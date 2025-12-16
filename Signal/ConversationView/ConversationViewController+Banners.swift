@@ -235,13 +235,13 @@ private class ConversationBannerView: UIView {
                     newThumbnail: configuration.thumbnail
                 )
             } else {
-                bodyLabel.numberOfLines = 0
+                bodyLabel.numberOfLines = configuration.isPinnedMessagesBanner ? 1 : 0
                 bodyLabel.font = UIFont.dynamicTypeSubheadlineClamped
                 bodyLabel.textColor = .Signal.label
                 bodyLabel.attributedText = configuration.body
 
                 if let title = configuration.title {
-                    titleLabel.numberOfLines = 0
+                    titleLabel.numberOfLines = configuration.isPinnedMessagesBanner ? 1 : 0
                     titleLabel.font = UIFont.dynamicTypeFootnote.semibold()
                     titleLabel.textColor = .Signal.label
                     titleLabel.text = title
@@ -337,13 +337,13 @@ private class ConversationBannerView: UIView {
                 hStack.spacing = 12
 
                 let _titleLabel = UILabel()
-                _titleLabel.numberOfLines = 0
+                _titleLabel.numberOfLines = 1
                 _titleLabel.font = UIFont.dynamicTypeFootnote.semibold()
                 _titleLabel.textColor = .Signal.label
                 _titleLabel.text = title
 
                 let _bodyLabel = UILabel()
-                _bodyLabel.numberOfLines = 0
+                _bodyLabel.numberOfLines = 1
                 _bodyLabel.font = UIFont.dynamicTypeSubheadlineClamped
                 _bodyLabel.textColor = .Signal.label
                 _bodyLabel.attributedText = body
