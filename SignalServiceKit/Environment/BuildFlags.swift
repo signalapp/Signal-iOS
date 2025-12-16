@@ -83,8 +83,8 @@ public enum BuildFlags {
     public static let serviceIdStrings = TSConstants.isUsingProductionService
 
     public enum PinnedMessages {
-        public static let send = build <= .dev
-        public static let receive = build <= .dev
+        public static let send = build <= .internal
+        public static let receive = build <= .internal
     }
 
     public static let useNewAttachmentLimits = false
