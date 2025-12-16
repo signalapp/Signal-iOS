@@ -1136,7 +1136,6 @@
 		66B1E26C2CB187B3005F43AC /* AttachmentUploadStoreImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B1E26B2CB187A0005F43AC /* AttachmentUploadStoreImpl.swift */; };
 		66B1E2702CB48C53005F43AC /* Array+SSKTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B1E26F2CB48C48005F43AC /* Array+SSKTest.swift */; };
 		66B5451A2DD5B9A00016289B /* BackupListMediaManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B545192DD5B9980016289B /* BackupListMediaManager.swift */; };
-		66B78E032BE59B860022580E /* StickerMetadata+TSResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B78E022BE59B860022580E /* StickerMetadata+TSResource.swift */; };
 		66B78E062BE5AADF0022580E /* AttachmentViewOnceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B78E052BE5AADF0022580E /* AttachmentViewOnceManager.swift */; };
 		66B78E082BE5AAFC0022580E /* AttachmentViewOnceManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B78E072BE5AAFB0022580E /* AttachmentViewOnceManagerImpl.swift */; };
 		66B78E112BE5AB360022580E /* AttachmentViewOnceManagerMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B78E102BE5AB360022580E /* AttachmentViewOnceManagerMock.swift */; };
@@ -5302,7 +5301,6 @@
 		66B1E26B2CB187A0005F43AC /* AttachmentUploadStoreImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentUploadStoreImpl.swift; sourceTree = "<group>"; };
 		66B1E26F2CB48C48005F43AC /* Array+SSKTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+SSKTest.swift"; sourceTree = "<group>"; };
 		66B545192DD5B9980016289B /* BackupListMediaManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupListMediaManager.swift; sourceTree = "<group>"; };
-		66B78E022BE59B860022580E /* StickerMetadata+TSResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StickerMetadata+TSResource.swift"; sourceTree = "<group>"; };
 		66B78E052BE5AADF0022580E /* AttachmentViewOnceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentViewOnceManager.swift; sourceTree = "<group>"; };
 		66B78E072BE5AAFB0022580E /* AttachmentViewOnceManagerImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentViewOnceManagerImpl.swift; sourceTree = "<group>"; };
 		66B78E102BE5AB360022580E /* AttachmentViewOnceManagerMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentViewOnceManagerMock.swift; sourceTree = "<group>"; };
@@ -14572,7 +14570,6 @@
 				F9C5C92A289453B100548EEE /* StickerInfo.h */,
 				F9C5C921289453B100548EEE /* StickerInfo.m */,
 				F9C5C919289453B100548EEE /* StickerManager.swift */,
-				66B78E022BE59B860022580E /* StickerMetadata+TSResource.swift */,
 				F9C5C91B289453B100548EEE /* StickerMetadata.swift */,
 				F9C5C91C289453B100548EEE /* StickerPack+SDS.swift */,
 				F9C5C91D289453B100548EEE /* StickerPack.h */,
@@ -19434,7 +19431,6 @@
 				F9C5CC1B289453B300548EEE /* StickerError.swift in Sources */,
 				F9C5CC13289453B300548EEE /* StickerInfo.m in Sources */,
 				F9C5CC0B289453B300548EEE /* StickerManager.swift in Sources */,
-				66B78E032BE59B860022580E /* StickerMetadata+TSResource.swift in Sources */,
 				F9C5CC0D289453B300548EEE /* StickerMetadata.swift in Sources */,
 				F9C5CC0E289453B300548EEE /* StickerPack+SDS.swift in Sources */,
 				F9C5CC17289453B300548EEE /* StickerPack.m in Sources */,

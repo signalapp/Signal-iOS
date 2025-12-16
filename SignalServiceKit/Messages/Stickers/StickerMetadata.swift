@@ -183,22 +183,3 @@ public class EncryptedStickerMetadata: StickerMetadata {
         hasher.combine(stickerInfo.asKey().hashValue)
     }
 }
-
-extension EncryptedStickerMetadata {
-
-    public static func from(
-        attachment: AttachmentStream,
-        stickerInfo: StickerInfo,
-        stickerType: StickerType,
-        emojiString: String?
-    ) -> EncryptedStickerMetadata {
-        return .init(
-            stickerInfo: stickerInfo,
-            stickerType: stickerType,
-            emojiString: emojiString,
-            encryptedStickerDataUrl: attachment.fileURL,
-            encryptionKey: attachment.attachment.encryptionKey,
-            plaintextLength: attachment.info.unencryptedByteCount
-        )
-    }
-}

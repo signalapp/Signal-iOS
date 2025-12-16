@@ -1350,15 +1350,19 @@ fileprivate extension CVComponentState.Builder {
         else {
             throw OWSAssertionError("Missing sticker attachment.")
         }
-        if let attachmentStream = attachment.asReferencedStream {
-            let stickerMetadata = attachmentStream.attachmentStream.asStickerMetadata(
+        if let referencedAttachmentStream = attachment.asReferencedStream {
+            let stickerMetadata = EncryptedStickerMetadata(
                 stickerInfo: messageSticker.info,
-                stickerType: StickerManager.stickerType(forContentType: attachmentStream.attachment.mimeType),
-                emojiString: messageSticker.emoji
+                stickerType: StickerManager.stickerType(forContentType: referencedAttachmentStream.attachment.mimeType),
+                emojiString: messageSticker.emoji,
+                encryptedStickerDataUrl: referencedAttachmentStream.attachmentStream.fileURL,
+                encryptionKey: referencedAttachmentStream.attachmentStream.attachment.encryptionKey,
+                plaintextLength: referencedAttachmentStream.attachmentStream.info.unencryptedByteCount,
             )
+
             self.sticker = .available(
                 stickerMetadata: stickerMetadata,
-                attachmentStream: attachmentStream
+                attachmentStream: referencedAttachmentStream
             )
             return build()
         } else if let attachmentPointer = attachment.asReferencedAnyPointer {
