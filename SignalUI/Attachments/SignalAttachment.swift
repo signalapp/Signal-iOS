@@ -326,7 +326,7 @@ public class SignalAttachment: CustomDebugStringConvertible {
         forImageQuality imageQuality: ImageQualityLevel,
         fileSize: UInt64,
         dataUTI: String,
-        imageMetadata: ImageMetadata,
+        imageMetadata: ImageMetadata?,
     ) -> Bool {
         // 10-18-2023: Due to an issue with corrupt JPEG IPTC metadata causing a
         // crash in CGImageDestinationCopyImageSource, stop using the original
@@ -337,7 +337,7 @@ public class SignalAttachment: CustomDebugStringConvertible {
 
         guard SignalAttachment.outputImageUTISet.contains(dataUTI) else { return false }
         guard fileSize <= imageQuality.maxFileSize else { return false }
-        if imageMetadata.hasStickerLikeProperties { return true }
+        if let imageMetadata, imageMetadata.hasStickerLikeProperties { return true }
         guard fileSize <= imageQuality.maxOriginalFileSize else { return false }
         return true
     }
@@ -368,7 +368,7 @@ public class SignalAttachment: CustomDebugStringConvertible {
     static func convertAndCompressImage(
         toImageQuality imageQuality: ImageQualityLevel,
         dataSource: DataSourcePath,
-        imageMetadata: ImageMetadata,
+        imageMetadata: ImageMetadata?,
     ) throws(SignalAttachmentError) -> (dataSource: DataSourcePath, containerType: ContainerType) {
         var nextImageUploadQuality: ImageQualityTier? = imageQuality.startingTier
         while let imageUploadQuality = nextImageUploadQuality {
@@ -392,19 +392,19 @@ public class SignalAttachment: CustomDebugStringConvertible {
         toImageQuality imageQuality: ImageQualityLevel,
         imageUploadQuality: ImageQualityTier,
         dataSource: DataSourcePath,
-        imageMetadata: ImageMetadata,
+        imageMetadata: ImageMetadata?,
     ) throws(SignalAttachmentError) -> (dataSource: DataSourcePath, containerType: ContainerType)? {
         return try autoreleasepool { () throws(SignalAttachmentError) -> (dataSource: DataSourcePath, containerType: ContainerType)? in
             let maxSize = imageUploadQuality.maxEdgeSize
-            let pixelSize = imageMetadata.pixelSize
+            let pixelSize = imageMetadata?.pixelSize
             var imageProperties = [CFString: Any]()
 
-            guard let imageSource = cgImageSource(for: dataSource, imageFormat: imageMetadata.imageFormat) else {
+            guard let imageSource = cgImageSource(for: dataSource, imageFormat: imageMetadata?.imageFormat) else {
                 throw .couldNotParseImage
             }
 
             let cgImage: CGImage
-            if pixelSize.width > maxSize || pixelSize.height > maxSize {
+            if let pixelSize, pixelSize.width > maxSize || pixelSize.height > maxSize {
                 // NOTE: For unknown reasons, resizing images with UIGraphicsBeginImageContext()
                 // crashes reliably in the share extension after screen lock's auth UI has been presented.
                 // Resizing using a CGContext seems to work fine.
@@ -454,11 +454,11 @@ public class SignalAttachment: CustomDebugStringConvertible {
             // transparent pixels (all screenshots fall into this bucket)
             // and there is not a simple, performant way to check if there
             // are any transparent pixels in an image.
-            if imageMetadata.hasStickerLikeProperties {
+            if let imageMetadata, imageMetadata.hasStickerLikeProperties {
                 containerType = .png
             } else {
                 containerType = .jpg
-                imageProperties[kCGImageDestinationLossyCompressionQuality] = compressionQuality(for: pixelSize)
+                imageProperties[kCGImageDestinationLossyCompressionQuality] = compressionQuality(for: pixelSize ?? .zero)
             }
 
             let tempFileUrl = OWSFileSystem.temporaryFileUrl(fileExtension: containerType.fileExtension)
@@ -506,7 +506,7 @@ public class SignalAttachment: CustomDebugStringConvertible {
         return 0.6
     }
 
-    private class func cgImageSource(for dataSource: DataSourcePath, imageFormat: ImageFormat) -> CGImageSource? {
+    private class func cgImageSource(for dataSource: DataSourcePath, imageFormat: ImageFormat?) -> CGImageSource? {
         if imageFormat == .webp {
             // CGImageSource doesn't know how to handle webp, so we have
             // to pass it through YYImage. This is costly and we could

@@ -55,14 +55,12 @@ public struct PreviewableAttachment {
             throw SignalAttachmentError.invalidData
         }
 
-        guard let imageMetadata = try? dataSource.imageSource().imageMetadata(ignorePerTypeFileSizeLimits: true) else {
-            throw SignalAttachmentError.invalidData
-        }
+        let imageMetadata = try? dataSource.imageSource().imageMetadata(ignorePerTypeFileSizeLimits: true)
 
         let newDataSource: DataSourcePath
         let newDataUTI: String
 
-        let isAnimated = imageMetadata.isAnimated
+        let isAnimated = imageMetadata?.isAnimated ?? false
         // Never re-encode animated images (i.e. GIFs) as JPEGs.
         if isAnimated {
             guard fileSize <= OWSMediaUtils.kMaxFileSizeAnimatedImage else {
@@ -130,7 +128,7 @@ public struct PreviewableAttachment {
             }
         }
         let result = SignalAttachment(dataSource: newDataSource, dataUTI: newDataUTI)
-        result.isBorderless = canBeBorderless && imageMetadata.hasStickerLikeProperties
+        result.isBorderless = canBeBorderless && (imageMetadata?.hasStickerLikeProperties ?? false)
         result.isAnimatedImage = isAnimated
         return Self(rawValue: result)
     }
