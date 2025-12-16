@@ -662,6 +662,26 @@ extension ConversationViewController {
         return SSKEnvironment.shared.databaseStorageRef.read { tx in Self.lastVisibleInteraction(for: thread, tx: tx) }
     }
 
+    public func focusInitialVoiceoverElement() {
+        let focusIndexPath: IndexPath
+        if let _indexPath = indexPathOfUnreadMessagesIndicator {
+            focusIndexPath = _indexPath
+        } else if let lastVisibleInteraction = lastVisibleInteractionWithSneakyTransaction(),
+                  let _indexPath = indexPath(forInteractionUniqueId: lastVisibleInteraction.uniqueId) {
+            focusIndexPath = _indexPath
+        } else {
+            return
+        }
+
+        if let cell = self.collectionView.cellForItem(at: focusIndexPath) as? CVCell,
+           let componentView = cell.componentView {
+            UIAccessibility.post(
+                notification: .screenChanged,
+                argument: componentView.rootView
+            )
+        }
+    }
+
     private static func lastVisibleInteraction(for thread: TSThread, tx: DBReadTransaction) -> LastVisibleInteraction? {
         guard
             let lastVisibleInteraction = DependenciesBridge.shared.lastVisibleInteractionStore

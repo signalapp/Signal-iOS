@@ -441,6 +441,8 @@ public final class ConversationViewController: OWSViewController {
         self.configureScrollDownButtons()
         inputToolbar?.viewDidAppear()
 
+        self.focusInitialVoiceoverElement()
+
         self.viewDidAppearDidComplete()
     }
 
