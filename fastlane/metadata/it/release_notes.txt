@@ -1,1 +1,1 @@
-• Da ora i sondaggi includono delle descrizioni più complete per l'accessibilità e per supportare al meglio la funzione di VoiceOver.
+• Ulteriori miglioramenti all'interfaccia, tra cui un aggiornamento del layout e dei comandi per la riproduzione nel visualizzatore dei media per seguire lo stile di Liquid Glass di Apple.

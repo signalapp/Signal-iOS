@@ -1,1 +1,1 @@
-• Les enquestes ara inclouen etiquetes d'accessibilitat addicionals per millorar la compatibilitat amb VoiceOver.
+• Millores addicionals a la interfície, que inclouen un disseny actualitzat i controls de reproducció de Liquid Glass al visor d'arxius multimèdia.

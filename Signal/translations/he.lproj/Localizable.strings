@@ -689,7 +689,7 @@
 "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_PROCESSING_MEDIA" = "מדיה בעיבוד…";
 
 /* Message describing to the user that the last backup failed. */
-"BACKUP_SETTINGS_BACKUP_FAILED_MESSAGE" = "הגיבוי האחרון שלך לא הושלם. לחצו על ״גיבוי עכשיו״ כדי לנסות שוב.";
+"BACKUP_SETTINGS_BACKUP_FAILED_MESSAGE" = "הגיבוי האחרון שלך לא הושלם. יש ללחוץ על ״גיבוי כעת״ כדי לנסות שוב.";
 
 /* Title for a button allowing users to upgrade from a free to paid backup plan. */
 "BACKUP_SETTINGS_BACKUP_PLAN_FREE_ACTION_BUTTON_TITLE" = "שדרג";
@@ -3173,7 +3173,7 @@
 "DONATIONS_CURRENCY_PICKER_LABEL" = "מטבע";
 
 /* Label for a button that says 'Don't show again'. */
-"DONT_SHOW_AGAIN_BUTTON_TITLE" = "אל תציג שוב";
+"DONT_SHOW_AGAIN_BUTTON_TITLE" = "לא להציג שוב";
 
 /* Message for Double Tap to Edit sheet show on first interaction */
 "DOUBLE_TAP_TO_EDIT_ALERT_MESSAGE" = "אפשר ללחוץ פעמיים במהירות על ההודעות שלך כדי לערוך אותן. אפשר לערוך הודעות עד 24 שעות מרגע השליחה.";
@@ -3839,7 +3839,7 @@
 "GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%1$@ שינה/שינתה את הגדרות הקבוצה אל התרה רק למנהלנים לשלוח הודעות.";
 
 /* Message text for the 'group invite link' action sheet. */
-"GROUP_LINK_ACTION_SHEET_JOIN_MESSAGE" = "להצטרף לקבוצה הזו ולשתף את השם והתמונה עם חברי הקבוצה?";
+"GROUP_LINK_ACTION_SHEET_JOIN_MESSAGE" = "להצטרף לקבוצה הזו ולשתף את השם והתמונה שלך עם חברי הקבוצה?";
 
 /* Message text for the 'group invite link' action sheet, if the user will be requesting to join. */
 "GROUP_LINK_ACTION_SHEET_JOIN_MESSAGE_W_REQUEST" = "כשמבקשים להצטרף, השם והתמונה ישותפו עם חברי הקבוצה הזו. הבקשה דורשת אישור מנהל/ת.";
@@ -6542,10 +6542,10 @@
 "PINNED_CONVERSATION_LIMIT" = "אפשר להצמיד עד 4 צ׳אטים בלבד.";
 
 /* Shown when another user pins a message. Embeds {{ another user }}. */
-"PINNED_MESSAGE_CHAT_EVENT_OTHER" = "%1$@ pinned a message";
+"PINNED_MESSAGE_CHAT_EVENT_OTHER" = "%1$@ הצמיד הודעה";
 
 /* Shown when the local user pins a message. */
-"PINNED_MESSAGE_CHAT_EVENT_SELF" = "You pinned a message";
+"PINNED_MESSAGE_CHAT_EVENT_SELF" = "הצמדת הודעה";
 
 /* Label for button to pin a message */
 "PINNED_MESSAGE_PIN_ACTION_TITLE" = "הצמדת הודעה";
@@ -6560,13 +6560,13 @@
 "PINNED_MESSAGE_REPLACE_OLDEST_TITLE" = "להחליף את ההצמדה הוותיקה ביותר?";
 
 /* Body for error sheet shown if the pinned message failed to send */
-"PINNED_MESSAGE_SEND_ERROR_SHEET_BODY" = "Check your connection and try again.";
+"PINNED_MESSAGE_SEND_ERROR_SHEET_BODY" = "כדאי לבדוק את החיבור שלך ולנסות שוב.";
 
 /* Title for error sheet shown if the pinned message failed to send */
-"PINNED_MESSAGE_SEND_ERROR_SHEET_TITLE" = "Couldn’t Pin Message";
+"PINNED_MESSAGE_SEND_ERROR_SHEET_TITLE" = "לא ניתן להצמיד הודעה";
 
 /* Text to show on a toast when someone unpins a message */
-"PINNED_MESSAGE_TOAST" = "הצמדת ההודעה בוטלה";
+"PINNED_MESSAGE_TOAST" = "הצמדת הודעה בוטלה";
 
 /* Label for button to unpin a message */
 "PINNED_MESSAGE_UNPIN_ACTION_TITLE" = "ביטול הצמדת הודעה";
@@ -6587,7 +6587,7 @@
 "PINNED_SECTION_TITLE" = "מוצמד";
 
 /* Body for a sheet warning users they are pinning a disappearing message. */
-"PINNING_DISAPPEARING_MESSAGE_WARNING_BODY" = "הודעות נעלמות יבוטלו מהצמדה כשהזמן שנקבע יפוג וההודעה תימחק מהצ'אט.";
+"PINNING_DISAPPEARING_MESSAGE_WARNING_BODY" = "ההצמדה של הודעות נעלמות תבוטל כשהטיימר שלהן יסתיים וההודעה תימחק מהצ'אט.";
 
 /* Title for a sheet warning users they are pinning a disappearing message. */
 "PINNING_DISAPPEARING_MESSAGE_WARNING_TITLE" = "הצמדת הודעות נעלמות";
@@ -6611,7 +6611,7 @@
 "POLL_ACCESSIBILITY_LABEL" = "סקר: %1$@.";
 
 /* Accessibility label for a vote option that is not selected by the user. */
-"POLL_ACCESSIBILITY_LABEL_OPTION_PENDING" = "ממתין";
+"POLL_ACCESSIBILITY_LABEL_OPTION_PENDING" = "בהמתנה";
 
 /* Title for a toggle allowing multiple votes for a poll. */
 "POLL_ALLOW_MULTIPLE_LABEL" = "לאפשר הצבעות מרובות";
@@ -6890,13 +6890,13 @@
 "PUSH_REGISTER_SUCCESS" = "נרשם מחדש בהצלחה עבור התראות דחיפה.";
 
 /* Body for sheet with info about scanning a Quick Restore QR code */
-"QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_ACTION_BODY" = "Use this device to scan the QR code on the device you want to transfer to";
+"QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_ACTION_BODY" = "השתמשו במכשיר הזה לסריקת קוד ה-QR במכשיר שאליו מעבירים.";
 
 /* Title for sheet with info about scanning a Quick Restore QR code */
-"QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_ACTION_TITLE" = "Scan QR Code";
+"QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_ACTION_TITLE" = "סריקת קוד QR";
 
 /* Message for an action sheet telling users how to use quick restore, when trying to open an external quick restore URL. */
-"QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_MESSAGE" = "To transfer this account to a new device, tap “Continue” and scan the QR code with the Signal camera. Make sure you only scan QR codes that come directly from Signal.";
+"QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_MESSAGE" = "כדי להעביר חשבון זה למכשיר חדש, יש ללחוץ על ״המשך״ ולסרוק את קוד ה–QR באמצעות מצלמת Signal. חשוב לוודא שסורקים רק את קודי ה–QR שמגיעים ישירות מ–Signal.";
 
 /* Accessibility label stating the author of the message to which you are replying. Embeds: {{ the author of the message to which you are replying }}. */
 "QUOTED_REPLY_ACCESSIBILITY_LABEL_FORMAT" = "תשובה אל %1$@.";
@@ -8771,10 +8771,10 @@
 "STICKER_CATEGORY_FEATURED_NAME" = "מומלצים";
 
 /* Subtitle of the helper text displayed when Recent stickers are empty. */
-"STICKER_CATEGORY_RECENTS_EMPTY_SUBTITLE" = "שלחו סטיקר והוא יופיע כאן";
+"STICKER_CATEGORY_RECENTS_EMPTY_SUBTITLE" = "אפשר לשלוח סטיקר והוא יופיע כאן";
 
 /* Title of the helper text displayed when Recent stickers are empty. */
-"STICKER_CATEGORY_RECENTS_EMPTY_TITLE" = "אין סטיקרים בשימוש לאחרונה";
+"STICKER_CATEGORY_RECENTS_EMPTY_TITLE" = "אין סטיקרים שהיו בשימוש לאחרונה";
 
 /* The name for the sticker category 'Recents' */
 "STICKER_CATEGORY_RECENTS_NAME" = "אחרונים";
@@ -9233,7 +9233,7 @@
 "TEXT_MENU_MONOSPACE" = "רוחב אחיד";
 
 /* Option in selected text edit menu to remove all text formatting in the selected text range */
-"TEXT_MENU_REMOVE_FORMATTING" = "Remove Formatting";
+"TEXT_MENU_REMOVE_FORMATTING" = "הסרת עיצוב";
 
 /* Option in selected text edit menu to make text spoiler */
 "TEXT_MENU_SPOILER" = "ספוילר";

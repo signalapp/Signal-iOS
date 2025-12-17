@@ -1,1 +1,1 @@
-• Ankety teraz obsahujú ďalšie štítky prístupnosti pre lepšiu podporu funkcie VoiceOver.
+• Ďalšie vylepšenia rozhrania vrátane aktualizovaného rozloženia a ovládacích prvkov prehrávania s dizajnom Liquid Glass v prehliadači médií.

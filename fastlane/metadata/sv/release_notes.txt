@@ -1,1 +1,1 @@
-• Omröstningar har nu ytterligare tillgänglighetsetiketter för förbättrat VoiceOver-stöd.
+• Ytterligare förbättringar av gränssnittet, inklusive en uppdaterad layout och Liquid Glass-uppspelningskontroller i medievisaren.

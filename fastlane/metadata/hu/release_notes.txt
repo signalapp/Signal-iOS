@@ -1,1 +1,1 @@
-• A szavazások mostantól további kisegítő címkéket tartalmaznak a hangalámondás jobb támogatása érdekében.
+• További felületfejlesztések, beleértve a frissített elrendezést és a Liquid Glass lejátszási vezérlőket a médiamegjelenítőben.

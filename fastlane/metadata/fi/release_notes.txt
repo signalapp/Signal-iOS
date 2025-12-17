@@ -1,1 +1,1 @@
-• Kyselyissä on nyt lisää esteettömyystunnisteita, jotka parantavat VoiceOver-tukea.
+• Lisää käyttöliittymäparannuksia, kuten mediakatseluohjelman päivitetty asettelu ja Liquid Glass -toistosäätimet.

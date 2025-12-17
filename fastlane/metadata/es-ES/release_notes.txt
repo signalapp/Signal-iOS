@@ -1,1 +1,1 @@
-• Ahora las encuestas incluyen etiquetas adicionales de accesibilidad para mejorar la compatibilidad con VoiceOver.
+• Hemos añadido mejoras adicionales en la interfaz, incluido un diseño actualizado y controles de reproducción Liquid Glass en el visor de archivos multimedia.

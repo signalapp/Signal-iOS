@@ -1,1 +1,1 @@
-• Für eine verbesserte VoiceOver-Unterstützung sind Umfragen jetzt mit weiteren barrierefreien Bezeichnungen versehen.
+• Es gibt weitere Verbesserungen an der Benutzeroberfläche, darunter ein aktualisiertes Layout und Liquid-Glass-Wiedergabesteuerung im Mediaplayer.

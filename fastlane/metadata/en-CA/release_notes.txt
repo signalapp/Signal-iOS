@@ -1,1 +1,1 @@
-• Polls now include additional accessibility labels for improved VoiceOver support.
+• Additional interface improvements, including an updated layout and Liquid Glass playback controls in the media viewer.
