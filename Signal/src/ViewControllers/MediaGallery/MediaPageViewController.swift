@@ -905,6 +905,8 @@ extension MediaPageViewController: MediaPresentationContextProvider {
             return nil
         }
 
+        view.layoutIfNeeded()
+
         let backgroundColor: UIColor = if #available(iOS 26, *) { .Signal.background } else { .black }
         return MediaPresentationContext(
             mediaView: mediaView,
