@@ -94,8 +94,11 @@ class MessageReactionPicker: UIStackView {
 
         super.init(frame: .zero)
 
-        let liquidGlassIsAvailable: Bool =
-        if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
+        if forceDarkTheme {
+            overrideUserInterfaceStyle = .dark
+        }
+
+        let liquidGlassIsAvailable: Bool = if #available(iOS 26, *) {
             true
         } else {
             false
@@ -108,19 +111,12 @@ class MessageReactionPicker: UIStackView {
             break
         case (.configure, true), (.contextMenu(allowGlass: true), true):
             guard #available(iOS 26, *) else { break }
-#if compiler(>=6.2)
             let glassEffect = UIGlassEffect(style: .regular)
             let visualEffectView = UIVisualEffectView(effect: glassEffect)
             visualEffectView.cornerConfiguration = .capsule()
-            if forceDarkTheme {
-                visualEffectView.overrideUserInterfaceStyle = .dark
-            }
             addBackgroundView(visualEffectView)
             backgroundView = visualEffectView
             backgroundContentView = visualEffectView.contentView
-#else
-            fallthrough
-#endif
         case (.configure, false), (.contextMenu(allowGlass: _), _):
             backgroundView = addBackgroundView(
                 withBackgroundColor: forceDarkTheme ? .ows_gray75 : Theme.actionSheetBackgroundColor,
@@ -182,7 +178,11 @@ class MessageReactionPicker: UIStackView {
         for (index, emoji) in emojiSet.enumerated() {
             let button = OWSFlatButton()
             button.autoSetDimensions(to: CGSize(square: reactionHeight))
-            button.setTitle(title: emoji.rawValue, font: .systemFont(ofSize: reactionFontSize), titleColor: forceDarkTheme ? Theme.darkThemePrimaryColor : Theme.primaryTextColor)
+            button.setTitle(
+                title: emoji.rawValue,
+                font: .systemFont(ofSize: reactionFontSize),
+                titleColor: .Signal.label
+            )
             button.setPressedBlock { [weak self] in
                 // current title of button may have changed in the meantime
                 if let currentEmoji = button.button.title(for: .normal) {

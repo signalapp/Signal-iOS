@@ -8,20 +8,18 @@ public import SignalUI
 
 public class EmojiReactionPickerConfigViewController: UIViewController {
 
-    private lazy var reactionPicker: MessageReactionPicker = {
-        return MessageReactionPicker(
-            selectedEmoji: nil,
-            delegate: nil,
-            style: .configure,
-            forceDarkTheme: self.forceDarkTheme
-        )
-    }()
+    private lazy var reactionPicker =  MessageReactionPicker(
+        selectedEmoji: nil,
+        delegate: nil,
+        style: .configure,
+        forceDarkTheme: self.forceDarkTheme
+    )
 
-    private lazy var instructionLabel: UILabel = {
+    private let instructionLabel: UILabel = {
         let label = UILabel()
         label.text = OWSLocalizedString("TAP_REPLACE_EMOJI", comment: "Tap to Replace Emoji string for reaction configuration")
         label.font = UIFont.dynamicTypeSubheadline
-        label.textColor = self.forceDarkTheme ? Theme.darkThemeSecondaryTextAndIconColor : Theme.secondaryTextAndIconColor
+        label.textColor = UIColor.Signal.secondaryLabel
         return label
     }()
 
@@ -45,11 +43,7 @@ public class EmojiReactionPickerConfigViewController: UIViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
         title = OWSLocalizedString("CONFIGURE_REACTIONS", comment: "Configure reactions title text")
-        if self.forceDarkTheme || Theme.isDarkThemeEnabled {
-            view.backgroundColor = .ows_gray75
-        } else {
-            view.backgroundColor = UIColor.color(rgbHex: 0xF0F0F0)
-        }
+        view.backgroundColor = .Signal.tertiaryGroupedBackground
 
         navigationItem.rightBarButtonItem = .doneButton { [weak self] in
             self?.doneButtonTapped()
@@ -66,9 +60,8 @@ public class EmojiReactionPickerConfigViewController: UIViewController {
             }
         )
         if self.forceDarkTheme {
-            navigationController?.navigationBar.tintColor = .white
-            let textAttributes = [NSAttributedString.Key.foregroundColor: UIColor.white]
-            navigationController?.navigationBar.titleTextAttributes = textAttributes
+            navigationController?.overrideUserInterfaceStyle = .dark
+            overrideUserInterfaceStyle = .dark
         }
 
         // Reaction picker

@@ -79,6 +79,7 @@ class StoryPageViewController: UIPageViewController {
         self.currentContext = context
         currentContextViewController.loadMessage = loadMessage
         currentContextViewController.action = action
+        overrideUserInterfaceStyle = .dark
         modalPresentationStyle = .fullScreen
         transitioningDelegate = self
     }

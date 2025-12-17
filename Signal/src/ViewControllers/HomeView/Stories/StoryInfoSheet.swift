@@ -25,6 +25,7 @@ class StoryInfoSheet: OWSTableSheetViewController {
 
         DependenciesBridge.shared.databaseChangeObserver.appendDatabaseChangeDelegate(self)
 
+        overrideUserInterfaceStyle = .dark
         tableViewController.forceDarkMode = true
         tableViewController.tableView.register(ContactTableViewCell.self, forCellReuseIdentifier: ContactTableViewCell.reuseIdentifier)
     }

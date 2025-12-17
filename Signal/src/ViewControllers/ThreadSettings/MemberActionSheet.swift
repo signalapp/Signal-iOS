@@ -34,13 +34,17 @@ struct ProfileSheetSheetCoordinator {
             return
         }
 
-        MemberActionSheet(
+        let sheet = MemberActionSheet(
             threadViewModel: threadViewModel,
             address: address,
             groupViewHelper: groupViewHelper,
             spoilerState: spoilerState
         )
-        .present(from: viewController)
+        if viewController.overrideUserInterfaceStyle == .dark {
+            sheet.overrideUserInterfaceStyle = .dark
+            sheet.tableViewController.forceDarkMode = true
+        }
+        sheet.present(from: viewController)
     }
 }
 
@@ -72,7 +76,6 @@ class MemberActionSheet: OWSTableSheetViewController {
         self.address = address
         self.spoilerState = spoilerState
 
-#if compiler(>=6.2)
         if #available(iOS 26.0, *) {
             super.init(visualEffect: UIGlassEffect())
             self.topCornerRadius = 40
@@ -80,9 +83,6 @@ class MemberActionSheet: OWSTableSheetViewController {
         } else {
             super.init()
         }
-#else
-        super.init()
-#endif
 
         tableViewController.defaultSeparatorInsetLeading =
             OWSTableViewController2.cellHInnerMargin + 24 + OWSTableItem.iconSpacing
@@ -155,10 +155,12 @@ class MemberActionSheet: OWSTableSheetViewController {
         // Nickname
         section.add(.item(
             icon: .buttonEdit,
+            tintColor: .Signal.label,
             name: OWSLocalizedString(
                 "NICKNAME_BUTTON_TITLE",
                 comment: "Title for the table cell in conversation settings for presenting the profile nickname editor."
             ),
+            textColor: .Signal.label,
             actionBlock: { [weak self] in
                 guard let self else { return }
                 let db = DependenciesBridge.shared.db
@@ -183,11 +185,12 @@ class MemberActionSheet: OWSTableSheetViewController {
         guard !threadViewModel.isBlocked else {
             section.add(.item(
                 icon: .chatSettingsBlock,
+                tintColor: .Signal.label,
                 name: OWSLocalizedString(
                     "BLOCK_LIST_UNBLOCK_BUTTON",
                     comment: "Button label for the 'unblock' button"
                 ),
-                accessibilityIdentifier: "MemberActionSheet.unblock",
+                textColor: .Signal.label,
                 actionBlock: { [weak self] in
                     self?.didTapUnblockThread {}
                 }
@@ -197,11 +200,12 @@ class MemberActionSheet: OWSTableSheetViewController {
 
         section.add(.item(
             icon: .chatSettingsBlock,
+            tintColor: .Signal.label,
             name: OWSLocalizedString(
                 "BLOCK_LIST_BLOCK_BUTTON",
                 comment: "Button label for the 'block' button"
             ),
-            accessibilityIdentifier: "MemberActionSheet.block",
+            textColor: .Signal.label,
             actionBlock: { [weak self] in
                 guard let self = self, let fromViewController = self.fromViewController else { return }
                 self.dismiss(animated: true) {
@@ -218,11 +222,12 @@ class MemberActionSheet: OWSTableSheetViewController {
             if groupViewHelper.canRemoveFromGroup(address: address) {
                 section.add(.item(
                     icon: .groupMemberRemoveFromGroup,
+                    tintColor: .Signal.label,
                     name: OWSLocalizedString(
                         "CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON",
                         comment: "Label for 'remove from group' button in conversation settings view."
                     ),
-                    accessibilityIdentifier: "MemberActionSheet.removeFromGroup",
+                    textColor: .Signal.label,
                     actionBlock: { [weak self] in
                         guard let self = self else { return }
                         self.dismiss(animated: true) {
@@ -234,11 +239,12 @@ class MemberActionSheet: OWSTableSheetViewController {
             if groupViewHelper.memberActionSheetCanMakeGroupAdmin(address: address) {
                 section.add(.item(
                     icon: .groupMemberMakeGroupAdmin,
+                    tintColor: .Signal.label,
                     name: OWSLocalizedString(
                         "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON",
                         comment: "Label for 'make group admin' button in conversation settings view."
                     ),
-                    accessibilityIdentifier: "MemberActionSheet.makeGroupAdmin",
+                    textColor: .Signal.label,
                     actionBlock: { [weak self] in
                         guard let self = self else { return }
                         self.dismiss(animated: true) {
@@ -250,11 +256,12 @@ class MemberActionSheet: OWSTableSheetViewController {
             if groupViewHelper.memberActionSheetCanRevokeGroupAdmin(address: address) {
                 section.add(.item(
                     icon: .groupMemberRevokeGroupAdmin,
+                    tintColor: .Signal.label,
                     name: OWSLocalizedString(
                         "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON",
                         comment: "Label for 'revoke group admin' button in conversation settings view."
                     ),
-                    accessibilityIdentifier: "MemberActionSheet.revokeGroupAdmin",
+                    textColor: .Signal.label,
                     actionBlock: { [weak self] in
                         guard let self = self else { return }
                         self.dismiss(animated: true) {
@@ -267,11 +274,12 @@ class MemberActionSheet: OWSTableSheetViewController {
 
         section.add(.item(
             icon: .groupMemberAddToGroup,
+            tintColor: .Signal.label,
             name: OWSLocalizedString(
                 "ADD_TO_GROUP",
                 comment: "Label for button or row which allows users to add to another group."
             ),
-            accessibilityIdentifier: "MemberActionSheet.add_to_group",
+            textColor: .Signal.label,
             actionBlock: { [weak self] in
                 guard let self = self, let fromViewController = self.fromViewController else { return }
                 self.dismiss(animated: true) {
@@ -286,11 +294,12 @@ class MemberActionSheet: OWSTableSheetViewController {
         if isSystemContact {
             section.add(.item(
                 icon: .contactInfoUserInContacts,
+                tintColor: .Signal.label,
                 name: OWSLocalizedString(
                     "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT",
                     comment: "Indicates that user is in the system contacts list."
                 ),
-                accessibilityIdentifier: "MemberActionSheet.contact",
+                textColor: .Signal.label,
                 actionBlock: { [weak self] in
                     guard let self else { return }
                     self.viewSystemContactDetails(contactAddress: self.address)
@@ -299,11 +308,12 @@ class MemberActionSheet: OWSTableSheetViewController {
         } else if address.phoneNumber != nil {
             section.add(.item(
                 icon: .contactInfoAddToContacts,
+                tintColor: .Signal.label,
                 name: OWSLocalizedString(
                     "CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS",
                     comment: "button in conversation settings view."
                 ),
-                accessibilityIdentifier: "MemberActionSheet.add_to_contacts",
+                textColor: .Signal.label,
                 actionBlock: { [weak self] in
                     guard let self else { return }
                     self.showAddToSystemContactsActionSheet(contactAddress: self.address)
@@ -313,11 +323,12 @@ class MemberActionSheet: OWSTableSheetViewController {
 
         section.add(.item(
             icon: .contactInfoSafetyNumber,
+            tintColor: .Signal.label,
             name: OWSLocalizedString(
                 "VERIFY_PRIVACY",
                 comment: "Label for button or row which allows users to verify the safety number of another user."
             ),
-            accessibilityIdentifier: "MemberActionSheet.safety_number",
+            textColor: .Signal.label,
             actionBlock: { [weak self] in
                 guard let self = self, let fromViewController = self.fromViewController else { return }
                 self.dismiss(animated: true) {

@@ -92,6 +92,7 @@ class StoryContextViewController: OWSViewController {
         self.loadPositionIfRead = loadPositionIfRead
         super.init()
         self.delegate = delegate
+        overrideUserInterfaceStyle = .dark
         DependenciesBridge.shared.databaseChangeObserver.appendDatabaseChangeDelegate(self)
     }
 
