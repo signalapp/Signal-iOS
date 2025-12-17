@@ -157,7 +157,7 @@ extension ConversationViewController: ContextMenuInteractionDelegate {
 
         // Add reaction bar if necessary
         if thread.canSendReactionToThread && shouldShowReactionPickerForInteraction(contextInteraction.itemViewModel.interaction) {
-            let reactionBarAccessory = ContextMenuRectionBarAccessory(thread: self.thread, itemViewModel: contextInteraction.itemViewModel)
+            let reactionBarAccessory = ContextMenuReactionBarAccessory(thread: self.thread, itemViewModel: contextInteraction.itemViewModel)
             reactionBarAccessory.didSelectReactionHandler = { [weak self] (message: TSMessage, reaction: String, isRemoving: Bool) in
 
                 guard self != nil else {

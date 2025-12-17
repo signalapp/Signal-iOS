@@ -457,6 +457,7 @@ class ContextMenuController: OWSViewController, ContextMenuViewDelegate, UIGestu
 
         guard let superview = view.superview, presentedSize != superview.bounds.size else { return }
 
+        emojiPickerSheet?.dismiss(animated: true)
         delegate?.contextMenuControllerRequestsDismissal(self)
 
         // TODO: Support orientation changes.
