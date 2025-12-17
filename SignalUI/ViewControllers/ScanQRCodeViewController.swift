@@ -884,6 +884,16 @@ private class QRCodeScanner {
             session.removeInput($0)
         }
         session.addInput(newInput)
+
+        // The default videoZoomFactor is the ultrawide lens when there is one,
+        // so set it to the main lens and let it switch to the ultrawide for
+        // macro mode automatically. This only works after it's added to the
+        // session for some reason 🤷‍♀️
+        if let wideAngleZoomFactor = device.virtualDeviceSwitchOverVideoZoomFactors.first {
+            try device.lockForConfiguration()
+            device.videoZoomFactor = CGFloat(truncating: wideAngleZoomFactor)
+            device.unlockForConfiguration()
+        }
     }
 
     private func selectCaptureDevice() throws -> AVCaptureDevice {
@@ -891,11 +901,11 @@ private class QRCodeScanner {
 
         // Camera types in descending order of preference.
         var deviceTypes = [AVCaptureDevice.DeviceType]()
+        deviceTypes.append(.builtInTripleCamera)
+        deviceTypes.append(.builtInDualWideCamera)
+        deviceTypes.append(.builtInDualCamera)
         deviceTypes.append(.builtInWideAngleCamera)
         deviceTypes.append(.builtInUltraWideCamera)
-        deviceTypes.append(.builtInDualWideCamera)
-        deviceTypes.append(.builtInTripleCamera)
-        deviceTypes.append(.builtInDualCamera)
         deviceTypes.append(.builtInTelephotoCamera)
 
         func selectDevice(session: AVCaptureDevice.DiscoverySession) -> AVCaptureDevice? {
