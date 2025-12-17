@@ -139,7 +139,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     // MARK: Initializers
 
     override init() {
-        self.searchBar = OWSSearchBar()
+        self.searchBar = UISearchBar()
         self.layout = GifPickerLayout()
         self.collectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: self.layout)
 

@@ -47,16 +47,10 @@ public class ConversationSearchController: NSObject {
 
         uiSearchController.hidesNavigationBarDuringPresentation = true
         uiSearchController.obscuresBackgroundDuringPresentation = false
-
-        applyTheme()
     }
 
     var searchBar: UISearchBar {
         return uiSearchController.searchBar
-    }
-
-    func applyTheme() {
-        OWSSearchBar.applyTheme(to: uiSearchController.searchBar)
     }
 }
 
