@@ -96,14 +96,11 @@ class DisappearingMessagesTimerSettingsViewController: HostingController<Disappe
         GroupViewUtils.updateGroupWithActivityIndicator(
             fromViewController: self,
             updateBlock: {
-                await withCheckedContinuation { continuation in
-                    DispatchQueue.global().async {
-                        // We're sending a message, so we're accepting any pending message request.
-                        ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(thread)
-                        continuation.resume()
-                    }
+                let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+                await databaseStorage.awaitableWrite { tx in
+                    // We're sending a message, so we're accepting any pending message request.
+                    _ = ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequest(thread, setDefaultTimerIfNecessary: true, tx: tx)
                 }
-
                 try await self.localUpdateDisappearingMessagesConfiguration(
                     thread: thread,
                     newToken: configuration.asVersionedToken
