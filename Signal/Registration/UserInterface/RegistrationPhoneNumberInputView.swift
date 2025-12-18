@@ -162,7 +162,6 @@ class RegistrationPhoneNumberInputView: UIView {
             comment: "Placeholder string for phone number field during registration"
         )
         result.delegate = self
-        result.addTarget(delegate, action: #selector(didChange), for: .valueChanged)
         return result
     }()
 
@@ -219,6 +218,8 @@ extension RegistrationPhoneNumberInputView: UITextFieldDelegate {
             replacementString = phoneNumber.nationalNumber
         }
 
+        let oldValue = textField.text!
+
         let result = FormattedNumberField.textField(
             textField,
             shouldChangeCharactersIn: range,
@@ -236,6 +237,12 @@ extension RegistrationPhoneNumberInputView: UITextFieldDelegate {
                     to: textField.endOfDocument
                 )
             }
+        }
+
+        let newValue = textField.text!
+
+        if newValue != oldValue {
+            delegate?.didChange()
         }
 
         return result
