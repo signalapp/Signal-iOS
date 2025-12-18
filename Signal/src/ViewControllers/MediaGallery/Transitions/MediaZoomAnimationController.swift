@@ -147,7 +147,7 @@ extension MediaZoomAnimationController: UIViewControllerAnimatedTransitioning {
         toContextProvider.mediaWillPresent(toContext: toMediaContext)
 
         let duration = transitionDuration(using: transitionContext)
-        let animator = UIViewPropertyAnimator(duration: duration, springDamping: 1, springResponse: 0.35)
+        let animator = UIViewPropertyAnimator(duration: duration, springDamping: 1, springResponse: 0.3)
         animator.addAnimations {
             toView.alpha = 1.0
             transitionView.shape = toMediaContext.mediaViewShape
