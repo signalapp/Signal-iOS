@@ -1,1 +1,1 @@
-• Tính năng hỏi ý kiến được bổ sung các nhãn trợ năng để cải thiện hỗ trợ VoiceOver.
+• Bổ sung các cải tiến giao diện, cập nhật bố cục và các nút điều khiển Liquid Glass trong công cụ xem tập tin đa phương tiện.

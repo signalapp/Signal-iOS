@@ -1,1 +1,1 @@
-• Peilingen bevatten nu extra toegankelijkheidslabels voor betere VoiceOver-ondersteuning.
+• Aanvullende verbeteringen aan de interface, waaronder een bijgewerkte lay-out en Liquid Glass-afspeelbediening in de mediaviewer.

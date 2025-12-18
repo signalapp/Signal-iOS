@@ -1,1 +1,1 @@
-• Sondajele includ acum etichete suplimentare de accesibilitate pentru o compatibilitate îmbunătățită cu VoiceOver.
+• Îmbunătățiri suplimentare ale interfeței, inclusiv un aspect actualizat și comenzi de redare Liquid Glass în vizualizatorul media.

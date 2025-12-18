@@ -1,1 +1,1 @@
-• Nå har avstemninger tilgjengelighetsetiketter for VoiceOver.
+• Flere grensesnittforbedringer, blant annet en ny layout og Liquid Glass-knapper i mediespilleren.

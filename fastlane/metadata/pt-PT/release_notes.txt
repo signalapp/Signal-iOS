@@ -1,1 +1,1 @@
-• As sondagens agora incluem etiquetas de acessibilidade para maior suporte de VoiceOver.
+• Melhorias adicionais na interface, incluindo layout atualizado e controlos de reprodução do Liquid Glass no visualizador de ficheiros multimédia.

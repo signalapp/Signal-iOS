@@ -1,1 +1,1 @@
-• Nous avons ajouté des descriptions vocales aux sondages pour améliorer l'accessibilité de l'application.
+• Nous avons encore peaufiné l'interface de Signal : côté lecteur multimédia, elle intègre désormais le design Liquid Glass aux commandes de lecture, et côté mise en page, l'appli termine l'année en beauté.

@@ -1,1 +1,1 @@
-• As enquetes agora incluem rótulos adicionais de acessibilidade para melhorar o suporte ao VoiceOver. 
+• Melhorias adicionais na interface, incluindo um layout atualizado e controles de reprodução Liquid Glass no visualizador de mídia.

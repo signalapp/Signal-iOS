@@ -1,1 +1,1 @@
-• Anketler artık gelişmiş VoiceOver desteği için ek erişilebilirlik etiketleri içermektedir.
+• Güncellenmiş bir düzen ve medya görüntüleyicide Liquid Glass oynatma kontrolleri dahil olmak üzere ek arayüz iyileştirmeleri.
