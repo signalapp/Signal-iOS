@@ -1360,6 +1360,78 @@
 /* notification body */
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ कॉल करने वाले का सेफ़्टी नंबर बदलने की वजह से कॉल मिस हो गई।";
 
+/* Footer text explaining custom issue descriptions in the call quality survey */
+"CALL_QUALITY_SURVEY_CUSTOM_ISSUE_FOOTER" = "Please include any details relevant to the issue. Anything you share here will be kept private and will only be used to help improve calls in Signal.";
+
+/* Placeholder text for the custom issue entry in the call quality survey */
+"CALL_QUALITY_SURVEY_CUSTOM_ISSUE_PLACEHOLDER" = "Describe your issue";
+
+/* Footer text explaining what debug logs contain in the call quality survey */
+"CALL_QUALITY_SURVEY_DEBUG_LOG_FOOTER" = "Debug logs contain low level app information and do not reveal any of your message contents.";
+
+/* Header text explaining the purpose of sharing debug logs in the call quality survey */
+"CALL_QUALITY_SURVEY_DEBUG_LOG_HEADER" = "Sending us your diagnostics info helps us improve call quality.";
+
+/* Title for the debug log sharing screen in the call quality survey */
+"CALL_QUALITY_SURVEY_DEBUG_LOG_TITLE" = "Help Us Improve";
+
+/* Label for the toggle to share debug log in the call quality survey */
+"CALL_QUALITY_SURVEY_DEBUG_LOG_TOGGLE" = "Share Debug Log";
+
+/* Button label for indicating the call did not have issues in the call quality survey */
+"CALL_QUALITY_SURVEY_GREAT_BUTTON" = "Great";
+
+/* Button label for indicating the call had issues in the call quality survey */
+"CALL_QUALITY_SURVEY_HAD_ISSUES_BUTTON" = "Had Issues";
+
+/* Label for audio issue option in call quality survey */
+"CALL_QUALITY_SURVEY_ISSUE_AUDIO" = "Audio issue";
+
+/* Label for audio dropout issue option in call quality survey */
+"CALL_QUALITY_SURVEY_ISSUE_AUDIO_DROP" = "Audio Cut Out";
+
+/* Label for local echo issue option in call quality survey, indicating the user heard an echo */
+"CALL_QUALITY_SURVEY_ISSUE_AUDIO_LOCAL_ECHO" = "I Heard Echo";
+
+/* Label for remote echo issue option in call quality survey, indicating other participants heard an echo */
+"CALL_QUALITY_SURVEY_ISSUE_AUDIO_REMOTE_ECHO" = "Others Heard Echo";
+
+/* Label for audio stuttering issue option in call quality survey */
+"CALL_QUALITY_SURVEY_ISSUE_AUDIO_STUTTERING" = "Audio Stuttering";
+
+/* Label for call dropped issue option in call quality survey */
+"CALL_QUALITY_SURVEY_ISSUE_CALL_DROPPED" = "Call Dropped";
+
+/* Label for custom issue option in call quality survey */
+"CALL_QUALITY_SURVEY_ISSUE_OTHER" = "Something Else";
+
+/* Label for video issue option in call quality survey */
+"CALL_QUALITY_SURVEY_ISSUE_VIDEO" = "Video Issue";
+
+/* Label for poor video quality issue option in call quality survey */
+"CALL_QUALITY_SURVEY_ISSUE_VIDEO_LOW_QUALITY" = "Poor Video Quality";
+
+/* Label for low resolution video issue option in call quality survey */
+"CALL_QUALITY_SURVEY_ISSUE_VIDEO_LOW_RESOLUTION" = "Low Resolution";
+
+/* Label for camera not working issue option in call quality survey */
+"CALL_QUALITY_SURVEY_ISSUE_VIDEO_NO_CAMERA" = "Camera Didn't Work";
+
+/* Header text on the call quality survey issues screen */
+"CALL_QUALITY_SURVEY_ISSUES_HEADER" = "Select all that apply";
+
+/* Title for the sheet in the call quality survey where issues with the call can be selected */
+"CALL_QUALITY_SURVEY_ISSUES_SHEET_TITLE" = "What Issues Did You Have?";
+
+/* Header text explaining the purpose of the call quality survey */
+"CALL_QUALITY_SURVEY_RATING_HEADER" = "This helps us improve calls in Signal. No personally identifiable information will be stored.";
+
+/* Title for the initial rating screen in the call quality survey */
+"CALL_QUALITY_SURVEY_RATING_TITLE" = "How Was Your Call?";
+
+/* Button text to submit the call quality survey */
+"CALL_QUALITY_SURVEY_SUBMIT_BUTTON" = "Submit";
+
 /* Label on button for raising hand in call. */
 "CALL_RAISE_HAND_BUTTON_LABEL" = "हाथ बढ़ाएं";
 
@@ -2635,17 +2707,8 @@
 /* An error indicating that the other device closed signal mid-transfer and it could not complete */
 "DEVICE_TRANSFER_ERROR_BACKGROUNDED" = "ट्रान्सफर पूरा नहीं हो पाया। सुनिश्चित करें कि दोनों डिवाइस में Signal खुला है और पुनः प्रयास करें।";
 
-/* An error indicating that we were unable to verify the identity of the new device to complete the transfer */
-"DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "आपका नया डिवाइस वेरिफ़ाई नहीं हो पाया। कृपया, फिर से कोशिश करें";
-
 /* An error indicating that something went wrong with the transfer and it could not complete */
 "DEVICE_TRANSFER_ERROR_GENERIC" = "ट्रान्सफर पूरा नहीं हो पाया। सुनिश्चित करें कि आपके डिवाइस एक-दूसरे के निकट हैं और पुनः प्रयास करें।";
-
-/* An error indicating the user must scan this code with a linked device to transfer. */
-"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "इस iPad को लिंक हुए डिवाइस के तौर पर सेटअप करने के लिए, अपने पुराने iPad से स्कैन करें";
-
-/* An error indicating the user must scan this code with a primary device to transfer. */
-"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_PRIMARY" = "अपना अकाउंट ट्रांसफ़र करने के लिए, आपको अपने iPhone से स्कैन करना होगा";
 
 /* An error indicating that the user does not have enough free space on their device to complete the transfer */
 "DEVICE_TRANSFER_ERROR_NOT_ENOUGH_SPACE" = "ट्रांसफ़र पूरा करने के लिए डिवाइस में पर्याप्त जगह मौजूद नहीं है";
@@ -2653,35 +2716,11 @@
 /* An error indicating the user must update their device before trying to transfer. */
 "DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "Signal के सबसे नए वर्ज़न पर अपडेट करें और फिर से कोशिश करें";
 
-/* The explanation on the action sheet prompting the user if they want to transfer their device. */
-"DEVICE_TRANSFER_PROMPT_EXPLANATION" = "अपने Signal खाते को नये iOS डिवाइस पर ट्रांसफ़र करें। पक्का कर लें कि नया डिवाइस पास में हो और चालू हो।";
-
-/* The title on the acttion sheet prompting the user if they want to transfer their device. */
-"DEVICE_TRANSFER_PROMPT_TITLE" = "अकाउंट ट्रांसफ़र करें";
-
-/* The explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "अपनी पुरानी डिवाइस को नजदीक लाएं, सुनिश्चित करें कि उस पर वाई-फ़ाई और ब्लूटूथ सक्षम हैं, और उससे इस QR कोड को स्कैन करें।";
-
-/* A prompt to provide further explanation if the user is not seeing the transfer on both devices. */
-"DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "पुराने डिवाइस पर प्रॉम्प्ट नहीं दिख रहा है?";
-
-/* The title for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_TITLE" = "QR कोड स्कैन करें";
-
 /* The explanation on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "दोनों डिवाइस को एक-दूसरे के आस-पास रखें। किसी भी डिवाइस को बंद न करें और Signal चालू रखें। ट्रांसफ़र एंड-टू-एंड एनक्रिप्टेड होता है।";
 
 /* The title on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_TITLE" = "डेटा मिल रहा है";
-
-/* Text indicating that we are connecting to the scanned device */
-"DEVICE_TRANSFER_SCANNING_CONNECTING" = "कनेक्ट हो रहा है…";
-
-/* The explanation for the action sheet asking the user to scan the QR code to transfer */
-"DEVICE_TRANSFER_SCANNING_EXPLANATION" = "QR कोड को घेरे के अंदर लाएं";
-
-/* The title for the action sheet asking the user to scan the QR code to transfer */
-"DEVICE_TRANSFER_SCANNING_TITLE" = "अपने नए डिवाइस को कैमरे के सामने रखें";
 
 /* Status message on new device when cancelling transfer. */
 "DEVICE_TRANSFER_STATUS_NEW_DEVICE_CANCELLING" = "पुराने iPhone से कनेक्शन रद्द किया जा रहा है…";
@@ -2693,7 +2732,7 @@
 "DEVICE_TRANSFER_STATUS_NEW_DEVICE_CONNECTING_MESSAGE" = "अपने पुराने डिवाइस को पास लेकर आएं और यह पक्का करें कि उस पर वाई-फ़ाई और ब्लूटूथ चालू है।";
 
 /* Status message on new device when transfer is starting. */
-"DEVICE_TRANSFER_STATUS_NEW_DEVICE_STARTING" = "पुराने iPhone से कनेक्ट होने का इंतज़ार किया जा रहा है…";
+"DEVICE_TRANSFER_STATUS_NEW_DEVICE_STARTING" = "Waiting to connect to old device…";
 
 /* Description in the progress view displayed after failure of device transfer. */
 "DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFER_FAILED_BODY" = "नए डिवाइस पर ट्रांसफ़र नहीं किया जा सका। अपने पुराने डिवाइस को पास लेकर लाएं और कृपया फिर से कोशिश करें।";
@@ -2717,13 +2756,10 @@
 "DEVICE_TRANSFER_STATUS_OLD_DEVICE_CONNECTING_MESSAGE" = "अपने नए डिवाइस को पास लेकर आएं और यह पक्का करें कि उस पर वाई-फ़ाई और ब्लूटूथ चालू है।";
 
 /* Status message on old device when transfer is starting. */
-"DEVICE_TRANSFER_STATUS_OLD_DEVICE_STARTING" = "नए iPhone से कनेक्ट होने का इंतज़ार किया जा रहा है…";
+"DEVICE_TRANSFER_STATUS_OLD_DEVICE_STARTING" = "Waiting to connect to new device…";
 
-/* The explanation on the action sheet that shows transfer progress */
-"DEVICE_TRANSFER_TRANSFERRING_EXPLANATION" = "दोनों डिवाइस एक दूसरे के आस-पास रखें। किसी भी डिवाइस को बंद न करें और Signal चालू रखें।";
-
-/* The title on the action sheet that shows transfer progress */
-"DEVICE_TRANSFER_TRANSFERRING_TITLE" = "डेटा ट्रांसफ़र हो रहा है";
+/* Action asking user to try again after transfer failure. */
+"DEVICE_TRANSFER_TRY_AGAIN_ACTION" = "Try Again";
 
 /* table cell label in conversation settings */
 "DISAPPEARING_MESSAGES" = "मैसेज गायब होने की सुविधा";
@@ -4822,24 +4858,6 @@
 /* Shown to users while the app is loading, asking them not to close the app. */
 "LOADING_VIEW_CONTROLLER_DONT_CLOSE_APP" = "Signal बंद न करें.";
 
-/* Body for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "अपने Signal अकाउंट को ट्रांसफ़र करने के लिए, आपको दोनों डिवाइस पर लोकल नेटवर्क ऐक्सेस चालू करना होगा।";
-
-/* A button asking the user if they need further help getting their transfer working. */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_NEED_HELP" = "क्या आपको मदद चाहिए?";
-
-/* First step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_ONE" = "हर डिवाइस पर, सेटिंग खोलें";
-
-/* Third step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_THREE" = "'लोकल नेटवर्क' चालू करें";
-
-/* Second step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_TWO" = "Signal पर जाएं";
-
-/* Title for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_TITLE" = "लोकल नेटवर्क का ऐक्सेस दें";
-
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "नाम या जगह से खोजें";
 
@@ -6542,13 +6560,13 @@
 "PINNED_CONVERSATION_LIMIT" = "आप केवल 4 तक चैट को पिन कर सकते हैं।";
 
 /* Shown when another user pins a message. Embeds {{ another user }}. */
-"PINNED_MESSAGE_CHAT_EVENT_OTHER" = "%1$@ pinned a message";
+"PINNED_MESSAGE_CHAT_EVENT_OTHER" = "%1$@ ने एक मैसेज पिन किया है";
 
 /* Shown when the local user pins a message. */
-"PINNED_MESSAGE_CHAT_EVENT_SELF" = "You pinned a message";
+"PINNED_MESSAGE_CHAT_EVENT_SELF" = "आपने कोई मैसेज पिन किया है";
 
 /* Label for button to pin a message */
-"PINNED_MESSAGE_PIN_ACTION_TITLE" = "मैसेज पिन करें";
+"PINNED_MESSAGE_PIN_ACTION_TITLE" = "Pin";
 
 /* Message for an action sheet confirming the user wants to replace oldest pinned message. */
 "PINNED_MESSAGE_REPLACE_OLDEST_BODY" = "किसी मैसेज को पिन करने से वह पुराने की जगह ले लेगा।";
@@ -6560,19 +6578,34 @@
 "PINNED_MESSAGE_REPLACE_OLDEST_TITLE" = "पुराने मैसेज की जगह कोई नया पिन करना है?";
 
 /* Body for error sheet shown if the pinned message failed to send */
-"PINNED_MESSAGE_SEND_ERROR_SHEET_BODY" = "Check your connection and try again.";
+"PINNED_MESSAGE_SEND_ERROR_SHEET_BODY" = "अपना इंटरनेट कनेक्शन देखें और दोबारा कोशिश करें।";
 
 /* Title for error sheet shown if the pinned message failed to send */
-"PINNED_MESSAGE_SEND_ERROR_SHEET_TITLE" = "Couldn’t Pin Message";
+"PINNED_MESSAGE_SEND_ERROR_SHEET_TITLE" = "मैसेज को पिन नहीं किया जा सका";
 
 /* Text to show on a toast when someone unpins a message */
 "PINNED_MESSAGE_TOAST" = "मैसेज अनपिन किया गया";
 
 /* Label for button to unpin a message */
-"PINNED_MESSAGE_UNPIN_ACTION_TITLE" = "मैसेज अनपिन करें";
+"PINNED_MESSAGE_UNPIN_ACTION_TITLE" = "Unpin";
+
+/* Option in pinned message action sheet to pin for 24 hours. */
+"PINNED_MESSAGES_24_HOURS" = "24 Hours";
+
+/* Option in pinned message action sheet to pin for 30 days. */
+"PINNED_MESSAGES_30_DAYS" = "30 Days";
+
+/* Option in pinned message action sheet to pin for 7 days. */
+"PINNED_MESSAGES_7_DAYS" = "7 Days";
 
 /* Title for Pinned Messages detail view */
 "PINNED_MESSAGES_DETAILS_TITLE" = "पिन किए गए मैसेज";
+
+/* Title for an action sheet to indicate how long to keep the pin active */
+"PINNED_MESSAGES_EXPIRY_SHEET_TITLE" = "Keep pinned for...";
+
+/* Option in pinned message action sheet to pin with no expiry. */
+"PINNED_MESSAGES_FOREVER" = "Forever";
 
 /* Action menu item to go to a message in the conversation view */
 "PINNED_MESSAGES_GO_TO_MESSAGE" = "मैसेज पर जाएं";
@@ -6581,7 +6614,7 @@
 "PINNED_MESSAGES_SEE_ALL_MESSAGES" = "सभी मैसेज देखें";
 
 /* Action menu item to unpin a message */
-"PINNED_MESSAGES_UNPIN" = "मैसेज अनपिन करें";
+"PINNED_MESSAGES_UNPIN" = "Unpin";
 
 /* The title for pinned conversation section on the conversation list */
 "PINNED_SECTION_TITLE" = "पिन किया गया";
@@ -6890,13 +6923,13 @@
 "PUSH_REGISTER_SUCCESS" = "पुश नोटिफ़िकेशन के लिए फिर से रजिस्ट्रेशन पूरा हुआ।";
 
 /* Body for sheet with info about scanning a Quick Restore QR code */
-"QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_ACTION_BODY" = "Use this device to scan the QR code on the device you want to transfer to";
+"QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_ACTION_BODY" = "आपको जिस डिवाइस में डेटा ट्रांसफ़र करना है, उसमें दिख रहे QR कोड को स्कैन करने के लिए इस डिवाइस का इस्तेमाल करें";
 
 /* Title for sheet with info about scanning a Quick Restore QR code */
-"QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_ACTION_TITLE" = "Scan QR Code";
+"QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_ACTION_TITLE" = "QR कोड स्कैन करें";
 
 /* Message for an action sheet telling users how to use quick restore, when trying to open an external quick restore URL. */
-"QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_MESSAGE" = "To transfer this account to a new device, tap “Continue” and scan the QR code with the Signal camera. Make sure you only scan QR codes that come directly from Signal.";
+"QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_MESSAGE" = "इस अकाउंट को किसी नए डिवाइस पर ट्रांसफ़र करने के लिए, ‘जारी रखें’ पर टैप करें और Signal कैमरे की मदद से QR कोड स्कैन करें। यह ध्यान रखें कि सिर्फ़ वे ही QR कोड स्कैन करें जो सीधे Signal से मिले हों।";
 
 /* Accessibility label stating the author of the message to which you are replying. Embeds: {{ the author of the message to which you are replying }}. */
 "QUOTED_REPLY_ACCESSIBILITY_LABEL_FORMAT" = "%1$@ को जवाब दे रहे हैं।";
@@ -7250,7 +7283,7 @@
 "REGISTRATION_SCAN_QR_CODE_FAILED_TITLE" = "रीस्टोर नहीं किया जा सका";
 
 /* Title for screen containing QR code that users scan with their old phone when they want to transfer/restore their message history to a new device. */
-"REGISTRATION_SCAN_QR_CODE_TITLE" = "अपने पुराने फ़ोन से यह कोड स्कैन करें";
+"REGISTRATION_SCAN_QR_CODE_TITLE" = "Scan this code with your old device";
 
 /* Tutorial text describing the first step to scanning the restore/transfer QR code with your old phone: opening Signal */
 "REGISTRATION_SCAN_QR_CODE_TUTORIAL_OPEN_SIGNAL" = "अपने पुराने डिवाइस पर Signal खोलें";
@@ -9233,7 +9266,7 @@
 "TEXT_MENU_MONOSPACE" = "मोनोस्पेस";
 
 /* Option in selected text edit menu to remove all text formatting in the selected text range */
-"TEXT_MENU_REMOVE_FORMATTING" = "Remove Formatting";
+"TEXT_MENU_REMOVE_FORMATTING" = "फ़ॉर्मेटिंग हटाएं";
 
 /* Option in selected text edit menu to make text spoiler */
 "TEXT_MENU_SPOILER" = "स्पॉइलर";

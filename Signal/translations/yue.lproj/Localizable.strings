@@ -1360,6 +1360,78 @@
 /* notification body */
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ 未接聽通話，因為來電者嘅安全碼已經郁動過。";
 
+/* Footer text explaining custom issue descriptions in the call quality survey */
+"CALL_QUALITY_SURVEY_CUSTOM_ISSUE_FOOTER" = "Please include any details relevant to the issue. Anything you share here will be kept private and will only be used to help improve calls in Signal.";
+
+/* Placeholder text for the custom issue entry in the call quality survey */
+"CALL_QUALITY_SURVEY_CUSTOM_ISSUE_PLACEHOLDER" = "Describe your issue";
+
+/* Footer text explaining what debug logs contain in the call quality survey */
+"CALL_QUALITY_SURVEY_DEBUG_LOG_FOOTER" = "Debug logs contain low level app information and do not reveal any of your message contents.";
+
+/* Header text explaining the purpose of sharing debug logs in the call quality survey */
+"CALL_QUALITY_SURVEY_DEBUG_LOG_HEADER" = "Sending us your diagnostics info helps us improve call quality.";
+
+/* Title for the debug log sharing screen in the call quality survey */
+"CALL_QUALITY_SURVEY_DEBUG_LOG_TITLE" = "Help Us Improve";
+
+/* Label for the toggle to share debug log in the call quality survey */
+"CALL_QUALITY_SURVEY_DEBUG_LOG_TOGGLE" = "Share Debug Log";
+
+/* Button label for indicating the call did not have issues in the call quality survey */
+"CALL_QUALITY_SURVEY_GREAT_BUTTON" = "Great";
+
+/* Button label for indicating the call had issues in the call quality survey */
+"CALL_QUALITY_SURVEY_HAD_ISSUES_BUTTON" = "Had Issues";
+
+/* Label for audio issue option in call quality survey */
+"CALL_QUALITY_SURVEY_ISSUE_AUDIO" = "Audio issue";
+
+/* Label for audio dropout issue option in call quality survey */
+"CALL_QUALITY_SURVEY_ISSUE_AUDIO_DROP" = "Audio Cut Out";
+
+/* Label for local echo issue option in call quality survey, indicating the user heard an echo */
+"CALL_QUALITY_SURVEY_ISSUE_AUDIO_LOCAL_ECHO" = "I Heard Echo";
+
+/* Label for remote echo issue option in call quality survey, indicating other participants heard an echo */
+"CALL_QUALITY_SURVEY_ISSUE_AUDIO_REMOTE_ECHO" = "Others Heard Echo";
+
+/* Label for audio stuttering issue option in call quality survey */
+"CALL_QUALITY_SURVEY_ISSUE_AUDIO_STUTTERING" = "Audio Stuttering";
+
+/* Label for call dropped issue option in call quality survey */
+"CALL_QUALITY_SURVEY_ISSUE_CALL_DROPPED" = "Call Dropped";
+
+/* Label for custom issue option in call quality survey */
+"CALL_QUALITY_SURVEY_ISSUE_OTHER" = "Something Else";
+
+/* Label for video issue option in call quality survey */
+"CALL_QUALITY_SURVEY_ISSUE_VIDEO" = "Video Issue";
+
+/* Label for poor video quality issue option in call quality survey */
+"CALL_QUALITY_SURVEY_ISSUE_VIDEO_LOW_QUALITY" = "Poor Video Quality";
+
+/* Label for low resolution video issue option in call quality survey */
+"CALL_QUALITY_SURVEY_ISSUE_VIDEO_LOW_RESOLUTION" = "Low Resolution";
+
+/* Label for camera not working issue option in call quality survey */
+"CALL_QUALITY_SURVEY_ISSUE_VIDEO_NO_CAMERA" = "Camera Didn't Work";
+
+/* Header text on the call quality survey issues screen */
+"CALL_QUALITY_SURVEY_ISSUES_HEADER" = "Select all that apply";
+
+/* Title for the sheet in the call quality survey where issues with the call can be selected */
+"CALL_QUALITY_SURVEY_ISSUES_SHEET_TITLE" = "What Issues Did You Have?";
+
+/* Header text explaining the purpose of the call quality survey */
+"CALL_QUALITY_SURVEY_RATING_HEADER" = "This helps us improve calls in Signal. No personally identifiable information will be stored.";
+
+/* Title for the initial rating screen in the call quality survey */
+"CALL_QUALITY_SURVEY_RATING_TITLE" = "How Was Your Call?";
+
+/* Button text to submit the call quality survey */
+"CALL_QUALITY_SURVEY_SUBMIT_BUTTON" = "Submit";
+
 /* Label on button for raising hand in call. */
 "CALL_RAISE_HAND_BUTTON_LABEL" = "舉手";
 
@@ -2635,17 +2707,8 @@
 /* An error indicating that the other device closed signal mid-transfer and it could not complete */
 "DEVICE_TRANSFER_ERROR_BACKGROUNDED" = "轉移未能完成。請確保兩部機都開咗 Signal，然後再試多次。";
 
-/* An error indicating that we were unable to verify the identity of the new device to complete the transfer */
-"DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "驗證唔到您部新機，請再試一次";
-
 /* An error indicating that something went wrong with the transfer and it could not complete */
 "DEVICE_TRANSFER_ERROR_GENERIC" = "轉移未能完成。請確保兩部機擺得夠近，然後再試多次。";
-
-/* An error indicating the user must scan this code with a linked device to transfer. */
-"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "若要將呢部 iPad 設定為連結咗嘅機，您就要用您部舊嘅 iPad 嚟掃描";
-
-/* An error indicating the user must scan this code with a primary device to transfer. */
-"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_PRIMARY" = "若要轉移您嘅帳戶，您就要用您部 iPhone 嚟掃描";
 
 /* An error indicating that the user does not have enough free space on their device to complete the transfer */
 "DEVICE_TRANSFER_ERROR_NOT_ENOUGH_SPACE" = "空間不足，完成唔到轉移";
@@ -2653,35 +2716,11 @@
 /* An error indicating the user must update their device before trying to transfer. */
 "DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "請更新到最新版本嘅 Signal，然後再試一次";
 
-/* The explanation on the action sheet prompting the user if they want to transfer their device. */
-"DEVICE_TRANSFER_PROMPT_EXPLANATION" = "將您嘅 Signal 帳戶轉移去一部新嘅 iOS 機度。請確定您部新機喺左近，並且開咗機。";
-
-/* The title on the acttion sheet prompting the user if they want to transfer their device. */
-"DEVICE_TRANSFER_PROMPT_TITLE" = "轉移帳戶";
-
-/* The explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "將部舊機擺喺附近，確保部機開咗 Wi-Fi 同藍牙，然後用佢掃描呢個二維碼。";
-
-/* A prompt to provide further explanation if the user is not seeing the transfer on both devices. */
-"DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "喺您部舊機度見唔到提示？";
-
-/* The title for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_TITLE" = "掃描二維碼";
-
 /* The explanation on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "將兩部機保持靠近。唔好熄機，並且開住 Signal。轉移係經端對端加密。";
 
 /* The title on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_TITLE" = "接收緊資料";
-
-/* Text indicating that we are connecting to the scanned device */
-"DEVICE_TRANSFER_SCANNING_CONNECTING" = "連緊線…";
-
-/* The explanation for the action sheet asking the user to scan the QR code to transfer */
-"DEVICE_TRANSFER_SCANNING_EXPLANATION" = "將個二維碼對準喺個圈入面";
-
-/* The title for the action sheet asking the user to scan the QR code to transfer */
-"DEVICE_TRANSFER_SCANNING_TITLE" = "將您部新機靠近鏡頭";
 
 /* Status message on new device when cancelling transfer. */
 "DEVICE_TRANSFER_STATUS_NEW_DEVICE_CANCELLING" = "取消緊同舊 iPhone 嘅連結……";
@@ -2693,7 +2732,7 @@
 "DEVICE_TRANSFER_STATUS_NEW_DEVICE_CONNECTING_MESSAGE" = "將部舊機擺喺附近，確保部機開咗 Wi-Fi 同藍牙。";
 
 /* Status message on new device when transfer is starting. */
-"DEVICE_TRANSFER_STATUS_NEW_DEVICE_STARTING" = "等緊連結去舊 iPhone……";
+"DEVICE_TRANSFER_STATUS_NEW_DEVICE_STARTING" = "Waiting to connect to old device…";
 
 /* Description in the progress view displayed after failure of device transfer. */
 "DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFER_FAILED_BODY" = "轉移唔到去新機。將部舊機擺喺附近，然後請你再試多次。";
@@ -2717,13 +2756,10 @@
 "DEVICE_TRANSFER_STATUS_OLD_DEVICE_CONNECTING_MESSAGE" = "將部新機擺喺附近，確保部機開咗 Wi-Fi 同藍牙。";
 
 /* Status message on old device when transfer is starting. */
-"DEVICE_TRANSFER_STATUS_OLD_DEVICE_STARTING" = "等緊連結去新 iPhone……";
+"DEVICE_TRANSFER_STATUS_OLD_DEVICE_STARTING" = "Waiting to connect to new device…";
 
-/* The explanation on the action sheet that shows transfer progress */
-"DEVICE_TRANSFER_TRANSFERRING_EXPLANATION" = "將兩部機保持靠近。唔好熄機，並且開住 Signal。";
-
-/* The title on the action sheet that shows transfer progress */
-"DEVICE_TRANSFER_TRANSFERRING_TITLE" = "轉移緊資料";
+/* Action asking user to try again after transfer failure. */
+"DEVICE_TRANSFER_TRY_AGAIN_ACTION" = "Try Again";
 
 /* table cell label in conversation settings */
 "DISAPPEARING_MESSAGES" = "過眼雲煙訊息";
@@ -4822,24 +4858,6 @@
 /* Shown to users while the app is loading, asking them not to close the app. */
 "LOADING_VIEW_CONTROLLER_DONT_CLOSE_APP" = "唔好閂 Signal。";
 
-/* Body for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "若要轉移您嘅 Signal 帳戶，兩部機上面都需要您啟用區域網絡存取。";
-
-/* A button asking the user if they need further help getting their transfer working. */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_NEED_HELP" = "需要幫手？";
-
-/* First step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_ONE" = "喺每部機上面，各自開啟「設定」";
-
-/* Third step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_THREE" = "開啟「區域網絡」";
-
-/* Second step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_TWO" = "碌落去 Signal 嗰行";
-
-/* Title for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_TITLE" = "開啟「區域網絡存取」";
-
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "查名或者地址";
 
@@ -6542,13 +6560,13 @@
 "PINNED_CONVERSATION_LIMIT" = "你最多只可以將 4 個聊天置頂。";
 
 /* Shown when another user pins a message. Embeds {{ another user }}. */
-"PINNED_MESSAGE_CHAT_EVENT_OTHER" = "%1$@ pinned a message";
+"PINNED_MESSAGE_CHAT_EVENT_OTHER" = "%1$@已經將訊息置頂";
 
 /* Shown when the local user pins a message. */
-"PINNED_MESSAGE_CHAT_EVENT_SELF" = "You pinned a message";
+"PINNED_MESSAGE_CHAT_EVENT_SELF" = "你已經將訊息置頂";
 
 /* Label for button to pin a message */
-"PINNED_MESSAGE_PIN_ACTION_TITLE" = "將訊息置頂";
+"PINNED_MESSAGE_PIN_ACTION_TITLE" = "Pin";
 
 /* Message for an action sheet confirming the user wants to replace oldest pinned message. */
 "PINNED_MESSAGE_REPLACE_OLDEST_BODY" = "想置頂嘅訊息會取代最舊嘅訊息。";
@@ -6560,19 +6578,34 @@
 "PINNED_MESSAGE_REPLACE_OLDEST_TITLE" = "係咪取代最舊嘅置頂訊息？";
 
 /* Body for error sheet shown if the pinned message failed to send */
-"PINNED_MESSAGE_SEND_ERROR_SHEET_BODY" = "Check your connection and try again.";
+"PINNED_MESSAGE_SEND_ERROR_SHEET_BODY" = "請檢查你嘅連線，然後再試多次。";
 
 /* Title for error sheet shown if the pinned message failed to send */
-"PINNED_MESSAGE_SEND_ERROR_SHEET_TITLE" = "Couldn’t Pin Message";
+"PINNED_MESSAGE_SEND_ERROR_SHEET_TITLE" = "訊息置頂唔到";
 
 /* Text to show on a toast when someone unpins a message */
 "PINNED_MESSAGE_TOAST" = "訊息已經取消置頂";
 
 /* Label for button to unpin a message */
-"PINNED_MESSAGE_UNPIN_ACTION_TITLE" = "取消訊息置頂";
+"PINNED_MESSAGE_UNPIN_ACTION_TITLE" = "Unpin";
+
+/* Option in pinned message action sheet to pin for 24 hours. */
+"PINNED_MESSAGES_24_HOURS" = "24 Hours";
+
+/* Option in pinned message action sheet to pin for 30 days. */
+"PINNED_MESSAGES_30_DAYS" = "30 Days";
+
+/* Option in pinned message action sheet to pin for 7 days. */
+"PINNED_MESSAGES_7_DAYS" = "7 Days";
 
 /* Title for Pinned Messages detail view */
 "PINNED_MESSAGES_DETAILS_TITLE" = "置頂嘅訊息";
+
+/* Title for an action sheet to indicate how long to keep the pin active */
+"PINNED_MESSAGES_EXPIRY_SHEET_TITLE" = "Keep pinned for...";
+
+/* Option in pinned message action sheet to pin with no expiry. */
+"PINNED_MESSAGES_FOREVER" = "Forever";
 
 /* Action menu item to go to a message in the conversation view */
 "PINNED_MESSAGES_GO_TO_MESSAGE" = "跳去「訊息」";
@@ -6581,7 +6614,7 @@
 "PINNED_MESSAGES_SEE_ALL_MESSAGES" = "睇晒全部訊息";
 
 /* Action menu item to unpin a message */
-"PINNED_MESSAGES_UNPIN" = "取消訊息置頂";
+"PINNED_MESSAGES_UNPIN" = "Unpin";
 
 /* The title for pinned conversation section on the conversation list */
 "PINNED_SECTION_TITLE" = "置頂";
@@ -6890,13 +6923,13 @@
 "PUSH_REGISTER_SUCCESS" = "已經成功重新註冊推送通知。";
 
 /* Body for sheet with info about scanning a Quick Restore QR code */
-"QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_ACTION_BODY" = "Use this device to scan the QR code on the device you want to transfer to";
+"QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_ACTION_BODY" = "用呢部機掃描你想轉移去嗰部機上面嘅二維碼";
 
 /* Title for sheet with info about scanning a Quick Restore QR code */
-"QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_ACTION_TITLE" = "Scan QR Code";
+"QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_ACTION_TITLE" = "掃描二維碼";
 
 /* Message for an action sheet telling users how to use quick restore, when trying to open an external quick restore URL. */
-"QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_MESSAGE" = "To transfer this account to a new device, tap “Continue” and scan the QR code with the Signal camera. Make sure you only scan QR codes that come directly from Signal.";
+"QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_MESSAGE" = "要將呢個帳戶轉移去新裝置，請你㩒一下「繼續」，然後用 Signal 相機掃描二維碼。請確保你掃瞄嘅二維碼係直接喺 Signal 開嘅。";
 
 /* Accessibility label stating the author of the message to which you are replying. Embeds: {{ the author of the message to which you are replying }}. */
 "QUOTED_REPLY_ACCESSIBILITY_LABEL_FORMAT" = "回覆 %1$@。";
@@ -7250,7 +7283,7 @@
 "REGISTRATION_SCAN_QR_CODE_FAILED_TITLE" = "還原唔到";
 
 /* Title for screen containing QR code that users scan with their old phone when they want to transfer/restore their message history to a new device. */
-"REGISTRATION_SCAN_QR_CODE_TITLE" = "用你部舊手機掃描呢個二維碼";
+"REGISTRATION_SCAN_QR_CODE_TITLE" = "Scan this code with your old device";
 
 /* Tutorial text describing the first step to scanning the restore/transfer QR code with your old phone: opening Signal */
 "REGISTRATION_SCAN_QR_CODE_TUTORIAL_OPEN_SIGNAL" = "喺你部舊機度打開 Signal";
@@ -9233,7 +9266,7 @@
 "TEXT_MENU_MONOSPACE" = "等寬";
 
 /* Option in selected text edit menu to remove all text formatting in the selected text range */
-"TEXT_MENU_REMOVE_FORMATTING" = "Remove Formatting";
+"TEXT_MENU_REMOVE_FORMATTING" = "移除格式";
 
 /* Option in selected text edit menu to make text spoiler */
 "TEXT_MENU_SPOILER" = "劇透文字";

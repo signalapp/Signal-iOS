@@ -1360,6 +1360,78 @@
 /* notification body */
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Tapt anrop grunnet endring av din kontakts sikkerhetsnummer";
 
+/* Footer text explaining custom issue descriptions in the call quality survey */
+"CALL_QUALITY_SURVEY_CUSTOM_ISSUE_FOOTER" = "Please include any details relevant to the issue. Anything you share here will be kept private and will only be used to help improve calls in Signal.";
+
+/* Placeholder text for the custom issue entry in the call quality survey */
+"CALL_QUALITY_SURVEY_CUSTOM_ISSUE_PLACEHOLDER" = "Describe your issue";
+
+/* Footer text explaining what debug logs contain in the call quality survey */
+"CALL_QUALITY_SURVEY_DEBUG_LOG_FOOTER" = "Debug logs contain low level app information and do not reveal any of your message contents.";
+
+/* Header text explaining the purpose of sharing debug logs in the call quality survey */
+"CALL_QUALITY_SURVEY_DEBUG_LOG_HEADER" = "Sending us your diagnostics info helps us improve call quality.";
+
+/* Title for the debug log sharing screen in the call quality survey */
+"CALL_QUALITY_SURVEY_DEBUG_LOG_TITLE" = "Help Us Improve";
+
+/* Label for the toggle to share debug log in the call quality survey */
+"CALL_QUALITY_SURVEY_DEBUG_LOG_TOGGLE" = "Share Debug Log";
+
+/* Button label for indicating the call did not have issues in the call quality survey */
+"CALL_QUALITY_SURVEY_GREAT_BUTTON" = "Great";
+
+/* Button label for indicating the call had issues in the call quality survey */
+"CALL_QUALITY_SURVEY_HAD_ISSUES_BUTTON" = "Had Issues";
+
+/* Label for audio issue option in call quality survey */
+"CALL_QUALITY_SURVEY_ISSUE_AUDIO" = "Audio issue";
+
+/* Label for audio dropout issue option in call quality survey */
+"CALL_QUALITY_SURVEY_ISSUE_AUDIO_DROP" = "Audio Cut Out";
+
+/* Label for local echo issue option in call quality survey, indicating the user heard an echo */
+"CALL_QUALITY_SURVEY_ISSUE_AUDIO_LOCAL_ECHO" = "I Heard Echo";
+
+/* Label for remote echo issue option in call quality survey, indicating other participants heard an echo */
+"CALL_QUALITY_SURVEY_ISSUE_AUDIO_REMOTE_ECHO" = "Others Heard Echo";
+
+/* Label for audio stuttering issue option in call quality survey */
+"CALL_QUALITY_SURVEY_ISSUE_AUDIO_STUTTERING" = "Audio Stuttering";
+
+/* Label for call dropped issue option in call quality survey */
+"CALL_QUALITY_SURVEY_ISSUE_CALL_DROPPED" = "Call Dropped";
+
+/* Label for custom issue option in call quality survey */
+"CALL_QUALITY_SURVEY_ISSUE_OTHER" = "Something Else";
+
+/* Label for video issue option in call quality survey */
+"CALL_QUALITY_SURVEY_ISSUE_VIDEO" = "Video Issue";
+
+/* Label for poor video quality issue option in call quality survey */
+"CALL_QUALITY_SURVEY_ISSUE_VIDEO_LOW_QUALITY" = "Poor Video Quality";
+
+/* Label for low resolution video issue option in call quality survey */
+"CALL_QUALITY_SURVEY_ISSUE_VIDEO_LOW_RESOLUTION" = "Low Resolution";
+
+/* Label for camera not working issue option in call quality survey */
+"CALL_QUALITY_SURVEY_ISSUE_VIDEO_NO_CAMERA" = "Camera Didn't Work";
+
+/* Header text on the call quality survey issues screen */
+"CALL_QUALITY_SURVEY_ISSUES_HEADER" = "Select all that apply";
+
+/* Title for the sheet in the call quality survey where issues with the call can be selected */
+"CALL_QUALITY_SURVEY_ISSUES_SHEET_TITLE" = "What Issues Did You Have?";
+
+/* Header text explaining the purpose of the call quality survey */
+"CALL_QUALITY_SURVEY_RATING_HEADER" = "This helps us improve calls in Signal. No personally identifiable information will be stored.";
+
+/* Title for the initial rating screen in the call quality survey */
+"CALL_QUALITY_SURVEY_RATING_TITLE" = "How Was Your Call?";
+
+/* Button text to submit the call quality survey */
+"CALL_QUALITY_SURVEY_SUBMIT_BUTTON" = "Submit";
+
 /* Label on button for raising hand in call. */
 "CALL_RAISE_HAND_BUTTON_LABEL" = "Rekk opp hånden";
 
@@ -2635,17 +2707,8 @@
 /* An error indicating that the other device closed signal mid-transfer and it could not complete */
 "DEVICE_TRANSFER_ERROR_BACKGROUNDED" = "Overføringen kunne ikke gjennomføres. Sørg for at Signal er åpen på begge enhetene, og prøv på nytt.";
 
-/* An error indicating that we were unable to verify the identity of the new device to complete the transfer */
-"DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "Den nye enheten kunne ikke bekreftes. Prøv igjen";
-
 /* An error indicating that something went wrong with the transfer and it could not complete */
 "DEVICE_TRANSFER_ERROR_GENERIC" = "Overføringen kunne ikke gjennomføres. Sørg for at enhetene befinner seg i nærheten av hverandre, og prøv på nytt.";
-
-/* An error indicating the user must scan this code with a linked device to transfer. */
-"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "Du må skanne med den gamle iPad-en for å kunne sette opp denne iPad-en som en koblet enhet";
-
-/* An error indicating the user must scan this code with a primary device to transfer. */
-"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_PRIMARY" = "Du må du skanne med iPhone for å overføre kontoen";
 
 /* An error indicating that the user does not have enough free space on their device to complete the transfer */
 "DEVICE_TRANSFER_ERROR_NOT_ENOUGH_SPACE" = "Det er ikke nok ledig plass til å fullføre overføringen";
@@ -2653,35 +2716,11 @@
 /* An error indicating the user must update their device before trying to transfer. */
 "DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "Oppdater til siste versjon av Signal, og prøv igjen";
 
-/* The explanation on the action sheet prompting the user if they want to transfer their device. */
-"DEVICE_TRANSFER_PROMPT_EXPLANATION" = "Overfør Signal-kontoen til en ny iOS-enhet. Pass på at den nye enheten er i nærheten, og at den er slått på.";
-
-/* The title on the acttion sheet prompting the user if they want to transfer their device. */
-"DEVICE_TRANSFER_PROMPT_TITLE" = "Overfør konto";
-
-/* The explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Bruk den gamle enheten til å skanne denne QR-koden. Pass på at enheten er koblet til Wi-Fi og at Bluetooth er slått på.";
-
-/* A prompt to provide further explanation if the user is not seeing the transfer on both devices. */
-"DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "Får du ikke opp koden på din gamle enhet?";
-
-/* The title for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_TITLE" = "Skann QR-kode";
-
 /* The explanation on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "Hold enhetene i nærheten av hverandre. Ikke slå av noen av enhetene, og la Signal være åpen. Overføringer er kryptert fra ende til ende.";
 
 /* The title on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_TITLE" = "Mottak av data";
-
-/* Text indicating that we are connecting to the scanned device */
-"DEVICE_TRANSFER_SCANNING_CONNECTING" = "Kobler til…";
-
-/* The explanation for the action sheet asking the user to scan the QR code to transfer */
-"DEVICE_TRANSFER_SCANNING_EXPLANATION" = "Plasser QR-koden i sirkelen";
-
-/* The title for the action sheet asking the user to scan the QR code to transfer */
-"DEVICE_TRANSFER_SCANNING_TITLE" = "Hold den nye enheten opp til kameraet";
 
 /* Status message on new device when cancelling transfer. */
 "DEVICE_TRANSFER_STATUS_NEW_DEVICE_CANCELLING" = "Avbryter koblingen til den gamle telefonen …";
@@ -2693,7 +2732,7 @@
 "DEVICE_TRANSFER_STATUS_NEW_DEVICE_CONNECTING_MESSAGE" = "Hold den gamle enheten i nærheten, og sørg for at Wi-Fi og Bluetooth er slått på.";
 
 /* Status message on new device when transfer is starting. */
-"DEVICE_TRANSFER_STATUS_NEW_DEVICE_STARTING" = "Venter på å koble til den gamle telefonen …";
+"DEVICE_TRANSFER_STATUS_NEW_DEVICE_STARTING" = "Waiting to connect to old device…";
 
 /* Description in the progress view displayed after failure of device transfer. */
 "DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFER_FAILED_BODY" = "Overføring til ny enhet mislyktes. Hold den gamle enheten i nærheten, og prøv på nytt.";
@@ -2717,13 +2756,10 @@
 "DEVICE_TRANSFER_STATUS_OLD_DEVICE_CONNECTING_MESSAGE" = "Hold den nye enheten i nærheten, og sørg for at Wi-Fi og Bluetooth er slått på.";
 
 /* Status message on old device when transfer is starting. */
-"DEVICE_TRANSFER_STATUS_OLD_DEVICE_STARTING" = "Venter på å koble til den nye telefonen …";
+"DEVICE_TRANSFER_STATUS_OLD_DEVICE_STARTING" = "Waiting to connect to new device…";
 
-/* The explanation on the action sheet that shows transfer progress */
-"DEVICE_TRANSFER_TRANSFERRING_EXPLANATION" = "Hold enhetene i nærheten av hverandre. Ikke slå av noen av enhetene, og la Signal være åpen.";
-
-/* The title on the action sheet that shows transfer progress */
-"DEVICE_TRANSFER_TRANSFERRING_TITLE" = "Data overføres";
+/* Action asking user to try again after transfer failure. */
+"DEVICE_TRANSFER_TRY_AGAIN_ACTION" = "Try Again";
 
 /* table cell label in conversation settings */
 "DISAPPEARING_MESSAGES" = "Tidsavgrensede meldinger";
@@ -4822,24 +4858,6 @@
 /* Shown to users while the app is loading, asking them not to close the app. */
 "LOADING_VIEW_CONTROLLER_DONT_CLOSE_APP" = "Ikke lukk Signal.";
 
-/* Body for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "For å overføre Signal-kontoen må du gi tilgang til lokalt nett på begge enheter.";
-
-/* A button asking the user if they need further help getting their transfer working. */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_NEED_HELP" = "Ønsker du hjelp?";
-
-/* First step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_ONE" = "Åpne Innstillinger på hver enhet";
-
-/* Third step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_THREE" = "Gå til \"Lokalt Nettverk\"";
-
-/* Second step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_TWO" = "Gå til Signal";
-
-/* Title for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_TITLE" = "Skru på \"Lokalt Nettverk\"";
-
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Søk etter navn eller adresse";
 
@@ -6542,13 +6560,13 @@
 "PINNED_CONVERSATION_LIMIT" = "Du kan bare feste opptil 4 samtaler.";
 
 /* Shown when another user pins a message. Embeds {{ another user }}. */
-"PINNED_MESSAGE_CHAT_EVENT_OTHER" = "%1$@ pinned a message";
+"PINNED_MESSAGE_CHAT_EVENT_OTHER" = "%1$@ festet en melding";
 
 /* Shown when the local user pins a message. */
-"PINNED_MESSAGE_CHAT_EVENT_SELF" = "You pinned a message";
+"PINNED_MESSAGE_CHAT_EVENT_SELF" = "Du festet en melding";
 
 /* Label for button to pin a message */
-"PINNED_MESSAGE_PIN_ACTION_TITLE" = "Fest melding";
+"PINNED_MESSAGE_PIN_ACTION_TITLE" = "Pin";
 
 /* Message for an action sheet confirming the user wants to replace oldest pinned message. */
 "PINNED_MESSAGE_REPLACE_OLDEST_BODY" = "Hvis du fester denne meldingen, bytter du ut den eldste festede meldingen.";
@@ -6560,19 +6578,34 @@
 "PINNED_MESSAGE_REPLACE_OLDEST_TITLE" = "Vil du bytte ut festet melding?";
 
 /* Body for error sheet shown if the pinned message failed to send */
-"PINNED_MESSAGE_SEND_ERROR_SHEET_BODY" = "Check your connection and try again.";
+"PINNED_MESSAGE_SEND_ERROR_SHEET_BODY" = "Sjekk internettilkoblingen og prøv igjen.";
 
 /* Title for error sheet shown if the pinned message failed to send */
-"PINNED_MESSAGE_SEND_ERROR_SHEET_TITLE" = "Couldn’t Pin Message";
+"PINNED_MESSAGE_SEND_ERROR_SHEET_TITLE" = "Meldingen kunne ikke festes";
 
 /* Text to show on a toast when someone unpins a message */
 "PINNED_MESSAGE_TOAST" = "Meldingen ble løsnet";
 
 /* Label for button to unpin a message */
-"PINNED_MESSAGE_UNPIN_ACTION_TITLE" = "Løsne melding";
+"PINNED_MESSAGE_UNPIN_ACTION_TITLE" = "Unpin";
+
+/* Option in pinned message action sheet to pin for 24 hours. */
+"PINNED_MESSAGES_24_HOURS" = "24 Hours";
+
+/* Option in pinned message action sheet to pin for 30 days. */
+"PINNED_MESSAGES_30_DAYS" = "30 Days";
+
+/* Option in pinned message action sheet to pin for 7 days. */
+"PINNED_MESSAGES_7_DAYS" = "7 Days";
 
 /* Title for Pinned Messages detail view */
 "PINNED_MESSAGES_DETAILS_TITLE" = "Festede meldinger";
+
+/* Title for an action sheet to indicate how long to keep the pin active */
+"PINNED_MESSAGES_EXPIRY_SHEET_TITLE" = "Keep pinned for...";
+
+/* Option in pinned message action sheet to pin with no expiry. */
+"PINNED_MESSAGES_FOREVER" = "Forever";
 
 /* Action menu item to go to a message in the conversation view */
 "PINNED_MESSAGES_GO_TO_MESSAGE" = "Gå til meldingen";
@@ -6581,7 +6614,7 @@
 "PINNED_MESSAGES_SEE_ALL_MESSAGES" = "Se alle meldinger";
 
 /* Action menu item to unpin a message */
-"PINNED_MESSAGES_UNPIN" = "Løsne melding";
+"PINNED_MESSAGES_UNPIN" = "Unpin";
 
 /* The title for pinned conversation section on the conversation list */
 "PINNED_SECTION_TITLE" = "Festet";
@@ -6890,13 +6923,13 @@
 "PUSH_REGISTER_SUCCESS" = "Vellykket omregistrering for push-varslinger.";
 
 /* Body for sheet with info about scanning a Quick Restore QR code */
-"QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_ACTION_BODY" = "Use this device to scan the QR code on the device you want to transfer to";
+"QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_ACTION_BODY" = "Bruk denne enheten til å skanne QR-koden på enheten du ønsker å overføre kontoen din til.";
 
 /* Title for sheet with info about scanning a Quick Restore QR code */
-"QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_ACTION_TITLE" = "Scan QR Code";
+"QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_ACTION_TITLE" = "Skann QR-koden";
 
 /* Message for an action sheet telling users how to use quick restore, when trying to open an external quick restore URL. */
-"QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_MESSAGE" = "To transfer this account to a new device, tap “Continue” and scan the QR code with the Signal camera. Make sure you only scan QR codes that come directly from Signal.";
+"QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_MESSAGE" = "For å overføre denne kontoen til en ny enhet trykker du på «Fortsett» og skanner QR-koden med kameraet i Signal. Pass på at du bare skanner QR-koder som kommer direkte fra Signal.";
 
 /* Accessibility label stating the author of the message to which you are replying. Embeds: {{ the author of the message to which you are replying }}. */
 "QUOTED_REPLY_ACCESSIBILITY_LABEL_FORMAT" = "Svarer %1$@.";
@@ -7250,7 +7283,7 @@
 "REGISTRATION_SCAN_QR_CODE_FAILED_TITLE" = "Gjenopprettingen mislyktes";
 
 /* Title for screen containing QR code that users scan with their old phone when they want to transfer/restore their message history to a new device. */
-"REGISTRATION_SCAN_QR_CODE_TITLE" = "Skann denne koden med den gamle enheten";
+"REGISTRATION_SCAN_QR_CODE_TITLE" = "Scan this code with your old device";
 
 /* Tutorial text describing the first step to scanning the restore/transfer QR code with your old phone: opening Signal */
 "REGISTRATION_SCAN_QR_CODE_TUTORIAL_OPEN_SIGNAL" = "Åpne Signal på den gamle enheten.";
@@ -9233,7 +9266,7 @@
 "TEXT_MENU_MONOSPACE" = "Fast tegnavstand";
 
 /* Option in selected text edit menu to remove all text formatting in the selected text range */
-"TEXT_MENU_REMOVE_FORMATTING" = "Remove Formatting";
+"TEXT_MENU_REMOVE_FORMATTING" = "Fjern formatering";
 
 /* Option in selected text edit menu to make text spoiler */
 "TEXT_MENU_SPOILER" = "Spoiler";

@@ -1360,6 +1360,78 @@
 /* notification body */
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Llamada perdida debido a cambios en el número de seguridad.";
 
+/* Footer text explaining custom issue descriptions in the call quality survey */
+"CALL_QUALITY_SURVEY_CUSTOM_ISSUE_FOOTER" = "Please include any details relevant to the issue. Anything you share here will be kept private and will only be used to help improve calls in Signal.";
+
+/* Placeholder text for the custom issue entry in the call quality survey */
+"CALL_QUALITY_SURVEY_CUSTOM_ISSUE_PLACEHOLDER" = "Describe your issue";
+
+/* Footer text explaining what debug logs contain in the call quality survey */
+"CALL_QUALITY_SURVEY_DEBUG_LOG_FOOTER" = "Debug logs contain low level app information and do not reveal any of your message contents.";
+
+/* Header text explaining the purpose of sharing debug logs in the call quality survey */
+"CALL_QUALITY_SURVEY_DEBUG_LOG_HEADER" = "Sending us your diagnostics info helps us improve call quality.";
+
+/* Title for the debug log sharing screen in the call quality survey */
+"CALL_QUALITY_SURVEY_DEBUG_LOG_TITLE" = "Help Us Improve";
+
+/* Label for the toggle to share debug log in the call quality survey */
+"CALL_QUALITY_SURVEY_DEBUG_LOG_TOGGLE" = "Share Debug Log";
+
+/* Button label for indicating the call did not have issues in the call quality survey */
+"CALL_QUALITY_SURVEY_GREAT_BUTTON" = "Great";
+
+/* Button label for indicating the call had issues in the call quality survey */
+"CALL_QUALITY_SURVEY_HAD_ISSUES_BUTTON" = "Had Issues";
+
+/* Label for audio issue option in call quality survey */
+"CALL_QUALITY_SURVEY_ISSUE_AUDIO" = "Audio issue";
+
+/* Label for audio dropout issue option in call quality survey */
+"CALL_QUALITY_SURVEY_ISSUE_AUDIO_DROP" = "Audio Cut Out";
+
+/* Label for local echo issue option in call quality survey, indicating the user heard an echo */
+"CALL_QUALITY_SURVEY_ISSUE_AUDIO_LOCAL_ECHO" = "I Heard Echo";
+
+/* Label for remote echo issue option in call quality survey, indicating other participants heard an echo */
+"CALL_QUALITY_SURVEY_ISSUE_AUDIO_REMOTE_ECHO" = "Others Heard Echo";
+
+/* Label for audio stuttering issue option in call quality survey */
+"CALL_QUALITY_SURVEY_ISSUE_AUDIO_STUTTERING" = "Audio Stuttering";
+
+/* Label for call dropped issue option in call quality survey */
+"CALL_QUALITY_SURVEY_ISSUE_CALL_DROPPED" = "Call Dropped";
+
+/* Label for custom issue option in call quality survey */
+"CALL_QUALITY_SURVEY_ISSUE_OTHER" = "Something Else";
+
+/* Label for video issue option in call quality survey */
+"CALL_QUALITY_SURVEY_ISSUE_VIDEO" = "Video Issue";
+
+/* Label for poor video quality issue option in call quality survey */
+"CALL_QUALITY_SURVEY_ISSUE_VIDEO_LOW_QUALITY" = "Poor Video Quality";
+
+/* Label for low resolution video issue option in call quality survey */
+"CALL_QUALITY_SURVEY_ISSUE_VIDEO_LOW_RESOLUTION" = "Low Resolution";
+
+/* Label for camera not working issue option in call quality survey */
+"CALL_QUALITY_SURVEY_ISSUE_VIDEO_NO_CAMERA" = "Camera Didn't Work";
+
+/* Header text on the call quality survey issues screen */
+"CALL_QUALITY_SURVEY_ISSUES_HEADER" = "Select all that apply";
+
+/* Title for the sheet in the call quality survey where issues with the call can be selected */
+"CALL_QUALITY_SURVEY_ISSUES_SHEET_TITLE" = "What Issues Did You Have?";
+
+/* Header text explaining the purpose of the call quality survey */
+"CALL_QUALITY_SURVEY_RATING_HEADER" = "This helps us improve calls in Signal. No personally identifiable information will be stored.";
+
+/* Title for the initial rating screen in the call quality survey */
+"CALL_QUALITY_SURVEY_RATING_TITLE" = "How Was Your Call?";
+
+/* Button text to submit the call quality survey */
+"CALL_QUALITY_SURVEY_SUBMIT_BUTTON" = "Submit";
+
 /* Label on button for raising hand in call. */
 "CALL_RAISE_HAND_BUTTON_LABEL" = "Levantar la mano";
 
@@ -2635,17 +2707,8 @@
 /* An error indicating that the other device closed signal mid-transfer and it could not complete */
 "DEVICE_TRANSFER_ERROR_BACKGROUNDED" = "No se ha podido completar la transferencia. Asegúrate de que la aplicación Signal esté abierta en ambos dispositivos e inténtalo de nuevo.";
 
-/* An error indicating that we were unable to verify the identity of the new device to complete the transfer */
-"DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "No se ha podido verificar tu nuevo dispositivo. Inténtalo de nuevo.";
-
 /* An error indicating that something went wrong with the transfer and it could not complete */
 "DEVICE_TRANSFER_ERROR_GENERIC" = "No se ha podido completar la transferencia. Asegúrate de que tus dispositivos estén cerca uno del otro e inténtalo de nuevo.";
-
-/* An error indicating the user must scan this code with a linked device to transfer. */
-"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "Para configurar este iPad como dispositivo vinculado, debes escanear el código con tu iPad anterior";
-
-/* An error indicating the user must scan this code with a primary device to transfer. */
-"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_PRIMARY" = "Para transferir tu cuenta, debes escanear el código con tu iPhone";
 
 /* An error indicating that the user does not have enough free space on their device to complete the transfer */
 "DEVICE_TRANSFER_ERROR_NOT_ENOUGH_SPACE" = "No hay suficiente espacio de almacenamiento para completar la transferencia";
@@ -2653,35 +2716,11 @@
 /* An error indicating the user must update their device before trying to transfer. */
 "DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "Actualiza a la última versión de Signal e inténtalo de nuevo";
 
-/* The explanation on the action sheet prompting the user if they want to transfer their device. */
-"DEVICE_TRANSFER_PROMPT_EXPLANATION" = "Transfiere tu cuenta de Signal a un nuevo dispositivo de iOS. Asegúrate de que tu nuevo dispositivo esté cerca y encendido.";
-
-/* The title on the acttion sheet prompting the user if they want to transfer their device. */
-"DEVICE_TRANSFER_PROMPT_TITLE" = "Transferir cuenta";
-
-/* The explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Acerca tu dispositivo anterior, asegúrate de que Wi-Fi y Bluetooth estén habilitados y escanea este código QR.";
-
-/* A prompt to provide further explanation if the user is not seeing the transfer on both devices. */
-"DEVICE_TRANSFER_QRCODE_NOT_SEEING" = "¿No aparece el aviso en tu dispositivo anterior?";
-
-/* The title for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_TITLE" = "Escanear código QR";
-
 /* The explanation on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "Mantén ambos dispositivos cerca uno del otro. No los apagues y mantén la aplicación Signal abierta. Las transferencias están cifradas de extremo a extremo.";
 
 /* The title on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_TITLE" = "Recibiendo datos";
-
-/* Text indicating that we are connecting to the scanned device */
-"DEVICE_TRANSFER_SCANNING_CONNECTING" = "Conectando…";
-
-/* The explanation for the action sheet asking the user to scan the QR code to transfer */
-"DEVICE_TRANSFER_SCANNING_EXPLANATION" = "Coloca el código QR dentro el círculo";
-
-/* The title for the action sheet asking the user to scan the QR code to transfer */
-"DEVICE_TRANSFER_SCANNING_TITLE" = "Mantén tu nuevo dispositivo delante de la cámara";
 
 /* Status message on new device when cancelling transfer. */
 "DEVICE_TRANSFER_STATUS_NEW_DEVICE_CANCELLING" = "Cancelando la conexión al iPhone anterior…";
@@ -2693,7 +2732,7 @@
 "DEVICE_TRANSFER_STATUS_NEW_DEVICE_CONNECTING_MESSAGE" = "Acerca tu dispositivo anterior y asegúrate de que tanto el Wi-Fi como el Bluetooth estén habilitados.";
 
 /* Status message on new device when transfer is starting. */
-"DEVICE_TRANSFER_STATUS_NEW_DEVICE_STARTING" = "Esperando para conectar al iPhone anterior…";
+"DEVICE_TRANSFER_STATUS_NEW_DEVICE_STARTING" = "Waiting to connect to old device…";
 
 /* Description in the progress view displayed after failure of device transfer. */
 "DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFER_FAILED_BODY" = "No se ha podido completar la transferencia al nuevo dispositivo. Acerca tu dispositivo anterior y vuelve a intentarlo.";
@@ -2717,13 +2756,10 @@
 "DEVICE_TRANSFER_STATUS_OLD_DEVICE_CONNECTING_MESSAGE" = "Acerca tu nuevo dispositivo y asegúrate de que tanto el Wi-Fi como el Bluetooth estén habilitados.";
 
 /* Status message on old device when transfer is starting. */
-"DEVICE_TRANSFER_STATUS_OLD_DEVICE_STARTING" = "Esperando para conectar al nuevo iPhone…";
+"DEVICE_TRANSFER_STATUS_OLD_DEVICE_STARTING" = "Waiting to connect to new device…";
 
-/* The explanation on the action sheet that shows transfer progress */
-"DEVICE_TRANSFER_TRANSFERRING_EXPLANATION" = "Mantén ambos dispositivos cerca uno del otro. No los apagues y mantén la aplicación Signal abierta.";
-
-/* The title on the action sheet that shows transfer progress */
-"DEVICE_TRANSFER_TRANSFERRING_TITLE" = "Transfiriendo datos";
+/* Action asking user to try again after transfer failure. */
+"DEVICE_TRANSFER_TRY_AGAIN_ACTION" = "Try Again";
 
 /* table cell label in conversation settings */
 "DISAPPEARING_MESSAGES" = "Mensajes temporales";
@@ -2903,7 +2939,7 @@
 "DONATION_BADGE_ISSUE_SHEET_BANK_PAYMENT_PROCESSING_TITLE" = "Donación pendiente";
 
 /* Message for a sheet explaining that a one-time donation via bank payment is pending, and how that will affect the user's badge. Embeds {{ the name of the badge }}. Will have a 'learn more' link appended, when it is rendered. */
-"DONATION_BADGE_ISSUE_SHEET_ONE_TIME_BANK_PAYMENT_PROCESSING_MESSAGE" = "Tu donación única está pendiente. Cuando la recibamos, podrás mostrar la insignia %1$@ en tu perfil.\n\nLas transferencias bancarias pueden tardar entre 1 y 14 días hábiles en procesarse.";
+"DONATION_BADGE_ISSUE_SHEET_ONE_TIME_BANK_PAYMENT_PROCESSING_MESSAGE" = "Tu donación está pendiente. Cuando la recibamos, podrás mostrar la insignia %1$@ en tu perfil.\n\nLas transferencias bancarias pueden tardar entre 1 y 14 días hábiles en procesarse.";
 
 /* Message for a sheet explaining that a recurring donation via bank payment is pending, and how that will affect the user's badge. Embeds {{ the name of the badge }}. Will have a 'learn more' link appended, when it is rendered. */
 "DONATION_BADGE_ISSUE_SHEET_RECURRING_BANK_PAYMENT_PROCESSING_MESSAGE" = "Tu donación mensual está pendiente. Cuando la recibamos, podrás mostrar la insignia %1$@ en tu perfil.\n\nLas transferencias bancarias pueden tardar entre 1 y 14 días hábiles en procesarse.";
@@ -4822,24 +4858,6 @@
 /* Shown to users while the app is loading, asking them not to close the app. */
 "LOADING_VIEW_CONTROLLER_DONT_CLOSE_APP" = "No cierres Signal.";
 
-/* Body for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_BODY" = "Para transferir tu cuenta de Signal, necesitas permitir el acceso a la red local en ambos dispositivos.";
-
-/* A button asking the user if they need further help getting their transfer working. */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_NEED_HELP" = "¿Necesitas ayuda?";
-
-/* First step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_ONE" = "En los dos dispositivos, ve a \"Ajustes\"";
-
-/* Third step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_THREE" = "Activa \"Red local\"";
-
-/* Second step for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_STEP_TWO" = "Desliza hasta Signal";
-
-/* Title for local network permission action sheet */
-"LOCAL_NETWORK_PERMISSION_ACTION_SHEET_TITLE" = "Activar el acceso a la red local";
-
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Buscar por nombre o dirección";
 
@@ -6542,13 +6560,13 @@
 "PINNED_CONVERSATION_LIMIT" = "Solo puedes fijar un máximo de 4 chats.";
 
 /* Shown when another user pins a message. Embeds {{ another user }}. */
-"PINNED_MESSAGE_CHAT_EVENT_OTHER" = "%1$@ pinned a message";
+"PINNED_MESSAGE_CHAT_EVENT_OTHER" = "%1$@ ha fijado un mensaje";
 
 /* Shown when the local user pins a message. */
-"PINNED_MESSAGE_CHAT_EVENT_SELF" = "You pinned a message";
+"PINNED_MESSAGE_CHAT_EVENT_SELF" = "Has fijado un mensaje";
 
 /* Label for button to pin a message */
-"PINNED_MESSAGE_PIN_ACTION_TITLE" = "Fijar mensaje";
+"PINNED_MESSAGE_PIN_ACTION_TITLE" = "Pin";
 
 /* Message for an action sheet confirming the user wants to replace oldest pinned message. */
 "PINNED_MESSAGE_REPLACE_OLDEST_BODY" = "Si fijas este mensaje, se reemplazará el más antiguo.";
@@ -6560,19 +6578,34 @@
 "PINNED_MESSAGE_REPLACE_OLDEST_TITLE" = "¿Reemplazar el mensaje fijado más antiguo?";
 
 /* Body for error sheet shown if the pinned message failed to send */
-"PINNED_MESSAGE_SEND_ERROR_SHEET_BODY" = "Check your connection and try again.";
+"PINNED_MESSAGE_SEND_ERROR_SHEET_BODY" = "Comprueba tu conexión e inténtalo de nuevo.";
 
 /* Title for error sheet shown if the pinned message failed to send */
-"PINNED_MESSAGE_SEND_ERROR_SHEET_TITLE" = "Couldn’t Pin Message";
+"PINNED_MESSAGE_SEND_ERROR_SHEET_TITLE" = "No se ha podido fijar el mensaje";
 
 /* Text to show on a toast when someone unpins a message */
 "PINNED_MESSAGE_TOAST" = "Mensaje desfijado";
 
 /* Label for button to unpin a message */
-"PINNED_MESSAGE_UNPIN_ACTION_TITLE" = "Desfijar mensaje";
+"PINNED_MESSAGE_UNPIN_ACTION_TITLE" = "Unpin";
+
+/* Option in pinned message action sheet to pin for 24 hours. */
+"PINNED_MESSAGES_24_HOURS" = "24 Hours";
+
+/* Option in pinned message action sheet to pin for 30 days. */
+"PINNED_MESSAGES_30_DAYS" = "30 Days";
+
+/* Option in pinned message action sheet to pin for 7 days. */
+"PINNED_MESSAGES_7_DAYS" = "7 Days";
 
 /* Title for Pinned Messages detail view */
 "PINNED_MESSAGES_DETAILS_TITLE" = "Mensajes fijados";
+
+/* Title for an action sheet to indicate how long to keep the pin active */
+"PINNED_MESSAGES_EXPIRY_SHEET_TITLE" = "Keep pinned for...";
+
+/* Option in pinned message action sheet to pin with no expiry. */
+"PINNED_MESSAGES_FOREVER" = "Forever";
 
 /* Action menu item to go to a message in the conversation view */
 "PINNED_MESSAGES_GO_TO_MESSAGE" = "Ir al mensaje";
@@ -6581,7 +6614,7 @@
 "PINNED_MESSAGES_SEE_ALL_MESSAGES" = "Ver todos los mensajes";
 
 /* Action menu item to unpin a message */
-"PINNED_MESSAGES_UNPIN" = "Desfijar mensaje";
+"PINNED_MESSAGES_UNPIN" = "Unpin";
 
 /* The title for pinned conversation section on the conversation list */
 "PINNED_SECTION_TITLE" = "Fijados";
@@ -6890,13 +6923,13 @@
 "PUSH_REGISTER_SUCCESS" = "Se han reactivado las notificaciones push.";
 
 /* Body for sheet with info about scanning a Quick Restore QR code */
-"QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_ACTION_BODY" = "Use this device to scan the QR code on the device you want to transfer to";
+"QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_ACTION_BODY" = "Usa este dispositivo para escanear el código QR que se muestra en el dispositivo al que quieres transferir tus datos.";
 
 /* Title for sheet with info about scanning a Quick Restore QR code */
-"QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_ACTION_TITLE" = "Scan QR Code";
+"QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_ACTION_TITLE" = "Escanear código QR";
 
 /* Message for an action sheet telling users how to use quick restore, when trying to open an external quick restore URL. */
-"QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_MESSAGE" = "To transfer this account to a new device, tap “Continue” and scan the QR code with the Signal camera. Make sure you only scan QR codes that come directly from Signal.";
+"QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_MESSAGE" = "Para transferir esta cuenta a un nuevo dispositivo, toca \"Continuar\" y escanea el código QR con la cámara en Signal. Asegúrate de escanear solo códigos QR que provengan directamente de Signal.";
 
 /* Accessibility label stating the author of the message to which you are replying. Embeds: {{ the author of the message to which you are replying }}. */
 "QUOTED_REPLY_ACCESSIBILITY_LABEL_FORMAT" = "Respuesta a %1$@";
@@ -7250,7 +7283,7 @@
 "REGISTRATION_SCAN_QR_CODE_FAILED_TITLE" = "Error de restauración";
 
 /* Title for screen containing QR code that users scan with their old phone when they want to transfer/restore their message history to a new device. */
-"REGISTRATION_SCAN_QR_CODE_TITLE" = "Escanea este código con tu teléfono anterior";
+"REGISTRATION_SCAN_QR_CODE_TITLE" = "Scan this code with your old device";
 
 /* Tutorial text describing the first step to scanning the restore/transfer QR code with your old phone: opening Signal */
 "REGISTRATION_SCAN_QR_CODE_TUTORIAL_OPEN_SIGNAL" = "Abre Signal en tu dispositivo anterior";
@@ -9233,7 +9266,7 @@
 "TEXT_MENU_MONOSPACE" = "Monoespaciado";
 
 /* Option in selected text edit menu to remove all text formatting in the selected text range */
-"TEXT_MENU_REMOVE_FORMATTING" = "Remove Formatting";
+"TEXT_MENU_REMOVE_FORMATTING" = "Eliminar formato";
 
 /* Option in selected text edit menu to make text spoiler */
 "TEXT_MENU_SPOILER" = "Spoiler";
