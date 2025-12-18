@@ -39,9 +39,9 @@ PODS:
   - SDWebImageWebPCoder (0.14.6):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.17)
-  - SignalRingRTC (2.60.5):
-    - SignalRingRTC/WebRTC (= 2.60.5)
-  - SignalRingRTC/WebRTC (2.60.5)
+  - SignalRingRTC (2.61.0):
+    - SignalRingRTC/WebRTC (= 2.61.0)
+  - SignalRingRTC/WebRTC (2.61.0)
   - SQLCipher (4.6.1):
     - SQLCipher/standard (= 4.6.1)
   - SQLCipher/common (4.6.1)
@@ -66,7 +66,7 @@ DEPENDENCIES:
   - Reachability
   - SDWebImage
   - SDWebImageWebPCoder
-  - SignalRingRTC (from `https://github.com/signalapp/ringrtc`, tag `v2.60.5`)
+  - SignalRingRTC (from `https://github.com/signalapp/ringrtc`, tag `v2.61.0`)
   - SQLCipher (from `https://github.com/signalapp/sqlcipher.git`, tag `v4.6.1-f_barrierfsync`)
   - SwiftProtobuf (= 1.31.1)
 
@@ -105,7 +105,7 @@ EXTERNAL SOURCES:
     :tag: v6.0.3
   SignalRingRTC:
     :git: https://github.com/signalapp/ringrtc
-    :tag: v2.60.5
+    :tag: v2.61.0
   SQLCipher:
     :git: https://github.com/signalapp/sqlcipher.git
     :tag: v4.6.1-f_barrierfsync
@@ -132,7 +132,7 @@ CHECKOUT OPTIONS:
     :tag: v6.0.3
   SignalRingRTC:
     :git: https://github.com/signalapp/ringrtc
-    :tag: v2.60.5
+    :tag: v2.61.0
   SQLCipher:
     :git: https://github.com/signalapp/sqlcipher.git
     :tag: v4.6.1-f_barrierfsync
@@ -154,10 +154,10 @@ SPEC CHECKSUMS:
   Reachability: fd0ecd23705e2599e4cceeb943222ae02296cbc6
   SDWebImage: 9f177d83116802728e122410fb25ad88f5c7608a
   SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
-  SignalRingRTC: 184d29a8b625e5e3c64d0807588eb8cf34d77f04
+  SignalRingRTC: 67d2762636cb3d5d799f19beb19cf2bed164dd25
   SQLCipher: ff2f045b20d675a73a70f7329395ddd4a2580063
   SwiftProtobuf: e02f51c8c2df5845657aee2d4de9d61bf50ef788
 
-PODFILE CHECKSUM: 4e61fcf41bafd9c8a8842172e7faf83d4d879af8
+PODFILE CHECKSUM: 8fcc906d5613c14a27c166cbeb5a05ebdd690d68
 
 COCOAPODS: 1.15.2
