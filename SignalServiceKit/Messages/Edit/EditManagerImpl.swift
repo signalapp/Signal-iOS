@@ -464,6 +464,11 @@ public class EditManagerImpl: EditManager {
             return false
         }
 
+        // Skip polls.
+        if message.isPoll {
+            return false
+        }
+
         return true
     }
 
