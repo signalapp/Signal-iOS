@@ -120,36 +120,3 @@ extension AttachmentManager {
         )
     }
 }
-
-// MARK: - OwnedAttachmentBuilder convenience
-
-extension AttachmentManager {
-
-    public func createAttachmentPointerBuilder(
-        from proto: SSKProtoAttachmentPointer,
-        tx: DBWriteTransaction
-    ) throws -> OwnedAttachmentBuilder<Void> {
-        return OwnedAttachmentBuilder<Void>(
-            finalize: { [self] owner, innerTx in
-                return try self.createAttachmentPointer(
-                    from: .init(proto: proto, owner: owner),
-                    tx: innerTx
-                )
-            }
-        )
-    }
-
-    public func createAttachmentStreamBuilder(
-        from dataSource: AttachmentDataSource,
-        tx: DBWriteTransaction
-    ) throws -> OwnedAttachmentBuilder<Void> {
-        return OwnedAttachmentBuilder<Void>(
-            finalize: { [self] owner, innerTx in
-                return try self.createAttachmentStream(
-                    from: OwnedAttachmentDataSource(dataSource: dataSource, owner: owner),
-                    tx: innerTx
-                )
-            }
-        )
-    }
-}

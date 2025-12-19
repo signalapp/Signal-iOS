@@ -908,7 +908,6 @@
 		6640DD602ACDBEC500CE9A8C /* IncomingPniChangeNumberProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6640DD5F2ACDBEC500CE9A8C /* IncomingPniChangeNumberProcessor.swift */; };
 		6640DD632ACDD5DE00CE9A8C /* SVRLocalStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6640DD622ACDD5DE00CE9A8C /* SVRLocalStorage.swift */; };
 		664160D029A6D60A00F5BA85 /* ChatServiceAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664160CF29A6D60A00F5BA85 /* ChatServiceAuth.swift */; };
-		664165132BA4A27000C34F6A /* OwnedAttachmentBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664165122BA4A27000C34F6A /* OwnedAttachmentBuilder.swift */; };
 		66420F682BB2376100252B0D /* DraftQuotedReplyModel+Payments.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66420F672BB2376100252B0D /* DraftQuotedReplyModel+Payments.swift */; };
 		6642A8702A8D7B4B00E591C2 /* OWSPaymentActivationRequestFinishedMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = 6642A86F2A8D7B3400E591C2 /* OWSPaymentActivationRequestFinishedMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		6642A8722A8D7C5700E591C2 /* OWSPaymentActivationRequestFinishedMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 6642A8712A8D7C5700E591C2 /* OWSPaymentActivationRequestFinishedMessage.m */; };
@@ -5062,7 +5061,6 @@
 		6640DD5F2ACDBEC500CE9A8C /* IncomingPniChangeNumberProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncomingPniChangeNumberProcessor.swift; sourceTree = "<group>"; };
 		6640DD622ACDD5DE00CE9A8C /* SVRLocalStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SVRLocalStorage.swift; sourceTree = "<group>"; };
 		664160CF29A6D60A00F5BA85 /* ChatServiceAuth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatServiceAuth.swift; sourceTree = "<group>"; };
-		664165122BA4A27000C34F6A /* OwnedAttachmentBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OwnedAttachmentBuilder.swift; sourceTree = "<group>"; };
 		66420F672BB2376100252B0D /* DraftQuotedReplyModel+Payments.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "DraftQuotedReplyModel+Payments.swift"; sourceTree = "<group>"; };
 		6642A86F2A8D7B3400E591C2 /* OWSPaymentActivationRequestFinishedMessage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OWSPaymentActivationRequestFinishedMessage.h; sourceTree = "<group>"; };
 		6642A8712A8D7C5700E591C2 /* OWSPaymentActivationRequestFinishedMessage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OWSPaymentActivationRequestFinishedMessage.m; sourceTree = "<group>"; };
@@ -9946,14 +9944,6 @@
 			path = LocalStorage;
 			sourceTree = "<group>";
 		};
-		664165112BA4A26000C34F6A /* OwnedAttachmentBuilder */ = {
-			isa = PBXGroup;
-			children = (
-				664165122BA4A27000C34F6A /* OwnedAttachmentBuilder.swift */,
-			);
-			path = OwnedAttachmentBuilder;
-			sourceTree = "<group>";
-		};
 		6645F30629BF8D1000B58EBD /* AccountAttributes */ = {
 			isa = PBXGroup;
 			children = (
@@ -10442,7 +10432,6 @@
 				66D7B93E2B9A67A20005C98B /* Downloads */,
 				668B24162BBB661B00EB60C4 /* Mocks */,
 				6689B23B2C064E6D003D5B2F /* OrphanedAttachments */,
-				664165112BA4A26000C34F6A /* OwnedAttachmentBuilder */,
 				6649651A2BDC6E8D00E2DE98 /* Playback */,
 				66D7B90C2B9798770005C98B /* QuotedMessageAttachment */,
 				66144B3B2BFD22EE00E2C9CD /* Records */,
@@ -19028,7 +19017,6 @@
 				884E4C4828AF2F2A007A338C /* OutgoingStorySentMessageTranscript.swift in Sources */,
 				042223BA2EDF30BA00158556 /* OutgoingUnpinMessage.swift in Sources */,
 				C1E307402BA3B342009F015B /* OutputStreamable.swift in Sources */,
-				664165132BA4A27000C34F6A /* OwnedAttachmentBuilder.swift in Sources */,
 				6676A40A2BD1EB3D006B9CC9 /* OwnedAttachmentPointerProto.swift in Sources */,
 				F9C5CE0D289453B400548EEE /* OWS2FAManager.swift in Sources */,
 				F9C5CC49289453B300548EEE /* OWSAddToContactsOfferMessage+SDS.swift in Sources */,

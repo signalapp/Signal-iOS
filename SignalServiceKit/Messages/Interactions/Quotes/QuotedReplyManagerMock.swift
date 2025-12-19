@@ -19,14 +19,6 @@ open class QuotedReplyManagerMock: QuotedReplyManager {
         throw OWSAssertionError("Not implemented!")
     }
 
-    open func quotedMessage(
-        for dataMessage: SSKProtoDataMessage,
-        thread: TSThread,
-        tx: DBWriteTransaction
-    ) -> OwnedAttachmentBuilder<TSQuotedMessage>? {
-        return nil
-    }
-
     open func buildDraftQuotedReply(
         originalMessage: TSMessage,
         tx: DBReadTransaction
