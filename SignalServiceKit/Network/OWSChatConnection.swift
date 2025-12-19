@@ -726,7 +726,7 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection & Send
                 }
                 applyDesiredSocketState()
                 throw OWSHTTPError.networkFailure(.genericTimeout)
-            case SignalError.webSocketError(_), SignalError.connectionFailed(_), SignalError.chatServiceInactive(_):
+            case SignalError.webSocketError(_), SignalError.possibleCaptiveNetwork(_), SignalError.connectionFailed(_), SignalError.chatServiceInactive(_):
                 throw OWSHTTPError.networkFailure(.genericFailure)
             case SignalError.connectionInvalidated(_):
                 throw OWSHTTPError.networkFailure(.wrappedFailure(error))
