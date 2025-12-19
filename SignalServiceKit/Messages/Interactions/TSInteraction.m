@@ -127,7 +127,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
 - (void)encodeWithCoder:(NSCoder *)coder
 {
-    [super encodeWithCoder:coder];
+    [self encodeIdsWithCoder:coder];
     [coder encodeObject:[self valueForKey:@"receivedAtTimestamp"] forKey:@"receivedAtTimestamp"];
     [coder encodeObject:[self valueForKey:@"sortId"] forKey:@"sortId"];
     [coder encodeObject:[self valueForKey:@"timestamp"] forKey:@"timestamp"];
@@ -206,7 +206,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
 - (id)copyWithZone:(nullable NSZone *)zone
 {
-    TSInteraction *result = [super copyWithZone:zone];
+    TSInteraction *result = [self copyAndAssignIdsWithZone:zone];
     result->_receivedAtTimestamp = self.receivedAtTimestamp;
     result->_sortId = self.sortId;
     result->_timestamp = self.timestamp;

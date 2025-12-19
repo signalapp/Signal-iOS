@@ -65,7 +65,7 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (void)encodeWithCoder:(NSCoder *)coder
+- (void)encodeIdsWithCoder:(NSCoder *)coder
 {
     NSNumber *grdbId = self.grdbId;
     if (grdbId != nil) {
@@ -117,7 +117,7 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 
-- (id)copyWithZone:(nullable NSZone *)zone
+- (id)copyAndAssignIdsWithZone:(nullable NSZone *)zone
 {
     TSYapDatabaseObject *result = [[[self class] allocWithZone:zone] init];
     result->_grdbId = self.grdbId;

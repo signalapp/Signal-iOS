@@ -95,7 +95,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)encodeWithCoder:(NSCoder *)coder
 {
-    [super encodeWithCoder:coder];
+    [self encodeIdsWithCoder:coder];
     NSString *addressUuidString = self.addressUuidString;
     if (addressUuidString != nil) {
         [coder encodeObject:addressUuidString forKey:@"addressUuidString"];
@@ -237,7 +237,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (id)copyWithZone:(nullable NSZone *)zone
 {
-    TSPaymentModel *result = [super copyWithZone:zone];
+    TSPaymentModel *result = [self copyAndAssignIdsWithZone:zone];
     result->_addressUuidString = self.addressUuidString;
     result->_createdTimestamp = self.createdTimestamp;
     result->_interactionUniqueId = self.interactionUniqueId;

@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)encodeWithCoder:(NSCoder *)coder
 {
-    [super encodeWithCoder:coder];
+    [self encodeIdsWithCoder:coder];
     [coder encodeObject:[self valueForKey:@"durationSeconds"] forKey:@"durationSeconds"];
     [coder encodeObject:[self valueForKey:@"enabled"] forKey:@"enabled"];
     [coder encodeObject:[self valueForKey:@"timerVersion"] forKey:@"timerVersion"];
@@ -54,7 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (id)copyWithZone:(nullable NSZone *)zone
 {
-    OWSDisappearingMessagesConfiguration *result = [super copyWithZone:zone];
+    OWSDisappearingMessagesConfiguration *result = [self copyAndAssignIdsWithZone:zone];
     result->_durationSeconds = self.durationSeconds;
     result->_enabled = self.enabled;
     result->_timerVersion = self.timerVersion;

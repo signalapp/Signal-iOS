@@ -111,7 +111,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
 
 - (void)encodeWithCoder:(NSCoder *)coder
 {
-    [super encodeWithCoder:coder];
+    [self encodeIdsWithCoder:coder];
     NSString *conversationColorNameObsolete = self.conversationColorNameObsolete;
     if (conversationColorNameObsolete != nil) {
         [coder encodeObject:conversationColorNameObsolete forKey:@"conversationColorNameObsolete"];
@@ -329,7 +329,7 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
 
 - (id)copyWithZone:(nullable NSZone *)zone
 {
-    TSThread *result = [super copyWithZone:zone];
+    TSThread *result = [self copyAndAssignIdsWithZone:zone];
     result->_conversationColorNameObsolete = self.conversationColorNameObsolete;
     result->_creationDate = self.creationDate;
     result->_editTargetTimestamp = self.editTargetTimestamp;

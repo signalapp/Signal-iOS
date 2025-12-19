@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 // TODO: Rename and/or merge with BaseModel.
-@interface TSYapDatabaseObject : NSObject <NSCoding, NSCopying, SDSRecordDelegate>
+@interface TSYapDatabaseObject : NSObject <SDSRecordDelegate>
 
 + (NSString *)generateUniqueId;
 
@@ -45,6 +45,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithGrdbId:(int64_t)grdbId uniqueId:(NSString *)uniqueId NS_DESIGNATED_INITIALIZER;
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
+
+/// Encode the grdbId and uniqueId.
+- (void)encodeIdsWithCoder:(NSCoder *)coder;
+
+/// Creates a copy and assigns the grdbId and uniqueId.
+- (id)copyAndAssignIdsWithZone:(nullable NSZone *)zone;
 
 // These methods should only ever be called within a GRDB write transaction.
 - (void)clearRowId;

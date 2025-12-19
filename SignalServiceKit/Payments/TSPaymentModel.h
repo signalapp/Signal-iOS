@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 //   without an associated interaction.
 // * Interactions might be deleted, but we need to maintain records of
 //   all payments.
-@interface TSPaymentModel : BaseModel
+@interface TSPaymentModel : BaseModel <NSCoding, NSCopying>
 
 // Incoming, outgoing, etc.
 //

@@ -109,53 +109,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation StickerPack
 
-- (void)encodeWithCoder:(NSCoder *)coder
-{
-    [super encodeWithCoder:coder];
-    NSString *author = self.author;
-    if (author != nil) {
-        [coder encodeObject:author forKey:@"author"];
-    }
-    StickerPackItem *cover = self.cover;
-    if (cover != nil) {
-        [coder encodeObject:cover forKey:@"cover"];
-    }
-    NSDate *dateCreated = self.dateCreated;
-    if (dateCreated != nil) {
-        [coder encodeObject:dateCreated forKey:@"dateCreated"];
-    }
-    StickerPackInfo *info = self.info;
-    if (info != nil) {
-        [coder encodeObject:info forKey:@"info"];
-    }
-    [coder encodeObject:[self valueForKey:@"isInstalled"] forKey:@"isInstalled"];
-    NSArray *items = self.items;
-    if (items != nil) {
-        [coder encodeObject:items forKey:@"items"];
-    }
-    NSString *title = self.title;
-    if (title != nil) {
-        [coder encodeObject:title forKey:@"title"];
-    }
-}
-
-- (nullable instancetype)initWithCoder:(NSCoder *)coder
-{
-    self = [super initWithCoder:coder];
-    if (!self) {
-        return self;
-    }
-    self->_author = [coder decodeObjectOfClass:[NSString class] forKey:@"author"];
-    self->_cover = [coder decodeObjectOfClass:[StickerPackItem class] forKey:@"cover"];
-    self->_dateCreated = [coder decodeObjectOfClass:[NSDate class] forKey:@"dateCreated"];
-    self->_info = [coder decodeObjectOfClass:[StickerPackInfo class] forKey:@"info"];
-    self->_isInstalled = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class] forKey:@"isInstalled"] boolValue];
-    self->_items = [coder decodeObjectOfClasses:[NSSet setWithArray:@[ [NSArray class], [StickerPackItem class] ]]
-                                         forKey:@"items"];
-    self->_title = [coder decodeObjectOfClass:[NSString class] forKey:@"title"];
-    return self;
-}
-
 - (NSUInteger)hash
 {
     NSUInteger result = [super hash];
@@ -201,7 +154,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (id)copyWithZone:(nullable NSZone *)zone
 {
-    StickerPack *result = [super copyWithZone:zone];
+    StickerPack *result = [self copyAndAssignIdsWithZone:zone];
     result->_author = self.author;
     result->_cover = self.cover;
     result->_dateCreated = self.dateCreated;

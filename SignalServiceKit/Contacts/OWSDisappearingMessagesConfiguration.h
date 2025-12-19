@@ -10,7 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class DBReadTransaction;
 @class TSThread;
 
-@interface OWSDisappearingMessagesConfiguration : BaseModel
+@interface OWSDisappearingMessagesConfiguration : BaseModel <NSCoding, NSCopying>
 
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
