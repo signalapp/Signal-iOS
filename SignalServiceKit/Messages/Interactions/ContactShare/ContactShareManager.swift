@@ -126,12 +126,13 @@ public class ContactShareManagerImpl: ContactShareManager {
                     throw OWSAssertionError("Failed to get JPEG")
                 }
                 let mimeType = MimeType.imageJpeg.rawValue
-                return try await attachmentValidator.validateContents(
+                let pendingAttachment = try await attachmentValidator.validateContents(
                     data: imageData,
                     mimeType: mimeType,
                     renderingFlag: .default,
                     sourceFilename: nil
                 )
+                return .pendingAttachment(pendingAttachment)
             } else {
                 return nil
             }

@@ -112,7 +112,7 @@ public class OnboardingStoryManagerStoryMessageFactoryMock: OnboardingStoryManag
         timestamp: UInt64,
         transaction: DBWriteTransaction
     ) throws -> StoryMessage {
-        return try StoryMessage.createAndInsert(
+        let storyMessage = StoryMessage(
             timestamp: timestamp,
             authorAci: StoryMessage.systemStoryAuthor,
             groupId: nil,
@@ -124,12 +124,11 @@ public class OnboardingStoryManagerStoryMessageFactoryMock: OnboardingStoryManag
                     viewedTimestamp: nil
                 )
             ),
+            attachment: .media,
             replyCount: 0,
-            attachmentBuilder: .withoutFinalizer(.media),
-            mediaCaption: nil,
-            shouldLoop: false,
-            transaction: transaction
         )
+        storyMessage.anyInsert(transaction: transaction)
+        return storyMessage
     }
 
     public override class func validateAttachmentContents(

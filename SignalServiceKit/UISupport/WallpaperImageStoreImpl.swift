@@ -112,12 +112,13 @@ public class WallpaperImageStoreImpl: WallpaperImageStore {
         else {
             throw OWSAssertionError("Failed to get jpg data for wallpaper photo")
         }
-        return try await attachmentValidator.validateContents(
+        let pendingAttachment = try await attachmentValidator.validateContents(
             data: imageData,
             mimeType: mimeType,
             renderingFlag: .default,
             sourceFilename: nil
         )
+        return .pendingAttachment(pendingAttachment)
     }
 
     private func setWallpaperImage(
@@ -136,7 +137,7 @@ public class WallpaperImageStoreImpl: WallpaperImageStore {
                     dataSource: dataSource,
                     owner: owner
                 )
-                try self.attachmentManager.createAttachmentStream(consuming: dataSource, tx: tx)
+                try self.attachmentManager.createAttachmentStream(from: dataSource, tx: tx)
             }
             try onInsert(tx)
         }

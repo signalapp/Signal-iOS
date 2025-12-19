@@ -183,34 +183,6 @@ public protocol AttachmentContentValidator {
 
 extension AttachmentContentValidator {
 
-    public func validateContents(
-        dataSource: DataSourcePath,
-        mimeType: String,
-        renderingFlag: AttachmentReference.RenderingFlag,
-        sourceFilename: String?
-    ) async throws -> AttachmentDataSource {
-        return await .from(pendingAttachment: try self.validateContents(
-            dataSource: dataSource,
-            mimeType: mimeType,
-            renderingFlag: renderingFlag,
-            sourceFilename: sourceFilename
-        ))
-    }
-
-    public func validateContents(
-        data: Data,
-        mimeType: String,
-        renderingFlag: AttachmentReference.RenderingFlag,
-        sourceFilename: String?
-    ) async throws -> AttachmentDataSource {
-        return await .from(pendingAttachment: try self.validateContents(
-            data: data,
-            mimeType: mimeType,
-            renderingFlag: renderingFlag,
-            sourceFilename: sourceFilename
-        ))
-    }
-
     public func prepareOversizeTextIfNeeded(
         _ body: MessageBody,
     ) async throws -> ValidatedMessageBody {

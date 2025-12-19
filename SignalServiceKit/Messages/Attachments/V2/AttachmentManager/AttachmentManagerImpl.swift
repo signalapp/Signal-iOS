@@ -99,7 +99,7 @@ public class AttachmentManagerImpl: AttachmentManager {
     }
 
     public func createAttachmentStreams(
-        consuming dataSources: [OwnedAttachmentDataSource],
+        from dataSources: [OwnedAttachmentDataSource],
         tx: DBWriteTransaction
     ) throws {
         guard dataSources.count < UInt32.max else {

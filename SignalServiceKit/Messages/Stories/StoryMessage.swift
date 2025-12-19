@@ -136,7 +136,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
 
     public var context: StoryContext { groupId.map { .groupId($0) } ?? .authorAci(authorAci) }
 
-    private init(
+    public init(
         timestamp: UInt64,
         authorAci: Aci,
         groupId: Data?,
@@ -157,43 +157,6 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         self.manifest = manifest
         self._attachment = attachment.asSerializable
         self.replyCount = replyCount
-    }
-
-    public static func createAndInsert(
-        timestamp: UInt64,
-        authorAci: Aci,
-        groupId: Data?,
-        manifest: StoryManifest,
-        replyCount: UInt64,
-        attachmentBuilder: OwnedAttachmentBuilder<StoryMessageAttachment>,
-        mediaCaption: StyleOnlyMessageBody?,
-        shouldLoop: Bool,
-        transaction: DBWriteTransaction
-    ) throws -> StoryMessage {
-        let storyMessage = StoryMessage(
-            timestamp: timestamp,
-            authorAci: authorAci,
-            groupId: groupId,
-            manifest: manifest,
-            attachment: attachmentBuilder.info,
-            replyCount: replyCount
-        )
-        storyMessage.anyInsert(transaction: transaction)
-        guard let id = storyMessage.id else {
-            throw OWSAssertionError("No sqlite id after insert!")
-        }
-        let ownerId: AttachmentReference.OwnerBuilder
-        switch attachmentBuilder.info {
-        case .media:
-            ownerId = .storyMessageMedia(.init(
-                storyMessageRowId: id,
-                caption: mediaCaption
-            ))
-        case .text:
-            ownerId = .storyMessageLinkPreview(storyMessageRowId: id)
-        }
-        try attachmentBuilder.finalize(owner: ownerId, tx: transaction)
-        return storyMessage
     }
 
     @discardableResult
@@ -237,35 +200,38 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
             return StyleOnlyMessageBody(text: caption, protos: storyMessage.bodyRanges)
         }
 
-        let attachment: StoryMessageAttachment
-        let mediaAttachmentBuilder: OwnedAttachmentBuilder<Void>?
-        let linkPreviewBuilder: OwnedAttachmentBuilder<OWSLinkPreview>?
+        let attachmentManager = DependenciesBridge.shared.attachmentManager
+        let linkPreviewManager = DependenciesBridge.shared.linkPreviewManager
 
+        let validatedLinkPreview: ValidatedLinkPreviewProto?
+        let mediaAttachmentProto: SSKProtoAttachmentPointer?
+        let attachment: StoryMessageAttachment
         if let fileAttachment = storyMessage.fileAttachment {
-            let attachmentBuilder = try DependenciesBridge.shared.attachmentManager.createAttachmentPointerBuilder(
-                from: fileAttachment,
-                tx: transaction
-            )
+            validatedLinkPreview = nil
+            mediaAttachmentProto = fileAttachment
             attachment = .media
-            mediaAttachmentBuilder = attachmentBuilder
-            linkPreviewBuilder = nil
         } else if let textAttachmentProto = storyMessage.textAttachment {
-            linkPreviewBuilder = textAttachmentProto.preview.flatMap {
+            if let linkPreviewProto = textAttachmentProto.preview {
                 do {
-                    return try DependenciesBridge.shared.linkPreviewManager.validateAndBuildStoryLinkPreview(
-                        from: $0,
-                        tx: transaction
+                    validatedLinkPreview = try linkPreviewManager.validateAndBuildStoryLinkPreview(
+                        from: linkPreviewProto,
                     )
+                } catch LinkPreviewError.invalidPreview {
+                    // Just drop the link preview, but keep the message
+                    Logger.warn("Dropping invalid link preview; keeping story")
+                    validatedLinkPreview = nil
                 } catch {
-                    Logger.error("Unable to build link preview!")
+                    owsFailDebug("Unexpected error for incoming story link preview proto! \(error)")
                     return nil
                 }
+            } else {
+                validatedLinkPreview = nil
             }
-            mediaAttachmentBuilder = nil
+            mediaAttachmentProto = nil
             attachment = .text(try TextAttachment(
                 from: textAttachmentProto,
                 bodyRanges: storyMessage.bodyRanges,
-                linkPreview: linkPreviewBuilder?.info,
+                linkPreview: validatedLinkPreview?.preview,
                 transaction: transaction
             ))
         } else {
@@ -294,17 +260,28 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         // Nil associated datas are for outgoing contexts, where we don't need to keep track of received timestamp.
         record.context.associatedData(transaction: transaction)?.update(lastReceivedTimestamp: timestamp, transaction: transaction)
 
-        try linkPreviewBuilder?.finalize(
-            owner: .storyMessageLinkPreview(storyMessageRowId: record.id!),
-            tx: transaction
-        )
-        try mediaAttachmentBuilder?.finalize(
-            owner: .storyMessageMedia(.init(
-                storyMessageRowId: record.id!,
-                caption: caption
-            )),
-            tx: transaction
-        )
+        if let linkPreviewImageProto = validatedLinkPreview?.imageProto {
+            try attachmentManager.createAttachmentPointer(
+                from: OwnedAttachmentPointerProto(
+                    proto: linkPreviewImageProto,
+                    owner: .storyMessageLinkPreview(storyMessageRowId: record.id!),
+                ),
+                tx: transaction,
+            )
+        }
+
+        if let mediaAttachmentProto {
+            try attachmentManager.createAttachmentPointer(
+                from: OwnedAttachmentPointerProto(
+                    proto: mediaAttachmentProto,
+                    owner: .storyMessageMedia(.init(
+                        storyMessageRowId: record.id!,
+                        caption: caption
+                    )),
+                ),
+                tx: transaction,
+            )
+        }
 
         return record
     }
@@ -350,35 +327,34 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
             return StyleOnlyMessageBody(text: caption, protos: storyMessage.bodyRanges)
         }
 
-        let attachment: StoryMessageAttachment
-        let mediaAttachmentBuilder: OwnedAttachmentBuilder<Void>?
-        let linkPreviewBuilder: OwnedAttachmentBuilder<OWSLinkPreview>?
+        let attachmentManager = DependenciesBridge.shared.attachmentManager
+        let linkPreviewManager = DependenciesBridge.shared.linkPreviewManager
 
+        let validatedLinkPreview: ValidatedLinkPreviewProto?
+        let mediaAttachmentProto: SSKProtoAttachmentPointer?
+        let attachment: StoryMessageAttachment
         if let fileAttachment = storyMessage.fileAttachment {
-            let attachmentBuilder = try DependenciesBridge.shared.attachmentManager.createAttachmentPointerBuilder(
-                from: fileAttachment,
-                tx: transaction
-            )
+            validatedLinkPreview = nil
+            mediaAttachmentProto = fileAttachment
             attachment = .media
-            mediaAttachmentBuilder = attachmentBuilder
-            linkPreviewBuilder = nil
         } else if let textAttachmentProto = storyMessage.textAttachment {
-            linkPreviewBuilder = textAttachmentProto.preview.flatMap {
+            if let linkPreviewProto = textAttachmentProto.preview {
                 do {
-                    return try DependenciesBridge.shared.linkPreviewManager.validateAndBuildStoryLinkPreview(
-                        from: $0,
-                        tx: transaction
+                    validatedLinkPreview = try linkPreviewManager.validateAndBuildStoryLinkPreview(
+                        from: linkPreviewProto,
                     )
                 } catch {
-                    Logger.error("Unable to build link preview!")
-                    return nil
+                    Logger.error("Failed to validate and build link preview! \(error)")
+                    validatedLinkPreview = nil
                 }
+            } else {
+                validatedLinkPreview = nil
             }
-            mediaAttachmentBuilder = nil
+            mediaAttachmentProto = nil
             attachment = .text(try TextAttachment(
                 from: textAttachmentProto,
                 bodyRanges: storyMessage.bodyRanges,
-                linkPreview: linkPreviewBuilder?.info,
+                linkPreview: validatedLinkPreview?.preview,
                 transaction: transaction
             ))
         } else {
@@ -415,17 +391,28 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
             }
         }
 
-        try linkPreviewBuilder?.finalize(
-            owner: .storyMessageLinkPreview(storyMessageRowId: record.id!),
-            tx: transaction
-        )
-        try mediaAttachmentBuilder?.finalize(
-            owner: .storyMessageMedia(.init(
-                storyMessageRowId: record.id!,
-                caption: caption
-            )),
-            tx: transaction
-        )
+        if let linkPreviewImageProto = validatedLinkPreview?.imageProto {
+            try attachmentManager.createAttachmentPointer(
+                from: OwnedAttachmentPointerProto(
+                    proto: linkPreviewImageProto,
+                    owner: .storyMessageLinkPreview(storyMessageRowId: record.id!),
+                ),
+                tx: transaction,
+            )
+        }
+
+        if let mediaAttachmentProto {
+            try attachmentManager.createAttachmentPointer(
+                from: OwnedAttachmentPointerProto(
+                    proto: mediaAttachmentProto,
+                    owner: .storyMessageMedia(.init(
+                        storyMessageRowId: record.id!,
+                        caption: caption,
+                    )),
+                ),
+                tx: transaction,
+            )
+        }
 
         return record
     }
@@ -454,11 +441,6 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         // If someday a system story caption has styles, they'd go here.
         let caption: StyleOnlyMessageBody? = nil
 
-        let attachmentBuilder = try DependenciesBridge.shared.attachmentManager.createAttachmentStreamBuilder(
-            from: attachmentSource,
-            tx: transaction
-        )
-
         let record = StoryMessage(
             // NOTE: As of now these only get created for the onboarding story, and that happens
             // when you first launch the app. That's probably okay, but if we need something more
@@ -473,12 +455,16 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         )
         record.anyInsert(transaction: transaction)
 
-        try attachmentBuilder.finalize(
-            owner: .storyMessageMedia(.init(
-                storyMessageRowId: record.id!,
-                caption: caption
-            )),
-            tx: transaction
+        let attachmentManager = DependenciesBridge.shared.attachmentManager
+        try attachmentManager.createAttachmentStream(
+            from: OwnedAttachmentDataSource(
+                dataSource: attachmentSource,
+                owner: .storyMessageMedia(.init(
+                    storyMessageRowId: record.id!,
+                    caption: caption,
+                )),
+            ),
+            tx: transaction,
         )
 
         return record

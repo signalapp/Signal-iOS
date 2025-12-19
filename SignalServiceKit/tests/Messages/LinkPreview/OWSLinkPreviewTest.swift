@@ -8,23 +8,21 @@ import Foundation
 import XCTest
 
 class OWSLinkPreviewTest: XCTestCase {
-    var mockDB: InMemoryDB!
     var linkPreviewManager: LinkPreviewManagerImpl!
 
     override func setUp() {
         super.setUp()
 
-        mockDB = InMemoryDB()
         linkPreviewManager = LinkPreviewManagerImpl(
             attachmentManager: AttachmentManagerMock(),
             attachmentStore: AttachmentStoreMock(),
             attachmentValidator: AttachmentContentValidatorMock(),
-            db: mockDB,
+            db: InMemoryDB(),
             linkPreviewSettingStore: LinkPreviewSettingStore.mock()
         )
     }
 
-    func testBuildValidatedLinkPreview_TitleAndImage() {
+    func testBuildValidatedLinkPreview_TitleAndImage() throws {
         let url = "https://www.youtube.com/watch?v=tP-Ipsat90c"
         let body = "\(url)"
         let previewBuilder = SSKProtoPreview.builder(url: url)
@@ -39,26 +37,13 @@ class OWSLinkPreviewTest: XCTestCase {
         dataBuilder.setBody(body)
         let dataMessage = try! dataBuilder.build()
 
-        mockDB.write { tx in
-            let linkPreviewBuilder = try! linkPreviewManager.validateAndBuildLinkPreview(
-                from: dataMessage.preview.first!,
-                dataMessage: dataMessage,
-                tx: tx
-            )
-            XCTAssertNotNil(linkPreviewBuilder)
-            try! linkPreviewBuilder.finalize(
-                owner: .messageLinkPreview(.init(
-                    messageRowId: 0,
-                    receivedAtTimestamp: 1000,
-                    threadRowId: 0,
-                    isPastEditRevision: false
-                )),
-                tx: tx
-            )
-        }
+        _ = try linkPreviewManager.validateAndBuildLinkPreview(
+            from: dataMessage.preview.first!,
+            dataMessage: dataMessage,
+        )
     }
 
-    func testBuildValidatedLinkPreview_Title() {
+    func testBuildValidatedLinkPreview_Title() throws {
         let url = "https://www.youtube.com/watch?v=tP-Ipsat90c"
         let body = "\(url)"
         let previewBuilder = SSKProtoPreview.builder(url: url)
@@ -68,26 +53,13 @@ class OWSLinkPreviewTest: XCTestCase {
         dataBuilder.setBody(body)
         let dataMessage = try! dataBuilder.build()
 
-        mockDB.write { tx in
-            let linkPreviewBuilder = try! linkPreviewManager.validateAndBuildLinkPreview(
-                from: dataMessage.preview.first!,
-                dataMessage: dataMessage,
-                tx: tx
-            )
-            XCTAssertNotNil(linkPreviewBuilder)
-            try! linkPreviewBuilder.finalize(
-                owner: .messageLinkPreview(.init(
-                    messageRowId: 0,
-                    receivedAtTimestamp: 100,
-                    threadRowId: 0,
-                    isPastEditRevision: false
-                )),
-                tx: tx
-            )
-        }
+        _ = try linkPreviewManager.validateAndBuildLinkPreview(
+            from: dataMessage.preview.first!,
+            dataMessage: dataMessage,
+        )
     }
 
-    func testBuildValidatedLinkPreview_Image() {
+    func testBuildValidatedLinkPreview_Image() throws {
         let url = "https://www.youtube.com/watch?v=tP-Ipsat90c"
         let body = "\(url)"
         let previewBuilder = SSKProtoPreview.builder(url: url)
@@ -101,22 +73,9 @@ class OWSLinkPreviewTest: XCTestCase {
         dataBuilder.setBody(body)
         let dataMessage = try! dataBuilder.build()
 
-        mockDB.write { tx in
-            let linkPreviewBuilder = try! linkPreviewManager.validateAndBuildLinkPreview(
-                from: dataMessage.preview.first!,
-                dataMessage: dataMessage,
-                tx: tx
-            )
-            XCTAssertNotNil(linkPreviewBuilder)
-            try! linkPreviewBuilder.finalize(
-                owner: .messageLinkPreview(.init(
-                    messageRowId: 0,
-                    receivedAtTimestamp: 300,
-                    threadRowId: 1,
-                    isPastEditRevision: false
-                )),
-                tx: tx
-            )
-        }
+        _ = try linkPreviewManager.validateAndBuildLinkPreview(
+            from: dataMessage.preview.first!,
+            dataMessage: dataMessage,
+        )
     }
 }

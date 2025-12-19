@@ -204,61 +204,58 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
         }
 
         // Create and assign the new link preview.
-        let builder = LinkPreviewBuilderImpl(
-            attachmentManager: attachmentManager,
-            attachmentValidator: attachmentValidator
-        )
         switch newLinkPreview {
         case .none:
             break
         case .draft(let draft):
-            let builder = try linkPreviewManager.buildLinkPreview(
-                from: draft,
-                builder: builder,
-                tx: tx
+            let validatedLinkPreview = try linkPreviewManager.validateDataSource(
+                dataSource: draft,
+                tx: tx,
             )
-            latestRevision.update(with: builder.info, transaction: tx)
-            try builder.finalize(
-                owner: .messageLinkPreview(.init(
-                    messageRowId: latestRevisionRowId,
-                    receivedAtTimestamp: latestRevision.receivedAtTimestamp,
-                    threadRowId: threadRowId,
-                    isPastEditRevision: latestRevision.isPastEditRevision()
-                )),
-                tx: tx
-            )
+
+            latestRevision.update(with: validatedLinkPreview.preview, transaction: tx)
+
+            if let imageDataSource = validatedLinkPreview.imageDataSource {
+                try attachmentManager.createAttachmentStream(
+                    from: OwnedAttachmentDataSource(
+                        dataSource: imageDataSource,
+                        owner: .messageLinkPreview(.init(
+                            messageRowId: latestRevisionRowId,
+                            receivedAtTimestamp: latestRevision.receivedAtTimestamp,
+                            threadRowId: threadRowId,
+                            isPastEditRevision: latestRevision.isPastEditRevision()
+                        )),
+                    ),
+                    tx: tx,
+                )
+            }
         case .proto(let preview, let dataMessage):
-            let linkPreviewBuilder: OwnedAttachmentBuilder<OWSLinkPreview>
             do {
-                linkPreviewBuilder = try linkPreviewManager.validateAndBuildLinkPreview(
+                let validatedLinkPreview = try linkPreviewManager.validateAndBuildLinkPreview(
                     from: preview,
                     dataMessage: dataMessage,
-                    builder: builder,
-                    tx: tx
                 )
-            } catch let error as LinkPreviewError {
-                switch error {
-                case .invalidPreview:
-                    // Just drop the link preview, but keep the message
-                    Logger.info("Dropping invalid link preview; keeping message edit")
-                    return
-                case .noPreview, .fetchFailure, .featureDisabled:
-                    owsFailDebug("Invalid link preview error on incoming proto")
-                    return
+
+                latestRevision.update(with: validatedLinkPreview.preview, transaction: tx)
+
+                if let linkPreviewImageProto = validatedLinkPreview.imageProto {
+                    try attachmentManager.createAttachmentPointer(
+                        from: OwnedAttachmentPointerProto(
+                            proto: linkPreviewImageProto,
+                            owner: .messageLinkPreview(.init(
+                                messageRowId: latestRevisionRowId,
+                                receivedAtTimestamp: latestRevision.receivedAtTimestamp,
+                                threadRowId: threadRowId,
+                                isPastEditRevision: latestRevision.isPastEditRevision()
+                            )),
+                        ),
+                        tx: tx,
+                    )
                 }
-            } catch let error {
-                throw error
+            } catch LinkPreviewError.invalidPreview {
+                // Just drop the link preview, but keep the message
+                Logger.warn("Dropping invalid link preview; keeping message edit")
             }
-            latestRevision.update(with: linkPreviewBuilder.info, transaction: tx)
-            try linkPreviewBuilder.finalize(
-                owner: .messageLinkPreview(.init(
-                    messageRowId: latestRevisionRowId,
-                    receivedAtTimestamp: latestRevision.receivedAtTimestamp,
-                    threadRowId: threadRowId,
-                    isPastEditRevision: latestRevision.isPastEditRevision()
-                )),
-                tx: tx
-            )
         }
     }
 
@@ -315,7 +312,7 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
         case .dataSource(let dataSource):
             let attachmentDataSource = dataSource
             try attachmentManager.createAttachmentStream(
-                consuming: .init(
+                from: OwnedAttachmentDataSource(
                     dataSource: attachmentDataSource,
                     owner: .messageOversizeText(.init(
                         messageRowId: latestRevisionRowId,
@@ -328,7 +325,7 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
             )
         case .proto(let protoPointer):
             try attachmentManager.createAttachmentPointer(
-                from: .init(
+                from: OwnedAttachmentPointerProto(
                     proto: protoPointer,
                     owner: .messageOversizeText(.init(
                         messageRowId: latestRevisionRowId,

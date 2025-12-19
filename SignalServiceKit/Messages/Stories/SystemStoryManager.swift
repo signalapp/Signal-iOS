@@ -50,12 +50,14 @@ public class OnboardingStoryManagerStoryMessageFactory {
         dataSource: DataSourcePath,
         mimeType: String
     ) async throws -> AttachmentDataSource {
-        return try await DependenciesBridge.shared.attachmentContentValidator.validateContents(
+        let attachmentContentValidator = DependenciesBridge.shared.attachmentContentValidator
+        let pendingAttachment = try await attachmentContentValidator.validateContents(
             dataSource: dataSource,
             mimeType: mimeType,
             renderingFlag: .default,
             sourceFilename: nil
         )
+        return .pendingAttachment(pendingAttachment)
     }
 }
 

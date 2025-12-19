@@ -27,7 +27,7 @@ open class AttachmentManagerMock: AttachmentManager {
     }
 
     open func createAttachmentStreams(
-        consuming dataSources: [OwnedAttachmentDataSource],
+        from dataSources: [OwnedAttachmentDataSource],
         tx: DBWriteTransaction
     ) throws {
         // Do nothing

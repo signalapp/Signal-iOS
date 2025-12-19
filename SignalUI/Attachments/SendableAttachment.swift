@@ -212,11 +212,12 @@ extension AttachmentContentValidator {
         sendableAttachment: SendableAttachment,
         shouldUseDefaultFilename: Bool,
     ) async throws -> AttachmentDataSource {
-        return try await validateContents(
+        let pendingAttachment = try await validateContents(
             dataSource: sendableAttachment.dataSource,
             mimeType: sendableAttachment.mimeType,
             renderingFlag: sendableAttachment.renderingFlag,
             sourceFilename: sendableAttachment.sourceFilename?.rawValue ?? (shouldUseDefaultFilename ? sendableAttachment.defaultFilename : nil),
         )
+        return .pendingAttachment(pendingAttachment)
     }
 }

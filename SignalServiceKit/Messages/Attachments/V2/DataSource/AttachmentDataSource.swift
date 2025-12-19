@@ -73,12 +73,6 @@ public enum AttachmentDataSource {
         ))
     }
 
-    public static func from(
-        pendingAttachment: PendingAttachment
-    ) -> AttachmentDataSource {
-        return .pendingAttachment(pendingAttachment)
-    }
-
     public func removeBorderlessRenderingFlagIfPresent() -> Self {
         switch self {
         case .existingAttachment(var existingAttachmentSource):

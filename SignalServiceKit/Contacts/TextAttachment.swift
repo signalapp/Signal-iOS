@@ -86,45 +86,6 @@ public struct UnsentTextAttachment {
         public var textContent: TextAttachment.TextContent {
             return TextAttachment.textContent(body: body, textStyle: textStyle)
         }
-
-        public func buildTextAttachment(
-            transaction: DBWriteTransaction
-        ) -> OwnedAttachmentBuilder<TextAttachment>? {
-            var linkPreviewBuilder: OwnedAttachmentBuilder<OWSLinkPreview>?
-            if let linkPreview = linkPreviewDraft {
-                do {
-                    linkPreviewBuilder = try DependenciesBridge.shared.linkPreviewManager.buildLinkPreview(
-                        from: linkPreview,
-                        tx: transaction
-                    )
-                } catch LinkPreviewError.featureDisabled {
-                    linkPreviewBuilder = .withoutFinalizer(OWSLinkPreview(urlString: linkPreview.metadata.urlString))
-                } catch {
-                    Logger.error("Failed to generate link preview.")
-                }
-            }
-
-            guard linkPreviewBuilder != nil || !(body?.isEmpty ?? true) else {
-                owsFailDebug("Empty content")
-                return nil
-            }
-
-            func buildTextAttachment(linkPreview: OWSLinkPreview?) -> TextAttachment {
-                return TextAttachment(
-                    body: body,
-                    textStyle: textStyle,
-                    textForegroundColor: textForegroundColor,
-                    textBackgroundColor: textBackgroundColor,
-                    background: background,
-                    linkPreview: linkPreview
-                )
-            }
-            if let linkPreviewBuilder {
-                return linkPreviewBuilder.wrap(buildTextAttachment(linkPreview:))
-            } else {
-                return .withoutFinalizer(buildTextAttachment(linkPreview: nil))
-            }
-        }
     }
 }
 

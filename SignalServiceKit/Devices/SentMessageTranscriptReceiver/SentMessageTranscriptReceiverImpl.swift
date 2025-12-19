@@ -181,12 +181,10 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
 
         updateDisappearingMessageTokenIfNecessary(target: messageParams.target, localIdentifiers: localIdentifiers, tx: tx)
 
-        let linkPreviewBuilder: OwnedAttachmentBuilder<OWSLinkPreview>?
         let quotedMessageBuilder: OwnedAttachmentBuilder<TSQuotedMessage>?
         let contactBuilder: OwnedAttachmentBuilder<OWSContact>?
         let messageStickerBuilder: OwnedAttachmentBuilder<MessageSticker>?
         do {
-            linkPreviewBuilder = try messageParams.makeLinkPreviewBuilder(tx)
             quotedMessageBuilder = try messageParams.makeQuotedMessageBuilder(tx)
             contactBuilder = try messageParams.makeContactBuilder(tx)
             messageStickerBuilder = try messageParams.makeMessageStickerBuilder(tx)
@@ -216,7 +214,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             storyReactionEmoji: nil,
             quotedMessage: quotedMessageBuilder?.info,
             contactShare: contactBuilder?.info,
-            linkPreview: linkPreviewBuilder?.info,
+            linkPreview: messageParams.validatedLinkPreview?.preview,
             messageSticker: messageStickerBuilder?.info,
             giftBadge: messageParams.giftBadge,
             isPoll: messageParams.makePollCreateBuilder != nil
@@ -225,7 +223,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
 
         let hasRenderableContent = outgoingMessageBuilder.hasRenderableContent(
             hasBodyAttachments: messageParams.attachmentPointerProtos.isEmpty.negated,
-            hasLinkPreview: linkPreviewBuilder != nil,
+            hasLinkPreview: messageParams.validatedLinkPreview != nil,
             hasQuotedReply: quotedMessageBuilder != nil,
             hasContactShare: contactBuilder != nil,
             hasSticker: messageStickerBuilder != nil,
@@ -309,15 +307,20 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
                     tx: tx
                 )
 
-                try linkPreviewBuilder?.finalize(
-                    owner: .messageLinkPreview(.init(
-                        messageRowId: outgoingMessage.sqliteRowId!,
-                        receivedAtTimestamp: outgoingMessage.receivedAtTimestamp,
-                        threadRowId: threadRowId,
-                        isPastEditRevision: outgoingMessage.isPastEditRevision()
-                    )),
-                    tx: tx
-                )
+                if let linkPreviewImageProto = messageParams.validatedLinkPreview?.imageProto {
+                    try attachmentManager.createAttachmentPointer(
+                        from: OwnedAttachmentPointerProto(
+                            proto: linkPreviewImageProto,
+                            owner: .messageLinkPreview(.init(
+                                messageRowId: outgoingMessage.sqliteRowId!,
+                                receivedAtTimestamp: outgoingMessage.receivedAtTimestamp,
+                                threadRowId: threadRowId,
+                                isPastEditRevision: outgoingMessage.isPastEditRevision()
+                            )),
+                        ),
+                        tx: tx,
+                    )
+                }
 
                 try messageStickerBuilder.map {
                     try $0.finalize(

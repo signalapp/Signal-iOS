@@ -1199,30 +1199,24 @@ public final class MessageReceiver {
             contactBuilder = nil
         }
 
-        let linkPreviewBuilder: OwnedAttachmentBuilder<OWSLinkPreview>?
-        if let linkPreview = dataMessage.preview.first {
+        let validatedLinkPreview: ValidatedLinkPreviewProto?
+        if let linkPreviewProto = dataMessage.preview.first {
             do {
-                linkPreviewBuilder = try DependenciesBridge.shared.linkPreviewManager.validateAndBuildLinkPreview(
-                    from: linkPreview,
+                let linkPreviewManager = DependenciesBridge.shared.linkPreviewManager
+                validatedLinkPreview = try linkPreviewManager.validateAndBuildLinkPreview(
+                    from: linkPreviewProto,
                     dataMessage: dataMessage,
-                    tx: tx
                 )
-            } catch let error as LinkPreviewError {
-                switch error {
-                case .invalidPreview:
-                    // Just drop the link preview, but keep the message
-                    Logger.info("Dropping invalid link preview; keeping message")
-                    linkPreviewBuilder = nil
-                case .noPreview, .fetchFailure, .featureDisabled:
-                    owsFailDebug("Invalid link preview error on incoming proto")
-                    linkPreviewBuilder = nil
-                }
+            } catch LinkPreviewError.invalidPreview {
+                // Just drop the link preview, but keep the message
+                Logger.warn("Dropping invalid link preview; keeping message")
+                validatedLinkPreview = nil
             } catch {
-                Logger.error("linkPreviewError: \(error)")
+                owsFailDebug("Unexpected error for incoming link preview proto! \(error)")
                 return nil
             }
         } else {
-            linkPreviewBuilder = nil
+            validatedLinkPreview = nil
         }
 
         var messageStickerBuilder: OwnedAttachmentBuilder<MessageSticker>?
@@ -1428,7 +1422,7 @@ public final class MessageReceiver {
             storyReactionEmoji: nil,
             quotedMessage: quotedMessageBuilder?.info,
             contactShare: contactBuilder?.info,
-            linkPreview: linkPreviewBuilder?.info,
+            linkPreview: validatedLinkPreview?.preview,
             messageSticker: messageStickerBuilder?.info,
             giftBadge: giftBadge,
             paymentNotification: paymentModels?.notification,
@@ -1443,7 +1437,7 @@ public final class MessageReceiver {
 
         let hasRenderableContent = messageBuilder.hasRenderableContent(
             hasBodyAttachments: !dataMessage.attachments.isEmpty,
-            hasLinkPreview: linkPreviewBuilder != nil,
+            hasLinkPreview: validatedLinkPreview != nil,
             hasQuotedReply: quotedMessageBuilder != nil,
             hasContactShare: contactBuilder != nil,
             hasSticker: messageStickerBuilder != nil,
@@ -1495,15 +1489,21 @@ public final class MessageReceiver {
                 )),
                 tx: tx
             )
-            try linkPreviewBuilder?.finalize(
-                owner: .messageLinkPreview(.init(
-                    messageRowId: message.sqliteRowId!,
-                    receivedAtTimestamp: message.receivedAtTimestamp,
-                    threadRowId: thread.sqliteRowId!,
-                    isPastEditRevision: message.isPastEditRevision()
-                )),
-                tx: tx
-            )
+            let attachmentManager = DependenciesBridge.shared.attachmentManager
+            if let linkPreviewImageProto = validatedLinkPreview?.imageProto {
+                try attachmentManager.createAttachmentPointer(
+                    from: OwnedAttachmentPointerProto(
+                        proto: linkPreviewImageProto,
+                        owner: .messageLinkPreview(.init(
+                            messageRowId: message.sqliteRowId!,
+                            receivedAtTimestamp: message.receivedAtTimestamp,
+                            threadRowId: thread.sqliteRowId!,
+                            isPastEditRevision: message.isPastEditRevision()
+                        )),
+                    ),
+                    tx: tx,
+                )
+            }
             try messageStickerBuilder.map {
                 try $0.finalize(
                     owner: .messageSticker(.init(

@@ -101,6 +101,7 @@ public class AttachmentMultisend {
         let attachmentValidator: AttachmentContentValidator
         let contactsMentionHydrator: ContactsMentionHydrator.Type
         let databaseStorage: SDSDatabaseStorage
+        let linkPreviewManager: LinkPreviewManager
         let messageSenderJobQueue: MessageSenderJobQueue
         let tsAccountManager: TSAccountManager
     }
@@ -110,6 +111,7 @@ public class AttachmentMultisend {
         attachmentValidator: DependenciesBridge.shared.attachmentContentValidator,
         contactsMentionHydrator: ContactsMentionHydrator.self,
         databaseStorage: SSKEnvironment.shared.databaseStorageRef,
+        linkPreviewManager: DependenciesBridge.shared.linkPreviewManager,
         messageSenderJobQueue: SSKEnvironment.shared.messageSenderJobQueueRef,
         tsAccountManager: DependenciesBridge.shared.tsAccountManager
     )
@@ -221,7 +223,7 @@ public class AttachmentMultisend {
         tx: DBWriteTransaction,
     ) throws -> [PreparedOutgoingMessage] {
         let segmentedAttachments = approvedAttachments.reduce([], { arr, segmented in
-            return arr + segmented.segmentedOrOriginal.map { ($0, segmented.renderingFlag == .shouldLoop) }
+            return arr + segmented.segmentedOrOriginal
         })
         let unsegmentedAttachments = approvedAttachments.compactMap { (attachment) -> SendableAttachment.ForSending? in
             guard let original = attachment.original else {
@@ -424,7 +426,7 @@ public class AttachmentMultisend {
                 .lazy
                 .compactMap { $0.serviceId }
                 .dictionaryMappingToValues { _ in
-                    return .init(allowsReplies: true, contexts: [])
+                    return StoryRecipientState(allowsReplies: true, contexts: [])
                 }
         )
         return try builder.build(
@@ -506,46 +508,93 @@ public class AttachmentMultisend {
     // MARK: Generic story construction
 
     private struct StoryMessageBuilder {
-        /// Group id to builder; each group thread gets its own builder.
-        let groupThreadAttachmentBuilders: [Data: OwnedAttachmentBuilder<StoryMessageAttachment>]
-        /// All private story threads share a single builder (because they share a single StoryMessage).
-        let privateStoryThreadAttachmentBuilder: OwnedAttachmentBuilder<StoryMessageAttachment>?
+        enum AttachmentType {
+            case media(AttachmentDataSource, caption: StyleOnlyMessageBody?)
+            case text(TextAttachment, linkPreviewImage: AttachmentDataSource?)
+        }
+
         let localAci: Aci
-        let mediaCaption: StyleOnlyMessageBody?
-        let shouldLoop: Bool
+        let attachmentType: AttachmentType
+
+        /// Each group thread gets a `StoryMessage`.
+        let groupIds: [Data]
+        /// All private story threads share a single `StoryMessage`.
+        let includePrivateStoryThread: Bool
 
         func build(
             groupId: Data?,
             manifest: StoryManifest,
             tx: DBWriteTransaction
         ) throws -> StoryMessage {
-            let attachmentBuilder: OwnedAttachmentBuilder<StoryMessageAttachment>?
-            if let groupId {
-                attachmentBuilder = groupThreadAttachmentBuilders[groupId]
-            } else {
-                attachmentBuilder = privateStoryThreadAttachmentBuilder
-            }
-            guard let attachmentBuilder else {
-                throw OWSAssertionError("Building for an unprepared thread")
-            }
-
-            let storyMessage = try StoryMessage.createAndInsert(
+            let storyMessage = StoryMessage(
                 timestamp: MessageTimestampGenerator.sharedInstance.generateTimestamp(),
-                authorAci: self.localAci,
+                authorAci: localAci,
                 groupId: groupId,
                 manifest: manifest,
+                attachment: { () -> StoryMessageAttachment in
+                    switch attachmentType {
+                    case .media:
+                        return .media
+                    case .text(let textAttachment, _):
+                        return .text(textAttachment)
+                    }
+                }(),
                 replyCount: 0,
-                attachmentBuilder: attachmentBuilder,
-                mediaCaption: self.mediaCaption,
-                shouldLoop: self.shouldLoop,
-                transaction: tx
             )
+            storyMessage.anyInsert(transaction: tx)
+
+            try insertAttachmentIfNecessary(
+                storyMessage: storyMessage,
+                tx: tx,
+            )
+
             return storyMessage
+        }
+
+        private func insertAttachmentIfNecessary(
+            storyMessage: StoryMessage,
+            tx: DBWriteTransaction,
+        ) throws {
+            let attachmentManager = DependenciesBridge.shared.attachmentManager
+
+            guard let storyMessageID = storyMessage.id else {
+                throw OWSAssertionError("Missing ID for StoryMessage!")
+            }
+
+            let ownedAttachmentDataSource: OwnedAttachmentDataSource?
+            switch attachmentType {
+            case .media(let attachmentDataSource, let caption):
+                ownedAttachmentDataSource = OwnedAttachmentDataSource(
+                    dataSource: attachmentDataSource,
+                    owner: .storyMessageMedia(.init(
+                        storyMessageRowId: storyMessageID,
+                        caption: caption,
+                    )),
+                )
+            case .text(_, let linkPreviewImage):
+                if let linkPreviewImage {
+                    ownedAttachmentDataSource = OwnedAttachmentDataSource(
+                        dataSource: linkPreviewImage,
+                        owner: .storyMessageLinkPreview(
+                            storyMessageRowId: storyMessageID,
+                        ),
+                    )
+                } else {
+                    ownedAttachmentDataSource = nil
+                }
+            }
+
+            if let ownedAttachmentDataSource {
+                try attachmentManager.createAttachmentStream(
+                    from: ownedAttachmentDataSource,
+                    tx: tx,
+                )
+            }
         }
     }
 
     private class func storyMessageBuilders(
-        segmentedAttachments: [(AttachmentDataSource, isLoopingVideo: Bool)],
+        segmentedAttachments: [AttachmentDataSource],
         approvedMessageBody: MessageBody?,
         groupStoryThreads: [TSGroupThread],
         privateStoryThreads: [TSPrivateStoryThread],
@@ -564,24 +613,15 @@ public class AttachmentMultisend {
             .hydrating(mentionHydrator: ContactsMentionHydrator.mentionHydrator(transaction: tx))
             .asStyleOnlyBody()
 
-        return segmentedAttachments.map { attachmentDataSource, isLoopingVideo in
-            let attachmentManager = deps.attachmentManager
-            let attachmentBuilder = OwnedAttachmentBuilder<StoryMessageAttachment>(
-                info: .media,
-                finalize: { owner, tx in
-                    try attachmentManager.createAttachmentStream(
-                        consuming: .init(dataSource: attachmentDataSource, owner: owner),
-                        tx: tx
-                    )
-                }
-            )
+        return segmentedAttachments.map { attachmentDataSource in
             return storyMessageBuilder(
-                attachmentBuilder: attachmentBuilder,
+                localAci: localAci,
+                attachmentType: .media(
+                    attachmentDataSource,
+                    caption: storyCaption,
+                ),
                 groupStoryThreads: groupStoryThreads,
                 privateStoryThreads: privateStoryThreads,
-                localAci: localAci,
-                mediaCaption: storyCaption,
-                shouldLoop: isLoopingVideo
             )
         }
     }
@@ -595,50 +635,60 @@ public class AttachmentMultisend {
         guard let localAci = deps.tsAccountManager.localIdentifiers(tx: tx)?.aci else {
             throw OWSAssertionError("Sending without a local aci!")
         }
-        guard
-            let textAttachmentBuilder = textAttachment
-                .buildTextAttachment(transaction: tx)?
-                .wrap({ StoryMessageAttachment.text($0) })
-        else {
-            throw OWSAssertionError("Invalid text attachment")
+
+        let validatedLinkPreviewDataSource: ValidatedLinkPreviewDataSource?
+        if let linkPreviewDraft = textAttachment.linkPreviewDraft {
+            do {
+                validatedLinkPreviewDataSource = try deps.linkPreviewManager.validateDataSource(
+                    dataSource: linkPreviewDraft,
+                    tx: tx,
+                )
+            } catch LinkPreviewError.featureDisabled {
+                validatedLinkPreviewDataSource = nil
+            } catch {
+                Logger.warn("Failed to build link preview! \(error)")
+                validatedLinkPreviewDataSource = nil
+            }
+        } else {
+            validatedLinkPreviewDataSource = nil
         }
+
+        if
+            validatedLinkPreviewDataSource == nil,
+            (textAttachment.body == nil || textAttachment.body!.isEmpty)
+        {
+            throw OWSAssertionError("Not sending text story with empty content!")
+        }
+
         return storyMessageBuilder(
-            attachmentBuilder: textAttachmentBuilder,
+            localAci: localAci,
+            attachmentType: .text(
+                TextAttachment(
+                    body: textAttachment.body,
+                    textStyle: textAttachment.textStyle,
+                    textForegroundColor: textAttachment.textForegroundColor,
+                    textBackgroundColor: textAttachment.textBackgroundColor,
+                    background: textAttachment.background,
+                    linkPreview: validatedLinkPreviewDataSource?.preview,
+                ),
+                linkPreviewImage: validatedLinkPreviewDataSource?.imageDataSource,
+            ),
             groupStoryThreads: groupStoryThreads,
             privateStoryThreads: privateStoryThreads,
-            localAci: localAci,
-            mediaCaption: nil,
-            shouldLoop: false
         )
     }
 
     private class func storyMessageBuilder(
-        attachmentBuilder: OwnedAttachmentBuilder<StoryMessageAttachment>,
+        localAci: Aci,
+        attachmentType: StoryMessageBuilder.AttachmentType,
         groupStoryThreads: [TSGroupThread],
         privateStoryThreads: [TSPrivateStoryThread],
-        localAci: Aci,
-        mediaCaption: StyleOnlyMessageBody?,
-        shouldLoop: Bool
     ) -> StoryMessageBuilder {
-        var numDestinations = groupStoryThreads.count
-        if !privateStoryThreads.isEmpty {
-            numDestinations += 1
-        }
-        let duplicatedAttachmentBuilders = attachmentBuilder.forMultisendReuse(
-            numDestinations: numDestinations
-        )
-        var groupThreadAttachmentBuilders = [Data: OwnedAttachmentBuilder<StoryMessageAttachment>]()
-        for (index, groupStoryThread) in groupStoryThreads.enumerated() {
-            groupThreadAttachmentBuilders[groupStoryThread.groupId] = duplicatedAttachmentBuilders[index]
-        }
-        return .init(
-            groupThreadAttachmentBuilders: groupThreadAttachmentBuilders,
-            privateStoryThreadAttachmentBuilder: privateStoryThreads.isEmpty
-                ? nil
-                : duplicatedAttachmentBuilders.last,
+        return StoryMessageBuilder(
             localAci: localAci,
-            mediaCaption: mediaCaption,
-            shouldLoop: shouldLoop
+            attachmentType: attachmentType,
+            groupIds: groupStoryThreads.map(\.groupId),
+            includePrivateStoryThread: !privateStoryThreads.isEmpty,
         )
     }
 }

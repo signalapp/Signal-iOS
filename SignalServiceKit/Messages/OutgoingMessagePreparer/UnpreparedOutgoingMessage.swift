@@ -201,14 +201,12 @@ public class UnpreparedOutgoingMessage {
             throw OWSAssertionError("Outgoing message missing thread.")
         }
 
-        let linkPreviewBuilder = try message.linkPreviewDraft.map {
-            try DependenciesBridge.shared.linkPreviewManager.buildLinkPreview(
-                from: $0,
-                tx: tx
-            )
-        }.map {
-            message.message.update(with: $0.info, transaction: tx)
-            return $0
+        let validatedLinkPreview = try message.linkPreviewDraft.map {
+            let linkPreviewManager = DependenciesBridge.shared.linkPreviewManager
+            return try linkPreviewManager.validateDataSource(dataSource: $0, tx: tx)
+        }
+        if let validatedLinkPreview {
+            message.message.update(with: validatedLinkPreview.preview, transaction: tx)
         }
 
         let quotedReplyBuilder = message.quotedReplyDraft.map {
@@ -259,7 +257,7 @@ public class UnpreparedOutgoingMessage {
 
         if let oversizeTextDataSource = message.oversizeTextDataSource {
             try DependenciesBridge.shared.attachmentManager.createAttachmentStream(
-                consuming: .init(
+                from: OwnedAttachmentDataSource(
                     dataSource: oversizeTextDataSource,
                     owner: .messageOversizeText(.init(
                         messageRowId: messageRowId,
@@ -282,8 +280,8 @@ public class UnpreparedOutgoingMessage {
                 unsavedBodyMediaAttachments = message.unsavedBodyMediaAttachments
             }
             try DependenciesBridge.shared.attachmentManager.createAttachmentStreams(
-                consuming: unsavedBodyMediaAttachments.map { dataSource in
-                    return .init(
+                from: unsavedBodyMediaAttachments.map { dataSource in
+                    return OwnedAttachmentDataSource(
                         dataSource: dataSource,
                         owner: .messageBodyAttachment(.init(
                             messageRowId: messageRowId,
@@ -298,15 +296,22 @@ public class UnpreparedOutgoingMessage {
             )
         }
 
-        try linkPreviewBuilder?.finalize(
-            owner: .messageLinkPreview(.init(
-                messageRowId: messageRowId,
-                receivedAtTimestamp: message.message.receivedAtTimestamp,
-                threadRowId: threadRowId,
-                isPastEditRevision: message.message.isPastEditRevision()
-            )),
-            tx: tx
-        )
+        if let linkPreviewImageDataSource = validatedLinkPreview?.imageDataSource {
+            let attachmentManager = DependenciesBridge.shared.attachmentManager
+            try attachmentManager.createAttachmentStream(
+                from: OwnedAttachmentDataSource(
+                    dataSource: linkPreviewImageDataSource,
+                    owner: .messageLinkPreview(.init(
+                        messageRowId: messageRowId,
+                        receivedAtTimestamp: message.message.receivedAtTimestamp,
+                        threadRowId: threadRowId,
+                        isPastEditRevision: message.message.isPastEditRevision()
+                    )),
+                ),
+                tx: tx,
+            )
+        }
+
         try quotedReplyBuilder?.finalize(
             owner: .quotedReplyAttachment(.init(
                 messageRowId: messageRowId,

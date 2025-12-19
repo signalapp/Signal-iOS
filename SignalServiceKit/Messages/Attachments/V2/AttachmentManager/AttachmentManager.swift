@@ -38,12 +38,14 @@ public protocol AttachmentManager {
         tx: DBWriteTransaction
     ) -> [OwnedAttachmentBackupPointerProto.CreationError]
 
-    /// Create attachment streams from the data sources, consuming those data sources.
-    /// May reuse an existing attachment stream if matched by content, and discard
-    /// the data source.
+    /// Create attachment streams from the given data sources.
+    ///
+    /// May save new attachment streams, or reuse existing attachment streams if
+    /// matched by content.
+    ///
     /// Creates a reference from the owner to the attachments.
     func createAttachmentStreams(
-        consuming dataSources: [OwnedAttachmentDataSource],
+        from dataSources: [OwnedAttachmentDataSource],
         tx: DBWriteTransaction
     ) throws
 
@@ -117,16 +119,18 @@ extension AttachmentManager {
         )
     }
 
-    /// Create an attachment stream from a data source, consuming that data source.
-    /// May reuse an existing attachment stream if matched by content, and discard
-    /// the data source.
+    /// Create attachment streams from the given data sources.
+    ///
+    /// May save new attachment streams, or reuse existing attachment streams if
+    /// matched by content.
+    ///
     /// Creates a reference from the owner to the attachment.
     public func createAttachmentStream(
-        consuming dataSource: OwnedAttachmentDataSource,
+        from dataSource: OwnedAttachmentDataSource,
         tx: DBWriteTransaction
     ) throws {
         try createAttachmentStreams(
-            consuming: [dataSource],
+            from: [dataSource],
             tx: tx
         )
     }
@@ -157,7 +161,7 @@ extension AttachmentManager {
         return OwnedAttachmentBuilder<Void>(
             finalize: { [self] owner, innerTx in
                 return try self.createAttachmentStream(
-                    consuming: .init(dataSource: dataSource, owner: owner),
+                    from: OwnedAttachmentDataSource(dataSource: dataSource, owner: owner),
                     tx: innerTx
                 )
             }

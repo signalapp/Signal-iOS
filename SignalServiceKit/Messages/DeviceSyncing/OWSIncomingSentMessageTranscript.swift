@@ -138,7 +138,7 @@ public class OWSIncomingSentMessageTranscript: SentMessageTranscript {
             ) else {
                 return nil
             }
-            guard let messageParams = try? self.parseMessageParams(
+            guard let messageParams = self.parseMessageParams(
                 sentProto: sentProto,
                 serverTimestamp: serverTimestamp,
                 dataMessage: dataMessage,
@@ -210,7 +210,7 @@ public class OWSIncomingSentMessageTranscript: SentMessageTranscript {
         dataMessage: SSKProtoDataMessage,
         target: SentMessageTranscriptTarget,
         tx: DBWriteTransaction
-    ) throws -> SentMessageTranscriptType.Message? {
+    ) -> SentMessageTranscriptType.Message? {
         let isViewOnceMessage = dataMessage.hasIsViewOnce && dataMessage.isViewOnce
 
         let bodyRanges = dataMessage.bodyRanges.isEmpty ? MessageBodyRanges.empty : MessageBodyRanges(protos: dataMessage.bodyRanges)
@@ -230,35 +230,30 @@ public class OWSIncomingSentMessageTranscript: SentMessageTranscript {
             }
         }
 
-        let makeLinkPreviewBuilder = { [dataMessage] tx -> OwnedAttachmentBuilder<OWSLinkPreview>? in
-            if let linkPreview = dataMessage.preview.first {
-                do {
-                    return try DependenciesBridge.shared.linkPreviewManager.validateAndBuildLinkPreview(
-                        from: linkPreview,
-                        dataMessage: dataMessage,
-                        tx: tx
-                    )
-                } catch let error as LinkPreviewError {
-                    switch error {
-                    case .invalidPreview:
-                        // Just drop the link preview, but keep the message
-                        Logger.info("Dropping invalid link preview; keeping message")
-                       return nil
-                    case .noPreview, .fetchFailure, .featureDisabled:
-                        owsFailDebug("Invalid link preview error on incoming proto")
-                        return nil
-                    }
-                } catch let error {
-                    throw error
-                }
-            } else {
+        let validatedLinkPreview: ValidatedLinkPreviewProto?
+        if let linkPreviewProto = dataMessage.preview.first {
+            do {
+                let linkPreviewManager = DependenciesBridge.shared.linkPreviewManager
+                validatedLinkPreview = try linkPreviewManager.validateAndBuildLinkPreview(
+                    from: linkPreviewProto,
+                    dataMessage: dataMessage,
+                )
+            } catch LinkPreviewError.invalidPreview {
+                // Just drop the link preview, but keep the message
+                Logger.warn("Dropping invalid link preview; keeping message")
+                validatedLinkPreview = nil
+            } catch {
+                owsFailDebug("Unexpected error for incoming synced link preview proto! \(error)")
                 return nil
             }
+        } else {
+            validatedLinkPreview = nil
         }
 
         let giftBadge = OWSGiftBadge.maybeBuild(from: dataMessage)
         if giftBadge != nil, target.thread.isGroupThread {
-            throw OWSAssertionError("Ignoring gift sent to group")
+            owsFailDebug("Ignoring gift sent to group")
+            return nil
         }
 
         let makeMessageStickerBuilder = { [dataMessage] tx in
@@ -312,7 +307,8 @@ public class OWSIncomingSentMessageTranscript: SentMessageTranscript {
             storyTimestamp = storyContext.sentTimestamp
             storyAuthorAci = Aci.parseFrom(serviceIdBinary: storyContext.authorAciBinary, serviceIdString: storyContext.authorAci)
             guard storyAuthorAci != nil else {
-                throw OWSAssertionError("Couldn't parse story author")
+                owsFailDebug("Couldn't parse story author")
+                return nil
             }
         } else {
             storyTimestamp = nil
@@ -325,7 +321,7 @@ public class OWSIncomingSentMessageTranscript: SentMessageTranscript {
             attachmentPointerProtos: dataMessage.attachments,
             makeQuotedMessageBuilder: makeQuotedMessageBuilder,
             makeContactBuilder: makeContactBuilder,
-            makeLinkPreviewBuilder: makeLinkPreviewBuilder,
+            validatedLinkPreview: validatedLinkPreview,
             giftBadge: giftBadge,
             makeMessageStickerBuilder: makeMessageStickerBuilder,
             isViewOnceMessage: isViewOnceMessage,

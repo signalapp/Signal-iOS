@@ -37,9 +37,7 @@ public enum SentMessageTranscriptType {
         /// Edit messages construct a transcript but don't use the attachment builders and instead make their own.
         public let makeContactBuilder: (DBWriteTransaction) throws -> OwnedAttachmentBuilder<OWSContact>?
 
-        /// Construction of the builder itself deferred since the builder's constructor does database inserts.
-        /// Edit messages construct a transcript but don't use the attachment builders and instead make their own.
-        public let makeLinkPreviewBuilder: (DBWriteTransaction) throws -> OwnedAttachmentBuilder<OWSLinkPreview>?
+        public let validatedLinkPreview: ValidatedLinkPreviewProto?
 
         public let giftBadge: OWSGiftBadge?
 
