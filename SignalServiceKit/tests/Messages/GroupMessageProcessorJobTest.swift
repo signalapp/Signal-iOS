@@ -10,10 +10,10 @@ import Testing
 
 struct GroupMessageProcessorJobTest {
     @Test
-    func testDeserialize() throws {
+    func testDeserialize() {
         let groupId = Data(repeating: 2, count: 32)
         let db = InMemoryDB()
-        try db.write { tx in
+        try! db.write { tx in
             try tx.database.execute(sql: """
             INSERT INTO "model_IncomingGroupsV2MessageJob" (
                 "id",
@@ -38,7 +38,7 @@ struct GroupMessageProcessorJobTest {
             )
             """)
         }
-        let job = try db.read { tx in try GroupMessageProcessorJobStore().nextJob(forGroupId: groupId, tx: tx)! }
+        let job = db.read { tx in GroupMessageProcessorJobStore().nextJob(forGroupId: groupId, tx: tx)! }
         #expect(job.id == 42)
         #expect(job.groupId == groupId)
         #expect(job.envelopeData == Data([0x12, 0x34]))

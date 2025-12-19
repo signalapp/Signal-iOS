@@ -124,11 +124,16 @@ public class ReactionFinder {
     }
 
     /// Delete all reaction records associated with this message
-    public func deleteAllReactions(transaction: DBWriteTransaction) {
+    public func deleteAllReactions(transaction tx: DBWriteTransaction) {
         let sql = """
             DELETE FROM \(OWSReaction.databaseTableName)
             WHERE \(OWSReaction.columnName(.uniqueMessageId)) = ?
         """
-        transaction.database.executeHandlingErrors(sql: sql, arguments: [uniqueMessageId])
+        failIfThrows {
+            try tx.database.execute(
+                sql: sql,
+                arguments: [uniqueMessageId],
+            )
+        }
     }
 }

@@ -35,10 +35,6 @@ public enum BuildFlags {
 
     public static let shouldUseTestIntervals = build <= .beta
 
-    /// If we ever need to internally detect database corruption again in the
-    /// future, we can re-enable this.
-    public static let periodicallyCheckDatabaseIntegrity: Bool = false
-
     public enum Backups {
         public static let showMegaphones = build <= .internal
         public static let showOptimizeMedia = build <= .dev

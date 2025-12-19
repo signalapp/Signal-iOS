@@ -31,18 +31,12 @@ public final class GroupCallInteractionFinder {
             """
 
         let arguments: StatementArguments = [thread.uniqueId, eraId]
-        do {
+        return failIfThrows {
             return try Bool.fetchOne(
                 transaction.database,
                 sql: sql,
                 arguments: arguments
             ) ?? false
-        } catch {
-            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
-                userDefaults: CurrentAppContext().appUserDefaults(),
-                error: error
-            )
-            owsFail("Failed to find group call")
         }
     }
 

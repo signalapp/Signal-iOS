@@ -70,7 +70,7 @@ extension SDSCodableModelDatabaseInterfaceImpl {
         batchSize: UInt,
         block: (Model, UnsafeMutablePointer<ObjCBool>) -> Void
     ) {
-        do {
+        failIfThrows {
             var recordCursor: RecordCursor<Model>
             if let sql = sql, let arguments = arguments {
                 recordCursor = try Model.fetchCursor(
@@ -90,12 +90,6 @@ extension SDSCodableModelDatabaseInterfaceImpl {
                 value.anyDidEnumerateOne(transaction: transaction)
                 block(value, stop)
             }
-        } catch let error {
-            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
-                userDefaults: CurrentAppContext().appUserDefaults(),
-                error: error
-            )
-            owsFailDebug("Failed to fetch models: \(error)!")
         }
     }
 }

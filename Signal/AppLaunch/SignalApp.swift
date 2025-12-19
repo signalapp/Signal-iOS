@@ -397,46 +397,4 @@ public class SignalApp {
         })
         parentVC.present(alert, animated: true)
     }
-
-    public func showDatabaseIntegrityCheckUI(
-        from parentVC: UIViewController,
-        databaseStorage: SDSDatabaseStorage,
-        completion: @escaping () -> Void = {}
-    ) {
-        let alert = UIAlertController(
-            title: OWSLocalizedString("DATABASE_INTEGRITY_CHECK_TITLE",
-                                     comment: "Title for alert before running a database integrity check"),
-            message: OWSLocalizedString("DATABASE_INTEGRITY_CHECK_MESSAGE",
-                                       comment: "Message for alert before running a database integrity check"),
-            preferredStyle: .alert)
-        alert.addAction(.init(title: OWSLocalizedString("DATABASE_INTEGRITY_CHECK_ACTION_RUN",
-                                                       comment: "Button to run the database integrity check"),
-                              style: .default) { _ in
-            let progressView = UIActivityIndicatorView(style: .large)
-            progressView.color = .gray
-            parentVC.view.addSubview(progressView)
-            progressView.autoCenterInSuperview()
-            progressView.startAnimating()
-
-            var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "showDatabaseIntegrityCheckUI")
-
-            DispatchQueue.sharedUserInitiated.async {
-                GRDBDatabaseStorageAdapter.checkIntegrity(databaseStorage: databaseStorage)
-
-                owsAssertDebug(backgroundTask != nil)
-                backgroundTask = nil
-
-                DispatchQueue.main.async {
-                    progressView.removeFromSuperview()
-                    completion()
-                }
-            }
-        })
-        alert.addAction(.init(title: OWSLocalizedString("DATABASE_INTEGRITY_CHECK_SKIP",
-                                                       comment: "Button to skip database integrity check step"),
-                              style: .cancel) { _ in
-            completion()
-        })
-        parentVC.present(alert, animated: true)
-    }
 }

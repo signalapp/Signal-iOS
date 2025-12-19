@@ -195,18 +195,11 @@ private extension SDSCodableModelDatabaseInterface {
         existingGrdbRowId: SDSCodableModel.RowId,
         transaction: DBWriteTransaction
     ) {
-        do {
+        failIfThrows {
             var recordCopy = model
             recordCopy.id = existingGrdbRowId
 
             try recordCopy.update(transaction.database)
-        } catch let error {
-            DatabaseCorruptionState.flagDatabaseCorruptionIfNecessary(
-                userDefaults: CurrentAppContext().appUserDefaults(),
-                error: error
-            )
-
-            owsFail("Update failed: \(error.grdbErrorForLogging)")
         }
     }
 
@@ -214,15 +207,8 @@ private extension SDSCodableModelDatabaseInterface {
         model: Model,
         transaction: DBWriteTransaction
     ) {
-        do {
+        failIfThrows {
             try model.insert(transaction.database)
-        } catch let error {
-            DatabaseCorruptionState.flagDatabaseCorruptionIfNecessary(
-                userDefaults: CurrentAppContext().appUserDefaults(),
-                error: error
-            )
-
-            owsFail("Insert failed: \(error.grdbErrorForLogging)")
         }
     }
 }

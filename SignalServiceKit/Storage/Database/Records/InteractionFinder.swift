@@ -69,18 +69,12 @@ public class InteractionFinder: NSObject {
             sourceAci.serviceIdUppercaseString,
             SignalServiceAddress(sourceAci).phoneNumber
         ]
-        do {
+        return failIfThrows {
             return try Bool.fetchOne(
                 transaction.database,
                 sql: sql,
                 arguments: arguments
             ) ?? false
-        } catch {
-            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
-                userDefaults: CurrentAppContext().appUserDefaults(),
-                error: error
-            )
-            owsFail("Failed to find incoming message")
         }
     }
 
@@ -858,18 +852,12 @@ public class InteractionFinder: NSObject {
             threadUniqueId,
             SDSRecordType.outgoingMessage.rawValue
         ]
-        do {
+        return failIfThrows {
             return try Bool.fetchOne(
                 transaction.database,
                 sql: sql,
                 arguments: arguments
             ) ?? false
-        } catch {
-            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
-                userDefaults: CurrentAppContext().appUserDefaults(),
-                error: error
-            )
-            owsFail("Failed to find outgoing message")
         }
     }
 
@@ -885,18 +873,12 @@ public class InteractionFinder: NSObject {
             """
 
         let arguments: StatementArguments = [threadUniqueId]
-        do {
+        return failIfThrows {
             return try Bool.fetchOne(
                 transaction.database,
                 sql: sql,
                 arguments: arguments
             ) ?? false
-        } catch {
-            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
-                userDefaults: CurrentAppContext().appUserDefaults(),
-                error: error
-            )
-            owsFail("Failed to find info message")
         }
     }
 
@@ -942,18 +924,12 @@ public class InteractionFinder: NSObject {
             """
 
         let arguments: StatementArguments = [threadUniqueId]
-        do {
+        return failIfThrows {
             return try Bool.fetchOne(
                 transaction.database,
                 sql: sql,
                 arguments: arguments
             ) ?? false
-        } catch {
-            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
-                userDefaults: CurrentAppContext().appUserDefaults(),
-                error: error
-            )
-            owsFail("Failed to find info message")
         }
     }
 
@@ -1013,18 +989,12 @@ public class InteractionFinder: NSObject {
             """
         let arguments: StatementArguments = [threadUniqueId]
 
-        do {
+        return failIfThrows {
             return try Bool.fetchOne(
                 transaction.database,
                 sql: sql,
                 arguments: arguments
             ) ?? false
-        } catch {
-            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
-                userDefaults: CurrentAppContext().appUserDefaults(),
-                error: error
-            )
-            owsFail("Failed to determine interaction")
         }
     }
 
@@ -1060,18 +1030,12 @@ public class InteractionFinder: NSObject {
             """
         let arguments: StatementArguments = [threadUniqueId]
 
-        do {
+        return failIfThrows {
             return try Bool.fetchOne(
                 transaction.database,
                 sql: sql,
                 arguments: arguments
             ) ?? false
-        } catch {
-            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
-                userDefaults: CurrentAppContext().appUserDefaults(),
-                error: error
-            )
-            owsFail("Failed to find Incoming message")
         }
     }
 
@@ -1088,18 +1052,12 @@ public class InteractionFinder: NSObject {
             SDSRecordType.outgoingMessage.rawValue
         ]
 
-        do {
+        return failIfThrows {
             return try UInt.fetchOne(
                 transaction.database,
                 sql: sql,
                 arguments: arguments
             ) ?? 0
-        } catch {
-            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
-                userDefaults: CurrentAppContext().appUserDefaults(),
-                error: error
-            )
-            owsFail("Failed to determine message count")
         }
     }
 
@@ -1118,18 +1076,12 @@ public class InteractionFinder: NSObject {
             limit
         ]
 
-        do {
+        return failIfThrows {
             return try UInt.fetchOne(
                 transaction.database,
                 sql: sql,
                 arguments: arguments
             ) ?? 0
-        } catch {
-            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
-                userDefaults: CurrentAppContext().appUserDefaults(),
-                error: error
-            )
-            owsFail("Failed to determine message count")
         }
     }
 

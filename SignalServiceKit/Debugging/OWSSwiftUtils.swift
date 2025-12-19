@@ -88,8 +88,12 @@ public func failIfThrows<T>(
     do {
         return try block()
     } catch {
-        DatabaseCorruptionState.flagDatabaseCorruptionIfNecessary(userDefaults: CurrentAppContext().appUserDefaults(), error: error)
-        owsFail("Couldn't write: \(error)", file: file, function: function, line: line)
+        if let error = error as? DatabaseError, error.resultCode == .SQLITE_CORRUPT {
+            DatabaseCorruptionState.flagDatabaseAsCorrupted(userDefaults: CurrentAppContext().appUserDefaults())
+            owsFail("Failing due to database corruption. Extended result code: \(error.extendedResultCode)", file: file, function: function, line: line)
+        } else {
+            owsFail("Failing for unexpected throw: \(error.grdbErrorForLogging)", file: file, function: function, line: line)
+        }
     }
 }
 

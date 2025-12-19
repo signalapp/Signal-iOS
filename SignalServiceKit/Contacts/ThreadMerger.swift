@@ -330,30 +330,38 @@ class _ThreadMerger_SDSThreadMergerWrapper: _ThreadMerger_SDSThreadMergerShim {
 
     private func mergeInteractions(_ threadPair: MergePair<TSContactThread>, tx: DBWriteTransaction) {
         let uniqueIds = threadPair.map { $0.uniqueId }
-        tx.database.executeHandlingErrors(
-            sql: """
+        failIfThrows {
+            let sql = """
                 UPDATE "\(InteractionRecord.databaseTableName)"
                 SET "\(interactionColumn: .threadUniqueId)" = ?
                 WHERE "\(interactionColumn: .threadUniqueId)" = ?
-            """,
-            arguments: [uniqueIds.intoValue, uniqueIds.fromValue]
-        )
+            """
+            try tx.database.execute(
+                sql: sql,
+                arguments: [uniqueIds.intoValue, uniqueIds.fromValue],
+            )
+        }
     }
 
     private func mergeReceiptsPendingMessageRequest(_ threadPair: MergePair<TSContactThread>, tx: DBWriteTransaction) {
         let threadRowIds = threadPair.map { $0.sqliteRowId! }
-        tx.database.executeHandlingErrors(
-            sql: """
+        failIfThrows {
+            let viewedReceiptSQL = """
                 UPDATE "\(PendingViewedReceiptRecord.databaseTableName)" SET "threadId" = ? WHERE "threadId" = ?
-            """,
-            arguments: [threadRowIds.intoValue, threadRowIds.fromValue]
-        )
-        tx.database.executeHandlingErrors(
-            sql: """
+            """
+            try tx.database.execute(
+                sql: viewedReceiptSQL,
+                arguments: [threadRowIds.intoValue, threadRowIds.fromValue],
+            )
+
+            let readReceiptSQL = """
                 UPDATE "\(PendingReadReceiptRecord.databaseTableName)" SET "threadId" = ? WHERE "threadId" = ?
-            """,
-            arguments: [threadRowIds.intoValue, threadRowIds.fromValue]
-        )
+            """
+            try tx.database.execute(
+                sql: readReceiptSQL,
+                arguments: [threadRowIds.intoValue, threadRowIds.fromValue]
+            )
+        }
     }
 
     private func mergeMessageSendLogPayloads(_ threadPair: MergePair<TSContactThread>, tx: DBWriteTransaction) {

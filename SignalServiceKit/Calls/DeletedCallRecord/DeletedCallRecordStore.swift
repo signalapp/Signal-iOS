@@ -137,14 +137,17 @@ class DeletedCallRecordStoreImpl: DeletedCallRecordStore {
         intoThreadRowId intoRowId: Int64,
         tx: DBWriteTransaction
     ) {
-        tx.database.executeHandlingErrors(
-            sql: """
+        failIfThrows {
+            let sql = """
                 UPDATE "\(DeletedCallRecord.databaseTableName)"
                 SET "\(DeletedCallRecord.CodingKeys.threadRowId.rawValue)" = ?
                 WHERE "\(DeletedCallRecord.CodingKeys.threadRowId.rawValue)" = ?
-            """,
-            arguments: [ intoRowId, fromRowId ]
-        )
+            """
+            try tx.database.execute(
+                sql: sql,
+                arguments: [intoRowId, fromRowId],
+            )
+        }
     }
 
     // MARK: -

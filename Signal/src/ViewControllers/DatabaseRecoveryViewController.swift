@@ -11,6 +11,7 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
     private let corruptDatabaseStorage: SDSDatabaseStorage
     private let deviceSleepManager: DeviceSleepManagerImpl
     private let keychainStorage: any KeychainStorage
+    private let logger: PrefixedLogger
     private let setupSskEnvironment: (SDSDatabaseStorage) -> Task<SetupResult, Never>
     private let launchApp: (SetupResult) -> Void
 
@@ -26,6 +27,8 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
         self.corruptDatabaseStorage = corruptDatabaseStorage
         self.deviceSleepManager = deviceSleepManager
         self.keychainStorage = keychainStorage
+        self.logger = PrefixedLogger(prefix: "[DatabaseRecovery]")
+
         self.setupSskEnvironment = setupSskEnvironment
         self.launchApp = launchApp
         super.init()
@@ -209,7 +212,10 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
     @objc
     private func didRequestToSubmitDebugLogs() {
         self.dismiss(animated: true) {
-            DebugLogs.submitLogs(supportTag: LaunchPreflightError.databaseCorruptedAndMightBeRecoverable.supportTag, dumper: .preLaunch())
+            DebugLogs.submitLogs(
+                supportTag: "LaunchFailure_DatabaseRecoveryFailed",
+                dumper: .preLaunch(),
+            )
         }
     }
 
@@ -225,9 +231,9 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
         state = .recovering(fractionCompleted: 0)
 
         // We might not run all the steps (see comment below). We could use that to adjust the
-        // progress's unit count but that makes the code more complicated, so we just set it to 4
+        // progress's unit count but that makes the code more complicated, so we just set it to 5
         // for simplicity.
-        let progress = Progress(totalUnitCount: 4)
+        let progress = Progress(totalUnitCount: 5)
 
         let progressObserver = progress.observe(\.fractionCompleted, options: [.new]) { [weak self] _, _ in
             self?.didFractionCompletedChange(fractionCompleted: progress.fractionCompleted)
@@ -244,7 +250,7 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
         //
         // Otherwise...
         //
-        // 1. Try to rebuild the existing database. If that clears corruption, skip steps 2 and 4.
+        // 1. Try to reindex the existing database. If that clears corruption, skip steps 2 and 4.
         // 2. Dump and restore.
         // 3. Set up the environment.
         // 4. Do a manual recreate.
@@ -253,11 +259,16 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
         switch DatabaseCorruptionState(userDefaults: userDefaults).status {
         case .notCorrupted:
             owsFail("Database was not corrupted! Why are we on this screen?")
-        case .corrupted, .readCorrupted:
+        case .corrupted:
             promise = firstly(on: DispatchQueue.sharedUserInitiated) { () -> Promise<Bool> in
+                self.logger.info("Integrity check on untouched database...")
                 progress.performAsCurrent(withPendingUnitCount: 1) {
-                    DatabaseRecovery.rebuildExistingDatabase(databaseStorage: self.corruptDatabaseStorage)
+                    _ = DatabaseRecovery.integrityCheck(databaseStorage: self.corruptDatabaseStorage)
                 }
+                progress.performAsCurrent(withPendingUnitCount: 1) {
+                    DatabaseRecovery.reindex(databaseStorage: self.corruptDatabaseStorage)
+                }
+                self.logger.info("Integrity check, again...")
                 let integrity = progress.performAsCurrent(withPendingUnitCount: 1) {
                     return DatabaseRecovery.integrityCheck(databaseStorage: self.corruptDatabaseStorage)
                 }
@@ -269,17 +280,19 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
                 }
 
                 if shouldDumpAndRecreate {
-                    let dumpAndRestore = DatabaseRecovery.DumpAndRestore(
+                    let dumpAndRestoreOperation = DatabaseRecovery.DumpAndRestoreOperation(
                         appReadiness: self.appReadiness,
                         corruptDatabaseStorage: self.corruptDatabaseStorage,
                         keychainStorage: self.keychainStorage
                     )
-                    progress.addChild(dumpAndRestore.progress, withPendingUnitCount: 1)
+                    progress.addChild(dumpAndRestoreOperation.progress, withPendingUnitCount: 1)
+
                     do {
-                        try dumpAndRestore.run()
+                        try dumpAndRestoreOperation.run()
                     } catch {
                         return Promise<Bool>(error: error)
                     }
+
                     DatabaseCorruptionState.flagCorruptedDatabaseAsDumpedAndRestored(userDefaults: self.userDefaults)
                 } else {
                     progress.completedUnitCount += 1
@@ -293,13 +306,14 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
                     databaseFileUrl: self.corruptDatabaseStorage.databaseFileUrl,
                     keychainStorage: self.keychainStorage
                 )
+
                 return Guarantee.wrapAsync {
                     await self.setupSskEnvironment(databaseStorage).value
                 }.map(on: DispatchQueue.sharedUserInitiated) { setupResult in
                     if shouldDumpAndRecreate {
-                        let manualRecreation = DatabaseRecovery.ManualRecreation(databaseStorage: databaseStorage)
-                        progress.addChild(manualRecreation.progress, withPendingUnitCount: 1)
-                        manualRecreation.run()
+                        let recreateFTSIndexOperation = DatabaseRecovery.RecreateFTSIndexOperation(databaseStorage: databaseStorage)
+                        progress.addChild(recreateFTSIndexOperation.progress, withPendingUnitCount: 1)
+                        recreateFTSIndexOperation.run()
                     } else {
                         progress.completedUnitCount += 1
                     }
@@ -310,18 +324,21 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
             promise = Guarantee.wrapAsync {
                 await self.setupSskEnvironment(self.corruptDatabaseStorage).value
             }.map(on: DispatchQueue.sharedUserInitiated) { setupResult in
-                let manualRecreation = DatabaseRecovery.ManualRecreation(databaseStorage: self.corruptDatabaseStorage)
-                progress.addChild(
-                    manualRecreation.progress,
-                    withPendingUnitCount: progress.remainingUnitCount
+                let recreateFTSIndexOperation = DatabaseRecovery.RecreateFTSIndexOperation(
+                    databaseStorage: self.corruptDatabaseStorage
                 )
-                manualRecreation.run()
+                progress.addChild(
+                    recreateFTSIndexOperation.progress,
+                    withPendingUnitCount: progress.remainingUnitCount,
+                )
+                recreateFTSIndexOperation.run()
+
                 return setupResult
             }
         }
 
         promise.done(on: DispatchQueue.main) { setupResult in
-            DatabaseCorruptionState.flagDatabaseAsRecoveredFromCorruption(userDefaults: self.userDefaults)
+            DatabaseCorruptionState.flagDatabaseAsNotCorrupted(userDefaults: self.userDefaults)
             self.state = .recoverySucceeded(setupResult)
         }.ensure {
             progressObserver.invalidate()
@@ -402,7 +419,7 @@ class DatabaseRecoveryViewController<SetupResult>: OWSViewController {
 
         headlineLabel.text = OWSLocalizedString(
             "DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE",
-            comment: "In some cases, the user's message history can become corrupted, and a recovery interface is shown. The user has not been hacked and may be confused by this interface, so try to avoid using terms like \"database\" or \"corrupted\"—terms like \"message history\" are better. This is the title on the first screen of this interface, which gives them some information and asks them to continue."
+            comment: "In some cases, the user's message history can become corrupted, and a recovery interface is shown. This is the title on the first screen of this interface, which gives them some information and asks them to continue."
         )
         stackView.addArrangedSubview(headlineLabel)
 

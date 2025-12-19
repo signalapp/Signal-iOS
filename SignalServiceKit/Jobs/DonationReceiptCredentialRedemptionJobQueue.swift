@@ -210,14 +210,8 @@ struct DonationReceiptCredentialRedemptionJobFinder {
             subscriberID
         ]
 
-        do {
+        return failIfThrows {
             return try Bool.fetchOne(tx.database, sql: sql, arguments: arguments) ?? false
-        } catch {
-            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
-                userDefaults: CurrentAppContext().appUserDefaults(),
-                error: error
-            )
-            owsFail("Unable to find job: \(error.grdbErrorForLogging)")
         }
     }
 }

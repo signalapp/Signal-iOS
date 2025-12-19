@@ -415,17 +415,14 @@ public extension TSPaymentModel {
 @objc
 public class TSPaymentModelCursor: NSObject, SDSCursor {
     private let transaction: DBReadTransaction
-    private let cursor: RecordCursor<PaymentModelRecord>?
+    private let cursor: RecordCursor<PaymentModelRecord>
 
-    init(transaction: DBReadTransaction, cursor: RecordCursor<PaymentModelRecord>?) {
+    init(transaction: DBReadTransaction, cursor: RecordCursor<PaymentModelRecord>) {
         self.transaction = transaction
         self.cursor = cursor
     }
 
     public func next() throws -> TSPaymentModel? {
-        guard let cursor = cursor else {
-            return nil
-        }
         guard let record = try cursor.next() else {
             return nil
         }
@@ -451,16 +448,9 @@ public extension TSPaymentModel {
     @nonobjc
     class func grdbFetchCursor(transaction: DBReadTransaction) -> TSPaymentModelCursor {
         let database = transaction.database
-        do {
+        return failIfThrows {
             let cursor = try PaymentModelRecord.fetchCursor(database)
             return TSPaymentModelCursor(transaction: transaction, cursor: cursor)
-        } catch {
-            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
-                userDefaults: CurrentAppContext().appUserDefaults(),
-                error: error
-            )
-            owsFailDebug("Read failed: \(error)")
-            return TSPaymentModelCursor(transaction: transaction, cursor: nil)
         }
     }
 
@@ -537,17 +527,10 @@ public extension TSPaymentModel {
     class func grdbFetchCursor(sql: String,
                                arguments: StatementArguments = StatementArguments(),
                                transaction: DBReadTransaction) -> TSPaymentModelCursor {
-        do {
+        return failIfThrows {
             let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)
             let cursor = try PaymentModelRecord.fetchCursor(transaction.database, sqlRequest)
             return TSPaymentModelCursor(transaction: transaction, cursor: cursor)
-        } catch {
-            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
-                userDefaults: CurrentAppContext().appUserDefaults(),
-                error: error
-            )
-            owsFailDebug("Read failed: \(error)")
-            return TSPaymentModelCursor(transaction: transaction, cursor: nil)
         }
     }
 

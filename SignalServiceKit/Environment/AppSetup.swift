@@ -299,7 +299,7 @@ extension AppSetup.GlobalsContinuation {
         )
         let ows2FAManager = OWS2FAManager()
         let paymentsHelper = testDependencies.paymentsHelper ?? PaymentsHelperImpl()
-        let archivedPaymentStore = ArchivedPaymentStoreImpl()
+        let archivedPaymentStore = ArchivedPaymentStore()
         let pniProtocolStore = SignalProtocolStore.build(
             dateProvider: dateProvider,
             identity: .pni,
@@ -1481,7 +1481,6 @@ extension AppSetup.GlobalsContinuation {
                 appReadiness: appReadiness,
                 dateProvider: dateProviderMonotonic,
                 db: db,
-                fullTextSearchIndexer: BackupArchiveFullTextSearchIndexerImpl.Wrappers.FullTextSearchIndexer(),
                 interactionStore: interactionStore,
                 searchableNameIndexer: searchableNameIndexer
             ),

@@ -253,16 +253,11 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
         uniqueInteractionId: BackupArchive.InteractionUniqueId,
         context: BackupArchive.RecipientArchivingContext
     ) -> BackupArchive.ArchiveInteractionResult<ChatItemType> {
-        let historyItem: ArchivedPayment?
-        do {
-            historyItem = try archivedPaymentStore.fetch(
-                for: archivedPaymentMessage,
-                interactionUniqueId: uniqueInteractionId.value,
-                tx: context.tx
-            )
-        } catch {
-            return .messageFailure([.archiveFrameError(.paymentInfoFetchFailed(error), uniqueInteractionId)])
-        }
+        let historyItem = archivedPaymentStore.fetch(
+            for: archivedPaymentMessage,
+            interactionUniqueId: uniqueInteractionId.value,
+            tx: context.tx,
+        )
         guard let historyItem else {
             return .messageFailure([.archiveFrameError(.missingPaymentInformation, uniqueInteractionId)])
         }
@@ -1354,13 +1349,7 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
             direction: direction,
             interactionUniqueId: message.uniqueId
         )
-        do {
-            try archivedPaymentStore.insert(archivedPayment, tx: context.tx)
-        } catch {
-            return .messageFailure([
-                .restoreFrameError(.databaseInsertionFailed(error), chatItemId)
-            ])
-        }
+        archivedPaymentStore.insert(archivedPayment, tx: context.tx)
         return .success(())
     }
 

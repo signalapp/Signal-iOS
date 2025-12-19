@@ -205,7 +205,12 @@ public class ThreadStoreImpl: ThreadStore {
 
     public func removeThread(_ thread: TSThread, tx: DBWriteTransaction) {
         let sql = "DELETE FROM \(thread.sdsTableName) WHERE uniqueId = ?"
-        tx.database.executeAndCacheStatementHandlingErrors(sql: sql, arguments: [thread.uniqueId])
+        failIfThrows {
+            try tx.database.execute(
+                sql: sql,
+                arguments: [thread.uniqueId],
+            )
+        }
     }
 
     public func updateThread(_ thread: TSThread, tx: DBWriteTransaction) {

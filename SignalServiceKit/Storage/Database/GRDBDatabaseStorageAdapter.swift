@@ -873,7 +873,6 @@ extension GRDBDatabaseStorageAdapter {
     }
 
     /// Run database integrity checks and log their results.
-    @discardableResult
     public static func checkIntegrity(databaseStorage: SDSDatabaseStorage) -> SqliteUtil.IntegrityCheckResult {
         func read<T>(block: (Database) -> T) -> T {
             return databaseStorage.read { block($0.database) }

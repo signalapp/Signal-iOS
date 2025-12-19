@@ -338,17 +338,14 @@ public extension StickerPack {
 @objc
 public class StickerPackCursor: NSObject, SDSCursor {
     private let transaction: DBReadTransaction
-    private let cursor: RecordCursor<StickerPackRecord>?
+    private let cursor: RecordCursor<StickerPackRecord>
 
-    init(transaction: DBReadTransaction, cursor: RecordCursor<StickerPackRecord>?) {
+    init(transaction: DBReadTransaction, cursor: RecordCursor<StickerPackRecord>) {
         self.transaction = transaction
         self.cursor = cursor
     }
 
     public func next() throws -> StickerPack? {
-        guard let cursor = cursor else {
-            return nil
-        }
         guard let record = try cursor.next() else {
             return nil
         }
@@ -374,16 +371,9 @@ public extension StickerPack {
     @nonobjc
     class func grdbFetchCursor(transaction: DBReadTransaction) -> StickerPackCursor {
         let database = transaction.database
-        do {
+        return failIfThrows {
             let cursor = try StickerPackRecord.fetchCursor(database)
             return StickerPackCursor(transaction: transaction, cursor: cursor)
-        } catch {
-            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
-                userDefaults: CurrentAppContext().appUserDefaults(),
-                error: error
-            )
-            owsFailDebug("Read failed: \(error)")
-            return StickerPackCursor(transaction: transaction, cursor: nil)
         }
     }
 
@@ -460,17 +450,10 @@ public extension StickerPack {
     class func grdbFetchCursor(sql: String,
                                arguments: StatementArguments = StatementArguments(),
                                transaction: DBReadTransaction) -> StickerPackCursor {
-        do {
+        return failIfThrows {
             let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)
             let cursor = try StickerPackRecord.fetchCursor(transaction.database, sqlRequest)
             return StickerPackCursor(transaction: transaction, cursor: cursor)
-        } catch {
-            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
-                userDefaults: CurrentAppContext().appUserDefaults(),
-                error: error
-            )
-            owsFailDebug("Read failed: \(error)")
-            return StickerPackCursor(transaction: transaction, cursor: nil)
         }
     }
 

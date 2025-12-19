@@ -1102,19 +1102,15 @@ fileprivate extension CVComponentState.Builder {
         }
 
         if let archivedPaymentMessage = message as? OWSArchivedPaymentMessage {
-            do {
-                let archivedPayment = try DependenciesBridge.shared.archivedPaymentStore.fetch(
-                    for: archivedPaymentMessage,
-                    interactionUniqueId: message.uniqueId,
-                    tx: transaction
-                )
-                return buildArchivedPaymentAttachment(
-                    archivedPaymentMessage: archivedPaymentMessage,
-                    archivedPayment: archivedPayment
-                )
-            } catch {
-                owsFail("\(error.grdbErrorForLogging)")
-            }
+            let archivedPayment = DependenciesBridge.shared.archivedPaymentStore.fetch(
+                for: archivedPaymentMessage,
+                interactionUniqueId: message.uniqueId,
+                tx: transaction
+            )
+            return buildArchivedPaymentAttachment(
+                archivedPaymentMessage: archivedPaymentMessage,
+                archivedPayment: archivedPayment
+            )
         }
 
         if let giftBadge = message.giftBadge {

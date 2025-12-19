@@ -14,53 +14,44 @@ class DatabaseCorruptionStateTest: XCTestCase {
         }
         func expected(
             _ status: DatabaseCorruptionState.DatabaseCorruptionStatus,
-            count: UInt
         ) -> DatabaseCorruptionState {
-            DatabaseCorruptionState(status: status, count: count)
+            DatabaseCorruptionState(status: status)
         }
 
         // Initial state
-        XCTAssertEqual(fetch(), expected(.notCorrupted, count: 0))
-
-        // After flagging as read corrupted
-        DatabaseCorruptionState.flagDatabaseAsReadCorrupted(userDefaults: defaults)
-        XCTAssertEqual(fetch(), expected(.readCorrupted, count: 0))
+        XCTAssertEqual(fetch(), expected(.notCorrupted))
 
         // After flagging as corrupted
         DatabaseCorruptionState.flagDatabaseAsCorrupted(userDefaults: defaults)
-        XCTAssertEqual(fetch(), expected(.corrupted, count: 1))
+        XCTAssertEqual(fetch(), expected(.corrupted))
 
         // After partial recovery
         DatabaseCorruptionState.flagCorruptedDatabaseAsDumpedAndRestored(userDefaults: defaults)
-        XCTAssertEqual(fetch(), expected(.corruptedButAlreadyDumpedAndRestored, count: 1))
+        XCTAssertEqual(fetch(), expected(.corruptedButAlreadyDumpedAndRestored))
 
         // After full recovery
-        DatabaseCorruptionState.flagDatabaseAsRecoveredFromCorruption(userDefaults: defaults)
-        XCTAssertEqual(fetch(), expected(.notCorrupted, count: 0))
+        DatabaseCorruptionState.flagDatabaseAsNotCorrupted(userDefaults: defaults)
+        XCTAssertEqual(fetch(), expected(.notCorrupted))
 
         // After another corruption
         DatabaseCorruptionState.flagDatabaseAsCorrupted(userDefaults: defaults)
-        XCTAssertEqual(fetch(), expected(.corrupted, count: 1))
-
-        // Read corruption shouldn't change state after a corruption
-        DatabaseCorruptionState.flagDatabaseAsReadCorrupted(userDefaults: defaults)
-        XCTAssertEqual(fetch(), expected(.corrupted, count: 1))
+        XCTAssertEqual(fetch(), expected(.corrupted))
     }
 
-    func testLegacyFalseValueWithoutCount() throws {
+    func testLegacyFalseValue() throws {
         let defaults = TestUtils.userDefaults()
         defaults.set(false, forKey: DatabaseCorruptionState.databaseCorruptionStatusKey)
 
-        let expected = DatabaseCorruptionState(status: .notCorrupted, count: 0)
+        let expected = DatabaseCorruptionState(status: .notCorrupted)
         let actual = DatabaseCorruptionState(userDefaults: defaults)
         XCTAssertEqual(actual, expected)
     }
 
-    func testLegacyTrueValueWithoutCount() throws {
+    func testLegacyTrueValue() throws {
         let defaults = TestUtils.userDefaults()
         defaults.set(true, forKey: DatabaseCorruptionState.databaseCorruptionStatusKey)
 
-        let expected = DatabaseCorruptionState(status: .corrupted, count: 1)
+        let expected = DatabaseCorruptionState(status: .corrupted)
         let actual = DatabaseCorruptionState(userDefaults: defaults)
         XCTAssertEqual(actual, expected)
     }
@@ -68,9 +59,8 @@ class DatabaseCorruptionStateTest: XCTestCase {
     func testInvalidData() throws {
         let defaults = TestUtils.userDefaults()
         defaults.set("garbage", forKey: DatabaseCorruptionState.databaseCorruptionStatusKey)
-        defaults.set("garbage", forKey: DatabaseCorruptionState.databaseCorruptionCountKey)
 
-        let expected = DatabaseCorruptionState(status: .notCorrupted, count: 0)
+        let expected = DatabaseCorruptionState(status: .notCorrupted)
         let actual = DatabaseCorruptionState(userDefaults: defaults)
         XCTAssertEqual(actual, expected)
     }

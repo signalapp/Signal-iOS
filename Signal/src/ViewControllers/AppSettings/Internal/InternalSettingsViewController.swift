@@ -95,13 +95,25 @@ class InternalSettingsViewController: OWSTableViewController2 {
         debugSection.add(.actionItem(
             withText: "Run Database Integrity Checks",
             actionBlock: { [weak self] in
-                guard let self = self else {
-                    return
+                guard let self else { return }
+
+                ModalActivityIndicatorViewController.present(
+                    fromViewController: self
+                ) { modal in
+                    let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+                    let integrityCheckResult = GRDBDatabaseStorageAdapter.checkIntegrity(
+                        databaseStorage: databaseStorage,
+                    )
+
+                    modal.dismiss {
+                        switch integrityCheckResult {
+                        case .ok:
+                            self.presentToast(text: "Integrity check: ok! More detail in logs.")
+                        case .notOk:
+                            self.presentToast(text: "Integrity check: not ok! More detail in logs.")
+                        }
+                    }
                 }
-                SignalApp.shared.showDatabaseIntegrityCheckUI(
-                    from: self,
-                    databaseStorage: SSKEnvironment.shared.databaseStorageRef,
-                )
             }
         ))
         debugSection.add(.actionItem(

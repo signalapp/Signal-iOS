@@ -33,14 +33,14 @@ final class DatabaseRecoveryTest: SSKBaseTest {
         )
     }
 
-    // MARK: - Rebuild existing database
+    // MARK: - Reindex existing database
 
-    func testRebuildExistingDatabase() throws {
+    func testReindexExistingDatabase() throws {
         let databaseStorage = try newDatabase(keychainStorage: keychainStorage)
         try GRDBSchemaMigrator.migrateDatabase(databaseStorage: databaseStorage)
         try XCTUnwrap(databaseStorage.grdbStorage.pool.close())
 
-        DatabaseRecovery.rebuildExistingDatabase(databaseStorage: try cloneDatabaseStorage(databaseStorage))
+        DatabaseRecovery.reindex(databaseStorage: try cloneDatabaseStorage(databaseStorage))
 
         // As a smoke test, ensure that the database is still empty.
         let finishedDatabaseStorage = try cloneDatabaseStorage(databaseStorage)
@@ -60,7 +60,7 @@ final class DatabaseRecoveryTest: SSKBaseTest {
     // MARK: - Dump and restore
 
     func testDumpedTables() throws {
-        let allTableNames = DatabaseRecovery.DumpAndRestore.allTableNames
+        let allTableNames = DatabaseRecovery.DumpAndRestoreOperation.allTableNames
         let allTableNamesSet = Set(allTableNames)
 
         let hasDuplicates = allTableNames.count != allTableNamesSet.count
@@ -103,7 +103,7 @@ final class DatabaseRecoveryTest: SSKBaseTest {
         try GRDBSchemaMigrator.migrateDatabase(databaseStorage: databaseStorage)
         try XCTUnwrap(databaseStorage.grdbStorage.pool.close())
 
-        let dump = DatabaseRecovery.DumpAndRestore(
+        let dump = DatabaseRecovery.DumpAndRestoreOperation(
             appReadiness: AppReadinessMock(),
             corruptDatabaseStorage: try cloneDatabaseStorage(databaseStorage),
             keychainStorage: keychainStorage
@@ -183,7 +183,7 @@ final class DatabaseRecoveryTest: SSKBaseTest {
 
         try XCTUnwrap(databaseStorage.grdbStorage.pool.close())
 
-        let dump = DatabaseRecovery.DumpAndRestore(
+        let dump = DatabaseRecovery.DumpAndRestoreOperation(
             appReadiness: AppReadinessMock(),
             corruptDatabaseStorage: try cloneDatabaseStorage(databaseStorage),
             keychainStorage: keychainStorage
@@ -262,7 +262,7 @@ final class DatabaseRecoveryTest: SSKBaseTest {
         }
         try XCTUnwrap(databaseStorage.grdbStorage.pool.close())
 
-        let dump = DatabaseRecovery.DumpAndRestore(
+        let dump = DatabaseRecovery.DumpAndRestoreOperation(
             appReadiness: AppReadinessMock(),
             corruptDatabaseStorage: try cloneDatabaseStorage(databaseStorage),
             keychainStorage: keychainStorage
@@ -283,7 +283,7 @@ final class DatabaseRecoveryTest: SSKBaseTest {
         }
         try XCTUnwrap(databaseStorage.grdbStorage.pool.close())
 
-        let dump = DatabaseRecovery.DumpAndRestore(
+        let dump = DatabaseRecovery.DumpAndRestoreOperation(
             appReadiness: AppReadinessMock(),
             corruptDatabaseStorage: try cloneDatabaseStorage(databaseStorage),
             keychainStorage: keychainStorage
@@ -332,7 +332,7 @@ final class DatabaseRecoveryTest: SSKBaseTest {
 
         try XCTUnwrap(databaseStorage.grdbStorage.pool.close())
 
-        let dump = DatabaseRecovery.DumpAndRestore(
+        let dump = DatabaseRecovery.DumpAndRestoreOperation(
             appReadiness: AppReadinessMock(),
             corruptDatabaseStorage: try cloneDatabaseStorage(databaseStorage),
             keychainStorage: keychainStorage
@@ -345,8 +345,8 @@ final class DatabaseRecoveryTest: SSKBaseTest {
             keychainStorage: keychainStorage
         )
 
-        let manualRecreation = DatabaseRecovery.ManualRecreation(databaseStorage: finishedDatabaseStorage)
-        manualRecreation.run()
+        let recreateFTSIndex = DatabaseRecovery.RecreateFTSIndexOperation(databaseStorage: finishedDatabaseStorage)
+        recreateFTSIndex.run()
 
         finishedDatabaseStorage.read { transaction in
             func searchMessages(for searchText: String) -> [TSMessage] {
@@ -420,8 +420,8 @@ final class DatabaseRecoveryTest: SSKBaseTest {
 
 // MARK: - Test-only extensions
 
-extension DatabaseRecovery.DumpAndRestore {
-    fileprivate static var allTableNames: [String] {
+private extension DatabaseRecovery.DumpAndRestoreOperation {
+    static var allTableNames: [String] {
         tablesToCopyWithBestEffort + tablesThatMustBeCopiedFlawlessly + tablesExplicitlySkipped
     }
 }

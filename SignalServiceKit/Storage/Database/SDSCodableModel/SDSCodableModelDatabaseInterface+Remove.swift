@@ -26,7 +26,7 @@ extension SDSCodableModelDatabaseInterfaceImpl {
         _ model: Model,
         transaction: DBWriteTransaction
     ) {
-        do {
+        failIfThrows {
             let sql: String = """
                 DELETE FROM \(Model.databaseTableName.quotedDatabaseIdentifier)
                 WHERE uniqueId = ?
@@ -35,13 +35,6 @@ extension SDSCodableModelDatabaseInterfaceImpl {
             let statement = try transaction.database.cachedStatement(sql: sql)
             try statement.setArguments([model.uniqueId])
             try statement.execute()
-        } catch let error {
-            DatabaseCorruptionState.flagDatabaseCorruptionIfNecessary(
-                userDefaults: CurrentAppContext().appUserDefaults(),
-                error: error
-            )
-
-            owsFail("Delete failed: \(error.grdbErrorForLogging)")
         }
     }
 }

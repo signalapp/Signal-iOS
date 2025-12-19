@@ -60,7 +60,12 @@ public extension SDSModel {
             FROM \(sdsTableName)
             WHERE uniqueId == ?
         """
-        tx.database.executeAndCacheStatementHandlingErrors(sql: sql, arguments: [uniqueId])
+        failIfThrows {
+            try tx.database.execute(
+                sql: sql,
+                arguments: [uniqueId],
+            )
+        }
 
         anyDidRemove(with: tx)
     }

@@ -74,25 +74,15 @@ public struct RecipientDatabaseTable {
     }
 
     public func fetchRecipient(rowId: Int64, tx: DBReadTransaction) -> SignalRecipient? {
-        do {
+        return failIfThrows {
             return try SignalRecipient.fetchOne(tx.database, key: rowId)
-        } catch {
-            let grdbError = error.grdbErrorForLogging
-            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(error: grdbError)
-            owsFailDebug("\(grdbError)")
-            return nil
         }
     }
 
     public func fetchRecipient(uniqueId: String, tx: DBReadTransaction) -> SignalRecipient? {
         let sql = "SELECT * FROM \(SignalRecipient.databaseTableName) WHERE \(signalRecipientColumn: .uniqueId) = ?"
-        do {
+        return failIfThrows {
             return try SignalRecipient.fetchOne(tx.database, sql: sql, arguments: [uniqueId])
-        } catch {
-            let grdbError = error.grdbErrorForLogging
-            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(error: grdbError)
-            owsFailDebug("\(grdbError)")
-            return nil
         }
     }
 
@@ -104,30 +94,20 @@ public struct RecipientDatabaseTable {
             }
         }()
         let sql = "SELECT * FROM \(SignalRecipient.databaseTableName) WHERE \(signalRecipientColumn: serviceIdColumn) = ?"
-        do {
+        return failIfThrows {
             return try SignalRecipient.fetchOne(tx.database, sql: sql, arguments: [serviceId.serviceIdUppercaseString])
-        } catch {
-            let grdbError = error.grdbErrorForLogging
-            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(error: grdbError)
-            owsFailDebug("\(grdbError)")
-            return nil
         }
     }
 
     public func fetchRecipient(phoneNumber: String, transaction tx: DBReadTransaction) -> SignalRecipient? {
         let sql = "SELECT * FROM \(SignalRecipient.databaseTableName) WHERE \(signalRecipientColumn: .phoneNumber) = ?"
-        do {
+        return failIfThrows {
             return try SignalRecipient.fetchOne(tx.database, sql: sql, arguments: [phoneNumber])
-        } catch {
-            let grdbError = error.grdbErrorForLogging
-            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(error: grdbError)
-            owsFailDebug("\(grdbError)")
-            return nil
         }
     }
 
     public func enumerateAll(tx: DBReadTransaction, block: (SignalRecipient) -> Void) {
-        do {
+        failIfThrows {
             let cursor = try SignalRecipient.fetchCursor(tx.database)
             var hasMore = true
             while hasMore {
@@ -139,10 +119,6 @@ public struct RecipientDatabaseTable {
                     block(recipient)
                 }
             }
-        } catch {
-            let grdbError = error.grdbErrorForLogging
-            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(error: grdbError)
-            owsFailDebug("\(grdbError)")
         }
     }
 

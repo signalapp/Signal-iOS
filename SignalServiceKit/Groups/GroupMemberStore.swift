@@ -40,7 +40,13 @@ class GroupMemberStoreImpl: GroupMemberStore {
             FROM \(TSGroupMember.databaseTableName)
             WHERE \(TSGroupMember.columnName(.serviceId)) = ?
         """
-        return tx.database.strictRead { try String.fetchAll($0, sql: sql, arguments: [serviceId.serviceIdUppercaseString]) }
+        return failIfThrows {
+            try String.fetchAll(
+                tx.database,
+                sql: sql,
+                arguments: [serviceId.serviceIdUppercaseString],
+            )
+        }
     }
 
     func groupThreadIds(withFullMember phoneNumber: E164, tx: DBReadTransaction) -> [String] {
@@ -53,7 +59,13 @@ class GroupMemberStoreImpl: GroupMemberStore {
             FROM \(TSGroupMember.databaseTableName)
             WHERE \(TSGroupMember.columnName(.phoneNumber)) = ?
         """
-        return tx.database.strictRead { try String.fetchAll($0, sql: sql, arguments: [phoneNumber.stringValue]) }
+        return failIfThrows {
+            return try String.fetchAll(
+                tx.database,
+                sql: sql,
+                arguments: [phoneNumber.stringValue],
+            )
+        }
     }
 
     func sortedFullGroupMembers(in groupThreadId: String, tx: DBReadTransaction) -> [TSGroupMember] {
@@ -66,7 +78,13 @@ class GroupMemberStoreImpl: GroupMemberStore {
             WHERE \(TSGroupMember.columnName(.groupThreadId)) = ?
             ORDER BY \(TSGroupMember.columnName(.lastInteractionTimestamp)) DESC
         """
-        return tx.database.strictRead { try TSGroupMember.fetchAll($0, sql: sql, arguments: [groupThreadId]) }
+        return failIfThrows {
+            try TSGroupMember.fetchAll(
+                tx.database,
+                sql: sql,
+                arguments: [groupThreadId],
+            )
+        }
     }
 }
 

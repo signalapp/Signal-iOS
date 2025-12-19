@@ -83,12 +83,14 @@ public class MentionFinder {
         return messages
     }
 
-    public class func deleteAllMentions(for message: TSMessage, transaction: DBWriteTransaction) {
+    public class func deleteAllMentions(for message: TSMessage, transaction tx: DBWriteTransaction) {
         let sql = """
             DELETE FROM \(TSMention.databaseTableName)
             WHERE \(TSMention.columnName(.uniqueMessageId)) = ?
         """
-        transaction.database.executeHandlingErrors(sql: sql, arguments: [message.uniqueId])
+        failIfThrows {
+            try tx.database.execute(sql: sql, arguments: [message.uniqueId])
+        }
     }
 
     public class func mentionedAcis(for message: TSMessage, tx: DBReadTransaction) -> [Aci] {

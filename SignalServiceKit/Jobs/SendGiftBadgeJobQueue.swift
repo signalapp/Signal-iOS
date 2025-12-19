@@ -113,14 +113,8 @@ private func jobExists(threadId: String, transaction: DBReadTransaction) -> Bool
         SendGiftBadgeJobRecord.Status.permanentlyFailed.rawValue,
         SendGiftBadgeJobRecord.Status.obsolete.rawValue
     ]
-    do {
+    return failIfThrows {
         return try Bool.fetchOne(transaction.database, sql: sql, arguments: arguments) ?? false
-    } catch {
-        DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
-            userDefaults: CurrentAppContext().appUserDefaults(),
-            error: error
-        )
-        owsFail("Unable to find job")
     }
 }
 

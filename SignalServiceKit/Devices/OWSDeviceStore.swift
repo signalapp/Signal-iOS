@@ -26,12 +26,8 @@ public struct OWSDeviceStore {
     // MARK: -
 
     public func fetchAll(tx: DBReadTransaction) -> [OWSDevice] {
-        do {
+        return failIfThrows {
             return try OWSDevice.fetchAll(tx.database)
-        } catch {
-            owsFailDebug("Failed to fetch devices! \(error)")
-            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(error: error)
-            return []
         }
     }
 

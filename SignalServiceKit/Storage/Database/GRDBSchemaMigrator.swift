@@ -4503,7 +4503,7 @@ public class GRDBSchemaMigrator {
                 DELETE FROM \(InteractionRecord.databaseTableName)
                 WHERE \(interactionColumn: .recordType) = ?
             """
-            transaction.database.executeHandlingErrors(
+            try transaction.database.execute(
                 sql: sql,
                 arguments: [SDSRecordType.invalidIdentityKeySendingErrorMessage.rawValue]
             )

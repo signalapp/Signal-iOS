@@ -15,14 +15,8 @@ public class DonationReceiptFinder {
                 LIMIT 1
             )
         """
-        do {
+        return failIfThrows {
             return try Bool.fetchOne(transaction.database, sql: sql) ?? false
-        } catch {
-            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
-                userDefaults: CurrentAppContext().appUserDefaults(),
-                error: error
-            )
-            owsFail("Failed to find donation receipt")
         }
     }
 
@@ -32,14 +26,8 @@ public class DonationReceiptFinder {
             FROM \(DonationReceipt.databaseTableName)
             ORDER BY \(DonationReceipt.columnName(.timestamp)) DESC
         """
-        do {
+        return failIfThrows {
             return try DonationReceipt.fetchAll(transaction.database, sql: sql)
-        } catch {
-            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
-                userDefaults: CurrentAppContext().appUserDefaults(),
-                error: error
-            )
-            owsFail("Failed to fetch donation receipts \(error)")
         }
     }
 }

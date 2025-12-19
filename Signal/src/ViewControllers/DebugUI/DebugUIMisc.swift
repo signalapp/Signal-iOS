@@ -29,9 +29,6 @@ class DebugUIMisc: DebugUIPage {
             OWSTableItem(title: "Flag database as corrupted", actionBlock: {
                 DebugUIMisc.showFlagDatabaseAsCorruptedUi()
             }),
-            OWSTableItem(title: "Flag database as read corrupted", actionBlock: {
-                DebugUIMisc.showFlagDatabaseAsReadCorruptedUi()
-            }),
 
             OWSTableItem(title: "Test spoiler animations", actionBlock: {
                 let viewController = SpoilerAnimationTestController()
@@ -91,19 +88,6 @@ class DebugUIMisc: DebugUIPage {
                 userDefaults: CurrentAppContext().appUserDefaults()
             )
             owsFail("Crashing due to (intentional) database corruption")
-        }
-    }
-
-    private static func showFlagDatabaseAsReadCorruptedUi() {
-        OWSActionSheets.showConfirmationAlert(
-            title: "Are you sure?",
-            message: "This will flag your database as possibly corrupted. It will not trigger a recovery on next startup. However, if you select the 'Make next app launch fail', the startup following the crash will funnel into the database recovery flow.",
-            proceedTitle: "Mark database corrupted on read",
-            proceedStyle: .destructive
-        ) { _ in
-            DatabaseCorruptionState.flagDatabaseAsReadCorrupted(
-                userDefaults: CurrentAppContext().appUserDefaults()
-            )
         }
     }
 }

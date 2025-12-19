@@ -5387,17 +5387,14 @@ public extension TSInteraction {
 @objc
 public class TSInteractionCursor: NSObject, SDSCursor {
     private let transaction: DBReadTransaction
-    private let cursor: RecordCursor<InteractionRecord>?
+    private let cursor: RecordCursor<InteractionRecord>
 
-    init(transaction: DBReadTransaction, cursor: RecordCursor<InteractionRecord>?) {
+    init(transaction: DBReadTransaction, cursor: RecordCursor<InteractionRecord>) {
         self.transaction = transaction
         self.cursor = cursor
     }
 
     public func next() throws -> TSInteraction? {
-        guard let cursor = cursor else {
-            return nil
-        }
         guard let record = try cursor.next() else {
             return nil
         }
@@ -5425,16 +5422,9 @@ public extension TSInteraction {
     @nonobjc
     class func grdbFetchCursor(transaction: DBReadTransaction) -> TSInteractionCursor {
         let database = transaction.database
-        do {
+        return failIfThrows {
             let cursor = try InteractionRecord.fetchCursor(database)
             return TSInteractionCursor(transaction: transaction, cursor: cursor)
-        } catch {
-            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
-                userDefaults: CurrentAppContext().appUserDefaults(),
-                error: error
-            )
-            owsFailDebug("Read failed: \(error)")
-            return TSInteractionCursor(transaction: transaction, cursor: nil)
         }
     }
 
@@ -5525,17 +5515,10 @@ public extension TSInteraction {
     class func grdbFetchCursor(sql: String,
                                arguments: StatementArguments = StatementArguments(),
                                transaction: DBReadTransaction) -> TSInteractionCursor {
-        do {
+        return failIfThrows {
             let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)
             let cursor = try InteractionRecord.fetchCursor(transaction.database, sqlRequest)
             return TSInteractionCursor(transaction: transaction, cursor: cursor)
-        } catch {
-            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
-                userDefaults: CurrentAppContext().appUserDefaults(),
-                error: error
-            )
-            owsFailDebug("Read failed: \(error)")
-            return TSInteractionCursor(transaction: transaction, cursor: nil)
         }
     }
 

@@ -795,17 +795,14 @@ public extension TSThread {
 @objc
 public class TSThreadCursor: NSObject, SDSCursor {
     private let transaction: DBReadTransaction
-    private let cursor: RecordCursor<ThreadRecord>?
+    private let cursor: RecordCursor<ThreadRecord>
 
-    init(transaction: DBReadTransaction, cursor: RecordCursor<ThreadRecord>?) {
+    init(transaction: DBReadTransaction, cursor: RecordCursor<ThreadRecord>) {
         self.transaction = transaction
         self.cursor = cursor
     }
 
     public func next() throws -> TSThread? {
-        guard let cursor = cursor else {
-            return nil
-        }
         guard let record = try cursor.next() else {
             return nil
         }
@@ -833,16 +830,9 @@ public extension TSThread {
     @nonobjc
     class func grdbFetchCursor(transaction: DBReadTransaction) -> TSThreadCursor {
         let database = transaction.database
-        do {
+        return failIfThrows {
             let cursor = try ThreadRecord.fetchCursor(database)
             return TSThreadCursor(transaction: transaction, cursor: cursor)
-        } catch {
-            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
-                userDefaults: CurrentAppContext().appUserDefaults(),
-                error: error
-            )
-            owsFailDebug("Read failed: \(error)")
-            return TSThreadCursor(transaction: transaction, cursor: nil)
         }
     }
 
@@ -933,17 +923,10 @@ public extension TSThread {
     class func grdbFetchCursor(sql: String,
                                arguments: StatementArguments = StatementArguments(),
                                transaction: DBReadTransaction) -> TSThreadCursor {
-        do {
+        return failIfThrows {
             let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)
             let cursor = try ThreadRecord.fetchCursor(transaction.database, sqlRequest)
             return TSThreadCursor(transaction: transaction, cursor: cursor)
-        } catch {
-            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
-                userDefaults: CurrentAppContext().appUserDefaults(),
-                error: error
-            )
-            owsFailDebug("Read failed: \(error)")
-            return TSThreadCursor(transaction: transaction, cursor: nil)
         }
     }
 

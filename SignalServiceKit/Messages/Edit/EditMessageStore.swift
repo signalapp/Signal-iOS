@@ -111,18 +111,12 @@ public struct EditMessageStore {
 
         let arguments: StatementArguments = [message.grdbId]
 
-        do {
+        return failIfThrows {
             return try Int.fetchOne(
                 tx.database,
                 sql: sql,
                 arguments: arguments
             ) ?? 0
-        } catch {
-            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
-                userDefaults: CurrentAppContext().appUserDefaults(),
-                error: error
-            )
-            owsFail("Missing instance.")
         }
     }
 

@@ -11,35 +11,6 @@ import SignalUI
 import UIKit
 import WebRTC
 
-enum LaunchPreflightError {
-    case unknownDatabaseVersion
-    case couldNotRestoreTransferredData
-    case databaseCorruptedAndMightBeRecoverable
-    case databaseUnrecoverablyCorrupted
-    case lastAppLaunchCrashed
-    case lowStorageSpaceAvailable
-    case possibleReadCorruptionCrashed
-
-    var supportTag: String {
-        switch self {
-        case .unknownDatabaseVersion:
-            return "LaunchFailure_UnknownDatabaseVersion"
-        case .couldNotRestoreTransferredData:
-            return "LaunchFailure_CouldNotRestoreTransferredData"
-        case .databaseCorruptedAndMightBeRecoverable:
-            return "LaunchFailure_DatabaseCorruptedAndMightBeRecoverable"
-        case .databaseUnrecoverablyCorrupted:
-            return "LaunchFailure_DatabaseUnrecoverablyCorrupted"
-        case .lastAppLaunchCrashed:
-            return "LaunchFailure_LastAppLaunchCrashed"
-        case .lowStorageSpaceAvailable:
-            return "LaunchFailure_NoDiskSpaceAvailable"
-        case .possibleReadCorruptionCrashed:
-            return "LaunchFailure_PossibleReadCorruption"
-        }
-    }
-}
-
 private func uncaughtExceptionHandler(_ exception: NSException) {
     if DebugFlags.internalLogging {
         Logger.error("exception: \(exception)")
@@ -228,8 +199,18 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             let viewController = terminalErrorViewController()
             _ = initializeWindow(mainAppContext: mainAppContext, rootViewController: viewController)
 
-            presentDatabaseUnrecoverablyCorruptedError(
+            presentLaunchFailureActionSheet(
                 from: viewController,
+                supportTag: "LaunchFailure_DatabaseLoadFailed",
+                logDumper: .preLaunch(),
+                title: OWSLocalizedString(
+                    "APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE",
+                    comment: "Error indicating that the app could not launch because the database could not be loaded."
+                ),
+                message: OWSLocalizedString(
+                    "APP_LAUNCH_FAILURE_ALERT_MESSAGE",
+                    comment: "Default message for the 'app launch failed' alert."
+                ),
                 actions: [
                     .submitDebugLogsAndCrash,
                     .wipeAppDataAndCrash(keyFetcher: GRDBKeyFetcher(keychainStorage: keychainStorage)),
@@ -861,8 +842,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             object: nil
         )
 
-        checkDatabaseIntegrityIfNecessary(isRegistered: registeredState != nil)
-
         SignalApp.shared.showLaunchInterface(
             launchInterface,
             appReadiness: appReadiness,
@@ -984,6 +963,29 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
     private var shouldKillAppWhenBackgrounded: Bool = false
 
+    private enum LaunchPreflightError {
+        case unknownDatabaseVersion
+        case couldNotRestoreTransferredData
+        case databaseCorrupted
+        case lastAppLaunchCrashed
+        case lowStorageSpaceAvailable
+
+        var supportTag: String {
+            switch self {
+            case .unknownDatabaseVersion:
+                return "LaunchFailure_UnknownDatabaseVersion"
+            case .couldNotRestoreTransferredData:
+                return "LaunchFailure_CouldNotRestoreTransferredData"
+            case .databaseCorrupted:
+                return "LaunchFailure_DatabaseCorrupted"
+            case .lastAppLaunchCrashed:
+                return "LaunchFailure_LastAppLaunchCrashed"
+            case .lowStorageSpaceAvailable:
+                return "LaunchFailure_NoDiskSpaceAvailable"
+            }
+        }
+    }
+
     private func checkIfAllowedToLaunch(
         mainAppContext: MainAppContext,
         appVersion: AppVersion,
@@ -1007,25 +1009,19 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
         let databaseCorruptionState = DatabaseCorruptionState(userDefaults: userDefaults)
         switch databaseCorruptionState.status {
-        case .notCorrupted, .readCorrupted:
+        case .notCorrupted:
             break
         case .corrupted, .corruptedButAlreadyDumpedAndRestored:
             guard !UIDevice.current.isIPad else {
                 // Database recovery theoretically works on iPad,
                 // but we haven't built the UI for it.
-                return .databaseUnrecoverablyCorrupted
+                return .lastAppLaunchCrashed
             }
-            guard databaseCorruptionState.count <= 5 else {
-                return .databaseUnrecoverablyCorrupted
-            }
-            return .databaseCorruptedAndMightBeRecoverable
+            return .databaseCorrupted
         }
 
         let launchAttemptFailureThreshold = DebugFlags.betaLogging ? 2 : 3
         if userDefaults.integer(forKey: Constants.appLaunchesAttemptedKey) >= launchAttemptFailureThreshold {
-            if case .readCorrupted = databaseCorruptionState.status {
-                return .possibleReadCorruptionCrashed
-            }
             return .lastAppLaunchCrashed
         }
 
@@ -1045,23 +1041,21 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         let actions: [LaunchFailureActionSheetAction]
 
         switch preflightError {
-        case .databaseCorruptedAndMightBeRecoverable, .possibleReadCorruptionCrashed:
-            presentDatabaseRecovery(
-                from: viewController,
-                launchContext: launchContext,
-                window: window
+        case .databaseCorrupted:
+            title = OWSLocalizedString(
+                "APP_LAUNCH_FAILURE_DATABASE_CORRUPTED_TITLE",
+                comment: "Title for an action sheet explaining that Signal can't launch because the database is corrupted."
             )
-            return
-
-        case .databaseUnrecoverablyCorrupted:
-            presentDatabaseUnrecoverablyCorruptedError(
-                from: viewController,
-                actions: [
-                    .submitDebugLogsWithDatabaseIntegrityCheckAndCrash(databaseStorage: launchContext.databaseStorage),
-                    .wipeAppDataAndCrash(keyFetcher: GRDBKeyFetcher(keychainStorage: launchContext.keychainStorage)),
-                ]
+            message = OWSLocalizedString(
+                "APP_LAUNCH_FAILURE_DATABASE_CORRUPTED_MESSAGE",
+                comment: "Message for an action sheet explaining that Signal can't launch because the database is corrupted."
             )
-            return
+            actions = [
+                .presentDatabaseRecovery(window: window, launchContext: launchContext),
+                .submitDebugLogsAndCrash,
+                .launchApp(window: window, launchContext: launchContext),
+                .wipeAppDataAndCrash(keyFetcher: GRDBKeyFetcher(keychainStorage: launchContext.keychainStorage)),
+            ]
 
         case .unknownDatabaseVersion:
             title = OWSLocalizedString(
@@ -1124,8 +1118,8 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
     private func presentDatabaseRecovery(
         from viewController: UIViewController,
+        window: UIWindow,
         launchContext: LaunchContext,
-        window: UIWindow
     ) {
         var launchContext = launchContext
         let recoveryViewController = DatabaseRecoveryViewController<(AppSetup.FinalContinuation, DeviceSleepBlockObject)>(
@@ -1164,30 +1158,10 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         viewController.present(recoveryViewController, animated: true)
     }
 
-    private func presentDatabaseUnrecoverablyCorruptedError(
-        from viewController: UIViewController,
-        actions: [LaunchFailureActionSheetAction],
-    ) {
-        presentLaunchFailureActionSheet(
-            from: viewController,
-            supportTag: LaunchPreflightError.databaseUnrecoverablyCorrupted.supportTag,
-            logDumper: .preLaunch(),
-            title: OWSLocalizedString(
-                "APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE",
-                comment: "Error indicating that the app could not launch because the database could not be loaded."
-            ),
-            message: OWSLocalizedString(
-                "APP_LAUNCH_FAILURE_ALERT_MESSAGE",
-                comment: "Default message for the 'app launch failed' alert."
-            ),
-            actions: actions
-        )
-    }
-
     private enum LaunchFailureActionSheetAction {
         case submitDebugLogsAndCrash
         case submitDebugLogsAndLaunchApp(window: UIWindow, launchContext: LaunchContext)
-        case submitDebugLogsWithDatabaseIntegrityCheckAndCrash(databaseStorage: SDSDatabaseStorage)
+        case presentDatabaseRecovery(window: UIWindow, launchContext: LaunchContext)
         case wipeAppDataAndCrash(keyFetcher: GRDBKeyFetcher)
         case launchApp(window: UIWindow, launchContext: LaunchContext)
     }
@@ -1227,6 +1201,13 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         func ignoreErrorAndLaunchApp(in window: UIWindow, launchContext: LaunchContext) {
             // Pretend we didn't fail!
             self.didAppLaunchFail = false
+
+            // If we're wrong about this, we'll find out pretty quickly when a
+            // database operation fails.
+            DatabaseCorruptionState.flagDatabaseAsNotCorrupted(
+                userDefaults: launchContext.appContext.appUserDefaults(),
+            )
+
             let loadingViewController = LoadingViewController()
             window.rootViewController = loadingViewController
             self.launchApp(
@@ -1252,17 +1233,20 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                     }
                 }
 
-            case .submitDebugLogsWithDatabaseIntegrityCheckAndCrash(let databaseStorage):
-                addSubmitDebugLogsAction { [unowned viewController] in
-                    SignalApp.shared.showDatabaseIntegrityCheckUI(
-                        from: viewController,
-                        databaseStorage: databaseStorage,
-                    ) {
-                        DebugLogs.submitLogs(supportTag: supportTag, dumper: logDumper) {
-                            owsFail("Exiting after submitting debug logs")
-                        }
+            case .presentDatabaseRecovery(let window, let launchContext):
+                actionSheet.addAction(.init(
+                    title: OWSLocalizedString(
+                        "APP_LAUNCH_FAILURE_DATABASE_RECOVERY_ACTION_TITLE",
+                        comment: "Action in an action sheet offering to attempt recovery of a corrupted database.",
+                    ),
+                    handler: { [self] _ in
+                        presentDatabaseRecovery(
+                            from: viewController,
+                            window: window,
+                            launchContext: launchContext,
+                        )
                     }
-                }
+                ))
 
             case .wipeAppDataAndCrash(let keyFetcher):
                 let wipeAppDataActionTitle = OWSLocalizedString(
@@ -1300,7 +1284,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                         "APP_LAUNCH_FAILURE_CONTINUE",
                         comment: "Button to try launching the app even though the last launch failed"
                     ),
-                    style: .cancel, // Use a cancel-style button to draw attention.
                     handler: { [unowned window] _ in
                         ignoreErrorAndLaunchApp(in: window, launchContext: launchContext)
                     }
@@ -1310,6 +1293,8 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
         viewController.presentActionSheet(actionSheet)
     }
+
+    // MARK: -
 
     public func userNotificationCenter(
         _ center: UNUserNotificationCenter,
@@ -1888,28 +1873,6 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             urlOpener.openUrl(parsedUrl, in: self.window!)
         }
         return true
-    }
-
-    // MARK: - Database integrity checks
-
-    private func checkDatabaseIntegrityIfNecessary(
-        isRegistered: Bool
-    ) {
-        guard isRegistered, BuildFlags.periodicallyCheckDatabaseIntegrity else { return }
-
-        let appReadiness: AppReadiness = self.appReadiness
-        DispatchQueue.sharedUtility.async {
-            switch GRDBDatabaseStorageAdapter.checkIntegrity(databaseStorage: SSKEnvironment.shared.databaseStorageRef) {
-            case .ok: break
-            case .notOk:
-                appReadiness.runNowOrWhenUIDidBecomeReadySync {
-                    OWSActionSheets.showActionSheet(
-                        title: "Database corrupted!",
-                        message: "We have detected database corruption on your device. Please submit debug logs to the iOS team."
-                    )
-                }
-            }
-        }
     }
 }
 

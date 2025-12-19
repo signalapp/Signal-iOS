@@ -67,22 +67,14 @@ public class SDSDatabaseStorage: NSObject, DB {
     }
 
     func runGrdbSchemaMigrations() {
-        let didPerformIncrementalMigrations: Bool
-        do {
-            didPerformIncrementalMigrations = try GRDBSchemaMigrator.migrateDatabase(databaseStorage: self, runDataMigrations: false)
-        } catch {
-            DatabaseCorruptionState.flagDatabaseCorruptionIfNecessary(
-                userDefaults: CurrentAppContext().appUserDefaults(),
-                error: error
+        failIfThrows {
+            let didPerformIncrementalMigrations = try GRDBSchemaMigrator.migrateDatabase(
+                databaseStorage: self,
+                runDataMigrations: false,
             )
-            owsFail("Database migration failed. Error: \(error.grdbErrorForLogging)")
-        }
 
-        if didPerformIncrementalMigrations {
-            do {
+            if didPerformIncrementalMigrations {
                 try reopenGRDBStorage()
-            } catch {
-                owsFail("Unable to reopen storage \(error.grdbErrorForLogging)")
             }
         }
     }
@@ -91,14 +83,11 @@ public class SDSDatabaseStorage: NSObject, DB {
     /// should be impossible to execute this method when there are any
     /// outstanding schema migrations.
     func runGrdbDataMigrations() {
-        do {
-            try GRDBSchemaMigrator.migrateDatabase(databaseStorage: self, runDataMigrations: true)
-        } catch {
-            DatabaseCorruptionState.flagDatabaseCorruptionIfNecessary(
-                userDefaults: CurrentAppContext().appUserDefaults(),
-                error: error
+        failIfThrows {
+            _ = try GRDBSchemaMigrator.migrateDatabase(
+                databaseStorage: self,
+                runDataMigrations: true
             )
-            owsFail("Database migration failed. Error: \(error.grdbErrorForLogging)")
         }
     }
 
@@ -153,11 +142,7 @@ public class SDSDatabaseStorage: NSObject, DB {
             _databaseChangeObserver.didTouch(interaction: interaction, transaction: tx)
         }
         if shouldReindex, let message = interaction as? TSMessage {
-            do {
-                try FullTextSearchIndexer.update(message, tx: tx)
-            } catch {
-                owsFail("Error: \(error)")
-            }
+            FullTextSearchIndexer.update(message, tx: tx)
         }
     }
 
@@ -249,23 +234,6 @@ public class SDSDatabaseStorage: NSObject, DB {
         try grdbStorage.read { try block($0) }
     }
 
-    public func read(
-        file: String,
-        function: String,
-        line: Int,
-        block: (DBReadTransaction) -> Void
-    ) {
-        do {
-            try readThrows(file: file, function: function, line: line, block: block)
-        } catch {
-            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
-                userDefaults: CurrentAppContext().appUserDefaults(),
-                error: error
-            )
-            owsFail("error: \(error.grdbErrorForLogging)")
-        }
-    }
-
     @objc(readWithBlock:)
     public func readObjC(block: (DBReadTransaction) -> Void) {
         read(file: "objc", function: "block", line: 0, block: block)
@@ -277,22 +245,15 @@ public class SDSDatabaseStorage: NSObject, DB {
         line: Int,
         block: (DBReadTransaction) throws(E) -> T
     ) throws(E) -> T {
-        return try _read(file: file, function: function, line: line, block: block)
-    }
-
-    private func _read<T, E: Error>(
-        file: String,
-        function: String,
-        line: Int,
-        block: (DBReadTransaction) throws(E) -> T,
-    ) throws(E) -> T {
         var value: T!
         var thrown: E?
-        read(file: file, function: function, line: line) { tx in
-            do throws(E) {
-                value = try block(tx)
-            } catch {
-                thrown = error
+        failIfThrows {
+            try readThrows(file: file, function: function, line: line) { tx in
+                do throws(E) {
+                    value = try block(tx)
+                } catch {
+                    thrown = error
+                }
             }
         }
         if let thrown {
@@ -377,7 +338,7 @@ public class SDSDatabaseStorage: NSObject, DB {
     ) throws(E) -> T {
         var value: T!
         var thrown: E?
-        do {
+        failIfThrows {
             try performWriteWithTxCompletion(
                 file: file,
                 function: function,
@@ -392,8 +353,6 @@ public class SDSDatabaseStorage: NSObject, DB {
                     return completionIfThrows
                 }
             }
-        } catch {
-            owsFail("error: \(error.grdbErrorForLogging)")
         }
         if let thrown {
             throw thrown
@@ -504,21 +463,15 @@ public class SDSDatabaseStorage: NSObject, DB {
         line: Int,
         block: (DBWriteTransaction) -> Void
     ) {
-        do {
-            try performWriteWithTxCompletion(
-                file: file,
-                function: function,
-                line: line,
-                isAwaitableWrite: false,
-                block: {
-                    block($0)
-                    // The block can't throw; always commit.
-                    return .commit
-                }
-            )
-        } catch {
-            owsFail("error: \(error.grdbErrorForLogging)")
-        }
+        _writeWithTxCompletionIfThrows(
+            file: file,
+            function: function,
+            line: line,
+            isAwaitableWrite: false,
+            // The block can't throw: always commit.
+            completionIfThrows: .commit,
+            block: block,
+        )
     }
 
     /// NOTE: Do NOT call these methods directly. See SDSDatabaseStorage+Objc.h.

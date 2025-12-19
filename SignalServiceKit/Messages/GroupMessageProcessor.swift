@@ -320,31 +320,18 @@ internal class SpecificGroupMessageProcessor {
     }
 
     private func nextJob(tx: DBReadTransaction) -> GroupMessageProcessorJob? {
-        do {
-            return try self.finder.nextJob(forGroupId: self.groupId, tx: tx)
-        } catch {
-            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(error: error)
-            owsFailDebug("Couldn't process group messages: \(error)")
-            return nil
-        }
+        return finder.nextJob(forGroupId: self.groupId, tx: tx)
     }
 
     private func newestJobId() -> Int64? {
-        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
-        return databaseStorage.read { tx in
-            do {
-                return try self.finder.newestJobId(tx: tx)
-            } catch {
-                DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(error: error)
-                return nil
-            }
+        let db = DependenciesBridge.shared.db
+        return db.read { tx in
+            finder.newestJobId(tx: tx)
         }
     }
 
     private func didCompleteJob(_ job: GroupMessageProcessorJob, tx: DBWriteTransaction) {
-        failIfThrows {
-            try self.finder.removeJob(withRowId: job.id, tx: tx)
-        }
+        finder.removeJob(withRowId: job.id, tx: tx)
     }
 
     private func performLocalProcessingSync(
@@ -570,16 +557,10 @@ public class GroupMessageProcessorManager {
         }
 
         // Obtain the list of groups that currently need processing.
-        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
-        let groupIds = Set(databaseStorage.read { tx -> [Data] in
-            do {
-                return try self.finder.allEnqueuedGroupIds(tx: tx)
-            } catch {
-                DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(error: error)
-                owsFailDebug("Can't process group messages: \(error)")
-                return []
-            }
-        })
+        let db = DependenciesBridge.shared.db
+        let groupIds = db.read { tx -> Set<Data> in
+            return Set(finder.allEnqueuedGroupIds(tx: tx))
+        }
 
         if !groupIds.isEmpty {
             Logger.info("(Re-)starting \(groupIds.count) group message processor(s) with pending messages.")
@@ -704,14 +685,10 @@ public class GroupMessageProcessorManager {
         // 1. We don't have any other messages queued for this thread
         // 2. The message can be processed without updates
 
-        let existsJob: Bool
-        do {
-            existsJob = try GroupMessageProcessorJobStore().existsJob(forGroupId: groupContextInfo.groupId.serialize(), tx: tx)
-        } catch {
-            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(error: error)
-            owsFailDebug("Couldn't check for existing group jobs: \(error)")
-            existsJob = true // fall back to assuming it's true
-        }
+        let existsJob: Bool = GroupMessageProcessorJobStore().existsJob(
+            forGroupId: groupContextInfo.groupId.serialize(),
+            tx: tx,
+        )
         if existsJob {
             Logger.info("Cannot immediately process GV2 message because there are messages queued.")
             return false

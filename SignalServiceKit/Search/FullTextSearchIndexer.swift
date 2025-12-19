@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import GRDB
 
 public enum FullTextSearchIndexer {
@@ -160,11 +159,14 @@ extension FullTextSearchIndexer {
         return normalizeText(bodyText)
     }
 
-    public static func insert(_ message: TSMessage, tx: DBWriteTransaction) throws {
+    public static func insert(
+        _ message: TSMessage,
+        tx: DBWriteTransaction,
+    ) {
         guard let ftsContent = indexableContent(for: message, tx: tx) else {
             return
         }
-        try executeUpdate(
+        executeUpdate(
             sql: """
             INSERT INTO \(contentTableName)
             (\(collectionColumn), \(uniqueIdColumn), \(ftsContentColumn))
@@ -176,13 +178,19 @@ extension FullTextSearchIndexer {
         )
     }
 
-    public static func update(_ message: TSMessage, tx: DBWriteTransaction) throws {
-        try delete(message, tx: tx)
-        try insert(message, tx: tx)
+    public static func update(
+        _ message: TSMessage,
+        tx: DBWriteTransaction,
+    ) {
+        delete(message, tx: tx)
+        insert(message, tx: tx)
     }
 
-    public static func delete(_ message: TSMessage, tx: DBWriteTransaction) throws {
-        try executeUpdate(
+    public static func delete(
+        _ message: TSMessage,
+        tx: DBWriteTransaction,
+    ) {
+        executeUpdate(
             sql: """
             DELETE FROM \(contentTableName)
             WHERE \(uniqueIdColumn) == ?
@@ -196,19 +204,23 @@ extension FullTextSearchIndexer {
     private static func executeUpdate(
         sql: String,
         arguments: StatementArguments,
-        tx: DBWriteTransaction
-    ) throws {
-        let database = tx.database
+        tx: DBWriteTransaction,
+    ) {
         do {
-            let statement = try database.cachedStatement(sql: sql)
-            try statement.setArguments(arguments)
-            try statement.execute()
-        } catch {
-            DatabaseCorruptionState.flagDatabaseCorruptionIfNecessary(
-                userDefaults: CurrentAppContext().appUserDefaults(),
-                error: error
+            // Worth using a cached statement here, as we may be indexing many
+            // things at once.
+            try tx.database.executeWithCachedStatementThrows(
+                sql: sql,
+                arguments: arguments,
             )
-            throw error
+        } catch {
+            // We intentionally don't use failIfThrows here because we know the
+            // FTS index relatively frequently reports corruption errors; for
+            // these specifically swallow them rather than flagging the entire
+            // database as corrupted.
+            //
+            // TODO: Implement "rebuild the FTS index" in response to it becoming corrupted.
+            owsFailDebug("Failed to perform FTS index operation! \(error.grdbErrorForLogging)")
         }
     }
 

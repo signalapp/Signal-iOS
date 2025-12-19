@@ -44,7 +44,7 @@ extension SDSCodableModelDatabaseInterfaceImpl {
         arguments: StatementArguments,
         transaction: DBReadTransaction
     ) -> Model? {
-        do {
+        return failIfThrows {
             let model = try modelType.fetchOne(
                 transaction.database,
                 sql: sql,
@@ -52,13 +52,6 @@ extension SDSCodableModelDatabaseInterfaceImpl {
             )
             model?.anyDidFetchOne(transaction: transaction)
             return model
-        } catch let error {
-            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
-                userDefaults: CurrentAppContext().appUserDefaults(),
-                error: error
-            )
-            owsFailDebug("Failed to fetch model \(modelType): \(error.grdbErrorForLogging)")
-            return nil
         }
     }
 
@@ -67,7 +60,7 @@ extension SDSCodableModelDatabaseInterfaceImpl {
         modelType: Model.Type,
         transaction: DBReadTransaction
     ) -> [Model] {
-        do {
+        return failIfThrows {
             let sql: String = """
                 SELECT * FROM \(modelType.databaseTableName)
             """
@@ -76,13 +69,6 @@ extension SDSCodableModelDatabaseInterfaceImpl {
                 transaction.database,
                 sql: sql
             )
-        } catch let error {
-            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
-                userDefaults: CurrentAppContext().appUserDefaults(),
-                error: error
-            )
-            owsFailDebug("Failed to fetch \(modelType) models: \(error.grdbErrorForLogging)")
-            return []
         }
     }
 

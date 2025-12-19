@@ -4,7 +4,7 @@
 //
 
 import Foundation
-public import GRDB
+import GRDB
 
 public enum DatabaseRecoveryError: Error {
     case ranOutOfDiskSpace
@@ -33,17 +33,14 @@ public enum DatabaseRecoveryError: Error {
 ///   restoring full-text search indexes, without the app being mostly set up.
 ///
 /// It's up to the caller to coordinate these steps, and decide which are necessary.
-public enum DatabaseRecovery {}
+public enum DatabaseRecovery {
 
-// MARK: - Rebuild
+    private static let logger = PrefixedLogger(prefix: "[DatabaseRecovery]")
 
-public extension DatabaseRecovery {
-    /// Rebuild the existing database in-place.
-    ///
-    /// This just runs `REINDEX` for now. We might be able to do other things in the future like
-    /// rebuilding the FTS index.
-    static func rebuildExistingDatabase(databaseStorage: SDSDatabaseStorage) {
-        Logger.info("Attempting to reindex the database...")
+    // MARK: - Reindex
+
+    public static func reindex(databaseStorage: SDSDatabaseStorage) {
+        logger.info("Attempting to reindex the database...")
         do {
             // We use the `performWrite` method directly instead of the usual
             // `write` methods because we explicitly do NOT want to owsFail if
@@ -55,26 +52,24 @@ public extension DatabaseRecovery {
             ) { tx in
                 do {
                     try SqliteUtil.reindex(db: tx.database)
-                    Logger.info("Reindexed database")
+                    logger.info("Reindexed database")
                     return .commit
                 } catch {
-                    Logger.warn("Failed to reindex database")
+                    logger.warn("Failed to reindex database")
                     return .rollback
                 }
             }
         } catch {
-            Logger.warn("Failed to write to database")
+            logger.warn("Failed to write to database")
         }
     }
-}
 
-// MARK: - Dump and restore
+    // MARK: - Dump and restore
 
-public extension DatabaseRecovery {
     /// Dump and restore tables.
     ///
     /// Remember: this isn't everything you need to do to recover a database! See earlier docs.
-    class DumpAndRestore {
+    public class DumpAndRestoreOperation {
         private let appReadiness: AppReadiness
         private let corruptDatabaseStorage: SDSDatabaseStorage
         private let keychainStorage: any KeychainStorage
@@ -82,8 +77,8 @@ public extension DatabaseRecovery {
         private let unitCountForCheckpoint: Int64 = 1
         private let unitCountForOldDatabaseMigration: Int64 = 1
         private let unitCountForNewDatabaseCreation: Int64 = 1
-        private let unitCountForBestEffortCopy = Int64(DumpAndRestore.tablesToCopyWithBestEffort.count)
-        private let unitCountForFlawlessCopy = Int64(DumpAndRestore.tablesThatMustBeCopiedFlawlessly.count)
+        private let unitCountForBestEffortCopy = Int64(DumpAndRestoreOperation.tablesToCopyWithBestEffort.count)
+        private let unitCountForFlawlessCopy = Int64(DumpAndRestoreOperation.tablesThatMustBeCopiedFlawlessly.count)
         private let unitCountForNewDatabasePromotion: Int64 = 3
 
         public let progress: Progress
@@ -121,7 +116,7 @@ public extension DatabaseRecovery {
 
             Self.logTablesExplicitlySkipped()
 
-            Logger.info("Attempting database dump and restore")
+            logger.info("Attempting database dump and restore")
 
             let oldDatabaseStorage = self.corruptDatabaseStorage
 
@@ -182,32 +177,32 @@ public extension DatabaseRecovery {
                 )
             }
 
-            Logger.info("Dump and restore complete")
+            logger.info("Dump and restore complete")
         }
 
         // MARK: Checkpoint old database to clear its WAL/SHM files (step 1)
 
         private static func attemptToCheckpoint(oldDatabaseStorage: SDSDatabaseStorage) {
-            Logger.info("Attempting to checkpoint the old database...")
+            logger.info("Attempting to checkpoint the old database...")
             do {
                 try checkpoint(databaseStorage: oldDatabaseStorage)
-                Logger.info("Checkpointed old database.")
+                logger.info("Checkpointed old database.")
             } catch {
-                Logger.warn("Failed to checkpoint old database with error: \(error). Continuing on")
+                logger.warn("Failed to checkpoint old database with error: \(error). Continuing on")
             }
         }
 
         // MARK: Creating new database (step 2)
 
         private static func temporaryDatabaseFileUrl() -> URL {
-            Logger.info("Creating temporary database file...")
+            logger.info("Creating temporary database file...")
             let result = OWSFileSystem.temporaryFileUrl()
-            Logger.info("Created at \(result)")
+            logger.info("Created at \(result)")
             return result
         }
 
         private static func deleteTemporaryDatabase(databaseFileUrl: URL) {
-            Logger.info("Attempting to delete temporary database files...")
+            logger.info("Attempting to delete temporary database files...")
             let urls: [URL] = [
                 databaseFileUrl,
                 GRDBDatabaseStorageAdapter.walFileUrl(for: databaseFileUrl),
@@ -216,9 +211,9 @@ public extension DatabaseRecovery {
             for url in urls {
                 do {
                     try OWSFileSystem.deleteFileIfExists(url: url)
-                    Logger.info("Deleted temporary database file")
+                    logger.info("Deleted temporary database file")
                 } catch {
-                    Logger.warn("Failed to delete temporary database file")
+                    logger.warn("Failed to delete temporary database file")
                 }
             }
         }
@@ -238,7 +233,7 @@ public extension DatabaseRecovery {
         }
 
         private static func runMigrationsOn(databaseStorage: SDSDatabaseStorage, databaseIs mode: MigrationsMode) throws {
-            Logger.info("Running migrations on \(mode) database...")
+            logger.info("Running migrations on \(mode) database...")
             do {
                 let didPerformIncrementalMigrations = try GRDBSchemaMigrator.migrateDatabase(
                     databaseStorage: databaseStorage,
@@ -250,9 +245,9 @@ public extension DatabaseRecovery {
                         }
                     }()
                 )
-                Logger.info("Ran migrations on \(mode) database. \(didPerformIncrementalMigrations ? "Performed" : "Did not perform") incremental migrations")
+                logger.info("Ran migrations on \(mode) database. \(didPerformIncrementalMigrations ? "Performed" : "Did not perform") incremental migrations")
             } catch {
-                Logger.warn("Failed to run migrations on \(mode) database. Error: \(error)")
+                logger.warn("Failed to run migrations on \(mode) database. Error: \(error)")
                 throw error
             }
         }
@@ -333,7 +328,7 @@ public extension DatabaseRecovery {
             oldDatabaseStorage: SDSDatabaseStorage,
             newDatabaseStorage: SDSDatabaseStorage
         ) throws {
-            Logger.info("Attempting to copy \(tableName) (best effort)...")
+            logger.info("Attempting to copy \(tableName) (best effort)...")
             let result = copyTable(
                 tableName: tableName,
                 from: oldDatabaseStorage,
@@ -341,17 +336,17 @@ public extension DatabaseRecovery {
             )
             switch result {
             case let .totalFailure(error):
-                Logger.warn("Completely unable to copy \(tableName)")
+                logger.warn("Completely unable to copy \(tableName)")
                 if error.isSqliteFullError {
                     throw DatabaseRecoveryError.ranOutOfDiskSpace
                 }
             case let .copiedSomeButHadTrouble(error, rowsCopied):
-                Logger.warn("Finished copying \(tableName). Copied \(rowsCopied) row(s), but there was an error")
+                logger.warn("Finished copying \(tableName). Copied \(rowsCopied) row(s), but there was an error")
                 if error.isSqliteFullError {
                     throw DatabaseRecoveryError.ranOutOfDiskSpace
                 }
             case let .wentFlawlessly(rowsCopied):
-                Logger.info("Finished copying \(tableName). Copied \(rowsCopied) row(s)")
+                logger.info("Finished copying \(tableName). Copied \(rowsCopied) row(s)")
             }
         }
 
@@ -403,7 +398,7 @@ public extension DatabaseRecovery {
             oldDatabaseStorage: SDSDatabaseStorage,
             newDatabaseStorage: SDSDatabaseStorage
         ) -> TableCopyResult {
-            Logger.info("Attempting to copy \(tableName) (with no mistakes)...")
+            logger.info("Attempting to copy \(tableName) (with no mistakes)...")
             let result = copyTable(
                 tableName: tableName,
                 from: oldDatabaseStorage,
@@ -411,11 +406,11 @@ public extension DatabaseRecovery {
             )
             switch result {
             case .totalFailure:
-                Logger.warn("Completely unable to copy \(tableName)")
+                logger.warn("Completely unable to copy \(tableName)")
             case let .copiedSomeButHadTrouble(_, rowsCopied):
-                Logger.warn("Failed copying \(tableName) flawlessly. Copied \(rowsCopied) row(s)")
+                logger.warn("Failed copying \(tableName) flawlessly. Copied \(rowsCopied) row(s)")
             case let .wentFlawlessly(rowsCopied: rowsCopied):
-                Logger.info("Finished copying \(tableName). Copied \(rowsCopied) row(s)")
+                logger.info("Finished copying \(tableName). Copied \(rowsCopied) row(s)")
             }
             return result
         }
@@ -432,31 +427,31 @@ public extension DatabaseRecovery {
             try checkpointAndClose(databaseStorage: oldDatabaseStorage, logLabel: "old")
             try checkpointAndClose(databaseStorage: newDatabaseStorage, logLabel: "new")
 
-            Logger.info("Replacing old database with the new one...")
+            logger.info("Replacing old database with the new one...")
 
             _ = try FileManager.default.replaceItemAt(
                 oldDatabaseStorage.databaseFileUrl,
                 withItemAt: newDatabaseStorage.databaseFileUrl
             )
 
-            Logger.info("Out with the old database, in with the new!")
+            logger.info("Out with the old database, in with the new!")
         }
 
         private static func checkpointAndClose(
             databaseStorage: SDSDatabaseStorage,
             logLabel: String
         ) throws {
-            Logger.info("Checkpointing \(logLabel) database...")
+            logger.info("Checkpointing \(logLabel) database...")
             try checkpoint(databaseStorage: databaseStorage)
 
-            Logger.info("Checkpointed \(logLabel) database. Closing...")
+            logger.info("Checkpointed \(logLabel) database. Closing...")
             try databaseStorage.grdbStorage.pool.close()
 
-            Logger.info("Cleaning up WAL and SHM files...")
+            logger.info("Cleaning up WAL and SHM files...")
             OWSFileSystem.deleteFileIfExists(databaseStorage.grdbStorage.databaseWALFilePath)
             OWSFileSystem.deleteFileIfExists(databaseStorage.grdbStorage.databaseSHMFilePath)
 
-            Logger.info("\(logLabel.capitalized) database closed.")
+            logger.info("\(logLabel.capitalized) database closed.")
         }
 
         // MARK: Tables that are explicitly skipped
@@ -490,7 +485,7 @@ public extension DatabaseRecovery {
         ///
         /// This is a little weird, but helps us be clear: we don't copy all tables.
         private static func logTablesExplicitlySkipped() {
-            Logger.info("Explicitly skipping tables: \(tablesExplicitlySkipped.joined(separator: ", "))")
+            logger.info("Explicitly skipping tables: \(tablesExplicitlySkipped.joined(separator: ", "))")
         }
 
         // MARK: Checkpointing tables
@@ -532,7 +527,7 @@ public extension DatabaseRecovery {
                         columnNames = try getColumnNames(db: fromDb, tableName: tableName)
                         cursor = try Row.fetchCursor(fromDb, sql: "SELECT * FROM \(tableName)")
                     } catch {
-                        Logger.warn("Could not create cursor for table \(tableName) with error: \(error)")
+                        logger.warn("Could not create cursor for table \(tableName) with error: \(error)")
                         return .totalFailure(error: error)
                     }
 
@@ -545,7 +540,7 @@ public extension DatabaseRecovery {
                         do {
                             insertStatement = try toDb.makeStatement(sql: insertSql)
                         } catch {
-                            Logger.warn("Could not create prepared insert statement. \(error)")
+                            logger.warn("Could not create prepared insert statement. \(error)")
                             return .totalFailure(error: error)
                         }
 
@@ -563,7 +558,7 @@ public extension DatabaseRecovery {
                                 }
                             }
                         } catch {
-                            Logger.warn("Error while iterating: \(error)")
+                            logger.warn("Error while iterating: \(error)")
                             latestError = error
                         }
 
@@ -575,7 +570,7 @@ public extension DatabaseRecovery {
                     }
                 }
             } catch {
-                Logger.warn("Error when reading: \(error)")
+                logger.warn("Error when reading: \(error)")
                 return .totalFailure(error: error)
             }
         }
@@ -617,13 +612,11 @@ public extension DatabaseRecovery {
             return "INSERT INTO \(tableName) (\(columnNamesSql)) VALUES (\(valuesSql))"
         }
     }
-}
 
-// MARK: - Manual recreation
+    // MARK: - Manual recreation
 
-public extension DatabaseRecovery {
     /// Manually recreate various tables, such as the full-text search indexes.
-    class ManualRecreation {
+    public class RecreateFTSIndexOperation {
         private let databaseStorage: SDSDatabaseStorage
 
         private let unitCountForFullTextSearch: Int64 = 2
@@ -646,7 +639,7 @@ public extension DatabaseRecovery {
         }
 
         private func attemptToRecreateFullTextSearch() {
-            Logger.info("Starting to re-index full text search...")
+            logger.info("Starting to re-index full text search...")
 
             databaseStorage.write { tx in
                 let searchableNameIndexer = DependenciesBridge.shared.searchableNameIndexer
@@ -658,22 +651,16 @@ public extension DatabaseRecovery {
                     guard let message = interaction as? TSMessage else {
                         return
                     }
-                    do {
-                        try FullTextSearchIndexer.insert(message, tx: tx)
-                    } catch {
-                        owsFailDebug("Failed to insert message into FTS: \(error)")
-                    }
+                    FullTextSearchIndexer.insert(message, tx: tx)
                 }
             }
 
-            Logger.info("Finished re-indexing full text search")
+            logger.info("Finished re-indexing full text search")
         }
     }
-}
 
-// MARK: - Utilities
+    // MARK: - Utilities
 
-extension DatabaseRecovery {
     private struct PreparedOperation {
         public let progress: Progress
         private let fn: (Progress) throws -> Void
@@ -689,28 +676,29 @@ extension DatabaseRecovery {
     }
 
     public static func integrityCheck(databaseStorage: SDSDatabaseStorage) -> SqliteUtil.IntegrityCheckResult {
-        Logger.info("Running integrity check on database...")
-        let result = databaseStorage.write { transaction in
-            let db = transaction.database
-            return SqliteUtil.quickCheck(db: db)
-        }
+        logger.info("Running integrity check on database...")
+        let result = GRDBDatabaseStorageAdapter.checkIntegrity(databaseStorage: databaseStorage)
         switch result {
-        case .ok: Logger.info("Integrity check succeeded!")
-        case .notOk: Logger.warn("Integrity check failed")
+        case .ok: logger.info("Integrity check succeeded!")
+        case .notOk: logger.warn("Integrity check failed")
         }
         return result
     }
 }
 
-extension Error {
+// MARK: -
+
+private extension Error {
     var isSqliteFullError: Bool {
         guard let self = self as? DatabaseError else { return false }
         return self.resultCode == .SQLITE_FULL
     }
 }
 
-extension Row {
-    public var asDictionary: [String: DatabaseValue] {
+// MARK: -
+
+private extension Row {
+    var asDictionary: [String: DatabaseValue] {
         var result = [String: DatabaseValue]()
         for rowIndex in stride(from: startIndex, to: endIndex, by: 1) {
             let (columnName, databaseValue) = self[rowIndex]

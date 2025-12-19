@@ -845,7 +845,7 @@ extension OWSReceiptManager {
     static func markAllCallInteractionsAsReadLocally(
         beforeSQLId sqlId: NSNumber?, /* Clears everything if nil */
         thread: TSThread,
-        transaction: DBWriteTransaction
+        transaction tx: DBWriteTransaction
     ) {
         var sql = """
             UPDATE \(InteractionRecord.databaseTableName)
@@ -860,7 +860,12 @@ extension OWSReceiptManager {
             sql += " AND \(interactionColumn: .id) <= ?"
             arguments += [sqlId]
         }
-        transaction.database.executeHandlingErrors(sql: sql, arguments: arguments)
+        failIfThrows {
+            try tx.database.execute(
+                sql: sql,
+                arguments: arguments,
+            )
+        }
     }
 }
 

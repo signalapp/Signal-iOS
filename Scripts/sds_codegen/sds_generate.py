@@ -2011,17 +2011,14 @@ public extension %(class_name)s {
 @objc
 public class %sCursor: NSObject, SDSCursor {
     private let transaction: DBReadTransaction
-    private let cursor: RecordCursor<%s>?
+    private let cursor: RecordCursor<%s>
 
-    init(transaction: DBReadTransaction, cursor: RecordCursor<%s>?) {
+    init(transaction: DBReadTransaction, cursor: RecordCursor<%s>) {
         self.transaction = transaction
         self.cursor = cursor
     }
 
     public func next() throws -> %s? {
-        guard let cursor = cursor else {
-            return nil
-        }
         guard let record = try cursor.next() else {
             return nil
         }""" % (
@@ -2076,16 +2073,9 @@ public extension %(class_name)s {
     @nonobjc
     class func grdbFetchCursor(transaction: DBReadTransaction) -> %(class_name)sCursor {
         let database = transaction.database
-        do {
+        return failIfThrows {
             let cursor = try %(record_name)s.fetchCursor(database)
             return %(class_name)sCursor(transaction: transaction, cursor: cursor)
-        } catch {
-            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
-                userDefaults: CurrentAppContext().appUserDefaults(),
-                error: error
-            )
-            owsFailDebug("Read failed: \\(error)")
-            return %(class_name)sCursor(transaction: transaction, cursor: nil)
         }
     }
 """ % {
@@ -2215,17 +2205,10 @@ public extension %(class_name)s {
     class func grdbFetchCursor(sql: String,
                                arguments: StatementArguments = StatementArguments(),
                                transaction: DBReadTransaction) -> %(class_name)sCursor {
-        do {
+        return failIfThrows {
             let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)
             let cursor = try %(record_name)s.fetchCursor(transaction.database, sqlRequest)
             return %(class_name)sCursor(transaction: transaction, cursor: cursor)
-        } catch {
-            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
-                userDefaults: CurrentAppContext().appUserDefaults(),
-                error: error
-            )
-            owsFailDebug("Read failed: \\(error)")
-            return %(class_name)sCursor(transaction: transaction, cursor: nil)
         }
     }
 """ % {

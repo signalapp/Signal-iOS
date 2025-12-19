@@ -53,28 +53,16 @@ public extension SDSRecord {
     }
 
     private func sdsUpdate(grdbId: Int64, transaction: DBWriteTransaction) {
-        do {
+        failIfThrows {
             var recordCopy = self
             recordCopy.id = grdbId
             try recordCopy.update(transaction.database)
-        } catch {
-            DatabaseCorruptionState.flagDatabaseCorruptionIfNecessary(
-                userDefaults: CurrentAppContext().appUserDefaults(),
-                error: error
-            )
-            owsFail("Update failed: \(error.grdbErrorForLogging)")
         }
     }
 
     private func sdsInsert(transaction: DBWriteTransaction) {
-        do {
+        failIfThrows {
             try self.insert(transaction.database)
-        } catch {
-            DatabaseCorruptionState.flagDatabaseCorruptionIfNecessary(
-                userDefaults: CurrentAppContext().appUserDefaults(),
-                error: error
-            )
-            owsFail("Insert failed: \(error.grdbErrorForLogging)")
         }
     }
 }
@@ -98,20 +86,13 @@ extension BaseModel {
                                  uniqueIdColumnName: String,
                                  uniqueIdColumnValue: String,
                                  transaction: DBReadTransaction) -> Int64? {
-        do {
+        return failIfThrows {
             let tableName = tableMetadata.tableName
             let sql = "SELECT id FROM \(tableName.quotedDatabaseIdentifier) WHERE \(uniqueIdColumnName.quotedDatabaseIdentifier)=?"
             guard let value = try Int64.fetchOne(transaction.database, sql: sql, arguments: [uniqueIdColumnValue]) else {
                 return nil
             }
             return value
-        } catch {
-            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
-                userDefaults: CurrentAppContext().appUserDefaults(),
-                error: error
-            )
-            owsFailDebug("Could not find grdb id: \(error)")
-            return nil
         }
     }
 }

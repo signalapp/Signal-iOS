@@ -6,22 +6,12 @@
 import Foundation
 import GRDB
 
-public protocol ArchivedPaymentStore {
-    func insert(_ archivedPayment: ArchivedPayment, tx: DBWriteTransaction) throws
-    func fetch(
-        for archivedPaymentMessage: OWSArchivedPaymentMessage,
-        interactionUniqueId: String,
-        tx: DBReadTransaction
-    ) throws -> ArchivedPayment?
-    func enumerateAll(tx: DBReadTransaction, block: @escaping (ArchivedPayment, _ stop: inout Bool) -> Void)
-}
-
-public struct ArchivedPaymentStoreImpl: ArchivedPaymentStore {
+public struct ArchivedPaymentStore {
     public func enumerateAll(
         tx: DBReadTransaction,
         block: @escaping (ArchivedPayment, _ stop: inout Bool) -> Void
     ) {
-        do {
+        failIfThrows {
             let cursor = try ArchivedPayment.fetchCursor(tx.database)
             var stop = false
             while let archivedPayment = try cursor.next() {
@@ -30,12 +20,6 @@ public struct ArchivedPaymentStoreImpl: ArchivedPaymentStore {
                     break
                 }
             }
-        } catch {
-            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
-                userDefaults: CurrentAppContext().appUserDefaults(),
-                error: error
-            )
-            owsFail("Missing instance.")
         }
     }
 
@@ -43,21 +27,17 @@ public struct ArchivedPaymentStoreImpl: ArchivedPaymentStore {
         for archivedPaymentMessage: OWSArchivedPaymentMessage,
         interactionUniqueId: String,
         tx: DBReadTransaction
-    ) throws -> ArchivedPayment? {
-        do {
+    ) -> ArchivedPayment? {
+        failIfThrows {
             return try ArchivedPayment
                 .filter(Column(ArchivedPayment.CodingKeys.interactionUniqueId) == interactionUniqueId)
                 .fetchOne(tx.database)
-        } catch {
-            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
-                userDefaults: CurrentAppContext().appUserDefaults(),
-                error: error
-            )
-            throw error
         }
     }
 
-    public func insert(_ archivedPayment: ArchivedPayment, tx: DBWriteTransaction) throws {
-        try archivedPayment.insert(tx.database)
+    public func insert(_ archivedPayment: ArchivedPayment, tx: DBWriteTransaction) {
+        failIfThrows {
+            try archivedPayment.insert(tx.database)
+        }
     }
 }

@@ -342,14 +342,8 @@ public class StoryFinder {
                 )
             )
         """
-        do {
+        return failIfThrows {
             return try Bool.fetchOne(transaction.database, sql: sql) ?? false
-        } catch {
-            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
-                userDefaults: CurrentAppContext().appUserDefaults(),
-                error: error
-            )
-            owsFail("Fetch failed")
         }
     }
 }

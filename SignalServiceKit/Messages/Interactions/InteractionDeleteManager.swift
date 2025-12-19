@@ -248,7 +248,9 @@ final class InteractionDeleteManagerImpl: InteractionDeleteManager {
             tx: tx
         )
 
-        tx.database.executeAndCacheStatementHandlingErrors(
+        // Worth using a cached statement here, since we may be deleting a large
+        // number of interactions at once here.
+        tx.database.executeWithCachedStatement(
             sql: "DELETE FROM model_TSInteraction WHERE uniqueId = ?",
             arguments: [interaction.uniqueId]
         )
@@ -311,11 +313,7 @@ final class InteractionDeleteManagerImpl: InteractionDeleteManager {
         interactionReadCache.didRemove(interaction: interaction, transaction: tx)
 
         if let message = interaction as? TSMessage {
-            do {
-                try FullTextSearchIndexer.delete(message, tx: tx)
-            } catch {
-                owsFailBeta("Error: \(error)")
-            }
+            FullTextSearchIndexer.delete(message, tx: tx)
 
             message.removeAllAttachments(tx: tx)
             message.removeAllReactions(transaction: tx)

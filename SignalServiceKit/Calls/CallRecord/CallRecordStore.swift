@@ -269,14 +269,18 @@ class CallRecordStoreImpl: CallRecordStore {
         intoThreadRowId intoRowId: Int64,
         tx: DBWriteTransaction
     ) {
-        tx.database.executeHandlingErrors(
-            sql: """
+        failIfThrows {
+            let sql = """
                 UPDATE "\(CallRecord.databaseTableName)"
                 SET "\(CallRecord.CodingKeys.threadRowId.rawValue)" = ?
                 WHERE "\(CallRecord.CodingKeys.threadRowId.rawValue)" = ?
-            """,
-            arguments: [ intoRowId, fromRowId ]
-        )
+            """
+
+            try tx.database.execute(
+                sql: sql,
+                arguments: [intoRowId, fromRowId],
+            )
+        }
     }
 
     func fetch(

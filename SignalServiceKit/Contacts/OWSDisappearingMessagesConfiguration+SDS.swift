@@ -298,17 +298,14 @@ public extension OWSDisappearingMessagesConfiguration {
 @objc
 public class OWSDisappearingMessagesConfigurationCursor: NSObject, SDSCursor {
     private let transaction: DBReadTransaction
-    private let cursor: RecordCursor<DisappearingMessagesConfigurationRecord>?
+    private let cursor: RecordCursor<DisappearingMessagesConfigurationRecord>
 
-    init(transaction: DBReadTransaction, cursor: RecordCursor<DisappearingMessagesConfigurationRecord>?) {
+    init(transaction: DBReadTransaction, cursor: RecordCursor<DisappearingMessagesConfigurationRecord>) {
         self.transaction = transaction
         self.cursor = cursor
     }
 
     public func next() throws -> OWSDisappearingMessagesConfiguration? {
-        guard let cursor = cursor else {
-            return nil
-        }
         guard let record = try cursor.next() else {
             return nil
         }
@@ -334,16 +331,9 @@ public extension OWSDisappearingMessagesConfiguration {
     @nonobjc
     class func grdbFetchCursor(transaction: DBReadTransaction) -> OWSDisappearingMessagesConfigurationCursor {
         let database = transaction.database
-        do {
+        return failIfThrows {
             let cursor = try DisappearingMessagesConfigurationRecord.fetchCursor(database)
             return OWSDisappearingMessagesConfigurationCursor(transaction: transaction, cursor: cursor)
-        } catch {
-            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
-                userDefaults: CurrentAppContext().appUserDefaults(),
-                error: error
-            )
-            owsFailDebug("Read failed: \(error)")
-            return OWSDisappearingMessagesConfigurationCursor(transaction: transaction, cursor: nil)
         }
     }
 
@@ -420,17 +410,10 @@ public extension OWSDisappearingMessagesConfiguration {
     class func grdbFetchCursor(sql: String,
                                arguments: StatementArguments = StatementArguments(),
                                transaction: DBReadTransaction) -> OWSDisappearingMessagesConfigurationCursor {
-        do {
+        return failIfThrows {
             let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)
             let cursor = try DisappearingMessagesConfigurationRecord.fetchCursor(transaction.database, sqlRequest)
             return OWSDisappearingMessagesConfigurationCursor(transaction: transaction, cursor: cursor)
-        } catch {
-            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
-                userDefaults: CurrentAppContext().appUserDefaults(),
-                error: error
-            )
-            owsFailDebug("Read failed: \(error)")
-            return OWSDisappearingMessagesConfigurationCursor(transaction: transaction, cursor: nil)
         }
     }
 

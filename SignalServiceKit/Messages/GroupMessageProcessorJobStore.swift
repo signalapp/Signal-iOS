@@ -7,20 +7,18 @@ import Foundation
 import GRDB
 
 struct GroupMessageProcessorJobStore {
-    func allEnqueuedGroupIds(tx: DBReadTransaction) throws -> [Data] {
+    func allEnqueuedGroupIds(tx: DBReadTransaction) -> [Data] {
         let sql = """
             SELECT DISTINCT \(GroupMessageProcessorJob.CodingKeys.groupId.rawValue)
             FROM \(GroupMessageProcessorJob.databaseTableName)
             """
-        do {
+        return failIfThrows {
             return try (Data?).fetchAll(tx.database, sql: sql).compacted()
-        } catch {
-            throw error.grdbErrorForLogging
         }
     }
 
-    func nextJob(forGroupId groupId: Data, tx: DBReadTransaction) throws -> GroupMessageProcessorJob? {
-        do {
+    func nextJob(forGroupId groupId: Data, tx: DBReadTransaction) -> GroupMessageProcessorJob? {
+        return failIfThrows {
             let sql = """
                 SELECT *
                 FROM \(GroupMessageProcessorJob.databaseTableName)
@@ -28,41 +26,33 @@ struct GroupMessageProcessorJobStore {
                 ORDER BY \(GroupMessageProcessorJob.CodingKeys.id.rawValue)
                 """
             return try GroupMessageProcessorJob.fetchOne(tx.database, sql: sql, arguments: [groupId])
-        } catch {
-            throw error.grdbErrorForLogging
         }
     }
 
-    func newestJobId(tx: DBReadTransaction) throws -> Int64? {
-        do {
+    func newestJobId(tx: DBReadTransaction) -> Int64? {
+        return failIfThrows {
             let sql = """
                 SELECT \(GroupMessageProcessorJob.CodingKeys.id.rawValue)
                 FROM \(GroupMessageProcessorJob.databaseTableName)
                 ORDER BY \(GroupMessageProcessorJob.CodingKeys.id.rawValue) DESC
                 """
             return try Int64.fetchOne(tx.database, sql: sql)
-        } catch {
-            throw error.grdbErrorForLogging
         }
     }
 
-    public func existsJob(forGroupId groupId: Data, tx: DBReadTransaction) throws -> Bool {
+    public func existsJob(forGroupId groupId: Data, tx: DBReadTransaction) -> Bool {
         let sql = """
             SELECT 1 FROM \(GroupMessageProcessorJob.databaseTableName)
             WHERE \(GroupMessageProcessorJob.CodingKeys.groupId.rawValue) = ?
             """
-        do {
+        return failIfThrows {
             return try Bool.fetchOne(tx.database, sql: sql, arguments: [groupId]) ?? false
-        } catch {
-            throw error.grdbErrorForLogging
         }
     }
 
-    public func removeJob(withRowId rowId: Int64, tx: DBWriteTransaction) throws {
-        do {
+    public func removeJob(withRowId rowId: Int64, tx: DBWriteTransaction) {
+        failIfThrows {
             _ = try GroupMessageProcessorJob.deleteOne(tx.database, key: rowId)
-        } catch {
-            throw error.grdbErrorForLogging
         }
     }
 }

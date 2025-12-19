@@ -58,8 +58,12 @@ class AuthorMergeObserver: RecipientMergeObserver {
                 WHERE "\(table.phoneNumberColumn)" = ?
                 AND "\(table.aciColumn)" IS NULL
             """
-            let arguments: StatementArguments = [aciString, phoneNumber]
-            tx.database.executeHandlingErrors(sql: sql, arguments: arguments)
+            failIfThrows {
+                try tx.database.execute(
+                    sql: sql,
+                    arguments: [aciString, phoneNumber],
+                )
+            }
         }
         SSKEnvironment.shared.modelReadCachesRef.evacuateAllCaches()
     }

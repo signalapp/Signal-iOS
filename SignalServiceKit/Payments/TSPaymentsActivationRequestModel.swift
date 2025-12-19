@@ -65,19 +65,13 @@ public struct TSPaymentsActivationRequestModel: Codable, FetchableRecord, Persis
         let arguments: StatementArguments = [
             threadUniqueId
         ]
-        do {
+        failIfThrows {
             let exists = try Bool.fetchOne(transaction.database, sql: sql, arguments: arguments) ?? false
             if exists {
                 return
             }
             let model = Self.init(threadUniqueId: threadUniqueId, senderAci: senderAci)
             try model.insert(transaction.database)
-        } catch {
-            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
-                userDefaults: CurrentAppContext().appUserDefaults(),
-                error: error
-            )
-            owsFailDebug("Unable to create payment model")
         }
     }
 
@@ -86,18 +80,11 @@ public struct TSPaymentsActivationRequestModel: Codable, FetchableRecord, Persis
     ) -> [TSThread] {
         // This could be a SQL join, but the table is really small
         // so its fine to do an in-memory join.
-        do {
+        failIfThrows {
             return try TSPaymentsActivationRequestModel.fetchAll(transaction.database)
                 .compactMap { model in
                     return TSThread.anyFetch(uniqueId: model.threadUniqueId, transaction: transaction)
                 }
-        } catch {
-            DatabaseCorruptionState.flagDatabaseReadCorruptionIfNecessary(
-                userDefaults: CurrentAppContext().appUserDefaults(),
-                error: error
-            )
-            owsFailDebug("Unable to find payment models")
-            return []
         }
     }
 }
