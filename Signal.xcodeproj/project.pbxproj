@@ -260,7 +260,6 @@
 		3444E6BB264EDFF300B32E3B /* CVColorOrGradientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3444E6BA264EDFF200B32E3B /* CVColorOrGradientView.swift */; };
 		344A761124B366F4009D69A5 /* FlagsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344A761024B366F4009D69A5 /* FlagsViewController.swift */; };
 		344A761324B36C8C009D69A5 /* TestingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344A761224B36C8C009D69A5 /* TestingViewController.swift */; };
-		3452851D26DFD12300824983 /* PaymentsFormatTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3452851C26DFD12300824983 /* PaymentsFormatTest.swift */; };
 		34546F502649989D007C4958 /* ChatColorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34546F4F2649989C007C4958 /* ChatColorViewController.swift */; };
 		345772B6257E4E01001D7D44 /* CVViewStateSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 345772B5257E4E01001D7D44 /* CVViewStateSnapshot.swift */; };
 		3457794326828A9A00732869 /* ConversationCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3457794226828A9A00732869 /* ConversationCollectionView.swift */; };
@@ -4241,7 +4240,6 @@
 		344A761024B366F4009D69A5 /* FlagsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlagsViewController.swift; sourceTree = "<group>"; };
 		344A761224B36C8C009D69A5 /* TestingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestingViewController.swift; sourceTree = "<group>"; };
 		3452851A26DE890300824983 /* DateUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DateUtil.swift; sourceTree = "<group>"; };
-		3452851C26DFD12300824983 /* PaymentsFormatTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaymentsFormatTest.swift; sourceTree = "<group>"; };
 		34546F4F2649989C007C4958 /* ChatColorViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatColorViewController.swift; sourceTree = "<group>"; };
 		3456A73123D63EBE00947219 /* GroupsV2Protos.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupsV2Protos.swift; sourceTree = "<group>"; };
 		345772B5257E4E01001D7D44 /* CVViewStateSnapshot.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CVViewStateSnapshot.swift; sourceTree = "<group>"; };
@@ -8643,7 +8641,6 @@
 		3471210D25ED5F850037CD1F /* Payments */ = {
 			isa = PBXGroup;
 			children = (
-				3452851C26DFD12300824983 /* PaymentsFormatTest.swift */,
 				3471210E25ED5F850037CD1F /* PaymentsReconciliationTest.swift */,
 				346EFC3025FD050F00F493C7 /* PaymentsTest.swift */,
 			);
@@ -18403,7 +18400,6 @@
 				4C2A538C23C5462300D28CD8 /* MessageLoaderTest.swift in Sources */,
 				45D062F527D7F49800BD505E /* OWSContactsManagerTest.swift in Sources */,
 				F93461BB291ED2B000366682 /* PaymentDetailsValidityTest.swift in Sources */,
-				3452851D26DFD12300824983 /* PaymentsFormatTest.swift in Sources */,
 				3471211025ED5F910037CD1F /* PaymentsReconciliationTest.swift in Sources */,
 				346EFC3225FD051400F493C7 /* PaymentsTest.swift in Sources */,
 				50791B1D2D037A9800D747F8 /* PhoneNumberCountryTest.swift in Sources */,

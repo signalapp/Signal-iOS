@@ -62,26 +62,14 @@ jobs:
           bundler-cache: true
 
       - name: Build and Test
-        run: |
-          function formatFailures() {
-            grep '<failure message' fastlane/test_output/report.junit | sed -E "s/^.*<failure message='(.*)'>(.*):([0-9]+)<\/failure>/::error file=\2,line=\3::\1/" | sed -E 's/&quot;/"/g'
-            exit 1
-          }
-
-          bundle exec fastlane scan \
-            --scheme Signal \
-            --output_types junit \
-            --skip_package_dependencies_resolution \
-            --disable_package_automatic_updates \
-            --xcargs '-test-timeouts-enabled YES -maximum-test-execution-time-allowance 300 -default-test-execution-time-allowance 60' \
-            || formatFailures
+        run: Scripts/build-and-test.sh
 
       - name: Upload build logs
         uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: Logs
-          path: ~/Library/Logs/scan
+          path: ~/Library/Logs/Signal-CI
 
   check_autogenstrings:
     name: Check if strings file is outdated
