@@ -15,20 +15,6 @@ extension ConversationViewController {
     public func ensureBannerState() {
         AssertIsOnMainThread()
 
-        let isFirstLoadOfPinnedMessage: Bool
-        if let bannerStackView {
-            isFirstLoadOfPinnedMessage = bannerStackView.arrangedSubviews.count(where: { pinnedMessageBanner(view: $0) != nil}) == 0
-        } else {
-            isFirstLoadOfPinnedMessage = true
-        }
-
-        // This method should be called rarely, so it's simplest to discard and
-        // rebuild the indicator view every time.
-        if let bannerStackView {
-            bannerStackView.removeFromSuperview()
-            self.bannerStackView = nil
-        }
-
         var banners = [UIView]()
 
         // Logic for whether or not should a certain banner be displayed is inside of each banner creation method.
@@ -57,8 +43,36 @@ extension ConversationViewController {
         }
 
         // Pinned Messages
+        var didAddPinnedMessage = false
         if let banner = createPinnedMessageBannerIfNecessary() {
             banners.append(banner)
+            didAddPinnedMessage = true
+        }
+
+        let hasPriorPinnedMessages: Bool
+        if let bannerStackView {
+            hasPriorPinnedMessages = bannerStackView.arrangedSubviews.contains(where: { pinnedMessageBanner(view: $0) != nil})
+        } else {
+            hasPriorPinnedMessages = false
+        }
+
+        if hasPriorPinnedMessages, !didAddPinnedMessage, let bannerStackView {
+            for banner in bannerStackView.arrangedSubviews {
+                if let pinnedMessageBanner = pinnedMessageBanner(view: banner) {
+                    pinnedMessageBanner.animateBannerFadeOut(completion: { _ in
+                        bannerStackView.removeFromSuperview()
+                        self.bannerStackView = nil
+                    })
+                    return
+                }
+            }
+        }
+
+        // This method should be called rarely, so it's simplest to discard and
+        // rebuild the indicator view every time.
+        if let bannerStackView {
+            bannerStackView.removeFromSuperview()
+            self.bannerStackView = nil
         }
 
         guard !banners.isEmpty else {
@@ -85,7 +99,7 @@ extension ConversationViewController {
         ])
         view.layoutSubviews()
 
-        if isFirstLoadOfPinnedMessage {
+        if !hasPriorPinnedMessages, didAddPinnedMessage {
             for banner in bannersView.arrangedSubviews {
                 if let pinnedMessageBanner = pinnedMessageBanner(view: banner) {
                     pinnedMessageBanner.animateBannerFadeIn()
@@ -533,6 +547,32 @@ private class ConversationBannerView: UIView {
             contentView.titleLabel.alpha = 1
             contentView.thumbnail?.alpha = 1
         }
+
+        animator.startAnimation()
+    }
+
+    public func animateBannerFadeOut(completion: @escaping (UIViewAnimatingPosition) -> Void) {
+        guard let contentView = contentView as? ConversationBannerContentView else {
+            return
+        }
+        let animator = ConversationBannerView.fadeInAnimator()
+        UIView.performWithoutAnimation {
+            if let backgroundViewEffect = self.backgroundViewVisualEffect() {
+                self.blurBackgroundView?.effect = backgroundViewEffect
+            }
+            contentView.bodyLabel.alpha = 1
+            contentView.titleLabel.alpha = 1
+            contentView.thumbnail?.alpha = 1
+        }
+
+        animator.addAnimations {
+            self.blurBackgroundView?.effect = nil
+            contentView.bodyLabel.alpha = 0
+            contentView.titleLabel.alpha = 0
+            contentView.thumbnail?.alpha = 0
+        }
+
+        animator.addCompletion(completion)
 
         animator.startAnimation()
     }
