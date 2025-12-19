@@ -252,7 +252,12 @@ public class OWSIncomingSentMessageTranscript: SentMessageTranscript {
         let validatedMessageSticker: ValidatedMessageStickerProto?
         if let stickerProto = dataMessage.sticker {
             let messageStickerManager = DependenciesBridge.shared.messageStickerManager
-            validatedMessageSticker = try messageStickerManager.buildValidatedMessageSticker(from: stickerProto)
+            do {
+                validatedMessageSticker = try messageStickerManager.buildValidatedMessageSticker(from: stickerProto)
+            } catch {
+                owsFailDebug("Unexpected error for incoming message sticker! \(error)")
+                return nil
+            }
         } else {
             validatedMessageSticker = nil
         }
@@ -266,11 +271,16 @@ public class OWSIncomingSentMessageTranscript: SentMessageTranscript {
         let validatedQuotedReply: ValidatedQuotedReply?
         if let quoteProto = dataMessage.quote {
             let quotedReplyManager = DependenciesBridge.shared.quotedReplyManager
-            validatedQuotedReply = try quotedReplyManager.validateAndBuildQuotedReply(
-                from: quoteProto,
-                threadUniqueId: target.thread.uniqueId,
-                tx: tx,
-            )
+            do {
+                validatedQuotedReply = try quotedReplyManager.validateAndBuildQuotedReply(
+                    from: quoteProto,
+                    threadUniqueId: target.thread.uniqueId,
+                    tx: tx,
+                )
+            } catch {
+                owsFailDebug("Unexpected error for incoming quote reply! \(error)")
+                return nil
+            }
         } else {
             validatedQuotedReply = nil
         }
@@ -278,10 +288,15 @@ public class OWSIncomingSentMessageTranscript: SentMessageTranscript {
         let validatedPollCreate: ValidatedIncomingPollCreate?
         if let pollCreateProto = dataMessage.pollCreate {
             let pollMessageManager = DependenciesBridge.shared.pollMessageManager
-            validatedPollCreate = try pollMessageManager.validateIncomingPollCreate(
-                pollCreateProto: pollCreateProto,
-                tx: tx,
-            )
+            do {
+                validatedPollCreate = try pollMessageManager.validateIncomingPollCreate(
+                    pollCreateProto: pollCreateProto,
+                    tx: tx,
+                )
+            } catch {
+                owsFailDebug("Unexpected error for incoming poll create! \(error)")
+                return nil
+            }
 
             body = validatedPollCreate!.messageBody
         } else {
