@@ -310,7 +310,7 @@ public class LinkPreviewFetcherImpl: LinkPreviewFetcher {
         // tryToDownloadStickerPack will use locally saved data if possible...
         let stickerPack = try await StickerManager.tryToDownloadStickerPack(stickerPackInfo: stickerPackInfo).awaitable()
         let title = stickerPack.title?.filterForDisplay.nilIfEmpty
-        let coverUrl = try await StickerManager.tryToDownloadSticker(stickerPack: stickerPack, stickerInfo: stickerPack.coverInfo).awaitable()
+        let coverUrl = try await StickerManager.tryToDownloadSticker(stickerInfo: stickerPack.coverInfo).awaitable()
         let coverData = try Data(contentsOf: coverUrl)
         let previewThumbnail = await Self.previewThumbnail(srcImageData: coverData)
 

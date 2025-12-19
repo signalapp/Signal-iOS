@@ -191,7 +191,8 @@ public class InstalledStickerPackDataSource: BaseStickerPackDataSource {
     private static func fetchInstalledState(for stickerPackInfo: StickerPackInfo, readTx: DBReadTransaction) -> (
         stickerPack: StickerPack?,
         installedCoverInfo: StickerInfo?,
-        installedStickers: [StickerInfo]) {
+        installedStickers: [StickerInfo],
+    ) {
 
         // Update Sticker Pack.
         guard let stickerPack = StickerManager.fetchStickerPack(stickerPackInfo: stickerPackInfo,
@@ -431,8 +432,7 @@ public class TransientStickerPackDataSource: BaseStickerPackDataSource {
 
     // Returns true if sticker is already downloaded.
     // If not, kicks off the download.
-    private func ensureStickerDownload(stickerPack: StickerPack,
-                                       stickerInfo: StickerInfo) -> Bool {
+    private func ensureStickerDownload(stickerPack: StickerPack, stickerInfo: StickerInfo) -> Bool {
         AssertIsOnMainThread()
 
         guard let stickerPackItem = stickerPack.stickerPackItem(forStickerInfo: stickerInfo) else {
@@ -454,7 +454,7 @@ public class TransientStickerPackDataSource: BaseStickerPackDataSource {
 
         // This sticker is not downloaded; try to download now.
         firstly(on: DispatchQueue.global()) {
-            StickerManager.tryToDownloadSticker(stickerPack: stickerPack, stickerInfo: stickerInfo)
+            StickerManager.tryToDownloadSticker(stickerInfo: stickerInfo)
         }.done(on: DispatchQueue.main) { [weak self] (temporaryFileUrl) in
             guard let self = self else {
                 return

@@ -176,12 +176,6 @@ public class StickerManager: NSObject {
         }
     }
 
-    public class func availableStickerPacks(transaction: DBReadTransaction) -> [StickerPack] {
-        return allStickerPacks(transaction: transaction).filter {
-            !$0.isInstalled
-        }
-    }
-
     public class func isStickerPackSaved(stickerPackInfo: StickerPackInfo) -> Bool {
         return SSKEnvironment.shared.databaseStorageRef.read { (transaction) in
             return isStickerPackSaved(stickerPackInfo: stickerPackInfo, transaction: transaction)
@@ -741,7 +735,7 @@ public class StickerManager: NSObject {
         }
 
         return firstly {
-            tryToDownloadSticker(stickerPack: stickerPack, stickerInfo: stickerInfo)
+            tryToDownloadSticker(stickerInfo: stickerInfo)
         }.map(on: DispatchQueue.global()) { stickerUrl in
             self.installSticker(
                 stickerInfo: stickerInfo,
@@ -765,7 +759,7 @@ public class StickerManager: NSObject {
     private let stickerDownloads = AtomicValue<[String: StickerDownload]>([:], lock: .init())
     private let stickerOperationQueue = ConcurrentTaskQueue(concurrentLimit: 4)
 
-    private func tryToDownloadSticker(stickerPack: StickerPack, stickerInfo: StickerInfo) -> Promise<URL> {
+    private func tryToDownloadSticker(stickerInfo: StickerInfo) -> Promise<URL> {
         let (stickerDownload, shouldStartTask) = stickerDownloads.update {
             if let stickerDownload = $0[stickerInfo.asKey()] {
                 return (stickerDownload, false)
@@ -792,8 +786,8 @@ public class StickerManager: NSObject {
     }
 
     // This method is public so that we can download "transient" (uninstalled) stickers.
-    public class func tryToDownloadSticker(stickerPack: StickerPack, stickerInfo: StickerInfo) -> Promise<URL> {
-        SSKEnvironment.shared.stickerManagerRef.tryToDownloadSticker(stickerPack: stickerPack, stickerInfo: stickerInfo)
+    public class func tryToDownloadSticker(stickerInfo: StickerInfo) -> Promise<URL> {
+        SSKEnvironment.shared.stickerManagerRef.tryToDownloadSticker(stickerInfo: stickerInfo)
     }
 
     // MARK: - Emoji
