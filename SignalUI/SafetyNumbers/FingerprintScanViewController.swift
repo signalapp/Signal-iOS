@@ -36,22 +36,10 @@ class FingerprintScanViewController: OWSViewController, OWSNavigationChildContro
         title = CommonStrings.scanQRCodeTitle
     }
 
-    public var preferredNavigationBarStyle: OWSNavigationBarStyle {
-        return .solid
-    }
-
-    public var navbarBackgroundColorOverride: UIColor? {
-        return .ows_gray10
-    }
-
-    public var navbarTintColorOverride: UIColor? {
-        return Theme.lightThemePrimaryColor
-    }
-
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = .black
+        view.backgroundColor = .Signal.background
 
         qrCodeScanViewController.delegate = self
         view.addSubview(qrCodeScanViewController.view)
@@ -60,7 +48,7 @@ class FingerprintScanViewController: OWSViewController, OWSNavigationChildContro
         addChild(qrCodeScanViewController)
 
         let footerView = UIView()
-        footerView.backgroundColor = .ows_gray10
+        footerView.backgroundColor = .Signal.secondaryBackground
         view.addSubview(footerView)
         footerView.autoPinWidthToSuperview()
         footerView.autoPinEdge(.top, to: .bottom, of: qrCodeScanViewController.view)
@@ -72,7 +60,7 @@ class FingerprintScanViewController: OWSViewController, OWSNavigationChildContro
             comment: "label presented once scanning (camera) view is visible."
         )
         cameraInstructionLabel.font = .systemFont(ofSize: .scaleFromIPhone5To7Plus(14, 18))
-        cameraInstructionLabel.textColor = .ows_gray60
+        cameraInstructionLabel.textColor = .Signal.secondaryLabel
         cameraInstructionLabel.textAlignment = .center
         cameraInstructionLabel.numberOfLines = 0
         cameraInstructionLabel.lineBreakMode = .byWordWrapping
