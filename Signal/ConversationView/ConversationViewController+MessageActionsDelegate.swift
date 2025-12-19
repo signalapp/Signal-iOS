@@ -325,6 +325,11 @@ extension ConversationViewController: MessageActionsDelegate {
             )
             return
         }
+
+        // Pinned messages are sorted from most -> least recent.
+        // Reset the index to 0 if someone pins or unpins. This will
+        // make sure we always show the most recent pin after a change.
+        pinnedMessageIndex = 0
         completion?()
     }
 
