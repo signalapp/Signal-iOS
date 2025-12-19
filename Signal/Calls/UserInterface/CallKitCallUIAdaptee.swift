@@ -154,6 +154,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, @preconcurrency CXPro
 
     @MainActor
     private func endCallOnceReported(_ call: SignalCall, reason: CXCallEndedReason) {
+        Logger.info("CallKit: CXCallEndedReason reason: \(reason)")
         Self.providerReadyFlag.runNowOrWhenDidBecomeReadySync {
             switch call.commonState.systemState {
             case .notReported:
@@ -254,6 +255,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, @preconcurrency CXPro
     }
 
     private var ignoreFirstUnmuteAfterRemoteAnswer = false
+
     @MainActor
     func recipientAcceptedCall(_ call: CallMode) {
         Logger.info("")
@@ -364,7 +366,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, @preconcurrency CXPro
 
     @MainActor
     func provider(_ provider: CXProvider, perform action: CXStartCallAction) {
-        Logger.info("CXStartCallAction")
+        Logger.info("CallKit: CXStartCallAction")
 
         guard let call = callManager.callWithLocalId(action.callUUID) else {
             Logger.error("unable to find call")
@@ -414,7 +416,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, @preconcurrency CXPro
 
     @MainActor
     func provider(_ provider: CXProvider, perform action: CXAnswerCallAction) {
-        Logger.info("Received \(#function) CXAnswerCallAction \(action.timeoutDate)")
+        Logger.info("CallKit: CXAnswerCallAction \(action.timeoutDate)")
         guard let call = callManager.callWithLocalId(action.callUUID) else {
             owsFailDebug("call as unexpectedly nil")
             action.fail()
@@ -454,7 +456,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, @preconcurrency CXPro
 
     @MainActor
     public func provider(_ provider: CXProvider, perform action: CXEndCallAction) {
-        Logger.info("Received \(#function) CXEndCallAction")
+        Logger.info("CallKit: CXEndCallAction")
         guard let call = callManager.callWithLocalId(action.callUUID) else {
             Logger.error("trying to end unknown call with localId: \(action.callUUID)")
             action.fail()
@@ -472,7 +474,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, @preconcurrency CXPro
 
     @MainActor
     public func provider(_ provider: CXProvider, perform action: CXSetHeldCallAction) {
-        Logger.info("Received \(#function) CXSetHeldCallAction")
+        Logger.info("CallKit: CXSetHeldCallAction")
         guard let call = callManager.callWithLocalId(action.callUUID) else {
             action.fail()
             return
@@ -487,7 +489,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, @preconcurrency CXPro
 
     @MainActor
     public func provider(_ provider: CXProvider, perform action: CXSetMutedCallAction) {
-        Logger.info("Received \(#function) CXSetMutedCallAction")
+        Logger.info("CallKit: CXSetMutedCallAction")
         guard nil != callManager.callWithLocalId(action.callUUID) else {
             Logger.info("Failing CXSetMutedCallAction for unknown (ended?) call: \(action.callUUID)")
             action.fail()
@@ -507,13 +509,13 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, @preconcurrency CXPro
     public func provider(_ provider: CXProvider, perform action: CXSetGroupCallAction) {
         AssertIsOnMainThread()
 
-        Logger.warn("unimplemented \(#function) for CXSetGroupCallAction")
+        Logger.warn("CallKit: CXSetGroupCallAction unimplemented")
     }
 
     public func provider(_ provider: CXProvider, perform action: CXPlayDTMFCallAction) {
         AssertIsOnMainThread()
 
-        Logger.warn("unimplemented \(#function) for CXPlayDTMFCallAction")
+        Logger.warn("CallKit: CXPlayDTMFCallAction unimplemented")
     }
 
     func provider(_ provider: CXProvider, timedOutPerforming action: CXAction) {
@@ -540,12 +542,14 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, @preconcurrency CXPro
             }
         }
 
-        owsFailDebug("Timed out while performing \(action)")
+        owsFailDebug("CallKit: Timed out while performing \(action)")
     }
 
     @MainActor
     func provider(_ provider: CXProvider, didActivate audioSession: AVAudioSession) {
         AssertIsOnMainThread()
+
+        Logger.info("CallKit: didActivate AVAudioSession")
 
         _ = SUIEnvironment.shared.audioSessionRef.startAudioActivity(self.audioActivity)
 
@@ -565,6 +569,8 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, @preconcurrency CXPro
 
     func provider(_ provider: CXProvider, didDeactivate audioSession: AVAudioSession) {
         AssertIsOnMainThread()
+
+        Logger.info("CallKit: didDeactivate AVAudioSession")
 
         SUIEnvironment.shared.audioSessionRef.isRTCAudioEnabled = false
         SUIEnvironment.shared.audioSessionRef.endAudioActivity(self.audioActivity)

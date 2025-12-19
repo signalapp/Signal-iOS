@@ -144,6 +144,7 @@ final class CallKitCallManager {
         let transaction = CXTransaction()
         transaction.addAction(startCallAction)
 
+        Logger.info("CallKit: request(transaction: CXStartCallAction)")
         requestTransaction(transaction)
     }
 
@@ -152,6 +153,7 @@ final class CallKitCallManager {
         let transaction = CXTransaction()
         transaction.addAction(endCallAction)
 
+        Logger.info("CallKit: request(transaction: CXEndCallAction)")
         requestTransaction(transaction)
     }
 
@@ -160,6 +162,7 @@ final class CallKitCallManager {
         let transaction = CXTransaction()
         transaction.addAction(setHeldCallAction)
 
+        Logger.info("CallKit: request(transaction: CXSetHeldCallAction)")
         requestTransaction(transaction)
     }
 
@@ -168,6 +171,7 @@ final class CallKitCallManager {
         let transaction = CXTransaction()
         transaction.addAction(muteCallAction)
 
+        Logger.info("CallKit: request(transaction: CXSetMutedCallAction)")
         requestTransaction(transaction)
     }
 
@@ -176,15 +180,16 @@ final class CallKitCallManager {
         let transaction = CXTransaction()
         transaction.addAction(answerCallAction)
 
+        Logger.info("CallKit: request(transaction: CXAnswerCallAction)")
         requestTransaction(transaction)
     }
 
     private func requestTransaction(_ transaction: CXTransaction) {
         callController.request(transaction) { error in
             if let error = error {
-                Logger.error("Error requesting transaction: \(error)")
+                Logger.error("CallKit: Error requesting transaction: \(error)")
             } else {
-                Logger.debug("Requested transaction successfully")
+                Logger.debug("CallKit: Requested transaction successfully")
             }
         }
     }

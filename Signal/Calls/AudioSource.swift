@@ -101,3 +101,19 @@ extension AVAudioSessionPortDescription {
         return "<\(portType.rawValue): \(portName.prefix(2))..\(portName.suffix(2))>"
     }
 }
+
+extension AVAudioSession.RouteChangeReason {
+    var logSafeRouteChangeReason: String {
+        switch self {
+        case .unknown: return "Unknown"
+        case .newDeviceAvailable: return "New Device Available"
+        case .oldDeviceUnavailable: return "Old Device Unavailable"
+        case .categoryChange: return "Category Change"
+        case .override: return "Override"
+        case .wakeFromSleep: return "Wake From Sleep"
+        case .noSuitableRouteForCategory: return "No Suitable Route"
+        case .routeConfigurationChange: return "Route Config Change"
+        @unknown default: return "Raw Value \(self.rawValue)"
+        }
+    }
+}

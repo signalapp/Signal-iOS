@@ -41,7 +41,7 @@ extension AudioSession {
             return rtcAudioSession.isAudioEnabled
         }
         set {
-            Logger.info("rtcAudioSession.isAudioEnabled = \(newValue)")
+            Logger.info("Setting rtcAudioSession.isAudioEnabled = \(newValue)")
             rtcAudioSession.isAudioEnabled = newValue
         }
     }

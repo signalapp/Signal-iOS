@@ -40,11 +40,47 @@ class CallAudioService: IndividualCallObserver, GroupCallObserver {
         // We cannot assert singleton here, because this class gets rebuilt when the user changes relevant call settings
 
         // Configure audio session so we don't prompt user with Record permission until call is connected.
-
         audioSession.configureRTCAudio()
-        observers.append(NotificationCenter.default.addObserver(forName: AVAudioSession.routeChangeNotification, object: avAudioSession, queue: nil) { [weak self] _ in
+
+        observers.append(NotificationCenter.default.addObserver(forName: AVAudioSession.routeChangeNotification, object: avAudioSession, queue: nil) { [weak self, avAudioSession] note in
+            let reason = (note.userInfo?[AVAudioSessionRouteChangeReasonKey] as? UInt).flatMap(AVAudioSession.RouteChangeReason.init)
+            let oldRoute = note.userInfo?[AVAudioSessionRouteChangePreviousRouteKey] as? AVAudioSessionRouteDescription
+            Logger.info("AVAudioSession.routeChangeNotification \(reason?.logSafeRouteChangeReason ?? "nil"), Old: \(oldRoute?.outputs.first?.logSafeDescription ?? "nil") -> New: \(avAudioSession.currentRoute.outputs.first?.logSafeDescription ?? "nil")")
+
             self?.audioRouteDidChange()
         })
+
+        observers.append(NotificationCenter.default.addObserver(forName: AVAudioSession.interruptionNotification, object: avAudioSession, queue: nil) { note in
+            let type = (note.userInfo?[AVAudioSessionInterruptionTypeKey] as? UInt).flatMap(AVAudioSession.InterruptionType.init)
+            let reason = (note.userInfo?[AVAudioSessionInterruptionReasonKey] as? UInt).flatMap(AVAudioSession.InterruptionReason.init)
+            let options = (note.userInfo?[AVAudioSessionInterruptionOptionKey] as? UInt).map(AVAudioSession.InterruptionOptions.init) ?? []
+            Logger.warn("AVAudioSession.interruptionNotification \(type.map(String.init(describing:)) ?? "nil"), reason: \(reason.map(String.init(describing:)) ?? "nil"), options: \(options)")
+        })
+
+        observers.append(NotificationCenter.default.addObserver(forName: AVAudioSession.mediaServicesWereResetNotification, object: avAudioSession, queue: nil) { _ in
+            Logger.warn("AVAudioSession.mediaServicesWereResetNotification")
+        })
+
+        observers.append(NotificationCenter.default.addObserver(forName: AVAudioSession.mediaServicesWereLostNotification, object: avAudioSession, queue: nil) { _ in
+            Logger.warn("AVAudioSession.mediaServicesWereLostNotification")
+        })
+
+        observers.append(NotificationCenter.default.addObserver(forName: AVAudioSession.silenceSecondaryAudioHintNotification, object: avAudioSession, queue: nil) { note in
+            let type = (note.userInfo?[AVAudioSessionSilenceSecondaryAudioHintTypeKey] as? UInt).flatMap(AVAudioSession.SilenceSecondaryAudioHintType.init)
+            Logger.warn("AVAudioSession.silenceSecondaryAudioHintNotification \(type.map(String.init(describing:)) ?? "nil")")
+        })
+
+        if #available(iOS 17.2, *) {
+            observers.append(NotificationCenter.default.addObserver(forName: AVAudioSession.renderingModeChangeNotification, object: avAudioSession, queue: nil) { _ in
+                Logger.warn("AVAudioSession.renderingModeChangeNotification")
+            })
+        }
+
+        if #available(iOS 26.0, *) {
+            observers.append(NotificationCenter.default.addObserver(forName: AVAudioSession.outputMuteStateChangeNotification, object: avAudioSession, queue: nil) { _ in
+                Logger.warn("AVAudioSession.outputMuteStateChangeNotification")
+            })
+        }
     }
 
     deinit {
@@ -445,39 +481,27 @@ class CallAudioService: IndividualCallObserver, GroupCallObserver {
                                  mode: AVAudioSession.Mode,
                                  options: AVAudioSession.CategoryOptions = AVAudioSession.CategoryOptions.mixWithOthers) {
         if let currentPlayer {
-            Logger.info("changing audio session while playing sound [\(String(describing: currentPlayer))]")
+            Logger.info("AVAudioSession changing while playing sound [\(String(describing: currentPlayer))]")
         }
-        var audioSessionChanged = false
+
+        let oldCategory = avAudioSession.category
+        let oldMode = avAudioSession.mode
+        let oldOptions = avAudioSession.categoryOptions
+
+        guard oldCategory != category || oldMode != mode || oldOptions != options else {
+            return
+        }
+
         do {
-            let oldCategory = avAudioSession.category
-            let oldMode = avAudioSession.mode
-            let oldOptions = avAudioSession.categoryOptions
-
-            guard oldCategory != category || oldMode != mode || oldOptions != options else {
-                return
-            }
-
-            audioSessionChanged = true
-
-            if oldCategory != category {
-                Logger.info("audio session changed category: \(oldCategory.rawValue) -> \(category.rawValue) ")
-            }
-            if oldMode != mode {
-                Logger.info("audio session changed mode: \(oldMode.rawValue) -> \(mode.rawValue) ")
-            }
-            if oldOptions != options {
-                Logger.info("audio session changed options: \(oldOptions) -> \(options) ")
-            }
             try avAudioSession.setCategory(category, mode: mode, options: options)
+
+            Logger.info("AVAudioSession changed from [category: \(oldCategory.rawValue), mode: \(oldMode.rawValue), options: \(oldOptions)] to [category: \(category.rawValue), mode: \(mode.rawValue), options: \(options)]")
         } catch {
-            let message = "failed to set category: \(category), mode: \(mode), options: \(options) with error: \(error)"
+            let message = "AVAudioSession failed to change from [category: \(oldCategory.rawValue), mode: \(oldMode.rawValue), options: \(oldOptions)] to [category: \(category.rawValue), mode: \(mode.rawValue), options: \(options)] with error: \(error)"
             owsFailDebug(message)
         }
 
-        if audioSessionChanged {
-            Logger.info("audio session changed category: \(category.rawValue), mode: \(mode.rawValue), options: \(options)")
-            self.delegate?.callAudioServiceDidChangeAudioSession(self)
-        }
+        self.delegate?.callAudioServiceDidChangeAudioSession(self)
     }
 
     // MARK: - Manual sounds played for group calls
