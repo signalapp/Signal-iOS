@@ -220,7 +220,7 @@ class GroupAttributesEditorHelper: NSObject {
         } else {
             avatarImageView.image = nil
             avatarImageView.layer.borderWidth = 2
-            avatarImageView.layer.borderColor = Theme.outlineColor.cgColor
+            avatarImageView.layer.borderColor = UIColor.Signal.opaqueSeparator.cgColor
             cameraButton.isHidden = false
             cameraCornerButton.isHidden = true
         }

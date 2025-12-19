@@ -1405,7 +1405,7 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
 
     private var bubbleStrokeColor: UIColor? {
         if wasRemotelyDeleted || isBorderlessViewOnceMessage {
-            return conversationStyle.hasWallpaper ? nil : Theme.outlineColor
+            return conversationStyle.hasWallpaper ? nil : UIColor.Signal.opaqueSeparator
         } else {
             return nil
         }

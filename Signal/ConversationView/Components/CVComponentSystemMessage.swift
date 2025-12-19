@@ -231,7 +231,7 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
 
                     switch action.action {
                     case .didTapActivatePayments, .didTapSendPayment:
-                        button.layer.borderColor = Theme.outlineColor.cgColor
+                        button.layer.borderColor = UIColor.Signal.opaqueSeparator.cgColor
                         button.layer.borderWidth = 1.5
                     default: break
                     }

@@ -193,7 +193,7 @@ public class AddToGroupViewController: OWSTableViewController2 {
                 cell.configure(
                     thread: groupThread,
                     customSubtitle: isAlreadyAMember ? alreadyAMemberText : nil,
-                    customTextColor: isAlreadyAMember ? Theme.ternaryTextColor : nil
+                    customTextColor: isAlreadyAMember ? .Signal.tertiaryLabel : nil
                 )
                 cell.isUserInteractionEnabled = !isAlreadyAMember
                 return cell

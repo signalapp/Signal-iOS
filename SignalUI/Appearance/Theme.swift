@@ -315,23 +315,9 @@ final public class Theme {
         isDarkThemeEnabled ? darkThemeSecondaryTextAndIconColor : lightThemeSecondaryTextAndIconColor
     }
 
-    public class var ternaryTextColor: UIColor {
-        UIColor.Signal.tertiaryLabel.resolvedColor(with: currentThemeTraitCollection)
-    }
-
-    public class var hairlineColor: UIColor {
-        UIColor.Signal.opaqueSeparator.resolvedColor(with: currentThemeTraitCollection)
-    }
-
-    public class var outlineColor: UIColor {
-        hairlineColor
-    }
-
     public class var navbarBackgroundColor: UIColor {
         backgroundColor
     }
-
-    public class var navbarTitleColor: UIColor { primaryTextColor }
 
     public class var toolbarBackgroundColor: UIColor { navbarBackgroundColor }
 

@@ -106,7 +106,7 @@ public class ApprovalFooterView: UIView {
     @objc
     private func applyTheme() {
         backgroundView.backgroundColor = Theme.keyboardBackgroundColor
-        topStrokeView.backgroundColor = Theme.hairlineColor
+        topStrokeView.backgroundColor = UIColor.Signal.opaqueSeparator
         namesLabel.textColor = Theme.secondaryTextAndIconColor
         textFieldBackgroundView?.backgroundColor = textfieldBackgroundColor
     }

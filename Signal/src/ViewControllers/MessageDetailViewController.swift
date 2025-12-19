@@ -521,7 +521,7 @@ class MessageDetailViewController: OWSTableViewController2 {
         let labelConfig = CVLabelConfig.unstyledText(
             text,
             font: .dynamicTypeFootnoteClamped,
-            textColor: Theme.ternaryTextColor
+            textColor: .Signal.tertiaryLabel
         )
         labelConfig.applyForRendering(label: label)
         let labelSize = CVText.measureLabel(config: labelConfig, maxWidth: .greatestFiniteMagnitude)
@@ -533,7 +533,7 @@ class MessageDetailViewController: OWSTableViewController2 {
         }
 
         let imageView = CVImageView()
-        imageView.setTemplateImageName(Theme.iconName(.sealedSenderIndicator), tintColor: Theme.ternaryTextColor)
+        imageView.setTemplateImageName(Theme.iconName(.sealedSenderIndicator), tintColor: .Signal.tertiaryLabel)
         let imageSize = CGSize.square(20)
 
         let hStack = ManualStackView(name: "hStack")

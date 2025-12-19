@@ -63,7 +63,7 @@ public class PaymentModelCell: UITableViewCell {
         nameLabel.textColor = Theme.primaryTextColor
 
         statusLabel.font = .dynamicTypeSubheadlineClamped
-        statusLabel.textColor = Theme.ternaryTextColor
+        statusLabel.textColor = .Signal.tertiaryLabel
 
         amountLabel.font = .dynamicTypeBodyClamped
         amountLabel.textColor = (paymentItem.isIncoming

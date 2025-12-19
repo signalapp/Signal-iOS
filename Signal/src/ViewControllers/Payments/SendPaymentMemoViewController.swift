@@ -87,7 +87,7 @@ public class SendPaymentMemoViewController: OWSViewController {
         memoTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
 
         memoCharacterCountLabel.font = .dynamicTypeBodyClamped
-        memoCharacterCountLabel.textColor = Theme.ternaryTextColor
+        memoCharacterCountLabel.textColor = .Signal.tertiaryLabel
 
         memoCharacterCountLabel.setCompressionResistanceHorizontalHigh()
         memoCharacterCountLabel.setContentHuggingHorizontalHigh()
