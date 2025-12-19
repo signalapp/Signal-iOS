@@ -115,7 +115,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
 
         let body = quoteProto.text?.nilIfEmpty
         let bodyRanges =  quoteProto.bodyRanges.isEmpty ? nil : MessageBodyRanges(protos: quoteProto.bodyRanges)
-        let attachmentBuilder: OwnedAttachmentBuilder<QuotedAttachmentInfo>?
+        let attachmentBuilder: OwnedAttachmentBuilder<OWSAttachmentInfo>?
         if
             // We're only interested in the first attachment
             let quotedAttachment = quoteProto.attachments.first,
@@ -131,12 +131,9 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
                     tx: tx
                 )
                 attachmentBuilder = thumbnailAttachmentBuilder.wrap {
-                    return QuotedAttachmentInfo(
-                        info: .forThumbnailReference(
-                            withOriginalAttachmentMimeType: mimeType,
-                            originalAttachmentSourceFilename: sourceFilename
-                        ),
-                        renderingFlag: .fromProto(thumbnailProto)
+                    return OWSAttachmentInfo(
+                        originalAttachmentMimeType: mimeType,
+                        originalAttachmentSourceFilename: sourceFilename,
                     )
                 }
             } catch {
@@ -144,12 +141,9 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
                 return nil
             }
         } else if let attachmentProto = quoteProto.attachments.first, let mimeType = attachmentProto.contentType {
-            attachmentBuilder = .withoutFinalizer(QuotedAttachmentInfo(
-                info: .stub(
-                    withOriginalAttachmentMimeType: mimeType,
-                    originalAttachmentSourceFilename: attachmentProto.fileName
-                ),
-                renderingFlag: .default
+            attachmentBuilder = .withoutFinalizer(OWSAttachmentInfo(
+                originalAttachmentMimeType: mimeType,
+                originalAttachmentSourceFilename: attachmentProto.fileName,
             ))
         } else {
             attachmentBuilder = nil
@@ -160,14 +154,14 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
             return nil
         }
 
-        func quotedMessage(attachmentInfo: QuotedAttachmentInfo?) -> TSQuotedMessage {
+        func quotedMessage(attachmentInfo: OWSAttachmentInfo?) -> TSQuotedMessage {
             return TSQuotedMessage(
                 timestamp: quoteTimestamp,
                 authorAddress: quoteAuthorAddress,
                 body: body,
                 bodyRanges: bodyRanges,
                 bodySource: .remote,
-                receivedQuotedAttachmentInfo: attachmentInfo?.info,
+                receivedQuotedAttachmentInfo: attachmentInfo,
                 isGiftBadge: false,
                 isTargetMessageViewOnce: false,
                 isPoll: false
@@ -285,14 +279,14 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
             return nil
         }
 
-        func quotedMessage(attachmentInfo: QuotedAttachmentInfo?) -> TSQuotedMessage {
+        func quotedMessage(attachmentInfo: OWSAttachmentInfo?) -> TSQuotedMessage {
             return TSQuotedMessage(
                 timestamp: originalMessage.timestamp,
                 authorAddress: authorAddress,
                 body: body,
                 bodyRanges: bodyRanges,
                 bodySource: .local,
-                receivedQuotedAttachmentInfo: attachmentInfo?.info,
+                receivedQuotedAttachmentInfo: attachmentInfo,
                 isGiftBadge: isGiftBadge,
                 isTargetMessageViewOnce: false,
                 isPoll: isPoll
@@ -310,7 +304,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
         originalMessage: TSMessage,
         quoteProto: SSKProtoDataMessageQuote,
         tx: DBWriteTransaction
-    ) -> OwnedAttachmentBuilder<QuotedAttachmentInfo>? {
+    ) -> OwnedAttachmentBuilder<OWSAttachmentInfo>? {
         if quoteProto.attachments.isEmpty {
             // If the quote we got has no attachments, ignore any attachments
             // on the original message.
@@ -329,11 +323,15 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
             )
         {
             return attachmentManager.createQuotedReplyMessageThumbnailBuilder(
-                from: .fromOriginalAttachment(
-                    originalAttachment,
-                    originalReference: originalReference,
-                    thumbnailPointerFromSender: quoteProto.attachments.first?.thumbnail
-                ),
+                from: QuotedReplyAttachmentDataSource.originalAttachment(.init(
+                    id: originalAttachment.id,
+                    mimeType: originalAttachment.mimeType,
+                    renderingFlag: originalReference.renderingFlag,
+                    sourceFilename: originalReference.sourceFilename,
+                    sourceUnencryptedByteCount: originalReference.sourceUnencryptedByteCount,
+                    sourceMediaSizePixels: originalReference.sourceMediaSizePixels,
+                    thumbnailPointerFromSender: quoteProto.attachments.first?.thumbnail,
+                )),
                 tx: tx
             )
         } else {
@@ -640,7 +638,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
     ) async throws -> DraftQuotedReplyModel.ForSending {
         switch draft.content {
         case .edit(_, let tsQuotedMessage, _):
-            return .init(
+            return DraftQuotedReplyModel.ForSending(
                 originalMessageTimestamp: draft.originalMessageTimestamp,
                 originalMessageAuthorAddress: draft.originalMessageAuthorAddress,
                 originalMessageIsGiftBadge: draft.content.isGiftBadge,
@@ -656,9 +654,11 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
         }
 
         // Find the original message and any attachment
-        let (originalAttachmentReference, originalAttachment): (
-            AttachmentReference?,
-            Attachment?
+        let originalAttachmentReference: AttachmentReference?
+        let originalAttachment: Attachment?
+        (
+            originalAttachmentReference,
+            originalAttachment
         ) = db.read { tx in
             guard
                 let originalMessageTimestamp = draft.originalMessageTimestamp,
@@ -680,7 +680,10 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
         }
 
         let quoteAttachment = await { () -> DraftQuotedReplyModel.ForSending.Attachment? in
-            guard let originalAttachmentReference, let originalAttachment else {
+            guard
+                let originalAttachmentReference,
+                let originalAttachment
+            else {
                 return nil
             }
             let isVisualMedia: Bool = {
@@ -697,7 +700,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
             do {
                 let dataSource = try await attachmentValidator.prepareQuotedReplyThumbnail(
                     fromOriginalAttachment: originalAttachmentStream,
-                    originalReference: originalAttachmentReference
+                    originalReference: originalAttachmentReference,
                 )
                 return .thumbnail(dataSource: dataSource)
             } catch {
@@ -706,7 +709,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
             }
         }()
 
-        return .init(
+        return DraftQuotedReplyModel.ForSending(
             originalMessageTimestamp: draft.originalMessageTimestamp,
             originalMessageAuthorAddress: draft.originalMessageAuthorAddress,
             originalMessageIsGiftBadge: draft.content.isGiftBadge,
@@ -755,13 +758,13 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
 
         let body = draft.quoteBody
 
-        func buildQuotedMessage(_ attachmentInfo: QuotedAttachmentInfo?) -> TSQuotedMessage {
+        func buildQuotedMessage(_ attachmentInfo: OWSAttachmentInfo?) -> TSQuotedMessage {
             return TSQuotedMessage(
                 timestamp: draft.originalMessageTimestamp.map(NSNumber.init(value:)),
                 authorAddress: draft.originalMessageAuthorAddress,
                 body: body?.text,
                 bodyRanges: body?.ranges,
-                quotedAttachmentForSending: attachmentInfo?.info,
+                quotedAttachmentForSending: attachmentInfo,
                 isGiftBadge: draft.originalMessageIsGiftBadge,
                 isTargetMessageViewOnce: draft.originalMessageIsViewOnce,
                 isPoll: draft.originalMessageIsPoll
@@ -774,12 +777,9 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
 
         switch quotedAttachment {
         case .stub(let stub):
-            return .withoutFinalizer(buildQuotedMessage(QuotedAttachmentInfo(
-                info: .stub(
-                    withOriginalAttachmentMimeType: stub.mimeType ?? MimeType.applicationOctetStream.rawValue,
-                    originalAttachmentSourceFilename: stub.sourceFilename
-                ),
-                renderingFlag: .default
+            return .withoutFinalizer(buildQuotedMessage(OWSAttachmentInfo(
+                originalAttachmentMimeType: stub.mimeType ?? MimeType.applicationOctetStream.rawValue,
+                originalAttachmentSourceFilename: stub.sourceFilename,
             )))
         case .thumbnail(let dataSource):
             let attachmentBuilder = attachmentManager.createQuotedReplyMessageThumbnailBuilder(

@@ -63,12 +63,8 @@ typedef NS_ENUM(NSUInteger, TSQuotedMessageContentSource) {
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
-+ (instancetype)stubWithOriginalAttachmentMimeType:(NSString *)originalAttachmentMimeType
+- (instancetype)initWithOriginalAttachmentMimeType:(NSString *_Nullable)originalAttachmentMimeType
                   originalAttachmentSourceFilename:(NSString *_Nullable)originalAttachmentSourceFilename;
-
-+ (instancetype)forThumbnailReferenceWithOriginalAttachmentMimeType:(NSString *)originalAttachmentMimeType
-                                   originalAttachmentSourceFilename:
-                                       (NSString *_Nullable)originalAttachmentSourceFilename;
 
 #if TESTABLE_BUILD
 /// Do not use this constructor directly! Instead, use the static constructors.

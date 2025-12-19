@@ -37,30 +37,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 // MARK: -
 
-+ (instancetype)stubWithOriginalAttachmentMimeType:(NSString *)originalAttachmentMimeType
-                  originalAttachmentSourceFilename:(NSString *_Nullable)originalAttachmentSourceFilename
-{
-    return [[OWSAttachmentInfo alloc] initWithOriginalAttachmentMimeType:originalAttachmentMimeType
-                                        originalAttachmentSourceFilename:originalAttachmentSourceFilename];
-}
-
-+ (instancetype)forThumbnailReferenceWithOriginalAttachmentMimeType:(NSString *)originalAttachmentMimeType
-                                   originalAttachmentSourceFilename:
-                                       (NSString *_Nullable)originalAttachmentSourceFilename
-{
-    return [[OWSAttachmentInfo alloc] initWithOriginalAttachmentMimeType:originalAttachmentMimeType
-                                        originalAttachmentSourceFilename:originalAttachmentSourceFilename];
-}
-
-#if TESTABLE_BUILD
-+ (instancetype)stubWithNullableOriginalAttachmentMimeType:(NSString *_Nullable)originalAttachmentMimeType
-                          originalAttachmentSourceFilename:(NSString *_Nullable)originalAttachmentSourceFilename
-{
-    return [[OWSAttachmentInfo alloc] initWithOriginalAttachmentMimeType:originalAttachmentMimeType
-                                        originalAttachmentSourceFilename:originalAttachmentSourceFilename];
-}
-#endif
-
 - (instancetype)initWithOriginalAttachmentMimeType:(NSString *_Nullable)originalAttachmentMimeType
                   originalAttachmentSourceFilename:(NSString *_Nullable)originalAttachmentSourceFilename
 {
@@ -72,6 +48,15 @@ NS_ASSUME_NONNULL_BEGIN
     }
     return self;
 }
+
+#if TESTABLE_BUILD
++ (instancetype)stubWithNullableOriginalAttachmentMimeType:(NSString *_Nullable)originalAttachmentMimeType
+                          originalAttachmentSourceFilename:(NSString *_Nullable)originalAttachmentSourceFilename
+{
+    return [[OWSAttachmentInfo alloc] initWithOriginalAttachmentMimeType:originalAttachmentMimeType
+                                        originalAttachmentSourceFilename:originalAttachmentSourceFilename];
+}
+#endif
 
 // MARK: -
 

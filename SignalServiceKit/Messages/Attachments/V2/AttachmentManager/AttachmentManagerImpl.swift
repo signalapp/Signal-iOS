@@ -152,31 +152,21 @@ public class AttachmentManagerImpl: AttachmentManager {
 
     // MARK: Quoted Replies
 
-    public func quotedReplyAttachmentInfo(
-        originalMessage: TSMessage,
-        tx: DBReadTransaction
-    ) -> QuotedAttachmentInfo? {
-        guard let originalMessageRowId = originalMessage.sqliteRowId else {
-            owsFailDebug("Cloning attachment for un-inserted message")
-            return nil
-        }
-        return _quotedReplyAttachmentInfo(originalMessageRowId: originalMessageRowId, tx: tx).0?.info
-    }
-
     public func createQuotedReplyMessageThumbnailBuilder(
         from dataSource: QuotedReplyAttachmentDataSource,
         tx: DBWriteTransaction
-    ) -> OwnedAttachmentBuilder<QuotedAttachmentInfo> {
-        let (info, isStub) = self._quotedReplyAttachmentInfo(
+    ) -> OwnedAttachmentBuilder<OWSAttachmentInfo> {
+        let quotedReplyAttachmentInfo = OWSAttachmentInfo(
             originalAttachmentMimeType: dataSource.originalAttachmentMimeType,
-            originalReferenceSourceFilename: dataSource.originalAttachmentSourceFilename,
-            originalReferenceRenderingFlag: dataSource.renderingFlag
+            originalAttachmentSourceFilename: dataSource.originalAttachmentSourceFilename,
         )
-        if isStub {
-            return .withoutFinalizer(info)
+
+        if !MimeTypeUtil.isSupportedVisualMediaMimeType(dataSource.originalAttachmentMimeType) {
+            return .withoutFinalizer(quotedReplyAttachmentInfo)
         }
-        return OwnedAttachmentBuilder<QuotedAttachmentInfo>(
-            info: info,
+
+        return OwnedAttachmentBuilder<OWSAttachmentInfo>(
+            info: quotedReplyAttachmentInfo,
             finalize: { [self, dataSource] ownerId, tx in
                 let replyMessageOwner: AttachmentReference.OwnerBuilder.MessageAttachmentBuilder
                 switch ownerId {
@@ -187,40 +177,12 @@ public class AttachmentManagerImpl: AttachmentManager {
                     return
                 }
 
-                try self.createQuotedReplyMessageThumbnail(
-                    consuming: .init(
-                        dataSource: dataSource,
-                        owner: replyMessageOwner
-                    ),
+                try _createQuotedReplyMessageThumbnail(
+                    dataSource: dataSource,
+                    referenceOwner: .quotedReplyAttachment(replyMessageOwner),
                     tx: tx
                 )
             }
-        )
-    }
-
-    private func createQuotedReplyMessageThumbnail(
-        consuming dataSource: OwnedQuotedReplyAttachmentDataSource,
-        tx: DBWriteTransaction
-    ) throws {
-        switch dataSource.source.source {
-        case .originalAttachment:
-            // If the goal is to capture the original message's attachment,
-            // ensure we can actually capture its info.
-            if let originalMessageRowId = dataSource.source.originalMessageRowId {
-                let (info, isStub) = _quotedReplyAttachmentInfo(originalMessageRowId: originalMessageRowId, tx: tx)
-                guard
-                    info != nil,
-                    !isStub
-                else {
-                    return
-                }
-            }
-        case .pendingAttachment, .quotedAttachmentProto:
-            break
-        }
-        try _createQuotedReplyMessageThumbnail(
-            dataSource: dataSource,
-            tx: tx
         )
     }
 
@@ -1142,93 +1104,12 @@ public class AttachmentManagerImpl: AttachmentManager {
 
     // MARK: Quoted Replies
 
-    private struct WrappedQuotedAttachmentInfo {
-        let originalAttachmentReference: AttachmentReference
-        let originalAttachment: Attachment
-        let info: QuotedAttachmentInfo
-    }
-
-    private func _quotedReplyAttachmentInfo(
-        originalMessageRowId: Int64,
-        tx: DBReadTransaction
-    ) -> (WrappedQuotedAttachmentInfo?, isStub: Bool) {
-        guard
-            let originalReference = attachmentStore.attachmentToUseInQuote(
-                originalMessageRowId: originalMessageRowId,
-                tx: tx
-            ),
-            let originalAttachment = attachmentStore.fetch(id: originalReference.attachmentRowId, tx: tx)
-        else {
-            return (nil, true)
-        }
-        let (info, isStub) = self._quotedReplyAttachmentInfo(
-            originalAttachmentMimeType: originalAttachment.mimeType,
-            originalReferenceSourceFilename: originalReference.sourceFilename,
-            originalReferenceRenderingFlag: originalReference.renderingFlag
-        )
-        return (
-            .init(
-                originalAttachmentReference: originalReference,
-                originalAttachment: originalAttachment,
-                info: info
-            ),
-            isStub
-        )
-    }
-
-    private func _quotedReplyAttachmentInfo(
-        originalAttachmentMimeType: String,
-        originalReferenceSourceFilename: String?,
-        originalReferenceRenderingFlag: AttachmentReference.RenderingFlag
-    ) -> (QuotedAttachmentInfo, isStub: Bool) {
-        let renderingFlag: AttachmentReference.RenderingFlag
-        switch originalReferenceRenderingFlag {
-        case .borderless:
-            // Not allowed in quoted
-            renderingFlag = .default
-        default:
-            renderingFlag = originalReferenceRenderingFlag
-        }
-        guard MimeTypeUtil.isSupportedVisualMediaMimeType(originalAttachmentMimeType) else {
-            // Can't make a thumbnail, just return a stub.
-            return (
-                QuotedAttachmentInfo(
-                    info: .stub(
-                        withOriginalAttachmentMimeType: originalAttachmentMimeType,
-                        originalAttachmentSourceFilename: originalReferenceSourceFilename
-                    ),
-                    renderingFlag: renderingFlag
-                ),
-                isStub: true
-            )
-        }
-
-        return (
-            QuotedAttachmentInfo(
-                info: .forThumbnailReference(
-                    withOriginalAttachmentMimeType: originalAttachmentMimeType,
-                    originalAttachmentSourceFilename: originalReferenceSourceFilename
-                ),
-                renderingFlag: renderingFlag
-            ),
-            isStub: false
-        )
-    }
-
     private func _createQuotedReplyMessageThumbnail(
-        dataSource: OwnedQuotedReplyAttachmentDataSource,
+        dataSource: QuotedReplyAttachmentDataSource,
+        referenceOwner: AttachmentReference.OwnerBuilder,
         tx: DBWriteTransaction
     ) throws {
-        let referenceOwner = AttachmentReference.OwnerBuilder.quotedReplyAttachment(dataSource.owner)
-
-        switch dataSource.source.source {
-        case .quotedAttachmentProto(let quotedAttachmentProtoSource):
-            try self._createAttachmentPointer(
-                from: quotedAttachmentProtoSource.thumbnail,
-                owner: referenceOwner,
-                sourceOrder: nil,
-                tx: tx
-            )
+        switch dataSource {
         case .pendingAttachment(let pendingAttachmentSource):
             try self._createAttachmentStream(
                 consuming: .pendingAttachment(pendingAttachmentSource.pendingAttachment),

@@ -41,23 +41,13 @@ open class AttachmentManagerMock: AttachmentManager {
         // Do nothing
     }
 
-    open func quotedReplyAttachmentInfo(
-        originalMessage: TSMessage,
-        tx: DBReadTransaction
-    ) -> QuotedAttachmentInfo? {
-        return nil
-    }
-
     open func createQuotedReplyMessageThumbnailBuilder(
         from dataSource: QuotedReplyAttachmentDataSource,
         tx: DBWriteTransaction
-    ) -> OwnedAttachmentBuilder<QuotedAttachmentInfo> {
-        return .withoutFinalizer(.init(
-            info: .stub(
-                withOriginalAttachmentMimeType: dataSource.originalAttachmentMimeType,
-                originalAttachmentSourceFilename: dataSource.originalAttachmentSourceFilename
-            ),
-            renderingFlag: dataSource.renderingFlag
+    ) -> OwnedAttachmentBuilder<OWSAttachmentInfo> {
+        return .withoutFinalizer(OWSAttachmentInfo(
+            originalAttachmentMimeType: dataSource.originalAttachmentMimeType,
+            originalAttachmentSourceFilename: dataSource.originalAttachmentSourceFilename
         ))
     }
 

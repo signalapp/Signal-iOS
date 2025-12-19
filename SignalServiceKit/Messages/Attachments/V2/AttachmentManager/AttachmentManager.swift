@@ -62,26 +62,12 @@ public protocol AttachmentManager {
 
     // MARK: - Quoted Replies
 
-    /// Given an original message available locally, returns metadata
-    /// supplied to a TSQuotedReply, which distinguishes "stubs"
-    /// (attachments that cannot be thumbnail-ed) from thumbnails.
-    ///
-    /// If the original lacks an attachment, returns nil. If the original has an
-    /// attachment that can't be thumbnailed, returns stub metadata.
-    ///
-    /// Callers should call ``createQuotedReplyMessageThumbnail`` to
-    /// actually construct the attachment once the owning message exists.
-    func quotedReplyAttachmentInfo(
-        originalMessage: TSMessage,
-        tx: DBReadTransaction
-    ) -> QuotedAttachmentInfo?
-
     /// Given a quote thumbnail source, creates a builder for a thumbnail
     /// attachment (if necessary) and an owner reference to it.
     func createQuotedReplyMessageThumbnailBuilder(
         from dataSource: QuotedReplyAttachmentDataSource,
         tx: DBWriteTransaction
-    ) -> OwnedAttachmentBuilder<QuotedAttachmentInfo>
+    ) -> OwnedAttachmentBuilder<OWSAttachmentInfo>
 
     // MARK: - Removing Attachments
 

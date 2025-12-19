@@ -274,7 +274,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
 
     public func prepareQuotedReplyThumbnail(
         fromOriginalAttachment originalAttachment: AttachmentStream,
-        originalReference: AttachmentReference
+        originalReference: AttachmentReference,
     ) async throws -> QuotedReplyAttachmentDataSource {
         let pendingAttachment = try await prepareQuotedReplyThumbnail(
             fromOriginalAttachmentStream: originalAttachment,
@@ -282,21 +282,11 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             sourceFilename: originalReference.sourceFilename
         )
 
-        let originalMessageRowId: Int64?
-        switch originalReference.owner {
-        case .message(let messageSource):
-            originalMessageRowId = messageSource.messageRowId
-        case .storyMessage, .thread:
-            owsFailDebug("Should not be quote replying a non-message attachment")
-            originalMessageRowId = nil
-        }
-
-        return .fromPendingAttachment(
-            pendingAttachment,
+        return QuotedReplyAttachmentDataSource.pendingAttachment(.init(
+            pendingAttachment: pendingAttachment,
             originalAttachmentMimeType: originalAttachment.attachment.mimeType,
             originalAttachmentSourceFilename: originalReference.sourceFilename,
-            originalMessageRowId: originalMessageRowId
-        )
+        ))
     }
 
     public func prepareQuotedReplyThumbnail(
