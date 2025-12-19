@@ -180,7 +180,6 @@ struct MediaGalleryCollectionViewUpdater {
 
     /// Call this once. It invokes methods on the delegate to tell it what changed.
     mutating func update(_ changes: [Change]) {
-        Logger.debug("")
         updateModel(changes)
         notify()
     }
@@ -189,7 +188,6 @@ struct MediaGalleryCollectionViewUpdater {
 
     private mutating func updateModel(_ changes: [Change]) {
         for change in changes {
-            Logger.debug("update model using change \(change.debugDescription)")
             switch change {
             case .removeAll:
                 model = []
@@ -259,7 +257,6 @@ struct MediaGalleryCollectionViewUpdater {
             let allOriginalItemIndexes = IndexSet(0..<items.originalNumberOfItems)
             let deletedItemIndexes = allOriginalItemIndexes.subtracting(remainingOriginalItemIndexes)
             if !deletedItemIndexes.isEmpty {
-                Logger.debug("delete items \(deletedItemIndexes)")
                 delegate?.updaterDeleteItems(at: deletedItemIndexes.map {
                     MediaGalleryIndexPath(item: $0, section: originalSectionIndex)
                 })
@@ -276,7 +273,6 @@ struct MediaGalleryCollectionViewUpdater {
     private func performSectionDeletes() {
         let deletedSectionIndexes = self.deletedSectionIndexes
         if !deletedSectionIndexes.indexSet.isEmpty {
-            Logger.debug("delete sections \(deletedSectionIndexes)")
             delegate?.updaterDeleteSections(deletedSectionIndexes)
         }
     }
@@ -288,7 +284,6 @@ struct MediaGalleryCollectionViewUpdater {
             return
         }
         let indexSet = MediaGallerySectionIndexSet(prepends.indexSet.union(appends.indexSet))
-        Logger.debug("insert sections \(indexSet.indexSet.map { String($0) })")
         delegate?.updaterInsertSections(indexSet)
     }
 
@@ -317,7 +312,6 @@ struct MediaGalleryCollectionViewUpdater {
                 owsAssertDebug(items.indexesToReload.isSubset(of: items.survivors))
                 let indexPaths = items.indexesToReload.map { MediaGalleryIndexPath(item: $0, section: originalSectionIndex) }
                 if !indexPaths.isEmpty {
-                    Logger.debug("reload items \(indexPaths.debugDescription)")
                     // If we decide to fade in the image rather than just replace it this needs to get more complicated
                     // to avoid reloading an already-visible cell.
                     delegate?.updaterReloadItems(at: indexPaths)
