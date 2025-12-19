@@ -275,19 +275,17 @@ public class OWSIncomingSentMessageTranscript: SentMessageTranscript {
             validatedQuotedReply = nil
         }
 
-        var makePollCreateBuilder: ((Int64, DBWriteTransaction) throws -> Void)?
-        if let pollCreateMessage = dataMessage.pollCreate, let question = pollCreateMessage.question {
-            makePollCreateBuilder = { [pollCreateMessage] (interactionId: Int64, tx: DBWriteTransaction) in
-                try DependenciesBridge.shared.pollMessageManager.processIncomingPollCreate(
-                    interactionId: interactionId,
-                    pollCreateProto: pollCreateMessage,
-                    transaction: tx
-                )
-            }
-            body = DependenciesBridge.shared.attachmentContentValidator.truncatedMessageBodyForInlining(
-                MessageBody(text: question, ranges: .empty),
-                tx: tx
+        let validatedPollCreate: ValidatedIncomingPollCreate?
+        if let pollCreateProto = dataMessage.pollCreate {
+            let pollMessageManager = DependenciesBridge.shared.pollMessageManager
+            validatedPollCreate = try pollMessageManager.validateIncomingPollCreate(
+                pollCreateProto: pollCreateProto,
+                tx: tx,
             )
+
+            body = validatedPollCreate!.messageBody
+        } else {
+            validatedPollCreate = nil
         }
 
         let storyTimestamp: UInt64?
@@ -316,6 +314,7 @@ public class OWSIncomingSentMessageTranscript: SentMessageTranscript {
             validatedQuotedReply: validatedQuotedReply,
             validatedLinkPreview: validatedLinkPreview,
             validatedMessageSticker: validatedMessageSticker,
+            validatedPollCreate: validatedPollCreate,
             giftBadge: giftBadge,
             isViewOnceMessage: isViewOnceMessage,
             expirationStartedAt: sentProto.expirationStartTimestamp,
@@ -323,7 +322,6 @@ public class OWSIncomingSentMessageTranscript: SentMessageTranscript {
             expireTimerVersion: dataMessage.expireTimerVersion,
             storyTimestamp: storyTimestamp,
             storyAuthorAci: storyAuthorAci,
-            makePollCreateBuilder: makePollCreateBuilder
         )
     }
 

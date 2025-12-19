@@ -17,6 +17,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
     private let interactionStore: InteractionStore
     private let messageStickerManager: MessageStickerManager
     private let paymentsHelper: PaymentsHelper
+    private let pollMessageManager: PollMessageManager
     private let signalProtocolStoreManager: SignalProtocolStoreManager
     private let tsAccountManager: TSAccountManager
     private let viewOnceMessages: Shims.ViewOnceMessages
@@ -31,6 +32,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
         interactionStore: InteractionStore,
         messageStickerManager: MessageStickerManager,
         paymentsHelper: PaymentsHelper,
+        pollMessageManager: PollMessageManager,
         signalProtocolStoreManager: SignalProtocolStoreManager,
         tsAccountManager: TSAccountManager,
         viewOnceMessages: Shims.ViewOnceMessages
@@ -44,6 +46,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
         self.interactionStore = interactionStore
         self.messageStickerManager = messageStickerManager
         self.paymentsHelper = paymentsHelper
+        self.pollMessageManager = pollMessageManager
         self.signalProtocolStoreManager = signalProtocolStoreManager
         self.tsAccountManager = tsAccountManager
         self.viewOnceMessages = viewOnceMessages
@@ -206,7 +209,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             linkPreview: messageParams.validatedLinkPreview?.preview,
             messageSticker: messageParams.validatedMessageSticker?.sticker,
             giftBadge: messageParams.giftBadge,
-            isPoll: messageParams.makePollCreateBuilder != nil
+            isPoll: messageParams.validatedPollCreate != nil
         )
         var outgoingMessage = interactionStore.buildOutgoingMessage(builder: outgoingMessageBuilder, tx: tx)
 
@@ -218,7 +221,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             hasSticker: messageParams.validatedMessageSticker != nil,
             // Payment notifications go through a different path.
             hasPayment: false,
-            hasPoll: messageParams.makePollCreateBuilder != nil
+            hasPoll: messageParams.validatedPollCreate != nil
         )
         if !hasRenderableContent && !outgoingMessage.isViewOnceMessage {
             switch messageParams.target {
@@ -257,11 +260,13 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             // The sender may have resent the message. If so, we should swap it in place of the placeholder
             interactionStore.insertOrReplacePlaceholder(for: outgoingMessage, from: localIdentifiers.aciAddress, tx: tx)
 
-            // Polls can only be inserted after the outgoing message, since they have
-            // a reference to the grdb id of the TSInteraction.
-            if let pollCreateBuilder = messageParams.makePollCreateBuilder, let interactionId = outgoingMessage.grdbId?.int64Value {
+            if let validatedPollCreate = messageParams.validatedPollCreate {
                 do {
-                    try pollCreateBuilder(interactionId, tx)
+                    try pollMessageManager.processIncomingPollCreate(
+                        interactionId: outgoingMessage.sqliteRowId!,
+                        pollCreateProto: validatedPollCreate.pollCreateProto,
+                        transaction: tx,
+                    )
                 } catch {
                     Logger.error("Failed to insert poll \(error)")
                     // Roll back the message

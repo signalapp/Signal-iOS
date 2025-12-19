@@ -1255,6 +1255,17 @@ extension AppSetup.GlobalsContinuation {
             attachmentValidator: attachmentContentValidator
         )
 
+        let pollMessageManager = PollMessageManager(
+            pollStore: PollStore(),
+            recipientDatabaseTable: recipientDatabaseTable,
+            interactionStore: interactionStore,
+            accountManager: tsAccountManager,
+            messageSenderJobQueue: messageSenderJobQueue,
+            disappearingMessagesConfigurationStore: disappearingMessagesConfigurationStore,
+            attachmentContentValidator: attachmentContentValidator,
+            db: db
+        )
+
         let sentMessageTranscriptReceiver = SentMessageTranscriptReceiverImpl(
             attachmentDownloads: attachmentDownloadManager,
             attachmentManager: attachmentManager,
@@ -1265,6 +1276,7 @@ extension AppSetup.GlobalsContinuation {
             interactionStore: interactionStore,
             messageStickerManager: messageStickerManager,
             paymentsHelper: paymentsHelper,
+            pollMessageManager: pollMessageManager,
             signalProtocolStoreManager: signalProtocolStoreManager,
             tsAccountManager: tsAccountManager,
             viewOnceMessages: SentMessageTranscriptReceiverImpl.Wrappers.ViewOnceMessages()
@@ -1373,16 +1385,6 @@ extension AppSetup.GlobalsContinuation {
             attachmentManager: attachmentManager,
             attachmentStore: attachmentStore,
             db: db,
-        )
-        let pollMessageManager = PollMessageManager(
-            pollStore: PollStore(),
-            recipientDatabaseTable: recipientDatabaseTable,
-            interactionStore: interactionStore,
-            accountManager: tsAccountManager,
-            messageSenderJobQueue: messageSenderJobQueue,
-            disappearingMessagesConfigurationStore: disappearingMessagesConfigurationStore,
-            attachmentContentValidator: attachmentContentValidator,
-            db: db
         )
         let backupReactionArchiver = BackupArchiveReactionArchiver(
             reactionStore: BackupArchiveReactionStore()

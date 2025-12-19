@@ -1295,16 +1295,22 @@ public final class MessageReceiver {
             }
         }
 
-        let pollCreate = dataMessage.pollCreate
-        if let pollCreate {
+        let validatedPollCreate: ValidatedIncomingPollCreate?
+        if let pollCreateProto = dataMessage.pollCreate {
             do {
-                body = try DependenciesBridge.shared.pollMessageManager.validateIncomingPollCreate(
-                    pollCreate: pollCreate,
-                    tx: tx)
+                let pollMessageManager = DependenciesBridge.shared.pollMessageManager
+                validatedPollCreate = try pollMessageManager.validateIncomingPollCreate(
+                    pollCreateProto: pollCreateProto,
+                    tx: tx
+                )
+
+                body = validatedPollCreate!.messageBody
             } catch {
                 Logger.error("Error validating incoming poll create: \(error)")
                 return nil
             }
+        } else {
+            validatedPollCreate = nil
         }
 
         if let pollTerminate = dataMessage.pollTerminate{
@@ -1433,7 +1439,7 @@ public final class MessageReceiver {
             messageSticker: validatedMessageSticker?.sticker,
             giftBadge: giftBadge,
             paymentNotification: paymentModels?.notification,
-            isPoll: pollCreate != nil
+            isPoll: validatedPollCreate != nil
         )
         let message = messageBuilder.build()
 
@@ -1449,7 +1455,7 @@ public final class MessageReceiver {
             hasContactShare: validatedContactShare != nil,
             hasSticker: validatedMessageSticker != nil,
             hasPayment: paymentModels != nil,
-            hasPoll: pollCreate != nil
+            hasPoll: validatedPollCreate != nil
         )
         guard hasRenderableContent else {
             Logger.warn("Ignoring empty: \(messageDescription)")
@@ -1558,12 +1564,12 @@ public final class MessageReceiver {
             return nil
         }
 
-        if let pollCreate = dataMessage.pollCreate,
-           let interactionId = message.grdbId?.int64Value {
+        if let validatedPollCreate {
             do {
-                try DependenciesBridge.shared.pollMessageManager.processIncomingPollCreate(
-                    interactionId: interactionId,
-                    pollCreateProto: pollCreate,
+                let pollMessageManager = DependenciesBridge.shared.pollMessageManager
+                try pollMessageManager.processIncomingPollCreate(
+                    interactionId: message.sqliteRowId!,
+                    pollCreateProto: validatedPollCreate.pollCreateProto,
                     transaction: tx
                 )
             } catch {

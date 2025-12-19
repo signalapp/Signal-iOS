@@ -3,24 +3,14 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 public import LibSignalClient
 
-public struct CreatePollMessage {
-    let question: String
-    let options: [String]
-    let allowMultiple: Bool
-
-    public init(
-        question: String,
-        options: [String],
-        allowMultiple: Bool
-    ) {
-        self.question = question
-        self.options = options
-        self.allowMultiple = allowMultiple
-    }
+public struct ValidatedIncomingPollCreate {
+    let messageBody: ValidatedInlineMessageBody
+    let pollCreateProto: SSKProtoDataMessagePollCreate
 }
+
+// MARK: -
 
 public class PollMessageManager {
     static let pollEmoji = "📊"
@@ -55,9 +45,9 @@ public class PollMessageManager {
     }
 
     public func validateIncomingPollCreate(
-        pollCreate: SSKProtoDataMessagePollCreate,
+        pollCreateProto pollCreate: SSKProtoDataMessagePollCreate,
         tx: DBWriteTransaction
-    ) throws -> ValidatedInlineMessageBody {
+    ) throws -> ValidatedIncomingPollCreate {
         guard let question = pollCreate.question else {
             throw OWSAssertionError("Poll missing question")
         }
@@ -87,9 +77,14 @@ public class PollMessageManager {
             }
         }
 
-        return self.attachmentContentValidator.truncatedMessageBodyForInlining(
+        let inlinedMessageBody = attachmentContentValidator.truncatedMessageBodyForInlining(
             MessageBody(text: question, ranges: .empty),
-            tx: tx
+            tx: tx,
+        )
+
+        return ValidatedIncomingPollCreate(
+            messageBody: inlinedMessageBody,
+            pollCreateProto: pollCreate,
         )
     }
 
