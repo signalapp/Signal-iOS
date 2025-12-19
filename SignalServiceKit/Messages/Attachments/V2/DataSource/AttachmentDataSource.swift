@@ -5,10 +5,8 @@
 
 import Foundation
 
-/// A DataSource for an attachment to be created locally, with
-/// additional required metadata.
+/// A data source for creating attachments locally.
 public enum AttachmentDataSource {
-
     case existingAttachment(ExistingAttachmentSource)
     case pendingAttachment(PendingAttachment)
 

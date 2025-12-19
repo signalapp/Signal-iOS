@@ -264,21 +264,16 @@ public class OWSIncomingSentMessageTranscript: SentMessageTranscript {
             return nil
         }
 
-        let threadUniqueId = target.thread.uniqueId
-        let makeQuotedMessageBuilder = { [dataMessage, threadUniqueId] (tx: DBWriteTransaction) in
-            guard
-                let thread = DependenciesBridge.shared.threadStore.fetchThread(
-                    uniqueId: threadUniqueId,
-                    tx: tx
-                )
-            else {
-                throw OWSAssertionError("Missing thread!")
-            }
-            return DependenciesBridge.shared.quotedReplyManager.quotedMessage(
-                for: dataMessage,
-                thread: thread,
-                tx: tx
+        let validatedQuotedReply: ValidatedQuotedReply?
+        if let quoteProto = dataMessage.quote {
+            let quotedReplyManager = DependenciesBridge.shared.quotedReplyManager
+            validatedQuotedReply = try quotedReplyManager.validateAndBuildQuotedReply(
+                from: quoteProto,
+                threadUniqueId: target.thread.uniqueId,
+                tx: tx,
             )
+        } else {
+            validatedQuotedReply = nil
         }
 
         var makePollCreateBuilder: ((Int64, DBWriteTransaction) throws -> Void)?
@@ -318,8 +313,8 @@ public class OWSIncomingSentMessageTranscript: SentMessageTranscript {
             target: target,
             body: body,
             attachmentPointerProtos: dataMessage.attachments,
-            makeQuotedMessageBuilder: makeQuotedMessageBuilder,
             makeContactBuilder: makeContactBuilder,
+            validatedQuotedReply: validatedQuotedReply,
             validatedLinkPreview: validatedLinkPreview,
             validatedMessageSticker: validatedMessageSticker,
             giftBadge: giftBadge,

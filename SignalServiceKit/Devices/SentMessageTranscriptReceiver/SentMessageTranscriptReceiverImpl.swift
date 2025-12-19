@@ -181,10 +181,8 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
 
         updateDisappearingMessageTokenIfNecessary(target: messageParams.target, localIdentifiers: localIdentifiers, tx: tx)
 
-        let quotedMessageBuilder: OwnedAttachmentBuilder<TSQuotedMessage>?
         let contactBuilder: OwnedAttachmentBuilder<OWSContact>?
         do {
-            quotedMessageBuilder = try messageParams.makeQuotedMessageBuilder(tx)
             contactBuilder = try messageParams.makeContactBuilder(tx)
         } catch let error {
             return .failure(error)
@@ -210,7 +208,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             storyAuthorAci: messageParams.storyAuthorAci,
             storyTimestamp: messageParams.storyTimestamp,
             storyReactionEmoji: nil,
-            quotedMessage: quotedMessageBuilder?.info,
+            quotedMessage: messageParams.validatedQuotedReply?.quotedReply,
             contactShare: contactBuilder?.info,
             linkPreview: messageParams.validatedLinkPreview?.preview,
             messageSticker: messageParams.validatedMessageSticker?.sticker,
@@ -222,7 +220,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
         let hasRenderableContent = outgoingMessageBuilder.hasRenderableContent(
             hasBodyAttachments: messageParams.attachmentPointerProtos.isEmpty.negated,
             hasLinkPreview: messageParams.validatedLinkPreview != nil,
-            hasQuotedReply: quotedMessageBuilder != nil,
+            hasQuotedReply: messageParams.validatedQuotedReply != nil,
             hasContactShare: contactBuilder != nil,
             hasSticker: messageParams.validatedMessageSticker != nil,
             // Payment notifications go through a different path.
@@ -295,15 +293,18 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
                     tx: tx
                 )
 
-                try quotedMessageBuilder?.finalize(
-                    owner: .quotedReplyAttachment(.init(
-                        messageRowId: outgoingMessage.sqliteRowId!,
-                        receivedAtTimestamp: outgoingMessage.receivedAtTimestamp,
-                        threadRowId: threadRowId,
-                        isPastEditRevision: outgoingMessage.isPastEditRevision()
-                    )),
-                    tx: tx
-                )
+                if let quotedReplyAttachmentDataSource = messageParams.validatedQuotedReply?.thumbnailDataSource {
+                    try attachmentManager.createQuotedReplyMessageThumbnail(
+                        from: quotedReplyAttachmentDataSource,
+                        owningMessageAttachmentBuilder: .init(
+                            messageRowId: outgoingMessage.sqliteRowId!,
+                            receivedAtTimestamp: outgoingMessage.receivedAtTimestamp,
+                            threadRowId: threadRowId,
+                            isPastEditRevision: outgoingMessage.isPastEditRevision()
+                        ),
+                        tx: tx,
+                    )
+                }
 
                 if let linkPreviewImageProto = messageParams.validatedLinkPreview?.imageProto {
                     try attachmentManager.createAttachmentPointer(

@@ -282,10 +282,9 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             sourceFilename: originalReference.sourceFilename
         )
 
-        return QuotedReplyAttachmentDataSource.pendingAttachment(.init(
+        return .pendingAttachment(.init(
             pendingAttachment: pendingAttachment,
             originalAttachmentMimeType: originalAttachment.attachment.mimeType,
-            originalAttachmentSourceFilename: originalReference.sourceFilename,
         ))
     }
 

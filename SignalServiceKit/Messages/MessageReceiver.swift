@@ -1178,12 +1178,26 @@ public final class MessageReceiver {
                 tx: tx
             )
         }
+
         let serverGuid = ValidatedIncomingEnvelope.parseServerGuid(fromEnvelope: envelope.envelope)
-        let quotedMessageBuilder = DependenciesBridge.shared.quotedReplyManager.quotedMessage(
-            for: dataMessage,
-            thread: thread,
-            tx: tx
-        )
+
+        let validatedQuotedReply: ValidatedQuotedReply?
+        if let quoteProto = dataMessage.quote {
+            do {
+                let quotedReplyManager = DependenciesBridge.shared.quotedReplyManager
+                validatedQuotedReply = try quotedReplyManager.validateAndBuildQuotedReply(
+                    from: quoteProto,
+                    threadUniqueId: thread.uniqueId,
+                    tx: tx,
+                )
+            } catch {
+                Logger.warn("Failed to build validated quote reply! \(error)")
+                validatedQuotedReply = nil
+            }
+        } else {
+            validatedQuotedReply = nil
+        }
+
         let contactBuilder: OwnedAttachmentBuilder<OWSContact>?
         if let contactProto = dataMessage.contact.first {
             do {
@@ -1420,7 +1434,7 @@ public final class MessageReceiver {
             storyAuthorAci: storyAuthorAci,
             storyTimestamp: storyTimestamp,
             storyReactionEmoji: nil,
-            quotedMessage: quotedMessageBuilder?.info,
+            quotedMessage: validatedQuotedReply?.quotedReply,
             contactShare: contactBuilder?.info,
             linkPreview: validatedLinkPreview?.preview,
             messageSticker: validatedMessageSticker?.sticker,
@@ -1438,7 +1452,7 @@ public final class MessageReceiver {
         let hasRenderableContent = messageBuilder.hasRenderableContent(
             hasBodyAttachments: !dataMessage.attachments.isEmpty,
             hasLinkPreview: validatedLinkPreview != nil,
-            hasQuotedReply: quotedMessageBuilder != nil,
+            hasQuotedReply: validatedQuotedReply != nil,
             hasContactShare: contactBuilder != nil,
             hasSticker: validatedMessageSticker != nil,
             hasPayment: paymentModels != nil,
@@ -1464,9 +1478,11 @@ public final class MessageReceiver {
         let updatedThread = TSThread.anyFetch(uniqueId: thread.uniqueId, transaction: tx) ?? thread
 
         do {
-            try DependenciesBridge.shared.attachmentManager.createAttachmentPointers(
+            let attachmentManager = DependenciesBridge.shared.attachmentManager
+
+            try attachmentManager.createAttachmentPointers(
                 from: dataMessage.attachments.map { proto in
-                    return .init(
+                    return OwnedAttachmentPointerProto(
                         proto: proto,
                         owner: .messageBodyAttachment(.init(
                             messageRowId: message.sqliteRowId!,
@@ -1480,16 +1496,22 @@ public final class MessageReceiver {
                 tx: tx
             )
 
-            try quotedMessageBuilder?.finalize(
-                owner: .quotedReplyAttachment(.init(
-                    messageRowId: message.sqliteRowId!,
-                    receivedAtTimestamp: message.receivedAtTimestamp,
-                    threadRowId: thread.sqliteRowId!,
-                    isPastEditRevision: message.isPastEditRevision()
-                )),
-                tx: tx
-            )
-            let attachmentManager = DependenciesBridge.shared.attachmentManager
+            if
+                let quotedReplyAttachmentDataSource = validatedQuotedReply?.thumbnailDataSource,
+                MimeTypeUtil.isSupportedVisualMediaMimeType(quotedReplyAttachmentDataSource.originalAttachmentMimeType)
+            {
+                try attachmentManager.createQuotedReplyMessageThumbnail(
+                    from: quotedReplyAttachmentDataSource,
+                    owningMessageAttachmentBuilder: .init(
+                        messageRowId: message.sqliteRowId!,
+                        receivedAtTimestamp: message.receivedAtTimestamp,
+                        threadRowId: thread.sqliteRowId!,
+                        isPastEditRevision: message.isPastEditRevision(),
+                    ),
+                    tx: tx,
+                )
+            }
+
             if let linkPreviewImageProto = validatedLinkPreview?.imageProto {
                 try attachmentManager.createAttachmentPointer(
                     from: OwnedAttachmentPointerProto(

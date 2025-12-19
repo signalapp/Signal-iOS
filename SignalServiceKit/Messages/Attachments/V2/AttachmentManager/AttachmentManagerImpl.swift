@@ -152,37 +152,15 @@ public class AttachmentManagerImpl: AttachmentManager {
 
     // MARK: Quoted Replies
 
-    public func createQuotedReplyMessageThumbnailBuilder(
-        from dataSource: QuotedReplyAttachmentDataSource,
-        tx: DBWriteTransaction
-    ) -> OwnedAttachmentBuilder<OWSAttachmentInfo> {
-        let quotedReplyAttachmentInfo = OWSAttachmentInfo(
-            originalAttachmentMimeType: dataSource.originalAttachmentMimeType,
-            originalAttachmentSourceFilename: dataSource.originalAttachmentSourceFilename,
-        )
-
-        if !MimeTypeUtil.isSupportedVisualMediaMimeType(dataSource.originalAttachmentMimeType) {
-            return .withoutFinalizer(quotedReplyAttachmentInfo)
-        }
-
-        return OwnedAttachmentBuilder<OWSAttachmentInfo>(
-            info: quotedReplyAttachmentInfo,
-            finalize: { [self, dataSource] ownerId, tx in
-                let replyMessageOwner: AttachmentReference.OwnerBuilder.MessageAttachmentBuilder
-                switch ownerId {
-                case .quotedReplyAttachment(let metadata):
-                    replyMessageOwner = metadata
-                default:
-                    owsFailDebug("Invalid owner sent to quoted reply builder!")
-                    return
-                }
-
-                try _createQuotedReplyMessageThumbnail(
-                    dataSource: dataSource,
-                    referenceOwner: .quotedReplyAttachment(replyMessageOwner),
-                    tx: tx
-                )
-            }
+    public func createQuotedReplyMessageThumbnail(
+        from quotedReplyAttachmentDataSource: QuotedReplyAttachmentDataSource,
+        owningMessageAttachmentBuilder: AttachmentReference.OwnerBuilder.MessageAttachmentBuilder,
+        tx: DBWriteTransaction,
+    ) throws {
+        try _createQuotedReplyMessageThumbnail(
+            dataSource: quotedReplyAttachmentDataSource,
+            referenceOwner: .quotedReplyAttachment(owningMessageAttachmentBuilder),
+            tx: tx,
         )
     }
 
@@ -1207,6 +1185,14 @@ public class AttachmentManagerImpl: AttachmentManager {
                     tx: tx
                 )
             }
+        case .notFoundLocallyAttachment(let notFoundLocallyAttachmentSource):
+            try createAttachmentPointer(
+                from: OwnedAttachmentPointerProto(
+                    proto: notFoundLocallyAttachmentSource.thumbnailPointerProto,
+                    owner: referenceOwner,
+                ),
+                tx: tx,
+            )
         }
     }
 }

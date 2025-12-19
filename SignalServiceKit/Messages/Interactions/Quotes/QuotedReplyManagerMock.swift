@@ -11,6 +11,14 @@ open class QuotedReplyManagerMock: QuotedReplyManager {
 
     public init() {}
 
+    open func validateAndBuildQuotedReply(
+        from quoteProto: SSKProtoDataMessageQuote,
+        threadUniqueId: String,
+        tx: DBReadTransaction,
+    ) throws -> ValidatedQuotedReply {
+        throw OWSAssertionError("Not implemented!")
+    }
+
     open func quotedMessage(
         for dataMessage: SSKProtoDataMessage,
         thread: TSThread,
@@ -51,11 +59,11 @@ open class QuotedReplyManagerMock: QuotedReplyManager {
         )
     }
 
-    open func buildQuotedReplyForSending(
+    open func prepareQuotedReplyForSending(
         draft: DraftQuotedReplyModel.ForSending,
-        tx: DBWriteTransaction
-    ) -> OwnedAttachmentBuilder<TSQuotedMessage> {
-        fatalError("Unimplemented!")
+        tx: DBReadTransaction,
+    ) -> ValidatedQuotedReply {
+        fatalError("Not implemented!")
     }
 
     open func buildProtoForSending(

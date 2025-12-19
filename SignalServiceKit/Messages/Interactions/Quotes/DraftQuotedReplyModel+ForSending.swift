@@ -19,7 +19,7 @@ extension DraftQuotedReplyModel {
 
         public enum Attachment {
             case stub(QuotedMessageAttachmentReference.Stub)
-            case thumbnail(dataSource: QuotedReplyAttachmentDataSource)
+            case thumbnail(QuotedReplyAttachmentDataSource, originalAttachmentSourceFilename: String?)
         }
         public let attachment: Attachment?
 

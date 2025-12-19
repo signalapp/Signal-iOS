@@ -197,6 +197,7 @@ public class UnpreparedOutgoingMessage {
         let attachmentManager = DependenciesBridge.shared.attachmentManager
         let linkPreviewManager = DependenciesBridge.shared.linkPreviewManager
         let messageStickerManager = DependenciesBridge.shared.messageStickerManager
+        let quotedReplyManager = DependenciesBridge.shared.quotedReplyManager
 
         guard
             let thread = message.message.thread(tx: tx),
@@ -212,14 +213,11 @@ public class UnpreparedOutgoingMessage {
             message.message.update(with: validatedLinkPreview.preview, transaction: tx)
         }
 
-        let quotedReplyBuilder = message.quotedReplyDraft.map {
-            DependenciesBridge.shared.quotedReplyManager.buildQuotedReplyForSending(
-                draft: $0,
-                tx: tx
-            )
-        }.map {
-            message.message.update(with: $0.info, transaction: tx)
-            return $0
+        let validatedQuotedReply = message.quotedReplyDraft.map {
+            return quotedReplyManager.prepareQuotedReplyForSending(draft: $0, tx: tx)
+        }
+        if let validatedQuotedReply {
+            message.message.update(with: validatedQuotedReply.quotedReply, transaction: tx)
         }
 
         let validatedMessageSticker = try message.messageStickerDraft.map {
@@ -275,7 +273,7 @@ public class UnpreparedOutgoingMessage {
         if message.unsavedBodyMediaAttachments.count > 0 {
             // Borderless is disallowed on any message with a quoted reply.
             let unsavedBodyMediaAttachments: [AttachmentDataSource]
-            if quotedReplyBuilder != nil {
+            if validatedQuotedReply != nil {
                 unsavedBodyMediaAttachments = message.unsavedBodyMediaAttachments.map {
                     return $0.removeBorderlessRenderingFlagIfPresent()
                 }
@@ -314,15 +312,18 @@ public class UnpreparedOutgoingMessage {
             )
         }
 
-        try quotedReplyBuilder?.finalize(
-            owner: .quotedReplyAttachment(.init(
-                messageRowId: messageRowId,
-                receivedAtTimestamp: message.message.receivedAtTimestamp,
-                threadRowId: threadRowId,
-                isPastEditRevision: message.message.isPastEditRevision()
-            )),
-            tx: tx
-        )
+        if let thumbnailDataSource = validatedQuotedReply?.thumbnailDataSource {
+            try attachmentManager.createQuotedReplyMessageThumbnail(
+                from: thumbnailDataSource,
+                owningMessageAttachmentBuilder: .init(
+                    messageRowId: messageRowId,
+                    receivedAtTimestamp: message.message.receivedAtTimestamp,
+                    threadRowId: threadRowId,
+                    isPastEditRevision: message.message.isPastEditRevision()
+                ),
+                tx: tx,
+            )
+        }
 
         if let validatedMessageSticker {
             try attachmentManager.createAttachmentStream(

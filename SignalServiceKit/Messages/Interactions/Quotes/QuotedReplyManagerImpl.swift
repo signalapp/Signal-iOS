@@ -3,10 +3,54 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import LibSignalClient
 
-public class QuotedReplyManagerImpl: QuotedReplyManager {
+public struct ValidatedQuotedReply {
+    public let quotedReply: TSQuotedMessage
+    public let thumbnailDataSource: QuotedReplyAttachmentDataSource?
+}
+
+// MARK: -
+
+public protocol QuotedReplyManager {
+
+    func validateAndBuildQuotedReply(
+        from quoteProto: SSKProtoDataMessageQuote,
+        threadUniqueId: String,
+        tx: DBReadTransaction,
+    ) throws -> ValidatedQuotedReply
+
+    func buildDraftQuotedReply(
+        originalMessage: TSMessage,
+        tx: DBReadTransaction
+    ) -> DraftQuotedReplyModel?
+
+    func buildDraftQuotedReplyForEditing(
+        quotedReplyMessage: TSMessage,
+        quotedReply: TSQuotedMessage,
+        originalMessage: TSMessage?,
+        tx: DBReadTransaction
+    ) -> DraftQuotedReplyModel
+
+    func prepareDraftForSending(
+        _ draft: DraftQuotedReplyModel
+    ) async throws -> DraftQuotedReplyModel.ForSending
+
+    func prepareQuotedReplyForSending(
+        draft: DraftQuotedReplyModel.ForSending,
+        tx: DBReadTransaction,
+    ) -> ValidatedQuotedReply
+
+    func buildProtoForSending(
+        _ quote: TSQuotedMessage,
+        parentMessage: TSMessage,
+        tx: DBReadTransaction
+    ) throws -> SSKProtoDataMessageQuote
+}
+
+// MARK: -
+
+class QuotedReplyManagerImpl: QuotedReplyManager {
 
     private let attachmentManager: AttachmentManager
     private let attachmentStore: AttachmentStore
@@ -14,7 +58,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
     private let db: any DB
     private let tsAccountManager: TSAccountManager
 
-    public init(
+    init(
         attachmentManager: AttachmentManager,
         attachmentStore: AttachmentStore,
         attachmentValidator: AttachmentContentValidator,
@@ -28,58 +72,53 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
         self.tsAccountManager = tsAccountManager
     }
 
-    public func quotedMessage(
-        for dataMessage: SSKProtoDataMessage,
-        thread: TSThread,
-        tx: DBWriteTransaction
-    ) -> OwnedAttachmentBuilder<TSQuotedMessage>? {
-        guard let quote = dataMessage.quote else {
-            return nil
+    func validateAndBuildQuotedReply(
+        from quoteProto: SSKProtoDataMessageQuote,
+        threadUniqueId: String,
+        tx: DBReadTransaction,
+    ) throws -> ValidatedQuotedReply {
+        let timestamp = quoteProto.id
+        guard timestamp != 0, SDS.fitsInInt64(timestamp) else {
+            throw OWSAssertionError("Quoted message invalid timestamp! \(timestamp)")
         }
-        let timestamp = quote.id
-        guard timestamp != 0 else {
-            owsFailDebug("quoted message missing id")
-            return nil
-        }
-        guard SDS.fitsInInt64(timestamp) else {
-            owsFailDebug("Invalid timestamp")
-            return nil
-        }
-        guard let quoteAuthor = Aci.parseFrom(serviceIdBinary: quote.authorAciBinary, serviceIdString: quote.authorAci) else {
-            owsFailDebug("quoted message missing author")
-            return nil
+
+        guard
+            let quoteAuthor = Aci.parseFrom(
+                serviceIdBinary: quoteProto.authorAciBinary,
+                serviceIdString: quoteProto.authorAci,
+            )
+        else {
+            throw OWSAssertionError("Quoted message missing or invalid author!")
         }
 
         let originalMessage = InteractionFinder.findMessage(
             withTimestamp: timestamp,
-            threadId: thread.uniqueId,
+            threadId: threadUniqueId,
             author: .init(quoteAuthor),
             transaction: tx
         )
-        switch originalMessage {
-        case .some(let originalMessage):
+        if let originalMessage {
             // Prefer to generate the quoted content locally if available.
-            if
-                let localQuotedMessage = self.quotedMessage(
+            do {
+                return try localQuotedMessage(
                     originalMessage: originalMessage,
-                    quoteProto: quote,
-                    author: quoteAuthor,
-                    tx: tx
+                    quoteProto: quoteProto,
+                    quoteAuthor: quoteAuthor,
+                    tx: tx,
                 )
-            {
-                return localQuotedMessage
-            } else {
-                fallthrough
+            } catch {
+                Logger.warn("Failed to build quote message locally! \(error)")
             }
-        case .none:
-            // If we couldn't generate the quoted content from locally available info, we can generate it from the proto.
-            return remoteQuotedMessage(
-                quoteProto: quote,
-                quoteAuthor: quoteAuthor,
-                quoteTimestamp: timestamp,
-                tx: tx
-            )
         }
+
+        // If we couldn't generate the quoted content from local data, we can
+        // generate it from the proto.
+        return try remoteQuotedMessage(
+            quoteProto: quoteProto,
+            quoteAuthor: quoteAuthor,
+            quoteTimestamp: timestamp,
+            tx: tx,
+        )
     }
 
     /// Builds a remote message from the proto payload
@@ -89,8 +128,8 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
         quoteProto: SSKProtoDataMessageQuote,
         quoteAuthor: Aci,
         quoteTimestamp: UInt64,
-        tx: DBWriteTransaction
-    ) -> OwnedAttachmentBuilder<TSQuotedMessage>? {
+        tx: DBReadTransaction,
+    ) throws -> ValidatedQuotedReply {
         let quoteAuthorAddress = SignalServiceAddress(quoteAuthor)
 
         // This is untrusted content from other users that may not be well-formed.
@@ -100,22 +139,27 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
             quoteProto.hasType,
             quoteProto.unwrappedType == .giftBadge
         {
-            return .withoutFinalizer(TSQuotedMessage(
-                timestamp: quoteTimestamp,
-                authorAddress: quoteAuthorAddress,
-                body: nil,
-                bodyRanges: nil,
-                bodySource: .remote,
-                receivedQuotedAttachmentInfo: nil,
-                isGiftBadge: true,
-                isTargetMessageViewOnce: false,
-                isPoll: false
-            ))
+            return ValidatedQuotedReply(
+                quotedReply: TSQuotedMessage(
+                    timestamp: quoteTimestamp,
+                    authorAddress: quoteAuthorAddress,
+                    body: nil,
+                    bodyRanges: nil,
+                    bodySource: .remote,
+                    receivedQuotedAttachmentInfo: nil,
+                    isGiftBadge: true,
+                    isTargetMessageViewOnce: false,
+                    isPoll: false
+                ),
+                thumbnailDataSource: nil,
+            )
         }
 
         let body = quoteProto.text?.nilIfEmpty
         let bodyRanges =  quoteProto.bodyRanges.isEmpty ? nil : MessageBodyRanges(protos: quoteProto.bodyRanges)
-        let attachmentBuilder: OwnedAttachmentBuilder<OWSAttachmentInfo>?
+
+        let thumbnailAttachmentInfo: OWSAttachmentInfo?
+        let thumbnailDataSource: QuotedReplyAttachmentDataSource?
         if
             // We're only interested in the first attachment
             let quotedAttachment = quoteProto.attachments.first,
@@ -123,65 +167,56 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
         {
             let mimeType: String = quotedAttachment.contentType?.nilIfEmpty
                 ?? MimeType.applicationOctetStream.rawValue
-            let sourceFilename = quotedAttachment.fileName
 
-            do {
-                let thumbnailAttachmentBuilder = try attachmentManager.createAttachmentPointerBuilder(
-                    from: thumbnailProto,
-                    tx: tx
-                )
-                attachmentBuilder = thumbnailAttachmentBuilder.wrap {
-                    return OWSAttachmentInfo(
-                        originalAttachmentMimeType: mimeType,
-                        originalAttachmentSourceFilename: sourceFilename,
-                    )
-                }
-            } catch {
-                // Invalid proto!
-                return nil
-            }
-        } else if let attachmentProto = quoteProto.attachments.first, let mimeType = attachmentProto.contentType {
-            attachmentBuilder = .withoutFinalizer(OWSAttachmentInfo(
+            thumbnailAttachmentInfo = OWSAttachmentInfo(
                 originalAttachmentMimeType: mimeType,
-                originalAttachmentSourceFilename: attachmentProto.fileName,
+                originalAttachmentSourceFilename: quotedAttachment.fileName,
+            )
+            thumbnailDataSource = .notFoundLocallyAttachment(.init(
+                thumbnailPointerProto: thumbnailProto,
+                originalAttachmentMimeType: mimeType,
             ))
+        } else if
+            let quotedAttachment = quoteProto.attachments.first,
+            let mimeType = quotedAttachment.contentType
+        {
+            thumbnailAttachmentInfo = OWSAttachmentInfo(
+                originalAttachmentMimeType: mimeType,
+                originalAttachmentSourceFilename: quotedAttachment.fileName,
+            )
+            thumbnailDataSource = nil
         } else {
-            attachmentBuilder = nil
+            thumbnailAttachmentInfo = nil
+            thumbnailDataSource = nil
         }
 
-        if body?.nilIfEmpty == nil, attachmentBuilder == nil {
-            owsFailDebug("Failed to construct a valid quoted message from remote proto content")
-            return nil
+        if body?.nilIfEmpty == nil, thumbnailAttachmentInfo == nil {
+            throw OWSAssertionError("Remote quoted message proto missing content!")
         }
 
-        func quotedMessage(attachmentInfo: OWSAttachmentInfo?) -> TSQuotedMessage {
-            return TSQuotedMessage(
+        return ValidatedQuotedReply(
+            quotedReply: TSQuotedMessage(
                 timestamp: quoteTimestamp,
                 authorAddress: quoteAuthorAddress,
                 body: body,
                 bodyRanges: bodyRanges,
                 bodySource: .remote,
-                receivedQuotedAttachmentInfo: attachmentInfo,
+                receivedQuotedAttachmentInfo: thumbnailAttachmentInfo,
                 isGiftBadge: false,
                 isTargetMessageViewOnce: false,
                 isPoll: false
-            )
-        }
-
-        if let attachmentBuilder {
-            return attachmentBuilder.wrap(quotedMessage(attachmentInfo:))
-        } else {
-            return .withoutFinalizer(quotedMessage(attachmentInfo: nil))
-        }
+            ),
+            thumbnailDataSource: thumbnailDataSource,
+        )
     }
 
     /// Builds a quoted message from the original source message
-    private func quotedMessage(
+    private func localQuotedMessage(
         originalMessage: TSMessage,
         quoteProto: SSKProtoDataMessageQuote,
-        author: Aci,
-        tx: DBWriteTransaction
-    ) -> OwnedAttachmentBuilder<TSQuotedMessage>? {
+        quoteAuthor: Aci,
+        tx: DBReadTransaction,
+    ) throws -> ValidatedQuotedReply {
         let authorAddress: SignalServiceAddress
         if let incomingOriginal = originalMessage as? TSIncomingMessage {
             authorAddress = incomingOriginal.authorAddress
@@ -191,28 +226,29 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
                     tx: tx
                 )?.aciAddress
             else {
-                owsFailDebug("Not registered!")
-                return nil
+                throw NotRegisteredError()
             }
             authorAddress = localAddress
         } else {
-            owsFailDebug("Received message of type: \(type(of: originalMessage))")
-            return nil
+            throw OWSAssertionError("Received message of type: \(type(of: originalMessage))")
         }
 
         if originalMessage.isViewOnceMessage {
             // We construct a quote that does not include any of the quoted message's renderable content.
-            return .withoutFinalizer(TSQuotedMessage(
-                timestamp: originalMessage.timestamp,
-                authorAddress: authorAddress,
-                body: nil,
-                bodyRanges: nil,
-                bodySource: .local,
-                receivedQuotedAttachmentInfo: nil,
-                isGiftBadge: false,
-                isTargetMessageViewOnce: true,
-                isPoll: false
-            ))
+            return ValidatedQuotedReply(
+                quotedReply: TSQuotedMessage(
+                    timestamp: originalMessage.timestamp,
+                    authorAddress: authorAddress,
+                    body: nil,
+                    bodyRanges: nil,
+                    bodySource: .local,
+                    receivedQuotedAttachmentInfo: nil,
+                    isGiftBadge: false,
+                    isTargetMessageViewOnce: true,
+                    isPoll: false
+                ),
+                thumbnailDataSource: nil,
+            )
         }
 
         let body: String?
@@ -264,47 +300,52 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
             isPoll = false
         }
 
-        let attachmentBuilder = self.attachmentBuilder(
-            originalMessage: originalMessage,
-            quoteProto: quoteProto,
-            tx: tx
-        )
+        let thumbnailAttachmentInfo: OWSAttachmentInfo?
+        let thumbnailDataSource: QuotedReplyAttachmentDataSource?
+        if
+            let (info, dataSource) = quotedReplyAttachmentInfo(
+                originalMessage: originalMessage,
+                quoteProto: quoteProto,
+                tx: tx,
+            )
+        {
+            thumbnailAttachmentInfo = info
+            thumbnailDataSource = dataSource
+        } else {
+            thumbnailAttachmentInfo = nil
+            thumbnailDataSource = nil
+        }
 
         if
             body?.nilIfEmpty == nil,
-            attachmentBuilder == nil,
+            thumbnailAttachmentInfo == nil,
             !isGiftBadge
         {
-            owsFailDebug("quoted message has no content")
-            return nil
+            throw OWSAssertionError("Quoted message has no content!")
         }
 
-        func quotedMessage(attachmentInfo: OWSAttachmentInfo?) -> TSQuotedMessage {
-            return TSQuotedMessage(
+        return ValidatedQuotedReply(
+            quotedReply: TSQuotedMessage(
                 timestamp: originalMessage.timestamp,
                 authorAddress: authorAddress,
                 body: body,
                 bodyRanges: bodyRanges,
                 bodySource: .local,
-                receivedQuotedAttachmentInfo: attachmentInfo,
+                receivedQuotedAttachmentInfo: thumbnailAttachmentInfo,
                 isGiftBadge: isGiftBadge,
+                // Checked above
                 isTargetMessageViewOnce: false,
                 isPoll: isPoll
-            )
-        }
-
-        if let attachmentBuilder {
-            return attachmentBuilder.wrap(quotedMessage(attachmentInfo:))
-        } else {
-            return .withoutFinalizer(quotedMessage(attachmentInfo: nil))
-        }
+            ),
+            thumbnailDataSource: thumbnailDataSource,
+        )
     }
 
-    private func attachmentBuilder(
+    private func quotedReplyAttachmentInfo(
         originalMessage: TSMessage,
         quoteProto: SSKProtoDataMessageQuote,
-        tx: DBWriteTransaction
-    ) -> OwnedAttachmentBuilder<OWSAttachmentInfo>? {
+        tx: DBReadTransaction,
+    ) -> (OWSAttachmentInfo, QuotedReplyAttachmentDataSource)? {
         if quoteProto.attachments.isEmpty {
             // If the quote we got has no attachments, ignore any attachments
             // on the original message.
@@ -322,18 +363,22 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
                 tx: tx
             )
         {
-            return attachmentManager.createQuotedReplyMessageThumbnailBuilder(
-                from: QuotedReplyAttachmentDataSource.originalAttachment(.init(
-                    id: originalAttachment.id,
-                    mimeType: originalAttachment.mimeType,
-                    renderingFlag: originalReference.renderingFlag,
-                    sourceFilename: originalReference.sourceFilename,
-                    sourceUnencryptedByteCount: originalReference.sourceUnencryptedByteCount,
-                    sourceMediaSizePixels: originalReference.sourceMediaSizePixels,
-                    thumbnailPointerFromSender: quoteProto.attachments.first?.thumbnail,
-                )),
-                tx: tx
+            let attachmentInfo = OWSAttachmentInfo(
+                originalAttachmentMimeType: originalAttachment.mimeType,
+                originalAttachmentSourceFilename: originalReference.sourceFilename,
             )
+
+            let dataSource: QuotedReplyAttachmentDataSource = .originalAttachment(.init(
+                id: originalAttachment.id,
+                mimeType: originalAttachment.mimeType,
+                renderingFlag: originalReference.renderingFlag,
+                sourceFilename: originalReference.sourceFilename,
+                sourceUnencryptedByteCount: originalReference.sourceUnencryptedByteCount,
+                sourceMediaSizePixels: originalReference.sourceMediaSizePixels,
+                thumbnailPointerFromSender: quoteProto.attachments.first?.thumbnail,
+            ))
+
+            return (attachmentInfo, dataSource)
         } else {
             // This could happen if a sender spoofs their quoted message proto.
             // Our quoted message will include no thumbnails.
@@ -344,7 +389,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
 
     // MARK: - Creating draft
 
-    public func buildDraftQuotedReply(
+    func buildDraftQuotedReply(
         originalMessage: TSMessage,
         tx: DBReadTransaction
     ) -> DraftQuotedReplyModel? {
@@ -555,7 +600,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
         return createTextDraftReplyOrNil()
     }
 
-    public func buildDraftQuotedReplyForEditing(
+    func buildDraftQuotedReplyForEditing(
         quotedReplyMessage: TSMessage,
         quotedReply: TSQuotedMessage,
         originalMessage: TSMessage?,
@@ -633,7 +678,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
         }
     }
 
-    public func prepareDraftForSending(
+    func prepareDraftForSending(
         _ draft: DraftQuotedReplyModel
     ) async throws -> DraftQuotedReplyModel.ForSending {
         switch draft.content {
@@ -702,7 +747,10 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
                     fromOriginalAttachment: originalAttachmentStream,
                     originalReference: originalAttachmentReference,
                 )
-                return .thumbnail(dataSource: dataSource)
+                return .thumbnail(
+                    dataSource,
+                    originalAttachmentSourceFilename: originalAttachmentReference.sourceFilename,
+                )
             } catch {
                 // If we experience errors, just fall back to a stub.
                 return .stub(.init(mimeType: originalAttachment.mimeType, sourceFilename: originalAttachmentReference.sourceFilename))
@@ -722,12 +770,15 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
         )
     }
 
-    public func buildQuotedReplyForSending(
+    func prepareQuotedReplyForSending(
         draft: DraftQuotedReplyModel.ForSending,
-        tx: DBWriteTransaction
-    ) -> OwnedAttachmentBuilder<TSQuotedMessage> {
+        tx: DBReadTransaction,
+    ) -> ValidatedQuotedReply {
         if let tsQuotedMessage = draft.quotedMessageFromEdit {
-            return .withoutFinalizer(tsQuotedMessage)
+            return ValidatedQuotedReply(
+                quotedReply: tsQuotedMessage,
+                thumbnailDataSource: nil,
+            )
         }
 
         // Find the original message.
@@ -740,20 +791,23 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
                 transaction: tx
             )
         else {
-            return .withoutFinalizer(TSQuotedMessage(
-                timestamp: draft.originalMessageTimestamp ?? 0,
-                authorAddress: draft.originalMessageAuthorAddress,
-                body: OWSLocalizedString(
-                    "QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE",
-                    comment: "Footer label that appears below quoted messages when the quoted content was not derived locally. When the local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead show the content specified by the sender."
+            return ValidatedQuotedReply(
+                quotedReply: TSQuotedMessage(
+                    timestamp: draft.originalMessageTimestamp ?? 0,
+                    authorAddress: draft.originalMessageAuthorAddress,
+                    body: OWSLocalizedString(
+                        "QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE",
+                        comment: "Footer label that appears below quoted messages when the quoted content was not derived locally. When the local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead show the content specified by the sender."
+                    ),
+                    bodyRanges: nil,
+                    bodySource: .remote,
+                    receivedQuotedAttachmentInfo: nil,
+                    isGiftBadge: false,
+                    isTargetMessageViewOnce: false,
+                    isPoll: false
                 ),
-                bodyRanges: nil,
-                bodySource: .remote,
-                receivedQuotedAttachmentInfo: nil,
-                isGiftBadge: false,
-                isTargetMessageViewOnce: false,
-                isPoll: false
-            ))
+                thumbnailDataSource: nil,
+            )
         }
 
         let body = draft.quoteBody
@@ -771,22 +825,37 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
             )
         }
 
-        guard let quotedAttachment = draft.attachment, originalMessage.isViewOnceMessage.negated else {
-            return .withoutFinalizer(buildQuotedMessage(nil))
+        guard
+            let quotedAttachment = draft.attachment,
+            !originalMessage.isViewOnceMessage
+        else {
+            return ValidatedQuotedReply(
+                quotedReply: buildQuotedMessage(nil),
+                thumbnailDataSource: nil,
+            )
         }
 
         switch quotedAttachment {
         case .stub(let stub):
-            return .withoutFinalizer(buildQuotedMessage(OWSAttachmentInfo(
+            let thumbnailAttachmentInfo = OWSAttachmentInfo(
                 originalAttachmentMimeType: stub.mimeType ?? MimeType.applicationOctetStream.rawValue,
                 originalAttachmentSourceFilename: stub.sourceFilename,
-            )))
-        case .thumbnail(let dataSource):
-            let attachmentBuilder = attachmentManager.createQuotedReplyMessageThumbnailBuilder(
-                from: dataSource,
-                tx: tx
             )
-            return attachmentBuilder.wrap(buildQuotedMessage(_:))
+
+            return ValidatedQuotedReply(
+                quotedReply: buildQuotedMessage(thumbnailAttachmentInfo),
+                thumbnailDataSource: nil,
+            )
+        case .thumbnail(let dataSource, let originalAttachmentSourceFilename):
+            let thumbnailAttachmentInfo = OWSAttachmentInfo(
+                originalAttachmentMimeType: dataSource.originalAttachmentMimeType,
+                originalAttachmentSourceFilename: originalAttachmentSourceFilename,
+            )
+
+            return ValidatedQuotedReply(
+                quotedReply: buildQuotedMessage(thumbnailAttachmentInfo),
+                thumbnailDataSource: dataSource,
+            )
         }
     }
 
@@ -802,7 +871,7 @@ public class QuotedReplyManagerImpl: QuotedReplyManager {
 
     // MARK: - Outgoing proto
 
-    public func buildProtoForSending(
+    func buildProtoForSending(
         _ quote: TSQuotedMessage,
         parentMessage: TSMessage,
         tx: DBReadTransaction

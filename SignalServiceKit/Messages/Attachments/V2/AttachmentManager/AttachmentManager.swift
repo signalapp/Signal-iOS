@@ -62,12 +62,11 @@ public protocol AttachmentManager {
 
     // MARK: - Quoted Replies
 
-    /// Given a quote thumbnail source, creates a builder for a thumbnail
-    /// attachment (if necessary) and an owner reference to it.
-    func createQuotedReplyMessageThumbnailBuilder(
-        from dataSource: QuotedReplyAttachmentDataSource,
-        tx: DBWriteTransaction
-    ) -> OwnedAttachmentBuilder<OWSAttachmentInfo>
+    func createQuotedReplyMessageThumbnail(
+        from quotedReplyAttachmentDataSource: QuotedReplyAttachmentDataSource,
+        owningMessageAttachmentBuilder: AttachmentReference.OwnerBuilder.MessageAttachmentBuilder,
+        tx: DBWriteTransaction,
+    ) throws
 
     // MARK: - Removing Attachments
 
