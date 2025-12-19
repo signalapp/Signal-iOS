@@ -945,40 +945,35 @@ class BackupSettingsViewController:
     // MARK: -
 
     fileprivate func setOptimizeLocalStorage(_ newOptimizeLocalStorage: Bool) {
-        do {
-            let isPaidPlanTester: Bool = try db.writeWithRollbackIfThrows { tx in
-                let currentBackupPlan = backupPlanManager.backupPlan(tx: tx)
-                let newBackupPlan: BackupPlan
-                let isPaidPlanTester: Bool
+        let isPaidPlanTester: Bool = db.write { tx in
+            let currentBackupPlan = backupPlanManager.backupPlan(tx: tx)
+            let newBackupPlan: BackupPlan
+            let isPaidPlanTester: Bool
 
-                switch currentBackupPlan {
-                case .disabled, .disabling, .free:
-                    owsFailDebug("Shouldn't be setting Optimize Local Storage: \(currentBackupPlan)")
-                    return false
-                case .paid:
-                    newBackupPlan = .paid(optimizeLocalStorage: newOptimizeLocalStorage)
-                    isPaidPlanTester = false
-                case .paidExpiringSoon:
-                    newBackupPlan = .paidExpiringSoon(optimizeLocalStorage: newOptimizeLocalStorage)
-                    isPaidPlanTester = false
-                case .paidAsTester:
-                    newBackupPlan = .paidAsTester(optimizeLocalStorage: newOptimizeLocalStorage)
-                    isPaidPlanTester = true
-                }
-
-                try backupPlanManager.setBackupPlan(newBackupPlan, tx: tx)
-                return isPaidPlanTester
+            switch currentBackupPlan {
+            case .disabled, .disabling, .free:
+                owsFailDebug("Shouldn't be setting Optimize Local Storage: \(currentBackupPlan)")
+                return false
+            case .paid:
+                newBackupPlan = .paid(optimizeLocalStorage: newOptimizeLocalStorage)
+                isPaidPlanTester = false
+            case .paidExpiringSoon:
+                newBackupPlan = .paidExpiringSoon(optimizeLocalStorage: newOptimizeLocalStorage)
+                isPaidPlanTester = false
+            case .paidAsTester:
+                newBackupPlan = .paidAsTester(optimizeLocalStorage: newOptimizeLocalStorage)
+                isPaidPlanTester = true
             }
 
-            // If disabling Optimize Local Storage, offer to start downloads now.
-            if !newOptimizeLocalStorage {
-                showDownloadOffloadedMediaSheet()
-            } else if isPaidPlanTester {
-                showOffloadedMediaForTestersWarningSheet(onAcknowledge: {})
-            }
-        } catch {
-            owsFailDebug("Failed to set Optimize Local Storage: \(error)")
-            return
+            backupPlanManager.setBackupPlan(newBackupPlan, tx: tx)
+            return isPaidPlanTester
+        }
+
+        // If disabling Optimize Local Storage, offer to start downloads now.
+        if !newOptimizeLocalStorage {
+            showDownloadOffloadedMediaSheet()
+        } else if isPaidPlanTester {
+            showOffloadedMediaForTestersWarningSheet(onAcknowledge: {})
         }
     }
 

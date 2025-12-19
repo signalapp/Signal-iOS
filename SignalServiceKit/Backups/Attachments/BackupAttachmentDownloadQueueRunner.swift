@@ -359,8 +359,8 @@ public class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQu
                 // a a "retryable" error so we don't wipe this row from the queue.
                 // Since its now ineligible it will be skipped going forward.
                 Logger.info("Marking \(attachment.id) ineligible and skipping download")
-                try? await db.awaitableWrite { tx in
-                    try backupAttachmentDownloadStore.markIneligible(
+                await db.awaitableWrite { tx in
+                    backupAttachmentDownloadStore.markIneligible(
                         attachmentId: attachment.id,
                         thumbnail: record.record.isThumbnail,
                         tx: tx
@@ -371,8 +371,8 @@ public class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQu
                 // All done! Mark done and treat it as a "retryable" error
                 // so we don't wipe this row from the queue. Since its now
                 // done it will be skipped going forward.
-                try? await db.awaitableWrite { tx in
-                    try backupAttachmentDownloadStore.markDone(
+                await db.awaitableWrite { tx in
+                    backupAttachmentDownloadStore.markDone(
                         attachmentId: attachment.id,
                         thumbnail: record.record.isThumbnail,
                         tx: tx
@@ -561,11 +561,11 @@ public class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQu
             return .success
         }
 
-        func didSucceed(record: Store.Record, tx: DBWriteTransaction) throws {
+        func didSucceed(record: Store.Record, tx: DBWriteTransaction) {
             logger.info("Finished restoring attachment \(record.record.attachmentRowId), download \(record.id), isThumbnail: \(record.record.isThumbnail)")
             // Mark the record done when we succeed; this will filter it out
             // from future queue pop/peek operations.
-            try backupAttachmentDownloadStore.markDone(
+            backupAttachmentDownloadStore.markDone(
                 attachmentId: record.record.attachmentRowId,
                 thumbnail: record.record.isThumbnail,
                 tx: tx
@@ -641,7 +641,7 @@ public class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQu
                     }
                 }
             } else if !isRetryable {
-                try backupAttachmentDownloadStore.remove(
+                backupAttachmentDownloadStore.remove(
                     attachmentId: record.record.attachmentRowId,
                     thumbnail: record.record.isThumbnail,
                     tx: tx
@@ -693,9 +693,9 @@ public class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQu
             }
         }
 
-        func didCancel(record: Store.Record, tx: DBWriteTransaction) throws {
+        func didCancel(record: Store.Record, tx: DBWriteTransaction) {
             logger.warn("Cancelled restoring attachment \(record.record.attachmentRowId), download \(record.id), isThumbnail: \(record.record.isThumbnail)")
-            try backupAttachmentDownloadStore.remove(
+            backupAttachmentDownloadStore.remove(
                 attachmentId: record.record.attachmentRowId,
                 thumbnail: record.record.isThumbnail,
                 tx: tx
@@ -720,7 +720,7 @@ public class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQu
                     // This isn't load-bearing, but its nice to do just in case
                     // some new download gets added it can just count up to its own
                     // total.
-                    try? backupAttachmentDownloadStore.deleteAllDone(tx: tx)
+                    backupAttachmentDownloadStore.deleteAllDone(tx: tx)
                 }
             }
         }

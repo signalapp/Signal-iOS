@@ -482,22 +482,15 @@ internal class BackupArchiveMessageAttachmentArchiver: BackupArchiveProtoStreamW
             )])
         }
 
-        do {
-            try results.forEach {
-                try backupAttachmentDownloadScheduler.enqueueFromBackupIfNeeded(
-                    $0,
-                    restoreStartTimestampMs: context.startTimestampMs,
-                    backupPlan: backupPlan,
-                    remoteConfig: accountDataContext.currentRemoteConfig,
-                    isPrimaryDevice: context.isPrimaryDevice,
-                    tx: context.tx
-                )
-            }
-        } catch {
-            return .partialRestore((), [.restoreFrameError(
-                .failedToEnqueueAttachmentDownload(error),
-                chatItemId
-            )])
+        for referencedAttachment in results {
+            backupAttachmentDownloadScheduler.enqueueFromBackupIfNeeded(
+                referencedAttachment,
+                restoreStartTimestampMs: context.startTimestampMs,
+                backupPlan: backupPlan,
+                remoteConfig: accountDataContext.currentRemoteConfig,
+                isPrimaryDevice: context.isPrimaryDevice,
+                tx: context.tx
+            )
         }
 
         return .success(())

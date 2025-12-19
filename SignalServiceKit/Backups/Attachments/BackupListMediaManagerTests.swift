@@ -239,7 +239,7 @@ public class BackupListMediaManagerTests {
                 let attachment = attachmentStore.fetch(id: attachmentId, tx: tx)!
                 #expect(attachment.mediaTierInfo == nil)
 
-                #expect(try! backupAttachmentDownloadStore.getEnqueuedDownload(
+                #expect(backupAttachmentDownloadStore.getEnqueuedDownload(
                     attachmentRowId: attachmentId,
                     thumbnail: false,
                     tx: tx

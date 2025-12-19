@@ -26,19 +26,19 @@ class BackupAttachmentDownloadStoreTests: XCTestCase {
 
         let (threadRowId, messageRowId) = insertThreadAndInteraction()
 
-        try db.write { tx in
-            try attachmentRecord.insert(
+        db.write { tx in
+            try! attachmentRecord.insert(
                 tx.database
             )
-            let attachment = try Attachment(record: attachmentRecord)
-            let reference = try insertMessageAttachmentReferenceRecord(
+            let attachment = try! Attachment(record: attachmentRecord)
+            let reference = insertMessageAttachmentReferenceRecord(
                 attachmentRowId: attachmentRecord.sqliteId!,
                 messageRowId: messageRowId,
                 threadRowId: threadRowId,
                 timestamp: 1234,
                 tx: tx
             )
-            try store.enqueue(
+            store.enqueue(
                 ReferencedAttachment(reference: reference, attachment: attachment),
                 thumbnail: false,
                 canDownloadFromMediaTier: true,
@@ -48,7 +48,7 @@ class BackupAttachmentDownloadStoreTests: XCTestCase {
             )
 
             // Ensure the row exists.
-            let row = try QueuedBackupAttachmentDownload.fetchOne(tx.database)
+            let row = try! QueuedBackupAttachmentDownload.fetchOne(tx.database)
             XCTAssertNotNil(row)
             XCTAssertEqual(row?.attachmentRowId, attachmentRecord.sqliteId)
             XCTAssertEqual(row?.maxOwnerTimestamp, 1234)
@@ -56,15 +56,15 @@ class BackupAttachmentDownloadStoreTests: XCTestCase {
 
         // Re enqueue at a higher timestamp.
         try db.write { tx in
-            let attachment = try Attachment(record: attachmentRecord)
-            let reference = try insertMessageAttachmentReferenceRecord(
+            let attachment = try! Attachment(record: attachmentRecord)
+            let reference = insertMessageAttachmentReferenceRecord(
                 attachmentRowId: attachmentRecord.sqliteId!,
                 messageRowId: messageRowId,
                 threadRowId: threadRowId,
                 timestamp: 5678,
                 tx: tx
             )
-            try store.enqueue(
+            store.enqueue(
                 ReferencedAttachment(reference: reference, attachment: attachment),
                 thumbnail: false,
                 canDownloadFromMediaTier: true,
@@ -92,7 +92,7 @@ class BackupAttachmentDownloadStoreTests: XCTestCase {
             let attachment = try Attachment(record: attachmentRecord)
             let reference = try AttachmentReference(record: referenceRecord)
 
-            try store.enqueue(
+            store.enqueue(
                 ReferencedAttachment(reference: reference, attachment: attachment),
                 thumbnail: false,
                 canDownloadFromMediaTier: true,
@@ -109,8 +109,8 @@ class BackupAttachmentDownloadStoreTests: XCTestCase {
 
         // Re enqueue at an even higher timestamp.
         try db.write { tx in
-            let attachment = try Attachment(record: attachmentRecord)
-            let reference = try insertMessageAttachmentReferenceRecord(
+            let attachment = try! Attachment(record: attachmentRecord)
+            let reference = insertMessageAttachmentReferenceRecord(
                 attachmentRowId: attachmentRecord.sqliteId!,
                 messageRowId: messageRowId,
                 threadRowId: threadRowId,
@@ -118,7 +118,7 @@ class BackupAttachmentDownloadStoreTests: XCTestCase {
                 tx: tx
             )
 
-            try store.enqueue(
+            store.enqueue(
                 ReferencedAttachment(reference: reference, attachment: attachment),
                 thumbnail: false,
                 canDownloadFromMediaTier: true,
@@ -159,15 +159,15 @@ class BackupAttachmentDownloadStoreTests: XCTestCase {
                     try attachmentRecord.insert(
                         tx.database
                     )
-                    let attachment = try Attachment(record: attachmentRecord)
-                    let reference = try insertMessageAttachmentReferenceRecord(
+                    let attachment = try! Attachment(record: attachmentRecord)
+                    let reference = insertMessageAttachmentReferenceRecord(
                         attachmentRowId: attachmentRecord.sqliteId!,
                         messageRowId: messageRowId,
                         threadRowId: threadRowId,
                         timestamp: timestamp,
                         tx: tx
                     )
-                    try store.enqueue(
+                    store.enqueue(
                         ReferencedAttachment(reference: reference, attachment: attachment),
                         thumbnail: isThumbnail,
                         canDownloadFromMediaTier: true,
@@ -188,15 +188,15 @@ class BackupAttachmentDownloadStoreTests: XCTestCase {
                 try attachmentRecord.insert(
                     tx.database
                 )
-                let attachment = try Attachment(record: attachmentRecord)
-                let reference = try insertMessageAttachmentReferenceRecord(
+                let attachment = try! Attachment(record: attachmentRecord)
+                let reference = insertMessageAttachmentReferenceRecord(
                     attachmentRowId: attachmentRecord.sqliteId!,
                     messageRowId: messageRowId,
                     threadRowId: threadRowId,
                     timestamp: nowTimestamp - i,
                     tx: tx
                 )
-                try store.enqueue(
+                store.enqueue(
                     ReferencedAttachment(reference: reference, attachment: attachment),
                     thumbnail: i % 2 == 0,
                     canDownloadFromMediaTier: true,
@@ -269,7 +269,7 @@ class BackupAttachmentDownloadStoreTests: XCTestCase {
         threadRowId: Int64,
         timestamp: UInt64,
         tx: DBWriteTransaction
-    ) throws -> AttachmentReference {
+    ) -> AttachmentReference {
         let record = AttachmentReference.MessageAttachmentReferenceRecord.init(
             attachmentRowId: attachmentRowId,
             sourceFilename: nil,
@@ -283,7 +283,7 @@ class BackupAttachmentDownloadStoreTests: XCTestCase {
                 isPastEditRevision: false
             ))
         )
-        try record.insert(tx.database)
-        return try AttachmentReference(record: record)
+        try! record.insert(tx.database)
+        return try! AttachmentReference(record: record)
     }
 }

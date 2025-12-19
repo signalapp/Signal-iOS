@@ -351,13 +351,13 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
         let subscription = try await subscriptionFetcher.fetch(subscriberID: subscriberID)
         let backupEntitlement = try await whoAmIManager.makeWhoAmIRequest().entitlements.backup
 
-        try await db.awaitableWriteWithRollbackIfThrows { tx in
+        await db.awaitableWrite { tx in
             warnSubscriptionFailedToRenewIfNecessary(
                 fetchedSubscription: subscription,
                 tx: tx,
             )
 
-            try downgradeBackupPlanIfNecessary(
+            downgradeBackupPlanIfNecessary(
                 fetchedSubscription: subscription,
                 backupEntitlement: backupEntitlement,
                 tx: tx,
@@ -407,7 +407,7 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
         fetchedSubscription subscription: Subscription?,
         backupEntitlement: WhoAmIRequestFactory.Responses.WhoAmI.Entitlements.BackupEntitlement?,
         tx: DBWriteTransaction,
-    ) throws {
+    ) {
         let currentBackupPlan = backupPlanManager.backupPlan(tx: tx)
 
         enum Downgrade {
@@ -491,23 +491,18 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
             case .toPaidExpiringSoon(let optimizeLocalStorage): .paidExpiringSoon(optimizeLocalStorage: optimizeLocalStorage)
             }
 
-            do {
-                try backupPlanManager.setBackupPlan(downgradedBackupPlan, tx: tx)
+            backupPlanManager.setBackupPlan(downgradedBackupPlan, tx: tx)
 
-                switch downgrade {
-                case .toFreeTier:
-                    // Subscription issues no longer relevant!
-                    backupSubscriptionIssueStore.setStopWarningIAPSubscriptionAlreadyRedeemed(tx: tx)
-                    backupSubscriptionIssueStore.setStopWarningIAPSubscriptionNotFoundLocally(tx: tx)
+            switch downgrade {
+            case .toFreeTier:
+                // Subscription issues no longer relevant!
+                backupSubscriptionIssueStore.setStopWarningIAPSubscriptionAlreadyRedeemed(tx: tx)
+                backupSubscriptionIssueStore.setStopWarningIAPSubscriptionNotFoundLocally(tx: tx)
 
-                    // Warn that it expired, though.
-                    backupSubscriptionIssueStore.setShouldWarnIAPSubscriptionExpired(true, tx: tx)
-                case .toPaidExpiringSoon:
-                    break
-                }
-            } catch {
-                owsFailDebug("Failed to downgrade BackupPlan: \(currentBackupPlan) -> \(downgradedBackupPlan)! \(error)")
-                throw error
+                // Warn that it expired, though.
+                backupSubscriptionIssueStore.setShouldWarnIAPSubscriptionExpired(true, tx: tx)
+            case .toPaidExpiringSoon:
+                break
             }
         }
     }

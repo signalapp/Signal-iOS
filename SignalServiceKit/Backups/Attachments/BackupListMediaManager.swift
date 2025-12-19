@@ -778,13 +778,13 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
         )
 
         if
-            let existingDownload = try backupAttachmentDownloadStore.getEnqueuedDownload(
+            let existingDownload = backupAttachmentDownloadStore.getEnqueuedDownload(
                 attachmentRowId: attachment.id,
                 thumbnail: isThumbnail,
                 tx: tx
             )
         {
-            try self.cancelEnqueuedDownload(
+            self.cancelEnqueuedDownload(
                 existingDownload,
                 for: attachment,
                 isThumbnail: isThumbnail,
@@ -802,8 +802,8 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
         currentBackupPlan: BackupPlan,
         remoteConfig: RemoteConfig,
         tx: DBWriteTransaction
-    ) throws {
-        try backupAttachmentDownloadStore.remove(
+    ) {
+        backupAttachmentDownloadStore.remove(
             attachmentId: attachment.id,
             thumbnail: isThumbnail,
             tx: tx
@@ -830,7 +830,9 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
             existingDownload.id = nil
             existingDownload.canDownloadFromMediaTier = false
             existingDownload.state = transitTierEligibilityState
-            try existingDownload.insert(tx.database)
+            failIfThrows {
+                try existingDownload.insert(tx.database)
+            }
             shouldMarkDownloadProgressFinished = false
         }
         if shouldMarkDownloadProgressFinished {
@@ -1052,13 +1054,13 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
             fallthrough
         case .ready:
             // Dequeue any existing download first; this will reset the retry counter
-            try backupAttachmentDownloadStore.remove(
+            backupAttachmentDownloadStore.remove(
                 attachmentId: attachment.id,
                 thumbnail: isThumbnail,
                 tx: tx
             )
 
-            _ = try backupAttachmentDownloadStore.enqueue(
+            backupAttachmentDownloadStore.enqueue(
                 ReferencedAttachment(
                     reference: try fetchMostRecentReference(),
                     attachment: attachment

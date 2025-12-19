@@ -476,14 +476,14 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
             areDownloadsSuspended
         ) = db.read { tx in
             return (
-                (try? backupAttachmentDownloadStore.hasAnyReadyDownloads(
+                !backupAttachmentDownloadStore.hasAnyReadyDownloads(
                     isThumbnail: false,
                     tx: tx
-                ))?.negated ?? true,
-                (try? backupAttachmentDownloadStore.hasAnyReadyDownloads(
+                ),
+                !backupAttachmentDownloadStore.hasAnyReadyDownloads(
                     isThumbnail: true,
                     tx: tx
-                ))?.negated ?? true,
+                ),
                 backupSettingsStore.isBackupAttachmentDownloadQueueSuspended(tx: tx)
             )
 

@@ -45,7 +45,7 @@ struct BackupDisablingManagerTest {
         }
 
         mockDB.write { tx in
-            try! mockBackupPlanManager.setBackupPlan(.free, tx: tx)
+            mockBackupPlanManager.setBackupPlan(.free, tx: tx)
             #expect(!disablingManager.disableRemotelyFailed(tx: tx))
         }
 

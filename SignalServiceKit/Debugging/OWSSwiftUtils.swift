@@ -79,6 +79,7 @@ public func failIfThrowsDatabaseError<T>(
     failIfThrows(block: block, file: file, function: function, line: line)
 }
 
+@discardableResult
 public func failIfThrows<T>(
     block: () throws -> T,
     file: String = #fileID,

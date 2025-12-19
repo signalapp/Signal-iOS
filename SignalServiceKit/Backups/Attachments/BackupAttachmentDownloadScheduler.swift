@@ -18,7 +18,7 @@ public protocol BackupAttachmentDownloadScheduler {
         remoteConfig: RemoteConfig,
         isPrimaryDevice: Bool,
         tx: DBWriteTransaction
-    ) throws
+    )
 }
 
 public class BackupAttachmentDownloadSchedulerImpl: BackupAttachmentDownloadScheduler {
@@ -38,7 +38,7 @@ public class BackupAttachmentDownloadSchedulerImpl: BackupAttachmentDownloadSche
         remoteConfig: RemoteConfig,
         isPrimaryDevice: Bool,
         tx: DBWriteTransaction
-    ) throws {
+    ) {
         let eligibility = BackupAttachmentDownloadEligibility.forAttachment(
             referencedAttachment.attachment,
             reference: referencedAttachment.reference,
@@ -52,7 +52,7 @@ public class BackupAttachmentDownloadSchedulerImpl: BackupAttachmentDownloadSche
             let state = eligibility.thumbnailMediaTierState,
             state != .done
         {
-            try backupAttachmentDownloadStore.enqueue(
+            backupAttachmentDownloadStore.enqueue(
                 referencedAttachment,
                 thumbnail: true,
                 // Thumbnails are always media tier
@@ -70,7 +70,7 @@ public class BackupAttachmentDownloadSchedulerImpl: BackupAttachmentDownloadSche
             let state = eligibility.fullsizeState,
             state != .done
         {
-            try backupAttachmentDownloadStore.enqueue(
+            backupAttachmentDownloadStore.enqueue(
                 referencedAttachment,
                 thumbnail: false,
                 canDownloadFromMediaTier: eligibility.canDownloadMediaTierFullsize,
@@ -99,7 +99,7 @@ open class BackupAttachmentDownloadSchedulerMock: BackupAttachmentDownloadSchedu
         remoteConfig: RemoteConfig,
         isPrimaryDevice: Bool,
         tx: DBWriteTransaction
-    ) throws {
+    ) {
         // Do nothing
     }
 }

@@ -464,14 +464,7 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
             uploadEra = backupAttachmentUploadEraStore.currentUploadEra(tx: context.tx)
             backupPlan = .disabled
         }
-        do {
-            try backupPlanManager.setBackupPlan(backupPlan, tx: context.tx)
-        } catch {
-            return .failure([.restoreFrameError(
-                .failedToSetBackupPlan(error),
-                .localUser,
-            )])
-        }
+        backupPlanManager.setBackupPlan(backupPlan, tx: context.tx)
 
         // These MUST get set before we restore custom chat colors/wallpapers.
         context.uploadEra = uploadEra

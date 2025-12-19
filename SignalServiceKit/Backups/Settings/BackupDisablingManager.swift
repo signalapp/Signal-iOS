@@ -79,33 +79,29 @@ public final class BackupDisablingManager {
     ) async -> BackupAttachmentDownloadQueueStatus {
         logger.info("Disabling Backups...")
 
-        do {
-            try await db.awaitableWriteWithRollbackIfThrows { tx in
-                switch backupPlanManager.backupPlan(tx: tx) {
-                case .disabling:
-                    owsFail("Unexpectedly attempted to start disabling, but already disabling!")
-                case .disabled, .free, .paid, .paidExpiringSoon, .paidAsTester:
-                    break
-                }
-
-                try backupPlanManager.setBackupPlan(.disabling, tx: tx)
-
-                switch aepSideEffect {
-                case nil:
-                    break
-                case .rotate(let newAEP):
-                    // Persist the new AEP in this class' KVStore temporarily.
-                    // Once we're done disabling, we'll save it officially.
-                    kvStore.setString(newAEP.rawString, key: StoreKeys.aepBeingRotated, transaction: tx)
-                }
+        await db.awaitableWrite { tx in
+            switch backupPlanManager.backupPlan(tx: tx) {
+            case .disabling:
+                owsFail("Unexpectedly attempted to start disabling, but already disabling!")
+            case .disabled, .free, .paid, .paidExpiringSoon, .paidAsTester:
+                break
             }
 
-            logger.info("Backups set locally as disabling. Starting async disabling work...")
-            Task {
-                await disableRemotelyIfNecessary()
+            backupPlanManager.setBackupPlan(.disabling, tx: tx)
+
+            switch aepSideEffect {
+            case nil:
+                break
+            case .rotate(let newAEP):
+                // Persist the new AEP in this class' KVStore temporarily.
+                // Once we're done disabling, we'll save it officially.
+                kvStore.setString(newAEP.rawString, key: StoreKeys.aepBeingRotated, transaction: tx)
             }
-        } catch {
-            logger.error("Failed to mark Backups disabling locally! \(error)")
+        }
+
+        logger.info("Backups set locally as disabling. Starting async disabling work...")
+        Task {
+            await disableRemotelyIfNecessary()
         }
 
         // We may have just made the download queue non-empty. Ensure we wait
@@ -202,40 +198,36 @@ public final class BackupDisablingManager {
             successfullyDisabledRemotely = false
         }
 
-        do {
-            try await db.awaitableWriteWithRollbackIfThrows { tx in
-                if successfullyDisabledRemotely {
-                    kvStore.removeValue(forKey: StoreKeys.remoteDisablingFailed, transaction: tx)
-                } else {
-                    kvStore.setBool(true, key: StoreKeys.remoteDisablingFailed, transaction: tx)
-                }
-
-                try backupPlanManager.setBackupPlan(.disabled, tx: tx)
-
-                // Wipe these, which are now outdated.
-                backupSettingsStore.resetLastBackupDetails(tx: tx)
-                backupSettingsStore.resetShouldAllowBackupUploadsOnCellular(tx: tx)
-
-                // With Backups disabled, these credentials are no longer valid
-                // and are no longer safe to use.
-                authCredentialStore.removeAllBackupAuthCredentials(tx: tx)
-                backupCDNCredentialStore.wipe(tx: tx)
-
-                if let aepBeingRotatedString = kvStore.getString(StoreKeys.aepBeingRotated, transaction: tx) {
-                    logger.warn("Rotating AEP after disabling Backups!")
-
-                    accountEntropyPoolManager.setAccountEntropyPool(
-                        newAccountEntropyPool: try! AccountEntropyPool(key: aepBeingRotatedString),
-                        disablePIN: false,
-                        tx: tx
-                    )
-                }
+        await db.awaitableWrite { tx in
+            if successfullyDisabledRemotely {
+                kvStore.removeValue(forKey: StoreKeys.remoteDisablingFailed, transaction: tx)
+            } else {
+                kvStore.setBool(true, key: StoreKeys.remoteDisablingFailed, transaction: tx)
             }
 
-            logger.info("Successfully disabled Backups locally!")
-        } catch {
-            logger.error("Failed to mark Backups disabled locally! \(error)")
+            backupPlanManager.setBackupPlan(.disabled, tx: tx)
+
+            // Wipe these, which are now outdated.
+            backupSettingsStore.resetLastBackupDetails(tx: tx)
+            backupSettingsStore.resetShouldAllowBackupUploadsOnCellular(tx: tx)
+
+            // With Backups disabled, these credentials are no longer valid
+            // and are no longer safe to use.
+            authCredentialStore.removeAllBackupAuthCredentials(tx: tx)
+            backupCDNCredentialStore.wipe(tx: tx)
+
+            if let aepBeingRotatedString = kvStore.getString(StoreKeys.aepBeingRotated, transaction: tx) {
+                logger.warn("Rotating AEP after disabling Backups!")
+
+                accountEntropyPoolManager.setAccountEntropyPool(
+                    newAccountEntropyPool: try! AccountEntropyPool(key: aepBeingRotatedString),
+                    disablePIN: false,
+                    tx: tx
+                )
+            }
         }
+
+        logger.info("Successfully disabled Backups locally!")
     }
 
     private func _waitForBackupAttachmentDownloads() async {

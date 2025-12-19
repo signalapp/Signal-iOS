@@ -116,10 +116,7 @@ final class BackupEnablingManager {
             throw .networkError
         } catch let error as OWSHTTPError where error.responseStatusCode == 429 {
             logger.error("Rate limited when Registering Backup ID! \(error)")
-            if
-                let retryAfterHeader = error.responseHeaders?["retry-after"],
-                let retryAfterTime = TimeInterval(retryAfterHeader)
-            {
+            if let retryAfterTimeInterval = error.responseHeaders?.retryAfterTimeInterval {
                 let title = OWSLocalizedString(
                     "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_RATE_LIMITED_TITLE",
                     comment: "Message shown in an action sheet when the user tries to confirm a plan selection, but encounters a rate limit. They should wait the requested amount of time and try again. {{ Embeds 1 & 2: the preformatted time they must wait before enabling backups, such as \"1 week\" or \"6 hours\". }}"
@@ -129,7 +126,7 @@ final class BackupEnablingManager {
                     comment: "Message shown in an action sheet when the user tries to confirm a plan selection, but encounters a rate limit. They should wait the requested amount of time and try again."
                 )
                 let nextRetryString = DateUtil.formatDuration(
-                    seconds: UInt32(retryAfterTime),
+                    seconds: UInt32(retryAfterTimeInterval),
                     useShortFormat: false
                 )
                 throw .custom(
@@ -153,7 +150,7 @@ final class BackupEnablingManager {
 
         switch planSelection {
         case .free:
-            try await setBackupPlan { _ in .free }
+            await setBackupPlan { _ in .free }
         case .paid:
             if BuildFlags.Backups.avoidStoreKitForTesters {
                 try await enablePaidPlanWithoutStoreKit()
@@ -206,7 +203,7 @@ final class BackupEnablingManager {
                 ))
             }
 
-            try await setBackupPlan { currentBackupPlan in
+            await setBackupPlan { currentBackupPlan in
                 let currentOptimizeLocalStorage: Bool
                 switch currentBackupPlan {
                 case .disabled, .disabling, .free:
@@ -226,7 +223,7 @@ final class BackupEnablingManager {
             // is approved, but if/when that happens BackupPlan will get set
             // set to .paid. For the time being, we can enable Backups as
             // a free-tier user!
-            try await setBackupPlan { _ in .free }
+            await setBackupPlan { _ in .free }
 
         case .userCancelled:
             throw .userCancelled
@@ -244,7 +241,7 @@ final class BackupEnablingManager {
             throw .genericError
         }
 
-        try await setBackupPlan { _ in
+        await setBackupPlan { _ in
             return .paidAsTester(optimizeLocalStorage: false)
         }
     }
@@ -253,15 +250,10 @@ final class BackupEnablingManager {
 
     private func setBackupPlan(
         block: (_ currentBackupPlan: BackupPlan) -> BackupPlan,
-    ) async throws(ActionSheetDisplayableError) {
-        do {
-            try await db.awaitableWriteWithRollbackIfThrows { tx in
-                let newBackupPlan = block(backupPlanManager.backupPlan(tx: tx))
-                try backupPlanManager.setBackupPlan(newBackupPlan, tx: tx)
-            }
-        } catch {
-            owsFailDebug("Failed to set BackupPlan! \(error)", logger: logger)
-            throw .genericError
+    ) async {
+        await db.awaitableWrite { tx in
+            let newBackupPlan = block(backupPlanManager.backupPlan(tx: tx))
+            backupPlanManager.setBackupPlan(newBackupPlan, tx: tx)
         }
     }
 }

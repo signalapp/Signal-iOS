@@ -191,8 +191,8 @@ final class BackupTestFlightEntitlementManagerImpl: BackupTestFlightEntitlementM
             shouldWarnDowngraded = true
         }
 
-        try await db.awaitableWriteWithRollbackIfThrows { tx in
-            try backupPlanManager.setBackupPlan(newBackupPlan, tx: tx)
+        await db.awaitableWrite { tx in
+            backupPlanManager.setBackupPlan(newBackupPlan, tx: tx)
 
             if shouldWarnDowngraded {
                 backupSubscriptionIssueStore.setShouldWarnTestFlightSubscriptionExpired(true, tx: tx)

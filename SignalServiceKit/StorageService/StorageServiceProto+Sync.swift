@@ -1754,11 +1754,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
             )
         }
 
-        do {
-            try mergeBackupPlan(in: record, tx: transaction)
-        } catch {
-            owsFail("Failed to merge BackupPlan from Storage Service! \(error)")
-        }
+        mergeBackupPlan(in: record, tx: transaction)
 
         if mergeDefaultAvatarColor(in: record, tx: transaction) {
             needsUpdate = true
@@ -1770,7 +1766,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
     private func mergeBackupPlan(
         in record: StorageServiceProtoAccountRecord,
         tx: DBWriteTransaction,
-    ) throws {
+    ) {
         guard !isPrimaryDevice else {
             // Never set the BackupPlan on a primary via Storage Service.
             return
@@ -1781,13 +1777,13 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
                 let backupTierUInt8 = UInt8(exactly: backupTierRawValue),
                 let backupLevel = LibSignalClient.BackupLevel(rawValue: backupTierUInt8)
             {
-                try backupPlanManager.setBackupPlan(fromStorageService: backupLevel, tx: tx)
+                backupPlanManager.setBackupPlan(fromStorageService: backupLevel, tx: tx)
             } else {
                 let logger = PrefixedLogger(prefix: "[Backups]")
                 logger.warn("Ignoring backupTier value: \(backupTierRawValue)")
             }
         } else {
-            try backupPlanManager.setBackupPlan(fromStorageService: nil, tx: tx)
+            backupPlanManager.setBackupPlan(fromStorageService: nil, tx: tx)
         }
     }
 

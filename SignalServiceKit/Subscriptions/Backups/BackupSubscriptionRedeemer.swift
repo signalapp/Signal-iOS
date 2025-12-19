@@ -99,43 +99,35 @@ class BackupSubscriptionRedeemer {
 
         switch await _redeemBackupReceiptCredential(context: context) {
         case .success:
-            do {
-                try await db.awaitableWriteWithRollbackIfThrows { tx in
-                    context.delete(tx: tx)
+            await db.awaitableWrite { tx in
+                context.delete(tx: tx)
 
-                    /// We're now a paid-tier Backups user according to the server.
-                    /// If our local thinks we're free-tier, upgrade it.
-                    switch backupPlanManager.backupPlan(tx: tx) {
-                    case .free:
-                        // "Optimize Media" is off by default when you first upgrade.
-                        try backupPlanManager.setBackupPlan(
-                            .paid(optimizeLocalStorage: false),
-                            tx: tx
-                        )
-                    case .disabled, .disabling:
-                        // Don't sneakily enable Backups!
-                        break
-                    case .paid, .paidExpiringSoon, .paidAsTester:
-                        break
-                    }
-
-                    /// Clear out any cached Backup auth credentials, since we
-                    /// may now be able to fetch credentials with a higher level
-                    /// of access than we had cached.
-                    authCredentialStore.removeAllBackupAuthCredentials(tx: tx)
-
-                    /// We've successfully redeemed, so any "already redeemed"
-                    /// errors are by definition obsolete.
-                    backupSubscriptionIssueStore.setStopWarningIAPSubscriptionAlreadyRedeemed(tx: tx)
+                /// We're now a paid-tier Backups user according to the server.
+                /// If our local thinks we're free-tier, upgrade it.
+                switch backupPlanManager.backupPlan(tx: tx) {
+                case .free:
+                    // "Optimize Media" is off by default when you first upgrade.
+                    backupPlanManager.setBackupPlan(
+                        .paid(optimizeLocalStorage: false),
+                        tx: tx
+                    )
+                case .disabled, .disabling:
+                    // Don't sneakily enable Backups!
+                    break
+                case .paid, .paidExpiringSoon, .paidAsTester:
+                    break
                 }
 
-                logger.info("Redemption successful!")
-            } catch {
-                owsFailDebug("Failed to set BackupPlan! \(error)")
+                /// Clear out any cached Backup auth credentials, since we
+                /// may now be able to fetch credentials with a higher level
+                /// of access than we had cached.
+                authCredentialStore.removeAllBackupAuthCredentials(tx: tx)
 
-                await db.awaitableWrite { context.delete(tx: $0) }
-                throw TerminalRedemptionError()
+                /// We've successfully redeemed, so any "already redeemed"
+                /// errors are by definition obsolete.
+                backupSubscriptionIssueStore.setStopWarningIAPSubscriptionAlreadyRedeemed(tx: tx)
             }
+            logger.info("Redemption successful!")
 
         case .needsReattempt:
             // Try again, without a delay.

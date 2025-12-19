@@ -872,12 +872,8 @@ extension BackupArchive {
 
             case databaseInsertionFailed(RawError)
 
-            case failedToEnqueueAttachmentDownload(RawError)
-
             /// We failed to properly create the attachment in the DB after restoring
             case failedToCreateAttachment
-
-            case failedToSetBackupPlan(RawError)
 
             /// These should never happen; it means some invariant we could not
             /// enforce with the type system was broken. Nothing was wrong with
@@ -1033,12 +1029,11 @@ extension BackupArchive {
                 // Collapse these by the relevant class.
                 return "\(modelClass)"
             case
-                .databaseInsertionFailed(let rawError),
-                .failedToEnqueueAttachmentDownload(let rawError):
+                .databaseInsertionFailed(let rawError):
                 // We don't want to re-log every instance of this we see if they repeat.
                 // Collapse them by the raw error itself.
                 return "\(rawError)"
-            case .failedToSetBackupPlan, .developerError:
+            case .developerError:
                 // Log each of these as we see them.
                 return nil
             case .pollCreateFailedToInsertInDatabase,
@@ -1156,8 +1151,6 @@ extension BackupArchive {
                     .referencedCustomChatColorNotFound,
                     .databaseModelMissingRowId,
                     .databaseInsertionFailed,
-                    .failedToSetBackupPlan,
-                    .failedToEnqueueAttachmentDownload,
                     .developerError,
                     .pollCreateFailedToInsertInDatabase,
                     .pollVoteFailedToInsertInDatabase,
