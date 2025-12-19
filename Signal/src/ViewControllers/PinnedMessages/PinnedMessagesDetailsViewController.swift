@@ -221,7 +221,7 @@ class PinnedMessagesDetailsViewController: OWSViewController, DatabaseChangeDele
         let conversationStyle = ConversationStyle(
             type: .messageDetails,
             thread: thread,
-            viewWidth: view.frame.size.width,
+            viewWidth: view.width,
             hasWallpaper: false,
             isWallpaperPhoto: false,
             chatColor: DependenciesBridge.shared.chatColorSettingStore.resolvedChatColor(
@@ -239,6 +239,15 @@ class PinnedMessagesDetailsViewController: OWSViewController, DatabaseChangeDele
             spoilerState: SpoilerRenderState(),
             transaction: tx
         )
+    }
+
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        coordinator.animate(alongsideTransition: nil) { [weak self] _ in
+            self?.db.read { tx in
+                self?.layoutPinnedMessages(tx: tx)
+            }
+        }
     }
 
     // MARK: - Interactions

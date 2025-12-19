@@ -290,14 +290,16 @@ extension ConversationViewController: UIContextMenuInteractionDelegate {
                     comment: "Action menu item to see all pinned messages"
                 ), image: .listBullet) { [weak self] _ in
                     guard let self else { return }
-                    self.present(UINavigationController(rootViewController: PinnedMessagesDetailsViewController(
+                    let pmDetailsController = UINavigationController(rootViewController: PinnedMessagesDetailsViewController(
                         pinnedMessages: threadViewModel.pinnedMessages,
                         threadViewModel: threadViewModel,
                         database: DependenciesBridge.shared.db,
                         delegate: self,
                         databaseChangeObserver: DependenciesBridge.shared.databaseChangeObserver,
                         pinnedMessageManager: DependenciesBridge.shared.pinnedMessageManager
-                    )), animated: true)
+                    ))
+                    pmDetailsController.modalPresentationStyle = .pageSheet
+                    present(pmDetailsController, animated: true)
                 }
             ])
         }
