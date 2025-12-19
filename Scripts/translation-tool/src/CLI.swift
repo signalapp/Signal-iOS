@@ -38,7 +38,7 @@ struct CLI {
                 try Genstrings.filterPluralAware(
                     resourceFile: pluralAwareFile,
                     repositoryURL: Constant.repositoryURL,
-                    temporaryDirectoryURL: URL(fileURLWithPath: temporaryDirectoryPath)
+                    temporaryDirectoryURL: URL(fileURLWithPath: temporaryDirectoryPath),
                 )
             default:
                 print("Unknown action: \(arg)")
@@ -57,7 +57,7 @@ struct CLI {
         let client = Smartling(
             projectIdentifier: Constant.projectIdentifier,
             userIdentifier: userIdentifier,
-            userSecret: userSecret
+            userSecret: userSecret,
         )
         let result = CLI(repositoryURL: Constant.repositoryURL, client: client)
         loadedCLI = result
@@ -68,7 +68,7 @@ struct CLI {
 
     private static let metadataFiles: [MetadataFile] = [
         MetadataFile(filename: "release_notes.txt"),
-        MetadataFile(filename: "description.txt")
+        MetadataFile(filename: "description.txt"),
     ]
 
     private static let pluralAwareFile = ResourceFile(filename: "PluralAware.stringsdict")
@@ -76,7 +76,7 @@ struct CLI {
     private static let resourceFiles: [ResourceFile] = [
         ResourceFile(filename: "InfoPlist.strings"),
         ResourceFile(filename: "Localizable.strings"),
-        pluralAwareFile
+        pluralAwareFile,
     ]
 
     var repositoryURL: URL
@@ -87,7 +87,7 @@ struct CLI {
             for translatableFile in files {
                 try await taskGroup.addTask {
                     try await client.uploadSourceFile(
-                        at: repositoryURL.appendingPathComponent(translatableFile.relativeSourcePath)
+                        at: repositoryURL.appendingPathComponent(translatableFile.relativeSourcePath),
                     )
                     print("Uploaded \(translatableFile.filename)")
                 }

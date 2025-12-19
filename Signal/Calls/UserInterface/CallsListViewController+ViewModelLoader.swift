@@ -353,9 +353,7 @@ extension CallsListViewController {
 
             switch fetchDirection {
             case .older:
-                // swiftlint:disable shorthand_operator
                 self.callHistoryItemReferences = self.callHistoryItemReferences + fetchedCallHistoryItemReferences
-                // swiftlint:enable shorthand_operator
             case .newer:
                 self.callHistoryItemReferences = fetchedCallHistoryItemReferences + self.callHistoryItemReferences
             }

@@ -50,7 +50,7 @@ private let languageMap: [String: String] = [
     "zh-CN": "zh_CN",
     "zh-HK": "zh_HK",
     "zh-TW": "zh_TW",
-    "zh-YU": "yue"
+    "zh-YU": "yue",
 ]
 
 struct ResourceFile: TranslatableFile {
@@ -73,7 +73,7 @@ struct ResourceFile: TranslatableFile {
                 let localRelativePath = relativePath(for: localIdentifier)
                 try FileManager.default.copyItem(
                     at: fileURL,
-                    replacingItemAt: repositoryURL.appendingPathComponent(localRelativePath)
+                    replacingItemAt: repositoryURL.appendingPathComponent(localRelativePath),
                 )
                 print("Saved \(localRelativePath)")
             }
@@ -84,7 +84,7 @@ struct ResourceFile: TranslatableFile {
         try checkForUnusedLocalizations(
             in: repositoryURL.appendingPathComponent(relativeDirectoryPath),
             suffix: ".lproj",
-            expectedLocalizations: languageMap.map { $1 } + ["en"]
+            expectedLocalizations: languageMap.map { $1 } + ["en"],
         )
     }
 }

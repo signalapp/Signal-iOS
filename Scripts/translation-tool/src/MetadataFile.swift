@@ -40,7 +40,7 @@ private let languageMap: [String: [String]] = [
     "uk-UA": ["uk"],
     "vi": ["vi"],
     "zh-CN": ["zh-Hans"],
-    "zh-HK": ["zh-Hant"]
+    "zh-HK": ["zh-Hant"],
 
     // These don't exist in App Store Connect, so there's no need to fetch them from Smartling.
     // "be-BY": [],
@@ -91,7 +91,7 @@ struct MetadataFile: TranslatableFile {
             let localRelativePath = relativePath(for: localIdentifier)
             try FileManager.default.copyItem(
                 at: fileURL,
-                replacingItemAt: repositoryURL.appendingPathComponent(localRelativePath)
+                replacingItemAt: repositoryURL.appendingPathComponent(localRelativePath),
             )
             print("Saved \(localRelativePath)")
         }
@@ -101,7 +101,7 @@ struct MetadataFile: TranslatableFile {
         try checkForUnusedLocalizations(
             in: repositoryURL.appendingPathComponent(Self.relativeDirectoryPath),
             suffix: "",
-            expectedLocalizations: languageMap.flatMap { $1 } + extraEnglishLanguages + ["en-US"]
+            expectedLocalizations: languageMap.flatMap { $1 } + extraEnglishLanguages + ["en-US"],
         )
     }
 }

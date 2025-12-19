@@ -5,7 +5,7 @@
 
 import Foundation
 
-struct Genstrings {
+enum Genstrings {
     enum DecodingError: Error {
         case nonStringKeys
     }
@@ -28,7 +28,7 @@ struct Genstrings {
     static func filterPluralAware(
         resourceFile: ResourceFile,
         repositoryURL: URL,
-        temporaryDirectoryURL: URL
+        temporaryDirectoryURL: URL,
     ) throws {
         precondition(resourceFile.filename.hasSuffix(".stringsdict"))
 

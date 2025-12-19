@@ -8,7 +8,6 @@ import LibSignalClient
 import UIKit
 public import SignalServiceKit
 
-// swiftlint:disable:next class_delegate_protocol
 public protocol ConversationAvatarViewDelegate: UIViewController {
     func didTapBadge()
 

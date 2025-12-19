@@ -1,0 +1,93 @@
+--exclude Pods
+--exclude SignalServiceKit/Protos/Generated
+--exclude Signal/Emoji/Generated
+--exclude **/*.pb.swift
+--exclude **/*+SDS.swift
+
+# Temporary excludes.
+--exclude Signal
+--exclude SignalNSE
+--exclude SignalServiceKit
+--exclude SignalShareExtension
+--exclude SignalUI
+
+--swift-version 6.2
+--language-mode 5
+
+# The following are the set of enabled rules.
+#
+# Most SwiftFormat rules have a set of associated "options"; for those rules
+# where we use non-default options, the option is grouped next to the rule using
+# indentation.
+#
+# - Important
+# While most options (and at the time of writing, all options explicitly
+# included here) only affect a single rule, they are "SwiftFormat-wide" and
+# some rules do apply to multiple options. Take care when adding new rules, or
+# adding a new option, that any potential interactions with other existing
+# rules/options is accounted for.
+
+--rules andOperator
+--rules anyObjectProtocol
+--rules blankLinesAroundMark
+--rules blankLinesBetweenChainedFunctions
+--rules blankLinesBetweenScopes
+--rules braces
+--rules consecutiveBlankLines
+--rules consecutiveSpaces
+--rules consistentSwitchCaseSpacing
+--rules docCommentsBeforeModifiers
+--rules duplicateImports
+--rules elseOnSameLine
+--rules emptyExtensions
+--rules enumNamespaces
+--rules indent
+  --ifdef outdent
+  --indent 4
+--rules linebreakAtEndOfFile
+--rules modifierOrder
+--rules modifiersOnSameLine
+--rules redundantBreak
+--rules redundantEquatable
+--rules redundantFileprivate
+--rules redundantGet
+--rules redundantInit
+--rules redundantInternal
+--rules redundantMemberwiseInit
+--rules redundantOptionalBinding
+--rules redundantParens
+--rules redundantPattern
+--rules redundantPublic
+--rules semicolons
+--rules singlePropertyPerLine
+--rules sortImports
+  --import-grouping testable-last
+--rules sortTypealiases
+--rules spaceAroundBraces
+--rules spaceAroundComments
+--rules spaceAroundGenerics
+--rules spaceAroundOperators
+  --operator-func no-space
+  --ranges no-space
+--rules spaceAroundParens
+--rules spaceInsideBraces
+--rules spaceInsideBrackets
+--rules spaceInsideComments
+--rules spaceInsideParens
+--rules strongifiedSelf
+--rules trailingCommas
+--rules trailingSpace
+--rules void
+--rules wrapArguments
+  --allow-partial-wrapping false
+  --wrap-arguments before-first
+  --wrap-collections before-first
+  --wrap-parameters before-first
+  --wrap-conditions before-first
+  --call-site-paren balanced
+  --closing-paren balanced
+--rules wrapAttributes
+  --func-attributes prev-line
+  --type-attributes prev-line
+--rules wrapEnumCases
+--rules wrapMultilineStatementBraces

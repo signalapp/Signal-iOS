@@ -151,13 +151,11 @@ extension BackupArchive {
         }
 
         internal subscript(_ threadUniqueId: ThreadUniqueId) -> ChatId? {
-            // swiftlint:disable:next implicit_getter
-            get { map[threadUniqueId] }
+            map[threadUniqueId]
         }
 
         internal subscript(_ chatId: ChatId) -> CachedThreadInfo? {
-            // swiftlint:disable:next implicit_getter
-            get { threadCache[chatId] }
+            threadCache[chatId]
         }
     }
 
@@ -191,8 +189,7 @@ extension BackupArchive {
         }
 
         internal subscript(_ recipientId: RecipientId) -> ChatId? {
-            // swiftlint:disable:next implicit_getter
-            get { recipientToChatMap[recipientId] }
+            recipientToChatMap[recipientId]
         }
 
         internal subscript(_ chatId: ChatId) -> ChatThread? {
@@ -372,8 +369,7 @@ extension BackupArchive {
         }
 
         internal subscript(_ customChatColorKey: CustomChatColor.Key) -> CustomChatColorId? {
-            // swiftlint:disable:next implicit_getter
-            get { map[customChatColorKey] }
+            map[customChatColorKey]
         }
     }
 

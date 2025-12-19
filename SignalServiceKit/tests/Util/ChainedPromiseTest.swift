@@ -64,9 +64,7 @@ public class ChainedPromiseTest: XCTestCase {
         }
 
         failIfExecuteSecondPromise.set(false)
-        // swiftlint:disable discouraged_direct_init
-        firstFuture.resolve(with: Promise<Void>.init(error: NSError()))
-        // swiftlint:enable discouraged_direct_init
+        firstFuture.resolve(with: Promise<Void>(error: NSError()))
         secondFuture.resolve(())
 
         expectFailure(firstResultPromise, description: "first result failure", timeout: 0.1)

@@ -89,8 +89,8 @@ jobs:
       - name: Check for any changes
         run: git diff --exit-code
 
-  lint:
-    name: Lint
+  precommit:
+    name: Precommit
 
     timeout-minutes: 5
 
@@ -105,9 +105,9 @@ jobs:
         run: git fetch origin --depth 1 ${{ github.base_ref }}
 
       - name: Install Dependencies
-        run: brew install clang-format swiftlint
+        run: brew install clang-format swiftformat
 
-      - name: Lint files changed in the PR
+      - name: Run precommit on files changed in the PR
         run: |
           Scripts/precommit.py --ref origin/${{ github.base_ref }}
 

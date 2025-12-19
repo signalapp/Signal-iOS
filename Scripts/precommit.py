@@ -179,22 +179,20 @@ def should_process_file(file_path: str) -> bool:
     return True
 
 
-def swiftlint(file_paths):
-    file_paths = list(filter(lambda f: get_ext(f) == ".swift", file_paths))
-    if len(file_paths) == 0:
-        return True
-
-    subprocess.run(["swiftlint", "lint", "--quiet", "--fix", *file_paths])
-    proc = subprocess.run(["swiftlint", "lint", "--quiet", "--strict", *file_paths])
-
-    return proc.returncode == 0
-
-
 def clang_format(file_paths):
     file_paths = list(filter(lambda f: get_ext(f) in CLANG_FORMAT_EXTS, file_paths))
     if len(file_paths) == 0:
         return True
     proc = subprocess.run(["clang-format", "-i", *file_paths])
+    return proc.returncode == 0
+
+
+def swiftformat(file_paths):
+    file_paths = list(filter(lambda f: get_ext(f) == ".swift", file_paths))
+    if len(file_paths) == 0:
+        return True
+
+    proc = subprocess.run(["swiftformat", "--quiet", *file_paths])
     return proc.returncode == 0
 
 
@@ -227,11 +225,6 @@ if __name__ == "__main__":
         result = False
     print("")
 
-    print("Running swiftlint...", flush=True)
-    if not swiftlint(file_paths):
-        result = False
-    print("")
-
     print("Sorting forward declarations...", flush=True)
     for file_path in file_paths:
         process(file_path)
@@ -244,6 +237,11 @@ if __name__ == "__main__":
         proc = subprocess.run(["Scripts/sort-Xcode-project-file", "Signal.xcodeproj"])
         if proc.returncode != 0:
             result = False
+    print("")
+
+    print("Running swiftformat...", flush=True)
+    if not swiftformat(file_paths):
+        result = False
     print("")
 
     print("Running clang-format...", flush=True)

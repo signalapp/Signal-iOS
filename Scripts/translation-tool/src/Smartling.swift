@@ -33,7 +33,7 @@ class Smartling {
             let rawToken = try await fetchNewToken()
             let newToken = Token(
                 accessToken: rawToken.accessToken,
-                expirationDate: Date(timeIntervalSinceNow: TimeInterval(rawToken.expiresIn))
+                expirationDate: Date(timeIntervalSinceNow: TimeInterval(rawToken.expiresIn)),
             )
             print("Got new token that expires at \(newToken.expirationDate)")
             return newToken
@@ -70,7 +70,7 @@ class Smartling {
         let url = buildURL(path: urlPath, queryItems: [
             "fileUri": filename,
             "retrievalType": "published",
-            "includeOriginalStrings": "true"
+            "includeOriginalStrings": "true",
         ])
         var urlRequest = buildRequest(url: url, token: try await fetchToken())
         urlRequest.httpMethod = "GET"
@@ -90,7 +90,7 @@ private extension Smartling {
 
     func buildRequest(url: URL, token: Token? = nil) -> URLRequest {
         var request = URLRequest(url: url)
-        if let token = token {
+        if let token {
             request.addValue("Bearer \(token.accessToken)", forHTTPHeaderField: "Authorization")
         }
         return request
@@ -123,7 +123,7 @@ extension URLRequest {
         httpBody = Self.multipartFormData(boundary: boundary, items: [
             ("file", .file(name: filename, value: try Data(contentsOf: fileURL))),
             ("fileUri", .text(value: filename)),
-            ("fileType", .text(value: Self.fileType(for: fileURL)))
+            ("fileType", .text(value: Self.fileType(for: fileURL))),
         ])
     }
 

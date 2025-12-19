@@ -14,7 +14,7 @@ let package = Package(
         .executableTarget(
             name: "translation-tool",
             dependencies: [],
-            path: "src"
-        )
-    ]
+            path: "src",
+        ),
+    ],
 )

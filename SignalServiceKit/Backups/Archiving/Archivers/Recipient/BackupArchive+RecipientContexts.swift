@@ -203,29 +203,26 @@ extension BackupArchive {
         }
 
         subscript(_ address: Address) -> RecipientId? {
-            // swiftlint:disable:next implicit_getter
-            get {
-                switch address {
-                case .releaseNotesChannel:
-                    return releaseNotesChannelRecipientId
-                case .group(let groupId):
-                    return groupIdMap[groupId]
-                case .distributionList(let distributionId):
-                    return distributionIdMap[distributionId]
-                case .contact(let contactAddress):
-                    // Go down identifiers in priority order, return the first we have.
-                    if let aci = contactAddress.aci {
-                        return contactAciMap[aci]
-                    } else if let e164 = contactAddress.e164 {
-                        return contactE164Map[e164]
-                    } else if let pni = contactAddress.pni {
-                        return contactPniMap[pni]
-                    } else {
-                        return nil
-                    }
-                case .callLink(let callLinkId):
-                    return callLinkIdMap[callLinkId]
+            switch address {
+            case .releaseNotesChannel:
+                return releaseNotesChannelRecipientId
+            case .group(let groupId):
+                return groupIdMap[groupId]
+            case .distributionList(let distributionId):
+                return distributionIdMap[distributionId]
+            case .contact(let contactAddress):
+                // Go down identifiers in priority order, return the first we have.
+                if let aci = contactAddress.aci {
+                    return contactAciMap[aci]
+                } else if let e164 = contactAddress.e164 {
+                    return contactE164Map[e164]
+                } else if let pni = contactAddress.pni {
+                    return contactPniMap[pni]
+                } else {
+                    return nil
                 }
+            case .callLink(let callLinkId):
+                return callLinkIdMap[callLinkId]
             }
         }
 
