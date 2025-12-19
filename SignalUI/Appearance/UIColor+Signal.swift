@@ -184,7 +184,10 @@ extension UIColor.Signal {
     }
 
     public static var secondaryBackground: UIColor {
-        UIColor.byUserInterfaceLevel(
+        guard #available(iOS 16.0, *) else {
+            return .secondarySystemBackground
+        }
+        return UIColor.byUserInterfaceLevel(
             base: UIColor.byRGBHex(
                 light: 0xEFEFF0,
                 lightHighContrast: 0xE4E4E7,
@@ -234,7 +237,10 @@ extension UIColor.Signal {
     // MARK: Grouped Background
 
     public static var groupedBackground: UIColor {
-        UIColor.byUserInterfaceLevel(
+        guard #available(iOS 16.0, *) else {
+            return .systemGroupedBackground
+        }
+        return UIColor.byUserInterfaceLevel(
             base: UIColor.byRGBHex(
                 light: 0xEFEFF0,
                 lightHighContrast: 0xE4E4E7,
@@ -268,7 +274,10 @@ extension UIColor.Signal {
     }
 
     public static var tertiaryGroupedBackground: UIColor {
-        UIColor.byUserInterfaceLevel(
+        guard #available(iOS 16.0, *) else {
+            return .tertiarySystemGroupedBackground
+        }
+        return UIColor.byUserInterfaceLevel(
             base: UIColor.byRGBHex(
                 light: 0xEFEFF0,
                 lightHighContrast: 0xE4E4E7,
