@@ -268,30 +268,27 @@ public class UnpreparedOutgoingMessage {
                 tx: tx
             )
         }
-        if message.unsavedBodyMediaAttachments.count > 0 {
+
+        for (idx, var unsavedBodyMediaAttachment) in message.unsavedBodyMediaAttachments.enumerated() {
             // Borderless is disallowed on any message with a quoted reply.
-            let unsavedBodyMediaAttachments: [AttachmentDataSource]
             if validatedQuotedReply != nil {
-                unsavedBodyMediaAttachments = message.unsavedBodyMediaAttachments.map {
-                    return $0.removeBorderlessRenderingFlagIfPresent()
-                }
-            } else {
-                unsavedBodyMediaAttachments = message.unsavedBodyMediaAttachments
+                unsavedBodyMediaAttachment = unsavedBodyMediaAttachment.removeBorderlessRenderingFlagIfPresent()
             }
-            try DependenciesBridge.shared.attachmentManager.createAttachmentStreams(
-                from: unsavedBodyMediaAttachments.map { dataSource in
-                    return OwnedAttachmentDataSource(
-                        dataSource: dataSource,
-                        owner: .messageBodyAttachment(.init(
-                            messageRowId: messageRowId,
-                            receivedAtTimestamp: message.message.receivedAtTimestamp,
-                            threadRowId: threadRowId,
-                            isViewOnce: message.message.isViewOnceMessage,
-                            isPastEditRevision: message.message.isPastEditRevision()
-                        ))
-                    )
-                },
-                tx: tx
+
+            let attachmentManager = DependenciesBridge.shared.attachmentManager
+            try attachmentManager.createAttachmentStream(
+                from: OwnedAttachmentDataSource(
+                    dataSource: unsavedBodyMediaAttachment,
+                    owner: .messageBodyAttachment(.init(
+                        messageRowId: messageRowId,
+                        receivedAtTimestamp: message.message.receivedAtTimestamp,
+                        threadRowId: threadRowId,
+                        isViewOnce: message.message.isViewOnceMessage,
+                        isPastEditRevision: message.message.isPastEditRevision(),
+                        orderInMessage: UInt32(idx),
+                    ))
+                ),
+                tx: tx,
             )
         }
 

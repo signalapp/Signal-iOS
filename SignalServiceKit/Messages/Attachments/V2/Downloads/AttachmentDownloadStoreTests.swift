@@ -284,7 +284,7 @@ class AttachmentDownloadStoreTests: XCTestCase {
                 isPastEditRevision: false,
                 caption: nil,
                 renderingFlag: .default,
-                orderInOwner: 0,
+                orderInMessage: 0,
                 idInOwner: nil,
                 isViewOnce: false
             )))

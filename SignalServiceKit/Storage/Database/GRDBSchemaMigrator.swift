@@ -5331,7 +5331,7 @@ public class GRDBSchemaMigrator {
 
         // For the all media view; it shows message body media for a given thread,
         // filtered by content type + rendering flag, sorted by the timestamp and then
-        // rowId of the owning message, and finally sorted by orderInOwner on that message.
+        // rowId of the owning message, and finally sorted by orderInMessage on that message.
         try tx.database.create(
             index:
                 "index_message_attachment_reference_on"

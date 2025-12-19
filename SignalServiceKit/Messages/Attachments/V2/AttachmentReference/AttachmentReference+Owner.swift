@@ -126,7 +126,7 @@ extension AttachmentReference {
 
                 /// Order of this attachment appears in the owning message's "array" of body attachments.
                 /// Not necessarily an index; there may be gaps.
-                public let orderInOwner: UInt32
+                public let orderInMessage: UInt32
                 /// Uniquely identifies this attachment in the owning message's body attachments.
                 public let idInOwner: UUID?
 
@@ -141,13 +141,13 @@ extension AttachmentReference {
                     isPastEditRevision: Bool,
                     caption: String?,
                     renderingFlag: RenderingFlag,
-                    orderInOwner: UInt32,
+                    orderInMessage: UInt32,
                     idInOwner: UUID?,
                     isViewOnce: Bool
                 ) {
                     self.caption = caption
                     self.renderingFlag = renderingFlag
-                    self.orderInOwner = orderInOwner
+                    self.orderInMessage = orderInMessage
                     self.idInOwner = idInOwner
                     self.isViewOnce = isViewOnce
                     super.init(
@@ -326,8 +326,8 @@ extension AttachmentReference.Owner {
 
         switch ownerType {
         case .bodyAttachment:
-            guard let orderInOwner = record.orderInMessage else {
-                throw OWSAssertionError("OrderInOwner required for body attachment")
+            guard let orderInMessage = record.orderInMessage else {
+                throw OWSAssertionError("orderInMessage required for body attachment")
             }
             return .message(.bodyAttachment(.init(
                 messageRowId: record.ownerRowId,
@@ -337,7 +337,7 @@ extension AttachmentReference.Owner {
                 isPastEditRevision: record.ownerIsPastEditRevision,
                 caption: record.caption,
                 renderingFlag: try .init(rawValue: record.renderingFlag),
-                orderInOwner: orderInOwner,
+                orderInMessage: orderInMessage,
                 idInOwner: record.idInMessage.flatMap { UUID(uuidString: $0) },
                 isViewOnce: record.isViewOnce
             )))
@@ -448,7 +448,7 @@ extension AttachmentReference.Owner {
                         isPastEditRevision: metadata.isPastEditRevision,
                         caption: metadata.caption,
                         renderingFlag: metadata.renderingFlag,
-                        orderInOwner: metadata.orderInOwner,
+                        orderInMessage: metadata.orderInMessage,
                         idInOwner: metadata.idInOwner,
                         isViewOnce: metadata.isViewOnce
                     ))

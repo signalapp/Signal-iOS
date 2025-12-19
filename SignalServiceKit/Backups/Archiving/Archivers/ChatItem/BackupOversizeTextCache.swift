@@ -339,13 +339,13 @@ class BackupArchiveInlinedOversizeTextArchiver {
             return .messageFailure([.restoreFrameError(.invalidProtoData(.accountDataNotFound), chatItemId)])
         }
 
-        let errors = attachmentManager.createAttachmentPointers(
-            from: [ownedAttachment],
+        let error = attachmentManager.createAttachmentPointer(
+            from: ownedAttachment,
             uploadEra: uploadEra,
             attachmentByteCounter: context.attachmentByteCounter,
             tx: context.tx
         )
-        guard errors.isEmpty else {
+        if error != nil {
             return .messageFailure([.restoreFrameError(
                 .failedToCreateAttachment,
                 chatItemId

@@ -52,7 +52,7 @@ private struct FakeItem: MediaGallerySectionItem, Equatable {
     private static var _nextRowID = Int64(0)
     private static func allocateItemID() -> AttachmentReferenceId {
         defer { _nextRowID += 1 }
-        return .init(ownerId: .messageBodyAttachment(messageRowId: _nextRowID), orderInOwner: nil)
+        return .init(ownerId: .messageBodyAttachment(messageRowId: _nextRowID), orderInMessage: nil)
     }
     var itemId: AttachmentReferenceId
     var attachmentId: AttachmentReferenceId
@@ -65,13 +65,13 @@ private struct FakeItem: MediaGallerySectionItem, Equatable {
     /// The item's unique ID will be randomly generated.
     init(_ compressedDate: UInt32) {
         self.itemId = FakeItem.allocateItemID()
-        self.attachmentId = .init(ownerId: .messageBodyAttachment(messageRowId: .random(in: 0...Int64.max)), orderInOwner: nil)
+        self.attachmentId = .init(ownerId: .messageBodyAttachment(messageRowId: .random(in: 0...Int64.max)), orderInMessage: nil)
         self.timestamp = Date(compressedDate: compressedDate)
     }
 
     init(_ compressedDate: UInt32, attachmentId: AttachmentReferenceId?, itemId: AttachmentReferenceId) {
         self.itemId = itemId
-        self.attachmentId = attachmentId ?? .init(ownerId: .messageBodyAttachment(messageRowId: .random(in: 0...Int64.max)), orderInOwner: nil)
+        self.attachmentId = attachmentId ?? .init(ownerId: .messageBodyAttachment(messageRowId: .random(in: 0...Int64.max)), orderInMessage: nil)
         self.timestamp = Date(compressedDate: compressedDate)
     }
 }
@@ -673,11 +673,11 @@ class MediaGallerySectionsTest: SignalBaseTest {
         XCTAssertFalse(wrapper.sections.hasFetchedOldest)
         XCTAssertEqual(2, wrapper.sections.itemsBySection.count)
         XCTAssertEqual(
-            [3, 4].map { AttachmentReferenceId(ownerId: .messageBodyAttachment(messageRowId: $0), orderInOwner: nil) },
+            [3, 4].map { AttachmentReferenceId(ownerId: .messageBodyAttachment(messageRowId: $0), orderInMessage: nil) },
             wrapper.sections.itemsBySection[0].value.map { $0.itemId }
         )
         XCTAssertEqual(
-            [5, 6, 7, 8, 9].map { AttachmentReferenceId(ownerId: .messageBodyAttachment(messageRowId: $0), orderInOwner: nil) },
+            [5, 6, 7, 8, 9].map { AttachmentReferenceId(ownerId: .messageBodyAttachment(messageRowId: $0), orderInMessage: nil) },
             wrapper.sections.itemsBySection[1].value.map { $0.itemId }
         )
 
@@ -1326,7 +1326,7 @@ class MediaGallerySectionsTest: SignalBaseTest {
             // Keep January unmodified, drop all of April, and drop one value from September.
             [0, 1, 2, 5, 6, 8, 9]
                 .lazy
-                .map({ AttachmentReferenceId(ownerId: .messageBodyAttachment(messageRowId: $0), orderInOwner: nil) })
+                .map({ AttachmentReferenceId(ownerId: .messageBodyAttachment(messageRowId: $0), orderInMessage: nil) })
                 .contains($0.itemId)
         }
 

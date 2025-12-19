@@ -487,22 +487,20 @@ public class BackupArchiveChatStyleArchiver: BackupArchiveProtoStreamWriter {
             }()
         )
 
-        let errors = attachmentManager.createAttachmentPointers(
-            from: [ownedAttachment],
+        let error = attachmentManager.createAttachmentPointer(
+            from: ownedAttachment,
             uploadEra: uploadEra,
             attachmentByteCounter: context.attachmentByteCounter,
             tx: context.tx
         )
 
-        guard errors.isEmpty else {
+        if let error {
             // Treat attachment failures as non-catastrophic; a thread without
             // a wallpaper still works.
-            return .partialRestore(errors.map { error in
-                return .restoreFrameError(
-                    .fromAttachmentCreationError(error),
-                    errorId
-                )
-            })
+            return .partialRestore([.restoreFrameError(
+                .fromAttachmentCreationError(error),
+                errorId,
+            )])
         }
 
         let results = attachmentStore.fetchReferencedAttachments(owners: [ownedAttachment.owner.id], tx: context.tx)

@@ -332,7 +332,7 @@ extension AttachmentStore {
             .compactMap { (ref: AttachmentReference) -> (UInt32, AttachmentReference)? in
                 switch ref.owner {
                 case .message(.bodyAttachment(let metadata)):
-                    return (metadata.orderInOwner, ref)
+                    return (metadata.orderInMessage, ref)
                 default:
                     return nil
                 }

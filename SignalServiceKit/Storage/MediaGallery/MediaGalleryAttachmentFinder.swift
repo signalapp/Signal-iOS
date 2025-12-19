@@ -54,7 +54,7 @@ public struct MediaGalleryAttachmentFinder {
                     let reference = try AttachmentReference(record: record)
                     return .init(
                         ownerId: reference.owner.id,
-                        orderInOwner: record.orderInMessage
+                        orderInMessage: record.orderInMessage
                     )
                 }
         } catch {
@@ -85,7 +85,7 @@ public struct MediaGalleryAttachmentFinder {
                     return .init(
                         id: .init(
                             ownerId: reference.owner.id,
-                            orderInOwner: record.orderInMessage
+                            orderInMessage: record.orderInMessage
                         ),
                         receivedAtTimestamp: record.receivedAtTimestamp
                     )
@@ -223,7 +223,7 @@ public struct MediaGalleryAttachmentFinder {
             while let record = try cursor.next() {
                 let reference = try AttachmentReference(record: record)
                 block(.init(
-                    id: .init(ownerId: reference.owner.id, orderInOwner: record.orderInMessage),
+                    id: .init(ownerId: reference.owner.id, orderInMessage: record.orderInMessage),
                     receivedAtTimestamp: record.receivedAtTimestamp
                 ))
                 countSoFar += 1
@@ -386,8 +386,8 @@ public struct MediaGalleryAttachmentFinder {
                 continue
             }
 
-            if let orderInOwner = attachmentId.orderInOwner {
-                query = query.filter(!(ownerIdColumn == ownerId && orderInMessageColumn == orderInOwner))
+            if let orderInMessage = attachmentId.orderInMessage {
+                query = query.filter(!(ownerIdColumn == ownerId && orderInMessageColumn == orderInMessage))
             } else {
                 query = query.filter(ownerIdColumn != ownerId)
             }

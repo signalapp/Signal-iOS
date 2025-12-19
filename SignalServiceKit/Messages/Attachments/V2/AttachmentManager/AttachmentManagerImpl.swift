@@ -41,84 +41,69 @@ public class AttachmentManagerImpl: AttachmentManager {
 
     // MARK: Creating Attachments from source
 
-    public func createAttachmentPointers(
-        from protos: [OwnedAttachmentPointerProto],
-        tx: DBWriteTransaction
+    public func createAttachmentPointer(
+        from ownedProto: OwnedAttachmentPointerProto,
+        tx: DBWriteTransaction,
     ) throws {
-        guard protos.count < UInt32.max else {
-            throw OWSAssertionError("Input array too large")
-        }
-        try createAttachments(
-            protos,
-            mimeType: \.proto.contentType,
-            owner: \.owner,
-            output: \.proto,
-            createFn: {
-                try self._createAttachmentPointer(
-                    from: $0,
-                    owner: $1,
-                    sourceOrder: $2,
-                    tx: $3
-                )
-            },
-            tx: tx
+        let sanitizedOwnedProto = OwnedAttachmentPointerProto(
+            proto: ownedProto.proto,
+            owner: sanitizeOversizeTextOwner(
+                currentOwner: ownedProto.owner,
+                mimeType: ownedProto.proto.contentType ?? "",
+            ),
+        )
+
+        try _createAttachmentPointer(
+            from: sanitizedOwnedProto.proto,
+            owner: sanitizedOwnedProto.owner,
+            tx: tx,
         )
     }
 
-    public func createAttachmentPointers(
-        from backupProtos: [OwnedAttachmentBackupPointerProto],
+    public func createAttachmentPointer(
+        from ownedBackupProto: OwnedAttachmentBackupPointerProto,
         uploadEra: String,
         attachmentByteCounter: BackupArchiveAttachmentByteCounter,
         tx: DBWriteTransaction
-    ) -> [OwnedAttachmentBackupPointerProto.CreationError] {
-        let results = createAttachments(
-            backupProtos,
-            mimeType: { $0.proto.contentType },
-            owner: \.owner,
-            output: { $0 },
-            createFn: {
-                 return self._createAttachmentPointer(
-                    from: $0,
-                    owner: $1,
-                    sourceOrder: $2,
-                    uploadEra: uploadEra,
-                    attachmentByteCounter: attachmentByteCounter,
-                    tx: $3
-                )
-            },
-            tx: tx
+    ) -> OwnedAttachmentBackupPointerProto.CreationError? {
+        let sanitizedOwnedBackupProto = OwnedAttachmentBackupPointerProto(
+            proto: ownedBackupProto.proto,
+            renderingFlag: ownedBackupProto.renderingFlag,
+            clientUUID: ownedBackupProto.clientUUID,
+            owner: sanitizeOversizeTextOwner(
+                currentOwner: ownedBackupProto.owner,
+                mimeType: ownedBackupProto.proto.contentType,
+            ),
         )
-        return results.compactMap { result in
-            switch result {
-            case .success:
-                return nil
-            case .failure(let error):
-                return error
-            }
+
+        switch _createAttachmentPointer(
+            from: sanitizedOwnedBackupProto,
+            uploadEra: uploadEra,
+            attachmentByteCounter: attachmentByteCounter,
+            tx: tx,
+        ) {
+        case .success:
+            return nil
+        case .failure(let error):
+            return error
         }
     }
 
-    public func createAttachmentStreams(
-        from dataSources: [OwnedAttachmentDataSource],
-        tx: DBWriteTransaction
+    public func createAttachmentStream(
+        from ownedDataSource: OwnedAttachmentDataSource,
+        tx: DBWriteTransaction,
     ) throws {
-        guard dataSources.count < UInt32.max else {
-            throw OWSAssertionError("Input array too large")
-        }
-        try createAttachments(
-            dataSources,
-            mimeType: { $0.mimeType },
-            owner: \.owner,
-            output: \.source,
-            createFn: {
-                try self._createAttachmentStream(
-                    consuming: $0,
-                    owner: $1,
-                    sourceOrder: $2,
-                    tx: $3
-                )
-            },
-            tx: tx
+        let sanitizedOwnedDataSource = OwnedAttachmentDataSource(
+            dataSource: ownedDataSource.source,
+            owner: sanitizeOversizeTextOwner(
+                currentOwner: ownedDataSource.owner,
+                mimeType: ownedDataSource.mimeType,
+            ),
+        )
+
+        try _createAttachmentStream(
+            from: sanitizedOwnedDataSource,
+            tx: tx,
         )
 
         // When we create the attachment streams we schedule a backup of the
@@ -197,54 +182,28 @@ public class AttachmentManagerImpl: AttachmentManager {
 
     // MARK: Creating Attachments from source
 
-    @discardableResult
-    private func createAttachments<Input, Output, Result>(
-        _ inputArray: [Input],
-        mimeType: (Input) -> String?,
-        owner: (Input) -> OwnerBuilder,
-        output: (Input) -> Output,
-        createFn: (Output, OwnerBuilder, UInt32?, DBWriteTransaction) throws -> Result,
-        tx: DBWriteTransaction
-    ) rethrows -> [Result] {
-        var results = [Result]()
-        var indexOffset: Int = 0
-        for (i, input) in inputArray.enumerated() {
-            let sourceOrder: UInt32?
-            var ownerForInput = owner(input)
-            switch ownerForInput {
-            case .messageBodyAttachment(let metadata):
-                // Convert text mime type attachments in the first spot to oversize text.
-                if mimeType(input) == MimeType.textXSignalPlain.rawValue {
-                    ownerForInput = .messageOversizeText(.init(
-                        messageRowId: metadata.messageRowId,
-                        receivedAtTimestamp: metadata.receivedAtTimestamp,
-                        threadRowId: metadata.threadRowId,
-                        isPastEditRevision: metadata.isPastEditRevision
-                    ))
-                    indexOffset = -1
-                    sourceOrder = nil
-                } else {
-                    sourceOrder = UInt32(i + indexOffset)
-                }
-            default:
-                sourceOrder = nil
-                if inputArray.count > 1 {
-                    // Only allow multiple attachments in the case of message body attachments.
-                    owsFailDebug("Can't have multiple attachments under the same owner reference!")
-                }
-            }
-
-            let result = try createFn(output(input), ownerForInput, sourceOrder, tx)
-            results.append(result)
+    private func sanitizeOversizeTextOwner(
+        currentOwner: OwnerBuilder,
+        mimeType: String,
+    ) -> OwnerBuilder {
+        if
+            mimeType == MimeType.textXSignalPlain.rawValue,
+            case .messageBodyAttachment(let metadata) = currentOwner
+        {
+            return .messageOversizeText(.init(
+                messageRowId: metadata.messageRowId,
+                receivedAtTimestamp: metadata.receivedAtTimestamp,
+                threadRowId: metadata.threadRowId,
+                isPastEditRevision: metadata.isPastEditRevision,
+            ))
+        } else {
+            return currentOwner
         }
-        return results
     }
 
     private func _createAttachmentPointer(
         from proto: SSKProtoAttachmentPointer,
         owner: OwnerBuilder,
-        // Nil if no order is to be applied.
-        sourceOrder: UInt32?,
         tx: DBWriteTransaction
     ) throws {
         let transitTierInfo = try self.transitTierInfo(from: proto)
@@ -286,7 +245,6 @@ public class AttachmentManagerImpl: AttachmentManager {
 
         let referenceParams = AttachmentReference.ConstructionParams(
             owner: try owner.build(
-                orderInOwner: sourceOrder,
                 knownIdInOwner: knownIdFromProto,
                 renderingFlag: .fromProto(proto),
                 // Not downloaded so we don't know the content type.
@@ -370,9 +328,6 @@ public class AttachmentManagerImpl: AttachmentManager {
 
     private func _createAttachmentPointer(
         from ownedProto: OwnedAttachmentBackupPointerProto,
-        owner: OwnerBuilder,
-        // Nil if no order is to be applied.
-        sourceOrder: UInt32?,
         uploadEra: String,
         attachmentByteCounter: BackupArchiveAttachmentByteCounter,
         tx: DBWriteTransaction
@@ -500,8 +455,7 @@ public class AttachmentManagerImpl: AttachmentManager {
         let referenceParams: AttachmentReference.ConstructionParams
         do {
             referenceParams = AttachmentReference.ConstructionParams(
-                owner: try owner.build(
-                    orderInOwner: sourceOrder,
+                owner: try ownedProto.owner.build(
                     knownIdInOwner: knownIdFromProto,
                     renderingFlag: ownedProto.renderingFlag,
                     // Not downloaded so we don't know the content type.
@@ -655,20 +609,16 @@ public class AttachmentManagerImpl: AttachmentManager {
     }
 
     private func _createAttachmentStream(
-        consuming dataSource: AttachmentDataSource,
-        owner: OwnerBuilder,
-        // Nil if no order is to be applied.
-        sourceOrder: UInt32?,
+        from ownedDataSource: OwnedAttachmentDataSource,
         tx: DBWriteTransaction
     ) throws {
-        switch dataSource {
+        switch ownedDataSource.source {
         case .existingAttachment(let existingAttachmentMetadata):
             guard let existingAttachment = attachmentStore.fetch(id: existingAttachmentMetadata.id, tx: tx) else {
                 throw OWSAssertionError("Missing existing attachment!")
             }
 
-            let owner: AttachmentReference.Owner = try owner.build(
-                orderInOwner: sourceOrder,
+            let owner: AttachmentReference.Owner = try ownedDataSource.owner.build(
                 knownIdInOwner: .none,
                 renderingFlag: existingAttachmentMetadata.renderingFlag,
                 contentType: existingAttachment.streamInfo?.contentType.raw
@@ -685,8 +635,7 @@ public class AttachmentManagerImpl: AttachmentManager {
                 tx: tx
             )
         case .pendingAttachment(let pendingAttachment):
-            let owner: AttachmentReference.Owner = try owner.build(
-                orderInOwner: sourceOrder,
+            let owner: AttachmentReference.Owner = try ownedDataSource.owner.build(
                 knownIdInOwner: .none,
                 renderingFlag: pendingAttachment.renderingFlag,
                 contentType: pendingAttachment.validatedContentType.raw
@@ -1089,17 +1038,13 @@ public class AttachmentManagerImpl: AttachmentManager {
     ) throws {
         switch dataSource {
         case .pendingAttachment(let pendingAttachmentSource):
-            try self._createAttachmentStream(
-                consuming: .pendingAttachment(pendingAttachmentSource.pendingAttachment),
-                owner: referenceOwner,
-                sourceOrder: nil,
-                tx: tx
+            try createAttachmentStream(
+                from: OwnedAttachmentDataSource(
+                    dataSource: .pendingAttachment(pendingAttachmentSource.pendingAttachment),
+                    owner: referenceOwner,
+                ),
+                tx: tx,
             )
-            // When we create the attachment stream we schedule a backup of the
-            // new attachment. Kick the tires so that upload starts happening now.
-            tx.addSyncCompletion {
-                NotificationCenter.default.post(name: .startBackupAttachmentUploadQueue, object: nil)
-            }
         case .originalAttachment(let originalAttachmentSource):
             guard let originalAttachment = attachmentStore.fetch(id: originalAttachmentSource.id, tx: tx) else {
                 // The original has been deleted.
@@ -1146,7 +1091,6 @@ public class AttachmentManagerImpl: AttachmentManager {
             )
             let referenceParams = AttachmentReference.ConstructionParams(
                 owner: try referenceOwner.build(
-                    orderInOwner: nil,
                     knownIdInOwner: .none,
                     renderingFlag: originalAttachmentSource.renderingFlag,
                     contentType: nil

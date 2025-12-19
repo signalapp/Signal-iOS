@@ -32,7 +32,7 @@ extension AttachmentReference.ConstructionParams {
         renderingFlag: AttachmentReference.RenderingFlag = .default,
         isViewOnce: Bool = false,
         isPastEditRevision: Bool = false,
-        orderInOwner: UInt32 = 0,
+        orderInMessage: UInt32 = 0,
         idInOwner: UUID? = nil,
         sourceFilename: String? = UUID().uuidString,
         sourceUnencryptedByteCount: UInt32? = .random(in: 0...100),
@@ -47,7 +47,7 @@ extension AttachmentReference.ConstructionParams {
                 isPastEditRevision: isPastEditRevision,
                 caption: caption,
                 renderingFlag: renderingFlag,
-                orderInOwner: orderInOwner,
+                orderInMessage: orderInMessage,
                 idInOwner: idInOwner,
                 isViewOnce: isViewOnce
             ))),

@@ -210,7 +210,8 @@ internal class BackupArchiveMessageAttachmentArchiver: BackupArchiveProtoStreamW
             })
         }
 
-        let ownedAttachments = withUnwrappedUUIDs.map { attachment, clientUUID in
+        let ownedAttachments = withUnwrappedUUIDs.enumerated().map { (idx, withUnwrappedUUID) in
+            let (attachment, clientUUID) = withUnwrappedUUID
             return OwnedAttachmentBackupPointerProto(
                 proto: attachment.pointer,
                 renderingFlag: attachment.flag.asAttachmentFlag,
@@ -220,7 +221,8 @@ internal class BackupArchiveMessageAttachmentArchiver: BackupArchiveProtoStreamW
                     receivedAtTimestamp: message.receivedAtTimestamp,
                     threadRowId: thread.threadRowId,
                     isViewOnce: message.isViewOnceMessage,
-                    isPastEditRevision: message.isPastEditRevision()
+                    isPastEditRevision: message.isPastEditRevision(),
+                    orderInMessage: UInt32(idx),
                 ))
             )
         }
@@ -431,12 +433,14 @@ internal class BackupArchiveMessageAttachmentArchiver: BackupArchiveProtoStreamW
             return .messageFailure([.restoreFrameError(.invalidProtoData(.accountDataNotFound), chatItemId)])
         }
 
-        let errors = attachmentManager.createAttachmentPointers(
-            from: attachments,
-            uploadEra: uploadEra,
-            attachmentByteCounter: context.attachmentByteCounter,
-            tx: context.tx
-        )
+        let errors = attachments.compactMap { attachment in
+            return attachmentManager.createAttachmentPointer(
+                from: attachment,
+                uploadEra: uploadEra,
+                attachmentByteCounter: context.attachmentByteCounter,
+                tx: context.tx,
+            )
+        }
 
         guard errors.isEmpty else {
             // Treat attachment failures as message failures; a message

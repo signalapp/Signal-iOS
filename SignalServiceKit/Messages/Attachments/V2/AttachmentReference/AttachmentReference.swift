@@ -133,7 +133,7 @@ extension AttachmentReference {
     public var orderInOwningMessage: UInt32? {
         switch owner {
         case .message(.bodyAttachment(let metadata)):
-            return metadata.orderInOwner
+            return metadata.orderInMessage
         default:
             return nil
         }

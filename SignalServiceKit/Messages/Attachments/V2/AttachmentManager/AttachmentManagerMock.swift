@@ -9,25 +9,25 @@ import Foundation
 
 open class AttachmentManagerMock: AttachmentManager {
 
-    open func createAttachmentPointers(
-        from protos: [OwnedAttachmentPointerProto],
+    open func createAttachmentPointer(
+        from ownedProto: OwnedAttachmentPointerProto,
         tx: DBWriteTransaction
     ) throws {
         // Do nothing
     }
 
-    open func createAttachmentPointers(
-        from backupProtos: [OwnedAttachmentBackupPointerProto],
+    open func createAttachmentPointer(
+        from ownedBackupProto: OwnedAttachmentBackupPointerProto,
         uploadEra: String,
         attachmentByteCounter: BackupArchiveAttachmentByteCounter,
         tx: DBWriteTransaction
-    ) -> [OwnedAttachmentBackupPointerProto.CreationError] {
+    ) -> OwnedAttachmentBackupPointerProto.CreationError? {
         // Do nothing
-        return []
+        return nil
     }
 
-    open func createAttachmentStreams(
-        from dataSources: [OwnedAttachmentDataSource],
+    open func createAttachmentStream(
+        from ownedDataSource: OwnedAttachmentDataSource,
         tx: DBWriteTransaction
     ) throws {
         // Do nothing

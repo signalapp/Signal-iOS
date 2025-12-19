@@ -15,9 +15,9 @@ public protocol AttachmentManager {
     /// Creates a reference from the owner to the attachment.
     ///
     /// Throws an error if any of the provided protos are invalid.
-    func createAttachmentPointers(
-        from protos: [OwnedAttachmentPointerProto],
-        tx: DBWriteTransaction
+    func createAttachmentPointer(
+        from ownedProto: OwnedAttachmentPointerProto,
+        tx: DBWriteTransaction,
     ) throws
 
     /// Create attachment pointers from backup protos.
@@ -31,12 +31,12 @@ public protocol AttachmentManager {
     /// - returns errors for any of the provided protos that are invalid. Callers _must_ cancel
     /// the transaction if any error is returned; not doing so could result in writing partial invalid state.
     /// Returns an empty array on success.
-    func createAttachmentPointers(
-        from backupProtos: [OwnedAttachmentBackupPointerProto],
+    func createAttachmentPointer(
+        from ownedBackupProto: OwnedAttachmentBackupPointerProto,
         uploadEra: String,
         attachmentByteCounter: BackupArchiveAttachmentByteCounter,
         tx: DBWriteTransaction
-    ) -> [OwnedAttachmentBackupPointerProto.CreationError]
+    ) -> OwnedAttachmentBackupPointerProto.CreationError?
 
     /// Create attachment streams from the given data sources.
     ///
@@ -44,9 +44,9 @@ public protocol AttachmentManager {
     /// matched by content.
     ///
     /// Creates a reference from the owner to the attachments.
-    func createAttachmentStreams(
-        from dataSources: [OwnedAttachmentDataSource],
-        tx: DBWriteTransaction
+    func createAttachmentStream(
+        from ownedDataSource: OwnedAttachmentDataSource,
+        tx: DBWriteTransaction,
     ) throws
 
     /// Update an existing placeholder attachment with the full oversized text attachment file
@@ -84,39 +84,4 @@ public protocol AttachmentManager {
         from owners: [AttachmentReference.OwnerId],
         tx: DBWriteTransaction
     ) throws
-}
-
-// MARK: - Array<->Single object convenience methods
-
-extension AttachmentManager {
-
-    /// Given an attachment proto from its sender and an owner,
-    /// creates a local attachment and an owner reference to it.
-    ///
-    /// Throws an error if the provided proto is invalid.
-    public func createAttachmentPointer(
-        from proto: OwnedAttachmentPointerProto,
-        tx: DBWriteTransaction
-    ) throws {
-        try createAttachmentPointers(
-            from: [proto],
-            tx: tx
-        )
-    }
-
-    /// Create attachment streams from the given data sources.
-    ///
-    /// May save new attachment streams, or reuse existing attachment streams if
-    /// matched by content.
-    ///
-    /// Creates a reference from the owner to the attachment.
-    public func createAttachmentStream(
-        from dataSource: OwnedAttachmentDataSource,
-        tx: DBWriteTransaction
-    ) throws {
-        try createAttachmentStreams(
-            from: [dataSource],
-            tx: tx
-        )
-    }
 }

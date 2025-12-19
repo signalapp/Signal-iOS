@@ -83,7 +83,7 @@ class AttachmentStoreTests: XCTestCase {
                     let attachmentReferenceParams = AttachmentReference.ConstructionParams.mockMessageBodyAttachmentReference(
                         messageRowId: messageId,
                         threadRowId: threadId,
-                        orderInOwner: UInt32(index),
+                        orderInMessage: UInt32(index),
                         idInOwner: id
                     )
                     try attachmentStore.insert(
@@ -360,7 +360,7 @@ class AttachmentStoreTests: XCTestCase {
                     let attachmentReferenceParams = AttachmentReference.ConstructionParams.mockMessageBodyAttachmentReference(
                         messageRowId: messageId,
                         threadRowId: threadId,
-                        orderInOwner: UInt32(index),
+                        orderInMessage: UInt32(index),
                         idInOwner: attachmentIdInOwner
                     )
                     if let attachmentRowId {
@@ -402,7 +402,7 @@ class AttachmentStoreTests: XCTestCase {
                     let attachmentReferenceParams = AttachmentReference.ConstructionParams.mockMessageBodyAttachmentReference(
                         messageRowId: messageId,
                         threadRowId: threadId,
-                        orderInOwner: UInt32(index)
+                        orderInMessage: UInt32(index)
                     )
                     try attachmentStore.insert(
                         Attachment.ConstructionParams.mockPointer(),
@@ -493,7 +493,7 @@ class AttachmentStoreTests: XCTestCase {
                             isPastEditRevision: false,
                             caption: nil,
                             renderingFlag: .default,
-                            orderInOwner: 0,
+                            orderInMessage: 0,
                             idInOwner: nil,
                             isViewOnce: false
                         )))),
@@ -565,7 +565,7 @@ class AttachmentStoreTests: XCTestCase {
                             isPastEditRevision: false,
                             caption: nil,
                             renderingFlag: .default,
-                            orderInOwner: 0,
+                            orderInMessage: 0,
                             idInOwner: nil,
                             isViewOnce: false
                         )))),
@@ -832,7 +832,7 @@ class AttachmentStoreTests: XCTestCase {
                 reference: AttachmentReference.ConstructionParams.mockMessageBodyAttachmentReference(
                     messageRowId: messageId1,
                     threadRowId: threadId1,
-                    orderInOwner: 0,
+                    orderInMessage: 0,
                     idInOwner: referenceUUID1
                 ),
                 tx: tx
@@ -842,7 +842,7 @@ class AttachmentStoreTests: XCTestCase {
                 AttachmentReference.ConstructionParams.mockMessageBodyAttachmentReference(
                     messageRowId: messageId1,
                     threadRowId: threadId1,
-                    orderInOwner: 1,
+                    orderInMessage: 1,
                     idInOwner: referenceUUID2
                 ),
                 for: attachmentId,

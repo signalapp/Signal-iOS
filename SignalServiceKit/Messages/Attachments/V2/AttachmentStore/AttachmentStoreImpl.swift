@@ -80,9 +80,9 @@ public class AttachmentStoreImpl: AttachmentStore {
             var results = try RecordType.fetchAll(statement, arguments: arguments)
 
             // If we have one owner and are capable of sorting, sort in ascending order.
-            if owners.count == 1, let orderInOwnerKey = RecordType.orderInOwnerKey {
+            if owners.count == 1, let orderInMessageKey = RecordType.orderInMessageKey {
                 results = results.sorted(by: { lhs, rhs in
-                    return lhs[keyPath: orderInOwnerKey] ?? 0 <= rhs[keyPath: orderInOwnerKey] ?? 0
+                    return lhs[keyPath: orderInMessageKey] ?? 0 <= rhs[keyPath: orderInMessageKey] ?? 0
                 })
             }
             return results.compactMap {

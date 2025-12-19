@@ -275,21 +275,22 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             }
 
             do {
-                try attachmentManager.createAttachmentPointers(
-                    from: messageParams.attachmentPointerProtos.map { proto in
-                        return .init(
+                for (idx, proto) in messageParams.attachmentPointerProtos.enumerated() {
+                    try attachmentManager.createAttachmentPointer(
+                        from: OwnedAttachmentPointerProto(
                             proto: proto,
                             owner: .messageBodyAttachment(.init(
                                 messageRowId: outgoingMessage.sqliteRowId!,
                                 receivedAtTimestamp: outgoingMessage.receivedAtTimestamp,
                                 threadRowId: threadRowId,
                                 isViewOnce: outgoingMessage.isViewOnceMessage,
-                                isPastEditRevision: outgoingMessage.isPastEditRevision()
-                            ))
-                        )
-                    },
-                    tx: tx
-                )
+                                isPastEditRevision: outgoingMessage.isPastEditRevision(),
+                                orderInMessage: UInt32(idx),
+                            )),
+                        ),
+                        tx: tx,
+                    )
+                }
 
                 if let quotedReplyAttachmentDataSource = messageParams.validatedQuotedReply?.thumbnailDataSource {
                     try attachmentManager.createQuotedReplyMessageThumbnail(

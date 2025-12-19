@@ -1479,21 +1479,22 @@ public final class MessageReceiver {
         do {
             let attachmentManager = DependenciesBridge.shared.attachmentManager
 
-            try attachmentManager.createAttachmentPointers(
-                from: dataMessage.attachments.map { proto in
-                    return OwnedAttachmentPointerProto(
+            for (idx, proto) in dataMessage.attachments.enumerated() {
+                try attachmentManager.createAttachmentPointer(
+                    from: OwnedAttachmentPointerProto(
                         proto: proto,
                         owner: .messageBodyAttachment(.init(
                             messageRowId: message.sqliteRowId!,
                             receivedAtTimestamp: message.receivedAtTimestamp,
                             threadRowId: thread.sqliteRowId!,
                             isViewOnce: message.isViewOnceMessage,
-                            isPastEditRevision: message.isPastEditRevision()
-                        ))
-                    )
-                },
-                tx: tx
-            )
+                            isPastEditRevision: message.isPastEditRevision(),
+                            orderInMessage: UInt32(idx),
+                        )),
+                    ),
+                    tx: tx,
+                )
+            }
 
             if
                 let quotedReplyAttachmentDataSource = validatedQuotedReply?.thumbnailDataSource,

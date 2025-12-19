@@ -28,7 +28,7 @@ internal protocol FetchableAttachmentReferenceRecord: Codable, PersistableRecord
 
     static var attachmentRowIdColumn: Column { get }
 
-    static var orderInOwnerKey: KeyPath<Self, UInt32?>? { get }
+    static var orderInMessageKey: KeyPath<Self, UInt32?>? { get }
 
     /// Filters to apply when querying the table for rows matching the provided row id.
     /// If returns `nonMatchingOwnerType`, the record's table should not be queried at all.
@@ -38,7 +38,7 @@ internal protocol FetchableAttachmentReferenceRecord: Codable, PersistableRecord
 }
 
 extension FetchableAttachmentReferenceRecord {
-    static var orderInOwnerKey: KeyPath<Self, UInt32?>? { nil }
+    static var orderInMessageKey: KeyPath<Self, UInt32?>? { nil }
 }
 
 extension AttachmentReference {
@@ -113,7 +113,7 @@ extension AttachmentReference {
 
         static var attachmentRowIdColumn: Column { Column(CodingKeys.attachmentRowId) }
 
-        static var orderInOwnerKey: KeyPath<Self, UInt32?>? { \.orderInMessage }
+        static var orderInMessageKey: KeyPath<Self, UInt32?>? { \.orderInMessage }
 
         static func columnFilters(for ownerId: AttachmentReference.OwnerId) -> FetchableRecordColumnFilter {
             func ownerTypeAndRowId(_ messageRowId: Int64, _ ownerType: MessageOwnerTypeRaw) -> FetchableRecordColumnFilter {
@@ -227,7 +227,7 @@ extension AttachmentReference {
                 self.contentType = metadata.contentType.map { UInt32($0.rawValue) }
                 self.renderingFlag = UInt32(metadata.renderingFlag.rawValue)
                 self.idInMessage = metadata.idInOwner?.uuidString
-                self.orderInMessage = metadata.orderInOwner
+                self.orderInMessage = metadata.orderInMessage
                 self.threadRowId = metadata.threadRowId
                 self.caption = metadata.caption
                 self.stickerPackId = nil

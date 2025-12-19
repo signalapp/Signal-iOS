@@ -15,19 +15,19 @@ public struct AttachmentReferenceId: Equatable, Hashable {
     /// which makes this identifier object as a whole unique.
     ///
     /// In other owner cases this order value is nil.
-    public let orderInOwner: UInt32?
+    public let orderInMessage: UInt32?
 }
 
 extension AttachmentReference {
 
     public var referenceId: AttachmentReferenceId {
-        let orderInOwner: UInt32?
+        let orderInMessage: UInt32?
         switch owner {
         case .message(.bodyAttachment(let metadata)):
-            orderInOwner = metadata.orderInOwner
+            orderInMessage = metadata.orderInMessage
         default:
-            orderInOwner = nil
+            orderInMessage = nil
         }
-        return .init(ownerId: owner.id, orderInOwner: orderInOwner)
+        return .init(ownerId: owner.id, orderInMessage: orderInMessage)
     }
 }

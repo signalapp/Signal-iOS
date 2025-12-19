@@ -28,7 +28,7 @@ class MediaGalleryAttachmentFinderTest: XCTestCase {
             threadRowId: threadRowId,
             receivedAtTimestamp: 100,
             contentType: .image,
-            orderInOwner: 0
+            orderInMessage: 0
         )
         // ...and one matching content type after the date range
         try insertAttachment(
@@ -36,7 +36,7 @@ class MediaGalleryAttachmentFinderTest: XCTestCase {
             threadRowId: threadRowId,
             receivedAtTimestamp: 300,
             contentType: .image,
-            orderInOwner: 1
+            orderInMessage: 1
         )
         // ...and one non-matching content type within the date range
         try insertAttachment(
@@ -44,7 +44,7 @@ class MediaGalleryAttachmentFinderTest: XCTestCase {
             threadRowId: threadRowId,
             receivedAtTimestamp: 200,
             contentType: .audio,
-            orderInOwner: 2
+            orderInMessage: 2
         )
         // ...and two matching content type within the date range
         try insertAttachment(
@@ -52,14 +52,14 @@ class MediaGalleryAttachmentFinderTest: XCTestCase {
             threadRowId: threadRowId,
             receivedAtTimestamp: 200,
             contentType: .image,
-            orderInOwner: 3
+            orderInMessage: 3
         )
         try insertAttachment(
             messageRowId: messageRowId,
             threadRowId: threadRowId,
             receivedAtTimestamp: 200,
             contentType: .image,
-            orderInOwner: 4
+            orderInMessage: 4
         )
         // ...and one within the date range that we will exclude.
         try insertAttachment(
@@ -67,7 +67,7 @@ class MediaGalleryAttachmentFinderTest: XCTestCase {
             threadRowId: threadRowId,
             receivedAtTimestamp: 200,
             contentType: .image,
-            orderInOwner: 5
+            orderInMessage: 5
         )
         // ...and a view once attachment that will be excluded.
         try insertAttachment(
@@ -76,10 +76,10 @@ class MediaGalleryAttachmentFinderTest: XCTestCase {
             receivedAtTimestamp: 200,
             contentType: .image,
             isViewOnce: true,
-            orderInOwner: 6
+            orderInMessage: 6
         )
         let exclusionSet = Set<AttachmentReferenceId>([
-            .init(ownerId: .messageBodyAttachment(messageRowId: messageRowId), orderInOwner: 5)
+            .init(ownerId: .messageBodyAttachment(messageRowId: messageRowId), orderInMessage: 5)
         ])
 
         let finder = MediaGalleryAttachmentFinder(threadId: thread.grdbId!.int64Value, filter: .allPhotoVideoCategory)
@@ -142,12 +142,12 @@ class MediaGalleryAttachmentFinderTest: XCTestCase {
         ]
         let exclusionSets: [Set<AttachmentReferenceId>] = [
             Set(),
-            Set([.init(ownerId: .messageBodyAttachment(messageRowId: 100), orderInOwner: nil)]),
-            Set([.init(ownerId: .messageBodyAttachment(messageRowId: 200), orderInOwner: 5)]),
+            Set([.init(ownerId: .messageBodyAttachment(messageRowId: 100), orderInMessage: nil)]),
+            Set([.init(ownerId: .messageBodyAttachment(messageRowId: 200), orderInMessage: 5)]),
             Set([
-                .init(ownerId: .messageBodyAttachment(messageRowId: 100), orderInOwner: nil),
-                .init(ownerId: .messageBodyAttachment(messageRowId: 200), orderInOwner: nil),
-                .init(ownerId: .messageBodyAttachment(messageRowId: 300), orderInOwner: 5)
+                .init(ownerId: .messageBodyAttachment(messageRowId: 100), orderInMessage: nil),
+                .init(ownerId: .messageBodyAttachment(messageRowId: 200), orderInMessage: nil),
+                .init(ownerId: .messageBodyAttachment(messageRowId: 300), orderInMessage: 5)
             ])
         ]
         let offsets: [Int] = [0, 5]
@@ -272,7 +272,7 @@ class MediaGalleryAttachmentFinderTest: XCTestCase {
         renderingFlag: AttachmentReference.RenderingFlag = .default,
         isViewOnce: Bool = false,
         isPastEditRevision: Bool = false,
-        orderInOwner: UInt32,
+        orderInMessage: UInt32,
         idInOwner: UUID? = nil
     ) throws -> Attachment.IDType {
         let attachmentParams = Attachment.ConstructionParams.mockStream(
@@ -304,7 +304,7 @@ class MediaGalleryAttachmentFinderTest: XCTestCase {
                 isPastEditRevision: isPastEditRevision,
                 caption: caption,
                 renderingFlag: renderingFlag,
-                orderInOwner: orderInOwner,
+                orderInMessage: orderInMessage,
                 idInOwner: idInOwner,
                 isViewOnce: isViewOnce
             )))

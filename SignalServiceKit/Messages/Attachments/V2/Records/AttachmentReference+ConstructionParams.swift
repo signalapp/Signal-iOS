@@ -58,7 +58,6 @@ extension AttachmentReference {
         /// used by new attachments; however, it might be present when dealing
         /// with legacy data.
         public func build(
-            orderInOwner: UInt32?,
             knownIdInOwner: KnownIdInOwner,
             renderingFlag: AttachmentReference.RenderingFlag,
             contentType: AttachmentReference.ContentType?,
@@ -66,10 +65,6 @@ extension AttachmentReference {
         ) throws -> AttachmentReference.Owner {
             switch self {
             case .messageBodyAttachment(let metadata):
-                // idInOwner is optional; old clients may not send it.
-                guard let orderInOwner else {
-                    throw OWSAssertionError("OrderInOwner must be provided for body attachments.")
-                }
                 return .message(.bodyAttachment(.init(
                     messageRowId: metadata.messageRowId,
                     receivedAtTimestamp: metadata.receivedAtTimestamp,
@@ -79,7 +74,7 @@ extension AttachmentReference {
                     // We ignore captions in modern instances.
                     caption: caption,
                     renderingFlag: renderingFlag,
-                    orderInOwner: orderInOwner,
+                    orderInMessage: metadata.orderInMessage,
                     idInOwner: { () -> UUID? in
                         switch knownIdInOwner {
                         case .none: return UUID()
@@ -177,19 +172,24 @@ extension AttachmentReference {
             public let isViewOnce: Bool
             /// True if the owning message's ``TSEditState`` is `pastRevision`.
             public let isPastEditRevision: Bool
+            /// A relative ordering of this attachment among all the attachments
+            /// on the owning message.
+            public let orderInMessage: UInt32
 
             public init(
                 messageRowId: Int64,
                 receivedAtTimestamp: UInt64,
                 threadRowId: Int64,
                 isViewOnce: Bool,
-                isPastEditRevision: Bool
+                isPastEditRevision: Bool,
+                orderInMessage: UInt32,
             ) {
                 self.messageRowId = messageRowId
                 self.receivedAtTimestamp = receivedAtTimestamp
                 self.threadRowId = threadRowId
                 self.isViewOnce = isViewOnce
                 self.isPastEditRevision = isPastEditRevision
+                self.orderInMessage = orderInMessage
             }
         }
 
