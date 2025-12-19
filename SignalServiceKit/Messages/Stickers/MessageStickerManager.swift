@@ -7,24 +7,35 @@ import Foundation
 
 public struct MessageStickerDataSource {
     public let info: StickerInfo
-    public let stickerType: StickerType
     public let emoji: String?
     public let source: AttachmentDataSource
 }
+
+public struct ValidatedMessageStickerProto {
+    public let sticker: MessageSticker
+    public let proto: SSKProtoAttachmentPointer
+}
+
+public struct ValidatedMessageStickerDataSource {
+    public let sticker: MessageSticker
+    public let attachmentDataSource: AttachmentDataSource
+}
+
+// MARK: -
 
 public protocol MessageStickerManager {
 
     func buildValidatedMessageSticker(
         from proto: SSKProtoDataMessageSticker,
-        tx: DBWriteTransaction
-    ) throws -> OwnedAttachmentBuilder<MessageSticker>
+    ) throws -> ValidatedMessageStickerProto
 
-    func buildDataSource(fromDraft: MessageStickerDraft) async throws -> MessageStickerDataSource
+    func buildDataSource(
+        fromDraft: MessageStickerDraft,
+    ) async throws -> MessageStickerDataSource
 
-    func buildValidatedMessageSticker(
-        from dataSource: MessageStickerDataSource,
-        tx: DBWriteTransaction
-    ) throws -> OwnedAttachmentBuilder<MessageSticker>
+    func validateMessageSticker(
+        dataSource: MessageStickerDataSource,
+    ) throws -> ValidatedMessageStickerDataSource
 
     func buildProtoForSending(
         _ messageSticker: MessageSticker,
@@ -33,105 +44,86 @@ public protocol MessageStickerManager {
     ) throws -> SSKProtoDataMessageSticker
 }
 
-public class MessageStickerManagerImpl: MessageStickerManager {
+// MARK: -
+
+class MessageStickerManagerImpl: MessageStickerManager {
 
     private let attachmentManager: AttachmentManager
     private let attachmentStore: AttachmentStore
     private let attachmentValidator: AttachmentContentValidator
-    private let stickerManager: Shims.StickerManager
 
-    public init(
+    init(
         attachmentManager: AttachmentManager,
         attachmentStore: AttachmentStore,
         attachmentValidator: AttachmentContentValidator,
-        stickerManager: Shims.StickerManager
     ) {
         self.attachmentManager = attachmentManager
         self.attachmentStore = attachmentStore
         self.attachmentValidator = attachmentValidator
-        self.stickerManager = stickerManager
     }
 
-    public func buildValidatedMessageSticker(
+    func buildValidatedMessageSticker(
         from stickerProto: SSKProtoDataMessageSticker,
-        tx: DBWriteTransaction
-    ) throws -> OwnedAttachmentBuilder<MessageSticker> {
+    ) throws -> ValidatedMessageStickerProto {
         let packID: Data = stickerProto.packID
         let packKey: Data = stickerProto.packKey
         let stickerID: UInt32 = stickerProto.stickerID
         let emoji: String? = stickerProto.emoji
-        let dataProto: SSKProtoAttachmentPointer = stickerProto.data
+        let attachmentProto: SSKProtoAttachmentPointer = stickerProto.data
         let stickerInfo = StickerInfo(packId: packID, packKey: packKey, stickerId: stickerID)
-
-        let attachmentBuilder = try saveAttachment(
-            dataProto: dataProto,
-            stickerInfo: stickerInfo,
-            tx: tx
-        )
 
         let messageSticker = MessageSticker(info: stickerInfo, emoji: emoji)
         guard messageSticker.isValid else {
             throw StickerError.invalidInput
         }
-        return attachmentBuilder.wrap { _ in messageSticker }
-    }
 
-    private func saveAttachment(
-        dataProto: SSKProtoAttachmentPointer,
-        stickerInfo: StickerInfo,
-        tx: DBWriteTransaction
-    ) throws -> OwnedAttachmentBuilder<Void> {
-        do {
-            // If the content type is missing or generic, assume it's a webp.
-            let proto: SSKProtoAttachmentPointer
-            if dataProto.contentType == nil || dataProto.contentType == MimeType.applicationOctetStream.rawValue {
-                let builder = dataProto.asBuilder()
-                builder.setContentType(MimeType.imageWebp.rawValue)
-                proto = builder.buildInfallibly()
-            } else {
-                proto = dataProto
-            }
-            return try attachmentManager.createAttachmentPointerBuilder(
-                from: proto,
-                tx: tx
+        if attachmentProto.contentType == nil || attachmentProto.contentType == MimeType.applicationOctetStream.rawValue {
+            let builder = attachmentProto.asBuilder()
+            builder.setContentType(MimeType.imageWebp.rawValue)
+
+            return ValidatedMessageStickerProto(
+                sticker: messageSticker,
+                proto: builder.buildInfallibly(),
             )
-        } catch {
-            throw StickerError.invalidInput
+        } else {
+            return ValidatedMessageStickerProto(
+                sticker: messageSticker,
+                proto: attachmentProto,
+            )
         }
     }
 
-    public func buildDataSource(fromDraft draft: MessageStickerDraft) async throws -> MessageStickerDataSource {
+    func buildDataSource(
+        fromDraft draft: MessageStickerDraft,
+    ) async throws -> MessageStickerDataSource {
         let validatedDataSource = try await attachmentValidator.validateContents(
             data: draft.stickerData,
             mimeType: draft.stickerType.mimeType,
             renderingFlag: .default,
             sourceFilename: nil
         )
-        return .init(
+        return MessageStickerDataSource(
             info: draft.info,
-            stickerType: draft.stickerType,
             emoji: draft.emoji,
             source: .pendingAttachment(validatedDataSource)
         )
     }
 
-    public func buildValidatedMessageSticker(
-        from dataSource: MessageStickerDataSource,
-        tx: DBWriteTransaction
-    ) throws -> OwnedAttachmentBuilder<MessageSticker> {
-        let attachmentBuilder = try attachmentManager.createAttachmentStreamBuilder(
-            from: dataSource.source,
-            tx: tx
-        )
-
+    func validateMessageSticker(
+        dataSource: MessageStickerDataSource,
+    ) throws -> ValidatedMessageStickerDataSource {
         let messageSticker = MessageSticker(info: dataSource.info, emoji: dataSource.emoji)
         guard messageSticker.isValid else {
             throw StickerError.invalidInput
         }
-        return attachmentBuilder.wrap { _ in messageSticker }
+
+        return ValidatedMessageStickerDataSource(
+            sticker: messageSticker,
+            attachmentDataSource: dataSource.source,
+        )
     }
 
-    public func buildProtoForSending(
+    func buildProtoForSending(
         _ messageSticker: MessageSticker,
         parentMessage: TSMessage,
         tx: DBReadTransaction
@@ -172,62 +164,5 @@ public class MessageStickerManagerImpl: MessageStickerManager {
         }
 
         return try protoBuilder.build()
-    }
-}
-
-#if TESTABLE_BUILD
-
-public class MockMessageStickerManager: MessageStickerManager {
-
-    public func buildValidatedMessageSticker(
-        from proto: SSKProtoDataMessageSticker,
-        tx: DBWriteTransaction
-    ) throws -> OwnedAttachmentBuilder<MessageSticker> {
-        return .withoutFinalizer(MessageSticker(
-            info: .init(packId: proto.packID, packKey: proto.packKey, stickerId: proto.stickerID),
-            emoji: proto.emoji
-        ))
-    }
-
-    public func buildDataSource(fromDraft draft: MessageStickerDraft) throws -> MessageStickerDataSource {
-        throw OWSAssertionError("Unimplemented")
-    }
-
-    public func buildValidatedMessageSticker(
-        from dataSource: MessageStickerDataSource,
-        tx: DBWriteTransaction
-    ) throws -> OwnedAttachmentBuilder<MessageSticker> {
-        return .withoutFinalizer(MessageSticker(info: dataSource.info, emoji: dataSource.emoji))
-    }
-
-    public func buildProtoForSending(
-        _ messageSticker: MessageSticker,
-        parentMessage: TSMessage,
-        tx: DBReadTransaction
-    ) throws -> SSKProtoDataMessageSticker {
-        throw OWSAssertionError("Unimplemented")
-    }
-}
-
-#endif
-
-extension MessageStickerManagerImpl {
-    public enum Shims {
-        public typealias StickerManager = _MessageStickerManager_StickerManagerShim
-    }
-    public enum Wrappers {
-        public typealias StickerManager = _MessageStickerManager_StickerManagerWrapper
-    }
-}
-
-public protocol _MessageStickerManager_StickerManagerShim {
-    func fetchInstalledSticker(stickerInfo: StickerInfo, tx: DBReadTransaction) -> InstalledSticker?
-}
-
-public class _MessageStickerManager_StickerManagerWrapper: _MessageStickerManager_StickerManagerShim {
-    public init() {}
-
-    public func fetchInstalledSticker(stickerInfo: StickerInfo, tx: DBReadTransaction) -> InstalledSticker? {
-        StickerManager.fetchInstalledSticker(stickerInfo: stickerInfo, transaction: tx)
     }
 }

@@ -194,6 +194,10 @@ public class UnpreparedOutgoingMessage {
         _ message: MessageType.Persistable,
         tx: DBWriteTransaction
     ) throws -> PreparedOutgoingMessage.MessageType {
+        let attachmentManager = DependenciesBridge.shared.attachmentManager
+        let linkPreviewManager = DependenciesBridge.shared.linkPreviewManager
+        let messageStickerManager = DependenciesBridge.shared.messageStickerManager
+
         guard
             let thread = message.message.thread(tx: tx),
             let threadRowId = thread.sqliteRowId
@@ -202,7 +206,6 @@ public class UnpreparedOutgoingMessage {
         }
 
         let validatedLinkPreview = try message.linkPreviewDraft.map {
-            let linkPreviewManager = DependenciesBridge.shared.linkPreviewManager
             return try linkPreviewManager.validateDataSource(dataSource: $0, tx: tx)
         }
         if let validatedLinkPreview {
@@ -219,11 +222,11 @@ public class UnpreparedOutgoingMessage {
             return $0
         }
 
-        let messageStickerBuilder = try message.messageStickerDraft.map {
-            try DependenciesBridge.shared.messageStickerManager.buildValidatedMessageSticker(from: $0, tx: tx)
-        }.map {
-            message.message.update(with: $0.info, transaction: tx)
-            return $0
+        let validatedMessageSticker = try message.messageStickerDraft.map {
+            return try messageStickerManager.validateMessageSticker(dataSource: $0)
+        }
+        if let validatedMessageSticker {
+            message.message.update(with: validatedMessageSticker.sticker, transaction: tx)
         }
 
         let contactShareBuilder = try message.contactShareDraft.map {
@@ -297,7 +300,6 @@ public class UnpreparedOutgoingMessage {
         }
 
         if let linkPreviewImageDataSource = validatedLinkPreview?.imageDataSource {
-            let attachmentManager = DependenciesBridge.shared.attachmentManager
             try attachmentManager.createAttachmentStream(
                 from: OwnedAttachmentDataSource(
                     dataSource: linkPreviewImageDataSource,
@@ -322,19 +324,26 @@ public class UnpreparedOutgoingMessage {
             tx: tx
         )
 
-        try messageStickerBuilder.map {
-            try $0.finalize(
-                owner: .messageSticker(.init(
-                    messageRowId: messageRowId,
-                    receivedAtTimestamp: message.message.receivedAtTimestamp,
-                    threadRowId: threadRowId,
-                    isPastEditRevision: message.message.isPastEditRevision(),
-                    stickerPackId: $0.info.packId,
-                    stickerId: $0.info.stickerId
-                )),
-                tx: tx
+        if let validatedMessageSticker {
+            try attachmentManager.createAttachmentStream(
+                from: OwnedAttachmentDataSource(
+                    dataSource: validatedMessageSticker.attachmentDataSource,
+                    owner: .messageSticker(.init(
+                        messageRowId: messageRowId,
+                        receivedAtTimestamp: message.message.receivedAtTimestamp,
+                        threadRowId: threadRowId,
+                        isPastEditRevision: message.message.isPastEditRevision(),
+                        stickerPackId: validatedMessageSticker.sticker.packId,
+                        stickerId: validatedMessageSticker.sticker.stickerId
+                    ))
+                ),
+                tx: tx,
             )
-            StickerManager.stickerWasSent($0.info.info, transaction: tx)
+
+            StickerManager.stickerWasSent(
+                validatedMessageSticker.sticker.info,
+                transaction: tx,
+            )
         }
 
         try? contactShareBuilder?.finalize(

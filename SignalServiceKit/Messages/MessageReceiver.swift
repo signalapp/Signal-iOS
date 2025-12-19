@@ -1212,26 +1212,26 @@ public final class MessageReceiver {
                 Logger.warn("Dropping invalid link preview; keeping message")
                 validatedLinkPreview = nil
             } catch {
-                owsFailDebug("Unexpected error for incoming link preview proto! \(error)")
+                Logger.warn("Unexpected error for incoming link preview proto! \(error)")
                 return nil
             }
         } else {
             validatedLinkPreview = nil
         }
 
-        var messageStickerBuilder: OwnedAttachmentBuilder<MessageSticker>?
+        let validatedMessageSticker: ValidatedMessageStickerProto?
         if let stickerProto = dataMessage.sticker {
             do {
-                messageStickerBuilder = try DependenciesBridge.shared.messageStickerManager.buildValidatedMessageSticker(
+                let messageStickerManager = DependenciesBridge.shared.messageStickerManager
+                validatedMessageSticker = try messageStickerManager.buildValidatedMessageSticker(
                     from: stickerProto,
-                    tx: tx
                 )
             } catch {
-                Logger.error("stickerError: \(error)")
+                Logger.warn("Failed to build validated sticker for incoming sticker proto! \(error)")
                 return nil
             }
         } else {
-            messageStickerBuilder = nil
+            validatedMessageSticker = nil
         }
 
         let giftBadge = OWSGiftBadge.maybeBuild(from: dataMessage)
@@ -1423,7 +1423,7 @@ public final class MessageReceiver {
             quotedMessage: quotedMessageBuilder?.info,
             contactShare: contactBuilder?.info,
             linkPreview: validatedLinkPreview?.preview,
-            messageSticker: messageStickerBuilder?.info,
+            messageSticker: validatedMessageSticker?.sticker,
             giftBadge: giftBadge,
             paymentNotification: paymentModels?.notification,
             isPoll: pollCreate != nil
@@ -1440,7 +1440,7 @@ public final class MessageReceiver {
             hasLinkPreview: validatedLinkPreview != nil,
             hasQuotedReply: quotedMessageBuilder != nil,
             hasContactShare: contactBuilder != nil,
-            hasSticker: messageStickerBuilder != nil,
+            hasSticker: validatedMessageSticker != nil,
             hasPayment: paymentModels != nil,
             hasPoll: pollCreate != nil
         )
@@ -1504,17 +1504,20 @@ public final class MessageReceiver {
                     tx: tx,
                 )
             }
-            try messageStickerBuilder.map {
-                try $0.finalize(
-                    owner: .messageSticker(.init(
-                        messageRowId: message.sqliteRowId!,
-                        receivedAtTimestamp: message.receivedAtTimestamp,
-                        threadRowId: thread.sqliteRowId!,
-                        isPastEditRevision: message.isPastEditRevision(),
-                        stickerPackId: $0.info.packId,
-                        stickerId: $0.info.stickerId
-                    )),
-                    tx: tx
+            if let validatedMessageSticker {
+                try attachmentManager.createAttachmentPointer(
+                    from: OwnedAttachmentPointerProto(
+                        proto: validatedMessageSticker.proto,
+                        owner: .messageSticker(.init(
+                            messageRowId: message.sqliteRowId!,
+                            receivedAtTimestamp: message.receivedAtTimestamp,
+                            threadRowId: thread.sqliteRowId!,
+                            isPastEditRevision: message.isPastEditRevision(),
+                            stickerPackId: validatedMessageSticker.sticker.packId,
+                            stickerId: validatedMessageSticker.sticker.stickerId
+                        )),
+                    ),
+                    tx: tx,
                 )
             }
             try contactBuilder?.finalize(

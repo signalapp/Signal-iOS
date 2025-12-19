@@ -250,19 +250,18 @@ public class OWSIncomingSentMessageTranscript: SentMessageTranscript {
             validatedLinkPreview = nil
         }
 
+        let validatedMessageSticker: ValidatedMessageStickerProto?
+        if let stickerProto = dataMessage.sticker {
+            let messageStickerManager = DependenciesBridge.shared.messageStickerManager
+            validatedMessageSticker = try messageStickerManager.buildValidatedMessageSticker(from: stickerProto)
+        } else {
+            validatedMessageSticker = nil
+        }
+
         let giftBadge = OWSGiftBadge.maybeBuild(from: dataMessage)
         if giftBadge != nil, target.thread.isGroupThread {
             owsFailDebug("Ignoring gift sent to group")
             return nil
-        }
-
-        let makeMessageStickerBuilder = { [dataMessage] tx in
-            try dataMessage.sticker.map { stickerProto in
-                return try DependenciesBridge.shared.messageStickerManager.buildValidatedMessageSticker(
-                    from: stickerProto,
-                    tx: tx
-                )
-            }
         }
 
         let threadUniqueId = target.thread.uniqueId
@@ -315,15 +314,15 @@ public class OWSIncomingSentMessageTranscript: SentMessageTranscript {
             storyAuthorAci = nil
         }
 
-        return .init(
+        return SentMessageTranscriptType.Message(
             target: target,
             body: body,
             attachmentPointerProtos: dataMessage.attachments,
             makeQuotedMessageBuilder: makeQuotedMessageBuilder,
             makeContactBuilder: makeContactBuilder,
             validatedLinkPreview: validatedLinkPreview,
+            validatedMessageSticker: validatedMessageSticker,
             giftBadge: giftBadge,
-            makeMessageStickerBuilder: makeMessageStickerBuilder,
             isViewOnceMessage: isViewOnceMessage,
             expirationStartedAt: sentProto.expirationStartTimestamp,
             expirationDurationSeconds: dataMessage.expireTimer,

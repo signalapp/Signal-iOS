@@ -183,11 +183,9 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
 
         let quotedMessageBuilder: OwnedAttachmentBuilder<TSQuotedMessage>?
         let contactBuilder: OwnedAttachmentBuilder<OWSContact>?
-        let messageStickerBuilder: OwnedAttachmentBuilder<MessageSticker>?
         do {
             quotedMessageBuilder = try messageParams.makeQuotedMessageBuilder(tx)
             contactBuilder = try messageParams.makeContactBuilder(tx)
-            messageStickerBuilder = try messageParams.makeMessageStickerBuilder(tx)
         } catch let error {
             return .failure(error)
         }
@@ -215,7 +213,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             quotedMessage: quotedMessageBuilder?.info,
             contactShare: contactBuilder?.info,
             linkPreview: messageParams.validatedLinkPreview?.preview,
-            messageSticker: messageStickerBuilder?.info,
+            messageSticker: messageParams.validatedMessageSticker?.sticker,
             giftBadge: messageParams.giftBadge,
             isPoll: messageParams.makePollCreateBuilder != nil
         )
@@ -226,7 +224,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             hasLinkPreview: messageParams.validatedLinkPreview != nil,
             hasQuotedReply: quotedMessageBuilder != nil,
             hasContactShare: contactBuilder != nil,
-            hasSticker: messageStickerBuilder != nil,
+            hasSticker: messageParams.validatedMessageSticker != nil,
             // Payment notifications go through a different path.
             hasPayment: false,
             hasPoll: messageParams.makePollCreateBuilder != nil
@@ -322,19 +320,23 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
                     )
                 }
 
-                try messageStickerBuilder.map {
-                    try $0.finalize(
-                        owner: .messageSticker(.init(
-                            messageRowId: outgoingMessage.sqliteRowId!,
-                            receivedAtTimestamp: outgoingMessage.receivedAtTimestamp,
-                            threadRowId: threadRowId,
-                            isPastEditRevision: outgoingMessage.isPastEditRevision(),
-                            stickerPackId: $0.info.packId,
-                            stickerId: $0.info.stickerId
-                        )),
-                        tx: tx
+                if let validatedMessageSticker = messageParams.validatedMessageSticker {
+                    try attachmentManager.createAttachmentPointer(
+                        from: OwnedAttachmentPointerProto(
+                            proto: validatedMessageSticker.proto,
+                            owner: .messageSticker(.init(
+                                messageRowId: outgoingMessage.sqliteRowId!,
+                                receivedAtTimestamp: outgoingMessage.receivedAtTimestamp,
+                                threadRowId: threadRowId,
+                                isPastEditRevision: outgoingMessage.isPastEditRevision(),
+                                stickerPackId: validatedMessageSticker.sticker.packId,
+                                stickerId: validatedMessageSticker.sticker.stickerId
+                            )),
+                        ),
+                        tx: tx,
                     )
                 }
+
                 try contactBuilder?.finalize(
                     owner: .messageContactAvatar(.init(
                         messageRowId: outgoingMessage.sqliteRowId!,
