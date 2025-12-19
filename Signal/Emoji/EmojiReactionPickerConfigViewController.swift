@@ -8,11 +8,10 @@ public import SignalUI
 
 public class EmojiReactionPickerConfigViewController: UIViewController {
 
-    private lazy var reactionPicker =  MessageReactionPicker(
+    private lazy var reactionPicker = MessageReactionPicker(
         selectedEmoji: nil,
         delegate: nil,
         style: .configure,
-        forceDarkTheme: self.forceDarkTheme
     )
 
     private let instructionLabel: UILabel = {
@@ -23,15 +22,11 @@ public class EmojiReactionPickerConfigViewController: UIViewController {
         return label
     }()
 
-    private let forceDarkTheme: Bool
-
     private let reactionPickerConfigurationListener: ReactionPickerConfigurationListener?
 
     init(
-        forceDarkTheme: Bool = false,
         reactionPickerConfigurationListener: ReactionPickerConfigurationListener? = nil
     ) {
-        self.forceDarkTheme = forceDarkTheme
         self.reactionPickerConfigurationListener = reactionPickerConfigurationListener
         super.init(nibName: nil, bundle: nil)
     }
@@ -59,10 +54,6 @@ public class EmojiReactionPickerConfigViewController: UIViewController {
                 self?.resetButtonTapped()
             }
         )
-        if self.forceDarkTheme {
-            navigationController?.overrideUserInterfaceStyle = .dark
-            overrideUserInterfaceStyle = .dark
-        }
 
         // Reaction picker
         reactionPicker.delegate = self

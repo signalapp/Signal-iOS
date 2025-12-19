@@ -81,7 +81,6 @@ class MessageReactionPicker: UIStackView {
         selectedEmoji: String?,
         delegate: MessageReactionPickerDelegate?,
         style: Style,
-        forceDarkTheme: Bool = false
     ) {
         if let selectedEmoji = selectedEmoji {
             self.selectedEmoji = EmojiWithSkinTones(rawValue: selectedEmoji)
@@ -93,10 +92,6 @@ class MessageReactionPicker: UIStackView {
         self.style = style
 
         super.init(frame: .zero)
-
-        if forceDarkTheme {
-            overrideUserInterfaceStyle = .dark
-        }
 
         let liquidGlassIsAvailable: Bool = if #available(iOS 26, *) {
             true
@@ -119,19 +114,19 @@ class MessageReactionPicker: UIStackView {
             backgroundContentView = visualEffectView.contentView
         case (.configure, false), (.contextMenu(allowGlass: _), _):
             backgroundView = addBackgroundView(
-                withBackgroundColor: forceDarkTheme ? .ows_gray75 : Theme.actionSheetBackgroundColor,
+                withBackgroundColor: .Signal.secondaryGroupedBackground,
                 cornerRadius: pickerDiameter / 2
             )
             backgroundView?.layer.cornerCurve = .continuous
-            backgroundView?.layer.shadowColor = UIColor.ows_black.cgColor
+            backgroundView?.layer.shadowColor = UIColor.black.cgColor
             backgroundView?.layer.shadowRadius = 4
             backgroundView?.layer.shadowOpacity = 0.05
             backgroundView?.layer.shadowOffset = .zero
 
             let shadowView = UIView()
-            shadowView.backgroundColor = forceDarkTheme ? .ows_gray75 : Theme.actionSheetBackgroundColor
+            shadowView.backgroundColor = .Signal.secondaryGroupedBackground
             shadowView.layer.cornerRadius = pickerDiameter / 2
-            shadowView.layer.shadowColor = UIColor.ows_black.cgColor
+            shadowView.layer.shadowColor = UIColor.black.cgColor
             shadowView.layer.shadowRadius = 12
             shadowView.layer.shadowOpacity = 0.3
             shadowView.layer.shadowOffset = CGSize(width: 0, height: 4)
@@ -196,7 +191,7 @@ class MessageReactionPicker: UIStackView {
             // Add a circle behind the currently selected emoji
             if self.selectedEmoji == emoji {
                 let selectedBackgroundView = UIView()
-                selectedBackgroundView.backgroundColor = Theme.isDarkThemeEnabled || forceDarkTheme ? .ows_gray60 : .ows_gray05
+                selectedBackgroundView.backgroundColor = .Signal.secondaryFill
                 selectedBackgroundView.clipsToBounds = true
                 selectedBackgroundView.layer.cornerRadius = selectedBackgroundHeight / 2
                 backgroundContentView?.addSubview(selectedBackgroundView)
@@ -301,7 +296,7 @@ class MessageReactionPicker: UIStackView {
 
     public func replaceEmojiReaction(_ oldEmoji: String, newEmoji: String, inPosition position: Int) {
         guard let button = buttonForEmoji[position].emojiButton else { return }
-        button.setTitle(title: newEmoji, font: .systemFont(ofSize: reactionFontSize), titleColor: Theme.primaryTextColor)
+        button.setTitle(title: newEmoji, font: .systemFont(ofSize: reactionFontSize), titleColor: .Signal.label)
         buttonForEmoji.replaceSubrange(
             position...position,
             with: [.emoji(emoji: newEmoji, button: button)]

@@ -117,6 +117,7 @@ class StoryReplyInputToolbar: UIView {
         containerView.autoPinEdge(toSuperviewSafeArea: .bottom)
 
         containerView.addSubview(reactionPicker)
+        reactionPicker.overrideUserInterfaceStyle = .dark
         reactionPicker.autoPinEdges(toSuperviewEdgesExcludingEdge: .bottom)
 
         containerView.addSubview(textContainer)
@@ -209,7 +210,7 @@ class StoryReplyInputToolbar: UIView {
         textView.resignFirstResponder()
     }
 
-    private lazy var reactionPicker: MessageReactionPicker = MessageReactionPicker(selectedEmoji: nil, delegate: delegate, style: .inline, forceDarkTheme: true)
+    private lazy var reactionPicker: MessageReactionPicker = MessageReactionPicker(selectedEmoji: nil, delegate: delegate, style: .inline)
 
     private lazy var placeholderTextView: UITextView = {
         let placeholderTextView = buildTextView()

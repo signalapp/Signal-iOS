@@ -24,7 +24,10 @@ public class ContextMenuActionsAccessory: ContextMenuTargetedPreviewAccessory, C
     ) {
         self.menu = menu
 
-        menuView = ContextMenuActionsView(menu: menu, forceDarkTheme: forceDarkTheme)
+        menuView = ContextMenuActionsView(menu: menu)
+        if forceDarkTheme {
+            menuView.overrideUserInterfaceStyle = .dark
+        }
         menuView.isHidden = true
         super.init(accessoryView: menuView, accessoryAlignment: accessoryAlignment)
         menuView.delegate = self
@@ -150,7 +153,6 @@ private class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScr
 
     private class ContextMenuActionRow: UIView {
         let attributes: ContextMenuAction.Attributes
-        let forceDarkTheme: Bool
         let titleLabel: UILabel
         let iconView: UIImageView
         var separatorView: UIView?
@@ -162,18 +164,14 @@ private class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScr
                         if highlightedView == nil {
                             let view = UIView()
 
-                            if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
-#if compiler(>=6.2)
+                            if #available(iOS 26, *) {
                                 view.frame = bounds.insetBy(dx: 10, dy: 1)
                                 view.cornerConfiguration = .capsule()
-#endif
                             } else {
                                 view.frame = bounds
                             }
 
-                            view.backgroundColor = forceDarkTheme || Theme.isDarkThemeEnabled
-                                ? UIColor(rgbHex: 0x787880).withAlphaComponent(0.32)
-                                : UIColor(rgbHex: 0x787880).withAlphaComponent(0.16)
+                            view.backgroundColor = .Signal.secondaryFill
                             view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
                             highlightedView = view
                         }
@@ -208,7 +206,6 @@ private class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScr
             icon: UIImage?,
             attributes: ContextMenuAction.Attributes,
             hostBlurEffect: UIBlurEffect?,
-            forceDarkTheme: Bool
         ) {
             titleLabel = UILabel(frame: CGRect.zero)
             titleLabel.text = title
@@ -216,7 +213,6 @@ private class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScr
             titleLabel.numberOfLines = titleMaxLines
 
             self.attributes = attributes
-            self.forceDarkTheme = forceDarkTheme
 
             /// when made a child of a UIVisualEffectView, UILabel text color is overridden, but a vibrancy effect is added.
             /// When we aren't using a color anyway, we want the vibrancy effect so we add it as a subview of the visual effect.
@@ -226,10 +222,10 @@ private class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScr
                 titleLabel.textColor = UIColor.Signal.red
                 makeLabelSubviewOfVisualEffectsView = false
             } else if attributes.contains(.disabled) {
-                titleLabel.textColor = forceDarkTheme ? Theme.darkThemeSecondaryTextAndIconColor : Theme.secondaryTextAndIconColor
+                titleLabel.textColor = .Signal.secondaryLabel
                 makeLabelSubviewOfVisualEffectsView = false
             } else {
-                titleLabel.textColor = forceDarkTheme ? Theme.darkThemePrimaryColor : Theme.primaryTextColor
+                titleLabel.textColor = .Signal.label
                 makeLabelSubviewOfVisualEffectsView = true
             }
 
@@ -251,9 +247,7 @@ private class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScr
                 }
 
                 let separatorView = UIView()
-                separatorView.backgroundColor = forceDarkTheme || Theme.isDarkThemeEnabled
-                ? UIColor(rgbHex: 0x545458).withAlphaComponent(0.6)
-                : UIColor(rgbHex: 0x3c3c43).withAlphaComponent(0.3)
+                separatorView.backgroundColor = .Signal.transparentSeparator
                 separatorView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
                 self.separatorView = separatorView
 
@@ -338,7 +332,6 @@ private class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScr
 
     weak var delegate: ContextMenuActionsViewDelegate?
     public let menu: ContextMenu
-    public let forceDarkTheme: Bool
 
     private let actionViews: [ContextMenuActionRow]
     private let scrollView: UIScrollView
@@ -369,33 +362,21 @@ private class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScr
         0
     }
 
-    public init(
-        menu: ContextMenu,
-        forceDarkTheme: Bool = false
-    ) {
+    public init(menu: ContextMenu) {
         self.menu = menu
-        self.forceDarkTheme = forceDarkTheme
 
         scrollView = UIScrollView(frame: CGRect.zero)
         scrollView.verticalScrollIndicatorInsets = .init(hMargin: 0, vMargin: cornerRadius)
 
         let blurEffect: UIBlurEffect?
-        if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
-#if compiler(>=6.2)
+        if #available(iOS 26, *) {
             let effect = UIGlassEffect(style: .regular)
             effect.isInteractive = true
             backdropView = UIVisualEffectView(effect: effect)
-#else
-            // will never execute because of the BuildFlags.iOS26SDKIsAvailable check above, but needed for the Xcode 16 compiler to not get mad. Remove when CI is all Xcode 26
-            backdropView = UIVisualEffectView(effect: UIBlurEffect(style: .systemThinMaterial))
-#endif
             blurEffect = nil
         } else {
-            blurEffect = UIBlurEffect(style: .systemThinMaterial)
+            blurEffect = UIBlurEffect(style: .systemMaterial)
             backdropView = UIVisualEffectView(effect: blurEffect)
-            backdropView.backgroundColor = Theme.isDarkThemeEnabled || forceDarkTheme
-                ? .ows_blackAlpha80
-                : .ows_whiteAlpha40
         }
 
         var actionViews: [ContextMenuActionRow] = []
@@ -405,7 +386,6 @@ private class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScr
                 icon: action.image,
                 attributes: action.attributes,
                 hostBlurEffect: blurEffect,
-                forceDarkTheme: forceDarkTheme
             )
             actionViews.append(actionView)
         }

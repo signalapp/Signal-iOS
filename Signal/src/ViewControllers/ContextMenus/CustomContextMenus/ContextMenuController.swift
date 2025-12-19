@@ -387,7 +387,7 @@ class ContextMenuController: OWSViewController, ContextMenuViewDelegate, UIGestu
 
     private var emojiPickerSheet: EmojiPickerSheet?
 
-    init (
+    init(
         configuration: ContextMenuConfiguration,
         preview: ContextMenuTargetedPreview,
         initiatingGestureRecognizer: UIGestureRecognizer?,
@@ -485,9 +485,15 @@ class ContextMenuController: OWSViewController, ContextMenuViewDelegate, UIGestu
             if self.renderBackgroundBlur {
                 if !UIDevice.current.isIPad {
                     self.blurView.effect = UIBlurEffect(style: UIBlurEffect.Style.regular)
-                    self.blurView.backgroundColor = self.contextMenuConfiguration.forceDarkTheme || Theme.isDarkThemeEnabled ? UIColor.ows_whiteAlpha20 : UIColor.ows_blackAlpha20
+                    self.blurView.backgroundColor = UIColor { traitCollection in
+                        if traitCollection.userInterfaceStyle == .dark {
+                            UIColor.white.withAlphaComponent(0.2)
+                        } else {
+                            UIColor.black.withAlphaComponent(0.2)
+                        }
+                    }
                 } else {
-                    self.blurView.backgroundColor = UIColor.ows_blackAlpha40
+                    self.blurView.backgroundColor = UIColor.black.withAlphaComponent(0.4)
                 }
             }
 

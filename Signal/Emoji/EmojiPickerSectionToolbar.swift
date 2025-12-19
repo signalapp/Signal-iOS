@@ -14,7 +14,6 @@ protocol EmojiPickerSectionToolbarDelegate: AnyObject {
 class EmojiPickerSectionToolbar: UIView, UICollectionViewDelegate {
     private var buttons = [UIButton]()
 
-    private let forceDarkTheme: Bool
     private weak var delegate: EmojiPickerSectionToolbarDelegate?
 
     private enum Section {
@@ -108,16 +107,10 @@ class EmojiPickerSectionToolbar: UIView, UICollectionViewDelegate {
 
     init(
         delegate: EmojiPickerSectionToolbarDelegate,
-        forceDarkTheme: Bool = false
     ) {
         self.delegate = delegate
-        self.forceDarkTheme = forceDarkTheme
 
         super.init(frame: .zero)
-
-        if forceDarkTheme {
-            overrideUserInterfaceStyle = .dark
-        }
 
         // Prepare icons.
         var emojiSectionIcons: [ThemeIcon] = [
@@ -189,7 +182,7 @@ class EmojiPickerSectionToolbar: UIView, UICollectionViewDelegate {
 
                 addSubview(collectionView)
             } else {
-                let blurEffect = forceDarkTheme ? Theme.darkThemeBarBlurEffect : Theme.barBlurEffect
+                let blurEffect = UIBlurEffect(style: .regular)
                 let blurEffectView = UIVisualEffectView(effect: blurEffect)
                 addSubview(blurEffectView)
                 blurEffectView.translatesAutoresizingMaskIntoConstraints = false

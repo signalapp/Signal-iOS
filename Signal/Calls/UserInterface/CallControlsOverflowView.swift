@@ -12,8 +12,8 @@ class CallControlsOverflowView: UIView {
             selectedEmoji: nil,
             delegate: self,
             style: .contextMenu(allowGlass: false),
-            forceDarkTheme: true
         )
+        picker.overrideUserInterfaceStyle = .dark
         picker.translatesAutoresizingMaskIntoConstraints = false
         picker.isHidden = true
         return picker
@@ -242,12 +242,12 @@ extension CallControlsOverflowView: MessageReactionPickerDelegate {
     func didSelectAnyEmoji() {
         let sheet = EmojiPickerSheet(
             message: nil,
-            forceDarkTheme: true,
             reactionPickerConfigurationListener: self
         ) { [weak self] selectedEmoji in
             guard let selectedEmoji else { return }
             self?.react(with: selectedEmoji.rawValue)
         }
+        sheet.overrideUserInterfaceStyle = .dark
         emojiPickerSheetPresenter?.present(
             sheet: sheet,
             animated: true
