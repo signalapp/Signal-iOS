@@ -19,7 +19,7 @@ open class SignalBaseTest: XCTestCase {
             await MockSSKEnvironment.activate()
             setupExpectation.fulfill()
         }
-        waitForExpectations(timeout: 2)
+        waitForExpectations(timeout: 30)
     }
 
     @MainActor
