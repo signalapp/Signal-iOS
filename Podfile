@@ -29,11 +29,6 @@ pod 'SQLCipher', git: 'https://github.com/signalapp/sqlcipher.git', tag: 'v4.6.1
 # forked third party pods
 ###
 
-# Forked for performance optimizations that are not likely to be upstreamed as they are specific
-# to our limited use of Mantle
-pod 'Mantle', git: 'https://github.com/signalapp/Mantle', branch: 'signal-master'
-# pod 'Mantle', path: '../Mantle'
-
 pod 'libPhoneNumber-iOS', git: 'https://github.com/signalapp/libPhoneNumber-iOS', branch: 'signal-master'
 # pod 'libPhoneNumber-iOS', path: '../libPhoneNumber-iOS'
 

@@ -130,7 +130,7 @@ private enum GroupMemberState: Equatable, Codable, CustomStringConvertible {
 // MARK: -
 
 @objc
-public class GroupMembership: MTLModel {
+public class GroupMembership: NSObject, NSCoding {
 
     // MARK: Types
 
@@ -202,7 +202,7 @@ public class GroupMembership: MTLModel {
     private static var bannedMembersKey: String { "bannedMembers" }
     private static var invalidInviteMapKey: String { "invalidInviteMap" }
 
-    public override func encode(with aCoder: NSCoder) {
+    public func encode(with aCoder: NSCoder) {
         let encoder = JSONEncoder()
         do {
             let memberStatesData = try encoder.encode(self.memberStates)
@@ -213,11 +213,6 @@ public class GroupMembership: MTLModel {
 
         aCoder.encode(bannedMembers.mapKeys(injectiveTransform: { $0.rawUUID }), forKey: Self.bannedMembersKey)
         aCoder.encode(invalidInviteMap, forKey: Self.invalidInviteMapKey)
-    }
-
-    @objc
-    public required init(dictionary dictionaryValue: [String: Any]!) throws {
-        fatalError("init(dictionary:) has not been implemented")
     }
 
     fileprivate init(
@@ -874,72 +869,97 @@ public class GroupMembership: MTLModel {
 // MARK: - InvalidInviteModel
 
 @objc(GroupMembershipInvalidInviteModel)
-private class InvalidInviteModel: MTLModel {
-    @objc
-    var userId: Data?
+private final class InvalidInviteModel: NSObject, NSCoding, NSCopying {
+    init?(coder: NSCoder) {
+        self.addedByUserId = coder.decodeObject(of: NSData.self, forKey: "addedByUserId") as Data?
+        self.userId = coder.decodeObject(of: NSData.self, forKey: "userId") as Data?
+    }
 
-    @objc
-    var addedByUserId: Data?
+    func encode(with coder: NSCoder) {
+        if let addedByUserId {
+            coder.encode(addedByUserId, forKey: "addedByUserId")
+        }
+        if let userId {
+            coder.encode(userId, forKey: "userId")
+        }
+    }
+
+    public override var hash: Int {
+        var hasher = Hasher()
+        hasher.combine(addedByUserId)
+        hasher.combine(userId)
+        return hasher.finalize()
+    }
+
+    public override func isEqual(_ object: Any?) -> Bool {
+        guard let object = object as? Self else { return false }
+        guard type(of: self) == type(of: object) else { return false }
+        guard self.addedByUserId == object.addedByUserId else { return false }
+        guard self.userId == object.userId else { return false }
+        return true
+    }
+
+    public func copy(with zone: NSZone? = nil) -> Any {
+        return self
+    }
+
+    let userId: Data?
+    let addedByUserId: Data?
 
     init(userId: Data?, addedByUserId: Data? = nil) {
         self.userId = userId
         self.addedByUserId = addedByUserId
-        super.init()
-    }
-
-    @objc
-    public override init() {
-        super.init()
-    }
-
-    @objc
-    required public init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-    }
-
-    @objc
-    public required init(dictionary dictionaryValue: [String: Any]!) throws {
-        try super.init(dictionary: dictionaryValue)
     }
 }
 
 // MARK: - LegacyMemberState
 
 @objc(_TtCC16SignalServiceKit15GroupMembership11MemberState)
-private class LegacyMemberState: MTLModel {
-    @objc
-    var role: TSGroupMemberRole = .normal
-
-    @objc
-    var isPending: Bool = false
-
-    // Only applies for pending members.
-    @objc
-    var addedByUuid: UUID?
-
-    @objc
-    public override init() {
-        super.init()
+private final class LegacyMemberState: NSObject, NSCoding, NSCopying {
+    init?(coder: NSCoder) {
+        self.addedByUuid = coder.decodeObject(of: NSUUID.self, forKey: "addedByUuid") as UUID?
+        self.isPending = coder.decodeObject(of: NSNumber.self, forKey: "isPending")?.boolValue ?? false
+        self.role = (coder.decodeObject(of: NSNumber.self, forKey: "role")?.uintValue).flatMap(TSGroupMemberRole.init(rawValue:)) ?? .normal
     }
 
-    init(role: TSGroupMemberRole,
-         isPending: Bool,
-         addedByUuid: UUID? = nil) {
+    func encode(with coder: NSCoder) {
+        if let addedByUuid {
+            coder.encode(addedByUuid, forKey: "addedByUuid")
+        }
+        coder.encode(NSNumber(value: self.isPending), forKey: "isPending")
+        coder.encode(NSNumber(value: self.role.rawValue), forKey: "role")
+    }
+
+    public override var hash: Int {
+        var hasher = Hasher()
+        hasher.combine(addedByUuid)
+        hasher.combine(isPending)
+        hasher.combine(role)
+        return hasher.finalize()
+    }
+
+    public override func isEqual(_ object: Any?) -> Bool {
+        guard let object = object as? Self else { return false }
+        guard type(of: self) == type(of: object) else { return false }
+        guard self.addedByUuid == object.addedByUuid else { return false }
+        guard self.isPending == object.isPending else { return false }
+        guard self.role == object.role else { return false }
+        return true
+    }
+
+    public func copy(with zone: NSZone? = nil) -> Any {
+        return self
+    }
+
+    let role: TSGroupMemberRole
+    let isPending: Bool
+    // Only applies for pending members.
+    let addedByUuid: UUID?
+
+    init(role: TSGroupMemberRole, isPending: Bool, addedByUuid: UUID? = nil) {
         self.role = role
         self.isPending = isPending
         self.addedByUuid = addedByUuid
-
-        super.init()
-    }
-
-    @objc
-    required public init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-    }
-
-    @objc
-    public required init(dictionary dictionaryValue: [String: Any]!) throws {
-        try super.init(dictionary: dictionaryValue)
     }
 
     @objc

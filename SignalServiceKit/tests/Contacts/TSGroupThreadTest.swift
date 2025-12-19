@@ -4,11 +4,11 @@
 //
 
 import XCTest
-import SignalServiceKit
+@testable import SignalServiceKit
 
 class TSGroupThreadTest: XCTestCase {
     func testHasSafetyNumbers() throws {
-        let groupThread = try TSGroupThread(dictionary: [:])
+        let groupThread = TSGroupThread.forUnitTest()
         XCTAssertFalse(groupThread.hasSafetyNumbers())
     }
 }

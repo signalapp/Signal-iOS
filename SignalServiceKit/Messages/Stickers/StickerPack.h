@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+@import Foundation;
+
 #import <SignalServiceKit/BaseModel.h>
 #import <SignalServiceKit/StickerInfo.h>
 
@@ -11,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class DBWriteTransaction;
 @class StickerPack;
 
-@interface StickerPackItem : MTLModel
+@interface StickerPackItem : NSObject <NSCoding, NSCopying>
 
 @property (nonatomic, readonly) UInt32 stickerId;
 @property (nonatomic, readonly) NSString *emojiString;

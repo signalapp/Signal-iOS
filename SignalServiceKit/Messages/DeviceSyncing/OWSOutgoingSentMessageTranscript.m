@@ -66,12 +66,36 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+- (void)encodeWithCoder:(NSCoder *)coder
+{
+    [super encodeWithCoder:coder];
+    [coder encodeObject:[self valueForKey:@"isRecipientUpdate"] forKey:@"isRecipientUpdate"];
+    TSOutgoingMessage *message = self.message;
+    if (message != nil) {
+        [coder encodeObject:message forKey:@"message"];
+    }
+    TSThread *messageThread = self.messageThread;
+    if (messageThread != nil) {
+        [coder encodeObject:messageThread forKey:@"messageThread"];
+    }
+    SignalServiceAddress *sentRecipientAddress = self.sentRecipientAddress;
+    if (sentRecipientAddress != nil) {
+        [coder encodeObject:sentRecipientAddress forKey:@"sentRecipientAddress"];
+    }
+}
+
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
     self = [super initWithCoder:coder];
     if (!self) {
         return self;
     }
+    self->_isRecipientUpdate = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
+                                                                forKey:@"isRecipientUpdate"] boolValue];
+    self->_message = [coder decodeObjectOfClass:[TSOutgoingMessage class] forKey:@"message"];
+    self->_messageThread = [coder decodeObjectOfClass:[TSThread class] forKey:@"messageThread"];
+    self->_sentRecipientAddress = [coder decodeObjectOfClass:[SignalServiceAddress class]
+                                                      forKey:@"sentRecipientAddress"];
 
     if (_sentRecipientAddress == nil) {
         NSString *phoneNumber = [coder decodeObjectForKey:@"sentRecipientId"];
@@ -80,6 +104,47 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     return self;
+}
+
+- (NSUInteger)hash
+{
+    NSUInteger result = [super hash];
+    result ^= self.isRecipientUpdate;
+    result ^= self.message.hash;
+    result ^= self.messageThread.hash;
+    result ^= self.sentRecipientAddress.hash;
+    return result;
+}
+
+- (BOOL)isEqual:(id)other
+{
+    if (![super isEqual:other]) {
+        return NO;
+    }
+    OWSOutgoingSentMessageTranscript *typedOther = (OWSOutgoingSentMessageTranscript *)other;
+    if (self.isRecipientUpdate != typedOther.isRecipientUpdate) {
+        return NO;
+    }
+    if (![NSObject isObject:self.message equalToObject:typedOther.message]) {
+        return NO;
+    }
+    if (![NSObject isObject:self.messageThread equalToObject:typedOther.messageThread]) {
+        return NO;
+    }
+    if (![NSObject isObject:self.sentRecipientAddress equalToObject:typedOther.sentRecipientAddress]) {
+        return NO;
+    }
+    return YES;
+}
+
+- (id)copyWithZone:(nullable NSZone *)zone
+{
+    OWSOutgoingSentMessageTranscript *result = [super copyWithZone:zone];
+    result->_isRecipientUpdate = self.isRecipientUpdate;
+    result->_message = self.message;
+    result->_messageThread = self.messageThread;
+    result->_sentRecipientAddress = self.sentRecipientAddress;
+    return result;
 }
 
 - (BOOL)isUrgent

@@ -243,7 +243,7 @@ public class MockContactShareManager: ContactShareManager {
         for contactProto: SSKProtoDataMessageContact,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<OWSContact> {
-        return .withoutFinalizer(OWSContact())
+        return .withoutFinalizer(OWSContact(name: OWSContactName()))
     }
 
     public func validateAndPrepare(
@@ -256,7 +256,7 @@ public class MockContactShareManager: ContactShareManager {
         draft: ContactShareDraft.ForSending,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<OWSContact> {
-        return .withoutFinalizer(OWSContact())
+        return .withoutFinalizer(OWSContact(name: OWSContactName()))
     }
 
     public func buildProtoForSending(

@@ -37,17 +37,69 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+- (void)encodeWithCoder:(NSCoder *)coder
+{
+    [super encodeWithCoder:coder];
+    [coder encodeObject:[self valueForKey:@"isLocalChange"] forKey:@"isLocalChange"];
+    SignalServiceAddress *recipientAddress = self.recipientAddress;
+    if (recipientAddress != nil) {
+        [coder encodeObject:recipientAddress forKey:@"recipientAddress"];
+    }
+    [coder encodeObject:[self valueForKey:@"verificationState"] forKey:@"verificationState"];
+}
+
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
     self = [super initWithCoder:coder];
-    if (self) {
-        if (_recipientAddress == nil) {
-            NSString *_Nullable phoneNumber = [coder decodeObjectForKey:@"recipientId"];
-            _recipientAddress = [SignalServiceAddress legacyAddressWithServiceIdString:nil phoneNumber:phoneNumber];
-            OWSAssertDebug(_recipientAddress.isValid);
-        }
+    if (!self) {
+        return self;
+    }
+    self->_isLocalChange = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class] forKey:@"isLocalChange"] boolValue];
+    self->_recipientAddress = [coder decodeObjectOfClass:[SignalServiceAddress class] forKey:@"recipientAddress"];
+    self->_verificationState = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
+                                                                forKey:@"verificationState"] unsignedLongLongValue];
+    if (_recipientAddress == nil) {
+        NSString *_Nullable phoneNumber = [coder decodeObjectForKey:@"recipientId"];
+        _recipientAddress = [SignalServiceAddress legacyAddressWithServiceIdString:nil phoneNumber:phoneNumber];
+        OWSAssertDebug(_recipientAddress.isValid);
     }
     return self;
+}
+
+- (NSUInteger)hash
+{
+    NSUInteger result = [super hash];
+    result ^= self.isLocalChange;
+    result ^= self.recipientAddress.hash;
+    result ^= self.verificationState;
+    return result;
+}
+
+- (BOOL)isEqual:(id)other
+{
+    if (![super isEqual:other]) {
+        return NO;
+    }
+    OWSVerificationStateChangeMessage *typedOther = (OWSVerificationStateChangeMessage *)other;
+    if (self.isLocalChange != typedOther.isLocalChange) {
+        return NO;
+    }
+    if (![NSObject isObject:self.recipientAddress equalToObject:typedOther.recipientAddress]) {
+        return NO;
+    }
+    if (self.verificationState != typedOther.verificationState) {
+        return NO;
+    }
+    return YES;
+}
+
+- (id)copyWithZone:(nullable NSZone *)zone
+{
+    OWSVerificationStateChangeMessage *result = [super copyWithZone:zone];
+    result->_isLocalChange = self.isLocalChange;
+    result->_recipientAddress = self.recipientAddress;
+    result->_verificationState = self.verificationState;
+    return result;
 }
 
 - (bool)isVerified

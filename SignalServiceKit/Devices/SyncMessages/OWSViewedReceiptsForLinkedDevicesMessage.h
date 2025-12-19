@@ -3,7 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-#import <Mantle/MTLModel.h>
+@import Foundation;
+
 #import <SignalServiceKit/OWSOutgoingSyncMessage.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -12,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class DBReadTransaction;
 @class SignalServiceAddress;
 
-@interface OWSLinkedDeviceViewedReceipt : MTLModel
+@interface OWSLinkedDeviceViewedReceipt : NSObject <NSCoding, NSCopying>
 
 @property (nonatomic, readonly) SignalServiceAddress *senderAddress;
 @property (nonatomic, readonly, nullable) NSString *messageUniqueId; // Only nil if decoding old values
@@ -22,6 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithSenderAci:(AciObjC *)senderAci
                   messageUniqueId:(nullable NSString *)messageUniqueId
                messageIdTimestamp:(uint64_t)messageIdTimestamp

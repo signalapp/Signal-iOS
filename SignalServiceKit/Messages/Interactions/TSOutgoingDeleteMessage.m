@@ -43,6 +43,67 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+- (void)encodeWithCoder:(NSCoder *)coder
+{
+    [super encodeWithCoder:coder];
+    [coder encodeObject:[self valueForKey:@"isDeletingStoryMessage"] forKey:@"isDeletingStoryMessage"];
+    [coder encodeObject:[self valueForKey:@"messageTimestamp"] forKey:@"messageTimestamp"];
+    NSString *messageUniqueId = self.messageUniqueId;
+    if (messageUniqueId != nil) {
+        [coder encodeObject:messageUniqueId forKey:@"messageUniqueId"];
+    }
+}
+
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
+{
+    self = [super initWithCoder:coder];
+    if (!self) {
+        return self;
+    }
+    self->_isDeletingStoryMessage = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
+                                                                     forKey:@"isDeletingStoryMessage"] boolValue];
+    self->_messageTimestamp = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
+                                                               forKey:@"messageTimestamp"] unsignedLongLongValue];
+    self->_messageUniqueId = [coder decodeObjectOfClass:[NSString class] forKey:@"messageUniqueId"];
+    return self;
+}
+
+- (NSUInteger)hash
+{
+    NSUInteger result = [super hash];
+    result ^= self.isDeletingStoryMessage;
+    result ^= self.messageTimestamp;
+    result ^= self.messageUniqueId.hash;
+    return result;
+}
+
+- (BOOL)isEqual:(id)other
+{
+    if (![super isEqual:other]) {
+        return NO;
+    }
+    TSOutgoingDeleteMessage *typedOther = (TSOutgoingDeleteMessage *)other;
+    if (self.isDeletingStoryMessage != typedOther.isDeletingStoryMessage) {
+        return NO;
+    }
+    if (self.messageTimestamp != typedOther.messageTimestamp) {
+        return NO;
+    }
+    if (![NSObject isObject:self.messageUniqueId equalToObject:typedOther.messageUniqueId]) {
+        return NO;
+    }
+    return YES;
+}
+
+- (id)copyWithZone:(nullable NSZone *)zone
+{
+    TSOutgoingDeleteMessage *result = [super copyWithZone:zone];
+    result->_isDeletingStoryMessage = self.isDeletingStoryMessage;
+    result->_messageTimestamp = self.messageTimestamp;
+    result->_messageUniqueId = self.messageUniqueId;
+    return result;
+}
+
 - (instancetype)initWithThread:(TSThread *)thread
                   storyMessage:(StoryMessage *)storyMessage
              skippedRecipients:(NSArray<ServiceIdObjC *> *)skippedRecipients

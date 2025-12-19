@@ -80,9 +80,84 @@ NS_ASSUME_NONNULL_BEGIN
 
 // --- CODE GENERATION MARKER
 
+- (void)encodeWithCoder:(NSCoder *)coder
+{
+    [super encodeWithCoder:coder];
+    NSString *creatorUuid = self.creatorUuid;
+    if (creatorUuid != nil) {
+        [coder encodeObject:creatorUuid forKey:@"creatorUuid"];
+    }
+    NSString *eraId = self.eraId;
+    if (eraId != nil) {
+        [coder encodeObject:eraId forKey:@"eraId"];
+    }
+    [coder encodeObject:[self valueForKey:@"hasEnded"] forKey:@"hasEnded"];
+    NSArray *joinedMemberUuids = self.joinedMemberUuids;
+    if (joinedMemberUuids != nil) {
+        [coder encodeObject:joinedMemberUuids forKey:@"joinedMemberUuids"];
+    }
+    [coder encodeObject:[self valueForKey:@"read"] forKey:@"read"];
+}
+
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
-    return [super initWithCoder:coder];
+    self = [super initWithCoder:coder];
+    if (!self) {
+        return self;
+    }
+    self->_creatorUuid = [coder decodeObjectOfClass:[NSString class] forKey:@"creatorUuid"];
+    self->_eraId = [coder decodeObjectOfClass:[NSString class] forKey:@"eraId"];
+    self->_hasEnded = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class] forKey:@"hasEnded"] boolValue];
+    self->_joinedMemberUuids = [coder decodeObjectOfClasses:[NSSet setWithArray:@[ [NSArray class], [NSString class] ]]
+                                                     forKey:@"joinedMemberUuids"];
+    self->_read = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class] forKey:@"read"] boolValue];
+    return self;
+}
+
+- (NSUInteger)hash
+{
+    NSUInteger result = [super hash];
+    result ^= self.creatorUuid.hash;
+    result ^= self.eraId.hash;
+    result ^= self.hasEnded;
+    result ^= self.joinedMemberUuids.hash;
+    result ^= self.read;
+    return result;
+}
+
+- (BOOL)isEqual:(id)other
+{
+    if (![super isEqual:other]) {
+        return NO;
+    }
+    OWSGroupCallMessage *typedOther = (OWSGroupCallMessage *)other;
+    if (![NSObject isObject:self.creatorUuid equalToObject:typedOther.creatorUuid]) {
+        return NO;
+    }
+    if (![NSObject isObject:self.eraId equalToObject:typedOther.eraId]) {
+        return NO;
+    }
+    if (self.hasEnded != typedOther.hasEnded) {
+        return NO;
+    }
+    if (![NSObject isObject:self.joinedMemberUuids equalToObject:typedOther.joinedMemberUuids]) {
+        return NO;
+    }
+    if (self.read != typedOther.read) {
+        return NO;
+    }
+    return YES;
+}
+
+- (id)copyWithZone:(nullable NSZone *)zone
+{
+    OWSGroupCallMessage *result = [super copyWithZone:zone];
+    result->_creatorUuid = self.creatorUuid;
+    result->_eraId = self.eraId;
+    result->_hasEnded = self.hasEnded;
+    result->_joinedMemberUuids = self.joinedMemberUuids;
+    result->_read = self.read;
+    return result;
 }
 
 - (NSArray<AciObjC *> *)joinedMemberAcis

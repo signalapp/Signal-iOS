@@ -65,16 +65,26 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wobjc-designated-initializers"
+- (void)encodeWithCoder:(NSCoder *)coder
+{
+    NSNumber *grdbId = self.grdbId;
+    if (grdbId != nil) {
+        [coder encodeObject:grdbId forKey:@"grdbId"];
+    }
+    NSString *uniqueId = self.uniqueId;
+    if (uniqueId != nil) {
+        [coder encodeObject:uniqueId forKey:@"uniqueId"];
+    }
+}
+
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
-    self = [super initWithCoder:coder];
-#pragma clang diagnostic pop
-
+    self = [super init];
     if (!self) {
         return self;
     }
+    self->_grdbId = [coder decodeObjectOfClass:[NSNumber class] forKey:@"grdbId"];
+    self->_uniqueId = [coder decodeObjectOfClass:[NSString class] forKey:@"uniqueId"];
 
     if (_uniqueId.length < 1) {
         OWSFailDebug(@"Invalid uniqueId.");
@@ -82,6 +92,37 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     return self;
+}
+
+- (NSUInteger)hash
+{
+    NSUInteger result = 0;
+    result ^= self.grdbId.hash;
+    result ^= self.uniqueId.hash;
+    return result;
+}
+
+- (BOOL)isEqual:(id)other
+{
+    if (![other isMemberOfClass:self.class]) {
+        return NO;
+    }
+    TSYapDatabaseObject *typedOther = (TSYapDatabaseObject *)other;
+    if (![NSObject isObject:self.grdbId equalToObject:typedOther.grdbId]) {
+        return NO;
+    }
+    if (![NSObject isObject:self.uniqueId equalToObject:typedOther.uniqueId]) {
+        return NO;
+    }
+    return YES;
+}
+
+- (id)copyWithZone:(nullable NSZone *)zone
+{
+    TSYapDatabaseObject *result = [[[self class] allocWithZone:zone] init];
+    result->_grdbId = self.grdbId;
+    result->_uniqueId = self.uniqueId;
+    return result;
 }
 
 #pragma mark -

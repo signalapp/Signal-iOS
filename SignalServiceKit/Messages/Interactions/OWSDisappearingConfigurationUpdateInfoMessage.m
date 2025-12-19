@@ -24,9 +24,74 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSDisappearingConfigurationUpdateInfoMessage
 
+- (void)encodeWithCoder:(NSCoder *)coder
+{
+    [super encodeWithCoder:coder];
+    [coder encodeObject:[self valueForKey:@"configurationDurationSeconds"] forKey:@"configurationDurationSeconds"];
+    [coder encodeObject:[self valueForKey:@"configurationIsEnabled"] forKey:@"configurationIsEnabled"];
+    NSString *createdByRemoteName = self.createdByRemoteName;
+    if (createdByRemoteName != nil) {
+        [coder encodeObject:createdByRemoteName forKey:@"createdByRemoteName"];
+    }
+    [coder encodeObject:[self valueForKey:@"createdInExistingGroup"] forKey:@"createdInExistingGroup"];
+}
+
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
-    return [super initWithCoder:coder];
+    self = [super initWithCoder:coder];
+    if (!self) {
+        return self;
+    }
+    self->_configurationDurationSeconds =
+        [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
+                                         forKey:@"configurationDurationSeconds"] unsignedIntValue];
+    self->_configurationIsEnabled = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
+                                                                     forKey:@"configurationIsEnabled"] boolValue];
+    self->_createdByRemoteName = [coder decodeObjectOfClass:[NSString class] forKey:@"createdByRemoteName"];
+    self->_createdInExistingGroup = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
+                                                                     forKey:@"createdInExistingGroup"] boolValue];
+    return self;
+}
+
+- (NSUInteger)hash
+{
+    NSUInteger result = [super hash];
+    result ^= self.configurationDurationSeconds;
+    result ^= self.configurationIsEnabled;
+    result ^= self.createdByRemoteName.hash;
+    result ^= self.createdInExistingGroup;
+    return result;
+}
+
+- (BOOL)isEqual:(id)other
+{
+    if (![super isEqual:other]) {
+        return NO;
+    }
+    OWSDisappearingConfigurationUpdateInfoMessage *typedOther = (OWSDisappearingConfigurationUpdateInfoMessage *)other;
+    if (self.configurationDurationSeconds != typedOther.configurationDurationSeconds) {
+        return NO;
+    }
+    if (self.configurationIsEnabled != typedOther.configurationIsEnabled) {
+        return NO;
+    }
+    if (![NSObject isObject:self.createdByRemoteName equalToObject:typedOther.createdByRemoteName]) {
+        return NO;
+    }
+    if (self.createdInExistingGroup != typedOther.createdInExistingGroup) {
+        return NO;
+    }
+    return YES;
+}
+
+- (id)copyWithZone:(nullable NSZone *)zone
+{
+    OWSDisappearingConfigurationUpdateInfoMessage *result = [super copyWithZone:zone];
+    result->_configurationDurationSeconds = self.configurationDurationSeconds;
+    result->_configurationIsEnabled = self.configurationIsEnabled;
+    result->_createdByRemoteName = self.createdByRemoteName;
+    result->_createdInExistingGroup = self.createdInExistingGroup;
+    return result;
 }
 
 - (instancetype)initWithContactThread:(TSContactThread *)contactThread

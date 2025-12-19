@@ -72,6 +72,70 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+- (void)encodeWithCoder:(NSCoder *)coder
+{
+    [super encodeWithCoder:coder];
+    NSArray *messageTimestamps = self.messageTimestamps;
+    if (messageTimestamps != nil) {
+        [coder encodeObject:messageTimestamps forKey:@"messageTimestamps"];
+    }
+    NSSet *messageUniqueIds = self.messageUniqueIds;
+    if (messageUniqueIds != nil) {
+        [coder encodeObject:messageUniqueIds forKey:@"messageUniqueIds"];
+    }
+    [coder encodeObject:[self valueForKey:@"receiptType"] forKey:@"receiptType"];
+}
+
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
+{
+    self = [super initWithCoder:coder];
+    if (!self) {
+        return self;
+    }
+    self->_messageTimestamps = [coder decodeObjectOfClasses:[NSSet setWithArray:@[ [NSArray class], [NSNumber class] ]]
+                                                     forKey:@"messageTimestamps"];
+    self->_messageUniqueIds = [coder decodeObjectOfClasses:[NSSet setWithArray:@[ [NSSet class], [NSString class] ]]
+                                                    forKey:@"messageUniqueIds"];
+    self->_receiptType = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class] forKey:@"receiptType"] intValue];
+    return self;
+}
+
+- (NSUInteger)hash
+{
+    NSUInteger result = [super hash];
+    result ^= self.messageTimestamps.hash;
+    result ^= self.messageUniqueIds.hash;
+    result ^= (NSUInteger)self.receiptType;
+    return result;
+}
+
+- (BOOL)isEqual:(id)other
+{
+    if (![super isEqual:other]) {
+        return NO;
+    }
+    OWSReceiptsForSenderMessage *typedOther = (OWSReceiptsForSenderMessage *)other;
+    if (![NSObject isObject:self.messageTimestamps equalToObject:typedOther.messageTimestamps]) {
+        return NO;
+    }
+    if (![NSObject isObject:self.messageUniqueIds equalToObject:typedOther.messageUniqueIds]) {
+        return NO;
+    }
+    if (self.receiptType != typedOther.receiptType) {
+        return NO;
+    }
+    return YES;
+}
+
+- (id)copyWithZone:(nullable NSZone *)zone
+{
+    OWSReceiptsForSenderMessage *result = [super copyWithZone:zone];
+    result->_messageTimestamps = self.messageTimestamps;
+    result->_messageUniqueIds = self.messageUniqueIds;
+    result->_receiptType = self.receiptType;
+    return result;
+}
+
 #pragma mark - TSOutgoingMessage overrides
 
 - (BOOL)shouldSyncTranscript

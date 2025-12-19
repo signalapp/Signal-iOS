@@ -7,14 +7,41 @@
 /// some state has changed, such as we have joined or left the call.
 ///
 /// Not to be confused with an ``OWSGroupCallMessage``.
- @objc(OWSOutgoingGroupCallMessage)
+@objc(OWSOutgoingGroupCallMessage)
 public final class OutgoingGroupCallUpdateMessage: TSOutgoingMessage {
+    public required init?(coder: NSCoder) {
+        self.eraId = coder.decodeObject(of: NSString.self, forKey: "eraId") as String?
+        super.init(coder: coder)
+    }
+
+    public override func encode(with coder: NSCoder) {
+        super.encode(with: coder)
+        if let eraId {
+            coder.encode(eraId, forKey: "eraId")
+        }
+    }
+
+    public override var hash: Int {
+        var hasher = Hasher()
+        hasher.combine(super.hash)
+        hasher.combine(eraId)
+        return hasher.finalize()
+    }
+
+    public override func isEqual(_ object: Any?) -> Bool {
+        guard let object = object as? Self else { return false }
+        guard super.isEqual(object) else { return false }
+        guard self.eraId == object.eraId else { return false }
+        return true
+    }
+
+    public override func copy(with zone: NSZone? = nil) -> Any {
+        let result = super.copy(with: zone) as! Self
+        result.eraId = self.eraId
+        return result
+    }
+
     /// The era ID of the call with the update.
-    ///
-    /// - Note
-    /// Nullable and `var` to play nice with Mantle, which will set this during
-    /// its `init(coder:)`.
-    @objc
     private(set) var eraId: String?
 
     public init(
@@ -31,14 +58,6 @@ public final class OutgoingGroupCallUpdateMessage: TSOutgoingMessage {
             skippedRecipients: [],
             transaction: tx
         )
-    }
-
-    required public init?(coder: NSCoder) {
-        super.init(coder: coder)
-    }
-
-    required public init(dictionary dictionaryValue: [String: Any]!) throws {
-        try super.init(dictionary: dictionaryValue)
     }
 
     override public var shouldBeSaved: Bool { false }

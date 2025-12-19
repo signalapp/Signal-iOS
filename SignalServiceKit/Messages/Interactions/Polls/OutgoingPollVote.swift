@@ -7,16 +7,58 @@ import Foundation
 public import LibSignalClient
 
 public class OutgoingPollVoteMessage: TSOutgoingMessage {
-    @objc
+    public required init?(coder: NSCoder) {
+        self.targetPollAuthorAciBinary = coder.decodeObject(of: NSData.self, forKey: "targetPollAuthorAciBinary") as Data?
+        self.targetPollTimestamp = coder.decodeObject(of: NSNumber.self, forKey: "targetPollTimestamp")?.uint64Value ?? 0
+        self.voteCount = coder.decodeObject(of: NSNumber.self, forKey: "voteCount")?.uint32Value ?? 0
+        self.voteOptionIndexes = coder.decodeObject(of: [NSArray.self, NSNumber.self], forKey: "voteOptionIndexes") as? [UInt32] ?? []
+        super.init(coder: coder)
+    }
+
+    public override func encode(with coder: NSCoder) {
+        super.encode(with: coder)
+        if let targetPollAuthorAciBinary {
+            coder.encode(targetPollAuthorAciBinary, forKey: "targetPollAuthorAciBinary")
+        }
+        coder.encode(NSNumber(value: self.targetPollTimestamp), forKey: "targetPollTimestamp")
+        coder.encode(NSNumber(value: self.voteCount), forKey: "voteCount")
+        if let voteOptionIndexes {
+            coder.encode(voteOptionIndexes, forKey: "voteOptionIndexes")
+        }
+    }
+
+    public override var hash: Int {
+        var hasher = Hasher()
+        hasher.combine(super.hash)
+        hasher.combine(targetPollAuthorAciBinary)
+        hasher.combine(targetPollTimestamp)
+        hasher.combine(voteCount)
+        hasher.combine(voteOptionIndexes)
+        return hasher.finalize()
+    }
+
+    public override func isEqual(_ object: Any?) -> Bool {
+        guard let object = object as? Self else { return false }
+        guard super.isEqual(object) else { return false }
+        guard self.targetPollAuthorAciBinary == object.targetPollAuthorAciBinary else { return false }
+        guard self.targetPollTimestamp == object.targetPollTimestamp else { return false }
+        guard self.voteCount == object.voteCount else { return false }
+        guard self.voteOptionIndexes == object.voteOptionIndexes else { return false }
+        return true
+    }
+
+    public override func copy(with zone: NSZone? = nil) -> Any {
+        let result = super.copy(with: zone) as! Self
+        result.targetPollAuthorAciBinary = self.targetPollAuthorAciBinary
+        result.targetPollTimestamp = self.targetPollTimestamp
+        result.voteCount = self.voteCount
+        result.voteOptionIndexes = self.voteOptionIndexes
+        return result
+    }
+
     var targetPollTimestamp: UInt64 = 0
-
-    @objc
     var targetPollAuthorAciBinary: Data?
-
-    @objc
     var voteOptionIndexes: [UInt32]?
-
-    @objc
     var voteCount: UInt32 = 0
 
     public init(
@@ -39,14 +81,6 @@ public class OutgoingPollVoteMessage: TSOutgoingMessage {
             skippedRecipients: [],
             transaction: tx
         )
-    }
-
-    required public init?(coder: NSCoder) {
-        super.init(coder: coder)
-    }
-
-    required public init(dictionary dictionaryValue: [String: Any]!) throws {
-        try super.init(dictionary: dictionaryValue)
     }
 
     override public var shouldBeSaved: Bool { false }

@@ -65,18 +65,45 @@ public enum GroupV2Access: UInt, Codable, CustomStringConvertible {
 
 // This class is immutable.
 @objc
-public class GroupAccess: MTLModel {
-    @objc
-    public var members: GroupV2Access = .unknown
-    @objc
-    public var attributes: GroupV2Access = .unknown
-    @objc
-    public var addFromInviteLink: GroupV2Access = .unknown
+public final class GroupAccess: NSObject, NSCoding, NSCopying {
+    public init?(coder: NSCoder) {
+        self.addFromInviteLink = (coder.decodeObject(of: NSNumber.self, forKey: "addFromInviteLink")?.uintValue).flatMap(GroupV2Access.init(rawValue:)) ?? .unknown
+        self.attributes = (coder.decodeObject(of: NSNumber.self, forKey: "attributes")?.uintValue).flatMap(GroupV2Access.init(rawValue:)) ?? .unknown
+        self.members = (coder.decodeObject(of: NSNumber.self, forKey: "members")?.uintValue).flatMap(GroupV2Access.init(rawValue:)) ?? .unknown
+    }
 
-    public init(members: GroupV2Access,
-                attributes: GroupV2Access,
-                addFromInviteLink: GroupV2Access) {
+    public func encode(with coder: NSCoder) {
+        coder.encode(NSNumber(value: self.addFromInviteLink.rawValue), forKey: "addFromInviteLink")
+        coder.encode(NSNumber(value: self.attributes.rawValue), forKey: "attributes")
+        coder.encode(NSNumber(value: self.members.rawValue), forKey: "members")
+    }
 
+    public override var hash: Int {
+        var hasher = Hasher()
+        hasher.combine(addFromInviteLink)
+        hasher.combine(attributes)
+        hasher.combine(members)
+        return hasher.finalize()
+    }
+
+    public override func isEqual(_ object: Any?) -> Bool {
+        guard let object = object as? Self else { return false }
+        guard type(of: self) == type(of: object) else { return false }
+        guard self.addFromInviteLink == object.addFromInviteLink else { return false }
+        guard self.attributes == object.attributes else { return false }
+        guard self.members == object.members else { return false }
+        return true
+    }
+
+    public func copy(with zone: NSZone? = nil) -> Any {
+        return self
+    }
+
+    public let members: GroupV2Access
+    public let attributes: GroupV2Access
+    public let addFromInviteLink: GroupV2Access
+
+    public init(members: GroupV2Access, attributes: GroupV2Access, addFromInviteLink: GroupV2Access) {
         // Ensure we always have valid values.
         self.members = Self.filter(forMembers: members)
         self.attributes = Self.filter(forAttributes: attributes)
@@ -116,21 +143,6 @@ public class GroupAccess: MTLModel {
             owsFailDebug("Invalid access level: \(value)")
             return .unknown
         }
-    }
-
-    @objc
-    public override init() {
-        super.init()
-    }
-
-    @objc
-    public required init!(coder: NSCoder) {
-        super.init(coder: coder)
-    }
-
-    @objc
-    public required init(dictionary dictionaryValue: [String: Any]!) throws {
-        try super.init(dictionary: dictionaryValue)
     }
 
     #if TESTABLE_BUILD

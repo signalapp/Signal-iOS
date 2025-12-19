@@ -10,9 +10,69 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation InstalledSticker
 
+- (void)encodeWithCoder:(NSCoder *)coder
+{
+    [super encodeWithCoder:coder];
+    NSString *contentType = self.contentType;
+    if (contentType != nil) {
+        [coder encodeObject:contentType forKey:@"contentType"];
+    }
+    NSString *emojiString = self.emojiString;
+    if (emojiString != nil) {
+        [coder encodeObject:emojiString forKey:@"emojiString"];
+    }
+    StickerInfo *info = self.info;
+    if (info != nil) {
+        [coder encodeObject:info forKey:@"info"];
+    }
+}
+
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
-    return [super initWithCoder:coder];
+    self = [super initWithCoder:coder];
+    if (!self) {
+        return self;
+    }
+    self->_contentType = [coder decodeObjectOfClass:[NSString class] forKey:@"contentType"];
+    self->_emojiString = [coder decodeObjectOfClass:[NSString class] forKey:@"emojiString"];
+    self->_info = [coder decodeObjectOfClass:[StickerInfo class] forKey:@"info"];
+    return self;
+}
+
+- (NSUInteger)hash
+{
+    NSUInteger result = [super hash];
+    result ^= self.contentType.hash;
+    result ^= self.emojiString.hash;
+    result ^= self.info.hash;
+    return result;
+}
+
+- (BOOL)isEqual:(id)other
+{
+    if (![super isEqual:other]) {
+        return NO;
+    }
+    InstalledSticker *typedOther = (InstalledSticker *)other;
+    if (![NSObject isObject:self.contentType equalToObject:typedOther.contentType]) {
+        return NO;
+    }
+    if (![NSObject isObject:self.emojiString equalToObject:typedOther.emojiString]) {
+        return NO;
+    }
+    if (![NSObject isObject:self.info equalToObject:typedOther.info]) {
+        return NO;
+    }
+    return YES;
+}
+
+- (id)copyWithZone:(nullable NSZone *)zone
+{
+    InstalledSticker *result = [super copyWithZone:zone];
+    result->_contentType = self.contentType;
+    result->_emojiString = self.emojiString;
+    result->_info = self.info;
+    return result;
 }
 
 - (instancetype)initWithInfo:(StickerInfo *)info

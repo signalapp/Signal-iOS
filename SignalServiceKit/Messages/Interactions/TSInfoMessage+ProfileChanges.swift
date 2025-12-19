@@ -118,22 +118,69 @@ public extension TSInfoMessage {
 // MARK: -
 
 /// Represents a profile change for in-chat messages.
-/// - Note
-/// All members must be exposed to ObjC, nullable, and mutable, such that Mantle
-/// can populate them using reflection from its `init(coder:)` implementation.
-@objcMembers
-public class ProfileChanges: MTLModel {
-    var address: SignalServiceAddress?
+public final class ProfileChanges: NSObject, NSCoding, NSCopying {
+    public init?(coder: NSCoder) {
+        self.address = coder.decodeObject(of: SignalServiceAddress.self, forKey: "address")
+        self.newNameComponents = coder.decodeObject(of: NSPersonNameComponents.self, forKey: "newNameComponents") as PersonNameComponents?
+        self.newNameLiteral = coder.decodeObject(of: NSString.self, forKey: "newNameLiteral") as String?
+        self.oldNameComponents = coder.decodeObject(of: NSPersonNameComponents.self, forKey: "oldNameComponents") as PersonNameComponents?
+        self.oldNameLiteral = coder.decodeObject(of: NSString.self, forKey: "oldNameLiteral") as String?
+    }
+
+    public func encode(with coder: NSCoder) {
+        if let address {
+            coder.encode(address, forKey: "address")
+        }
+        if let newNameComponents {
+            coder.encode(newNameComponents, forKey: "newNameComponents")
+        }
+        if let newNameLiteral {
+            coder.encode(newNameLiteral, forKey: "newNameLiteral")
+        }
+        if let oldNameComponents {
+            coder.encode(oldNameComponents, forKey: "oldNameComponents")
+        }
+        if let oldNameLiteral {
+            coder.encode(oldNameLiteral, forKey: "oldNameLiteral")
+        }
+    }
+
+    public override var hash: Int {
+        var hasher = Hasher()
+        hasher.combine(address)
+        hasher.combine(newNameComponents)
+        hasher.combine(newNameLiteral)
+        hasher.combine(oldNameComponents)
+        hasher.combine(oldNameLiteral)
+        return hasher.finalize()
+    }
+
+    public override func isEqual(_ object: Any?) -> Bool {
+        guard let object = object as? Self else { return false }
+        guard type(of: self) == type(of: object) else { return false }
+        guard self.address == object.address else { return false }
+        guard self.newNameComponents == object.newNameComponents else { return false }
+        guard self.newNameLiteral == object.newNameLiteral else { return false }
+        guard self.oldNameComponents == object.oldNameComponents else { return false }
+        guard self.oldNameLiteral == object.oldNameLiteral else { return false }
+        return true
+    }
+
+    public func copy(with zone: NSZone? = nil) -> Any {
+        return self
+    }
+
+    let address: SignalServiceAddress?
 
     /// If this is populated, `oldNameComponents` will be nil.
-    var oldNameLiteral: String?
+    let oldNameLiteral: String?
     /// If this is populated, `oldNameLiteral` will be nil.
-    var oldNameComponents: PersonNameComponents?
+    let oldNameComponents: PersonNameComponents?
 
     /// If this is populated, `newNameComponents` will be nil.
-    var newNameLiteral: String?
+    let newNameLiteral: String?
     /// If this is populated, `newNameLiteral` will be nil.
-    var newNameComponents: PersonNameComponents?
+    let newNameComponents: PersonNameComponents?
 
     var oldFullName: String? {
         if let oldNameLiteral {
@@ -161,7 +208,9 @@ public class ProfileChanges: MTLModel {
 
     init(address: SignalServiceAddress, oldNameLiteral: String, newNameLiteral: String) {
         self.address = address
+        self.oldNameComponents = nil
         self.oldNameLiteral = oldNameLiteral
+        self.newNameComponents = nil
         self.newNameLiteral = newNameLiteral
 
         super.init()
@@ -170,21 +219,11 @@ public class ProfileChanges: MTLModel {
     init(address: SignalServiceAddress, oldProfile: OWSUserProfile, newProfile: OWSUserProfile) {
         self.address = address
         self.oldNameComponents = oldProfile.filteredNameComponents
+        self.oldNameLiteral = nil
         self.newNameComponents = newProfile.filteredNameComponents
+        self.newNameLiteral = nil
 
         super.init()
-    }
-
-    public override init!() {
-        super.init()
-    }
-
-    required init!(coder: NSCoder!) {
-        super.init(coder: coder)
-    }
-
-    required init(dictionary dictionaryValue: [String: Any]!) throws {
-        try super.init(dictionary: dictionaryValue)
     }
 
     func descriptionForUpdate(tx: DBReadTransaction) -> String? {

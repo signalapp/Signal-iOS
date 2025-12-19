@@ -223,12 +223,8 @@ private class MockIncomingMessage: TSIncomingMessage {
         super.init(incomingMessageWithBuilder: builder)
     }
 
-    required init(coder: NSCoder) {
+    required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-
-    required init(dictionary dictionaryValue: [String: Any]!) throws {
-        fatalError("init(dictionary:) has not been implemented")
     }
 
     public override var shouldBeSaved: Bool {
@@ -256,10 +252,6 @@ private class MockOutgoingMessage: TSOutgoingMessage {
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-
-    required init(dictionary dictionaryValue: [String: Any]!) throws {
-        fatalError("init(dictionary:) has not been implemented")
     }
 
     public override var shouldBeSaved: Bool {

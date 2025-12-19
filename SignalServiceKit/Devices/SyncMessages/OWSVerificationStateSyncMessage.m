@@ -50,12 +50,34 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+- (void)encodeWithCoder:(NSCoder *)coder
+{
+    [super encodeWithCoder:coder];
+    NSData *identityKey = self.identityKey;
+    if (identityKey != nil) {
+        [coder encodeObject:identityKey forKey:@"identityKey"];
+    }
+    [coder encodeObject:[self valueForKey:@"paddingBytesLength"] forKey:@"paddingBytesLength"];
+    SignalServiceAddress *verificationForRecipientAddress = self.verificationForRecipientAddress;
+    if (verificationForRecipientAddress != nil) {
+        [coder encodeObject:verificationForRecipientAddress forKey:@"verificationForRecipientAddress"];
+    }
+    [coder encodeObject:[self valueForKey:@"verificationState"] forKey:@"verificationState"];
+}
+
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
     self = [super initWithCoder:coder];
     if (!self) {
         return self;
     }
+    self->_identityKey = [coder decodeObjectOfClass:[NSData class] forKey:@"identityKey"];
+    self->_paddingBytesLength = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
+                                                                 forKey:@"paddingBytesLength"] unsignedLongValue];
+    self->_verificationForRecipientAddress = [coder decodeObjectOfClass:[SignalServiceAddress class]
+                                                                 forKey:@"verificationForRecipientAddress"];
+    self->_verificationState = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
+                                                                forKey:@"verificationState"] unsignedLongLongValue];
 
     if (_verificationForRecipientAddress == nil) {
         NSString *phoneNumber = [coder decodeObjectForKey:@"verificationForRecipientId"];
@@ -65,6 +87,48 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     return self;
+}
+
+- (NSUInteger)hash
+{
+    NSUInteger result = [super hash];
+    result ^= self.identityKey.hash;
+    result ^= self.paddingBytesLength;
+    result ^= self.verificationForRecipientAddress.hash;
+    result ^= self.verificationState;
+    return result;
+}
+
+- (BOOL)isEqual:(id)other
+{
+    if (![super isEqual:other]) {
+        return NO;
+    }
+    OWSVerificationStateSyncMessage *typedOther = (OWSVerificationStateSyncMessage *)other;
+    if (![NSObject isObject:self.identityKey equalToObject:typedOther.identityKey]) {
+        return NO;
+    }
+    if (self.paddingBytesLength != typedOther.paddingBytesLength) {
+        return NO;
+    }
+    if (![NSObject isObject:self.verificationForRecipientAddress
+              equalToObject:typedOther.verificationForRecipientAddress]) {
+        return NO;
+    }
+    if (self.verificationState != typedOther.verificationState) {
+        return NO;
+    }
+    return YES;
+}
+
+- (id)copyWithZone:(nullable NSZone *)zone
+{
+    OWSVerificationStateSyncMessage *result = [super copyWithZone:zone];
+    result->_identityKey = self.identityKey;
+    result->_paddingBytesLength = self.paddingBytesLength;
+    result->_verificationForRecipientAddress = self.verificationForRecipientAddress;
+    result->_verificationState = self.verificationState;
+    return result;
 }
 
 - (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilderWithTransaction:(DBReadTransaction *)transaction

@@ -20,6 +20,7 @@ typedef NS_CLOSED_ENUM(int32_t, SSKProtoSyncMessageRequestType);
                       localThread:(TSContactThread *)localThread
                       transaction:(DBReadTransaction *)transaction NS_UNAVAILABLE;
 
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithLocalThread:(TSContactThread *)localThread
                         requestType:(int32_t)requestType
                         transaction:(DBReadTransaction *)transaction NS_DESIGNATED_INITIALIZER;

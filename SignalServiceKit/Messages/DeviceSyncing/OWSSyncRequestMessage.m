@@ -35,6 +35,48 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+- (void)encodeWithCoder:(NSCoder *)coder
+{
+    [super encodeWithCoder:coder];
+    [coder encodeObject:[self valueForKey:@"requestType"] forKey:@"requestType"];
+}
+
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
+{
+    self = [super initWithCoder:coder];
+    if (!self) {
+        return self;
+    }
+    self->_requestType = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class] forKey:@"requestType"] intValue];
+    return self;
+}
+
+- (NSUInteger)hash
+{
+    NSUInteger result = [super hash];
+    result ^= (NSUInteger)self.requestType;
+    return result;
+}
+
+- (BOOL)isEqual:(id)other
+{
+    if (![super isEqual:other]) {
+        return NO;
+    }
+    OWSSyncRequestMessage *typedOther = (OWSSyncRequestMessage *)other;
+    if (self.requestType != typedOther.requestType) {
+        return NO;
+    }
+    return YES;
+}
+
+- (id)copyWithZone:(nullable NSZone *)zone
+{
+    OWSSyncRequestMessage *result = [super copyWithZone:zone];
+    result->_requestType = self.requestType;
+    return result;
+}
+
 - (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilderWithTransaction:(DBReadTransaction *)transaction
 {
     SSKProtoSyncMessageRequestBuilder *requestBuilder = [SSKProtoSyncMessageRequest builder];

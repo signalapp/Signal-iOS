@@ -24,6 +24,7 @@ typedef NS_CLOSED_ENUM(NSUInteger, OWSSyncFetchType) {
                       localThread:(TSContactThread *)localThread
                       transaction:(DBReadTransaction *)transaction NS_UNAVAILABLE;
 
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithLocalThread:(TSContactThread *)localThread
                           fetchType:(OWSSyncFetchType)requestType
                         transaction:(DBReadTransaction *)transaction NS_DESIGNATED_INITIALIZER;

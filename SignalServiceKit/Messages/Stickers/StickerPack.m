@@ -29,6 +29,67 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+- (void)encodeWithCoder:(NSCoder *)coder
+{
+    NSString *contentType = self.contentType;
+    if (contentType != nil) {
+        [coder encodeObject:contentType forKey:@"contentType"];
+    }
+    NSString *emojiString = self.emojiString;
+    if (emojiString != nil) {
+        [coder encodeObject:emojiString forKey:@"emojiString"];
+    }
+    [coder encodeObject:[self valueForKey:@"stickerId"] forKey:@"stickerId"];
+}
+
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
+{
+    self = [super init];
+    if (!self) {
+        return self;
+    }
+    self->_contentType = [coder decodeObjectOfClass:[NSString class] forKey:@"contentType"];
+    self->_emojiString = [coder decodeObjectOfClass:[NSString class] forKey:@"emojiString"];
+    self->_stickerId = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class] forKey:@"stickerId"] unsignedIntValue];
+    return self;
+}
+
+- (NSUInteger)hash
+{
+    NSUInteger result = 0;
+    result ^= self.contentType.hash;
+    result ^= self.emojiString.hash;
+    result ^= self.stickerId;
+    return result;
+}
+
+- (BOOL)isEqual:(id)other
+{
+    if (![other isMemberOfClass:self.class]) {
+        return NO;
+    }
+    StickerPackItem *typedOther = (StickerPackItem *)other;
+    if (![NSObject isObject:self.contentType equalToObject:typedOther.contentType]) {
+        return NO;
+    }
+    if (![NSObject isObject:self.emojiString equalToObject:typedOther.emojiString]) {
+        return NO;
+    }
+    if (self.stickerId != typedOther.stickerId) {
+        return NO;
+    }
+    return YES;
+}
+
+- (id)copyWithZone:(nullable NSZone *)zone
+{
+    StickerPackItem *result = [[[self class] allocWithZone:zone] init];
+    result->_contentType = self.contentType;
+    result->_emojiString = self.emojiString;
+    result->_stickerId = self.stickerId;
+    return result;
+}
+
 - (StickerInfo *)stickerInfoWithStickerPack:(StickerPack *)stickerPack
 {
     return [[StickerInfo alloc] initWithPackId:stickerPack.packId packKey:stickerPack.packKey stickerId:self.stickerId];
@@ -48,9 +109,107 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation StickerPack
 
+- (void)encodeWithCoder:(NSCoder *)coder
+{
+    [super encodeWithCoder:coder];
+    NSString *author = self.author;
+    if (author != nil) {
+        [coder encodeObject:author forKey:@"author"];
+    }
+    StickerPackItem *cover = self.cover;
+    if (cover != nil) {
+        [coder encodeObject:cover forKey:@"cover"];
+    }
+    NSDate *dateCreated = self.dateCreated;
+    if (dateCreated != nil) {
+        [coder encodeObject:dateCreated forKey:@"dateCreated"];
+    }
+    StickerPackInfo *info = self.info;
+    if (info != nil) {
+        [coder encodeObject:info forKey:@"info"];
+    }
+    [coder encodeObject:[self valueForKey:@"isInstalled"] forKey:@"isInstalled"];
+    NSArray *items = self.items;
+    if (items != nil) {
+        [coder encodeObject:items forKey:@"items"];
+    }
+    NSString *title = self.title;
+    if (title != nil) {
+        [coder encodeObject:title forKey:@"title"];
+    }
+}
+
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
-    return [super initWithCoder:coder];
+    self = [super initWithCoder:coder];
+    if (!self) {
+        return self;
+    }
+    self->_author = [coder decodeObjectOfClass:[NSString class] forKey:@"author"];
+    self->_cover = [coder decodeObjectOfClass:[StickerPackItem class] forKey:@"cover"];
+    self->_dateCreated = [coder decodeObjectOfClass:[NSDate class] forKey:@"dateCreated"];
+    self->_info = [coder decodeObjectOfClass:[StickerPackInfo class] forKey:@"info"];
+    self->_isInstalled = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class] forKey:@"isInstalled"] boolValue];
+    self->_items = [coder decodeObjectOfClasses:[NSSet setWithArray:@[ [NSArray class], [StickerPackItem class] ]]
+                                         forKey:@"items"];
+    self->_title = [coder decodeObjectOfClass:[NSString class] forKey:@"title"];
+    return self;
+}
+
+- (NSUInteger)hash
+{
+    NSUInteger result = [super hash];
+    result ^= self.author.hash;
+    result ^= self.cover.hash;
+    result ^= self.dateCreated.hash;
+    result ^= self.info.hash;
+    result ^= self.isInstalled;
+    result ^= self.items.hash;
+    result ^= self.title.hash;
+    return result;
+}
+
+- (BOOL)isEqual:(id)other
+{
+    if (![super isEqual:other]) {
+        return NO;
+    }
+    StickerPack *typedOther = (StickerPack *)other;
+    if (![NSObject isObject:self.author equalToObject:typedOther.author]) {
+        return NO;
+    }
+    if (![NSObject isObject:self.cover equalToObject:typedOther.cover]) {
+        return NO;
+    }
+    if (![NSObject isObject:self.dateCreated equalToObject:typedOther.dateCreated]) {
+        return NO;
+    }
+    if (![NSObject isObject:self.info equalToObject:typedOther.info]) {
+        return NO;
+    }
+    if (self.isInstalled != typedOther.isInstalled) {
+        return NO;
+    }
+    if (![NSObject isObject:self.items equalToObject:typedOther.items]) {
+        return NO;
+    }
+    if (![NSObject isObject:self.title equalToObject:typedOther.title]) {
+        return NO;
+    }
+    return YES;
+}
+
+- (id)copyWithZone:(nullable NSZone *)zone
+{
+    StickerPack *result = [super copyWithZone:zone];
+    result->_author = self.author;
+    result->_cover = self.cover;
+    result->_dateCreated = self.dateCreated;
+    result->_info = self.info;
+    result->_isInstalled = self.isInstalled;
+    result->_items = self.items;
+    result->_title = self.title;
+    return result;
 }
 
 - (instancetype)initWithInfo:(StickerPackInfo *)info

@@ -9,16 +9,39 @@
 /// - SeeAlso ``IncomingCallLogEventSyncMessageManager``
 @objc(OutgoingCallLogEventSyncMessage)
 public class OutgoingCallLogEventSyncMessage: OWSOutgoingSyncMessage {
+    public required init?(coder: NSCoder) {
+        self.callLogEvent = coder.decodeObject(of: CallLogEvent.self, forKey: "callLogEvent")
+        super.init(coder: coder)
+    }
+
+    public override func encode(with coder: NSCoder) {
+        super.encode(with: coder)
+        if let callLogEvent {
+            coder.encode(callLogEvent, forKey: "callLogEvent")
+        }
+    }
+
+    public override var hash: Int {
+        var hasher = Hasher()
+        hasher.combine(super.hash)
+        hasher.combine(callLogEvent)
+        return hasher.finalize()
+    }
+
+    public override func isEqual(_ object: Any?) -> Bool {
+        guard let object = object as? Self else { return false }
+        guard super.isEqual(object) else { return false }
+        guard self.callLogEvent == object.callLogEvent else { return false }
+        return true
+    }
+
+    public override func copy(with zone: NSZone? = nil) -> Any {
+        let result = super.copy(with: zone) as! Self
+        result.callLogEvent = self.callLogEvent
+        return result
+    }
 
     /// The call log event.
-    ///
-    /// - Important
-    /// The ObjC name must remain as-is for compatibility with Mantle.
-    ///
-    /// - Note
-    /// Nullability here is intentional, since Mantle will set this property via
-    /// its reflection-based `init(coder:)` when we call `super.init(coder:)`.
-    @objc(callLogEvent)
     private(set) var callLogEvent: CallLogEvent!
 
     init(
@@ -28,14 +51,6 @@ public class OutgoingCallLogEventSyncMessage: OWSOutgoingSyncMessage {
     ) {
         self.callLogEvent = callLogEvent
         super.init(localThread: localThread, transaction: tx)
-    }
-
-    required public init?(coder: NSCoder) {
-        super.init(coder: coder)
-    }
-
-    required public init(dictionary dictionaryValue: [String: Any]!) throws {
-        try super.init(dictionary: dictionaryValue)
     }
 
     override public var isUrgent: Bool { false }

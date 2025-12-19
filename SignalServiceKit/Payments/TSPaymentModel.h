@@ -155,7 +155,7 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:addressUuidString:c
 
 #pragma mark -
 
-@interface MobileCoinPayment : MTLModel
+@interface MobileCoinPayment : NSObject <NSCoding, NSCopying>
 
 // This property is only used for transfer in/out flows.
 @property (nonatomic, readonly, nullable) NSData *recipientPublicAddressData;

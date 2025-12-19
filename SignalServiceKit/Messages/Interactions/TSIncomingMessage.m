@@ -27,12 +27,57 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
 
 @implementation TSIncomingMessage
 
+- (void)encodeWithCoder:(NSCoder *)coder
+{
+    [super encodeWithCoder:coder];
+    NSString *authorPhoneNumber = self.authorPhoneNumber;
+    if (authorPhoneNumber != nil) {
+        [coder encodeObject:authorPhoneNumber forKey:@"authorPhoneNumber"];
+    }
+    NSString *authorUUID = self.authorUUID;
+    if (authorUUID != nil) {
+        [coder encodeObject:authorUUID forKey:@"authorUUID"];
+    }
+    NSNumber *deprecated_sourceDeviceId = self.deprecated_sourceDeviceId;
+    if (deprecated_sourceDeviceId != nil) {
+        [coder encodeObject:deprecated_sourceDeviceId forKey:@"deprecated_sourceDeviceId"];
+    }
+    [coder encodeObject:[self valueForKey:@"incomingMessageSchemaVersion"] forKey:@"incomingMessageSchemaVersion"];
+    [coder encodeObject:[self valueForKey:@"read"] forKey:@"read"];
+    [coder encodeObject:[self valueForKey:@"serverDeliveryTimestamp"] forKey:@"serverDeliveryTimestamp"];
+    NSString *serverGuid = self.serverGuid;
+    if (serverGuid != nil) {
+        [coder encodeObject:serverGuid forKey:@"serverGuid"];
+    }
+    NSNumber *serverTimestamp = self.serverTimestamp;
+    if (serverTimestamp != nil) {
+        [coder encodeObject:serverTimestamp forKey:@"serverTimestamp"];
+    }
+    [coder encodeObject:[self valueForKey:@"viewed"] forKey:@"viewed"];
+    [coder encodeObject:[self valueForKey:@"wasReceivedByUD"] forKey:@"wasReceivedByUD"];
+}
+
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
     self = [super initWithCoder:coder];
     if (!self) {
         return self;
     }
+    self->_authorPhoneNumber = [coder decodeObjectOfClass:[NSString class] forKey:@"authorPhoneNumber"];
+    self->_authorUUID = [coder decodeObjectOfClass:[NSString class] forKey:@"authorUUID"];
+    self->_deprecated_sourceDeviceId = [coder decodeObjectOfClass:[NSNumber class] forKey:@"deprecated_sourceDeviceId"];
+    self->_incomingMessageSchemaVersion =
+        [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
+                                         forKey:@"incomingMessageSchemaVersion"] unsignedIntegerValue];
+    self->_read = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class] forKey:@"read"] boolValue];
+    self->_serverDeliveryTimestamp =
+        [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
+                                         forKey:@"serverDeliveryTimestamp"] unsignedLongLongValue];
+    self->_serverGuid = [coder decodeObjectOfClass:[NSString class] forKey:@"serverGuid"];
+    self->_serverTimestamp = [coder decodeObjectOfClass:[NSNumber class] forKey:@"serverTimestamp"];
+    self->_viewed = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class] forKey:@"viewed"] boolValue];
+    self->_wasReceivedByUD = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
+                                                              forKey:@"wasReceivedByUD"] boolValue];
 
     if (_incomingMessageSchemaVersion < 1) {
         _authorPhoneNumber = [coder decodeObjectForKey:@"authorId"];
@@ -48,6 +93,77 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
     _incomingMessageSchemaVersion = TSIncomingMessageSchemaVersion;
 
     return self;
+}
+
+- (NSUInteger)hash
+{
+    NSUInteger result = [super hash];
+    result ^= self.authorPhoneNumber.hash;
+    result ^= self.authorUUID.hash;
+    result ^= self.deprecated_sourceDeviceId.hash;
+    result ^= self.incomingMessageSchemaVersion;
+    result ^= self.read;
+    result ^= self.serverDeliveryTimestamp;
+    result ^= self.serverGuid.hash;
+    result ^= self.serverTimestamp.hash;
+    result ^= self.viewed;
+    result ^= self.wasReceivedByUD;
+    return result;
+}
+
+- (BOOL)isEqual:(id)other
+{
+    if (![super isEqual:other]) {
+        return NO;
+    }
+    TSIncomingMessage *typedOther = (TSIncomingMessage *)other;
+    if (![NSObject isObject:self.authorPhoneNumber equalToObject:typedOther.authorPhoneNumber]) {
+        return NO;
+    }
+    if (![NSObject isObject:self.authorUUID equalToObject:typedOther.authorUUID]) {
+        return NO;
+    }
+    if (![NSObject isObject:self.deprecated_sourceDeviceId equalToObject:typedOther.deprecated_sourceDeviceId]) {
+        return NO;
+    }
+    if (self.incomingMessageSchemaVersion != typedOther.incomingMessageSchemaVersion) {
+        return NO;
+    }
+    if (self.read != typedOther.read) {
+        return NO;
+    }
+    if (self.serverDeliveryTimestamp != typedOther.serverDeliveryTimestamp) {
+        return NO;
+    }
+    if (![NSObject isObject:self.serverGuid equalToObject:typedOther.serverGuid]) {
+        return NO;
+    }
+    if (![NSObject isObject:self.serverTimestamp equalToObject:typedOther.serverTimestamp]) {
+        return NO;
+    }
+    if (self.viewed != typedOther.viewed) {
+        return NO;
+    }
+    if (self.wasReceivedByUD != typedOther.wasReceivedByUD) {
+        return NO;
+    }
+    return YES;
+}
+
+- (id)copyWithZone:(nullable NSZone *)zone
+{
+    TSIncomingMessage *result = [super copyWithZone:zone];
+    result->_authorPhoneNumber = self.authorPhoneNumber;
+    result->_authorUUID = self.authorUUID;
+    result->_deprecated_sourceDeviceId = self.deprecated_sourceDeviceId;
+    result->_incomingMessageSchemaVersion = self.incomingMessageSchemaVersion;
+    result->_read = self.read;
+    result->_serverDeliveryTimestamp = self.serverDeliveryTimestamp;
+    result->_serverGuid = self.serverGuid;
+    result->_serverTimestamp = self.serverTimestamp;
+    result->_viewed = self.viewed;
+    result->_wasReceivedByUD = self.wasReceivedByUD;
+    return result;
 }
 
 - (instancetype)initIncomingMessageWithBuilder:(TSIncomingMessageBuilder *)incomingMessageBuilder

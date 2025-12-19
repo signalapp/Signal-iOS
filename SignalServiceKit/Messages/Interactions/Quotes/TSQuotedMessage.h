@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-#import <Mantle/MTLModel.h>
+@import Foundation;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -30,12 +30,10 @@ typedef NS_ENUM(NSUInteger, TSQuotedMessageContentSource) {
     TSQuotedMessageContentSourceStory
 };
 
-@interface OWSAttachmentInfo : MTLModel
+@interface OWSAttachmentInfo : NSObject <NSCoding, NSCopying>
 @property (class, nonatomic, readonly) NSUInteger currentSchemaVersion;
 @property (nonatomic, readonly) NSUInteger schemaVersion;
 
-/// rawAttachmentId, above, is Mantel-decoded and transforms nil values into empty strings
-/// (Mantle provides "reasonable" defaults). This undoes that; empty string values are reverted to nil.
 @property (nonatomic, readonly, nullable) NSString *attachmentId;
 
 /// The mime type of an attachment that was quoted.
@@ -83,7 +81,7 @@ typedef NS_ENUM(NSUInteger, TSQuotedMessageContentSource) {
 @end
 
 
-@interface TSQuotedMessage : MTLModel
+@interface TSQuotedMessage : NSObject <NSCoding, NSCopying>
 
 @property (nullable, nonatomic, readonly) NSNumber *timestampValue;
 @property (nonatomic, readonly) SignalServiceAddress *authorAddress;

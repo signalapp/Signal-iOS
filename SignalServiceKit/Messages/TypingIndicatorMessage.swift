@@ -12,9 +12,37 @@ public enum TypingIndicatorAction: Int {
 }
 
 @objc(OWSTypingIndicatorMessage)
-public class TypingIndicatorMessage: TSOutgoingMessage {
-    // Marked @objc so that Mantle can encode/decode it.
-    @objc
+public final class TypingIndicatorMessage: TSOutgoingMessage {
+    public required init?(coder: NSCoder) {
+        self.action = (coder.decodeObject(of: NSNumber.self, forKey: "action")?.intValue).flatMap(TypingIndicatorAction.init(rawValue:)) ?? .started
+        super.init(coder: coder)
+    }
+
+    public override func encode(with coder: NSCoder) {
+        super.encode(with: coder)
+        coder.encode(NSNumber(value: self.action.rawValue), forKey: "action")
+    }
+
+    public override var hash: Int {
+        var hasher = Hasher()
+        hasher.combine(super.hash)
+        hasher.combine(action)
+        return hasher.finalize()
+    }
+
+    public override func isEqual(_ object: Any?) -> Bool {
+        guard let object = object as? Self else { return false }
+        guard super.isEqual(object) else { return false }
+        guard self.action == object.action else { return false }
+        return true
+    }
+
+    public override func copy(with zone: NSZone? = nil) -> Any {
+        let result = super.copy(with: zone) as! Self
+        result.action = self.action
+        return result
+    }
+
     private var action: TypingIndicatorAction = .started
 
     // MARK: Initializers
@@ -33,16 +61,6 @@ public class TypingIndicatorMessage: TSOutgoingMessage {
             skippedRecipients: [],
             transaction: transaction
         )
-    }
-
-    @objc
-    public required init!(coder: NSCoder) {
-        super.init(coder: coder)
-    }
-
-    @objc
-    public required init(dictionary dictionaryValue: [String: Any]!) throws {
-        try super.init(dictionary: dictionaryValue)
     }
 
     @objc

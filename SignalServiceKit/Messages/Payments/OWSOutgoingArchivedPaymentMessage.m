@@ -30,6 +30,52 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+- (void)encodeWithCoder:(NSCoder *)coder
+{
+    [super encodeWithCoder:coder];
+    TSArchivedPaymentInfo *archivedPaymentInfo = self.archivedPaymentInfo;
+    if (archivedPaymentInfo != nil) {
+        [coder encodeObject:archivedPaymentInfo forKey:@"archivedPaymentInfo"];
+    }
+}
+
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
+{
+    self = [super initWithCoder:coder];
+    if (!self) {
+        return self;
+    }
+    self->_archivedPaymentInfo = [coder decodeObjectOfClass:[TSArchivedPaymentInfo class]
+                                                     forKey:@"archivedPaymentInfo"];
+    return self;
+}
+
+- (NSUInteger)hash
+{
+    NSUInteger result = [super hash];
+    result ^= self.archivedPaymentInfo.hash;
+    return result;
+}
+
+- (BOOL)isEqual:(id)other
+{
+    if (![super isEqual:other]) {
+        return NO;
+    }
+    OWSOutgoingArchivedPaymentMessage *typedOther = (OWSOutgoingArchivedPaymentMessage *)other;
+    if (![NSObject isObject:self.archivedPaymentInfo equalToObject:typedOther.archivedPaymentInfo]) {
+        return NO;
+    }
+    return YES;
+}
+
+- (id)copyWithZone:(nullable NSZone *)zone
+{
+    OWSOutgoingArchivedPaymentMessage *result = [super copyWithZone:zone];
+    result->_archivedPaymentInfo = self.archivedPaymentInfo;
+    return result;
+}
+
 - (instancetype)initOutgoingArchivedPaymentMessageWithBuilder:(TSOutgoingMessageBuilder *)messageBuilder
                                                        amount:(nullable NSString *)amount
                                                           fee:(nullable NSString *)fee

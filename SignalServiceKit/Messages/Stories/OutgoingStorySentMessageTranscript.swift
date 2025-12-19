@@ -7,15 +7,54 @@ import Foundation
 public import LibSignalClient
 
 public class OutgoingStorySentMessageTranscript: OWSOutgoingSyncMessage {
-    // Exposed to ObjC and made optional for MTLModel serialization
+    public required init?(coder: NSCoder) {
+        self.isRecipientUpdate = coder.decodeObject(of: NSNumber.self, forKey: "isRecipientUpdate")
+        self.storyEncodedRecipientStates = coder.decodeObject(of: NSData.self, forKey: "storyEncodedRecipientStates") as Data?
+        self.storyMessageUniqueId = coder.decodeObject(of: NSString.self, forKey: "storyMessageUniqueId") as String?
+        super.init(coder: coder)
+    }
 
-    @objc
+    public override func encode(with coder: NSCoder) {
+        super.encode(with: coder)
+        if let isRecipientUpdate {
+            coder.encode(isRecipientUpdate, forKey: "isRecipientUpdate")
+        }
+        if let storyEncodedRecipientStates {
+            coder.encode(storyEncodedRecipientStates, forKey: "storyEncodedRecipientStates")
+        }
+        if let storyMessageUniqueId {
+            coder.encode(storyMessageUniqueId, forKey: "storyMessageUniqueId")
+        }
+    }
+
+    public override var hash: Int {
+        var hasher = Hasher()
+        hasher.combine(super.hash)
+        hasher.combine(isRecipientUpdate)
+        hasher.combine(storyEncodedRecipientStates)
+        hasher.combine(storyMessageUniqueId)
+        return hasher.finalize()
+    }
+
+    public override func isEqual(_ object: Any?) -> Bool {
+        guard let object = object as? Self else { return false }
+        guard super.isEqual(object) else { return false }
+        guard self.isRecipientUpdate == object.isRecipientUpdate else { return false }
+        guard self.storyEncodedRecipientStates == object.storyEncodedRecipientStates else { return false }
+        guard self.storyMessageUniqueId == object.storyMessageUniqueId else { return false }
+        return true
+    }
+
+    public override func copy(with zone: NSZone? = nil) -> Any {
+        let result = super.copy(with: zone) as! Self
+        result.isRecipientUpdate = self.isRecipientUpdate
+        result.storyEncodedRecipientStates = self.storyEncodedRecipientStates
+        result.storyMessageUniqueId = self.storyMessageUniqueId
+        return result
+    }
+
     private var storyEncodedRecipientStates: Data?
-
-    @objc
     private var storyMessageUniqueId: String?
-
-    @objc
     private var isRecipientUpdate: NSNumber!
 
     public init(localThread: TSContactThread, timestamp: UInt64, recipientStates: [ServiceId: StoryRecipientState], transaction: DBReadTransaction) {
@@ -159,15 +198,5 @@ public class OutgoingStorySentMessageTranscript: OWSOutgoingSyncMessage {
             owsFailDebug("failed to build protobuf: \(error)")
             return nil
         }
-    }
-
-    // MARK: - MTLModel
-
-    public required init?(coder: NSCoder) {
-        super.init(coder: coder)
-    }
-
-    public required init(dictionary: [String: Any]) throws {
-        try super.init(dictionary: dictionary)
     }
 }

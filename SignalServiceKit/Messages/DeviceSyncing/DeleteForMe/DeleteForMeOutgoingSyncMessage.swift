@@ -11,6 +11,38 @@ import LibSignalClient
 /// - SeeAlso ``DeleteForMeOutgoingSyncMessageManager``
 @objc(DeleteForMeOutgoingSyncMessage)
 class DeleteForMeOutgoingSyncMessage: OWSOutgoingSyncMessage {
+    public required init?(coder: NSCoder) {
+        self.contents = coder.decodeObject(of: NSData.self, forKey: "contents") as Data?
+        super.init(coder: coder)
+    }
+
+    public override func encode(with coder: NSCoder) {
+        super.encode(with: coder)
+        if let contents {
+            coder.encode(contents, forKey: "contents")
+        }
+    }
+
+    public override var hash: Int {
+        var hasher = Hasher()
+        hasher.combine(super.hash)
+        hasher.combine(contents)
+        return hasher.finalize()
+    }
+
+    public override func isEqual(_ object: Any?) -> Bool {
+        guard let object = object as? Self else { return false }
+        guard super.isEqual(object) else { return false }
+        guard self.contents == object.contents else { return false }
+        return true
+    }
+
+    public override func copy(with zone: NSZone? = nil) -> Any {
+        let result = super.copy(with: zone) as! Self
+        result.contents = self.contents
+        return result
+    }
+
     typealias Outgoing = DeleteForMeSyncMessage.Outgoing
 
     struct Contents: Codable {
@@ -68,13 +100,7 @@ class DeleteForMeOutgoingSyncMessage: OWSOutgoingSyncMessage {
     }
 
     /// A JSON-serialized ``Contents`` struct.
-    ///
-    /// - Important: The ObjC name must not change, for Mantle compatibility.
-    /// - Note
-    /// Nullability is intentional, since Mantle will set this property via its
-    /// reflection-based `init(coder:)` when we call `super.init(coder:)`.
-    @objc(contents)
-    private(set) var contentsData: Data!
+    private(set) var contents: Data!
 
     init?(
         contents: Contents,
@@ -82,7 +108,7 @@ class DeleteForMeOutgoingSyncMessage: OWSOutgoingSyncMessage {
         tx: DBReadTransaction
     ) {
         do {
-            self.contentsData = try JSONEncoder().encode(contents)
+            self.contents = try JSONEncoder().encode(contents)
         } catch {
             owsFailDebug("Failed to encode sync message contents!")
             return nil
@@ -91,20 +117,12 @@ class DeleteForMeOutgoingSyncMessage: OWSOutgoingSyncMessage {
         super.init(localThread: localThread, transaction: tx)
     }
 
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-    }
-
-    required init(dictionary dictionaryValue: [String: Any]!) throws {
-        try super.init(dictionary: dictionaryValue)
-    }
-
     override public var isUrgent: Bool { false }
 
     override public func syncMessageBuilder(transaction: DBReadTransaction) -> SSKProtoSyncMessageBuilder? {
         let contents: Contents
         do {
-            contents = try JSONDecoder().decode(Contents.self, from: contentsData)
+            contents = try JSONDecoder().decode(Contents.self, from: self.contents)
         } catch let error {
             owsFailDebug("Failed to decode serialized sync message contents! \(error)")
             return nil

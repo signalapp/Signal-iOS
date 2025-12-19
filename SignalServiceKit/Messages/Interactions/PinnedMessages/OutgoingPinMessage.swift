@@ -7,16 +7,56 @@ import Foundation
 public import LibSignalClient
 
 public class OutgoingPinMessage: TSOutgoingMessage {
-    @objc
+    public required init?(coder: NSCoder) {
+        self.pinDurationForever = coder.decodeObject(of: NSNumber.self, forKey: "pinDurationForever")?.boolValue ?? false
+        self.pinDurationSeconds = coder.decodeObject(of: NSNumber.self, forKey: "pinDurationSeconds")?.uint32Value ?? 0
+        self.targetMessageAuthorAciBinary = coder.decodeObject(of: NSData.self, forKey: "targetMessageAuthorAciBinary") as Data?
+        self.targetMessageTimestamp = coder.decodeObject(of: NSNumber.self, forKey: "targetMessageTimestamp")?.uint64Value ?? 0
+        super.init(coder: coder)
+    }
+
+    public override func encode(with coder: NSCoder) {
+        super.encode(with: coder)
+        coder.encode(NSNumber(value: self.pinDurationForever), forKey: "pinDurationForever")
+        coder.encode(NSNumber(value: self.pinDurationSeconds), forKey: "pinDurationSeconds")
+        if let targetMessageAuthorAciBinary {
+            coder.encode(targetMessageAuthorAciBinary, forKey: "targetMessageAuthorAciBinary")
+        }
+        coder.encode(NSNumber(value: self.targetMessageTimestamp), forKey: "targetMessageTimestamp")
+    }
+
+    public override var hash: Int {
+        var hasher = Hasher()
+        hasher.combine(super.hash)
+        hasher.combine(pinDurationForever)
+        hasher.combine(pinDurationSeconds)
+        hasher.combine(targetMessageAuthorAciBinary)
+        hasher.combine(targetMessageTimestamp)
+        return hasher.finalize()
+    }
+
+    public override func isEqual(_ object: Any?) -> Bool {
+        guard let object = object as? Self else { return false }
+        guard super.isEqual(object) else { return false }
+        guard self.pinDurationForever == object.pinDurationForever else { return false }
+        guard self.pinDurationSeconds == object.pinDurationSeconds else { return false }
+        guard self.targetMessageAuthorAciBinary == object.targetMessageAuthorAciBinary else { return false }
+        guard self.targetMessageTimestamp == object.targetMessageTimestamp else { return false }
+        return true
+    }
+
+    public override func copy(with zone: NSZone? = nil) -> Any {
+        let result = super.copy(with: zone) as! Self
+        result.pinDurationForever = self.pinDurationForever
+        result.pinDurationSeconds = self.pinDurationSeconds
+        result.targetMessageAuthorAciBinary = self.targetMessageAuthorAciBinary
+        result.targetMessageTimestamp = self.targetMessageTimestamp
+        return result
+    }
+
     private var targetMessageTimestamp: UInt64 = 0
-
-    @objc
     private var targetMessageAuthorAciBinary: Data?
-
-    @objc
     private var pinDurationSeconds: UInt32 = 0
-
-    @objc
     private var pinDurationForever: Bool = false
 
     public init(
@@ -45,14 +85,6 @@ public class OutgoingPinMessage: TSOutgoingMessage {
             skippedRecipients: [],
             transaction: tx
         )
-    }
-
-    required public init?(coder: NSCoder) {
-        super.init(coder: coder)
-    }
-
-    required public init(dictionary dictionaryValue: [String: Any]!) throws {
-        try super.init(dictionary: dictionaryValue)
     }
 
     override public var shouldBeSaved: Bool { false }

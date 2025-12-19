@@ -125,12 +125,30 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
 // --- CODE GENERATION MARKER
 
+- (void)encodeWithCoder:(NSCoder *)coder
+{
+    [super encodeWithCoder:coder];
+    [coder encodeObject:[self valueForKey:@"receivedAtTimestamp"] forKey:@"receivedAtTimestamp"];
+    [coder encodeObject:[self valueForKey:@"sortId"] forKey:@"sortId"];
+    [coder encodeObject:[self valueForKey:@"timestamp"] forKey:@"timestamp"];
+    NSString *uniqueThreadId = self.uniqueThreadId;
+    if (uniqueThreadId != nil) {
+        [coder encodeObject:uniqueThreadId forKey:@"uniqueThreadId"];
+    }
+}
+
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
     self = [super initWithCoder:coder];
     if (!self) {
-        return nil;
+        return self;
     }
+    self->_receivedAtTimestamp = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
+                                                                  forKey:@"receivedAtTimestamp"] unsignedLongLongValue];
+    self->_sortId = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class] forKey:@"sortId"] unsignedLongValue];
+    self->_timestamp = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
+                                                        forKey:@"timestamp"] unsignedLongLongValue];
+    self->_uniqueThreadId = [coder decodeObjectOfClass:[NSString class] forKey:@"uniqueThreadId"];
 
     // Previously the receivedAtTimestamp field lived on TSMessage, but we've moved it up
     // to the TSInteraction superclass.
@@ -153,6 +171,47 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
     }
 
     return self;
+}
+
+- (NSUInteger)hash
+{
+    NSUInteger result = [super hash];
+    result ^= self.receivedAtTimestamp;
+    result ^= self.sortId;
+    result ^= self.timestamp;
+    result ^= self.uniqueThreadId.hash;
+    return result;
+}
+
+- (BOOL)isEqual:(id)other
+{
+    if (![super isEqual:other]) {
+        return NO;
+    }
+    TSInteraction *typedOther = (TSInteraction *)other;
+    if (self.receivedAtTimestamp != typedOther.receivedAtTimestamp) {
+        return NO;
+    }
+    if (self.sortId != typedOther.sortId) {
+        return NO;
+    }
+    if (self.timestamp != typedOther.timestamp) {
+        return NO;
+    }
+    if (![NSObject isObject:self.uniqueThreadId equalToObject:typedOther.uniqueThreadId]) {
+        return NO;
+    }
+    return YES;
+}
+
+- (id)copyWithZone:(nullable NSZone *)zone
+{
+    TSInteraction *result = [super copyWithZone:zone];
+    result->_receivedAtTimestamp = self.receivedAtTimestamp;
+    result->_sortId = self.sortId;
+    result->_timestamp = self.timestamp;
+    result->_uniqueThreadId = self.uniqueThreadId;
+    return result;
 }
 
 #pragma mark Thread

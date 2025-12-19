@@ -24,9 +24,59 @@ NS_ASSUME_NONNULL_BEGIN
     SSKProtoEnvelope *_Nullable _envelope;
 }
 
+- (void)encodeWithCoder:(NSCoder *)coder
+{
+    [super encodeWithCoder:coder];
+    NSString *authorId = self.authorId;
+    if (authorId != nil) {
+        [coder encodeObject:authorId forKey:@"authorId"];
+    }
+    NSData *envelopeData = self.envelopeData;
+    if (envelopeData != nil) {
+        [coder encodeObject:envelopeData forKey:@"envelopeData"];
+    }
+}
+
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
-    return [super initWithCoder:coder];
+    self = [super initWithCoder:coder];
+    if (!self) {
+        return self;
+    }
+    self->_authorId = [coder decodeObjectOfClass:[NSString class] forKey:@"authorId"];
+    self->_envelopeData = [coder decodeObjectOfClass:[NSData class] forKey:@"envelopeData"];
+    return self;
+}
+
+- (NSUInteger)hash
+{
+    NSUInteger result = [super hash];
+    result ^= self.authorId.hash;
+    result ^= self.envelopeData.hash;
+    return result;
+}
+
+- (BOOL)isEqual:(id)other
+{
+    if (![super isEqual:other]) {
+        return NO;
+    }
+    TSInvalidIdentityKeyReceivingErrorMessage *typedOther = (TSInvalidIdentityKeyReceivingErrorMessage *)other;
+    if (![NSObject isObject:self.authorId equalToObject:typedOther.authorId]) {
+        return NO;
+    }
+    if (![NSObject isObject:self.envelopeData equalToObject:typedOther.envelopeData]) {
+        return NO;
+    }
+    return YES;
+}
+
+- (id)copyWithZone:(nullable NSZone *)zone
+{
+    TSInvalidIdentityKeyReceivingErrorMessage *result = [super copyWithZone:zone];
+    result->_authorId = [self.authorId copy];
+    result->_envelopeData = self.envelopeData;
+    return result;
 }
 
 // --- CODE GENERATION MARKER

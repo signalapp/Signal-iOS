@@ -39,10 +39,39 @@ public class MessageStickerDraft {
 // MARK: - MessageSticker
 
 @objc
-public class MessageSticker: MTLModel {
-    // MTLModel requires default values.
-    @objc
-    public var info = StickerInfo.defaultValue
+public final class MessageSticker: NSObject, NSCoding, NSCopying {
+    public init?(coder: NSCoder) {
+        self.emoji = coder.decodeObject(of: NSString.self, forKey: "emoji") as String?
+        self.info = coder.decodeObject(of: StickerInfo.self, forKey: "info") ?? .defaultValue
+    }
+
+    public func encode(with coder: NSCoder) {
+        if let emoji {
+            coder.encode(emoji, forKey: "emoji")
+        }
+        coder.encode(self.info, forKey: "info")
+    }
+
+    public override var hash: Int {
+        var hasher = Hasher()
+        hasher.combine(emoji)
+        hasher.combine(info)
+        return hasher.finalize()
+    }
+
+    public override func isEqual(_ object: Any?) -> Bool {
+        guard let object = object as? Self else { return false }
+        guard type(of: self) == type(of: object) else { return false }
+        guard self.emoji == object.emoji else { return false }
+        guard self.info == object.info else { return false }
+        return true
+    }
+
+    public func copy(with zone: NSZone? = nil) -> Any {
+        return self
+    }
+
+    public let info: StickerInfo
 
     @objc
     public var packId: Data {
@@ -59,29 +88,13 @@ public class MessageSticker: MTLModel {
         return info.stickerId
     }
 
-    @objc
-    public var emoji: String?
+    public let emoji: String?
 
     public init(info: StickerInfo, emoji: String?) {
         self.info = info
         self.emoji = emoji
 
         super.init()
-    }
-
-    @objc
-    public override init() {
-        super.init()
-    }
-
-    @objc
-    public required init!(coder: NSCoder) {
-        super.init(coder: coder)
-    }
-
-    @objc
-    public required init(dictionary dictionaryValue: [String: Any]!) throws {
-        try super.init(dictionary: dictionaryValue)
     }
 
     @objc

@@ -25,9 +25,74 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSSyncMessageRequestResponseMessage
 
+- (void)encodeWithCoder:(NSCoder *)coder
+{
+    [super encodeWithCoder:coder];
+    NSData *groupId = self.groupId;
+    if (groupId != nil) {
+        [coder encodeObject:groupId forKey:@"groupId"];
+    }
+    [coder encodeObject:[self valueForKey:@"responseType"] forKey:@"responseType"];
+    NSString *threadAci = self.threadAci;
+    if (threadAci != nil) {
+        [coder encodeObject:threadAci forKey:@"threadAci"];
+    }
+    [coder encodeObject:[self valueForKey:@"version"] forKey:@"version"];
+}
+
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
-    return [super initWithCoder:coder];
+    self = [super initWithCoder:coder];
+    if (!self) {
+        return self;
+    }
+    self->_groupId = [coder decodeObjectOfClass:[NSData class] forKey:@"groupId"];
+    self->_responseType = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
+                                                           forKey:@"responseType"] unsignedIntegerValue];
+    self->_threadAci = [coder decodeObjectOfClass:[NSString class] forKey:@"threadAci"];
+    self->_version = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class] forKey:@"version"] unsignedIntegerValue];
+    return self;
+}
+
+- (NSUInteger)hash
+{
+    NSUInteger result = [super hash];
+    result ^= self.groupId.hash;
+    result ^= self.responseType;
+    result ^= self.threadAci.hash;
+    result ^= self.version;
+    return result;
+}
+
+- (BOOL)isEqual:(id)other
+{
+    if (![super isEqual:other]) {
+        return NO;
+    }
+    OWSSyncMessageRequestResponseMessage *typedOther = (OWSSyncMessageRequestResponseMessage *)other;
+    if (![NSObject isObject:self.groupId equalToObject:typedOther.groupId]) {
+        return NO;
+    }
+    if (self.responseType != typedOther.responseType) {
+        return NO;
+    }
+    if (![NSObject isObject:self.threadAci equalToObject:typedOther.threadAci]) {
+        return NO;
+    }
+    if (self.version != typedOther.version) {
+        return NO;
+    }
+    return YES;
+}
+
+- (id)copyWithZone:(nullable NSZone *)zone
+{
+    OWSSyncMessageRequestResponseMessage *result = [super copyWithZone:zone];
+    result->_groupId = self.groupId;
+    result->_responseType = self.responseType;
+    result->_threadAci = self.threadAci;
+    result->_version = self.version;
+    return result;
 }
 
 - (instancetype)initWithLocalThread:(TSContactThread *)localThread

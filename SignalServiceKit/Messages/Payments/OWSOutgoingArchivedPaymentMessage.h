@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) TSArchivedPaymentInfo *archivedPaymentInfo;
 
-- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 - (instancetype)initOutgoingMessageWithBuilder:(TSOutgoingMessageBuilder *)outgoingMessageBuilder
                         recipientAddressStates:
                             (NSDictionary<SignalServiceAddress *, TSOutgoingMessageRecipientState *> *)

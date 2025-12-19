@@ -48,6 +48,52 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+- (void)encodeWithCoder:(NSCoder *)coder
+{
+    [super encodeWithCoder:coder];
+    OWSDisappearingMessagesConfiguration *configuration = self.configuration;
+    if (configuration != nil) {
+        [coder encodeObject:configuration forKey:@"configuration"];
+    }
+}
+
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
+{
+    self = [super initWithCoder:coder];
+    if (!self) {
+        return self;
+    }
+    self->_configuration = [coder decodeObjectOfClass:[OWSDisappearingMessagesConfiguration class]
+                                               forKey:@"configuration"];
+    return self;
+}
+
+- (NSUInteger)hash
+{
+    NSUInteger result = [super hash];
+    result ^= self.configuration.hash;
+    return result;
+}
+
+- (BOOL)isEqual:(id)other
+{
+    if (![super isEqual:other]) {
+        return NO;
+    }
+    OWSDisappearingMessagesConfigurationMessage *typedOther = (OWSDisappearingMessagesConfigurationMessage *)other;
+    if (![NSObject isObject:self.configuration equalToObject:typedOther.configuration]) {
+        return NO;
+    }
+    return YES;
+}
+
+- (id)copyWithZone:(nullable NSZone *)zone
+{
+    OWSDisappearingMessagesConfigurationMessage *result = [super copyWithZone:zone];
+    result->_configuration = self.configuration;
+    return result;
+}
+
 
 - (nullable SSKProtoDataMessageBuilder *)dataMessageBuilderWithThread:(TSThread *)thread
                                                           transaction:(DBReadTransaction *)transaction

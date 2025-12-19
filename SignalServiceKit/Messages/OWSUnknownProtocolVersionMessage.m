@@ -49,12 +49,30 @@ NSUInteger const OWSUnknownProtocolVersionMessageSchemaVersion = 1;
     return self;
 }
 
+- (void)encodeWithCoder:(NSCoder *)coder
+{
+    [super encodeWithCoder:coder];
+    [coder encodeObject:[self valueForKey:@"protocolVersion"] forKey:@"protocolVersion"];
+    SignalServiceAddress *sender = self.sender;
+    if (sender != nil) {
+        [coder encodeObject:sender forKey:@"sender"];
+    }
+    [coder encodeObject:[self valueForKey:@"unknownProtocolVersionMessageSchemaVersion"]
+                 forKey:@"unknownProtocolVersionMessageSchemaVersion"];
+}
+
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
     self = [super initWithCoder:coder];
     if (!self) {
         return self;
     }
+    self->_protocolVersion = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
+                                                              forKey:@"protocolVersion"] unsignedIntegerValue];
+    self->_sender = [coder decodeObjectOfClass:[SignalServiceAddress class] forKey:@"sender"];
+    self->_unknownProtocolVersionMessageSchemaVersion =
+        [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
+                                         forKey:@"unknownProtocolVersionMessageSchemaVersion"] unsignedIntegerValue];
 
     if (_unknownProtocolVersionMessageSchemaVersion < 1) {
         NSString *_Nullable phoneNumber = [coder decodeObjectForKey:@"senderId"];
@@ -66,6 +84,42 @@ NSUInteger const OWSUnknownProtocolVersionMessageSchemaVersion = 1;
     _unknownProtocolVersionMessageSchemaVersion = OWSUnknownProtocolVersionMessageSchemaVersion;
 
     return self;
+}
+
+- (NSUInteger)hash
+{
+    NSUInteger result = [super hash];
+    result ^= self.protocolVersion;
+    result ^= self.sender.hash;
+    result ^= self.unknownProtocolVersionMessageSchemaVersion;
+    return result;
+}
+
+- (BOOL)isEqual:(id)other
+{
+    if (![super isEqual:other]) {
+        return NO;
+    }
+    OWSUnknownProtocolVersionMessage *typedOther = (OWSUnknownProtocolVersionMessage *)other;
+    if (self.protocolVersion != typedOther.protocolVersion) {
+        return NO;
+    }
+    if (![NSObject isObject:self.sender equalToObject:typedOther.sender]) {
+        return NO;
+    }
+    if (self.unknownProtocolVersionMessageSchemaVersion != typedOther.unknownProtocolVersionMessageSchemaVersion) {
+        return NO;
+    }
+    return YES;
+}
+
+- (id)copyWithZone:(nullable NSZone *)zone
+{
+    OWSUnknownProtocolVersionMessage *result = [super copyWithZone:zone];
+    result->_protocolVersion = self.protocolVersion;
+    result->_sender = self.sender;
+    result->_unknownProtocolVersionMessageSchemaVersion = self.unknownProtocolVersionMessageSchemaVersion;
+    return result;
 }
 
 // --- CODE GENERATION MARKER

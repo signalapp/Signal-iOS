@@ -166,20 +166,163 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 
 // --- CODE GENERATION MARKER
 
+- (void)encodeWithCoder:(NSCoder *)coder
+{
+    [super encodeWithCoder:coder];
+    NSData *changeActionsProtoData = self.changeActionsProtoData;
+    if (changeActionsProtoData != nil) {
+        [coder encodeObject:changeActionsProtoData forKey:@"changeActionsProtoData"];
+    }
+    NSString *customMessage = self.customMessage;
+    if (customMessage != nil) {
+        [coder encodeObject:customMessage forKey:@"customMessage"];
+    }
+    [coder encodeObject:[self valueForKey:@"groupMetaMessage"] forKey:@"groupMetaMessage"];
+    [coder encodeObject:[self valueForKey:@"hasLegacyMessageState"] forKey:@"hasLegacyMessageState"];
+    [coder encodeObject:[self valueForKey:@"hasSyncedTranscript"] forKey:@"hasSyncedTranscript"];
+    [coder encodeObject:[self valueForKey:@"isVoiceMessage"] forKey:@"isVoiceMessage"];
+    [coder encodeObject:[self valueForKey:@"legacyMessageState"] forKey:@"legacyMessageState"];
+    [coder encodeObject:[self valueForKey:@"legacyWasDelivered"] forKey:@"legacyWasDelivered"];
+    NSString *mostRecentFailureText = self.mostRecentFailureText;
+    if (mostRecentFailureText != nil) {
+        [coder encodeObject:mostRecentFailureText forKey:@"mostRecentFailureText"];
+    }
+    [coder encodeObject:[self valueForKey:@"outgoingMessageSchemaVersion"] forKey:@"outgoingMessageSchemaVersion"];
+    NSDictionary *recipientAddressStates = self.recipientAddressStates;
+    if (recipientAddressStates != nil) {
+        [coder encodeObject:recipientAddressStates forKey:@"recipientAddressStates"];
+    }
+    [coder encodeObject:[self valueForKey:@"storedMessageState"] forKey:@"storedMessageState"];
+    [coder encodeObject:[self valueForKey:@"wasNotCreatedLocally"] forKey:@"wasNotCreatedLocally"];
+}
+
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
     self = [super initWithCoder:coder];
-
-    if (self) {
-#ifndef TESTABLE_BUILD
-        OWSAssertDebug(self.outgoingMessageSchemaVersion >= 1);
-#endif
-
-        _outgoingMessageSchemaVersion = TSOutgoingMessageSchemaVersion;
+    if (!self) {
+        return self;
     }
+    self->_changeActionsProtoData = [coder decodeObjectOfClass:[NSData class] forKey:@"changeActionsProtoData"];
+    self->_customMessage = [coder decodeObjectOfClass:[NSString class] forKey:@"customMessage"];
+    self->_groupMetaMessage = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
+                                                               forKey:@"groupMetaMessage"] integerValue];
+    self->_hasLegacyMessageState = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
+                                                                    forKey:@"hasLegacyMessageState"] boolValue];
+    self->_hasSyncedTranscript = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
+                                                                  forKey:@"hasSyncedTranscript"] boolValue];
+    self->_isVoiceMessage = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
+                                                             forKey:@"isVoiceMessage"] boolValue];
+    self->_legacyMessageState = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
+                                                                 forKey:@"legacyMessageState"] integerValue];
+    self->_legacyWasDelivered = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
+                                                                 forKey:@"legacyWasDelivered"] boolValue];
+    self->_mostRecentFailureText = [coder decodeObjectOfClass:[NSString class] forKey:@"mostRecentFailureText"];
+    self->_outgoingMessageSchemaVersion =
+        [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
+                                         forKey:@"outgoingMessageSchemaVersion"] unsignedIntegerValue];
+    self->_recipientAddressStates = [coder decodeObjectOfClasses:[NSSet setWithArray:@[
+        [NSDictionary class],
+        [SignalServiceAddress class],
+        [TSOutgoingMessageRecipientState class]
+    ]]
+                                                          forKey:@"recipientAddressStates"];
+    self->_storedMessageState = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
+                                                                 forKey:@"storedMessageState"] integerValue];
+    self->_wasNotCreatedLocally = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
+                                                                   forKey:@"wasNotCreatedLocally"] boolValue];
 
+#ifndef TESTABLE_BUILD
+    OWSAssertDebug(self.outgoingMessageSchemaVersion >= 1);
+#endif
+    _outgoingMessageSchemaVersion = TSOutgoingMessageSchemaVersion;
 
     return self;
+}
+
+- (NSUInteger)hash
+{
+    NSUInteger result = [super hash];
+    result ^= self.changeActionsProtoData.hash;
+    result ^= self.customMessage.hash;
+    result ^= (NSUInteger)self.groupMetaMessage;
+    result ^= self.hasLegacyMessageState;
+    result ^= self.hasSyncedTranscript;
+    result ^= self.isVoiceMessage;
+    result ^= (NSUInteger)self.legacyMessageState;
+    result ^= self.legacyWasDelivered;
+    result ^= self.mostRecentFailureText.hash;
+    result ^= self.outgoingMessageSchemaVersion;
+    result ^= self.recipientAddressStates.hash;
+    result ^= (NSUInteger)self.storedMessageState;
+    result ^= self.wasNotCreatedLocally;
+    return result;
+}
+
+- (BOOL)isEqual:(id)other
+{
+    if (![super isEqual:other]) {
+        return NO;
+    }
+    TSOutgoingMessage *typedOther = (TSOutgoingMessage *)other;
+    if (![NSObject isObject:self.changeActionsProtoData equalToObject:typedOther.changeActionsProtoData]) {
+        return NO;
+    }
+    if (![NSObject isObject:self.customMessage equalToObject:typedOther.customMessage]) {
+        return NO;
+    }
+    if (self.groupMetaMessage != typedOther.groupMetaMessage) {
+        return NO;
+    }
+    if (self.hasLegacyMessageState != typedOther.hasLegacyMessageState) {
+        return NO;
+    }
+    if (self.hasSyncedTranscript != typedOther.hasSyncedTranscript) {
+        return NO;
+    }
+    if (self.isVoiceMessage != typedOther.isVoiceMessage) {
+        return NO;
+    }
+    if (self.legacyMessageState != typedOther.legacyMessageState) {
+        return NO;
+    }
+    if (self.legacyWasDelivered != typedOther.legacyWasDelivered) {
+        return NO;
+    }
+    if (![NSObject isObject:self.mostRecentFailureText equalToObject:typedOther.mostRecentFailureText]) {
+        return NO;
+    }
+    if (self.outgoingMessageSchemaVersion != typedOther.outgoingMessageSchemaVersion) {
+        return NO;
+    }
+    if (![NSObject isObject:self.recipientAddressStates equalToObject:typedOther.recipientAddressStates]) {
+        return NO;
+    }
+    if (self.storedMessageState != typedOther.storedMessageState) {
+        return NO;
+    }
+    if (self.wasNotCreatedLocally != typedOther.wasNotCreatedLocally) {
+        return NO;
+    }
+    return YES;
+}
+
+- (id)copyWithZone:(nullable NSZone *)zone
+{
+    TSOutgoingMessage *result = [super copyWithZone:zone];
+    result->_changeActionsProtoData = self.changeActionsProtoData;
+    result->_customMessage = self.customMessage;
+    result->_groupMetaMessage = self.groupMetaMessage;
+    result->_hasLegacyMessageState = self.hasLegacyMessageState;
+    result->_hasSyncedTranscript = self.hasSyncedTranscript;
+    result->_isVoiceMessage = self.isVoiceMessage;
+    result->_legacyMessageState = self.legacyMessageState;
+    result->_legacyWasDelivered = self.legacyWasDelivered;
+    result->_mostRecentFailureText = self.mostRecentFailureText;
+    result->_outgoingMessageSchemaVersion = self.outgoingMessageSchemaVersion;
+    result->_recipientAddressStates = self.recipientAddressStates;
+    result->_storedMessageState = self.storedMessageState;
+    result->_wasNotCreatedLocally = self.wasNotCreatedLocally;
+    return result;
 }
 
 - (instancetype)initOutgoingMessageWithBuilder:(TSOutgoingMessageBuilder *)outgoingMessageBuilder

@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-#import <Mantle/MTLModel+NSCoding.h>
+@import Foundation;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -25,7 +25,7 @@ typedef NS_CLOSED_ENUM(uint32_t, GroupsVersion) {
 //       If you modify this class - especially if you
 //       add any new properties - make sure to update
 //       TSGroupModelBuilder.
-@interface TSGroupModel : MTLModel
+@interface TSGroupModel : NSObject <NSCoding, NSCopying>
 
 // groupMembers includes administrators and normal members.
 @property (nonatomic, readonly) NSArray<SignalServiceAddress *> *groupMembers;

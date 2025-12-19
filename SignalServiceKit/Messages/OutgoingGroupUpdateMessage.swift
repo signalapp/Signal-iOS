@@ -7,11 +7,43 @@ import Foundation
 import LibSignalClient
 
 /// An outgoing group v2 update.
-class OutgoingGroupUpdateMessage: TSOutgoingMessage {
-    @objc
-    private var isUpdateUrgent: Bool = false
+final class OutgoingGroupUpdateMessage: TSOutgoingMessage {
+    required init?(coder: NSCoder) {
+        self.isDeletingAccount = coder.decodeObject(of: NSNumber.self, forKey: "isDeletingAccount")?.boolValue ?? false
+        self.isUpdateUrgent = coder.decodeObject(of: NSNumber.self, forKey: "isUpdateUrgent")?.boolValue ?? false
+        super.init(coder: coder)
+    }
 
-    @objc
+    override func encode(with coder: NSCoder) {
+        super.encode(with: coder)
+        coder.encode(NSNumber(value: self.isDeletingAccount), forKey: "isDeletingAccount")
+        coder.encode(NSNumber(value: self.isUpdateUrgent), forKey: "isUpdateUrgent")
+    }
+
+    override var hash: Int {
+        var hasher = Hasher()
+        hasher.combine(super.hash)
+        hasher.combine(isDeletingAccount)
+        hasher.combine(isUpdateUrgent)
+        return hasher.finalize()
+    }
+
+    override func isEqual(_ object: Any?) -> Bool {
+        guard let object = object as? Self else { return false }
+        guard super.isEqual(object) else { return false }
+        guard self.isDeletingAccount == object.isDeletingAccount else { return false }
+        guard self.isUpdateUrgent == object.isUpdateUrgent else { return false }
+        return true
+    }
+
+    override func copy(with zone: NSZone? = nil) -> Any {
+        let result = super.copy(with: zone) as! Self
+        result.isDeletingAccount = self.isDeletingAccount
+        result.isUpdateUrgent = self.isUpdateUrgent
+        return result
+    }
+
+    private var isUpdateUrgent: Bool = false
     private(set) var isDeletingAccount: Bool = false
 
     init(
@@ -39,14 +71,6 @@ class OutgoingGroupUpdateMessage: TSOutgoingMessage {
             skippedRecipients: [],
             transaction: transaction
         )
-    }
-
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-    }
-
-    required init(dictionary: [String: Any]!) throws {
-        try super.init(dictionary: dictionary)
     }
 
     override var isUrgent: Bool { self.isUpdateUrgent }

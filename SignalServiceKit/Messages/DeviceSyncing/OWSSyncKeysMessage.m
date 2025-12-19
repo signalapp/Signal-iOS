@@ -36,9 +36,69 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+- (void)encodeWithCoder:(NSCoder *)coder
+{
+    [super encodeWithCoder:coder];
+    NSString *accountEntropyPool = self.accountEntropyPool;
+    if (accountEntropyPool != nil) {
+        [coder encodeObject:accountEntropyPool forKey:@"accountEntropyPool"];
+    }
+    NSData *masterKey = self.masterKey;
+    if (masterKey != nil) {
+        [coder encodeObject:masterKey forKey:@"masterKey"];
+    }
+    NSData *mediaRootBackupKey = self.mediaRootBackupKey;
+    if (mediaRootBackupKey != nil) {
+        [coder encodeObject:mediaRootBackupKey forKey:@"mediaRootBackupKey"];
+    }
+}
+
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
-    return [super initWithCoder:coder];
+    self = [super initWithCoder:coder];
+    if (!self) {
+        return self;
+    }
+    self->_accountEntropyPool = [coder decodeObjectOfClass:[NSString class] forKey:@"accountEntropyPool"];
+    self->_masterKey = [coder decodeObjectOfClass:[NSData class] forKey:@"masterKey"];
+    self->_mediaRootBackupKey = [coder decodeObjectOfClass:[NSData class] forKey:@"mediaRootBackupKey"];
+    return self;
+}
+
+- (NSUInteger)hash
+{
+    NSUInteger result = [super hash];
+    result ^= self.accountEntropyPool.hash;
+    result ^= self.masterKey.hash;
+    result ^= self.mediaRootBackupKey.hash;
+    return result;
+}
+
+- (BOOL)isEqual:(id)other
+{
+    if (![super isEqual:other]) {
+        return NO;
+    }
+    OWSSyncKeysMessage *typedOther = (OWSSyncKeysMessage *)other;
+    if (![NSObject isObject:self.accountEntropyPool equalToObject:typedOther.accountEntropyPool]) {
+        return NO;
+    }
+    if (![NSObject isObject:self.masterKey equalToObject:typedOther.masterKey]) {
+        return NO;
+    }
+    if (![NSObject isObject:self.mediaRootBackupKey equalToObject:typedOther.mediaRootBackupKey]) {
+        return NO;
+    }
+    return YES;
+}
+
+- (id)copyWithZone:(nullable NSZone *)zone
+{
+    OWSSyncKeysMessage *result = [super copyWithZone:zone];
+    result->_accountEntropyPool = self.accountEntropyPool;
+    result->_masterKey = self.masterKey;
+    result->_mediaRootBackupKey = self.mediaRootBackupKey;
+    return result;
 }
 
 - (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilderWithTransaction:(DBReadTransaction *)transaction

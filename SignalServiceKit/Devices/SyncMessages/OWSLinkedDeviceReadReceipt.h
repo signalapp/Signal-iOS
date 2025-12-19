@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-#import <Mantle/MTLModel.h>
+@import Foundation;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class DBReadTransaction;
 @class SignalServiceAddress;
 
-@interface OWSLinkedDeviceReadReceipt : MTLModel
+@interface OWSLinkedDeviceReadReceipt : NSObject <NSCoding, NSCopying>
 
 @property (nonatomic, readonly) SignalServiceAddress *senderAddress;
 @property (nonatomic, readonly, nullable) NSString *messageUniqueId; // Only nil if decoding old values

@@ -4,7 +4,6 @@
 //
 
 import Foundation
-import Mantle
 
 /// A convenience wrapper around a disappearing message timer duration value that
 /// 1) handles seconds/millis conversion
@@ -14,14 +13,38 @@ import Mantle
 /// with an attached version that, at time of writing, used by 1:1 conversations (TSContactThread)
 /// which are subject to races in setting their DM timer config.
 @objc
-public class DisappearingMessageToken: MTLModel {
+public final class DisappearingMessageToken: NSObject, NSCoding, NSCopying {
+    public init?(coder: NSCoder) {
+        self.durationSeconds = coder.decodeObject(of: NSNumber.self, forKey: "durationSeconds")?.uint32Value ?? 0
+    }
+
+    public func encode(with coder: NSCoder) {
+        coder.encode(NSNumber(value: self.durationSeconds), forKey: "durationSeconds")
+    }
+
+    public override var hash: Int {
+        var hasher = Hasher()
+        hasher.combine(durationSeconds)
+        return hasher.finalize()
+    }
+
+    public override func isEqual(_ object: Any?) -> Bool {
+        guard let object = object as? Self else { return false }
+        guard type(of: self) == type(of: object) else { return false }
+        guard self.durationSeconds == object.durationSeconds else { return false }
+        return true
+    }
+
+    public func copy(with zone: NSZone? = nil) -> Any {
+        return self
+    }
+
     @objc
     public var isEnabled: Bool {
         return durationSeconds > 0
     }
 
-    @objc
-    public var durationSeconds: UInt32 = 0
+    public let durationSeconds: UInt32
 
     @objc
     public init(isEnabled: Bool, durationSeconds: UInt32) {
@@ -30,23 +53,6 @@ public class DisappearingMessageToken: MTLModel {
         self.durationSeconds = isEnabled ? durationSeconds : 0
 
         super.init()
-    }
-
-    // MARK: - MTLModel
-
-    @objc
-    public override init() {
-        super.init()
-    }
-
-    @objc
-    required public init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-    }
-
-    @objc
-    public required init(dictionary dictionaryValue: [String: Any]!) throws {
-        try super.init(dictionary: dictionaryValue)
     }
 
     // MARK: -

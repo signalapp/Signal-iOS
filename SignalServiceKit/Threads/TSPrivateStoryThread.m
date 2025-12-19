@@ -22,6 +22,68 @@
     return self;
 }
 
+- (void)encodeWithCoder:(NSCoder *)coder
+{
+    [super encodeWithCoder:coder];
+    NSData *addresses = self.addresses;
+    if (addresses != nil) {
+        [coder encodeObject:addresses forKey:@"addresses"];
+    }
+    [coder encodeObject:[self valueForKey:@"allowsReplies"] forKey:@"allowsReplies"];
+    NSString *name = self.name;
+    if (name != nil) {
+        [coder encodeObject:name forKey:@"name"];
+    }
+}
+
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
+{
+    self = [super initWithCoder:coder];
+    if (!self) {
+        return self;
+    }
+    self->_addresses = [coder decodeObjectOfClass:[NSData class] forKey:@"addresses"];
+    self->_allowsReplies = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class] forKey:@"allowsReplies"] boolValue];
+    self->_name = [coder decodeObjectOfClass:[NSString class] forKey:@"name"];
+    return self;
+}
+
+- (NSUInteger)hash
+{
+    NSUInteger result = [super hash];
+    result ^= self.addresses.hash;
+    result ^= self.allowsReplies;
+    result ^= self.name.hash;
+    return result;
+}
+
+- (BOOL)isEqual:(id)other
+{
+    if (![super isEqual:other]) {
+        return NO;
+    }
+    TSPrivateStoryThread *typedOther = (TSPrivateStoryThread *)other;
+    if (![NSObject isObject:self.addresses equalToObject:typedOther.addresses]) {
+        return NO;
+    }
+    if (self.allowsReplies != typedOther.allowsReplies) {
+        return NO;
+    }
+    if (![NSObject isObject:self.name equalToObject:typedOther.name]) {
+        return NO;
+    }
+    return YES;
+}
+
+- (id)copyWithZone:(nullable NSZone *)zone
+{
+    TSPrivateStoryThread *result = [super copyWithZone:zone];
+    result->_addresses = self.addresses;
+    result->_allowsReplies = self.allowsReplies;
+    result->_name = self.name;
+    return result;
+}
+
 - (instancetype)initWithName:(NSString *)name allowsReplies:(BOOL)allowsReplies viewMode:(TSThreadStoryViewMode)viewMode
 {
     NSString *uniqueId = [[self class] generateUniqueId];

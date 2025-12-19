@@ -109,12 +109,99 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
 
 // --- CODE GENERATION MARKER
 
+- (void)encodeWithCoder:(NSCoder *)coder
+{
+    [super encodeWithCoder:coder];
+    NSString *conversationColorNameObsolete = self.conversationColorNameObsolete;
+    if (conversationColorNameObsolete != nil) {
+        [coder encodeObject:conversationColorNameObsolete forKey:@"conversationColorNameObsolete"];
+    }
+    NSDate *creationDate = self.creationDate;
+    if (creationDate != nil) {
+        [coder encodeObject:creationDate forKey:@"creationDate"];
+    }
+    NSNumber *editTargetTimestamp = self.editTargetTimestamp;
+    if (editTargetTimestamp != nil) {
+        [coder encodeObject:editTargetTimestamp forKey:@"editTargetTimestamp"];
+    }
+    [coder encodeObject:[self valueForKey:@"isArchivedByLegacyTimestampForSorting"]
+                 forKey:@"isArchivedByLegacyTimestampForSorting"];
+    [coder encodeObject:[self valueForKey:@"isArchivedObsolete"] forKey:@"isArchivedObsolete"];
+    [coder encodeObject:[self valueForKey:@"isMarkedUnreadObsolete"] forKey:@"isMarkedUnreadObsolete"];
+    [coder encodeObject:[self valueForKey:@"lastDraftInteractionRowId"] forKey:@"lastDraftInteractionRowId"];
+    [coder encodeObject:[self valueForKey:@"lastDraftUpdateTimestamp"] forKey:@"lastDraftUpdateTimestamp"];
+    [coder encodeObject:[self valueForKey:@"lastInteractionRowId"] forKey:@"lastInteractionRowId"];
+    NSNumber *lastSentStoryTimestamp = self.lastSentStoryTimestamp;
+    if (lastSentStoryTimestamp != nil) {
+        [coder encodeObject:lastSentStoryTimestamp forKey:@"lastSentStoryTimestamp"];
+    }
+    [coder encodeObject:[self valueForKey:@"lastVisibleSortIdObsolete"] forKey:@"lastVisibleSortIdObsolete"];
+    [coder encodeObject:[self valueForKey:@"lastVisibleSortIdOnScreenPercentageObsolete"]
+                 forKey:@"lastVisibleSortIdOnScreenPercentageObsolete"];
+    [coder encodeObject:[self valueForKey:@"mentionNotificationMode"] forKey:@"mentionNotificationMode"];
+    NSString *messageDraft = self.messageDraft;
+    if (messageDraft != nil) {
+        [coder encodeObject:messageDraft forKey:@"messageDraft"];
+    }
+    MessageBodyRanges *messageDraftBodyRanges = self.messageDraftBodyRanges;
+    if (messageDraftBodyRanges != nil) {
+        [coder encodeObject:messageDraftBodyRanges forKey:@"messageDraftBodyRanges"];
+    }
+    NSDate *mutedUntilDateObsolete = self.mutedUntilDateObsolete;
+    if (mutedUntilDateObsolete != nil) {
+        [coder encodeObject:mutedUntilDateObsolete forKey:@"mutedUntilDateObsolete"];
+    }
+    [coder encodeObject:[self valueForKey:@"mutedUntilTimestampObsolete"] forKey:@"mutedUntilTimestampObsolete"];
+    [coder encodeObject:[self valueForKey:@"shouldThreadBeVisible"] forKey:@"shouldThreadBeVisible"];
+    [coder encodeObject:[self valueForKey:@"storyViewMode"] forKey:@"storyViewMode"];
+}
+
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
     self = [super initWithCoder:coder];
     if (!self) {
         return self;
     }
+    self->_conversationColorNameObsolete = [coder decodeObjectOfClass:[NSString class]
+                                                               forKey:@"conversationColorNameObsolete"];
+    self->_creationDate = [coder decodeObjectOfClass:[NSDate class] forKey:@"creationDate"];
+    self->_editTargetTimestamp = [coder decodeObjectOfClass:[NSNumber class] forKey:@"editTargetTimestamp"];
+    self->_isArchivedByLegacyTimestampForSorting =
+        [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
+                                         forKey:@"isArchivedByLegacyTimestampForSorting"] boolValue];
+    self->_isArchivedObsolete = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
+                                                                 forKey:@"isArchivedObsolete"] boolValue];
+    self->_isMarkedUnreadObsolete = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
+                                                                     forKey:@"isMarkedUnreadObsolete"] boolValue];
+    self->_lastDraftInteractionRowId =
+        [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
+                                         forKey:@"lastDraftInteractionRowId"] unsignedLongLongValue];
+    self->_lastDraftUpdateTimestamp =
+        [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
+                                         forKey:@"lastDraftUpdateTimestamp"] unsignedLongLongValue];
+    self->_lastInteractionRowId =
+        [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class] forKey:@"lastInteractionRowId"] unsignedLongLongValue];
+    self->_lastSentStoryTimestamp = [coder decodeObjectOfClass:[NSNumber class] forKey:@"lastSentStoryTimestamp"];
+    self->_lastVisibleSortIdObsolete =
+        [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
+                                         forKey:@"lastVisibleSortIdObsolete"] unsignedLongLongValue];
+    self->_lastVisibleSortIdOnScreenPercentageObsolete =
+        [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
+                                         forKey:@"lastVisibleSortIdOnScreenPercentageObsolete"] doubleValue];
+    self->_mentionNotificationMode =
+        [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
+                                         forKey:@"mentionNotificationMode"] unsignedIntegerValue];
+    self->_messageDraft = [coder decodeObjectOfClass:[NSString class] forKey:@"messageDraft"];
+    self->_messageDraftBodyRanges = [coder decodeObjectOfClass:[MessageBodyRanges class]
+                                                        forKey:@"messageDraftBodyRanges"];
+    self->_mutedUntilDateObsolete = [coder decodeObjectOfClass:[NSDate class] forKey:@"mutedUntilDateObsolete"];
+    self->_mutedUntilTimestampObsolete =
+        [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
+                                         forKey:@"mutedUntilTimestampObsolete"] unsignedLongLongValue];
+    self->_shouldThreadBeVisible = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
+                                                                    forKey:@"shouldThreadBeVisible"] boolValue];
+    self->_storyViewMode = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
+                                                            forKey:@"storyViewMode"] unsignedIntegerValue];
 
     // renamed `hasEverHadMessage` -> `shouldThreadBeVisible`
     if (!_shouldThreadBeVisible) {
@@ -140,6 +227,132 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
     }
 
     return self;
+}
+
+- (NSUInteger)hash
+{
+    NSUInteger result = [super hash];
+    result ^= self.conversationColorNameObsolete.hash;
+    result ^= self.creationDate.hash;
+    result ^= self.editTargetTimestamp.hash;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    result ^= self.isArchivedByLegacyTimestampForSorting;
+#pragma clang diagnostic pop
+    result ^= self.isArchivedObsolete;
+    result ^= self.isMarkedUnreadObsolete;
+    result ^= self.lastDraftInteractionRowId;
+    result ^= self.lastDraftUpdateTimestamp;
+    result ^= self.lastInteractionRowId;
+    result ^= self.lastSentStoryTimestamp.hash;
+    result ^= self.lastVisibleSortIdObsolete;
+    result ^= @(self.lastVisibleSortIdOnScreenPercentageObsolete).stringValue.hash;
+    result ^= self.mentionNotificationMode;
+    result ^= self.messageDraft.hash;
+    result ^= self.messageDraftBodyRanges.hash;
+    result ^= self.mutedUntilDateObsolete.hash;
+    result ^= self.mutedUntilTimestampObsolete;
+    result ^= self.shouldThreadBeVisible;
+    result ^= self.storyViewMode;
+    return result;
+}
+
+- (BOOL)isEqual:(id)other
+{
+    if (![super isEqual:other]) {
+        return NO;
+    }
+    TSThread *typedOther = (TSThread *)other;
+    if (![NSObject isObject:self.conversationColorNameObsolete
+              equalToObject:typedOther.conversationColorNameObsolete]) {
+        return NO;
+    }
+    if (![NSObject isObject:self.creationDate equalToObject:typedOther.creationDate]) {
+        return NO;
+    }
+    if (![NSObject isObject:self.editTargetTimestamp equalToObject:typedOther.editTargetTimestamp]) {
+        return NO;
+    }
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    if (self.isArchivedByLegacyTimestampForSorting != typedOther.isArchivedByLegacyTimestampForSorting) {
+        return NO;
+    }
+#pragma clang diagnostic pop
+    if (self.isArchivedObsolete != typedOther.isArchivedObsolete) {
+        return NO;
+    }
+    if (self.isMarkedUnreadObsolete != typedOther.isMarkedUnreadObsolete) {
+        return NO;
+    }
+    if (self.lastDraftInteractionRowId != typedOther.lastDraftInteractionRowId) {
+        return NO;
+    }
+    if (self.lastDraftUpdateTimestamp != typedOther.lastDraftUpdateTimestamp) {
+        return NO;
+    }
+    if (self.lastInteractionRowId != typedOther.lastInteractionRowId) {
+        return NO;
+    }
+    if (![NSObject isObject:self.lastSentStoryTimestamp equalToObject:typedOther.lastSentStoryTimestamp]) {
+        return NO;
+    }
+    if (self.lastVisibleSortIdObsolete != typedOther.lastVisibleSortIdObsolete) {
+        return NO;
+    }
+    if (self.lastVisibleSortIdOnScreenPercentageObsolete != typedOther.lastVisibleSortIdOnScreenPercentageObsolete) {
+        return NO;
+    }
+    if (self.mentionNotificationMode != typedOther.mentionNotificationMode) {
+        return NO;
+    }
+    if (![NSObject isObject:self.messageDraft equalToObject:typedOther.messageDraft]) {
+        return NO;
+    }
+    if (![NSObject isObject:self.messageDraftBodyRanges equalToObject:typedOther.messageDraftBodyRanges]) {
+        return NO;
+    }
+    if (![NSObject isObject:self.mutedUntilDateObsolete equalToObject:typedOther.mutedUntilDateObsolete]) {
+        return NO;
+    }
+    if (self.mutedUntilTimestampObsolete != typedOther.mutedUntilTimestampObsolete) {
+        return NO;
+    }
+    if (self.shouldThreadBeVisible != typedOther.shouldThreadBeVisible) {
+        return NO;
+    }
+    if (self.storyViewMode != typedOther.storyViewMode) {
+        return NO;
+    }
+    return YES;
+}
+
+- (id)copyWithZone:(nullable NSZone *)zone
+{
+    TSThread *result = [super copyWithZone:zone];
+    result->_conversationColorNameObsolete = self.conversationColorNameObsolete;
+    result->_creationDate = self.creationDate;
+    result->_editTargetTimestamp = self.editTargetTimestamp;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    result->_isArchivedByLegacyTimestampForSorting = self.isArchivedByLegacyTimestampForSorting;
+#pragma clang diagnostic pop
+    result->_isArchivedObsolete = self.isArchivedObsolete;
+    result->_isMarkedUnreadObsolete = self.isMarkedUnreadObsolete;
+    result->_lastDraftInteractionRowId = self.lastDraftInteractionRowId;
+    result->_lastDraftUpdateTimestamp = self.lastDraftUpdateTimestamp;
+    result->_lastInteractionRowId = self.lastInteractionRowId;
+    result->_lastSentStoryTimestamp = self.lastSentStoryTimestamp;
+    result->_lastVisibleSortIdObsolete = self.lastVisibleSortIdObsolete;
+    result->_lastVisibleSortIdOnScreenPercentageObsolete = self.lastVisibleSortIdOnScreenPercentageObsolete;
+    result->_mentionNotificationMode = self.mentionNotificationMode;
+    result->_messageDraft = [self.messageDraft copy];
+    result->_messageDraftBodyRanges = self.messageDraftBodyRanges;
+    result->_mutedUntilDateObsolete = self.mutedUntilDateObsolete;
+    result->_mutedUntilTimestampObsolete = self.mutedUntilTimestampObsolete;
+    result->_shouldThreadBeVisible = self.shouldThreadBeVisible;
+    result->_storyViewMode = self.storyViewMode;
+    return result;
 }
 
 - (void)anyDidInsertWithTransaction:(DBWriteTransaction *)transaction

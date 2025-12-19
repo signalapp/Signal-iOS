@@ -102,18 +102,39 @@ class OutgoingCallEvent: NSObject, NSCoding {
 /// - SeeAlso ``IncomingCallEventSyncMessageManager``
 @objc(OutgoingCallEventSyncMessage)
 public class OutgoingCallEventSyncMessage: OWSOutgoingSyncMessage {
+    public required init?(coder: NSCoder) {
+        self.callEvent = coder.decodeObject(of: OutgoingCallEvent.self, forKey: "event")
+        super.init(coder: coder)
+    }
+
+    public override func encode(with coder: NSCoder) {
+        super.encode(with: coder)
+        if let callEvent {
+            coder.encode(callEvent, forKey: "event")
+        }
+    }
+
+    public override var hash: Int {
+        var hasher = Hasher()
+        hasher.combine(super.hash)
+        hasher.combine(callEvent)
+        return hasher.finalize()
+    }
+
+    public override func isEqual(_ object: Any?) -> Bool {
+        guard let object = object as? Self else { return false }
+        guard super.isEqual(object) else { return false }
+        guard self.callEvent == object.callEvent else { return false }
+        return true
+    }
+
+    public override func copy(with zone: NSZone? = nil) -> Any {
+        let result = super.copy(with: zone) as! Self
+        result.callEvent = self.callEvent
+        return result
+    }
 
     /// The call event.
-    ///
-    /// The ObjC name must remain as-is for compatibility with legacy data
-    /// archived using Mantle. When this model was originally written (in ObjC),
-    /// the property was named `event` - therefore, Mantle will have used that
-    /// name as a key when doing its reflection-based archiving.
-    ///
-    /// - Note
-    /// Nullability here is intentional, since Mantle will set this property via
-    /// its reflection-based `init(coder:)` when we call `super.init(coder:)`.
-    @objc(event)
     private(set) var callEvent: OutgoingCallEvent!
 
     init(
@@ -123,14 +144,6 @@ public class OutgoingCallEventSyncMessage: OWSOutgoingSyncMessage {
     ) {
         self.callEvent = event
         super.init(localThread: localThread, transaction: tx)
-    }
-
-    required public init?(coder: NSCoder) {
-        super.init(coder: coder)
-    }
-
-    required public init(dictionary dictionaryValue: [String: Any]!) throws {
-        try super.init(dictionary: dictionaryValue)
     }
 
     override public var isUrgent: Bool { false }

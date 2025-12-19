@@ -42,15 +42,42 @@ NSUInteger const OWSLinkedDeviceReadReceiptSchemaVersion = 1;
     return self;
 }
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wobjc-designated-initializers"
+- (void)encodeWithCoder:(NSCoder *)coder
+{
+    [coder encodeObject:[self valueForKey:@"linkedDeviceReadReceiptSchemaVersion"]
+                 forKey:@"linkedDeviceReadReceiptSchemaVersion"];
+    [coder encodeObject:[self valueForKey:@"messageIdTimestamp"] forKey:@"messageIdTimestamp"];
+    NSString *messageUniqueId = self.messageUniqueId;
+    if (messageUniqueId != nil) {
+        [coder encodeObject:messageUniqueId forKey:@"messageUniqueId"];
+    }
+    [coder encodeObject:[self valueForKey:@"readTimestamp"] forKey:@"readTimestamp"];
+    NSString *senderPhoneNumber = self.senderPhoneNumber;
+    if (senderPhoneNumber != nil) {
+        [coder encodeObject:senderPhoneNumber forKey:@"senderPhoneNumber"];
+    }
+    NSString *senderUUID = self.senderUUID;
+    if (senderUUID != nil) {
+        [coder encodeObject:senderUUID forKey:@"senderUUID"];
+    }
+}
+
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
-    self = [super initWithCoder:coder];
-#pragma clang diagnostic pop
+    self = [super init];
     if (!self) {
         return self;
     }
+    self->_linkedDeviceReadReceiptSchemaVersion =
+        [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
+                                         forKey:@"linkedDeviceReadReceiptSchemaVersion"] unsignedIntegerValue];
+    self->_messageIdTimestamp = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
+                                                                 forKey:@"messageIdTimestamp"] unsignedLongLongValue];
+    self->_messageUniqueId = [coder decodeObjectOfClass:[NSString class] forKey:@"messageUniqueId"];
+    self->_readTimestamp = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
+                                                            forKey:@"readTimestamp"] unsignedLongLongValue];
+    self->_senderPhoneNumber = [coder decodeObjectOfClass:[NSString class] forKey:@"senderPhoneNumber"];
+    self->_senderUUID = [coder decodeObjectOfClass:[NSString class] forKey:@"senderUUID"];
 
     // renamed timestamp -> messageIdTimestamp
     if (!_messageIdTimestamp) {
@@ -75,6 +102,57 @@ NSUInteger const OWSLinkedDeviceReadReceiptSchemaVersion = 1;
     _linkedDeviceReadReceiptSchemaVersion = OWSLinkedDeviceReadReceiptSchemaVersion;
 
     return self;
+}
+
+- (NSUInteger)hash
+{
+    NSUInteger result = 0;
+    result ^= self.linkedDeviceReadReceiptSchemaVersion;
+    result ^= self.messageIdTimestamp;
+    result ^= self.messageUniqueId.hash;
+    result ^= self.readTimestamp;
+    result ^= self.senderPhoneNumber.hash;
+    result ^= self.senderUUID.hash;
+    return result;
+}
+
+- (BOOL)isEqual:(id)other
+{
+    if (![other isMemberOfClass:self.class]) {
+        return NO;
+    }
+    OWSLinkedDeviceReadReceipt *typedOther = (OWSLinkedDeviceReadReceipt *)other;
+    if (self.linkedDeviceReadReceiptSchemaVersion != typedOther.linkedDeviceReadReceiptSchemaVersion) {
+        return NO;
+    }
+    if (self.messageIdTimestamp != typedOther.messageIdTimestamp) {
+        return NO;
+    }
+    if (![NSObject isObject:self.messageUniqueId equalToObject:typedOther.messageUniqueId]) {
+        return NO;
+    }
+    if (self.readTimestamp != typedOther.readTimestamp) {
+        return NO;
+    }
+    if (![NSObject isObject:self.senderPhoneNumber equalToObject:typedOther.senderPhoneNumber]) {
+        return NO;
+    }
+    if (![NSObject isObject:self.senderUUID equalToObject:typedOther.senderUUID]) {
+        return NO;
+    }
+    return YES;
+}
+
+- (id)copyWithZone:(nullable NSZone *)zone
+{
+    OWSLinkedDeviceReadReceipt *result = [[[self class] allocWithZone:zone] init];
+    result->_linkedDeviceReadReceiptSchemaVersion = self.linkedDeviceReadReceiptSchemaVersion;
+    result->_messageIdTimestamp = self.messageIdTimestamp;
+    result->_messageUniqueId = self.messageUniqueId;
+    result->_readTimestamp = self.readTimestamp;
+    result->_senderPhoneNumber = self.senderPhoneNumber;
+    result->_senderUUID = self.senderUUID;
+    return result;
 }
 
 - (SignalServiceAddress *)senderAddress

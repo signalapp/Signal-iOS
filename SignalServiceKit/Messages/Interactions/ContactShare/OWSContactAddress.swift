@@ -6,7 +6,79 @@
 public import Contacts
 
 @objc(OWSContactAddress)
-public class OWSContactAddress: MTLModel, OWSContactField {
+public final class OWSContactAddress: NSObject, NSCoding, NSCopying, OWSContactField {
+    public init?(coder: NSCoder) {
+        self.type = (coder.decodeObject(of: NSNumber.self, forKey: "addressType")?.intValue).flatMap(`Type`.init(rawValue:)) ?? .home
+        self.city = coder.decodeObject(of: NSString.self, forKey: "city") as String?
+        self.country = coder.decodeObject(of: NSString.self, forKey: "country") as String?
+        self.label = coder.decodeObject(of: NSString.self, forKey: "label") as String?
+        self.neighborhood = coder.decodeObject(of: NSString.self, forKey: "neighborhood") as String?
+        self.pobox = coder.decodeObject(of: NSString.self, forKey: "pobox") as String?
+        self.postcode = coder.decodeObject(of: NSString.self, forKey: "postcode") as String?
+        self.region = coder.decodeObject(of: NSString.self, forKey: "region") as String?
+        self.street = coder.decodeObject(of: NSString.self, forKey: "street") as String?
+    }
+
+    public func encode(with coder: NSCoder) {
+        coder.encode(NSNumber(value: self.type.rawValue), forKey: "addressType")
+        if let city {
+            coder.encode(city, forKey: "city")
+        }
+        if let country {
+            coder.encode(country, forKey: "country")
+        }
+        if let label {
+            coder.encode(label, forKey: "label")
+        }
+        if let neighborhood {
+            coder.encode(neighborhood, forKey: "neighborhood")
+        }
+        if let pobox {
+            coder.encode(pobox, forKey: "pobox")
+        }
+        if let postcode {
+            coder.encode(postcode, forKey: "postcode")
+        }
+        if let region {
+            coder.encode(region, forKey: "region")
+        }
+        if let street {
+            coder.encode(street, forKey: "street")
+        }
+    }
+
+    public override var hash: Int {
+        var hasher = Hasher()
+        hasher.combine(type)
+        hasher.combine(city)
+        hasher.combine(country)
+        hasher.combine(label)
+        hasher.combine(neighborhood)
+        hasher.combine(pobox)
+        hasher.combine(postcode)
+        hasher.combine(region)
+        hasher.combine(street)
+        return hasher.finalize()
+    }
+
+    public override func isEqual(_ object: Any?) -> Bool {
+        guard let object = object as? Self else { return false }
+        guard Swift.type(of: self) == Swift.type(of: object) else { return false }
+        guard self.type == object.type else { return false }
+        guard self.city == object.city else { return false }
+        guard self.country == object.country else { return false }
+        guard self.label == object.label else { return false }
+        guard self.neighborhood == object.neighborhood else { return false }
+        guard self.pobox == object.pobox else { return false }
+        guard self.postcode == object.postcode else { return false }
+        guard self.region == object.region else { return false }
+        guard self.street == object.street else { return false }
+        return true
+    }
+
+    public func copy(with zone: NSZone? = nil) -> Any {
+        return self
+    }
 
     @objc(OWSContactAddressType)
     public enum `Type`: Int, CustomStringConvertible {
@@ -23,31 +95,17 @@ public class OWSContactAddress: MTLModel, OWSContactField {
         }
     }
 
-    @objc(addressType)
-    public private(set) var type: `Type` = .home
+    public let type: `Type`
 
     // Applies in the Type.custom case.
-    @objc
-    public private(set) var label: String?
-
-    @objc
-    public fileprivate(set) var street: String?
-    @objc
-    public fileprivate(set) var pobox: String?
-    @objc
-    public fileprivate(set) var neighborhood: String?
-    @objc
-    public fileprivate(set) var city: String?
-    @objc
-    public fileprivate(set) var region: String?
-    @objc
-    public fileprivate(set) var postcode: String?
-    @objc
-    public fileprivate(set) var country: String?
-
-    public override init() {
-        super.init()
-    }
+    public let label: String?
+    public let street: String?
+    public let pobox: String?
+    public let neighborhood: String?
+    public let city: String?
+    public let region: String?
+    public let postcode: String?
+    public let country: String?
 
     public init(
         type: `Type`,
@@ -70,14 +128,6 @@ public class OWSContactAddress: MTLModel, OWSContactField {
         self.postcode = postcode
         self.country = country
         super.init()
-    }
-
-    required init!(coder: NSCoder!) {
-        super.init(coder: coder)
-    }
-
-    required init(dictionary dictionaryValue: [String: Any]!) throws {
-        try super.init(dictionary: dictionaryValue)
     }
 
     // MARK: OWSContactField
@@ -207,29 +257,17 @@ extension OWSContactAddress {
             label = nil
         }
 
-        self.init(type: type, label: label)
-
-         if proto.hasStreet {
-             street = proto.street?.strippedOrNil
-         }
-         if proto.hasPobox {
-             pobox = proto.pobox?.strippedOrNil
-         }
-         if proto.hasNeighborhood {
-             neighborhood = proto.neighborhood?.strippedOrNil
-         }
-         if proto.hasCity {
-             city = proto.city?.strippedOrNil
-         }
-         if proto.hasRegion {
-             region = proto.region?.strippedOrNil
-         }
-         if proto.hasPostcode {
-             postcode = proto.postcode?.strippedOrNil
-         }
-         if proto.hasCountry {
-             country = proto.country?.strippedOrNil
-         }
+        self.init(
+            type: type,
+            label: label,
+            street: proto.hasStreet ? proto.street?.strippedOrNil : nil,
+            pobox: proto.hasPobox ? proto.pobox?.strippedOrNil : nil,
+            neighborhood: proto.hasNeighborhood ? proto.neighborhood?.strippedOrNil : nil,
+            city: proto.hasCity ? proto.city?.strippedOrNil : nil,
+            region: proto.hasRegion ? proto.region?.strippedOrNil : nil,
+            postcode: proto.hasPostcode ? proto.postcode?.strippedOrNil : nil,
+            country: proto.hasCountry ? proto.country?.strippedOrNil : nil,
+        )
 
         guard isValid else { return nil }
     }

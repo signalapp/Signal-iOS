@@ -40,6 +40,88 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+- (void)encodeWithCoder:(NSCoder *)coder
+{
+    [super encodeWithCoder:coder];
+    OWSReaction *createdReaction = self.createdReaction;
+    if (createdReaction != nil) {
+        [coder encodeObject:createdReaction forKey:@"createdReaction"];
+    }
+    NSString *emoji = self.emoji;
+    if (emoji != nil) {
+        [coder encodeObject:emoji forKey:@"emoji"];
+    }
+    [coder encodeObject:[self valueForKey:@"isRemoving"] forKey:@"isRemoving"];
+    NSString *messageUniqueId = self.messageUniqueId;
+    if (messageUniqueId != nil) {
+        [coder encodeObject:messageUniqueId forKey:@"messageUniqueId"];
+    }
+    OWSReaction *previousReaction = self.previousReaction;
+    if (previousReaction != nil) {
+        [coder encodeObject:previousReaction forKey:@"previousReaction"];
+    }
+}
+
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
+{
+    self = [super initWithCoder:coder];
+    if (!self) {
+        return self;
+    }
+    self->_createdReaction = [coder decodeObjectOfClass:[OWSReaction class] forKey:@"createdReaction"];
+    self->_emoji = [coder decodeObjectOfClass:[NSString class] forKey:@"emoji"];
+    self->_isRemoving = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class] forKey:@"isRemoving"] boolValue];
+    self->_messageUniqueId = [coder decodeObjectOfClass:[NSString class] forKey:@"messageUniqueId"];
+    self->_previousReaction = [coder decodeObjectOfClass:[OWSReaction class] forKey:@"previousReaction"];
+    return self;
+}
+
+- (NSUInteger)hash
+{
+    NSUInteger result = [super hash];
+    result ^= self.createdReaction.hash;
+    result ^= self.emoji.hash;
+    result ^= self.isRemoving;
+    result ^= self.messageUniqueId.hash;
+    result ^= self.previousReaction.hash;
+    return result;
+}
+
+- (BOOL)isEqual:(id)other
+{
+    if (![super isEqual:other]) {
+        return NO;
+    }
+    OWSOutgoingReactionMessage *typedOther = (OWSOutgoingReactionMessage *)other;
+    if (![NSObject isObject:self.createdReaction equalToObject:typedOther.createdReaction]) {
+        return NO;
+    }
+    if (![NSObject isObject:self.emoji equalToObject:typedOther.emoji]) {
+        return NO;
+    }
+    if (self.isRemoving != typedOther.isRemoving) {
+        return NO;
+    }
+    if (![NSObject isObject:self.messageUniqueId equalToObject:typedOther.messageUniqueId]) {
+        return NO;
+    }
+    if (![NSObject isObject:self.previousReaction equalToObject:typedOther.previousReaction]) {
+        return NO;
+    }
+    return YES;
+}
+
+- (id)copyWithZone:(nullable NSZone *)zone
+{
+    OWSOutgoingReactionMessage *result = [super copyWithZone:zone];
+    result->_createdReaction = self.createdReaction;
+    result->_emoji = self.emoji;
+    result->_isRemoving = self.isRemoving;
+    result->_messageUniqueId = self.messageUniqueId;
+    result->_previousReaction = self.previousReaction;
+    return result;
+}
+
 - (BOOL)shouldBeSaved
 {
     return NO;

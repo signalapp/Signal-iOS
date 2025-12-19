@@ -16,7 +16,7 @@ public class MockLinkPreviewManager: LinkPreviewManager {
         dataMessage: SSKProtoDataMessage,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<OWSLinkPreview> {
-        return .withoutFinalizer(.init())
+        return .withoutFinalizer(.init(urlString: "https://signal.org"))
     }
 
     public func validateAndBuildLinkPreview<Builder: LinkPreviewBuilder>(
@@ -25,14 +25,14 @@ public class MockLinkPreviewManager: LinkPreviewManager {
         builder: Builder,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<OWSLinkPreview> {
-        return .withoutFinalizer(.init())
+        return .withoutFinalizer(.init(urlString: "https://signal.org"))
     }
 
     public func validateAndBuildStoryLinkPreview(
         from proto: SSKProtoPreview,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<OWSLinkPreview> {
-        return .withoutFinalizer(.init())
+        return .withoutFinalizer(.init(urlString: "https://signal.org"))
     }
 
     public func buildDataSource(
@@ -61,7 +61,7 @@ public class MockLinkPreviewManager: LinkPreviewManager {
         from dataSource: LinkPreviewDataSource,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<OWSLinkPreview> {
-        return .withoutFinalizer(.init())
+        return .withoutFinalizer(.init(urlString: "https://signal.org"))
     }
 
     public func buildLinkPreview<Builder: LinkPreviewBuilder>(
@@ -69,7 +69,7 @@ public class MockLinkPreviewManager: LinkPreviewManager {
         builder: Builder,
         tx: DBWriteTransaction
     ) throws -> OwnedAttachmentBuilder<OWSLinkPreview> {
-        return .withoutFinalizer(.init())
+        return .withoutFinalizer(.init(urlString: "https://signal.org"))
     }
 
     public func buildProtoForSending(

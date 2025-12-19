@@ -8,10 +8,46 @@ public import SignalRingRTC
 
 @objc(OutgoingCallLinkUpdateMessage)
 public class OutgoingCallLinkUpdateMessage: OWSOutgoingSyncMessage {
-    @objc
-    private var rootKey: Data!
+    public required init?(coder: NSCoder) {
+        self.adminPasskey = coder.decodeObject(of: NSData.self, forKey: "adminPasskey") as Data?
+        self.rootKey = coder.decodeObject(of: NSData.self, forKey: "rootKey") as Data?
+        super.init(coder: coder)
+    }
 
-    @objc
+    public override func encode(with coder: NSCoder) {
+        super.encode(with: coder)
+        if let adminPasskey {
+            coder.encode(adminPasskey, forKey: "adminPasskey")
+        }
+        if let rootKey {
+            coder.encode(rootKey, forKey: "rootKey")
+        }
+    }
+
+    public override var hash: Int {
+        var hasher = Hasher()
+        hasher.combine(super.hash)
+        hasher.combine(adminPasskey)
+        hasher.combine(rootKey)
+        return hasher.finalize()
+    }
+
+    public override func isEqual(_ object: Any?) -> Bool {
+        guard let object = object as? Self else { return false }
+        guard super.isEqual(object) else { return false }
+        guard self.adminPasskey == object.adminPasskey else { return false }
+        guard self.rootKey == object.rootKey else { return false }
+        return true
+    }
+
+    public override func copy(with zone: NSZone? = nil) -> Any {
+        let result = super.copy(with: zone) as! Self
+        result.adminPasskey = self.adminPasskey
+        result.rootKey = self.rootKey
+        return result
+    }
+
+    private var rootKey: Data!
     private var adminPasskey: Data?
 
     public init(
@@ -23,14 +59,6 @@ public class OutgoingCallLinkUpdateMessage: OWSOutgoingSyncMessage {
         self.rootKey = rootKey.bytes
         self.adminPasskey = adminPasskey
         super.init(localThread: localThread, transaction: tx)
-    }
-
-    public required init?(coder: NSCoder) {
-        super.init(coder: coder)
-    }
-
-    public required init(dictionary dictionaryValue: [String: Any]!) throws {
-        try super.init(dictionary: dictionaryValue)
     }
 
     public override var isUrgent: Bool { false }

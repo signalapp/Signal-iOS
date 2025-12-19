@@ -54,7 +54,7 @@ final class OutgoingCallEventSyncMessageSerializationTest: SSKBaseTest {
 
     /// This test simply confirms that an instance of
     /// ``OutgoingCallEventSyncMessage`` will continue to serialize/deserialize
-    /// correctly. This should be trivial, but Mantle makes me nervous.
+    /// correctly.
     func testCallEventRoundTrip() throws {
         SSKEnvironment.shared.databaseStorageRef.write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(

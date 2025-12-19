@@ -30,9 +30,49 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+- (void)encodeWithCoder:(NSCoder *)coder
+{
+    [super encodeWithCoder:coder];
+    NSData *profileKey = self.profileKey;
+    if (profileKey != nil) {
+        [coder encodeObject:profileKey forKey:@"profileKey"];
+    }
+}
+
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
-    return [super initWithCoder:coder];
+    self = [super initWithCoder:coder];
+    if (!self) {
+        return self;
+    }
+    self->_profileKey = [coder decodeObjectOfClass:[NSData class] forKey:@"profileKey"];
+    return self;
+}
+
+- (NSUInteger)hash
+{
+    NSUInteger result = [super hash];
+    result ^= self.profileKey.hash;
+    return result;
+}
+
+- (BOOL)isEqual:(id)other
+{
+    if (![super isEqual:other]) {
+        return NO;
+    }
+    OWSProfileKeyMessage *typedOther = (OWSProfileKeyMessage *)other;
+    if (![NSObject isObject:self.profileKey equalToObject:typedOther.profileKey]) {
+        return NO;
+    }
+    return YES;
+}
+
+- (id)copyWithZone:(nullable NSZone *)zone
+{
+    OWSProfileKeyMessage *result = [super copyWithZone:zone];
+    result->_profileKey = self.profileKey;
+    return result;
 }
 
 - (BOOL)shouldBeSaved

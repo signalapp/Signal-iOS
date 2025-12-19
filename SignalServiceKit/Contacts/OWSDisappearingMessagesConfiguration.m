@@ -20,11 +20,45 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSDisappearingMessagesConfiguration
 
+- (void)encodeWithCoder:(NSCoder *)coder
+{
+    [super encodeWithCoder:coder];
+    [coder encodeObject:[self valueForKey:@"durationSeconds"] forKey:@"durationSeconds"];
+    [coder encodeObject:[self valueForKey:@"enabled"] forKey:@"enabled"];
+    [coder encodeObject:[self valueForKey:@"timerVersion"] forKey:@"timerVersion"];
+}
+
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
     self = [super initWithCoder:coder];
-
+    if (!self) {
+        return self;
+    }
+    self->_durationSeconds = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
+                                                              forKey:@"durationSeconds"] unsignedIntValue];
+    self->_enabled = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class] forKey:@"enabled"] boolValue];
+    self->_timerVersion = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
+                                                           forKey:@"timerVersion"] unsignedIntValue];
     return self;
+}
+
+- (NSUInteger)hash
+{
+    NSUInteger result = [super hash];
+    result ^= self.durationSeconds;
+    result ^= self.enabled;
+    // [Mantle] TODO: It's wrong to include this based on isEqual:'s implementation.
+    result ^= self.timerVersion;
+    return result;
+}
+
+- (id)copyWithZone:(nullable NSZone *)zone
+{
+    OWSDisappearingMessagesConfiguration *result = [super copyWithZone:zone];
+    result->_durationSeconds = self.durationSeconds;
+    result->_enabled = self.enabled;
+    result->_timerVersion = self.timerVersion;
+    return result;
 }
 
 - (instancetype)initWithThreadId:(NSString *)threadId
@@ -129,7 +163,6 @@ NS_ASSUME_NONNULL_BEGIN
     return newInstance;
 }
 
-
 - (BOOL)hasSameDurationAs:(OWSDisappearingMessagesConfiguration *)other
 {
     if (other.isEnabled != self.isEnabled) {
@@ -143,6 +176,8 @@ NS_ASSUME_NONNULL_BEGIN
     if (![other isKindOfClass:[OWSDisappearingMessagesConfiguration class]]) {
         return NO;
     }
+
+    // [Mantle] TODO: This is wrong because it ignores uniqueId.
 
     OWSDisappearingMessagesConfiguration *otherConfiguration = (OWSDisappearingMessagesConfiguration *)other;
     if (otherConfiguration.isEnabled != self.isEnabled) {

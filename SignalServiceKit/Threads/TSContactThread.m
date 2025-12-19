@@ -97,18 +97,83 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
 
 // --- CODE GENERATION MARKER
 
+- (void)encodeWithCoder:(NSCoder *)coder
+{
+    [super encodeWithCoder:coder];
+    NSString *contactPhoneNumber = self.contactPhoneNumber;
+    if (contactPhoneNumber != nil) {
+        [coder encodeObject:contactPhoneNumber forKey:@"contactPhoneNumber"];
+    }
+    [coder encodeObject:[self valueForKey:@"contactThreadSchemaVersion"] forKey:@"contactThreadSchemaVersion"];
+    NSString *contactUUID = self.contactUUID;
+    if (contactUUID != nil) {
+        [coder encodeObject:contactUUID forKey:@"contactUUID"];
+    }
+    [coder encodeObject:[self valueForKey:@"hasDismissedOffers"] forKey:@"hasDismissedOffers"];
+}
+
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
     self = [super initWithCoder:coder];
-    if (self) {
-        // Migrate legacy threads to store phone number and UUID
-        if (_contactThreadSchemaVersion < 1) {
-            _contactPhoneNumber = [[self class] legacyContactPhoneNumberFromThreadId:self.uniqueId];
-        }
-
-        _contactThreadSchemaVersion = TSContactThreadSchemaVersion;
+    if (!self) {
+        return self;
     }
+    self->_contactPhoneNumber = [coder decodeObjectOfClass:[NSString class] forKey:@"contactPhoneNumber"];
+    self->_contactThreadSchemaVersion =
+        [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
+                                         forKey:@"contactThreadSchemaVersion"] unsignedIntegerValue];
+    self->_contactUUID = [coder decodeObjectOfClass:[NSString class] forKey:@"contactUUID"];
+    self->_hasDismissedOffers = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
+                                                                 forKey:@"hasDismissedOffers"] boolValue];
+
+    // Migrate legacy threads to store phone number and UUID
+    if (_contactThreadSchemaVersion < 1) {
+        _contactPhoneNumber = [[self class] legacyContactPhoneNumberFromThreadId:self.uniqueId];
+    }
+    _contactThreadSchemaVersion = TSContactThreadSchemaVersion;
+
     return self;
+}
+
+- (NSUInteger)hash
+{
+    NSUInteger result = [super hash];
+    result ^= self.contactPhoneNumber.hash;
+    result ^= self.contactThreadSchemaVersion;
+    result ^= self.contactUUID.hash;
+    result ^= self.hasDismissedOffers;
+    return result;
+}
+
+- (BOOL)isEqual:(id)other
+{
+    if (![super isEqual:other]) {
+        return NO;
+    }
+    TSContactThread *typedOther = (TSContactThread *)other;
+    if (![NSObject isObject:self.contactPhoneNumber equalToObject:typedOther.contactPhoneNumber]) {
+        return NO;
+    }
+    if (self.contactThreadSchemaVersion != typedOther.contactThreadSchemaVersion) {
+        return NO;
+    }
+    if (![NSObject isObject:self.contactUUID equalToObject:typedOther.contactUUID]) {
+        return NO;
+    }
+    if (self.hasDismissedOffers != typedOther.hasDismissedOffers) {
+        return NO;
+    }
+    return YES;
+}
+
+- (id)copyWithZone:(nullable NSZone *)zone
+{
+    TSContactThread *result = [super copyWithZone:zone];
+    result->_contactPhoneNumber = self.contactPhoneNumber;
+    result->_contactThreadSchemaVersion = self.contactThreadSchemaVersion;
+    result->_contactUUID = self.contactUUID;
+    result->_hasDismissedOffers = self.hasDismissedOffers;
+    return result;
 }
 
 - (instancetype)initWithContactUUID:(nullable NSString *)contactUUID

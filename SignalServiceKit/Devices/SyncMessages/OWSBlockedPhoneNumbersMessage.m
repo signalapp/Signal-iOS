@@ -18,9 +18,72 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSBlockedPhoneNumbersMessage
 
+- (void)encodeWithCoder:(NSCoder *)coder
+{
+    [super encodeWithCoder:coder];
+    NSArray *groupIds = self.groupIds;
+    if (groupIds != nil) {
+        [coder encodeObject:groupIds forKey:@"groupIds"];
+    }
+    NSArray *phoneNumbers = self.phoneNumbers;
+    if (phoneNumbers != nil) {
+        [coder encodeObject:phoneNumbers forKey:@"phoneNumbers"];
+    }
+    NSArray *uuids = self.uuids;
+    if (uuids != nil) {
+        [coder encodeObject:uuids forKey:@"uuids"];
+    }
+}
+
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
-    return [super initWithCoder:coder];
+    self = [super initWithCoder:coder];
+    if (!self) {
+        return self;
+    }
+    self->_groupIds = [coder decodeObjectOfClasses:[NSSet setWithArray:@[ [NSArray class], [NSData class] ]]
+                                            forKey:@"groupIds"];
+    self->_phoneNumbers = [coder decodeObjectOfClasses:[NSSet setWithArray:@[ [NSArray class], [NSString class] ]]
+                                                forKey:@"phoneNumbers"];
+    self->_uuids = [coder decodeObjectOfClasses:[NSSet setWithArray:@[ [NSArray class], [NSUUID class] ]]
+                                         forKey:@"uuids"];
+    return self;
+}
+
+- (NSUInteger)hash
+{
+    NSUInteger result = [super hash];
+    result ^= self.groupIds.hash;
+    result ^= self.phoneNumbers.hash;
+    result ^= self.uuids.hash;
+    return result;
+}
+
+- (BOOL)isEqual:(id)other
+{
+    if (![super isEqual:other]) {
+        return NO;
+    }
+    OWSBlockedPhoneNumbersMessage *typedOther = (OWSBlockedPhoneNumbersMessage *)other;
+    if (![NSObject isObject:self.groupIds equalToObject:typedOther.groupIds]) {
+        return NO;
+    }
+    if (![NSObject isObject:self.phoneNumbers equalToObject:typedOther.phoneNumbers]) {
+        return NO;
+    }
+    if (![NSObject isObject:self.uuids equalToObject:typedOther.uuids]) {
+        return NO;
+    }
+    return YES;
+}
+
+- (id)copyWithZone:(nullable NSZone *)zone
+{
+    OWSBlockedPhoneNumbersMessage *result = [super copyWithZone:zone];
+    result->_groupIds = self.groupIds;
+    result->_phoneNumbers = self.phoneNumbers;
+    result->_uuids = self.uuids;
+    return result;
 }
 
 - (instancetype)initWithLocalThread:(TSContactThread *)localThread

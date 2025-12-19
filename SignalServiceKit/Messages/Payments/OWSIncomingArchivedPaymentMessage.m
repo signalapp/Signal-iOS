@@ -25,7 +25,53 @@ NS_ASSUME_NONNULL_BEGIN
     _archivedPaymentInfo = [[TSArchivedPaymentInfo alloc] initWithAmount:amount fee:fee note:note];
 
     return self;
-};
+}
+
+- (void)encodeWithCoder:(NSCoder *)coder
+{
+    [super encodeWithCoder:coder];
+    TSArchivedPaymentInfo *archivedPaymentInfo = self.archivedPaymentInfo;
+    if (archivedPaymentInfo != nil) {
+        [coder encodeObject:archivedPaymentInfo forKey:@"archivedPaymentInfo"];
+    }
+}
+
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
+{
+    self = [super initWithCoder:coder];
+    if (!self) {
+        return self;
+    }
+    self->_archivedPaymentInfo = [coder decodeObjectOfClass:[TSArchivedPaymentInfo class]
+                                                     forKey:@"archivedPaymentInfo"];
+    return self;
+}
+
+- (NSUInteger)hash
+{
+    NSUInteger result = [super hash];
+    result ^= self.archivedPaymentInfo.hash;
+    return result;
+}
+
+- (BOOL)isEqual:(id)other
+{
+    if (![super isEqual:other]) {
+        return NO;
+    }
+    OWSIncomingArchivedPaymentMessage *typedOther = (OWSIncomingArchivedPaymentMessage *)other;
+    if (![NSObject isObject:self.archivedPaymentInfo equalToObject:typedOther.archivedPaymentInfo]) {
+        return NO;
+    }
+    return YES;
+}
+
+- (id)copyWithZone:(nullable NSZone *)zone
+{
+    OWSIncomingArchivedPaymentMessage *result = [super copyWithZone:zone];
+    result->_archivedPaymentInfo = self.archivedPaymentInfo;
+    return result;
+}
 
 // --- CODE GENERATION MARKER
 

@@ -27,6 +27,67 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+- (void)encodeWithCoder:(NSCoder *)coder
+{
+    NSData *packId = self.packId;
+    if (packId != nil) {
+        [coder encodeObject:packId forKey:@"packId"];
+    }
+    NSData *packKey = self.packKey;
+    if (packKey != nil) {
+        [coder encodeObject:packKey forKey:@"packKey"];
+    }
+    [coder encodeObject:[self valueForKey:@"stickerId"] forKey:@"stickerId"];
+}
+
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
+{
+    self = [super init];
+    if (!self) {
+        return self;
+    }
+    self->_packId = [coder decodeObjectOfClass:[NSData class] forKey:@"packId"];
+    self->_packKey = [coder decodeObjectOfClass:[NSData class] forKey:@"packKey"];
+    self->_stickerId = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class] forKey:@"stickerId"] unsignedIntValue];
+    return self;
+}
+
+- (NSUInteger)hash
+{
+    NSUInteger result = 0;
+    result ^= self.packId.hash;
+    result ^= self.packKey.hash;
+    result ^= self.stickerId;
+    return result;
+}
+
+- (BOOL)isEqual:(id)other
+{
+    if (![other isMemberOfClass:self.class]) {
+        return NO;
+    }
+    StickerInfo *typedOther = (StickerInfo *)other;
+    if (![NSObject isObject:self.packId equalToObject:typedOther.packId]) {
+        return NO;
+    }
+    if (![NSObject isObject:self.packKey equalToObject:typedOther.packKey]) {
+        return NO;
+    }
+    if (self.stickerId != typedOther.stickerId) {
+        return NO;
+    }
+    return YES;
+}
+
+- (id)copyWithZone:(nullable NSZone *)zone
+{
+    StickerInfo *result = [[[self class] allocWithZone:zone] init];
+    result->_packId = self.packId;
+    result->_packKey = self.packKey;
+    result->_stickerId = self.stickerId;
+    return result;
+}
+
 - (NSString *)asKey
 {
     return [StickerInfo keyWithPackId:self.packId stickerId:self.stickerId];

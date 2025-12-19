@@ -25,9 +25,6 @@ PODS:
     - libwebp/sharpyuv
   - Logging (1.4.0)
   - lottie-ios (4.4.3)
-  - Mantle (2.1.0):
-    - Mantle/extobjc (= 2.1.0)
-  - Mantle/extobjc (2.1.0)
   - MobileCoin/CoreHTTP (6.0.3):
     - LibMobileCoin/CoreHTTP (~> 6.0.0-pre1)
     - Logging (~> 1.4)
@@ -60,7 +57,6 @@ DEPENDENCIES:
   - LibSignalClient/Tests (from `https://github.com/signalapp/libsignal.git`, tag `v0.86.9`)
   - libwebp
   - lottie-ios
-  - Mantle (from `https://github.com/signalapp/Mantle`, branch `signal-master`)
   - MobileCoin/CoreHTTP (from `https://github.com/mobilecoinofficial/MobileCoin-Swift`, tag `v6.0.3`)
   - PureLayout
   - Reachability
@@ -97,9 +93,6 @@ EXTERNAL SOURCES:
   LibSignalClient:
     :git: https://github.com/signalapp/libsignal.git
     :tag: v0.86.9
-  Mantle:
-    :branch: signal-master
-    :git: https://github.com/signalapp/Mantle
   MobileCoin:
     :git: https://github.com/mobilecoinofficial/MobileCoin-Swift
     :tag: v6.0.3
@@ -124,9 +117,6 @@ CHECKOUT OPTIONS:
   LibSignalClient:
     :git: https://github.com/signalapp/libsignal.git
     :tag: v0.86.9
-  Mantle:
-    :commit: e7e46253bb01ce39525d90aa69ed9e85e758bfc4
-    :git: https://github.com/signalapp/Mantle
   MobileCoin:
     :git: https://github.com/mobilecoinofficial/MobileCoin-Swift
     :tag: v6.0.3
@@ -148,7 +138,6 @@ SPEC CHECKSUMS:
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
   Logging: beeb016c9c80cf77042d62e83495816847ef108b
   lottie-ios: fcb5e73e17ba4c983140b7d21095c834b3087418
-  Mantle: 2fa750afa478cd625a94230fbf1c13462f29395b
   MobileCoin: cd7f49d6eaa2d362e4c9f8324cae0cc3bc3c53b5
   PureLayout: f08c01b8dec00bb14a1fefa3de4c7d9c265df85e
   Reachability: fd0ecd23705e2599e4cceeb943222ae02296cbc6
@@ -158,6 +147,6 @@ SPEC CHECKSUMS:
   SQLCipher: ff2f045b20d675a73a70f7329395ddd4a2580063
   SwiftProtobuf: e02f51c8c2df5845657aee2d4de9d61bf50ef788
 
-PODFILE CHECKSUM: c64de4aa9c1dc2aa042e74dbf9e2884fdafcf243
+PODFILE CHECKSUM: 24ab8bec3bf2e1898613995f8a3d02f9b8c99ec9
 
 COCOAPODS: 1.15.2

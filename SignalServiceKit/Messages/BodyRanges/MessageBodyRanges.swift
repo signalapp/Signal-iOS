@@ -368,7 +368,7 @@ public class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
     }
 
     public func copy(with zone: NSZone? = nil) -> Any {
-        return MessageBodyRanges(mentions: mentions, orderedMentions: orderedMentions, collapsedStyles: collapsedStyles)
+        return self
     }
 
     public func encode(with coder: NSCoder) {

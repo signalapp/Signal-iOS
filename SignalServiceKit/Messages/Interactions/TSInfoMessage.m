@@ -53,12 +53,59 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
 
 @implementation TSInfoMessage
 
+- (void)encodeWithCoder:(NSCoder *)coder
+{
+    [super encodeWithCoder:coder];
+    NSString *customMessage = self.customMessage;
+    if (customMessage != nil) {
+        [coder encodeObject:customMessage forKey:@"customMessage"];
+    }
+    [coder encodeObject:[self valueForKey:@"infoMessageSchemaVersion"] forKey:@"infoMessageSchemaVersion"];
+    NSDictionary *infoMessageUserInfo = self.infoMessageUserInfo;
+    if (infoMessageUserInfo != nil) {
+        [coder encodeObject:infoMessageUserInfo forKey:@"infoMessageUserInfo"];
+    }
+    [coder encodeObject:[self valueForKey:@"messageType"] forKey:@"messageType"];
+    [coder encodeObject:[self valueForKey:@"read"] forKey:@"read"];
+    NSString *serverGuid = self.serverGuid;
+    if (serverGuid != nil) {
+        [coder encodeObject:serverGuid forKey:@"serverGuid"];
+    }
+    SignalServiceAddress *unregisteredAddress = self.unregisteredAddress;
+    if (unregisteredAddress != nil) {
+        [coder encodeObject:unregisteredAddress forKey:@"unregisteredAddress"];
+    }
+}
+
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
     self = [super initWithCoder:coder];
     if (!self) {
         return self;
     }
+    self->_customMessage = [coder decodeObjectOfClass:[NSString class] forKey:@"customMessage"];
+    self->_infoMessageSchemaVersion =
+        [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
+                                         forKey:@"infoMessageSchemaVersion"] unsignedIntegerValue];
+    self->_infoMessageUserInfo = [coder decodeObjectOfClasses:[NSSet setWithArray:@[
+        [DisappearingMessageToken class],
+        [NSDictionary class],
+        [NSNull class],
+        [NSNumber class],
+        [NSString class],
+        [PersistableEndPollItem class],
+        [PersistablePinnedMessageItem class],
+        [ProfileChanges class],
+        [SignalServiceAddress class],
+        [TSGroupModel class],
+        [TSInfoMessageUpdateMessages class],
+        [TSInfoMessageUpdateMessagesV2 class]
+    ]]
+                                                       forKey:@"infoMessageUserInfo"];
+    self->_messageType = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class] forKey:@"messageType"] integerValue];
+    self->_read = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class] forKey:@"read"] boolValue];
+    self->_serverGuid = [coder decodeObjectOfClass:[NSString class] forKey:@"serverGuid"];
+    self->_unregisteredAddress = [coder decodeObjectOfClass:[SignalServiceAddress class] forKey:@"unregisteredAddress"];
 
     if (self.infoMessageSchemaVersion < 1) {
         _read = YES;
@@ -78,6 +125,62 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
     }
 
     return self;
+}
+
+- (NSUInteger)hash
+{
+    NSUInteger result = [super hash];
+    result ^= self.customMessage.hash;
+    result ^= self.infoMessageSchemaVersion;
+    result ^= self.infoMessageUserInfo.hash;
+    result ^= (NSUInteger)self.messageType;
+    result ^= self.read;
+    result ^= self.serverGuid.hash;
+    result ^= self.unregisteredAddress.hash;
+    return result;
+}
+
+- (BOOL)isEqual:(id)other
+{
+    if (![super isEqual:other]) {
+        return NO;
+    }
+    TSInfoMessage *typedOther = (TSInfoMessage *)other;
+    if (![NSObject isObject:self.customMessage equalToObject:typedOther.customMessage]) {
+        return NO;
+    }
+    if (self.infoMessageSchemaVersion != typedOther.infoMessageSchemaVersion) {
+        return NO;
+    }
+    if (![NSObject isObject:self.infoMessageUserInfo equalToObject:typedOther.infoMessageUserInfo]) {
+        return NO;
+    }
+    if (self.messageType != typedOther.messageType) {
+        return NO;
+    }
+    if (self.read != typedOther.read) {
+        return NO;
+    }
+    if (![NSObject isObject:self.serverGuid equalToObject:typedOther.serverGuid]) {
+        return NO;
+    }
+    if (![NSObject isObject:self.unregisteredAddress equalToObject:typedOther.unregisteredAddress]) {
+        return NO;
+    }
+    return YES;
+}
+
+- (id)copyWithZone:(nullable NSZone *)zone
+{
+    TSInfoMessage *result = [super copyWithZone:zone];
+    result->_customMessage = self.customMessage;
+    result->_infoMessageSchemaVersion = self.infoMessageSchemaVersion;
+    result->_infoMessageUserInfo = self.infoMessageUserInfo;
+    result->_messageType = self.messageType;
+    result->_read = self.read;
+    result->_serverGuid = self.serverGuid;
+    result->_unregisteredAddress = self.unregisteredAddress;
+    return result;
 }
 
 - (instancetype)initWithThread:(TSThread *)thread

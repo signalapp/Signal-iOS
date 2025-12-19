@@ -31,9 +31,51 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+- (void)encodeWithCoder:(NSCoder *)coder
+{
+    [super encodeWithCoder:coder];
+    NSArray *viewedReceipts = self.viewedReceipts;
+    if (viewedReceipts != nil) {
+        [coder encodeObject:viewedReceipts forKey:@"viewedReceipts"];
+    }
+}
+
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
-    return [super initWithCoder:coder];
+    self = [super initWithCoder:coder];
+    if (!self) {
+        return self;
+    }
+    self->_viewedReceipts =
+        [coder decodeObjectOfClasses:[NSSet setWithArray:@[ [NSArray class], [OWSLinkedDeviceViewedReceipt class] ]]
+                              forKey:@"viewedReceipts"];
+    return self;
+}
+
+- (NSUInteger)hash
+{
+    NSUInteger result = [super hash];
+    result ^= self.viewedReceipts.hash;
+    return result;
+}
+
+- (BOOL)isEqual:(id)other
+{
+    if (![super isEqual:other]) {
+        return NO;
+    }
+    OWSViewedReceiptsForLinkedDevicesMessage *typedOther = (OWSViewedReceiptsForLinkedDevicesMessage *)other;
+    if (![NSObject isObject:self.viewedReceipts equalToObject:typedOther.viewedReceipts]) {
+        return NO;
+    }
+    return YES;
+}
+
+- (id)copyWithZone:(nullable NSZone *)zone
+{
+    OWSViewedReceiptsForLinkedDevicesMessage *result = [super copyWithZone:zone];
+    result->_viewedReceipts = self.viewedReceipts;
+    return result;
 }
 
 - (BOOL)isUrgent
@@ -112,6 +154,86 @@ NS_ASSUME_NONNULL_BEGIN
     _viewedTimestamp = viewedTimestamp;
 
     return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)coder
+{
+    [coder encodeObject:[self valueForKey:@"messageIdTimestamp"] forKey:@"messageIdTimestamp"];
+    NSString *messageUniqueId = self.messageUniqueId;
+    if (messageUniqueId != nil) {
+        [coder encodeObject:messageUniqueId forKey:@"messageUniqueId"];
+    }
+    NSString *senderPhoneNumber = self.senderPhoneNumber;
+    if (senderPhoneNumber != nil) {
+        [coder encodeObject:senderPhoneNumber forKey:@"senderPhoneNumber"];
+    }
+    NSString *senderUUID = self.senderUUID;
+    if (senderUUID != nil) {
+        [coder encodeObject:senderUUID forKey:@"senderUUID"];
+    }
+    [coder encodeObject:[self valueForKey:@"viewedTimestamp"] forKey:@"viewedTimestamp"];
+}
+
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
+{
+    self = [super init];
+    if (!self) {
+        return self;
+    }
+    self->_messageIdTimestamp = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
+                                                                 forKey:@"messageIdTimestamp"] unsignedLongLongValue];
+    self->_messageUniqueId = [coder decodeObjectOfClass:[NSString class] forKey:@"messageUniqueId"];
+    self->_senderPhoneNumber = [coder decodeObjectOfClass:[NSString class] forKey:@"senderPhoneNumber"];
+    self->_senderUUID = [coder decodeObjectOfClass:[NSString class] forKey:@"senderUUID"];
+    self->_viewedTimestamp = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
+                                                              forKey:@"viewedTimestamp"] unsignedLongLongValue];
+    return self;
+}
+
+- (NSUInteger)hash
+{
+    NSUInteger result = 0;
+    result ^= self.messageIdTimestamp;
+    result ^= self.messageUniqueId.hash;
+    result ^= self.senderPhoneNumber.hash;
+    result ^= self.senderUUID.hash;
+    result ^= self.viewedTimestamp;
+    return result;
+}
+
+- (BOOL)isEqual:(id)other
+{
+    if (![other isMemberOfClass:self.class]) {
+        return NO;
+    }
+    OWSLinkedDeviceViewedReceipt *typedOther = (OWSLinkedDeviceViewedReceipt *)other;
+    if (self.messageIdTimestamp != typedOther.messageIdTimestamp) {
+        return NO;
+    }
+    if (![NSObject isObject:self.messageUniqueId equalToObject:typedOther.messageUniqueId]) {
+        return NO;
+    }
+    if (![NSObject isObject:self.senderPhoneNumber equalToObject:typedOther.senderPhoneNumber]) {
+        return NO;
+    }
+    if (![NSObject isObject:self.senderUUID equalToObject:typedOther.senderUUID]) {
+        return NO;
+    }
+    if (self.viewedTimestamp != typedOther.viewedTimestamp) {
+        return NO;
+    }
+    return YES;
+}
+
+- (id)copyWithZone:(nullable NSZone *)zone
+{
+    OWSLinkedDeviceViewedReceipt *result = [[[self class] allocWithZone:zone] init];
+    result->_messageIdTimestamp = self.messageIdTimestamp;
+    result->_messageUniqueId = self.messageUniqueId;
+    result->_senderPhoneNumber = self.senderPhoneNumber;
+    result->_senderUUID = self.senderUUID;
+    result->_viewedTimestamp = self.viewedTimestamp;
+    return result;
 }
 
 - (SignalServiceAddress *)senderAddress

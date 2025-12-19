@@ -31,6 +31,52 @@ NS_ASSUME_NONNULL_BEGIN
                                      transaction:transaction];
 }
 
+- (void)encodeWithCoder:(NSCoder *)coder
+{
+    [super encodeWithCoder:coder];
+    OWSVerificationStateSyncMessage *verificationStateSyncMessage = self.verificationStateSyncMessage;
+    if (verificationStateSyncMessage != nil) {
+        [coder encodeObject:verificationStateSyncMessage forKey:@"verificationStateSyncMessage"];
+    }
+}
+
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
+{
+    self = [super initWithCoder:coder];
+    if (!self) {
+        return self;
+    }
+    self->_verificationStateSyncMessage = [coder decodeObjectOfClass:[OWSVerificationStateSyncMessage class]
+                                                              forKey:@"verificationStateSyncMessage"];
+    return self;
+}
+
+- (NSUInteger)hash
+{
+    NSUInteger result = [super hash];
+    result ^= self.verificationStateSyncMessage.hash;
+    return result;
+}
+
+- (BOOL)isEqual:(id)other
+{
+    if (![super isEqual:other]) {
+        return NO;
+    }
+    OWSOutgoingNullMessage *typedOther = (OWSOutgoingNullMessage *)other;
+    if (![NSObject isObject:self.verificationStateSyncMessage equalToObject:typedOther.verificationStateSyncMessage]) {
+        return NO;
+    }
+    return YES;
+}
+
+- (id)copyWithZone:(nullable NSZone *)zone
+{
+    OWSOutgoingNullMessage *result = [super copyWithZone:zone];
+    result->_verificationStateSyncMessage = self.verificationStateSyncMessage;
+    return result;
+}
+
 - (instancetype)initWithContactThread:(TSContactThread *)contactThread
          verificationStateSyncMessage:(OWSVerificationStateSyncMessage *)verificationStateSyncMessage
                           transaction:(DBReadTransaction *)transaction

@@ -247,13 +247,16 @@ public class MessageSenderJobQueue {
 
     private func didMarkAsReady(oldJobRecord: MessageSenderJobRecord, transaction: DBWriteTransaction) {
         // TODO: Remove this method and status swapping logic entirely.
-        let uniqueId: String
+        let uniqueId: String?
         switch oldJobRecord.messageType {
         case .persisted(let messageId, _):
             uniqueId = messageId
         case .editMessage(let editedMessageId, _, _):
             uniqueId = editedMessageId
         case .transient, .none:
+            return
+        }
+        guard let uniqueId else {
             return
         }
 

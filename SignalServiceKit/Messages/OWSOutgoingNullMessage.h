@@ -54,7 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
                 storedMessageState:(TSOutgoingMessageState)storedMessageState
               wasNotCreatedLocally:(BOOL)wasNotCreatedLocally NS_UNAVAILABLE;
 
-- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 - (instancetype)initOutgoingMessageWithBuilder:(TSOutgoingMessageBuilder *)outgoingMessageBuilder
                         recipientAddressStates:
                             (NSDictionary<SignalServiceAddress *, TSOutgoingMessageRecipientState *> *)

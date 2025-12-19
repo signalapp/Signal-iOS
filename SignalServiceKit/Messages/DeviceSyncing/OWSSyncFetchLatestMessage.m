@@ -28,6 +28,49 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+- (void)encodeWithCoder:(NSCoder *)coder
+{
+    [super encodeWithCoder:coder];
+    [coder encodeObject:[self valueForKey:@"fetchType"] forKey:@"fetchType"];
+}
+
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
+{
+    self = [super initWithCoder:coder];
+    if (!self) {
+        return self;
+    }
+    self->_fetchType = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
+                                                        forKey:@"fetchType"] unsignedIntegerValue];
+    return self;
+}
+
+- (NSUInteger)hash
+{
+    NSUInteger result = [super hash];
+    result ^= self.fetchType;
+    return result;
+}
+
+- (BOOL)isEqual:(id)other
+{
+    if (![super isEqual:other]) {
+        return NO;
+    }
+    OWSSyncFetchLatestMessage *typedOther = (OWSSyncFetchLatestMessage *)other;
+    if (self.fetchType != typedOther.fetchType) {
+        return NO;
+    }
+    return YES;
+}
+
+- (id)copyWithZone:(nullable NSZone *)zone
+{
+    OWSSyncFetchLatestMessage *result = [super copyWithZone:zone];
+    result->_fetchType = self.fetchType;
+    return result;
+}
+
 - (SSKProtoSyncMessageFetchLatestType)protoFetchType
 {
     switch (self.fetchType) {

@@ -38,6 +38,51 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+- (void)encodeWithCoder:(NSCoder *)coder
+{
+    [super encodeWithCoder:coder];
+    NSData *plaintextData = self.plaintextData;
+    if (plaintextData != nil) {
+        [coder encodeObject:plaintextData forKey:@"plaintextData"];
+    }
+}
+
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
+{
+    self = [super initWithCoder:coder];
+    if (!self) {
+        return self;
+    }
+    self->_plaintextData = [coder decodeObjectOfClass:[NSData class] forKey:@"plaintextData"];
+    return self;
+}
+
+- (NSUInteger)hash
+{
+    NSUInteger result = [super hash];
+    result ^= self.plaintextData.hash;
+    return result;
+}
+
+- (BOOL)isEqual:(id)other
+{
+    if (![super isEqual:other]) {
+        return NO;
+    }
+    OWSStaticOutgoingMessage *typedOther = (OWSStaticOutgoingMessage *)other;
+    if (![NSObject isObject:self.plaintextData equalToObject:typedOther.plaintextData]) {
+        return NO;
+    }
+    return YES;
+}
+
+- (id)copyWithZone:(nullable NSZone *)zone
+{
+    OWSStaticOutgoingMessage *result = [super copyWithZone:zone];
+    result->_plaintextData = self.plaintextData;
+    return result;
+}
+
 - (BOOL)shouldBeSaved
 {
     return NO;

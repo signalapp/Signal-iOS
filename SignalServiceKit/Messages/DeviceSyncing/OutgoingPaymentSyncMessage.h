@@ -3,13 +3,15 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+@import Foundation;
+
 #import <SignalServiceKit/OWSOutgoingSyncMessage.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class AciObjC;
 
-@interface OutgoingPaymentMobileCoin : MTLModel
+@interface OutgoingPaymentMobileCoin : NSObject <NSCoding, NSCopying>
 
 @property (nonatomic, readonly, nullable) AciObjC *recipientAci;
 @property (nonatomic, readonly, nullable) NSData *recipientAddress;

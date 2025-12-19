@@ -29,7 +29,7 @@ public final class MessageSenderJobRecord: JobRecord, FactoryInitializableFromRe
     public enum MessageType {
         case persisted(messageId: String, useMediaQueue: Bool)
         case editMessage(
-            editedMessageId: String,
+            editedMessageId: String?,
             messageForSending: OutgoingEditMessage,
             useMediaQueue: Bool
         )
@@ -41,7 +41,7 @@ public final class MessageSenderJobRecord: JobRecord, FactoryInitializableFromRe
     public var messageType: MessageType {
         if let editMessage = transientMessage as? OutgoingEditMessage {
             return .editMessage(
-                editedMessageId: persistedMessageId ?? editMessage.editedMessage.uniqueId,
+                editedMessageId: persistedMessageId ?? editMessage.editedMessage?.uniqueId,
                 messageForSending: editMessage,
                 useMediaQueue: useMediaQueue
             )

@@ -7,18 +7,71 @@ import Foundation
 import LibSignalClient
 
 public class OutgoingStoryMessage: TSOutgoingMessage {
-    @objc
-    public private(set) var storyMessageId: String!
+    public required init?(coder: NSCoder) {
+        self._storyMessageRowId = coder.decodeObject(of: NSNumber.self, forKey: "_storyMessageRowId")
+        self.isPrivateStorySend = coder.decodeObject(of: NSNumber.self, forKey: "isPrivateStorySend")
+        self.skipSyncTranscript = coder.decodeObject(of: NSNumber.self, forKey: "skipSyncTranscript")
+        self.storyAllowsReplies = coder.decodeObject(of: NSNumber.self, forKey: "storyAllowsReplies")
+        self.storyMessageId = coder.decodeObject(of: NSString.self, forKey: "storyMessageId") as String?
+        super.init(coder: coder)
+    }
 
-    @objc
+    public override func encode(with coder: NSCoder) {
+        super.encode(with: coder)
+        if let _storyMessageRowId {
+            coder.encode(_storyMessageRowId, forKey: "_storyMessageRowId")
+        }
+        if let isPrivateStorySend {
+            coder.encode(isPrivateStorySend, forKey: "isPrivateStorySend")
+        }
+        if let skipSyncTranscript {
+            coder.encode(skipSyncTranscript, forKey: "skipSyncTranscript")
+        }
+        if let storyAllowsReplies {
+            coder.encode(storyAllowsReplies, forKey: "storyAllowsReplies")
+        }
+        if let storyMessageId {
+            coder.encode(storyMessageId, forKey: "storyMessageId")
+        }
+    }
+
+    public override var hash: Int {
+        var hasher = Hasher()
+        hasher.combine(super.hash)
+        hasher.combine(_storyMessageRowId)
+        hasher.combine(isPrivateStorySend)
+        hasher.combine(skipSyncTranscript)
+        hasher.combine(storyAllowsReplies)
+        hasher.combine(storyMessageId)
+        return hasher.finalize()
+    }
+
+    public override func isEqual(_ object: Any?) -> Bool {
+        guard let object = object as? Self else { return false }
+        guard super.isEqual(object) else { return false }
+        guard self._storyMessageRowId == object._storyMessageRowId else { return false }
+        guard self.isPrivateStorySend == object.isPrivateStorySend else { return false }
+        guard self.skipSyncTranscript == object.skipSyncTranscript else { return false }
+        guard self.storyAllowsReplies == object.storyAllowsReplies else { return false }
+        guard self.storyMessageId == object.storyMessageId else { return false }
+        return true
+    }
+
+    public override func copy(with zone: NSZone? = nil) -> Any {
+        let result = super.copy(with: zone) as! Self
+        result._storyMessageRowId = self._storyMessageRowId
+        result.isPrivateStorySend = self.isPrivateStorySend
+        result.skipSyncTranscript = self.skipSyncTranscript
+        result.storyAllowsReplies = self.storyAllowsReplies
+        result.storyMessageId = self.storyMessageId
+        return result
+    }
+
+    public private(set) var storyMessageId: String!
     public private(set) var _storyMessageRowId: NSNumber!
     public var storyMessageRowId: Int64! { _storyMessageRowId?.int64Value }
-
-    @objc
     public private(set) var storyAllowsReplies: NSNumber!
-    @objc
     public private(set) var isPrivateStorySend: NSNumber!
-    @objc
     public private(set) var skipSyncTranscript: NSNumber!
 
     public init(
@@ -67,14 +120,6 @@ public class OutgoingStoryMessage: TSOutgoingMessage {
             skipSyncTranscript: skipSyncTranscript,
             transaction: transaction
         )
-    }
-
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-    }
-
-    required init(dictionary dictionaryValue: [String: Any]!) throws {
-        try super.init(dictionary: dictionaryValue)
     }
 
     @objc

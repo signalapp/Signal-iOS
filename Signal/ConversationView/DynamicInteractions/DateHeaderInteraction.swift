@@ -16,13 +16,8 @@ public class DateHeaderInteraction: TSInteraction {
     }
 
     @available(*, unavailable, message: "use other constructor instead.")
-    public required init(coder aDecoder: NSCoder) {
+    public required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-
-    @available(*, unavailable, message: "use other constructor instead.")
-    public required init(dictionary dictionaryValue: [String: Any]!) throws {
-        fatalError("init(dictionary:) has not been implemented")
     }
 
     public init(thread: TSThread, timestamp: UInt64) {

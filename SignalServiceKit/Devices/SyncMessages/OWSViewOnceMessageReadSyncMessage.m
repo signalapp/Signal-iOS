@@ -35,12 +35,33 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+- (void)encodeWithCoder:(NSCoder *)coder
+{
+    [super encodeWithCoder:coder];
+    [coder encodeObject:[self valueForKey:@"messageIdTimestamp"] forKey:@"messageIdTimestamp"];
+    NSString *messageUniqueId = self.messageUniqueId;
+    if (messageUniqueId != nil) {
+        [coder encodeObject:messageUniqueId forKey:@"messageUniqueId"];
+    }
+    [coder encodeObject:[self valueForKey:@"readTimestamp"] forKey:@"readTimestamp"];
+    SignalServiceAddress *senderAddress = self.senderAddress;
+    if (senderAddress != nil) {
+        [coder encodeObject:senderAddress forKey:@"senderAddress"];
+    }
+}
+
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
     self = [super initWithCoder:coder];
     if (!self) {
         return self;
     }
+    self->_messageIdTimestamp = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
+                                                                 forKey:@"messageIdTimestamp"] unsignedLongLongValue];
+    self->_messageUniqueId = [coder decodeObjectOfClass:[NSString class] forKey:@"messageUniqueId"];
+    self->_readTimestamp = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
+                                                            forKey:@"readTimestamp"] unsignedLongLongValue];
+    self->_senderAddress = [coder decodeObjectOfClass:[SignalServiceAddress class] forKey:@"senderAddress"];
 
     if (_senderAddress == nil) {
         NSString *phoneNumber = [coder decodeObjectForKey:@"senderId"];
@@ -49,6 +70,47 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     return self;
+}
+
+- (NSUInteger)hash
+{
+    NSUInteger result = [super hash];
+    result ^= self.messageIdTimestamp;
+    result ^= self.messageUniqueId.hash;
+    result ^= self.readTimestamp;
+    result ^= self.senderAddress.hash;
+    return result;
+}
+
+- (BOOL)isEqual:(id)other
+{
+    if (![super isEqual:other]) {
+        return NO;
+    }
+    OWSViewOnceMessageReadSyncMessage *typedOther = (OWSViewOnceMessageReadSyncMessage *)other;
+    if (self.messageIdTimestamp != typedOther.messageIdTimestamp) {
+        return NO;
+    }
+    if (![NSObject isObject:self.messageUniqueId equalToObject:typedOther.messageUniqueId]) {
+        return NO;
+    }
+    if (self.readTimestamp != typedOther.readTimestamp) {
+        return NO;
+    }
+    if (![NSObject isObject:self.senderAddress equalToObject:typedOther.senderAddress]) {
+        return NO;
+    }
+    return YES;
+}
+
+- (id)copyWithZone:(nullable NSZone *)zone
+{
+    OWSViewOnceMessageReadSyncMessage *result = [super copyWithZone:zone];
+    result->_messageIdTimestamp = self.messageIdTimestamp;
+    result->_messageUniqueId = self.messageUniqueId;
+    result->_readTimestamp = self.readTimestamp;
+    result->_senderAddress = self.senderAddress;
+    return result;
 }
 
 - (BOOL)isUrgent

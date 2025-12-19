@@ -3,13 +3,13 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-#import <Mantle/MTLModel+NSCoding.h>
+@import Foundation;
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class StickerPackInfo;
 
-@interface StickerInfo : MTLModel
+@interface StickerInfo : NSObject <NSCoding, NSCopying>
 
 @property (nonatomic, readonly) NSData *packId;
 @property (nonatomic, readonly) NSData *packKey;
@@ -22,7 +22,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) StickerPackInfo *packInfo;
 
-// This can be used as a placeholder value, e.g. when initializing a non-nil var of a`MTLModel`.
 @property (class, readonly, nonatomic) StickerInfo *defaultValue;
 
 - (BOOL)isValid;

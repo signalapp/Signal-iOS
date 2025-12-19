@@ -4,7 +4,7 @@
 //
 
 @objc(TSOutgoingMessageRecipientState)
-public class TSOutgoingMessageRecipientState: NSObject, NSCoding, NSCopying {
+public final class TSOutgoingMessageRecipientState: NSObject, NSCoding, NSCopying {
     /// The status of the outgoing message send to this recipient.
     public private(set) var status: OWSOutgoingMessageRecipientStatus
 
@@ -158,11 +158,11 @@ public class TSOutgoingMessageRecipientState: NSObject, NSCoding, NSCopying {
     // MARK: - NSCopying
 
     public func copy(with zone: NSZone? = nil) -> Any {
-        return TSOutgoingMessageRecipientState(
+        return Self(
             status: status,
             statusTimestamp: statusTimestamp,
             wasSentByUD: wasSentByUD,
-            errorCode: errorCode
+            errorCode: errorCode,
         )
     }
 }

@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-#import <Mantle/MTLModel+NSCoding.h>
+@import Foundation;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 // TODO: Rename and/or merge with BaseModel.
-@interface TSYapDatabaseObject : MTLModel <SDSRecordDelegate>
+@interface TSYapDatabaseObject : NSObject <NSCoding, NSCopying, SDSRecordDelegate>
 
 + (NSString *)generateUniqueId;
 

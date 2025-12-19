@@ -39,6 +39,61 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+- (void)encodeWithCoder:(NSCoder *)coder
+{
+    [super encodeWithCoder:coder];
+    NSData *decryptionErrorData = self.decryptionErrorData;
+    if (decryptionErrorData != nil) {
+        [coder encodeObject:decryptionErrorData forKey:@"decryptionErrorData"];
+    }
+    NSData *failedEnvelopeGroupId = self.failedEnvelopeGroupId;
+    if (failedEnvelopeGroupId != nil) {
+        [coder encodeObject:failedEnvelopeGroupId forKey:@"failedEnvelopeGroupId"];
+    }
+}
+
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
+{
+    self = [super initWithCoder:coder];
+    if (!self) {
+        return self;
+    }
+    self->_decryptionErrorData = [coder decodeObjectOfClass:[NSData class] forKey:@"decryptionErrorData"];
+    self->_failedEnvelopeGroupId = [coder decodeObjectOfClass:[NSData class] forKey:@"failedEnvelopeGroupId"];
+    return self;
+}
+
+- (NSUInteger)hash
+{
+    NSUInteger result = [super hash];
+    result ^= self.decryptionErrorData.hash;
+    result ^= self.failedEnvelopeGroupId.hash;
+    return result;
+}
+
+- (BOOL)isEqual:(id)other
+{
+    if (![super isEqual:other]) {
+        return NO;
+    }
+    OWSOutgoingResendRequest *typedOther = (OWSOutgoingResendRequest *)other;
+    if (![NSObject isObject:self.decryptionErrorData equalToObject:typedOther.decryptionErrorData]) {
+        return NO;
+    }
+    if (![NSObject isObject:self.failedEnvelopeGroupId equalToObject:typedOther.failedEnvelopeGroupId]) {
+        return NO;
+    }
+    return YES;
+}
+
+- (id)copyWithZone:(nullable NSZone *)zone
+{
+    OWSOutgoingResendRequest *result = [super copyWithZone:zone];
+    result->_decryptionErrorData = self.decryptionErrorData;
+    result->_failedEnvelopeGroupId = self.failedEnvelopeGroupId;
+    return result;
+}
+
 - (EncryptionStyle)encryptionStyle
 {
     return EncryptionStylePlaintext;

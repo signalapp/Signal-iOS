@@ -6,12 +6,44 @@
 import Foundation
 
 @objc(StickerPackInfo)
-public class StickerPackInfo: MTLModel {
-    // Exposed to Objective-C and made optional for MTLModel serialization.
+public final class StickerPackInfo: NSObject, NSCoding, NSCopying {
+    public init?(coder: NSCoder) {
+        self.packId = coder.decodeObject(of: NSData.self, forKey: "packId") as Data?
+        self.packKey = coder.decodeObject(of: NSData.self, forKey: "packKey") as Data?
+    }
+
+    public func encode(with coder: NSCoder) {
+        if let packId {
+            coder.encode(packId, forKey: "packId")
+        }
+        if let packKey {
+            coder.encode(packKey, forKey: "packKey")
+        }
+    }
+
+    public override var hash: Int {
+        var hasher = Hasher()
+        hasher.combine(packId)
+        hasher.combine(packKey)
+        return hasher.finalize()
+    }
+
+    public override func isEqual(_ object: Any?) -> Bool {
+        guard let object = object as? Self else { return false }
+        guard type(of: self) == type(of: object) else { return false }
+        guard self.packId == object.packId else { return false }
+        guard self.packKey == object.packKey else { return false }
+        return true
+    }
+
+    public func copy(with zone: NSZone? = nil) -> Any {
+        return self
+    }
+
     @objc
-    public var packId: Data!
+    public let packId: Data!
     @objc
-    public var packKey: Data!
+    public let packKey: Data!
 
     @objc
     public init(packId: Data, packKey: Data) {
@@ -113,21 +145,4 @@ public class StickerPackInfo: MTLModel {
     }
 
     public override var description: String { packId.hexadecimalString }
-
-    // MARK: - MTLModel
-
-    @objc
-    public override init() {
-        super.init()
-    }
-
-    @objc
-    required public init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-    }
-
-    @objc
-    public required init(dictionary dictionaryValue: [String: Any]!) throws {
-        try super.init(dictionary: dictionaryValue)
-    }
 }

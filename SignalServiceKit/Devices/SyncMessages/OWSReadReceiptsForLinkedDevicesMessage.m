@@ -31,9 +31,51 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+- (void)encodeWithCoder:(NSCoder *)coder
+{
+    [super encodeWithCoder:coder];
+    NSArray *readReceipts = self.readReceipts;
+    if (readReceipts != nil) {
+        [coder encodeObject:readReceipts forKey:@"readReceipts"];
+    }
+}
+
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
-    return [super initWithCoder:coder];
+    self = [super initWithCoder:coder];
+    if (!self) {
+        return self;
+    }
+    self->_readReceipts =
+        [coder decodeObjectOfClasses:[NSSet setWithArray:@[ [NSArray class], [OWSLinkedDeviceReadReceipt class] ]]
+                              forKey:@"readReceipts"];
+    return self;
+}
+
+- (NSUInteger)hash
+{
+    NSUInteger result = [super hash];
+    result ^= self.readReceipts.hash;
+    return result;
+}
+
+- (BOOL)isEqual:(id)other
+{
+    if (![super isEqual:other]) {
+        return NO;
+    }
+    OWSReadReceiptsForLinkedDevicesMessage *typedOther = (OWSReadReceiptsForLinkedDevicesMessage *)other;
+    if (![NSObject isObject:self.readReceipts equalToObject:typedOther.readReceipts]) {
+        return NO;
+    }
+    return YES;
+}
+
+- (id)copyWithZone:(nullable NSZone *)zone
+{
+    OWSReadReceiptsForLinkedDevicesMessage *result = [super copyWithZone:zone];
+    result->_readReceipts = self.readReceipts;
+    return result;
 }
 
 - (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilderWithTransaction:(DBReadTransaction *)transaction

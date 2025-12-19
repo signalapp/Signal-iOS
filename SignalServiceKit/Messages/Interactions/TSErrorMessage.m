@@ -25,12 +25,38 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
 
 @implementation TSErrorMessage
 
+- (void)encodeWithCoder:(NSCoder *)coder
+{
+    [super encodeWithCoder:coder];
+    [coder encodeObject:[self valueForKey:@"errorMessageSchemaVersion"] forKey:@"errorMessageSchemaVersion"];
+    [coder encodeObject:[self valueForKey:@"errorType"] forKey:@"errorType"];
+    [coder encodeObject:[self valueForKey:@"read"] forKey:@"read"];
+    SignalServiceAddress *recipientAddress = self.recipientAddress;
+    if (recipientAddress != nil) {
+        [coder encodeObject:recipientAddress forKey:@"recipientAddress"];
+    }
+    SignalServiceAddress *sender = self.sender;
+    if (sender != nil) {
+        [coder encodeObject:sender forKey:@"sender"];
+    }
+    [coder encodeObject:[self valueForKey:@"wasIdentityVerified"] forKey:@"wasIdentityVerified"];
+}
+
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
     self = [super initWithCoder:coder];
     if (!self) {
         return self;
     }
+    self->_errorMessageSchemaVersion =
+        [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
+                                         forKey:@"errorMessageSchemaVersion"] unsignedIntegerValue];
+    self->_errorType = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class] forKey:@"errorType"] intValue];
+    self->_read = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class] forKey:@"read"] boolValue];
+    self->_recipientAddress = [coder decodeObjectOfClass:[SignalServiceAddress class] forKey:@"recipientAddress"];
+    self->_sender = [coder decodeObjectOfClass:[SignalServiceAddress class] forKey:@"sender"];
+    self->_wasIdentityVerified = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
+                                                                  forKey:@"wasIdentityVerified"] boolValue];
 
     if (self.errorMessageSchemaVersion < 1) {
         _read = YES;
@@ -51,6 +77,57 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
     }
 
     return self;
+}
+
+- (NSUInteger)hash
+{
+    NSUInteger result = [super hash];
+    result ^= self.errorMessageSchemaVersion;
+    result ^= (NSUInteger)self.errorType;
+    result ^= self.read;
+    result ^= self.recipientAddress.hash;
+    result ^= self.sender.hash;
+    result ^= self.wasIdentityVerified;
+    return result;
+}
+
+- (BOOL)isEqual:(id)other
+{
+    if (![super isEqual:other]) {
+        return NO;
+    }
+    TSErrorMessage *typedOther = (TSErrorMessage *)other;
+    if (self.errorMessageSchemaVersion != typedOther.errorMessageSchemaVersion) {
+        return NO;
+    }
+    if (self.errorType != typedOther.errorType) {
+        return NO;
+    }
+    if (self.read != typedOther.read) {
+        return NO;
+    }
+    if (![NSObject isObject:self.recipientAddress equalToObject:typedOther.recipientAddress]) {
+        return NO;
+    }
+    if (![NSObject isObject:self.sender equalToObject:typedOther.sender]) {
+        return NO;
+    }
+    if (self.wasIdentityVerified != typedOther.wasIdentityVerified) {
+        return NO;
+    }
+    return YES;
+}
+
+- (id)copyWithZone:(nullable NSZone *)zone
+{
+    TSErrorMessage *result = [super copyWithZone:zone];
+    result->_errorMessageSchemaVersion = self.errorMessageSchemaVersion;
+    result->_errorType = self.errorType;
+    result->_read = self.read;
+    result->_recipientAddress = self.recipientAddress;
+    result->_sender = self.sender;
+    result->_wasIdentityVerified = self.wasIdentityVerified;
+    return result;
 }
 
 - (instancetype)initErrorMessageWithBuilder:(TSErrorMessageBuilder *)errorMessageBuilder

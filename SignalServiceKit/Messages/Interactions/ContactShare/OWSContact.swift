@@ -4,7 +4,6 @@
 //
 
 public import Contacts
-import Mantle
 
 public protocol OWSContactField: AnyObject {
 
@@ -16,19 +15,60 @@ public protocol OWSContactField: AnyObject {
 // MARK: - OWSContact
 
 @objc(OWSContact)
-public class OWSContact: MTLModel {
+public final class OWSContact: NSObject, NSCoding, NSCopying {
+    public init?(coder: NSCoder) {
+        self.addresses = coder.decodeObject(of: [NSArray.self, OWSContactAddress.self], forKey: "addresses") as? [OWSContactAddress] ?? []
+        self.avatarAttachmentId = coder.decodeObject(of: NSString.self, forKey: "avatarAttachmentId") as String?
+        self.emails = coder.decodeObject(of: [NSArray.self, OWSContactEmail.self], forKey: "emails") as? [OWSContactEmail] ?? []
+        self.name = coder.decodeObject(of: OWSContactName.self, forKey: "name") ?? OWSContactName()
+        self.phoneNumbers = coder.decodeObject(of: [NSArray.self, OWSContactPhoneNumber.self], forKey: "phoneNumbers") as? [OWSContactPhoneNumber] ?? []
+    }
 
-    @objc
+    public func encode(with coder: NSCoder) {
+        coder.encode(self.addresses, forKey: "addresses")
+        if let avatarAttachmentId {
+            coder.encode(avatarAttachmentId, forKey: "avatarAttachmentId")
+        }
+        coder.encode(self.emails, forKey: "emails")
+        coder.encode(self.name, forKey: "name")
+        coder.encode(self.phoneNumbers, forKey: "phoneNumbers")
+    }
+
+    public override var hash: Int {
+        var hasher = Hasher()
+        hasher.combine(addresses)
+        hasher.combine(avatarAttachmentId)
+        hasher.combine(emails)
+        hasher.combine(name)
+        hasher.combine(phoneNumbers)
+        return hasher.finalize()
+    }
+
+    public override func isEqual(_ object: Any?) -> Bool {
+        guard let object = object as? Self else { return false }
+        guard type(of: self) == type(of: object) else { return false }
+        guard self.addresses == object.addresses else { return false }
+        guard self.avatarAttachmentId == object.avatarAttachmentId else { return false }
+        guard self.emails == object.emails else { return false }
+        guard self.name == object.name else { return false }
+        guard self.phoneNumbers == object.phoneNumbers else { return false }
+        return true
+    }
+
+    public func copy(with zone: NSZone? = nil) -> Any {
+        return Self(
+            name: name,
+            phoneNumbers: phoneNumbers,
+            emails: emails,
+            addresses: addresses,
+            avatarAttachmentId: avatarAttachmentId,
+        )
+    }
+
     public var name: OWSContactName
-
-    @objc
-    public var phoneNumbers: [OWSContactPhoneNumber] = []
-    @objc
-    public var emails: [OWSContactEmail] = []
-    @objc
-    public var addresses: [OWSContactAddress] = []
-
-    @objc
+    public var phoneNumbers: [OWSContactPhoneNumber]
+    public var emails: [OWSContactEmail]
+    public var addresses: [OWSContactAddress]
     private var avatarAttachmentId: String?
 
     public var legacyAvatarAttachmentId: String? { avatarAttachmentId }
@@ -74,13 +114,11 @@ public class OWSContact: MTLModel {
         return hasValue
     }
 
-    public override init() {
-        self.name = OWSContactName()
-        super.init()
-    }
-
     public init(name: OWSContactName) {
         self.name = name
+        self.addresses = []
+        self.emails = []
+        self.phoneNumbers = []
         super.init()
         name.updateDisplayName()
     }
@@ -100,21 +138,15 @@ public class OWSContact: MTLModel {
         super.init()
     }
 
-    required init!(coder: NSCoder!) {
-        self.name = OWSContactName()
-        super.init(coder: coder)
-    }
-
-    required init(dictionary dictionaryValue: [String: Any]!) throws {
-        self.name = OWSContactName()
-        try super.init(dictionary: dictionaryValue)
-    }
-
     public func copy(with name: OWSContactName) -> OWSContact {
-        let contactCopy = self.copy() as! OWSContact
-        contactCopy.name = name
         name.updateDisplayName()
-        return contactCopy
+        return Self(
+            name: name,
+            phoneNumbers: self.phoneNumbers,
+            emails: self.emails,
+            addresses: self.addresses,
+            avatarAttachmentId: self.avatarAttachmentId,
+        )
     }
 
     // MARK: Avatar

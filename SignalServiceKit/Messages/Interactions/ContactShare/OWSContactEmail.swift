@@ -6,7 +6,41 @@
 public import Contacts
 
 @objc(OWSContactEmail)
-public class OWSContactEmail: MTLModel, OWSContactField {
+public final class OWSContactEmail: NSObject, NSCoding, NSCopying, OWSContactField {
+    public init?(coder: NSCoder) {
+        self.email = coder.decodeObject(of: NSString.self, forKey: "email") as String? ?? ""
+        self.type = (coder.decodeObject(of: NSNumber.self, forKey: "emailType")?.intValue).flatMap(`Type`.init(rawValue:)) ?? .home
+        self.label = coder.decodeObject(of: NSString.self, forKey: "label") as String?
+    }
+
+    public func encode(with coder: NSCoder) {
+        coder.encode(self.email, forKey: "email")
+        coder.encode(NSNumber(value: self.type.rawValue), forKey: "emailType")
+        if let label {
+            coder.encode(label, forKey: "label")
+        }
+    }
+
+    public override var hash: Int {
+        var hasher = Hasher()
+        hasher.combine(email)
+        hasher.combine(type)
+        hasher.combine(label)
+        return hasher.finalize()
+    }
+
+    public override func isEqual(_ object: Any?) -> Bool {
+        guard let object = object as? Self else { return false }
+        guard Swift.type(of: self) == Swift.type(of: object) else { return false }
+        guard self.email == object.email else { return false }
+        guard self.type == object.type else { return false }
+        guard self.label == object.label else { return false }
+        return true
+    }
+
+    public func copy(with zone: NSZone? = nil) -> Any {
+        return self
+    }
 
     @objc(OWSContactEmailType)
     public enum `Type`: Int, CustomStringConvertible {
@@ -25,33 +59,17 @@ public class OWSContactEmail: MTLModel, OWSContactField {
         }
     }
 
-    @objc(emailType)
-    public private(set) var type: `Type` = .home
+    public let type: `Type`
 
     // Applies in the Type.custom case.
-    @objc
-    public private(set) var label: String?
-
-    @objc
-    public private(set) var email: String = ""
-
-    public override init() {
-        super.init()
-    }
+    public let label: String?
+    public let email: String
 
     public init(type: Type, label: String? = nil, email: String) {
         self.type = type
         self.label = label
         self.email = email
         super.init()
-    }
-
-    required init!(coder: NSCoder!) {
-        super.init(coder: coder)
-    }
-
-    required init(dictionary dictionaryValue: [String: Any]!) throws {
-        try super.init(dictionary: dictionaryValue)
     }
 
     // MARK: OWSContactField

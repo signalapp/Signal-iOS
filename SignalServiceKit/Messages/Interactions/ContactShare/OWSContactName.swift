@@ -6,26 +6,85 @@
 public import Contacts
 
 @objc(OWSContactName)
-public class OWSContactName: MTLModel {
-
-    @objc
-    public fileprivate(set) var givenName: String?
-    @objc
-    public fileprivate(set) var familyName: String?
-    @objc
-    public fileprivate(set) var namePrefix: String?
-    @objc
-    public fileprivate(set) var nameSuffix: String?
-    @objc
-    public fileprivate(set) var middleName: String?
-    @objc
-    public fileprivate(set) var nickname: String?
-    @objc
-    public fileprivate(set) var organizationName: String?
-
-    public override init() {
-        super.init()
+public final class OWSContactName: NSObject, NSCoding, NSCopying {
+    public init?(coder: NSCoder) {
+        self.familyName = coder.decodeObject(of: NSString.self, forKey: "familyName") as String?
+        self.givenName = coder.decodeObject(of: NSString.self, forKey: "givenName") as String?
+        self.middleName = coder.decodeObject(of: NSString.self, forKey: "middleName") as String?
+        self.namePrefix = coder.decodeObject(of: NSString.self, forKey: "namePrefix") as String?
+        self.nameSuffix = coder.decodeObject(of: NSString.self, forKey: "nameSuffix") as String?
+        self.nickname = coder.decodeObject(of: NSString.self, forKey: "nickname") as String?
+        self.organizationName = coder.decodeObject(of: NSString.self, forKey: "organizationName") as String?
     }
+
+    public func encode(with coder: NSCoder) {
+        if let familyName {
+            coder.encode(familyName, forKey: "familyName")
+        }
+        if let givenName {
+            coder.encode(givenName, forKey: "givenName")
+        }
+        if let middleName {
+            coder.encode(middleName, forKey: "middleName")
+        }
+        if let namePrefix {
+            coder.encode(namePrefix, forKey: "namePrefix")
+        }
+        if let nameSuffix {
+            coder.encode(nameSuffix, forKey: "nameSuffix")
+        }
+        if let nickname {
+            coder.encode(nickname, forKey: "nickname")
+        }
+        if let organizationName {
+            coder.encode(organizationName, forKey: "organizationName")
+        }
+    }
+
+    public override var hash: Int {
+        var hasher = Hasher()
+        hasher.combine(familyName)
+        hasher.combine(givenName)
+        hasher.combine(middleName)
+        hasher.combine(namePrefix)
+        hasher.combine(nameSuffix)
+        hasher.combine(nickname)
+        hasher.combine(organizationName)
+        return hasher.finalize()
+    }
+
+    public override func isEqual(_ object: Any?) -> Bool {
+        guard let object = object as? Self else { return false }
+        guard type(of: self) == type(of: object) else { return false }
+        guard self.familyName == object.familyName else { return false }
+        guard self.givenName == object.givenName else { return false }
+        guard self.middleName == object.middleName else { return false }
+        guard self.namePrefix == object.namePrefix else { return false }
+        guard self.nameSuffix == object.nameSuffix else { return false }
+        guard self.nickname == object.nickname else { return false }
+        guard self.organizationName == object.organizationName else { return false }
+        return true
+    }
+
+    public func copy(with zone: NSZone? = nil) -> Any {
+        return Self(
+            givenName: givenName,
+            familyName: familyName,
+            namePrefix: namePrefix,
+            nameSuffix: nameSuffix,
+            middleName: middleName,
+            nickname: nickname,
+            organizationName: organizationName,
+        )
+    }
+
+    public let givenName: String?
+    public let familyName: String?
+    public let namePrefix: String?
+    public let nameSuffix: String?
+    public let middleName: String?
+    public let nickname: String?
+    public let organizationName: String?
 
     public init(
         givenName: String? = nil,
@@ -57,14 +116,6 @@ public class OWSContactName: MTLModel {
             nickname: cnContact.nickname.stripped,
             organizationName: cnContact.organizationName.stripped
         )
-    }
-
-    required init!(coder: NSCoder!) {
-        super.init(coder: coder)
-    }
-
-    required init(dictionary dictionaryValue: [String: Any]!) throws {
-        try super.init(dictionary: dictionaryValue)
     }
 
     // MARK: Display Name

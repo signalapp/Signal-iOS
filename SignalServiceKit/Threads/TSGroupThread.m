@@ -78,9 +78,49 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
 
 // --- CODE GENERATION MARKER
 
+- (void)encodeWithCoder:(NSCoder *)coder
+{
+    [super encodeWithCoder:coder];
+    TSGroupModel *groupModel = self.groupModel;
+    if (groupModel != nil) {
+        [coder encodeObject:groupModel forKey:@"groupModel"];
+    }
+}
+
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
-    return [super initWithCoder:coder];
+    self = [super initWithCoder:coder];
+    if (!self) {
+        return self;
+    }
+    self->_groupModel = [coder decodeObjectOfClass:[TSGroupModel class] forKey:@"groupModel"];
+    return self;
+}
+
+- (NSUInteger)hash
+{
+    NSUInteger result = [super hash];
+    result ^= self.groupModel.hash;
+    return result;
+}
+
+- (BOOL)isEqual:(id)other
+{
+    if (![super isEqual:other]) {
+        return NO;
+    }
+    TSGroupThread *typedOther = (TSGroupThread *)other;
+    if (![NSObject isObject:self.groupModel equalToObject:typedOther.groupModel]) {
+        return NO;
+    }
+    return YES;
+}
+
+- (id)copyWithZone:(nullable NSZone *)zone
+{
+    TSGroupThread *result = [super copyWithZone:zone];
+    result->_groupModel = self.groupModel;
+    return result;
 }
 
 - (instancetype)initWithGroupModel:(TSGroupModelV2 *)groupModel

@@ -89,6 +89,7 @@ public class PreparedOutgoingMessage {
             return .init(messageType: .persisted(.init(rowId: message.sqliteRowId!, message: message)))
         case .editMessage(let editedMessageId, let messageForSending, _):
             guard
+                let editedMessageId,
                 let interaction = TSOutgoingMessage.anyFetch(uniqueId: editedMessageId, transaction: tx),
                 let editedMessage = interaction as? TSOutgoingMessage
             else {

@@ -28,6 +28,113 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+- (void)encodeWithCoder:(NSCoder *)coder
+{
+    [super encodeWithCoder:coder];
+    SSKProtoCallMessageAnswer *answerMessage = self.answerMessage;
+    if (answerMessage != nil) {
+        [coder encodeObject:answerMessage forKey:@"answerMessage"];
+    }
+    SSKProtoCallMessageBusy *busyMessage = self.busyMessage;
+    if (busyMessage != nil) {
+        [coder encodeObject:busyMessage forKey:@"busyMessage"];
+    }
+    NSNumber *destinationDeviceId = self.destinationDeviceId;
+    if (destinationDeviceId != nil) {
+        [coder encodeObject:destinationDeviceId forKey:@"destinationDeviceId"];
+    }
+    SSKProtoCallMessageHangup *hangupMessage = self.hangupMessage;
+    if (hangupMessage != nil) {
+        [coder encodeObject:hangupMessage forKey:@"hangupMessage"];
+    }
+    NSArray *iceUpdateMessages = self.iceUpdateMessages;
+    if (iceUpdateMessages != nil) {
+        [coder encodeObject:iceUpdateMessages forKey:@"iceUpdateMessages"];
+    }
+    SSKProtoCallMessageOffer *offerMessage = self.offerMessage;
+    if (offerMessage != nil) {
+        [coder encodeObject:offerMessage forKey:@"offerMessage"];
+    }
+    SSKProtoCallMessageOpaque *opaqueMessage = self.opaqueMessage;
+    if (opaqueMessage != nil) {
+        [coder encodeObject:opaqueMessage forKey:@"opaqueMessage"];
+    }
+}
+
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
+{
+    self = [super initWithCoder:coder];
+    if (!self) {
+        return self;
+    }
+    self->_answerMessage = [coder decodeObjectOfClass:[SSKProtoCallMessageAnswer class] forKey:@"answerMessage"];
+    self->_busyMessage = [coder decodeObjectOfClass:[SSKProtoCallMessageBusy class] forKey:@"busyMessage"];
+    self->_destinationDeviceId = [coder decodeObjectOfClass:[NSNumber class] forKey:@"destinationDeviceId"];
+    self->_hangupMessage = [coder decodeObjectOfClass:[SSKProtoCallMessageHangup class] forKey:@"hangupMessage"];
+    self->_iceUpdateMessages =
+        [coder decodeObjectOfClasses:[NSSet setWithArray:@[ [NSArray class], [SSKProtoCallMessageIceUpdate class] ]]
+                              forKey:@"iceUpdateMessages"];
+    self->_offerMessage = [coder decodeObjectOfClass:[SSKProtoCallMessageOffer class] forKey:@"offerMessage"];
+    self->_opaqueMessage = [coder decodeObjectOfClass:[SSKProtoCallMessageOpaque class] forKey:@"opaqueMessage"];
+    return self;
+}
+
+- (NSUInteger)hash
+{
+    NSUInteger result = [super hash];
+    result ^= self.answerMessage.hash;
+    result ^= self.busyMessage.hash;
+    result ^= self.destinationDeviceId.hash;
+    result ^= self.hangupMessage.hash;
+    result ^= self.iceUpdateMessages.hash;
+    result ^= self.offerMessage.hash;
+    result ^= self.opaqueMessage.hash;
+    return result;
+}
+
+- (BOOL)isEqual:(id)other
+{
+    if (![super isEqual:other]) {
+        return NO;
+    }
+    OWSOutgoingCallMessage *typedOther = (OWSOutgoingCallMessage *)other;
+    if (![NSObject isObject:self.answerMessage equalToObject:typedOther.answerMessage]) {
+        return NO;
+    }
+    if (![NSObject isObject:self.busyMessage equalToObject:typedOther.busyMessage]) {
+        return NO;
+    }
+    if (![NSObject isObject:self.destinationDeviceId equalToObject:typedOther.destinationDeviceId]) {
+        return NO;
+    }
+    if (![NSObject isObject:self.hangupMessage equalToObject:typedOther.hangupMessage]) {
+        return NO;
+    }
+    if (![NSObject isObject:self.iceUpdateMessages equalToObject:typedOther.iceUpdateMessages]) {
+        return NO;
+    }
+    if (![NSObject isObject:self.offerMessage equalToObject:typedOther.offerMessage]) {
+        return NO;
+    }
+    if (![NSObject isObject:self.opaqueMessage equalToObject:typedOther.opaqueMessage]) {
+        return NO;
+    }
+    return YES;
+}
+
+- (id)copyWithZone:(nullable NSZone *)zone
+{
+    OWSOutgoingCallMessage *result = [super copyWithZone:zone];
+    result->_answerMessage = self.answerMessage;
+    result->_busyMessage = self.busyMessage;
+    result->_destinationDeviceId = self.destinationDeviceId;
+    result->_hangupMessage = self.hangupMessage;
+    result->_iceUpdateMessages = self.iceUpdateMessages;
+    result->_offerMessage = self.offerMessage;
+    result->_opaqueMessage = self.opaqueMessage;
+    return result;
+}
+
 - (instancetype)initWithThread:(TSThread *)thread
                   offerMessage:(SSKProtoCallMessageOffer *)offerMessage
            destinationDeviceId:(nullable NSNumber *)destinationDeviceId
