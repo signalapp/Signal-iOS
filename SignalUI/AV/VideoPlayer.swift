@@ -14,6 +14,7 @@ public class VideoPlayer {
 
     public let avPlayer: AVPlayer
     private let audioActivity: AudioActivity
+    private var audioActivityHasStarted = false
     private let shouldLoop: Bool
 
     public var isMuted = false {
@@ -107,18 +108,20 @@ public class VideoPlayer {
 
     // MARK: Playback Controls
 
-    public func endAudioActivity() {
+    private func endAudioActivity() {
         SUIEnvironment.shared.audioSessionRef.endAudioActivity(audioActivity)
     }
 
     public func pause() {
         avPlayer.pause()
-        endAudioActivity()
     }
 
     public func play() {
-        let success = SUIEnvironment.shared.audioSessionRef.startAudioActivity(audioActivity)
-        assert(success)
+        if !audioActivityHasStarted {
+            audioActivityHasStarted = true
+            let success = SUIEnvironment.shared.audioSessionRef.startAudioActivity(audioActivity)
+            assert(success)
+        }
 
         guard let item = avPlayer.currentItem else {
             owsFailDebug("video player item was unexpectedly nil")
@@ -136,7 +139,6 @@ public class VideoPlayer {
     public func stop() {
         avPlayer.pause()
         avPlayer.seek(to: CMTime.zero)
-        endAudioActivity()
     }
 
     public func seek(to time: CMTime) {
@@ -203,8 +205,6 @@ public class VideoPlayer {
         if shouldLoop {
             avPlayer.seek(to: CMTime.zero)
             avPlayer.play()
-        } else {
-            endAudioActivity()
         }
     }
 }
