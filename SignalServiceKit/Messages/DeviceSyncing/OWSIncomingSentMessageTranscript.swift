@@ -221,13 +221,12 @@ public class OWSIncomingSentMessageTranscript: SentMessageTranscript {
             )
         }
 
-        let makeContactBuilder = { [dataMessage] tx in
-            try dataMessage.contact.first.map {
-                try DependenciesBridge.shared.contactShareManager.validateAndBuild(
-                    for: $0,
-                    tx: tx
-                )
-            }
+        let validatedContactShare: ValidatedContactShareProto?
+        if let contactShareProto = dataMessage.contact.first {
+            let contactShareManager = DependenciesBridge.shared.contactShareManager
+            validatedContactShare = contactShareManager.validateAndBuild(for: contactShareProto)
+        } else {
+            validatedContactShare = nil
         }
 
         let validatedLinkPreview: ValidatedLinkPreviewProto?
@@ -313,7 +312,7 @@ public class OWSIncomingSentMessageTranscript: SentMessageTranscript {
             target: target,
             body: body,
             attachmentPointerProtos: dataMessage.attachments,
-            makeContactBuilder: makeContactBuilder,
+            validatedContactShare: validatedContactShare,
             validatedQuotedReply: validatedQuotedReply,
             validatedLinkPreview: validatedLinkPreview,
             validatedMessageSticker: validatedMessageSticker,

@@ -195,6 +195,7 @@ public class UnpreparedOutgoingMessage {
         tx: DBWriteTransaction
     ) throws -> PreparedOutgoingMessage.MessageType {
         let attachmentManager = DependenciesBridge.shared.attachmentManager
+        let contactShareManager = DependenciesBridge.shared.contactShareManager
         let linkPreviewManager = DependenciesBridge.shared.linkPreviewManager
         let messageStickerManager = DependenciesBridge.shared.messageStickerManager
         let quotedReplyManager = DependenciesBridge.shared.quotedReplyManager
@@ -227,14 +228,11 @@ public class UnpreparedOutgoingMessage {
             message.message.update(with: validatedMessageSticker.sticker, transaction: tx)
         }
 
-        let contactShareBuilder = try message.contactShareDraft.map {
-            try DependenciesBridge.shared.contactShareManager.build(
-                draft: $0,
-                tx: tx
-            )
-        }.map {
-            message.message.update(withContactShare: $0.info, transaction: tx)
-            return $0
+        let validatedContactShare = message.contactShareDraft.map {
+            contactShareManager.validateAndBuild(preparedDraft: $0)
+        }
+        if let validatedContactShare {
+            message.message.update(withContactShare: validatedContactShare.contact, transaction: tx)
         }
 
         if message.poll != nil {
@@ -347,15 +345,20 @@ public class UnpreparedOutgoingMessage {
             )
         }
 
-        try? contactShareBuilder?.finalize(
-            owner: .messageContactAvatar(.init(
-                messageRowId: messageRowId,
-                receivedAtTimestamp: message.message.receivedAtTimestamp,
-                threadRowId: threadRowId,
-                isPastEditRevision: message.message.isPastEditRevision()
-            )),
-            tx: tx
-        )
+        if let avatarDataSource = validatedContactShare?.avatarDataSource {
+            try attachmentManager.createAttachmentStream(
+                from: OwnedAttachmentDataSource(
+                    dataSource: avatarDataSource,
+                    owner: .messageContactAvatar(.init(
+                        messageRowId: messageRowId,
+                        receivedAtTimestamp: message.message.receivedAtTimestamp,
+                        threadRowId: threadRowId,
+                        isPastEditRevision: message.message.isPastEditRevision()
+                    )),
+                ),
+                tx: tx,
+            )
+        }
 
         return .persisted(PreparedOutgoingMessage.MessageType.Persisted(
             rowId: messageRowId,

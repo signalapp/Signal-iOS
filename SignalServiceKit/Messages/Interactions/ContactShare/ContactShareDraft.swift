@@ -6,25 +6,19 @@
 public import Contacts
 
 public class ContactShareDraft {
-
     public var name: OWSContactName
-
     public var addresses: [OWSContactAddress]
-
     public var emails: [OWSContactEmail]
-
     public var phoneNumbers: [OWSContactPhoneNumber]
-
     public var existingAvatarAttachment: ReferencedAttachment?
 
+    private var cachedAvatarImage: UIImage?
     public var avatarImageData: Data? {
         didSet {
             self.cachedAvatarImage = nil
             existingAvatarAttachment = nil
         }
     }
-
-    private var cachedAvatarImage: UIImage?
 
     public var avatarImage: UIImage? {
         if self.cachedAvatarImage != nil {
@@ -153,14 +147,5 @@ public class ContactShareDraft {
         public let emails: [OWSContactEmail]
         public let phoneNumbers: [OWSContactPhoneNumber]
         public let avatar: AttachmentDataSource?
-
-        public var ows_isValid: Bool {
-            return OWSContact.isValid(
-                name: name,
-                phoneNumbers: phoneNumbers,
-                emails: emails,
-                addresses: addresses
-            )
-        }
     }
 }

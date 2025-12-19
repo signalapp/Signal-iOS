@@ -181,13 +181,6 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
 
         updateDisappearingMessageTokenIfNecessary(target: messageParams.target, localIdentifiers: localIdentifiers, tx: tx)
 
-        let contactBuilder: OwnedAttachmentBuilder<OWSContact>?
-        do {
-            contactBuilder = try messageParams.makeContactBuilder(tx)
-        } catch let error {
-            return .failure(error)
-        }
-
         let outgoingMessageBuilder = TSOutgoingMessageBuilder(
             thread: messageParams.target.thread,
             timestamp: transcript.timestamp,
@@ -209,7 +202,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             storyTimestamp: messageParams.storyTimestamp,
             storyReactionEmoji: nil,
             quotedMessage: messageParams.validatedQuotedReply?.quotedReply,
-            contactShare: contactBuilder?.info,
+            contactShare: messageParams.validatedContactShare?.contact,
             linkPreview: messageParams.validatedLinkPreview?.preview,
             messageSticker: messageParams.validatedMessageSticker?.sticker,
             giftBadge: messageParams.giftBadge,
@@ -221,7 +214,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             hasBodyAttachments: messageParams.attachmentPointerProtos.isEmpty.negated,
             hasLinkPreview: messageParams.validatedLinkPreview != nil,
             hasQuotedReply: messageParams.validatedQuotedReply != nil,
-            hasContactShare: contactBuilder != nil,
+            hasContactShare: messageParams.validatedContactShare != nil,
             hasSticker: messageParams.validatedMessageSticker != nil,
             // Payment notifications go through a different path.
             hasPayment: false,
@@ -338,15 +331,20 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
                     )
                 }
 
-                try contactBuilder?.finalize(
-                    owner: .messageContactAvatar(.init(
-                        messageRowId: outgoingMessage.sqliteRowId!,
-                        receivedAtTimestamp: outgoingMessage.receivedAtTimestamp,
-                        threadRowId: threadRowId,
-                        isPastEditRevision: outgoingMessage.isPastEditRevision()
-                    )),
-                    tx: tx
-                )
+                if let contactAvatarProto = messageParams.validatedContactShare?.avatarProto {
+                    try attachmentManager.createAttachmentPointer(
+                        from: OwnedAttachmentPointerProto(
+                            proto: contactAvatarProto,
+                            owner: .messageContactAvatar(.init(
+                                messageRowId: outgoingMessage.sqliteRowId!,
+                                receivedAtTimestamp: outgoingMessage.receivedAtTimestamp,
+                                threadRowId: threadRowId,
+                                isPastEditRevision: outgoingMessage.isPastEditRevision()
+                            )),
+                        ),
+                        tx: tx,
+                    )
+                }
             } catch let error {
                 Logger.error("Attachment failure: \(error)")
                 // Roll back the message

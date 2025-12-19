@@ -29,10 +29,7 @@ public enum SentMessageTranscriptType {
 
         public let attachmentPointerProtos: [SSKProtoAttachmentPointer]
 
-        /// Construction of the builder itself deferred since the builder's constructor does database inserts.
-        /// Edit messages construct a transcript but don't use the attachment builders and instead make their own.
-        public let makeContactBuilder: (DBWriteTransaction) throws -> OwnedAttachmentBuilder<OWSContact>?
-
+        public let validatedContactShare: ValidatedContactShareProto?
         public let validatedQuotedReply: ValidatedQuotedReply?
         public let validatedLinkPreview: ValidatedLinkPreviewProto?
         public let validatedMessageSticker: ValidatedMessageStickerProto?

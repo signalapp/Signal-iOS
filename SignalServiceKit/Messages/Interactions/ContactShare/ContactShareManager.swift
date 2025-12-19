@@ -3,22 +3,30 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+public struct ValidatedContactShareProto {
+    public let contact: OWSContact
+    public let avatarProto: SSKProtoAttachmentPointer?
+}
+
+public struct ValidatedContactShareDataSource {
+    public let contact: OWSContact
+    public let avatarDataSource: AttachmentDataSource?
+}
+
+// MARK: -
 
 public protocol ContactShareManager {
     func validateAndBuild(
         for contactProto: SSKProtoDataMessageContact,
-        tx: DBWriteTransaction
-    ) throws -> OwnedAttachmentBuilder<OWSContact>
+    ) -> ValidatedContactShareProto
 
     func validateAndPrepare(
         draft: ContactShareDraft
     ) async throws -> ContactShareDraft.ForSending
 
-    func build(
-        draft: ContactShareDraft.ForSending,
-        tx: DBWriteTransaction
-    ) throws -> OwnedAttachmentBuilder<OWSContact>
+    func validateAndBuild(
+        preparedDraft: ContactShareDraft.ForSending,
+    ) -> ValidatedContactShareDataSource
 
     func buildProtoForSending(
         from contactShare: OWSContact,
@@ -27,13 +35,15 @@ public protocol ContactShareManager {
     ) throws -> SSKProtoDataMessageContact
 }
 
-public class ContactShareManagerImpl: ContactShareManager {
+// MARK: -
+
+class ContactShareManagerImpl: ContactShareManager {
 
     private let attachmentManager: AttachmentManager
     private let attachmentStore: AttachmentStore
     private let attachmentValidator: AttachmentContentValidator
 
-    public init(
+    init(
         attachmentManager: AttachmentManager,
         attachmentStore: AttachmentStore,
         attachmentValidator: AttachmentContentValidator
@@ -43,10 +53,9 @@ public class ContactShareManagerImpl: ContactShareManager {
         self.attachmentValidator = attachmentValidator
     }
 
-    public func validateAndBuild(
+    func validateAndBuild(
         for contactProto: SSKProtoDataMessageContact,
-        tx: DBWriteTransaction
-    ) throws -> OwnedAttachmentBuilder<OWSContact> {
+    ) -> ValidatedContactShareProto {
         var givenName: String?
         var familyName: String?
         var namePrefix: String?
@@ -92,24 +101,13 @@ public class ContactShareManagerImpl: ContactShareManager {
         contact.emails = contactProto.email.compactMap { OWSContactEmail(proto: $0) }
         contact.addresses = contactProto.address.compactMap { OWSContactAddress(proto: $0) }
 
-        if
-            let avatar = contactProto.avatar,
-            let avatarAttachmentProto = avatar.avatar
-        {
-            let avatarAttachmentBuilder = try attachmentManager.createAttachmentPointerBuilder(
-                from: avatarAttachmentProto,
-                tx: tx
-            )
-
-            return avatarAttachmentBuilder.wrap {
-                return contact
-            }
-        } else {
-            return .withoutFinalizer(contact)
-        }
+        return ValidatedContactShareProto(
+            contact: contact,
+            avatarProto: contactProto.avatar?.avatar,
+        )
     }
 
-    public func validateAndPrepare(
+    func validateAndPrepare(
         draft: ContactShareDraft
     ) async throws -> ContactShareDraft.ForSending {
         let avatarDataSource: AttachmentDataSource? = try await {
@@ -146,34 +144,21 @@ public class ContactShareManagerImpl: ContactShareManager {
         )
     }
 
-    public func build(
-        draft: ContactShareDraft.ForSending,
-        tx: DBWriteTransaction
-    ) throws -> OwnedAttachmentBuilder<OWSContact> {
-        func buildContact(legacyAttachmentId: String? = nil) -> OWSContact {
-            return OWSContact(
+    func validateAndBuild(
+        preparedDraft draft: ContactShareDraft.ForSending,
+    ) -> ValidatedContactShareDataSource {
+        return ValidatedContactShareDataSource(
+            contact: OWSContact(
                 name: draft.name,
                 phoneNumbers: draft.phoneNumbers,
                 emails: draft.emails,
                 addresses: draft.addresses,
-                avatarAttachmentId: legacyAttachmentId
-            )
-        }
-
-        guard let avatarDataSource = draft.avatar else {
-            return .withoutFinalizer(buildContact())
-        }
-
-        return try attachmentManager.createAttachmentStreamBuilder(
-            from: avatarDataSource,
-            tx: tx
-        ).wrap {
-            return buildContact()
-        }
-
+            ),
+            avatarDataSource: draft.avatar,
+        )
     }
 
-    public func buildProtoForSending(
+    func buildProtoForSending(
         from contactShare: OWSContact,
         parentMessage: TSMessage,
         tx: DBReadTransaction
@@ -236,37 +221,3 @@ public class ContactShareManagerImpl: ContactShareManager {
         return contactProto
     }
 }
-
-#if TESTABLE_BUILD
-
-public class MockContactShareManager: ContactShareManager {
-    public func validateAndBuild(
-        for contactProto: SSKProtoDataMessageContact,
-        tx: DBWriteTransaction
-    ) throws -> OwnedAttachmentBuilder<OWSContact> {
-        return .withoutFinalizer(OWSContact(name: OWSContactName()))
-    }
-
-    public func validateAndPrepare(
-        draft: ContactShareDraft
-    ) throws -> ContactShareDraft.ForSending {
-        throw OWSAssertionError("Unimplemented")
-    }
-
-    public func build(
-        draft: ContactShareDraft.ForSending,
-        tx: DBWriteTransaction
-    ) throws -> OwnedAttachmentBuilder<OWSContact> {
-        return .withoutFinalizer(OWSContact(name: OWSContactName()))
-    }
-
-    public func buildProtoForSending(
-        from contactShare: OWSContact,
-        parentMessage: TSMessage,
-        tx: DBReadTransaction
-    ) throws -> SSKProtoDataMessageContact {
-        return SSKProtoDataMessageContact.builder().buildInfallibly()
-    }
-}
-
-#endif

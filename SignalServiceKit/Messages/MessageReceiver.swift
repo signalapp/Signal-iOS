@@ -1198,19 +1198,12 @@ public final class MessageReceiver {
             validatedQuotedReply = nil
         }
 
-        let contactBuilder: OwnedAttachmentBuilder<OWSContact>?
+        let validatedContactShare: ValidatedContactShareProto?
         if let contactProto = dataMessage.contact.first {
-            do {
-                contactBuilder = try DependenciesBridge.shared.contactShareManager.validateAndBuild(
-                    for: contactProto,
-                    tx: tx
-                )
-            } catch {
-                Logger.error("contact share error: \(error)")
-                return nil
-            }
+            let contactShareManager = DependenciesBridge.shared.contactShareManager
+            validatedContactShare = contactShareManager.validateAndBuild(for: contactProto)
         } else {
-            contactBuilder = nil
+            validatedContactShare = nil
         }
 
         let validatedLinkPreview: ValidatedLinkPreviewProto?
@@ -1435,7 +1428,7 @@ public final class MessageReceiver {
             storyTimestamp: storyTimestamp,
             storyReactionEmoji: nil,
             quotedMessage: validatedQuotedReply?.quotedReply,
-            contactShare: contactBuilder?.info,
+            contactShare: validatedContactShare?.contact,
             linkPreview: validatedLinkPreview?.preview,
             messageSticker: validatedMessageSticker?.sticker,
             giftBadge: giftBadge,
@@ -1453,7 +1446,7 @@ public final class MessageReceiver {
             hasBodyAttachments: !dataMessage.attachments.isEmpty,
             hasLinkPreview: validatedLinkPreview != nil,
             hasQuotedReply: validatedQuotedReply != nil,
-            hasContactShare: contactBuilder != nil,
+            hasContactShare: validatedContactShare != nil,
             hasSticker: validatedMessageSticker != nil,
             hasPayment: paymentModels != nil,
             hasPoll: pollCreate != nil
@@ -1526,6 +1519,7 @@ public final class MessageReceiver {
                     tx: tx,
                 )
             }
+
             if let validatedMessageSticker {
                 try attachmentManager.createAttachmentPointer(
                     from: OwnedAttachmentPointerProto(
@@ -1542,15 +1536,21 @@ public final class MessageReceiver {
                     tx: tx,
                 )
             }
-            try contactBuilder?.finalize(
-                owner: .messageContactAvatar(.init(
-                    messageRowId: message.sqliteRowId!,
-                    receivedAtTimestamp: message.receivedAtTimestamp,
-                    threadRowId: thread.sqliteRowId!,
-                    isPastEditRevision: message.isPastEditRevision()
-                )),
-                tx: tx
-            )
+
+            if let contactAvatarProto = validatedContactShare?.avatarProto {
+                try attachmentManager.createAttachmentPointer(
+                    from: OwnedAttachmentPointerProto(
+                        proto: contactAvatarProto,
+                        owner: .messageContactAvatar(.init(
+                            messageRowId: message.sqliteRowId!,
+                            receivedAtTimestamp: message.receivedAtTimestamp,
+                            threadRowId: thread.sqliteRowId!,
+                            isPastEditRevision: message.isPastEditRevision()
+                        ))
+                    ),
+                    tx: tx,
+                )
+            }
         } catch {
             owsFailDebug("Could not build attachments!")
             DependenciesBridge.shared.interactionDeleteManager

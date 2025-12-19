@@ -987,7 +987,6 @@
 		665F6F9D2C5C2FAD0002915C /* BackupArchiveMessageAttachmentArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665F6F9C2C5C2FAD0002915C /* BackupArchiveMessageAttachmentArchiver.swift */; };
 		665FAE8C2A02C0D400FA298D /* SpoilerRevealState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665FAE8B2A02C0D400FA298D /* SpoilerRevealState.swift */; };
 		6660725E2BAB36960084B3D2 /* AttachmentDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6660725D2BAB36960084B3D2 /* AttachmentDataSource.swift */; };
-		666072622BAB58A20084B3D2 /* OWSContactSerializationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 666072602BAB58850084B3D2 /* OWSContactSerializationTest.swift */; };
 		6664B9AB2A314EBD008EF74B /* SpoilerRevealStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6664B9AA2A314EBD008EF74B /* SpoilerRevealStateTests.swift */; };
 		666654212AD0B03F00B23B32 /* MasterKeySyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 666654202AD0B03F00B23B32 /* MasterKeySyncManager.swift */; };
 		66681CDF2C58174F00E50136 /* BackupAttachmentDownloadStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66681CDE2C58174F00E50136 /* BackupAttachmentDownloadStoreTests.swift */; };
@@ -5142,7 +5141,6 @@
 		665F6F9C2C5C2FAD0002915C /* BackupArchiveMessageAttachmentArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupArchiveMessageAttachmentArchiver.swift; sourceTree = "<group>"; };
 		665FAE8B2A02C0D400FA298D /* SpoilerRevealState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerRevealState.swift; sourceTree = "<group>"; };
 		6660725D2BAB36960084B3D2 /* AttachmentDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentDataSource.swift; sourceTree = "<group>"; };
-		666072602BAB58850084B3D2 /* OWSContactSerializationTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSContactSerializationTest.swift; sourceTree = "<group>"; };
 		6664B9AA2A314EBD008EF74B /* SpoilerRevealStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerRevealStateTests.swift; sourceTree = "<group>"; };
 		666654202AD0B03F00B23B32 /* MasterKeySyncManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MasterKeySyncManager.swift; sourceTree = "<group>"; };
 		66681CDE2C58174F00E50136 /* BackupAttachmentDownloadStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttachmentDownloadStoreTests.swift; sourceTree = "<group>"; };
@@ -10087,14 +10085,6 @@
 			path = DataSource;
 			sourceTree = "<group>";
 		};
-		6660725F2BAB58760084B3D2 /* ContactShare */ = {
-			isa = PBXGroup;
-			children = (
-				666072602BAB58850084B3D2 /* OWSContactSerializationTest.swift */,
-			);
-			path = ContactShare;
-			sourceTree = "<group>";
-		};
 		6673FF6A2978B5B900F96CFD /* SecureValueRecovery */ = {
 			isa = PBXGroup;
 			children = (
@@ -13999,7 +13989,6 @@
 			isa = PBXGroup;
 			children = (
 				66FC636D29DF793000F00DAC /* BodyRanges */,
-				6660725F2BAB58760084B3D2 /* ContactShare */,
 				D962346E2C0E99CE00DAF6CB /* DeleteForMe */,
 				C182C4BC29E45D64007F7A7C /* Edit */,
 				F942621F289B1B5500460798 /* Interactions */,
@@ -19748,7 +19737,6 @@
 				F96BB60729A528BD001C18DF /* OWS2FAManagerTest.swift in Sources */,
 				667BBAD92BAA5F84006AB9DE /* OWSAttachmentInfoSerializationTest.swift in Sources */,
 				500A76152E031CA600322493 /* OWSChatConnectionTest.swift in Sources */,
-				666072622BAB58A20084B3D2 /* OWSContactSerializationTest.swift in Sources */,
 				D9708B5C29E4CCCB004306FA /* OWSDeviceManagerTest.swift in Sources */,
 				F9426263289B1B5500460798 /* OWSDeviceNamesTest.swift in Sources */,
 				50EF8DD32A1EC6B100A00935 /* OWSDisappearingMessagesConfigurationTest.swift in Sources */,

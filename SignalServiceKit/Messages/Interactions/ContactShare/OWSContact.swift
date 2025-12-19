@@ -6,9 +6,7 @@
 public import Contacts
 
 public protocol OWSContactField: AnyObject {
-
     var isValid: Bool { get }
-
     var localizedLabel: String { get }
 }
 
@@ -18,7 +16,6 @@ public protocol OWSContactField: AnyObject {
 public final class OWSContact: NSObject, NSCoding, NSCopying {
     public init?(coder: NSCoder) {
         self.addresses = coder.decodeObject(of: [NSArray.self, OWSContactAddress.self], forKey: "addresses") as? [OWSContactAddress] ?? []
-        self.avatarAttachmentId = coder.decodeObject(of: NSString.self, forKey: "avatarAttachmentId") as String?
         self.emails = coder.decodeObject(of: [NSArray.self, OWSContactEmail.self], forKey: "emails") as? [OWSContactEmail] ?? []
         self.name = coder.decodeObject(of: OWSContactName.self, forKey: "name") ?? OWSContactName()
         self.phoneNumbers = coder.decodeObject(of: [NSArray.self, OWSContactPhoneNumber.self], forKey: "phoneNumbers") as? [OWSContactPhoneNumber] ?? []
@@ -26,9 +23,6 @@ public final class OWSContact: NSObject, NSCoding, NSCopying {
 
     public func encode(with coder: NSCoder) {
         coder.encode(self.addresses, forKey: "addresses")
-        if let avatarAttachmentId {
-            coder.encode(avatarAttachmentId, forKey: "avatarAttachmentId")
-        }
         coder.encode(self.emails, forKey: "emails")
         coder.encode(self.name, forKey: "name")
         coder.encode(self.phoneNumbers, forKey: "phoneNumbers")
@@ -37,7 +31,6 @@ public final class OWSContact: NSObject, NSCoding, NSCopying {
     public override var hash: Int {
         var hasher = Hasher()
         hasher.combine(addresses)
-        hasher.combine(avatarAttachmentId)
         hasher.combine(emails)
         hasher.combine(name)
         hasher.combine(phoneNumbers)
@@ -48,7 +41,6 @@ public final class OWSContact: NSObject, NSCoding, NSCopying {
         guard let object = object as? Self else { return false }
         guard type(of: self) == type(of: object) else { return false }
         guard self.addresses == object.addresses else { return false }
-        guard self.avatarAttachmentId == object.avatarAttachmentId else { return false }
         guard self.emails == object.emails else { return false }
         guard self.name == object.name else { return false }
         guard self.phoneNumbers == object.phoneNumbers else { return false }
@@ -61,7 +53,6 @@ public final class OWSContact: NSObject, NSCoding, NSCopying {
             phoneNumbers: phoneNumbers,
             emails: emails,
             addresses: addresses,
-            avatarAttachmentId: avatarAttachmentId,
         )
     }
 
@@ -69,9 +60,6 @@ public final class OWSContact: NSObject, NSCoding, NSCopying {
     public var phoneNumbers: [OWSContactPhoneNumber]
     public var emails: [OWSContactEmail]
     public var addresses: [OWSContactAddress]
-    private var avatarAttachmentId: String?
-
-    public var legacyAvatarAttachmentId: String? { avatarAttachmentId }
 
     public var isValid: Bool {
         return Self.isValid(
@@ -128,13 +116,11 @@ public final class OWSContact: NSObject, NSCoding, NSCopying {
         phoneNumbers: [OWSContactPhoneNumber],
         emails: [OWSContactEmail],
         addresses: [OWSContactAddress],
-        avatarAttachmentId: String?
     ) {
         self.name = name
         self.phoneNumbers = phoneNumbers
         self.emails = emails
         self.addresses = addresses
-        self.avatarAttachmentId = avatarAttachmentId
         super.init()
     }
 
@@ -145,14 +131,7 @@ public final class OWSContact: NSObject, NSCoding, NSCopying {
             phoneNumbers: self.phoneNumbers,
             emails: self.emails,
             addresses: self.addresses,
-            avatarAttachmentId: self.avatarAttachmentId,
         )
-    }
-
-    // MARK: Avatar
-
-    public func setLegacyAvatarAttachmentId(_ attachmentId: String) {
-        self.avatarAttachmentId = attachmentId
     }
 
     // MARK: Phone Numbers and Recipient IDs
@@ -237,14 +216,11 @@ public final class OWSContact: NSObject, NSCoding, NSCopying {
 extension OWSContact {
 
     public convenience init(cnContact: CNContact) {
-        // Name
-        let contactName = OWSContactName(cnContact: cnContact)
         self.init(
-            name: contactName,
+            name: OWSContactName(cnContact: cnContact),
             phoneNumbers: cnContact.phoneNumbers.map { OWSContactPhoneNumber(cnLabeledValue: $0) },
             emails: cnContact.emailAddresses.map { OWSContactEmail(cnLabeledValue: $0) },
             addresses: cnContact.postalAddresses.map { OWSContactAddress(cnLabeledValue: $0) },
-            avatarAttachmentId: nil
         )
     }
 
