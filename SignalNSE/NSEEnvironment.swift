@@ -32,7 +32,7 @@ class NSEEnvironment {
             debugLogger.enableFileLogging(appContext: appContext, canLaunchInBackground: true)
             debugLogger.enableTTYLoggingIfNeeded()
             DebugLogger.registerLibsignal()
-            DebugLogger.registerRingRTC()
+            DebugLogger.registerRingRTC(appContext: appContext)
             didStartAppSetup = true
         }
 

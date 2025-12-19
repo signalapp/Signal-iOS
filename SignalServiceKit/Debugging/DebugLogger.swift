@@ -193,7 +193,7 @@ public final class DebugLogger {
         }())
     }
 
-    public static func registerRingRTC() {
+    public static func registerRingRTC(appContext: any AppContext) {
         let maxLogLevel: RingRTCLogLevel
         #if DEBUG
         if
@@ -202,6 +202,8 @@ public final class DebugLogger {
             let overrideLogLevel = RingRTCLogLevel(rawValue: overrideLogLevelRaw)
         {
             maxLogLevel = overrideLogLevel
+        } else if appContext.isRunningTests {
+            maxLogLevel = .warn
         } else {
             maxLogLevel = .trace
         }
