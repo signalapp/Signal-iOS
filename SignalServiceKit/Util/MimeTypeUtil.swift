@@ -15,6 +15,7 @@ public enum MimeType: String {
     case applicationZip = "application/zip"
     case imageApng = "image/apng"
     case imageBmp = "image/bmp"
+    case imageDng = "image/x-adobe-dng"
     case imageGif = "image/gif"
     case imageHeic = "image/heic"
     case imageHeif = "image/heif"
@@ -65,7 +66,7 @@ public enum MimeTypeUtil {
     public static let supportedAudioUtiTypes: Set<String> = Set(utiTypesForMimeTypes(supportedAudioMimeTypesToExtensionTypes.keys))
     public static let supportedInputImageUtiTypes: Set<String> = Set(utiTypesForMimeTypes(supportedImageMimeTypesToExtensionTypes.keys))
     public static let supportedOutputImageUtiTypes: Set<String> = Set(utiTypesForMimeTypes(supportedImageMimeTypesToExtensionTypes.keys,
-                                                                                           excluding: [MimeType.imageWebp.rawValue, MimeType.imageHeic.rawValue, MimeType.imageHeif.rawValue]))
+                                                                                           excluding: [MimeType.imageWebp.rawValue, MimeType.imageHeic.rawValue, MimeType.imageHeif.rawValue, MimeType.imageDng.rawValue]))
     public static let supportedAnimatedImageUtiTypes: Set<String> = Set(utiTypesForMimeTypes(supportedMaybeAnimatedMimeTypesToExtensionTypes.keys))
     private static func utiTypesForMimeTypes<S: Sequence<String>>(_ mimeTypes: S, excluding excludedMimeTypes: Set<String>? = nil) -> Set<String> {
         var result = Set<String>()
@@ -179,6 +180,7 @@ public enum MimeTypeUtil {
         MimeType.imageXTiff.rawValue: "tif",
         MimeType.imageBmp.rawValue: "bmp",
         MimeType.imageXWindowsBmp.rawValue: "bmp",
+        MimeType.imageDng.rawValue: "dng",
         MimeType.imageHeic.rawValue: "heic",
         MimeType.imageHeif.rawValue: "heif",
         MimeType.imageWebp.rawValue: "webp",
