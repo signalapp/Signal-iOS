@@ -47,7 +47,7 @@ class NSEContext: NSObject, AppContext {
 
     let memoryPressureSource = DispatchSource.makeMemoryPressureSource(
         eventMask: .all,
-        queue: .global()
+        queue: .global(),
     )
 
     override init() {
@@ -88,7 +88,7 @@ class NSEContext: NSObject, AppContext {
     }
 }
 
-fileprivate extension DispatchSourceMemoryPressure {
+private extension DispatchSourceMemoryPressure {
     var memoryEvent: DispatchSource.MemoryPressureEvent {
         DispatchSource.MemoryPressureEvent(rawValue: data)
     }

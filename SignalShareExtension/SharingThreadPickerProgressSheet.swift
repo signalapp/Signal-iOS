@@ -15,7 +15,7 @@ public class SharingThreadPickerProgressSheet: ActionSheetController {
 
     public init(
         attachmentIds: [Attachment.IDType],
-        delegate: ShareViewDelegate?
+        delegate: ShareViewDelegate?,
     ) {
         self.attachmentIds = attachmentIds
         super.init()
@@ -24,7 +24,7 @@ public class SharingThreadPickerProgressSheet: ActionSheetController {
 
         let cancelAction = ActionSheetAction(
             title: CommonStrings.cancelButton,
-            style: .cancel
+            style: .cancel,
         ) { [weak delegate] _ in
             delegate?.shareViewWasCancelled()
         }
@@ -34,7 +34,7 @@ public class SharingThreadPickerProgressSheet: ActionSheetController {
             self,
             selector: #selector(handleAttachmentProgressNotification(_:)),
             name: Upload.Constants.attachmentUploadProgressNotification,
-            object: nil
+            object: nil,
         )
     }
 
@@ -90,7 +90,7 @@ public class SharingThreadPickerProgressSheet: ActionSheetController {
         guard attachmentIds.isEmpty.negated else {
             progressLabel.text = OWSLocalizedString(
                 "MESSAGE_STATUS_SENDING",
-                comment: "message status while message is sending."
+                comment: "message status while message is sending.",
             )
             return
         }
@@ -109,13 +109,13 @@ public class SharingThreadPickerProgressSheet: ActionSheetController {
         progressLabel.text = String(
             format: Self.progressFormat,
             OWSFormat.formatInt(min(totalCompleted + 1, attachmentIds.count)),
-            OWSFormat.formatInt(attachmentIds.count)
+            OWSFormat.formatInt(attachmentIds.count),
         )
     }
 
     private static let progressFormat = OWSLocalizedString(
         "SHARE_EXTENSION_SENDING_IN_PROGRESS_FORMAT",
-        comment: "Send progress for share extension. Embeds {{ %1$@ number of attachments uploaded, %2$@ total number of attachments}}"
+        comment: "Send progress for share extension. Embeds {{ %1$@ number of attachments uploaded, %2$@ total number of attachments}}",
     )
 
     // MARK: Notifications

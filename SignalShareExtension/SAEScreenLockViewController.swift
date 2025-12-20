@@ -110,7 +110,7 @@ final class SAEScreenLockViewController: ScreenLockViewController {
 
                 self.isShowingAuthUI = false
                 self.ensureUI()
-            }
+            },
         )
 
         ensureUI()
@@ -122,13 +122,13 @@ final class SAEScreenLockViewController: ScreenLockViewController {
         OWSActionSheets.showActionSheet(
             title: OWSLocalizedString(
                 "SCREEN_LOCK_UNLOCK_FAILED",
-                comment: "Title for alert indicating that screen lock could not be unlocked."
+                comment: "Title for alert indicating that screen lock could not be unlocked.",
             ),
             buttonAction: { _ in
                 // After the alert, update the UI.
                 self.ensureUI()
             },
-            fromViewController: self
+            fromViewController: self,
         )
     }
 

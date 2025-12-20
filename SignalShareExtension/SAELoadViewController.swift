@@ -3,10 +3,10 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import UIKit
 import PureLayout
 import SignalServiceKit
 import SignalUI
+import UIKit
 
 class SAELoadViewController: UIViewController, OWSNavigationChildController {
 
@@ -73,8 +73,8 @@ class SAELoadViewController: UIViewController, OWSNavigationChildController {
 
         self.view.backgroundColor = (
             self.shouldMimicRecipientPicker
-            ? Theme.tableView2PresentedBackgroundColor
-            : Theme.backgroundColor
+                ? Theme.tableView2PresentedBackgroundColor
+                : Theme.backgroundColor,
         )
 
         let activityIndicator = UIActivityIndicatorView(style: .large)
@@ -96,8 +96,10 @@ class SAELoadViewController: UIViewController, OWSNavigationChildController {
         let label = UILabel()
         label.textColor = Theme.primaryTextColor
         label.font = .systemFont(ofSize: 17)
-        label.text = OWSLocalizedString("SHARE_EXTENSION_LOADING",
-                                       comment: "Indicates that the share extension is still loading.")
+        label.text = OWSLocalizedString(
+            "SHARE_EXTENSION_LOADING",
+            comment: "Indicates that the share extension is still loading.",
+        )
         self.view.addSubview(label)
         label.autoHCenterInSuperview()
         label.autoPinEdge(.top, to: .bottom, of: activityIndicator, withOffset: 12)

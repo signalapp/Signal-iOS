@@ -12,7 +12,7 @@ class NSELogger: PrefixedLogger {
     convenience init() {
         self.init(
             prefix: "[NSE]",
-            suffix: "{{\(UUID().uuidString)}}"
+            suffix: "{{\(UUID().uuidString)}}",
         )
     }
 }

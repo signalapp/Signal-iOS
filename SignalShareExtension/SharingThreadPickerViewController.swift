@@ -24,7 +24,7 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
     /// the attachments end up being incompatible, because it would be weird to
     /// have the stories destinations disappear. Instead, we show an error when
     /// actually sending if stories are selected.
-    public let areAttachmentStoriesCompatPrecheck: Bool
+    let areAttachmentStoriesCompatPrecheck: Bool
 
     var typedItems: [TypedItem] {
         didSet {
@@ -38,7 +38,7 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
 
     private var selectedConversations: [ConversationItem] { selection.conversations }
 
-    public init(areAttachmentStoriesCompatPrecheck: Bool, shareViewDelegate: ShareViewDelegate) {
+    init(areAttachmentStoriesCompatPrecheck: Bool, shareViewDelegate: ShareViewDelegate) {
         self.typedItems = []
         self.areAttachmentStoriesCompatPrecheck = areAttachmentStoriesCompatPrecheck
         self.shareViewDelegate = shareViewDelegate
@@ -52,7 +52,7 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
         self.updateApprovalMode()
     }
 
-    public func presentActionSheetOnNavigationController(_ alert: ActionSheetController) {
+    func presentActionSheetOnNavigationController(_ alert: ActionSheetController) {
         if let navigationController = shareViewDelegate?.shareViewNavigationController {
             navigationController.presentActionSheet(alert)
         } else {
@@ -65,8 +65,8 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
 
         guard
             selectedConversations.count == 1,
-            case .group(let groupThreadId) = selectedConversations.first?.messageRecipient else
-        {
+            case .group(let groupThreadId) = selectedConversations.first?.messageRecipient
+        else {
             mentionCandidates = []
             return
         }
@@ -142,7 +142,7 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
                     profileManager: SSKEnvironment.shared.profileManagerRef,
                     recipientManager: DependenciesBridge.shared.recipientManager,
                     tsAccountManager: DependenciesBridge.shared.tsAccountManager,
-                    tx: tx
+                    tx: tx,
                 )
             }
             let approvalView = ContactShareViewController(contactShareDraft: contactShareDraft)
@@ -161,7 +161,7 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
                     return AttachmentApprovalItem(attachment: attachment, canSave: false)
                 }
             }
-            var approvalVCOptions: AttachmentApprovalViewControllerOptions = withCancelButton ? [ .hasCancel ] : []
+            var approvalVCOptions: AttachmentApprovalViewControllerOptions = withCancelButton ? [.hasCancel] : []
             if self.selection.conversations.contains(where: \.isStory) {
                 approvalVCOptions.insert(.disallowViewOnce)
             }
@@ -234,7 +234,7 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
                         messageBody: destination.messageBody,
                         quotedReplyDraft: nil,
                         linkPreviewDataSource: linkPreviewDataSource,
-                        transaction: tx
+                        transaction: tx,
                     )
                     return try unpreparedMessage.prepare(tx: tx)
                 },
@@ -244,9 +244,9 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
                     try await StorySharing.enqueueTextStory(
                         with: messageBody,
                         linkPreviewDraft: linkPreview,
-                        to: conversations
+                        to: conversations,
                     )
-                }
+                },
             )
         case .contact(let contactShare):
             let contactShareForSending: ContactShareDraft.ForSending
@@ -265,14 +265,14 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
                         thread: destination.thread,
                         expiresInSeconds: dmConfigurationStore.durationSeconds(
                             for: destination.thread,
-                            tx: tx
-                        )
+                            tx: tx,
+                        ),
                     )
                     let message = builder.build(transaction: tx)
                     let unpreparedMessage = UnpreparedOutgoingMessage.forMessage(
                         message,
                         body: nil,
-                        contactShareDraft: contactShareForSending
+                        contactShareDraft: contactShareForSending,
                     )
                     return try unpreparedMessage.prepare(tx: tx)
                 },
@@ -326,7 +326,7 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
         } else {
             let actionSheet = SharingThreadPickerProgressSheet(
                 attachmentIds: attachmentIds,
-                delegate: self.shareViewDelegate
+                delegate: self.shareViewDelegate,
             )
             presentActionSheetOnNavigationController(actionSheet)
             self.sendProgressSheet = actionSheet
@@ -370,14 +370,14 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
                     ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequest(
                         destination.thread,
                         setDefaultTimerIfNecessary: true,
-                        tx: tx
+                        tx: tx,
                     )
                 }
 
                 let sendPromises = preparedMessages.map {
                     ThreadUtil.enqueueMessagePromise(
                         message: $0,
-                        transaction: tx
+                        transaction: tx,
                     )
                 }
                 return (preparedMessages, sendPromises)
@@ -427,9 +427,9 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
 
         let cancelAction = ActionSheetAction(
             title: CommonStrings.cancelButton,
-            style: .cancel
+            style: .cancel,
         ) { [weak self] _ in
-            guard let self = self else { return }
+            guard let self else { return }
             SSKEnvironment.shared.databaseStorageRef.write { transaction in
                 for message in failure.outgoingMessages {
                     // If we sent the message to anyone, mark it as failed
@@ -445,7 +445,7 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
             let untrustedServiceId = untrustedIdentityError.serviceId
             let failureFormat = OWSLocalizedString(
                 "SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT",
-                comment: "alert body when sharing file failed because of untrusted/changed identity keys"
+                comment: "alert body when sharing file failed because of untrusted/changed identity keys",
             )
             let displayName = SSKEnvironment.shared.databaseStorageRef.read { tx in
                 return SSKEnvironment.shared.contactManagerRef.displayName(for: SignalServiceAddress(untrustedServiceId), tx: tx).resolvedValue()
@@ -463,16 +463,16 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
 
             let confirmAction = ActionSheetAction(
                 title: SafetyNumberStrings.confirmSendButton,
-                style: .default
+                style: .default,
             ) { [weak self] _ in
-                guard let self = self else { return }
+                guard let self else { return }
 
                 // Confirm Identity
                 SSKEnvironment.shared.databaseStorageRef.write { transaction in
                     let identityManager = DependenciesBridge.shared.identityManager
                     let verificationState = identityManager.verificationState(
                         for: SignalServiceAddress(untrustedServiceId),
-                        tx: transaction
+                        tx: transaction,
                     )
                     switch verificationState {
                     case .verified:
@@ -488,7 +488,7 @@ class SharingThreadPickerViewController: ConversationPickerViewController {
                             of: identityKey,
                             for: SignalServiceAddress(untrustedServiceId),
                             isUserInitiatedChange: true,
-                            tx: transaction
+                            tx: transaction,
                         )
                     }
                 }

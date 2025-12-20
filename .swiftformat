@@ -6,9 +6,7 @@
 
 # Temporary excludes.
 --exclude Signal
---exclude SignalNSE
 --exclude SignalServiceKit
---exclude SignalShareExtension
 --exclude SignalUI
 
 --swift-version 6.2

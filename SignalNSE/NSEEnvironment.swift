@@ -50,7 +50,7 @@ class NSEEnvironment {
         let databaseStorage = try SDSDatabaseStorage(
             appReadiness: appReadiness,
             databaseFileUrl: SDSDatabaseStorage.grdbDatabaseFileUrl,
-            keychainStorage: keychainStorage
+            keychainStorage: keychainStorage,
         )
         databaseStorage.grdbStorage.setUpDatabasePathKVO()
 
