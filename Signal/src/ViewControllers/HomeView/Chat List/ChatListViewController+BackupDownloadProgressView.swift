@@ -85,12 +85,7 @@ public class CLVBackupDownloadProgressView {
             completeDismissAction: {},
             backupAttachmentDownloadQueueStatusReporter: backupAttachmentDownloadQueueStatusReporter
         )
-        switch downloadState {
-        case nil:
-            return false
-        default:
-            return true
-        }
+        return downloadState != nil
     }
 
     @MainActor
