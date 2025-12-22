@@ -17,21 +17,21 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  # Path format pulled from https://github.com/actions/runner-images/blob/main/images/macos/macos-15-Readme.md#xcode
-  DEVELOPER_DIR: /Applications/Xcode_26.1.app
+  # Path format pulled from https://github.com/actions/runner-images/blob/main/images/macos/macos-26-arm64-Readme.md#xcode
+  DEVELOPER_DIR: /Applications/Xcode_26.2.app
 
 jobs:
   build_and_test:
     name: Build and Test
     timeout-minutes: 20
-    runs-on: macos-15-xlarge
+    runs-on: macos-26-xlarge
     env:
       FASTLANE_XCODEBUILD_SETTINGS_RETRIES: 7
 
     strategy:
       matrix:
         # Add additional Xcode versions here if necessary.
-        xcode: ["Xcode_26.1"]
+        xcode: ["Xcode_26.2"]
 
     steps:
       - name: Set Xcode version
@@ -76,7 +76,7 @@ jobs:
 
     timeout-minutes: 10
 
-    runs-on: macos-15
+    runs-on: macos-26
 
     if: github.event_name == 'pull_request'
 
@@ -94,7 +94,7 @@ jobs:
 
     timeout-minutes: 5
 
-    runs-on: macos-15
+    runs-on: macos-26
 
     if: github.event_name == 'pull_request'
 
