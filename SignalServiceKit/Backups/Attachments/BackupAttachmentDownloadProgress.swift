@@ -93,8 +93,8 @@ public actor BackupAttachmentDownloadProgressImpl: BackupAttachmentDownloadProgr
         let finishedByteCount: UInt64
         (pendingByteCount, finishedByteCount) = db.read { tx -> (UInt64, UInt64) in
             return (
-                backupAttachmentDownloadStore.computeEstimatedRemainingFullsizeByteCount(tx: tx),
-                backupAttachmentDownloadStore.computeEstimatedFinishedFullsizeByteCount(tx: tx),
+                backupAttachmentDownloadStore.computeEstimatedRemainingFullsizeByteCount(tx: tx) ?? 0,
+                backupAttachmentDownloadStore.computeEstimatedFinishedFullsizeByteCount(tx: tx) ?? 0,
             )
         }
         let totalByteCount = pendingByteCount + finishedByteCount
@@ -217,8 +217,8 @@ public actor BackupAttachmentDownloadProgressImpl: BackupAttachmentDownloadProgr
         let finishedByteCount: UInt64
         (pendingByteCount, finishedByteCount) = db.read { tx -> (UInt64, UInt64) in
             return (
-                backupAttachmentDownloadStore.computeEstimatedRemainingFullsizeByteCount(tx: tx),
-                backupAttachmentDownloadStore.computeEstimatedFinishedFullsizeByteCount(tx: tx),
+                backupAttachmentDownloadStore.computeEstimatedRemainingFullsizeByteCount(tx: tx) ?? 0,
+                backupAttachmentDownloadStore.computeEstimatedFinishedFullsizeByteCount(tx: tx) ?? 0,
             )
         }
         let totalByteCount = pendingByteCount + finishedByteCount

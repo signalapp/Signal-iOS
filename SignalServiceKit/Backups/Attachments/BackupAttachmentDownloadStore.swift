@@ -307,8 +307,9 @@ public class BackupAttachmentDownloadStore {
             Logger.info("Deleting all done rows from \(file) \(line): \(function)")
         }
 
-        let byteCountSnapshot = computeEstimatedFinishedFullsizeByteCount(tx: tx)
-        kvStore.setUInt64(byteCountSnapshot, key: self.downloadCompleteBannerByteCountSnapshotKey, transaction: tx)
+        if let byteCountSnapshot = computeEstimatedFinishedFullsizeByteCount(tx: tx) {
+            kvStore.setUInt64(byteCountSnapshot, key: self.downloadCompleteBannerByteCountSnapshotKey, transaction: tx)
+        }
 
         let query = QueuedBackupAttachmentDownload
             .filter(Column(QueuedBackupAttachmentDownload.CodingKeys.state) ==
@@ -319,7 +320,7 @@ public class BackupAttachmentDownloadStore {
         }
     }
 
-    public func computeEstimatedFinishedFullsizeByteCount(tx: DBReadTransaction) -> UInt64 {
+    public func computeEstimatedFinishedFullsizeByteCount(tx: DBReadTransaction) -> UInt64? {
         let sql = """
             SELECT SUM(\(QueuedBackupAttachmentDownload.CodingKeys.estimatedByteCount.rawValue))
             FROM \(QueuedBackupAttachmentDownload.databaseTableName)
@@ -329,11 +330,11 @@ public class BackupAttachmentDownloadStore {
             """
 
         return failIfThrows {
-            try UInt64.fetchOne(tx.database, sql: sql) ?? 0
+            try UInt64.fetchOne(tx.database, sql: sql)
         }
     }
 
-    public func computeEstimatedRemainingFullsizeByteCount(tx: DBReadTransaction) -> UInt64 {
+    public func computeEstimatedRemainingFullsizeByteCount(tx: DBReadTransaction) -> UInt64? {
         let sql = """
             SELECT SUM(\(QueuedBackupAttachmentDownload.CodingKeys.estimatedByteCount.rawValue))
             FROM \(QueuedBackupAttachmentDownload.databaseTableName)
@@ -343,7 +344,7 @@ public class BackupAttachmentDownloadStore {
             """
 
         return failIfThrows {
-            try UInt64.fetchOne(tx.database, sql: sql) ?? 0
+            try UInt64.fetchOne(tx.database, sql: sql)
         }
     }
 
