@@ -38,6 +38,8 @@ public struct ConversationStyle {
 
     public let isWallpaperPhoto: Bool
 
+    public let isStandaloneRenderItem: Bool
+
     private let dynamicBodyTypePointSize: CGFloat
     private let primaryTextColor: UIColor
 
@@ -109,7 +111,8 @@ public struct ConversationStyle {
         viewWidth: CGFloat,
         hasWallpaper: Bool,
         isWallpaperPhoto: Bool,
-        chatColor: ColorOrGradientSetting
+        chatColor: ColorOrGradientSetting,
+        isStandaloneRenderItem: Bool = false
     ) {
         self.type = type
         self.viewWidth = viewWidth
@@ -169,6 +172,8 @@ public struct ConversationStyle {
 
         let kMaxAudioMessageWidth: CGFloat = 244
         maxAudioMessageWidth = floor(min(maxMessageWidth, kMaxAudioMessageWidth))
+
+        self.isStandaloneRenderItem = isStandaloneRenderItem
     }
 
     // MARK: Colors

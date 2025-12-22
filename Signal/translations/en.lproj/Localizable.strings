@@ -6616,6 +6616,9 @@
 /* Action menu item to unpin a message */
 "PINNED_MESSAGES_UNPIN" = "Unpin";
 
+/* Title for a button to unpin all pinned messages. */
+"PINNED_MESSAGES_UNPIN_ALL" = "Unpin All";
+
 /* The title for pinned conversation section on the conversation list */
 "PINNED_SECTION_TITLE" = "Pinned";
 

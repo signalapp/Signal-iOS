@@ -127,7 +127,7 @@ extension ConversationViewController {
 
 private class ConversationBannerView: UIView {
     internal var contentView: UIView & UIContentView
-    private var blurBackgroundView: UIVisualEffectView?
+    var blurBackgroundView: UIVisualEffectView?
 
     public static func fadeInAnimator() -> UIViewPropertyAnimator {
         return UIViewPropertyAnimator(
@@ -1111,8 +1111,9 @@ internal extension ConversationViewController {
         )
 
         let banner = ConversationBannerView(configuration: bannerConfiguration)
+
         let longPressInteraction = UIContextMenuInteraction(delegate: self)
-        banner.addInteraction(longPressInteraction)
+        banner.blurBackgroundView?.addInteraction(longPressInteraction)
 
         // Set up interaction delegate for pin icon menu
         banner.pinnedMessageDelegate = self

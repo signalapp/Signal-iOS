@@ -18,6 +18,9 @@ protocol PinnedMessageInteractionManagerDelegate: AnyObject {
 
     /// Presents the "see all messages" details view.
     func presentSeeAllMessages()
+
+    /// Unpins all messages
+    func unpinAllMessages()
 }
 
 public struct PinnedMessageBannerData {
@@ -354,5 +357,19 @@ extension ConversationViewController: PinnedMessageInteractionManagerDelegate {
         ))
         pmDetailsController.modalPresentationStyle = .pageSheet
         present(pmDetailsController, animated: true)
+    }
+
+    func unpinAllMessages() {
+        Task {
+            for message in threadViewModel.pinnedMessages {
+                await handleActionUnpinAsync(message: message)
+            }
+            presentToast(
+               text: OWSLocalizedString(
+                   "PINNED_MESSAGE_TOAST",
+                   comment: "Text to show on a toast when someone unpins a message"
+               )
+           )
+        }
     }
 }

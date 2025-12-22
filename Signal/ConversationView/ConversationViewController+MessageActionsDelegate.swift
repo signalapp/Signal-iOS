@@ -484,6 +484,30 @@ extension ConversationViewController: MessageActionsDelegate {
         }
     }
 
+    public func handleActionUnpinAsync(message: TSMessage) async {
+        let pinnedMessageManager = DependenciesBridge.shared.pinnedMessageManager
+        let db = DependenciesBridge.shared.db
+
+        let unpinMessage = db.write { tx in
+            pinnedMessageManager.getOutgoingUnpinMessage(
+                interaction: message,
+                thread: thread,
+                expiresAt: nil,
+                tx: tx
+            )
+        }
+        guard let unpinMessage else {
+            return
+        }
+
+        await queuePinMessageChangeWithModal(
+            message: message,
+            pinMessage: unpinMessage,
+            completion: nil
+        )
+    }
+
+
     func messageActionsChangePinStatus(_ itemViewModel: CVItemViewModelImpl, pin: Bool) {
         guard let message = itemViewModel.renderItem.interaction as? TSMessage else {
             return

@@ -144,10 +144,14 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
                     return contentView.rootView
                 }
 
+                let isStandaloneRenderItem = conversationStyle.isStandaloneRenderItem
+
                 // On iOS 26 always use `visual effect` content view for the sticky header.
                 if componentDelegate.isConversationPreview {
                     return buildVisualEffectContentView()
                 } else if hasWallpaper, #unavailable(iOS 26) {
+                    return buildPlainContentView()
+                } else if isStandaloneRenderItem {
                     return buildPlainContentView()
                 } else {
                     let plainContentView = buildPlainContentView()

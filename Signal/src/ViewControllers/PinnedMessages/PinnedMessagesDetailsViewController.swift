@@ -57,6 +57,7 @@ class PinnedMessagesDetailsViewController: OWSViewController, DatabaseChangeDele
         titleStackView.spacing = 4
 
         navigationItem.titleView = titleStackView
+        navigationItem.rightBarButtonItem = .doneButton(dismissingFrom: self)
     }
 
     private func layoutPinnedMessages(tx: DBReadTransaction) {
@@ -112,7 +113,8 @@ class PinnedMessagesDetailsViewController: OWSViewController, DatabaseChangeDele
 
         scrollView.autoPinEdgesToSuperviewEdges()
         paddedContainerView.autoPinEdgesToSuperviewEdges()
-        stack.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16))
+
+        stack.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: 16, left: 16, bottom: 64, right: 16))
         paddedContainerView.autoMatch(.width, to: .width, of: scrollView)
 
     }
@@ -134,6 +136,23 @@ class PinnedMessagesDetailsViewController: OWSViewController, DatabaseChangeDele
         db.read { tx in
             layoutPinnedMessages(tx: tx)
         }
+
+        let unpinAllButton = UIButton(
+            configuration: .largeSecondary(title: OWSLocalizedString(
+                "PINNED_MESSAGES_UNPIN_ALL",
+                comment: "Title for a button to unpin all pinned messages."
+            )),
+            primaryAction: UIAction { [weak self] _ in
+                self?.dismiss(animated: true)
+                self?.delegate?.unpinAllMessages()
+            },
+        )
+        view.addSubview(unpinAllButton)
+        unpinAllButton.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            unpinAllButton.bottomAnchor.constraint(equalTo: contentLayoutGuide.bottomAnchor),
+            unpinAllButton.centerXAnchor.constraint(equalTo: contentLayoutGuide.centerXAnchor),
+        ])
     }
 
     private func buildButtonAndCellStack(renderItem: CVRenderItem, message: TSMessage, reversedIndex: Int) -> UIStackView {
@@ -192,7 +211,8 @@ class PinnedMessagesDetailsViewController: OWSViewController, DatabaseChangeDele
             chatColor: DependenciesBridge.shared.chatColorSettingStore.resolvedChatColor(
                 for: threadViewModel.threadRecord,
                 tx: tx
-            )
+            ),
+            isStandaloneRenderItem: true
         )
 
         return CVLoader.buildStandaloneRenderItem(
@@ -521,7 +541,7 @@ extension PinnedMessagesDetailsViewController: CVComponentDelegate {
         return {}
     }
 
-    var isConversationPreview: Bool { true }
+    var isConversationPreview: Bool { false }
 
     var wallpaperBlurProvider: WallpaperBlurProvider? { nil }
 
