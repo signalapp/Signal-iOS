@@ -629,18 +629,8 @@ public final class ConversationViewController: OWSViewController {
 
     public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         AssertIsOnMainThread()
-
         self.updateBarButtonItems()
         self.updateNavigationBarSubtitleLabel()
-
-        // Invoking -ensureBannerState synchronously can lead to reenterant updates to the
-        // trait collection while building the banners. This can lead us to blow out the stack
-        // on unrelated trait collection changes (e.g. rotating to landscape).
-        // We workaround this by just asyncing any banner updates to break the synchronous
-        // dependency chain.
-        DispatchQueue.main.async {
-            self.ensureBannerState()
-        }
     }
 
     public override func viewSafeAreaInsetsDidChange() {

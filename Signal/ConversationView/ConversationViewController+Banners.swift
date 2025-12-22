@@ -137,6 +137,21 @@ private class ConversationBannerView: UIView {
         )
     }
 
+    var pinnedMessageDelegate: PinnedMessageInteractionManagerDelegate? {
+        get {
+            guard let _contentView = contentView as? ConversationBannerContentView else {
+                return nil
+            }
+            return _contentView.pinnedMessageInteractionDelegate
+        }
+        set {
+            guard let _contentView = contentView as? ConversationBannerContentView else {
+                return
+            }
+            _contentView.pinnedMessageInteractionDelegate = newValue
+        }
+    }
+
     /// Contains all the information necessary to construct any banner.
     struct ContentConfiguration: UIContentConfiguration {
         /// Text displayed on the top row of the banner.
@@ -163,9 +178,6 @@ private class ConversationBannerView: UIView {
         /// Small view displayed at the leading edge of the banner.
         let leadingAccessoryView: UIView?
 
-        /// Small view displayed at the trailing edge of the banner.
-        let trailingAccessoryView: UIView?
-
         /// Action to perform when the entire banner is tapped.
         /// Banner will not be tappable if this is nil.
         var bannerTapAction: (() -> Void)?
@@ -182,6 +194,7 @@ private class ConversationBannerView: UIView {
     }
 
     private class ConversationBannerContentView: UIStackView, UIContentView {
+        weak var pinnedMessageInteractionDelegate: PinnedMessageInteractionManagerDelegate?
 
         var configuration: any UIContentConfiguration {
             get { _configuration }
@@ -326,22 +339,69 @@ private class ConversationBannerView: UIView {
                 directionalLayoutMargins.trailing = 4 // 10 total with button's content padding
             }
 
-            if let trailingAccessoryView = configuration.trailingAccessoryView {
-                let trailingAccessoryContainerView = UIView.container()
-                trailingAccessoryContainerView.addSubview(trailingAccessoryView)
-                trailingAccessoryView.translatesAutoresizingMaskIntoConstraints = false
+            if configuration.isPinnedMessagesBanner {
+                let button: UIButton
+                if #available(iOS 26.0, *) {
+                    button = UIButton(configuration: .clearGlass())
+                } else {
+                    button = UIButton(configuration: .plain())
+                }
+                button.configuration?.image = .pin
+                button.configuration?.cornerStyle = .capsule
+                button.configuration?.contentInsets = .init(margin: 6)
+                button.accessibilityLabel = OWSLocalizedString(
+                    "PINNED_MESSAGE_MENU_ACCESSIBILITY_LABEL",
+                    comment: "Accessibility label for pin message button"
+                )
+                button.setCompressionResistanceHigh()
+                button.setContentHuggingHigh()
+
+                button.menu = pinMessageMenu()
+                button.showsMenuAsPrimaryAction = true
+                button.backgroundColor = Theme.secondaryBackgroundColor
+
+                let buttonContainer = UIView.container()
+                buttonContainer.addSubview(button)
+                button.translatesAutoresizingMaskIntoConstraints = false
                 NSLayoutConstraint.activate([
-                    trailingAccessoryView.topAnchor.constraint(greaterThanOrEqualTo: trailingAccessoryContainerView.topAnchor),
-                    trailingAccessoryView.centerYAnchor.constraint(equalTo: trailingAccessoryContainerView.centerYAnchor),
-                    trailingAccessoryView.leadingAnchor.constraint(equalTo: trailingAccessoryContainerView.leadingAnchor),
-                    trailingAccessoryView.trailingAnchor.constraint(equalTo: trailingAccessoryContainerView.trailingAnchor),
+                    button.topAnchor.constraint(greaterThanOrEqualTo: buttonContainer.topAnchor),
+                    button.centerYAnchor.constraint(equalTo: buttonContainer.centerYAnchor),
+                    button.leadingAnchor.constraint(equalTo: buttonContainer.leadingAnchor),
+                    button.trailingAnchor.constraint(equalTo: buttonContainer.trailingAnchor),
                 ])
-                addArrangedSubview(trailingAccessoryContainerView)
+                addArrangedSubview(buttonContainer)
+
+                directionalLayoutMargins.trailing = 4 // 10 total with button's content padding
             }
 
             if configuration.bannerTapAction != nil {
                 addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapBanner)))
             }
+        }
+
+        private func pinMessageMenu() -> UIMenu {
+            return UIMenu(children: [
+                UIAction(
+                    title: OWSLocalizedString(
+                        "PINNED_MESSAGES_UNPIN",
+                        comment: "Action menu item to unpin a message"
+                    ), image: .pinSlash) { [weak self] _ in
+                        self?.pinnedMessageInteractionDelegate?.unpinMessage(message: nil)
+                },
+                UIAction(
+                    title: OWSLocalizedString(
+                        "PINNED_MESSAGES_GO_TO_MESSAGE",
+                        comment: "Action menu item to go to a message in the conversation view"
+                    ), image: .chatArrow) { [weak self] _ in
+                        self?.pinnedMessageInteractionDelegate?.goToMessage(message: nil)
+                },
+                UIAction(title: OWSLocalizedString(
+                    "PINNED_MESSAGES_SEE_ALL_MESSAGES",
+                    comment: "Action menu item to see all pinned messages"
+                ), image: .listBullet) { [weak self] _ in
+                    self?.pinnedMessageInteractionDelegate?.presentSeeAllMessages()
+                }
+            ])
         }
 
         private func animatePinnedMessageTransition(newTitle: String, newBody: NSAttributedString, newThumbnail: UIImageView?) {
@@ -643,7 +703,6 @@ private extension ConversationViewController {
                 self.ensureBannerState()
             },
             leadingAccessoryView: DoubleProfileImageView(primaryImage: avatar1, secondaryImage: avatar2),
-            trailingAccessoryView: nil,
             isPinnedMessagesBanner: false
         )
 
@@ -737,7 +796,6 @@ private extension ConversationViewController {
                 )
             },
             leadingAccessoryView: DoubleProfileImageView(primaryImage: avatar1, secondaryImage: avatar2),
-            trailingAccessoryView: nil,
             isPinnedMessagesBanner: false
         )
 
@@ -905,7 +963,6 @@ private extension ConversationViewController {
                 imageView.setCompressionResistanceHigh()
                 return imageView
             }(),
-            trailingAccessoryView: nil,
             isPinnedMessagesBanner: false
         )
         return ConversationBannerView(configuration: bannerConfiguration)
@@ -971,7 +1028,6 @@ private extension ConversationViewController {
                 imageView.setCompressionResistanceHigh()
                 return imageView
             }(),
-            trailingAccessoryView: nil,
             isPinnedMessagesBanner: false
         )
 
@@ -1042,13 +1098,6 @@ internal extension ConversationViewController {
             viewButtonAction: nil,
             dismissButtonAction: nil,
             leadingAccessoryView: pinnedMessageLeadingAccessoryView(),
-            trailingAccessoryView: {
-                let imageView = UIImageView(image: UIImage(named: "pin"))
-                imageView.tintColor = .Signal.label
-                imageView.setContentHuggingHigh()
-                imageView.setCompressionResistanceHigh()
-                return imageView
-            }(),
             bannerTapAction: { [weak self] in
                 guard let priorPinnedMessage = self?.bannerStackView?.arrangedSubviews.last as? ConversationBannerView else {
                     return
@@ -1064,6 +1113,9 @@ internal extension ConversationViewController {
         let banner = ConversationBannerView(configuration: bannerConfiguration)
         let longPressInteraction = UIContextMenuInteraction(delegate: self)
         banner.addInteraction(longPressInteraction)
+
+        // Set up interaction delegate for pin icon menu
+        banner.pinnedMessageDelegate = self
 
         return banner
     }

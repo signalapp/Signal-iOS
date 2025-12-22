@@ -6,6 +6,20 @@
 import SignalUI
 public import SignalServiceKit
 
+protocol PinnedMessageInteractionManagerDelegate: AnyObject {
+
+    /// Scrolls to the message specified.
+    /// If nil, scrolls to the message found at pinnedMessageIndex, the current one displayed in the UI banner.
+    func goToMessage(message: TSMessage?)
+
+    /// Unpins the message specified.
+    /// If nil, unpins the message found at pinnedMessageIndex, the current one displayed in the UI banner.
+    func unpinMessage(message: TSMessage?)
+
+    /// Presents the "see all messages" details view.
+    func presentSeeAllMessages()
+}
+
 public struct PinnedMessageBannerData {
     let authorName: String
     let previewText: NSAttributedString
@@ -200,7 +214,7 @@ public extension ConversationViewController {
         let attachmentDescription = mediaAttachment?.previewText(includeEmoji: false)
         if let attachmentDescription = attachmentDescription?.nilIfEmpty {
             if let attachmentIcon {
-                return attachmentIcon + NSAttributedString(string: attachmentDescription)
+                return attachmentIcon  + " " + NSAttributedString(string: attachmentDescription)
             }
             return NSAttributedString(string: attachmentDescription)
         }
@@ -289,17 +303,7 @@ extension ConversationViewController: UIContextMenuInteractionDelegate {
                     "PINNED_MESSAGES_SEE_ALL_MESSAGES",
                     comment: "Action menu item to see all pinned messages"
                 ), image: .listBullet) { [weak self] _ in
-                    guard let self else { return }
-                    let pmDetailsController = UINavigationController(rootViewController: PinnedMessagesDetailsViewController(
-                        pinnedMessages: threadViewModel.pinnedMessages,
-                        threadViewModel: threadViewModel,
-                        database: DependenciesBridge.shared.db,
-                        delegate: self,
-                        databaseChangeObserver: DependenciesBridge.shared.databaseChangeObserver,
-                        pinnedMessageManager: DependenciesBridge.shared.pinnedMessageManager
-                    ))
-                    pmDetailsController.modalPresentationStyle = .pageSheet
-                    present(pmDetailsController, animated: true)
+                    self?.presentSeeAllMessages()
                 }
             ])
         }
@@ -307,15 +311,48 @@ extension ConversationViewController: UIContextMenuInteractionDelegate {
 }
 
 extension ConversationViewController: PinnedMessageInteractionManagerDelegate {
-    func goToMessage(message: TSMessage) {
+    func goToMessage(message: TSMessage?) {
+        let targetMessage: TSMessage
+        if let message {
+            targetMessage = message
+        } else {
+            guard threadViewModel.pinnedMessages.indices.contains(pinnedMessageIndex) else {
+                return
+            }
+            targetMessage = threadViewModel.pinnedMessages[pinnedMessageIndex]
+        }
+
         ensureInteractionLoadedThenScrollToInteraction(
-            message.uniqueId,
+            targetMessage.uniqueId,
             alignment: .centerIfNotEntirelyOnScreen,
             isAnimated: true
         )
     }
 
-    func unpinMessage(message: TSMessage) {
-        handleActionUnpin(message: message)
+    func unpinMessage(message: TSMessage?) {
+        let messageToUnpin: TSMessage
+        if let message {
+            messageToUnpin = message
+        } else {
+            guard threadViewModel.pinnedMessages.indices.contains(pinnedMessageIndex) else {
+                return
+            }
+            messageToUnpin = threadViewModel.pinnedMessages[pinnedMessageIndex]
+        }
+
+        handleActionUnpin(message: messageToUnpin)
+    }
+
+    func presentSeeAllMessages() {
+        let pmDetailsController = UINavigationController(rootViewController: PinnedMessagesDetailsViewController(
+            pinnedMessages: threadViewModel.pinnedMessages,
+            threadViewModel: threadViewModel,
+            database: DependenciesBridge.shared.db,
+            delegate: self,
+            databaseChangeObserver: DependenciesBridge.shared.databaseChangeObserver,
+            pinnedMessageManager: DependenciesBridge.shared.pinnedMessageManager
+        ))
+        pmDetailsController.modalPresentationStyle = .pageSheet
+        present(pmDetailsController, animated: true)
     }
 }

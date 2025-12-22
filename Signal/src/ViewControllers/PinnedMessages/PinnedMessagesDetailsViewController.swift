@@ -7,12 +7,6 @@ import LibSignalClient
 import SignalServiceKit
 import SignalUI
 
-@objc
-protocol PinnedMessageInteractionManagerDelegate: AnyObject {
-    func goToMessage(message: TSMessage)
-    func unpinMessage(message: TSMessage)
-}
-
 class PinnedMessagesDetailsViewController: OWSViewController, DatabaseChangeDelegate, PinnedMessageLongPressDelegate.ActionDelegate {
     private var pinnedMessages: [TSMessage]
     private let threadViewModel: ThreadViewModel
