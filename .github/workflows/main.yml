@@ -105,7 +105,7 @@ jobs:
         run: git fetch origin --depth 1 ${{ github.base_ref }}
 
       - name: Install Dependencies
-        run: brew install clang-format swiftformat
+        run: brew install clang-format
 
       - name: Run precommit on files changed in the PR
         run: |
