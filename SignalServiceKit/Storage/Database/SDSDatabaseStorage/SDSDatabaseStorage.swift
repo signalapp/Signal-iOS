@@ -24,6 +24,7 @@ public class SDSDatabaseStorage: NSObject, DB {
     private let _databaseChangeObserver: SDSDatabaseChangeObserver
 
     public let databaseFileUrl: URL
+    public let keychainStorage: any KeychainStorage
     public let keyFetcher: GRDBKeyFetcher
 
     private(set) public var grdbStorage: GRDBDatabaseStorageAdapter
@@ -33,6 +34,7 @@ public class SDSDatabaseStorage: NSObject, DB {
         self.appReadiness = appReadiness
         self._databaseChangeObserver = DatabaseChangeObserverImpl(appReadiness: appReadiness)
         self.databaseFileUrl = databaseFileUrl
+        self.keychainStorage = keychainStorage
         self.keyFetcher = GRDBKeyFetcher(keychainStorage: keychainStorage)
         self.grdbStorage = try GRDBDatabaseStorageAdapter(
             databaseChangeObserver: _databaseChangeObserver,

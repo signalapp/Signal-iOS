@@ -4,6 +4,10 @@ LOG_DIR="$HOME/Library/Logs/Signal-CI"
 rm -rf "$LOG_DIR"
 mkdir -p "$LOG_DIR"
 
+SCHEMA_DIR="$HOME/Library/Signal-iOS-Schema"
+rm -rf "$SCHEMA_DIR"
+mkdir -p "$SCHEMA_DIR"
+
 echo
 echo "Available iOS Simulator runtimes:"
 xcrun simctl list runtimes
@@ -28,7 +32,7 @@ echo "Using simulator: $LATEST_IOS_SIM_ID"
 
 echo
 set -o pipefail \
-&& NSUnbufferedIO=YES xcodebuild \
+&& NSUnbufferedIO=YES TEST_RUNNER_SCHEMA_DUMP_PATH="$SCHEMA_DIR/schema.json" xcodebuild \
   -workspace Signal.xcworkspace \
   -scheme Signal \
   -destination "platform=iOS Simulator,id=$LATEST_IOS_SIM_ID" \

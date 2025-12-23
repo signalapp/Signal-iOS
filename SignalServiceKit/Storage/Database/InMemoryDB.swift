@@ -16,36 +16,19 @@ public final class InMemoryDB: DB {
     let databaseQueue: DatabaseQueue
 
     public init() {
-        self.databaseQueue = DatabaseQueue()
-
-        let schemaUrl: URL
-        if
-            let urlInNormalPlace = Bundle(for: GRDBSchemaMigrator.self)
-                .url(forResource: "schema", withExtension: "sql")
-        {
-            schemaUrl = urlInNormalPlace
-        } else if
-            let urlInWonkyPlace = Bundle(for: GRDBSchemaMigrator.self)
-                .url(forResource: "schema", withExtension: "sql", subdirectory: "Frameworks/SignalServiceKit.framework")
-        {
-            /// There's what appears to be a bug in Xcode 16.3, in which for
-            /// Xcode Previews, sometimes, the Bundle returned for SSK types
-            /// refers to the top-level app bundle, not the SSK bundle.
-            /// Searching in that bundle will fail to find `schema.sql`; so
-            /// instead manually search in the SSK subdirectory.
-            ///
-            /// If we go a while without noticing the warning print below, we
-            /// can remove this and see what happens.
-            ///
-            /// Note that Logger doesn't work in Xcode Previews, hence print!
-            print("Warning: needed to use fallback schema.sql location!")
-            schemaUrl = urlInWonkyPlace
-        } else {
-            owsFail("Failed to find schema.sql in Bundle!")
-        }
-
-        try! databaseQueue.write { try $0.execute(sql: try String(contentsOf: schemaUrl)) }
+        var configuration = GRDB.Configuration()
+        configuration.acceptsDoubleQuotedStringLiterals = true
+        self.databaseQueue = DatabaseQueue(configuration: configuration)
+        try! Self.emptyDb.backup(to: self.databaseQueue)
     }
+
+    private static let emptyDb: DatabaseQueue = {
+        var configuration = GRDB.Configuration()
+        configuration.acceptsDoubleQuotedStringLiterals = true
+        let databaseQueue = DatabaseQueue(configuration: configuration)
+        try! GRDBSchemaMigrator.runIncrementalMigrations(databaseWriter: databaseQueue)
+        return databaseQueue
+    }()
 
     // MARK: - Protocol
 

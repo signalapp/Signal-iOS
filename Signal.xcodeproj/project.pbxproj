@@ -3453,7 +3453,6 @@
 		F9A392B9297F2ED5007964E5 /* SpamReportingTokenRecordTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9A392B8297F2ED5007964E5 /* SpamReportingTokenRecordTest.swift */; };
 		F9A8ACC7280A175E00AFC6A7 /* DonationSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9A8ACC6280A175E00AFC6A7 /* DonationSettingsViewController.swift */; };
 		F9AE695328F046E40012E9C9 /* OWSFingerprintTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9AE695228F046E40012E9C9 /* OWSFingerprintTest.swift */; };
-		F9B0DC4F28948656004E07B7 /* schema.sql in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC3C28948656004E07B7 /* schema.sql */; };
 		F9B0DC5328948656004E07B7 /* isrgrootx1.crt in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC4128948656004E07B7 /* isrgrootx1.crt */; };
 		F9B0DC5528948656004E07B7 /* GSR2.crt in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC4328948656004E07B7 /* GSR2.crt */; };
 		F9B0DC5728948656004E07B7 /* GSR4.crt in Resources */ = {isa = PBXBuildFile; fileRef = F9B0DC4528948656004E07B7 /* GSR4.crt */; };
@@ -7647,7 +7646,6 @@
 		F9A392B8297F2ED5007964E5 /* SpamReportingTokenRecordTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpamReportingTokenRecordTest.swift; sourceTree = "<group>"; };
 		F9A8ACC6280A175E00AFC6A7 /* DonationSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationSettingsViewController.swift; sourceTree = "<group>"; };
 		F9AE695228F046E40012E9C9 /* OWSFingerprintTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSFingerprintTest.swift; sourceTree = "<group>"; };
-		F9B0DC3C28948656004E07B7 /* schema.sql */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = schema.sql; sourceTree = "<group>"; };
 		F9B0DC4128948656004E07B7 /* isrgrootx1.crt */ = {isa = PBXFileReference; lastKnownFileType = file; path = isrgrootx1.crt; sourceTree = "<group>"; };
 		F9B0DC4328948656004E07B7 /* GSR2.crt */ = {isa = PBXFileReference; lastKnownFileType = file; path = GSR2.crt; sourceTree = "<group>"; };
 		F9B0DC4528948656004E07B7 /* GSR4.crt */ = {isa = PBXFileReference; lastKnownFileType = file; path = GSR4.crt; sourceTree = "<group>"; };
@@ -14149,7 +14147,6 @@
 			isa = PBXGroup;
 			children = (
 				F9B0DC3D28948656004E07B7 /* Certificates */,
-				F9B0DC3C28948656004E07B7 /* schema.sql */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -15873,7 +15870,6 @@
 				F9B0DC5C28948656004E07B7 /* GTSR3.crt in Resources */,
 				F9B0DC5F28948656004E07B7 /* GTSR4.crt in Resources */,
 				F9B0DC5328948656004E07B7 /* isrgrootx1.crt in Resources */,
-				F9B0DC4F28948656004E07B7 /* schema.sql in Resources */,
 				F9B0DC5928948656004E07B7 /* signal-messenger.cer in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -12,11 +12,8 @@ import XCTest
 final class DatabaseRecoveryTest: SSKBaseTest {
     // MARK: - Setup
 
-    private var keychainStorage: MockKeychainStorage!
-
     override func setUp() {
         super.setUp()
-        self.keychainStorage = MockKeychainStorage()
         SSKEnvironment.shared.databaseStorageRef.write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
                 localIdentifiers: .forUnitTests,
@@ -29,32 +26,24 @@ final class DatabaseRecoveryTest: SSKBaseTest {
         return try SDSDatabaseStorage(
             appReadiness: AppReadinessMock(),
             databaseFileUrl: databaseStorage.databaseFileUrl,
-            keychainStorage: keychainStorage
+            keychainStorage: databaseStorage.keychainStorage,
         )
     }
 
     // MARK: - Reindex existing database
 
     func testReindexExistingDatabase() throws {
-        let databaseStorage = try newDatabase(keychainStorage: keychainStorage)
+        let databaseStorage = try newDatabase()
         try GRDBSchemaMigrator.migrateDatabase(databaseStorage: databaseStorage)
+        let oldRowCounts = try normalTableRowCounts(databaseStorage: databaseStorage)
         try XCTUnwrap(databaseStorage.grdbStorage.pool.close())
 
         DatabaseRecovery.reindex(databaseStorage: try cloneDatabaseStorage(databaseStorage))
 
-        // As a smoke test, ensure that the database is still empty.
+        // As a smoke test, ensure that the database has the same number of rows.
         let finishedDatabaseStorage = try cloneDatabaseStorage(databaseStorage)
-        finishedDatabaseStorage.read { transaction in
-            let database = transaction.database
-            for tableName in allNormalTableNames(transaction: transaction) {
-                let sql = "SELECT EXISTS (SELECT 1 FROM \(tableName))"
-                guard let anyRowExists = try? XCTUnwrap(Bool.fetchOne(database, sql: sql)) else {
-                    XCTFail("Could not fetch boolean from test query")
-                    return
-                }
-                XCTAssertFalse(anyRowExists, "\(tableName) had at least one row, unexpectedly")
-            }
-        }
+        let newRowCounts = try normalTableRowCounts(databaseStorage: finishedDatabaseStorage)
+        XCTAssertEqual(newRowCounts, oldRowCounts)
     }
 
     // MARK: - Dump and restore
@@ -73,18 +62,16 @@ final class DatabaseRecoveryTest: SSKBaseTest {
         }
 
         let expectedTableNames: Set<String> = try {
-            let databaseStorage = try newDatabase(keychainStorage: keychainStorage)
-            try GRDBSchemaMigrator.migrateDatabase(databaseStorage: databaseStorage)
-            return databaseStorage.read { allNormalTableNames(transaction: $0) }
+            let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+            return try databaseStorage.read { try allNormalTableNames(tx: $0) }
         }()
         XCTAssertEqual(allTableNamesSet, expectedTableNames)
     }
 
     func testColumnSafety() throws {
-        let databaseStorage = try newDatabase(keychainStorage: keychainStorage)
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
         let tableNames: Set<String> = try {
-            try GRDBSchemaMigrator.migrateDatabase(databaseStorage: databaseStorage)
-            return databaseStorage.read { allNormalTableNames(transaction: $0) }
+            return try databaseStorage.read { try allNormalTableNames(tx: $0) }
         }()
 
         for tableName in tableNames {
@@ -98,38 +85,38 @@ final class DatabaseRecoveryTest: SSKBaseTest {
         }
     }
 
+    private func normalTableRowCounts(databaseStorage: SDSDatabaseStorage) throws -> [String: Int] {
+        return try databaseStorage.read { (tx) throws -> [String: Int] in
+            var result = [String: Int]()
+            for tableName in try allNormalTableNames(tx: tx) {
+                let sql = "SELECT COUNT(*) FROM \(tableName)"
+                let rowCount = try XCTUnwrap(Int.fetchOne(tx.database, sql: sql))
+                result[tableName] = rowCount
+            }
+            return result
+        }
+    }
+
     func testDumpAndRestoreOfEmptyDatabase() throws {
-        let databaseStorage = try newDatabase(keychainStorage: keychainStorage)
+        let databaseStorage = try newDatabase()
         try GRDBSchemaMigrator.migrateDatabase(databaseStorage: databaseStorage)
+        let oldRowCounts = try normalTableRowCounts(databaseStorage: databaseStorage)
         try XCTUnwrap(databaseStorage.grdbStorage.pool.close())
 
         let dump = DatabaseRecovery.DumpAndRestoreOperation(
             appReadiness: AppReadinessMock(),
             corruptDatabaseStorage: try cloneDatabaseStorage(databaseStorage),
-            keychainStorage: keychainStorage
+            keychainStorage: databaseStorage.keychainStorage,
         )
         try XCTUnwrap(dump.run())
 
-        let finishedDatabaseStorage = try SDSDatabaseStorage(
-            appReadiness: AppReadinessMock(),
-            databaseFileUrl: databaseStorage.databaseFileUrl,
-            keychainStorage: keychainStorage
-        )
-        finishedDatabaseStorage.read { transaction in
-            let database = transaction.database
-            for tableName in allNormalTableNames(transaction: transaction) {
-                let sql = "SELECT EXISTS (SELECT 1 FROM \(tableName))"
-                guard let anyRowExists = try? XCTUnwrap(Bool.fetchOne(database, sql: sql)) else {
-                    XCTFail("Could not fetch boolean from test query")
-                    return
-                }
-                XCTAssertFalse(anyRowExists, "\(tableName) had at least one row, unexpectedly")
-            }
-        }
+        let finishedDatabaseStorage = try cloneDatabaseStorage(databaseStorage)
+        let newRowCounts = try normalTableRowCounts(databaseStorage: finishedDatabaseStorage)
+        XCTAssertEqual(newRowCounts, oldRowCounts)
     }
 
     func testDumpAndRestoreOnHappyDatabase() throws {
-        let databaseStorage = try newDatabase(keychainStorage: keychainStorage)
+        let databaseStorage = try newDatabase()
         try GRDBSchemaMigrator.migrateDatabase(databaseStorage: databaseStorage)
 
         let contactAci = Aci.randomForTesting()
@@ -186,14 +173,14 @@ final class DatabaseRecoveryTest: SSKBaseTest {
         let dump = DatabaseRecovery.DumpAndRestoreOperation(
             appReadiness: AppReadinessMock(),
             corruptDatabaseStorage: try cloneDatabaseStorage(databaseStorage),
-            keychainStorage: keychainStorage
+            keychainStorage: databaseStorage.keychainStorage,
         )
         try XCTUnwrap(dump.run())
 
         let finishedDatabaseStorage = try SDSDatabaseStorage(
             appReadiness: AppReadinessMock(),
             databaseFileUrl: databaseStorage.databaseFileUrl,
-            keychainStorage: keychainStorage
+            keychainStorage: databaseStorage.keychainStorage,
         )
         finishedDatabaseStorage.read { transaction in
             // Thread
@@ -255,7 +242,7 @@ final class DatabaseRecoveryTest: SSKBaseTest {
     }
 
     func testDumpAndRestoreWithInvalidEssentialTable() throws {
-        let databaseStorage = try newDatabase(keychainStorage: keychainStorage)
+        let databaseStorage = try newDatabase()
         try GRDBSchemaMigrator.migrateDatabase(databaseStorage: databaseStorage)
         databaseStorage.write { transaction in
             try! transaction.database.drop(table: KeyValueStore.tableName)
@@ -265,7 +252,7 @@ final class DatabaseRecoveryTest: SSKBaseTest {
         let dump = DatabaseRecovery.DumpAndRestoreOperation(
             appReadiness: AppReadinessMock(),
             corruptDatabaseStorage: try cloneDatabaseStorage(databaseStorage),
-            keychainStorage: keychainStorage
+            keychainStorage: databaseStorage.keychainStorage,
         )
         XCTAssertThrowsError(try dump.run()) { error in
             XCTAssertEqual(
@@ -276,7 +263,7 @@ final class DatabaseRecoveryTest: SSKBaseTest {
     }
 
     func testDumpAndRestoreWithInvalidNonessentialTable() throws {
-        let databaseStorage = try newDatabase(keychainStorage: keychainStorage)
+        let databaseStorage = try newDatabase()
         try GRDBSchemaMigrator.migrateDatabase(databaseStorage: databaseStorage)
         databaseStorage.write { transaction in
             try! transaction.database.drop(table: OWSReaction.databaseTableName)
@@ -286,14 +273,14 @@ final class DatabaseRecoveryTest: SSKBaseTest {
         let dump = DatabaseRecovery.DumpAndRestoreOperation(
             appReadiness: AppReadinessMock(),
             corruptDatabaseStorage: try cloneDatabaseStorage(databaseStorage),
-            keychainStorage: keychainStorage
+            keychainStorage: databaseStorage.keychainStorage,
         )
         try XCTUnwrap(dump.run())
 
         let finishedDatabaseStorage = try SDSDatabaseStorage(
             appReadiness: AppReadinessMock(),
             databaseFileUrl: databaseStorage.databaseFileUrl,
-            keychainStorage: keychainStorage
+            keychainStorage: databaseStorage.keychainStorage,
         )
         finishedDatabaseStorage.read { transaction in
             let sql = "SELECT EXISTS (SELECT 1 FROM \(OWSReaction.databaseTableName))"
@@ -309,7 +296,7 @@ final class DatabaseRecoveryTest: SSKBaseTest {
     // MARK: - Manual restoration
 
     func testFullTextSearchRestoration() throws {
-        let databaseStorage = try newDatabase(keychainStorage: keychainStorage)
+        let databaseStorage = try newDatabase()
         try GRDBSchemaMigrator.migrateDatabase(databaseStorage: databaseStorage)
 
         databaseStorage.write { transaction in
@@ -335,14 +322,14 @@ final class DatabaseRecoveryTest: SSKBaseTest {
         let dump = DatabaseRecovery.DumpAndRestoreOperation(
             appReadiness: AppReadinessMock(),
             corruptDatabaseStorage: try cloneDatabaseStorage(databaseStorage),
-            keychainStorage: keychainStorage
+            keychainStorage: databaseStorage.keychainStorage,
         )
         try XCTUnwrap(dump.run())
 
         let finishedDatabaseStorage = try SDSDatabaseStorage(
             appReadiness: AppReadinessMock(),
             databaseFileUrl: databaseStorage.databaseFileUrl,
-            keychainStorage: keychainStorage
+            keychainStorage: databaseStorage.keychainStorage,
         )
 
         let recreateFTSIndex = DatabaseRecovery.RecreateFTSIndexOperation(databaseStorage: finishedDatabaseStorage)
@@ -370,18 +357,18 @@ final class DatabaseRecoveryTest: SSKBaseTest {
 
     let validTableOrColumnNameRegex = "^[a-zA-Z][a-zA-Z0-9_]+$"
 
-    func newDatabase(keychainStorage: any KeychainStorage) throws -> SDSDatabaseStorage {
+    func newDatabase() throws -> SDSDatabaseStorage {
         return try SDSDatabaseStorage(
             appReadiness: AppReadinessMock(),
             databaseFileUrl: OWSFileSystem.temporaryFileUrl(),
-            keychainStorage: keychainStorage
+            keychainStorage: MockKeychainStorage(),
         )
     }
 
-    func allNormalTableNames(transaction: DBReadTransaction) -> Set<String> {
-        let db = transaction.database
+    func allNormalTableNames(tx: DBReadTransaction) throws -> Set<String> {
+        let db = tx.database
         let sql = "SELECT name FROM sqlite_schema WHERE type IS 'table'"
-        let allTableNames = Set((try? String.fetchAll(db, sql: sql)) ?? [])
+        let allTableNames = Set(try String.fetchAll(db, sql: sql))
         owsPrecondition(!allTableNames.isEmpty, "No tables were found!")
 
         let tableNamesToSkip: Set<String> = ["grdb_migrations", "sqlite_sequence"]

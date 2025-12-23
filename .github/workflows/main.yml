@@ -71,6 +71,16 @@ jobs:
           name: Logs
           path: ~/Library/Logs/Signal-CI
 
+      - name: Normalize database schema
+        run: |
+          touch -d 2026-01-01T00:00:00 ~/Library/Signal-iOS-Schema/schema.json
+
+      - name: Upload database schema
+        uses: actions/upload-artifact@v4
+        with:
+          name: Database Schema
+          path: ~/Library/Signal-iOS-Schema
+
   check_autogenstrings:
     name: Check if strings file is outdated
 

@@ -79,6 +79,7 @@ public enum DatabaseRecovery {
         private let unitCountForNewDatabaseCreation: Int64 = 1
         private let unitCountForBestEffortCopy = Int64(DumpAndRestoreOperation.tablesToCopyWithBestEffort.count)
         private let unitCountForFlawlessCopy = Int64(DumpAndRestoreOperation.tablesThatMustBeCopiedFlawlessly.count)
+        private let unitCountForMigrationIds: Int64 = 1
         private let unitCountForNewDatabasePromotion: Int64 = 3
 
         public let progress: Progress
@@ -93,6 +94,7 @@ public enum DatabaseRecovery {
                 unitCountForNewDatabaseCreation +
                 unitCountForBestEffortCopy +
                 unitCountForFlawlessCopy +
+                unitCountForMigrationIds +
                 unitCountForNewDatabasePromotion
             )
             self.progress = Progress(totalUnitCount: totalUnitCount)
@@ -125,7 +127,12 @@ public enum DatabaseRecovery {
             }
 
             progress.performAsCurrent(withPendingUnitCount: unitCountForOldDatabaseMigration) {
-                try? Self.runMigrationsOn(databaseStorage: oldDatabaseStorage, databaseIs: .old)
+                do {
+                    logger.info("Running migrations on old database...")
+                    try Self.runMigrationsOn(databaseStorage: oldDatabaseStorage)
+                } catch {
+                    Logger.warn("Couldn't migrate existing database. Repair will probably fail because of an incompatible schema")
+                }
             }
 
             let newTemporaryDatabaseFileUrl = Self.temporaryDatabaseFileUrl()
@@ -143,7 +150,9 @@ public enum DatabaseRecovery {
                         databaseFileUrl: newTemporaryDatabaseFileUrl,
                         keychainStorage: self.keychainStorage
                     )
-                    try Self.runMigrationsOn(databaseStorage: newDatabaseStorage, databaseIs: .new)
+                    logger.info("Running migrations on new database...")
+                    try Self.runMigrationsOn(databaseStorage: newDatabaseStorage)
+                    try Self.deleteEverythingFrom(databaseStorage: newDatabaseStorage)
                 } catch {
                     throw DatabaseRecoveryError.unrecoverablyCorrupted
                 }
@@ -170,6 +179,14 @@ public enum DatabaseRecovery {
             )
             try copyTablesThatMustBeCopiedFlawlessly.run()
 
+            progress.performAsCurrent(withPendingUnitCount: unitCountForMigrationIds) {
+                do {
+                    try Self.copyMigrationIds(oldDatabaseStorage: oldDatabaseStorage, newDatabaseStorage: newDatabaseStorage)
+                } catch {
+                    Logger.warn("Continuing despite MigrationId copy error: \(error.grdbErrorForLogging)")
+                }
+            }
+
             try progress.performAsCurrent(withPendingUnitCount: unitCountForNewDatabasePromotion) {
                 try Self.promoteNewDatabase(
                     oldDatabaseStorage: oldDatabaseStorage,
@@ -180,7 +197,7 @@ public enum DatabaseRecovery {
             logger.info("Dump and restore complete")
         }
 
-        // MARK: Checkpoint old database to clear its WAL/SHM files (step 1)
+        // MARK: Checkpoint old database to clear its WAL/SHM files
 
         private static func attemptToCheckpoint(oldDatabaseStorage: SDSDatabaseStorage) {
             logger.info("Attempting to checkpoint the old database...")
@@ -192,7 +209,7 @@ public enum DatabaseRecovery {
             }
         }
 
-        // MARK: Creating new database (step 2)
+        // MARK: Creating new database
 
         private static func temporaryDatabaseFileUrl() -> URL {
             logger.info("Creating temporary database file...")
@@ -218,41 +235,58 @@ public enum DatabaseRecovery {
             }
         }
 
-        // MARK: Running schema migrations (steps 2 and 3)
+        // MARK: Running schema migrations
 
-        private enum MigrationsMode: CustomStringConvertible {
-            case old
-            case new
-
-            public var description: String {
-                switch self {
-                case .old: return "old"
-                case .new: return "new"
-                }
-            }
-        }
-
-        private static func runMigrationsOn(databaseStorage: SDSDatabaseStorage, databaseIs mode: MigrationsMode) throws {
-            logger.info("Running migrations on \(mode) database...")
+        private static func runMigrationsOn(databaseStorage: SDSDatabaseStorage) throws {
             do {
-                let didPerformIncrementalMigrations = try GRDBSchemaMigrator.migrateDatabase(
+                _ = try GRDBSchemaMigrator.migrateDatabase(
                     databaseStorage: databaseStorage,
-                    runDataMigrations: {
-                        switch mode {
-                            // We skip old data migrations because we suspect data is more likely to be corrupted.
-                        case .old: return false
-                        case .new: return true
-                        }
-                    }()
+                    // We assume data migrations don't affect the schema of the tables, and
+                    // we'll run them on the repaired database if everything else succeeds.
+                    runDataMigrations: false,
                 )
-                logger.info("Ran migrations on \(mode) database. \(didPerformIncrementalMigrations ? "Performed" : "Did not perform") incremental migrations")
+                logger.info("Ran migrations")
             } catch {
-                logger.warn("Failed to run migrations on \(mode) database. Error: \(error)")
+                logger.warn("Failed to run migrations: \(error.grdbErrorForLogging)")
                 throw error
             }
         }
 
-        // MARK: Copy tables with best effort (step 4)
+        /// Runs DELETE FROM on every non-sqlite, non-grdb, non-fts table.
+        private static func deleteEverythingFrom(databaseStorage: SDSDatabaseStorage) throws {
+            try databaseStorage.write { tx in
+                let tableNames = try String.fetchAll(tx.database, sql: "SELECT name FROM sqlite_master WHERE type = 'table'")
+                for tableName in tableNames {
+                    let shouldSkip = (
+                        Database.isSQLiteInternalTable(tableName)
+                        || Database.isGRDBInternalTable(tableName)
+                    )
+                    if shouldSkip {
+                        continue
+                    }
+                    if
+                        let ftsTableName = ftsTableName(forTableName: tableName),
+                        tableNames.contains(ftsTableName)
+                    {
+                        continue
+                    }
+                    owsPrecondition(SqliteUtil.isSafe(sqlName: tableName))
+                    logger.info("Deleting everything from \(tableName)")
+                    try tx.database.execute(sql: "DELETE FROM \"\(tableName)\"")
+                }
+            }
+        }
+
+        private static func ftsTableName(forTableName tableName: String) -> String? {
+            for suffix in ["_config", "_data", "_docsize", "_idx"] {
+                if let matchingRange = tableName.range(of: suffix, options: [.anchored, .backwards]) {
+                    return String(tableName[..<matchingRange.lowerBound])
+                }
+            }
+            return nil
+        }
+
+        // MARK: Copy tables with best effort
 
         static let tablesToCopyWithBestEffort: [String] = [
             // We should try to copy thread data.
@@ -350,7 +384,7 @@ public enum DatabaseRecovery {
             }
         }
 
-        // MARK: Copy essential tables (step 5)
+        // MARK: Copy essential tables
 
         static let tablesThatMustBeCopiedFlawlessly: [String] = [
             // The app will be too unpredictable with strange key-value stores.
@@ -384,6 +418,7 @@ public enum DatabaseRecovery {
                     }
                     switch result {
                     case let .totalFailure(error), let .copiedSomeButHadTrouble(error, _):
+                        Logger.warn("Couldn't copy tables flawlessly: \(error.grdbErrorForLogging)")
                         let toThrow: DatabaseRecoveryError = error.isSqliteFullError ? .ranOutOfDiskSpace : .unrecoverablyCorrupted
                         throw toThrow
                     case .wentFlawlessly:
@@ -415,7 +450,30 @@ public enum DatabaseRecovery {
             return result
         }
 
-        // MARK: Promote the old database (step 6)
+        // MARK: Copy migrations
+
+        /// Copies migrationIds (esp. data migrations) that were already performed.
+        ///
+        /// After repairing, we want to skip data migrations we've already run, but
+        /// we want to execute the ones that haven't yet run.
+        private static func copyMigrationIds(
+            oldDatabaseStorage: SDSDatabaseStorage,
+            newDatabaseStorage: SDSDatabaseStorage,
+        ) throws {
+            let migrationIds = try oldDatabaseStorage.read { tx in
+                return try String.fetchAll(tx.database, sql: "SELECT identifier FROM grdb_migrations")
+            }
+            try newDatabaseStorage.write { tx in
+                for migrationId in migrationIds {
+                    try tx.database.execute(
+                        sql: "INSERT OR IGNORE INTO grdb_migrations (identifier) VALUES (?)",
+                        arguments: [migrationId],
+                    )
+                }
+            }
+        }
+
+        // MARK: Promote the old database
 
         /// "Promotes" the new database and clobbers the old one.
         ///

@@ -7,7 +7,7 @@ import Foundation
 
 #if TESTABLE_BUILD
 
-public class MockKeychainStorage: KeychainStorage {
+public final class MockKeychainStorage: KeychainStorage {
     private let values = AtomicDictionary<String, Data>([:], lock: .init())
 
     private func buildKey(service: String, key: String) -> String {
@@ -28,6 +28,12 @@ public class MockKeychainStorage: KeychainStorage {
 
     public func removeValue(service: String, key: String) throws {
         values[buildKey(service: service, key: key)] = nil
+    }
+
+    func clone() -> MockKeychainStorage {
+        let result = MockKeychainStorage()
+        result.values.set(self.values.get())
+        return result
     }
 }
 
