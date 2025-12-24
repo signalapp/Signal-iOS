@@ -154,10 +154,13 @@ class WidePhotoCell: MediaTileListModeCell {
     }
 
     override func mediaPresentationContext(collectionView: UICollectionView, in coordinateSpace: UICoordinateSpace) -> MediaPresentationContext? {
-
         let presentationFrame = coordinateSpace.convert(thumbnailView.imageView.frame, from: thumbnailView)
-        let clippingAreaInsets = UIEdgeInsets(top: collectionView.adjustedContentInset.top, leading: 0, bottom: 0, trailing: 0)
-
+        let clippingAreaInsets = UIEdgeInsets(
+            top: collectionView.adjustedContentInset.top,
+            leading: 0,
+            bottom: collectionView.adjustedContentInset.bottom,
+            trailing: 0
+        )
         return MediaPresentationContext(
             mediaView: thumbnailView.imageView,
             presentationFrame: presentationFrame,

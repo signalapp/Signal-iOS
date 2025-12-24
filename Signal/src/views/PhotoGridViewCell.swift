@@ -299,7 +299,12 @@ class PhotoGridViewCell: UICollectionViewCell {
             return nil
         }
         let presentationFrame = coordinateSpace.convert(imageView.frame, from: mediaSuperview)
-        let clippingAreaInsets = UIEdgeInsets(top: collectionView.adjustedContentInset.top, leading: 0, bottom: 0, trailing: 0)
+        let clippingAreaInsets = UIEdgeInsets(
+            top: collectionView.adjustedContentInset.top,
+            leading: 0,
+            bottom: collectionView.adjustedContentInset.bottom,
+            trailing: 0
+        )
         return MediaPresentationContext(
             mediaView: imageView,
             presentationFrame: presentationFrame,
