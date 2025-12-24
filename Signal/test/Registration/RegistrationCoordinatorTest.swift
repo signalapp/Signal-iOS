@@ -98,7 +98,7 @@ public class RegistrationCoordinatorTest {
         usernameLinkManagerMock = MockUsernameLinkManager()
 
         let recipientDbTable = RecipientDatabaseTable()
-        let recipientFetcher = RecipientFetcherImpl(
+        let recipientFetcher = RecipientFetcher(
             recipientDatabaseTable: recipientDbTable,
             searchableNameIndexer: MockSearchableNameIndexer(),
         )

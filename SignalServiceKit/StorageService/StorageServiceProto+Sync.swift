@@ -1953,7 +1953,7 @@ class StorageServiceStoryDistributionListRecordUpdater: StorageServiceRecordUpda
 
     private let privateStoryThreadDeletionManager: any PrivateStoryThreadDeletionManager
     private let recipientDatabaseTable: RecipientDatabaseTable
-    private let recipientFetcher: any RecipientFetcher
+    private let recipientFetcher: RecipientFetcher
     private let storyRecipientManager: StoryRecipientManager
     private let storyRecipientStore: StoryRecipientStore
     private let threadRemover: any ThreadRemover
@@ -1961,7 +1961,7 @@ class StorageServiceStoryDistributionListRecordUpdater: StorageServiceRecordUpda
     init(
         privateStoryThreadDeletionManager: any PrivateStoryThreadDeletionManager,
         recipientDatabaseTable: RecipientDatabaseTable,
-        recipientFetcher: any RecipientFetcher,
+        recipientFetcher: RecipientFetcher,
         storyRecipientManager: StoryRecipientManager,
         storyRecipientStore: StoryRecipientStore,
         threadRemover: any ThreadRemover

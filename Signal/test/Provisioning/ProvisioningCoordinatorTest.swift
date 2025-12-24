@@ -38,7 +38,7 @@ public class ProvisioningCoordinatorTest: XCTestCase {
         let mockDb = InMemoryDB()
 
         let recipientDbTable = RecipientDatabaseTable()
-        let recipientFetcher = RecipientFetcherImpl(
+        let recipientFetcher = RecipientFetcher(
             recipientDatabaseTable: recipientDbTable,
             searchableNameIndexer: MockSearchableNameIndexer(),
         )

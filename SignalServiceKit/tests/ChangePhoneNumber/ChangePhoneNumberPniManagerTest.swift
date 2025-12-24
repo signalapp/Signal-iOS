@@ -25,7 +25,7 @@ class ChangePhoneNumberPniManagerTest: XCTestCase {
 
     public override func setUp() {
         let recipientDbTable = RecipientDatabaseTable()
-        let recipientFetcher = RecipientFetcherImpl(
+        let recipientFetcher = RecipientFetcher(
             recipientDatabaseTable: recipientDbTable,
             searchableNameIndexer: MockSearchableNameIndexer(),
         )

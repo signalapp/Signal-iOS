@@ -40,7 +40,7 @@ struct OWSDeviceServiceImpl: OWSDeviceService {
     private let deviceStore: OWSDeviceStore
     private let identityManager: OWSIdentityManager
     private let networkManager: NetworkManager
-    private let recipientFetcher: any RecipientFetcher
+    private let recipientFetcher: RecipientFetcher
     private let recipientManager: any SignalRecipientManager
     private let tsAccountManager: any TSAccountManager
 
@@ -51,7 +51,7 @@ struct OWSDeviceServiceImpl: OWSDeviceService {
         identityManager: OWSIdentityManager,
         messageSenderJobQueue: MessageSenderJobQueue,
         networkManager: NetworkManager,
-        recipientFetcher: any RecipientFetcher,
+        recipientFetcher: RecipientFetcher,
         recipientManager: any SignalRecipientManager,
         threadStore: ThreadStore,
         tsAccountManager: any TSAccountManager

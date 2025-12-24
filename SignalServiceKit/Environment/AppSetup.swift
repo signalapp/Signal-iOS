@@ -242,7 +242,7 @@ extension AppSetup.GlobalsContinuation {
             usernameLookupRecordStore: usernameLookupRecordStore,
             nicknameRecordStore: nicknameRecordStore,
         )
-        let recipientFetcher = RecipientFetcherImpl(
+        let recipientFetcher = RecipientFetcher(
             recipientDatabaseTable: recipientDatabaseTable,
             searchableNameIndexer: searchableNameIndexer,
         )

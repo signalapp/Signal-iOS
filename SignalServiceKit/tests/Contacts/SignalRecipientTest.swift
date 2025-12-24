@@ -736,7 +736,7 @@ final class SignalRecipient2Test: XCTestCase {
         let aci = Aci.randomForTesting()
         let mockDb = InMemoryDB()
         let recipientTable = RecipientDatabaseTable()
-        let recipientFetcher = RecipientFetcherImpl(
+        let recipientFetcher = RecipientFetcher(
             recipientDatabaseTable: recipientTable,
             searchableNameIndexer: MockSearchableNameIndexer(),
         )
@@ -782,7 +782,7 @@ final class SignalRecipient2Test: XCTestCase {
         ]
         let mockDb = InMemoryDB()
         let recipientTable = RecipientDatabaseTable()
-        let recipientFetcher = RecipientFetcherImpl(
+        let recipientFetcher = RecipientFetcher(
             recipientDatabaseTable: recipientTable,
             searchableNameIndexer: MockSearchableNameIndexer(),
         )

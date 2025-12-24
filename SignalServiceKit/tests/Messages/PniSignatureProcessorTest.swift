@@ -59,7 +59,7 @@ final class PniSignatureProcessorTest: XCTestCase {
         super.setUp()
 
         recipientDatabaseTable = RecipientDatabaseTable()
-        let recipientFetcher = RecipientFetcherImpl(
+        let recipientFetcher = RecipientFetcher(
             recipientDatabaseTable: recipientDatabaseTable,
             searchableNameIndexer: MockSearchableNameIndexer(),
         )

@@ -9,7 +9,7 @@ import LibSignalClient
 public class AccountChecker {
     private let db: any DB
     private let networkManager: NetworkManager
-    private let recipientFetcher: any RecipientFetcher
+    private let recipientFetcher: RecipientFetcher
     private let recipientManager: any SignalRecipientManager
     private let recipientMerger: any RecipientMerger
     private let recipientStore: RecipientDatabaseTable
@@ -25,7 +25,7 @@ public class AccountChecker {
     init(
         db: any DB,
         networkManager: NetworkManager,
-        recipientFetcher: any RecipientFetcher,
+        recipientFetcher: RecipientFetcher,
         recipientManager: any SignalRecipientManager,
         recipientMerger: any RecipientMerger,
         recipientStore: RecipientDatabaseTable,

@@ -35,7 +35,7 @@ public class ProvisioningManagerTests {
         self.mockReceiptManager = ProvisioningManager.Mocks.ReceiptManager()
         self.mockTsAccountManager = MockTSAccountManager()
 
-        recipientFetcher = RecipientFetcherImpl(
+        recipientFetcher = RecipientFetcher(
             recipientDatabaseTable: recipientDatabaseTable,
             searchableNameIndexer: MockSearchableNameIndexer(),
         )

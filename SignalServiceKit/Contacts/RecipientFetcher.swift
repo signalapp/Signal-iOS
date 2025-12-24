@@ -7,18 +7,7 @@ import Foundation
 import GRDB
 public import LibSignalClient
 
-public protocol RecipientFetcher {
-    func fetchOrCreateImpl(serviceId: ServiceId, tx: DBWriteTransaction) -> (inserted: Bool, recipientAfterInsert: SignalRecipient)
-    func fetchOrCreate(phoneNumber: E164, tx: DBWriteTransaction) -> SignalRecipient
-}
-
-extension RecipientFetcher {
-    public func fetchOrCreate(serviceId: ServiceId, tx: DBWriteTransaction) -> SignalRecipient {
-        return fetchOrCreateImpl(serviceId: serviceId, tx: tx).recipientAfterInsert
-    }
-}
-
-public class RecipientFetcherImpl: RecipientFetcher {
+public struct RecipientFetcher {
     private let recipientDatabaseTable: RecipientDatabaseTable
     private let searchableNameIndexer: any SearchableNameIndexer
 
@@ -28,6 +17,10 @@ public class RecipientFetcherImpl: RecipientFetcher {
     ) {
         self.recipientDatabaseTable = recipientDatabaseTable
         self.searchableNameIndexer = searchableNameIndexer
+    }
+
+    public func fetchOrCreate(serviceId: ServiceId, tx: DBWriteTransaction) -> SignalRecipient {
+        return fetchOrCreateImpl(serviceId: serviceId, tx: tx).recipientAfterInsert
     }
 
     public func fetchOrCreateImpl(serviceId: ServiceId, tx: DBWriteTransaction) -> (inserted: Bool, recipientAfterInsert: SignalRecipient) {

@@ -45,7 +45,7 @@ private class TestDependencies {
     init(observers: [RecipientMergeObserver] = []) {
         let searchableNameIndexer = MockSearchableNameIndexer()
         let storageServiceManager = MockStorageServiceManager()
-        recipientFetcher = RecipientFetcherImpl(
+        recipientFetcher = RecipientFetcher(
             recipientDatabaseTable: recipientDatabaseTable,
             searchableNameIndexer: searchableNameIndexer,
         )
