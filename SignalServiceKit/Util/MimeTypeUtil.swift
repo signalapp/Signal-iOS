@@ -51,9 +51,6 @@ public enum MimeTypeUtil {
     public static func isSupportedMaybeAnimatedMimeType(_ contentType: String) -> Bool {
         supportedMaybeAnimatedMimeTypesToExtensionTypes[contentType] != nil
     }
-    public static func isSupportedBinaryDataMimeType(_ contentType: String) -> Bool {
-        supportedBinaryDataMimeTypesToExtensionTypes[contentType] != nil
-    }
     public static func isSupportedVisualMediaMimeType(_ contentType: String) -> Bool {
         isSupportedImageMimeType(contentType)
         || isSupportedVideoMimeType(contentType)
@@ -83,20 +80,8 @@ public enum MimeTypeUtil {
     }
 
     // MARK: - Mime Type to Extension Conversion
-    fileprivate static func getSupportedExtensionFromVideoMimeType(_ supportedMimeType: String) -> String? {
-        supportedVideoMimeTypesToExtensionTypes[supportedMimeType]
-    }
     static func getSupportedExtensionFromAudioMimeType(_ supportedMimeType: String) -> String? {
         supportedAudioMimeTypesToExtensionTypes[supportedMimeType]
-    }
-    fileprivate static func getSupportedExtensionFromImageMimeType(_ supportedMimeType: String) -> String? {
-        supportedImageMimeTypesToExtensionTypes[supportedMimeType]
-    }
-    fileprivate static func getSupportedExtensionFromAnimatedMimeType(_ supportedMimeType: String) -> String? {
-        supportedMaybeAnimatedMimeTypesToExtensionTypes[supportedMimeType]
-    }
-    fileprivate static func getSupportedExtensionFromBinaryDataMimeType(_ supportedMimeType: String) -> String? {
-        supportedBinaryDataMimeTypesToExtensionTypes[supportedMimeType]
     }
 
     // MARK: - Conversion Functions for UTI Type / MIME Type / File Extension
@@ -196,9 +181,6 @@ public enum MimeTypeUtil {
         result[MimeType.imagePng.rawValue] = "png"
         return result
     }()
-    public static let supportedBinaryDataMimeTypesToExtensionTypes: [String: String] = [
-        MimeType.applicationOctetStream.rawValue: "dat",
-    ]
     public static let genericMimeTypesToExtensionTypes: [String: String] = [
         MimeType.imageApng.rawValue: "png",
         MimeType.imageVndMozillaApng.rawValue: "png",
