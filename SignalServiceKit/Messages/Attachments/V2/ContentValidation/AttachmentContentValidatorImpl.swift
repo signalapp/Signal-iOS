@@ -555,7 +555,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         let imageMetadata: ImageMetadata
         switch imageMetadataResult {
         case .genericSizeLimitExceeded:
-            throw OWSAssertionError("Attachment size should have been validated before reching this point!")
+            throw OWSAssertionError("Attachment size should have been validated before reaching this point!")
         case .imageTypeSizeLimitExceeded:
             throw OWSAssertionError("Image size too large")
         case .invalid:
