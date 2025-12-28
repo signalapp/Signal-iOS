@@ -41,7 +41,7 @@ enum MediaViewShape {
 }
 
 struct MediaPresentationContext {
-    static let animationDuration: TimeInterval = 0.3
+    static let animationDuration: TimeInterval = 0.25
 
     let mediaView: UIView
     let presentationFrame: CGRect

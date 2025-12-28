@@ -195,7 +195,7 @@ extension MediaDismissAnimationController: UIViewControllerAnimatedTransitioning
             let animator = UIViewPropertyAnimator(
                 duration: duration,
                 springDamping: 1,
-                springResponse: 0.3,
+                springResponse: 0.25,
                 initialVelocity: velocity ?? .zero
             )
             animator.addAnimations {

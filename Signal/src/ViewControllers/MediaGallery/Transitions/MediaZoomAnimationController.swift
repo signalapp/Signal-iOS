@@ -144,7 +144,7 @@ extension MediaZoomAnimationController: UIViewControllerAnimatedTransitioning {
         toContextProvider.mediaWillPresent(toContext: toMediaContext)
 
         let duration = transitionDuration(using: transitionContext)
-        let animator = UIViewPropertyAnimator(duration: duration, springDamping: 1, springResponse: 0.3)
+        let animator = UIViewPropertyAnimator(duration: duration, springDamping: 1, springResponse: 0.25)
         animator.addAnimations {
             if let clippingAreaInsets = toMediaContext.clippingAreaInsets {
                 clippingView.frame = containerView.bounds.inset(by: clippingAreaInsets)
