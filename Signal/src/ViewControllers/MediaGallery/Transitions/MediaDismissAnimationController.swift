@@ -214,17 +214,6 @@ extension MediaDismissAnimationController: UIViewControllerAnimatedTransitioning
                 transitionView.transform = .identity
                 transitionView.frame = clippingView.convert(destinationFrame, from: containerView)
                 transitionView.layer.shadowOpacity = 0
-
-                // TODO: this doesn't animate. fix it.
-                if !transitionContext.transitionWasCancelled,
-                   let clippingAreaInsets = toMediaContext?.clippingAreaInsets,
-                   clippingAreaInsets.isNonEmpty
-                {
-                    let maskLayer = CALayer()
-                    maskLayer.frame = clippingView.layer.bounds.inset(by: clippingAreaInsets)
-                    maskLayer.backgroundColor = UIColor.black.cgColor
-                    clippingView.layer.mask = maskLayer
-                }
             }
             animator.addCompletion { _ in
                 clippingView.removeFromSuperview()
