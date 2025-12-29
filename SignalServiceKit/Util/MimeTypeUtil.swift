@@ -19,6 +19,7 @@ public enum MimeType: String {
     case imageHeic = "image/heic"
     case imageHeif = "image/heif"
     case imageJpeg = "image/jpeg"
+    case imageJpegXl = "image/jxl"
     case imagePng = "image/png"
     case imageTiff = "image/tiff"
     case imageVndMozillaApng = "image/vnd.mozilla.apng"
@@ -61,8 +62,15 @@ public enum MimeTypeUtil {
     public static let supportedVideoUtiTypes: Set<String> = Set(utiTypesForMimeTypes(supportedVideoMimeTypesToExtensionTypes.keys))
     public static let supportedAudioUtiTypes: Set<String> = Set(utiTypesForMimeTypes(supportedAudioMimeTypesToExtensionTypes.keys))
     public static let supportedInputImageUtiTypes: Set<String> = Set(utiTypesForMimeTypes(supportedImageMimeTypesToExtensionTypes.keys))
-    public static let supportedOutputImageUtiTypes: Set<String> = Set(utiTypesForMimeTypes(supportedImageMimeTypesToExtensionTypes.keys,
-                                                                                           excluding: [MimeType.imageWebp.rawValue, MimeType.imageHeic.rawValue, MimeType.imageHeif.rawValue]))
+    public static let supportedOutputImageUtiTypes: Set<String> = Set(utiTypesForMimeTypes(
+        supportedImageMimeTypesToExtensionTypes.keys,
+        excluding: [
+            MimeType.imageWebp.rawValue,
+            MimeType.imageHeic.rawValue,
+            MimeType.imageHeif.rawValue,
+            MimeType.imageJpegXl.rawValue,
+        ],
+    ))
     public static let supportedAnimatedImageUtiTypes: Set<String> = Set(utiTypesForMimeTypes(supportedMaybeAnimatedMimeTypesToExtensionTypes.keys))
     private static func utiTypesForMimeTypes<S: Sequence<String>>(_ mimeTypes: S, excluding excludedMimeTypes: Set<String>? = nil) -> Set<String> {
         var result = Set<String>()
@@ -159,6 +167,7 @@ public enum MimeTypeUtil {
     public static let supportedImageMimeTypesToExtensionTypes: [String: String] = [
         MimeType.imageJpeg.rawValue: "jpeg",
         "image/pjpeg": "jpeg",
+        MimeType.imageJpegXl.rawValue: "jxl",
         MimeType.imagePng.rawValue: "png",
         MimeType.imageTiff.rawValue: "tif",
         MimeType.imageXTiff.rawValue: "tif",
@@ -1013,6 +1022,7 @@ public enum MimeTypeUtil {
         MimeType.imageHeif.rawValue: "heif",
         "image/ief": "ief",
         MimeType.imageJpeg.rawValue: "jpg",
+        MimeType.imageJpegXl.rawValue: "jxl",
         "image/jutvision": "jut",
         "image/ktx": "ktx",
         "image/pict": "pict",
@@ -1610,6 +1620,7 @@ public enum MimeTypeUtil {
         "js": "application/javascript",
         "json": MimeType.applicationJson.rawValue,
         "jsonml": "application/jsonml+json",
+        "jxl": MimeType.imageJpegXl.rawValue,
         "kar": "audio/midi",
         "karbon": "application/vnd.kde.karbon",
         "kfo": "application/vnd.kde.kformula",
