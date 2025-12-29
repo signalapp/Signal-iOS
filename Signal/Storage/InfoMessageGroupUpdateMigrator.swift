@@ -63,7 +63,7 @@ struct InfoMessageGroupUpdateMigrator {
 
         logger.info("Starting...")
 
-        _ = try await TimeGatedBatch.processAllAsync(
+        _ = try await TimeGatedBatch.processAll(
             db: db,
             buildTxContext: { tx throws(CancellationError) -> TxContext in
                 let lastMigratedInfoMessageRowID = kvStore.fetchValue(

@@ -67,18 +67,43 @@ public enum TimeGatedBatch {
 
     // MARK: -
 
-    /// Processes all elements in batches bound by time, asynchronously.
+    /// Processes all elements in batches bound by time.
     ///
-    /// Like `processAll`, but `async`. See that method for details.
-    public static func processAllAsync<E: Error, TxContext>(
-        db: any DB,
+    /// This method invokes `processBatch` repeatedly & in a tight loop. It
+    /// stops when `processBatch` returns zero (indicating an empty batch).
+    /// Callers must ensure `processBatch` eventually returns zero; they likely
+    /// need to delete objects as part of each batch or maintain a cursor to
+    /// avoid processing the same elements multiple times.
+    ///
+    /// This method is most useful for "fetch and delete" operations that are
+    /// trying to avoid DELETE-ing rows from the database while SELECT-ing them
+    /// via enumeration. This method will execute multiple batches within a
+    /// single transaction (if time allows), so those operations can fetch &
+    /// delete in small batches without exploding the number of transactions.
+    ///
+    /// - parameter errorTxCompletion: The strategy to employ with the latest
+    /// transaction if an error is thrown: rollback or commit changes made so
+    /// far _within_ that latest transaction. Note that prior non-throwing
+    /// transactions would have already been committed and are not rolled back.
+    ///
+    /// - Parameter buildTxContext: A block run once immediately when a new
+    /// transaction is opened, returning a context object shared by each batch
+    /// processed in that transaction.
+    ///
+    /// - Parameter concludeTx: A block run once just before a transaction is
+    /// closed, which may be used to commit information about the batches
+    /// processed in that transaction.
+    ///
+    /// - Returns: The total number of items processed across all batches.
+    public static func processAll<E: Error, TxContext>(
+        db: DB,
         yieldTxAfter maximumDuration: TimeInterval = 0.5,
         errorTxCompletion: GRDB.Database.TransactionCompletion = .commit,
         buildTxContext: (DBWriteTransaction) throws(E) -> TxContext,
         processBatch: (DBWriteTransaction, inout TxContext) throws(E) -> Int,
         concludeTx: (DBWriteTransaction, TxContext) throws(E) -> Void,
     ) async throws(E) -> Int {
-        return try await _processAllAsync(
+        return try await _processAll(
             db: db,
             yieldTxAfter: maximumDuration,
             errorTxCompletion: errorTxCompletion,
@@ -88,17 +113,16 @@ public enum TimeGatedBatch {
         )
     }
 
-    /// Processes all elements in batches bound by time, asynchronously.
+    /// Processes all elements in batches bound by time.
     ///
-    /// Like `processAll`, but `async` and without "transaction contexts". See
-    /// that method for details.
-    public static func processAllAsync<E: Error>(
+    /// Like `processAll` but without "transaction contexts".
+    public static func processAll<E: Error>(
         db: DB,
         yieldTxAfter maximumDuration: TimeInterval = 0.5,
         errorTxCompletion: GRDB.Database.TransactionCompletion = .commit,
         processBatch: (DBWriteTransaction) throws(E) -> Int,
     ) async throws(E) -> Int {
-        return try await _processAllAsync(
+        return try await _processAll(
             db: db,
             yieldTxAfter: maximumDuration,
             errorTxCompletion: errorTxCompletion,
@@ -109,10 +133,10 @@ public enum TimeGatedBatch {
     }
 
     /// See docs on `processAll`.
-    private static func _processAllAsync<E: Error, TxContext>(
-        db: any DB,
-        yieldTxAfter maximumDuration: TimeInterval = 0.5,
-        errorTxCompletion: GRDB.Database.TransactionCompletion = .commit,
+    private static func _processAll<E: Error, TxContext>(
+        db: DB,
+        yieldTxAfter maximumDuration: TimeInterval,
+        errorTxCompletion: GRDB.Database.TransactionCompletion,
         buildTxContext: (DBWriteTransaction) throws(E) -> TxContext,
         processBatch: (DBWriteTransaction, inout TxContext) throws(E) -> Int,
         concludeTx: (DBWriteTransaction, TxContext) throws(E) -> Void,
@@ -134,113 +158,6 @@ public enum TimeGatedBatch {
                 try await db.awaitableWrite(block: txBlock)
             case .rollback:
                 try await db.awaitableWriteWithRollbackIfThrows(block: txBlock)
-            }
-
-            itemCount += txItemCount
-
-            if mightHaveMore {
-                continue
-            } else {
-                break
-            }
-        }
-
-        return itemCount
-    }
-
-    // MARK: -
-
-    /// Processes all elements in batches bound by time.
-    ///
-    /// This method invokes `processBatch` repeatedly & in a tight loop. It
-    /// stops when `processBatch` returns zero (indicating an empty batch).
-    /// Callers must ensure `processBatch` eventually returns zero; they likely
-    /// need to delete objects as part of each batch or maintain a cursor to
-    /// avoid processing the same elements multiple times.
-    ///
-    /// This method is most useful for "fetch and delete" operations that are
-    /// trying to avoid DELETE-ing rows from the database while SELECT-ing them
-    /// via enumeration. This method will execute multiple batches within a
-    /// single transaction (if time allows), so those operations can fetch &
-    /// delete in small batches without exploding the number of transactions.
-    ///
-    /// - parameter errorTxCompletion: The strategy to employ with the latest
-    /// transaction if an error is thrown: rollback or commit changes made so far _within_
-    /// that last transaction. Prior non-throwing transactions would already be committed.
-    ///
-    /// - Parameter buildTxContext: A block run once immediately when a new
-    /// transaction is opened, returning a context object shared by each batch
-    /// processed in that transaction.
-    ///
-    /// - Parameter concludeTx: A block run once just before a transaction is
-    /// closed, which may be used to commit information about the batches
-    /// processed in that transaction.
-    ///
-    /// - Returns: The total number of items processed across all batches.
-    public static func processAll<E: Error, TxContext>(
-        db: DB,
-        yieldTxAfter maximumDuration: TimeInterval = 0.5,
-        errorTxCompletion: GRDB.Database.TransactionCompletion = .commit,
-        buildTxContext: (DBWriteTransaction) throws(E) -> TxContext,
-        processBatch: (DBWriteTransaction, inout TxContext) throws(E) -> Int,
-        concludeTx: (DBWriteTransaction, TxContext) throws(E) -> Void,
-    ) throws(E) -> Int {
-        return try _processAll(
-            db: db,
-            yieldTxAfter: maximumDuration,
-            errorTxCompletion: errorTxCompletion,
-            buildTxContext: buildTxContext,
-            processBatch: processBatch,
-            concludeTx: concludeTx
-        )
-    }
-
-    /// Processes all elements in batches bound by time.
-    ///
-    /// Like `processAll` above, but without "transaction contexts". See that
-    /// method for details.
-    public static func processAll<E: Error>(
-        db: DB,
-        yieldTxAfter maximumDuration: TimeInterval = 0.5,
-        errorTxCompletion: GRDB.Database.TransactionCompletion = .commit,
-        processBatch: (DBWriteTransaction) throws(E) -> Int
-    ) throws(E) -> Int {
-        return try _processAll(
-            db: db as any DB,
-            yieldTxAfter: maximumDuration,
-            errorTxCompletion: errorTxCompletion,
-            buildTxContext: { _ throws(E) in DummyTxContext() },
-            processBatch: { tx, _ throws(E) in try processBatch(tx) },
-            concludeTx: { _, _ throws(E) in }
-        )
-    }
-
-    /// See docs on `processAll`.
-    private static func _processAll<E: Error, TxContext>(
-        db: DB,
-        yieldTxAfter maximumDuration: TimeInterval,
-        errorTxCompletion: GRDB.Database.TransactionCompletion,
-        buildTxContext: (DBWriteTransaction) throws(E) -> TxContext,
-        processBatch: (DBWriteTransaction, inout TxContext) throws(E) -> Int,
-        concludeTx: (DBWriteTransaction, TxContext) throws(E) -> Void,
-    ) throws(E) -> Int {
-        var itemCount = 0
-        while true {
-            let txBlock: (DBWriteTransaction) throws(E) -> (txItemCount: Int, mightHaveMore: Bool) = { tx in
-                return try processBatchesInTransaction(
-                    maximumDuration: maximumDuration,
-                    buildTxContext: buildTxContext,
-                    processBatch: processBatch,
-                    concludeTx: concludeTx,
-                    tx: tx,
-                )
-            }
-
-            let (txItemCount, mightHaveMore): (Int, Bool) = switch errorTxCompletion {
-            case .commit:
-                try db.write(block: txBlock)
-            case .rollback:
-                try db.writeWithRollbackIfThrows(block: txBlock)
             }
 
             itemCount += txItemCount

@@ -343,7 +343,7 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
 
         if !hasCompletedEnumeratingAttchments {
             let remoteConfig = remoteConfigManager.currentConfig()
-            _ = try await TimeGatedBatch.processAllAsync(db: db, errorTxCompletion: .rollback) { tx in
+            _ = try await TimeGatedBatch.processAll(db: db, errorTxCompletion: .rollback) { tx in
                 try Task.checkCancellation()
                 let currentBackupPlan = backupSettingsStore.backupPlan(tx: tx)
                 var query = Attachment.Record
@@ -423,7 +423,7 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
         // If we created a new attachment stream between when we checked every attachment
         // above and now, that attachment will be queued for media tier upload, and that
         // media tier upload job will cancel the orphan job we schedule here.
-        _ = try await TimeGatedBatch.processAllAsync(db: db, errorTxCompletion: .rollback) { tx in
+        _ = try await TimeGatedBatch.processAll(db: db, errorTxCompletion: .rollback) { tx in
             try Task.checkCancellation()
             let listedMediaObjects = try ListedBackupMediaObject
                 .limit(100)

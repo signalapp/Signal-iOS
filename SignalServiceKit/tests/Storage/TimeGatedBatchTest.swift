@@ -76,11 +76,11 @@ class DBTimeBatchingTest: XCTestCase {
         XCTAssertEqual(seenElements, [1, 2, 3, 4, 5])
     }
 
-    func testProcessSeparateTransactions() {
+    func testProcessSeparateTransactions() async {
         weak var priorTx: DBWriteTransaction?
         var batchCounter = 0
         let expectedResult = 3
-        let actualResult = TimeGatedBatch.processAll(db: InMemoryDB(), yieldTxAfter: -1) { tx in
+        let actualResult = await TimeGatedBatch.processAll(db: InMemoryDB(), yieldTxAfter: -1) { tx in
             // Every iteration should use a new transaction, so it should never match.
             // In practice, `priorTx` is always `nil`, but this code is right even in
             // situations where some other component retains the transaction.
@@ -92,11 +92,11 @@ class DBTimeBatchingTest: XCTestCase {
         XCTAssertEqual(actualResult, expectedResult)
     }
 
-    func testProcessSingleTransaction() {
+    func testProcessSingleTransaction() async {
         weak var priorTx: DBWriteTransaction?
         var batchCounter = 0
         let expectedResult = 3
-        let actualResult = TimeGatedBatch.processAll(db: InMemoryDB(), yieldTxAfter: .infinity) { tx in
+        let actualResult = await TimeGatedBatch.processAll(db: InMemoryDB(), yieldTxAfter: .infinity) { tx in
             // If we're on the 2nd or later batch, then the tx must match.
             XCTAssert(batchCounter == 0 || priorTx === tx)
             priorTx = tx
@@ -106,7 +106,7 @@ class DBTimeBatchingTest: XCTestCase {
         XCTAssertEqual(actualResult, expectedResult)
     }
 
-    func testProcessMultipleBatchesMultipleTransactions() {
+    func testProcessMultipleBatchesMultipleTransactions() async {
         // Start with a tiny value and increment it each time the test fails. Even
         // on a slow machine, we should eventually process two batches within a
         // single transaction before running out of time.
@@ -115,7 +115,7 @@ class DBTimeBatchingTest: XCTestCase {
             weak var priorTx: DBWriteTransaction?
             var batchCounter = 0
             var multipleBatchesInOneTx = false
-            let actualResult = TimeGatedBatch.processAll(db: InMemoryDB(), yieldTxAfter: yieldTxAfter) { tx in
+            let actualResult = await TimeGatedBatch.processAll(db: InMemoryDB(), yieldTxAfter: yieldTxAfter) { tx in
                 batchCounter += 1
                 // If this is the 2nd batch and we're using same transaction, then we've
                 // satisfied the requirement of multiple batches with one transaction.
@@ -150,7 +150,7 @@ class DBTimeBatchingTest: XCTestCase {
         weak var priorTx: DBWriteTransaction?
         var batchCounter = 0
         do {
-            _ = try TimeGatedBatch.processAll(
+            _ = try await TimeGatedBatch.processAll(
                 db: db,
                 yieldTxAfter: -1,
                 errorTxCompletion: .rollback,
@@ -191,7 +191,7 @@ class DBTimeBatchingTest: XCTestCase {
 
     // MARK: -
 
-    func testTxContext_sync() {
+    func testTxContext() async {
         let maxBatchCount = 3
         var buildTxContextCount = 0
         var processBatchCount = 0
@@ -201,41 +201,7 @@ class DBTimeBatchingTest: XCTestCase {
             var id = 0
         }
 
-        _ = TimeGatedBatch.processAll(
-            db: InMemoryDB(),
-            yieldTxAfter: -1, // Each iteration a new transaction
-            buildTxContext: { _ in
-                buildTxContextCount += 1
-                return TxContext()
-            },
-            processBatch: { _, context in
-                XCTAssertEqual(context.id, 0)
-                context.id += 1
-                processBatchCount += 1
-                return processBatchCount == maxBatchCount ? 0 : 1
-            },
-            concludeTx: { _, context in
-                XCTAssertEqual(context.id, 1)
-                concludeTxCount += 1
-            },
-        )
-
-        XCTAssertEqual(buildTxContextCount, maxBatchCount)
-        XCTAssertEqual(processBatchCount, maxBatchCount)
-        XCTAssertEqual(concludeTxCount, maxBatchCount)
-    }
-
-    func testTxContext_async() async {
-        let maxBatchCount = 3
-        var buildTxContextCount = 0
-        var processBatchCount = 0
-        var concludeTxCount = 0
-
-        struct TxContext {
-            var id = 0
-        }
-
-        _ = await TimeGatedBatch.processAllAsync(
+        _ = await TimeGatedBatch.processAll(
             db: InMemoryDB(),
             yieldTxAfter: -1, // Each iteration a new transaction
             buildTxContext: { _ in

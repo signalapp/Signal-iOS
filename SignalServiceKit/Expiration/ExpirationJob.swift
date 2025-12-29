@@ -195,7 +195,7 @@ open class ExpirationJob<ExpiringElement> {
     }
 
     private func deleteExpiredElements() async {
-        let deletedCount = await TimeGatedBatch.processAllAsync(db: db) { tx in
+        let deletedCount = await TimeGatedBatch.processAll(db: db) { tx in
             if Task.isCancelled {
                 // We're cancelled: we'll get to any remaining elements later.
                 return 0

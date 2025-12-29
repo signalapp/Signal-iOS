@@ -204,7 +204,7 @@ private class CallRecordDeleteAllJobRunner: JobRunner {
 
         logger.info("Attempting to delete all call records before \(deleteBeforeTimestamp).")
 
-        let deletedCount = await TimeGatedBatch.processAllAsync(db: db) { tx in
+        let deletedCount = await TimeGatedBatch.processAll(db: db) { tx in
             let (deletedCount, earliestDeletedTimestamp) = self.deleteSomeCallRecords(
                 beforeTimestamp: deleteBeforeTimestamp,
                 tx: tx

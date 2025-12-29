@@ -128,7 +128,7 @@ class BackupArchiveInlinedOversizeTextArchiver {
             return
         }
 
-        _ = try await TimeGatedBatch.processAllAsync(db: db) { tx in
+        _ = try await TimeGatedBatch.processAll(db: db) { tx in
             let batchIds = attachmentIds.dropFirst(attachmentIdIndex).prefix(Self.batchCount)
             attachmentIdIndex += Self.batchCount
             try self.populateTableIncrementallyBatch(

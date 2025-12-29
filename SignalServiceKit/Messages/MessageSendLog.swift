@@ -362,7 +362,7 @@ public class MessageSendLog {
             .select(Column("payloadId"), as: Int64.self)
             .filter(Column("sentTimestamp") < cutoffTimestamp)
             .limit(Constants.cleanupLimit)
-        let count = try await TimeGatedBatch.processAllAsync(db: db) { tx in
+        let count = try await TimeGatedBatch.processAll(db: db) { tx in
             try Task.checkCancellation()
             do {
                 let db = tx.database
