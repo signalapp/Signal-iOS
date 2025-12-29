@@ -304,7 +304,7 @@ private class StickerPacksToolbar: UIView {
 
     private enum Metrics {
         static let listItemCellSize: CGFloat = 40 // side of each collection view cell.
-        static let listItemContentInset: CGFloat = 8 // how much cell's content is inset from cell's edges.
+        static let listItemContentInset: CGFloat = 6 // how much cell's content is inset from cell's edges.
         static let listItemSpacing: CGFloat = 4 // between cells
 
         static let listVMargin: CGFloat = 4 // spacing above and below collection view
