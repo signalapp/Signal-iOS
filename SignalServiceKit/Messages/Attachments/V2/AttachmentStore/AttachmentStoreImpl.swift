@@ -193,19 +193,6 @@ public class AttachmentStoreImpl: AttachmentStore {
         }
     }
 
-    public func enumerateAllAttachmentsWithMediaName(
-        tx: DBReadTransaction,
-        block: (Attachment) throws -> Void
-    ) throws {
-        try Attachment.Record
-            .filter(Column(Attachment.Record.CodingKeys.mediaName) != nil)
-            .fetchCursor(tx.database)
-            .forEach {
-                let attachment = try Attachment(record: $0)
-                try block(attachment)
-            }
-    }
-
     private func enumerateReferences<RecordType: FetchableAttachmentReferenceRecord>(
         attachmentId: Attachment.IDType,
         recordType: RecordType.Type,

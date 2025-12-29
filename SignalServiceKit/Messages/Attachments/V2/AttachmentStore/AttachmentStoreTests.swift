@@ -437,39 +437,6 @@ class AttachmentStoreTests: XCTestCase {
         XCTAssertEqual(enumeratedCount, attachmentIdsInOwner.count)
     }
 
-    func testEnumerateAttachmentsWithMediaName() throws {
-        let attachmentCount = 100
-
-        let threadIds = db.write { tx in
-            (0..<attachmentCount).map { _ in
-                insertThread(tx: tx).sqliteRowId!
-            }
-        }
-
-        try db.write { tx in
-            try threadIds.forEach { threadId in
-                try attachmentStore.insert(
-                    .mockStream(),
-                    reference: .mock(owner: .thread(.threadWallpaperImage(.init(threadRowId: threadId, creationTimestamp: 0)))),
-                    tx: tx
-                )
-            }
-        }
-
-        // Check that we enumerate all the ids we created for the original attachment's id.
-        var enumeratedCount = 0
-        try db.read { tx in
-            try attachmentStore.enumerateAllAttachmentsWithMediaName(
-                tx: tx,
-                block: { _ in
-                    enumeratedCount += 1
-                }
-            )
-        }
-
-        XCTAssertEqual(enumeratedCount, attachmentCount)
-    }
-
     func testOldestStickerPackReferences() throws {
         // Sticker pack id to oldest row id.
         var stickerPackIds = [Data: Int64]()
