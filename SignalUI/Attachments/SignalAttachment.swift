@@ -404,7 +404,7 @@ public class SignalAttachment: CustomDebugStringConvertible {
             }
 
             let cgImage: CGImage
-            if let pixelSize, pixelSize.width > maxSize || pixelSize.height > maxSize {
+            if pixelSize == nil || pixelSize!.width > maxSize || pixelSize!.height > maxSize {
                 // NOTE: For unknown reasons, resizing images with UIGraphicsBeginImageContext()
                 // crashes reliably in the share extension after screen lock's auth UI has been presented.
                 // Resizing using a CGContext seems to work fine.
