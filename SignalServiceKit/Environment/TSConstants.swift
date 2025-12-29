@@ -40,8 +40,7 @@ public class TSConstants {
     public static let donateUrl = URL(string: "https://signal.org/donate/")!
     public static let appStoreUrl = URL(string: "https://itunes.apple.com/us/app/signal-private-messenger/id874139669?mt=8")!
 
-    public static var mainServiceIdentifiedURL: String { shared.mainServiceIdentifiedURL }
-    public static var mainServiceUnidentifiedURL: String { shared.mainServiceUnidentifiedURL }
+    public static var mainServiceURL: String { shared.mainServiceURL }
 
     public static var textSecureCDN0ServerURL: String { shared.textSecureCDN0ServerURL }
     public static var textSecureCDN2ServerURL: String { shared.textSecureCDN2ServerURL }
@@ -97,8 +96,7 @@ public class TSConstants {
 // MARK: -
 
 public protocol TSConstantsProtocol: AnyObject {
-    var mainServiceIdentifiedURL: String { get }
-    var mainServiceUnidentifiedURL: String { get }
+    var mainServiceURL: String { get }
     var textSecureCDN0ServerURL: String { get }
     var textSecureCDN2ServerURL: String { get }
     var textSecureCDN3ServerURL: String { get }
@@ -155,8 +153,7 @@ public class TSConstantsProduction: TSConstantsProtocol {
 
     public init() {}
 
-    public let mainServiceIdentifiedURL = "https://chat.signal.org"
-    public let mainServiceUnidentifiedURL = "https://ud-chat.signal.org"
+    public let mainServiceURL = "https://chat.signal.org"
     public let textSecureCDN0ServerURL = "https://cdn.signal.org"
     public let textSecureCDN2ServerURL = "https://cdn2.signal.org"
     public let textSecureCDN3ServerURL = "https://cdn3.signal.org"
@@ -209,8 +206,7 @@ public class TSConstantsStaging: TSConstantsProtocol {
 
     public init() {}
 
-    public let mainServiceIdentifiedURL = "https://chat.staging.signal.org"
-    public let mainServiceUnidentifiedURL = "https://ud-chat.staging.signal.org"
+    public let mainServiceURL = "https://chat.staging.signal.org"
     public let textSecureCDN0ServerURL = "https://cdn-staging.signal.org"
     public let textSecureCDN2ServerURL = "https://cdn2-staging.signal.org"
     public let textSecureCDN3ServerURL = "https://cdn3-staging.signal.org"
@@ -268,9 +264,7 @@ public class TSConstantsMock: TSConstantsProtocol {
 
     private let defaultValues = TSConstantsProduction()
 
-    public lazy var mainServiceIdentifiedURL = defaultValues.mainServiceIdentifiedURL
-
-    public lazy var mainServiceUnidentifiedURL = defaultValues.mainServiceUnidentifiedURL
+    public lazy var mainServiceURL = defaultValues.mainServiceURL
 
     public lazy var textSecureCDN0ServerURL = defaultValues.textSecureCDN0ServerURL
 

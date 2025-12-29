@@ -20,9 +20,8 @@ public class ProvisioningSocket {
     let socket: SSKWebSocket
 
     public init(webSocketFactory: WebSocketFactory) {
-        // TODO: Should we (sometimes?) use the unidentified service?
         let request = WebSocketRequest(
-            signalService: .mainSignalServiceIdentified,
+            signalService: .mainSignalService,
             urlPath: "v1/websocket/provisioning/",
             urlQueryItems: [URLQueryItem(name: "agent", value: LinkingProvisioningMessage.Constants.userAgent)],
             extraHeaders: [:]

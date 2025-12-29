@@ -134,7 +134,7 @@ public class ProvisioningCoordinatorTest: XCTestCase {
         signalServiceMock.mockUrlSessionBuilder = { (signalServiceInfo, _, _) in
             XCTAssertEqual(
                 signalServiceInfo.baseUrl,
-                SignalServiceType.mainSignalServiceIdentified.signalServiceInfo().baseUrl
+                SignalServiceType.mainSignalService.signalServiceInfo().baseUrl
             )
             return mockSession
         }

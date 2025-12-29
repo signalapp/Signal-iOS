@@ -185,7 +185,7 @@ private struct ProxyConfig {
     var password: String?
 
     static func fromCFNetwork() -> Self? {
-        let chatURL = URL(string: TSConstants.mainServiceIdentifiedURL)!
+        let chatURL = URL(string: TSConstants.mainServiceURL)!
         guard let settings = CFNetworkCopySystemProxySettings()?.takeRetainedValue() else {
             return nil
         }

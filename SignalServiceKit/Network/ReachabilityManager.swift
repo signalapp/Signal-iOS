@@ -157,7 +157,7 @@ public class SSKReachabilityManagerImpl: SSKReachabilityManager {
 
         Task { [backgroundSession] in
             do {
-                _ = try await backgroundSession.performDownload(TSConstants.mainServiceIdentifiedURL, method: .get)
+                _ = try await backgroundSession.performDownload(TSConstants.mainServiceURL, method: .get)
                 Logger.info("Finished wakeup request.")
             } catch {
                 Logger.warn("Failed wakeup request \(error)")
