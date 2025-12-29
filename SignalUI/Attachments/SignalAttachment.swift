@@ -250,12 +250,7 @@ public class SignalAttachment: CustomDebugStringConvertible {
     // Image attachments may be converted to another image format before 
     // being uploaded.
     public class var inputImageUTISet: Set<String> {
-         // HEIC is valid input, but not valid output. Non-iOS11 clients do not support it.
-        let heicSet: Set<String> = Set(["public.heic", "public.heif"])
-
-        return MimeTypeUtil.supportedInputImageUtiTypes
-            .union(animatedImageUTISet)
-            .union(heicSet)
+        return MimeTypeUtil.supportedInputImageUtiTypes.union(animatedImageUTISet)
     }
 
     // Returns the set of UTIs that correspond to valid _output_ image formats
