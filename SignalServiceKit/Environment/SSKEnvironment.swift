@@ -243,7 +243,6 @@ public class SSKEnvironment: NSObject {
         SignalProxy.warmCaches(appReadiness: appReadiness)
         self.signalServiceRef.warmCaches()
         self.profileManagerRef.warmCaches()
-        self.receiptManagerRef.prepareCachedValues()
         dependenciesBridge.svr.warmCaches()
         self.typingIndicatorsRef.warmCaches()
         self.paymentsHelperRef.warmCaches()

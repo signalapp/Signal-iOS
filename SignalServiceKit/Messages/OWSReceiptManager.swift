@@ -75,7 +75,6 @@ public class OWSReceiptManager: NSObject {
     }
 
     private var isProcessing = AtomicValue(false, lock: .init())
-    private var areReadReceiptsEnabledCached = AtomicOptional<Bool>(nil, lock: .init())
 
     static let keyValueStore = KeyValueStore(collection: "OWSReadReceiptManagerCollection")
     private static let toLinkedDevicesReadReceiptMapStore = KeyValueStore(collection: "OWSReceiptManager.toLinkedDevicesReadReceiptMapStore")
@@ -126,7 +125,7 @@ public class OWSReceiptManager: NSObject {
         case .onLinkedDevice:
             break
         case .onLinkedDeviceWhilePendingMessageRequest:
-            if areReadReceiptsEnabled() {
+            if Self.areReadReceiptsEnabled(transaction: transaction) {
                 pendingReceiptRecorder.recordPendingReadReceipt(for: message, thread: thread, transaction: transaction)
             }
         case .onThisDevice:
@@ -140,12 +139,12 @@ public class OWSReceiptManager: NSObject {
                 Logger.warn("Dropping receipt for message without an Aci.")
                 return
             }
-            if areReadReceiptsEnabled() {
+            if Self.areReadReceiptsEnabled(transaction: transaction) {
                 receiptSender.enqueueReadReceipt(for: authorAci, timestamp: message.timestamp, messageUniqueId: message.uniqueId, tx: transaction)
             }
         case .onThisDeviceWhilePendingMessageRequest:
             enqueueLinkedDeviceReadReceipt(forMessage: message, transaction: transaction)
-            if areReadReceiptsEnabled() {
+            if Self.areReadReceiptsEnabled(transaction: transaction) {
                 pendingReceiptRecorder.recordPendingReadReceipt(for: message, thread: thread, transaction: transaction)
             }
         }
@@ -157,7 +156,7 @@ public class OWSReceiptManager: NSObject {
         case .onLinkedDevice:
             break
         case .onLinkedDeviceWhilePendingMessageRequest:
-            if areReadReceiptsEnabled() {
+            if Self.areReadReceiptsEnabled(transaction: transaction) {
                 pendingReceiptRecorder.recordPendingViewedReceipt(for: message, thread: thread, transaction: transaction)
             }
         case .onThisDevice:
@@ -171,12 +170,12 @@ public class OWSReceiptManager: NSObject {
                 Logger.warn("Dropping receipt for message without an Aci.")
                 return
             }
-            if areReadReceiptsEnabled() {
+            if Self.areReadReceiptsEnabled(transaction: transaction) {
                 receiptSender.enqueueViewedReceipt(for: authorAci, timestamp: message.timestamp, messageUniqueId: message.uniqueId, tx: transaction)
             }
         case .onThisDeviceWhilePendingMessageRequest:
             enqueueLinkedDeviceViewedReceipt(forIncomingMessage: message, transaction: transaction)
-            if areReadReceiptsEnabled() {
+            if Self.areReadReceiptsEnabled(transaction: transaction) {
                 pendingReceiptRecorder.recordPendingViewedReceipt(for: message, thread: thread, transaction: transaction)
             }
         }
@@ -239,28 +238,6 @@ public class OWSReceiptManager: NSObject {
 
     // MARK: - Settings
 
-    public func prepareCachedValues() {
-        // Clear out so we re-initialize if we ever re-run the "on launch" logic,
-        // such as after a completed database transfer.
-        areReadReceiptsEnabledCached.set(nil)
-        _ = self.areReadReceiptsEnabled()
-    }
-
-    public func areReadReceiptsEnabled() -> Bool {
-        // We don't need to worry about races around this cached value.
-        //
-        // ^ The above comment was copied from objc code... it seems... dubious.
-        if let result = areReadReceiptsEnabledCached.get() {
-            return result
-        }
-
-        return SSKEnvironment.shared.databaseStorageRef.read { [areReadReceiptsEnabledCached] transaction in
-            let result = Self.areReadReceiptsEnabled(transaction: transaction)
-            try? areReadReceiptsEnabledCached.setIfNil(result)
-            return result
-        }
-    }
-
     public static func areReadReceiptsEnabled(transaction: DBReadTransaction) -> Bool {
         keyValueStore.getBool(kOwsReceiptManagerAreReadReceiptsEnabled, defaultValue: false, transaction: transaction)
     }
@@ -274,7 +251,6 @@ public class OWSReceiptManager: NSObject {
 
     public func setAreReadReceiptsEnabled(_ value: Bool, transaction: DBWriteTransaction) {
         Self.keyValueStore.setBool(value, key: Self.kOwsReceiptManagerAreReadReceiptsEnabled, transaction: transaction)
-        areReadReceiptsEnabledCached.set(value)
     }
 }
 
@@ -949,7 +925,7 @@ extension OWSReceiptManager {
         readTimestamp: UInt64,
         tx: DBWriteTransaction
     ) -> [UInt64] {
-        guard self.areReadReceiptsEnabled() else {
+        guard Self.areReadReceiptsEnabled(transaction: tx) else {
             return []
         }
         return processReceiptsForMessages(sentAt: sentTimestamps, tx: tx) { _, messages in
@@ -984,7 +960,7 @@ extension OWSReceiptManager {
     ) -> [UInt64] {
         return processReceiptsForMessages(sentAt: sentTimestamps, tx: tx) { sentTimestamp, messages in
             if !messages.isEmpty {
-                if self.areReadReceiptsEnabled() {
+                if Self.areReadReceiptsEnabled(transaction: tx) {
                     for message in messages {
                         message.update(
                             withViewedRecipient: SignalServiceAddress(recipientAci),

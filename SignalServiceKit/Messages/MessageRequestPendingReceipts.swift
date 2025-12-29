@@ -136,7 +136,7 @@ public class MessageRequestPendingReceipts: PendingReceiptRecorder {
     }
 
     private func enqueue(pendingReadReceipts: [PendingReadReceiptRecord], pendingViewedReceipts: [PendingViewedReceiptRecord], transaction: DBWriteTransaction) throws {
-        guard SSKEnvironment.shared.receiptManagerRef.areReadReceiptsEnabled() else {
+        guard OWSReceiptManager.areReadReceiptsEnabled(transaction: transaction) else {
             Logger.info("Deleting all pending receipts - user has subsequently disabled read receipts.")
             try finder.deleteAllPendingReceipts(transaction: transaction)
             return

@@ -75,7 +75,10 @@ class PrivacySettingsViewController: OWSTableViewController2 {
                 "SETTINGS_READ_RECEIPT",
                 comment: "Label for the 'read receipts' setting."
             ),
-            isOn: { SSKEnvironment.shared.receiptManagerRef.areReadReceiptsEnabled() },
+            isOn: {
+                let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+                return databaseStorage.read(block: OWSReceiptManager.areReadReceiptsEnabled(transaction:))
+            },
             target: self,
             selector: #selector(didToggleReadReceiptsSwitch)
         ))

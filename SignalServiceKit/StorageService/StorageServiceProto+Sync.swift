@@ -1567,7 +1567,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
             localThreadAssociatedData.updateWith(isMarkedUnread: record.noteToSelfMarkedUnread, updateStorageService: false, transaction: transaction)
         }
 
-        let localReadReceiptsEnabled = receiptManager.areReadReceiptsEnabled()
+        let localReadReceiptsEnabled = OWSReceiptManager.areReadReceiptsEnabled(transaction: transaction)
         if record.readReceipts != localReadReceiptsEnabled {
             receiptManager.setAreReadReceiptsEnabled(record.readReceipts, transaction: transaction)
         }
