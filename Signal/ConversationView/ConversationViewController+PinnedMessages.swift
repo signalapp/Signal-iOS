@@ -268,8 +268,8 @@ public extension ConversationViewController {
         imageView.image = attachmentStream.attachmentStream.thumbnailImageSync(quality: .small)
         imageView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            imageView.widthAnchor.constraint(equalToConstant: 36),
-            imageView.heightAnchor.constraint(equalToConstant: 36)
+            imageView.widthAnchor.constraint(equalToConstant: 30),
+            imageView.heightAnchor.constraint(equalToConstant: 30)
         ])
         return imageView
     }

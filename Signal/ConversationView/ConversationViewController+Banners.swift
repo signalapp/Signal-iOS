@@ -82,7 +82,7 @@ extension ConversationViewController {
             return
         }
 
-        let topMargin: CGFloat = if #available(iOS 26, *) { 2 } else { 8 }
+        let topMargin: CGFloat = if #available(iOS 26, *) { 0 } else { 8 }
         let hMargin = OWSTableViewController2.cellHInnerMargin
         let bannersView = UIStackView(arrangedSubviews: banners)
         bannersView.axis = .vertical
@@ -194,6 +194,22 @@ private class ConversationBannerView: UIView {
     }
 
     private class ConversationBannerContentView: UIStackView, UIContentView {
+        private enum PinnedMessageConstants {
+            static let bannerHeight = 50.0
+            static let thumbnailSize = 30.0
+            static let spacing = 8.0
+            static let leadingPadding = 16.0
+
+            // Image is 30 px, total banner is 50, which leaves 10 on top&bottom
+            static let thumbnailPadding = 10.0
+
+            // The leading scroll accessory adds 10 px to the total size when present.
+            static let leadingAccessoryPadding = 10.0
+
+            // Buffer so the text doesn't overlap with the trailing pin button.
+            static let pinButtonTrailingPadding = 48.0
+        }
+
         weak var pinnedMessageInteractionDelegate: PinnedMessageInteractionManagerDelegate?
 
         var configuration: any UIContentConfiguration {
@@ -226,8 +242,68 @@ private class ConversationBannerView: UIView {
             rebuildContent()
         }
 
+        private func buildTitleLabel(text: String) -> UILabel {
+            let _titleLabel = UILabel()
+            _titleLabel.font = UIFont.dynamicTypeFootnoteClamped.semibold()
+            _titleLabel.textColor = .Signal.label
+            _titleLabel.numberOfLines = 1
+            _titleLabel.text = text
+            return _titleLabel
+        }
+
+        private func buildBodyLabel(text: NSAttributedString) -> UILabel {
+            let _bodyLabel = UILabel()
+            _bodyLabel.font = UIFont.dynamicTypeSubheadlineClamped
+            _bodyLabel.textColor = .Signal.label
+            _bodyLabel.numberOfLines = 1
+            _bodyLabel.attributedText = text
+            return _bodyLabel
+        }
+
+        func makeTextStackThumbnailContainer(
+            thumbnail: UIImageView?,
+            title: String,
+            body: NSAttributedString,
+            hasLeadingAccessory: Bool
+        ) -> UIView {
+            let container = UIView()
+            let accessoryPadding = hasLeadingAccessory ? PinnedMessageConstants.leadingAccessoryPadding : 0.0
+            let textStackLeadingPadding: CGFloat
+            if let thumbnail {
+                container.addSubview(thumbnail)
+                thumbnail.translatesAutoresizingMaskIntoConstraints = false
+                NSLayoutConstraint.activate([
+                    thumbnail.topAnchor.constraint(equalTo: container.topAnchor, constant: PinnedMessageConstants.thumbnailPadding),
+                    thumbnail.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: PinnedMessageConstants.leadingPadding + accessoryPadding),
+                    thumbnail.widthAnchor.constraint(equalToConstant: PinnedMessageConstants.thumbnailSize),
+                ])
+                textStackLeadingPadding = PinnedMessageConstants.leadingPadding +
+                    accessoryPadding +
+                    PinnedMessageConstants.thumbnailSize +
+                    PinnedMessageConstants.spacing
+            } else {
+                textStackLeadingPadding = PinnedMessageConstants.leadingPadding + accessoryPadding
+            }
+
+            let _titleLabel = buildTitleLabel(text: title)
+            let _bodyLabel = buildBodyLabel(text: body)
+
+            let textStack = UIStackView(arrangedSubviews: [_titleLabel, _bodyLabel])
+            textStack.axis = .vertical
+            container.addSubview(textStack)
+
+            textStack.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
+                textStack.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: textStackLeadingPadding),
+                textStack.centerYAnchor.constraint(equalTo: container.centerYAnchor),
+                textStack.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -PinnedMessageConstants.pinButtonTrailingPadding),
+                textStack.topAnchor.constraint(equalTo: container.topAnchor, constant: 4),
+            ])
+            return container
+        }
+
         private func rebuildContent() {
-            directionalLayoutMargins = NSDirectionalEdgeInsets(hMargin: 16, vMargin: 10)
+            directionalLayoutMargins = NSDirectionalEdgeInsets(hMargin: 16, vMargin: 6)
 
             removeAllSubviews()
 
@@ -246,41 +322,42 @@ private class ConversationBannerView: UIView {
                 addArrangedSubview(leadingAccessoryContainerView)
             }
 
-            if let _thumbnail = configuration.thumbnail {
-                thumbnail = _thumbnail
-                addArrangedSubview(_thumbnail)
-            }
+            if configuration.isPinnedMessagesBanner, let title = configuration.title {
+                // If this is a pinned message and its not first load (no previous title), animate the existing banner off screen.
+                if !titleLabel.text.isEmptyOrNil {
+                    animatePinnedMessageTransition(
+                        newTitle: title,
+                        newBody: configuration.body,
+                        newThumbnail: configuration.thumbnail
+                    )
+                } else {
+                    // Otherwise build from scratch.
+                    let container = makeTextStackThumbnailContainer(
+                        thumbnail: configuration.thumbnail,
+                        title: title,
+                        body: configuration.body,
+                        hasLeadingAccessory: configuration.leadingAccessoryView != nil
+                    )
 
-            // If this is a pinned message and its not first load (no previous title), animate.
-            if configuration.isPinnedMessagesBanner,
-               let title = configuration.title,
-               !titleLabel.text.isEmptyOrNil
-            {
-                animatePinnedMessageTransition(
-                    newTitle: title,
-                    newBody: configuration.body,
-                    newThumbnail: configuration.thumbnail
-                )
+                    // Store copies of old banner strings for the next animation.
+                    titleLabel = buildTitleLabel(text: title)
+                    bodyLabel = buildBodyLabel(text: configuration.body)
+
+                    addSubview(container)
+                    container.translatesAutoresizingMaskIntoConstraints = false
+                    NSLayoutConstraint.activate([
+                        container.leadingAnchor.constraint(equalTo: leadingAnchor),
+                        container.trailingAnchor.constraint(equalTo: trailingAnchor),
+                        container.topAnchor.constraint(equalTo: topAnchor),
+                    ])
+                }
             } else {
-                bodyLabel.numberOfLines = configuration.isPinnedMessagesBanner ? 1 : 0
+                bodyLabel = UILabel()
                 bodyLabel.font = UIFont.dynamicTypeSubheadlineClamped
                 bodyLabel.textColor = .Signal.label
+                bodyLabel.numberOfLines = 0
                 bodyLabel.attributedText = configuration.body
-
-                if let title = configuration.title {
-                    titleLabel.numberOfLines = configuration.isPinnedMessagesBanner ? 1 : 0
-                    titleLabel.font = UIFont.dynamicTypeFootnote.semibold()
-                    titleLabel.textColor = .Signal.label
-                    titleLabel.text = title
-
-                    textStackView.addArrangedSubviews([titleLabel, bodyLabel])
-                    textStackView.axis = .vertical
-                    textStackView.spacing = 2
-
-                    addArrangedSubview(textStackView)
-                } else {
-                    addArrangedSubview(bodyLabel)
-                }
+                addArrangedSubview(bodyLabel)
             }
 
             if let viewButtonTitle = configuration.viewButtonTitle,
@@ -358,7 +435,7 @@ private class ConversationBannerView: UIView {
 
                 button.menu = pinMessageMenu()
                 button.showsMenuAsPrimaryAction = true
-                button.backgroundColor = Theme.secondaryBackgroundColor
+                button.tintColor = .Signal.label
 
                 let buttonContainer = UIView.container()
                 buttonContainer.addSubview(button)
@@ -369,9 +446,17 @@ private class ConversationBannerView: UIView {
                     button.leadingAnchor.constraint(equalTo: buttonContainer.leadingAnchor),
                     button.trailingAnchor.constraint(equalTo: buttonContainer.trailingAnchor),
                 ])
-                addArrangedSubview(buttonContainer)
+                addSubview(buttonContainer)
+                buttonContainer.translatesAutoresizingMaskIntoConstraints = false
+                NSLayoutConstraint.activate([
+                    buttonContainer.centerYAnchor.constraint(equalTo: centerYAnchor),
+                    buttonContainer.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -4),
+                ])
 
-                directionalLayoutMargins.trailing = 4 // 10 total with button's content padding
+                // Total banner height should always be 50 for pinned messages.
+                NSLayoutConstraint.activate([
+                    heightAnchor.constraint(equalToConstant: PinnedMessageConstants.bannerHeight)
+                ])
             }
 
             if configuration.bannerTapAction != nil {
@@ -404,101 +489,79 @@ private class ConversationBannerView: UIView {
             ])
         }
 
-        private func animatePinnedMessageTransition(newTitle: String, newBody: NSAttributedString, newThumbnail: UIImageView?) {
-            func makeAnimatedStack(title: String?, body: NSAttributedString?, thumbnailImageView: UIImageView?) -> (UIStackView) {
-                let hStack = UIStackView()
-                hStack.axis = .horizontal
-                hStack.spacing = 12
-
-                let _titleLabel = UILabel()
-                _titleLabel.numberOfLines = 1
-                _titleLabel.font = UIFont.dynamicTypeFootnote.semibold()
-                _titleLabel.textColor = .Signal.label
-                _titleLabel.text = title
-
-                let _bodyLabel = UILabel()
-                _bodyLabel.numberOfLines = 1
-                _bodyLabel.font = UIFont.dynamicTypeSubheadlineClamped
-                _bodyLabel.textColor = .Signal.label
-                _bodyLabel.attributedText = body
-
-                let newTextStack = UIStackView(arrangedSubviews: [_titleLabel, _bodyLabel])
-                newTextStack.axis = .vertical
-                newTextStack.spacing = 2
-
-                if let _thumbnail = thumbnailImageView {
-                    hStack.addArrangedSubview(_thumbnail)
-                }
-                hStack.addArrangedSubview(newTextStack)
-                return hStack
+        private func animatePinnedMessageTransition(
+            newTitle: String,
+            newBody: NSAttributedString,
+            newThumbnail: UIImageView?
+        ) {
+            guard
+                let titleText = titleLabel.text,
+                let bodyText = bodyLabel.attributedText
+            else {
+                return
             }
 
-            let oldAnimatedStack = makeAnimatedStack(
-                title: titleLabel.text,
-                body: bodyLabel.attributedText,
-                thumbnailImageView: thumbnail
+            // Make container for old textStack
+            let oldContainer = makeTextStackThumbnailContainer(
+                thumbnail: thumbnail,
+                title: titleText,
+                body: bodyText,
+                hasLeadingAccessory: true
             )
-            let newAnimatedStack = makeAnimatedStack(
+            addSubview(oldContainer)
+
+            oldContainer.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
+                oldContainer.leadingAnchor.constraint(equalTo: leadingAnchor),
+                oldContainer.trailingAnchor.constraint(equalTo: trailingAnchor),
+                oldContainer.topAnchor.constraint(equalTo: topAnchor),
+                oldContainer.heightAnchor.constraint(equalToConstant: PinnedMessageConstants.bannerHeight)
+            ])
+
+            // Build container for new textStack
+            let newContainer = makeTextStackThumbnailContainer(
+                thumbnail: newThumbnail,
                 title: newTitle,
                 body: newBody,
-                thumbnailImageView: newThumbnail
+                hasLeadingAccessory: true
             )
+            addSubview(newContainer)
 
-            // Create a stack with:
-            // [old]
-            // [new]
-            // and insert it into a fixed-height wrapper (so the label thats sliding in/out gets cut off).
-            // Constrain the top of the stack (old pin) to the top of the wrapper and start it at (0,0),
-            // then animate it upwards off screen by a y value equal to its size, leaving the new pin in view.
-            let animatedStack = UIStackView(arrangedSubviews: [
-                oldAnimatedStack,
-                newAnimatedStack
-            ])
-            animatedStack.axis = .vertical
-
-            let fixedHeightAnimationView = UIView()
-            fixedHeightAnimationView.clipsToBounds = true
-            fixedHeightAnimationView.addSubview(animatedStack)
-
-            animatedStack.translatesAutoresizingMaskIntoConstraints = false
+            newContainer.translatesAutoresizingMaskIntoConstraints = false
             NSLayoutConstraint.activate([
-                animatedStack.leadingAnchor.constraint(equalTo: fixedHeightAnimationView.leadingAnchor),
-                animatedStack.trailingAnchor.constraint(equalTo: fixedHeightAnimationView.trailingAnchor),
-                animatedStack.topAnchor.constraint(equalTo: fixedHeightAnimationView.topAnchor),
+                newContainer.leadingAnchor.constraint(equalTo: leadingAnchor),
+                newContainer.trailingAnchor.constraint(equalTo: trailingAnchor),
+                newContainer.topAnchor.constraint(equalTo: topAnchor),
+                newContainer.heightAnchor.constraint(equalToConstant: PinnedMessageConstants.bannerHeight)
             ])
 
-            let textHeight = textStackView.bounds.height
-            addArrangedSubview(fixedHeightAnimationView)
-
-            fixedHeightAnimationView.heightAnchor.constraint(equalToConstant: textHeight).isActive = true
+            // Initial positions
+            oldContainer.transform = .identity
+            newContainer.transform = CGAffineTransform(translationX: 0, y: PinnedMessageConstants.bannerHeight)
 
             let pinAnimator = UIViewPropertyAnimator(
                 duration: 0.3,
                 springDamping: 1,
                 springResponse: 0.3
             )
+
             pinAnimator.addAnimations {
-                animatedStack.transform = CGAffineTransform(translationX: 0, y: -textHeight)
+                oldContainer.transform = CGAffineTransform(translationX: 0, y: -PinnedMessageConstants.bannerHeight)
+                newContainer.transform = .identity
             }
 
-            pinAnimator.addCompletion { [self] _ in
+            pinAnimator.addCompletion { _ in
                 self.isAnimating = false
-                fixedHeightAnimationView.removeFromSuperview()
+                oldContainer.removeFromSuperview()
 
-                self.titleLabel.text = newTitle
-                self.bodyLabel.attributedText = newBody
+                // Store the new text & thumbnails so we can reference them
+                // as the "old" ones next time we animate.
+                self.titleLabel = self.buildTitleLabel(text: newTitle)
+                self.bodyLabel = self.buildBodyLabel(text: newBody)
                 self.thumbnail = newThumbnail
-
-                let textStackIndex: Int
-                if let _thumbnail = self.thumbnail {
-                    insertArrangedSubview(_thumbnail, at: 1)
-                    textStackIndex = 2
-                } else {
-                    textStackIndex = 1
-                }
-                insertArrangedSubview(textStackView, at: textStackIndex)
             }
-            self.isAnimating = true
+
+            isAnimating = true
             pinAnimator.startAnimation()
         }
 
