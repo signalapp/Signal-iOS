@@ -189,7 +189,6 @@ private extension OWSIdentity {
 }
 
 public class OWSIdentityManagerImpl: OWSIdentityManager {
-    private let aciProtocolStore: SignalProtocolStore
     private let appReadiness: AppReadiness
     private let db: any DB
     private let messageSenderJobQueue: MessageSenderJobQueue
@@ -202,12 +201,12 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
     private let recipientDatabaseTable: RecipientDatabaseTable
     private let recipientFetcher: RecipientFetcher
     private let recipientIdFinder: RecipientIdFinder
+    private let sessionStore: SessionStore
     private let shareMyPhoneNumberStore: KeyValueStore
     private let storageServiceManager: StorageServiceManager
     private let tsAccountManager: TSAccountManager
 
-    public init(
-        aciProtocolStore: SignalProtocolStore,
+    init(
         appReadiness: AppReadiness,
         db: any DB,
         messageSenderJobQueue: MessageSenderJobQueue,
@@ -218,10 +217,10 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         recipientDatabaseTable: RecipientDatabaseTable,
         recipientFetcher: RecipientFetcher,
         recipientIdFinder: RecipientIdFinder,
+        sessionStore: SessionStore,
         storageServiceManager: StorageServiceManager,
         tsAccountManager: TSAccountManager
     ) {
-        self.aciProtocolStore = aciProtocolStore
         self.appReadiness = appReadiness
         self.db = db
         self.messageSenderJobQueue = messageSenderJobQueue
@@ -238,6 +237,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         self.recipientDatabaseTable = recipientDatabaseTable
         self.recipientFetcher = recipientFetcher
         self.recipientIdFinder = recipientIdFinder
+        self.sessionStore = sessionStore
         self.shareMyPhoneNumberStore = KeyValueStore(
             collection: "OWSIdentityManager.shareMyPhoneNumberStore"
         )
@@ -348,27 +348,27 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
 
     @discardableResult
     public func saveIdentityKey(_ identityKey: Data, for serviceId: ServiceId, tx: DBWriteTransaction) -> Result<IdentityChange, RecipientIdError> {
-        let recipientIdResult = recipientIdFinder.ensureRecipientUniqueId(for: serviceId, tx: tx)
-        return recipientIdResult.map({ _saveIdentityKey(identityKey, for: serviceId, recipientUniqueId: $0, tx: tx) })
+        let recipientResult = recipientIdFinder.ensureRecipient(for: serviceId, tx: tx)
+        return recipientResult.map({ _saveIdentityKey(identityKey, for: serviceId, recipient: $0, tx: tx) })
     }
 
-    private func _saveIdentityKey(_ identityKey: Data, for serviceId: ServiceId, recipientUniqueId: RecipientUniqueId, tx: DBWriteTransaction) -> IdentityChange {
+    private func _saveIdentityKey(_ identityKey: Data, for serviceId: ServiceId, recipient: SignalRecipient, tx: DBWriteTransaction) -> IdentityChange {
         owsAssertDebug(identityKey.count == Constants.storedIdentityKeyLength)
 
-        let existingIdentity = OWSRecipientIdentity.anyFetch(uniqueId: recipientUniqueId, transaction: tx)
+        let existingIdentity = OWSRecipientIdentity.anyFetch(uniqueId: recipient.uniqueId, transaction: tx)
         guard let existingIdentity else {
             Logger.info("Saving first-use identity for \(serviceId)")
             OWSRecipientIdentity(
-                uniqueId: recipientUniqueId,
+                uniqueId: recipient.uniqueId,
                 identityKey: identityKey,
                 isFirstKnownKey: true,
                 createdAt: Date(),
                 verificationState: .default
             ).anyInsert(transaction: tx)
             // Cancel any pending verification state sync messages for this recipient.
-            clearSyncMessage(for: recipientUniqueId, tx: tx)
+            clearSyncMessage(for: recipient.uniqueId, tx: tx)
             fireIdentityStateChangeNotification(after: tx)
-            storageServiceManager.recordPendingUpdates(updatedRecipientUniqueIds: [recipientUniqueId])
+            storageServiceManager.recordPendingUpdates(updatedRecipientUniqueIds: [recipient.uniqueId])
             return .newOrUnchanged
         }
 
@@ -386,16 +386,16 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         Logger.info("Saving new identity for \(serviceId): \(existingIdentity.verificationState) -> \(verificationState)")
         insertIdentityChangeInfoMessage(for: serviceId, wasIdentityVerified: existingIdentity.wasIdentityVerified, tx: tx)
         OWSRecipientIdentity(
-            uniqueId: recipientUniqueId,
+            uniqueId: recipient.uniqueId,
             identityKey: identityKey,
             isFirstKnownKey: false,
             createdAt: Date(),
             verificationState: verificationState.rawValue
         ).anyUpsert(transaction: tx)
-        aciProtocolStore.sessionStore.archiveAllSessions(for: serviceId, tx: tx)
+        sessionStore.archiveSessions(forRecipientId: recipient.id, localIdentity: .aci, tx: tx)
         // Cancel any pending verification state sync messages for this recipient.
-        clearSyncMessage(for: recipientUniqueId, tx: tx)
-        storageServiceManager.recordPendingUpdates(updatedRecipientUniqueIds: [recipientUniqueId])
+        clearSyncMessage(for: recipient.uniqueId, tx: tx)
+        storageServiceManager.recordPendingUpdates(updatedRecipientUniqueIds: [recipient.uniqueId])
         return .replacedExisting
     }
 

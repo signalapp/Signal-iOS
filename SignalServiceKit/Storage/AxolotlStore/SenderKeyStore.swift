@@ -82,7 +82,7 @@ public class SenderKeyStore {
             // comparing a set of (deviceId, registrationId) structs, we should be able
             // to detect reused deviceIds that will need an SKDM.
             let registrationId = try sessionStore.loadSession(
-                for: serviceId,
+                forServiceId: serviceId,
                 deviceId: deviceId,
                 tx: tx
             )?.remoteRegistrationId()

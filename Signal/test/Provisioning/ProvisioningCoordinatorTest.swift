@@ -66,6 +66,7 @@ public class ProvisioningCoordinatorTest: XCTestCase {
         self.tsAccountManagerMock = .init()
         self.udManagerMock = .init()
         let preKeyStore = PreKeyStore()
+        let sessionStore = SignalServiceKit.SessionStore()
 
         self.provisioningCoordinator = ProvisioningCoordinatorImpl(
             chatConnectionManager: chatConnectionManagerMock,
@@ -81,9 +82,10 @@ public class ProvisioningCoordinatorTest: XCTestCase {
             registrationStateChangeManager: registrationStateChangeManagerMock,
             registrationWebSocketManager: MockRegistrationWebSocketManager(),
             signalProtocolStoreManager: SignalProtocolStoreManager(
-                aciProtocolStore: .mock(identity: .aci, preKeyStore: preKeyStore),
-                pniProtocolStore: .mock(identity: .pni, preKeyStore: preKeyStore),
+                aciProtocolStore: .mock(identity: .aci, preKeyStore: preKeyStore, recipientIdFinder: recipientIdFinder, sessionStore: sessionStore),
+                pniProtocolStore: .mock(identity: .pni, preKeyStore: preKeyStore, recipientIdFinder: recipientIdFinder, sessionStore: sessionStore),
                 preKeyStore: preKeyStore,
+                sessionStore: sessionStore,
             ),
             signalService: signalServiceMock,
             storageServiceManager: storageServiceManagerMock,

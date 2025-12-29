@@ -106,6 +106,6 @@ private class SessionResetJobRunner: JobRunner {
 
     private func archiveAllSessions(for contactThread: TSContactThread, tx: DBWriteTransaction) {
         let sessionStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
-        sessionStore.archiveAllSessions(for: contactThread.contactAddress, tx: tx)
+        sessionStore.archiveSessions(forAddress: contactThread.contactAddress, tx: tx)
     }
 }

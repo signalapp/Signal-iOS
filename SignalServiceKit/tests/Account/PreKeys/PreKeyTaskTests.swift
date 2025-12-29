@@ -45,14 +45,28 @@ final class PreKeyTaskTests: SSKBaseTest {
         mockAPIClient = .init()
         mockDateProvider = .init()
         mockDb = InMemoryDB()
+        let sessionStore = SignalServiceKit.SessionStore()
 
         mockPreKeyStore = PreKeyStore()
-        mockAciProtocolStore = .mock(identity: .aci, preKeyStore: mockPreKeyStore)
-        mockPniProtocolStore = .mock(identity: .pni, preKeyStore: mockPreKeyStore)
+        mockAciProtocolStore = .build(
+            dateProvider: mockDateProvider.targetDate,
+            identity: .aci,
+            preKeyStore: mockPreKeyStore,
+            recipientIdFinder: recipientIdFinder,
+            sessionStore: sessionStore,
+        )
+        mockPniProtocolStore = .build(
+            dateProvider: mockDateProvider.targetDate,
+            identity: .pni,
+            preKeyStore: mockPreKeyStore,
+            recipientIdFinder: recipientIdFinder,
+            sessionStore: sessionStore,
+        )
         mockProtocolStoreManager = SignalProtocolStoreManager(
             aciProtocolStore: mockAciProtocolStore,
             pniProtocolStore: mockPniProtocolStore,
             preKeyStore: mockPreKeyStore,
+            sessionStore: sessionStore,
         )
 
         taskManager = PreKeyTaskManager(

@@ -28,16 +28,13 @@ private class MockStorageServiceManager: StorageServiceManager {
 }
 
 private class TestDependencies {
-    let aciSessionStore: SignalSessionStore
-    var aciSessionStoreKeyValueStore: KeyValueStore {
-        KeyValueStore(collection: "TSStorageManagerSessionStoreCollection")
-    }
     let identityManager: MockIdentityManager
     let mockDB = InMemoryDB()
     let recipientMerger: RecipientMerger
     let recipientDatabaseTable = RecipientDatabaseTable()
     let recipientFetcher: RecipientFetcher
     let recipientIdFinder: RecipientIdFinder
+    let sessionStore: SignalServiceKit.SessionStore
     let threadAssociatedDataStore: MockThreadAssociatedDataStore
     let threadStore: MockThreadStore
     let threadMerger: ThreadMerger
@@ -50,10 +47,10 @@ private class TestDependencies {
             searchableNameIndexer: searchableNameIndexer,
         )
         recipientIdFinder = RecipientIdFinder(recipientDatabaseTable: recipientDatabaseTable, recipientFetcher: recipientFetcher)
-        aciSessionStore = SSKSessionStore(for: .aci, recipientIdFinder: recipientIdFinder)
         identityManager = MockIdentityManager(recipientIdFinder: recipientIdFinder)
         identityManager.recipientIdentities = [:]
         identityManager.sessionSwitchoverMessages = []
+        sessionStore = SignalServiceKit.SessionStore()
         threadAssociatedDataStore = MockThreadAssociatedDataStore()
         threadStore = MockThreadStore()
         threadMerger = ThreadMerger.forUnitTests(
@@ -61,7 +58,6 @@ private class TestDependencies {
             threadStore: threadStore
         )
         recipientMerger = RecipientMergerImpl(
-            aciSessionStore: aciSessionStore,
             blockedRecipientStore: BlockedRecipientStore(),
             identityManager: identityManager,
             observers: RecipientMergerImpl.Observers(
@@ -72,6 +68,7 @@ private class TestDependencies {
             recipientDatabaseTable: recipientDatabaseTable,
             recipientFetcher: recipientFetcher,
             searchableNameIndexer: searchableNameIndexer,
+            sessionStore: sessionStore,
             storageServiceManager: storageServiceManager,
             storyRecipientStore: StoryRecipientStore()
         )
@@ -253,7 +250,13 @@ class RecipientMergerTest: XCTestCase {
                             createdAt: Date(),
                             verificationState: .default
                         )
-                        d.aciSessionStoreKeyValueStore.setData(Data(), key: recipient.uniqueId, transaction: tx)
+                        d.sessionStore.upsertSession(
+                            forRecipientId: recipient.id,
+                            deviceId: .primary,
+                            localIdentity: .aci,
+                            recordData: Data(),
+                            tx: tx,
+                        )
                     }
                 }
 
@@ -266,7 +269,7 @@ class RecipientMergerTest: XCTestCase {
 
                 XCTAssertEqual(d.identityManager.identityChangeInfoMessages, testCase.shouldInsertEvent ? [ac1] : [])
                 XCTAssertEqual(try! d.identityManager.identityKey(for: ac1, tx: tx), ik1)
-                XCTAssertTrue(d.aciSessionStore.mightContainSession(for: mergedRecipient, tx: tx))
+                XCTAssertTrue(d.sessionStore.hasSessionRecords(forRecipientId: mergedRecipient.id, localIdentity: .aci, tx: tx))
             }
         }
     }
@@ -402,7 +405,13 @@ class RecipientMergerTest: XCTestCase {
             d.mockDB.write { tx in
                 for recipientNumber in testCase.hasSession {
                     let recipient = recipients.dropFirst(recipientNumber - 1).first!
-                    d.aciSessionStoreKeyValueStore.setData(Data(), key: recipient.uniqueId, transaction: tx)
+                    d.sessionStore.upsertSession(
+                        forRecipientId: recipient.id,
+                        deviceId: .primary,
+                        localIdentity: .aci,
+                        recordData: Data(),
+                        tx: tx,
+                    )
                     let thread = TSContactThread(contactAddress: SignalServiceAddress(
                         serviceId: recipient.aci ?? recipient.pni,
                         phoneNumber: recipient.phoneNumber?.stringValue,
@@ -444,10 +453,22 @@ class RecipientMergerTest: XCTestCase {
         let d = TestDependencies()
         let aciRecipient = d.mockDB.write { tx in
             let aciRecipient = try! SignalRecipient.insertRecord(aci: aci, tx: tx)
-            d.aciSessionStoreKeyValueStore.setData(Data(), key: aciRecipient.uniqueId, transaction: tx)
+            d.sessionStore.upsertSession(
+                forRecipientId: aciRecipient.id,
+                deviceId: .primary,
+                localIdentity: .aci,
+                recordData: Data(),
+                tx: tx,
+            )
 
             let pniRecipient = try! SignalRecipient.insertRecord(phoneNumber: phoneNumber, pni: pni, tx: tx)
-            d.aciSessionStoreKeyValueStore.setData(Data(), key: pniRecipient.uniqueId, transaction: tx)
+            d.sessionStore.upsertSession(
+                forRecipientId: pniRecipient.id,
+                deviceId: .primary,
+                localIdentity: .aci,
+                recordData: Data(),
+                tx: tx,
+            )
 
             return aciRecipient
         }

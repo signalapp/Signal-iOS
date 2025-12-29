@@ -71,6 +71,11 @@ public enum BuildFlags {
     // that's now dead because this is false.
     public static let decodeDeprecatedPreKeys = true
 
+    // Turn this off after all still-registered clients have run this
+    // migration. That should happen by 2026-08-04. Then, delete all the code
+    // that's now dead because this is false.
+    public static let migrateDeprecatedSessions = true
+
     public static let serviceIdBinaryProvisioning = true
     public static let serviceIdBinaryConstantOverhead = !serviceIdStrings || (build <= .internal)
     public static let serviceIdBinaryVariableOverhead = !serviceIdStrings || (build <= .dev)

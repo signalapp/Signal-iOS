@@ -400,6 +400,7 @@ public enum DatabaseRecovery {
             StoryRecipient.databaseTableName,
             PreKey.databaseTableName,
             KyberPreKeyUseRecord.databaseTableName,
+            SignalServiceKit.SessionRecord.databaseTableName,
         ]
 
         /// Copy tables that must be copied flawlessly. Operation throws if any tables fail.

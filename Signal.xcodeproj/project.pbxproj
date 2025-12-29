@@ -572,6 +572,7 @@
 		500FE4E2288A373100FA090C /* BadgeGiftingAlreadyRedeemedSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500FE4E1288A373100FA090C /* BadgeGiftingAlreadyRedeemedSheet.swift */; };
 		50101FB22B083C8100C648E4 /* ChatListSettingsButtonState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50101FB12B083C8100C648E4 /* ChatListSettingsButtonState.swift */; };
 		50101FB42B08447000C648E4 /* ChatListProxyButtonCreator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50101FB32B08447000C648E4 /* ChatListProxyButtonCreator.swift */; };
+		501050BB2EB959A4005161CA /* SessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501050BA2EB959A4005161CA /* SessionStore.swift */; };
 		501052642BDAEEDC0097DDC5 /* MobileCoinExternal.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501052632BDAEEDC0097DDC5 /* MobileCoinExternal.pb.swift */; };
 		501052672BDB22940097DDC5 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 501052652BDB15B90097DDC5 /* PrivacyInfo.xcprivacy */; };
 		501052692BDB232A0097DDC5 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 501052682BDB232A0097DDC5 /* PrivacyInfo.xcprivacy */; };
@@ -1806,7 +1807,6 @@
 		C1C4AA3329E7038D000CE9D3 /* EditManagerShims.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1C4AA3229E7038D000CE9D3 /* EditManagerShims.swift */; };
 		C1C7E4FB2BE0419300F196EE /* UploadMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1C7E4FA2BE0419300F196EE /* UploadMetadata.swift */; };
 		C1CA5F8E2BE2F21C00D733CA /* BackupArchiveDistributionListRecipientArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CA5F8D2BE2F21C00D733CA /* BackupArchiveDistributionListRecipientArchiver.swift */; };
-		C1CD0E3A2A6B0D2700307F1A /* SignalSessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CD0E392A6B0D2700307F1A /* SignalSessionStore.swift */; };
 		C1CD0E402A6B37BF00307F1A /* PreKeyStoreImplTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CD0E3F2A6B37BF00307F1A /* PreKeyStoreImplTest.swift */; };
 		C1CF83D02B96C85E00CDC9C4 /* ChunkedOutputStreamTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CF83CF2B96C85E00CDC9C4 /* ChunkedOutputStreamTransform.swift */; };
 		C1CF83D22B9A1FCB00CDC9C4 /* GzipStreamTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1CF83D12B9A1FCB00CDC9C4 /* GzipStreamTransform.swift */; };
@@ -3739,7 +3739,6 @@
 		F9C5CD33289453B300548EEE /* SignedPreKeyStoreImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA55289453B100548EEE /* SignedPreKeyStoreImpl.swift */; };
 		F9C5CD34289453B300548EEE /* SignalProtocolStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA56289453B100548EEE /* SignalProtocolStore.swift */; };
 		F9C5CD37289453B300548EEE /* SenderKeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA59289453B100548EEE /* SenderKeyStore.swift */; };
-		F9C5CD3C289453B300548EEE /* SSKSessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA5E289453B100548EEE /* SSKSessionStore.swift */; };
 		F9C5CD52289453B300548EEE /* PreKeyStoreImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA75289453B100548EEE /* PreKeyStoreImpl.swift */; };
 		F9C5CD54289453B300548EEE /* SSKKeychainStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA77289453B100548EEE /* SSKKeychainStorage.swift */; };
 		F9C5CD56289453B300548EEE /* PendingViewedReceiptRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5CA79289453B100548EEE /* PendingViewedReceiptRecord.swift */; };
@@ -4716,6 +4715,7 @@
 		500FE4E1288A373100FA090C /* BadgeGiftingAlreadyRedeemedSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeGiftingAlreadyRedeemedSheet.swift; sourceTree = "<group>"; };
 		50101FB12B083C8100C648E4 /* ChatListSettingsButtonState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatListSettingsButtonState.swift; sourceTree = "<group>"; };
 		50101FB32B08447000C648E4 /* ChatListProxyButtonCreator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatListProxyButtonCreator.swift; sourceTree = "<group>"; };
+		501050BA2EB959A4005161CA /* SessionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionStore.swift; sourceTree = "<group>"; };
 		501052632BDAEEDC0097DDC5 /* MobileCoinExternal.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MobileCoinExternal.pb.swift; sourceTree = "<group>"; };
 		501052652BDB15B90097DDC5 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		501052682BDB232A0097DDC5 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
@@ -5963,7 +5963,6 @@
 		C1C4AA3229E7038D000CE9D3 /* EditManagerShims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditManagerShims.swift; sourceTree = "<group>"; };
 		C1C7E4FA2BE0419300F196EE /* UploadMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadMetadata.swift; sourceTree = "<group>"; };
 		C1CA5F8D2BE2F21C00D733CA /* BackupArchiveDistributionListRecipientArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupArchiveDistributionListRecipientArchiver.swift; sourceTree = "<group>"; };
-		C1CD0E392A6B0D2700307F1A /* SignalSessionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalSessionStore.swift; sourceTree = "<group>"; };
 		C1CD0E3F2A6B37BF00307F1A /* PreKeyStoreImplTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreKeyStoreImplTest.swift; sourceTree = "<group>"; };
 		C1CF83CF2B96C85E00CDC9C4 /* ChunkedOutputStreamTransform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChunkedOutputStreamTransform.swift; sourceTree = "<group>"; };
 		C1CF83D12B9A1FCB00CDC9C4 /* GzipStreamTransform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GzipStreamTransform.swift; sourceTree = "<group>"; };
@@ -7934,7 +7933,6 @@
 		F9C5CA55289453B100548EEE /* SignedPreKeyStoreImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignedPreKeyStoreImpl.swift; sourceTree = "<group>"; };
 		F9C5CA56289453B100548EEE /* SignalProtocolStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalProtocolStore.swift; sourceTree = "<group>"; };
 		F9C5CA59289453B100548EEE /* SenderKeyStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SenderKeyStore.swift; sourceTree = "<group>"; };
-		F9C5CA5E289453B100548EEE /* SSKSessionStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SSKSessionStore.swift; sourceTree = "<group>"; };
 		F9C5CA75289453B100548EEE /* PreKeyStoreImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreKeyStoreImpl.swift; sourceTree = "<group>"; };
 		F9C5CA77289453B100548EEE /* SSKKeychainStorage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SSKKeychainStorage.swift; sourceTree = "<group>"; };
 		F9C5CA79289453B100548EEE /* PendingViewedReceiptRecord.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PendingViewedReceiptRecord.swift; sourceTree = "<group>"; };
@@ -14881,10 +14879,9 @@
 				50589CDD2E8C44D5003EF42A /* PreKeyStore.swift */,
 				F9C5CA75289453B100548EEE /* PreKeyStoreImpl.swift */,
 				F9C5CA59289453B100548EEE /* SenderKeyStore.swift */,
+				501050BA2EB959A4005161CA /* SessionStore.swift */,
 				F9C5CA56289453B100548EEE /* SignalProtocolStore.swift */,
-				C1CD0E392A6B0D2700307F1A /* SignalSessionStore.swift */,
 				F9C5CA55289453B100548EEE /* SignedPreKeyStoreImpl.swift */,
-				F9C5CA5E289453B100548EEE /* SSKSessionStore.swift */,
 			);
 			path = AxolotlStore;
 			sourceTree = "<group>";
@@ -19328,6 +19325,7 @@
 				F9C5CC96289453B300548EEE /* SessionRecord.pb.swift in Sources */,
 				725465242BA017D500EABFD2 /* SessionResetJob.swift in Sources */,
 				D9AE0AD729187A700063488B /* SessionResetJobRecord.swift in Sources */,
+				501050BB2EB959A4005161CA /* SessionStore.swift in Sources */,
 				1700E34128BD41150073D949 /* SetAlgebra+SSK.swift in Sources */,
 				502346772DB039320029DB97 /* SetDeque.swift in Sources */,
 				66C2B14D2A13E2C7008DDE72 /* SgxWebsocketConfigurator.swift in Sources */,
@@ -19352,7 +19350,6 @@
 				F9C5CC9A289453B300548EEE /* SignalService.pb.swift in Sources */,
 				F9C5CCE2289453B300548EEE /* SignalServiceAddress.swift in Sources */,
 				F9C5CDBB289453B400548EEE /* SignalServiceProfile.swift in Sources */,
-				C1CD0E3A2A6B0D2700307F1A /* SignalSessionStore.swift in Sources */,
 				72B0C2422C9EED0E00B57DAD /* SignedPreKeyRecord.swift in Sources */,
 				F9C5CD33289453B300548EEE /* SignedPreKeyStoreImpl.swift in Sources */,
 				F9C5CC51289453B300548EEE /* SMKError.swift in Sources */,
@@ -19371,7 +19368,6 @@
 				F9C5CCA4289453B300548EEE /* SSKProto+OWS.swift in Sources */,
 				F9C5CCA1289453B300548EEE /* SSKProto.swift in Sources */,
 				F9C5CC8E289453B300548EEE /* SSKProtos.swift in Sources */,
-				F9C5CD3C289453B300548EEE /* SSKSessionStore.swift in Sources */,
 				F9C5CD9E289453B400548EEE /* SSKWebSocket.swift in Sources */,
 				F9C5CC1B289453B300548EEE /* StickerError.swift in Sources */,
 				F9C5CC13289453B300548EEE /* StickerInfo.m in Sources */,

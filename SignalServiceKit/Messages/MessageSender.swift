@@ -48,10 +48,10 @@ public class MessageSender {
 
     // MARK: - Creating Signal Protocol Sessions
 
-    private func validSession(for serviceId: ServiceId, deviceId: DeviceId, tx: DBReadTransaction) throws -> SessionRecord? {
+    private func validSession(for serviceId: ServiceId, deviceId: DeviceId, tx: DBReadTransaction) throws -> LibSignalClient.SessionRecord? {
         let sessionStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
         do {
-            guard let session = try sessionStore.loadSession(for: serviceId, deviceId: deviceId, tx: tx) else {
+            guard let session = try sessionStore.loadSession(forServiceId: serviceId, deviceId: deviceId, tx: tx) else {
                 return nil
             }
             guard session.hasCurrentState else {
@@ -1555,7 +1555,7 @@ public class MessageSender {
             Logger.warn("Found identity key mismatch on outgoing message to \(serviceId).\(deviceId). Archiving session before retrying...")
             let signalProtocolStoreManager = DependenciesBridge.shared.signalProtocolStoreManager
             let aciSessionStore = signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
-            aciSessionStore.archiveSession(for: serviceId, deviceId: deviceId, tx: tx)
+            aciSessionStore.archiveSession(forServiceId: serviceId, deviceId: deviceId, tx: tx)
             throw OWSRetryableMessageSenderError()
         } catch SignalError.untrustedIdentity {
             Logger.warn("Found untrusted identity on outgoing message to \(serviceId). Wrapping error and throwing...")
@@ -1755,7 +1755,7 @@ public class MessageSender {
         Logger.warn("Stale devices for \(serviceId): \(staleDevices)")
         let sessionStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
         for staleDeviceId in staleDevices {
-            sessionStore.archiveSession(for: serviceId, deviceId: staleDeviceId, tx: tx)
+            sessionStore.archiveSession(forServiceId: serviceId, deviceId: staleDeviceId, tx: tx)
         }
     }
 
@@ -1809,7 +1809,7 @@ public class MessageSender {
             Logger.info("Archiving sessions for extra devices: \(devicesToRemove)")
             let sessionStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
             for deviceId in devicesToRemove {
-                sessionStore.archiveSession(for: serviceId, deviceId: deviceId, tx: tx)
+                sessionStore.archiveSession(forServiceId: serviceId, deviceId: deviceId, tx: tx)
             }
         }
     }

@@ -6,7 +6,7 @@
 /// Wraps the stores for 1:1 sessions that use the Signal Protocol (Double Ratchet + X3DH).
 
 public struct SignalProtocolStore {
-    public let sessionStore: SignalSessionStore
+    public let sessionStore: SessionManagerForIdentity
     public let preKeyStore: PreKeyStoreImpl
     public let signedPreKeyStore: SignedPreKeyStoreImpl
     public let kyberPreKeyStore: KyberPreKeyStoreImpl
@@ -16,9 +16,10 @@ public struct SignalProtocolStore {
         identity: OWSIdentity,
         preKeyStore: PreKeyStore,
         recipientIdFinder: RecipientIdFinder,
+        sessionStore: SessionStore,
     ) -> Self {
         return Self(
-            sessionStore: SSKSessionStore(for: identity, recipientIdFinder: recipientIdFinder),
+            sessionStore: SessionManagerForIdentity(identity: identity, recipientIdFinder: recipientIdFinder, sessionStore: sessionStore),
             preKeyStore: PreKeyStoreImpl(for: identity, preKeyStore: preKeyStore),
             signedPreKeyStore: SignedPreKeyStoreImpl(for: identity, preKeyStore: preKeyStore),
             kyberPreKeyStore: KyberPreKeyStoreImpl(for: identity, dateProvider: dateProvider, preKeyStore: preKeyStore),
@@ -31,6 +32,7 @@ public struct SignalProtocolStoreManager {
     let aciProtocolStore: SignalProtocolStore
     let pniProtocolStore: SignalProtocolStore
     let preKeyStore: PreKeyStore
+    let sessionStore: SessionStore
 
     public func signalProtocolStore(for identity: OWSIdentity) -> SignalProtocolStore {
         switch identity {
@@ -43,11 +45,11 @@ public struct SignalProtocolStoreManager {
 
     public func removeAllKeys(tx: DBWriteTransaction) {
         for signalProtocolStore in [aciProtocolStore, pniProtocolStore] {
-            signalProtocolStore.sessionStore.removeAll(tx: tx)
             signalProtocolStore.preKeyStore.removeMetadata(tx: tx)
             signalProtocolStore.signedPreKeyStore.removeMetadata(tx: tx)
             signalProtocolStore.kyberPreKeyStore.removeMetadata(tx: tx)
         }
+        self.sessionStore.deleteAllSessions(tx: tx)
         self.preKeyStore.removeAll(tx: tx)
     }
 }

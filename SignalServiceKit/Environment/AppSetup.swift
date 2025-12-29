@@ -276,12 +276,14 @@ extension AppSetup.GlobalsContinuation {
         )
 
         let preKeyStore = PreKeyStore()
+        let sessionStore = SessionStore()
 
         let aciProtocolStore = SignalProtocolStore.build(
             dateProvider: dateProvider,
             identity: .aci,
             preKeyStore: preKeyStore,
             recipientIdFinder: recipientIdFinder,
+            sessionStore: sessionStore,
         )
         let blockedRecipientStore = BlockedRecipientStore()
         let blockingManager = BlockingManager(
@@ -305,6 +307,7 @@ extension AppSetup.GlobalsContinuation {
             identity: .pni,
             preKeyStore: preKeyStore,
             recipientIdFinder: recipientIdFinder,
+            sessionStore: sessionStore,
         )
         let profileManager = testDependencies.profileManager ?? OWSProfileManager(
             appReadiness: appReadiness,
@@ -320,6 +323,7 @@ extension AppSetup.GlobalsContinuation {
             aciProtocolStore: aciProtocolStore,
             pniProtocolStore: pniProtocolStore,
             preKeyStore: preKeyStore,
+            sessionStore: sessionStore,
         )
         let signalService = testDependencies.signalService ?? OWSSignalService(libsignalNet: libsignalNet)
         let signalServiceAddressCache = SignalServiceAddressCache()
@@ -764,7 +768,6 @@ extension AppSetup.GlobalsContinuation {
         let badgeCountFetcher = BadgeCountFetcherImpl()
 
         let identityManager = OWSIdentityManagerImpl(
-            aciProtocolStore: aciProtocolStore,
             appReadiness: appReadiness,
             db: db,
             messageSenderJobQueue: messageSenderJobQueue,
@@ -775,6 +778,7 @@ extension AppSetup.GlobalsContinuation {
             recipientDatabaseTable: recipientDatabaseTable,
             recipientFetcher: recipientFetcher,
             recipientIdFinder: recipientIdFinder,
+            sessionStore: sessionStore,
             storageServiceManager: storageServiceManager,
             tsAccountManager: tsAccountManager
         )
@@ -1036,7 +1040,6 @@ extension AppSetup.GlobalsContinuation {
 
         let authorMergeHelper = AuthorMergeHelper()
         let recipientMerger = RecipientMergerImpl(
-            aciSessionStore: aciProtocolStore.sessionStore,
             blockedRecipientStore: blockedRecipientStore,
             identityManager: identityManager,
             observers: RecipientMergerImpl.buildObservers(
@@ -1063,6 +1066,7 @@ extension AppSetup.GlobalsContinuation {
             recipientDatabaseTable: recipientDatabaseTable,
             recipientFetcher: recipientFetcher,
             searchableNameIndexer: searchableNameIndexer,
+            sessionStore: sessionStore,
             storageServiceManager: storageServiceManager,
             storyRecipientStore: storyRecipientStore
         )

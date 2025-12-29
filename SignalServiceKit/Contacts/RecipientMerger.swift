@@ -94,13 +94,13 @@ struct MergedRecipient {
 }
 
 class RecipientMergerImpl: RecipientMerger {
-    private let aciSessionStore: SignalSessionStore
     private let blockedRecipientStore: BlockedRecipientStore
     private let identityManager: OWSIdentityManager
     private let observers: Observers
     private let recipientDatabaseTable: RecipientDatabaseTable
     private let recipientFetcher: RecipientFetcher
     private let searchableNameIndexer: any SearchableNameIndexer
+    private let sessionStore: SessionStore
     private let storageServiceManager: StorageServiceManager
     private let storyRecipientStore: StoryRecipientStore
 
@@ -111,23 +111,23 @@ class RecipientMergerImpl: RecipientMerger {
     /// which we learned about the new association, and they are notified in the
     /// order in which they are provided.
     init(
-        aciSessionStore: SignalSessionStore,
         blockedRecipientStore: BlockedRecipientStore,
         identityManager: OWSIdentityManager,
         observers: Observers,
         recipientDatabaseTable: RecipientDatabaseTable,
         recipientFetcher: RecipientFetcher,
         searchableNameIndexer: any SearchableNameIndexer,
+        sessionStore: SessionStore,
         storageServiceManager: StorageServiceManager,
         storyRecipientStore: StoryRecipientStore
     ) {
-        self.aciSessionStore = aciSessionStore
         self.blockedRecipientStore = blockedRecipientStore
         self.identityManager = identityManager
         self.observers = observers
         self.recipientDatabaseTable = recipientDatabaseTable
         self.recipientFetcher = recipientFetcher
         self.searchableNameIndexer = searchableNameIndexer
+        self.sessionStore = sessionStore
         self.storageServiceManager = storageServiceManager
         self.storyRecipientStore = storyRecipientStore
     }
@@ -801,7 +801,7 @@ class RecipientMergerImpl: RecipientMerger {
         for affectedRecipient in affectedRecipients {
             if affectedRecipient.isEmpty {
                 // TODO: Should we clean up any more state related to the discarded recipient?
-                aciSessionStore.mergeRecipient(affectedRecipient, into: mergedRecipient, tx: tx)
+                sessionStore.mergeRecipientId(affectedRecipient.id, into: mergedRecipient.id, localIdentity: .aci, tx: tx)
                 identityManager.mergeRecipient(affectedRecipient, into: mergedRecipient, tx: tx)
                 blockedRecipientStore.mergeRecipientId(affectedRecipient.id, into: mergedRecipient.id, tx: tx)
                 failIfThrows { try storyRecipientStore.mergeRecipient(affectedRecipient, into: mergedRecipient, tx: tx) }
@@ -860,7 +860,7 @@ class RecipientMergerImpl: RecipientMerger {
                 intoValue: newRecipient.isEmpty ? mergedRecipient : newRecipient
             )
 
-            guard aciSessionStore.mightContainSession(for: recipientPair.fromValue, tx: tx) else {
+            guard sessionStore.hasSessionRecords(forRecipientId: recipientPair.fromValue.id, localIdentity: .aci, tx: tx) else {
                 continue
             }
 
@@ -894,7 +894,7 @@ class RecipientMergerImpl: RecipientMerger {
         // the session/identity for these recipients.
         if recipientPair.fromValue.uniqueId == recipientPair.intoValue.uniqueId {
             identityManager.removeRecipientIdentity(for: recipientPair.fromValue.uniqueId, tx: tx)
-            aciSessionStore.deleteAllSessions(for: recipientPair.fromValue.uniqueId, tx: tx)
+            sessionStore.deleteSessions(forRecipientId: recipientPair.fromValue.id, localIdentity: .aci, tx: tx)
         }
 
         // The canonical case is adding an ACI to a recipient that already had a

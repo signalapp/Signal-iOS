@@ -34,29 +34,50 @@ public final class RecipientIdFinder {
         guard let recipient = recipientDatabaseTable.fetchRecipient(serviceId: serviceId, transaction: tx) else {
             return nil
         }
-        return recipientUniqueIdResult(for: serviceId, recipient: recipient)
+        return validateRecipient(recipient, for: serviceId).map(\.uniqueId)
     }
 
     public func recipientUniqueId(for address: SignalServiceAddress, tx: DBReadTransaction) -> Result<RecipientUniqueId, RecipientIdError>? {
-        guard
-            let recipient = DependenciesBridge.shared.recipientDatabaseTable
-                .fetchRecipient(address: address, tx: tx)
-        else {
+        guard let recipient = recipientDatabaseTable.fetchRecipient(address: address, tx: tx) else {
             return nil
         }
-
-        return recipientUniqueIdResult(for: address.serviceId, recipient: recipient)
+        return validateRecipient(recipient, for: address.serviceId).map(\.uniqueId)
     }
 
     public func ensureRecipientUniqueId(for serviceId: ServiceId, tx: DBWriteTransaction) -> Result<RecipientUniqueId, RecipientIdError> {
-        let recipient = recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: tx)
-        return recipientUniqueIdResult(for: serviceId, recipient: recipient)
+        return ensureRecipient(for: serviceId, tx: tx).map(\.uniqueId)
     }
 
-    private func recipientUniqueIdResult(for serviceId: ServiceId?, recipient: SignalRecipient) -> Result<RecipientUniqueId, RecipientIdError> {
+    public func recipientId(for serviceId: ServiceId, tx: DBReadTransaction) -> Result<SignalRecipient.RowId, RecipientIdError>? {
+        guard let recipient = recipientDatabaseTable.fetchRecipient(serviceId: serviceId, transaction: tx) else {
+            return nil
+        }
+        return validateRecipient(recipient, for: serviceId).map(\.id)
+    }
+
+    public func recipientId(for address: SignalServiceAddress, tx: DBReadTransaction) -> Result<SignalRecipient.RowId, RecipientIdError>? {
+        guard let recipient = recipientDatabaseTable.fetchRecipient(address: address, tx: tx) else {
+            return nil
+        }
+        return validateRecipient(recipient, for: address.serviceId).map(\.id)
+    }
+
+    public func ensureRecipientId(for serviceId: ServiceId, tx: DBWriteTransaction) -> Result<SignalRecipient.RowId, RecipientIdError> {
+        return ensureRecipient(for: serviceId, tx: tx).map(\.id)
+    }
+
+    public func ensureRecipient(for serviceId: ServiceId, tx: DBWriteTransaction) -> Result<SignalRecipient, RecipientIdError> {
+        let recipient = recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: tx)
+        return validateRecipient(recipient, for: serviceId)
+    }
+
+    private func validateRecipient(
+        _ recipient: SignalRecipient,
+        for serviceId: ServiceId?,
+    ) -> Result<SignalRecipient, RecipientIdError> {
         if serviceId is Pni, recipient.aciString != nil {
             return .failure(.mustNotUsePniBecauseAciExists)
         }
-        return .success(recipient.uniqueId)
+        return .success(recipient)
     }
 }

@@ -1907,7 +1907,7 @@ public final class MessageReceiver {
                 let sessionRecord = try sessionStore.loadSession(for: protocolAddress, context: tx)
                 if try sessionRecord?.currentRatchetKeyMatches(ratchetKey) == true {
                     Logger.info("Decryption error included ratchet key. Archiving...")
-                    sessionStore.archiveSession(for: sourceAci, deviceId: sourceDeviceId, tx: tx)
+                    sessionStore.archiveSession(forServiceId: sourceAci, deviceId: sourceDeviceId, tx: tx)
                     didPerformSessionReset = true
                 } else {
                     didPerformSessionReset = false
@@ -2188,7 +2188,7 @@ public final class MessageReceiver {
         TSInfoMessage(thread: thread, messageType: .typeRemoteUserEndedSession).anyInsert(transaction: tx)
 
         let sessionStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
-        sessionStore.archiveAllSessions(for: decryptedEnvelope.sourceAci, tx: tx)
+        sessionStore.archiveSessions(forServiceId: decryptedEnvelope.sourceAci, tx: tx)
     }
 }
 

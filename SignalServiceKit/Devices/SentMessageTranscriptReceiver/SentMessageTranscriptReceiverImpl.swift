@@ -527,7 +527,6 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
     }
 
     private func archiveSessions(for address: SignalServiceAddress, tx: DBWriteTransaction) {
-        let sessionStore = signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
-        sessionStore.archiveAllSessions(for: address, tx: tx)
+        self.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore.archiveSessions(forAddress: address, tx: tx)
     }
 }

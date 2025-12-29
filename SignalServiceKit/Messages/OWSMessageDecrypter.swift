@@ -364,8 +364,7 @@ public class OWSMessageDecrypter {
 
             Logger.warn("Archiving session for undecryptable message from \(senderId)")
             let sessionStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
-            sessionStore.archiveSession(for: sourceAci, deviceId: sourceDeviceId, tx: transaction)
-
+            sessionStore.archiveSession(forServiceId: sourceAci, deviceId: sourceDeviceId, tx: transaction)
             trySendNullMessage(in: contactThread, senderId: senderId, transaction: transaction)
             return true
         } else {

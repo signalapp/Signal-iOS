@@ -211,8 +211,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
             tx: tx
         )
 
-        signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore.resetSessionStore(tx: tx)
-        signalProtocolStoreManager.signalProtocolStore(for: .pni).sessionStore.resetSessionStore(tx: tx)
+        signalProtocolStoreManager.sessionStore.deleteAllSessions(tx: tx)
         senderKeyStore.resetSenderKeyStore(transaction: tx)
         udManager.removeSenderCertificates(tx: tx)
         versionedProfiles.clearProfileKeyCredentials(tx: tx)

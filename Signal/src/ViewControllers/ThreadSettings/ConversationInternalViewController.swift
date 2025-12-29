@@ -135,8 +135,8 @@ public class ConversationInternalViewController: OWSTableViewController2 {
             let sessionSection = OWSTableSection()
             sessionSection.add(.actionItem(withText: "Delete Session") {
                 SSKEnvironment.shared.databaseStorageRef.write { transaction in
-                    let aciStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci)
-                    aciStore.sessionStore.deleteAllSessions(for: address.serviceId!, tx: transaction)
+                    let sessionStore = DependenciesBridge.shared.signalProtocolStoreManager.signalProtocolStore(for: .aci).sessionStore
+                    sessionStore.deleteSessions(forServiceId: address.serviceId!, tx: transaction)
                 }
             })
 

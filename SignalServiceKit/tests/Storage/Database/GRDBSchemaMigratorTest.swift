@@ -1160,4 +1160,118 @@ class GRDBSchemaMigratorTest: XCTestCase {
             XCTAssertEqual(callLinks[2][0] as String?, "Something")
         }
     }
+
+    private func keyedArchiverSessionData(deviceIds: [Int32]) -> Data {
+        let sessionDictionary = Dictionary(uniqueKeysWithValues: deviceIds.map { ($0, Data()) })
+        return keyedArchiverData(rootObject: sessionDictionary)
+    }
+
+    func testMigrateSessions() throws {
+        let databaseQueue = DatabaseQueue()
+        try databaseQueue.write { db in
+            try db.execute(sql: """
+            CREATE TABLE keyvalue (collection TEXT NOT NULL, key TEXT NOT NULL, value BLOB NOT NULL);
+            """)
+
+            try db.execute(sql: """
+            CREATE TABLE model_SignalRecipient (id INTEGER PRIMARY KEY, uniqueId TEXT NOT NULL);
+            """)
+
+            let recipient1UniqueId = UUID().uuidString
+            let recipient2UniqueId = UUID().uuidString
+            let recipient3UniqueId = UUID().uuidString
+            let recipient4UniqueId = UUID().uuidString
+
+            try db.execute(
+                sql: "INSERT INTO model_SignalRecipient (id, uniqueId) VALUES (?, ?)",
+                arguments: [1, recipient1UniqueId],
+            )
+            try db.execute(
+                sql: "INSERT INTO model_SignalRecipient (id, uniqueId) VALUES (?, ?)",
+                arguments: [2, recipient2UniqueId],
+            )
+            // Don't insert recipient3UniqueKey.
+            try db.execute(
+                sql: "INSERT INTO model_SignalRecipient (id, uniqueId) VALUES (?, ?)",
+                arguments: [4, recipient4UniqueId],
+            )
+
+            try db.execute(
+                sql: "INSERT INTO keyvalue (collection, key, value) VALUES (?, ?, ?)",
+                arguments: ["TSStorageManagerSessionStoreCollection", recipient1UniqueId, keyedArchiverSessionData(deviceIds: [1, 2, 128])],
+            )
+            try db.execute(
+                sql: "INSERT INTO keyvalue (collection, key, value) VALUES (?, ?, ?)",
+                arguments: ["TSStorageManagerPNISessionStoreCollection", recipient1UniqueId, keyedArchiverSessionData(deviceIds: [0, 2, 3])],
+            )
+            try db.execute(
+                sql: "INSERT INTO keyvalue (collection, key, value) VALUES (?, ?, ?)",
+                arguments: ["TSStorageManagerSessionStoreCollection", recipient2UniqueId, keyedArchiverSessionData(deviceIds: [1])],
+            )
+            try db.execute(
+                sql: "INSERT INTO keyvalue (collection, key, value) VALUES (?, ?, ?)",
+                arguments: ["TSStorageManagerSessionStoreCollection", recipient3UniqueId, keyedArchiverSessionData(deviceIds: [1])],
+            )
+
+            @objc(FakeLegacySession) class FakeLegacySession: NSObject, NSCoding {
+                override init() {}
+                required init?(coder: NSCoder) { fatalError("should never be deserialized") }
+                func encode(with coder: NSCoder) {}
+            }
+            let legacyArchivedData: Data
+            do {
+                let sessionDictionary: [Int32: AnyObject] = [1: FakeLegacySession(), 2: Data() as NSData]
+                let archiver = NSKeyedArchiver(requiringSecureCoding: false)
+                archiver.setClassName("SSKLegacySessionClassThatNoLongerExists", for: FakeLegacySession.self)
+                archiver.encode(sessionDictionary, forKey: NSKeyedArchiveRootObjectKey)
+                legacyArchivedData = archiver.encodedData
+            }
+            try db.execute(
+                sql: "INSERT INTO keyvalue (collection, key, value) VALUES (?, ?, ?)",
+                arguments: ["TSStorageManagerSessionStoreCollection", recipient4UniqueId, legacyArchivedData],
+            )
+
+            do {
+                let tx = DBWriteTransaction(database: db)
+                defer { tx.finalizeTransaction() }
+                try GRDBSchemaMigrator.createSession(tx: tx)
+                try GRDBSchemaMigrator.migrateSessions(tx: tx)
+                try GRDBSchemaMigrator.dropOldSessions(tx: tx)
+            }
+
+            let sessions = try Row.fetchAll(db, sql: "SELECT * FROM Session ORDER BY recipientId, localIdentity, deviceId")
+
+            XCTAssertEqual(sessions.count, 6)
+
+            XCTAssertEqual(sessions[0]["recipientId"] as Int64, 1)
+            XCTAssertEqual(sessions[0]["localIdentity"] as Int64, 0)
+            XCTAssertEqual(sessions[0]["deviceId"] as Int8, 1)
+            XCTAssertEqual(sessions[0]["serializedRecord"] as Data?, Data())
+
+            XCTAssertEqual(sessions[1]["recipientId"] as Int64, 1)
+            XCTAssertEqual(sessions[1]["localIdentity"] as Int64, 0)
+            XCTAssertEqual(sessions[1]["deviceId"] as Int8, 2)
+            XCTAssertEqual(sessions[1]["serializedRecord"] as Data?, Data())
+
+            XCTAssertEqual(sessions[2]["recipientId"] as Int64, 1)
+            XCTAssertEqual(sessions[2]["localIdentity"] as Int64, 1)
+            XCTAssertEqual(sessions[2]["deviceId"] as Int8, 2)
+            XCTAssertEqual(sessions[2]["serializedRecord"] as Data?, Data())
+
+            XCTAssertEqual(sessions[3]["recipientId"] as Int64, 1)
+            XCTAssertEqual(sessions[3]["localIdentity"] as Int64, 1)
+            XCTAssertEqual(sessions[3]["deviceId"] as Int8, 3)
+            XCTAssertEqual(sessions[3]["serializedRecord"] as Data?, Data())
+
+            XCTAssertEqual(sessions[4]["recipientId"] as Int64, 2)
+            XCTAssertEqual(sessions[4]["localIdentity"] as Int64, 0)
+            XCTAssertEqual(sessions[4]["deviceId"] as Int8, 1)
+            XCTAssertEqual(sessions[4]["serializedRecord"] as Data?, Data())
+
+            XCTAssertEqual(sessions[5]["recipientId"] as Int64, 4)
+            XCTAssertEqual(sessions[5]["localIdentity"] as Int64, 0)
+            XCTAssertEqual(sessions[5]["deviceId"] as Int8, 1)
+            XCTAssertEqual(sessions[5]["serializedRecord"] as Data?, nil)
+        }
+    }
 }

@@ -77,7 +77,7 @@ fileprivate extension SMKMessageType {
 
 @objc
 public class SMKSecretSessionCipher: NSObject {
-    private let currentSessionStore: SessionStore
+    private let currentSessionStore: LibSignalClient.SessionStore
     private let currentPreKeyStore: LibSignalClient.PreKeyStore
     private let currentSignedPreKeyStore: SignedPreKeyStore
     private let currentKyberPreKeyStore: KyberPreKeyStore
@@ -86,7 +86,7 @@ public class SMKSecretSessionCipher: NSObject {
 
     // public SecretSessionCipher(SignalProtocolStore signalProtocolStore) {
     init(
-        sessionStore: SessionStore,
+        sessionStore: LibSignalClient.SessionStore,
         preKeyStore: LibSignalClient.PreKeyStore,
         signedPreKeyStore: SignedPreKeyStore,
         kyberPreKeyStore: KyberPreKeyStore,

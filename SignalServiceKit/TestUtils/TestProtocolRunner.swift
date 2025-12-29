@@ -266,12 +266,16 @@ struct FakeSignalClient: TestSignalClient {
 struct LocalSignalClient: TestSignalClient {
     let identity: OWSIdentity
     let _preKeyStore: PreKeyStore
-    let _sessionStore: SSKSessionStore
+    let _sessionStore: SessionManagerForIdentity
 
     init(identity: OWSIdentity = .aci) {
         self.identity = identity
         self._preKeyStore = PreKeyStore()
-        self._sessionStore = SSKSessionStore(for: identity, recipientIdFinder: DependenciesBridge.shared.recipientIdFinder)
+        self._sessionStore = SessionManagerForIdentity(
+            identity: identity,
+            recipientIdFinder: DependenciesBridge.shared.recipientIdFinder,
+            sessionStore: SessionStore(),
+        )
     }
 
     var identityKeyPair: ECKeyPair {
