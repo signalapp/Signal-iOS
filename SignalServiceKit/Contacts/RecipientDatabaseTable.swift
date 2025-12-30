@@ -135,21 +135,13 @@ public struct RecipientDatabaseTable {
 
     public func updateRecipient(_ signalRecipient: SignalRecipient, transaction: DBWriteTransaction) {
         failIfThrows {
-            do {
-                try signalRecipient.update(transaction.database)
-            } catch {
-                throw error.grdbErrorForLogging
-            }
+            try signalRecipient.update(transaction.database)
         }
     }
 
     public func removeRecipient(_ signalRecipient: SignalRecipient, transaction: DBWriteTransaction) {
         failIfThrows {
-            do {
-                try signalRecipient.delete(transaction.database)
-            } catch {
-                throw error.grdbErrorForLogging
-            }
+            try signalRecipient.delete(transaction.database)
         }
     }
 }
