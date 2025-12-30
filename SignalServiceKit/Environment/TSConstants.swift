@@ -11,17 +11,19 @@ public import LibSignalClient
 public class TSConstants {
 
     private enum Environment {
-        case production, staging
+        case production
+        case staging
     }
+
     private static let environment: Environment = {
-        // You can set "USE_STAGING=1" in your Xcode Scheme. This allows you to
-        // prepare a series of commits without accidentally committing the change
-        // to the environment.
-        #if DEBUG
+// You can set "USE_STAGING=1" in your Xcode Scheme. This allows you to
+// prepare a series of commits without accidentally committing the change
+// to the environment.
+#if DEBUG
         if ProcessInfo.processInfo.environment["USE_STAGING"] == "1" {
             return .staging
         }
-        #endif
+#endif
 
         // If you do want to make a build that will always connect to staging,
         // change this value. (Scheme environment variables are only set when
@@ -142,7 +144,7 @@ public struct MrEnclave: Equatable {
         owsPrecondition(self.dataValue.count == 32)
     }
 
-    public static func == (lhs: Self, rhs: Self) -> Bool {
+    public static func ==(lhs: Self, rhs: Self) -> Bool {
         return lhs.dataValue == rhs.dataValue
     }
 }
