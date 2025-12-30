@@ -34,15 +34,15 @@ class BackupKeepKeySafeSheet: HeroSheetViewController {
                 "BACKUP_ONBOARDING_CONFIRM_KEY_KEEP_KEY_SAFE_SHEET_BODY",
                 comment: "Body for a sheet warning users to their 'Recovery Key' safe."
             ),
-            primary: .button(HeroSheetViewController.Button(
+            primaryButton: Button(
                 title: CommonStrings.continueButton,
                 action: { sheet in
                     sheet.dismiss(animated: true) {
                         onContinue()
                     }
                 }
-            )),
-            secondary: .button(HeroSheetViewController.Button(
+            ),
+            secondaryButton: Button(
                 title: Self.seeKeyAgainButtonTitle,
                 style: .secondary,
                 action: .custom({ sheet in
@@ -50,7 +50,7 @@ class BackupKeepKeySafeSheet: HeroSheetViewController {
                         onSeeKeyAgain()
                     }
                 }),
-            )),
+            ),
         )
     }
 }

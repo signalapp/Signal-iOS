@@ -217,7 +217,7 @@ class BackupSettingsViewController:
             // Ignore network failures.
         } catch {
             owsFailDebug("Failed to fetch Backup subscription config!")
-            ActionSheetDisplayableError.genericError.showActionSheet(from: self)
+            SheetDisplayableError.genericError.showSheet(from: self)
         }
     }
 
@@ -513,7 +513,7 @@ class BackupSettingsViewController:
         initialPlanSelection: ChooseBackupPlanViewController.PlanSelection?,
         shouldShowWelcomeToBackupsSheet: Bool,
     ) async {
-        do throws(ActionSheetDisplayableError) {
+        do throws(SheetDisplayableError) {
             let chooseBackupPlanViewController: ChooseBackupPlanViewController = try await .load(
                 fromViewController: self,
                 initialPlanSelection: initialPlanSelection,
@@ -535,7 +535,7 @@ class BackupSettingsViewController:
                 animated: true
             )
         } catch {
-            error.showActionSheet(from: self)
+            error.showSheet(from: self)
         }
     }
 
@@ -545,7 +545,7 @@ class BackupSettingsViewController:
         planSelection: ChooseBackupPlanViewController.PlanSelection,
         shouldShowWelcomeToBackupsSheet: Bool,
     ) async {
-        do throws(ActionSheetDisplayableError) {
+        do throws(SheetDisplayableError) {
             try await backupEnablingManager.enableBackups(
                 fromViewController: fromViewController,
                 planSelection: planSelection
@@ -557,7 +557,7 @@ class BackupSettingsViewController:
                 }
             }
         } catch {
-            error.showActionSheet(from: fromViewController)
+            error.showSheet(from: fromViewController)
         }
     }
 
@@ -1333,36 +1333,7 @@ class BackupSettingsViewController:
     // MARK: -
 
     fileprivate func showBackupSubscriptionAlreadyRedeemedSheet() {
-        let alreadyRedeemedSheet = HeroSheetViewController(
-            hero: .circleIcon(icon: .backupErrorBold, iconSize: 40, tintColor: .orange, backgroundColor: UIColor(rgbHex: 0xF9E4B6)),
-            title: OWSLocalizedString(
-                "BACKUP_SETTINGS_SUBSCRIPTION_ALREADY_REDEEMED_SHEET_TITLE",
-                comment: "Title for a sheet explaining that the user's Backups subscription was already redeemed.",
-            ),
-            body: OWSLocalizedString(
-                "BACKUP_SETTINGS_SUBSCRIPTION_ALREADY_REDEEMED_SHEET_BODY",
-                comment: "Body for a sheet explaining that the user's Backups subscription was already redeemed.",
-            ),
-            primaryButton: .dismissing(title: OWSLocalizedString(
-                "BACKUP_SETTINGS_SUBSCRIPTION_ALREADY_REDEEMED_SHEET_GOT_IT_BUTTON",
-                comment: "Button for a sheet explaining that the user's Backups subscription was already redeemed.",
-            )),
-            secondaryButton: HeroSheetViewController.Button(
-                title: CommonStrings.learnMore,
-                style: .secondary,
-                action: .custom({ sheet in
-                    sheet.dismiss(animated: true) { [weak self] in
-                        guard let self else { return }
-                        ContactSupportActionSheet.present(
-                            emailFilter: .custom("BackupSubscriptionAlreadyRedeemed"),
-                            logDumper: .fromGlobals(),
-                            fromViewController: self,
-                        )
-                    }
-                }),
-            )
-        )
-
+        let alreadyRedeemedSheet = BackupSubscriptionAlreadyRedeemedSheet()
         present(alreadyRedeemedSheet, animated: true)
     }
 

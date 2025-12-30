@@ -53,7 +53,7 @@ final class BackupEnablingManager {
     func enableBackups(
         fromViewController: UIViewController,
         planSelection: ChooseBackupPlanViewController.PlanSelection,
-    ) async throws(ActionSheetDisplayableError) {
+    ) async throws(SheetDisplayableError) {
         let (
             registrationState,
             localIdentifiers,
@@ -71,7 +71,7 @@ final class BackupEnablingManager {
             let localIdentifiers,
             registrationState.isRegistered
         else {
-            throw .custom(localizedMessage: OWSLocalizedString(
+            throw ActionSheetDisplayableError(localizedMessage: OWSLocalizedString(
                 "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NOT_REGISTERED",
                 comment: "Message shown in an action sheet when the user tries to confirm a plan selection, but is not registered."
             ))
@@ -84,7 +84,7 @@ final class BackupEnablingManager {
 
         try await ModalActivityIndicatorViewController.presentAndPropagateResult(
             from: fromViewController
-        ) { [self] () throws(ActionSheetDisplayableError) in
+        ) { [self] () throws(SheetDisplayableError) in
             try await _enableBackups(
                 planSelection: planSelection,
                 localIdentifiers: localIdentifiers
@@ -97,7 +97,9 @@ final class BackupEnablingManager {
     private func _enableBackups(
         planSelection: ChooseBackupPlanViewController.PlanSelection,
         localIdentifiers: LocalIdentifiers,
-    ) async throws(ActionSheetDisplayableError) {
+    ) async throws(SheetDisplayableError) {
+        logger.info("")
+
         // First, reserve a Backup ID. We'll need this regardless of which plan
         // the user chose, and we want to be sure it's succeeded before we
         // attempt a potential purchase. (Redeeming a Backups subscription
@@ -129,7 +131,7 @@ final class BackupEnablingManager {
                     seconds: UInt32(retryAfterTimeInterval),
                     useShortFormat: false
                 )
-                throw .custom(
+                throw ActionSheetDisplayableError(
                     localizedTitle: title,
                     localizedMessage: String(format: message, nextRetryString)
                 )
@@ -177,7 +179,7 @@ final class BackupEnablingManager {
 
     // MARK: -
 
-    private func enablePaidPlanWithStoreKit() async throws(ActionSheetDisplayableError) {
+    private func enablePaidPlanWithStoreKit() async throws(SheetDisplayableError) {
         let purchaseResult: BackupSubscription.PurchaseResult
         do {
             purchaseResult = try await backupSubscriptionManager.purchaseNewSubscription()
@@ -185,7 +187,7 @@ final class BackupEnablingManager {
             throw .networkError
         } catch {
             owsFailDebug("StoreKit purchase unexpectedly failed: \(error)", logger: logger)
-            throw .custom(localizedMessage: OWSLocalizedString(
+            throw ActionSheetDisplayableError(localizedMessage: OWSLocalizedString(
                 "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE",
                 comment: "Message shown in an action sheet when the user tries to confirm selecting the paid plan, but encountered an error from Apple while purchasing."
             ))
@@ -196,11 +198,21 @@ final class BackupEnablingManager {
             do {
                 try await self.backupSubscriptionManager.redeemSubscriptionIfNecessary()
             } catch {
-                owsFailDebug("Unexpectedly failed to redeem subscription! \(error)", logger: logger)
-                throw .custom(localizedMessage: OWSLocalizedString(
-                    "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE_REDEMPTION",
-                    comment: "Message shown in an action sheet when the user tries to confirm selecting the paid plan, but encountered an error while redeeming their completed purchase."
-                ))
+                let shouldWarnAlreadyRedeemed = db.read { tx in
+                    return backupSubscriptionIssueStore.shouldShowIAPSubscriptionAlreadyRedeemedWarning(tx: tx)
+                }
+
+                if shouldWarnAlreadyRedeemed {
+                    throw HeroSheetDisplayableError(
+                        heroSheetBuilder: { return BackupSubscriptionAlreadyRedeemedSheet() },
+                    )
+                } else {
+                    owsFailDebug("Unexpectedly failed to redeem subscription! \(error)", logger: logger)
+                    throw ActionSheetDisplayableError(localizedMessage: OWSLocalizedString(
+                        "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE_REDEMPTION",
+                        comment: "Message shown in an action sheet when the user tries to confirm selecting the paid plan, but encountered an error while redeeming their completed purchase."
+                    ))
+                }
             }
 
             await setBackupPlan { currentBackupPlan in
@@ -231,7 +243,7 @@ final class BackupEnablingManager {
         }
     }
 
-    private func enablePaidPlanWithoutStoreKit() async throws(ActionSheetDisplayableError) {
+    private func enablePaidPlanWithoutStoreKit() async throws(SheetDisplayableError) {
         do {
             try await backupTestFlightEntitlementManager.acquireEntitlement()
         } catch where error.isNetworkFailureOrTimeout {

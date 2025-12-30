@@ -76,10 +76,10 @@ public struct UsernameQuerier {
         fromViewController: UIViewController,
         failureSheetDismissalDelegate: SheetDismissalDelegate? = nil,
     ) async -> (username: String, Aci)? {
-        do throws(ActionSheetDisplayableError) {
+        do throws(SheetDisplayableError) {
             return try await _queryForUsernameLink(link: link, fromViewController: fromViewController)
         } catch {
-            error.showActionSheet(from: fromViewController, dismissalDelegate: failureSheetDismissalDelegate)
+            error.showSheet(from: fromViewController, dismissalDelegate: failureSheetDismissalDelegate)
             return nil
         }
     }
@@ -87,7 +87,7 @@ public struct UsernameQuerier {
     private func _queryForUsernameLink(
         link: Usernames.UsernameLink,
         fromViewController: UIViewController,
-    ) async throws(ActionSheetDisplayableError) -> (username: String, Aci) {
+    ) async throws(SheetDisplayableError) -> (username: String, Aci) {
         let (localAci, localLink, localUsername): (
             Aci?,
             Usernames.UsernameLink?,
@@ -113,7 +113,7 @@ public struct UsernameQuerier {
         return try await ModalActivityIndicatorViewController.presentAndPropagateResult(
             from: fromViewController,
             canCancel: true,
-        ) { () throws(ActionSheetDisplayableError) -> (username: String, Aci) in
+        ) { () throws(SheetDisplayableError) -> (username: String, Aci) in
             let username: String?
             do {
                 username = try await usernameLinkManager.decryptEncryptedLink(link: link)
@@ -162,10 +162,10 @@ public struct UsernameQuerier {
         fromViewController: UIViewController,
         failureSheetDismissalDelegate: SheetDismissalDelegate? = nil,
     ) async -> Aci? {
-        do throws(ActionSheetDisplayableError) {
+        do throws(SheetDisplayableError) {
             return try await _queryForUsername(username: username, fromViewController: fromViewController)
         } catch {
-            error.showActionSheet(from: fromViewController, dismissalDelegate: failureSheetDismissalDelegate)
+            error.showSheet(from: fromViewController, dismissalDelegate: failureSheetDismissalDelegate)
             return nil
         }
     }
@@ -173,7 +173,7 @@ public struct UsernameQuerier {
     private func _queryForUsername(
         username: String,
         fromViewController: UIViewController,
-    ) async throws(ActionSheetDisplayableError) -> Aci {
+    ) async throws(SheetDisplayableError) -> Aci {
         let (localAci, localUsername): (Aci?, String?) = db.read { tx in
             return (
                 tsAccountManager.localIdentifiers(tx: tx)?.aci,
@@ -192,7 +192,7 @@ public struct UsernameQuerier {
         return try await ModalActivityIndicatorViewController.presentAndPropagateResult(
             from: fromViewController,
             canCancel: true,
-        ) { () throws(ActionSheetDisplayableError) -> Aci in
+        ) { () throws(SheetDisplayableError) -> Aci in
             guard let hashedUsername = try? Usernames.HashedUsername(
                 forUsername: username
             ) else {
@@ -276,9 +276,9 @@ public struct UsernameQuerier {
 
 // MARK: -
 
-private extension ActionSheetDisplayableError {
-    static func usernameInvalidError(_ username: String) -> ActionSheetDisplayableError {
-        return .custom(
+private extension SheetDisplayableError {
+    static func usernameInvalidError(_ username: String) -> SheetDisplayableError {
+        return ActionSheetDisplayableError(
             localizedTitle: OWSLocalizedString(
                 "USERNAME_LOOKUP_INVALID_USERNAME_TITLE",
                 comment: "Title for an action sheet indicating that a user-entered username value is not a valid username."
@@ -293,8 +293,8 @@ private extension ActionSheetDisplayableError {
         )
     }
 
-    static func usernameNotFoundError(_ username: String) -> ActionSheetDisplayableError {
-        return .custom(
+    static func usernameNotFoundError(_ username: String) -> SheetDisplayableError {
+        return ActionSheetDisplayableError(
             localizedTitle: OWSLocalizedString(
                 "USERNAME_LOOKUP_NOT_FOUND_TITLE",
                 comment: "Title for an action sheet indicating that the given username is not associated with a registered Signal account."
@@ -309,8 +309,8 @@ private extension ActionSheetDisplayableError {
         )
     }
 
-    static func usernameLinkNoLongerValidError() -> ActionSheetDisplayableError {
-        return .custom(
+    static func usernameLinkNoLongerValidError() -> SheetDisplayableError {
+        return ActionSheetDisplayableError(
             localizedTitle: CommonStrings.errorAlertTitle,
             localizedMessage: OWSLocalizedString(
                 "USERNAME_LOOKUP_LINK_NO_LONGER_VALID_MESSAGE",
@@ -319,8 +319,8 @@ private extension ActionSheetDisplayableError {
         )
     }
 
-    static func usernameLookupGenericError() -> ActionSheetDisplayableError {
-        return .custom(localizedMessage: OWSLocalizedString(
+    static func usernameLookupGenericError() -> SheetDisplayableError {
+        return ActionSheetDisplayableError(localizedMessage: OWSLocalizedString(
             "USERNAME_LOOKUP_ERROR_MESSAGE",
             comment: "A message indicating that username lookup failed."
         ))

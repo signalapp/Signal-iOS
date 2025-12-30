@@ -68,7 +68,7 @@ class ChooseBackupPlanViewController: HostingController<ChooseBackupPlanView> {
         fromViewController: UIViewController,
         initialPlanSelection: PlanSelection?,
         onConfirmPlanSelectionBlock: @escaping OnConfirmPlanSelectionBlock,
-    ) async throws(ActionSheetDisplayableError) -> ChooseBackupPlanViewController {
+    ) async throws(SheetDisplayableError) -> ChooseBackupPlanViewController {
         let backupSubscriptionManager = DependenciesBridge.shared.backupSubscriptionManager
         let subscriptionConfigManager = DependenciesBridge.shared.subscriptionConfigManager
 
@@ -77,7 +77,7 @@ class ChooseBackupPlanViewController: HostingController<ChooseBackupPlanView> {
             backupSubscriptionConfiguration,
         ) = try await ModalActivityIndicatorViewController.presentAndPropagateResult(
             from: fromViewController,
-        ) { () throws(ActionSheetDisplayableError) in
+        ) { () throws(SheetDisplayableError) in
             let storeKitAvailability: StoreKitAvailability
             if BuildFlags.Backups.avoidStoreKitForTesters {
                 storeKitAvailability = .unavailableForTesters

@@ -2519,6 +2519,7 @@
 		D92A1CDA2E314BD400C91E21 /* DebugUIPrompts.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92A1CD92E314BD000C91E21 /* DebugUIPrompts.swift */; };
 		D92AB7D829E3BEE30081CA7D /* OWSDeviceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92AB7D729E3BEE30081CA7D /* OWSDeviceManager.swift */; };
 		D92C57552A2925AD00A03BB7 /* TSInfoMessage+DisplayableGroupUpdateItemTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92C57542A2925AD00A03BB7 /* TSInfoMessage+DisplayableGroupUpdateItemTest.swift */; };
+		D92CB5562F030F8300537EBE /* BackupSubscriptionAlreadyRedeemedSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92CB5552F030F7A00537EBE /* BackupSubscriptionAlreadyRedeemedSheet.swift */; };
 		D93086272C616391008E3A27 /* TSOutgoingMessage+Builder.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93086262C616391008E3A27 /* TSOutgoingMessage+Builder.swift */; };
 		D93086292C61672E008E3A27 /* TSErrorMessage+Builder.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93086282C61672E008E3A27 /* TSErrorMessage+Builder.swift */; };
 		D93108042B30F7E3006A034E /* CallRecordQuerier.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93108032B30F7E3006A034E /* CallRecordQuerier.swift */; };
@@ -2696,7 +2697,7 @@
 		D9708B5C29E4CCCB004306FA /* OWSDeviceManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9708B5B29E4CCCB004306FA /* OWSDeviceManagerTest.swift */; };
 		D972E2FF2C542BCD001D7337 /* Backup.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = D972E2FE2C542BCD001D7337 /* Backup.pb.swift */; };
 		D97411BB28D277C900BB1865 /* GroupManager+GenericGroupUpdates.swift in Sources */ = {isa = PBXBuildFile; fileRef = D97411BA28D277C900BB1865 /* GroupManager+GenericGroupUpdates.swift */; };
-		D9791BB92EAA84830016AA5A /* ActionSheetDisplayableError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9791BB82EAA847E0016AA5A /* ActionSheetDisplayableError.swift */; };
+		D9791BB92EAA84830016AA5A /* SheetDisplayableError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9791BB82EAA847E0016AA5A /* SheetDisplayableError.swift */; };
 		D9791BC42EAADF010016AA5A /* HTTPResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9791BC32EAADEFD0016AA5A /* HTTPResponse.swift */; };
 		D97992A12D9E55F20080A4F5 /* CurrencyFormatterTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D97992A02D9E55E10080A4F5 /* CurrencyFormatterTest.swift */; };
 		D97992A32D9E55FB0080A4F5 /* CurrencyFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D97992A22D9E55F80080A4F5 /* CurrencyFormatter.swift */; };
@@ -6676,6 +6677,7 @@
 		D92A1CD92E314BD000C91E21 /* DebugUIPrompts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugUIPrompts.swift; sourceTree = "<group>"; };
 		D92AB7D729E3BEE30081CA7D /* OWSDeviceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSDeviceManager.swift; sourceTree = "<group>"; };
 		D92C57542A2925AD00A03BB7 /* TSInfoMessage+DisplayableGroupUpdateItemTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+DisplayableGroupUpdateItemTest.swift"; sourceTree = "<group>"; };
+		D92CB5552F030F7A00537EBE /* BackupSubscriptionAlreadyRedeemedSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupSubscriptionAlreadyRedeemedSheet.swift; sourceTree = "<group>"; };
 		D93086262C616391008E3A27 /* TSOutgoingMessage+Builder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSOutgoingMessage+Builder.swift"; sourceTree = "<group>"; };
 		D93086282C61672E008E3A27 /* TSErrorMessage+Builder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSErrorMessage+Builder.swift"; sourceTree = "<group>"; };
 		D93108032B30F7E3006A034E /* CallRecordQuerier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallRecordQuerier.swift; sourceTree = "<group>"; };
@@ -6861,7 +6863,7 @@
 		D9708B5B29E4CCCB004306FA /* OWSDeviceManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSDeviceManagerTest.swift; sourceTree = "<group>"; };
 		D972E2FE2C542BCD001D7337 /* Backup.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Backup.pb.swift; sourceTree = "<group>"; };
 		D97411BA28D277C900BB1865 /* GroupManager+GenericGroupUpdates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GroupManager+GenericGroupUpdates.swift"; sourceTree = "<group>"; };
-		D9791BB82EAA847E0016AA5A /* ActionSheetDisplayableError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionSheetDisplayableError.swift; sourceTree = "<group>"; };
+		D9791BB82EAA847E0016AA5A /* SheetDisplayableError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SheetDisplayableError.swift; sourceTree = "<group>"; };
 		D9791BC32EAADEFD0016AA5A /* HTTPResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPResponse.swift; sourceTree = "<group>"; };
 		D97992A02D9E55E10080A4F5 /* CurrencyFormatterTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyFormatterTest.swift; sourceTree = "<group>"; };
 		D97992A22D9E55F80080A4F5 /* CurrencyFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyFormatter.swift; sourceTree = "<group>"; };
@@ -8996,7 +8998,6 @@
 			isa = PBXGroup;
 			children = (
 				508F0345296F72F4001D88D0 /* CustomCellBackgroundColor.swift */,
-				B9921F872CC6FDB200AB667F /* HeroSheetViewController.swift */,
 				880C2E01262A19DE006650B6 /* InteractiveSheetViewController.swift */,
 				34A95591271B510500B05242 /* ModalActivityIndicatorViewController.swift */,
 				665EF86C290C385B00F490D2 /* OWSNavigationController.swift */,
@@ -13125,6 +13126,7 @@
 				D93964B52E038C7B00094117 /* BackupSettingsAttachmentUploadTracker.swift */,
 				D951F5302D9B236100C5EBF3 /* BackupSettingsViewController.swift */,
 				04E66D412DFF3A3E0059DBAC /* BackupsReminderCoordinator.swift */,
+				D92CB5552F030F7A00537EBE /* BackupSubscriptionAlreadyRedeemedSheet.swift */,
 				D9680CF22DBB0B28005DD5BE /* ChooseBackupPlanViewController.swift */,
 				D98CA2BD2DF398DF0060370E /* EnterAccountEntropyPoolViewController.swift */,
 			);
@@ -13209,8 +13211,9 @@
 			isa = PBXGroup;
 			children = (
 				34A95569271B510500B05242 /* ActionSheetController.swift */,
-				D9791BB82EAA847E0016AA5A /* ActionSheetDisplayableError.swift */,
+				B9921F872CC6FDB200AB667F /* HeroSheetViewController.swift */,
 				34A9553D271B510400B05242 /* OWSActionSheets.swift */,
+				D9791BB82EAA847E0016AA5A /* SheetDisplayableError.swift */,
 			);
 			path = ActionSheets;
 			sourceTree = "<group>";
@@ -17251,7 +17254,6 @@
 			files = (
 				05104E3A2C8B541000F8851F /* AccessibleLayoutMetric.swift in Sources */,
 				3402AA35271D9DCD0084CBAE /* ActionSheetController.swift in Sources */,
-				D9791BB92EAA84830016AA5A /* ActionSheetDisplayableError.swift in Sources */,
 				887F898228FF32A600D3B78E /* AllSignalConnectionsViewController.swift in Sources */,
 				342FFE62271DB2E7000AC89F /* AppContext+SignalUI.swift in Sources */,
 				3402AA4E271D9DCD0084CBAE /* ApprovalFooterView.swift in Sources */,
@@ -17435,6 +17437,7 @@
 				66FC638E29EDABAC00F00DAC /* SearchDisplayConfigurations.swift in Sources */,
 				66FBC4E328DA82AA00BD9E8B /* SelectMyStoryRecipientsViewController.swift in Sources */,
 				504861AA2EEB4D0D00B13C49 /* SendableAttachment.swift in Sources */,
+				D9791BB92EAA84830016AA5A /* SheetDisplayableError.swift in Sources */,
 				B9A53B932CF7928A0000578B /* SheetPreviewViewController.swift in Sources */,
 				3402AA3C271D9DCD0084CBAE /* SheetViewController.swift in Sources */,
 				504861AB2EEB4D1500B13C49 /* SignalAttachment.swift in Sources */,
@@ -17611,6 +17614,7 @@
 				D93964B62E038C7B00094117 /* BackupSettingsAttachmentUploadTracker.swift in Sources */,
 				D951F5312D9B236700C5EBF3 /* BackupSettingsViewController.swift in Sources */,
 				04E66D422DFF3A4B0059DBAC /* BackupsReminderCoordinator.swift in Sources */,
+				D92CB5562F030F8300537EBE /* BackupSubscriptionAlreadyRedeemedSheet.swift in Sources */,
 				32E035242739059C0081EE11 /* BadgeCollectionView.swift in Sources */,
 				32E03522273901710081EE11 /* BadgeConfigurationViewController.swift in Sources */,
 				881BB28A2743531D00B609B8 /* BadgeDetailsSheet.swift in Sources */,
