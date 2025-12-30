@@ -12,7 +12,7 @@ enum FeatureBuild: Int, Comparable {
     case beta
     case production
 
-    static func < (lhs: Self, rhs: Self) -> Bool {
+    static func <(lhs: Self, rhs: Self) -> Bool {
         return lhs.rawValue < rhs.rawValue
     }
 }
@@ -53,8 +53,8 @@ public enum BuildFlags {
     public static let runTSAttachmentMigrationInMainAppBackground = true
     public static let runTSAttachmentMigrationBlockingOnLaunch = true
 
-    /// We are still making Xcode 16 builds as of writing this, and some iOS 26
-    /// changes must only be applied if the SDK is also iOS 26.
+/// We are still making Xcode 16 builds as of writing this, and some iOS 26
+/// changes must only be applied if the SDK is also iOS 26.
 #if compiler(>=6.2)
     public static let iOS26SDKIsAvailable = true
 #else
@@ -92,6 +92,7 @@ public enum BuildFlags {
 }
 
 // MARK: -
+
 @objc
 public class BuildFlagsObjC: NSObject {
     @objc
@@ -129,14 +130,14 @@ extension BuildFlags {
         }
 
         let configuration: String? = {
-            #if DEBUG
+#if DEBUG
             LocalizationNotNeeded("Debug")
-            #elseif TESTABLE_BUILD
+#elseif TESTABLE_BUILD
             LocalizationNotNeeded("Testable")
-            #else
+#else
             // RELEASE can be inferred from the lack of configuration.
             nil
-            #endif
+#endif
         }()
 
         return [buildFlagString, configuration]
@@ -176,19 +177,19 @@ public enum DebugFlags {
     public static let messageSendsFail = TestableFlag(
         false,
         title: LocalizationNotNeeded("Message Sends Fail"),
-        details: LocalizationNotNeeded("All outgoing message sends will fail.")
+        details: LocalizationNotNeeded("All outgoing message sends will fail."),
     )
 
     public static let callingUseTestSFU = TestableFlag(
         false,
         title: LocalizationNotNeeded("Calling: Use Test SFU"),
-        details: LocalizationNotNeeded("Group calls will connect to sfu.test.voip.signal.org.")
+        details: LocalizationNotNeeded("Group calls will connect to sfu.test.voip.signal.org."),
     )
 
     public static let delayedMessageResend = TestableFlag(
         false,
         title: LocalizationNotNeeded("Delayed message resend"),
-        details: LocalizationNotNeeded("Waits 10s before responding to a resend request.")
+        details: LocalizationNotNeeded("Waits 10s before responding to a resend request."),
     )
 
     public static let fastPlaceholderExpiration = TestableFlag(
@@ -197,7 +198,7 @@ public enum DebugFlags {
         details: LocalizationNotNeeded("Shortens the valid window for message resend+recovery."),
         toggleHandler: { _ in
             SSKEnvironment.shared.messageDecrypterRef.cleanUpExpiredPlaceholders()
-        }
+        },
     )
 
     public static func allTestableFlags() -> [TestableFlag] {
@@ -219,10 +220,12 @@ public class TestableFlag {
     public let details: String
     public let toggleHandler: ((Bool) -> Void)?
 
-    fileprivate init(_ defaultValue: Bool,
-                     title: String,
-                     details: String,
-                     toggleHandler: ((Bool) -> Void)? = nil) {
+    fileprivate init(
+        _ defaultValue: Bool,
+        title: String,
+        details: String,
+        toggleHandler: ((Bool) -> Void)? = nil,
+    ) {
         self.defaultValue = defaultValue
         self.title = title
         self.details = details
@@ -231,9 +234,12 @@ public class TestableFlag {
 
         // Normally we'd store the observer here and remove it in deinit.
         // But TestableFlags are always static; they don't *get* deinitialized except in testing.
-        NotificationCenter.default.addObserver(forName: Self.ResetAllTestableFlagsNotification,
-                                               object: nil, queue: nil) { [weak self] _ in
-            guard let self = self else { return }
+        NotificationCenter.default.addObserver(
+            forName: Self.ResetAllTestableFlagsNotification,
+            object: nil,
+            queue: nil,
+        ) { [weak self] _ in
+            guard let self else { return }
             self.set(self.defaultValue)
         }
     }

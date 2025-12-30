@@ -27,7 +27,7 @@ class SupplementalCallControlsForFullscreenLocalMember: UIView {
         imageView.tintColor = .ows_white
         imageView.autoSetDimension(
             .height,
-            toSize: 24
+            toSize: 24,
         )
         imageView.autoMatch(.width, to: .height, of: imageView)
         return imageView
@@ -42,7 +42,7 @@ class SupplementalCallControlsForFullscreenLocalMember: UIView {
 
         button.autoSetDimension(
             .height,
-            toSize: 48
+            toSize: 48,
         )
         button.autoMatch(.width, to: .height, of: button)
         button.accessibilityLabel = flipCameraButtonAccessibilityLabel
@@ -60,7 +60,7 @@ class SupplementalCallControlsForFullscreenLocalMember: UIView {
     private var flipCameraButtonAccessibilityLabel: String {
         return OWSLocalizedString(
             "CALL_VIEW_SWITCH_CAMERA_DIRECTION",
-            comment: "Accessibility label to toggle front- vs. rear-facing camera"
+            comment: "Accessibility label to toggle front- vs. rear-facing camera",
         )
     }
 
@@ -75,7 +75,7 @@ class SupplementalCallControlsForFullscreenLocalMember: UIView {
     init(
         call: SignalCall,
         groupCall: GroupCall,
-        callService: CallService
+        callService: CallService,
     ) {
         self.call = call
         self.groupCall = groupCall

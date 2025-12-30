@@ -11,7 +11,7 @@ public protocol StoryStore {
     /// Fetch the story message with the given SQLite row ID, if one exists.
     func fetchStoryMessage(
         rowId storyMessageRowId: Int64,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> StoryMessage?
 
     /// Note: does not insert the created context; just populates it in memory with default values.
@@ -22,7 +22,7 @@ public protocol StoryStore {
     /// (Note this method only takes a read transaction; it couldn't insert in the db if it wanted to.)
     func getOrCreateStoryContextAssociatedData(
         forGroupThread groupThread: TSGroupThread,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> StoryContextAssociatedData
 
     func updateStoryContext(
@@ -32,7 +32,7 @@ public protocol StoryStore {
         lastReceivedTimestamp: UInt64?,
         lastReadTimestamp: UInt64?,
         lastViewedTimestamp: UInt64?,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     )
 
     func getOrCreateMyStory(tx: DBWriteTransaction) -> TSPrivateStoryThread
@@ -48,7 +48,7 @@ public extension StoryStore {
         lastReceivedTimestamp: UInt64? = nil,
         lastReadTimestamp: UInt64? = nil,
         lastViewedTimestamp: UInt64? = nil,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         self.updateStoryContext(
             storyContext: storyContext,
@@ -57,7 +57,7 @@ public extension StoryStore {
             lastReceivedTimestamp: lastReceivedTimestamp,
             lastReadTimestamp: lastReadTimestamp,
             lastViewedTimestamp: lastViewedTimestamp,
-            tx: tx
+            tx: tx,
         )
     }
 }
@@ -68,7 +68,7 @@ public class StoryStoreImpl: StoryStore {
 
     public func fetchStoryMessage(
         rowId storyMessageRowId: Int64,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> StoryMessage? {
         return StoryMessage.anyFetch(rowId: storyMessageRowId, transaction: tx)
     }
@@ -76,17 +76,17 @@ public class StoryStoreImpl: StoryStore {
     public func getOrCreateStoryContextAssociatedData(for aci: Aci, tx: DBReadTransaction) -> StoryContextAssociatedData {
         return StoryContextAssociatedData.fetchOrDefault(
             sourceContext: .contact(contactAci: aci),
-            transaction: tx
+            transaction: tx,
         )
     }
 
     public func getOrCreateStoryContextAssociatedData(
         forGroupThread groupThread: TSGroupThread,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> StoryContextAssociatedData {
         return StoryContextAssociatedData.fetchOrDefault(
             sourceContext: .group(groupId: groupThread.groupId),
-            transaction: tx
+            transaction: tx,
         )
     }
 
@@ -97,7 +97,7 @@ public class StoryStoreImpl: StoryStore {
         lastReceivedTimestamp: UInt64? = nil,
         lastReadTimestamp: UInt64? = nil,
         lastViewedTimestamp: UInt64? = nil,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         storyContext.update(
             updateStorageService: updateStorageService,
@@ -105,7 +105,7 @@ public class StoryStoreImpl: StoryStore {
             lastReceivedTimestamp: lastReceivedTimestamp,
             lastReadTimestamp: lastReadTimestamp,
             lastViewedTimestamp: lastViewedTimestamp,
-            transaction: tx
+            transaction: tx,
         )
     }
 

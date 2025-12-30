@@ -38,7 +38,7 @@ public protocol StorageServiceManager {
 
     func rotateManifest(
         mode: ManifestRotationMode,
-        authedDevice: AuthedDevice
+        authedDevice: AuthedDevice,
     ) async throws
 
     /// Wipes all local state related to Storage Service, without mutating
@@ -151,14 +151,14 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
                     self,
                     selector: #selector(self.willResignActive),
                     name: .OWSApplicationWillResignActive,
-                    object: nil
+                    object: nil,
                 )
 
                 NotificationCenter.default.addObserver(
                     self,
                     selector: #selector(self.backupPlanDidChange),
                     name: .backupPlanChanged,
-                    object: nil
+                    object: nil,
                 )
             }
 
@@ -224,13 +224,13 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
 
     public func currentManifestVersion(tx: DBReadTransaction) -> UInt64 {
         return StorageServiceOperation.State.current(
-            transaction: tx
+            transaction: tx,
         ).manifestVersion
     }
 
     public func currentManifestHasRecordIkm(tx: DBReadTransaction) -> Bool {
         return StorageServiceOperation.State.current(
-            transaction: tx
+            transaction: tx,
         ).manifestRecordIkm != nil
     }
 
@@ -248,6 +248,7 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
             var continuations: [CheckedContinuation<Void, Error>]
             var mode: ManifestRotationMode
         }
+
         var pendingManifestRotation: PendingManifestRotation?
 
         var hasPendingCleanup = false
@@ -260,6 +261,7 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
             var authedDevice: AuthedDevice
             var masterKeySource: StorageService.MasterKeySource
         }
+
         var pendingBackup: PendingBackup?
         var pendingBackupTimer: Timer?
 
@@ -269,6 +271,7 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
             var isRunningViaCron: Bool
             var futures: [Future<Void>]
         }
+
         var pendingRestore: PendingRestore?
 
         var pendingMutations = PendingMutations()
@@ -336,12 +339,14 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
                 }
             }
 
-            if let rotateManifestOperation = buildOperation(
-                managerState: managerState,
-                mode: .rotateManifest(mode: pendingManifestRotation.mode),
-                authedDevice: pendingManifestRotation.authedDevice,
-                masterKeySource: pendingManifestRotation.masterKeySource
-            ) {
+            if
+                let rotateManifestOperation = buildOperation(
+                    managerState: managerState,
+                    mode: .rotateManifest(mode: pendingManifestRotation.mode),
+                    authedDevice: pendingManifestRotation.authedDevice,
+                    masterKeySource: pendingManifestRotation.masterKeySource,
+                )
+            {
                 let cleanupBlock: ((inout ManagerState, (any Error)?) -> Void) = { _, error in
                     resumeContinuations(error)
                 }
@@ -368,7 +373,7 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
                 managerState: managerState,
                 mode: .cleanUpUnknownData,
                 authedDevice: .implicit,
-                masterKeySource: .implicit
+                masterKeySource: .implicit,
             )
             if let cleanUpOperation {
                 return (cleanUpOperation, nil)
@@ -383,7 +388,7 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
                 managerState: managerState,
                 mode: .restoreOrCreate(isRunningViaCron: pendingRestore.isRunningViaCron),
                 authedDevice: pendingRestore.authedDevice,
-                masterKeySource: pendingRestore.masterKeySource
+                masterKeySource: pendingRestore.masterKeySource,
             )
             if let restoreOperation {
                 return ({
@@ -422,7 +427,7 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
                 managerState: managerState,
                 mode: .backup,
                 authedDevice: pendingBackup.authedDevice,
-                masterKeySource: pendingBackup.masterKeySource
+                masterKeySource: pendingBackup.masterKeySource,
             )
             if let backupOperation {
                 return (backupOperation, nil)
@@ -436,7 +441,7 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
         managerState: ManagerState,
         mode: StorageServiceOperation.Mode,
         authedDevice: AuthedDevice,
-        masterKeySource: StorageService.MasterKeySource
+        masterKeySource: StorageService.MasterKeySource,
     ) -> (() async throws -> Void)? {
         let localIdentifiers: LocalIdentifiers
         let isPrimaryDevice: Bool
@@ -469,7 +474,7 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
                 localIdentifiers: localIdentifiers,
                 isPrimaryDevice: isPrimaryDevice,
                 authedDevice: authedDevice,
-                masterKeySource: masterKeySource
+                masterKeySource: masterKeySource,
             ).run()
         }
     }
@@ -561,7 +566,7 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
                 authedDevice: .implicit,
                 masterKeySource: .implicit,
                 isRunningViaCron: false,
-                futures: []
+                futures: [],
             )
             pendingRestore.futures.append(future)
             pendingRestore.authedDevice = authedDevice.orIfImplicitUse(pendingRestore.authedDevice)
@@ -574,7 +579,7 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
 
     public func rotateManifest(
         mode: ManifestRotationMode,
-        authedDevice: AuthedDevice
+        authedDevice: AuthedDevice,
     ) async throws {
         try await withCheckedThrowingContinuation { continuation in
             updateManagerState { managerState in
@@ -582,7 +587,7 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
                     authedDevice: .implicit,
                     masterKeySource: .implicit,
                     continuations: [],
-                    mode: mode
+                    mode: mode,
                 )
                 pendingRotation.continuations.append(continuation)
                 pendingRotation.authedDevice = authedDevice.orIfImplicitUse(pendingRotation.authedDevice)
@@ -637,7 +642,7 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
             target: self,
             selector: #selector(self.backupTimerFired(_:)),
             userInfo: nil,
-            repeats: false
+            repeats: false,
         )
         DispatchQueue.main.async {
             RunLoop.current.add(timer, forMode: .default)
@@ -687,14 +692,14 @@ private struct PendingMutations {
     var updatedLocalAccount = false
 
     var hasChanges: Bool {
-        return (
+        return
             updatedLocalAccount
-            || !updatedRecipientUniqueIds.isEmpty
-            || !updatedServiceIds.isEmpty
-            || !updatedGroupV2MasterKeys.isEmpty
-            || !updatedStoryDistributionListIds.isEmpty
-            || !updatedCallLinkRootKeys.isEmpty
-        )
+                || !updatedRecipientUniqueIds.isEmpty
+                || !updatedServiceIds.isEmpty
+                || !updatedGroupV2MasterKeys.isEmpty
+                || !updatedStoryDistributionListIds.isEmpty
+                || !updatedCallLinkRootKeys.isEmpty
+
     }
 }
 
@@ -717,6 +722,7 @@ class StorageServiceOperation {
         case restoreOrCreate(isRunningViaCron: Bool)
         case cleanUpUnknownData
     }
+
     private let mode: Mode
     private let localIdentifiers: LocalIdentifiers
     private let isPrimaryDevice: Bool
@@ -730,7 +736,7 @@ class StorageServiceOperation {
         localIdentifiers: LocalIdentifiers,
         isPrimaryDevice: Bool,
         authedDevice: AuthedDevice,
-        masterKeySource: StorageService.MasterKeySource
+        masterKeySource: StorageService.MasterKeySource,
     ) {
         self.mode = mode
         self.localIdentifiers = localIdentifiers
@@ -829,7 +835,7 @@ class StorageServiceOperation {
 
     private static func recordPendingMutations(
         _ pendingMutations: PendingMutations,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) {
         var state = State.current(transaction: transaction)
         recordPendingMutations(pendingMutations, in: &state, transaction: transaction)
@@ -839,7 +845,7 @@ class StorageServiceOperation {
     private static func recordPendingMutations(
         _ pendingMutations: PendingMutations,
         in state: inout State,
-        transaction tx: DBWriteTransaction
+        transaction tx: DBWriteTransaction,
     ) {
         // Coalesce addresses to account IDs. There may be duplicates among the
         // addresses and account IDs.
@@ -863,7 +869,7 @@ class StorageServiceOperation {
             GV2: \(pendingMutations.updatedGroupV2MasterKeys.count); \
             DLists: \(pendingMutations.updatedStoryDistributionListIds.count); \
             CLinks: \(pendingMutations.updatedCallLinkRootKeys.count))
-            """
+            """,
         )
 
         if pendingMutations.updatedLocalAccount {
@@ -915,7 +921,7 @@ class StorageServiceOperation {
             changeState: State.ChangeState,
             stateUpdater: StateUpdater,
             needsInterceptForMigration: Bool,
-            transaction: DBReadTransaction
+            transaction: DBReadTransaction,
         ) {
             let recordUpdater = stateUpdater.recordUpdater
 
@@ -932,7 +938,7 @@ class StorageServiceOperation {
                 newRecord = recordUpdater.buildRecord(
                     for: localId,
                     unknownFields: unknownFields,
-                    transaction: transaction
+                    transaction: transaction,
                 )
             case .deleted:
                 newRecord = nil
@@ -960,7 +966,7 @@ class StorageServiceOperation {
             if needsInterceptForMigration {
                 newRecord = StorageServiceUnknownFieldMigrator.interceptLocalManifestBeforeUploading(
                     record: newRecord,
-                    tx: transaction
+                    tx: transaction,
                 )
             }
 
@@ -977,7 +983,7 @@ class StorageServiceOperation {
             state: inout State,
             stateUpdater: StateUpdater,
             needsInterceptForMigration: Bool,
-            transaction: DBReadTransaction
+            transaction: DBReadTransaction,
         ) {
             stateUpdater.resetAndEnumerateChangeStates(in: &state) { mutableState, localId, changeState in
                 updateRecord(
@@ -986,7 +992,7 @@ class StorageServiceOperation {
                     changeState: changeState,
                     stateUpdater: stateUpdater,
                     needsInterceptForMigration: needsInterceptForMigration,
-                    transaction: transaction
+                    transaction: transaction,
                 )
             }
         }
@@ -1003,37 +1009,37 @@ class StorageServiceOperation {
                 state: &state,
                 stateUpdater: buildAccountUpdater(),
                 needsInterceptForMigration: needsInterceptForMigration,
-                transaction: transaction
+                transaction: transaction,
             )
             updateRecords(
                 state: &state,
                 stateUpdater: buildContactUpdater(),
                 needsInterceptForMigration: needsInterceptForMigration,
-                transaction: transaction
+                transaction: transaction,
             )
             updateRecords(
                 state: &state,
                 stateUpdater: buildGroupV1Updater(),
                 needsInterceptForMigration: needsInterceptForMigration,
-                transaction: transaction
+                transaction: transaction,
             )
             updateRecords(
                 state: &state,
                 stateUpdater: buildGroupV2Updater(),
                 needsInterceptForMigration: needsInterceptForMigration,
-                transaction: transaction
+                transaction: transaction,
             )
             updateRecords(
                 state: &state,
                 stateUpdater: buildStoryDistributionListUpdater(),
                 needsInterceptForMigration: needsInterceptForMigration,
-                transaction: transaction
+                transaction: transaction,
             )
             updateRecords(
                 state: &state,
                 stateUpdater: buildCallLinkUpdater(),
                 needsInterceptForMigration: needsInterceptForMigration,
-                transaction: transaction
+                transaction: transaction,
             )
 
             return state
@@ -1056,7 +1062,7 @@ class StorageServiceOperation {
         let manifest = buildManifestRecord(
             manifestVersion: state.manifestVersion,
             manifestRecordIkm: state.manifestRecordIkm,
-            identifiers: state.allIdentifiers
+            identifiers: state.allIdentifiers,
         )
 
         Logger.info(
@@ -1066,7 +1072,7 @@ class StorageServiceOperation {
             Deleted: \(deletedIdentifiers.count), \
             Invalid/Missing: \(invalidIdentifiers.count), \
             Total: \(state.allIdentifiers.count))
-            """
+            """,
         )
 
         do {
@@ -1076,14 +1082,14 @@ class StorageServiceOperation {
                 deletedIdentifiers: deletedIdentifiers + invalidIdentifiers,
                 deleteAllExistingRecords: false,
                 masterKey: masterKey,
-                chatServiceAuth: authedAccount.chatServiceAuth
+                chatServiceAuth: authedAccount.chatServiceAuth,
             )
         } catch StorageService.StorageError.conflictingManifest(let conflictingManifest) {
             // Throw away all our work, resolve conflicts, and try again.
             try await self.mergeLocalManifest(withRemoteManifest: conflictingManifest, backupAfterSuccess: true)
             return
         } catch
-            StorageService.StorageError.manifestDecryptionFailed(let conflictingVersion) where isPrimaryDevice,
+        StorageService.StorageError.manifestDecryptionFailed(let conflictingVersion) where isPrimaryDevice,
             StorageService.StorageError.manifestProtoDeserializationFailed(let conflictingVersion) where isPrimaryDevice
         {
             /// The remote manifest is invalid and conflicting, which is
@@ -1107,14 +1113,14 @@ class StorageServiceOperation {
     private func buildManifestRecord(
         manifestVersion: UInt64,
         manifestRecordIkm: Data?,
-        identifiers identifiersParam: [StorageService.StorageIdentifier]
+        identifiers identifiersParam: [StorageService.StorageIdentifier],
     ) -> StorageServiceProtoManifestRecord {
         let identifiers = StorageService.StorageIdentifier.deduplicate(identifiersParam)
         var manifestBuilder = StorageServiceProtoManifestRecord.builder(version: manifestVersion)
         if let manifestRecordIkm {
             owsAssertDebug(
                 manifestRecordIkm.count == StorageService.ManifestRecordIkm.expectedLength,
-                "Found manifest recordIkm with unexpected length! Who generated it?"
+                "Found manifest recordIkm with unexpected length! Who generated it?",
             )
             manifestBuilder.setRecordIkm(manifestRecordIkm)
         }
@@ -1148,7 +1154,7 @@ class StorageServiceOperation {
             switch try await StorageService.fetchLatestManifest(
                 ifGreaterThanVersion: greaterThanVersion,
                 masterKey: masterKey,
-                chatServiceAuth: authedAccount.chatServiceAuth
+                chatServiceAuth: authedAccount.chatServiceAuth,
             ) {
             case .noExistingManifest:
                 // There is no existing manifest, let's create one.
@@ -1161,7 +1167,7 @@ class StorageServiceOperation {
                 return try await self.mergeLocalManifest(withRemoteManifest: manifest, backupAfterSuccess: false)
             }
         } catch
-            StorageService.StorageError.manifestDecryptionFailed(let manifestVersion) where isPrimaryDevice,
+        StorageService.StorageError.manifestDecryptionFailed(let manifestVersion) where isPrimaryDevice,
             StorageService.StorageError.manifestProtoDeserializationFailed(let manifestVersion) where isPrimaryDevice
         {
             // If we succeeded to fetch the manifest but were unable to decrypt or
@@ -1215,16 +1221,18 @@ class StorageServiceOperation {
         let manifest = buildManifestRecord(
             manifestVersion: version,
             manifestRecordIkm: manifestRecordIkm,
-            identifiers: state.allIdentifiers
+            identifiers: state.allIdentifiers,
         )
 
-        if let conflictingManifestVersion = try await createNewManifestAndSaveState(
-            manifest,
-            state: &state,
-            newItems: [],
-            deletedIdentifiers: [],
-            deleteAllExistingRecords: false
-        ) {
+        if
+            let conflictingManifestVersion = try await createNewManifestAndSaveState(
+                manifest,
+                state: &state,
+                newItems: [],
+                deletedIdentifiers: [],
+                deleteAllExistingRecords: false,
+            )
+        {
             /// We hit a conflict, and consequently we can't be confident that
             /// the records we wanted to preserve can still be preserved. This
             /// indicates devices racing with unfortunate timing, and so should
@@ -1254,14 +1262,14 @@ class StorageServiceOperation {
 
             func createRecord<StateUpdater: StorageServiceStateUpdater>(
                 localId: StateUpdater.IdType,
-                stateUpdater: StateUpdater
+                stateUpdater: StateUpdater,
             ) {
                 let recordUpdater = stateUpdater.recordUpdater
 
                 let newRecord = recordUpdater.buildRecord(
                     for: localId,
                     unknownFields: nil,
-                    transaction: transaction
+                    transaction: transaction,
                 )
                 guard var newRecord else {
                     return
@@ -1269,7 +1277,7 @@ class StorageServiceOperation {
                 if shouldInterceptForMigration {
                     newRecord = StorageServiceUnknownFieldMigrator.interceptLocalManifestBeforeUploading(
                         record: newRecord,
-                        tx: transaction
+                        tx: transaction,
                     )
                 }
 
@@ -1325,7 +1333,7 @@ class StorageServiceOperation {
                 .forEach { deletedDistributionListIdentifier in
                     createRecord(
                         localId: deletedDistributionListIdentifier,
-                        stateUpdater: storyDistributionListUpdater
+                        stateUpdater: storyDistributionListUpdater,
                     )
                 }
 
@@ -1344,7 +1352,7 @@ class StorageServiceOperation {
         let manifest = buildManifestRecord(
             manifestVersion: state.manifestVersion,
             manifestRecordIkm: state.manifestRecordIkm,
-            identifiers: identifiers
+            identifiers: identifiers,
         )
 
         // We want to do this only when absolutely necessary as it's an expensive
@@ -1352,13 +1360,15 @@ class StorageServiceOperation {
         // purge any orphaned records.
         let shouldDeletePreviousRecords = version > 1
 
-        if let conflictingManifestVersion = try await createNewManifestAndSaveState(
-            manifest,
-            state: &state,
-            newItems: allItems,
-            deletedIdentifiers: [],
-            deleteAllExistingRecords: shouldDeletePreviousRecords
-        ) {
+        if
+            let conflictingManifestVersion = try await createNewManifestAndSaveState(
+                manifest,
+                state: &state,
+                newItems: allItems,
+                deletedIdentifiers: [],
+                deleteAllExistingRecords: shouldDeletePreviousRecords,
+            )
+        {
             /// We know affirmatively that we want to create a new manifest from
             /// the data on this device, so if we hit a conflict we'll bump the
             /// version number and try again (thereby overwriting whatever we
@@ -1372,13 +1382,15 @@ class StorageServiceOperation {
                 return builder.buildInfallibly()
             }()
 
-            if try await createNewManifestAndSaveState(
-                manifest,
-                state: &state,
-                newItems: allItems,
-                deletedIdentifiers: [],
-                deleteAllExistingRecords: true
-            ) != nil {
+            if
+                try await createNewManifestAndSaveState(
+                    manifest,
+                    state: &state,
+                    newItems: allItems,
+                    deletedIdentifiers: [],
+                    deleteAllExistingRecords: true,
+                ) != nil
+            {
                 throw OWSGenericError("Repeated conflicts trying to create a new manifest; giving up. What's going on?")
             }
         }
@@ -1395,7 +1407,7 @@ class StorageServiceOperation {
         state: inout State,
         newItems: [StorageService.StorageItem],
         deletedIdentifiers: [StorageService.StorageIdentifier],
-        deleteAllExistingRecords: Bool
+        deleteAllExistingRecords: Bool,
     ) async throws -> UInt64? {
         owsPrecondition(isPrimaryDevice)
 
@@ -1409,7 +1421,7 @@ class StorageServiceOperation {
                 deletedIdentifiers: deletedIdentifiers,
                 deleteAllExistingRecords: deleteAllExistingRecords,
                 masterKey: masterKey,
-                chatServiceAuth: authedAccount.chatServiceAuth
+                chatServiceAuth: authedAccount.chatServiceAuth,
             )
             /// We created a new manifest, so let's tell our other devices to go
             /// fetch it.
@@ -1435,7 +1447,7 @@ class StorageServiceOperation {
             /// was in the mysteriously-fixed manifest.
             conflictingManifestVersion = conflictingManifest.version
         } catch
-            StorageService.StorageError.manifestDecryptionFailed(let _conflictingManifestVersion),
+        StorageService.StorageError.manifestDecryptionFailed(let _conflictingManifestVersion),
             StorageService.StorageError.manifestProtoDeserializationFailed(let _conflictingManifestVersion)
         {
             /// This indicates that we found a conflicting remote manifest that
@@ -1457,7 +1469,7 @@ class StorageServiceOperation {
 
     private func mergeLocalManifest(
         withRemoteManifest manifest: StorageServiceProtoManifestRecord,
-        backupAfterSuccess: Bool
+        backupAfterSuccess: Bool,
     ) async throws {
         var state: State = await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
             var state = State.current(transaction: transaction)
@@ -1531,7 +1543,7 @@ class StorageServiceOperation {
                     for: [newLocalAccountIdentifier],
                     manifest: manifest,
                     masterKey: masterKey,
-                    chatServiceAuth: authedAccount.chatServiceAuth
+                    chatServiceAuth: authedAccount.chatServiceAuth,
                 ).first
 
                 guard let item else {
@@ -1551,7 +1563,7 @@ class StorageServiceOperation {
                         identifier: item.identifier,
                         state: &state,
                         stateUpdater: self.buildAccountUpdater(),
-                        transaction: transaction
+                        transaction: transaction,
                     )
                     state.save(transaction: transaction)
                 }
@@ -1565,7 +1577,7 @@ class StorageServiceOperation {
             // any batch, we'll add them in `fetchAndMergeItemsInBatches`.
             state.unknownIdentifiersTypeMap = state.unknownIdentifiersTypeMap
                 .mapValues { unknownIdentifiers in Array(allManifestItems.intersection(unknownIdentifiers)) }
-                .filter { (recordType, unknownIdentifiers) in !unknownIdentifiers.isEmpty }
+                .filter { recordType, unknownIdentifiers in !unknownIdentifiers.isEmpty }
 
             // Then, fetch the remaining items in the manifest and resolve any conflicts as appropriate.
             try await self.fetchAndMergeItemsInBatches(identifiers: newOrUpdatedItems, manifest: manifest, state: &state)
@@ -1587,7 +1599,7 @@ class StorageServiceOperation {
                 {
                     owsAssertDebug(
                         localManifestRecordIkm == remoteManifestRecordIkm,
-                        "Primary unexpectedly found a remote manifest recordIkm that doesn't match the local one. Who rotated it?"
+                        "Primary unexpectedly found a remote manifest recordIkm that doesn't match the local one. Who rotated it?",
                     )
                 }
 
@@ -1597,7 +1609,7 @@ class StorageServiceOperation {
                 // We fetched all the previously unknown identifiers, so we don't need to
                 // fetch them again in the future unless they're updated.
                 state.unknownIdentifiersTypeMap = state.unknownIdentifiersTypeMap
-                    .filter { (keyType, _) in !Self.isKnownKeyType(keyType) }
+                    .filter { keyType, _ in !Self.isKnownKeyType(keyType) }
 
                 // Save invalid identifiers to remove during the write operation.
                 //
@@ -1676,9 +1688,9 @@ class StorageServiceOperation {
 
                 let pendingChangesCount = (
                     state.accountIdChangeMap.count
-                    + state.groupV2ChangeMap.count
-                    + state.storyDistributionListChangeMap.count
-                    + state.callLinkRootKeyChangeMap.count
+                        + state.groupV2ChangeMap.count
+                        + state.storyDistributionListChangeMap.count
+                        + state.callLinkRootKeyChangeMap.count,
                 )
 
                 Logger.info(
@@ -1690,7 +1702,7 @@ class StorageServiceOperation {
                     \(orphanedGroupV2Count) orphaned gv2; \
                     \(orphanedStoryDistributionListCount) orphaned dlists; \
                     \(orphanedCallLinkRootKeyCount) orphaned clinks
-                    """
+                    """,
                 )
 
                 state.save(clearConsecutiveConflicts: true, transaction: transaction)
@@ -1741,7 +1753,7 @@ class StorageServiceOperation {
     private func fetchAndMergeItemsInBatches(
         identifiers: [StorageService.StorageIdentifier],
         manifest: StorageServiceProtoManifestRecord,
-        state: inout State
+        state: inout State,
     ) async throws {
         var deferredItems = [StorageService.StorageItem]()
         for identifierBatch in identifiers.chunked(by: Self.itemsBatchSize) {
@@ -1750,7 +1762,7 @@ class StorageServiceOperation {
                 for: Array(identifierBatch),
                 manifest: manifest,
                 masterKey: masterKey,
-                chatServiceAuth: self.authedAccount.chatServiceAuth
+                chatServiceAuth: self.authedAccount.chatServiceAuth,
             )
 
             // We process contacts with ACIs before those without ACIs. We do this to
@@ -1789,14 +1801,14 @@ class StorageServiceOperation {
         for item in items {
             func _mergeRecord<StateUpdater: StorageServiceStateUpdater>(
                 _ record: StateUpdater.RecordType,
-                stateUpdater: StateUpdater
+                stateUpdater: StateUpdater,
             ) {
                 self.mergeRecord(
                     record,
                     identifier: item.identifier,
                     state: &state,
                     stateUpdater: stateUpdater,
-                    transaction: tx
+                    transaction: tx,
                 )
             }
 
@@ -1903,7 +1915,7 @@ class StorageServiceOperation {
     private func cleanUpRecordsWithUnknownFields(in state: inout State) async {
         var shouldCleanUpRecordsWithUnknownFields =
             state.unknownFieldLastCheckedAppVersion != AppVersionImpl.shared.currentAppVersion
-        #if DEBUG
+#if DEBUG
         // Debug builds don't have proper version numbers but we do want to run
         // these migrations on them.
         if !shouldCleanUpRecordsWithUnknownFields {
@@ -1911,7 +1923,7 @@ class StorageServiceOperation {
                 shouldCleanUpRecordsWithUnknownFields = true
             }
         }
-        #endif
+#endif
         guard shouldCleanUpRecordsWithUnknownFields else {
             return
         }
@@ -1919,7 +1931,7 @@ class StorageServiceOperation {
 
         func fetchRecordsWithUnknownFields(
             stateUpdater: some StorageServiceStateUpdater,
-            tx: DBWriteTransaction
+            tx: DBWriteTransaction,
         ) -> [any MigrateableStorageServiceRecordType] {
             return stateUpdater.recordsWithUnknownFields(in: state)
                 .lazy
@@ -1936,7 +1948,7 @@ class StorageServiceOperation {
         // merge any values, we might partially merge all the values.
         func mergeRecordsWithUnknownFields(
             stateUpdater: some StorageServiceStateUpdater,
-            tx: DBWriteTransaction
+            tx: DBWriteTransaction,
         ) {
             let recordsWithUnknownFields = stateUpdater.recordsWithUnknownFields(in: state)
             if recordsWithUnknownFields.isEmpty {
@@ -1955,7 +1967,7 @@ class StorageServiceOperation {
                     identifier: storageIdentifier,
                     state: &state,
                     stateUpdater: stateUpdater,
-                    transaction: tx
+                    transaction: tx,
                 )
             }
             let remainingCount = stateUpdater.recordsWithUnknownFields(in: state).count
@@ -1980,8 +1992,8 @@ class StorageServiceOperation {
                     records.append(
                         contentsOf: fetchRecordsWithUnknownFields(
                             stateUpdater: stateUpdater,
-                            tx: tx
-                        )
+                            tx: tx,
+                        ),
                     )
                 }
 
@@ -1994,7 +2006,7 @@ class StorageServiceOperation {
                 // value was set for any records not passed in.
                 StorageServiceUnknownFieldMigrator.runMigrationsForRecordsWithUnknownFields(
                     records: records,
-                    tx: tx
+                    tx: tx,
                 )
             }
 
@@ -2026,7 +2038,7 @@ class StorageServiceOperation {
     private func recordPendingAccountMutations(
         in state: inout State,
         caller: String = #function,
-        shouldUpdate: (StorageServiceContact?) -> Bool
+        shouldUpdate: (StorageServiceContact?) -> Bool,
     ) async {
         let databaseStorage = SSKEnvironment.shared.databaseStorageRef
         let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
@@ -2058,20 +2070,20 @@ class StorageServiceOperation {
         identifier: StorageService.StorageIdentifier,
         state: inout State,
         stateUpdater: StateUpdater,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) {
         var record = record
         // First apply any migrations
         if StorageServiceUnknownFieldMigrator.shouldInterceptRemoteManifestBeforeMerging(tx: transaction) {
             record = StorageServiceUnknownFieldMigrator.interceptRemoteManifestBeforeMerging(
                 record: record,
-                tx: transaction
+                tx: transaction,
             )
         }
 
         let mergeResult = stateUpdater.recordUpdater.mergeRecord(
             record,
-            transaction: transaction
+            transaction: transaction,
         )
         switch mergeResult {
         case .invalid:
@@ -2122,11 +2134,11 @@ class StorageServiceOperation {
                 tsAccountManager: DependenciesBridge.shared.tsAccountManager,
                 typingIndicators: SSKEnvironment.shared.typingIndicatorsRef,
                 udManager: SSKEnvironment.shared.udManagerRef,
-                usernameEducationManager: DependenciesBridge.shared.usernameEducationManager
+                usernameEducationManager: DependenciesBridge.shared.usernameEducationManager,
             ),
             changeState: \.localAccountChangeState,
             storageIdentifier: \.localAccountIdentifier,
-            recordWithUnknownFields: \.localAccountRecordWithUnknownFields
+            recordWithUnknownFields: \.localAccountRecordWithUnknownFields,
         )
     }
 
@@ -2150,11 +2162,11 @@ class StorageServiceOperation {
                 remoteConfigProvider: SSKEnvironment.shared.remoteConfigManagerRef,
                 signalServiceAddressCache: SSKEnvironment.shared.signalServiceAddressCacheRef,
                 tsAccountManager: DependenciesBridge.shared.tsAccountManager,
-                usernameLookupManager: DependenciesBridge.shared.usernameLookupManager
+                usernameLookupManager: DependenciesBridge.shared.usernameLookupManager,
             ),
             changeState: \.accountIdChangeMap,
             storageIdentifier: \.accountIdToIdentifierMap,
-            recordWithUnknownFields: \.accountIdToRecordWithUnknownFields
+            recordWithUnknownFields: \.accountIdToRecordWithUnknownFields,
         )
     }
 
@@ -2163,7 +2175,7 @@ class StorageServiceOperation {
             recordUpdater: StorageServiceGroupV1RecordUpdater(),
             changeState: \.groupV1ChangeMap,
             storageIdentifier: \.groupV1IdToIdentifierMap,
-            recordWithUnknownFields: \.groupV1IdToRecordWithUnknownFields
+            recordWithUnknownFields: \.groupV1IdToRecordWithUnknownFields,
         )
     }
 
@@ -2175,11 +2187,11 @@ class StorageServiceOperation {
                 avatarDefaultColorManager: DependenciesBridge.shared.avatarDefaultColorManager,
                 blockingManager: SSKEnvironment.shared.blockingManagerRef,
                 groupsV2: SSKEnvironment.shared.groupsV2Ref,
-                profileManager: SSKEnvironment.shared.profileManagerRef
+                profileManager: SSKEnvironment.shared.profileManagerRef,
             ),
             changeState: \.groupV2ChangeMap,
             storageIdentifier: \.groupV2MasterKeyToIdentifierMap,
-            recordWithUnknownFields: \.groupV2MasterKeyToRecordWithUnknownFields
+            recordWithUnknownFields: \.groupV2MasterKeyToRecordWithUnknownFields,
         )
     }
 
@@ -2191,11 +2203,11 @@ class StorageServiceOperation {
                 recipientFetcher: DependenciesBridge.shared.recipientFetcher,
                 storyRecipientManager: DependenciesBridge.shared.storyRecipientManager,
                 storyRecipientStore: DependenciesBridge.shared.storyRecipientStore,
-                threadRemover: DependenciesBridge.shared.threadRemover
+                threadRemover: DependenciesBridge.shared.threadRemover,
             ),
             changeState: \.storyDistributionListChangeMap,
             storageIdentifier: \.storyDistributionListIdentifierToStorageIdentifierMap,
-            recordWithUnknownFields: \.storyDistributionListIdentifierToRecordWithUnknownFields
+            recordWithUnknownFields: \.storyDistributionListIdentifierToRecordWithUnknownFields,
         )
     }
 
@@ -2204,11 +2216,11 @@ class StorageServiceOperation {
             recordUpdater: StorageServiceCallLinkRecordUpdater(
                 callLinkStore: DependenciesBridge.shared.callLinkStore,
                 callRecordDeleteManager: DependenciesBridge.shared.callRecordDeleteManager,
-                callRecordStore: DependenciesBridge.shared.callRecordStore
+                callRecordStore: DependenciesBridge.shared.callRecordStore,
             ),
             changeState: \.callLinkRootKeyChangeMap,
             storageIdentifier: \.callLinkRootKeyToStorageIdentifierMap,
-            recordWithUnknownFields: \.callLinkRootKeyToRecordWithUnknownFields
+            recordWithUnknownFields: \.callLinkRootKeyToRecordWithUnknownFields,
         )
     }
 
@@ -2259,6 +2271,7 @@ class StorageServiceOperation {
             get { _storyDistributionListIdentifierToStorageIdentifierMap ?? [:] }
             set { _storyDistributionListIdentifierToStorageIdentifierMap = newValue }
         }
+
         private var _storyDistributionListIdentifierToRecordWithUnknownFields: [Data: StorageServiceProtoStoryDistributionListRecord]?
         fileprivate var storyDistributionListIdentifierToRecordWithUnknownFields: [Data: StorageServiceProtoStoryDistributionListRecord] {
             get { _storyDistributionListIdentifierToRecordWithUnknownFields ?? [:] }
@@ -2274,6 +2287,7 @@ class StorageServiceOperation {
             get { _invalidIdentifiers ?? Set() }
             set { _invalidIdentifiers = newValue.isEmpty ? nil : newValue }
         }
+
         fileprivate var _invalidIdentifiers: Set<StorageService.StorageIdentifier>?
 
         /// The app version from the last time we checked unknown fields. We can
@@ -2310,11 +2324,13 @@ class StorageServiceOperation {
             get { _callLinkRootKeyChangeMap ?? [:] }
             set { _callLinkRootKeyChangeMap = newValue }
         }
+
         private var _callLinkRootKeyToStorageIdentifierMap: [Data: StorageService.StorageIdentifier]?
         fileprivate var callLinkRootKeyToStorageIdentifierMap: [Data: StorageService.StorageIdentifier] {
             get { _callLinkRootKeyToStorageIdentifierMap ?? [:] }
             set { _callLinkRootKeyToStorageIdentifierMap = newValue }
         }
+
         private var _callLinkRootKeyToRecordWithUnknownFields: [Data: StorageServiceProtoCallLinkRecord]?
         fileprivate var callLinkRootKeyToRecordWithUnknownFields: [Data: StorageServiceProtoCallLinkRecord] {
             get { _callLinkRootKeyToRecordWithUnknownFields ?? [:] }
@@ -2323,7 +2339,7 @@ class StorageServiceOperation {
 
         fileprivate var allIdentifiers: [StorageService.StorageIdentifier] {
             var allIdentifiers = [StorageService.StorageIdentifier]()
-            if let localAccountIdentifier = localAccountIdentifier {
+            if let localAccountIdentifier {
                 allIdentifiers.append(localAccountIdentifier)
             }
 
@@ -2401,7 +2417,7 @@ private struct SingleElementStateUpdater<RecordUpdaterType: StorageServiceRecord
         recordUpdater: RecordUpdaterType,
         changeState: WritableKeyPath<State, State.ChangeState>,
         storageIdentifier: WritableKeyPath<State, StorageService.StorageIdentifier?>,
-        recordWithUnknownFields: WritableKeyPath<State, RecordType?>
+        recordWithUnknownFields: WritableKeyPath<State, RecordType?>,
     ) {
         self.recordUpdater = recordUpdater
         self.changeStateKeyPath = changeState
@@ -2461,7 +2477,7 @@ private struct MultipleElementStateUpdater<RecordUpdaterType: StorageServiceReco
         recordUpdater: RecordUpdaterType,
         changeState: WritableKeyPath<State, [IdType: State.ChangeState]>,
         storageIdentifier: WritableKeyPath<State, [IdType: StorageService.StorageIdentifier]>,
-        recordWithUnknownFields: WritableKeyPath<State, [IdType: RecordType]>
+        recordWithUnknownFields: WritableKeyPath<State, [IdType: RecordType]>,
     ) {
         self.recordUpdater = recordUpdater
         self.changeStateKeyPath = changeState

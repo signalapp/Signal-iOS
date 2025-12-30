@@ -28,15 +28,19 @@ public class RegistrationIdMismatchManagerImpl: RegistrationIdMismatchManager {
     }
 
     public func validateRegistrationIds() async {
-        guard !db.read(block: {
-            kvStore.getBool(Constants.haveRegistrationIdsBeenChecked, defaultValue: false, transaction: $0)
-        }) else {
+        guard
+            !db.read(block: {
+                kvStore.getBool(Constants.haveRegistrationIdsBeenChecked, defaultValue: false, transaction: $0)
+            })
+        else {
             return
         }
 
-        guard let registeredState = db.read(block: { tx in
-            return try? tsAccountManager.registeredState(tx: tx)
-        }) else {
+        guard
+            let registeredState = db.read(block: { tx in
+                return try? tsAccountManager.registeredState(tx: tx)
+            })
+        else {
             Logger.warn("Attempting to check registrationId while unregistered.")
             return
         }
@@ -66,7 +70,7 @@ public class RegistrationIdMismatchManagerImpl: RegistrationIdMismatchManager {
         let (udAccess, deviceId) = db.read { tx in (
             (serviceId as? Aci).flatMap { udManager.udAccess(for: $0, tx: tx) },
             tsAccountManager.storedDeviceId(tx: tx),
-        )}
+        ) }
 
         // Fetch a key bundle for yourself.
         let requestMaker = RequestMaker(
@@ -76,14 +80,14 @@ public class RegistrationIdMismatchManagerImpl: RegistrationIdMismatchManager {
             accessKey: udAccess,
             endorsement: nil,
             authedAccount: .implicit(),
-            options: [.allowIdentifiedFallback]
+            options: [.allowIdentifiedFallback],
         )
 
         let result = try await requestMaker.makeRequest {
             return OWSRequestFactory.recipientPreKeyRequest(
                 serviceId: serviceId,
                 deviceId: deviceId.description,
-                auth: $0
+                auth: $0,
             )
         }
 

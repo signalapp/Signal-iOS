@@ -61,7 +61,7 @@ public extension Collection {
         var endIndex = self.index(
             startIndex,
             offsetBy: chunkSize,
-            limitedBy: self.endIndex
+            limitedBy: self.endIndex,
         ) ?? self.endIndex
         while self.distance(from: startIndex, to: endIndex) > 0 {
             try await block(self[startIndex..<endIndex])
@@ -69,7 +69,7 @@ public extension Collection {
             endIndex = self.index(
                 startIndex,
                 offsetBy: chunkSize,
-                limitedBy: self.endIndex
+                limitedBy: self.endIndex,
             ) ?? self.endIndex
         }
     }
@@ -79,7 +79,7 @@ public extension Collection {
 
 public extension Array {
     /// Removes and returns the first element of the array, if there is one.
-    /// 
+    ///
     /// - Important
     /// This method runs in O(N), and consequently should not be used outside
     /// test code.

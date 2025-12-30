@@ -30,7 +30,7 @@ struct UsernameLookupRecordStore {
             try UsernameLookupRecord
                 .filter(
                     Column(UsernameLookupRecord.CodingKeys.username)
-                        .collating(.nocase) == username
+                        .collating(.nocase) == username,
                 )
                 .fetchOne(tx.database)
         }

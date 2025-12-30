@@ -21,7 +21,7 @@ public class EncryptingStreamTransform: StreamTransform, FinalizableStreamTransf
             algorithm: .aes,
             options: .pkcs7Padding,
             key: encryptionKey,
-            iv: iv
+            iv: iv,
         )
     }
 

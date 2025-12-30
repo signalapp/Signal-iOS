@@ -6,9 +6,9 @@
 import Foundation
 
 public struct OWSAssertionError: Error {
-    #if TESTABLE_BUILD
+#if TESTABLE_BUILD
     public static var test_skipAssertions = false
-    #endif
+#endif
 
     public let description: String
     public init(
@@ -16,17 +16,17 @@ public struct OWSAssertionError: Error {
         logger: PrefixedLogger = .empty(),
         file: String = #fileID,
         function: String = #function,
-        line: Int = #line
+        line: Int = #line,
     ) {
-        #if TESTABLE_BUILD
+#if TESTABLE_BUILD
         if Self.test_skipAssertions {
             logger.warn("assertionError: \(description)")
         } else {
             owsFailDebug("assertionError: \(description)", logger: logger, file: file, function: function, line: line)
         }
-        #else
+#else
         owsFailDebug("assertionError: \(description)", logger: logger, file: file, function: function, line: line)
-        #endif
+#endif
         self.description = description
     }
 }

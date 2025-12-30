@@ -46,16 +46,16 @@ public class StickerKeyboard: CustomKeyboard {
         ])
     }
 
-    required public init(coder: NSCoder) {
+    public required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    public override func willPresent() {
+    override public func willPresent() {
         super.willPresent()
         stickerPickerView.willBePresented()
     }
 
-    public override func wasPresented() {
+    override public func wasPresented() {
         super.wasPresented()
         stickerPickerView.wasPresented()
     }

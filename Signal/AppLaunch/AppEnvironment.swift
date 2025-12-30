@@ -69,7 +69,7 @@ public class AppEnvironment: NSObject {
         self.appIconBadgeUpdater = AppIconBadgeUpdater(badgeManager: badgeManager)
         self.avatarHistoryManager = AvatarHistoryManager(
             appReadiness: appReadiness,
-            db: DependenciesBridge.shared.db
+            db: DependenciesBridge.shared.db,
         )
         self.badgeManager = badgeManager
         self.backupEnablingManager = BackupEnablingManager(
@@ -83,12 +83,12 @@ public class AppEnvironment: NSObject {
             backupTestFlightEntitlementManager: DependenciesBridge.shared.backupTestFlightEntitlementManager,
             db: DependenciesBridge.shared.db,
             tsAccountManager: DependenciesBridge.shared.tsAccountManager,
-            notificationPresenter: SSKEnvironment.shared.notificationPresenterRef
+            notificationPresenter: SSKEnvironment.shared.notificationPresenterRef,
         )
         self.callService = callService
         self.callLinkProfileKeySharingManager = CallLinkProfileKeySharingManager(
             db: DependenciesBridge.shared.db,
-            accountManager: DependenciesBridge.shared.tsAccountManager
+            accountManager: DependenciesBridge.shared.tsAccountManager,
         )
         self.provisioningManager = ProvisioningManager(
             accountKeyStore: DependenciesBridge.shared.accountKeyStore,
@@ -99,7 +99,7 @@ public class AppEnvironment: NSObject {
             linkAndSyncManager: DependenciesBridge.shared.linkAndSyncManager,
             profileManager: SSKEnvironment.shared.profileManagerRef,
             receiptManager: ProvisioningManager.Wrappers.ReceiptManager(SSKEnvironment.shared.receiptManagerRef),
-            tsAccountManager: DependenciesBridge.shared.tsAccountManager
+            tsAccountManager: DependenciesBridge.shared.tsAccountManager,
         )
         self.quickRestoreManager = QuickRestoreManager(
             accountKeyStore: DependenciesBridge.shared.accountKeyStore,
@@ -109,7 +109,7 @@ public class AppEnvironment: NSObject {
             deviceProvisioningService: deviceProvisioningService,
             identityManager: DependenciesBridge.shared.identityManager,
             networkManager: SSKEnvironment.shared.networkManagerRef,
-            tsAccountManager: DependenciesBridge.shared.tsAccountManager
+            tsAccountManager: DependenciesBridge.shared.tsAccountManager,
         )
 
         let usernameValidationManager = DependenciesBridge.shared.usernameValidationManager
@@ -123,13 +123,13 @@ public class AppEnvironment: NSObject {
 
         self.outgoingDeviceRestorePresenter = OutgoingDeviceRestorePresenter(
             deviceTransferService: deviceTransferServiceRef,
-            quickRestoreManager: quickRestoreManager
+            quickRestoreManager: quickRestoreManager,
         )
 
         self.registrationIdMismatchManager = RegistrationIdMismatchManagerImpl(
             db: DependenciesBridge.shared.db,
             tsAccountManager: DependenciesBridge.shared.tsAccountManager,
-            udManager: SSKEnvironment.shared.udManagerRef
+            udManager: SSKEnvironment.shared.udManagerRef,
         )
 
         let inactiveLinkedDeviceFinder = DependenciesBridge.shared.inactiveLinkedDeviceFinder
@@ -179,7 +179,7 @@ public class AppEnvironment: NSObject {
                 db: db,
                 recipientDatabaseTable: recipientDatabaseTable,
                 storageServiceManager: storageServiceManager,
-                threadStore: threadStore
+                threadStore: threadStore,
             )
             let groupCallRecordRingingCleanupManager = GroupCallRecordRingingCleanupManager(
                 callRecordStore: callRecordStore,
@@ -188,12 +188,12 @@ public class AppEnvironment: NSObject {
                 interactionStore: interactionStore,
                 groupCallPeekClient: groupCallPeekClient,
                 notificationPresenter: notificationPresenter,
-                threadStore: threadStore
+                threadStore: threadStore,
             )
 
             let (
                 isRegisteredPrimaryDevice,
-                localIdentifiers
+                localIdentifiers,
             ) = db.read { tx in
                 (
                     tsAccountManager.registrationState(tx: tx).isRegisteredPrimaryDevice,
@@ -219,7 +219,7 @@ public class AppEnvironment: NSObject {
                     do {
                         try await backupIdService.registerBackupIDIfNecessary(
                             localAci: localIdentifiers.aci,
-                            auth: .implicit()
+                            auth: .implicit(),
                         )
                     } catch {
                         // Do nothing, we'll try again on the next app launch.

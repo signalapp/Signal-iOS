@@ -13,6 +13,7 @@ public class LRUCache<KeyType: Hashable & Equatable, ValueType> {
     public var resetCount: UInt {
         _resetCount.get()
     }
+
     public var maxSize: Int {
         get {
             return cache.countLimit
@@ -22,17 +23,23 @@ public class LRUCache<KeyType: Hashable & Equatable, ValueType> {
         }
     }
 
-    public init(maxSize: Int,
-                nseMaxSize: Int = 0,
-                shouldEvacuateInBackground: Bool = false) {
+    public init(
+        maxSize: Int,
+        nseMaxSize: Int = 0,
+        shouldEvacuateInBackground: Bool = false,
+    ) {
         self.cache.countLimit = CurrentAppContext().isNSE ? nseMaxSize : maxSize
 
-        if CurrentAppContext().isMainApp,
-           shouldEvacuateInBackground {
-            NotificationCenter.default.addObserver(self,
-                                                   selector: #selector(didEnterBackground),
-                                                   name: .OWSApplicationDidEnterBackground,
-                                                   object: nil)
+        if
+            CurrentAppContext().isMainApp,
+            shouldEvacuateInBackground
+        {
+            NotificationCenter.default.addObserver(
+                self,
+                selector: #selector(didEnterBackground),
+                name: .OWSApplicationDidEnterBackground,
+                object: nil,
+            )
         }
     }
 
@@ -84,7 +91,7 @@ public class LRUCache<KeyType: Hashable & Equatable, ValueType> {
             get(key: key)
         }
         set(value) {
-            if let value = value {
+            if let value {
                 set(key: key, value: value)
             } else {
                 remove(key: key)
@@ -117,9 +124,11 @@ public class LRUCache<KeyType: Hashable & Equatable, ValueType> {
         init(_ wrappedValue: KeyType) {
             self.wrappedValue = wrappedValue
         }
+
         override func isEqual(_ object: Any?) -> Bool {
             return self.wrappedValue == (object as? WrappedKey)?.wrappedValue
         }
+
         override var hash: Int {
             return self.wrappedValue.hashValue
         }

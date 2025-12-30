@@ -94,7 +94,7 @@ extension RegistrationPhoneNumberViewState.ValidationError.InvalidInput {
     func warningLabelText() -> String {
         return OWSLocalizedString(
             "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING",
-            comment: "Label indicating that the phone number is invalid in the 'onboarding phone number' view."
+            comment: "Label indicating that the phone number is invalid in the 'onboarding phone number' view.",
         )
     }
 }
@@ -108,7 +108,7 @@ extension RegistrationPhoneNumberViewState.ValidationError.InvalidE164 {
     func warningLabelText() -> String {
         return OWSLocalizedString(
             "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING",
-            comment: "Label indicating that the phone number is invalid in the 'onboarding phone number' view."
+            comment: "Label indicating that the phone number is invalid in the 'onboarding phone number' view.",
         )
     }
 }
@@ -123,7 +123,7 @@ extension RegistrationPhoneNumberViewState.ValidationError.RateLimited {
         let now = dateProvider()
         let rateLimitFormat = OWSLocalizedString(
             "ONBOARDING_PHONE_NUMBER_RATE_LIMIT_WARNING_FORMAT",
-            comment: "Label indicating that registration has been ratelimited. Embeds {{remaining time string}}."
+            comment: "Label indicating that registration has been ratelimited. Embeds {{remaining time string}}.",
         )
         let timeRemaining = max(expiration.timeIntervalSince(now), 0)
 

@@ -33,7 +33,7 @@ public struct MailtoLink {
             ("cc", escapeList(ccRecipients)),
             ("bcc", escapeList(bccRecipients)),
             ("subject", escapeString(subject)),
-            ("body", escapeString(body))
+            ("body", escapeString(body)),
         ]
         let cleanedQueryItems = rawQueryItems
             .filter { !$0.1.isEmpty }

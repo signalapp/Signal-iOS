@@ -23,7 +23,7 @@ class EditCallLinkNameViewController: NameEditorViewController {
         Logger.warn("Call link edit name failed with error \(error)")
         OWSActionSheets.showActionSheet(
             title: CallStrings.callLinkErrorSheetTitle,
-            message: CallStrings.callLinkUpdateErrorSheetDescription
+            message: CallStrings.callLinkUpdateErrorSheetDescription,
         )
     }
 }

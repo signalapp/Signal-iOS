@@ -41,7 +41,7 @@ public class CallEventInserter {
         thread: TSContactThread,
         callId: UInt64?,
         offerMediaType: TSRecentCallOfferType,
-        sentAtTimestamp: UInt64
+        sentAtTimestamp: UInt64,
     ) {
         self.thread = thread
         self.callId = callId
@@ -72,7 +72,7 @@ public class CallEventInserter {
     /// therefore canonical.
     public func createOrUpdate(
         callType: RPRecentCallType,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         func updateCallType(existingCall: TSCall) {
             guard shouldUpdateCallType(callType, for: existingCall, tx: tx) else {
@@ -89,7 +89,7 @@ public class CallEventInserter {
                 individualCallInteractionRowId: existingCallRowId,
                 contactThread: thread,
                 newCallInteractionType: callType,
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -119,7 +119,7 @@ public class CallEventInserter {
             callType: callType,
             offerType: self.offerMediaType,
             thread: self.thread,
-            sentAtTimestamp: self.sentAtTimestamp
+            sentAtTimestamp: self.sentAtTimestamp,
         )
         callInteraction.anyInsert(transaction: tx)
         self.callInteraction = callInteraction
@@ -130,7 +130,7 @@ public class CallEventInserter {
             OWSReceiptManager.markAllCallInteractionsAsReadLocally(
                 beforeSQLId: callInteraction.grdbId,
                 thread: self.thread,
-                transaction: tx
+                transaction: tx,
             )
             let threadUniqueId = self.thread.uniqueId
             DispatchQueue.main.async { [notificationPresenter] in
@@ -156,7 +156,9 @@ public class CallEventInserter {
 
         let callRecord: CallRecord? = {
             switch self.callRecordStore.fetch(
-                callId: callId, conversationId: .thread(threadRowId: threadRowId), tx: tx
+                callId: callId,
+                conversationId: .thread(threadRowId: threadRowId),
+                tx: tx,
             ) {
             case .matchFound(let callRecord):
                 return callRecord
@@ -180,9 +182,9 @@ public class CallEventInserter {
     private func shouldUpdateCallType(
         _ callType: RPRecentCallType,
         for callInteraction: TSCall?,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> Bool {
-        guard let callInteraction = callInteraction else {
+        guard let callInteraction else {
             // No further checks if we are creating a new one.
             return true
         }
@@ -194,7 +196,7 @@ public class CallEventInserter {
             let callRecord = fetchCallRecord(tx: tx),
             case let .individual(existingIndividualCallStatus) = callRecord.callStatus,
             let newIndividualCallStatus = CallRecord.CallStatus.IndividualCallStatus(
-                individualCallInteractionType: callType
+                individualCallInteractionType: callType,
             )
         else {
             return true
@@ -207,9 +209,9 @@ public class CallEventInserter {
             existingIndividualCallStatus == newIndividualCallStatus
             || IndividualCallRecordStatusTransitionManager().isStatusTransitionAllowed(
                 fromIndividualCallStatus: existingIndividualCallStatus,
-                toIndividualCallStatus: newIndividualCallStatus
+                toIndividualCallStatus: newIndividualCallStatus,
             )
-         else {
+        else {
             return false
         }
         return true
@@ -217,7 +219,7 @@ public class CallEventInserter {
 
     private func createOrUpdateCallRecordIfNeeded(
         for callInteraction: TSCall,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         guard let callId else {
             Logger.info("No call id; unable to create call record.")
@@ -240,7 +242,7 @@ public class CallEventInserter {
                 contactThread: thread,
                 contactThreadRowId: threadRowId,
                 callId: callId,
-                tx: tx
+                tx: tx,
             )
         } catch let error {
             owsFailBeta("Failed to insert call record: \(error)")

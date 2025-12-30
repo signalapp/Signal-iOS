@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import CFNetwork
+import Foundation
 import LibSignalClient
 
 /// This extension sacrifices Dictionary performance in order to ignore http
@@ -30,7 +30,7 @@ private extension Dictionary where Key == String {
 }
 
 public class HTTPUtils {
-    #if TESTABLE_BUILD
+#if TESTABLE_BUILD
     public static func logCurl(for request: URLRequest) {
         guard let httpMethod = request.httpMethod else {
             Logger.debug("attempted to log curl on a request with no http method")
@@ -44,7 +44,7 @@ public class HTTPUtils {
             url: url,
             method: httpMethod,
             headers: HttpHeaders(httpHeaders: request.allHTTPHeaderFields, overwriteOnConflict: true),
-            body: request.httpBody
+            body: request.httpBody,
         )
     }
 
@@ -57,10 +57,10 @@ public class HTTPUtils {
                 switch request.body {
                 case .data(let bodyData):
                     return bodyData
-                case .parameters(_):
+                case .parameters:
                     return nil
                 }
-            }()
+            }(),
         )
     }
 
@@ -111,13 +111,13 @@ public class HTTPUtils {
         let curlCommand = curlComponents.joined(separator: " ")
         Logger.verbose("curl for request: \(curlCommand)")
     }
-    #endif
+#endif
 
     public static func preprocessMainServiceHTTPError(
         requestUrl: URL,
         responseStatus: Int,
         responseHeaders: HttpHeaders,
-        responseData: Data?
+        responseData: Data?,
     ) async -> OWSHTTPError {
         let httpError: OWSHTTPError
         if responseStatus == 0 {
@@ -127,7 +127,7 @@ public class HTTPUtils {
                 requestUrl: requestUrl,
                 responseStatus: responseStatus,
                 responseHeaders: responseHeaders,
-                responseData: responseData
+                responseData: responseData,
             ))
         }
 
@@ -193,7 +193,7 @@ public extension Error {
     ///
     /// a.k.a. "the internet gave up" (see also `isTimeout`)
     var isNetworkFailure: Bool {
-        switch (self as any Error) {
+        switch self as any Error {
         case URLError.cannotConnectToHost: return true
         case URLError.networkConnectionLost: return true
         case URLError.dnsLookupFailed: return true
@@ -214,7 +214,7 @@ public extension Error {
     ///
     /// a.k.a. "we gave up" (see also `isNetworkFailure`)
     var isTimeout: Bool {
-        switch (self as any Error) {
+        switch self as any Error {
         case URLError.timedOut: return true
         case let httpError as OWSHTTPError: return httpError.isTimeoutImpl
         case GroupsV2Error.timeout: return true
@@ -242,10 +242,12 @@ public extension Error {
 // MARK: -
 
 @inlinable
-public func owsFailDebugUnlessNetworkFailure(_ error: Error,
-                                             file: String = #file,
-                                             function: String = #function,
-                                             line: Int = #line) {
+public func owsFailDebugUnlessNetworkFailure(
+    _ error: Error,
+    file: String = #file,
+    function: String = #function,
+    line: Int = #line,
+) {
     if error.isNetworkFailureOrTimeout {
         // Log but otherwise ignore network failures.
         Logger.warn("Error: \(error)", file: file, function: function, line: line)
@@ -259,7 +261,7 @@ public func owsFailBetaUnlessNetworkFailure(
     _ error: Error,
     file: String = #file,
     function: String = #function,
-    line: Int = #line
+    line: Int = #line,
 ) {
     if error.isNetworkFailureOrTimeout {
         // Log but otherwise ignore network failures.

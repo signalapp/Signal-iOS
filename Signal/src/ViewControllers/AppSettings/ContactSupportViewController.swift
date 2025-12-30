@@ -25,37 +25,37 @@ private extension ContactSupportViewController.Filter {
         case .featureRequest:
             return OWSLocalizedString(
                 "CONTACT_SUPPORT_FILTER_FEATURE_REQUEST",
-                comment: "The localized representation of the 'feature request' support filter."
+                comment: "The localized representation of the 'feature request' support filter.",
             )
         case .question:
             return OWSLocalizedString(
                 "CONTACT_SUPPORT_FILTER_QUESTION",
-                comment: "The localized representation of the 'question' support filter."
+                comment: "The localized representation of the 'question' support filter.",
             )
         case .feedback:
             return OWSLocalizedString(
                 "CONTACT_SUPPORT_FILTER_FEEDBACK",
-                comment: "The localized representation of the 'feedback' support filter."
+                comment: "The localized representation of the 'feedback' support filter.",
             )
         case .somethingNotWorking:
             return OWSLocalizedString(
                 "CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING",
-                comment: "The localized representation of the 'something not working' support filter."
+                comment: "The localized representation of the 'something not working' support filter.",
             )
         case .other:
             return OWSLocalizedString(
                 "CONTACT_SUPPORT_FILTER_OTHER",
-                comment: "The localized representation of the 'other' support filter."
+                comment: "The localized representation of the 'other' support filter.",
             )
         case .payments:
             return OWSLocalizedString(
                 "CONTACT_SUPPORT_FILTER_PAYMENTS",
-                comment: "The localized representation of the 'payments' support filter."
+                comment: "The localized representation of the 'payments' support filter.",
             )
         case .donationsAndBadges:
             return OWSLocalizedString(
                 "CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES",
-                comment: "The localized representation of the 'Donations & Badges' support filter."
+                comment: "The localized representation of the 'Donations & Badges' support filter.",
             )
         }
     }
@@ -65,37 +65,37 @@ private extension ContactSupportViewController.Filter {
         case .featureRequest:
             return OWSLocalizedString(
                 "CONTACT_SUPPORT_FILTER_FEATURE_REQUEST_SHORT",
-                comment: "A brief localized representation of the 'feature request' support filter."
+                comment: "A brief localized representation of the 'feature request' support filter.",
             )
         case .question:
             return OWSLocalizedString(
                 "CONTACT_SUPPORT_FILTER_QUESTION_SHORT",
-                comment: "A brief localized representation of the 'question' support filter."
+                comment: "A brief localized representation of the 'question' support filter.",
             )
         case .feedback:
             return OWSLocalizedString(
                 "CONTACT_SUPPORT_FILTER_FEEDBACK_SHORT",
-                comment: "A brief localized representation of the 'feedback' support filter."
+                comment: "A brief localized representation of the 'feedback' support filter.",
             )
         case .somethingNotWorking:
             return OWSLocalizedString(
                 "CONTACT_SUPPORT_FILTER_SOMETHING_NOT_WORKING_SHORT",
-                comment: "A brief localized representation of the 'something not working' support filter."
+                comment: "A brief localized representation of the 'something not working' support filter.",
             )
         case .other:
             return OWSLocalizedString(
                 "CONTACT_SUPPORT_FILTER_OTHER_SHORT",
-                comment: "A brief localized representation of the 'other' support filter."
+                comment: "A brief localized representation of the 'other' support filter.",
             )
         case .payments:
             return OWSLocalizedString(
                 "CONTACT_SUPPORT_FILTER_PAYMENTS_SHORT",
-                comment: "A brief localized representation of the 'payments' support filter."
+                comment: "A brief localized representation of the 'payments' support filter.",
             )
         case .donationsAndBadges:
             return OWSLocalizedString(
                 "CONTACT_SUPPORT_FILTER_DONATIONS_AND_BADGES_SHORT",
-                comment: "A brief localized representation of the 'Donations & Badges' support filter."
+                comment: "A brief localized representation of the 'Donations & Badges' support filter.",
             )
         }
     }
@@ -131,6 +131,7 @@ final class ContactSupportViewController: OWSTableViewController2 {
     }
 
     // MARK: - Data providers
+
     // Any views that provide model information are instantiated by the view controller directly
     // Views that are just chrome are put together in the `constructTableContents()` function
 
@@ -140,8 +141,10 @@ final class ContactSupportViewController: OWSTableViewController2 {
 
     private func setupDataProviderViews() {
         descriptionField.delegate = self
-        descriptionField.placeholderText = OWSLocalizedString("SUPPORT_DESCRIPTION_PLACEHOLDER",
-                                                             comment: "Placeholder string for support description")
+        descriptionField.placeholderText = OWSLocalizedString(
+            "SUPPORT_DESCRIPTION_PLACEHOLDER",
+            comment: "Placeholder string for support description",
+        )
         debugSwitch.isOn = true
     }
 
@@ -154,7 +157,7 @@ final class ContactSupportViewController: OWSTableViewController2 {
             style: .done,
             action: { [weak self] in
                 self?.didTapNext()
-            }
+            },
         )
         navigationItem.rightBarButtonItem?.isEnabled = false
     }
@@ -172,7 +175,7 @@ final class ContactSupportViewController: OWSTableViewController2 {
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
 
-        coordinator.animate(alongsideTransition: { (_) in
+        coordinator.animate(alongsideTransition: { _ in
             self.descriptionField.scrollToFocus(in: self.tableView, animated: true)
         }, completion: nil)
     }
@@ -190,8 +193,10 @@ final class ContactSupportViewController: OWSTableViewController2 {
             spinner.startAnimating()
 
             let label = UILabel()
-            label.text = OWSLocalizedString("SUPPORT_LOG_UPLOAD_IN_PROGRESS",
-                                           comment: "A string in the navigation bar indicating that the support request is uploading logs")
+            label.text = OWSLocalizedString(
+                "SUPPORT_LOG_UPLOAD_IN_PROGRESS",
+                comment: "A string in the navigation bar indicating that the support request is uploading logs",
+            )
             label.textColor = .Signal.secondaryLabel
 
             let stackView = UIStackView(arrangedSubviews: [label, spinner])
@@ -216,7 +221,7 @@ final class ContactSupportViewController: OWSTableViewController2 {
             emojiMood: emojiPicker.selectedMood,
             supportFilter: selectedFilter.map { "iOS \($0.emailFilterString)" },
             debugLogPolicy: debugSwitch.isOn ? .attemptUpload(logDumper) : nil,
-            hasRecentChallenge: logDumper.challengeReceivedRecently()
+            hasRecentChallenge: logDumper.challengeReceivedRecently(),
         )
 
         showSpinnerOnNextButton = true
@@ -233,7 +238,7 @@ final class ContactSupportViewController: OWSTableViewController2 {
                 let alertTitle = error.userErrorDescription
                 let alertMessage = OWSLocalizedString(
                     "SUPPORT_EMAIL_ERROR_ALERT_DESCRIPTION",
-                    comment: "Message for alert dialog presented when a support email failed to send"
+                    comment: "Message for alert dialog presented when a support email failed to send",
                 )
                 OWSActionSheets.showActionSheet(title: alertTitle, message: alertMessage)
             }
@@ -261,63 +266,75 @@ extension ContactSupportViewController: TextViewWithPlaceholderDelegate {
 
 extension ContactSupportViewController {
 
-    fileprivate func constructContents() -> OWSTableContents {
+    private func constructContents() -> OWSTableContents {
 
-        let titleText = OWSLocalizedString("HELP_CONTACT_US",
-                                          comment: "Help item allowing the user to file a support request")
-        let contactHeaderText = OWSLocalizedString("SUPPORT_CONTACT_US_HEADER",
-                                                  comment: "Header of support description field")
-        let emojiHeaderText = OWSLocalizedString("SUPPORT_EMOJI_PROMPT",
-                                                comment: "Header for emoji mood selection")
-        let faqPromptText = OWSLocalizedString("SUPPORT_FAQ_PROMPT",
-                                              comment: "Label in support request informing user about Signal FAQ")
+        let titleText = OWSLocalizedString(
+            "HELP_CONTACT_US",
+            comment: "Help item allowing the user to file a support request",
+        )
+        let contactHeaderText = OWSLocalizedString(
+            "SUPPORT_CONTACT_US_HEADER",
+            comment: "Header of support description field",
+        )
+        let emojiHeaderText = OWSLocalizedString(
+            "SUPPORT_EMOJI_PROMPT",
+            comment: "Header for emoji mood selection",
+        )
+        let faqPromptText = OWSLocalizedString(
+            "SUPPORT_FAQ_PROMPT",
+            comment: "Label in support request informing user about Signal FAQ",
+        )
 
         return OWSTableContents(title: titleText, sections: [
 
             OWSTableSection(title: contactHeaderText, items: [
 
                 // Filter selection
-                OWSTableItem(customCellBlock: { [weak self] in
-                    guard let self = self else { return UITableViewCell() }
-                    return OWSTableItem.buildCell(
-                        itemName: OWSLocalizedString(
-                            "CONTACT_SUPPORT_FILTER_PROMPT",
-                            comment: "Prompt telling the user to select a filter for their support request."
-                        ),
-                        accessoryText: self.selectedFilter?.localizedShortString ?? OWSLocalizedString(
-                            "CONTACT_SUPPORT_SELECT_A_FILTER",
-                            comment: "Placeholder telling user they must select a filter."
-                        ),
-                        accessoryTextColor: self.selectedFilter == nil ? .placeholderText : nil
-                    )
-                },
-                actionBlock: { [weak self] in
-                    self?.showFilterPicker()
-                }),
+                OWSTableItem(
+                    customCellBlock: { [weak self] in
+                        guard let self else { return UITableViewCell() }
+                        return OWSTableItem.buildCell(
+                            itemName: OWSLocalizedString(
+                                "CONTACT_SUPPORT_FILTER_PROMPT",
+                                comment: "Prompt telling the user to select a filter for their support request.",
+                            ),
+                            accessoryText: self.selectedFilter?.localizedShortString ?? OWSLocalizedString(
+                                "CONTACT_SUPPORT_SELECT_A_FILTER",
+                                comment: "Placeholder telling user they must select a filter.",
+                            ),
+                            accessoryTextColor: self.selectedFilter == nil ? .placeholderText : nil,
+                        )
+                    },
+                    actionBlock: { [weak self] in
+                        self?.showFilterPicker()
+                    },
+                ),
 
                 // Description field
                 self.textViewItem(self.descriptionField, minimumHeight: 125),
 
                 // Debug log switch
                 OWSTableItem(customCellBlock: { [weak self] in
-                    guard let self = self else { return UITableViewCell() }
+                    guard let self else { return UITableViewCell() }
                     return self.createDebugLogCell()
                 }),
 
                 // FAQ prompt
-                OWSTableItem(customCellBlock: {
-                    let cell = OWSTableItem.newCell()
-                    cell.textLabel?.font = UIFont.dynamicTypeBody
-                    cell.textLabel?.adjustsFontForContentSizeCategory = true
-                    cell.textLabel?.numberOfLines = 0
-                    cell.textLabel?.text = faqPromptText
-                    cell.textLabel?.textColor = .Signal.accent
-                    return cell
-                },
-                   actionBlock: { [weak self] in
-                       let vc = SFSafariViewController(url: URL.Support.generic)
-                       self?.present(vc, animated: true)
-                })
+                OWSTableItem(
+                    customCellBlock: {
+                        let cell = OWSTableItem.newCell()
+                        cell.textLabel?.font = UIFont.dynamicTypeBody
+                        cell.textLabel?.adjustsFontForContentSizeCategory = true
+                        cell.textLabel?.numberOfLines = 0
+                        cell.textLabel?.text = faqPromptText
+                        cell.textLabel?.textColor = .Signal.accent
+                        return cell
+                    },
+                    actionBlock: { [weak self] in
+                        let vc = SFSafariViewController(url: URL.Support.generic)
+                        self?.present(vc, animated: true)
+                    },
+                ),
             ]),
 
             // The emoji picker is placed in the section footer to avoid tableview separators
@@ -327,7 +344,7 @@ extension ContactSupportViewController {
             // UITableViewCell.separatorInset looks like it would work, but it only applies to separators
             // between cells, not between the header and the footer
 
-            OWSTableSection(title: emojiHeaderText, footerView: createEmojiFooterView())
+            OWSTableSection(title: emojiHeaderText, footerView: createEmojiFooterView()),
         ])
     }
 
@@ -335,8 +352,10 @@ extension ContactSupportViewController {
         let cell = OWSTableItem.newCell()
 
         let label = UILabel()
-        label.text = OWSLocalizedString("SUPPORT_INCLUDE_DEBUG_LOG",
-                                       comment: "Label describing support switch to attach debug logs")
+        label.text = OWSLocalizedString(
+            "SUPPORT_INCLUDE_DEBUG_LOG",
+            comment: "Label describing support switch to attach debug logs",
+        )
         label.font = UIFont.dynamicTypeBody
         label.adjustsFontForContentSizeCategory = true
         label.numberOfLines = 0
@@ -346,8 +365,10 @@ extension ContactSupportViewController {
             let vc = SFSafariViewController(url: URL.Support.debugLogs)
             self?.present(vc, animated: true)
         }
-        infoButton.accessibilityLabel = OWSLocalizedString("DEBUG_LOG_INFO_BUTTON",
-                                                          comment: "Accessibility label for the ? vector asset used to get info about debug logs")
+        infoButton.accessibilityLabel = OWSLocalizedString(
+            "DEBUG_LOG_INFO_BUTTON",
+            comment: "Accessibility label for the ? vector asset used to get info about debug logs",
+        )
 
         cell.contentView.addSubview(label)
         cell.contentView.addSubview(infoButton)
@@ -379,7 +400,7 @@ extension ContactSupportViewController {
     private func showFilterPicker() {
         let actionSheet = ActionSheetController(title: OWSLocalizedString(
             "CONTACT_SUPPORT_FILTER_PROMPT",
-            comment: "Prompt telling the user to select a filter for their support request."
+            comment: "Prompt telling the user to select a filter for their support request.",
         ))
         actionSheet.addAction(OWSActionSheets.cancelAction)
 

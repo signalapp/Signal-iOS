@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import Testing
 @testable import Signal
 @testable import SignalServiceKit
-import Testing
 
 @MainActor
 struct BackupRefreshManagerTest {

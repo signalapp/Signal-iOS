@@ -6,7 +6,7 @@
 import UIKit
 
 open class OWSTextField: UITextField {
-    public override init(frame: CGRect) {
+    override public init(frame: CGRect) {
         super.init(frame: frame)
         self.disableAiWritingTools()
         applyTheme()
@@ -30,7 +30,7 @@ open class OWSTextField: UITextField {
         clearButtonMode: UITextField.ViewMode = .never,
         delegate: UITextFieldDelegate? = nil,
         editingChanged: (() -> Void)? = nil,
-        returnPressed: (() -> Void)? = nil
+        returnPressed: (() -> Void)? = nil,
     ) {
         self.init(frame: .zero)
         self.font = font

@@ -14,7 +14,7 @@ class BackupOnboardingIntroViewController: HostingController<BackupOnboardingInt
     ) {
         super.init(wrappedView: BackupOnboardingIntroView(
             onContinue: onContinue,
-            onNotNow: onNotNow
+            onNotNow: onNotNow,
         ))
 
         OWSTableViewController2.removeBackButtonText(viewController: self)
@@ -39,22 +39,22 @@ struct BackupOnboardingIntroView: View {
             image: .lock,
             text: OWSLocalizedString(
                 "BACKUP_ONBOARDING_INTRO_BULLET_1",
-                comment: "Bullet point on a view introducing Backups during an onboarding flow."
-            )
+                comment: "Bullet point on a view introducing Backups during an onboarding flow.",
+            ),
         ),
         BulletPoint(
             image: .checkSquare,
             text: OWSLocalizedString(
                 "BACKUP_ONBOARDING_INTRO_BULLET_2",
-                comment: "Bullet point on a view introducing Backups during an onboarding flow."
-            )
+                comment: "Bullet point on a view introducing Backups during an onboarding flow.",
+            ),
         ),
         BulletPoint(
             image: .trash,
             text: OWSLocalizedString(
                 "BACKUP_ONBOARDING_INTRO_BULLET_3",
-                comment: "Bullet point on a view introducing Backups during an onboarding flow."
-            )
+                comment: "Bullet point on a view introducing Backups during an onboarding flow.",
+            ),
         ),
     ]
 
@@ -69,9 +69,11 @@ struct BackupOnboardingIntroView: View {
             HStack(spacing: 12) {
                 Image(Theme.iconName(.info))
 
-                Text(OWSLocalizedString(
-                    "BACKUP_SETTINGS_BETA_NOTICE_HEADER",
-                    comment: "Notice that backups is a beta feature")
+                Text(
+                    OWSLocalizedString(
+                        "BACKUP_SETTINGS_BETA_NOTICE_HEADER",
+                        comment: "Notice that backups is a beta feature",
+                    ),
                 )
                 .font(.footnote)
                 .multilineTextAlignment(.leading)
@@ -96,7 +98,7 @@ struct BackupOnboardingIntroView: View {
                 HStack {
                     Text(OWSLocalizedString(
                         "BACKUP_ONBOARDING_INTRO_TITLE",
-                        comment: "Title for a view introducing Backups during an onboarding flow."
+                        comment: "Title for a view introducing Backups during an onboarding flow.",
                     ))
                     .font(Font(UIFont.dynamicTypeFont(ofStandardSize: 26)))
                     .fontWeight(.semibold)
@@ -107,8 +109,9 @@ struct BackupOnboardingIntroView: View {
                         .bold()
                         .padding(.horizontal, 10)
                         .padding(.vertical, 4)
-                        .background(Capsule().fill(
-                            Color.Signal.secondaryFill)
+                        .background(
+                            Capsule().fill(
+                                Color.Signal.secondaryFill),
                         )
                         .foregroundStyle(Color.Signal.label)
                 }
@@ -119,7 +122,7 @@ struct BackupOnboardingIntroView: View {
 
                 Text(OWSLocalizedString(
                     "BACKUP_ONBOARDING_INTRO_SUBTITLE",
-                    comment: "Subtitle for a view introducing Backups during an onboarding flow."
+                    comment: "Subtitle for a view introducing Backups during an onboarding flow.",
                 ))
                 .font(.body)
                 .foregroundStyle(Color.Signal.secondaryLabel)
@@ -177,7 +180,7 @@ struct BackupOnboardingIntroView: View {
 #Preview {
     SheetPreviewViewController(sheet: OWSNavigationController(rootViewController: BackupOnboardingIntroViewController(
         onContinue: { print("Continuing...!") },
-        onNotNow: { print("Not now...!") }
+        onNotNow: { print("Not now...!") },
     )))
 }
 

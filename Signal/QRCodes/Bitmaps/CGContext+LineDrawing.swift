@@ -25,7 +25,7 @@ extension CGContext {
         lineJoin: CGLineJoin = .round,
         lineCap: CGLineCap = .round,
         foregroundColor: CGColor,
-        backgroundColor: CGColor
+        backgroundColor: CGColor,
     ) -> CGContext {
         let scaleFloat = CGFloat(scaleInt)
 
@@ -36,7 +36,7 @@ extension CGContext {
             bitsPerComponent: 8,
             bytesPerRow: 4 * drawing.width * scaleInt, // Four components per pixel
             space: CGColorSpaceCreateDeviceRGB(),
-            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue,
         )!
 
         cgContext.setFillColor(backgroundColor)
@@ -50,7 +50,7 @@ extension CGContext {
         let segmentsCGPointPairs = drawing.segments.flatMap { segment -> [CGPoint] in
             return [
                 segment.start.cgPoint(scaledBy: scaleFloat),
-                segment.end.cgPoint(scaledBy: scaleFloat)
+                segment.end.cgPoint(scaledBy: scaleFloat),
             ]
         }
 

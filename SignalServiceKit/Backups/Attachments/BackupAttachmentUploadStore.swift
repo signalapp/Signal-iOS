@@ -25,7 +25,7 @@ public class BackupAttachmentUploadStore {
         tx: DBWriteTransaction,
         file: StaticString? = #file,
         function: StaticString? = #function,
-        line: UInt? = #line
+        line: UInt? = #line,
     ) {
         if let file, let function, let line {
             Logger.info("Enqueuing \(attachment.id) fullsize? \(fullsize) from \(file) \(line): \(function)")
@@ -86,7 +86,7 @@ public class BackupAttachmentUploadStore {
     public func fetchNextUploads(
         count: UInt,
         isFullsize: Bool,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> [QueuedBackupAttachmentUpload] {
         // NULLS FIRST is unsupported in GRDB so we bridge to raw SQL;
         // we want thread wallpapers to go first (null timestamp) and then
@@ -95,22 +95,22 @@ public class BackupAttachmentUploadStore {
             .fetchAll(
                 tx.database,
                 sql: """
-                    SELECT * FROM \(QueuedBackupAttachmentUpload.databaseTableName)
-                    WHERE
-                      \(QueuedBackupAttachmentUpload.CodingKeys.state.rawValue) = ?
-                      AND \(QueuedBackupAttachmentUpload.CodingKeys.isFullsize.rawValue) = ?
-                    ORDER BY
-                        \(QueuedBackupAttachmentUpload.CodingKeys.maxOwnerTimestamp.rawValue) DESC NULLS FIRST
-                    LIMIT ?
-                    """,
-                arguments: [QueuedBackupAttachmentUpload.State.ready.rawValue, isFullsize, count]
+                SELECT * FROM \(QueuedBackupAttachmentUpload.databaseTableName)
+                WHERE
+                  \(QueuedBackupAttachmentUpload.CodingKeys.state.rawValue) = ?
+                  AND \(QueuedBackupAttachmentUpload.CodingKeys.isFullsize.rawValue) = ?
+                ORDER BY
+                    \(QueuedBackupAttachmentUpload.CodingKeys.maxOwnerTimestamp.rawValue) DESC NULLS FIRST
+                LIMIT ?
+                """,
+                arguments: [QueuedBackupAttachmentUpload.State.ready.rawValue, isFullsize, count],
             )
     }
 
     public func getEnqueuedUpload(
         for attachmentId: Attachment.IDType,
         fullsize: Bool,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> QueuedBackupAttachmentUpload? {
         return try QueuedBackupAttachmentUpload
             .filter(Column(QueuedBackupAttachmentUpload.CodingKeys.attachmentRowId) == attachmentId)
@@ -134,7 +134,7 @@ public class BackupAttachmentUploadStore {
         tx: DBWriteTransaction,
         file: StaticString? = #file,
         function: StaticString? = #function,
-        line: UInt? = #line
+        line: UInt? = #line,
     ) throws -> QueuedBackupAttachmentUpload? {
         if let file, let function, let line {
             Logger.info("Marking \(attachmentId) done. fullsize? \(fullsize) from \(file) \(line): \(function)")
@@ -153,13 +153,13 @@ public class BackupAttachmentUploadStore {
             .fetchOne(
                 tx.database,
                 sql: """
-                    SELECT SUM(\(QueuedBackupAttachmentUpload.CodingKeys.estimatedByteCount.rawValue))
-                    FROM \(QueuedBackupAttachmentUpload.databaseTableName)
-                    WHERE
-                      \(QueuedBackupAttachmentUpload.CodingKeys.state.rawValue) = ?
-                      AND \(QueuedBackupAttachmentUpload.CodingKeys.isFullsize.rawValue) = ?
-                    """,
-                arguments: [QueuedBackupAttachmentUpload.State.ready.rawValue, true]
+                SELECT SUM(\(QueuedBackupAttachmentUpload.CodingKeys.estimatedByteCount.rawValue))
+                FROM \(QueuedBackupAttachmentUpload.databaseTableName)
+                WHERE
+                  \(QueuedBackupAttachmentUpload.CodingKeys.state.rawValue) = ?
+                  AND \(QueuedBackupAttachmentUpload.CodingKeys.isFullsize.rawValue) = ?
+                """,
+                arguments: [QueuedBackupAttachmentUpload.State.ready.rawValue, true],
             )
             ?? 0
     }
@@ -173,6 +173,7 @@ extension QueuedBackupAttachmentUpload.OwnerType {
         // Thread wallpapers are higher priority, they always win.
         case (.threadWallpaper, _):
             return true
+
         case (.message(_), .threadWallpaper):
             return false
 

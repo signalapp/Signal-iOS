@@ -12,6 +12,7 @@ extension SentMessageTranscriptReceiverImpl {
         public typealias GroupManager = _SentMessageTranscriptReceiver_GroupManagerShim
         public typealias ViewOnceMessages = _SentMessageTranscriptReceiver_ViewOnceMessagesShim
     }
+
     public enum Wrappers {
         public typealias EarlyMessageManager = _SentMessageTranscriptReceiver_EarlyMessageManagerWrapper
         public typealias GroupManager = _SentMessageTranscriptReceiver_GroupManagerWrapper
@@ -26,7 +27,7 @@ public protocol _SentMessageTranscriptReceiver_EarlyMessageManagerShim {
     func applyPendingMessages(
         for message: TSMessage,
         localIdentifiers: LocalIdentifiers,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     )
 }
 
@@ -52,7 +53,7 @@ public protocol _SentMessageTranscriptReceiver_GroupManagerShim {
         disappearingMessageToken: VersionedDisappearingMessageToken,
         changeAuthor: Aci,
         localIdentifiers: LocalIdentifiers,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     )
 }
 
@@ -65,14 +66,14 @@ public class _SentMessageTranscriptReceiver_GroupManagerWrapper: _SentMessageTra
         disappearingMessageToken: VersionedDisappearingMessageToken,
         changeAuthor: Aci,
         localIdentifiers: LocalIdentifiers,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         GroupManager.remoteUpdateDisappearingMessages(
             contactThread: thread,
             disappearingMessageToken: disappearingMessageToken,
             changeAuthor: changeAuthor,
             localIdentifiers: localIdentifiers,
-            transaction: tx
+            transaction: tx,
         )
     }
 }
@@ -84,7 +85,7 @@ public protocol _SentMessageTranscriptReceiver_ViewOnceMessagesShim {
     func markAsComplete(
         message: TSMessage,
         sendSyncMessages: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     )
 }
 

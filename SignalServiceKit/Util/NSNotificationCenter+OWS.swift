@@ -34,13 +34,13 @@ extension NotificationCenter {
 
     public func addObserver(
         name: Notification.Name,
-        block: @escaping (Notification) -> Void
+        block: @escaping (Notification) -> Void,
     ) -> Observer {
         return Observer(wrapped: addObserver(
             forName: name,
             object: nil,
             queue: nil,
-            using: block
+            using: block,
         ))
     }
 

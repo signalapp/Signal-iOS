@@ -41,20 +41,20 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
     public weak var editableBodyDelegate: EditableMessageBodyDelegate?
 
     public init(
-        db: any DB
+        db: any DB,
     ) {
         self.db = db
         super.init()
     }
 
     @available(*, unavailable)
-    required public init?(coder: NSCoder) {
+    public required init?(coder: NSCoder) {
         owsFail("Use another initializer")
     }
 
     // MARK: - NSTextStorage
 
-    public override var string: String {
+    override public var string: String {
         return body.hydratedText
     }
 
@@ -65,20 +65,20 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
         return body.hydratedText.naturalTextAlignment
     }
 
-    public override func attributes(at location: Int, effectiveRange range: NSRangePointer?) -> [NSAttributedString.Key: Any] {
+    override public func attributes(at location: Int, effectiveRange range: NSRangePointer?) -> [NSAttributedString.Key: Any] {
         return displayString.attributes(at: location, effectiveRange: range)
     }
 
-    public override func replaceCharacters(in range: NSRange, with str: String) {
+    override public func replaceCharacters(in range: NSRange, with str: String) {
         self.replaceCharacters(
             in: range,
             with: str,
             selectedRange: editableBodyDelegate?.editableMessageSelectedRange()
-                ?? NSRange(location: (body.hydratedText as NSString).length, length: 0)
+                ?? NSRange(location: (body.hydratedText as NSString).length, length: 0),
         )
     }
 
-    public override func setAttributes(_ attrs: [NSAttributedString.Key: Any]?, range: NSRange) {
+    override public func setAttributes(_ attrs: [NSAttributedString.Key: Any]?, range: NSRange) {
         // If we get any memoji attributes, remove them and pass them up to the delegate.
         var attrs = attrs
         if let memojiGlyph = OWSAdaptiveImageGlyph.remove(from: &attrs) {
@@ -94,7 +94,7 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
 
     private var isFixingAttributes = false
 
-    public override func fixAttributes(in range: NSRange) {
+    override public func fixAttributes(in range: NSRange) {
         isFixingAttributes = true
         super.fixAttributes(in: range)
         isFixingAttributes = false
@@ -104,13 +104,13 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
 
     private var selectionAfterEdits: NSRange?
 
-    public override func beginEditing() {
+    override public func beginEditing() {
         super.beginEditing()
         isEditing = true
         self.selectionAfterEdits = nil
     }
 
-    public override func endEditing() {
+    override public func endEditing() {
         super.endEditing()
         isEditing = false
         DispatchQueue.main.async {
@@ -123,7 +123,7 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
 
     // MARK: - State Representation
 
-    internal struct Body: Equatable {
+    struct Body: Equatable {
         var hydratedText: String
         var mentions: [NSRange: Aci]
         var flattenedStyles: [NSRangedValue<SingleStyle>]
@@ -158,7 +158,7 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
             hydratedTextBeforeChange: body.hydratedText,
             hydrator: makeMentionHydratorForCurrentBody(),
             modifiedRange: NSRange(location: 0, length: (body.hydratedText as NSString).length),
-            selectedRangeAfterChange: selectedRange
+            selectedRangeAfterChange: selectedRange,
         )
     }
 
@@ -172,7 +172,7 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
             with: string,
             selectedRange: selectedRange,
             forceIgnoreStylesInReplacedRange: false,
-            txProvider: db.readTxProvider
+            txProvider: db.readTxProvider,
         )
     }
 
@@ -181,7 +181,7 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
         with string: String,
         selectedRange: NSRange,
         forceIgnoreStylesInReplacedRange: Bool,
-        txProvider: ReadTxProvider
+        txProvider: ReadTxProvider,
     ) {
         let string = string.removingPlaceholders()
         let hydratedTextBeforeChange = body.hydratedText
@@ -195,7 +195,7 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
         // If the change is within a mention, that mention is eliminated.
         // Note that the hydrated text of the mention is preserved; its just plaintext now.
         var intersectingMentionRanges = [NSRange]()
-        body.mentions.forEach { (mentionRange, mentionAci) in
+        body.mentions.forEach { mentionRange, mentionAci in
             if
                 // An insert, which can happen in the middle of a mention.
                 (range.length == 0 && mentionRange.contains(range.location) && range.location != mentionRange.location)
@@ -216,13 +216,13 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
             // Put the selection after the prefix so a new mention can be typed.
             let newSelectedRange = NSRange(
                 location: intersectingMentionRange.location + (Mention.prefix as NSString).length,
-                length: 0
+                length: 0,
             )
             self.editableBodyDelegate?.editableMessageBodyDidRequestNewSelectedRange(newSelectedRange)
             return
         }
 
-        body.mentions.forEach { (mentionRange, mentionAci) in
+        body.mentions.forEach { mentionRange, mentionAci in
             if range.upperBound <= mentionRange.location {
                 // If the change is before a mention, we have to shift the mention.
                 body.mentions[mentionRange] = nil
@@ -240,7 +240,7 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
             body.flattenedStyles,
             forReplacementOf: range,
             with: string,
-            preserveStyleInReplacement: (!forceIgnoreStylesInReplacedRange && string.shouldContinueExistingStyle)
+            preserveStyleInReplacement: !forceIgnoreStylesInReplacedRange && string.shouldContinueExistingStyle,
         )
 
         body.hydratedText = (body.hydratedText as NSString)
@@ -251,7 +251,7 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
             hydratedTextBeforeChange: hydratedTextBeforeChange,
             hydrator: makeMentionHydrator(for: Array(self.body.mentions.values), txProvider: txProvider),
             modifiedRange: modifiedRange,
-            selectedRangeAfterChange: nil
+            selectedRangeAfterChange: nil,
         )
     }
 
@@ -274,8 +274,8 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
                         style.value,
                         range: NSRange(
                             location: style.range.location,
-                            length: style.range.length + range.length + changeInLength
-                        )
+                            length: style.range.length + range.length + changeInLength,
+                        ),
                     )
                     // Safe to reinsert in place as its sorted by location,
                     // which didn't change as we only touched length.
@@ -297,7 +297,7 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
             stringToAppend = StyleOnlyMessageBody(text: string, styles: stylesToApply).asAttributedStringForDisplay(
                 config: config.style,
                 textAlignment: string.nilIfEmpty?.naturalTextAlignment ?? .natural,
-                isDarkThemeEnabled: isDarkThemeEnabled
+                isDarkThemeEnabled: isDarkThemeEnabled,
             )
             editActions = [.editedAttributes, .editedCharacters]
         } else {
@@ -308,8 +308,8 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
                 attributes: [
                     .font: config.mention.font,
                     .foregroundColor: config.baseTextColor.color(isDarkThemeEnabled: isDarkThemeEnabled),
-                    .paragraphStyle: paragraphStyle
-                ]
+                    .paragraphStyle: paragraphStyle,
+                ],
             )
             editActions = .editedCharacters
         }
@@ -326,7 +326,7 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
         in range: NSRange,
         withMentionAci mentionAci: Aci,
         hydrator: CacheMentionHydrator,
-        insertSpaceAfter: Bool
+        insertSpaceAfter: Bool,
     ) {
         let hydratedTextBeforeChange = body.hydratedText
         var modifiedRange = range
@@ -366,16 +366,16 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
             body.flattenedStyles,
             forReplacementOf: range,
             with: finalMentionText,
-            preserveStyleInReplacement: true
+            preserveStyleInReplacement: true,
         )
 
         body.hydratedText = (body.hydratedText as NSString).replacingCharacters(
             in: range,
-            with: finalMentionText
+            with: finalMentionText,
         ).removingPlaceholders()
 
         // If the new mention is before the already existing mentions, we have to shift the existing mentions.
-        body.mentions.forEach { (mentionRange, mentionAci) in
+        body.mentions.forEach { mentionRange, mentionAci in
             if range.upperBound <= mentionRange.location {
                 // Since the user may have already typed out part of the mention, we should remove
                 // range.length from the final location to avoid double counting those letters.
@@ -397,7 +397,7 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
             hydratedTextBeforeChange: hydratedTextBeforeChange,
             hydrator: hydrator,
             modifiedRange: modifiedRange,
-            selectedRangeAfterChange: newSelectedRange
+            selectedRangeAfterChange: newSelectedRange,
         )
     }
 
@@ -432,8 +432,8 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
                     style.value,
                     range: NSRange(
                         location: style.range.location,
-                        length: range.location - style.range.location
-                    )
+                        length: range.location - style.range.location,
+                    ),
                 )
                 insertStylePreservingSort(newStyle)
             }
@@ -443,8 +443,8 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
                     style.value,
                     range: NSRange(
                         location: range.upperBound,
-                        length: style.range.upperBound - range.upperBound
-                    )
+                        length: style.range.upperBound - range.upperBound,
+                    ),
                 )
                 insertStylePreservingSort(newStyle)
             }
@@ -462,7 +462,7 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
             hydratedTextBeforeChange: body.hydratedText /* text doesn't change */,
             hydrator: makeMentionHydratorForCurrentBody(),
             modifiedRange: range,
-            selectedRangeAfterChange: newSelectedRange
+            selectedRangeAfterChange: newSelectedRange,
         )
     }
 
@@ -488,7 +488,7 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
         let overlaps = NSRangedValue<SingleStyle>.overlaps(
             of: newStyle,
             in: self.body.flattenedStyles,
-            isEqual: ==
+            isEqual: ==,
         )
 
         switch overlaps {
@@ -508,8 +508,8 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
                     style,
                     range: NSRange(
                         location: containingStyle.range.location,
-                        length: range.location - containingStyle.range.location
-                    )
+                        length: range.location - containingStyle.range.location,
+                    ),
                 )
                 insertStylePreservingSort(newStyle)
             }
@@ -519,8 +519,8 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
                     style,
                     range: NSRange(
                         location: range.upperBound,
-                        length: containingStyle.range.upperBound - range.upperBound
-                    )
+                        length: containingStyle.range.upperBound - range.upperBound,
+                    ),
                 )
                 insertStylePreservingSort(newStyle)
             }
@@ -556,8 +556,8 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
                         style,
                         range: NSRange(
                             location: existingRange.range.location,
-                            length: range.location - existingRange.range.location
-                        )
+                            length: range.location - existingRange.range.location,
+                        ),
                     )
                     if newStyle.range.length > 0 {
                         newRangesToInsert.append(newStyle)
@@ -570,8 +570,8 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
                         style,
                         range: NSRange(
                             location: range.upperBound,
-                            length: existingRange.range.upperBound - range.upperBound
-                        )
+                            length: existingRange.range.upperBound - range.upperBound,
+                        ),
                     )
                     if newStyle.range.length > 0 {
                         newRangesToInsert.append(newStyle)
@@ -605,7 +605,7 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
             hydratedTextBeforeChange: hydratedTextBeforeChange,
             hydrator: makeMentionHydrator(for: Array(self.body.mentions.values), txProvider: txProvider),
             modifiedRange: range,
-            selectedRangeAfterChange: newSelectedRange
+            selectedRangeAfterChange: newSelectedRange,
         )
     }
 
@@ -617,7 +617,7 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
         while low != high {
             let mid = self.body.flattenedStyles.index(
                 low,
-                offsetBy: self.body.flattenedStyles.distance(from: low, to: high) / 2
+                offsetBy: self.body.flattenedStyles.distance(from: low, to: high) / 2,
             )
             let element = self.body.flattenedStyles[mid]
             if newStyle.range.location == element.range.location {
@@ -644,21 +644,21 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
             with: insertedBody.hydratedText,
             selectedRange: range,
             forceIgnoreStylesInReplacedRange: true,
-            txProvider: txProvider
+            txProvider: txProvider,
         )
         for mention in insertedBody.mentions {
             self.replaceCharacters(
                 in: NSRange(location: range.location + mention.key.location, length: mention.key.length),
                 withMentionAci: mention.value,
                 hydrator: hydrator,
-                insertSpaceAfter: false
+                insertSpaceAfter: false,
             )
         }
         for style in insertedBody.flattenedStyles {
             self.toggleStyle(
                 style.value,
                 in: NSRange(location: range.location + style.range.location, length: style.range.length),
-                txProvider: txProvider
+                txProvider: txProvider,
             )
         }
         let hydratedTextBeforeChange = body.hydratedText
@@ -669,7 +669,7 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
             hydratedTextBeforeChange: hydratedTextBeforeChange,
             hydrator: wholeBodyHydrator,
             modifiedRange: range,
-            selectedRangeAfterChange: newSelectedRange
+            selectedRangeAfterChange: newSelectedRange,
         )
     }
 
@@ -684,7 +684,7 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
         _ flattenedStyles: [NSRangedValue<SingleStyle>],
         forReplacementOf range: NSRange,
         with string: String,
-        preserveStyleInReplacement: Bool
+        preserveStyleInReplacement: Bool,
     ) -> [NSRangedValue<SingleStyle>] {
         let stringLength = (string as NSString).length
         let changeLengthDiff = stringLength - range.length
@@ -717,14 +717,14 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
                 // We should preserve this style, and apply it to the entire new range.
                 let newLength =
                     range.location - style.range.location /* part before the range start */
-                    + range.length + changeLengthDiff /* applies to the entire range */
-                    + max(0, style.range.upperBound - range.upperBound) /* part after the end, if any */
+                        + range.length + changeLengthDiff /* applies to the entire range */
+                        + max(0, style.range.upperBound - range.upperBound) /* part after the end, if any */
                 appendToFinalStyles(.init(
                     style.value,
                     range: NSRange(
                         location: style.range.location,
-                        length: newLength
-                    )
+                        length: newLength,
+                    ),
                 ))
             } else if style.range.upperBound <= range.location {
                 // Its before the changed region, no changes needed.
@@ -735,8 +735,8 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
                     style.value,
                     range: NSRange(
                         location: style.range.location + changeLengthDiff,
-                        length: style.range.length
-                    )
+                        length: style.range.length,
+                    ),
                 ))
             } else if style.range.location >= range.location, style.range.upperBound <= range.upperBound {
                 // Total overlap; the range being replaced fully contains the existing style.
@@ -749,15 +749,15 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
                     style.value,
                     range: NSRange(
                         location: style.range.location,
-                        length: range.location - style.range.location
-                    )
+                        length: range.location - style.range.location,
+                    ),
                 ))
                 appendToFinalStyles(.init(
                     style.value,
                     range: NSRange(
                         location: range.upperBound + changeLengthDiff,
-                        length: style.range.upperBound - range.upperBound
-                    )
+                        length: style.range.upperBound - range.upperBound,
+                    ),
                 ))
             } else if style.range.location < range.location {
                 // The style hangs off the start of the affected range.
@@ -766,8 +766,8 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
                     style.value,
                     range: NSRange(
                         location: style.range.location,
-                        length: range.location - style.range.location
-                    )
+                        length: range.location - style.range.location,
+                    ),
                 ))
             } else {
                 // The style hangs off the end of the affected range.
@@ -776,8 +776,8 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
                     style.value,
                     range: NSRange(
                         location: range.upperBound + changeLengthDiff,
-                        length: style.range.upperBound - range.upperBound
-                    )
+                        length: style.range.upperBound - range.upperBound,
+                    ),
                 ))
             }
         }
@@ -804,7 +804,7 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
             hydratedTextBeforeChange: hydratedTextBeforeChange,
             hydrator: hydrator,
             modifiedRange: NSRange(location: 0, length: (hydratedTextBeforeChange as NSString).length),
-            selectedRangeAfterChange: NSRange(location: (body.hydratedText as NSString).length, length: 0)
+            selectedRangeAfterChange: NSRange(location: (body.hydratedText as NSString).length, length: 0),
         )
         // Immediately apply any selection changes; otherwise the selected range
         // may end up with out of range values.
@@ -849,8 +849,8 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
                     flattenedStyle.value,
                     range: NSRange(
                         location: intersection.location - subrange.location,
-                        length: intersection.length
-                    )
+                        length: intersection.length,
+                    ),
                 )
             }
         }
@@ -870,8 +870,8 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
                     aci,
                     range: NSRange(
                         location: intersection.location - subrange.location,
-                        length: intersection.length
-                    )
+                        length: intersection.length,
+                    ),
                 )
             })
             .sorted(by: {
@@ -889,7 +889,7 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
                 flattenedStyles,
                 forReplacementOf: effectiveRange,
                 with: MessageBody.mentionPlaceholder,
-                preserveStyleInReplacement: true
+                preserveStyleInReplacement: true,
             )
             mentionOffset += mentionPlaceholderLength - mention.range.length
         }
@@ -897,8 +897,8 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
             text: text as String,
             ranges: MessageBodyRanges(
                 mentions: finalMentions,
-                styles: flattenedStyles
-            )
+                styles: flattenedStyles,
+            ),
         )
     }
 
@@ -906,7 +906,7 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
         hydratedTextBeforeChange: String,
         hydrator: CacheMentionHydrator,
         modifiedRange: NSRange,
-        selectedRangeAfterChange: NSRange?
+        selectedRangeAfterChange: NSRange?,
     ) {
         guard let editableBodyDelegate else {
             owsFailDebug("Should have delegate")
@@ -919,7 +919,7 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
             .asAttributedStringForDisplay(
                 config: config,
                 textAlignment: hydratedPlaintext.nilIfEmpty?.naturalTextAlignment ?? .natural,
-                isDarkThemeEnabled: isDarkThemeEnabled
+                isDarkThemeEnabled: isDarkThemeEnabled,
             )
         self.displayString = (displayString as? NSMutableAttributedString) ?? NSMutableAttributedString(attributedString: displayString)
         self.fixAttributes(in: NSRange(location: 0, length: displayString.length))
@@ -928,7 +928,7 @@ public class EditableMessageBodyTextStorage: NSTextStorage {
         super.edited(
             body.hydratedText != hydratedTextBeforeChange ? [.editedCharacters, .editedAttributes] : .editedAttributes,
             range: modifiedRange,
-            changeInLength: changeInLength
+            changeInLength: changeInLength,
         )
         self.selectionAfterEdits = selectedRangeAfterChange
         if !isEditing, let selectedRangeAfterChange {

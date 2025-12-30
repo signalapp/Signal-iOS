@@ -77,7 +77,7 @@ extension UsernameSelectionViewController {
 
                 super.init(
                     name: "Username discriminator view",
-                    arrangedSubviews: []
+                    arrangedSubviews: [],
                 )
 
                 addArrangedSubviews([
@@ -225,7 +225,7 @@ extension UsernameSelectionViewController {
 
             placeholder = OWSLocalizedString(
                 "USERNAME_SELECTION_TEXT_FIELD_PLACEHOLDER",
-                comment: "The placeholder for a text field into which users can type their desired username."
+                comment: "The placeholder for a text field into which users can type their desired username.",
             )
 
             returnKeyType = .next
@@ -339,7 +339,7 @@ extension UsernameSelectionViewController.UsernameTextField.DiscriminatorView: U
             replacementString: string,
             allowedCharacters: .numbers,
             maxCharacters: 9,
-            format: { $0 }
+            format: { $0 },
         )
 
         // Remove execess leading zeroes
@@ -357,7 +357,7 @@ extension UsernameSelectionViewController.UsernameTextField.DiscriminatorView: U
                     // Find any amount of `0`s at the start of the string
                     of: "^0*",
                     with: "",
-                    options: .regularExpression
+                    options: .regularExpression,
                 )
                 .appending(text.suffix(2))
         }

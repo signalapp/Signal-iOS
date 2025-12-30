@@ -76,7 +76,7 @@ public class JobRecordFinderImpl<JobRecordType>: JobRecordFinder where JobRecord
     private func fetchAndPruneSomePersistedJobs(
         afterRowId: JobRecord.RowId?,
         updateRunnableJobRecord: (JobRecordType, DBWriteTransaction) -> Void,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws -> ([JobRecordType], hasMoreAfterRowId: JobRecord.RowId?) {
         let (jobs, hasMore) = try fetchSomeJobs(afterRowId: afterRowId, tx: tx)
         var runnableJobs = [JobRecordType]()
@@ -118,7 +118,7 @@ public class JobRecordFinderImpl<JobRecordType>: JobRecordFinder where JobRecord
 
     private func fetchSomeJobs(
         afterRowId: JobRecord.RowId?,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> ([JobRecordType], hasMore: Bool) {
         var sql = """
             SELECT * FROM \(JobRecordType.databaseTableName)

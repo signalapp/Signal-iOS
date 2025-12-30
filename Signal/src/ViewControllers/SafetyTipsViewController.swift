@@ -15,8 +15,8 @@ public enum SafetyTipsType {
 public class SafetyTipsViewController: InteractiveSheetViewController, UIScrollViewDelegate {
     let contentScrollView = UIScrollView()
     let stackView = UIStackView()
-    public override var interactiveScrollViews: [UIScrollView] { [contentScrollView] }
-    public override var sheetBackgroundColor: UIColor { Theme.tableView2PresentedBackgroundColor }
+    override public var interactiveScrollViews: [UIScrollView] { [contentScrollView] }
+    override public var sheetBackgroundColor: UIColor { Theme.tableView2PresentedBackgroundColor }
 
     private enum Constants {
         static let stackSpacing: CGFloat = 12.0
@@ -29,19 +29,19 @@ public class SafetyTipsViewController: InteractiveSheetViewController, UIScrollV
             top: 0.0,
             left: 24.0,
             bottom: 42.0,
-            right: 24.0
+            right: 24.0,
         )
 
         static let buttonInsets: UIEdgeInsets = .init(
             top: 16.0,
             leading: 36.0,
             bottom: 12.0,
-            trailing: 36.0
+            trailing: 36.0,
         )
 
         static let buttonEdgeInsets: UIEdgeInsets = .init(
             hMargin: 0.0,
-            vMargin: 14.0
+            vMargin: 14.0,
         )
     }
 
@@ -72,27 +72,27 @@ public class SafetyTipsViewController: InteractiveSheetViewController, UIScrollV
             case .fakeNames:
                 return OWSLocalizedString(
                     "SAFETY_TIPS_FAKE_NAMES_TITLE",
-                    comment: "Message title describing the fake names safety tip."
+                    comment: "Message title describing the fake names safety tip.",
                 )
             case .crypto:
                 return OWSLocalizedString(
                     "SAFETY_TIPS_CRYPTO_TITLE",
-                    comment: "Message title describing the crypto safety tip."
+                    comment: "Message title describing the crypto safety tip.",
                 )
             case .vagueMessages:
                 return OWSLocalizedString(
                     "SAFETY_TIPS_VAGUE_MESSAGE_TITLE",
-                    comment: "Message title describing the safety tip about vague messages."
+                    comment: "Message title describing the safety tip about vague messages.",
                 )
             case .messagesWithLinks:
                 return OWSLocalizedString(
                     "SAFETY_TIPS_MESSAGE_LINKS_TITLE",
-                    comment: "Message title describing the safety tip about unknown links in messages."
+                    comment: "Message title describing the safety tip about unknown links in messages.",
                 )
             case .fakeBusiness:
                 return OWSLocalizedString(
                     "SAFETY_TIPS_FAKE_BUSINESS_TITLE",
-                    comment: "Message title describing the safety tip about unknown or fake businesses."
+                    comment: "Message title describing the safety tip about unknown or fake businesses.",
                 )
             }
         }
@@ -102,27 +102,27 @@ public class SafetyTipsViewController: InteractiveSheetViewController, UIScrollV
             case .fakeNames:
                 return OWSLocalizedString(
                     "SAFETY_TIPS_FAKE_NAMES_BODY",
-                    comment: "Message contents for the fake names safety tip."
+                    comment: "Message contents for the fake names safety tip.",
                 )
             case .crypto:
                 return OWSLocalizedString(
                     "SAFETY_TIPS_CRYPTO_BODY",
-                    comment: "Message contents for the crypto safety tip."
+                    comment: "Message contents for the crypto safety tip.",
                 )
             case .vagueMessages:
                 return OWSLocalizedString(
                     "SAFETY_TIPS_VAGUE_MESSAGE_BODY",
-                    comment: "Message contents for the vague message safety tip."
+                    comment: "Message contents for the vague message safety tip.",
                 )
             case .messagesWithLinks:
                 return OWSLocalizedString(
                     "SAFETY_TIPS_MESSAGE_LINKS_BODY",
-                    comment: "Message contents for the unknown links in messages safety tip."
+                    comment: "Message contents for the unknown links in messages safety tip.",
                 )
             case .fakeBusiness:
                 return OWSLocalizedString(
                     "SAFETY_TIPS_FAKE_BUSINESS_BODY",
-                    comment: "Message contents for the safety tip concerning fake businesses."
+                    comment: "Message contents for the safety tip concerning fake businesses.",
                 )
             }
         }
@@ -137,7 +137,7 @@ public class SafetyTipsViewController: InteractiveSheetViewController, UIScrollV
         super.init()
     }
 
-    public override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
 
         minimizedHeight = min(725, CurrentAppContext().frame.height)
@@ -162,7 +162,7 @@ public class SafetyTipsViewController: InteractiveSheetViewController, UIScrollV
         setColorsForCurrentTheme()
     }
 
-    public override func themeDidChange() {
+    override public func themeDidChange() {
         super.themeDidChange()
         buildContents()
         updateButtonState()
@@ -191,13 +191,14 @@ public class SafetyTipsViewController: InteractiveSheetViewController, UIScrollV
         let previousButton = OWSFlatButton.insetButton(
             title: OWSLocalizedString(
                 "SAFETY_TIPS_PREVIOUS_TIP_BUTTON",
-                comment: "Button that will show the previous safety tip."
+                comment: "Button that will show the previous safety tip.",
             ),
             font: .dynamicTypeHeadlineClamped,
             titleColor: .white,
             backgroundColor: .ows_accentBlue,
             target: self,
-            selector: #selector(didTapPrevious))
+            selector: #selector(didTapPrevious),
+        )
         previousButton.button.setBackgroundImage(UIImage.image(color: .clear), for: .disabled)
         previousButton.button.setTitleColor(.ows_accentBlue, for: .disabled)
         previousButton.contentEdgeInsets = Constants.buttonEdgeInsets
@@ -208,13 +209,14 @@ public class SafetyTipsViewController: InteractiveSheetViewController, UIScrollV
         let nextButton = OWSFlatButton.insetButton(
             title: OWSLocalizedString(
                 "SAFETY_TIPS_NEXT_TIP_BUTTON",
-                comment: "Button that will show the next safety tip."
+                comment: "Button that will show the next safety tip.",
             ),
             font: .dynamicTypeHeadlineClamped,
             titleColor: .white,
             backgroundColor: .ows_accentBlue,
             target: self,
-            selector: #selector(didTapNext))
+            selector: #selector(didTapNext),
+        )
         nextButton.button.setBackgroundImage(UIImage.image(color: .clear), for: .disabled)
         nextButton.button.setTitleColor(.ows_accentBlue, for: .disabled)
         nextButton.contentEdgeInsets = Constants.buttonEdgeInsets
@@ -342,7 +344,7 @@ extension SafetyTipsViewController {
             stackView.autoPinEdgesToSuperviewMargins()
             stackView.addArrangedSubviews([
                 titleLabel,
-                subtitleLabel
+                subtitleLabel,
             ])
 
             self.setContentHuggingHigh()
@@ -361,7 +363,8 @@ extension SafetyTipsViewController {
             let label = UILabel()
             label.text = OWSLocalizedString(
                 "SAFETY_TIPS_HEADER_TITLE",
-                comment: "Title for Safety Tips education screen.")
+                comment: "Title for Safety Tips education screen.",
+            )
             label.numberOfLines = 0
             label.textAlignment = .center
             label.lineBreakMode = .byWordWrapping
@@ -376,12 +379,12 @@ extension SafetyTipsViewController {
                 case .contact:
                     return OWSLocalizedString(
                         "SAFETY_TIPS_INDIVIDUAL_HEADER_MESSAGE",
-                        comment: "Message describing safety tips for 1:1 conversations."
+                        comment: "Message describing safety tips for 1:1 conversations.",
                     )
                 case .group:
                     return OWSLocalizedString(
                         "SAFETY_TIPS_GROUPS_HEADER_MESSAGE",
-                        comment: "Message describing safety tips for group conversations."
+                        comment: "Message describing safety tips for group conversations.",
                     )
                 }
             }()
@@ -417,7 +420,7 @@ extension SafetyTipsViewController {
                 top: layoutMargin,
                 left: layoutMargin,
                 bottom: 24.0,
-                right: layoutMargin
+                right: layoutMargin,
             )
         }
 

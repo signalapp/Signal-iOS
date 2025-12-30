@@ -17,14 +17,16 @@ class AddToBlockListViewController: RecipientPickerContainerViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = OWSLocalizedString("SETTINGS_ADD_TO_BLOCK_LIST_TITLE",
-                                  comment: "Title for the 'add to block list' view.")
+        title = OWSLocalizedString(
+            "SETTINGS_ADD_TO_BLOCK_LIST_TITLE",
+            comment: "Title for the 'add to block list' view.",
+        )
 
         recipientPicker.selectionMode = .blocklist
         recipientPicker.groupsToShow = .allGroupsWhenSearching
         recipientPicker.findByPhoneNumberButtonTitle = OWSLocalizedString(
             "BLOCK_LIST_VIEW_BLOCK_BUTTON",
-            comment: "A label for the block button in the block list view"
+            comment: "A label for the block button in the block list view",
         )
         recipientPicker.delegate = self
 
@@ -51,7 +53,7 @@ extension AddToBlockListViewController: RecipientPickerDelegate, UsernameLinkSca
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
         selectionStyleForRecipient recipient: PickedRecipient,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> UITableViewCell.SelectionStyle {
         let blockingManager = SSKEnvironment.shared.blockingManagerRef
 
@@ -71,7 +73,7 @@ extension AddToBlockListViewController: RecipientPickerDelegate, UsernameLinkSca
 
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
-        didSelectRecipient recipient: PickedRecipient
+        didSelectRecipient recipient: PickedRecipient,
     ) {
         let blockingManager = SSKEnvironment.shared.blockingManagerRef
         let databaseStorage = SSKEnvironment.shared.databaseStorageRef
@@ -81,7 +83,7 @@ extension AddToBlockListViewController: RecipientPickerDelegate, UsernameLinkSca
             if databaseStorage.read(block: { blockingManager.isAddressBlocked(address, transaction: $0) }) {
                 let errorMessage = OWSLocalizedString(
                     "BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST",
-                    comment: "Error message indicating that a user can't be blocked because they are already blocked."
+                    comment: "Error message indicating that a user can't be blocked because they are already blocked.",
                 )
                 OWSActionSheets.showErrorAlert(message: errorMessage)
                 return
@@ -91,7 +93,7 @@ extension AddToBlockListViewController: RecipientPickerDelegate, UsernameLinkSca
             if databaseStorage.read(block: { blockingManager.isThreadBlocked(thread, transaction: $0) }) {
                 let errorMessage = OWSLocalizedString(
                     "BLOCK_LIST_ERROR_CONVERSATION_ALREADY_IN_BLOCKLIST",
-                    comment: "Error message indicating that a conversation can't be blocked because they are already blocked."
+                    comment: "Error message indicating that a conversation can't be blocked because they are already blocked.",
                 )
                 OWSActionSheets.showErrorAlert(message: errorMessage)
                 return
@@ -103,14 +105,14 @@ extension AddToBlockListViewController: RecipientPickerDelegate, UsernameLinkSca
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
         accessoryMessageForRecipient recipient: PickedRecipient,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> String? {
         switch recipient.identifier {
         case .address(let address):
-            #if DEBUG
+#if DEBUG
             let isBlocked = SSKEnvironment.shared.blockingManagerRef.isAddressBlocked(address, transaction: transaction)
             owsPrecondition(!isBlocked, "It should be impossible to see a blocked connection in this view")
-            #endif
+#endif
             return nil
         case .group(let thread):
             guard SSKEnvironment.shared.blockingManagerRef.isThreadBlocked(thread, transaction: transaction) else { return nil }

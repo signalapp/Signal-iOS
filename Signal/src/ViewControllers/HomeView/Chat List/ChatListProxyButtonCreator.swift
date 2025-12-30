@@ -31,7 +31,7 @@ final class ChatListProxyButtonCreator: NSObject {
             forName: OWSChatConnection.chatConnectionStateDidChange,
             object: nil,
             queue: .main,
-            using: { [weak self] _ in MainActor.assumeIsolated { self?.updateState() } }
+            using: { [weak self] _ in MainActor.assumeIsolated { self?.updateState() } },
         ))
     }
 
@@ -74,7 +74,7 @@ final class ChatListProxyButtonCreator: NSObject {
             image: proxyStatusImage,
             style: .plain,
             target: self,
-            action: #selector(didTapButton)
+            action: #selector(didTapButton),
         )
         button.tintColor = tintColor
         return button

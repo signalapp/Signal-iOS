@@ -12,14 +12,17 @@ import UIKit
 
 protocol CameraCaptureControlDelegate: AnyObject {
     // MARK: Photo
+
     func cameraCaptureControlDidRequestCapturePhoto(_ control: CameraCaptureControl)
 
     // MARK: Video
+
     func cameraCaptureControlDidRequestStartVideoRecording(_ control: CameraCaptureControl)
     func cameraCaptureControlDidRequestFinishVideoRecording(_ control: CameraCaptureControl)
     func cameraCaptureControlDidRequestCancelVideoRecording(_ control: CameraCaptureControl)
 
     // MARK: Zoom
+
     var zoomScaleReferenceDistance: CGFloat? { get }
     func cameraCaptureControl(_ control: CameraCaptureControl, didUpdateZoomLevel zoomLevel: CGFloat)
 }
@@ -34,6 +37,7 @@ class CameraCaptureControl: UIView {
             }
         }
     }
+
     private var horizontalAxisConstraints = [NSLayoutConstraint]()
     private var verticalAxisConstraints = [NSLayoutConstraint]()
 
@@ -41,7 +45,7 @@ class CameraCaptureControl: UIView {
     private let shutterButtonOuterCircle = CircleBlurView(effect: UIBlurEffect(style: .light))
     private let shutterButtonInnerCircle = CircleView()
 
-    fileprivate static let recordingLockControlSize: CGFloat = 42   // Stop button, swipe tracking circle, lock icon
+    fileprivate static let recordingLockControlSize: CGFloat = 42 // Stop button, swipe tracking circle, lock icon
     private static let shutterButtonDefaultSize: CGFloat = 72
     private static let shutterButtonRecordingSize: CGFloat = 122
 
@@ -54,10 +58,11 @@ class CameraCaptureControl: UIView {
         view.backgroundColor = .ows_white
         return view
     }()
+
     private lazy var lockIconView = LockView(frame: CGRect(origin: .zero, size: .square(CameraCaptureControl.recordingLockControlSize)))
     private lazy var stopButton: UIButton = {
         let button = OWSButton { [weak self] in
-            guard let self = self else { return }
+            guard let self else { return }
             self.didTapStopButton()
         }
         button.backgroundColor = .white
@@ -82,15 +87,15 @@ class CameraCaptureControl: UIView {
         shutterButtonLayoutGuide.widthAnchor.constraint(equalToConstant: CameraCaptureControl.shutterButtonDefaultSize).isActive = true
         shutterButtonLayoutGuide.heightAnchor.constraint(equalToConstant: CameraCaptureControl.shutterButtonDefaultSize).isActive = true
         horizontalAxisConstraints.append(contentsOf: [
-            shutterButtonLayoutGuide.centerXAnchor.constraint(equalTo: leadingAnchor, constant: 0.5*CameraCaptureControl.shutterButtonDefaultSize),
+            shutterButtonLayoutGuide.centerXAnchor.constraint(equalTo: leadingAnchor, constant: 0.5 * CameraCaptureControl.shutterButtonDefaultSize),
             shutterButtonLayoutGuide.topAnchor.constraint(equalTo: topAnchor),
-            shutterButtonLayoutGuide.bottomAnchor.constraint(equalTo: bottomAnchor)
+            shutterButtonLayoutGuide.bottomAnchor.constraint(equalTo: bottomAnchor),
 
         ])
         verticalAxisConstraints.append(contentsOf: [
             shutterButtonLayoutGuide.leadingAnchor.constraint(equalTo: leadingAnchor),
             shutterButtonLayoutGuide.trailingAnchor.constraint(equalTo: trailingAnchor),
-            shutterButtonLayoutGuide.centerYAnchor.constraint(equalTo: topAnchor, constant: 0.5*CameraCaptureControl.shutterButtonDefaultSize)
+            shutterButtonLayoutGuide.centerYAnchor.constraint(equalTo: topAnchor, constant: 0.5 * CameraCaptureControl.shutterButtonDefaultSize),
         ])
 
         addSubview(shutterButtonOuterCircle)
@@ -187,7 +192,7 @@ class CameraCaptureControl: UIView {
             UIView.animate(
                 withDuration: animationDuration,
                 delay: 0,
-                options: [ .beginFromCurrentState ],
+                options: [.beginFromCurrentState],
                 animations: {
                     self.updateShutterButtonAppearanceForCurrentState()
                     self.setNeedsLayout()
@@ -199,7 +204,7 @@ class CameraCaptureControl: UIView {
                     // Adding the controls to the view hierarchy outside of the animation block
                     // also fixes an issue where stop button would be visible briefly during shutter button animations.
                     self.prepareLongPressVideoRecordingControlsIfNecessary()
-                }
+                },
             )
         } else {
             updateShutterButtonAppearanceForCurrentState()
@@ -241,11 +246,15 @@ class CameraCaptureControl: UIView {
         addSubview(lockIconView)
         lockIconView.translatesAutoresizingMaskIntoConstraints = false
         // Centered vertically, pinned to trailing edge.
-        let horizontalConstraints = [ lockIconView.centerYAnchor.constraint(equalTo: shutterButtonLayoutGuide.centerYAnchor),
-                                      lockIconView.trailingAnchor.constraint(equalTo: trailingAnchor) ]
+        let horizontalConstraints = [
+            lockIconView.centerYAnchor.constraint(equalTo: shutterButtonLayoutGuide.centerYAnchor),
+            lockIconView.trailingAnchor.constraint(equalTo: trailingAnchor),
+        ]
         // Centered horizontally, pinned to bottom edge.
-        let verticalConstraints = [ lockIconView.centerXAnchor.constraint(equalTo: shutterButtonLayoutGuide.centerXAnchor),
-                                    lockIconView.bottomAnchor.constraint(equalTo: bottomAnchor) ]
+        let verticalConstraints = [
+            lockIconView.centerXAnchor.constraint(equalTo: shutterButtonLayoutGuide.centerXAnchor),
+            lockIconView.bottomAnchor.constraint(equalTo: bottomAnchor),
+        ]
 
         // 3. Activate current constraints.
         horizontalAxisConstraints.append(contentsOf: horizontalConstraints)
@@ -286,12 +295,16 @@ class CameraCaptureControl: UIView {
     private static func intrinsicContentSize(forAxis axis: NSLayoutConstraint.Axis) -> CGSize {
         switch axis {
         case .horizontal:
-            return CGSize(width: CameraCaptureControl.shutterButtonDefaultSize + 64 + CameraCaptureControl.recordingLockControlSize,
-                          height: CameraCaptureControl.shutterButtonDefaultSize)
+            return CGSize(
+                width: CameraCaptureControl.shutterButtonDefaultSize + 64 + CameraCaptureControl.recordingLockControlSize,
+                height: CameraCaptureControl.shutterButtonDefaultSize,
+            )
 
         case .vertical:
-            return CGSize(width: CameraCaptureControl.shutterButtonDefaultSize,
-                          height: CameraCaptureControl.shutterButtonDefaultSize + 64 + CameraCaptureControl.recordingLockControlSize)
+            return CGSize(
+                width: CameraCaptureControl.shutterButtonDefaultSize,
+                height: CameraCaptureControl.shutterButtonDefaultSize + 64 + CameraCaptureControl.recordingLockControlSize,
+            )
 
         @unknown default:
             owsFailDebug("Unsupported `axis` value: \(axis.rawValue)")
@@ -329,6 +342,7 @@ class CameraCaptureControl: UIView {
     private var initialSlidingCircleViewCenter: CGPoint {
         shutterButtonInnerCircle.center
     }
+
     private var finalSlidingCircleViewCenter: CGPoint {
         lockIconView.center
     }
@@ -355,11 +369,11 @@ class CameraCaptureControl: UIView {
                 timeInterval: CameraCaptureControl.longPressDurationThreshold,
                 target: self,
                 userInfo: nil,
-                repeats: false
+                repeats: false,
             ) { [weak self] _ in
-                guard let self = self else { return }
+                guard let self else { return }
 
-                self.setState(.recording, isRecordingWithLongPress: true, animationDuration: 2*self.animationDuration)
+                self.setState(.recording, isRecordingWithLongPress: true, animationDuration: 2 * self.animationDuration)
                 self.startVideoRecording()
             }
 
@@ -376,7 +390,7 @@ class CameraCaptureControl: UIView {
                 return
             }
 
-            guard let initialTouchLocation = initialTouchLocation else {
+            guard let initialTouchLocation else {
                 owsFailDebug("initialTouchLocation was unexpectedly nil")
                 return
             }
@@ -387,7 +401,7 @@ class CameraCaptureControl: UIView {
                 let currentSlideOffset: CGFloat = {
                     switch axis {
                     case .horizontal:
-                        if let initialZoomPosition = initialZoomPosition {
+                        if let initialZoomPosition {
                             return initialZoomPosition - currentLocation.y
                         } else {
                             initialZoomPosition = currentLocation.y
@@ -395,7 +409,7 @@ class CameraCaptureControl: UIView {
                         }
 
                     case .vertical:
-                        if let initialZoomPosition = initialZoomPosition {
+                        if let initialZoomPosition {
                             if CurrentAppContext().isRTL {
                                 return currentLocation.x - initialZoomPosition
                             } else {
@@ -447,11 +461,13 @@ class CameraCaptureControl: UIView {
 
                 // 1. Snap slider to one of the endpoints with the spring animation.
                 let finalCenter = shouldLockRecording ? finalSlidingCircleViewCenter : initialSlidingCircleViewCenter
-                UIView.animate(withDuration: animationDuration,
-                               delay: 0,
-                               usingSpringWithDamping: 1,
-                               initialSpringVelocity: 0,
-                               options: [ .beginFromCurrentState ]) {
+                UIView.animate(
+                    withDuration: animationDuration,
+                    delay: 0,
+                    usingSpringWithDamping: 1,
+                    initialSpringVelocity: 0,
+                    options: [.beginFromCurrentState],
+                ) {
                     self.slidingCircleView.center = finalCenter
                 }
 
@@ -463,14 +479,16 @@ class CameraCaptureControl: UIView {
                 } else {
                     // Animate change of inner (white) circle back to normal...
                     sliderTrackingProgress = 0
-                    UIView.animate(withDuration: animationDuration,
-                                   animations: {
-                        self.layoutIfNeeded()
-                    },
-                                   completion: { _ in
-                        // ...and only then animate the rest of the shutter button to its initial state.
-                        self.setState(.initial, animationDuration: self.animationDuration)
-                    })
+                    UIView.animate(
+                        withDuration: animationDuration,
+                        animations: {
+                            self.layoutIfNeeded()
+                        },
+                        completion: { _ in
+                            // ...and only then animate the rest of the shutter button to its initial state.
+                            self.setState(.initial, animationDuration: self.animationDuration)
+                        },
+                    )
 
                     finishVideoRecording()
                 }
@@ -533,7 +551,7 @@ class CameraCaptureControl: UIView {
     }
 
     private func prepareLongPressVideoRecordingControlsIfNecessary() {
-        guard state == .recording && sliderTrackingProgress == 0 && isRecordingWithLongPress else { return }
+        guard state == .recording, sliderTrackingProgress == 0, isRecordingWithLongPress else { return }
 
         initializeVideoRecordingControlsIfNecessary()
 
@@ -583,7 +601,7 @@ class CameraZoomSelectionControl: UIView {
         didSet {
             var viewFound = false
             for selectionView in selectionViews.reversed() {
-                if currentZoomFactor >= selectionView.defaultZoomFactor && !viewFound {
+                if currentZoomFactor >= selectionView.defaultZoomFactor, !viewFound {
                     selectionView.isSelected = true
                     selectionView.currentZoomFactor = currentZoomFactor
                     selectionView.update(animated: true)
@@ -604,6 +622,7 @@ class CameraZoomSelectionControl: UIView {
         stackView.isLayoutMarginsRelativeArrangement = true
         return stackView
     }()
+
     private let selectionViews: [CameraSelectionCircleView]
 
     var cameraZoomLevelIndicators: [UIView] {
@@ -679,7 +698,7 @@ class CameraZoomSelectionControl: UIView {
 
         if let selectedView = tappedView {
             selectionViews.forEach { view in
-                if view.isSelected && view != selectedView {
+                if view.isSelected, view != selectedView {
                     view.isSelected = false
                     view.update(animated: true)
                 } else if view == selectedView {
@@ -777,7 +796,7 @@ class CameraZoomSelectionControl: UIView {
             return scaleString
         }
 
-        static private let animationDuration: TimeInterval = 0.2
+        private static let animationDuration: TimeInterval = 0.2
         func update(animated: Bool) {
             textLabel.text = Self.cameraLabel(forZoomFactor: currentZoomFactor, isSelected: isSelected)
 
@@ -793,9 +812,11 @@ class CameraZoomSelectionControl: UIView {
             }
 
             if animated {
-                UIView.animate(withDuration: Self.animationDuration,
-                               delay: 0,
-                               options: [ .curveEaseInOut ]) {
+                UIView.animate(
+                    withDuration: Self.animationDuration,
+                    delay: 0,
+                    options: [.curveEaseInOut],
+                ) {
                     animations()
                 }
             } else {
@@ -822,6 +843,7 @@ private class LockView: UIView {
         case locking
         case locked
     }
+
     private var _internalState: State = .unlocked
     var state: State {
         get {
@@ -836,9 +858,11 @@ private class LockView: UIView {
     func setState(_ state: State, animated: Bool = false) {
         _internalState = state
         if animated {
-            UIView.animate(withDuration: 0.25,
-                           delay: 0,
-                           options: [ .beginFromCurrentState ]) {
+            UIView.animate(
+                withDuration: 0.25,
+                delay: 0,
+                options: [.beginFromCurrentState],
+            ) {
                 self.updateAppearance()
             }
         } else {
@@ -973,8 +997,8 @@ class RecordingDurationView: PillView {
         UIView.animate(
             withDuration: 0.5,
             delay: 0,
-            options: [ .autoreverse, .repeat ],
-            animations: { self.icon.alpha = 1 }
+            options: [.autoreverse, .repeat],
+            animations: { self.icon.alpha = 1 },
         )
     }
 
@@ -1034,12 +1058,14 @@ class MediaDoneButton: UIButton {
         label.font = MediaDoneButton.font
         return label
     }()
+
     private let pillView: PillView = {
         let pillView = PillView(frame: .zero)
         pillView.isUserInteractionEnabled = false
         pillView.layoutMargins = UIEdgeInsets(hMargin: 8, vMargin: 8)
         return pillView
     }()
+
     private let blurBackgroundView = UIVisualEffectView(effect: UIBlurEffect(style: .regular))
     private let chevronImageView: UIImageView = {
         let image = UIImage(systemName: "chevron.right")
@@ -1048,6 +1074,7 @@ class MediaDoneButton: UIButton {
         chevronImageView.preferredSymbolConfiguration = UIImage.SymbolConfiguration(pointSize: MediaDoneButton.font.pointSize)
         return chevronImageView
     }()
+
     private var dimmerView: UIView?
 
     override init(frame: CGRect) {
@@ -1100,7 +1127,7 @@ class MediaDoneButton: UIButton {
                     self.dimmerView = dimmerView
                 }
                 dimmerView?.alpha = 0.5
-            } else if let dimmerView = dimmerView {
+            } else if let dimmerView {
                 dimmerView.alpha = 0
             }
         }
@@ -1206,7 +1233,7 @@ class MediaPickerButton: RoundMediaButton {
         super.init(
             image: UIImage(named: "album-tilt-28"),
             backgroundStyle: .solid(RoundMediaButton.defaultBackgroundColor),
-            customView: nil
+            customView: nil,
         )
     }
 }
@@ -1224,12 +1251,14 @@ class CameraTopBar: MediaTopBar {
     let recordingTimerView = RecordingDurationView(frame: .zero)
 
     override init(frame: CGRect) {
-        cameraControlsContainerView = UIStackView(arrangedSubviews: [ batchModeButton, flashModeButton ])
+        cameraControlsContainerView = UIStackView(arrangedSubviews: [batchModeButton, flashModeButton])
 
         super.init(frame: frame)
 
-        closeButton.accessibilityLabel = OWSLocalizedString("CAMERA_VO_CLOSE_BUTTON",
-                                                           comment: "VoiceOver label for close (X) button in camera.")
+        closeButton.accessibilityLabel = OWSLocalizedString(
+            "CAMERA_VO_CLOSE_BUTTON",
+            comment: "VoiceOver label for close (X) button in camera.",
+        )
 
         addSubview(closeButton)
         closeButton.translatesAutoresizingMaskIntoConstraints = false
@@ -1260,7 +1289,9 @@ class CameraTopBar: MediaTopBar {
     // MARK: - Mode
 
     enum Mode {
-        case cameraControls, closeButton, videoRecording
+        case cameraControls
+        case closeButton
+        case videoRecording
     }
 
     private var internalMode: Mode = .cameraControls
@@ -1312,6 +1343,7 @@ class CameraBottomBar: UIView {
         case iPhone
         case iPad
     }
+
     private var _internalLayout: Layout = .iPhone
     var layout: Layout { _internalLayout }
     func setLayout(_ layout: Layout, animated: Bool) {
@@ -1325,6 +1357,7 @@ class CameraBottomBar: UIView {
         case videoRecording
         case text
     }
+
     private var _internalMode: Mode = .camera
     var mode: Mode { _internalMode }
     func setMode(_ mode: Mode, animated: Bool) {
@@ -1356,10 +1389,13 @@ class CameraBottomBar: UIView {
         button.sizeToFit()
         return button
     }()
+
     let controlButtonsLayoutGuide = UILayoutGuide() // area encompassing Photo Library and Switch Camera buttons.
     private var controlButtonsLayoutGuideConstraints: [NSLayoutConstraint]?
-    func constrainControlButtonsLayoutGuideHorizontallyTo(leadingAnchor: NSLayoutXAxisAnchor?,
-                                                          trailingAnchor: NSLayoutXAxisAnchor?) {
+    func constrainControlButtonsLayoutGuideHorizontallyTo(
+        leadingAnchor: NSLayoutXAxisAnchor?,
+        trailingAnchor: NSLayoutXAxisAnchor?,
+    ) {
         if let existingConstraints = controlButtonsLayoutGuideConstraints {
             NSLayoutConstraint.deactivate(existingConstraints)
         }
@@ -1368,7 +1404,7 @@ class CameraBottomBar: UIView {
         let referenceTrailingAnchor = trailingAnchor ?? layoutMarginsGuide.trailingAnchor
         let constraints = [
             controlButtonsLayoutGuide.leadingAnchor.constraint(equalTo: referenceLeadingAnchor),
-            controlButtonsLayoutGuide.trailingAnchor.constraint(equalTo: referenceTrailingAnchor)
+            controlButtonsLayoutGuide.trailingAnchor.constraint(equalTo: referenceTrailingAnchor),
         ]
         constraints.forEach { $0.priority = .defaultHigh - 10 }
         NSLayoutConstraint.activate(constraints)
@@ -1397,7 +1433,7 @@ class CameraBottomBar: UIView {
             // This constraint imitates setting huggingPriority on the controlButtonsLayoutGuide
             // to prevent it from expanding too much on iPads.
             let heightConstraint = controlButtonsLayoutGuide.heightAnchor.constraint(
-                equalToConstant: photoLibraryButton.intrinsicContentSize.height
+                equalToConstant: photoLibraryButton.intrinsicContentSize.height,
             )
             heightConstraint.priority = .defaultHigh - 100
             return heightConstraint
@@ -1412,45 +1448,59 @@ class CameraBottomBar: UIView {
 
         photoLibraryButton.translatesAutoresizingMaskIntoConstraints = false
         addSubview(photoLibraryButton)
-        addConstraints([ photoLibraryButton.layoutMarginsGuide.leadingAnchor.constraint(equalTo: controlButtonsLayoutGuide.leadingAnchor),
-                         photoLibraryButton.centerYAnchor.constraint(equalTo: controlButtonsLayoutGuide.centerYAnchor),
-                         photoLibraryButton.topAnchor.constraint(greaterThanOrEqualTo: controlButtonsLayoutGuide.topAnchor) ])
+        addConstraints([
+            photoLibraryButton.layoutMarginsGuide.leadingAnchor.constraint(equalTo: controlButtonsLayoutGuide.leadingAnchor),
+            photoLibraryButton.centerYAnchor.constraint(equalTo: controlButtonsLayoutGuide.centerYAnchor),
+            photoLibraryButton.topAnchor.constraint(greaterThanOrEqualTo: controlButtonsLayoutGuide.topAnchor),
+        ])
 
         switchCameraButton.translatesAutoresizingMaskIntoConstraints = false
         addSubview(switchCameraButton)
-        addConstraints([ switchCameraButton.layoutMarginsGuide.trailingAnchor.constraint(equalTo: controlButtonsLayoutGuide.trailingAnchor),
-                         switchCameraButton.topAnchor.constraint(greaterThanOrEqualTo: controlButtonsLayoutGuide.topAnchor),
-                         switchCameraButton.centerYAnchor.constraint(equalTo: controlButtonsLayoutGuide.centerYAnchor) ])
+        addConstraints([
+            switchCameraButton.layoutMarginsGuide.trailingAnchor.constraint(equalTo: controlButtonsLayoutGuide.trailingAnchor),
+            switchCameraButton.topAnchor.constraint(greaterThanOrEqualTo: controlButtonsLayoutGuide.topAnchor),
+            switchCameraButton.centerYAnchor.constraint(equalTo: controlButtonsLayoutGuide.centerYAnchor),
+        ])
 
         if isContentTypeSelectionControlAvailable {
             contentTypeSelectionControl.translatesAutoresizingMaskIntoConstraints = false
             addSubview(contentTypeSelectionControl)
-            addConstraints([ contentTypeSelectionControl.centerXAnchor.constraint(equalTo: layoutMarginsGuide.centerXAnchor),
-                             contentTypeSelectionControl.centerYAnchor.constraint(equalTo: controlButtonsLayoutGuide.centerYAnchor) ])
+            addConstraints([
+                contentTypeSelectionControl.centerXAnchor.constraint(equalTo: layoutMarginsGuide.centerXAnchor),
+                contentTypeSelectionControl.centerYAnchor.constraint(equalTo: controlButtonsLayoutGuide.centerYAnchor),
+            ])
 
             proceedButton.isHidden = true
             proceedButton.isEnabled = false
-            proceedButton.accessibilityValue = OWSLocalizedString("CAMERA_VO_ARROW_RIGHT_PROCEED",
-                                                                 comment: "VoiceOver label for -> button in text story composer.")
+            proceedButton.accessibilityValue = OWSLocalizedString(
+                "CAMERA_VO_ARROW_RIGHT_PROCEED",
+                comment: "VoiceOver label for -> button in text story composer.",
+            )
             proceedButton.translatesAutoresizingMaskIntoConstraints = false
             addSubview(proceedButton)
-            addConstraints([ proceedButton.layoutMarginsGuide.trailingAnchor.constraint(equalTo: controlButtonsLayoutGuide.trailingAnchor),
-                             proceedButton.centerYAnchor.constraint(equalTo: controlButtonsLayoutGuide.centerYAnchor) ])
+            addConstraints([
+                proceedButton.layoutMarginsGuide.trailingAnchor.constraint(equalTo: controlButtonsLayoutGuide.trailingAnchor),
+                proceedButton.centerYAnchor.constraint(equalTo: controlButtonsLayoutGuide.centerYAnchor),
+            ])
         }
 
         // Compact Height:
         // With this layout owner of this view should be able to just define vertical position of the bar.
         if isContentTypeSelectionControlAvailable {
             // • control buttons are located below shutter button with a fixed spacing and are pinned to the bottom.
-           compactHeightLayoutConstraints.append(
-                contentsOf: [ controlButtonsLayoutGuide.topAnchor.constraint(equalTo: captureControl.bottomAnchor, constant: 8),
-                              controlButtonsLayoutGuide.bottomAnchor.constraint(equalTo: bottomAnchor) ])
+            compactHeightLayoutConstraints.append(
+                contentsOf: [
+                    controlButtonsLayoutGuide.topAnchor.constraint(equalTo: captureControl.bottomAnchor, constant: 8),
+                    controlButtonsLayoutGuide.bottomAnchor.constraint(equalTo: bottomAnchor),
+                ])
         } else {
             // • control buttons are vertically centered with the shutter button.
             // • shutter button control takes the entire view height.
             compactHeightLayoutConstraints.append(
-                contentsOf: [ controlButtonsLayoutGuide.centerYAnchor.constraint(equalTo: captureControl.shutterButtonLayoutGuide.centerYAnchor),
-                              captureControl.bottomAnchor.constraint(equalTo: bottomAnchor) ])
+                contentsOf: [
+                    controlButtonsLayoutGuide.centerYAnchor.constraint(equalTo: captureControl.shutterButtonLayoutGuide.centerYAnchor),
+                    captureControl.bottomAnchor.constraint(equalTo: bottomAnchor),
+                ])
         }
 
         // Regular Height:
@@ -1458,8 +1508,10 @@ class CameraBottomBar: UIView {
         // • area with the controls is pinned to the bottom edge of the view.
         // With this layout owner of this view is supposed to add additional constraints
         // to top and bottom anchors of controlButtonsLayoutGuide thus positioning buttons properly.
-        regularHeightLayoutConstraints.append(contentsOf: [ controlButtonsLayoutGuide.topAnchor.constraint(greaterThanOrEqualTo: captureControl.bottomAnchor),
-                                                            controlButtonsLayoutGuide.bottomAnchor.constraint(equalTo: bottomAnchor) ])
+        regularHeightLayoutConstraints.append(contentsOf: [
+            controlButtonsLayoutGuide.topAnchor.constraint(greaterThanOrEqualTo: captureControl.bottomAnchor),
+            controlButtonsLayoutGuide.bottomAnchor.constraint(equalTo: bottomAnchor),
+        ])
 
         updateCompactHeightLayoutConstraints()
     }
@@ -1482,7 +1534,7 @@ class CameraBottomBar: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
 
-        if isContentTypeSelectionControlAvailable && UIAccessibility.isVoiceOverRunning {
+        if isContentTypeSelectionControlAvailable, UIAccessibility.isVoiceOverRunning {
             DispatchQueue.main.async {
                 self.updateContentTypePickerAccessibilityFrame()
             }
@@ -1514,13 +1566,13 @@ class CameraBottomBar: UIView {
 
     fileprivate class ContentTypeSelectionControl: UISegmentedControl {
 
-        static private let titleCamera = OWSLocalizedString(
+        private static let titleCamera = OWSLocalizedString(
             "STORY_COMPOSER_CAMERA",
-            comment: "One of two possible sources when composing a new story. Displayed at the bottom in in-app camera."
+            comment: "One of two possible sources when composing a new story. Displayed at the bottom in in-app camera.",
         )
-        static private let titleText = OWSLocalizedString(
+        private static let titleText = OWSLocalizedString(
             "STORY_COMPOSER_TEXT",
-            comment: "One of two possible sources when composing a new story. Displayed at the bottom in in-app camera."
+            comment: "One of two possible sources when composing a new story. Displayed at the bottom in in-app camera.",
         )
 
         init() {
@@ -1538,8 +1590,8 @@ class CameraBottomBar: UIView {
             let normalFont = UIFont.monospacedSystemFont(ofSize: 14, weight: .semibold)
             let selectedFont = UIFont.monospacedSystemFont(ofSize: 14, weight: .bold)
 
-            setTitleTextAttributes([ .font: normalFont, .foregroundColor: UIColor(white: 1, alpha: 0.7) ], for: .normal)
-            setTitleTextAttributes([ .font: selectedFont, .foregroundColor: UIColor.white ], for: .selected)
+            setTitleTextAttributes([.font: normalFont, .foregroundColor: UIColor(white: 1, alpha: 0.7)], for: .normal)
+            setTitleTextAttributes([.font: selectedFont, .foregroundColor: UIColor.white], for: .selected)
         }
 
         required init?(coder: NSCoder) {
@@ -1567,7 +1619,7 @@ class CameraSideBar: UIView {
     private(set) var cameraCaptureControl = CameraCaptureControl(axis: .vertical)
 
     override init(frame: CGRect) {
-        cameraControlsContainerView = UIStackView(arrangedSubviews: [ batchModeButton, flashModeButton, switchCameraButton ])
+        cameraControlsContainerView = UIStackView(arrangedSubviews: [batchModeButton, flashModeButton, switchCameraButton])
 
         super.init(frame: frame)
 
@@ -1605,7 +1657,7 @@ extension CameraCaptureControl {
     }
 
     override var accessibilityTraits: UIAccessibilityTraits {
-        get { [ .button ] }
+        get { [.button] }
         set { super.accessibilityTraits = newValue }
     }
 
@@ -1618,12 +1670,16 @@ extension CameraCaptureControl {
         get {
             switch state {
             case .initial:
-                return OWSLocalizedString("CAMERA_VO_TAKE_PICTURE",
-                                         comment: "VoiceOver label for the round capture button in in-app camera.")
+                return OWSLocalizedString(
+                    "CAMERA_VO_TAKE_PICTURE",
+                    comment: "VoiceOver label for the round capture button in in-app camera.",
+                )
 
             case .recordingUsingVoiceOver:
-                return OWSLocalizedString("CAMERA_VO_STOP_VIDEO_REC",
-                                         comment: "VoiceOver label for the round capture button in in-app camera during video recording.")
+                return OWSLocalizedString(
+                    "CAMERA_VO_STOP_VIDEO_REC",
+                    comment: "VoiceOver label for the round capture button in in-app camera during video recording.",
+                )
 
             default:
                 owsFailDebug("Invalid state")
@@ -1636,9 +1692,12 @@ extension CameraCaptureControl {
     override var accessibilityCustomActions: [UIAccessibilityCustomAction]? {
         get {
             guard state == .initial else { return [] }
-            let actionName = OWSLocalizedString("CAMERA_VO_TAKE_VIDEO",
-                                               comment: "VoiceOver label for other possible action for round capture button in in-app camera.")
-            return [ UIAccessibilityCustomAction(name: actionName, target: self, selector: #selector(accessibilityStartVideoRecording)) ] }
+            let actionName = OWSLocalizedString(
+                "CAMERA_VO_TAKE_VIDEO",
+                comment: "VoiceOver label for other possible action for round capture button in in-app camera.",
+            )
+            return [UIAccessibilityCustomAction(name: actionName, target: self, selector: #selector(accessibilityStartVideoRecording))]
+        }
         set { super.accessibilityCustomActions = newValue }
     }
 
@@ -1678,8 +1737,11 @@ extension MediaDoneButton {
         get {
             guard badgeNumber > 0 else { return nil }
 
-            let format = OWSLocalizedString("CAMERA_VO_N_ITEMS", tableName: "PluralAware",
-                                           comment: "VoiceOver text for blue Done button in camera, describing how many items have already been captured.")
+            let format = OWSLocalizedString(
+                "CAMERA_VO_N_ITEMS",
+                tableName: "PluralAware",
+                comment: "VoiceOver text for blue Done button in camera, describing how many items have already been captured.",
+            )
             return String.localizedStringWithFormat(format, badgeNumber)
         }
         set {
@@ -1692,8 +1754,10 @@ extension FlashModeButton {
 
     override var accessibilityLabel: String? {
         get {
-            OWSLocalizedString("CAMERA_VO_FLASH_BUTTON",
-                              comment: "VoiceOver label for Flash button in camera.")
+            OWSLocalizedString(
+                "CAMERA_VO_FLASH_BUTTON",
+                comment: "VoiceOver label for Flash button in camera.",
+            )
         }
         set { super.accessibilityLabel = newValue }
     }
@@ -1702,16 +1766,22 @@ extension FlashModeButton {
         get {
             switch flashMode {
             case .auto:
-                return OWSLocalizedString("CAMERA_VO_FLASH_AUTO",
-                                         comment: "VoiceOver description of current flash setting.")
+                return OWSLocalizedString(
+                    "CAMERA_VO_FLASH_AUTO",
+                    comment: "VoiceOver description of current flash setting.",
+                )
 
             case .on:
-                return OWSLocalizedString("CAMERA_VO_FLASH_ON",
-                                         comment: "VoiceOver description of current flash setting.")
+                return OWSLocalizedString(
+                    "CAMERA_VO_FLASH_ON",
+                    comment: "VoiceOver description of current flash setting.",
+                )
 
             case .off:
-                return OWSLocalizedString("CAMERA_VO_FLASH_OFF",
-                                         comment: "VoiceOver description of current flash setting.")
+                return OWSLocalizedString(
+                    "CAMERA_VO_FLASH_OFF",
+                    comment: "VoiceOver description of current flash setting.",
+                )
 
             @unknown default:
                 owsFailDebug("unexpected photoCapture.flashMode: \(flashMode.rawValue)")
@@ -1726,16 +1796,20 @@ extension CameraChooserButton {
 
     override var accessibilityLabel: String? {
         get {
-            OWSLocalizedString("CAMERA_VO_CAMERA_CHOOSER_BUTTON",
-                              comment: "VoiceOver label for Switch Camera button in in-app camera.")
+            OWSLocalizedString(
+                "CAMERA_VO_CAMERA_CHOOSER_BUTTON",
+                comment: "VoiceOver label for Switch Camera button in in-app camera.",
+            )
         }
         set { super.accessibilityLabel = newValue }
     }
 
     override var accessibilityHint: String? {
         get {
-            OWSLocalizedString("CAMERA_VO_CAMERA_CHOOSER_HINT",
-                              comment: "VoiceOver hint for Switch Camera button in in-app camera.")
+            OWSLocalizedString(
+                "CAMERA_VO_CAMERA_CHOOSER_HINT",
+                comment: "VoiceOver hint for Switch Camera button in in-app camera.",
+            )
         }
         set { super.accessibilityHint = newValue }
     }
@@ -1743,11 +1817,15 @@ extension CameraChooserButton {
     override var accessibilityValue: String? {
         get {
             if isFrontCameraActive {
-                return OWSLocalizedString("CAMERA_VO_CAMERA_FRONT_FACING",
-                                         comment: "VoiceOver value for Switch Camera button that tells which camera is currently active.")
+                return OWSLocalizedString(
+                    "CAMERA_VO_CAMERA_FRONT_FACING",
+                    comment: "VoiceOver value for Switch Camera button that tells which camera is currently active.",
+                )
             } else {
-                return OWSLocalizedString("CAMERA_VO_CAMERA_BACK_FACING",
-                                         comment: "VoiceOver value for Switch Camera button that tells which camera is currently active.")
+                return OWSLocalizedString(
+                    "CAMERA_VO_CAMERA_BACK_FACING",
+                    comment: "VoiceOver value for Switch Camera button that tells which camera is currently active.",
+                )
             }
         }
         set { super.accessibilityValue = newValue }
@@ -1758,8 +1836,10 @@ extension CaptureModeButton {
 
     override var accessibilityLabel: String? {
         get {
-            OWSLocalizedString("CAMERA_VO_CAMERA_ALBUM_MODE",
-                              comment: "VoiceOver label for Flash button in camera.")
+            OWSLocalizedString(
+                "CAMERA_VO_CAMERA_ALBUM_MODE",
+                comment: "VoiceOver label for Flash button in camera.",
+            )
         }
         set { super.accessibilityLabel = newValue }
     }
@@ -1768,12 +1848,16 @@ extension CaptureModeButton {
         get {
             switch captureMode {
             case .single:
-                return OWSLocalizedString("CAMERA_VO_CAMERA_ALBUM_MODE_OFF",
-                                         comment: "VoiceOver label for Switch Camera button in in-app camera.")
+                return OWSLocalizedString(
+                    "CAMERA_VO_CAMERA_ALBUM_MODE_OFF",
+                    comment: "VoiceOver label for Switch Camera button in in-app camera.",
+                )
 
             case .multi:
-                return OWSLocalizedString("CAMERA_VO_CAMERA_ALBUM_MODE_ON",
-                                         comment: "VoiceOver label for Switch Camera button in in-app camera.")
+                return OWSLocalizedString(
+                    "CAMERA_VO_CAMERA_ALBUM_MODE_ON",
+                    comment: "VoiceOver label for Switch Camera button in in-app camera.",
+                )
             }
         }
         set { super.accessibilityValue = newValue }
@@ -1784,8 +1868,10 @@ extension MediaPickerButton {
 
     override var accessibilityLabel: String? {
         get {
-            OWSLocalizedString("CAMERA_VO_PHOTO_LIBRARY_BUTTON",
-                              comment: "VoiceOver label for button to choose existing photo/video in in-app camera")
+            OWSLocalizedString(
+                "CAMERA_VO_PHOTO_LIBRARY_BUTTON",
+                comment: "VoiceOver label for button to choose existing photo/video in in-app camera",
+            )
         }
         set { super.accessibilityLabel = newValue }
     }
@@ -1799,7 +1885,7 @@ extension CameraZoomSelectionControl {
     }
 
     override var accessibilityTraits: UIAccessibilityTraits {
-        get { [ .button, .adjustable ] }
+        get { [.button, .adjustable] }
         set { super.accessibilityTraits = newValue }
     }
 
@@ -1823,8 +1909,10 @@ extension CameraZoomSelectionControl {
         get {
             guard let zoomValueString = CameraZoomSelectionControl.voiceOverNumberFormatter.string(for: currentZoomFactor) else { return nil }
 
-            let formatString = OWSLocalizedString("CAMERA_VO_ZOOM_LEVEL",
-                                                 comment: "VoiceOver description of current camera zoom level.")
+            let formatString = OWSLocalizedString(
+                "CAMERA_VO_ZOOM_LEVEL",
+                comment: "VoiceOver description of current camera zoom level.",
+            )
             return String(format: formatString, zoomValueString)
         }
         set { super.accessibilityValue = newValue }
@@ -1878,7 +1966,7 @@ extension CameraBottomBar.ContentTypeSelectionControl {
         get {
             OWSLocalizedString(
                 "CAMERA_VO_COMPOSER_MODE",
-                comment: "VoiceOver label for composer mode (CAMERA|TEXT) selector at the bottom of in-app camera screen."
+                comment: "VoiceOver label for composer mode (CAMERA|TEXT) selector at the bottom of in-app camera screen.",
             )
         }
         set { super.accessibilityLabel = newValue }

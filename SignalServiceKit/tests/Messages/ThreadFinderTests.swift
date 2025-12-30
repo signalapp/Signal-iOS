@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import XCTest
 import LibSignalClient
+import XCTest
 
 @testable import SignalServiceKit
 
@@ -27,7 +27,7 @@ class ThreadFinderTests: XCTestCase {
         contactThread1 = TSContactThread(contactAddress: SignalServiceAddress(
             serviceId: testACI1,
             phoneNumber: testPhone1.stringValue,
-            cache: SignalServiceAddressCache()
+            cache: SignalServiceAddressCache(),
         ))
 
         let testPhone2 = E164("+16505550100")!
@@ -35,7 +35,7 @@ class ThreadFinderTests: XCTestCase {
         contactThread2 = TSContactThread(contactAddress: SignalServiceAddress(
             serviceId: testACI2,
             phoneNumber: testPhone2.stringValue,
-            cache: SignalServiceAddressCache()
+            cache: SignalServiceAddressCache(),
         ))
     }
 
@@ -45,7 +45,7 @@ class ThreadFinderTests: XCTestCase {
         draft: String?,
         lastInteractionRowID: UInt64,
         lastDraftInteractionRowId: UInt64,
-        lastDraftUpdateTimestamp: UInt64
+        lastDraftUpdateTimestamp: UInt64,
     ) -> ThreadRecord {
         ThreadRecord(
             delegate: contactThread,
@@ -75,20 +75,21 @@ class ThreadFinderTests: XCTestCase {
             storyViewMode: 0,
             editTargetTimestamp: nil,
             lastDraftInteractionRowId: lastDraftInteractionRowId,
-            lastDraftUpdateTimestamp: lastDraftUpdateTimestamp)
+            lastDraftUpdateTimestamp: lastDraftUpdateTimestamp,
+        )
     }
 
     func buildThreadAssociatedData(
         uniqueID: String,
         isMarkedUnread: Bool,
-        isArchived: Bool
+        isArchived: Bool,
     ) -> ThreadAssociatedData {
         return ThreadAssociatedData(
             threadUniqueId: uniqueID,
             isArchived: isArchived,
             isMarkedUnread: isMarkedUnread,
             mutedUntilTimestamp: 0,
-            audioPlaybackRate: 1
+            audioPlaybackRate: 1,
         )
     }
 
@@ -103,13 +104,13 @@ class ThreadFinderTests: XCTestCase {
                 draft: "test draft",
                 lastInteractionRowID: 0,
                 lastDraftInteractionRowId: 1,
-                lastDraftUpdateTimestamp: 1
+                lastDraftUpdateTimestamp: 1,
             ).insert(database)
 
             try buildThreadAssociatedData(
                 uniqueID: "UUID1",
                 isMarkedUnread: chatListType == .unread,
-                isArchived: chatListType == .archive
+                isArchived: chatListType == .archive,
             ).insert(database)
 
             // Non-draft that has more recent lastInteractionRowID.
@@ -119,13 +120,13 @@ class ThreadFinderTests: XCTestCase {
                 draft: nil,
                 lastInteractionRowID: 1,
                 lastDraftInteractionRowId: 0,
-                lastDraftUpdateTimestamp: 0
+                lastDraftUpdateTimestamp: 0,
             ).insert(database)
 
             try buildThreadAssociatedData(
                 uniqueID: "UUID2",
                 isMarkedUnread: chatListType == .unread,
-                isArchived: chatListType == .archive
+                isArchived: chatListType == .archive,
             ).insert(database)
         }
 
@@ -168,13 +169,13 @@ class ThreadFinderTests: XCTestCase {
                 draft: "test draft",
                 lastInteractionRowID: 3,
                 lastDraftInteractionRowId: 1,
-                lastDraftUpdateTimestamp: 1
+                lastDraftUpdateTimestamp: 1,
             ).insert(database)
 
             try buildThreadAssociatedData(
                 uniqueID: "UUID1",
                 isMarkedUnread: chatListType == .unread,
-                isArchived: chatListType == .archive
+                isArchived: chatListType == .archive,
             ).insert(database)
 
             // Non-draft that has less recent lastInteractionRowID.
@@ -184,13 +185,13 @@ class ThreadFinderTests: XCTestCase {
                 draft: nil,
                 lastInteractionRowID: 2,
                 lastDraftInteractionRowId: 0,
-                lastDraftUpdateTimestamp: 0
+                lastDraftUpdateTimestamp: 0,
             ).insert(database)
 
             try buildThreadAssociatedData(
                 uniqueID: "UUID2",
                 isMarkedUnread: chatListType == .unread,
-                isArchived: chatListType == .archive
+                isArchived: chatListType == .archive,
             ).insert(database)
         }
 
@@ -233,13 +234,13 @@ class ThreadFinderTests: XCTestCase {
                 draft: "test draft",
                 lastInteractionRowID: 2,
                 lastDraftInteractionRowId: 2,
-                lastDraftUpdateTimestamp: 1
+                lastDraftUpdateTimestamp: 1,
             ).insert(database)
 
             try buildThreadAssociatedData(
                 uniqueID: "UUID1",
                 isMarkedUnread: chatListType == .unread,
-                isArchived: chatListType == .archive
+                isArchived: chatListType == .archive,
             ).insert(database)
 
             // Thread 2, has a more recent draft based on timestamp.
@@ -249,13 +250,13 @@ class ThreadFinderTests: XCTestCase {
                 draft: "test draft",
                 lastInteractionRowID: 1,
                 lastDraftInteractionRowId: 2,
-                lastDraftUpdateTimestamp: 2
+                lastDraftUpdateTimestamp: 2,
             ).insert(database)
 
             try buildThreadAssociatedData(
                 uniqueID: "UUID2",
                 isMarkedUnread: chatListType == .unread,
-                isArchived: chatListType == .archive
+                isArchived: chatListType == .archive,
             ).insert(database)
         }
 
@@ -298,13 +299,13 @@ class ThreadFinderTests: XCTestCase {
                 draft: "test draft",
                 lastInteractionRowID: 1,
                 lastDraftInteractionRowId: 2,
-                lastDraftUpdateTimestamp: 100
+                lastDraftUpdateTimestamp: 100,
             ).insert(database)
 
             try buildThreadAssociatedData(
                 uniqueID: "UUID1",
                 isMarkedUnread: chatListType == .unread,
-                isArchived: chatListType == .archive
+                isArchived: chatListType == .archive,
             ).insert(database)
 
             // Non-draft that has less recent lastInteractionRowID.
@@ -314,13 +315,13 @@ class ThreadFinderTests: XCTestCase {
                 draft: nil,
                 lastInteractionRowID: 3,
                 lastDraftInteractionRowId: 0,
-                lastDraftUpdateTimestamp: 0
+                lastDraftUpdateTimestamp: 0,
             ).insert(database)
 
             try buildThreadAssociatedData(
                 uniqueID: "UUID2",
                 isMarkedUnread: chatListType == .unread,
-                isArchived: chatListType == .archive
+                isArchived: chatListType == .archive,
             ).insert(database)
         }
 

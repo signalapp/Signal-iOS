@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import XCTest
 import SignalServiceKit
+import XCTest
 
 final class SpamReportingTokenTest: XCTestCase {
     func testInit() {
@@ -15,7 +15,7 @@ final class SpamReportingTokenTest: XCTestCase {
     func testBase64EncodedString() {
         XCTAssertEqual(
             SpamReportingToken(data: .init([1, 2, 3, 4]))?.base64EncodedString(),
-            "AQIDBA=="
+            "AQIDBA==",
         )
     }
 }

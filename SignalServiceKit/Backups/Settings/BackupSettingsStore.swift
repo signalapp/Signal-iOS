@@ -141,12 +141,12 @@ public struct BackupSettingsStore {
     }
 
     public func lastBackupEnabledDetails(
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> LastBackupEnabledDetails? {
         do {
             return try kvStore.getCodableValue(
                 forKey: Keys.lastBackupEnabledDetails,
-                transaction: tx
+                transaction: tx,
             )
         } catch {
             owsFailDebug("Failed to get LastBackupEnabledDetails \(error)")
@@ -157,16 +157,16 @@ public struct BackupSettingsStore {
     public func setLastBackupEnabledDetails(
         backupsEnabledTime: Date,
         notificationDelay: TimeInterval,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         do {
             try kvStore.setCodable(
                 LastBackupEnabledDetails(
                     enabledTime: backupsEnabledTime,
-                    notificationDelay: notificationDelay
+                    notificationDelay: notificationDelay,
                 ),
                 key: Keys.lastBackupEnabledDetails,
-                transaction: tx
+                transaction: tx,
             )
         } catch {
             owsFailDebug("Failed to set LastBackupEnabledDetails")
@@ -176,7 +176,7 @@ public struct BackupSettingsStore {
     public func clearLastBackupEnabledDetails(tx: DBWriteTransaction) {
         kvStore.removeValue(
             forKey: Keys.lastBackupEnabledDetails,
-            transaction: tx
+            transaction: tx,
         )
     }
 
@@ -422,7 +422,7 @@ public struct BackupSettingsStore {
     }
 }
 
-fileprivate extension BackupPlan {
+private extension BackupPlan {
     var asStorageServiceBackupTier: UInt64? {
         switch self {
         case .disabled, .disabling:

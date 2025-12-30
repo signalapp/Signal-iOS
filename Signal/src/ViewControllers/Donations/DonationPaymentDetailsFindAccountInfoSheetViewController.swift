@@ -20,12 +20,12 @@ public class DonationPaymentDetailsFindAccountInfoSheetViewController: OWSTableS
         section.add(.init(customCellBlock: {
             let headerLabel = UILabel.title2Label(text: OWSLocalizedString(
                 "FIND_ACCOUNT_INFO_SHEET_TITLE",
-                comment: "Users can choose to learn more about how to find account info, which will open a sheet with additional information. This is the title of that sheet."
+                comment: "Users can choose to learn more about how to find account info, which will open a sheet with additional information. This is the title of that sheet.",
             ))
 
             let descriptionLabel = UILabel.explanationTextLabel(text: OWSLocalizedString(
                 "FIND_ACCOUNT_INFO_SHEET_BODY",
-                comment: "Users can choose to learn more about how to find account info, which will open a sheet with additional information. This is the body of that sheet."
+                comment: "Users can choose to learn more about how to find account info, which will open a sheet with additional information. This is the body of that sheet.",
             ))
 
             let stackView = UIStackView(arrangedSubviews: [headerLabel, descriptionLabel])

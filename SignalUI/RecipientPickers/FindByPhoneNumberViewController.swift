@@ -6,8 +6,10 @@
 public import SignalServiceKit
 
 public protocol FindByPhoneNumberDelegate: AnyObject {
-    func findByPhoneNumber(_ findByPhoneNumber: FindByPhoneNumberViewController,
-                           didSelectAddress address: SignalServiceAddress)
+    func findByPhoneNumber(
+        _ findByPhoneNumber: FindByPhoneNumberViewController,
+        didSelectAddress address: SignalServiceAddress,
+    )
 }
 
 public class FindByPhoneNumberViewController: OWSTableViewController2 {
@@ -21,7 +23,7 @@ public class FindByPhoneNumberViewController: OWSTableViewController2 {
         keyboardType: .numberPad,
         returnKeyType: .done,
         autocorrectionType: .no,
-        delegate: self
+        delegate: self,
     )
     let countryRowTitleLabel = UILabel()
     let nationalNumberRowTitleLabel = UILabel()
@@ -44,9 +46,9 @@ public class FindByPhoneNumberViewController: OWSTableViewController2 {
         NSAttributedString(
             string: OWSLocalizedString(
                 "REGISTRATION_DEFAULT_COUNTRY_NAME",
-                comment: "Label for the country code field"
+                comment: "Label for the country code field",
             ),
-            attributes: titleAttributes
+            attributes: titleAttributes,
         )
     }
 
@@ -54,9 +56,9 @@ public class FindByPhoneNumberViewController: OWSTableViewController2 {
         NSAttributedString(
             string: OWSLocalizedString(
                 "REGISTRATION_PHONENUMBER_BUTTON",
-                comment: "Label for the phone number textfield"
+                comment: "Label for the phone number textfield",
             ),
-            attributes: titleAttributes
+            attributes: titleAttributes,
         )
     }
 
@@ -64,11 +66,11 @@ public class FindByPhoneNumberViewController: OWSTableViewController2 {
         NSAttributedString(
             string: OWSLocalizedString(
                 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT",
-                comment: "Placeholder text for the phone number textfield"
+                comment: "Placeholder text for the phone number textfield",
             ),
             attributes: [
                 .font: UIFont.dynamicTypeBodyClamped,
-            ]
+            ],
         )
     }
 
@@ -84,9 +86,9 @@ public class FindByPhoneNumberViewController: OWSTableViewController2 {
         let content = OWSTableContents(
             title: OWSLocalizedString(
                 "NEW_NONCONTACT_CONVERSATION_VIEW_TITLE",
-                comment: "Title for the 'new non-contact conversation' view."
+                comment: "Title for the 'new non-contact conversation' view.",
             ),
-            sections: [section]
+            sections: [section],
         )
 
         let titleWidth: CGFloat = 138
@@ -158,25 +160,25 @@ public class FindByPhoneNumberViewController: OWSTableViewController2 {
             style: .done,
             target: self,
             action: #selector(tryToSelectPhoneNumber),
-            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "button")
+            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "button"),
         )
         navigationItem.rightBarButtonItem?.isEnabled = false
 
         applyTheme()
     }
 
-    public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+    override public func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
 
         applyTheme()
     }
 
-    public override func contentSizeCategoryDidChange() {
+    override public func contentSizeCategoryDidChange() {
         super.contentSizeCategoryDidChange()
         loadTableContents()
     }
 
-    public override func themeDidChange() {
+    override public func themeDidChange() {
         super.themeDidChange()
         applyTheme()
     }
@@ -200,7 +202,7 @@ public class FindByPhoneNumberViewController: OWSTableViewController2 {
         let phoneNumberUtil = SSKEnvironment.shared.phoneNumberUtilRef
         return phoneNumberUtil.parsePhoneNumber(
             countryCode: country.countryCode,
-            nationalNumber: nationalNumber
+            nationalNumber: nationalNumber,
         )?.e164.nilIfEmpty
     }
 
@@ -234,7 +236,7 @@ public class FindByPhoneNumberViewController: OWSTableViewController2 {
                                 RecipientPickerViewController.presentSMSInvitationSheet(
                                     for: phoneNumber,
                                     fromViewController: self,
-                                    dismissalDelegate: self
+                                    dismissalDelegate: self,
                                 )
                                 return
                             }
@@ -244,11 +246,11 @@ public class FindByPhoneNumberViewController: OWSTableViewController2 {
                         modal.dismissIfNotCanceled {
                             OWSActionSheets.showErrorAlert(
                                 message: error.userErrorDescription,
-                                dismissalDelegate: self
+                                dismissalDelegate: self,
                             )
                         }
                     }
-                }
+                },
             )
         } else {
             findByPhoneNumberDelegate?.findByPhoneNumber(self, didSelectAddress: SignalServiceAddress(phoneNumber: phoneNumber))

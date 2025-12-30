@@ -7,7 +7,11 @@ import Foundation
 public import LocalAuthentication
 
 public enum DeviceOwnerAuthenticationType {
-    case unknown, passcode, faceId, touchId, opticId
+    case unknown
+    case passcode
+    case faceId
+    case touchId
+    case opticId
 }
 
 extension DeviceOwnerAuthenticationType {

@@ -44,7 +44,7 @@ public struct PendingReadReceiptRecord: Codable, FetchableRecord, PersistableRec
         self.authorPhoneNumber = (self.authorAciString == nil) ? try container.decodeIfPresent(String.self, forKey: .authorPhoneNumber) : nil
     }
 
-    mutating public func didInsert(with rowID: Int64, for column: String?) {
+    public mutating func didInsert(with rowID: Int64, for column: String?) {
         self.id = rowID
     }
 }

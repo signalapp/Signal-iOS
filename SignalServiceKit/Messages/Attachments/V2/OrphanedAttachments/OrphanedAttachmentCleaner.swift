@@ -31,17 +31,17 @@ public protocol OrphanedAttachmentCleaner {
     ///
     /// Return the id which can be used to release the pending attachment.
     func commitPendingAttachment(
-        _ record: OrphanedAttachmentRecord
+        _ record: OrphanedAttachmentRecord,
     ) async throws -> OrphanedAttachmentRecord.IDType
 
     /// See commitPendingAttachmentWithSneakyTransaction; does the same thing for
     /// multiple orphan records at once, keyed as chosen by the caller.
     func commitPendingAttachments<Key: Hashable>(
-        _ records: [Key: OrphanedAttachmentRecord]
+        _ records: [Key: OrphanedAttachmentRecord],
     ) async throws -> [Key: OrphanedAttachmentRecord.IDType]
 
     /// Un-marks a pending attachment for deletion IFF currently marked for deletion.
-    /// 
+    ///
     /// If the id is not found, throws an error.
     /// Why? Here is the expected sequence:
     /// 1. Reserve attachment file locations (assign random file UUIDs)
@@ -62,7 +62,7 @@ public protocol OrphanedAttachmentCleaner {
     /// or step 5 fails but we didn't delete the files.
     func releasePendingAttachment(
         withId: OrphanedAttachmentRecord.IDType,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     )
 }
 
@@ -79,14 +79,14 @@ public class OrphanedAttachmentCleanerImpl: OrphanedAttachmentCleaner {
         self.init(
             db: db,
             fileSystem: Wrappers.OWSFileSystem(),
-            taskScheduler: Wrappers.TaskScheduler()
+            taskScheduler: Wrappers.TaskScheduler(),
         )
     }
 
-    internal init(
+    init(
         db: DB,
         fileSystem: Shims.OWSFileSystem,
-        taskScheduler: Shims.TaskScheduler
+        taskScheduler: Shims.TaskScheduler,
     ) {
         self.db = db
         self.taskScheduler = taskScheduler
@@ -94,9 +94,9 @@ public class OrphanedAttachmentCleanerImpl: OrphanedAttachmentCleaner {
             jobRunner: JobRunner(
                 db: db,
                 fileSystem: fileSystem,
-                cleaner: self
+                cleaner: self,
             ),
-            taskScheduler: taskScheduler
+            taskScheduler: taskScheduler,
         )
     }
 
@@ -114,14 +114,14 @@ public class OrphanedAttachmentCleanerImpl: OrphanedAttachmentCleaner {
     }
 
     public func commitPendingAttachment(
-        _ record: OrphanedAttachmentRecord
+        _ record: OrphanedAttachmentRecord,
     ) async throws -> OrphanedAttachmentRecord.IDType {
         let id = UUID()
         return try await commitPendingAttachments([id: record])[id]!
     }
 
     public func commitPendingAttachments<Key: Hashable>(
-        _ records: [Key: OrphanedAttachmentRecord]
+        _ records: [Key: OrphanedAttachmentRecord],
     ) async throws -> [Key: OrphanedAttachmentRecord.IDType] {
         return try await db.awaitableWrite { tx in
             var results = [Key: OrphanedAttachmentRecord.IDType]()
@@ -163,7 +163,7 @@ public class OrphanedAttachmentCleanerImpl: OrphanedAttachmentCleaner {
     // We keep this in memory; we will retry on next app launch.
     //
     // Should only be accessed from within a write transaction.
-    fileprivate var skippedRowIds = AtomicValue<Set<OrphanedAttachmentRecord.IDType>>.init(Set(), lock: .init())
+    fileprivate var skippedRowIds = AtomicValue<Set<OrphanedAttachmentRecord.IDType>>(Set(), lock: .init())
 
     private actor JobRunner {
 
@@ -176,7 +176,7 @@ public class OrphanedAttachmentCleanerImpl: OrphanedAttachmentCleaner {
         init(
             db: DB,
             fileSystem: Shims.OWSFileSystem,
-            cleaner: OrphanedAttachmentCleanerImpl
+            cleaner: OrphanedAttachmentCleanerImpl,
         ) {
             self.db = db
             self.fileSystem = fileSystem
@@ -269,9 +269,9 @@ public class OrphanedAttachmentCleanerImpl: OrphanedAttachmentCleaner {
                     Logger.warn("Too many skipped row ids!")
                     (
                         skippedRowIdsForQuery,
-                        skippedRowIdsForInMemoryFilter
+                        skippedRowIdsForInMemoryFilter,
                     ) = skippedRowIds.split(
-                        at: skippedRowIds.index(skippedRowIds.startIndex, offsetBy: 50)
+                        at: skippedRowIds.index(skippedRowIds.startIndex, offsetBy: 50),
                     )
                 } else {
                     skippedRowIdsForQuery = skippedRowIds
@@ -304,7 +304,7 @@ public class OrphanedAttachmentCleanerImpl: OrphanedAttachmentCleaner {
                 record.localRelativeFilePath,
                 record.localRelativeFilePathThumbnail,
                 record.localRelativeFilePathAudioWaveform,
-                record.localRelativeFilePathVideoStillFrame
+                record.localRelativeFilePathVideoStillFrame,
             ].compacted()
 
             try relativeFilePaths.forEach { relativeFilePath in
@@ -317,7 +317,7 @@ public class OrphanedAttachmentCleanerImpl: OrphanedAttachmentCleaner {
                 for quality in AttachmentThumbnailQuality.allCases {
                     let cacheFileUrl = AttachmentThumbnailQuality.thumbnailCacheFileUrl(
                         attachmentLocalRelativeFilePath: localRelativeFilePath,
-                        at: quality
+                        at: quality,
                     )
                     try fileSystem.deleteFileIfExists(url: cacheFileUrl)
                 }
@@ -334,7 +334,7 @@ public class OrphanedAttachmentCleanerImpl: OrphanedAttachmentCleaner {
 
         init(
             jobRunner: JobRunner,
-            taskScheduler: Shims.TaskScheduler
+            taskScheduler: Shims.TaskScheduler,
         ) {
             self.jobRunner = jobRunner
             self.taskScheduler = taskScheduler
@@ -380,6 +380,7 @@ extension OrphanedAttachmentCleanerImpl {
         public typealias OWSFileSystem = _OrphanedAttachmentCleanerImpl_OWSFileSystemShim
         public typealias TaskScheduler = _OrphanedAttachmentCleanerImpl_TaskSchedulerShim
     }
+
     public enum Wrappers {
         public typealias OWSFileSystem = _OrphanedAttachmentCleanerImpl_OWSFileSystemWrapper
         public typealias TaskScheduler = _OrphanedAttachmentCleanerImpl_TaskSchedulerWrapper

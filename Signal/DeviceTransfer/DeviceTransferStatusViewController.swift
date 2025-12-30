@@ -30,14 +30,14 @@ class DeviceTransferStatusViewController: HostingController<TransferStatusView> 
                 hero: .image(UIImage(named: "transfer_complete")!),
                 title: OWSLocalizedString(
                     "TRANSFER_COMPLETE_SHEET_TITLE",
-                    comment: "Title for bottom sheet shown when device transfer completes on the receiving device."
+                    comment: "Title for bottom sheet shown when device transfer completes on the receiving device.",
                 ),
                 body: OWSLocalizedString(
                     "TRANSFER_COMPLETE_SHEET_SUBTITLE",
-                    comment: "Subtitle for bottom sheet shown when device transfer completes on the receiving device."
+                    comment: "Subtitle for bottom sheet shown when device transfer completes on the receiving device.",
                 ),
                 primaryButton: .init(
-                    title: CommonStrings.okayButton
+                    title: CommonStrings.okayButton,
                 ) { _ in
                     Task {
                         SSKEnvironment.shared.notificationPresenterRef.notifyUserToRelaunchAfterTransfer {
@@ -46,7 +46,7 @@ class DeviceTransferStatusViewController: HostingController<TransferStatusView> 
                         }
                     }
                     self?.dismiss(animated: true)
-                }
+                },
             )
             self?.present(sheet, animated: true)
         }
@@ -60,20 +60,20 @@ class DeviceTransferStatusViewController: HostingController<TransferStatusView> 
             let actionSheet = ActionSheetController(
                 title: OWSLocalizedString(
                     "DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE",
-                    comment: "The title of the dialog asking the user if they want to cancel a device transfer"
+                    comment: "The title of the dialog asking the user if they want to cancel a device transfer",
                 ),
                 message: OWSLocalizedString(
                     "DEVICE_TRANSFER_CANCEL_CONFIRMATION_MESSAGE",
-                    comment: "The message of the dialog asking the user if they want to cancel a device transfer"
-                )
+                    comment: "The message of the dialog asking the user if they want to cancel a device transfer",
+                ),
             )
 
             let okAction = ActionSheetAction(
                 title: OWSLocalizedString(
                     "DEVICE_TRANSFER_CANCEL_CONFIRMATION_ACTION",
-                    comment: "The stop action of the dialog asking the user if they want to cancel a device transfer"
+                    comment: "The stop action of the dialog asking the user if they want to cancel a device transfer",
                 ),
-                style: .destructive
+                style: .destructive,
             ) { _ in
                 continuation.resume(returning: true)
             }
@@ -81,7 +81,7 @@ class DeviceTransferStatusViewController: HostingController<TransferStatusView> 
 
             let cancelAction = ActionSheetAction(
                 title: CommonStrings.cancelButton,
-                style: .cancel
+                style: .cancel,
             ) { _ in
                 continuation.resume(returning: false)
             }
@@ -135,18 +135,18 @@ struct TransferStatusView: View {
             case .transferring(let progress):
                 Text(OWSLocalizedString(
                     "DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFERRING",
-                    comment: "Title for a progress view displayed during device transfer."
-                    ))
-                    .font(.title2.weight(.semibold))
-                    .foregroundStyle(Color.Signal.label)
-                    .padding(.top, 44)
-                    .padding(.bottom, 2)
+                    comment: "Title for a progress view displayed during device transfer.",
+                ))
+                .font(.title2.weight(.semibold))
+                .foregroundStyle(Color.Signal.label)
+                .padding(.top, 44)
+                .padding(.bottom, 2)
                 Text(OWSLocalizedString(
                     "DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFERRING_DESCRIPTION",
-                    comment: "Description in the progress view displayed during device transfer."
-                    ))
-                    .font(.body)
-                    .foregroundStyle(Color.Signal.secondaryLabel)
+                    comment: "Description in the progress view displayed during device transfer.",
+                ))
+                .font(.body)
+                .foregroundStyle(Color.Signal.secondaryLabel)
 
                 Spacer()
                 Text("\(progress.formatted(.percent.precision(.fractionLength(0))))")
@@ -168,22 +168,22 @@ struct TransferStatusView: View {
             case .error(let error):
                 Text(OWSLocalizedString(
                     "DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFER_FAILED_TITLE",
-                    comment: "Title for a progress view displayed after failure of device transfer."
-                    ))
-                    .font(.title2.weight(.semibold))
-                    .foregroundStyle(Color.Signal.label)
-                    .padding(.top, 44)
-                    .padding(.bottom, 2)
+                    comment: "Title for a progress view displayed after failure of device transfer.",
+                ))
+                .font(.title2.weight(.semibold))
+                .foregroundStyle(Color.Signal.label)
+                .padding(.top, 44)
+                .padding(.bottom, 2)
                 Text(OWSLocalizedString(
                     "DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFER_FAILED_BODY",
-                    comment: "Description in the progress view displayed after failure of device transfer."
-                    ))
-                    .font(.body)
-                    .foregroundStyle(Color.Signal.secondaryLabel)
+                    comment: "Description in the progress view displayed after failure of device transfer.",
+                ))
+                .font(.body)
+                .foregroundStyle(Color.Signal.secondaryLabel)
                 Spacer()
                 Button(OWSLocalizedString(
                     "DEVICE_TRANSFER_TRY_AGAIN_ACTION",
-                    comment: "Action asking user to try again after transfer failure."
+                    comment: "Action asking user to try again after transfer failure.",
                 )) {
                     viewModel.onFailure(error)
                 }

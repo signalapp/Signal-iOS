@@ -29,10 +29,10 @@ class PushChallenge: SpamChallenge {
         }
     }
 
-    override public func resolveChallenge() {
+    override func resolveChallenge() {
         super.resolveChallenge()
 
-        if let token = token {
+        if let token {
             postToken(token)
         } else {
             requestToken()
@@ -131,7 +131,8 @@ class PushChallenge: SpamChallenge {
     // MARK: - <Codable>
 
     enum CodingKeys: String, CodingKey {
-        case token, failureCount
+        case token
+        case failureCount
     }
 
     required init(from decoder: Decoder) throws {

@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import GRDB
 import Foundation
+import GRDB
 import LibSignalClient
 
 // MARK: -
@@ -58,7 +58,7 @@ extension LibSignalClient.Net: ContactDiscoveryConnection {
             e164s: request.newE164s.map(\.stringValue),
             prevE164s: request.prevE164s.map(\.stringValue),
             acisAndAccessKeys: request.acisAndAccessKeys,
-            token: request.token
+            token: request.token,
         )
         return try await self.cdsiLookup(auth: auth, request: request)
     }
@@ -66,7 +66,7 @@ extension LibSignalClient.Net: ContactDiscoveryConnection {
     func continueRequest(afterAckingToken tokenResult: CdsiLookup) async throws -> [ContactDiscoveryResult] {
         let response = try await tokenResult.complete()
         Logger.info("CDSv2: Consumed \(response.debugPermitsUsed) tokens")
-        return try response.entries.compactMap {entry in
+        return try response.entries.compactMap { entry in
             guard let pni = entry.pni else {
                 return nil
             }
@@ -109,7 +109,7 @@ final class ContactDiscoveryV2Operation<ConnectionType: ContactDiscoveryConnecti
         mode: ContactDiscoveryMode,
         udManager: any OWSUDManager,
         connectionImpl: ConnectionType,
-        remoteAttestation: any Shims.RemoteAttestation
+        remoteAttestation: any Shims.RemoteAttestation,
     ) {
         self.init(
             db: db,
@@ -117,7 +117,7 @@ final class ContactDiscoveryV2Operation<ConnectionType: ContactDiscoveryConnecti
             persistentState: mode == .oneOffUserRequest ? nil : ContactDiscoveryV2PersistentStateImpl(),
             udManager: udManager,
             connectionImpl: connectionImpl,
-            remoteAttestation: remoteAttestation
+            remoteAttestation: remoteAttestation,
         )
     }
 
@@ -127,7 +127,7 @@ final class ContactDiscoveryV2Operation<ConnectionType: ContactDiscoveryConnecti
         persistentState: (any ContactDiscoveryV2PersistentState)?,
         udManager: any OWSUDManager,
         connectionImpl: ConnectionType,
-        remoteAttestation: any Shims.RemoteAttestation
+        remoteAttestation: any Shims.RemoteAttestation,
     ) {
         self.db = db
         self.e164sToLookup = e164sToLookup
@@ -148,7 +148,7 @@ final class ContactDiscoveryV2Operation<ConnectionType: ContactDiscoveryConnecti
             try await self.handle(
                 token: tokenResult.token,
                 initialRequestHadToken: request.token != nil,
-                newE164s: request.newE164s
+                newE164s: request.newE164s,
             )
             return try await self.connectionImpl.continueRequest(afterAckingToken: tokenResult)
         } catch {
@@ -185,19 +185,19 @@ final class ContactDiscoveryV2Operation<ConnectionType: ContactDiscoveryConnecti
             newE164s: newE164s,
             prevE164s: prevE164s,
             acisAndAccessKeys: acisAndAccessKeys,
-            token: prevToken
+            token: prevToken,
         )
     }
 
     private func handle(
         token: Data,
         initialRequestHadToken: Bool,
-        newE164s: Set<E164>
+        newE164s: Set<E164>,
     ) async throws {
         try await persistentState?.save(
             newToken: token,
             clearE164s: !initialRequestHadToken,
-            newE164s: newE164s
+            newE164s: newE164s,
         )
     }
 
@@ -224,10 +224,10 @@ final class ContactDiscoveryV2Operation<ConnectionType: ContactDiscoveryConnecti
             await persistentState?.reset()
             return ContactDiscoveryError.invalidToken
         case .networkProtocolError(let message),
-                .webSocketError(let message),
-                .connectionTimeoutError(let message),
-                .requestTimeoutError(let message),
-                .connectionFailed(let message):
+             .webSocketError(let message),
+             .connectionTimeoutError(let message),
+             .requestTimeoutError(let message),
+             .connectionFailed(let message):
             return ContactDiscoveryError.retryableError("connection error: \(message)")
         default:
             return ContactDiscoveryError.terminalError("libsignal-net error: \(libSignalError)")

@@ -31,8 +31,8 @@ extension Usernames {
 
         /// The hash of this username, as bytes.
         var rawHash: Data {
-             libSignalUsername.hash
-         }
+            libSignalUsername.hash
+        }
 
         /// The hash of this username, base64url-encoded.
         lazy var hashString: String = {
@@ -98,7 +98,7 @@ public extension Usernames.HashedUsername {
         forNickname nickname: String,
         minNicknameLength: UInt32,
         maxNicknameLength: UInt32,
-        desiredDiscriminator: String?
+        desiredDiscriminator: String?,
     ) throws -> GeneratedCandidates {
         do {
             let nicknameLengthRange = minNicknameLength...maxNicknameLength
@@ -109,7 +109,7 @@ public extension Usernames.HashedUsername {
 
             let candidates: [Usernames.HashedUsername] = try LibSignalUsername.candidates(
                 from: nickname,
-                withValidLengthWithin: nicknameLengthRange
+                withValidLengthWithin: nicknameLengthRange,
             ).map { candidate -> Usernames.HashedUsername in
                 return .init(libSignalUsername: candidate)
             }
@@ -131,7 +131,7 @@ public extension Usernames.HashedUsername {
 // MARK: - Equatable
 
 extension Usernames.HashedUsername: Equatable {
-    public static func == (lhs: Usernames.HashedUsername, rhs: Usernames.HashedUsername) -> Bool {
+    public static func ==(lhs: Usernames.HashedUsername, rhs: Usernames.HashedUsername) -> Bool {
         lhs.libSignalUsername.value == rhs.libSignalUsername.value
     }
 }

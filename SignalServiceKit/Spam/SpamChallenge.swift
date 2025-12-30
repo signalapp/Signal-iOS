@@ -85,7 +85,7 @@ class SpamChallenge: Codable {
         }
     }
 
-    public func resolveChallenge() {
+    func resolveChallenge() {
         // Subclass work should happen here.
         // Subclasses a responsible for updating their state
         // once they've completed their attempt, successfully or not.

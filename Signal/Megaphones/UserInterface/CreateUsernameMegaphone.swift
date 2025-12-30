@@ -12,7 +12,7 @@ class CreateUsernameMegaphone: MegaphoneView {
     init(
         usernameSelectionCoordinator: UsernameSelectionCoordinator,
         experienceUpgrade: ExperienceUpgrade,
-        fromViewController: UIViewController
+        fromViewController: UIViewController,
     ) {
         self.usernameSelectionCoordinator = usernameSelectionCoordinator
 
@@ -20,12 +20,12 @@ class CreateUsernameMegaphone: MegaphoneView {
 
         titleText = OWSLocalizedString(
             "CREATE_USERNAME_MEGAPHONE_TITLE",
-            comment: "Title for an interactive in-app prompt to set up a Signal username."
+            comment: "Title for an interactive in-app prompt to set up a Signal username.",
         )
 
         bodyText = OWSLocalizedString(
             "CREATE_USERNAME_MEGAPHONE_BODY",
-            comment: "Body text for an interactive in-app prompt to set up a Signal username."
+            comment: "Body text for an interactive in-app prompt to set up a Signal username.",
         )
 
         imageName = "usernames-48-color"

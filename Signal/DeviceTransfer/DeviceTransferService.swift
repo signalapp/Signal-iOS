@@ -107,7 +107,7 @@ class DeviceTransferService: NSObject, DeviceTransferServiceProtocol {
     private lazy var newDeviceServiceBrowser: MCNearbyServiceBrowser = {
         let browser = MCNearbyServiceBrowser(
             peer: peerId,
-            serviceType: DeviceTransferService.newDeviceServiceIdentifier
+            serviceType: DeviceTransferService.newDeviceServiceIdentifier,
         )
         browser.delegate = self
         return browser
@@ -115,8 +115,9 @@ class DeviceTransferService: NSObject, DeviceTransferServiceProtocol {
 
     private lazy var newDeviceServiceAdvertiser: MCNearbyServiceAdvertiser = {
         let advertiser = MCNearbyServiceAdvertiser(
-            peer: peerId, discoveryInfo: nil,
-            serviceType: DeviceTransferService.newDeviceServiceIdentifier
+            peer: peerId,
+            discoveryInfo: nil,
+            serviceType: DeviceTransferService.newDeviceServiceIdentifier,
         )
         advertiser.delegate = self
         return advertiser
@@ -141,7 +142,7 @@ class DeviceTransferService: NSObject, DeviceTransferServiceProtocol {
             self,
             selector: #selector(didEnterBackground),
             name: .OWSApplicationDidEnterBackground,
-            object: nil
+            object: nil,
         )
     }
 
@@ -206,7 +207,7 @@ class DeviceTransferService: NSObject, DeviceTransferServiceProtocol {
                 DependenciesBridge.shared.db.write { tx in
                     DependenciesBridge.shared.registrationStateChangeManager.setIsTransferComplete(
                         sendStateUpdateNotification: true,
-                        tx: tx
+                        tx: tx,
                     )
                 }
             }
@@ -233,7 +234,7 @@ class DeviceTransferService: NSObject, DeviceTransferServiceProtocol {
             newDeviceCertificateHash: certificateHash,
             manifest: manifest,
             transferredFileIds: [],
-            progress: progress
+            progress: progress,
         )
 
         newDeviceServiceBrowser.invitePeer(peerId, to: session, withContext: nil, timeout: 30)
@@ -301,7 +302,7 @@ class DeviceTransferService: NSObject, DeviceTransferServiceProtocol {
             DependenciesBridge.shared.db.write { tx in
                 DependenciesBridge.shared.registrationStateChangeManager.setIsTransferComplete(
                     sendStateUpdateNotification: notifyRegState,
-                    tx: tx
+                    tx: tx,
                 )
             }
         }
@@ -409,7 +410,7 @@ class DeviceTransferService: NSObject, DeviceTransferServiceProtocol {
     private static let walCopyFilename = "wal_copy_for_transfer"
 
     private static func urlForCopy(
-        databaseFile: DeviceTransferProtoFile
+        databaseFile: DeviceTransferProtoFile,
     ) throws -> URL {
         let newFileName: String
         let newFileExtension: String
@@ -427,11 +428,11 @@ class DeviceTransferService: NSObject, DeviceTransferServiceProtocol {
     }
 
     private static func makeLocalCopy(
-        databaseFile: DeviceTransferProtoFile
+        databaseFile: DeviceTransferProtoFile,
     ) throws -> DeviceTransferProtoFile {
         let url = URL(
             fileURLWithPath: databaseFile.relativePath,
-            relativeTo: DeviceTransferService.appSharedDataDirectory
+            relativeTo: DeviceTransferService.appSharedDataDirectory,
         )
 
         if !OWSFileSystem.fileOrFolderExists(url: url) {
@@ -458,7 +459,7 @@ class DeviceTransferService: NSObject, DeviceTransferServiceProtocol {
     func sendDoneMessage(to peerId: MCPeerID) throws {
         Logger.info("Sending done message")
 
-        guard let session = session else {
+        guard let session else {
             throw OWSAssertionError("attempted to send done message without an available session")
         }
 
@@ -469,7 +470,7 @@ class DeviceTransferService: NSObject, DeviceTransferServiceProtocol {
     func sendBackgroundAppMessage(to peerId: MCPeerID) throws {
         Logger.info("Sending backgrounded message")
 
-        guard let session = session else {
+        guard let session else {
             throw OWSAssertionError("attempted to send backgrounded message without an available session")
         }
 
@@ -489,17 +490,19 @@ class DeviceTransferService: NSObject, DeviceTransferServiceProtocol {
 
         stopThroughputCalculation()
 
-        guard let progress: Progress = {
-            switch transferState {
-            case .incoming(_, _, _, _, let progress):
-                return progress
-            case .outgoing(_, _, _, _, let progress):
-                return progress
-            case .idle:
-                owsFailDebug("Can't start throughput calculation while idle")
-                return nil
-            }
-        }() else {
+        guard
+            let progress: Progress = {
+                switch transferState {
+                case .incoming(_, _, _, _, let progress):
+                    return progress
+                case .outgoing(_, _, _, _, let progress):
+                    return progress
+                case .idle:
+                    owsFailDebug("Can't start throughput calculation while idle")
+                    return nil
+                }
+            }()
+        else {
             return owsFailDebug("Can't start throughput calculations without progress")
         }
 

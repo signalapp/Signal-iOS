@@ -34,22 +34,26 @@ public struct AudioSource: Hashable, CustomDebugStringConvertible {
         // In that case, instead we prefer just the model name e.g. "iPhone" or "iPad"
         let localizedName = isBuiltInEarPiece ? UIDevice.current.localizedModel : portDescription.portName
 
-        self.init(localizedName: localizedName,
-                  isBuiltInSpeaker: false,
-                  isBuiltInEarPiece: isBuiltInEarPiece,
-                  portDescription: portDescription)
+        self.init(
+            localizedName: localizedName,
+            isBuiltInSpeaker: false,
+            isBuiltInEarPiece: isBuiltInEarPiece,
+            portDescription: portDescription,
+        )
     }
 
     // Speakerphone is handled separately from the other audio routes as it doesn't appear as an "input"
     public static var builtInSpeaker: AudioSource {
-        return self.init(localizedName: OWSLocalizedString("AUDIO_ROUTE_BUILT_IN_SPEAKER", comment: "action sheet button title to enable built in speaker during a call"),
-                         isBuiltInSpeaker: true,
-                         isBuiltInEarPiece: false)
+        return self.init(
+            localizedName: OWSLocalizedString("AUDIO_ROUTE_BUILT_IN_SPEAKER", comment: "action sheet button title to enable built in speaker during a call"),
+            isBuiltInSpeaker: true,
+            isBuiltInEarPiece: false,
+        )
     }
 
     // MARK: Hashable
 
-    public static func == (lhs: AudioSource, rhs: AudioSource) -> Bool {
+    public static func ==(lhs: AudioSource, rhs: AudioSource) -> Bool {
         // Simply comparing the `portDescription` vs the `portDescription.uid`
         // caused multiple instances of the built in mic to turn up in a set.
         if lhs.isBuiltInSpeaker && rhs.isBuiltInSpeaker {

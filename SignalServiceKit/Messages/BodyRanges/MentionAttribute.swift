@@ -29,7 +29,7 @@ public enum Mention {
     public static let prefix = "@"
 }
 
-internal protocol MentionAttribute: Equatable, Hashable {
+protocol MentionAttribute: Equatable, Hashable {
 
     /// Externally: identifies a single mention range, even if multiple mentions with
     /// the same uuid exist in the same message.
@@ -40,12 +40,12 @@ internal protocol MentionAttribute: Equatable, Hashable {
     var mentionAci: Aci { get }
 }
 
-internal struct UnhydratedMentionAttribute: MentionAttribute {
+struct UnhydratedMentionAttribute: MentionAttribute {
 
-    internal let id: MentionIDType
-    internal let mentionAci: Aci
+    let id: MentionIDType
+    let mentionAci: Aci
 
-    internal static func fromOriginalRange(_ range: NSRange, mentionAci: Aci) -> Self {
+    static func fromOriginalRange(_ range: NSRange, mentionAci: Aci) -> Self {
         var hasher = Hasher()
         hasher.combine(range)
         let id = hasher.finalize()
@@ -58,17 +58,17 @@ internal struct UnhydratedMentionAttribute: MentionAttribute {
     }
 }
 
-internal struct HydratedMentionAttribute: MentionAttribute {
+struct HydratedMentionAttribute: MentionAttribute {
 
-    internal let id: MentionIDType
-    internal let mentionAci: Aci
+    let id: MentionIDType
+    let mentionAci: Aci
     /// Name without the prefix.
-    internal let displayName: String
+    let displayName: String
 
-    internal static func fromOriginalRange(
+    static func fromOriginalRange(
         _ range: NSRange,
         mentionAci: Aci,
-        displayName: String
+        displayName: String,
     ) -> Self {
         var hasher = Hasher()
         hasher.combine(range)
@@ -79,22 +79,22 @@ internal struct HydratedMentionAttribute: MentionAttribute {
     private init(
         id: MentionIDType,
         mentionAci: Aci,
-        displayName: String
+        displayName: String,
     ) {
         self.id = id
         self.mentionAci = mentionAci
         self.displayName = displayName
     }
 
-    internal func applyAttributes(
+    func applyAttributes(
         to string: NSMutableAttributedString,
         at range: NSRange,
         config: MentionDisplayConfiguration,
-        isDarkThemeEnabled: Bool
+        isDarkThemeEnabled: Bool,
     ) {
         var attributes: [NSAttributedString.Key: Any] = [
             .font: config.font,
-            .foregroundColor: config.foregroundColor.color(isDarkThemeEnabled: isDarkThemeEnabled)
+            .foregroundColor: config.foregroundColor.color(isDarkThemeEnabled: isDarkThemeEnabled),
         ]
         if let backgroundColor = config.backgroundColor {
             attributes[.backgroundColor] = backgroundColor.color(isDarkThemeEnabled: isDarkThemeEnabled)

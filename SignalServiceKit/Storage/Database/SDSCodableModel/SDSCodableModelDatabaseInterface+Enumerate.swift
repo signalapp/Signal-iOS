@@ -16,7 +16,7 @@ extension SDSCodableModelDatabaseInterfaceImpl {
         modelType: Model.Type,
         transaction: DBReadTransaction,
         batchingPreference: BatchingPreference,
-        block: (Model, UnsafeMutablePointer<ObjCBool>) -> Void
+        block: (Model, UnsafeMutablePointer<ObjCBool>) -> Void,
     ) {
         let batchSize = batchSize(batchingPreference: batchingPreference)
         enumerateModels(
@@ -25,7 +25,7 @@ extension SDSCodableModelDatabaseInterfaceImpl {
             sql: nil,
             arguments: nil,
             batchSize: batchSize,
-            block: block
+            block: block,
         )
     }
 
@@ -36,7 +36,7 @@ extension SDSCodableModelDatabaseInterfaceImpl {
         sql: String,
         arguments: StatementArguments,
         batchingPreference: BatchingPreference,
-        block: (Model, UnsafeMutablePointer<ObjCBool>) -> Void
+        block: (Model, UnsafeMutablePointer<ObjCBool>) -> Void,
     ) {
         let batchSize = batchSize(batchingPreference: batchingPreference)
         enumerateModels(
@@ -45,7 +45,7 @@ extension SDSCodableModelDatabaseInterfaceImpl {
             sql: sql,
             arguments: arguments,
             batchSize: batchSize,
-            block: block
+            block: block,
         )
     }
 
@@ -68,15 +68,15 @@ extension SDSCodableModelDatabaseInterfaceImpl {
         sql: String? = nil,
         arguments: StatementArguments? = nil,
         batchSize: UInt,
-        block: (Model, UnsafeMutablePointer<ObjCBool>) -> Void
+        block: (Model, UnsafeMutablePointer<ObjCBool>) -> Void,
     ) {
         failIfThrows {
             var recordCursor: RecordCursor<Model>
-            if let sql = sql, let arguments = arguments {
+            if let sql, let arguments {
                 recordCursor = try Model.fetchCursor(
                     transaction.database,
                     sql: sql,
-                    arguments: arguments
+                    arguments: arguments,
                 )
             } else {
                 recordCursor = try modelType.fetchCursor(transaction.database)

@@ -84,11 +84,11 @@ extension BackupArchiveProtoStreamWriter {
      * Helper function to build a frame and write the proto to the backup file in one action
      * with standard error handling.
      */
-    internal static func writeFrameToStream<AppIdType>(
+    static func writeFrameToStream<AppIdType>(
         _ stream: BackupArchiveProtoOutputStream,
         objectId: AppIdType,
         frameBencher: BackupArchive.Bencher.FrameBencher,
-        frameBuilder: () -> BackupProto_Frame
+        frameBuilder: () -> BackupProto_Frame,
     ) -> BackupArchive.ArchiveFrameError<AppIdType>? {
         let frame = frameBuilder()
         frameBencher.didProcessFrame(frame)

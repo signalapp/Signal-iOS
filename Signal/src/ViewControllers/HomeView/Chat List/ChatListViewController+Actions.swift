@@ -18,8 +18,9 @@ extension ChatListViewController {
         }
 
         let currentThread = self.conversationSplitViewController?.selectedThread
-        if let previousIndexPath = renderState.indexPath(beforeThread: currentThread),
-           let threadUniqueId = renderState.threadUniqueId(forIndexPath: previousIndexPath)
+        if
+            let previousIndexPath = renderState.indexPath(beforeThread: currentThread),
+            let threadUniqueId = renderState.threadUniqueId(forIndexPath: previousIndexPath)
         {
             presentThread(threadUniqueId: threadUniqueId, action: .compose, animated: true)
         }
@@ -37,8 +38,9 @@ extension ChatListViewController {
         }
 
         let currentThread = self.conversationSplitViewController?.selectedThread
-        if let nextIndexPath = renderState.indexPath(afterThread: currentThread),
-           let threadUniqueId = renderState.threadUniqueId(forIndexPath: nextIndexPath)
+        if
+            let nextIndexPath = renderState.indexPath(afterThread: currentThread),
+            let threadUniqueId = renderState.threadUniqueId(forIndexPath: nextIndexPath)
         {
             presentThread(threadUniqueId: threadUniqueId, action: .compose, animated: true)
         }
@@ -48,13 +50,13 @@ extension ChatListViewController {
         threadUniqueId: String,
         action: ConversationViewAction = .none,
         focusMessageId: String? = nil,
-        animated: Bool
+        animated: Bool,
     ) {
         conversationSplitViewController?.presentThread(
             threadUniqueId: threadUniqueId,
             action: action,
             focusMessageId: focusMessageId,
-            animated: animated
+            animated: animated,
         )
     }
 }

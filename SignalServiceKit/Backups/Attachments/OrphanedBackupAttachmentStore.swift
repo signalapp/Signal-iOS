@@ -23,7 +23,7 @@ public protocol OrphanedBackupAttachmentStore {
     func removeThumbnail(
         fullsizeMediaName: String,
         thumbnailMediaId: Data,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws
 
     /// Remove any tasks for deleting a fullsize media tier upload with
@@ -32,13 +32,13 @@ public protocol OrphanedBackupAttachmentStore {
     func removeFullsize(
         mediaName: String,
         fullsizeMediaId: Data,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws
 
     /// Remove the task from the queue. Should be called once deleted on the cdn (or permanently failed).
     func remove(
         _ record: OrphanedBackupAttachment,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws
 
     /// Remove all records from the table.
@@ -57,7 +57,7 @@ public class OrphanedBackupAttachmentStoreImpl: OrphanedBackupAttachmentStore {
 
     public func peek(
         count: UInt,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> [OrphanedBackupAttachment] {
         let db = tx.database
         return try OrphanedBackupAttachment
@@ -92,13 +92,13 @@ public class OrphanedBackupAttachmentStoreImpl: OrphanedBackupAttachmentStore {
     public func removeThumbnail(
         fullsizeMediaName: String,
         thumbnailMediaId: Data,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         try OrphanedBackupAttachment
             // Records for thumbnails are enqueued with the fullsize's media name
             .filter(Column(OrphanedBackupAttachment.CodingKeys.mediaName) == fullsizeMediaName)
             .filter(Column(OrphanedBackupAttachment.CodingKeys.type)
-                    == OrphanedBackupAttachment.SizeType.thumbnail.rawValue)
+                == OrphanedBackupAttachment.SizeType.thumbnail.rawValue)
             .deleteAll(tx.database)
         try OrphanedBackupAttachment
             // No need to filter by type; matching the mediaId is sufficient
@@ -109,22 +109,22 @@ public class OrphanedBackupAttachmentStoreImpl: OrphanedBackupAttachmentStore {
     public func removeFullsize(
         mediaName: String,
         fullsizeMediaId: Data,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         try OrphanedBackupAttachment
             .filter(Column(OrphanedBackupAttachment.CodingKeys.mediaName) == mediaName)
             .filter(Column(OrphanedBackupAttachment.CodingKeys.type)
-                    == OrphanedBackupAttachment.SizeType.fullsize.rawValue)
+                == OrphanedBackupAttachment.SizeType.fullsize.rawValue)
             .deleteAll(tx.database)
         try OrphanedBackupAttachment
-        // No need to filter by type; matching the mediaId is sufficient
+            // No need to filter by type; matching the mediaId is sufficient
             .filter(Column(OrphanedBackupAttachment.CodingKeys.mediaId) == fullsizeMediaId)
             .deleteAll(tx.database)
     }
 
     public func remove(
         _ record: OrphanedBackupAttachment,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         let db = tx.database
         try record.delete(db)

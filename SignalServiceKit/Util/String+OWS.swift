@@ -60,7 +60,7 @@ extension String {
     }
 
     /// - Warning: Only exposed for testing. Do not use.
-    internal func filterUnsafeFilenameCharacters() -> String {
+    func filterUnsafeFilenameCharacters() -> String {
         StringSanitizer.sanitize(self) { c in
             c.unicodeScalars.contains { s in
                 unsafeFilenameCharacterSet.contains(s)
@@ -136,7 +136,7 @@ extension String {
             }
         }
 
-        if (isolateStartsCount == isolatePopCount && formattingStartsCount == formattingPopCount) {
+        if isolateStartsCount == isolatePopCount, formattingStartsCount == formattingPopCount {
             return self
         }
 
@@ -173,7 +173,7 @@ extension String {
 
     public func bidirectionallyBalancedAndIsolated() -> String {
         // We're already isolated, nothing to do here.
-        if let first = unicodeScalars.first, let last = unicodeScalars.last, first == bidiFirstStrongIsolate && last == bidiPopDirectionalIsolate {
+        if let first = unicodeScalars.first, let last = unicodeScalars.last, first == bidiFirstStrongIsolate, last == bidiPopDirectionalIsolate {
             return self
         }
 

@@ -12,7 +12,7 @@ class RemoteMegaphone: MegaphoneView {
     init(
         experienceUpgrade: ExperienceUpgrade,
         remoteMegaphoneModel: RemoteMegaphoneModel,
-        fromViewController: UIViewController
+        fromViewController: UIViewController,
     ) {
         megaphoneModel = remoteMegaphoneModel
 
@@ -33,28 +33,28 @@ class RemoteMegaphone: MegaphoneView {
         if let primary = megaphoneModel.presentablePrimaryAction {
             let primaryButton = MegaphoneView.Button(title: primary.presentableText) { [weak self, weak fromViewController] in
                 guard
-                    let self = self,
-                    let fromViewController = fromViewController
+                    let self,
+                    let fromViewController
                 else { return }
 
                 self.performAction(
                     primary.action,
                     fromViewController: fromViewController,
-                    buttonDescriptor: "primary"
+                    buttonDescriptor: "primary",
                 )
             }
 
             if let secondary = megaphoneModel.presentableSecondaryAction {
                 let secondaryButton = MegaphoneView.Button(title: secondary.presentableText) { [weak self, weak fromViewController] in
                     guard
-                        let self = self,
-                        let fromViewController = fromViewController
+                        let self,
+                        let fromViewController
                     else { return }
 
                     self.performAction(
                         secondary.action,
                         fromViewController: fromViewController,
-                        buttonDescriptor: "secondary"
+                        buttonDescriptor: "secondary",
                     )
                 }
 
@@ -75,7 +75,7 @@ class RemoteMegaphone: MegaphoneView {
     private func performAction(
         _ action: RemoteMegaphoneModel.Manifest.Action,
         fromViewController: UIViewController,
-        buttonDescriptor: String
+        buttonDescriptor: String,
     ) {
         switch action {
         case .snooze:
@@ -92,9 +92,11 @@ class RemoteMegaphone: MegaphoneView {
                 self.dismiss(animated: false)
             }
 
-            guard DonationUtilities.canDonateInAnyWay(
-                tsAccountManager: DependenciesBridge.shared.tsAccountManager,
-            ) else {
+            guard
+                DonationUtilities.canDonateInAnyWay(
+                    tsAccountManager: DependenciesBridge.shared.tsAccountManager,
+                )
+            else {
                 done()
                 DonationViewsUtil.openDonateWebsite()
                 return
@@ -108,13 +110,13 @@ class RemoteMegaphone: MegaphoneView {
                         guard
                             let frontVc = frontVc(),
                             let badgeThanksSheetPresenter = BadgeThanksSheetPresenter.fromGlobalsWithSneakyTransaction(
-                                successMode: receiptCredentialSuccessMode
+                                successMode: receiptCredentialSuccessMode,
                             )
                         else { return }
 
                         Task {
                             await badgeThanksSheetPresenter.presentAndRecordBadgeThanks(
-                                fromViewController: frontVc
+                                fromViewController: frontVc,
                             )
                         }
                     }
@@ -135,10 +137,12 @@ class RemoteMegaphone: MegaphoneView {
                 self.dismiss(animated: false)
             }
 
-            guard DonationUtilities.canDonate(
-                inMode: .gift,
-                tsAccountManager: DependenciesBridge.shared.tsAccountManager,
-            ) else {
+            guard
+                DonationUtilities.canDonate(
+                    inMode: .gift,
+                    tsAccountManager: DependenciesBridge.shared.tsAccountManager,
+                )
+            else {
                 done()
                 DonationViewsUtil.openDonateWebsite()
                 return
@@ -163,11 +167,11 @@ private extension RemoteMegaphoneModel {
 
         fileprivate init?(
             action: Manifest.Action?,
-            presentableText: String?
+            presentableText: String?,
         ) {
             guard
-                let action = action,
-                let presentableText = presentableText
+                let action,
+                let presentableText
             else {
                 return nil
             }
@@ -180,14 +184,14 @@ private extension RemoteMegaphoneModel {
     var presentablePrimaryAction: PresentableAction? {
         PresentableAction(
             action: manifest.primaryAction,
-            presentableText: translation.primaryActionText
+            presentableText: translation.primaryActionText,
         )
     }
 
     var presentableSecondaryAction: PresentableAction? {
         PresentableAction(
             action: manifest.secondaryAction,
-            presentableText: translation.secondaryActionText
+            presentableText: translation.secondaryActionText,
         )
     }
 }

@@ -31,7 +31,7 @@ public class ColorPickerBarColor {
     }
 
     class func defaultColor() -> ColorPickerBarColor {
-        return ColorPickerBarColor(color: UIColor(rgbHex: 0xff0000), palettePhase: 1/9)
+        return ColorPickerBarColor(color: UIColor(rgbHex: 0xff0000), palettePhase: 1 / 9)
     }
 
     class var white: ColorPickerBarColor {
@@ -52,7 +52,7 @@ public class ColorPickerBarColor {
             UIColor(rgbHex: 0x0000ff),
             UIColor(rgbHex: 0xff00ff),
             UIColor(rgbHex: 0xff0000),
-            UIColor(rgbHex: 0xffffff)
+            UIColor(rgbHex: 0xffffff),
         ]
     }
 
@@ -60,7 +60,7 @@ public class ColorPickerBarColor {
         return gradientUIColors.map { $0.cgColor }
     }
 
-    static func == (left: ColorPickerBarColor, right: ColorPickerBarColor) -> Bool {
+    static func ==(left: ColorPickerBarColor, right: ColorPickerBarColor) -> Bool {
         return left.palettePhase.fuzzyEquals(right.palettePhase)
     }
 }
@@ -101,10 +101,12 @@ private class ColorPreviewView: OWSLayerView {
 
         teardropLayer.fillColor = teardropColor.cgColor
 
-        layoutCallback = { (view) in
-            ColorPreviewView.updateLayers(view: view,
-                                          circleLayer: circleLayer,
-                                          teardropLayer: teardropLayer)
+        layoutCallback = { view in
+            ColorPreviewView.updateLayers(
+                view: view,
+                circleLayer: circleLayer,
+                teardropLayer: teardropLayer,
+            )
         }
 
         // The bounding rect of the teardrop + shadow is non-trivial, so
@@ -120,9 +122,11 @@ private class ColorPreviewView: OWSLayerView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    static func updateLayers(view: UIView,
-                             circleLayer: CAShapeLayer,
-                             teardropLayer: CAShapeLayer) {
+    static func updateLayers(
+        view: UIView,
+        circleLayer: CAShapeLayer,
+        teardropLayer: CAShapeLayer,
+    ) {
         let bounds = view.bounds
         let outerRadius = innerRadius + circleMargin
         let bottomEdge = CGPoint(x: bounds.center.x, y: bounds.maxY)
@@ -149,23 +153,29 @@ private class ColorPreviewView: OWSLayerView {
         let endAngle = -angle + .halfPi
 
         let teardropPath = UIBezierPath()
-        teardropPath.addArc(withCenter: circleCenter,
-                            radius: outerRadius,
-                            startAngle: startAngle,
-                            endAngle: endAngle,
-                            clockwise: true)
-        teardropPath.addArc(withCenter: teardropTipCenter,
-                            radius: teardropTipRadius,
-                            startAngle: endAngle,
-                            endAngle: startAngle,
-                            clockwise: true)
+        teardropPath.addArc(
+            withCenter: circleCenter,
+            radius: outerRadius,
+            startAngle: startAngle,
+            endAngle: endAngle,
+            clockwise: true,
+        )
+        teardropPath.addArc(
+            withCenter: teardropTipCenter,
+            radius: teardropTipRadius,
+            startAngle: endAngle,
+            endAngle: startAngle,
+            clockwise: true,
+        )
 
         teardropLayer.path = teardropPath.cgPath
         teardropLayer.frame = bounds
 
         let innerCircleSize = CGSize(square: innerRadius * 2)
-        let circleFrame = CGRect(origin: circleCenter.minus(innerCircleSize.asPoint.times(0.5)),
-                                 size: innerCircleSize)
+        let circleFrame = CGRect(
+            origin: circleCenter.minus(innerCircleSize.asPoint.times(0.5)),
+            size: innerCircleSize,
+        )
         circleLayer.path = UIBezierPath(ovalIn: circleFrame).cgPath
         circleLayer.frame = bounds
     }
@@ -212,6 +222,7 @@ public class ColorPickerBarView: UIView {
         borderView.autoVCenterInSuperview()
         return selectionView
     }()
+
     // imageWrapper is used to host the "selection view".
     private let imageWrapper = OWSLayerView()
     private var selectionConstraint: NSLayoutConstraint?
@@ -239,7 +250,7 @@ public class ColorPickerBarView: UIView {
         addSubview(imageViewBorder)
         imageViewBorder.autoPinEdges(toEdgesOf: imageView, with: UIEdgeInsets(margin: -borderWidth))
 
-        imageWrapper.layoutCallback = { [weak self] (_) in
+        imageWrapper.layoutCallback = { [weak self] _ in
             guard let strongSelf = self else {
                 return
             }
@@ -253,8 +264,15 @@ public class ColorPickerBarView: UIView {
 
         // There must be a better way to pin the selection view's location,
         // but I can't find it.
-        let selectionConstraint = NSLayoutConstraint(item: selectionView, attribute: .centerX, relatedBy: .equal,
-                                                     toItem: imageWrapper, attribute: .leading, multiplier: 1, constant: 0)
+        let selectionConstraint = NSLayoutConstraint(
+            item: selectionView,
+            attribute: .centerX,
+            relatedBy: .equal,
+            toItem: imageWrapper,
+            attribute: .leading,
+            multiplier: 1,
+            constant: 0,
+        )
         selectionConstraint.autoInstall()
         self.selectionConstraint = selectionConstraint
 
@@ -310,8 +328,10 @@ public class ColorPickerBarView: UIView {
             owsFailDebug("Couldn't find matching segment.")
             return ColorPickerBarColor.defaultColor()
         }
-        guard palettePhase >= segment.palettePhase0,
-              palettePhase <= segment.palettePhase1 else {
+        guard
+            palettePhase >= segment.palettePhase0,
+            palettePhase <= segment.palettePhase1
+        else {
             owsFailDebug("Invalid segment.")
             return ColorPickerBarColor.defaultColor()
         }
@@ -326,7 +346,7 @@ public class ColorPickerBarView: UIView {
         selectionView.backgroundColor = selectedValue.color
         previewView.selectedColor = selectedValue.color
 
-        guard let selectionConstraint = selectionConstraint else {
+        guard let selectionConstraint else {
             owsFailDebug("Missing selectionConstraint.")
             return
         }

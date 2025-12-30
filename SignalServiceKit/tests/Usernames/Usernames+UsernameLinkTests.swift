@@ -30,7 +30,7 @@ class UsernameLinkTests: XCTestCase {
             (url(scheme: "https", host: "signal.me", path: "/"), false),
             (url(scheme: "https", host: "signal.me", path: "/", fragment: goodFragment, query: "foo=bar"), false),
             (url(scheme: "https", host: "signal.me", path: "/", fragment: goodFragment, user: "admin", password: "1337"), false),
-            (url(scheme: "https", host: "signal.me", path: "/", fragment: goodFragment, port: 80), false)
+            (url(scheme: "https", host: "signal.me", path: "/", fragment: goodFragment, port: 80), false),
         ]
 
         for (i, testCase) in testCases.enumerated() {
@@ -40,7 +40,7 @@ class UsernameLinkTests: XCTestCase {
             XCTAssertEqual(
                 actual != nil,
                 shouldParse,
-                "\(i): \(url.absoluteString)"
+                "\(i): \(url.absoluteString)",
             )
         }
     }
@@ -55,7 +55,7 @@ class UsernameLinkTests: XCTestCase {
 
         let testCases: [(String, String)] = [
             ("aa?", "https://signal.me/#eu/YWE_AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwPvAiiinqxGwqz0Z99bBr5X"),
-            ("aa>", "https://signal.me/#eu/YWE-AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwPvAiiinqxGwqz0Z99bBr5X")
+            ("aa>", "https://signal.me/#eu/YWE-AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwPvAiiinqxGwqz0Z99bBr5X"),
         ]
 
         for testCase in testCases {
@@ -65,7 +65,7 @@ class UsernameLinkTests: XCTestCase {
 
             let actual = Usernames.UsernameLink(
                 handle: knownHandle,
-                entropy: entropy
+                entropy: entropy,
             )!.url.absoluteString
 
             XCTAssertEqual(actual, expected)
@@ -80,7 +80,7 @@ class UsernameLinkTests: XCTestCase {
         query: String? = nil,
         user: String? = nil,
         password: String? = nil,
-        port: Int? = nil
+        port: Int? = nil,
     ) -> URL {
         var components = URLComponents()
         components.scheme = scheme

@@ -18,14 +18,14 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
 
     private var previouslyRenderedDisappearingMessagesDuration: UInt32?
 
-    public override var preferredNavigationBarStyle: OWSNavigationBarStyle { .solid }
-    public override var navbarBackgroundColorOverride: UIColor? { .clear }
+    override var preferredNavigationBarStyle: OWSNavigationBarStyle { .solid }
+    override var navbarBackgroundColorOverride: UIColor? { .clear }
 
-    public init(
+    init(
         badge: ProfileBadge,
         price: FiatMoney,
         paymentMethodsConfiguration: PaymentMethodsConfiguration,
-        thread: TSContactThread
+        thread: TSContactThread,
     ) {
         self.badge = badge
         self.price = price
@@ -35,14 +35,14 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
         super.init()
     }
 
-    public override func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
 
         DependenciesBridge.shared.databaseChangeObserver.appendDatabaseChangeDelegate(self)
 
         title = OWSLocalizedString(
             "DONATION_ON_BEHALF_OF_A_FRIEND_CONFIRMATION_SCREEN_TITLE",
-            comment: "Users can donate on a friend's behalf. This is the title on the screen where users confirm the donation, and can write a message for the friend."
+            comment: "Users can donate on a friend's behalf. This is the title on the screen where users confirm the donation, and can write a message for the friend.",
         )
 
         shouldAvoidKeyboard = true
@@ -57,12 +57,12 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
         SignalApp.shared.presentConversationForThread(
             threadUniqueId: thread.uniqueId,
             action: .none,
-            animated: false
+            animated: false,
         )
         dismiss(animated: true) {
             SignalApp.shared.conversationSplitViewController?.present(
                 BadgeGiftingThanksSheet(thread: self.thread, badge: self.badge),
-                animated: true
+                animated: true,
             )
         }
     }
@@ -91,9 +91,9 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
                     forDonationMode: .gift,
                     usingCurrency: self.price.currencyCode,
                     withConfiguration: self.paymentMethodsConfiguration,
-                    localNumber: DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber
+                    localNumber: DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber,
                 ),
-                didChoosePaymentMethod: { [weak self] (sheet, paymentMethod) in
+                didChoosePaymentMethod: { [weak self] sheet, paymentMethod in
                     sheet.dismiss(animated: true) { [weak self] in
                         guard let self else { return }
                         switch paymentMethod {
@@ -122,7 +122,7 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
         let view = TextViewWithPlaceholder()
         view.placeholderText = OWSLocalizedString(
             "DONATE_ON_BEHALF_OF_A_FRIEND_ADDITIONAL_MESSAGE_PLACEHOLDER",
-            comment: "Users can donate on a friend's behalf and can optionally add a message. This is the placeholder in the text field for that additional message."
+            comment: "Users can donate on a friend's behalf and can optionally add a message. This is the placeholder in the text field for that additional message.",
         )
         view.returnKeyType = .done
         view.delegate = self
@@ -143,7 +143,7 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
         let avatarView = ConversationAvatarView(
             sizeClass: .thirtySix,
             localUserDisplayMode: .asUser,
-            badged: true
+            badged: true,
         )
 
         let (recipientName, disappearingMessagesDuration) = SSKEnvironment.shared.databaseStorageRef.read { transaction -> (String, UInt32) in
@@ -193,7 +193,7 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
                 let disappearingMessagesTimerLabelView = UILabel()
                 disappearingMessagesTimerLabelView.text = DateUtil.formatDuration(
                     seconds: disappearingMessagesDuration,
-                    useShortFormat: true
+                    useShortFormat: true,
                 )
                 disappearingMessagesTimerLabelView.font = .dynamicTypeSubheadline
                 disappearingMessagesTimerLabelView.textAlignment = .center
@@ -201,7 +201,7 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
 
                 let disappearingMessagesTimerView = UIStackView(arrangedSubviews: [
                     iconView,
-                    disappearingMessagesTimerLabelView
+                    disappearingMessagesTimerLabelView,
                 ])
                 disappearingMessagesTimerView.spacing = 4
 
@@ -223,7 +223,7 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
             let messageInfoLabel = UILabel()
             messageInfoLabel.text = OWSLocalizedString(
                 "DONATE_ON_BEHALF_OF_A_FRIEND_ADDITIONAL_MESSAGE_INFO",
-                comment: "Users can donate on a friend's behalf and can optionally add a message. This is tells users about that optional message."
+                comment: "Users can donate on a friend's behalf and can optionally add a message. This is tells users about that optional message.",
             )
             messageInfoLabel.font = .dynamicTypeSubheadline
             messageInfoLabel.textColor = .Signal.label
@@ -241,7 +241,7 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
             badgeSection,
             recipientSection,
             messageInfoSection,
-            messageTextSection
+            messageTextSection,
         ]
 
         if disappearingMessagesDuration != 0 {
@@ -258,10 +258,10 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
 
                 let format = OWSLocalizedString(
                     "DONATION_ON_BEHALF_OF_A_FRIEND_DISAPPEARING_MESSAGES_NOTICE_FORMAT",
-                    comment: "When users make donations on a friend's behalf, a message is sent. This text tells senders that their message will disappear, if the conversation has disappearing messages enabled. Embeds {{duration}}, such as \"1 week\"."
+                    comment: "When users make donations on a friend's behalf, a message is sent. This text tells senders that their message will disappear, if the conversation has disappearing messages enabled. Embeds {{duration}}, such as \"1 week\".",
                 )
                 let durationString = String.formatDurationLossless(
-                    durationSeconds: disappearingMessagesDuration
+                    durationSeconds: disappearingMessagesDuration,
                 )
                 disappearingMessagesInfoLabel.text = String(format: format, durationString)
 
@@ -281,7 +281,7 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
 
     // MARK: - Footer
 
-    open override var bottomFooter: UIView? {
+    override open var bottomFooter: UIView? {
         get { bottomFooterContainer }
         set {}
     }
@@ -291,7 +291,7 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
             let descriptionLabel = UILabel()
             descriptionLabel.text = OWSLocalizedString(
                 "DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_DESCRIPTION",
-                comment: "Users can donate on a friend's behalf. This tells users that this will be a one-time donation."
+                comment: "Users can donate on a friend's behalf. This tells users that this will be a one-time donation.",
             )
             descriptionLabel.font = .dynamicTypeBody
             descriptionLabel.textColor = .Signal.label
@@ -315,7 +315,7 @@ class BadgeGiftingConfirmationViewController: OWSTableViewController2 {
             configuration: .largePrimary(title: CommonStrings.continueButton),
             primaryAction: UIAction { [weak self] _ in
                 self?.checkRecipientAndPresentChoosePaymentMethodSheet()
-            }
+            },
         )
 
         let stackView = UIStackView(arrangedSubviews: [
@@ -372,10 +372,12 @@ extension BadgeGiftingConfirmationViewController: DatabaseChangeDelegate {
 // MARK: - Text view delegate
 
 extension BadgeGiftingConfirmationViewController: TextViewWithPlaceholderDelegate {
-    func textView(_ textView: TextViewWithPlaceholder,
-                  uiTextView: UITextView,
-                  shouldChangeTextIn range: NSRange,
-                  replacementText text: String) -> Bool {
+    func textView(
+        _ textView: TextViewWithPlaceholder,
+        uiTextView: UITextView,
+        shouldChangeTextIn range: NSRange,
+        replacementText text: String,
+    ) -> Bool {
         if text == "\n" {
             uiTextView.resignFirstResponder()
         }

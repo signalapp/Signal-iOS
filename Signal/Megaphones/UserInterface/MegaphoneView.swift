@@ -15,11 +15,13 @@ class MegaphoneView: UIView, ExperienceUpgradeView {
             if imageName != nil { image = nil }
         }
     }
+
     var image: UIImage? {
         didSet {
             if image != nil { imageName = nil }
         }
     }
+
     var imageContentMode: UIView.ContentMode = .scaleAspectFit
 
     var animation: Animation?
@@ -39,7 +41,7 @@ class MegaphoneView: UIView, ExperienceUpgradeView {
             speed: CGFloat = 1,
             loopMode: LottieLoopMode = .playOnce,
             backgroundBehavior: LottieBackgroundBehavior = .forceFinish,
-            contentMode: UIView.ContentMode = .scaleAspectFit
+            contentMode: UIView.ContentMode = .scaleAspectFit,
         ) {
             self.name = name
             self.speed = speed
@@ -52,8 +54,10 @@ class MegaphoneView: UIView, ExperienceUpgradeView {
     }
 
     enum ButtonOrientation {
-        case horizontal, vertical
+        case horizontal
+        case vertical
     }
+
     var buttonOrientation: ButtonOrientation = .horizontal {
         willSet { assert(!hasPresented) }
     }
@@ -61,6 +65,7 @@ class MegaphoneView: UIView, ExperienceUpgradeView {
     var titleText: String? {
         willSet { assert(!hasPresented) }
     }
+
     var bodyText: String? {
         willSet { assert(!hasPresented) }
     }
@@ -74,7 +79,7 @@ class MegaphoneView: UIView, ExperienceUpgradeView {
     func setButtons(primary: Button, secondary: Button? = nil) {
         assert(!hasPresented)
 
-        if let secondary = secondary {
+        if let secondary {
             buttons = [primary, secondary]
         } else {
             buttons = [primary]
@@ -216,7 +221,7 @@ class MegaphoneView: UIView, ExperienceUpgradeView {
         let container: UIView
 
         if let image = { () -> UIImage? in
-            if let imageName = imageName { return UIImage(named: imageName) }
+            if let imageName { return UIImage(named: imageName) }
             return image
         }() {
             container = UIView()
@@ -227,7 +232,7 @@ class MegaphoneView: UIView, ExperienceUpgradeView {
             imageView.autoPinWidthToSuperview()
             imageView.autoPinToSquareAspectRatio()
             imageView.autoVCenterInSuperview()
-        } else if let animation = animation {
+        } else if let animation {
             container = UIView()
 
             if let backgroundImageName = animation.backgroundImageName {
@@ -282,7 +287,7 @@ class MegaphoneView: UIView, ExperienceUpgradeView {
             for button in buttons {
                 let buttonView = createButtonView(
                     button,
-                    font: previousButton == nil ? UIFont.semiboldFont(ofSize: 15) : .regularFont(ofSize: 15)
+                    font: previousButton == nil ? UIFont.semiboldFont(ofSize: 15) : .regularFont(ofSize: 15),
                 )
 
                 switch buttonOrientation {

@@ -13,7 +13,7 @@ protocol CallLinkManager {
     /// - Returns: An era ID.
     func peekCallLink(
         rootKey: CallLinkRootKey,
-        authCredential: SignalServiceKit.CallLinkAuthCredential
+        authCredential: SignalServiceKit.CallLinkAuthCredential,
     ) async throws -> String?
 
     func createCallLink(rootKey: CallLinkRootKey) async throws -> CallLinkManagerImpl.CreateResult
@@ -21,21 +21,21 @@ protocol CallLinkManager {
     func deleteCallLink(
         rootKey: CallLinkRootKey,
         adminPasskey: Data,
-        authCredential: SignalServiceKit.CallLinkAuthCredential
+        authCredential: SignalServiceKit.CallLinkAuthCredential,
     ) async throws
 
     func updateCallLinkName(
         _ name: String,
         rootKey: CallLinkRootKey,
         adminPasskey: Data,
-        authCredential: SignalServiceKit.CallLinkAuthCredential
+        authCredential: SignalServiceKit.CallLinkAuthCredential,
     ) async throws -> SignalServiceKit.CallLinkState
 
     func updateCallLinkRestrictions(
         requiresAdminApproval: Bool,
         rootKey: CallLinkRootKey,
         adminPasskey: Data,
-        authCredential: SignalServiceKit.CallLinkAuthCredential
+        authCredential: SignalServiceKit.CallLinkAuthCredential,
     ) async throws -> SignalServiceKit.CallLinkState
 }
 
@@ -51,7 +51,7 @@ class CallLinkManagerImpl: CallLinkManager {
     init(
         networkManager: NetworkManager,
         serverParams: GenericServerPublicParams,
-        tsAccountManager: any TSAccountManager
+        tsAccountManager: any TSAccountManager,
     ) {
         self.networkManager = networkManager
         self.serverParams = serverParams
@@ -71,7 +71,7 @@ class CallLinkManagerImpl: CallLinkManager {
 
     func peekCallLink(
         rootKey: CallLinkRootKey,
-        authCredential: SignalServiceKit.CallLinkAuthCredential
+        authCredential: SignalServiceKit.CallLinkAuthCredential,
     ) async throws -> String? {
         let sfuUrl = DebugFlags.callingUseTestSFU.get() ? TSConstants.sfuTestURL : TSConstants.sfuURL
         let secretParams = CallLinkSecretParams.deriveFromRootKey(rootKey.bytes)
@@ -79,7 +79,7 @@ class CallLinkManagerImpl: CallLinkManager {
         let peekResult = await self.sfuClient.peek(
             sfuUrl: sfuUrl,
             authCredentialPresentation: [UInt8](authCredentialPresentation.serialize()),
-            linkRootKey: rootKey
+            linkRootKey: rootKey,
         )
         if let errorCode = peekResult.errorStatusCode {
             switch errorCode {
@@ -106,8 +106,8 @@ class CallLinkManagerImpl: CallLinkManager {
             url: URL(string: "v1/call-link/create-auth")!,
             method: "POST",
             parameters: [
-                "createCallLinkCredentialRequest": credentialRequestContext.getRequest().serialize().base64EncodedString()
-            ]
+                "createCallLinkCredentialRequest": credentialRequestContext.getRequest().serialize().base64EncodedString(),
+            ],
         )
         let httpResult = try await self.networkManager.asyncRequest(httpRequest)
         guard httpResult.responseStatusCode == 200 else {
@@ -138,7 +138,7 @@ class CallLinkManagerImpl: CallLinkManager {
             linkRootKey: rootKey,
             adminPasskey: adminPasskey,
             callLinkPublicParams: [UInt8](publicParams.serialize()),
-            restrictions: SignalServiceKit.CallLinkState.Constants.defaultRequiresAdminApproval ? .adminApproval : .none
+            restrictions: SignalServiceKit.CallLinkState.Constants.defaultRequiresAdminApproval ? .adminApproval : .none,
         ).unwrap())
         return CreateResult(adminPasskey: adminPasskey, callLinkState: callLinkState)
     }
@@ -146,7 +146,7 @@ class CallLinkManagerImpl: CallLinkManager {
     func deleteCallLink(
         rootKey: CallLinkRootKey,
         adminPasskey: Data,
-        authCredential: SignalServiceKit.CallLinkAuthCredential
+        authCredential: SignalServiceKit.CallLinkAuthCredential,
     ) async throws {
         let sfuUrl = DebugFlags.callingUseTestSFU.get() ? TSConstants.sfuTestURL : TSConstants.sfuURL
         let secretParams = CallLinkSecretParams.deriveFromRootKey(rootKey.bytes)
@@ -155,7 +155,7 @@ class CallLinkManagerImpl: CallLinkManager {
             sfuUrl: sfuUrl,
             authCredentialPresentation: [UInt8](authCredentialPresentation.serialize()),
             linkRootKey: rootKey,
-            adminPasskey: adminPasskey
+            adminPasskey: adminPasskey,
         ).unwrap()
     }
 
@@ -163,7 +163,7 @@ class CallLinkManagerImpl: CallLinkManager {
         _ name: String,
         rootKey: CallLinkRootKey,
         adminPasskey: Data,
-        authCredential: SignalServiceKit.CallLinkAuthCredential
+        authCredential: SignalServiceKit.CallLinkAuthCredential,
     ) async throws -> SignalServiceKit.CallLinkState {
         let sfuUrl = DebugFlags.callingUseTestSFU.get() ? TSConstants.sfuTestURL : TSConstants.sfuURL
         let secretParams = CallLinkSecretParams.deriveFromRootKey(rootKey.bytes)
@@ -173,7 +173,7 @@ class CallLinkManagerImpl: CallLinkManager {
             authCredentialPresentation: [UInt8](authCredentialPresentation.serialize()),
             linkRootKey: rootKey,
             adminPasskey: adminPasskey,
-            newName: name
+            newName: name,
         ).unwrap())
     }
 
@@ -181,7 +181,7 @@ class CallLinkManagerImpl: CallLinkManager {
         requiresAdminApproval: Bool,
         rootKey: CallLinkRootKey,
         adminPasskey: Data,
-        authCredential: SignalServiceKit.CallLinkAuthCredential
+        authCredential: SignalServiceKit.CallLinkAuthCredential,
     ) async throws -> SignalServiceKit.CallLinkState {
         let sfuUrl = DebugFlags.callingUseTestSFU.get() ? TSConstants.sfuTestURL : TSConstants.sfuURL
         let secretParams = CallLinkSecretParams.deriveFromRootKey(rootKey.bytes)
@@ -191,7 +191,7 @@ class CallLinkManagerImpl: CallLinkManager {
             authCredentialPresentation: [UInt8](authCredentialPresentation.serialize()),
             linkRootKey: rootKey,
             adminPasskey: adminPasskey,
-            restrictions: requiresAdminApproval ? .adminApproval : .none
+            restrictions: requiresAdminApproval ? .adminApproval : .none,
         ).unwrap())
     }
 }

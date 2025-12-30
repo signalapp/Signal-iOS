@@ -48,7 +48,7 @@ public class ProfileFetcherJob {
         syncManager: any SyncManagerProtocol,
         tsAccountManager: any TSAccountManager,
         udManager: any OWSUDManager,
-        versionedProfiles: any VersionedProfiles
+        versionedProfiles: any VersionedProfiles,
     ) {
         self.serviceId = serviceId
         self.groupIdContext = groupIdContext
@@ -118,7 +118,7 @@ public class ProfileFetcherJob {
                 profileKey: versionedFetchParameters.profileKey,
                 shouldRequestCredential: versionedFetchParameters.shouldRequestCredential,
                 udAccessKey: versionedFetchParameters.auth?.key,
-                auth: self.authedAccount.chatServiceAuth
+                auth: self.authedAccount.chatServiceAuth,
             )
             do {
                 let response = try await makeRequest(versionedProfileRequest.request)
@@ -164,13 +164,13 @@ public class ProfileFetcherJob {
             accessKey: nil,
             endorsement: endorsement,
             authedAccount: self.authedAccount,
-            options: [.allowIdentifiedFallback, .isProfileFetch]
+            options: [.allowIdentifiedFallback, .isProfileFetch],
         )
 
         let result = try await requestMaker.makeRequest { sealedSenderAuth in
             return OWSRequestFactory.getUnversionedProfileRequest(
                 serviceId: serviceId,
-                auth: sealedSenderAuth.map({ .sealedSender($0) }) ?? .identified(self.authedAccount.chatServiceAuth)
+                auth: sealedSenderAuth.map({ .sealedSender($0) }) ?? .identified(self.authedAccount.chatServiceAuth),
             )
         }
 
@@ -194,7 +194,7 @@ public class ProfileFetcherJob {
 
     private func readVersionedFetchParameters(
         localIdentifiers: LocalIdentifiers,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> VersionedFetchParameters? {
         let _versionedFetchParameters = Self._readVersionedFetchParameters(
             serviceId: self.serviceId,
@@ -211,7 +211,7 @@ public class ProfileFetcherJob {
             profileKey: _versionedFetchParameters.profileKey,
             shouldRequestCredential: try (
                 self.mustFetchNewCredential
-                || self.versionedProfiles.validProfileKeyCredential(for: _versionedFetchParameters.aci, transaction: tx) == nil
+                    || self.versionedProfiles.validProfileKeyCredential(for: _versionedFetchParameters.aci, transaction: tx) == nil
             ),
             auth: _versionedFetchParameters.auth,
         )
@@ -231,12 +231,12 @@ public class ProfileFetcherJob {
         tx: DBReadTransaction,
     ) -> _VersionedFetchParameters? {
         switch serviceId.concreteType {
-        case .pni(_):
+        case .pni:
             return nil
         case .aci(let aci):
             let profileKey = profileManager.userProfile(
                 for: SignalServiceAddress(aci),
-                tx: tx
+                tx: tx,
             )?.profileKey
             guard let profileKey else {
                 return nil
@@ -256,7 +256,7 @@ public class ProfileFetcherJob {
             return _VersionedFetchParameters(
                 aci: aci,
                 profileKey: ProfileKey(profileKey),
-                auth: auth
+                auth: auth,
             )
         }
     }
@@ -299,7 +299,7 @@ public class ProfileFetcherJob {
             let individualEndorsement = try endorsementStore.fetchIndividualEndorsement(
                 groupThreadId: groupThread.sqliteRowId!,
                 recipientId: recipient.id,
-                tx: tx
+                tx: tx,
             )
         else {
             throw OWSAssertionError("Can't find GSE for group member that should have one.")
@@ -307,7 +307,7 @@ public class ProfileFetcherJob {
         return GroupSendFullTokenBuilder(
             secretParams: try groupModel.secretParams(),
             expiration: combinedEndorsement.expiration,
-            endorsement: try GroupSendEndorsement(contents: individualEndorsement.endorsement)
+            endorsement: try GroupSendEndorsement(contents: individualEndorsement.endorsement),
         )
     }
 
@@ -318,15 +318,15 @@ public class ProfileFetcherJob {
 
     private func updateProfile(
         fetchedProfile: FetchedProfile,
-        localIdentifiers: LocalIdentifiers
+        localIdentifiers: LocalIdentifiers,
     ) async throws {
         await updateProfile(
             fetchedProfile: fetchedProfile,
             avatarDownloadResult: try await downloadAvatarIfNeeded(
                 fetchedProfile,
-                localIdentifiers: localIdentifiers
+                localIdentifiers: localIdentifiers,
             ),
-            localIdentifiers: localIdentifiers
+            localIdentifiers: localIdentifiers,
         )
     }
 
@@ -337,7 +337,7 @@ public class ProfileFetcherJob {
 
     private func downloadAvatarIfNeeded(
         _ fetchedProfile: FetchedProfile,
-        localIdentifiers: LocalIdentifiers
+        localIdentifiers: LocalIdentifiers,
     ) async throws -> AvatarDownloadResult {
         if localIdentifiers.contains(serviceId: fetchedProfile.profile.serviceId) {
             // Profile fetches NEVER touch the local user's avatar.
@@ -368,7 +368,7 @@ public class ProfileFetcherJob {
         let shouldPreventDownload = db.read { tx -> Bool in
             SSKEnvironment.shared.contactManagerImplRef.shouldBlockAvatarDownload(
                 address: profileAddress,
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -380,7 +380,7 @@ public class ProfileFetcherJob {
         do {
             temporaryAvatarUrl = try await profileManager.downloadAndDecryptAvatar(
                 avatarUrlPath: newAvatarUrlPath,
-                profileKey: profileKey
+                profileKey: profileKey,
             )
         } catch {
             Logger.warn("Error: \(error)")
@@ -398,14 +398,14 @@ public class ProfileFetcherJob {
         }
         return AvatarDownloadResult(
             remoteRelativePath: .setTo(newAvatarUrlPath),
-            localFileUrl: .setTo(temporaryAvatarUrl)
+            localFileUrl: .setTo(temporaryAvatarUrl),
         )
     }
 
     private func updateProfile(
         fetchedProfile: FetchedProfile,
         avatarDownloadResult: AvatarDownloadResult,
-        localIdentifiers: LocalIdentifiers
+        localIdentifiers: LocalIdentifiers,
     ) async {
         let profile = fetchedProfile.profile
         let serviceId = profile.serviceId
@@ -416,7 +416,7 @@ public class ProfileFetcherJob {
                     aci: aci,
                     verifier: profile.unidentifiedAccessVerifier,
                     hasUnrestrictedAccess: profile.hasUnrestrictedUnidentifiedAccess,
-                    tx: transaction
+                    tx: transaction,
                 )
             }
 
@@ -442,7 +442,7 @@ public class ProfileFetcherJob {
             do {
                 avatarFilename = try OWSUserProfile.consumeTemporaryAvatarFileUrl(
                     avatarDownloadResult.localFileUrl,
-                    tx: transaction
+                    tx: transaction,
                 )
             } catch {
                 Logger.warn("Couldn't move downloaded avatar: \(error)")
@@ -458,7 +458,7 @@ public class ProfileFetcherJob {
                     profileBadges: profileBadgeMetadata,
                     lastFetchDate: Date(),
                     userProfileWriter: .profileFetch,
-                    tx: transaction
+                    tx: transaction,
                 )
             }
 
@@ -466,7 +466,7 @@ public class ProfileFetcherJob {
                 serviceId: serviceId,
                 fetchedCapabilities: fetchedProfile.profile.capabilities,
                 localIdentifiers: localIdentifiers,
-                tx: transaction
+                tx: transaction,
             )
 
             if localIdentifiers.aci == serviceId {
@@ -480,7 +480,7 @@ public class ProfileFetcherJob {
             self.paymentsHelper.setArePaymentsEnabled(
                 for: serviceId,
                 hasPaymentsEnabled: paymentAddress != nil,
-                transaction: transaction
+                transaction: transaction,
             )
         }
     }
@@ -489,7 +489,7 @@ public class ProfileFetcherJob {
         aci: Aci,
         verifier: Data?,
         hasUnrestrictedAccess: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         let unidentifiedAccessMode: UnidentifiedAccessMode = {
             guard let verifier else {
@@ -521,7 +521,7 @@ public class ProfileFetcherJob {
         serviceId: ServiceId,
         fetchedCapabilities: SignalServiceProfile.Capabilities,
         localIdentifiers: LocalIdentifiers,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         let registrationState = tsAccountManager.registrationState(tx: tx)
 
@@ -559,7 +559,7 @@ public class ProfileFetcherJob {
         }
         DependenciesBridge.shared.localProfileChecker.didFetchLocalProfile(LocalProfileChecker.RemoteProfile(
             avatarUrlPath: fetchedProfile.profile.avatarUrlPath,
-            decryptedProfile: fetchedProfile.decryptedProfile
+            decryptedProfile: fetchedProfile.decryptedProfile,
         ))
     }
 
@@ -609,10 +609,10 @@ public struct FetchedProfile {
         }
         let hasAnyField: Bool = (
             profile.profileNameEncrypted != nil
-            || profile.bioEncrypted != nil
-            || profile.bioEmojiEncrypted != nil
-            || profile.paymentAddressEncrypted != nil
-            || profile.phoneNumberSharingEncrypted != nil
+                || profile.bioEncrypted != nil
+                || profile.bioEmojiEncrypted != nil
+                || profile.paymentAddressEncrypted != nil
+                || profile.phoneNumberSharingEncrypted != nil,
         )
         guard hasAnyField else {
             return nil
@@ -637,7 +637,7 @@ public struct FetchedProfile {
             bio: bio,
             bioEmoji: bioEmoji,
             paymentAddressData: paymentAddressData,
-            phoneNumberSharing: phoneNumberSharing
+            phoneNumberSharing: phoneNumberSharing,
         )
     }
 }

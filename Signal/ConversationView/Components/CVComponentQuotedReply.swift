@@ -14,11 +14,14 @@ public class CVComponentQuotedReply: CVComponentBase, CVComponent {
     private var quotedReplyModel: QuotedReplyModel {
         quotedReply.quotedReplyModel
     }
+
     private let sharpCornersForQuotedMessage: OWSDirectionalRectCorner
 
-    init(itemModel: CVItemModel,
-         quotedReply: CVComponentState.QuotedReply,
-         sharpCornersForQuotedMessage: OWSDirectionalRectCorner) {
+    init(
+        itemModel: CVItemModel,
+        quotedReply: CVComponentState.QuotedReply,
+        sharpCornersForQuotedMessage: OWSDirectionalRectCorner,
+    ) {
         self.quotedReply = quotedReply
         self.sharpCornersForQuotedMessage = sharpCornersForQuotedMessage
 
@@ -29,7 +32,7 @@ public class CVComponentQuotedReply: CVComponentBase, CVComponent {
         CVComponentViewQuotedReply()
     }
 
-    public override func updateScrollingContent(componentView: CVComponentView) {
+    override public func updateScrollingContent(componentView: CVComponentView) {
         super.updateScrollingContent(componentView: componentView)
 
         guard let componentView = componentView as? CVComponentViewQuotedReply else {
@@ -39,9 +42,11 @@ public class CVComponentQuotedReply: CVComponentBase, CVComponent {
         componentView.quotedMessageView.updateAppearance()
     }
 
-    public func configureForRendering(componentView componentViewParam: CVComponentView,
-                                      cellMeasurement: CVCellMeasurement,
-                                      componentDelegate: CVComponentDelegate) {
+    public func configureForRendering(
+        componentView componentViewParam: CVComponentView,
+        cellMeasurement: CVCellMeasurement,
+        componentDelegate: CVComponentDelegate,
+    ) {
         guard let componentView = componentViewParam as? CVComponentViewQuotedReply else {
             owsFailDebug("Unexpected componentView.")
             componentViewParam.reset()
@@ -50,34 +55,42 @@ public class CVComponentQuotedReply: CVComponentBase, CVComponent {
 
         let quotedMessageView = componentView.quotedMessageView
         let adapter = QuotedMessageViewAdapter(interactionUniqueId: interaction.uniqueId)
-        quotedMessageView.configureForRendering(state: quotedReply.viewState,
-                                                delegate: adapter,
-                                                componentDelegate: componentDelegate,
-                                                sharpCorners: sharpCornersForQuotedMessage,
-                                                cellMeasurement: cellMeasurement)
+        quotedMessageView.configureForRendering(
+            state: quotedReply.viewState,
+            delegate: adapter,
+            componentDelegate: componentDelegate,
+            sharpCorners: sharpCornersForQuotedMessage,
+            cellMeasurement: cellMeasurement,
+        )
     }
 
     private var stackConfig: CVStackViewConfig {
-        CVStackViewConfig(axis: .vertical,
-                          alignment: .fill,
-                          spacing: 0,
-                          layoutMargins: .zero)
+        CVStackViewConfig(
+            axis: .vertical,
+            alignment: .fill,
+            spacing: 0,
+            layoutMargins: .zero,
+        )
     }
 
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
         owsAssertDebug(maxWidth > 0)
 
-        return QuotedMessageView.measure(state: quotedReply.viewState,
-                                         maxWidth: maxWidth,
-                                         measurementBuilder: measurementBuilder)
+        return QuotedMessageView.measure(
+            state: quotedReply.viewState,
+            maxWidth: maxWidth,
+            measurementBuilder: measurementBuilder,
+        )
     }
 
     // MARK: - Events
 
-    public override func handleTap(sender: UIGestureRecognizer,
-                                   componentDelegate: CVComponentDelegate,
-                                   componentView: CVComponentView,
-                                   renderItem: CVRenderItem) -> Bool {
+    override public func handleTap(
+        sender: UIGestureRecognizer,
+        componentDelegate: CVComponentDelegate,
+        componentView: CVComponentView,
+        renderItem: CVRenderItem,
+    ) -> Bool {
 
         componentDelegate.didTapQuotedReply(quotedReplyModel)
         return true
@@ -112,7 +125,7 @@ extension CVComponentQuotedReply: CVAccessibilityComponent {
     public var accessibilityDescription: String {
         let format = OWSLocalizedString(
             "QUOTED_REPLY_ACCESSIBILITY_LABEL_FORMAT",
-            comment: "Accessibility label stating the author of the message to which you are replying. Embeds: {{ the author of the message to which you are replying }}."
+            comment: "Accessibility label stating the author of the message to which you are replying. Embeds: {{ the author of the message to which you are replying }}.",
         )
 
         if quotedReply.quotedReplyModel.isOriginalMessageAuthorLocalUser {
@@ -120,7 +133,7 @@ extension CVComponentQuotedReply: CVAccessibilityComponent {
         } else {
             return String(
                 format: format,
-                self.quotedReply.viewState.quotedAuthorName
+                self.quotedReply.viewState.quotedAuthorName,
             )
         }
     }
@@ -144,7 +157,7 @@ private class QuotedMessageViewAdapter: QuotedMessageViewDelegate {
             DependenciesBridge.shared.attachmentDownloadManager.enqueueDownloadOfAttachmentsForMessage(
                 message,
                 priority: .userInitiated,
-                tx: tx
+                tx: tx,
             )
         }
     }

@@ -38,7 +38,7 @@ final class ThreadMerger {
         threadReplyInfoStore: ThreadReplyInfoStore,
         threadStore: ThreadStore,
         wallpaperImageStore: WallpaperImageStore,
-        wallpaperStore: WallpaperStore
+        wallpaperStore: WallpaperStore,
     ) {
         self.callRecordStore = callRecordStore
         self.chatColorSettingStore = chatColorSettingStore
@@ -103,11 +103,11 @@ final class ThreadMerger {
             // Prefer audio playback rates that have been changed from the default. If
             // they have both been changed, prefer the one from the thread we're
             // merging into.
-            audioPlaybackRate: (
-                valuePair.intoValue.audioPlaybackRate != 1
+            audioPlaybackRate:
+            valuePair.intoValue.audioPlaybackRate != 1
                 ? valuePair.intoValue.audioPlaybackRate
-                : valuePair.fromValue.audioPlaybackRate
-            )
+                : valuePair.fromValue.audioPlaybackRate,
+
         )
 
         func newValueIfChanged<T: Equatable>(_ keyPath: KeyPath<ThreadAssociatedData, T>) -> T? {
@@ -123,7 +123,7 @@ final class ThreadMerger {
             mutedUntilTimestamp: newValueIfChanged(\.mutedUntilTimestamp),
             audioPlaybackRate: newValueIfChanged(\.audioPlaybackRate),
             updateStorageService: true,
-            tx: tx
+            tx: tx,
         )
     }
 
@@ -213,13 +213,13 @@ final class ThreadMerger {
         callRecordStore.updateWithMergedThread(
             fromThreadRowId: fromThreadRowId,
             intoThreadRowId: intoThreadRowId,
-            tx: tx
+            tx: tx,
         )
 
         deletedCallRecordStore.updateWithMergedThread(
             fromThreadRowId: fromThreadRowId,
             intoThreadRowId: intoThreadRowId,
-            tx: tx
+            tx: tx,
         )
     }
 
@@ -244,7 +244,7 @@ final class ThreadMerger {
         }()
         let message: TSInfoMessage = .makeForThreadMerge(
             mergedThread: threadPair.intoValue,
-            previousE164: mergedPhoneNumber
+            previousE164: mergedPhoneNumber,
         )
         interactionStore.insertInteraction(message, tx: tx)
     }
@@ -279,7 +279,7 @@ final class ThreadMerger {
             uniqueIdField: \.uniqueId,
             fetchObjectsForServiceId: { threadStore.fetchContactThreads(serviceId: $0, tx: tx) },
             fetchObjectsForPhoneNumber: { threadStore.fetchContactThreads(phoneNumber: $0.stringValue, tx: tx) },
-            updateObject: { threadStore.updateThread($0, tx: tx) }
+            updateObject: { threadStore.updateThread($0, tx: tx) },
         )
 
         let threadMergeEventCount = mergeAllThreads(threadsToMerge, tx: tx)
@@ -293,7 +293,7 @@ final class ThreadMerger {
             let normalizedAddress = NormalizedDatabaseRecordAddress(
                 aci: recipient.aci,
                 phoneNumber: recipient.phoneNumber?.stringValue,
-                pni: recipient.pni
+                pni: recipient.pni,
             )
             finalThread.contactUUID = normalizedAddress?.serviceId?.serviceIdUppercaseString
             finalThread.contactPhoneNumber = normalizedAddress?.phoneNumber
@@ -359,7 +359,7 @@ class _ThreadMerger_SDSThreadMergerWrapper: _ThreadMerger_SDSThreadMergerShim {
             """
             try tx.database.execute(
                 sql: readReceiptSQL,
-                arguments: [threadRowIds.intoValue, threadRowIds.fromValue]
+                arguments: [threadRowIds.intoValue, threadRowIds.fromValue],
             )
         }
     }
@@ -380,7 +380,7 @@ class _ThreadMerger_SDSThreadMergerWrapper: _ThreadMerger_SDSThreadMergerShim {
         try? DependenciesBridge.shared.attachmentStore.updateMessageAttachmentThreadRowIdsForThreadMerge(
             fromThreadRowId: fromThreadRowId,
             intoThreadRowId: intoThreadRowId,
-            tx: tx
+            tx: tx,
         )
     }
 }
@@ -419,7 +419,7 @@ protocol _ThreadMerger_ThreadAssociatedDataManagerShim {
         mutedUntilTimestamp: UInt64?,
         audioPlaybackRate: Float?,
         updateStorageService: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     )
 }
 
@@ -431,7 +431,7 @@ class _ThreadMerger_ThreadAssociatedDataManagerWrapper: _ThreadMerger_ThreadAsso
         mutedUntilTimestamp: UInt64?,
         audioPlaybackRate: Float?,
         updateStorageService: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         guard isArchived != nil || isMarkedUnread != nil || mutedUntilTimestamp != nil || audioPlaybackRate != nil else {
             return
@@ -442,7 +442,7 @@ class _ThreadMerger_ThreadAssociatedDataManagerWrapper: _ThreadMerger_ThreadAsso
             mutedUntilTimestamp: mutedUntilTimestamp,
             audioPlaybackRate: audioPlaybackRate,
             updateStorageService: updateStorageService,
-            transaction: tx
+            transaction: tx,
         )
     }
 }
@@ -459,16 +459,16 @@ extension ThreadMerger {
     static func forUnitTests(
         interactionStore: InteractionStore = MockInteractionStore(),
         threadAssociatedDataStore: MockThreadAssociatedDataStore = MockThreadAssociatedDataStore(),
-        threadStore: ThreadStore = MockThreadStore()
+        threadStore: ThreadStore = MockThreadStore(),
     ) -> ThreadMerger {
         let disappearingMessagesConfigurationStore = MockDisappearingMessagesConfigurationStore()
         let threadReplyInfoStore = ThreadReplyInfoStore()
         let wallpaperImageStore = MockWallpaperImageStore()
         let wallpaperStore = WallpaperStore(
-            wallpaperImageStore: wallpaperImageStore
+            wallpaperImageStore: wallpaperImageStore,
         )
         let chatColorSettingStore = ChatColorSettingStore(
-            wallpaperStore: wallpaperStore
+            wallpaperStore: wallpaperStore,
         )
         let threadRemover = ThreadRemoverImpl(
             chatColorSettingStore: chatColorSettingStore,
@@ -480,7 +480,7 @@ extension ThreadMerger {
             threadReplyInfoStore: threadReplyInfoStore,
             threadSoftDeleteManager: MockThreadSoftDeleteManager(),
             threadStore: threadStore,
-            wallpaperStore: wallpaperStore
+            wallpaperStore: wallpaperStore,
         )
         return ThreadMerger(
             callRecordStore: MockCallRecordStore(),
@@ -497,7 +497,7 @@ extension ThreadMerger {
             threadReplyInfoStore: threadReplyInfoStore,
             threadStore: threadStore,
             wallpaperImageStore: MockWallpaperImageStore(),
-            wallpaperStore: wallpaperStore
+            wallpaperStore: wallpaperStore,
         )
     }
 }
@@ -507,6 +507,7 @@ class ThreadMerger_MockDisappearingMessagesConfigurationManager: ThreadMerger.Sh
     init(_ disappearingMessagesConfigurationStore: MockDisappearingMessagesConfigurationStore) {
         self.store = disappearingMessagesConfigurationStore
     }
+
     func setToken(_ token: VersionedDisappearingMessageToken, for thread: TSContactThread, tx: DBWriteTransaction) {
         self.store.set(token: token, for: .thread(thread), tx: tx)
     }
@@ -517,6 +518,7 @@ class ThreadMerger_MockThreadAssociatedDataManager: ThreadMerger.Shims.ThreadAss
     init(_ threadAssociatedDataStore: MockThreadAssociatedDataStore) {
         self.store = threadAssociatedDataStore
     }
+
     func updateValue(
         _ threadAssociatedData: ThreadAssociatedData,
         isArchived: Bool?,
@@ -524,14 +526,14 @@ class ThreadMerger_MockThreadAssociatedDataManager: ThreadMerger.Shims.ThreadAss
         mutedUntilTimestamp: UInt64?,
         audioPlaybackRate: Float?,
         updateStorageService: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         self.store.values[threadAssociatedData.threadUniqueId] = ThreadAssociatedData(
             threadUniqueId: threadAssociatedData.threadUniqueId,
             isArchived: isArchived ?? threadAssociatedData.isArchived,
             isMarkedUnread: isMarkedUnread ?? threadAssociatedData.isMarkedUnread,
             mutedUntilTimestamp: mutedUntilTimestamp ?? threadAssociatedData.mutedUntilTimestamp,
-            audioPlaybackRate: audioPlaybackRate ?? threadAssociatedData.audioPlaybackRate
+            audioPlaybackRate: audioPlaybackRate ?? threadAssociatedData.audioPlaybackRate,
         )
     }
 }

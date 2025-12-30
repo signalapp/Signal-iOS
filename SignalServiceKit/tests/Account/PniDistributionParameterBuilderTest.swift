@@ -30,7 +30,7 @@ class PniDistributionParameterBuilderTest: XCTestCase {
             db: db,
             messageSender: messageSenderMock,
             pniKyberPreKeyStore: pniKyberPreKeyStoreMock,
-            registrationIdGenerator: registrationIdGeneratorMock
+            registrationIdGenerator: registrationIdGeneratorMock,
         )
     }
 
@@ -39,7 +39,7 @@ class PniDistributionParameterBuilderTest: XCTestCase {
             type: .ciphertext,
             destinationDeviceId: deviceId,
             destinationRegistrationId: registrationId,
-            content: Data()
+            content: Data(),
         )
     }
 
@@ -62,7 +62,7 @@ class PniDistributionParameterBuilderTest: XCTestCase {
             localPniIdentityKeyPair: pniKeyPair,
             localDevicePniSignedPreKey: localSignedPreKey,
             localDevicePniPqLastResortPreKey: localPqLastResortPreKey,
-            localDevicePniRegistrationId: localRegistrationId
+            localDevicePniRegistrationId: localRegistrationId,
         )
 
         XCTAssertEqual(parameters.pniIdentityKey, pniKeyPair.keyPair.identityKey)
@@ -100,7 +100,7 @@ class PniDistributionParameterBuilderTest: XCTestCase {
                 localPniIdentityKeyPair: pniKeyPair,
                 localDevicePniSignedPreKey: localSignedPreKey,
                 localDevicePniPqLastResortPreKey: localPqLastResortPreKey,
-                localDevicePniRegistrationId: localRegistrationId
+                localDevicePniRegistrationId: localRegistrationId,
             )
         }
 
@@ -116,7 +116,7 @@ class PniDistributionParameterBuilderTest: XCTestCase {
         localPniIdentityKeyPair: ECKeyPair,
         localDevicePniSignedPreKey: LibSignalClient.SignedPreKeyRecord,
         localDevicePniPqLastResortPreKey: LibSignalClient.KyberPreKeyRecord,
-        localDevicePniRegistrationId: UInt32
+        localDevicePniRegistrationId: UInt32,
     ) async throws -> PniDistribution.Parameters {
         let aci = Aci.randomForTesting()
         let e164 = E164("+17735550199")!
@@ -128,7 +128,7 @@ class PniDistributionParameterBuilderTest: XCTestCase {
             localE164: e164,
             localDevicePniSignedPreKey: localDevicePniSignedPreKey,
             localDevicePniPqLastResortPreKey: localDevicePniPqLastResortPreKey,
-            localDevicePniRegistrationId: localDevicePniRegistrationId
+            localDevicePniRegistrationId: localDevicePniRegistrationId,
         )
     }
 }
@@ -152,7 +152,7 @@ private class MessageSenderMock: PniDistributionParameterBuilderImpl.Shims.Messa
         encryptionStyle: EncryptionStyle,
         buildPlaintextContent: (DeviceId, DBWriteTransaction) throws -> Data,
         isTransient: Bool,
-        sealedSenderParameters: SealedSenderParameters?
+        sealedSenderParameters: SealedSenderParameters?,
     ) async throws -> [DeviceMessage] {
         let nextResult = deviceMessagesMocks.update { $0.removeFirst() }
         let result = try nextResult.get()

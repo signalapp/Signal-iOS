@@ -210,7 +210,7 @@ public class Attachment {
 
     // MARK: - Init
 
-    internal init(record: Attachment.Record) throws {
+    init(record: Attachment.Record) throws {
         guard let id = record.sqliteId else {
             throw OWSAssertionError("Attachment is only for inserted records")
         }
@@ -222,7 +222,7 @@ public class Attachment {
             cachedMediaWidthPixels: record.cachedMediaWidthPixels,
             cachedVideoDurationSeconds: record.cachedVideoDurationSeconds,
             audioWaveformRelativeFilePath: record.audioWaveformRelativeFilePath,
-            videoStillFrameRelativeFilePath: record.videoStillFrameRelativeFilePath
+            videoStillFrameRelativeFilePath: record.videoStillFrameRelativeFilePath,
         )
 
         self.id = id
@@ -242,7 +242,7 @@ public class Attachment {
             unencryptedByteCount: record.unencryptedByteCount,
             contentType: contentType,
             digestSHA256Ciphertext: record.digestSHA256Ciphertext,
-            localRelativeFilePath: record.localRelativeFilePath
+            localRelativeFilePath: record.localRelativeFilePath,
         )
         let latestTransitTierInfo = TransitTierInfo(
             cdnNumber: record.latestTransitCdnNumber,
@@ -254,7 +254,7 @@ public class Attachment {
             sha256ContentHash: record.sha256ContentHash,
             lastDownloadAttemptTimestamp: record.latestTransitLastDownloadAttemptTimestamp,
             incrementalMac: record.latestTransitTierIncrementalMac,
-            incrementalMacChunkSize: record.latestTransitTierIncrementalMacChunkSize
+            incrementalMacChunkSize: record.latestTransitTierIncrementalMacChunkSize,
         )
         self.latestTransitTierInfo = latestTransitTierInfo
 
@@ -269,11 +269,11 @@ public class Attachment {
             // or we have no local digest which means we will use the
             // transit download as the file when its done, or we have
             // only plaintext integrity check which means it always matches.)
-            (
-                record.latestTransitDigestSHA256Ciphertext == record.digestSHA256Ciphertext
-                || record.digestSHA256Ciphertext == nil
-                || record.latestTransitDigestSHA256Ciphertext == nil
-            )
+
+            record.latestTransitDigestSHA256Ciphertext == record.digestSHA256Ciphertext
+            || record.digestSHA256Ciphertext == nil
+            || record.latestTransitDigestSHA256Ciphertext == nil
+
         {
             self.originalTransitTierInfo = latestTransitTierInfo
         } else {
@@ -287,7 +287,7 @@ public class Attachment {
                 sha256ContentHash: record.sha256ContentHash,
                 lastDownloadAttemptTimestamp: nil,
                 incrementalMac: record.originalTransitTierIncrementalMac,
-                incrementalMacChunkSize: record.originalTransitTierIncrementalMacChunkSize
+                incrementalMacChunkSize: record.originalTransitTierIncrementalMacChunkSize,
             )
         }
         self.mediaTierInfo = MediaTierInfo(
@@ -297,12 +297,12 @@ public class Attachment {
             uploadEra: record.mediaTierUploadEra,
             lastDownloadAttemptTimestamp: record.lastMediaTierDownloadAttemptTimestamp,
             incrementalMac: record.mediaTierIncrementalMac,
-            incrementalMacChunkSize: record.mediaTierIncrementalMacChunkSize
+            incrementalMacChunkSize: record.mediaTierIncrementalMacChunkSize,
         )
         self.thumbnailMediaTierInfo = ThumbnailMediaTierInfo(
             cdnNumber: record.thumbnailCdnNumber,
             uploadEra: record.thumbnailUploadEra,
-            lastDownloadAttemptTimestamp: record.lastThumbnailDownloadAttemptTimestamp
+            lastDownloadAttemptTimestamp: record.lastThumbnailDownloadAttemptTimestamp,
         )
     }
 
@@ -371,7 +371,7 @@ public class Attachment {
             key: encryptionKey,
             digest: stream.info.digestSHA256Ciphertext,
             encryptedDataLength: stream.info.encryptedByteCount,
-            plaintextDataLength: stream.info.unencryptedByteCount
+            plaintextDataLength: stream.info.unencryptedByteCount,
         )
 
         if
@@ -383,7 +383,7 @@ public class Attachment {
             case .digestSHA256Ciphertext(let digest) = latestTransitTierInfo.integrityCheck,
             // And we are still in the window to reuse it
             dateProvider().timeIntervalSince(
-                Date(millisecondsSince1970: latestTransitTierInfo.uploadTimestamp)
+                Date(millisecondsSince1970: latestTransitTierInfo.uploadTimestamp),
             ) <= Upload.Constants.uploadReuseWindow
         {
             // We have unexpired transit tier info. Reuse that upload.
@@ -397,8 +397,8 @@ public class Attachment {
                     // didn't include it; we now know it from the local file.
                     plaintextDataLength: latestTransitTierInfo.unencryptedByteCount ?? metadata.plaintextDataLength,
                     // Encryped length is the same regardless of the key used.
-                    encryptedDataLength: metadata.encryptedDataLength
-                )
+                    encryptedDataLength: metadata.encryptedDataLength,
+                ),
             )
         } else if
             // This device has never uploaded
@@ -427,7 +427,7 @@ private extension Attachment.StreamInfo {
         unencryptedByteCount: UInt32?,
         contentType: Attachment.ContentType?,
         digestSHA256Ciphertext: Data?,
-        localRelativeFilePath: String?
+        localRelativeFilePath: String?,
     ) {
         guard
             let sha256ContentHash,
@@ -443,10 +443,10 @@ private extension Attachment.StreamInfo {
             // all be set or none set.
             owsAssertDebug(
                 encryptedByteCount == nil
-                && unencryptedByteCount == nil
-                && contentType == nil
-                && localRelativeFilePath == nil,
-                "Have partial stream info!"
+                    && unencryptedByteCount == nil
+                    && contentType == nil
+                    && localRelativeFilePath == nil,
+                "Have partial stream info!",
             )
             return nil
         }
@@ -471,7 +471,7 @@ private extension Attachment.TransitTierInfo {
         sha256ContentHash: Data?,
         lastDownloadAttemptTimestamp: UInt64?,
         incrementalMac: Data?,
-        incrementalMacChunkSize: UInt32?
+        incrementalMacChunkSize: UInt32?,
     ) {
         let integrityCheck: AttachmentIntegrityCheck?
         if let digestSHA256Ciphertext {
@@ -496,11 +496,11 @@ private extension Attachment.TransitTierInfo {
         else {
             owsAssertDebug(
                 cdnNumber == nil
-                && cdnKey == nil
-                && uploadTimestamp == nil
-                && unencryptedByteCount == nil
-                && digestSHA256Ciphertext == nil,
-                "Have partial transit cdn info!"
+                    && cdnKey == nil
+                    && uploadTimestamp == nil
+                    && unencryptedByteCount == nil
+                    && digestSHA256Ciphertext == nil,
+                "Have partial transit cdn info!",
             )
             return nil
         }
@@ -516,7 +516,7 @@ private extension Attachment.TransitTierInfo {
         } else {
             owsAssertDebug(
                 incrementalMac == nil && incrementalMacChunkSize == nil,
-                "Have partial transit tier incremental mac info!"
+                "Have partial transit tier incremental mac info!",
             )
             self.incrementalMacInfo = nil
         }
@@ -531,7 +531,7 @@ private extension Attachment.MediaTierInfo {
         uploadEra: String?,
         lastDownloadAttemptTimestamp: UInt64?,
         incrementalMac: Data?,
-        incrementalMacChunkSize: UInt32?
+        incrementalMacChunkSize: UInt32?,
     ) {
         guard
             let uploadEra,
@@ -550,7 +550,7 @@ private extension Attachment.MediaTierInfo {
         } else {
             owsAssertDebug(
                 incrementalMac == nil && incrementalMacChunkSize == nil,
-                "Have partial media tier incremental mac info!"
+                "Have partial media tier incremental mac info!",
             )
             self.incrementalMacInfo = nil
         }
@@ -561,14 +561,14 @@ private extension Attachment.ThumbnailMediaTierInfo {
     init?(
         cdnNumber: UInt32?,
         uploadEra: String?,
-        lastDownloadAttemptTimestamp: UInt64?
+        lastDownloadAttemptTimestamp: UInt64?,
     ) {
         guard
             let uploadEra
         else {
             owsAssertDebug(
                 uploadEra == nil,
-                "Have partial thumbnail media cdn info!"
+                "Have partial thumbnail media cdn info!",
             )
             return nil
         }
@@ -581,7 +581,7 @@ private extension Attachment.ThumbnailMediaTierInfo {
 private extension Attachment.IncrementalMacInfo {
     init?(
         mac: Data?,
-        chunkSize: UInt32?
+        chunkSize: UInt32?,
     ) {
         guard let mac, let chunkSize else { return nil }
 

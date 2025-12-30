@@ -19,7 +19,7 @@ final class ContactOutputStream {
         phoneNumber: E164?,
         signalAccount: SignalAccount?,
         disappearingMessagesConfiguration: OWSDisappearingMessagesConfiguration?,
-        inboxPosition: Int?
+        inboxPosition: Int?,
     ) throws {
         let contactBuilder = SSKProtoContactDetails.builder()
         if let phoneNumber {

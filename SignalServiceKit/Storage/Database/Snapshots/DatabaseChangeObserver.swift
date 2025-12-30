@@ -75,7 +75,7 @@ public class DatabaseChangeObserverImpl: SDSDatabaseChangeObserver {
     public static let kMaxIncrementalRowChanges = 200
 
     private lazy var nonModelTables: Set<String> = Set([
-        PendingReadReceiptRecord.databaseTableName
+        PendingReadReceiptRecord.databaseTableName,
     ])
 
     // We protect DatabaseChangeObserver state with an UnfairLock.
@@ -133,16 +133,16 @@ public class DatabaseChangeObserverImpl: SDSDatabaseChangeObserver {
         }
     }
 
-    #if TESTABLE_BUILD
+#if TESTABLE_BUILD
     private var _databaseWriteDelegates: [Weak<DatabaseWriteDelegate>] = []
     private var databaseWriteDelegates: [DatabaseWriteDelegate] {
         return _databaseWriteDelegates.compactMap { $0.value }
     }
 
     public func appendDatabaseWriteDelegate(_ delegate: DatabaseWriteDelegate) {
-        _databaseWriteDelegates = _databaseWriteDelegates.filter { $0.value != nil} + [Weak(value: delegate)]
+        _databaseWriteDelegates = _databaseWriteDelegates.filter { $0.value != nil } + [Weak(value: delegate)]
     }
-    #endif
+#endif
 
     private var lastPublishUpdatesDate: Date?
 
@@ -167,18 +167,24 @@ public class DatabaseChangeObserverImpl: SDSDatabaseChangeObserver {
     init(appReadiness: AppReadiness) {
         self.appReadiness = appReadiness
 
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(didReceiveCrossProcessNotification),
-                                               name: SDSDatabaseStorage.didReceiveCrossProcessNotificationActiveAsync,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(self.applicationStateDidChange),
-                                               name: .OWSApplicationDidEnterBackground,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(applicationStateDidChange),
-                                               name: .OWSApplicationWillEnterForeground,
-                                               object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(didReceiveCrossProcessNotification),
+            name: SDSDatabaseStorage.didReceiveCrossProcessNotificationActiveAsync,
+            object: nil,
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(self.applicationStateDidChange),
+            name: .OWSApplicationDidEnterBackground,
+            object: nil,
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(applicationStateDidChange),
+            name: .OWSApplicationWillEnterForeground,
+            object: nil,
+        )
 
         appReadiness.runNowOrWhenAppDidBecomeReadySync {
             DispatchQueue.main.async {
@@ -226,8 +232,10 @@ public class DatabaseChangeObserverImpl: SDSDatabaseChangeObserver {
     private let willRequestDisplayLinkActive = AtomicBool(false, lock: .sharedGlobal)
 
     private func didModifyPendingChanges() {
-        guard !isDisplayLinkActive.get(),
-              willRequestDisplayLinkActive.tryToSetFlag() else {
+        guard
+            !isDisplayLinkActive.get(),
+            willRequestDisplayLinkActive.tryToSetFlag()
+        else {
             return
         }
         DispatchQueue.main.async { [weak self] in
@@ -276,7 +284,7 @@ public class DatabaseChangeObserverImpl: SDSDatabaseChangeObserver {
         }()
 
         if shouldBeActive {
-            if let displayLink = displayLink {
+            if let displayLink {
                 displayLink.isPaused = false
             } else {
                 let link = CADisplayLink(target: self, selector: #selector(displayLinkDidFire))
@@ -315,7 +323,7 @@ public class DatabaseChangeObserverImpl: SDSDatabaseChangeObserver {
             mode: .firstLast,
             maxFrequencySeconds: 3.0,
             onQueue: .main,
-            notifyBlock: { [weak self] in self?.fireDidUpdateExternally() }
+            notifyBlock: { [weak self] in self?.fireDidUpdateExternally() },
         )
     }()
 
@@ -399,7 +407,7 @@ extension DatabaseChangeObserverImpl: TransactionObserver {
             didTouch(
                 thread: thread,
                 shouldUpdateChatListUi: shouldUpdateChatListUI,
-                transaction: transaction
+                transaction: transaction,
             )
         } else {
             owsFailDebug("Interaction missing expected database relationships!")
@@ -482,15 +490,15 @@ extension DatabaseChangeObserverImpl: TransactionObserver {
             }
 
             // We record certain deletions.
-            if event.kind == .delete && event.tableName == InteractionRecord.databaseTableName {
+            if event.kind == .delete, event.tableName == InteractionRecord.databaseTableName {
                 pendingChanges.insert(deletedInteractionRowId: event.rowID)
             }
 
-            #if TESTABLE_BUILD
+#if TESTABLE_BUILD
             for delegate in databaseWriteDelegates {
                 delegate.databaseDidChange(with: event)
             }
-            #endif
+#endif
         }
 
         didModifyPendingChanges()
@@ -505,18 +513,18 @@ extension DatabaseChangeObserverImpl: TransactionObserver {
             pendingChangesToCommit.finalizePublishedStateAndCopyToCommittedChanges(
                 self.committedChanges,
                 withLock: Self.committedChangesLock,
-                db: db
+                db: db,
             )
 
-            #if TESTABLE_BUILD
+#if TESTABLE_BUILD
             for delegate in databaseWriteDelegates {
                 delegate.databaseDidCommit(db: db)
             }
-            #endif
+#endif
         }
 
         DispatchQueue.main.async { [weak self] in
-            guard let self = self else {
+            guard let self else {
                 return
             }
 
@@ -552,11 +560,11 @@ extension DatabaseChangeObserverImpl: TransactionObserver {
 
     private var targetPublishingOfUpdatesInterval: Double {
         AssertIsOnMainThread()
-        #if TESTABLE_BUILD
+#if TESTABLE_BUILD
         // Don't wait to publish updates in tests
         // because some tests read immediately.
         if CurrentAppContext().isRunningTests { return 0 }
-        #endif
+#endif
         // We want the UI to feel snappy and responsive, which means
         // low latency in view updates.
         //
@@ -582,10 +590,12 @@ extension DatabaseChangeObserverImpl: TransactionObserver {
         let fastUpdateInterval: TimeInterval = 1 / TimeInterval(20)
         let slowUpdateInterval: TimeInterval = 1 / TimeInterval(1)
 
-        guard recentDisplayLinkDates.count > 1,
-              let firstDisplayLinkDate = recentDisplayLinkDates.first,
-              let lastDisplayLinkDate = recentDisplayLinkDates.last,
-              firstDisplayLinkDate < lastDisplayLinkDate else {
+        guard
+            recentDisplayLinkDates.count > 1,
+            let firstDisplayLinkDate = recentDisplayLinkDates.first,
+            let lastDisplayLinkDate = recentDisplayLinkDates.last,
+            firstDisplayLinkDate < lastDisplayLinkDate
+        else {
             // If the display link hasn't been running long enough to have
             // two samples, use the fastest update interval.
             return fastUpdateInterval
@@ -599,9 +609,11 @@ extension DatabaseChangeObserverImpl: TransactionObserver {
         // Alpha represents the unit load, 0 <= x <= 1.
         // 0 = light load.
         // 1 = heavy load.
-        let displayLinkAlpha: Double = recentDisplayLinkFrequency.inverseLerp(lightDisplayLinkFrequency,
-                                                                              heavyDisplayLinkFrequency,
-                                                                              shouldClamp: true)
+        let displayLinkAlpha: Double = recentDisplayLinkFrequency.inverseLerp(
+            lightDisplayLinkFrequency,
+            heavyDisplayLinkFrequency,
+            shouldClamp: true,
+        )
 
         // Select the alpha of our chosen heuristic.
         let alpha: Double = displayLinkAlpha
@@ -657,11 +669,11 @@ extension DatabaseChangeObserverImpl: TransactionObserver {
         DatabaseChangeObserverImpl.serializedSync {
             pendingChanges = ObservedDatabaseChanges(concurrencyMode: .databaseChangeObserverSerialQueue)
 
-            #if TESTABLE_BUILD
+#if TESTABLE_BUILD
             for delegate in databaseWriteDelegates {
                 delegate.databaseDidRollback(db: db)
             }
-            #endif
+#endif
         }
     }
 }

@@ -21,12 +21,12 @@ protocol PaymentsHistoryDataSourceDelegate: AnyObject {
 @MainActor
 class PaymentsHistoryDataSource {
 
-    public enum RecordType: Int, CustomStringConvertible {
+    enum RecordType: Int, CustomStringConvertible {
         case all = 0
         case incoming
         case outgoing
 
-        public var description: String {
+        var description: String {
             switch self {
             case .all:
                 return ".all"
@@ -46,24 +46,24 @@ class PaymentsHistoryDataSource {
         }
     }
 
-    public private(set) var items = [PaymentsHistoryItem]()
+    private(set) var items = [PaymentsHistoryItem]()
 
-    public var hasItems: Bool {
+    var hasItems: Bool {
         !items.isEmpty
     }
 
-    public var count: Int {
+    var count: Int {
         items.count
     }
 
-    public init() {
+    init() {
         DependenciesBridge.shared.databaseChangeObserver.appendDatabaseChangeDelegate(self)
 
         updateContent()
     }
 
     func updateContent() {
-        guard let delegate = delegate else {
+        guard let delegate else {
             return
         }
         items = loadAllPaymentsHistoryItems(delegate: delegate)
@@ -86,8 +86,10 @@ class PaymentsHistoryDataSource {
                     return paymentModel.isOutgoing
                 }
             }
-            if let maxRecordCount = delegate.maxRecordCount,
-               maxRecordCount < paymentModels.count {
+            if
+                let maxRecordCount = delegate.maxRecordCount,
+                maxRecordCount < paymentModels.count
+            {
                 paymentModels = Array(paymentModels.prefix(maxRecordCount))
             }
 
@@ -98,14 +100,20 @@ class PaymentsHistoryDataSource {
                 } else if let senderOrRecipientAci = paymentModel.senderOrRecipientAci?.wrappedAciValue {
                     displayName = SSKEnvironment.shared.contactManagerRef.displayName(for: SignalServiceAddress(senderOrRecipientAci), tx: transaction).resolvedValue()
                 } else if paymentModel.isOutgoingTransfer {
-                    displayName = OWSLocalizedString("PAYMENTS_TRANSFER_OUT_PAYMENT",
-                                                    comment: "Label for 'transfer out' payments.")
+                    displayName = OWSLocalizedString(
+                        "PAYMENTS_TRANSFER_OUT_PAYMENT",
+                        comment: "Label for 'transfer out' payments.",
+                    )
                 } else if paymentModel.isDefragmentation {
-                    displayName = OWSLocalizedString("PAYMENTS_DEFRAGMENTATION_PAYMENT",
-                                                    comment: "Label for 'defragmentation' payments.")
+                    displayName = OWSLocalizedString(
+                        "PAYMENTS_DEFRAGMENTATION_PAYMENT",
+                        comment: "Label for 'defragmentation' payments.",
+                    )
                 } else {
-                    displayName = OWSLocalizedString("PAYMENTS_UNKNOWN_PAYMENT",
-                                                    comment: "Label for unknown payments.")
+                    displayName = OWSLocalizedString(
+                        "PAYMENTS_UNKNOWN_PAYMENT",
+                        comment: "Label for unknown payments.",
+                    )
                 }
                 return PaymentsHistoryModelItem(paymentModel: paymentModel, displayName: displayName)
             }
@@ -120,11 +128,17 @@ class PaymentsHistoryDataSource {
         return Self.cell(forPaymentItem: paymentItem, tableView: tableView, indexPath: indexPath)
     }
 
-    public static func cell(forPaymentItem paymentItem: PaymentsHistoryItem,
-                            tableView: UITableView,
-                            indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: PaymentModelCell.reuseIdentifier,
-                                                       for: indexPath) as? PaymentModelCell else {
+    static func cell(
+        forPaymentItem paymentItem: PaymentsHistoryItem,
+        tableView: UITableView,
+        indexPath: IndexPath,
+    ) -> UITableViewCell {
+        guard
+            let cell = tableView.dequeueReusableCell(
+                withIdentifier: PaymentModelCell.reuseIdentifier,
+                for: indexPath,
+            ) as? PaymentModelCell
+        else {
             owsFailDebug("Cell had unexpected type.")
             return UITableViewCell()
         }
@@ -137,7 +151,7 @@ class PaymentsHistoryDataSource {
 
 extension PaymentsHistoryDataSource: DatabaseChangeDelegate {
 
-    public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
+    func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         guard databaseChanges.didUpdate(tableName: TSPaymentModel.table.tableName) else {
             return
         }
@@ -145,11 +159,11 @@ extension PaymentsHistoryDataSource: DatabaseChangeDelegate {
         updateContent()
     }
 
-    public func databaseChangesDidUpdateExternally() {
+    func databaseChangesDidUpdateExternally() {
         updateContent()
     }
 
-    public func databaseChangesDidReset() {
+    func databaseChangesDidReset() {
         updateContent()
     }
 }
@@ -161,22 +175,22 @@ extension ArchivedPayment {
             case (.insufficientFundsFailure, true):
                 return OWSLocalizedString(
                     "PAYMENTS_FAILURE_OUTGOING_INSUFFICIENT_FUNDS",
-                    comment: "Status indicator for outgoing payments which failed due to insufficient funds."
+                    comment: "Status indicator for outgoing payments which failed due to insufficient funds.",
                 )
             case (.networkFailure, true):
                 return OWSLocalizedString(
                     "PAYMENTS_FAILURE_OUTGOING_NOTIFICATION_SEND_FAILED",
-                    comment: "Status indicator for outgoing payments for which the notification could not be sent."
+                    comment: "Status indicator for outgoing payments for which the notification could not be sent.",
                 )
             case (_, true):
                 return OWSLocalizedString(
                     "PAYMENTS_FAILURE_OUTGOING_FAILED",
-                    comment: "Status indicator for outgoing payments which failed."
+                    comment: "Status indicator for outgoing payments which failed.",
                 )
             case (_, false):
                 return OWSLocalizedString(
                     "PAYMENTS_FAILURE_INCOMING_FAILED",
-                    comment: "Status indicator for incoming payments which failed."
+                    comment: "Status indicator for incoming payments which failed.",
                 )
             }
         } else {
@@ -184,22 +198,22 @@ extension ArchivedPayment {
             case (.initial, true):
                 return OWSLocalizedString(
                     "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNSUBMITTED",
-                    comment: "Status indicator for outgoing payments which have not yet been submitted."
+                    comment: "Status indicator for outgoing payments which have not yet been submitted.",
                 )
             case (.submitted, true):
                 return OWSLocalizedString(
                     "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENDING",
-                    comment: "Status indicator for outgoing payments which are being sent."
+                    comment: "Status indicator for outgoing payments which are being sent.",
                 )
             case (_, true):
                 return OWSLocalizedString(
                     "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENT",
-                    comment: "Status indicator for outgoing payments which have been sent."
+                    comment: "Status indicator for outgoing payments which have been sent.",
                 )
             case (_, false):
                 return OWSLocalizedString(
                     "PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_COMPLETE",
-                    comment: "Status indicator for incoming payments which are complete."
+                    comment: "Status indicator for incoming payments which are complete.",
                 )
             }
         }

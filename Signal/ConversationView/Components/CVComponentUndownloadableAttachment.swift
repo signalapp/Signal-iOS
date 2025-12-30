@@ -24,13 +24,13 @@ class CVComponentUndownloadableAttachment: CVComponentBase, CVComponent {
             OWSLocalizedString(
                 "AUDIO_UNAVAILABLE_MESSAGE_LABEL",
                 value: "Voice message not available",
-                comment: "Message when trying to show a voice message that has expired and is unavailable for download"
+                comment: "Message when trying to show a voice message that has expired and is unavailable for download",
             )
         case .sticker:
             OWSLocalizedString(
                 "STICKER_UNAVAILABLE_MESSAGE_LABEL",
                 value: "Sticker not available",
-                comment: "Message when trying to show a sticker that has expired and is unavailable for download"
+                comment: "Message when trying to show a sticker that has expired and is unavailable for download",
             )
         }
     }
@@ -41,7 +41,7 @@ class CVComponentUndownloadableAttachment: CVComponentBase, CVComponent {
     init(
         itemModel: CVItemModel,
         attachmentType: CVComponentState.UndownloadableAttachment,
-        footerOverlay: CVComponent?
+        footerOverlay: CVComponent?,
     ) {
         self.attachmentType = attachmentType
         self.footerOverlay = footerOverlay
@@ -51,14 +51,14 @@ class CVComponentUndownloadableAttachment: CVComponentBase, CVComponent {
     private static let measurementKey_stackView = "CVComponentUndownloadableAttachment.measurementKey_stackView"
     private static let measurementKey_footerSize = "CVComponentUndownloadableAttachment.measurementKey_footerSize"
 
-    public func buildComponentView(componentDelegate: any CVComponentDelegate) -> any CVComponentView {
+    func buildComponentView(componentDelegate: any CVComponentDelegate) -> any CVComponentView {
         CVComponentViewUndownloadableAttachment()
     }
 
-    public func configureForRendering(
+    func configureForRendering(
         componentView: any CVComponentView,
         cellMeasurement: SignalUI.CVCellMeasurement,
-        componentDelegate: any CVComponentDelegate
+        componentDelegate: any CVComponentDelegate,
     ) {
         guard let componentView = componentView as? CVComponentViewUndownloadableAttachment else {
             owsFailDebug("Unexpected componentView.")
@@ -81,7 +81,7 @@ class CVComponentUndownloadableAttachment: CVComponentBase, CVComponent {
             footerOverlay.configureForRendering(
                 componentView: footerView,
                 cellMeasurement: cellMeasurement,
-                componentDelegate: componentDelegate
+                componentDelegate: componentDelegate,
             )
             let footerRootView = footerView.rootView
 
@@ -98,25 +98,25 @@ class CVComponentUndownloadableAttachment: CVComponentBase, CVComponent {
         label.configureForRendering(
             config: self.labelConfig(
                 conversationStyle: conversationStyle,
-                isIncoming: itemModel.interaction is TSIncomingMessage
+                isIncoming: itemModel.interaction is TSIncomingMessage,
             ),
-            spoilerAnimationManager: .init()
+            spoilerAnimationManager: .init(),
         )
 
         stackView.configure(
             config: self.stackViewConfig,
             cellMeasurement: cellMeasurement,
             measurementKey: Self.measurementKey_stackView,
-            subviews: [label.view]
+            subviews: [label.view],
         )
     }
 
-    public func measure(maxWidth: CGFloat, measurementBuilder: SignalUI.CVCellMeasurement.Builder) -> CGSize {
+    func measure(maxWidth: CGFloat, measurementBuilder: SignalUI.CVCellMeasurement.Builder) -> CGSize {
         owsAssertDebug(maxWidth > 0)
 
         let config = self.labelConfig(
             conversationStyle: conversationStyle,
-            isIncoming: false // Used for color. Doesn't matter for measurement
+            isIncoming: false, // Used for color. Doesn't matter for measurement
         )
 
         let footerSize: CGSize
@@ -124,7 +124,7 @@ class CVComponentUndownloadableAttachment: CVComponentBase, CVComponent {
             let maxFooterWidth = max(0, maxWidth - conversationStyle.textInsets.totalWidth)
             footerSize = footerOverlay.measure(
                 maxWidth: maxFooterWidth,
-                measurementBuilder: measurementBuilder
+                measurementBuilder: measurementBuilder,
             )
             measurementBuilder.setSize(key: Self.measurementKey_footerSize, size: footerSize)
         } else {
@@ -135,7 +135,7 @@ class CVComponentUndownloadableAttachment: CVComponentBase, CVComponent {
             config: config,
             footerSize: footerSize,
             maxWidth: maxWidth,
-            measurementBuilder: measurementBuilder
+            measurementBuilder: measurementBuilder,
         )
 
         let stackMeasurement = ManualStackView.measure(
@@ -143,24 +143,24 @@ class CVComponentUndownloadableAttachment: CVComponentBase, CVComponent {
             measurementBuilder: measurementBuilder,
             measurementKey: Self.measurementKey_stackView,
             subviewInfos: info,
-            maxWidth: maxWidth
+            maxWidth: maxWidth,
         )
 
         return stackMeasurement.measuredSize
     }
 
-    public var stackViewConfig: CVStackViewConfig {
+    var stackViewConfig: CVStackViewConfig {
         CVStackViewConfig(
             axis: .vertical,
             alignment: .leading,
             spacing: 0,
-            layoutMargins: .zero
+            layoutMargins: .zero,
         )
     }
 
     private func labelConfig(
         conversationStyle: ConversationStyle,
-        isIncoming: Bool
+        isIncoming: Bool,
     ) -> CVTextLabel.Config {
         let font = UIFont.dynamicTypeBodyClamped
         let textColor = conversationStyle.bubbleTextColor(isIncoming: isIncoming)
@@ -171,7 +171,7 @@ class CVComponentUndownloadableAttachment: CVComponentBase, CVComponent {
                     NSAttributedString.with(
                         image: self.icon,
                         font: .dynamicTypeSubheadlineClamped,
-                        centerVerticallyRelativeTo: font
+                        centerVerticallyRelativeTo: font,
                     ),
                     " ",
                     self.message,
@@ -181,9 +181,9 @@ class CVComponentUndownloadableAttachment: CVComponentBase, CVComponent {
                         clamped: true,
                         weight: .bold,
                         leadingCharacter: .nonBreakingSpace,
-                        attributes: [.foregroundColor: UIColor.Signal.secondaryLabel]
+                        attributes: [.foregroundColor: UIColor.Signal.secondaryLabel],
                     ),
-                ]).styled(with: .font(font), .color(textColor))
+                ]).styled(with: .font(font), .color(textColor)),
             ),
             displayConfig: .forUnstyledText(font: font, textColor: textColor),
             font: font,
@@ -192,7 +192,7 @@ class CVComponentUndownloadableAttachment: CVComponentBase, CVComponent {
             textAlignment: .natural,
             lineBreakMode: .byWordWrapping,
             items: [],
-            linkifyStyle: .linkAttribute
+            linkifyStyle: .linkAttribute,
         )
     }
 
@@ -200,7 +200,7 @@ class CVComponentUndownloadableAttachment: CVComponentBase, CVComponent {
         sender: UIGestureRecognizer,
         componentDelegate: any CVComponentDelegate,
         componentView: any CVComponentView,
-        renderItem: CVRenderItem
+        renderItem: CVRenderItem,
     ) -> Bool {
         switch self.attachmentType {
         case .audio:
@@ -211,19 +211,19 @@ class CVComponentUndownloadableAttachment: CVComponentBase, CVComponent {
         return true
     }
 
-    public class CVComponentViewUndownloadableAttachment: NSObject, CVComponentView {
+    class CVComponentViewUndownloadableAttachment: NSObject, CVComponentView {
         fileprivate let stackView = ManualStackView(name: "CVComponentViewAudioAttachment.stackView")
         fileprivate var footerOverlayView: CVComponentView?
 
-        public var isDedicatedCellView: Bool = false
+        var isDedicatedCellView: Bool = false
 
-        public var rootView: UIView {
+        var rootView: UIView {
             stackView
         }
 
-        public func setIsCellVisible(_ isCellVisible: Bool) {}
+        func setIsCellVisible(_ isCellVisible: Bool) {}
 
-        public func reset() {
+        func reset() {
             stackView.reset()
             footerOverlayView?.reset()
             footerOverlayView = nil

@@ -68,7 +68,7 @@ extension Attachment {
                 localRelativeFilePath,
                 localRelativeFilePathThumbnail,
                 videoStillFrameRelativeFilePath,
-                audioWaveformRelativeFilePath
+                audioWaveformRelativeFilePath,
             ].compacted()
         }
 
@@ -132,7 +132,7 @@ extension Attachment {
 
         // MARK: - Initializers
 
-        internal init(attachment: Attachment) {
+        init(attachment: Attachment) {
             self.init(
                 sqliteId: attachment.id,
                 blurHash: attachment.blurHash,
@@ -151,7 +151,7 @@ extension Attachment {
             )
         }
 
-        internal init(params: Attachment.ConstructionParams) {
+        init(params: Attachment.ConstructionParams) {
             self.init(
                 optionalSqliteId: nil,
                 blurHash: params.blurHash,
@@ -170,7 +170,7 @@ extension Attachment {
             )
         }
 
-        internal init(
+        init(
             sqliteId: IDType,
             blurHash: String?,
             mimeType: String,

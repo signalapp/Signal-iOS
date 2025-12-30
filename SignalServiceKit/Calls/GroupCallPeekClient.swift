@@ -30,7 +30,7 @@ public class GroupCallPeekClient {
 
     init(
         db: any DB,
-        groupsV2: any GroupsV2
+        groupsV2: any GroupsV2,
     ) {
         self.db = db
         self.groupsV2 = groupsV2
@@ -59,7 +59,7 @@ public class GroupCallPeekClient {
         let peekRequest = PeekRequest(
             sfuURL: self.sfuUrl,
             membershipProof: membershipProof,
-            groupMembers: membership
+            groupMembers: membership,
         )
 
         let peekResponse = await self.sfuClient.peek(request: peekRequest)
@@ -103,7 +103,7 @@ public class GroupCallPeekClient {
 
             return GroupMemberInfo(
                 userId: aci.rawUUID,
-                userIdCipherText: aciCiphertext
+                userIdCipherText: aciCiphertext,
             )
         }
     }

@@ -46,25 +46,27 @@ public extension Usernames {
         }
 
         public init?(usernameLinkUrl: URL) {
-            guard let components = URLComponents(
-                url: usernameLinkUrl,
-                resolvingAgainstBaseURL: true
-            ) else {
+            guard
+                let components = URLComponents(
+                    url: usernameLinkUrl,
+                    resolvingAgainstBaseURL: true,
+                )
+            else {
                 return nil
             }
 
             let fragmentPrefix = LinkUrlComponents.fragmentPrefix
 
             guard
-                (
-                    components.scheme == LinkUrlComponents.httpsScheme
-                    || components.scheme == LinkUrlComponents.sgnlScheme
-                ),
+
+                components.scheme == LinkUrlComponents.httpsScheme
+                || components.scheme == LinkUrlComponents.sgnlScheme
+                ,
                 components.host == LinkUrlComponents.host,
-                (
-                    components.path == LinkUrlComponents.path
-                    || components.path.isEmpty
-                ),
+
+                components.path == LinkUrlComponents.path
+                || components.path.isEmpty
+                ,
                 let fragment = components.fragment,
                 fragment.hasPrefix(fragmentPrefix),
                 components.query == nil,

@@ -23,7 +23,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, @preconcurrency CXPro
 
     // Instantiating more than one CXProvider can cause us to miss call transactions, so
     // we maintain the provider across Adaptees using a singleton pattern
-    static private let providerReadyFlag: ReadyFlag = ReadyFlag(name: "CallKitCXProviderReady")
+    private static let providerReadyFlag: ReadyFlag = ReadyFlag(name: "CallKitCXProviderReady")
     private static var _sharedProvider: CXProvider?
     class func sharedProvider(useSystemCallLog: Bool) -> CXProvider {
         let configuration = buildProviderConfiguration(useSystemCallLog: useSystemCallLog)
@@ -109,7 +109,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, @preconcurrency CXPro
             }
             return OWSLocalizedString(
                 "CALLKIT_ANONYMOUS_CONTACT_NAME",
-                comment: "The generic name used for calls if CallKit privacy is enabled"
+                comment: "The generic name used for calls if CallKit privacy is enabled",
             )
         case .groupThread(let call):
             if showNamesOnCallScreen {
@@ -128,7 +128,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, @preconcurrency CXPro
             }
             return OWSLocalizedString(
                 "CALLKIT_ANONYMOUS_GROUP_NAME",
-                comment: "The generic name used for group calls if CallKit privacy is enabled"
+                comment: "The generic name used for group calls if CallKit privacy is enabled",
             )
         case .callLink(let call):
             if showNamesOnCallScreen {
@@ -166,7 +166,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, @preconcurrency CXPro
                 // We've reported the call to CallKit, but CallKit hasn't confirmed it yet.
                 // Try again soon, but give up if the call ends some other way and is destroyed.
                 DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1), qos: .userInitiated) { [weak call] in
-                    guard let call = call else {
+                    guard let call else {
                         return
                     }
                     self.endCallOnceReported(call, reason: reason)
@@ -373,8 +373,8 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, @preconcurrency CXPro
             return
         }
 
-        // We can't wait for long before fulfilling the CXAction, else CallKit will show a "Failed Call". We don't 
-        // actually need to wait for the outcome of the handleOutgoingCall promise, because it handles any errors by 
+        // We can't wait for long before fulfilling the CXAction, else CallKit will show a "Failed Call". We don't
+        // actually need to wait for the outcome of the handleOutgoingCall promise, because it handles any errors by
         // manually failing the call.
         switch call.mode {
         case .individual:
@@ -455,7 +455,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, @preconcurrency CXPro
     }
 
     @MainActor
-    public func provider(_ provider: CXProvider, perform action: CXEndCallAction) {
+    func provider(_ provider: CXProvider, perform action: CXEndCallAction) {
         Logger.info("CallKit: CXEndCallAction")
         guard let call = callManager.callWithLocalId(action.callUUID) else {
             Logger.error("trying to end unknown call with localId: \(action.callUUID)")
@@ -473,7 +473,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, @preconcurrency CXPro
     }
 
     @MainActor
-    public func provider(_ provider: CXProvider, perform action: CXSetHeldCallAction) {
+    func provider(_ provider: CXProvider, perform action: CXSetHeldCallAction) {
         Logger.info("CallKit: CXSetHeldCallAction")
         guard let call = callManager.callWithLocalId(action.callUUID) else {
             action.fail()
@@ -488,7 +488,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, @preconcurrency CXPro
     }
 
     @MainActor
-    public func provider(_ provider: CXProvider, perform action: CXSetMutedCallAction) {
+    func provider(_ provider: CXProvider, perform action: CXSetMutedCallAction) {
         Logger.info("CallKit: CXSetMutedCallAction")
         guard nil != callManager.callWithLocalId(action.callUUID) else {
             Logger.info("Failing CXSetMutedCallAction for unknown (ended?) call: \(action.callUUID)")
@@ -506,13 +506,13 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, @preconcurrency CXPro
         action.fulfill()
     }
 
-    public func provider(_ provider: CXProvider, perform action: CXSetGroupCallAction) {
+    func provider(_ provider: CXProvider, perform action: CXSetGroupCallAction) {
         AssertIsOnMainThread()
 
         Logger.warn("CallKit: CXSetGroupCallAction unimplemented")
     }
 
-    public func provider(_ provider: CXProvider, perform action: CXPlayDTMFCallAction) {
+    func provider(_ provider: CXProvider, perform action: CXPlayDTMFCallAction) {
         AssertIsOnMainThread()
 
         Logger.warn("CallKit: CXPlayDTMFCallAction unimplemented")

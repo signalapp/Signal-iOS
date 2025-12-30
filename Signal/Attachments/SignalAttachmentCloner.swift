@@ -15,7 +15,7 @@ enum SignalAttachmentCloner {
 
         // Just use a random file name on the decrypted copy; its internal use only.
         let decryptedCopyUrl = try attachment.attachmentStream.makeDecryptedCopy(
-            filename: attachment.reference.sourceFilename
+            filename: attachment.reference.sourceFilename,
         )
 
         let decryptedDataSource = DataSourcePath(fileUrl: decryptedCopyUrl, ownership: .owned)

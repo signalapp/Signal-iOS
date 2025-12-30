@@ -28,7 +28,7 @@ public final class OWSContact: NSObject, NSCoding, NSCopying {
         coder.encode(self.phoneNumbers, forKey: "phoneNumbers")
     }
 
-    public override var hash: Int {
+    override public var hash: Int {
         var hasher = Hasher()
         hasher.combine(addresses)
         hasher.combine(emails)
@@ -37,7 +37,7 @@ public final class OWSContact: NSObject, NSCoding, NSCopying {
         return hasher.finalize()
     }
 
-    public override func isEqual(_ object: Any?) -> Bool {
+    override public func isEqual(_ object: Any?) -> Bool {
         guard let object = object as? Self else { return false }
         guard type(of: self) == type(of: object) else { return false }
         guard self.addresses == object.addresses else { return false }
@@ -66,7 +66,7 @@ public final class OWSContact: NSObject, NSCoding, NSCopying {
             name: name,
             phoneNumbers: phoneNumbers,
             emails: emails,
-            addresses: addresses
+            addresses: addresses,
         )
     }
 
@@ -74,7 +74,7 @@ public final class OWSContact: NSObject, NSCoding, NSCopying {
         name: OWSContactName,
         phoneNumbers: [OWSContactPhoneNumber],
         emails: [OWSContactEmail],
-        addresses: [OWSContactAddress]
+        addresses: [OWSContactAddress],
     ) -> Bool {
         guard !name.displayName.stripped.isEmpty else {
             Logger.warn("invalid contact; no display name.")
@@ -139,15 +139,15 @@ public final class OWSContact: NSObject, NSCoding, NSCopying {
     private var e164PhoneNumbersCached: [String]?
 
     public struct PhoneNumberPartition {
-        fileprivate(set) public var sendablePhoneNumbers = [String]()
-        fileprivate(set) public var invitablePhoneNumbers = [String]()
-        fileprivate(set) public var addablePhoneNumbers = [String]()
+        public fileprivate(set) var sendablePhoneNumbers = [String]()
+        public fileprivate(set) var invitablePhoneNumbers = [String]()
+        public fileprivate(set) var addablePhoneNumbers = [String]()
 
         public func map<T>(
             ifSendablePhoneNumbers: ([String]) -> T,
             elseIfInvitablePhoneNumbers: ([String]) -> T,
             elseIfAddablePhoneNumbers: ([String]) -> T,
-            elseIfNoPhoneNumbers: () -> T
+            elseIfNoPhoneNumbers: () -> T,
         ) -> T {
             if !sendablePhoneNumbers.isEmpty {
                 return ifSendablePhoneNumbers(sendablePhoneNumbers)
@@ -175,7 +175,7 @@ public final class OWSContact: NSObject, NSCoding, NSCopying {
             return PhoneNumberStatus(
                 phoneNumber: phoneNumber,
                 isSystemContact: SSKEnvironment.shared.contactManagerRef.cnContactId(for: phoneNumber) != nil,
-                canLinkToSystemContact: recipient?.isRegistered == true
+                canLinkToSystemContact: recipient?.isRegistered == true,
             )
         }
         var result = PhoneNumberPartition()

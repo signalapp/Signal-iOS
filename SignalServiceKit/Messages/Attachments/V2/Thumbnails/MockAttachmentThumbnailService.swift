@@ -13,14 +13,14 @@ open class MockAttachmentThumbnailService: AttachmentThumbnailService {
 
     open func thumbnailImage(
         for attachmentStream: AttachmentStream,
-        quality: AttachmentThumbnailQuality
+        quality: AttachmentThumbnailQuality,
     ) async -> UIImage? {
         return nil
     }
 
     open func thumbnailImageSync(
         for attachmentStream: AttachmentStream,
-        quality: AttachmentThumbnailQuality
+        quality: AttachmentThumbnailQuality,
     ) -> UIImage? {
         return nil
     }

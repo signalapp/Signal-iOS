@@ -30,12 +30,12 @@ final class MessageTimerView: ManualLayoutView {
     func configure(
         expirationTimestampMs: UInt64,
         disappearingMessageInterval: UInt32,
-        tintColor: UIColor
+        tintColor: UIColor,
     ) {
         let expirationProgress = self.expirationProgress(
             expirationTimestampMs: expirationTimestampMs,
             disappearingMessageInterval: disappearingMessageInterval,
-            nowMs: Date.ows_millisecondTimestamp()
+            nowMs: Date.ows_millisecondTimestamp(),
         )
         updateIcon(quantizedValue: expirationProgress.quantizedValue, tintColor: tintColor)
         startAnimation(expirationProgress: expirationProgress, tintColor: tintColor)
@@ -54,7 +54,7 @@ final class MessageTimerView: ManualLayoutView {
     private func expirationProgress(
         expirationTimestampMs: UInt64,
         disappearingMessageInterval: UInt32,
-        nowMs: UInt64
+        nowMs: UInt64,
     ) -> ExpirationProgress {
         // Every N milliseconds we move to the next progress level.
         let refreshIntervalMs = UInt64(disappearingMessageInterval) * 1000 / Constants.quantizationLevelCount
@@ -70,7 +70,7 @@ final class MessageTimerView: ManualLayoutView {
             return ExpirationProgress(quantizedValue: 0)
         }
 
-        let intermediateValue = remainingMs.partialValue.addingReportingOverflow(refreshIntervalMs/2)
+        let intermediateValue = remainingMs.partialValue.addingReportingOverflow(refreshIntervalMs / 2)
         // The disappearing interval is way too large -- something is wrong.
         guard !intermediateValue.overflow else {
             return ExpirationProgress(quantizedValue: Constants.quantizationLevelCount)
@@ -84,10 +84,10 @@ final class MessageTimerView: ManualLayoutView {
                     return nil
                 }
                 return TimerConfiguration(
-                    nextRefreshMs: expirationTimestampMs - (quantizedValue - 1) * refreshIntervalMs - refreshIntervalMs/2,
-                    refreshIntervalMs: refreshIntervalMs
+                    nextRefreshMs: expirationTimestampMs - (quantizedValue - 1) * refreshIntervalMs - refreshIntervalMs / 2,
+                    refreshIntervalMs: refreshIntervalMs,
                 )
-            }()
+            }(),
         )
     }
 
@@ -120,7 +120,7 @@ final class MessageTimerView: ManualLayoutView {
         var quantizedValue = expirationProgress.quantizedValue
         let animationTimer = Timer(
             fire: Date(millisecondsSince1970: timerConfiguration.nextRefreshMs),
-            interval: TimeInterval(timerConfiguration.refreshIntervalMs)/1000,
+            interval: TimeInterval(timerConfiguration.refreshIntervalMs) / 1000,
             repeats: true,
             block: { [weak self] timer in
                 guard let self else {
@@ -133,7 +133,7 @@ final class MessageTimerView: ManualLayoutView {
                     timer.invalidate()
                     return
                 }
-            }
+            },
         )
         self.animationTimer = animationTimer
         RunLoop.main.add(animationTimer, forMode: .common)

@@ -40,8 +40,10 @@ extension ChatListViewController {
 
     // MARK: -
 
-    fileprivate func loadRenderStateForReset(viewInfo: CLVViewInfo,
-                                             transaction: DBReadTransaction) -> CLVLoadResult {
+    fileprivate func loadRenderStateForReset(
+        viewInfo: CLVViewInfo,
+        transaction: DBReadTransaction,
+    ) -> CLVLoadResult {
         AssertIsOnMainThread()
 
         return CLVLoader.loadRenderStateForReset(viewInfo: viewInfo, transaction: transaction)
@@ -52,15 +54,19 @@ extension ChatListViewController {
         return CLVLoader.newRenderStateWithViewInfo(viewInfo, lastRenderState: renderState)
     }
 
-    fileprivate func loadNewRenderStateWithDiff(viewInfo: CLVViewInfo,
-                                                updatedThreadIds: Set<String>,
-                                                transaction: DBReadTransaction) -> CLVLoadResult {
+    fileprivate func loadNewRenderStateWithDiff(
+        viewInfo: CLVViewInfo,
+        updatedThreadIds: Set<String>,
+        transaction: DBReadTransaction,
+    ) -> CLVLoadResult {
         AssertIsOnMainThread()
 
-        return CLVLoader.loadRenderStateAndDiff(viewInfo: viewInfo,
-                                               updatedItemIds: updatedThreadIds,
-                                               lastRenderState: renderState,
-                                               transaction: transaction)
+        return CLVLoader.loadRenderStateAndDiff(
+            viewInfo: viewInfo,
+            updatedItemIds: updatedThreadIds,
+            lastRenderState: renderState,
+            transaction: transaction,
+        )
     }
 
     fileprivate func applyLoadResult(_ loadResult: CLVLoadResult, animated: Bool) {
@@ -93,7 +99,7 @@ extension ChatListViewController {
         viewState.updateViewInfo(renderState.viewInfo)
     }
 
-    fileprivate func applyRowChanges(_ rowChanges: [CLVRowChange], renderState: CLVRenderState, animated: Bool) {
+    private func applyRowChanges(_ rowChanges: [CLVRowChange], renderState: CLVRenderState, animated: Bool) {
         AssertIsOnMainThread()
 
         let previousRenderState = tableDataSource.renderState
@@ -115,10 +121,10 @@ extension ChatListViewController {
         // strange scroll animations may occur
         var tableUpdatesPerformed = false
         let checkAndSetTableUpdates = { [weak self] in
-            if !tableUpdatesPerformed, let self = self {
+            if !tableUpdatesPerformed, let self {
                 tableView.beginUpdates()
                 // animate all UI changes within the same transaction
-                if tableView.isEditing && !self.viewState.multiSelectState.isActive {
+                if tableView.isEditing, !self.viewState.multiSelectState.isActive {
                     tableView.setEditing(false, animated: true)
                 }
                 tableUpdatesPerformed = true
@@ -173,7 +179,7 @@ extension ChatListViewController {
                 }
                 useFallBackUpdateMechanism = true
             case .update(let oldIndexPath):
-                if tableView.isEditing && !viewState.multiSelectState.isActive {
+                if tableView.isEditing, !viewState.multiSelectState.isActive {
                     checkAndSetTableUpdates()
                 }
 
@@ -200,9 +206,10 @@ extension ChatListViewController {
             checkAndSetTableUpdates()
 
             for (_, sectionUpdate) in sectionChanges.updates {
-                guard let rowChanges = renderState
-                    .sectionDifference(for: sectionUpdate.element, from: previousRenderState)?
-                    .batchedChanges()
+                guard
+                    let rowChanges = renderState
+                        .sectionDifference(for: sectionUpdate.element, from: previousRenderState)?
+                        .batchedChanges()
                 else { continue }
 
                 let sectionIndex = sectionUpdate.offset
@@ -280,7 +287,7 @@ public class CLVLoadCoordinator {
             hasVisibleReminders: Bool,
             shouldBackupDownloadProgressViewBeVisible: Bool,
             lastViewInfo: CLVViewInfo,
-            transaction: DBReadTransaction
+            transaction: DBReadTransaction,
         ) -> CLVLoadInfo {
             let inboxFilter = inboxFilter ?? loadCoordinator.filterStore.inboxFilter(transaction: transaction) ?? .none
 
@@ -291,7 +298,7 @@ public class CLVLoadCoordinator {
                 lastSelectedThreadId: lastSelectedThreadId,
                 hasVisibleReminders: hasVisibleReminders,
                 shouldBackupDownloadProgressViewBeVisible: shouldBackupDownloadProgressViewBeVisible,
-                transaction: transaction
+                transaction: transaction,
             )
 
             if shouldResetAll {
@@ -342,7 +349,7 @@ public class CLVLoadCoordinator {
         // exception and update the view contents; otherwise, the home
         // view will briefly appear empty after launch.
         let shouldForceLoad = (!viewController.hasEverAppeared &&
-                                viewController.tableDataSource.renderState.visibleThreadCount == 0)
+            viewController.tableDataSource.renderState.visibleThreadCount == 0)
 
         loadIfNecessary(suppressAnimations: true, shouldForceLoad: shouldForceLoad)
     }
@@ -351,7 +358,7 @@ public class CLVLoadCoordinator {
     public func applicationWillEnterForeground() {
         AssertIsOnMainThread()
 
-        guard let viewController = viewController else {
+        guard let viewController else {
             owsFailDebug("Missing viewController.")
             return
         }
@@ -393,7 +400,7 @@ public class CLVLoadCoordinator {
                 hasVisibleReminders: hasVisibleReminders,
                 shouldBackupDownloadProgressViewBeVisible: shouldBackupDownloadProgressViewBeVisible,
                 lastViewInfo: viewController.renderState.viewInfo,
-                transaction: transaction
+                transaction: transaction,
             )
 
             // Reset the builder.
@@ -406,14 +413,14 @@ public class CLVLoadCoordinator {
             case .resetAll:
                 return viewController.loadRenderStateForReset(
                     viewInfo: loadInfo.viewInfo,
-                    transaction: transaction
+                    transaction: transaction,
                 )
 
             case .incrementalDiff(let updatedThreadIds):
                 return viewController.loadNewRenderStateWithDiff(
                     viewInfo: loadInfo.viewInfo,
                     updatedThreadIds: updatedThreadIds,
-                    transaction: transaction
+                    transaction: transaction,
                 )
 
             case .incrementalWithoutThreadUpdates:

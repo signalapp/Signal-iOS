@@ -84,7 +84,7 @@ class BackupExportJobRunnerImpl: BackupExportJobRunner {
     }
 
     private func addUpdateObserver(
-        block: @escaping (BackupExportJobRunnerUpdate?) -> Void
+        block: @escaping (BackupExportJobRunnerUpdate?) -> Void,
     ) -> State.UpdateObserver {
         let observer = State.UpdateObserver(block: block)
 
@@ -123,11 +123,12 @@ class BackupExportJobRunnerImpl: BackupExportJobRunner {
             _state.currentExportJobTask = Task { () async -> Void in
                 let result = await Result(catching: {
                     try await backupExportJob.exportAndUploadBackup(
-                        mode: .manual(OWSSequentialProgress<BackupExportJobStep>
-                            .createSink { [weak self] exportJobProgress in
-                                self?.exportJobDidUpdateProgress(exportJobProgress)
-                            }
-                        )
+                        mode: .manual(
+                            OWSSequentialProgress<BackupExportJobStep>
+                                .createSink { [weak self] exportJobProgress in
+                                    self?.exportJobDidUpdateProgress(exportJobProgress)
+                                },
+                        ),
                     )
                 })
 

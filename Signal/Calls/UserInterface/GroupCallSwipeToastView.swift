@@ -42,7 +42,7 @@ class GroupCallSwipeToastView: UIView {
 
         let stackView = UIStackView(arrangedSubviews: [
             imageView,
-            label
+            label,
         ])
         stackView.axis = .horizontal
         stackView.alignment = .center

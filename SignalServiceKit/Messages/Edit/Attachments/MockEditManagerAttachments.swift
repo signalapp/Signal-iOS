@@ -21,7 +21,7 @@ public class MockEditManagerAttachments: EditManagerAttachments {
         newOversizeText: MessageEdits.OversizeTextSource?,
         newLinkPreview: MessageEdits.LinkPreviewSource?,
         quotedReplyEdit: MessageEdits.Edit<Void>,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         // Do nothing
     }

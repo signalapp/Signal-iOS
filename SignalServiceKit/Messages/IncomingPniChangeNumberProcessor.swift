@@ -11,7 +11,7 @@ public protocol IncomingPniChangeNumberProcessor {
     func processIncomingPniChangePhoneNumber(
         proto: SSKProtoSyncMessagePniChangeNumber,
         updatedPni: Pni,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     )
 }
 
@@ -28,7 +28,7 @@ public class IncomingPniChangeNumberProcessorImpl: IncomingPniChangeNumberProces
         pniProtocolStore: SignalProtocolStore,
         preKeyManager: PreKeyManager,
         registrationStateChangeManager: RegistrationStateChangeManager,
-        tsAccountManager: TSAccountManager
+        tsAccountManager: TSAccountManager,
     ) {
         self.identityManager = identityManager
         self.pniProtocolStore = pniProtocolStore
@@ -49,7 +49,7 @@ public class IncomingPniChangeNumberProcessorImpl: IncomingPniChangeNumberProces
     public func processIncomingPniChangePhoneNumber(
         proto: SSKProtoSyncMessagePniChangeNumber,
         updatedPni: Pni,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         guard let localAci = tsAccountManager.localIdentifiers(tx: tx)?.aci else {
             owsFailDebug("Missing ACI while processing incoming PNI change-number sync message!")
@@ -65,7 +65,7 @@ public class IncomingPniChangeNumberProcessorImpl: IncomingPniChangeNumberProces
         identityManager.setIdentityKeyPair(
             pniChangeData.identityKeyPair,
             for: .pni,
-            tx: tx
+            tx: tx,
         )
 
         if let lastResortKey = pniChangeData.lastResortKyberPreKey {
@@ -79,7 +79,7 @@ public class IncomingPniChangeNumberProcessorImpl: IncomingPniChangeNumberProces
             pniChangeData.e164,
             aci: localAci,
             pni: updatedPni,
-            tx: tx
+            tx: tx,
         )
 
         // Clean up thereafter
@@ -91,7 +91,7 @@ public class IncomingPniChangeNumberProcessorImpl: IncomingPniChangeNumberProces
     }
 
     private func deserializeIncomingPniChangePhoneNumber(
-        proto: SSKProtoSyncMessagePniChangeNumber
+        proto: SSKProtoSyncMessagePniChangeNumber,
     ) -> PniChangePhoneNumberData? {
         guard
             let pniIdentityKeyPairData = proto.identityKeyPair,
@@ -115,7 +115,7 @@ public class IncomingPniChangeNumberProcessorImpl: IncomingPniChangeNumberProces
                 signedPreKey: pniSignedPreKey,
                 lastResortKyberPreKey: pniLastResortKyberPreKey,
                 registrationId: pniRegistrationId,
-                e164: newE164
+                e164: newE164,
             )
         } catch let error {
             owsFailDebug("Error while deserializing PNI change-number proto: \(error)")

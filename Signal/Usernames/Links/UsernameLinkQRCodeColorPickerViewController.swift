@@ -23,7 +23,7 @@ class UsernameLinkQRCodeColorPickerViewController: OWSTableViewController2 {
         currentColor: QRCodeColor,
         username: String,
         qrCode: UIImage,
-        delegate: UsernameLinkQRCodeColorPickerDelegate
+        delegate: UsernameLinkQRCodeColorPickerDelegate,
     ) {
         self.startingColor = currentColor
         self.currentColor = currentColor
@@ -45,7 +45,7 @@ class UsernameLinkQRCodeColorPickerViewController: OWSTableViewController2 {
         let qrCodeView: QRCodeView = {
             let view = QRCodeView(
                 qrCodeTintColor: currentColor,
-                contentInset: 16
+                contentInset: 16,
             )
             view.autoSetDimensions(to: .square(184))
             view.setQRCode(image: qrCode)
@@ -88,7 +88,7 @@ class UsernameLinkQRCodeColorPickerViewController: OWSTableViewController2 {
                 let button = ColorOptionButton(
                     size: 56,
                     color: color.background,
-                    selected: color == currentColor
+                    selected: color == currentColor,
                 ) { [weak self] in
                     self?.didSelectColor(color: color)
                 }
@@ -135,7 +135,7 @@ class UsernameLinkQRCodeColorPickerViewController: OWSTableViewController2 {
 
         navigationItem.title = OWSLocalizedString(
             "USERNAME_LINK_QR_CODE_COLOR_PICKER_VIEW_TITLE_COLOR",
-            comment: "A title for a view that allows you to pick a color for a QR code for your username link."
+            comment: "A title for a view that allows you to pick a color for a QR code for your username link.",
         )
 
         buildTableContents()
@@ -165,14 +165,14 @@ class UsernameLinkQRCodeColorPickerViewController: OWSTableViewController2 {
 
                     return wrapper
                 },
-                margins: UIEdgeInsets(top: 20, leading: 32, bottom: 24, trailing: 32)
+                margins: UIEdgeInsets(top: 20, leading: 32, bottom: 24, trailing: 32),
             ),
             .itemWrappingView(
                 viewBlock: { [weak self] in
                     self?.buildColorOptionsView()
                 },
-                margins: UIEdgeInsets(top: 24, leading: 36, bottom: 16, trailing: 36)
-            )
+                margins: UIEdgeInsets(top: 24, leading: 36, bottom: 16, trailing: 36),
+            ),
         ])
 
         section.hasBackground = false
@@ -215,7 +215,7 @@ private extension UsernameLinkQRCodeColorPickerViewController {
             size: CGFloat,
             color: UIColor,
             selected: Bool,
-            onTap: @escaping () -> Void
+            onTap: @escaping () -> Void,
         ) {
             self.size = size
             self.color = color
@@ -244,12 +244,12 @@ private extension UsernameLinkQRCodeColorPickerViewController {
                     return Self.drawSelectedImage(
                         color: color.cgColor,
                         outerCircleColor: Theme.isDarkThemeEnabled ? .white : .black,
-                        size: .square(size)
+                        size: .square(size),
                     )
                 } else {
                     return Self.drawUnselectedImage(
                         color: color.cgColor,
-                        size: .square(size)
+                        size: .square(size),
                     )
                 }
             }()
@@ -267,13 +267,13 @@ private extension UsernameLinkQRCodeColorPickerViewController {
         /// A colored circle with a dimmed border.
         private static func drawUnselectedImage(
             color: CGColor,
-            size: CGSize
+            size: CGSize,
         ) -> UIImage {
             return UIGraphicsImageRenderer(size: size).image { uiContext in
                 drawColoredCircleWithBorder(
                     cgContext: uiContext.cgContext,
                     color: color,
-                    rect: CGRect(origin: .zero, size: size)
+                    rect: CGRect(origin: .zero, size: size),
                 )
             }
         }
@@ -282,7 +282,7 @@ private extension UsernameLinkQRCodeColorPickerViewController {
         private static func drawSelectedImage(
             color: CGColor,
             outerCircleColor: CGColor,
-            size: CGSize
+            size: CGSize,
         ) -> UIImage {
             return UIGraphicsImageRenderer(size: size).image { uiContext in
                 let rect = CGRect(origin: .zero, size: size)
@@ -295,7 +295,7 @@ private extension UsernameLinkQRCodeColorPickerViewController {
                 drawColoredCircleWithBorder(
                     cgContext: cgContext,
                     color: color,
-                    rect: rect.inset(by: UIEdgeInsets(margin: 7))
+                    rect: rect.inset(by: UIEdgeInsets(margin: 7)),
                 )
             }
         }
@@ -305,7 +305,7 @@ private extension UsernameLinkQRCodeColorPickerViewController {
         private static func drawColoredCircleWithBorder(
             cgContext: CGContext,
             color: CGColor,
-            rect: CGRect
+            rect: CGRect,
         ) {
             cgContext.setFillColor(color)
             cgContext.fillEllipse(in: rect)

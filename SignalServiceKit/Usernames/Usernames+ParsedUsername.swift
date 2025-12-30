@@ -46,11 +46,11 @@ public extension Usernames {
         }
 
         public func updatingNickame(
-            newNickname: String
+            newNickname: String,
         ) -> ParsedUsername {
             return ParsedUsername(
                 nickname: newNickname,
-                discriminator: discriminator
+                discriminator: discriminator,
             )
         }
     }

@@ -5,13 +5,13 @@
 
 import Testing
 
-@testable import SignalServiceKit
 @testable import Signal
+@testable import SignalServiceKit
 
 @MainActor
 @Suite(.serialized)
 final class BackupSettingsAttachmentUploadTrackerTest: BackupSettingsAttachmentTrackerTest<
-    BackupSettingsAttachmentUploadTracker.UploadUpdate
+    BackupSettingsAttachmentUploadTracker.UploadUpdate,
 > {
     typealias UploadUpdate = BackupSettingsAttachmentUploadTracker.UploadUpdate
 
@@ -22,7 +22,7 @@ final class BackupSettingsAttachmentUploadTrackerTest: BackupSettingsAttachmentT
         let uploadQueueStatusReporter = MockUploadQueueStatusReporter(.running)
         let uploadTracker = BackupSettingsAttachmentUploadTracker(
             backupAttachmentUploadQueueStatusReporter: uploadQueueStatusReporter,
-            backupAttachmentUploadProgress: uploadProgress
+            backupAttachmentUploadProgress: uploadProgress,
         )
 
         let expectedUpdates: [ExpectedUpdate] = [
@@ -30,19 +30,19 @@ final class BackupSettingsAttachmentUploadTrackerTest: BackupSettingsAttachmentT
                 update: UploadUpdate(.running, uploaded: 0, total: 4),
                 nextSteps: {
                     uploadProgress.progressMock = OWSProgress(completedUnitCount: 1, totalUnitCount: 4)
-                }
+                },
             ),
             ExpectedUpdate(
                 update: UploadUpdate(.running, uploaded: 1, total: 4),
                 nextSteps: {
                     uploadProgress.progressMock = OWSProgress(completedUnitCount: 4, totalUnitCount: 4)
-                }
+                },
             ),
             ExpectedUpdate(
                 update: UploadUpdate(.running, uploaded: 4, total: 4),
                 nextSteps: {
                     uploadQueueStatusReporter.currentStatusMock = .empty
-                }
+                },
             ),
             ExpectedUpdate(update: nil, nextSteps: {}),
         ]
@@ -58,13 +58,13 @@ final class BackupSettingsAttachmentUploadTrackerTest: BackupSettingsAttachmentT
         let uploadQueueStatusReporter = MockUploadQueueStatusReporter(.running)
         let uploadTracker = BackupSettingsAttachmentUploadTracker(
             backupAttachmentUploadQueueStatusReporter: uploadQueueStatusReporter,
-            backupAttachmentUploadProgress: uploadProgress
+            backupAttachmentUploadProgress: uploadProgress,
         )
 
         let firstExpectedUpdates: [ExpectedUpdate] = [
             ExpectedUpdate(
                 update: UploadUpdate(.running, uploaded: 0, total: 4),
-                nextSteps: {}
+                nextSteps: {},
             ),
         ]
         await runTest(updateStream: uploadTracker.updates(), expectedUpdates: firstExpectedUpdates)
@@ -74,17 +74,17 @@ final class BackupSettingsAttachmentUploadTrackerTest: BackupSettingsAttachmentT
                 update: UploadUpdate(.running, uploaded: 0, total: 1),
                 nextSteps: {
                     uploadProgress.progressMock = OWSProgress(completedUnitCount: 1, totalUnitCount: 1)
-                }
+                },
             ),
             ExpectedUpdate(
                 update: UploadUpdate(.running, uploaded: 1, total: 1),
                 nextSteps: {
                     uploadQueueStatusReporter.currentStatusMock = .empty
-                }
+                },
             ),
             ExpectedUpdate(
                 update: nil,
-                nextSteps: {}
+                nextSteps: {},
             ),
         ]
         await runTest(updateStream: uploadTracker.updates(), expectedUpdates: secondExpectedUpdates)
@@ -96,7 +96,7 @@ final class BackupSettingsAttachmentUploadTrackerTest: BackupSettingsAttachmentT
         let uploadQueueStatusReporter = MockUploadQueueStatusReporter(.running)
         let uploadTracker = BackupSettingsAttachmentUploadTracker(
             backupAttachmentUploadQueueStatusReporter: uploadQueueStatusReporter,
-            backupAttachmentUploadProgress: uploadProgress
+            backupAttachmentUploadProgress: uploadProgress,
         )
 
         let expectedUpdates: [ExpectedUpdate] = [
@@ -104,23 +104,23 @@ final class BackupSettingsAttachmentUploadTrackerTest: BackupSettingsAttachmentT
                 update: UploadUpdate(.running, uploaded: 0, total: 1),
                 nextSteps: {
                     uploadProgress.progressMock = OWSProgress(completedUnitCount: 1, totalUnitCount: 1)
-                }
+                },
             ),
             ExpectedUpdate(
                 update: UploadUpdate(.running, uploaded: 1, total: 1),
                 nextSteps: {
                     uploadQueueStatusReporter.currentStatusMock = .empty
-                }
+                },
             ),
             ExpectedUpdate(
                 update: nil,
-                nextSteps: {}
+                nextSteps: {},
             ),
         ]
 
         await runTest(
             updateStreams: [uploadTracker.updates(), uploadTracker.updates()],
-            expectedUpdates: expectedUpdates
+            expectedUpdates: expectedUpdates,
         )
     }
 }

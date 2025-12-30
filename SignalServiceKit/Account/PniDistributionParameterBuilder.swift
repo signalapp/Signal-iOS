@@ -18,32 +18,32 @@ public enum PniDistribution {
             self.pniIdentityKey = pniIdentityKey
         }
 
-        #if TESTABLE_BUILD
+#if TESTABLE_BUILD
 
         static func mock(
             pniIdentityKeyPair: ECKeyPair,
             localDeviceId: DeviceId,
             localDevicePniSignedPreKey: LibSignalClient.SignedPreKeyRecord,
             localDevicePniPqLastResortPreKey: LibSignalClient.KyberPreKeyRecord,
-            localDevicePniRegistrationId: UInt32
+            localDevicePniRegistrationId: UInt32,
         ) -> Parameters {
             var mock = Parameters(pniIdentityKey: pniIdentityKeyPair.keyPair.identityKey)
             mock.addLocalDevice(
                 localDeviceId: localDeviceId,
                 signedPreKey: localDevicePniSignedPreKey,
                 pqLastResortPreKey: localDevicePniPqLastResortPreKey,
-                registrationId: localDevicePniRegistrationId
+                registrationId: localDevicePniRegistrationId,
             )
             return mock
         }
 
-        #endif
+#endif
 
         fileprivate mutating func addLocalDevice(
             localDeviceId: DeviceId,
             signedPreKey: LibSignalClient.SignedPreKeyRecord,
             pqLastResortPreKey: LibSignalClient.KyberPreKeyRecord,
-            registrationId: UInt32
+            registrationId: UInt32,
         ) {
             devicePniSignedPreKeys["\(localDeviceId)"] = signedPreKey
             devicePniPqLastResortPreKeys["\(localDeviceId)"] = pqLastResortPreKey
@@ -55,7 +55,7 @@ public enum PniDistribution {
             signedPreKey: LibSignalClient.SignedPreKeyRecord,
             pqLastResortPreKey: LibSignalClient.KyberPreKeyRecord,
             registrationId: UInt32,
-            deviceMessage: DeviceMessage
+            deviceMessage: DeviceMessage,
         ) {
             owsPrecondition(deviceId == deviceMessage.destinationDeviceId)
 
@@ -71,7 +71,7 @@ public enum PniDistribution {
                 "devicePniSignedPrekeys": devicePniSignedPreKeys.mapValues { OWSRequestFactory.signedPreKeyRequestParameters($0) },
                 "devicePniPqLastResortPrekeys": devicePniPqLastResortPreKeys.mapValues { OWSRequestFactory.pqPreKeyRequestParameters($0) },
                 "deviceMessages": deviceMessages.map { $0.requestParameters() },
-                "pniRegistrationIds": pniRegistrationIds
+                "pniRegistrationIds": pniRegistrationIds,
             ]
         }
     }
@@ -94,7 +94,7 @@ protocol PniDistributionParamaterBuilder {
         localE164: E164,
         localDevicePniSignedPreKey: LibSignalClient.SignedPreKeyRecord,
         localDevicePniPqLastResortPreKey: LibSignalClient.KyberPreKeyRecord,
-        localDevicePniRegistrationId: UInt32
+        localDevicePniRegistrationId: UInt32,
     ) async throws -> PniDistribution.Parameters
 }
 
@@ -110,7 +110,7 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
         db: any DB,
         messageSender: Shims.MessageSender,
         pniKyberPreKeyStore: KyberPreKeyStoreImpl,
-        registrationIdGenerator: RegistrationIdGenerator
+        registrationIdGenerator: RegistrationIdGenerator,
     ) {
         self.db = db
         self.messageSender = messageSender
@@ -125,7 +125,7 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
         localE164: E164,
         localDevicePniSignedPreKey: LibSignalClient.SignedPreKeyRecord,
         localDevicePniPqLastResortPreKey: LibSignalClient.KyberPreKeyRecord,
-        localDevicePniRegistrationId: UInt32
+        localDevicePniRegistrationId: UInt32,
     ) async throws -> PniDistribution.Parameters {
         var parameters = PniDistribution.Parameters(pniIdentityKey: localPniIdentityKeyPair.keyPair.identityKey)
 
@@ -140,14 +140,14 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
             localDeviceId: localDeviceId,
             signedPreKey: localDevicePniSignedPreKey,
             pqLastResortPreKey: localDevicePniPqLastResortPreKey,
-            registrationId: localDevicePniRegistrationId
+            registrationId: localDevicePniRegistrationId,
         )
 
         // Create a signed pre key & registration ID for linked devices.
         let linkedDeviceParamResults = try await buildLinkedDevicePniGenerationParams(
             localAci: localAci,
             pniIdentityKeyPair: localPniIdentityKeyPair,
-            e164: localE164
+            e164: localE164,
         )
 
         for param in linkedDeviceParamResults {
@@ -156,7 +156,7 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
                 signedPreKey: param.signedPreKey,
                 pqLastResortPreKey: param.pqLastResortPreKey,
                 registrationId: param.registrationId,
-                deviceMessage: param.deviceMessage
+                deviceMessage: param.deviceMessage,
             )
         }
 
@@ -177,7 +177,7 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
     private func buildLinkedDevicePniGenerationParams(
         localAci: Aci,
         pniIdentityKeyPair: ECKeyPair,
-        e164: E164
+        e164: E164,
     ) async throws -> [LinkedDevicePniGenerationParams] {
         var syncMessages = [DeviceId: PniDistributionSyncMessage]()
 
@@ -196,7 +196,7 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
                     signedPreKey: signedPreKey,
                     pqLastResortPreKey: pqLastResortPreKey,
                     registrationId: registrationId,
-                    e164: e164
+                    e164: e164,
                 )
 
                 syncMessages[deviceId] = syncMessage
@@ -204,7 +204,7 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
                 return try syncMessage.buildSerializedMessageProto()
             },
             isTransient: false,
-            sealedSenderParameters: nil // Sync messages do not use UD
+            sealedSenderParameters: nil, // Sync messages do not use UD
         )
 
         return deviceMessages.map {
@@ -214,7 +214,7 @@ final class PniDistributionParameterBuilderImpl: PniDistributionParamaterBuilder
                 signedPreKey: syncMessage.signedPreKey,
                 pqLastResortPreKey: syncMessage.pqLastResortPreKey,
                 registrationId: syncMessage.registrationId,
-                deviceMessage: $0
+                deviceMessage: $0,
             )
         }
     }
@@ -241,7 +241,7 @@ protocol _PniDistributionParameterBuilder_MessageSender_Shim {
         encryptionStyle: EncryptionStyle,
         buildPlaintextContent: (DeviceId, DBWriteTransaction) throws -> Data,
         isTransient: Bool,
-        sealedSenderParameters: SealedSenderParameters?
+        sealedSenderParameters: SealedSenderParameters?,
     ) async throws -> [DeviceMessage]
 }
 
@@ -258,7 +258,7 @@ class _PniDistributionParameterBuilder_MessageSender_Wrapper: _PniDistributionPa
         encryptionStyle: EncryptionStyle,
         buildPlaintextContent: (DeviceId, DBWriteTransaction) throws -> Data,
         isTransient: Bool,
-        sealedSenderParameters: SealedSenderParameters?
+        sealedSenderParameters: SealedSenderParameters?,
     ) async throws -> [DeviceMessage] {
         try await messageSender.buildDeviceMessages(
             serviceId: serviceId,
@@ -266,7 +266,7 @@ class _PniDistributionParameterBuilder_MessageSender_Wrapper: _PniDistributionPa
             encryptionStyle: encryptionStyle,
             buildPlaintextContent: buildPlaintextContent,
             isTransient: isTransient,
-            sealedSenderParameters: sealedSenderParameters
+            sealedSenderParameters: sealedSenderParameters,
         )
     }
 }

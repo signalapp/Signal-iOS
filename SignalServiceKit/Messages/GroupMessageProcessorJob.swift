@@ -64,7 +64,7 @@ struct GroupMessageProcessorJob: Codable, PersistableRecord, FetchableRecord {
         groupId: Data,
         wasReceivedByUD: Bool,
         serverDeliveryTimestamp: UInt64,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws -> Self {
         do {
             return try Self.fetchOne(
@@ -90,7 +90,7 @@ struct GroupMessageProcessorJob: Codable, PersistableRecord, FetchableRecord {
                     Date().timeIntervalSince1970,
                     SDSRecordType.incomingGroupsV2MessageJob.rawValue,
                     UUID().uuidString,
-                ]
+                ],
             )!
         } catch {
             throw error.grdbErrorForLogging

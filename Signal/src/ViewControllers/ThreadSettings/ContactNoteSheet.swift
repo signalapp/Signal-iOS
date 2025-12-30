@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalUI
 import SignalServiceKit
+import SignalUI
 
 class ContactNoteSheet: OWSTableSheetViewController {
     struct Context {
@@ -49,9 +49,9 @@ class ContactNoteSheet: OWSTableSheetViewController {
                 for: self.thread.contactAddress,
                 context: .init(
                     db: self.context.db,
-                    nicknameManager: self.context.nicknameManager
+                    nicknameManager: self.context.nicknameManager,
                 ),
-                tx: tx
+                tx: tx,
             )
         }
         guard let nicknameEditor else { return }
@@ -91,14 +91,14 @@ private class ContactNoteTableViewController: OWSTableViewController2, TextViewW
                 top: 0,
                 left: 16,
                 bottom: 24,
-                right: 16
+                right: 16,
             )
 
             let titleLabel = UILabel()
             headerContainer.addSubview(titleLabel)
             titleLabel.text = OWSLocalizedString(
                 "CONTACT_NOTE_TITLE",
-                comment: "Title for a view showing the note that has been set for a profile."
+                comment: "Title for a view showing the note that has been set for a profile.",
             )
             titleLabel.font = .dynamicTypeHeadline.semibold()
             titleLabel.textColor = Theme.primaryTextColor
@@ -109,7 +109,7 @@ private class ContactNoteTableViewController: OWSTableViewController2, TextViewW
                 title: CommonStrings.editButton,
                 block: { [weak self] in
                     self?.didTapEdit?()
-                }
+                },
             )
             headerContainer.addSubview(editButton)
             editButton.autoAlignAxis(.horizontal, toSameAxisOf: titleLabel)
@@ -124,11 +124,11 @@ private class ContactNoteTableViewController: OWSTableViewController2, TextViewW
             guard
                 let recipient = self.context.recipientDatabaseTable.fetchRecipient(
                     address: self.thread.contactAddress,
-                    tx: tx
+                    tx: tx,
                 ),
                 let nicknameRecord = self.context.nicknameManager.fetchNickname(
                     for: recipient,
-                    tx: tx
+                    tx: tx,
                 )
             else { return nil }
             return nicknameRecord.note
@@ -140,10 +140,10 @@ private class ContactNoteTableViewController: OWSTableViewController2, TextViewW
             items: [
                 self.textViewItem(
                     self.noteTextView,
-                    dataDetectorTypes: .all
-                )
+                    dataDetectorTypes: .all,
+                ),
             ],
-            headerView: header
+            headerView: header,
         )
 
         return OWSTableContents(sections: [section])

@@ -39,31 +39,31 @@ public class CompareSafetyNumbersActivity: UIActivity {
 
     // MARK: UIActivity
 
-    public override class var activityCategory: UIActivity.Category { .action }
+    override public class var activityCategory: UIActivity.Category { .action }
 
-    public override var activityType: UIActivity.ActivityType? {
+    override public var activityType: UIActivity.ActivityType? {
         UIActivity.ActivityType(rawValue: CompareSafetyNumbersActivityType)
     }
 
-    public override var activityTitle: String? {
+    override public var activityTitle: String? {
         OWSLocalizedString("COMPARE_SAFETY_NUMBER_ACTION", comment: "Activity Sheet label")
     }
 
-    public override var activityImage: UIImage? { UIImage(imageLiteralResourceName: "lock") }
+    override public var activityImage: UIImage? { UIImage(imageLiteralResourceName: "lock") }
 
-    public override func canPerform(withActivityItems activityItems: [Any]) -> Bool {
+    override public func canPerform(withActivityItems activityItems: [Any]) -> Bool {
         return stringsFrom(activityItems: activityItems).count > 0
     }
 
-    public override func prepare(withActivityItems activityItems: [Any]) {
+    override public func prepare(withActivityItems activityItems: [Any]) {
         let myFormattedSafetyNumbers = stringsFrom(activityItems: activityItems).first
         mySafetyNumbers = numericOnly(string: myFormattedSafetyNumbers)
     }
 
-    public override func perform() {
+    override public func perform() {
         defer { activityDidFinish(true) }
 
-        guard let delegate = delegate else {
+        guard let delegate else {
             owsFailDebug("Missing delegate.")
             return
         }
@@ -89,7 +89,7 @@ public class CompareSafetyNumbersActivity: UIActivity {
     // MARK: Helpers
 
     func numericOnly(string: String?) -> String? {
-        guard let string = string else {
+        guard let string else {
             return nil
         }
 

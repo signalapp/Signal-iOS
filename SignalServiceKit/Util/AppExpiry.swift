@@ -27,6 +27,7 @@ public final class AppExpiry {
             case immediately
             case atDate
         }
+
         let mode: Mode
 
         let expirationDate: Date?
@@ -42,6 +43,7 @@ public final class AppExpiry {
             owsAssertDebug(mode != .atDate || expirationDate != nil)
         }
     }
+
     private let expirationState: AtomicValue<ExpirationState>
 
     static let keyValueCollection = "AppExpiry"
@@ -51,13 +53,13 @@ public final class AppExpiry {
         self.init(appVersion: appVersion.currentAppVersion4, buildDate: appVersion.buildDate)
     }
 
-    #if TESTABLE_BUILD
+#if TESTABLE_BUILD
 
     public static func forUnitTests(buildDate: Date = Date()) -> Self {
         return Self(appVersion: try! AppVersionNumber4(AppVersionNumber("1.2.3.4")), buildDate: buildDate)
     }
 
-    #endif
+#endif
 
     public init(
         appVersion: AppVersionNumber4,
@@ -69,7 +71,7 @@ public final class AppExpiry {
 
         self.expirationState = AtomicValue(
             .init(appVersion: appVersion.wrappedValue.rawValue, mode: .default),
-            lock: .sharedGlobal
+            lock: .sharedGlobal,
         )
     }
 
@@ -77,7 +79,7 @@ public final class AppExpiry {
         let persistedExpirationState: ExpirationState? = try? self.keyValueStore.getCodableValue(
             forKey: Self.keyValueKey,
             failDebugOnParseError: false,
-            transaction: tx
+            transaction: tx,
         )
 
         // We only want to restore the persisted state if it's for our current version.
@@ -99,7 +101,7 @@ public final class AppExpiry {
                 // Don't write or fire notification if the value hasn't changed.
                 let oldState: ExpirationState? = try self.keyValueStore.getCodableValue(
                     forKey: Self.keyValueKey,
-                    transaction: transaction
+                    transaction: transaction,
                 )
                 if let oldState, oldState == state {
                     return
@@ -111,7 +113,7 @@ public final class AppExpiry {
                 try self.keyValueStore.setCodable(
                     state,
                     key: Self.keyValueKey,
-                    transaction: transaction
+                    transaction: transaction,
                 )
             } catch {
                 owsFailDebug("Error persisting expiration state \(error)")
@@ -148,7 +150,7 @@ public final class AppExpiry {
             newState = .init(
                 appVersion: appVersion.wrappedValue.rawValue,
                 mode: .atDate,
-                expirationDate: newExpirationDate
+                expirationDate: newExpirationDate,
             )
         } else {
             newState = .init(appVersion: appVersion.wrappedValue.rawValue, mode: .default)

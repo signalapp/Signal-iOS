@@ -22,22 +22,26 @@ public class PaymentsRestoreWalletSplashViewController: OWSViewController {
         super.init()
     }
 
-    public override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
 
-        title = OWSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_TITLE",
-                                  comment: "Title for the 'restore payments wallet' view of the app settings.")
+        title = OWSLocalizedString(
+            "SETTINGS_PAYMENTS_RESTORE_WALLET_TITLE",
+            comment: "Title for the 'restore payments wallet' view of the app settings.",
+        )
 
         OWSTableViewController2.removeBackButtonText(viewController: self)
 
-        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done,
-                                                           target: self,
-                                                           action: #selector(didTapDismiss),
-                                                           accessibilityIdentifier: "dismiss")
+        navigationItem.leftBarButtonItem = UIBarButtonItem(
+            barButtonSystemItem: .done,
+            target: self,
+            action: #selector(didTapDismiss),
+            accessibilityIdentifier: "dismiss",
+        )
         createContents()
     }
 
-    public override func themeDidChange() {
+    override public func themeDidChange() {
         super.themeDidChange()
 
         updateContents()
@@ -65,17 +69,22 @@ public class PaymentsRestoreWalletSplashViewController: OWSViewController {
         let heroImage = UIImageView(image: UIImage(named: "recovery-phrase"))
 
         let titleLabel = UILabel()
-        titleLabel.text = OWSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE",
-                                            comment: "Title for the first step of the 'restore payments wallet' views.")
+        titleLabel.text = OWSLocalizedString(
+            "SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_TITLE",
+            comment: "Title for the first step of the 'restore payments wallet' views.",
+        )
         titleLabel.font = UIFont.dynamicTypeTitle2Clamped.semibold()
         titleLabel.textColor = Theme.primaryTextColor
         titleLabel.textAlignment = .center
 
         let explanationLabel = PaymentsViewUtils.buildTextWithLearnMoreLinkTextView(
-            text: OWSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION",
-                                    comment: "Explanation of the 'restore payments wallet' process payments settings."),
+            text: OWSLocalizedString(
+                "SETTINGS_PAYMENTS_RESTORE_WALLET_SPLASH_EXPLANATION",
+                comment: "Explanation of the 'restore payments wallet' process payments settings.",
+            ),
             font: .dynamicTypeSubheadlineClamped,
-            learnMoreUrl: URL.Support.Payments.walletRestorePassphrase)
+            learnMoreUrl: URL.Support.Payments.walletRestorePassphrase,
+        )
         explanationLabel.textAlignment = .center
 
         let topStack = UIStackView(arrangedSubviews: [
@@ -83,29 +92,37 @@ public class PaymentsRestoreWalletSplashViewController: OWSViewController {
             UIView.spacer(withHeight: 20),
             titleLabel,
             UIView.spacer(withHeight: 10),
-            explanationLabel
+            explanationLabel,
         ])
         topStack.axis = .vertical
         topStack.alignment = .center
         topStack.isLayoutMarginsRelativeArrangement = true
         topStack.layoutMargins = UIEdgeInsets(hMargin: 20, vMargin: 0)
 
-        let pasteFromPasteboardButton = OWSFlatButton.button(title: OWSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_FROM_PASTEBOARD",
-                                                                                      comment: "Label for the 'restore passphrase from pasteboard' button in the 'restore payments wallet from passphrase' view."),
-                                               font: UIFont.dynamicTypeHeadline,
-                                               titleColor: .ows_accentBlue,
-                                               backgroundColor: backgroundColor,
-                                               target: self,
-                                               selector: #selector(didTapPasteFromPasteboardButton))
+        let pasteFromPasteboardButton = OWSFlatButton.button(
+            title: OWSLocalizedString(
+                "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_FROM_PASTEBOARD",
+                comment: "Label for the 'restore passphrase from pasteboard' button in the 'restore payments wallet from passphrase' view.",
+            ),
+            font: UIFont.dynamicTypeHeadline,
+            titleColor: .ows_accentBlue,
+            backgroundColor: backgroundColor,
+            target: self,
+            selector: #selector(didTapPasteFromPasteboardButton),
+        )
         pasteFromPasteboardButton.autoSetHeightUsingFont()
 
-        let enterManuallyButton = OWSFlatButton.button(title: OWSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_ENTER_MANUALLY",
-                                                                                comment: "Label for the 'enter passphrase manually' button in the 'restore payments wallet from passphrase' view."),
-                                               font: UIFont.dynamicTypeHeadline,
-                                               titleColor: .white,
-                                               backgroundColor: .ows_accentBlue,
-                                               target: self,
-                                               selector: #selector(didTapEnterManuallyButton))
+        let enterManuallyButton = OWSFlatButton.button(
+            title: OWSLocalizedString(
+                "SETTINGS_PAYMENTS_RESTORE_WALLET_ENTER_MANUALLY",
+                comment: "Label for the 'enter passphrase manually' button in the 'restore payments wallet from passphrase' view.",
+            ),
+            font: UIFont.dynamicTypeHeadline,
+            titleColor: .white,
+            backgroundColor: .ows_accentBlue,
+            target: self,
+            selector: #selector(didTapEnterManuallyButton),
+        )
         enterManuallyButton.autoSetHeightUsingFont()
 
         let spacerFactory = SpacerFactory()
@@ -118,7 +135,7 @@ public class PaymentsRestoreWalletSplashViewController: OWSViewController {
             pasteFromPasteboardButton,
             UIView.spacer(withHeight: 8),
             enterManuallyButton,
-            UIView.spacer(withHeight: 8)
+            UIView.spacer(withHeight: 8),
         ])
 
         spacerFactory.finalizeSpacers()
@@ -133,7 +150,7 @@ public class PaymentsRestoreWalletSplashViewController: OWSViewController {
 
     @objc
     private func didTapPasteFromPasteboardButton() {
-        guard let restoreWalletDelegate = restoreWalletDelegate else {
+        guard let restoreWalletDelegate else {
             owsFailDebug("Missing restoreWalletDelegate.")
             dismiss(animated: true, completion: nil)
             return
@@ -144,15 +161,17 @@ public class PaymentsRestoreWalletSplashViewController: OWSViewController {
 
     @objc
     private func didTapEnterManuallyButton() {
-        guard let restoreWalletDelegate = restoreWalletDelegate else {
+        guard let restoreWalletDelegate else {
             owsFailDebug("Missing restoreWalletDelegate.")
             dismiss(animated: true, completion: nil)
             return
         }
         // Start by entering the first word of the partial passphrase.
-        let view = PaymentsRestoreWalletWordViewController(restoreWalletDelegate: restoreWalletDelegate,
-                                                           partialPassphrase: PartialPaymentsPassphrase.empty,
-                                                           wordIndex: 0)
+        let view = PaymentsRestoreWalletWordViewController(
+            restoreWalletDelegate: restoreWalletDelegate,
+            partialPassphrase: PartialPaymentsPassphrase.empty,
+            wordIndex: 0,
+        )
         navigationController?.pushViewController(view, animated: true)
     }
 }

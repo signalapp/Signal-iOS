@@ -29,7 +29,7 @@ public class ProvisioningCipher {
 
     public init(
         ourKeyPair: IdentityKeyPair = IdentityKeyPair.generate(),
-        initializationVector: Data? = nil
+        initializationVector: Data? = nil,
     ) {
         self.ourKeyPair = ourKeyPair
         self.initializationVector = initializationVector ?? Randomness.generateRandomBytes(UInt(kCCBlockSizeAES128))
@@ -65,11 +65,15 @@ public class ProvisioningCipher {
                             CCOperation(kCCEncrypt),
                             CCAlgorithm(kCCAlgorithmAES),
                             CCOptions(kCCOptionPKCS7Padding),
-                            keyBytes.baseAddress, keyBytes.count,
+                            keyBytes.baseAddress,
+                            keyBytes.count,
                             ivBytes.baseAddress,
-                            dataBytes.baseAddress, dataBytes.count,
-                            ciphertextBytes.baseAddress, ciphertextBytes.count,
-                            &bytesEncrypted)
+                            dataBytes.baseAddress,
+                            dataBytes.count,
+                            ciphertextBytes.baseAddress,
+                            ciphertextBytes.count,
+                            &bytesEncrypted,
+                        )
                         return status
                     }
                 }
@@ -146,10 +150,13 @@ public class ProvisioningCipher {
                             CCOperation(kCCDecrypt),
                             CCAlgorithm(kCCAlgorithmAES128),
                             CCOptions(kCCOptionPKCS7Padding),
-                            keyBytes.baseAddress, keyBytes.count,
+                            keyBytes.baseAddress,
+                            keyBytes.count,
                             ivBytes.baseAddress,
-                            ciphertextBytes.baseAddress, ciphertextBytes.count,
-                            dataBytes.baseAddress, dataBytes.count,
+                            ciphertextBytes.baseAddress,
+                            ciphertextBytes.count,
+                            dataBytes.baseAddress,
+                            dataBytes.count,
                             &bytesDecrypted,
                         )
                     }

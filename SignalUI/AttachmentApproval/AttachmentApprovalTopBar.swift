@@ -50,7 +50,7 @@ class AttachmentApprovalTopBar: MediaTopBar {
             leadingButton = backButton
         }
         let spacerView = UIView.hStretchingSpacer()
-        let stackView = UIStackView(arrangedSubviews: [ leadingButton, spacerView, recipientListView ])
+        let stackView = UIStackView(arrangedSubviews: [leadingButton, spacerView, recipientListView])
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.alignment = .center
         addSubview(stackView)
@@ -59,7 +59,7 @@ class AttachmentApprovalTopBar: MediaTopBar {
             stackView.topAnchor.constraint(equalTo: controlsLayoutGuide.topAnchor),
             stackView.bottomAnchor.constraint(equalTo: controlsLayoutGuide.bottomAnchor),
             stackView.trailingAnchor.constraint(equalTo: controlsLayoutGuide.trailingAnchor),
-            spacerView.widthAnchor.constraint(greaterThanOrEqualToConstant: 24)
+            spacerView.widthAnchor.constraint(greaterThanOrEqualToConstant: 24),
         ])
     }
 

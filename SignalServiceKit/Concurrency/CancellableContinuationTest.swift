@@ -14,7 +14,7 @@ final class CancellableContinuationTest: XCTestCase {
             let cancellableContinuation = CancellableContinuation<Void>()
             try await withTaskCancellationHandler(
                 operation: cancellableContinuation.wait,
-                onCancel: { /* do nothing */ }
+                onCancel: { /* do nothing */ },
             )
         }
         cancellableTask.cancel()

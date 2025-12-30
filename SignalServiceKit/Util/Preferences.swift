@@ -187,7 +187,7 @@ public class Preferences {
         keyValueStore.getBool(
             Key.shouldShowUnidentifiedDeliveryIndicators.rawValue,
             defaultValue: false,
-            transaction: transaction
+            transaction: transaction,
         )
     }
 
@@ -254,7 +254,7 @@ public class Preferences {
         bool(forKey: .wasBlurTooltipShown, defaultValue: false)
     }
 
-    public func setWasBlurTooltipShown( ) {
+    public func setWasBlurTooltipShown() {
         setBool(true, forKey: .wasBlurTooltipShown)
     }
 
@@ -279,7 +279,7 @@ public class Preferences {
     public func notificationPreviewType(tx: DBReadTransaction) -> NotificationType {
         let rawValue = keyValueStore.getUInt(
             Key.notificationPreviewType.rawValue,
-            transaction: tx
+            transaction: tx,
         )
         return rawValue.flatMap(NotificationType.init(rawValue:)) ?? .namePreview
     }

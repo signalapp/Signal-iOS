@@ -29,12 +29,12 @@ class ResendMessagePromptBuilder {
                 if latestMessage.wasRemotelyDeleted {
                     let messageToSend = TSOutgoingDeleteMessage(thread: latestThread, message: latestMessage, transaction: tx)
                     preparedMessage = PreparedOutgoingMessage.preprepared(
-                        transientMessageWithoutAttachments: messageToSend
+                        transientMessageWithoutAttachments: messageToSend,
                     )
                 } else {
                     preparedMessage = PreparedOutgoingMessage.preprepared(
                         forResending: latestMessage,
-                        messageRowId: latestMessage.sqliteRowId!
+                        messageRowId: latestMessage.sqliteRowId!,
                     )
                 }
                 messageSenderJobQueue.add(message: preparedMessage, transaction: tx)
@@ -51,7 +51,7 @@ class ResendMessagePromptBuilder {
                     if didConfirm {
                         sendAgain()
                     }
-                }
+                },
             )
             return confirmationSheet
         }
@@ -63,19 +63,21 @@ class ResendMessagePromptBuilder {
             style: .destructive,
             handler: { [databaseStorage] _ in
                 databaseStorage.write { tx in
-                    guard let freshInstance = TSInteraction.anyFetch(
-                        uniqueId: message.uniqueId, transaction: tx
-                    ) else { return }
+                    guard
+                        let freshInstance = TSInteraction.anyFetch(
+                            uniqueId: message.uniqueId,
+                            transaction: tx,
+                        ) else { return }
 
                     DependenciesBridge.shared.interactionDeleteManager
                         .delete(freshInstance, sideEffects: .default(), tx: tx)
                 }
-            }
+            },
         ))
         actionSheet.addAction(ActionSheetAction(
             title: OWSLocalizedString("SEND_AGAIN_BUTTON", comment: ""),
             style: .default,
-            handler: { _ in sendAgain() }
+            handler: { _ in sendAgain() },
         ))
         return actionSheet
     }

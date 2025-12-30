@@ -20,17 +20,17 @@ class BadgeGiftingChooseBadgeViewControllerStateTest: XCTestCase {
                     "category": "donor",
                     "name": "A Gift",
                     "description": "A gift badge!",
-                    "sprites6": ["ldpi.png", "mdpi.png", "hdpi.png", "xhdpi.png", "xxhdpi.png", "xxxhdpi.png"]
+                    "sprites6": ["ldpi.png", "mdpi.png", "hdpi.png", "xhdpi.png", "xxhdpi.png", "xxxhdpi.png"],
                 ]),
                 presetAmount: [
                     "EUR": .init(currencyCode: "EUR", value: 123),
-                    "USD": .init(currencyCode: "USD", value: 456)
-                ]
+                    "USD": .init(currencyCode: "USD", value: 456),
+                ],
             ),
             paymentMethodsConfiguration: .init(supportedPaymentMethodsByCurrency: [
                 "USD": [.applePay, .creditOrDebitCard, .paypal],
-                "EUR": [.applePay, .creditOrDebitCard, .paypal]
-            ])
+                "EUR": [.applePay, .creditOrDebitCard, .paypal],
+            ]),
         )
     }
 

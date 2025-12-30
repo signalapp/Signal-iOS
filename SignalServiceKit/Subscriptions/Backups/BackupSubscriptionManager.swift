@@ -4,8 +4,8 @@
 //
 
 import CryptoKit
-import StoreKit
 import LibSignalClient
+import StoreKit
 
 /// Responsible for In-App Purchases (IAP) that grant access to paid-tier Backups.
 ///
@@ -219,9 +219,11 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
         struct MissingProductError: Error {}
 
         do {
-            guard let product = try await Product.products(
-                for: [Constants.paidTierBackupsProductId]
-            ).first else {
+            guard
+                let product = try await Product.products(
+                    for: [Constants.paidTierBackupsProductId],
+                ).first
+            else {
                 throw MissingProductError()
             }
 
@@ -229,12 +231,12 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
         } catch is MissingProductError {
             throw OWSAssertionError(
                 "Paid-tier product missing from StoreKit!",
-                logger: logger
+                logger: logger,
             )
         } catch {
             throw OWSAssertionError(
                 "Failed to get paid-tier product from StoreKit! \(error)",
-                logger: logger
+                logger: logger,
             )
         }
     }
@@ -259,7 +261,7 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
         guard let transaction = try? transactionResult.payloadValue else {
             owsFailDebug(
                 "Transaction was unverified! onlyEntitling: \(onlyEntitling)",
-                logger: logger
+                logger: logger,
             )
             return nil
         }
@@ -285,7 +287,7 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
                 guard let transaction = try? transactionResult.payloadValue else {
                     owsFailDebug(
                         "Transaction from update was unverified!",
-                        logger: logger
+                        logger: logger,
                     )
                     continue
                 }
@@ -307,7 +309,7 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
                     } catch {
                         owsFailDebug(
                             "Failed to redeem subscription: \(error)",
-                            logger: logger
+                            logger: logger,
                         )
                     }
                 } else {
@@ -340,13 +342,13 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
 
         return try await _fetchAndMaybeDowngradeSubscription(
             subscriberID: subscriberID,
-            subscriptionFetcher: SubscriptionFetcher(networkManager: networkManager)
+            subscriptionFetcher: SubscriptionFetcher(networkManager: networkManager),
         )
     }
 
     private func _fetchAndMaybeDowngradeSubscription(
         subscriberID: Data,
-        subscriptionFetcher: SubscriptionFetcher
+        subscriptionFetcher: SubscriptionFetcher,
     ) async throws -> Subscription? {
         let subscription = try await subscriptionFetcher.fetch(subscriberID: subscriberID)
         let backupEntitlement = try await whoAmIManager.makeWhoAmIRequest().entitlements.backup
@@ -531,7 +533,7 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
             case .unverified:
                 throw OWSAssertionError(
                     "Unverified successful purchase result!",
-                    logger: logger
+                    logger: logger,
                 )
             }
         case .userCancelled:
@@ -543,7 +545,7 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
         @unknown default:
             throw OWSAssertionError(
                 "Unknown purchase result!",
-                logger: logger
+                logger: logger,
             )
         }
     }
@@ -571,9 +573,11 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
     }
 
     private func _redeemSubscriptionIfNecessary() async throws {
-        if let preexistingRedemptionContext = db.read(block: {
-            return BackupSubscriptionRedemptionContext.fetch(tx: $0)
-        }) {
+        if
+            let preexistingRedemptionContext = db.read(block: {
+                return BackupSubscriptionRedemptionContext.fetch(tx: $0)
+            })
+        {
             // We have a persisted redemption context, which means a previous
             // redemption was interrupted. Finish it, then try again.
             //
@@ -649,7 +653,7 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
                 /// we'll "claim" it by generating and registering identifiers
                 /// for the local subscription!
                 localIAPSubscriberData = try await registerNewSubscriberId(
-                    originalTransactionId: localEntitlingTransaction.originalID
+                    originalTransactionId: localEntitlingTransaction.originalID,
                 )
             }
         } else if let localEntitlingTransaction {
@@ -657,7 +661,7 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
             /// identifiers. (This might be the first time we're subscribing!)
             /// Generate and register them now!
             localIAPSubscriberData = try await registerNewSubscriberId(
-                originalTransactionId: localEntitlingTransaction.originalID
+                originalTransactionId: localEntitlingTransaction.originalID,
             )
         } else if let persistedIAPSubscriberData {
             /// We don't have an active subscription locally, but we do have
@@ -680,14 +684,14 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
         await reconcileIAPNotFoundLocallyWarnings(localIAPSubscriberData: localIAPSubscriberData)
 
         let subscriptionRedemptionNecessaryChecker = SubscriptionRedemptionNecessityChecker<
-            BackupSubscriptionRedemptionContext
+            BackupSubscriptionRedemptionContext,
         >(
             checkerStore: store,
             dateProvider: dateProvider,
             db: db,
             logger: logger,
             networkManager: networkManager,
-            tsAccountManager: tsAccountManager
+            tsAccountManager: tsAccountManager,
         )
 
         try await subscriptionRedemptionNecessaryChecker.redeemSubscriptionIfNecessary(
@@ -696,7 +700,7 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
                     let subscriberID = db.read(block: { store.getIAPSubscriberData(tx: $0)?.subscriberId }),
                     let subscription = try await _fetchAndMaybeDowngradeSubscription(
                         subscriberID: subscriberID,
-                        subscriptionFetcher: subscriptionFetcher
+                        subscriptionFetcher: subscriptionFetcher,
                     )
                 {
                     return (subscriberID, subscription)
@@ -710,13 +714,15 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
                     logger.info("Registering new subscriber ID for active local IAP, remote subscription was missing!")
 
                     let newSubscriberId = try await registerNewSubscriberId(
-                        originalTransactionId: localEntitlingTransaction.originalID
+                        originalTransactionId: localEntitlingTransaction.originalID,
                     ).subscriberId
 
-                    if let subscription = try await _fetchAndMaybeDowngradeSubscription(
-                        subscriberID: newSubscriberId,
-                        subscriptionFetcher: subscriptionFetcher
-                    ) {
+                    if
+                        let subscription = try await _fetchAndMaybeDowngradeSubscription(
+                            subscriberID: newSubscriberId,
+                            subscriptionFetcher: subscriptionFetcher,
+                        )
+                    {
                         return (newSubscriberId, subscription)
                     } else {
                         owsFailDebug("Subscription missing, but we just registered a new subscriber ID!")
@@ -739,7 +745,7 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
             startRedemptionJobBlock: { redemptionContext async throws in
                 // Note that this step, if successful, will set BackupPlan.
                 try await backupSubscriptionRedeemer.redeem(context: redemptionContext)
-            }
+            },
         )
     }
 
@@ -747,7 +753,7 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
     /// associated with the given StoreKit "original transaction ID" for a
     /// subscription. Persists and returns the new subscriber ID.
     private func registerNewSubscriberId(
-        originalTransactionId: UInt64
+        originalTransactionId: UInt64,
     ) async throws -> IAPSubscriberData {
         logger.info("Generating and registering new Backups subscriber ID!")
 
@@ -756,7 +762,7 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
         /// First, we tell the server (unauthenticated) that a new subscriber ID
         /// exists. At this point, it won't be associated with anything.
         let registerSubscriberIdResponse = try await networkManager.asyncRequest(
-            .registerSubscriberId(subscriberId: newSubscriberId)
+            .registerSubscriberId(subscriberId: newSubscriberId),
         )
 
         guard registerSubscriberIdResponse.responseStatusCode == 200 else {
@@ -771,8 +777,8 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
         let associateIdsResponse = try await networkManager.asyncRequest(
             .associateSubscriberId(
                 newSubscriberId,
-                withOriginalTransactionId: originalTransactionId
-            )
+                withOriginalTransactionId: originalTransactionId,
+            ),
         )
 
         guard associateIdsResponse.responseStatusCode == 200 else {
@@ -781,7 +787,7 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
 
         let newSubscriberData = IAPSubscriberData(
             subscriberId: newSubscriberId,
-            iapSubscriptionId: .originalTransactionId(originalTransactionId)
+            iapSubscriptionId: .originalTransactionId(originalTransactionId),
         )
 
         /// Our subscription is now set up on the service, and we should record
@@ -884,12 +890,12 @@ final class BackupSubscriptionManagerImpl: BackupSubscriptionManager {
             if let originalTransactionId = kvStore.getUInt64(Keys.originalTransactionId, transaction: tx) {
                 return IAPSubscriberData(
                     subscriberId: subscriberId,
-                    iapSubscriptionId: .originalTransactionId(originalTransactionId)
+                    iapSubscriptionId: .originalTransactionId(originalTransactionId),
                 )
             } else if let purchaseToken = kvStore.getString(Keys.purchaseToken, transaction: tx) {
                 return IAPSubscriberData(
                     subscriberId: subscriberId,
-                    iapSubscriptionId: .purchaseToken(purchaseToken)
+                    iapSubscriptionId: .purchaseToken(purchaseToken),
                 )
             }
 
@@ -935,12 +941,12 @@ private extension TSRequest {
 
     static func associateSubscriberId(
         _ subscriberId: Data,
-        withOriginalTransactionId originalTransactionId: UInt64
+        withOriginalTransactionId originalTransactionId: UInt64,
     ) -> TSRequest {
         var request = TSRequest(
             url: URL(string: "v1/subscription/\(subscriberId.asBase64Url)/appstore/\(originalTransactionId)")!,
             method: "POST",
-            parameters: nil
+            parameters: nil,
         )
         request.auth = .anonymous
         request.applyRedactionStrategy(.redactURL())

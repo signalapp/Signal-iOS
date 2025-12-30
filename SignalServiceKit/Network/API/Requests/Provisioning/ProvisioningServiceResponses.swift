@@ -19,7 +19,7 @@ public enum ProvisioningServiceResponses {
         case deviceLimitExceeded = 411
         case unexpectedError = -1
 
-        static public var unknown: Self { .unexpectedError }
+        public static var unknown: Self { .unexpectedError }
     }
 
     public struct VerifySecondaryDeviceResponse: Codable, Equatable {

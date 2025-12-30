@@ -60,7 +60,7 @@ public class DisappearingMessagesExpirationJobObjcBridge: NSObject {
     static func startExpiration(
         forMessage message: TSMessage,
         expirationStartedAt: UInt64,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         DependenciesBridge.shared.disappearingMessagesExpirationJob
             .startExpiration(

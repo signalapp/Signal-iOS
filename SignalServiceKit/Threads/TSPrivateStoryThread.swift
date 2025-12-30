@@ -32,7 +32,7 @@ extension TSPrivateStoryThread {
     @objc
     public var distributionListIdentifier: Data? { UUID(uuidString: uniqueId)?.data }
 
-    public override func recipientAddresses(with tx: DBReadTransaction) -> [SignalServiceAddress] {
+    override public func recipientAddresses(with tx: DBReadTransaction) -> [SignalServiceAddress] {
         let storyRecipientManager = DependenciesBridge.shared.storyRecipientManager
         do {
             switch storyViewMode {
@@ -58,7 +58,7 @@ extension TSPrivateStoryThread {
     public func updateWithAllowsReplies(
         _ allowsReplies: Bool,
         updateStorageService: Bool,
-        transaction tx: DBWriteTransaction
+        transaction tx: DBWriteTransaction,
     ) {
         anyUpdatePrivateStoryThread(transaction: tx) { privateStoryThread in
             privateStoryThread.allowsReplies = allowsReplies
@@ -66,7 +66,7 @@ extension TSPrivateStoryThread {
 
         if updateStorageService, let distributionListIdentifier {
             SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(
-                updatedStoryDistributionListIds: [distributionListIdentifier]
+                updatedStoryDistributionListIds: [distributionListIdentifier],
             )
         }
     }
@@ -74,7 +74,7 @@ extension TSPrivateStoryThread {
     public func updateWithName(
         _ name: String,
         updateStorageService: Bool,
-        transaction tx: DBWriteTransaction
+        transaction tx: DBWriteTransaction,
     ) {
         anyUpdatePrivateStoryThread(transaction: tx) { privateStoryThread in
             privateStoryThread.name = name
@@ -82,7 +82,7 @@ extension TSPrivateStoryThread {
 
         if updateStorageService, let distributionListIdentifier {
             SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(
-                updatedStoryDistributionListIds: [distributionListIdentifier]
+                updatedStoryDistributionListIds: [distributionListIdentifier],
             )
         }
     }
@@ -103,13 +103,13 @@ extension TSPrivateStoryThread {
         storyRecipientIds storyRecipientIdsChange: OptionalChange<[SignalRecipient.RowId]>,
         updateStorageService: Bool,
         updateHasSetMyStoryPrivacyIfNeeded: Bool = true,
-        transaction tx: DBWriteTransaction
+        transaction tx: DBWriteTransaction,
     ) {
         if updateHasSetMyStoryPrivacyIfNeeded, isMyStory {
             StoryManager.setHasSetMyStoriesPrivacy(
                 true,
                 shouldUpdateStorageService: updateStorageService,
-                transaction: tx
+                transaction: tx,
             )
         }
 
@@ -127,7 +127,7 @@ extension TSPrivateStoryThread {
                     storyRecipientIds,
                     for: self,
                     shouldUpdateStorageService: false, // handled below
-                    tx: tx
+                    tx: tx,
                 )
             }
         }

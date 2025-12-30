@@ -6,8 +6,10 @@
 import SignalServiceKit
 
 protocol ApprovalRailCellViewDelegate: AnyObject {
-    func approvalRailCellView(_ approvalRailCellView: ApprovalRailCellView,
-                              didRemoveItem attachmentApprovalItem: AttachmentApprovalItem)
+    func approvalRailCellView(
+        _ approvalRailCellView: ApprovalRailCellView,
+        didRemoveItem attachmentApprovalItem: AttachmentApprovalItem,
+    )
     func canRemoveApprovalRailCellView(_ approvalRailCellView: ApprovalRailCellView) -> Bool
 }
 
@@ -43,7 +45,7 @@ class ApprovalRailCellView: GalleryRailCellView {
             itemBorderColor: .white,
             focusedItemBorderWidth: 2,
             focusedItemBorderColor: Theme.accentBlueColor,
-            focusedItemOverlayColor: .ows_blackAlpha50
+            focusedItemOverlayColor: .ows_blackAlpha50,
         )
         super.init(configuration: configuration)
         addSubview(deleteButton)

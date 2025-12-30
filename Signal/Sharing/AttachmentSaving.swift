@@ -4,8 +4,8 @@
 //
 
 import Photos
-import SignalUI
 import SignalServiceKit
+import SignalUI
 
 enum AttachmentSaving {
     /// Save the given attachments to the photo library.
@@ -14,10 +14,10 @@ enum AttachmentSaving {
     /// Only attachments representing media that can be saved to the photo
     /// library will be saved. Others will be ignored.
     static func saveToPhotoLibrary(
-        referencedAttachmentStreams: [ReferencedAttachmentStream]
+        referencedAttachmentStreams: [ReferencedAttachmentStream],
     ) {
         let (assetCreationRequests, _) = referencedAttachmentStreams.reduce(
-            into: (requests: [PHAssetCreationRequestType](), filenames: Set<String>())
+            into: (requests: [PHAssetCreationRequestType](), filenames: Set<String>()),
         ) { result, referencedAttachmentStream in
             let reference = referencedAttachmentStream.reference
             let attachmentStream = referencedAttachmentStream.attachmentStream
@@ -31,13 +31,13 @@ enum AttachmentSaving {
 
             let filename = uniqueFilename(
                 sourceFilename: reference.sourceFilename,
-                existingFilenames: &result.filenames
+                existingFilenames: &result.filenames,
             )
 
             let decryptedFileUrl: URL
             do {
                 decryptedFileUrl = try attachmentStream.makeDecryptedCopy(
-                    filename: filename
+                    filename: filename,
                 )
             } catch let error {
                 owsFailDebug("Failed to save decrypted copy of attachment for photo library! \(error)")
@@ -63,7 +63,7 @@ enum AttachmentSaving {
     }
 
     private static func _confirmAndSaveToPhotoLibrary(
-        assetCreationRequests: [PHAssetCreationRequestType]
+        assetCreationRequests: [PHAssetCreationRequestType],
     ) {
         let fromViewController = CurrentAppContext().frontmostViewController()!
 
@@ -75,33 +75,33 @@ enum AttachmentSaving {
             let actionSheet = ActionSheetController(
                 title: OWSLocalizedString(
                     "ATTACHMENT_SAVING_ACTION_SHEET_TITLE",
-                    comment: "Title for an action sheet asking users about saving attachments. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name."
+                    comment: "Title for an action sheet asking users about saving attachments. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name.",
                 ),
                 message: OWSLocalizedString(
                     "ATTACHMENT_SAVING_ACTION_SHEET_MESSAGE",
-                    comment: "Message for an action sheet asking users about saving attachments. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name."
-                )
+                    comment: "Message for an action sheet asking users about saving attachments. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name.",
+                ),
             )
 
             let saveAction = ActionSheetAction(title: OWSLocalizedString(
                 "ATTACHMENT_SAVING_ACTION_SHEET_ACTION_SAVE",
-                comment: "Title for an action in an action sheet that will save attachments to the device's Photos app."
+                comment: "Title for an action in an action sheet that will save attachments to the device's Photos app.",
             )) { _ in
                 _saveToPhotoLibrary(
                     assetCreationRequests: assetCreationRequests,
-                    fromViewController: fromViewController
+                    fromViewController: fromViewController,
                 )
             }
 
             let saveAndDontShowAgainAction = ActionSheetAction(title: OWSLocalizedString(
                 "ATTACHMENT_SAVING_ACTION_SHEET_ACTION_SAVE_AND_DONT_SHOW_AGAIN",
-                comment: "Title for an action in an action sheet that will save attachments to the device's Photos app, and disable the action sheet in the future."
+                comment: "Title for an action in an action sheet that will save attachments to the device's Photos app, and disable the action sheet in the future.",
             )) { _ in
                 db.write { preferenceStore.disableShowingSaveMediaActionSheet(tx: $0) }
 
                 _saveToPhotoLibrary(
                     assetCreationRequests: assetCreationRequests,
-                    fromViewController: fromViewController
+                    fromViewController: fromViewController,
                 )
             }
 
@@ -112,14 +112,14 @@ enum AttachmentSaving {
         } else {
             _saveToPhotoLibrary(
                 assetCreationRequests: assetCreationRequests,
-                fromViewController: fromViewController
+                fromViewController: fromViewController,
             )
         }
     }
 
     private static func _saveToPhotoLibrary(
         assetCreationRequests: [PHAssetCreationRequestType],
-        fromViewController: UIViewController
+        fromViewController: UIViewController,
     ) {
         Task { @MainActor in
             let isGranted = await fromViewController.ows_askForMediaLibraryPermissions(for: .addOnly)
@@ -145,18 +145,18 @@ enum AttachmentSaving {
 
                 ToastController(text: OWSLocalizedString(
                     "ATTACHMENT_SAVING_SUCCESS_MESSAGE",
-                    comment: "Message shown in a toast after user successfully saves attachments to Photos. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name."
+                    comment: "Message shown in a toast after user successfully saves attachments to Photos. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name.",
                 )).presentToastView(
                     from: .bottom,
                     of: fromViewController.view,
-                    inset: 40
+                    inset: 40,
                 )
             } catch {
                 Logger.error("Failed to save attachments to photo library: \(error)")
 
                 OWSActionSheets.showErrorAlert(message: OWSLocalizedString(
                     "ATTACHMENT_SAVING_FAILURE_MESSAGE",
-                    comment: "Message shown in an action sheet after user fails to save attachments to Photos. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name."
+                    comment: "Message shown in an action sheet after user fails to save attachments to Photos. 'Photos' is the name of the default Photos app on iOS, and should be localized as that app's name.",
                 ))
             }
 
@@ -172,7 +172,7 @@ enum AttachmentSaving {
 
     static func uniqueFilename(
         sourceFilename: String?,
-        existingFilenames: inout Set<String>
+        existingFilenames: inout Set<String>,
     ) -> String? {
         if
             let sourceFilename,

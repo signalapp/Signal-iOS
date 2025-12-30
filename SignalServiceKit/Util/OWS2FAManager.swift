@@ -34,11 +34,12 @@ public class OWS2FAManager {
     public var isRegistrationLockV2Enabled: Bool {
         return db.read { isRegistrationLockV2Enabled(transaction: $0) }
     }
+
     public func isRegistrationLockV2Enabled(transaction: DBReadTransaction) -> Bool {
         return keyValueStore.getBool(
             kOWS2FAManager_IsRegistrationLockV2Enabled,
             defaultValue: false,
-            transaction: transaction
+            transaction: transaction,
         )
     }
 
@@ -47,6 +48,7 @@ public class OWS2FAManager {
     public var isPinEnabledWithSneakyTransaction: Bool {
         return db.read { isPinEnabled(tx: $0) }
     }
+
     public func isPinEnabled(tx: DBReadTransaction) -> Bool {
         return pinCode(transaction: tx) != nil
     }
@@ -54,6 +56,7 @@ public class OWS2FAManager {
     public var pinCodeWithSneakyTransaction: String? {
         return db.read { pinCode(transaction: $0) }
     }
+
     public func pinCode(transaction: DBReadTransaction) -> String? {
         return keyValueStore.getString(kOWS2FAManager_PinCode, transaction: transaction)
     }
@@ -64,17 +67,21 @@ public class OWS2FAManager {
     var defaultRepetitionInterval: TimeInterval {
         return Self.allRepetitionIntervals.first!
     }
+
     public func setDefaultRepetitionInterval(transaction: DBWriteTransaction) {
         keyValueStore.removeValue(forKey: kOWS2FAManager_RepetitionInterval, transaction: transaction)
     }
+
     public func setDefaultRepetitionIntervalForBackupRestore(transaction: DBWriteTransaction) {
         keyValueStore.setDouble(7 * .day, key: kOWS2FAManager_RepetitionInterval, transaction: transaction)
         // Reset the interval as part of the restore
         setLastCompletedReminderDate(Date(), transaction: transaction)
     }
+
     public var repetitionInterval: TimeInterval {
         return db.read { repetitionInterval(transaction: $0) }
     }
+
     func repetitionInterval(transaction: DBReadTransaction) -> TimeInterval {
         return keyValueStore.getDouble(kOWS2FAManager_RepetitionInterval, defaultValue: defaultRepetitionInterval, transaction: transaction)
     }
@@ -84,9 +91,11 @@ public class OWS2FAManager {
     public var areRemindersEnabled: Bool {
         return db.read { areRemindersEnabled(transaction: $0) }
     }
+
     public func areRemindersEnabled(transaction: DBReadTransaction) -> Bool {
         return keyValueStore.getBool(kOWS2FAManager_AreRemindersEnabled, defaultValue: true, transaction: transaction)
     }
+
     public func setAreRemindersEnabled(_ areRemindersEnabled: Bool, transaction: DBWriteTransaction) {
         keyValueStore.setBool(areRemindersEnabled, key: kOWS2FAManager_AreRemindersEnabled, transaction: transaction)
     }
@@ -96,9 +105,11 @@ public class OWS2FAManager {
     public func lastCompletedReminderDate(transaction: DBReadTransaction) -> Date? {
         return keyValueStore.getDate(kOWS2FAManager_LastSuccessfulReminderDateKey, transaction: transaction)
     }
+
     public func setLastCompletedReminderDate(_ date: Date, transaction: DBWriteTransaction) {
         keyValueStore.setDate(date, key: kOWS2FAManager_LastSuccessfulReminderDateKey, transaction: transaction)
     }
+
     public func nextReminderDate(transaction: DBReadTransaction) -> Date {
         let lastCompletedReminderDate = lastCompletedReminderDate(transaction: transaction) ?? .distantPast
         let repetitionInterval = repetitionInterval(transaction: transaction)
@@ -175,7 +186,7 @@ public class OWS2FAManager {
     public func markEnabled(
         pin: String,
         resetReminderInterval: Bool,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) {
         owsPrecondition(!pin.isEmpty)
 
@@ -216,16 +227,18 @@ public class OWS2FAManager {
 
         // Enabling V2 2FA doesn't inherently enable registration lock,
         // it's managed by a separate setting.
-        guard let masterKey = db.read(block: {
-            accountKeyStore.getMasterKey(tx: $0)
-        }) else {
+        guard
+            let masterKey = db.read(block: {
+                accountKeyStore.getMasterKey(tx: $0)
+            })
+        else {
             throw OWSAssertionError("Missing master key")
         }
 
         _ = try await svr.backupMasterKey(
             pin: pin,
             masterKey: masterKey,
-            authMethod: .implicit
+            authMethod: .implicit,
         ).awaitable()
 
         await db.awaitableWrite { tx in
@@ -239,7 +252,7 @@ public class OWS2FAManager {
         let token = db.read { tx in
             let masterKey = accountKeyStore.getMasterKey(tx: tx)
             return masterKey?.data(
-                for: .registrationLock
+                for: .registrationLock,
             ).canonicalStringRepresentation
         }
         guard let token else {
@@ -253,7 +266,7 @@ public class OWS2FAManager {
             keyValueStore.setBool(
                 true,
                 key: kOWS2FAManager_IsRegistrationLockV2Enabled,
-                transaction: transaction
+                transaction: transaction,
             )
         }
 
@@ -268,7 +281,7 @@ public class OWS2FAManager {
         keyValueStore.setBool(
             true,
             key: kOWS2FAManager_IsRegistrationLockV2Enabled,
-            transaction: transaction
+            transaction: transaction,
         )
     }
 
@@ -279,7 +292,7 @@ public class OWS2FAManager {
         await db.awaitableWrite { transaction in
             keyValueStore.removeValue(
                 forKey: kOWS2FAManager_IsRegistrationLockV2Enabled,
-                transaction: transaction
+                transaction: transaction,
             )
         }
 
@@ -326,7 +339,7 @@ public class OWS2FAManager {
             if previous + 1 != current { forwardSequential = false }
             if previous - 1 != current { reverseSequential = false }
 
-            if !allTheSame && !forwardSequential && !reverseSequential { break }
+            if !allTheSame, !forwardSequential, !reverseSequential { break }
         }
 
         return allTheSame || forwardSequential || reverseSequential

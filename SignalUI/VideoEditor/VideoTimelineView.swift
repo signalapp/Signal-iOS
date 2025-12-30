@@ -53,6 +53,7 @@ class VideoTimelineView: UIView {
         case trimmingEnd
         case scrubbing
     }
+
     private var mode: Mode = .none
 
     fileprivate enum Constants {
@@ -61,6 +62,7 @@ class VideoTimelineView: UIView {
         static let cursorSize = CGSize(width: 4, height: timelineHeight + 4)
         static let cornerRadius: CGFloat = 4
     }
+
     static let preferredHeight = Constants.timelineHeight
 
     private lazy var timeBubbleTextLabel: UILabel = {
@@ -69,6 +71,7 @@ class VideoTimelineView: UIView {
         label.font = .dynamicTypeCaption1.medium()
         return label
     }()
+
     private lazy var timeBubbleView: UIView = {
         let view = OWSLayerView()
         view.alpha = 0
@@ -86,6 +89,7 @@ class VideoTimelineView: UIView {
 
         return view
     }()
+
     private var timeBubbleViewPositionConstraint: NSLayoutConstraint?
 
     init() {
@@ -115,7 +119,7 @@ class VideoTimelineView: UIView {
         thumbnailLayerView.layer.addSublayer(thumbnailOverlayLayer)
 
         thumbnailLayerView.layoutCallback = { [weak self] view in
-            guard let self = self else { return }
+            guard let self else { return }
 
             // Rounded corners for thumbnailLayerView.
             // Even though actual thumbnail area is inset on both ends
@@ -144,7 +148,7 @@ class VideoTimelineView: UIView {
         trimLayerView.addSubview(trimHandleRight)
         trimLayerView.addSubview(cursorView)
         trimLayerView.layoutCallback = { [weak self] view in
-            guard let self = self else {
+            guard let self else {
                 return
             }
 
@@ -171,8 +175,10 @@ class VideoTimelineView: UIView {
             }
         }
 
-        guard let dataSource = dataSource,
-              let videoThumbnails = dataSource.videoThumbnails else {
+        guard
+            let dataSource,
+            let videoThumbnails = dataSource.videoThumbnails
+        else {
             return
         }
 
@@ -202,10 +208,12 @@ class VideoTimelineView: UIView {
             let thumbnail: UIImage = videoThumbnails[thumbnailIndex]
             let imageLayer = CALayer()
             imageLayer.contents = thumbnail.cgImage
-            imageLayer.frame = CGRect(x: thumbnailStripRect.minX + CGFloat(index) * thumbnailWidth,
-                                      y: thumbnailStripRect.minY,
-                                      width: thumbnailWidth,
-                                      height: thumbnailHeight)
+            imageLayer.frame = CGRect(
+                x: thumbnailStripRect.minX + CGFloat(index) * thumbnailWidth,
+                y: thumbnailStripRect.minY,
+                width: thumbnailWidth,
+                height: thumbnailHeight,
+            )
             thumbnailLayerView.layer.addSublayer(imageLayer)
         }
     }
@@ -238,7 +246,7 @@ class VideoTimelineView: UIView {
     // ratio of the trimmed video length to the original,
     // untrimmed video length.
     private var innerTrimRect: CGRect {
-        guard let dataSource = dataSource else {
+        guard let dataSource else {
             return bounds
         }
         let untrimmedDurationSeconds = CGFloat(dataSource.untrimmedDurationSeconds)
@@ -253,7 +261,7 @@ class VideoTimelineView: UIView {
     }
 
     private var cursorPosition: CGPoint {
-        guard let dataSource = dataSource else {
+        guard let dataSource else {
             return bounds.center
         }
         let startSeconds = CGFloat(dataSource.trimmedStartSeconds)
@@ -316,7 +324,7 @@ class VideoTimelineView: UIView {
         default:
             break
         }
-        if let dataSource = dataSource {
+        if let dataSource {
             return dataSource.isTrimmed
         }
         return false
@@ -382,7 +390,7 @@ extension VideoTimelineView {
     }
 
     private func modeForNewGesture(_ gesture: UIGestureRecognizer) -> Mode {
-        guard let dataSource = dataSource else {
+        guard let dataSource else {
             return .none
         }
 
@@ -393,16 +401,16 @@ extension VideoTimelineView {
         // Our gesture handling is permissive, trim gestures can start
         // a little bit outside the visible "trim handles".
         let couldBeTrimStart = (dataSource.canBeTrimmed &&
-                                location.x >= (outerTrimRect.minX - Constants.extraHotArea) &&
-                                location.x <= (innerTrimRect.minX + Constants.extraHotArea))
+            location.x >= (outerTrimRect.minX - Constants.extraHotArea) &&
+            location.x <= (innerTrimRect.minX + Constants.extraHotArea))
         let couldBeTrimEnd = (dataSource.canBeTrimmed &&
-                              location.x >= (innerTrimRect.maxX - Constants.extraHotArea) &&
-                              location.x <= (outerTrimRect.maxX + Constants.extraHotArea))
+            location.x >= (innerTrimRect.maxX - Constants.extraHotArea) &&
+            location.x <= (outerTrimRect.maxX + Constants.extraHotArea))
         let couldBeScrub = (location.x >= innerTrimRect.minX &&
-                            location.x <= innerTrimRect.maxX)
+            location.x <= innerTrimRect.maxX)
 
         // Prefer trimming to scrubbing.
-        if couldBeTrimStart && couldBeTrimEnd {
+        if couldBeTrimStart, couldBeTrimEnd {
             // Because our gesture handling is permissive,
             // we need to disambiguate.
             let startDistance = abs(location.x - outerTrimRect.minX)
@@ -424,7 +432,7 @@ extension VideoTimelineView {
     }
 
     private func applyGestureInProgress(_ gesture: UIGestureRecognizer) {
-        guard let dataSource = dataSource, let delegate = delegate else {
+        guard let dataSource, let delegate else {
             return
         }
 
@@ -524,7 +532,7 @@ extension VideoTimelineView {
     }
 
     func updateTimeBubble() {
-        guard let dataSource = dataSource else {
+        guard let dataSource else {
             hideTimeBubble(animated: false)
             return
         }
@@ -551,8 +559,15 @@ extension VideoTimelineView {
             timeBubbleViewPositionConstraint = existingConstraint
         } else {
             timeBubbleViewPositionConstraint =
-            NSLayoutConstraint(item: timeBubbleView, attribute: .centerX, relatedBy: .equal,
-                               toItem: self, attribute: .left, multiplier: 1, constant: 0)
+                NSLayoutConstraint(
+                    item: timeBubbleView,
+                    attribute: .centerX,
+                    relatedBy: .equal,
+                    toItem: self,
+                    attribute: .left,
+                    multiplier: 1,
+                    constant: 0,
+                )
             addConstraint(timeBubbleViewPositionConstraint)
             self.timeBubbleViewPositionConstraint = timeBubbleViewPositionConstraint
         }
@@ -568,7 +583,8 @@ extension VideoTimelineView {
             case .center:
                 // Position where current video playback is.
                 return convert(cursorView.center, from: trimLayerView).x
-            }}()
+            }
+        }()
 
         timeBubbleTextLabel.text = OWSFormat.localizedDurationString(from: round(time))
 
@@ -600,6 +616,7 @@ private class TrimHandleView: UIImageView {
         case left
         case right
     }
+
     let position: Position
 
     private static func handleImage(forPosition position: Position, isHighlighted: Bool) -> UIImage? {
@@ -613,7 +630,7 @@ private class TrimHandleView: UIImageView {
 
     override var isHighlighted: Bool {
         willSet {
-            if newValue && highlightedImage == nil {
+            if newValue, highlightedImage == nil {
                 highlightedImage = TrimHandleView.handleImage(forPosition: position, isHighlighted: true)
             }
         }

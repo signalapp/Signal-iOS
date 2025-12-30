@@ -24,14 +24,15 @@ final class IncomingCallLogEventSyncMessageManagerTest: XCTestCase {
         syncMessageManager = IncomingCallLogEventSyncMessageManagerImpl(
             callRecordConversationIdAdapter: mockCallRecordConversationIdAdapter,
             deleteAllCallsJobQueue: mockDeleteAllCallsJobQueue,
-            missedCallManager: mockMissedCallManager
+            missedCallManager: mockMissedCallManager,
         )
     }
 
     private func handle(incomingSyncMessage: IncomingCallLogEventSyncMessageParams) {
         InMemoryDB().write { tx in
             syncMessageManager.handleIncomingSyncMessage(
-                incomingSyncMessage: incomingSyncMessage, tx: tx
+                incomingSyncMessage: incomingSyncMessage,
+                tx: tx,
             )
         }
     }
@@ -43,7 +44,7 @@ final class IncomingCallLogEventSyncMessageManagerTest: XCTestCase {
         mockCallRecordConversationIdAdapter.mockHydratedCallRecord = .fixture(
             callId: callId,
             threadRowId: .maxRandom,
-            callBeganTimestamp: timestamp
+            callBeganTimestamp: timestamp,
         )
 
         mockDeleteAllCallsJobQueue.deleteAllCallsMock = { beforeTimestamp in
@@ -54,9 +55,9 @@ final class IncomingCallLogEventSyncMessageManagerTest: XCTestCase {
             eventType: .cleared,
             anchorCallIdentifiers: CallIdentifiers(
                 callId: callId,
-                conversationId: Data()
+                conversationId: Data(),
             ),
-            anchorTimestamp: timestamp + 1
+            anchorTimestamp: timestamp + 1,
         ))
     }
 
@@ -73,15 +74,15 @@ final class IncomingCallLogEventSyncMessageManagerTest: XCTestCase {
             eventType: .cleared,
             anchorCallIdentifiers: CallIdentifiers(
                 callId: .maxRandom,
-                conversationId: Data()
+                conversationId: Data(),
             ),
-            anchorTimestamp: timestamp
+            anchorTimestamp: timestamp,
         ))
 
         handle(incomingSyncMessage: IncomingCallLogEventSyncMessageParams(
             eventType: .cleared,
             anchorCallIdentifiers: nil,
-            anchorTimestamp: timestamp
+            anchorTimestamp: timestamp,
         ))
 
         XCTAssertEqual(deleteAttempts, 2)
@@ -94,7 +95,7 @@ final class IncomingCallLogEventSyncMessageManagerTest: XCTestCase {
         mockCallRecordConversationIdAdapter.mockHydratedCallRecord = .fixture(
             callId: callId,
             threadRowId: .maxRandom,
-            callBeganTimestamp: timestamp
+            callBeganTimestamp: timestamp,
         )
 
         mockMissedCallManager.markUnreadCallsAsReadMock = { beforeTimestamp in
@@ -105,9 +106,9 @@ final class IncomingCallLogEventSyncMessageManagerTest: XCTestCase {
             eventType: .markedAsRead,
             anchorCallIdentifiers: CallIdentifiers(
                 callId: callId,
-                conversationId: Data()
+                conversationId: Data(),
             ),
-            anchorTimestamp: timestamp + 1
+            anchorTimestamp: timestamp + 1,
         ))
     }
 
@@ -124,15 +125,15 @@ final class IncomingCallLogEventSyncMessageManagerTest: XCTestCase {
             eventType: .markedAsRead,
             anchorCallIdentifiers: CallIdentifiers(
                 callId: .maxRandom,
-                conversationId: Data()
+                conversationId: Data(),
             ),
-            anchorTimestamp: timestamp
+            anchorTimestamp: timestamp,
         ))
 
         handle(incomingSyncMessage: IncomingCallLogEventSyncMessageParams(
             eventType: .markedAsRead,
             anchorCallIdentifiers: nil,
-            anchorTimestamp: timestamp
+            anchorTimestamp: timestamp,
         ))
 
         XCTAssertEqual(markAsReadAttempts, 2)
@@ -145,7 +146,7 @@ private extension CallRecord {
     static func fixture(
         callId: UInt64,
         threadRowId: Int64,
-        callBeganTimestamp: UInt64
+        callBeganTimestamp: UInt64,
     ) -> CallRecord {
         return CallRecord(
             callId: callId,
@@ -154,7 +155,7 @@ private extension CallRecord {
             callType: .groupCall,
             callDirection: .incoming,
             callStatus: .group(.generic),
-            callBeganTimestamp: callBeganTimestamp
+            callBeganTimestamp: callBeganTimestamp,
         )
     }
 }

@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-@testable import SignalServiceKit
 import XCTest
+@testable import SignalServiceKit
 
 final class MessageBodyStyleTests: XCTestCase {
 
@@ -35,7 +35,7 @@ final class MessageBodyStyleTests: XCTestCase {
         allStyle.insert(.monospace)
         XCTAssertEqual(
             allStyle,
-            Style(testedCases.map { Style(rawValue: $0.rawValue) })
+            Style(testedCases.map { Style(rawValue: $0.rawValue) }),
         )
         testedCases.forEach {
             XCTAssert(allStyle.contains(Style(rawValue: $0.rawValue)))
@@ -50,67 +50,67 @@ final class MessageBodyStyleTests: XCTestCase {
         XCTAssertEqual(
             MergedSingleStyle.merge(sortedOriginals: [
                 NSRangedValue(.bold, range: NSRange(location: 0, length: 2)),
-                NSRangedValue(.bold, range: NSRange(location: 1, length: 2))
+                NSRangedValue(.bold, range: NSRange(location: 1, length: 2)),
             ]),
             [
-                MergedSingleStyle(style: .bold, mergedRange: NSRange(location: 0, length: 3))
-            ]
+                MergedSingleStyle(style: .bold, mergedRange: NSRange(location: 0, length: 3)),
+            ],
         )
         // Adjacent (doesn't merge)
         XCTAssertEqual(
             MergedSingleStyle.merge(sortedOriginals: [
                 NSRangedValue(.bold, range: NSRange(location: 0, length: 2)),
-                NSRangedValue(.bold, range: NSRange(location: 2, length: 2))
+                NSRangedValue(.bold, range: NSRange(location: 2, length: 2)),
             ]),
             [
                 MergedSingleStyle(style: .bold, mergedRange: NSRange(location: 0, length: 2)),
-                MergedSingleStyle(style: .bold, mergedRange: NSRange(location: 2, length: 2))
-            ]
+                MergedSingleStyle(style: .bold, mergedRange: NSRange(location: 2, length: 2)),
+            ],
         )
         // Adjacent (merging)
         XCTAssertEqual(
             MergedSingleStyle.merge(
                 sortedOriginals: [
                     NSRangedValue(.bold, range: NSRange(location: 0, length: 2)),
-                    NSRangedValue(.bold, range: NSRange(location: 2, length: 2))
+                    NSRangedValue(.bold, range: NSRange(location: 2, length: 2)),
                 ],
-                mergeAdjacentRangesOfSameStyle: true
+                mergeAdjacentRangesOfSameStyle: true,
             ),
             [
-                MergedSingleStyle(style: .bold, mergedRange: NSRange(location: 0, length: 4))
-            ]
+                MergedSingleStyle(style: .bold, mergedRange: NSRange(location: 0, length: 4)),
+            ],
         )
         // One inside the other
         XCTAssertEqual(
             MergedSingleStyle.merge(sortedOriginals: [
                 NSRangedValue(.bold, range: NSRange(location: 0, length: 5)),
-                NSRangedValue(.bold, range: NSRange(location: 2, length: 2))
+                NSRangedValue(.bold, range: NSRange(location: 2, length: 2)),
             ]),
             [
-                MergedSingleStyle(style: .bold, mergedRange: NSRange(location: 0, length: 5))
-            ]
+                MergedSingleStyle(style: .bold, mergedRange: NSRange(location: 0, length: 5)),
+            ],
         )
         // Not touching at all
         XCTAssertEqual(
             MergedSingleStyle.merge(sortedOriginals: [
                 NSRangedValue(.bold, range: NSRange(location: 0, length: 2)),
-                NSRangedValue(.bold, range: NSRange(location: 3, length: 2))
+                NSRangedValue(.bold, range: NSRange(location: 3, length: 2)),
             ]),
             [
                 MergedSingleStyle(style: .bold, mergedRange: NSRange(location: 0, length: 2)),
-                MergedSingleStyle(style: .bold, mergedRange: NSRange(location: 3, length: 2))
-            ]
+                MergedSingleStyle(style: .bold, mergedRange: NSRange(location: 3, length: 2)),
+            ],
         )
         // Mutliple overlapping
         XCTAssertEqual(
             MergedSingleStyle.merge(sortedOriginals: [
                 NSRangedValue(.bold, range: NSRange(location: 0, length: 5)),
                 NSRangedValue(.bold, range: NSRange(location: 3, length: 5)),
-                NSRangedValue(.bold, range: NSRange(location: 7, length: 5))
+                NSRangedValue(.bold, range: NSRange(location: 7, length: 5)),
             ]),
             [
-                MergedSingleStyle(style: .bold, mergedRange: NSRange(location: 0, length: 12))
-            ]
+                MergedSingleStyle(style: .bold, mergedRange: NSRange(location: 0, length: 12)),
+            ],
         )
         // Mutliple overlapping segments
         XCTAssertEqual(
@@ -118,13 +118,13 @@ final class MessageBodyStyleTests: XCTestCase {
                 NSRangedValue(.bold, range: NSRange(location: 0, length: 2)),
                 NSRangedValue(.bold, range: NSRange(location: 1, length: 2)),
                 NSRangedValue(.bold, range: NSRange(location: 10, length: 2)),
-                NSRangedValue(.bold, range: NSRange(location: 12, length: 2))
+                NSRangedValue(.bold, range: NSRange(location: 12, length: 2)),
             ]),
             [
                 MergedSingleStyle(style: .bold, mergedRange: NSRange(location: 0, length: 3)),
                 MergedSingleStyle(style: .bold, mergedRange: NSRange(location: 10, length: 2)),
-                MergedSingleStyle(style: .bold, mergedRange: NSRange(location: 12, length: 2))
-            ]
+                MergedSingleStyle(style: .bold, mergedRange: NSRange(location: 12, length: 2)),
+            ],
         )
     }
 
@@ -133,24 +133,24 @@ final class MessageBodyStyleTests: XCTestCase {
         XCTAssertEqual(
             MergedSingleStyle.merge(sortedOriginals: [
                 NSRangedValue(.bold, range: NSRange(location: 0, length: 2)),
-                NSRangedValue(.italic, range: NSRange(location: 1, length: 2))
+                NSRangedValue(.italic, range: NSRange(location: 1, length: 2)),
             ]),
             [
                 MergedSingleStyle(style: .bold, mergedRange: NSRange(location: 0, length: 2)),
-                MergedSingleStyle(style: .italic, mergedRange: NSRange(location: 1, length: 2))
-            ]
+                MergedSingleStyle(style: .italic, mergedRange: NSRange(location: 1, length: 2)),
+            ],
         )
         // Merge two bolds and don't let an italic interrupt.
         XCTAssertEqual(
             MergedSingleStyle.merge(sortedOriginals: [
                 NSRangedValue(.bold, range: NSRange(location: 0, length: 3)),
                 NSRangedValue(.bold, range: NSRange(location: 2, length: 2)),
-                NSRangedValue(.italic, range: NSRange(location: 1, length: 3))
+                NSRangedValue(.italic, range: NSRange(location: 1, length: 3)),
             ]),
             [
                 MergedSingleStyle(style: .bold, mergedRange: NSRange(location: 0, length: 4)),
-                MergedSingleStyle(style: .italic, mergedRange: NSRange(location: 1, length: 3))
-            ]
+                MergedSingleStyle(style: .italic, mergedRange: NSRange(location: 1, length: 3)),
+            ],
         )
     }
 }

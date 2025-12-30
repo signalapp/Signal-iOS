@@ -9,7 +9,7 @@ public struct NSRangedValue<T> {
     public let range: NSRange
     public let value: T
 
-    public init( _ value: T, range: NSRange) {
+    public init(_ value: T, range: NSRange) {
         self.range = range
         self.value = value
     }
@@ -43,7 +43,7 @@ extension NSRangedValue {
     static func overlaps(
         of range: NSRangedValue<T>,
         in array: [NSRangedValue<T>],
-        isEqual: (T, T) -> Bool
+        isEqual: (T, T) -> Bool,
     ) -> Overlaps {
         var insertionIndex = 0
         var overlapIndexes = [Int]()
@@ -71,7 +71,7 @@ extension NSRangedValue {
                 let lastOverlapRange = array[lastOverlapIndex]
                 let gap = NSRange(
                     location: lastOverlapRange.range.upperBound,
-                    length: existingRange.range.location - lastOverlapRange.range.upperBound
+                    length: existingRange.range.location - lastOverlapRange.range.upperBound,
                 )
                 if gap.length > 0 {
                     gaps.append(gap)
@@ -85,9 +85,9 @@ extension NSRangedValue {
     }
 
     public func offset(by offset: Int) -> Self {
-        return Self.init(
+        return Self(
             value,
-            range: self.range.offset(by: offset)
+            range: self.range.offset(by: offset),
         )
     }
 }
@@ -97,7 +97,7 @@ extension NSRange {
     public func offset(by offset: Int) -> Self {
         return NSRange(
             location: self.location + offset,
-            length: self.length
+            length: self.length,
         )
     }
 }

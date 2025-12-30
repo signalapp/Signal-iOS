@@ -20,7 +20,7 @@ public struct SubscriptionFetcher {
         do {
             response = try await networkManager.asyncRequest(
                 .fetchSubscription(subscriberID: subscriberID),
-                retryPolicy: retryPolicy
+                retryPolicy: retryPolicy,
             )
         } catch where error.httpStatusCode == 404 {
             return nil
@@ -40,7 +40,7 @@ public struct SubscriptionFetcher {
 
             return try Subscription(
                 subscriptionDict: subscriptionDict,
-                chargeFailureDict: chargeFailureDict
+                chargeFailureDict: chargeFailureDict,
             )
         default:
             throw OWSAssertionError("Got bad response code! \(response.responseStatusCode)")
@@ -54,7 +54,7 @@ private extension TSRequest {
         var result = TSRequest(
             url: URL(string: "v1/subscription/\(subscriberID.asBase64Url)")!,
             method: "GET",
-            parameters: nil
+            parameters: nil,
         )
         result.auth = .anonymous
         result.applyRedactionStrategy(.redactURL())
@@ -152,7 +152,7 @@ public struct Subscription: Equatable {
             "End of current period: \(endOfCurrentPeriod)",
             "Cancel at end of period?: \(cancelAtEndOfPeriod)",
             "Status: \(status)",
-            "Charge failure: \(chargeFailure.debugDescription)"
+            "Charge failure: \(chargeFailure.debugDescription)",
         ].joined(separator: ". ")
     }
 
@@ -173,7 +173,7 @@ public struct Subscription: Equatable {
                 } else {
                     return decimalValue / 100
                 }
-            }()
+            }(),
         )
         let _endOfCurrentPeriod: TimeInterval = try params.required(key: "endOfCurrentPeriod")
         endOfCurrentPeriod = Date(timeIntervalSince1970: _endOfCurrentPeriod)
@@ -203,7 +203,7 @@ public struct Subscription: Equatable {
 
         isPaymentProcessing = try params.required(key: "paymentProcessing")
 
-        if let chargeFailureDict = chargeFailureDict {
+        if let chargeFailureDict {
             chargeFailure = ChargeFailure(jsonDictionary: chargeFailureDict)
         } else {
             chargeFailure = nil

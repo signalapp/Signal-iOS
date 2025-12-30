@@ -43,7 +43,7 @@ public class UserProfileFinder: NSObject {
         let userProfiles = userProfilesWhere(
             column: "\(userProfileColumn: .serviceIdString)",
             anyValueIn: [serviceId.serviceIdUppercaseString],
-            tx: tx
+            tx: tx,
         )
 
         userProfiles.forEach { $0.loadBadgeContent(tx: tx) }
@@ -54,7 +54,7 @@ public class UserProfileFinder: NSObject {
         let userProfiles = userProfilesWhere(
             column: "\(userProfileColumn: .phoneNumber)",
             anyValueIn: [phoneNumber],
-            tx: tx
+            tx: tx,
         )
 
         userProfiles.forEach { $0.loadBadgeContent(tx: tx) }
@@ -63,14 +63,14 @@ public class UserProfileFinder: NSObject {
 
     private func userProfilesFor(
         serviceIds optionalServiceIds: [ServiceId?],
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> [OWSUserProfile?] {
         return Refinery<ServiceId?, OWSUserProfile>(optionalServiceIds)
             .refineNonnilKeys { (serviceIds: AnySequence<ServiceId>) -> [OWSUserProfile?] in
                 let profiles = userProfilesWhere(
                     column: "\(userProfileColumn: .serviceIdString)",
                     anyValueIn: Array(serviceIds.map { $0.serviceIdUppercaseString }),
-                    tx: tx
+                    tx: tx,
                 )
 
                 let index = Dictionary(grouping: profiles) { $0?.serviceIdString }
@@ -83,14 +83,14 @@ public class UserProfileFinder: NSObject {
 
     private func userProfilesFor(
         phoneNumbers optionalPhoneNumbers: [String?],
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> [OWSUserProfile?] {
         return Refinery<String?, OWSUserProfile>(optionalPhoneNumbers)
             .refineNonnilKeys { (phoneNumbers: AnySequence<String>) -> [OWSUserProfile?] in
                 let profiles = userProfilesWhere(
                     column: "\(userProfileColumn: .phoneNumber)",
                     anyValueIn: Array(phoneNumbers),
-                    tx: tx
+                    tx: tx,
                 )
 
                 let index = Dictionary(grouping: profiles) { $0?.phoneNumber }
@@ -104,7 +104,7 @@ public class UserProfileFinder: NSObject {
     private func userProfilesWhere(
         column: String,
         anyValueIn values: [String],
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> [OWSUserProfile] {
         let qms = Array(repeating: "?", count: values.count).joined(separator: ", ")
         let sql = "SELECT * FROM \(OWSUserProfile.databaseTableName) WHERE \(column) in (\(qms))"

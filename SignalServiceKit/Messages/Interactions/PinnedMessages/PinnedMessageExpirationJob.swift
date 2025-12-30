@@ -7,7 +7,7 @@ public final class PinnedMessageExpirationJob: ExpirationJob<PinnedMessageRecord
 
     init(
         dateProvider: @escaping DateProvider,
-        db: DB
+        db: DB,
     ) {
         super.init(
             dateProvider: dateProvider,

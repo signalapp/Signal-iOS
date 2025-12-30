@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalServiceKit
 import LibSignalClient
+import SignalServiceKit
 import SignalUI
 import SwiftUI
 
@@ -13,7 +13,7 @@ public protocol PollSendDelegate: AnyObject {
 }
 
 class NewPollViewController: HostingController<NewPollView> {
-    public weak var sendDelegate: PollSendDelegate?
+    weak var sendDelegate: PollSendDelegate?
     private let viewModel: NewPollViewModel
 
     init() {
@@ -31,12 +31,12 @@ extension NewPollViewController: NewPollViewModel.ActionsDelegate {
     fileprivate func onSend(
         pollOptions: [String],
         question: String,
-        allowMultipleVotes: Bool
+        allowMultipleVotes: Bool,
     ) {
         sendDelegate?.sendPoll(
             question: question,
             options: pollOptions,
-            allowMultipleVotes: allowMultipleVotes
+            allowMultipleVotes: allowMultipleVotes,
         )
 
         dismiss(animated: true)
@@ -47,20 +47,20 @@ extension NewPollViewController: NewPollViewModel.ActionsDelegate {
         hasEnoughOptions: Bool,
     ) {
         var toast: ToastController
-        if !hasQuestion && !hasEnoughOptions {
+        if !hasQuestion, !hasEnoughOptions {
             toast = ToastController(text: OWSLocalizedString(
                 "POLL_CREATE_ERROR_TOAST_NO_QUESTION_OR_ENOUGH_OPTIONS",
-                comment: "Toast telling user to add options and question to poll."
+                comment: "Toast telling user to add options and question to poll.",
             ))
         } else if !hasQuestion {
             toast = ToastController(text: OWSLocalizedString(
                 "POLL_CREATE_ERROR_TOAST_NO_QUESTION",
-                comment: "Toast telling user to add a question to poll."
+                comment: "Toast telling user to add a question to poll.",
             ))
         } else {
             toast = ToastController(text: OWSLocalizedString(
                 "POLL_CREATE_ERROR_TOAST_NOT_ENOUGH_OPTIONS",
-                comment: "Toast telling user to add more options to poll."
+                comment: "Toast telling user to add more options to poll.",
             ))
         }
 
@@ -74,7 +74,7 @@ private class NewPollViewModel {
         func onSend(
             pollOptions: [String],
             question: String,
-            allowMultipleVotes: Bool
+            allowMultipleVotes: Bool,
         )
         func showToast(
             hasQuestion: Bool,
@@ -91,12 +91,12 @@ private class NewPollViewModel {
     func onSend(
         pollOptions: [String],
         question: String,
-        allowMultipleVotes: Bool
+        allowMultipleVotes: Bool,
     ) {
         actionsDelegate?.onSend(
             pollOptions: pollOptions,
             question: question,
-            allowMultipleVotes: allowMultipleVotes
+            allowMultipleVotes: allowMultipleVotes,
         )
     }
 
@@ -106,7 +106,7 @@ private class NewPollViewModel {
     ) {
         actionsDelegate?.showToast(
             hasQuestion: hasQuestion,
-            hasEnoughOptions: hasEnoughOptions
+            hasEnoughOptions: hasEnoughOptions,
         )
     }
 }
@@ -141,7 +141,7 @@ struct NewPollView: View {
         var placeholder: String
 
         // Submit
-        var onSubmit: (() -> Void)
+        var onSubmit: () -> Void
 
         // Focus
         var questionFieldFocus: FocusState<Bool>.Binding?
@@ -154,10 +154,10 @@ struct NewPollView: View {
             ZStack(alignment: .topLeading) {
                 if text.isEmpty {
                     Text(placeholder)
-                    .foregroundColor(Color.Signal.secondaryLabel)
-                    .padding(.horizontal, 4)
-                    .padding(.vertical, 8)
-                    .accessibilityHidden(true)
+                        .foregroundColor(Color.Signal.secondaryLabel)
+                        .padding(.horizontal, 4)
+                        .padding(.vertical, 8)
+                        .accessibilityHidden(true)
                 }
                 textEditor()
             }
@@ -173,7 +173,7 @@ struct NewPollView: View {
                     if let last = newText.last, last.isNewline {
                         onSubmit()
                         return
-                   }
+                    }
                     if newText.count > PollResizingTextEditor.characterLimit {
                         let resizedText = String(newText.prefix(PollResizingTextEditor.characterLimit))
                         if text != resizedText {
@@ -187,13 +187,13 @@ struct NewPollView: View {
                 .background(
                     GeometryReader { geo in
                         Color.clear
-                        .onAppear {
-                            editorWidth = geo.size.width
-                        }
-                        .onChange(of: geo.size.width) { newWidth in
-                            editorWidth = newWidth
-                        }
-                    }
+                            .onAppear {
+                                editorWidth = geo.size.width
+                            }
+                            .onChange(of: geo.size.width) { newWidth in
+                                editorWidth = newWidth
+                            }
+                    },
                 )
                 .accessibilityLabel(placeholder)
 
@@ -212,7 +212,7 @@ struct NewPollView: View {
         let optionIndex: Int
         let totalCount: Int
         var focusedField: FocusState<UUID?>.Binding
-        var onSubmit: (() -> Void)
+        var onSubmit: () -> Void
 
         var body: some View {
             let remainingChars = PollResizingTextEditor.characterLimit - option.text.count
@@ -230,7 +230,7 @@ struct NewPollView: View {
                     optionFieldId: option.id,
                 )
 
-                if !option.text.isEmpty && totalCount > 2 {
+                if !option.text.isEmpty, totalCount > 2 {
                     Spacer()
                     Image("poll-drag")
                 }
@@ -239,14 +239,14 @@ struct NewPollView: View {
                 Text("\(displayRemainingChars)")
                     .font(.system(size: 15))
                     .foregroundColor(countdownColor),
-                alignment: .bottomTrailing
+                alignment: .bottomTrailing,
             )
         }
 
         private func localizedOptionPlaceholderText(index: Int) -> String {
             let locText = OWSLocalizedString(
                 "POLL_OPTION_PLACEHOLDER_PREFIX",
-                comment: "Placeholder text for an option row when creating a poll. This will have a number appended to it (Option 1, Option 2)"
+                comment: "Placeholder text for an option row when creating a poll. This will have a number appended to it (Option 1, Option 2)",
             )
 
             let formatter: NumberFormatter = {
@@ -273,20 +273,20 @@ struct NewPollView: View {
                         text: $pollQuestion,
                         placeholder: OWSLocalizedString(
                             "POLL_QUESTION_PLACEHOLDER_TEXT",
-                            comment: "Placeholder text for poll question"
+                            comment: "Placeholder text for poll question",
                         ),
                         onSubmit: {
                             if let nextBlankRow = findFirstBlankRow() {
                                 focusedItemID = nextBlankRow.id
                             }
                         },
-                        questionFieldFocus: $focusQuestionField
+                        questionFieldFocus: $focusQuestionField,
                     )
                     .overlay(
                         Text("\(displayRemainingChars)")
                             .font(.system(size: 15))
                             .foregroundColor(countdownColor),
-                        alignment: .bottomTrailing
+                        alignment: .bottomTrailing,
                     )
                     .onAppear {
                         focusQuestionField = true
@@ -295,8 +295,8 @@ struct NewPollView: View {
                     Text(
                         OWSLocalizedString(
                             "POLL_QUESTION_LABEL",
-                            comment: "Header for the poll question text box when making a new poll"
-                        )
+                            comment: "Header for the poll question text box when making a new poll",
+                        ),
                     )
                     .font(.headline)
                     .foregroundColor(Color.Signal.label)
@@ -313,7 +313,7 @@ struct NewPollView: View {
                                 if let nextBlankRow = findFirstBlankRow() {
                                     focusedItemID = nextBlankRow.id
                                 }
-                            }
+                            },
                         )
                     }
                     .onMove(perform: { from, to in
@@ -323,8 +323,8 @@ struct NewPollView: View {
                     Text(
                         OWSLocalizedString(
                             "POLL_OPTIONS_LABEL",
-                            comment: "Header for the poll options text boxes when making a new poll"
-                        )
+                            comment: "Header for the poll options text boxes when making a new poll",
+                        ),
                     )
                     .font(.headline)
                     .foregroundColor(Color.Signal.label)
@@ -336,19 +336,19 @@ struct NewPollView: View {
                     Toggle(
                         OWSLocalizedString(
                             "POLL_ALLOW_MULTIPLE_LABEL",
-                            comment: "Title for a toggle allowing multiple votes for a poll."
+                            comment: "Title for a toggle allowing multiple votes for a poll.",
                         ),
                         isOn: Binding(
                             get: { allowMultipleVotes },
-                            set: { allowMultipleVotes = $0 }
-                        )
+                            set: { allowMultipleVotes = $0 },
+                        ),
                     )
                 }
             }
         }
         .navigationTitle(OWSLocalizedString(
             "POLL_CREATE_TITLE",
-            comment: "Title of create poll pane"
+            comment: "Title of create poll pane",
         ))
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
@@ -382,9 +382,9 @@ struct NewPollView: View {
                     .accessibilityLabel(MessageStrings.sendButton)
                     .tint(Color.Signal.ultramarine)
 #if compiler(>=6.2)
-                    .buttonStyle(.glassProminent)
+                        .buttonStyle(.glassProminent)
 #endif
-                    .opacity(sendButtonEnabled ? 1 : 0.5)
+                        .opacity(sendButtonEnabled ? 1 : 0.5)
                 } else {
                     Button(MessageStrings.sendButton, action: {
                         sendButtonPressed(sendButtonEnabled: sendButtonEnabled)
@@ -401,7 +401,7 @@ struct NewPollView: View {
         let characterCountBuffer = 15.0
         let maxSize = CGSize(
             width: textViewWidth - characterCountBuffer,
-            height: CGFloat.greatestFiniteMagnitude
+            height: CGFloat.greatestFiniteMagnitude,
         )
         var textToMeasure: NSAttributedString = NSAttributedString(string: text, attributes: [.font: UIFont.dynamicTypeBody])
 
@@ -414,7 +414,7 @@ struct NewPollView: View {
         let newHeight = CGFloat.clamp(
             contentSize.height.rounded(),
             min: LayoutMetrics.minTextViewHeight,
-            max: LayoutMetrics.maxTextViewHeight
+            max: LayoutMetrics.maxTextViewHeight,
         )
 
         // Measured height for one line is taller than the average one-line TextField and looks strange.
@@ -448,7 +448,7 @@ struct NewPollView: View {
                     .filter { !$0.stripped.isEmpty }
                     .map { $0.stripped },
                 question: pollQuestion.stripped,
-                allowMultipleVotes: allowMultipleVotes
+                allowMultipleVotes: allowMultipleVotes,
             )
         } else {
             viewModel.showToast(hasQuestion: !pollQuestion.isEmpty, hasEnoughOptions: pollOptions.count >= 3)
@@ -468,14 +468,14 @@ struct NewPollView: View {
         }
 
         // If 0/1 option, we want exactly 2 fields in this case, so don't append or filter.
-        if filteredPollOptions.count <= 1 && pollOptions.count == 2 {
+        if filteredPollOptions.count <= 1, pollOptions.count == 2 {
             return
         }
 
         // To avoid infinite recursion caused by editing the pollOptions array,
         // check if we're setup correctly (blank row at the end, none in the middle)
         // and return early if so.
-        if pollOptions.last!.text.isEmpty && filteredPollOptions.count == pollOptions.count - 1 {
+        if pollOptions.last!.text.isEmpty, filteredPollOptions.count == pollOptions.count - 1 {
             return
         }
 

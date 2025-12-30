@@ -14,7 +14,7 @@ public struct PollRecord: Codable, FetchableRecord, MutablePersistableRecord {
     public var isEnded: Bool = false
     public let allowsMultiSelect: Bool
 
-    mutating public func didInsert(with rowID: Int64, for column: String?) {
+    public mutating func didInsert(with rowID: Int64, for column: String?) {
         id = rowID
     }
 

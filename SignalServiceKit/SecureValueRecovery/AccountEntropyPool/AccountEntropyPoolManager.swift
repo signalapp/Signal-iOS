@@ -76,7 +76,7 @@ class AccountEntropyPoolManagerImpl: AccountEntropyPoolManager {
         setAccountEntropyPool(
             newAccountEntropyPool: AccountEntropyPool(),
             disablePIN: false,
-            tx: tx
+            tx: tx,
         )
     }
 
@@ -111,7 +111,7 @@ class AccountEntropyPoolManagerImpl: AccountEntropyPoolManager {
         if rotateRelatedNonDerivedKeys {
             accountKeyStore.setMediaRootBackupKey(
                 MediaRootBackupKey(backupKey: .generateRandom()),
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -120,7 +120,7 @@ class AccountEntropyPoolManagerImpl: AccountEntropyPoolManager {
         svr.handleMasterKeyUpdated(
             newMasterKey: newAccountEntropyPool.getMasterKey(),
             disablePIN: disablePIN,
-            tx: tx
+            tx: tx,
         )
 
         // Skip the steps below if we're not yet registered. This check matters
@@ -134,7 +134,7 @@ class AccountEntropyPoolManagerImpl: AccountEntropyPoolManager {
         // changing.
         accountAttributesUpdater.scheduleAccountAttributesUpdate(
             authedAccount: .implicit(),
-            tx: tx
+            tx: tx,
         )
 
         // Proactively rotate our Storage Service manifest, since the master key
@@ -147,7 +147,7 @@ class AccountEntropyPoolManagerImpl: AccountEntropyPoolManager {
         Task {
             try? await storageServiceManager.rotateManifest(
                 mode: rotateRelatedNonDerivedKeys ? .alsoRotatingRecords : .preservingRecordsIfPossible,
-                authedDevice: .implicit
+                authedDevice: .implicit,
             )
 
             // Sync our new keys with linked devices, but wait until the storage

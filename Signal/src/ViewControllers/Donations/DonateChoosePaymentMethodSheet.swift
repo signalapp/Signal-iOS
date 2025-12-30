@@ -4,8 +4,8 @@
 //
 
 import Foundation
-import SignalUI
 import SignalServiceKit
+import SignalUI
 
 class DonateChoosePaymentMethodSheet: StackSheetViewController {
     enum DonationMode {
@@ -28,24 +28,24 @@ class DonateChoosePaymentMethodSheet: StackSheetViewController {
         case .oneTime:
             let format = OWSLocalizedString(
                 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_ONE_TIME_DONATION",
-                comment: "When users make one-time donations, they see a sheet that lets them pick a payment method. This is the title on that sheet. Embeds {{amount of money}}, such as \"$5\"."
+                comment: "When users make one-time donations, they see a sheet that lets them pick a payment method. This is the title on that sheet. Embeds {{amount of money}}, such as \"$5\".",
             )
             return String(format: format, currencyString)
         case .monthly:
             let moneyPerMonthFormat = OWSLocalizedString(
                 "SUSTAINER_VIEW_PRICING",
-                comment: "Pricing text for sustainer view badges, embeds {{price}}"
+                comment: "Pricing text for sustainer view badges, embeds {{price}}",
             )
             let moneyPerMonthString = String(format: moneyPerMonthFormat, currencyString)
             let format = OWSLocalizedString(
                 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_MONTHLY_DONATION",
-                comment: "When users make monthly donations, they see a sheet that lets them pick a payment method. This is the title on that sheet. Embeds {{amount of money per month}}, such as \"$5/month\"."
+                comment: "When users make monthly donations, they see a sheet that lets them pick a payment method. This is the title on that sheet. Embeds {{amount of money per month}}, such as \"$5/month\".",
             )
             return String(format: format, moneyPerMonthString)
         case .gift:
             let format = OWSLocalizedString(
                 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_DONATION_ON_BEHALF_OF_A_FRIEND",
-                comment: "When users make donations on a friend's behalf, they see a sheet that lets them pick a payment method. This is the title on that sheet. Embeds {{amount of money}}, such as \"$5\"."
+                comment: "When users make donations on a friend's behalf, they see a sheet that lets them pick a payment method. This is the title on that sheet. Embeds {{amount of money}}, such as \"$5\".",
             )
             return String(format: format, currencyString)
         }
@@ -56,20 +56,21 @@ class DonateChoosePaymentMethodSheet: StackSheetViewController {
         case .oneTime:
             let format = OWSLocalizedString(
                 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_ONE_TIME_DONATION",
-                comment: "When users make one-time donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay: receive a badge for a month. This is the subtitle on that sheet. Embeds {{localized badge name}}, such as \"Boost\"." )
+                comment: "When users make one-time donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay: receive a badge for a month. This is the subtitle on that sheet. Embeds {{localized badge name}}, such as \"Boost\".",
+            )
             return String(format: format, badge.localizedName)
 
         case .monthly:
             let format = OWSLocalizedString(
                 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_MONTHLY_DONATION",
-                comment: "When users make monthly donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay: receive a badge. This is the subtitle on that sheet. Embeds {{localized badge name}}, such as \"Planet\"."
+                comment: "When users make monthly donations, they see a sheet that lets them pick a payment method. It also tells them what they'll be doing when they pay: receive a badge. This is the subtitle on that sheet. Embeds {{localized badge name}}, such as \"Planet\".",
             )
             return String(format: format, badge.localizedName)
 
         case let .gift(recipientFullName):
             let format = OWSLocalizedString(
                 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_DONATION_ON_BEHALF_OF_A_FRIEND",
-                comment: "When users make donations on a friend's behalf, they see a sheet that lets them pick a payment method. This is the subtitle on that sheet. Embeds {{recipient's name}}."
+                comment: "When users make donations on a friend's behalf, they see a sheet that lets them pick a payment method. This is the subtitle on that sheet. Embeds {{recipient's name}}.",
             )
             return String(format: format, recipientFullName)
         }
@@ -80,7 +81,7 @@ class DonateChoosePaymentMethodSheet: StackSheetViewController {
         badge: ProfileBadge,
         donationMode: DonationMode,
         supportedPaymentMethods: Set<DonationPaymentMethod>,
-        didChoosePaymentMethod: @escaping (DonateChoosePaymentMethodSheet, DonationPaymentMethod) -> Void
+        didChoosePaymentMethod: @escaping (DonateChoosePaymentMethodSheet, DonationPaymentMethod) -> Void,
     ) {
         self.amount = amount
         self.badge = badge
@@ -104,7 +105,7 @@ class DonateChoosePaymentMethodSheet: StackSheetViewController {
         stackView.spacing = 24
     }
 
-    public func headerStack() -> UIStackView {
+    func headerStack() -> UIStackView {
         let stackView = UIStackView()
         stackView.axis = .vertical
         stackView.alignment = .center
@@ -132,14 +133,16 @@ class DonateChoosePaymentMethodSheet: StackSheetViewController {
         let paymentMethods: [DonationPaymentMethod]
         let applePayFirstRegions = PhoneNumberRegions(arrayLiteral: "1")
 
-        if let localNumber = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber,
-           applePayFirstRegions.contains(e164: localNumber) {
+        if
+            let localNumber = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.phoneNumber,
+            applePayFirstRegions.contains(e164: localNumber)
+        {
             paymentMethods = [
                 .applePay,
                 .creditOrDebitCard,
                 .paypal,
                 .sepa,
-                .ideal
+                .ideal,
             ]
         } else {
             paymentMethods = [
@@ -218,7 +221,7 @@ class DonateChoosePaymentMethodSheet: StackSheetViewController {
     private func createPaymentMethodButton(
         title: String,
         image: UIImage?,
-        action: @escaping () -> Void
+        action: @escaping () -> Void,
     ) -> UIButton {
         var configuration: UIButton.Configuration
         if #available(iOS 26, *) {
@@ -238,7 +241,7 @@ class DonateChoosePaymentMethodSheet: StackSheetViewController {
 
         let button = UIButton(
             configuration: configuration,
-            primaryAction: UIAction { _ in action() }
+            primaryAction: UIAction { _ in action() },
         )
         return button
     }
@@ -254,7 +257,7 @@ class DonateChoosePaymentMethodSheet: StackSheetViewController {
 
         configuration.title = OWSLocalizedString(
             "DONATE_CHOOSE_CREDIT_OR_DEBIT_CARD_AS_PAYMENT_METHOD",
-            comment: "When users make donations, they can choose which payment method they want to use. This is the text on the button that lets them choose to pay with credit or debit card."
+            comment: "When users make donations, they can choose which payment method they want to use. This is the text on the button that lets them choose to pay with credit or debit card.",
         )
         configuration.titleTextAttributesTransformer = .defaultFont(.dynamicTypeHeadlineClamped)
         configuration.image = UIImage(named: "payment")
@@ -266,7 +269,7 @@ class DonateChoosePaymentMethodSheet: StackSheetViewController {
             primaryAction: UIAction { [weak self] _ in
                 guard let self else { return }
                 self.didChoosePaymentMethod(self, .creditOrDebitCard)
-            }
+            },
         )
         button.tintColor = UIColor.Signal.accent
         return button
@@ -276,9 +279,9 @@ class DonateChoosePaymentMethodSheet: StackSheetViewController {
         createPaymentMethodButton(
             title: OWSLocalizedString(
                 "DONATE_CHOOSE_BANK_TRANSFER_AS_PAYMENT_METHOD",
-                comment: "When users make donations, they can choose which payment method they want to use. This is the text on the button that lets them choose to pay with bank transfer."
+                comment: "When users make donations, they can choose which payment method they want to use. This is the text on the button that lets them choose to pay with bank transfer.",
             ),
-            image: UIImage(named: "building")
+            image: UIImage(named: "building"),
         ) { [weak self] in
             guard let self else { return }
             self.didChoosePaymentMethod(self, .sepa)
@@ -288,7 +291,7 @@ class DonateChoosePaymentMethodSheet: StackSheetViewController {
     private func createIDEALButton() -> UIButton {
         createPaymentMethodButton(
             title: LocalizationNotNeeded("iDEAL"),
-            image: UIImage(named: "logo_ideal")
+            image: UIImage(named: "logo_ideal"),
         ) { [weak self] in
             guard let self else { return }
             self.didChoosePaymentMethod(self, .ideal)

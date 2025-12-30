@@ -23,8 +23,8 @@ public enum LinkValidator {
     private static func isProblematicCodepointAnywhereInString(_ scalar: UnicodeScalar) -> Bool {
         switch scalar {
         case "\u{202C}", // POP DIRECTIONAL FORMATTING
-            "\u{202D}", // LEFT-TO-RIGHT OVERRIDE
-            "\u{202E}": // RIGHT-TO-LEFT OVERRIDE
+             "\u{202D}", // LEFT-TO-RIGHT OVERRIDE
+             "\u{202E}": // RIGHT-TO-LEFT OVERRIDE
             return true
         default:
             return false
@@ -61,9 +61,9 @@ public enum LinkValidator {
         var result: URL?
         detector.enumerateMatches(
             in: entireMessage.text,
-            range: entireMessage.text.entireRange
+            range: entireMessage.text.entireRange,
         ) { match, _, stop in
-            guard let match = match else { return }
+            guard let match else { return }
             guard let parsedUrl = match.url else { return }
             guard let matchedRange = Range(match.range, in: entireMessage.text) else { return }
             for style in entireMessage.ranges.collapsedStyles {
@@ -82,7 +82,7 @@ public enum LinkValidator {
             guard
                 LinkPreviewHelper.isPermittedLinkPreviewUrl(
                     parsedUrl,
-                    parsedFrom: String(entireMessage.text[matchedRange])
+                    parsedFrom: String(entireMessage.text[matchedRange]),
                 )
             else {
                 return

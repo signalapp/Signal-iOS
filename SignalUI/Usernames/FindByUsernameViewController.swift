@@ -24,7 +24,7 @@ public class FindByUsernameViewController: OWSTableViewController2 {
     private lazy var usernameTextField = OWSTextField(
         placeholder: OWSLocalizedString(
             "FIND_BY_USERNAME_PLACEHOLDER",
-            comment: "A placeholder value for the text field for finding an account by their username"
+            comment: "A placeholder value for the text field for finding an account by their username",
         ),
         returnKeyType: .done,
         autocorrectionType: .no,
@@ -34,7 +34,7 @@ public class FindByUsernameViewController: OWSTableViewController2 {
         },
         returnPressed: { [weak self] in
             self?.didTapNext()
-        }
+        },
     )
 
     private var usernameValue: String {
@@ -42,27 +42,27 @@ public class FindByUsernameViewController: OWSTableViewController2 {
         return FindByUsername.preParseUsername(textValue)
     }
 
-    public override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
         updateTableContents()
 
         title = OWSLocalizedString(
             "FIND_BY_USERNAME_TITLE",
-            comment: "Title for the view for finding accounts by their username"
+            comment: "Title for the view for finding accounts by their username",
         )
 
         navigationItem.rightBarButtonItem = UIBarButtonItem(
             title: CommonStrings.nextButton,
             style: .done,
             target: self,
-            action: #selector(didTapNext)
+            action: #selector(didTapNext),
         )
         navigationItem.rightBarButtonItem?.isEnabled = false
 
         shouldAvoidKeyboard = true
     }
 
-    public override func viewDidAppear(_ animated: Bool) {
+    override public func viewDidAppear(_ animated: Bool) {
         usernameTextField.becomeFirstResponder()
     }
 
@@ -82,8 +82,8 @@ public class FindByUsernameViewController: OWSTableViewController2 {
             ],
             footerTitle: OWSLocalizedString(
                 "FIND_BY_USERNAME_FOOTER",
-                comment: "A footer below the username text field describing what should be entered"
-            )
+                comment: "A footer below the username text field describing what should be entered",
+            ),
         ))
 
         guard findByUsernameDelegate?.shouldShowQRCodeButton ?? false else {
@@ -102,11 +102,11 @@ public class FindByUsernameViewController: OWSTableViewController2 {
                     " ",
                     OWSLocalizedString(
                         "FIND_BY_USERNAME_SCAN_QR_CODE_BUTTON",
-                        comment: "A button below the username text field which opens a username QR code scanner"
-                    )
+                        comment: "A button below the username text field which opens a username QR code scanner",
+                    ),
                 ]).styled(
                     with: .font(font.medium()),
-                    .color(Theme.primaryTextColor)
+                    .color(Theme.primaryTextColor),
                 )
                 button.setAttributedTitle(title, for: .normal)
                 button.backgroundColor = Theme.tableCell2PresentedBackgroundColor
@@ -143,11 +143,13 @@ public class FindByUsernameViewController: OWSTableViewController2 {
         usernameTextField.resignFirstResponder()
 
         Task {
-            guard let aci = await UsernameQuerier().queryForUsername(
-                username: usernameValue,
-                fromViewController: self,
-                failureSheetDismissalDelegate: self,
-            ) else {
+            guard
+                let aci = await UsernameQuerier().queryForUsername(
+                    username: usernameValue,
+                    fromViewController: self,
+                    failureSheetDismissalDelegate: self,
+                )
+            else {
                 return
             }
 

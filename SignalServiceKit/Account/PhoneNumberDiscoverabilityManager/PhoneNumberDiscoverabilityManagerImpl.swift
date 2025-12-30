@@ -16,7 +16,7 @@ public class PhoneNumberDiscoverabilityManagerImpl: PhoneNumberDiscoverabilityMa
     public init(
         accountAttributesUpdater: AccountAttributesUpdater,
         storageServiceManager: StorageServiceManager,
-        tsAccountManager: TSAccountManager
+        tsAccountManager: TSAccountManager,
     ) {
         self.accountAttributesUpdater = accountAttributesUpdater
         self.storageServiceManager = storageServiceManager
@@ -32,7 +32,7 @@ public class PhoneNumberDiscoverabilityManagerImpl: PhoneNumberDiscoverabilityMa
         updateAccountAttributes: Bool,
         updateStorageService: Bool,
         authedAccount: AuthedAccount,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         tsAccountManager.setPhoneNumberDiscoverability(phoneNumberDiscoverability, tx: tx)
 

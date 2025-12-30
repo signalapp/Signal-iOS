@@ -12,7 +12,7 @@ public protocol ThreadStore {
     /// enumeration should continue, and `false` otherwise.
     func enumerateNonStoryThreads(
         tx: DBReadTransaction,
-        block: (TSThread) throws -> Bool
+        block: (TSThread) throws -> Bool,
     ) throws
     /// Enumerates story distribution lists
     /// - Parameter block
@@ -20,7 +20,7 @@ public protocol ThreadStore {
     /// enumeration should continue, and `false` otherwise.
     func enumerateStoryThreads(
         tx: DBReadTransaction,
-        block: (TSPrivateStoryThread) throws -> Bool
+        block: (TSPrivateStoryThread) throws -> Bool,
     ) throws
     /// Enumerates group threads in "last interaction" order.
     /// - Parameter block
@@ -28,7 +28,7 @@ public protocol ThreadStore {
     /// enumeration should continue, and `false` otherwise.
     func enumerateGroupThreads(
         tx: DBReadTransaction,
-        block: (TSGroupThread) throws -> Bool
+        block: (TSGroupThread) throws -> Bool,
     ) throws
     func fetchThread(rowId: Int64, tx: DBReadTransaction) -> TSThread?
     func fetchThread(uniqueId: String, tx: DBReadTransaction) -> TSThread?
@@ -49,19 +49,19 @@ public protocol ThreadStore {
         groupThread: TSGroupThread,
         withStorySendEnabled storySendEnabled: Bool,
         updateStorageService: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     )
 
     func update(
         groupThread: TSGroupThread,
         with groupModel: TSGroupModel,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     )
 
     func update(
         _ thread: TSThread,
         withShouldThreadBeVisible shouldBeVisible: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     )
 
     /// Note: does not insert any created default associated data into the db.
@@ -75,14 +75,14 @@ public protocol ThreadStore {
         mutedUntilTimestamp: UInt64?,
         audioPlaybackRate: Float?,
         updateStorageService: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     )
 
     func update(
         thread: TSThread,
         withMentionNotificationMode: TSThreadMentionNotificationMode,
         wasLocallyInitiated: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     )
 }
 
@@ -117,13 +117,13 @@ extension ThreadStore {
             uniqueIdField: \.uniqueId,
             fetchObjectsForServiceId: { fetchContactThreads(serviceId: $0, tx: tx) },
             fetchObjectsForPhoneNumber: { fetchContactThreads(phoneNumber: $0.stringValue, tx: tx) },
-            updateObject: { _ in }
+            updateObject: { _ in },
         ).first
     }
 
     public func fetchThreadForInteraction(
         _ interaction: TSInteraction,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> TSThread? {
         return fetchThread(uniqueId: interaction.uniqueThreadId, tx: tx)
     }
@@ -135,7 +135,7 @@ extension ThreadStore {
         mutedUntilTimestamp: UInt64? = nil,
         audioPlaybackRate: Float? = nil,
         updateStorageService: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         self.updateAssociatedData(
             threadAssociatedData: threadAssociatedData,
@@ -144,7 +144,7 @@ extension ThreadStore {
             mutedUntilTimestamp: mutedUntilTimestamp,
             audioPlaybackRate: audioPlaybackRate,
             updateStorageService: updateStorageService,
-            tx: tx
+            tx: tx,
         )
     }
 }
@@ -221,19 +221,19 @@ public class ThreadStoreImpl: ThreadStore {
         groupThread: TSGroupThread,
         withStorySendEnabled storySendEnabled: Bool,
         updateStorageService: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         groupThread.updateWithStorySendEnabled(
             storySendEnabled,
             transaction: tx,
-            updateStorageService: updateStorageService
+            updateStorageService: updateStorageService,
         )
     }
 
     public func update(
         groupThread: TSGroupThread,
         with groupModel: TSGroupModel,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         groupThread.update(with: groupModel, transaction: tx)
     }
@@ -241,7 +241,7 @@ public class ThreadStoreImpl: ThreadStore {
     public func update(
         _ thread: TSThread,
         withShouldThreadBeVisible shouldBeVisible: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         thread.updateWithShouldThreadBeVisible(shouldBeVisible, transaction: tx)
     }
@@ -257,7 +257,7 @@ public class ThreadStoreImpl: ThreadStore {
         mutedUntilTimestamp: UInt64?,
         audioPlaybackRate: Float?,
         updateStorageService: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         threadAssociatedData.updateWith(
             isArchived: isArchived,
@@ -265,7 +265,7 @@ public class ThreadStoreImpl: ThreadStore {
             mutedUntilTimestamp: mutedUntilTimestamp,
             audioPlaybackRate: audioPlaybackRate,
             updateStorageService: updateStorageService,
-            transaction: tx
+            transaction: tx,
         )
     }
 
@@ -273,12 +273,12 @@ public class ThreadStoreImpl: ThreadStore {
         thread: TSThread,
         withMentionNotificationMode mode: TSThreadMentionNotificationMode,
         wasLocallyInitiated: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         thread.updateWithMentionNotificationMode(
             mode,
             wasLocallyInitiated: wasLocallyInitiated,
-            transaction: tx
+            transaction: tx,
         )
     }
 }
@@ -403,7 +403,7 @@ public class MockThreadStore: ThreadStore {
         groupThread: TSGroupThread,
         withStorySendEnabled storySendEnabled: Bool,
         updateStorageService: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         // Unimplemented
     }
@@ -411,7 +411,7 @@ public class MockThreadStore: ThreadStore {
     public func update(
         groupThread: TSGroupThread,
         with groupModel: TSGroupModel,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         // Unimplemented
     }
@@ -419,7 +419,7 @@ public class MockThreadStore: ThreadStore {
     public func update(
         _ thread: TSThread,
         withShouldThreadBeVisible shouldBeVisible: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         // Unimplemented
     }
@@ -435,7 +435,7 @@ public class MockThreadStore: ThreadStore {
         mutedUntilTimestamp: UInt64?,
         audioPlaybackRate: Float?,
         updateStorageService: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         // Unimplemented
     }
@@ -444,7 +444,7 @@ public class MockThreadStore: ThreadStore {
         thread: TSThread,
         withMentionNotificationMode mode: TSThreadMentionNotificationMode,
         wasLocallyInitiated: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         // Unimplemented
     }

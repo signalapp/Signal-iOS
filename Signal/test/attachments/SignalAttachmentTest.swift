@@ -3,11 +3,11 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import XCTest
 import CoreServices
 import SignalServiceKit
 import SignalUI
 import UniformTypeIdentifiers
+import XCTest
 
 class SignalAttachmentTest: SignalBaseTest {
     // MARK: - Utilities
@@ -18,7 +18,7 @@ class SignalAttachmentTest: SignalBaseTest {
         let dataSource = DataSourcePath(fileUrl: url, ownership: .borrowed)
         let attachment = try PreviewableAttachment.imageAttachment(
             dataSource: dataSource,
-            dataUTI: UTType.jpeg.identifier
+            dataUTI: UTType.jpeg.identifier,
         )
         let newSize = DataImageSource(try attachment.dataSource.readData()).imageMetadata()?.pixelSize
 
@@ -44,10 +44,14 @@ class SignalAttachmentTest: SignalBaseTest {
 
     func testMetadataStrippingDoesNotChangeOrientation() throws {
         let testBundle = Bundle(for: Self.self)
-        try testMetadataStrippingDoesNotChangeOrientation(url: testBundle.url(forResource: "test-jpg",
-                                                                              withExtension: "jpg")!)
-        try testMetadataStrippingDoesNotChangeOrientation(url: testBundle.url(forResource: "test-jpg-rotated",
-                                                                              withExtension: "jpg")!)
+        try testMetadataStrippingDoesNotChangeOrientation(url: testBundle.url(
+            forResource: "test-jpg",
+            withExtension: "jpg",
+        )!)
+        try testMetadataStrippingDoesNotChangeOrientation(url: testBundle.url(
+            forResource: "test-jpg-rotated",
+            withExtension: "jpg",
+        )!)
     }
 
     func testRemoveMetadataFromPng() throws {
@@ -57,17 +61,17 @@ class SignalAttachmentTest: SignalBaseTest {
         XCTAssertEqual(
             try pngChunkTypes(data: dataSource.readData()),
             ["IHDR", "PLTE", "sRGB", "tIME", "tEXt", "IDAT", "IEND"],
-            "Test is not set up correctly. Fixture doesn't have the expected chunks"
+            "Test is not set up correctly. Fixture doesn't have the expected chunks",
         )
 
         let attachment = try PreviewableAttachment.imageAttachment(
             dataSource: dataSource,
-            dataUTI: UTType.png.identifier
+            dataUTI: UTType.png.identifier,
         )
 
         XCTAssertEqual(
             try pngChunkTypes(data: try attachment.dataSource.readData()),
-            ["IHDR", "PLTE", "sRGB", "IDAT", "IEND"]
+            ["IHDR", "PLTE", "sRGB", "IDAT", "IEND"],
         )
     }
 
@@ -80,32 +84,60 @@ class SignalAttachmentTest: SignalBaseTest {
 
             // This is a `tEXt` chunk with some sample data.
             let newChunkData = Data([
-                0x00, 0x00, 0x00, 0x14, 0x74, 0x45, 0x58, 0x74,
-                0x43, 0x6f, 0x6d, 0x6d, 0x65, 0x6e, 0x74, 0x00,
-                0x48, 0x65, 0x6c, 0x6c, 0x6f, 0x20, 0x77, 0x6f,
-                0x72, 0x6c, 0x64, 0x21, 0xab, 0x32, 0xb0, 0x28
+                0x00,
+                0x00,
+                0x00,
+                0x14,
+                0x74,
+                0x45,
+                0x58,
+                0x74,
+                0x43,
+                0x6f,
+                0x6d,
+                0x6d,
+                0x65,
+                0x6e,
+                0x74,
+                0x00,
+                0x48,
+                0x65,
+                0x6c,
+                0x6c,
+                0x6f,
+                0x20,
+                0x77,
+                0x6f,
+                0x72,
+                0x6c,
+                0x64,
+                0x21,
+                0xab,
+                0x32,
+                0xb0,
+                0x28,
             ])
             let newChunks: [Data] = (
                 apngChunks.dropLast(1).map { $0.allBytes() } +
-                [newChunkData, apngChunks.last!.allBytes()]
+                    [newChunkData, apngChunks.last!.allBytes()],
             )
 
             return PngChunker.pngSignature + newChunks.reduce(Data()) { $0 + $1 }
         }()
         XCTAssert(
             (try pngChunkTypes(data: pngData)).contains("tEXt"),
-            "Test is not set up correctly. Fixture doesn't have the expected chunks"
+            "Test is not set up correctly. Fixture doesn't have the expected chunks",
         )
         let dataSource = try DataSourcePath(writingTempFileData: pngData, fileExtension: "png")
 
         let attachment = try PreviewableAttachment.imageAttachment(
             dataSource: dataSource,
-            dataUTI: UTType.png.identifier
+            dataUTI: UTType.png.identifier,
         )
 
         XCTAssert(
             !(try pngChunkTypes(data: try attachment.dataSource.readData())).contains("tEXt"),
-            "Result contained unexpected chunk"
+            "Result contained unexpected chunk",
         )
     }
 }

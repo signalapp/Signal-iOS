@@ -37,7 +37,7 @@ class SignalDotMePhoneNumberLink {
                         guard let recipient = signalRecipients.first else {
                             RecipientPickerViewController.presentSMSInvitationSheet(
                                 for: phoneNumber,
-                                fromViewController: fromViewController
+                                fromViewController: fromViewController,
                             )
                             return
                         }
@@ -48,7 +48,7 @@ class SignalDotMePhoneNumberLink {
                         OWSActionSheets.showErrorAlert(message: error.userErrorDescription)
                     }
                 }
-            }
+            },
         )
     }
 }

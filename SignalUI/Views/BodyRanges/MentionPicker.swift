@@ -23,13 +23,13 @@ class MentionPicker: UIView {
     init(
         mentionableAcis: [Aci],
         style: Style,
-        selectedAddressCallback: @escaping (SignalServiceAddress) -> Void
+        selectedAddressCallback: @escaping (SignalServiceAddress) -> Void,
     ) {
         let databaseStorage = SSKEnvironment.shared.databaseStorageRef
         mentionableUsers = databaseStorage.read { transaction in
             let sortedAddresses = SSKEnvironment.shared.contactManagerImplRef.sortSignalServiceAddresses(
                 mentionableAcis.map({ SignalServiceAddress($0) }),
-                transaction: transaction
+                transaction: transaction,
             )
 
             return sortedAddresses.compactMap { address in
@@ -40,7 +40,7 @@ class MentionPicker: UIView {
 
                 return MentionableUser(
                     address: address,
-                    displayName: SSKEnvironment.shared.contactManagerRef.displayName(for: address, tx: transaction).resolvedValue()
+                    displayName: SSKEnvironment.shared.contactManagerRef.displayName(for: address, tx: transaction).resolvedValue(),
                 )
             }
         }
@@ -100,8 +100,8 @@ class MentionPicker: UIView {
             if backgroundView == nil {
                 if UIAccessibility.isReduceTransparencyEnabled {
                     tableView.backgroundColor = overrideUserInterfaceStyle == .dark
-                    ? Theme.darkThemeBackgroundColor
-                    : Theme.backgroundColor
+                        ? Theme.darkThemeBackgroundColor
+                        : Theme.backgroundColor
                 } else {
                     backgroundView = UIVisualEffectView(effect: backgroundViewVisualEffect())
                 }
@@ -241,10 +241,11 @@ class MentionPicker: UIView {
             withDuration: 0.25,
             animations: {
                 self.superview?.layoutIfNeeded()
-            }, completion: { _ in
+            },
+            completion: { _ in
                 self.isUpdatingHeight = false
                 self.lastContentOffset = self.tableView.contentOffset.y
-            }
+            },
         )
     }
 
@@ -293,7 +294,7 @@ class MentionPicker: UIView {
         return UIViewPropertyAnimator(
             duration: 0.35,
             springDamping: 1,
-            springResponse: 0.35
+            springResponse: 0.35,
         )
     }
 
@@ -317,8 +318,9 @@ class MentionPicker: UIView {
         animator.addAnimations {
             self.transform = .identity
 
-            if let backgroundView = self.backgroundView,
-               let backgroundViewEffect = self.backgroundViewVisualEffect()
+            if
+                let backgroundView = self.backgroundView,
+                let backgroundViewEffect = self.backgroundViewVisualEffect()
             {
                 backgroundView.effect = backgroundViewEffect
             }
@@ -376,7 +378,7 @@ class MentionPicker: UIView {
 
     private let mentionableUsers: [MentionableUser]
 
-    lazy private(set) var filteredMentionableUsers = mentionableUsers
+    private(set) lazy var filteredMentionableUsers = mentionableUsers
 
     /// Used to update the filtered list of users for display.
     /// If the mention text results in no users remaining, returns
@@ -419,7 +421,7 @@ class MentionPicker: UIView {
 extension MentionPicker {
 
     func highlightAndScrollToRow(_ row: Int, animated: Bool = true) {
-        guard row >= 0 && row < filteredMentionableUsers.count else { return }
+        guard row >= 0, row < filteredMentionableUsers.count else { return }
 
         tableView.selectRow(at: IndexPath(row: row, section: 0), animated: animated, scrollPosition: .none)
         tableView.scrollToRow(at: IndexPath(row: row, section: 0), at: .none, animated: animated)
@@ -460,7 +462,8 @@ extension MentionPicker {
     }
 
     func selectHighlightedRow() {
-        guard let selectedIndex = tableView.indexPathForSelectedRow,
+        guard
+            let selectedIndex = tableView.indexPathForSelectedRow,
             let mentionableUser = filteredMentionableUsers[safe: selectedIndex.row] else { return }
         selectedAddressCallback(mentionableUser.address)
     }
@@ -524,7 +527,7 @@ private class MentionableUserCell: UITableViewCell {
         let cellSize = cell.systemLayoutSizeFitting(
             CGSize(width: 300, height: CGFloat.greatestFiniteMagnitude),
             withHorizontalFittingPriority: .required,
-            verticalFittingPriority: .fittingSizeLevel
+            verticalFittingPriority: .fittingSizeLevel,
         )
         return cellSize.height
     }
@@ -539,7 +542,7 @@ private class MentionableUserCell: UITableViewCell {
     private let avatarView = ConversationAvatarView(
         sizeClass: MentionableUserCell.avatarSizeClass,
         localUserDisplayMode: .asUser,
-        useAutolayout: true
+        useAutolayout: true,
     )
 
     private static let vMargin: CGFloat = 10
@@ -561,7 +564,7 @@ private class MentionableUserCell: UITableViewCell {
             avatarView.trailingAnchor.constraint(equalTo: avatarContainer.trailingAnchor),
         ])
 
-        let stackView = UIStackView(arrangedSubviews: [ avatarContainer, displayNameLabel ])
+        let stackView = UIStackView(arrangedSubviews: [avatarContainer, displayNameLabel])
         stackView.axis = .horizontal
         stackView.spacing = 12
         stackView.isUserInteractionEnabled = false

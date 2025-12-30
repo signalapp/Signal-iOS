@@ -26,7 +26,7 @@ public enum JobAttemptResult<Success> {
         jobRecord: JobRecord,
         retryLimit: UInt,
         db: any DB,
-        block: () async throws -> Success
+        block: () async throws -> Success,
     ) async -> JobAttemptResult {
         do {
             let result = try await block()
@@ -50,7 +50,7 @@ public enum JobAttemptResult<Success> {
         error: Error,
         jobRecord: JobRecord,
         retryLimit: UInt,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) -> JobAttemptResult {
         if jobRecord.failureCount < retryLimit, error.isRetryable {
             jobRecord.addFailure(tx: tx)
@@ -236,7 +236,7 @@ public class JobQueueRunner<
                 queuedJobs.append(
                     contentsOf: oldJobs.filter { !newRowIds.contains($0.id!) }.map {
                         QueuedJob(rowId: $0.id!, runner: jobRunnerFactory.buildRunner())
-                    }
+                    },
                 )
                 queuedJobs.append(contentsOf: jobsToEnqueueAfterLoading)
                 if canExecuteJobsConcurrently {
@@ -267,14 +267,14 @@ public class JobQueueRunner<
                 if reachabilityManager.isReachable {
                     self?.retryWaitingJobs()
                 }
-            }
+            },
         ))
     }
 
     func retryWaitingJobs() {
         // Cancel each waiting task so that the next retry can commence.
         state.update { state in
-            state.waitingTasks.forEach { (_, waitingTask) in waitingTask.cancel() }
+            state.waitingTasks.forEach { _, waitingTask in waitingTask.cancel() }
         }
     }
 
@@ -290,7 +290,7 @@ public class JobQueueRunner<
             case .loading(let canExecuteJobsConcurrently, let jobsToEnqueueAfterLoading):
                 state.mode = .loading(
                     canExecuteJobsConcurrently: canExecuteJobsConcurrently,
-                    jobsToEnqueueAfterLoading: jobsToEnqueueAfterLoading + [job]
+                    jobsToEnqueueAfterLoading: jobsToEnqueueAfterLoading + [job],
                 )
             case .concurrent:
                 runJob(job)
@@ -374,7 +374,7 @@ public class JobQueueRunner<
         case .loading, .serialPaused:
             owsFailBeta("Can't start the next job.")
         case .concurrent:
-            return  // All of these are started immediately.
+            return // All of these are started immediately.
         case .serialRunning(nextJobs: var nextJobs):
             state.mode = {
                 if nextJobs.isEmpty {

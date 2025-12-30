@@ -8,7 +8,7 @@
 final class MockCallRecordDeleteManager: CallRecordDeleteManager {
     var deleteCallRecordsMock: ((
         _ callRecords: [CallRecord],
-        _ sendSyncMessageOnDelete: Bool
+        _ sendSyncMessageOnDelete: Bool,
     ) -> Void)?
     func deleteCallRecords(_ callRecords: [CallRecord], sendSyncMessageOnDelete: Bool, tx: DBWriteTransaction) {
         deleteCallRecordsMock!(callRecords, sendSyncMessageOnDelete)

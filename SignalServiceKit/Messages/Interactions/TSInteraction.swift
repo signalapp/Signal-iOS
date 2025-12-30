@@ -7,7 +7,7 @@ import Foundation
 
 extension TSInteraction {
 
-    public override func anyDidInsert(with tx: DBWriteTransaction) {
+    override public func anyDidInsert(with tx: DBWriteTransaction) {
         super.anyDidInsert(with: tx)
 
         if let thread = thread(tx: tx) {
@@ -15,7 +15,7 @@ extension TSInteraction {
         }
     }
 
-    public override func anyDidUpdate(with tx: DBWriteTransaction) {
+    override public func anyDidUpdate(with tx: DBWriteTransaction) {
         let interactionReadCache = SSKEnvironment.shared.modelReadCachesRef.interactionReadCache
 
         super.anyDidUpdate(with: tx)
@@ -35,10 +35,14 @@ extension TSInteraction {
             owsFailDebug("Unexpected sortId: \(sortId).")
             return
         }
-        guard let sortId = BaseModel.grdbIdByUniqueId(tableMetadata: TSInteractionSerializer.table,
-                                                      uniqueIdColumnName: InteractionRecord.columnName(.uniqueId),
-                                                      uniqueIdColumnValue: self.uniqueId,
-                                                      transaction: transaction) else {
+        guard
+            let sortId = BaseModel.grdbIdByUniqueId(
+                tableMetadata: TSInteractionSerializer.table,
+                uniqueIdColumnName: InteractionRecord.columnName(.uniqueId),
+                uniqueIdColumnValue: self.uniqueId,
+                transaction: transaction,
+            )
+        else {
             owsFailDebug("Missing sortId.")
             return
         }
@@ -54,18 +58,18 @@ extension TSInteraction {
     /// Returns `false` if the receiver needs to be inserted into the database.
     private func updatePlaceholder(
         from sender: SignalServiceAddress,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) -> Bool {
         let placeholders: [OWSRecoverableDecryptionPlaceholder]
         do {
             placeholders = try InteractionFinder.fetchInteractions(
                 timestamp: timestamp,
-                transaction: transaction
+                transaction: transaction,
             ).compactMap { candidate -> OWSRecoverableDecryptionPlaceholder? in
                 guard let placeholder = candidate as? OWSRecoverableDecryptionPlaceholder else {
                     return nil
                 }
-                guard placeholder.sender == sender && placeholder.timestamp == self.timestamp else {
+                guard placeholder.sender == sender, placeholder.timestamp == self.timestamp else {
                     return nil
                 }
                 return placeholder
@@ -127,7 +131,7 @@ extension TSInteraction {
                     .localIdentifiers(tx: transaction),
                 let updates = infoMessage.computedGroupUpdateItems(
                     localIdentifiers: localIdentifiers,
-                    tx: transaction
+                    tx: transaction,
                 )
             else {
                 return nil
@@ -143,7 +147,7 @@ extension TSInteraction {
     /// a block that builds the PersistableGroupUpdateItems for the message, which is run synchronously
     /// and may make use of a transaction if needed.
     public func shouldAppearInInbox(
-        groupUpdateItemsBuilder: (TSInfoMessage) -> [TSInfoMessage.PersistableGroupUpdateItem]?
+        groupUpdateItemsBuilder: (TSInfoMessage) -> [TSInfoMessage.PersistableGroupUpdateItem]?,
     ) -> Bool {
         if !shouldBeSaved || isDynamicInteraction || self is OWSOutgoingSyncMessage {
             owsFailDebug("Unexpected interaction type: \(type(of: self))")
@@ -156,7 +160,7 @@ extension TSInteraction {
         case let infoMessage as TSInfoMessage:
             return Self.shouldInfoMessageAppearInInbox(
                 infoMessage,
-                groupUpdateItemsBuilder: groupUpdateItemsBuilder
+                groupUpdateItemsBuilder: groupUpdateItemsBuilder,
             )
         case let message as TSMessage:
             return Self.shouldMessageAppearInInbox(message)
@@ -192,7 +196,7 @@ extension TSInteraction {
 
     private static func shouldInfoMessageAppearInInbox(
         _ message: TSInfoMessage,
-        groupUpdateItemsBuilder: (TSInfoMessage) -> [TSInfoMessage.PersistableGroupUpdateItem]?
+        groupUpdateItemsBuilder: (TSInfoMessage) -> [TSInfoMessage.PersistableGroupUpdateItem]?,
     ) -> Bool {
         switch message.messageType {
         case .verificationStateChange: return false

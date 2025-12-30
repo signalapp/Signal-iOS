@@ -18,7 +18,7 @@ protocol MessageLoaderBatchFetcher {
     func fetchUniqueIds(
         filter: InteractionFinder.RowIdFilter,
         limit: Int,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> [String]
 }
 
@@ -32,15 +32,15 @@ class MessageLoader {
     private let batchFetcher: MessageLoaderBatchFetcher
     private let interactionFetchers: [MessageLoaderInteractionFetcher]
 
-    public private(set) var loadedInteractions: [TSInteraction] = []
+    private(set) var loadedInteractions: [TSInteraction] = []
 
     /// If true, there might be older messages that could be loaded. If false,
     /// we believe we've reached the beginning of the chat.
-    private(set) public var canLoadOlder = true
+    private(set) var canLoadOlder = true
 
     /// If true, there might be newer messages that could be loaded. If false,
     /// we believe we've loaded all the way to the end of the chat.
-    private(set) public var canLoadNewer = true
+    private(set) var canLoadNewer = true
 
     /// Initializes a MessageLoader.
     ///
@@ -53,9 +53,9 @@ class MessageLoader {
     /// the order provided here. If the first fetcher returns a result for a
     /// particular interaction, then we won't try to fetch that interaction from
     /// any of the subsequent fetchers.
-    public init(
+    init(
         batchFetcher: MessageLoaderBatchFetcher,
-        interactionFetchers: [MessageLoaderInteractionFetcher]
+        interactionFetchers: [MessageLoaderInteractionFetcher],
     ) {
         self.batchFetcher = batchFetcher
         self.interactionFetchers = interactionFetchers
@@ -90,68 +90,68 @@ class MessageLoader {
         case sameLocation
     }
 
-    public func loadMessagePage(
+    func loadMessagePage(
         aroundInteractionId interactionUniqueId: String,
         reusableInteractions: [String: TSInteraction],
         deletedInteractionIds: Set<String>?,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws {
         try ensureLoaded(
             .around(interactionUniqueId: interactionUniqueId),
             count: initialLoadCount,
             reusableInteractions: reusableInteractions,
             deletedInteractionIds: deletedInteractionIds,
-            tx: tx
+            tx: tx,
         )
     }
 
-    public func loadNewerMessagePage(
+    func loadNewerMessagePage(
         reusableInteractions: [String: TSInteraction],
         deletedInteractionIds: Set<String>?,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws {
         try ensureLoaded(
             .newer,
             count: initialLoadCount * 2,
             reusableInteractions: reusableInteractions,
             deletedInteractionIds: deletedInteractionIds,
-            tx: tx
+            tx: tx,
         )
     }
 
-    public func loadOlderMessagePage(
+    func loadOlderMessagePage(
         reusableInteractions: [String: TSInteraction],
         deletedInteractionIds: Set<String>?,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws {
         try ensureLoaded(
             .older,
             count: initialLoadCount * 2,
             reusableInteractions: reusableInteractions,
             deletedInteractionIds: deletedInteractionIds,
-            tx: tx
+            tx: tx,
         )
     }
 
-    public func loadNewestMessagePage(
+    func loadNewestMessagePage(
         reusableInteractions: [String: TSInteraction],
         deletedInteractionIds: Set<String>?,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws {
         try ensureLoaded(
             .newest,
             count: initialLoadCount,
             reusableInteractions: reusableInteractions,
             deletedInteractionIds: deletedInteractionIds,
-            tx: tx
+            tx: tx,
         )
     }
 
-    public func loadInitialMessagePage(
+    func loadInitialMessagePage(
         focusMessageId: String?,
         reusableInteractions: [String: TSInteraction],
         deletedInteractionIds: Set<String>?,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws {
         if let focusMessageId {
             try ensureLoaded(
@@ -159,28 +159,28 @@ class MessageLoader {
                 count: initialLoadCount,
                 reusableInteractions: reusableInteractions,
                 deletedInteractionIds: deletedInteractionIds,
-                tx: tx
+                tx: tx,
             )
         } else {
             try loadNewestMessagePage(
                 reusableInteractions: reusableInteractions,
                 deletedInteractionIds: deletedInteractionIds,
-                tx: tx
+                tx: tx,
             )
         }
     }
 
-    public func loadSameLocation(
+    func loadSameLocation(
         reusableInteractions: [String: TSInteraction],
         deletedInteractionIds: Set<String>?,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws {
         try ensureLoaded(
             .sameLocation,
             count: max(initialLoadCount, loadedInteractions.count),
             reusableInteractions: reusableInteractions,
             deletedInteractionIds: deletedInteractionIds,
-            tx: tx
+            tx: tx,
         )
     }
 
@@ -195,7 +195,7 @@ class MessageLoader {
         count: Int,
         reusableInteractions: [String: TSInteraction],
         deletedInteractionIds: Set<String>?,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws {
         owsAssertDebug(count > 0)
         let count = count.clamp(1, Constants.maxInteractionCount)
@@ -203,12 +203,12 @@ class MessageLoader {
             direction,
             count: count,
             deletedInteractionIds: deletedInteractionIds,
-            tx: tx
+            tx: tx,
         )
         loadedInteractions = fetchInteractions(
             uniqueIds: loadBatch.uniqueIds,
             reusableInteractions: reusableInteractions,
-            tx: tx
+            tx: tx,
         )
         canLoadNewer = loadBatch.canLoadNewer
         canLoadOlder = loadBatch.canLoadOlder
@@ -218,13 +218,13 @@ class MessageLoader {
         _ direction: LoadWindowDirection,
         count: Int,
         deletedInteractionIds: Set<String>?,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> MessageLoaderBatch {
         func fetch(filter: InteractionFinder.RowIdFilter, limit: Int) throws -> [String] {
             return try batchFetcher.fetchUniqueIds(
                 filter: filter,
                 limit: limit,
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -265,7 +265,7 @@ class MessageLoader {
                 return try loadNewest()
             }
             var batch = MessageLoaderBatch(canLoadNewer: true, canLoadOlder: true, uniqueIds: [uniqueId])
-            let olderCount = try fetchOlder(before: rowId, count: count/2, batch: &batch)
+            let olderCount = try fetchOlder(before: rowId, count: count / 2, batch: &batch)
             try fetchNewer(after: rowId, count: count - olderCount, batch: &batch)
             return batch
         }
@@ -282,7 +282,7 @@ class MessageLoader {
                 // We can figure out what was deleted without any queries. (This may be a
                 // premature optimization.)
                 interactionIds = Array(
-                    loadedInteractions.lazy.map { $0.uniqueId }.filter { !deletedInteractionIds.contains($0) }
+                    loadedInteractions.lazy.map { $0.uniqueId }.filter { !deletedInteractionIds.contains($0) },
                 )
             } else {
                 // We can figure out what is left by re-checking prior rowids.
@@ -299,7 +299,7 @@ class MessageLoader {
             // the conversation.
             return (
                 range: lowerBound...upperBound,
-                batch: MessageLoaderBatch(canLoadNewer: canLoadNewer, canLoadOlder: canLoadOlder, uniqueIds: interactionIds)
+                batch: MessageLoaderBatch(canLoadNewer: canLoadNewer, canLoadOlder: canLoadOlder, uniqueIds: interactionIds),
             )
         }()
 
@@ -346,14 +346,14 @@ class MessageLoader {
     private func fetchInteractions(
         uniqueIds interactionIds: [String],
         reusableInteractions: [String: TSInteraction] = [:],
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> [TSInteraction] {
         var refinery = Refinery<String, TSInteraction>(interactionIds)
-        refinery = refinery.refine { (interactionIds) -> [TSInteraction?] in
+        refinery = refinery.refine { interactionIds -> [TSInteraction?] in
             return interactionIds.map { reusableInteractions[$0] }
         }
         for interactionFetcher in interactionFetchers {
-            refinery = refinery.refine { (interactionIds) -> [TSInteraction?] in
+            refinery = refinery.refine { interactionIds -> [TSInteraction?] in
                 let fetchedInteractions = interactionFetcher.fetchInteractions(for: Array(interactionIds), tx: tx)
                 return interactionIds.map { fetchedInteractions[$0] }
             }
@@ -376,7 +376,7 @@ class SDSInteractionFetcherImpl: MessageLoaderInteractionFetcher {
     func fetchInteractions(for uniqueIds: [String], tx: DBReadTransaction) -> [String: TSInteraction] {
         let fetchedInteractions = InteractionFinder.interactions(
             withInteractionIds: Set(uniqueIds),
-            transaction: tx
+            transaction: tx,
         )
         return Dictionary(uniqueKeysWithValues: fetchedInteractions.lazy.map { ($0.uniqueId, $0) })
     }
@@ -394,12 +394,12 @@ class ConversationViewBatchFetcher: MessageLoaderBatchFetcher {
     func fetchUniqueIds(
         filter: InteractionFinder.RowIdFilter,
         limit: Int,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> [String] {
         try interactionFinder.fetchUniqueIdsForConversationView(
             rowIdFilter: filter,
             limit: limit,
-            tx: tx
+            tx: tx,
         )
     }
 }

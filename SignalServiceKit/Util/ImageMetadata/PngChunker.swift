@@ -65,7 +65,7 @@ public class PngChunker {
     /// - Throws: `PngChunkerError.invalidChunkChecksum` if a chunk's checksum is invalid.
     /// - Throws: `PngChunkerError.endedUnexpectedly` if a chunk's length is longer than the remaining data available, or if the first chunk's length is too short.
     public func next() throws -> Chunk? {
-        guard var cursor = cursor, cursor < pngSource.byteLength else {
+        guard var cursor, cursor < pngSource.byteLength else {
             return nil
         }
 
@@ -114,7 +114,7 @@ public class PngChunker {
             lengthBytes: lengthBytes,
             type: type,
             data: data,
-            crcBytes: crcBytes
+            crcBytes: crcBytes,
         )
     }
 

@@ -78,7 +78,7 @@ public final class GroupAccess: NSObject, NSCoding, NSCopying {
         coder.encode(NSNumber(value: self.members.rawValue), forKey: "members")
     }
 
-    public override var hash: Int {
+    override public var hash: Int {
         var hasher = Hasher()
         hasher.combine(addFromInviteLink)
         hasher.combine(attributes)
@@ -86,7 +86,7 @@ public final class GroupAccess: NSObject, NSCoding, NSCopying {
         return hasher.finalize()
     }
 
-    public override func isEqual(_ object: Any?) -> Bool {
+    override public func isEqual(_ object: Any?) -> Bool {
         guard let object = object as? Self else { return false }
         guard type(of: self) == type(of: object) else { return false }
         guard self.addFromInviteLink == object.addFromInviteLink else { return false }
@@ -145,18 +145,18 @@ public final class GroupAccess: NSObject, NSCoding, NSCopying {
         }
     }
 
-    #if TESTABLE_BUILD
+#if TESTABLE_BUILD
     public static var allAccess: GroupAccess {
         return GroupAccess(members: .member, attributes: .member, addFromInviteLink: .any)
     }
-    #endif
+#endif
 
     @objc
     public static var defaultForV2: GroupAccess {
         return GroupAccess(members: .member, attributes: .member, addFromInviteLink: .unsatisfiable)
     }
 
-    public override var debugDescription: String {
+    override public var debugDescription: String {
         return "[members: \(members), attributes: \(attributes), addFromInviteLink: \(addFromInviteLink), ]"
     }
 }
@@ -167,7 +167,7 @@ public final class GroupAccess: NSObject, NSCoding, NSCopying {
 public extension GroupAccess {
     var canJoinFromInviteLink: Bool {
         // TODO: Should this include .member?
-        (addFromInviteLink == .any ||
-            addFromInviteLink == .administrator)
+        addFromInviteLink == .any ||
+            addFromInviteLink == .administrator
     }
 }

@@ -36,7 +36,7 @@ final class UsernameValidationManagerTest: XCTestCase {
             messageProcessor: mockMessageProcessor,
             storageServiceManager: mockStorageServiceManager,
             usernameLinkManager: mockUsernameLinkManager,
-            whoAmIManager: mockWhoAmIManager
+            whoAmIManager: mockWhoAmIManager,
         ))
     }
 
@@ -95,7 +95,7 @@ final class UsernameValidationManagerTest: XCTestCase {
     func testAvailableValidationSuccessful() async throws {
         mockLocalUsernameManager.startingUsernameState = .available(
             username: "boba_fett.42",
-            usernameLink: .mocked
+            usernameLink: .mocked,
         )
         mockMessageProcessor.canWait = true
         mockStorageServiceManager.pendingRestoreResult = .value(())
@@ -114,7 +114,7 @@ final class UsernameValidationManagerTest: XCTestCase {
     func testAvailableValidationFailsIfWhoamiFails() async {
         mockLocalUsernameManager.startingUsernameState = .available(
             username: "boba_fett.42",
-            usernameLink: .mocked
+            usernameLink: .mocked,
         )
         mockMessageProcessor.canWait = true
         mockStorageServiceManager.pendingRestoreResult = .value(())
@@ -132,7 +132,7 @@ final class UsernameValidationManagerTest: XCTestCase {
     func testAvailableValidationFailsIfRemoteUsernameMismatch() async throws {
         mockLocalUsernameManager.startingUsernameState = .available(
             username: "boba_fett.42",
-            usernameLink: .mocked
+            usernameLink: .mocked,
         )
         mockMessageProcessor.canWait = true
         mockStorageServiceManager.pendingRestoreResult = .value(())
@@ -150,7 +150,7 @@ final class UsernameValidationManagerTest: XCTestCase {
     func testAvailableValidationFailsIfLinkDecryptFails() async {
         mockLocalUsernameManager.startingUsernameState = .available(
             username: "boba_fett.42",
-            usernameLink: .mocked
+            usernameLink: .mocked,
         )
         mockMessageProcessor.canWait = true
         mockStorageServiceManager.pendingRestoreResult = .value(())
@@ -169,7 +169,7 @@ final class UsernameValidationManagerTest: XCTestCase {
     func testAvailableValidationFailsIfUsernameLinkMismatch() async throws {
         mockLocalUsernameManager.startingUsernameState = .available(
             username: "boba_fett.42",
-            usernameLink: .mocked
+            usernameLink: .mocked,
         )
         mockMessageProcessor.canWait = true
         mockStorageServiceManager.pendingRestoreResult = .value(())
@@ -265,7 +265,7 @@ private extension WhoAmIManager.WhoAmIResponse {
         pni: Pni.randomForTesting(),
         e164: E164("+16125550101")!,
         usernameHash: nil,
-        entitlements: Entitlements(backup: nil, badges: [])
+        entitlements: Entitlements(backup: nil, badges: []),
     )
 
     static func withRemoteUsername(_ remoteUsername: String) -> Self {
@@ -274,7 +274,7 @@ private extension WhoAmIManager.WhoAmIResponse {
             pni: Pni.randomForTesting(),
             e164: E164("+16125550101")!,
             usernameHash: try! Usernames.HashedUsername(forUsername: remoteUsername).hashString,
-            entitlements: Entitlements(backup: nil, badges: [])
+            entitlements: Entitlements(backup: nil, badges: []),
         )
     }
 }
@@ -283,7 +283,7 @@ private extension Usernames.UsernameLink {
     static var mocked: Usernames.UsernameLink {
         return Usernames.UsernameLink(
             handle: UUID(),
-            entropy: Data(repeating: 5, count: 32)
+            entropy: Data(repeating: 5, count: 32),
         )!
     }
 }
@@ -302,7 +302,7 @@ extension UsernameValidationManagerTest {
     private class MockMessageProcessor: Usernames.Validation.Shims.MessageProcessor {
         var canWait = false
 
-        public func waitForFetchingAndProcessing() async throws(CancellationError) {
+        func waitForFetchingAndProcessing() async throws(CancellationError) {
             owsPrecondition(canWait)
             canWait = false
         }

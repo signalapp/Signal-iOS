@@ -15,7 +15,7 @@ public protocol PrivateStoryThreadDeletionManager {
     /// Storage Service) before being purged from disk.
     func deletedAtTimestamp(
         forDistributionListIdentifier identifier: Data,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> UInt64?
 
     /// Marks the story distribution list with the given identifier as deleted
@@ -28,7 +28,7 @@ public protocol PrivateStoryThreadDeletionManager {
     func recordDeletedAtTimestamp(
         _ timestamp: UInt64,
         forDistributionListIdentifier identifier: Data,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     )
 
     /// All distribution list identifiers currently marked as deleted.
@@ -56,7 +56,7 @@ final class PrivateStoryThreadDeletionManagerImpl: PrivateStoryThreadDeletionMan
         remoteConfigProvider: any RemoteConfigProvider,
         storageServiceManager: any StorageServiceManager,
         threadRemover: any ThreadRemover,
-        threadStore: any ThreadStore
+        threadStore: any ThreadStore,
     ) {
         self.dateProvider = dateProvider
         self.deletedAtTimestampStore = KeyValueStore(collection: "TSPrivateStoryThread+DeletedAtTimestamp")
@@ -68,7 +68,7 @@ final class PrivateStoryThreadDeletionManagerImpl: PrivateStoryThreadDeletionMan
 
     func deletedAtTimestamp(
         forDistributionListIdentifier identifier: Data,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> UInt64? {
         guard let uniqueId = identifier.uuidString else { return nil }
         return deletedAtTimestampStore.getUInt64(uniqueId, transaction: tx)
@@ -77,7 +77,7 @@ final class PrivateStoryThreadDeletionManagerImpl: PrivateStoryThreadDeletionMan
     func recordDeletedAtTimestamp(
         _ timestamp: UInt64,
         forDistributionListIdentifier identifier: Data,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         guard timeInterval(sinceTimestamp: timestamp) < remoteConfigProvider.currentConfig().messageQueueTime else {
             logger.warn("Ignorning stale deleted at timestamp.")
@@ -98,7 +98,7 @@ final class PrivateStoryThreadDeletionManagerImpl: PrivateStoryThreadDeletionMan
             guard
                 let timestamp = deletedAtTimestampStore.getUInt64(
                     identifier,
-                    transaction: tx
+                    transaction: tx,
                 ),
                 timeInterval(sinceTimestamp: timestamp) > remoteConfigProvider.currentConfig().messageQueueTime
             else { continue }

@@ -23,7 +23,7 @@ final class ImageEditorStickerItem: ImageEditorItem, ImageEditorTransformable {
         referenceImageWidth: CGFloat,
         unitCenter: ImageEditorSample = .unitMidpoint,
         rotationRadians: CGFloat,
-        scaling: CGFloat
+        scaling: CGFloat,
     ) {
         self.sticker = sticker
         self.date = Date()
@@ -41,7 +41,7 @@ final class ImageEditorStickerItem: ImageEditorItem, ImageEditorTransformable {
         referenceImageWidth: CGFloat,
         unitCenter: ImageEditorSample,
         rotationRadians: CGFloat,
-        scaling: CGFloat
+        scaling: CGFloat,
     ) {
         self.sticker = sticker
         self.date = date
@@ -60,7 +60,7 @@ final class ImageEditorStickerItem: ImageEditorItem, ImageEditorTransformable {
             referenceImageWidth: self.referenceImageWidth,
             unitCenter: unitCenter,
             rotationRadians: self.rotationRadians,
-            scaling: self.scaling
+            scaling: self.scaling,
         )
     }
 
@@ -72,7 +72,7 @@ final class ImageEditorStickerItem: ImageEditorItem, ImageEditorTransformable {
             referenceImageWidth: self.referenceImageWidth,
             unitCenter: self.unitCenter,
             rotationRadians: rotationRadians,
-            scaling: scaling
+            scaling: scaling,
         )
     }
 
@@ -84,7 +84,7 @@ final class ImageEditorStickerItem: ImageEditorItem, ImageEditorTransformable {
             referenceImageWidth: self.referenceImageWidth,
             unitCenter: self.unitCenter,
             rotationRadians: self.rotationRadians,
-            scaling: self.scaling
+            scaling: self.scaling,
         )
     }
 

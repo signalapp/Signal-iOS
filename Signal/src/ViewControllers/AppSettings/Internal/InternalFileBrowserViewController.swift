@@ -31,8 +31,8 @@ class InternalFileBrowserViewController: OWSTableViewController2 {
         sections.append(OWSTableSection(items: [
             .copyableItem(
                 label: "Current File URL",
-                value: fileURL.absoluteString
-            )
+                value: fileURL.absoluteString,
+            ),
         ]))
 
         if isDirectory.boolValue {
@@ -66,13 +66,13 @@ class InternalFileBrowserViewController: OWSTableViewController2 {
                             InternalFileBrowserViewController(fileURL: contentsUrl),
                             animated: true,
                         )
-                    }
+                    },
                 )
             }
 
             sections.append(OWSTableSection(
                 title: "Contents",
-                items: fileItems
+                items: fileItems,
             ))
         }
 
@@ -84,13 +84,13 @@ class InternalFileBrowserViewController: OWSTableViewController2 {
                 .map { fileAttribute, value in
                     return .copyableItem(
                         label: fileAttribute.rawValue.replacingOccurrences(of: "NSFile", with: ""),
-                        value: "\(value)"
+                        value: "\(value)",
                     )
                 }
 
             sections.append(OWSTableSection(
                 title: "Attributes",
-                items: attributeItems
+                items: attributeItems,
             ))
         } catch {
             owsFailDebug("Failed to get attributes for \(fileURL)! \(error)")

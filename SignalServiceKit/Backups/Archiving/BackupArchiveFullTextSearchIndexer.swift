@@ -36,7 +36,7 @@ public class BackupArchiveFullTextSearchIndexerImpl: BackupArchiveFullTextSearch
         dateProvider: @escaping DateProviderMonotonic,
         db: any DB,
         interactionStore: InteractionStore,
-        searchableNameIndexer: SearchableNameIndexer
+        searchableNameIndexer: SearchableNameIndexer,
     ) {
         self.appReadiness = appReadiness
         self.dateProvider = dateProvider
@@ -65,9 +65,9 @@ public class BackupArchiveFullTextSearchIndexerImpl: BackupArchiveFullTextSearch
         let maxInteractionRowId = try Int64.fetchOne(
             tx.database,
             sql: """
-                SELECT max(\(TSInteractionSerializer.idColumn.columnName))
-                FROM \(TSInteraction.table.tableName);
-                """
+            SELECT max(\(TSInteractionSerializer.idColumn.columnName))
+            FROM \(TSInteraction.table.tableName);
+            """,
         )
         if let maxInteractionRowId {
             setMaxInteractionRowIdInclusive(maxInteractionRowId, tx: tx)
@@ -85,11 +85,11 @@ public class BackupArchiveFullTextSearchIndexerImpl: BackupArchiveFullTextSearch
         }
         var (
             minInteractionRowIdExclusive,
-            maxInteractionRowIdInclusive
+            maxInteractionRowIdInclusive,
         ) = db.read { tx in
             return (
                 self.minInteractionRowIdExclusive(tx: tx),
-                self.maxInteractionRowIdInclusive(tx: tx)
+                self.maxInteractionRowIdInclusive(tx: tx),
             )
         }
 
@@ -123,7 +123,7 @@ public class BackupArchiveFullTextSearchIndexerImpl: BackupArchiveFullTextSearch
                 let cursor = try self.interactionStore.fetchCursor(
                     minRowIdExclusive: minInteractionRowIdExclusive,
                     maxRowIdInclusive: maxInteractionRowIdInclusive,
-                    tx: tx
+                    tx: tx,
                 )
                 var processedCount = 0
 

@@ -35,7 +35,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
         pollMessageManager: PollMessageManager,
         signalProtocolStoreManager: SignalProtocolStoreManager,
         tsAccountManager: TSAccountManager,
-        viewOnceMessages: Shims.ViewOnceMessages
+        viewOnceMessages: Shims.ViewOnceMessages,
     ) {
         self.attachmentDownloads = attachmentDownloads
         self.attachmentManager = attachmentManager
@@ -55,7 +55,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
     public func process(
         _ transcript: SentMessageTranscript,
         localIdentifiers: LocalIdentifiers,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) -> Result<TSOutgoingMessage?, Error> {
 
         func validateTimestampInt64() -> Bool {
@@ -112,10 +112,9 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
                 thread: paymentNotification.target.thread,
                 paymentNotification: paymentNotification.notification,
                 messageTimestamp: messageTimestamp,
-                transaction: tx
+                transaction: tx,
             )
             return .success(nil)
-
         case .archivedPayment(let archivedPayment):
 
             guard validateProtocolVersion(for: transcript, thread: archivedPayment.target.thread, tx: tx) else {
@@ -129,12 +128,12 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
                     expiresInSeconds: archivedPayment.expirationDurationSeconds,
                     // Archived payments don't set the chat timer; version is irrelevant.
                     expireTimerVersion: nil,
-                    expireStartedAt: archivedPayment.expirationStartedAt
+                    expireStartedAt: archivedPayment.expirationStartedAt,
                 ),
                 amount: archivedPayment.amount,
                 fee: archivedPayment.fee,
                 note: archivedPayment.note,
-                tx: tx
+                tx: tx,
             )
 
             interactionStore.insertInteraction(message, tx: tx)
@@ -142,7 +141,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
                 message,
                 recipientStates: transcript.recipientStates,
                 isSentUpdate: false,
-                tx: tx
+                tx: tx,
             )
 
             return .success(message)
@@ -157,7 +156,6 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
 
             updateDisappearingMessageTokenIfNecessary(target: target, localIdentifiers: localIdentifiers, tx: tx)
             return .success(nil)
-
         case .message(let messageParams):
             Logger.info("Recording transcript in thread: \(messageParams.target.thread.logString) timestamp: \(transcript.timestamp)")
             guard validateTimestampValue() else {
@@ -167,7 +165,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
                 messageParams: messageParams,
                 transcript: transcript,
                 localIdentifiers: localIdentifiers,
-                tx: tx
+                tx: tx,
             ).map { $0 }
         }
     }
@@ -176,7 +174,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
         messageParams: SentMessageTranscriptType.Message,
         transcript: SentMessageTranscript,
         localIdentifiers: LocalIdentifiers,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) -> Result<TSOutgoingMessage, Error> {
         guard validateProtocolVersion(for: transcript, thread: messageParams.target.thread, tx: tx) else {
             return .failure(OWSAssertionError("Protocol version validation failed"))
@@ -209,7 +207,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             linkPreview: messageParams.validatedLinkPreview?.preview,
             messageSticker: messageParams.validatedMessageSticker?.sticker,
             giftBadge: messageParams.giftBadge,
-            isPoll: messageParams.validatedPollCreate != nil
+            isPoll: messageParams.validatedPollCreate != nil,
         )
         var outgoingMessage = interactionStore.buildOutgoingMessage(builder: outgoingMessageBuilder, tx: tx)
 
@@ -221,9 +219,9 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             hasSticker: messageParams.validatedMessageSticker != nil,
             // Payment notifications go through a different path.
             hasPayment: false,
-            hasPoll: messageParams.validatedPollCreate != nil
+            hasPoll: messageParams.validatedPollCreate != nil,
         )
-        if !hasRenderableContent && !outgoingMessage.isViewOnceMessage {
+        if !hasRenderableContent, !outgoingMessage.isViewOnceMessage {
             switch messageParams.target {
             case .group(let thread):
                 if thread.isGroupV2Thread {
@@ -244,7 +242,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             withTimestamp: outgoingMessage.timestamp,
             threadId: outgoingMessage.uniqueThreadId,
             author: localIdentifiers.aciAddress,
-            tx: tx
+            tx: tx,
         )
         if let existingFailedMessage = existingFailedMessage as? TSOutgoingMessage {
             // Update the reference to the outgoing message so that we apply all updates to the
@@ -299,7 +297,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
                             messageRowId: outgoingMessage.sqliteRowId!,
                             receivedAtTimestamp: outgoingMessage.receivedAtTimestamp,
                             threadRowId: threadRowId,
-                            isPastEditRevision: outgoingMessage.isPastEditRevision()
+                            isPastEditRevision: outgoingMessage.isPastEditRevision(),
                         ),
                         tx: tx,
                     )
@@ -313,7 +311,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
                                 messageRowId: outgoingMessage.sqliteRowId!,
                                 receivedAtTimestamp: outgoingMessage.receivedAtTimestamp,
                                 threadRowId: threadRowId,
-                                isPastEditRevision: outgoingMessage.isPastEditRevision()
+                                isPastEditRevision: outgoingMessage.isPastEditRevision(),
                             )),
                         ),
                         tx: tx,
@@ -330,7 +328,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
                                 threadRowId: threadRowId,
                                 isPastEditRevision: outgoingMessage.isPastEditRevision(),
                                 stickerPackId: validatedMessageSticker.sticker.packId,
-                                stickerId: validatedMessageSticker.sticker.stickerId
+                                stickerId: validatedMessageSticker.sticker.stickerId,
                             )),
                         ),
                         tx: tx,
@@ -345,7 +343,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
                                 messageRowId: outgoingMessage.sqliteRowId!,
                                 receivedAtTimestamp: outgoingMessage.receivedAtTimestamp,
                                 threadRowId: threadRowId,
-                                isPastEditRevision: outgoingMessage.isPastEditRevision()
+                                isPastEditRevision: outgoingMessage.isPastEditRevision(),
                             )),
                         ),
                         tx: tx,
@@ -361,7 +359,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
         owsAssertDebug(interactionStore.insertedMessageHasRenderableContent(
             message: outgoingMessage,
             rowId: outgoingMessage.sqliteRowId!,
-            tx: tx
+            tx: tx,
         ))
 
         let recipientStates: [SignalServiceAddress: TSOutgoingMessageRecipientState] = {
@@ -370,7 +368,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
                 // If this is a sent transcript that went to our Note to Self,
                 // we should force it as read.
                 return [
-                    localIdentifiers.aciAddress: TSOutgoingMessageRecipientState(status: .read)
+                    localIdentifiers.aciAddress: TSOutgoingMessageRecipientState(status: .read),
                 ]
             case .contact, .group:
                 return transcript.recipientStates
@@ -380,7 +378,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             outgoingMessage,
             recipientStates: recipientStates,
             isSentUpdate: false,
-            tx: tx
+            tx: tx,
         )
 
         if let expirationStartedAt = messageParams.expirationStartedAt {
@@ -391,13 +389,13 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
             disappearingMessagesExpirationJob.startExpiration(
                 forMessage: outgoingMessage,
                 expirationStartedAt: expirationStartedAt,
-                tx: tx
+                tx: tx,
             )
         }
 
         self.earlyMessageManager.applyPendingMessages(for: outgoingMessage, localIdentifiers: localIdentifiers, tx: tx)
 
-        if (outgoingMessage.isViewOnceMessage) {
+        if outgoingMessage.isViewOnceMessage {
             // Don't download attachments for "view-once" messages from linked devices.
             // To be extra-conservative, always mark as complete immediately.
             viewOnceMessages.markAsComplete(message: outgoingMessage, sendSyncMessages: false, tx: tx)
@@ -411,7 +409,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
     private func validateProtocolVersion(
         for transcript: SentMessageTranscript,
         thread: TSThread,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) -> Bool {
         if
             let requiredProtocolVersion = transcript.requiredProtocolVersion,
@@ -423,7 +421,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
                 thread: thread,
                 timestamp: MessageTimestampGenerator.sharedInstance.generateTimestamp(),
                 sender: nil,
-                protocolVersion: UInt(requiredProtocolVersion)
+                protocolVersion: UInt(requiredProtocolVersion),
             )
             interactionStore.insertInteraction(message, tx: tx)
             return false
@@ -434,7 +432,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
     private func updateDisappearingMessageTokenIfNecessary(
         target: SentMessageTranscriptTarget,
         localIdentifiers: LocalIdentifiers,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         switch target {
         case .group:
@@ -445,7 +443,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
                 disappearingMessageToken: disappearingMessageToken,
                 changeAuthor: localIdentifiers.aci,
                 localIdentifiers: localIdentifiers,
-                tx: tx
+                tx: tx,
             )
         }
     }
@@ -455,7 +453,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
     private func processRecipientUpdate(
         _ transcript: SentMessageTranscript,
         groupThread: TSGroupThread,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) -> Result<TSOutgoingMessage?, Error> {
 
         if transcript.recipientStates.isEmpty {
@@ -509,7 +507,7 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
                 message,
                 recipientStates: transcript.recipientStates,
                 isSentUpdate: true,
-                tx: tx
+                tx: tx,
             )
 
             // In theory more than one message could be found.

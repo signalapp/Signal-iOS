@@ -55,7 +55,7 @@ class SecureValueRecovery2Tests: XCTestCase {
             svrLocalStorage: localStorage,
             tsAccountManager: mockTSAccountManager,
             tsConstants: mockTSConstants,
-            twoFAManager: mock2FAManager
+            twoFAManager: mock2FAManager,
         )
     }
 

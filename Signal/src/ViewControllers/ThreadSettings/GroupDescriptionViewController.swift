@@ -21,7 +21,7 @@ class GroupDescriptionViewController: OWSTableViewController2 {
         let rawValue: Int
 
         static let updateImmediately = Options(rawValue: 1 << 0)
-        static let editable          = Options(rawValue: 1 << 1)
+        static let editable = Options(rawValue: 1 << 1)
     }
 
     var isEditable: Bool { options.contains(.editable) }
@@ -29,24 +29,24 @@ class GroupDescriptionViewController: OWSTableViewController2 {
     convenience init(
         groupModel: TSGroupModel,
         groupDescriptionCurrent: String? = nil,
-        options: Options
+        options: Options,
     ) {
         self.init(
             helper: GroupAttributesEditorHelper(groupModel: groupModel),
             groupDescriptionCurrent: groupDescriptionCurrent,
-            options: options
+            options: options,
         )
     }
 
     init(
         helper: GroupAttributesEditorHelper,
         groupDescriptionCurrent: String? = nil,
-        options: Options = []
+        options: Options = [],
     ) {
         self.helper = helper
         self.options = options
 
-        if let groupDescriptionCurrent = groupDescriptionCurrent {
+        if let groupDescriptionCurrent {
             self.helper.groupDescriptionOriginal = groupDescriptionCurrent
             providedCurrentDescription = true
         } else {
@@ -70,14 +70,14 @@ class GroupDescriptionViewController: OWSTableViewController2 {
         updateTableContents()
         helper.descriptionTextView.linkTextAttributes = [
             .foregroundColor: UIColor.Signal.link,
-            .underlineStyle: NSUnderlineStyle.single.rawValue
+            .underlineStyle: NSUnderlineStyle.single.rawValue,
         ]
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
 
-        coordinator.animate(alongsideTransition: { (_) in
+        coordinator.animate(alongsideTransition: { _ in
             self.helper.descriptionTextView.scrollToFocus(in: self.tableView, animated: true)
         }, completion: nil)
     }
@@ -103,20 +103,20 @@ class GroupDescriptionViewController: OWSTableViewController2 {
         } else if isEditable, remainingGlyphCount <= 100 {
             let titleFormat = OWSLocalizedString(
                 "GROUP_DESCRIPTION_VIEW_TITLE_FORMAT",
-                comment: "Title for the group description view. Embeds {{ the number of characters that can be added to the description without hitting the length limit }}."
+                comment: "Title for the group description view. Embeds {{ the number of characters that can be added to the description without hitting the length limit }}.",
             )
             title = String(format: titleFormat, OWSFormat.formatInt(remainingGlyphCount))
         } else {
             title = OWSLocalizedString(
                 "GROUP_DESCRIPTION_VIEW_TITLE",
-                comment: "Title for the group description view."
+                comment: "Title for the group description view.",
             )
         }
 
         if isEditable {
             navigationItem.leftBarButtonItem = .cancelButton(
                 dismissingFrom: self,
-                hasUnsavedChanges: { [weak self] in self?.helper.hasUnsavedChanges }
+                hasUnsavedChanges: { [weak self] in self?.helper.hasUnsavedChanges },
             )
 
             navigationItem.rightBarButtonItem = .setButton { [weak self] in
@@ -137,7 +137,7 @@ class GroupDescriptionViewController: OWSTableViewController2 {
         }
     }
 
-    public override func viewWillAppear(_ animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
         updateNavigation()
@@ -157,13 +157,13 @@ class GroupDescriptionViewController: OWSTableViewController2 {
         section.add(self.textViewItem(
             descriptionTextView,
             minimumHeight: self.isEditable ? 74 : nil,
-            dataDetectorTypes: self.isEditable ? [] : .all
+            dataDetectorTypes: self.isEditable ? [] : .all,
         ))
 
         if isEditable {
             section.footerTitle = OWSLocalizedString(
                 "GROUP_DESCRIPTION_VIEW_EDIT_FOOTER",
-                comment: "Footer text when editing the group description"
+                comment: "Footer text when editing the group description",
             )
         }
 
@@ -184,9 +184,9 @@ class GroupDescriptionViewController: OWSTableViewController2 {
         }
 
         helper.updateGroupIfNecessary(fromViewController: self) { [weak self] in
-            guard let self = self else { return }
+            guard let self else { return }
             self.descriptionDelegate?.groupDescriptionViewControllerDidComplete(
-                groupDescription: self.helper.groupDescriptionCurrent
+                groupDescription: self.helper.groupDescriptionCurrent,
             )
             self.dismiss(animated: true)
         }

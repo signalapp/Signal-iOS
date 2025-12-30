@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import Combine
 import SignalServiceKit
 import SignalUI
-import Combine
 
 // MARK: - CallQualitySurveyIssuesViewController
 
@@ -18,13 +18,13 @@ final class CallQualitySurveyIssuesViewController: CallQualitySurveySheetViewCon
         configuration: .largePrimary(title: CommonStrings.continueButton),
         primaryAction: .init { [weak sheetNav] _ in
             sheetNav?.doneSelectingIssues()
-        }
+        },
     )
     private lazy var customIssueEntry = UIButton(
         configuration: customIssueButtonConfig(customText: nil),
         primaryAction: .init { [weak self] _ in
             self?.didTapCustomIssue()
-        }
+        },
     )
 
     private let collectionView: UICollectionView = {
@@ -35,6 +35,7 @@ final class CallQualitySurveyIssuesViewController: CallQualitySurveySheetViewCon
         layout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
         return UICollectionView(frame: .zero, collectionViewLayout: layout)
     }()
+
     private var dataSource: UICollectionViewDiffableDataSource<Section, Item>?
 
     private var selectedItems = Set<Item>()
@@ -49,13 +50,13 @@ final class CallQualitySurveyIssuesViewController: CallQualitySurveySheetViewCon
 
         title = OWSLocalizedString(
             "CALL_QUALITY_SURVEY_ISSUES_SHEET_TITLE",
-            comment: "Title for the sheet in the call quality survey where issues with the call can be selected"
+            comment: "Title for the sheet in the call quality survey where issues with the call can be selected",
         )
 
         let headerLabel = UILabel()
         headerLabel.text = OWSLocalizedString(
             "CALL_QUALITY_SURVEY_ISSUES_HEADER",
-            comment: "Header text on the call quality survey issues screen"
+            comment: "Header text on the call quality survey issues screen",
         )
         headerLabel.font = .dynamicTypeSubheadline
         headerLabel.textColor = .Signal.secondaryLabel
@@ -65,7 +66,7 @@ final class CallQualitySurveyIssuesViewController: CallQualitySurveySheetViewCon
             top: 0,
             leading: 36,
             bottom: 24,
-            trailing: 36
+            trailing: 36,
         ))
         view.addSubview(headerContainer)
         headerContainer.autoPinEdges(toSuperviewEdgesExcludingEdge: .bottom)
@@ -250,57 +251,57 @@ final class CallQualitySurveyIssuesViewController: CallQualitySurveySheetViewCon
             case .audio:
                 OWSLocalizedString(
                     "CALL_QUALITY_SURVEY_ISSUE_AUDIO",
-                    comment: "Label for audio issue option in call quality survey"
+                    comment: "Label for audio issue option in call quality survey",
                 )
             case .audioStuttering:
                 OWSLocalizedString(
                     "CALL_QUALITY_SURVEY_ISSUE_AUDIO_STUTTERING",
-                    comment: "Label for audio stuttering issue option in call quality survey"
+                    comment: "Label for audio stuttering issue option in call quality survey",
                 )
             case .audioLocalEcho:
                 OWSLocalizedString(
                     "CALL_QUALITY_SURVEY_ISSUE_AUDIO_LOCAL_ECHO",
-                    comment: "Label for local echo issue option in call quality survey, indicating the user heard an echo"
+                    comment: "Label for local echo issue option in call quality survey, indicating the user heard an echo",
                 )
             case .audioRemoteEcho:
                 OWSLocalizedString(
                     "CALL_QUALITY_SURVEY_ISSUE_AUDIO_REMOTE_ECHO",
-                    comment: "Label for remote echo issue option in call quality survey, indicating other participants heard an echo"
+                    comment: "Label for remote echo issue option in call quality survey, indicating other participants heard an echo",
                 )
             case .audioDrop:
                 OWSLocalizedString(
                     "CALL_QUALITY_SURVEY_ISSUE_AUDIO_DROP",
-                    comment: "Label for audio dropout issue option in call quality survey"
+                    comment: "Label for audio dropout issue option in call quality survey",
                 )
             case .video:
                 OWSLocalizedString(
                     "CALL_QUALITY_SURVEY_ISSUE_VIDEO",
-                    comment: "Label for video issue option in call quality survey"
+                    comment: "Label for video issue option in call quality survey",
                 )
             case .videoNoCamera:
                 OWSLocalizedString(
                     "CALL_QUALITY_SURVEY_ISSUE_VIDEO_NO_CAMERA",
-                    comment: "Label for camera not working issue option in call quality survey"
+                    comment: "Label for camera not working issue option in call quality survey",
                 )
             case .videoLowQuality:
                 OWSLocalizedString(
                     "CALL_QUALITY_SURVEY_ISSUE_VIDEO_LOW_QUALITY",
-                    comment: "Label for poor video quality issue option in call quality survey"
+                    comment: "Label for poor video quality issue option in call quality survey",
                 )
             case .videoLowResolution:
                 OWSLocalizedString(
                     "CALL_QUALITY_SURVEY_ISSUE_VIDEO_LOW_RESOLUTION",
-                    comment: "Label for low resolution video issue option in call quality survey"
+                    comment: "Label for low resolution video issue option in call quality survey",
                 )
             case .callDropped:
                 OWSLocalizedString(
                     "CALL_QUALITY_SURVEY_ISSUE_CALL_DROPPED",
-                    comment: "Label for call dropped issue option in call quality survey"
+                    comment: "Label for call dropped issue option in call quality survey",
                 )
             case .other:
                 OWSLocalizedString(
                     "CALL_QUALITY_SURVEY_ISSUE_OTHER",
-                    comment: "Label for custom issue option in call quality survey"
+                    comment: "Label for custom issue option in call quality survey",
                 )
             }
         }
@@ -308,13 +309,13 @@ final class CallQualitySurveyIssuesViewController: CallQualitySurveySheetViewCon
         var image: ImageResource {
             switch self {
             case .audio, .audioStuttering, .audioLocalEcho, .audioRemoteEcho, .audioDrop:
-                    .speaker
+                .speaker
             case .video, .videoNoCamera, .videoLowQuality, .videoLowResolution:
-                    .video
+                .video
             case .callDropped:
-                    .xCircle
+                .xCircle
             case .other:
-                    .errorCircle
+                .errorCircle
             }
         }
     }
@@ -413,7 +414,7 @@ private final class CapsuleCell: UICollectionViewCell {
         } else if isSelected {
             contentView.backgroundColor = .Signal.accent
             titleLabel.textColor = .white
-            iconView.tintColor =  .white
+            iconView.tintColor = .white
         } else {
             contentView.backgroundColor = .Signal.secondaryGroupedBackground
             titleLabel.textColor = .Signal.label
@@ -435,7 +436,7 @@ private final class CenteredFlowLayout: UICollectionViewFlowLayout {
         guard
             let attributes = super.layoutAttributesForElements(in: rect)?
                 .map({ $0.copy() as! UICollectionViewLayoutAttributes }),
-            let collectionView = collectionView
+            let collectionView
         else {
             return super.layoutAttributesForElements(in: rect)
         }

@@ -33,13 +33,15 @@ class SubscriptionTest: XCTestCase {
             "status": "active",
             "processor": "STRIPE",
             "paymentMethod": "CARD",
-            "paymentProcessing": false
+            "paymentProcessing": false,
         ]
     }()
 
     func testJsonInit() throws {
-        let subscription = try Subscription(subscriptionDict: subscriptionDict,
-                                            chargeFailureDict: nil)
+        let subscription = try Subscription(
+            subscriptionDict: subscriptionDict,
+            chargeFailureDict: nil,
+        )
 
         XCTAssertEqual(subscription.level, 123)
         XCTAssertEqual(subscription.amount, FiatMoney(currencyCode: "USD", value: 5))
@@ -54,22 +56,28 @@ class SubscriptionTest: XCTestCase {
         var subscriptionDictWithUnexpectedStatus = subscriptionDict
         subscriptionDictWithUnexpectedStatus["status"] = "unexpected!!"
 
-        let subscription = try Subscription(subscriptionDict: subscriptionDictWithUnexpectedStatus,
-                                            chargeFailureDict: nil)
+        let subscription = try Subscription(
+            subscriptionDict: subscriptionDictWithUnexpectedStatus,
+            chargeFailureDict: nil,
+        )
 
         XCTAssertEqual(subscription.status, .unrecognized(rawValue: "unexpected!!"))
         XCTAssertNil(subscription.chargeFailure)
     }
 
     func testChargeFailure() throws {
-        let subscription = try Subscription(subscriptionDict: subscriptionDict,
-                                            chargeFailureDict: ["code": "foo bar"])
+        let subscription = try Subscription(
+            subscriptionDict: subscriptionDict,
+            chargeFailureDict: ["code": "foo bar"],
+        )
         XCTAssertEqual(subscription.chargeFailure?.code, "foo bar")
 
         let strangeChargeFailures: [[String: Any]] = [[:], ["no code": "missing"], ["code": 123]]
         for chargeFailureDict in strangeChargeFailures {
-            let subscription = try Subscription(subscriptionDict: subscriptionDict,
-                                                chargeFailureDict: chargeFailureDict)
+            let subscription = try Subscription(
+                subscriptionDict: subscriptionDict,
+                chargeFailureDict: chargeFailureDict,
+            )
             XCTAssertNotNil(subscription.chargeFailure)
             XCTAssertNil(subscription.chargeFailure?.code)
         }
@@ -85,7 +93,7 @@ class BadgeIdsTest: XCTestCase {
             ("BOOST", false),
             ("GIFT", false),
             ("OTHER", false),
-            ("", false)
+            ("", false),
         ]
         for (badgeId, shouldMatch) in testCases {
             XCTAssertEqual(SubscriptionBadgeIds.contains(badgeId), shouldMatch, "\(badgeId)")
@@ -100,7 +108,7 @@ class BadgeIdsTest: XCTestCase {
             ("BOOST", true),
             ("GIFT", false),
             ("OTHER", false),
-            ("", false)
+            ("", false),
         ]
         for (badgeId, shouldMatch) in testCases {
             XCTAssertEqual(BoostBadgeIds.contains(badgeId), shouldMatch, "\(badgeId)")
@@ -131,11 +139,11 @@ class DonationSubscriptionConfigurationTest: XCTestCase {
             levelOneAmount: Int = levelOneAmount,
             levelTwo: UInt? = LevelFixtures.levelTwo,
             levelTwoAmount: Int = levelTwoAmount,
-            supportedPaymentMethods: [String] = supportedPaymentMethods
+            supportedPaymentMethods: [String] = supportedPaymentMethods,
         ) -> [String: Any] {
             var result: [String: Any] = [
                 "minimum": minimumAmount,
-                "supportedPaymentMethods": supportedPaymentMethods
+                "supportedPaymentMethods": supportedPaymentMethods,
             ]
 
             result["oneTime"] = { () -> [String: [Int]] in
@@ -176,7 +184,7 @@ class DonationSubscriptionConfigurationTest: XCTestCase {
             "category": "donor",
             "name": "Test Badge 1",
             "description": "First test badge",
-            "sprites6": ["ldpi.png", "mdpi.png", "hdpi.png", "xhdpi.png", "xxhdpi.png", "xxxhdpi.png"]
+            "sprites6": ["ldpi.png", "mdpi.png", "hdpi.png", "xhdpi.png", "xxhdpi.png", "xxxhdpi.png"],
         ]
 
         static let badge: ProfileBadge = try! .init(jsonDictionary: badgeJson)
@@ -191,12 +199,12 @@ class DonationSubscriptionConfigurationTest: XCTestCase {
                 giftLevel,
                 boostLevel,
                 levelOne,
-                levelTwo
-            ]
+                levelTwo,
+            ],
         ) -> [String: Any] {
             levels.reduce(into: [:]) { partialResult, level in
                 partialResult["\(level)"] = [
-                    "badge": badgeJson
+                    "badge": badgeJson,
                 ]
             }
         }
@@ -205,14 +213,14 @@ class DonationSubscriptionConfigurationTest: XCTestCase {
     private enum DonationSubscriptionConfigurationFixtures {
         static func withDefaultValues(
             currenciesJson: [String: Any] = CurrencyFixtures.withDefaultValues(),
-            levelsJson: [String: Any] = LevelFixtures.withDefaultValues()
+            levelsJson: [String: Any] = LevelFixtures.withDefaultValues(),
         ) -> [String: Any] {
             [
                 "sepaMaximumEuros": 10000,
                 "currencies": [
-                    "usd": currenciesJson
+                    "usd": currenciesJson,
                 ],
-                "levels": levelsJson
+                "levels": levelsJson,
             ]
         }
     }
@@ -223,7 +231,7 @@ class DonationSubscriptionConfigurationTest: XCTestCase {
 
     func testParseValidDonationConfig() throws {
         let config = try DonationSubscriptionConfiguration.from(
-            responseBodyDict: DonationSubscriptionConfigurationFixtures.withDefaultValues()
+            responseBodyDict: DonationSubscriptionConfigurationFixtures.withDefaultValues(),
         )
 
         XCTAssertEqual(config.boost.level, LevelFixtures.boostLevel)
@@ -251,61 +259,61 @@ class DonationSubscriptionConfigurationTest: XCTestCase {
     func testParseConfigMissingThings() {
         let missingBoost = DonationSubscriptionConfigurationFixtures.withDefaultValues(
             levelsJson: LevelFixtures.withDefaultValues(
-                levels: [LevelFixtures.giftLevel, LevelFixtures.levelOne, LevelFixtures.levelTwo]
-            )
+                levels: [LevelFixtures.giftLevel, LevelFixtures.levelOne, LevelFixtures.levelTwo],
+            ),
         )
 
         let missingGift = DonationSubscriptionConfigurationFixtures.withDefaultValues(
             levelsJson: LevelFixtures.withDefaultValues(
-                levels: [LevelFixtures.boostLevel, LevelFixtures.levelOne, LevelFixtures.levelTwo]
-            )
+                levels: [LevelFixtures.boostLevel, LevelFixtures.levelOne, LevelFixtures.levelTwo],
+            ),
         )
 
         let missingBoostLevel = DonationSubscriptionConfigurationFixtures.withDefaultValues(
             currenciesJson: CurrencyFixtures.withDefaultValues(
-                boostLevel: nil
-            )
+                boostLevel: nil,
+            ),
         )
 
         let missingGiftLevel = DonationSubscriptionConfigurationFixtures.withDefaultValues(
             currenciesJson: CurrencyFixtures.withDefaultValues(
-                giftLevel: nil
-            )
+                giftLevel: nil,
+            ),
         )
 
         let missingSubscriptionLevel = DonationSubscriptionConfigurationFixtures.withDefaultValues(
             currenciesJson: CurrencyFixtures.withDefaultValues(
-                levelOne: nil
-            )
+                levelOne: nil,
+            ),
         )
 
         expect(
             try DonationSubscriptionConfiguration.from(responseBodyDict: missingBoost),
-            throwsParseError: .missingBoostBadge
+            throwsParseError: .missingBoostBadge,
         )
         expect(
             try DonationSubscriptionConfiguration.from(responseBodyDict: missingGift),
-            throwsParseError: .missingGiftBadge
+            throwsParseError: .missingGiftBadge,
         )
         expect(
             try DonationSubscriptionConfiguration.from(responseBodyDict: missingBoostLevel),
-            throwsParseError: .missingBoostPresetAmounts
+            throwsParseError: .missingBoostPresetAmounts,
         )
         expect(
             try DonationSubscriptionConfiguration.from(responseBodyDict: missingGiftLevel),
-            throwsParseError: .missingGiftPresetAmount
+            throwsParseError: .missingGiftPresetAmount,
         )
         expect(
             try DonationSubscriptionConfiguration.from(responseBodyDict: missingSubscriptionLevel),
-            throwsParseError: .missingAmountForLevel(LevelFixtures.levelOne)
+            throwsParseError: .missingAmountForLevel(LevelFixtures.levelOne),
         )
     }
 
     func testParseConfigWithUnrecognizedPaymentMethod() throws {
         let unexpectedPaymentMethod = DonationSubscriptionConfigurationFixtures.withDefaultValues(
             currenciesJson: CurrencyFixtures.withDefaultValues(
-                supportedPaymentMethods: CurrencyFixtures.supportedPaymentMethods + ["cash money"]
-            )
+                supportedPaymentMethods: CurrencyFixtures.supportedPaymentMethods + ["cash money"],
+            ),
         )
 
         _ = try DonationSubscriptionConfiguration.from(responseBodyDict: unexpectedPaymentMethod)
@@ -315,7 +323,7 @@ class DonationSubscriptionConfigurationTest: XCTestCase {
 
     private func expect(
         _ expression: @autoclosure () throws -> DonationSubscriptionConfiguration,
-        throwsParseError expectedParseError: DonationSubscriptionConfiguration.ParseError
+        throwsParseError expectedParseError: DonationSubscriptionConfiguration.ParseError,
     ) {
         do {
             let config = try expression()

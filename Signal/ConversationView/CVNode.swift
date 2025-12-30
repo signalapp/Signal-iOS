@@ -101,8 +101,10 @@ extension CVNode {
     }
 
     var hasPerConversationExpiration: Bool {
-        guard interaction.interactionType == .incomingMessage ||
-                interaction.interactionType == .outgoingMessage else {
+        guard
+            interaction.interactionType == .incomingMessage ||
+            interaction.interactionType == .outgoingMessage
+        else {
             return false
         }
         guard let message = interaction as? TSMessage else {

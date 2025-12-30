@@ -23,7 +23,7 @@ final class ContactStreamTest: XCTestCase {
             familyName: "",
             nickname: "",
             fullName: fullName,
-            contactAvatarHash: nil
+            contactAvatarHash: nil,
         )
     }
 
@@ -91,7 +91,7 @@ final class ContactStreamTest: XCTestCase {
                 phoneNumber: E164(signalAccount.recipientPhoneNumber),
                 signalAccount: signalAccount,
                 disappearingMessagesConfiguration: nil,
-                inboxPosition: nil
+                inboxPosition: nil,
             )
         }
 

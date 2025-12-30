@@ -52,13 +52,13 @@ public struct SMKDecryptResult {
 
 // MARK: -
 
-fileprivate extension ProtocolAddress {
+private extension ProtocolAddress {
     convenience init(from senderAddress: SealedSenderAddress) {
         self.init(senderAddress.senderAci, deviceId: senderAddress.deviceId)
     }
 }
 
-fileprivate extension SMKMessageType {
+private extension SMKMessageType {
     init(_ messageType: CiphertextMessage.MessageType) {
         switch messageType {
         case .whisper:
@@ -91,7 +91,7 @@ public class SMKSecretSessionCipher: NSObject {
         signedPreKeyStore: SignedPreKeyStore,
         kyberPreKeyStore: KyberPreKeyStore,
         identityStore: IdentityKeyStore,
-        senderKeyStore: LibSignalClient.SenderKeyStore
+        senderKeyStore: LibSignalClient.SenderKeyStore,
     ) {
         self.currentSessionStore = sessionStore
         self.currentPreKeyStore = preKeyStore
@@ -110,7 +110,7 @@ public class SMKSecretSessionCipher: NSObject {
         contentHint: UnidentifiedSenderMessageContent.ContentHint,
         groupId: Data?,
         senderCertificate: SenderCertificate,
-        protocolContext: StoreContext
+        protocolContext: StoreContext,
     ) throws -> Data {
         let recipientAddress = ProtocolAddress(serviceId, deviceId: deviceId)
 
@@ -119,30 +119,35 @@ public class SMKSecretSessionCipher: NSObject {
             for: recipientAddress,
             sessionStore: currentSessionStore,
             identityStore: currentIdentityStore,
-            context: protocolContext)
+            context: protocolContext,
+        )
 
         let usmc = try UnidentifiedSenderMessageContent(
             ciphertextMessage,
             from: senderCertificate,
             contentHint: contentHint,
-            groupId: groupId ?? Data())
+            groupId: groupId ?? Data(),
+        )
 
         let outerBytes = try sealedSenderEncrypt(
             usmc,
             for: recipientAddress,
             identityStore: currentIdentityStore,
-            context: protocolContext)
+            context: protocolContext,
+        )
 
         return outerBytes
     }
 
-    public func groupEncryptMessage(recipients: [ProtocolAddress],
-                                    paddedPlaintext: Data,
-                                    senderCertificate: SenderCertificate,
-                                    groupId: Data,
-                                    distributionId: UUID,
-                                    contentHint: UnidentifiedSenderMessageContent.ContentHint = .default,
-                                    protocolContext: StoreContext?) throws -> Data {
+    public func groupEncryptMessage(
+        recipients: [ProtocolAddress],
+        paddedPlaintext: Data,
+        senderCertificate: SenderCertificate,
+        groupId: Data,
+        distributionId: UUID,
+        contentHint: UnidentifiedSenderMessageContent.ContentHint = .default,
+        protocolContext: StoreContext?,
+    ) throws -> Data {
 
         let senderAddress = ProtocolAddress(from: senderCertificate.sender)
         let ciphertext = try groupEncrypt(
@@ -150,20 +155,23 @@ public class SMKSecretSessionCipher: NSObject {
             from: senderAddress,
             distributionId: distributionId,
             store: currentSenderKeyStore,
-            context: protocolContext ?? NullContext())
+            context: protocolContext ?? NullContext(),
+        )
 
         let udMessageContent = try UnidentifiedSenderMessageContent(
             ciphertext,
             from: senderCertificate,
             contentHint: contentHint,
-            groupId: groupId)
+            groupId: groupId,
+        )
 
         let multiRecipientMessage = try sealedSenderMultiRecipientEncrypt(
             udMessageContent,
             for: recipients,
             identityStore: currentIdentityStore,
             sessionStore: currentSessionStore,
-            context: protocolContext ?? NullContext())
+            context: protocolContext ?? NullContext(),
+        )
 
         return multiRecipientMessage
     }
@@ -176,7 +184,7 @@ public class SMKSecretSessionCipher: NSObject {
         timestamp: UInt64,
         localIdentifiers: LocalIdentifiers,
         localDeviceId: LocalDeviceId,
-        protocolContext: StoreContext?
+        protocolContext: StoreContext?,
     ) throws -> SMKDecryptResult {
         guard timestamp > 0 else {
             throw SMKError.assertionError(description: "[\(type(of: self))] invalid timestamp")
@@ -184,9 +192,11 @@ public class SMKSecretSessionCipher: NSObject {
 
         // Allow nil contexts for testing.
         let context = protocolContext ?? NullContext()
-        let messageContent = try UnidentifiedSenderMessageContent(message: cipherTextData,
-                                                                  identityStore: currentIdentityStore,
-                                                                  context: context)
+        let messageContent = try UnidentifiedSenderMessageContent(
+            message: cipherTextData,
+            identityStore: currentIdentityStore,
+            context: context,
+        )
 
         let sender = messageContent.senderCertificate.sender
 
@@ -198,7 +208,7 @@ public class SMKSecretSessionCipher: NSObject {
             throw SMKError.assertionError(description: "[\(type(of: self))] Invalid senderAci.")
         }
 
-        if localIdentifiers.aci == senderAci && localDeviceId.equals(deviceId) {
+        if localIdentifiers.aci == senderAci, localDeviceId.equals(deviceId) {
             Logger.warn("Discarding self-sent message")
             throw SMKSecretSessionCipherError.selfSentMessage
         }
@@ -219,14 +229,14 @@ public class SMKSecretSessionCipher: NSObject {
                 senderE164: sender.e164,
                 senderDeviceId: deviceId,
                 paddedPayload: Data(paddedMessagePlaintext),
-                messageType: SMKMessageType(messageContent.messageType)
+                messageType: SMKMessageType(messageContent.messageType),
             )
         } catch {
             throw SecretSessionKnownSenderError(
                 senderAci: senderAci,
                 senderDeviceId: deviceId,
                 messageContent: messageContent,
-                underlyingError: error
+                underlyingError: error,
             )
         }
     }
@@ -243,7 +253,7 @@ public class SMKSecretSessionCipher: NSObject {
         //
         // NOTE: We use the sender properties from the sender certificate, not from this class' properties.
         let sender = messageContent.senderCertificate.sender
-        guard sender.deviceId >= 0 && sender.deviceId <= Int32.max else {
+        guard sender.deviceId >= 0, sender.deviceId <= Int32.max else {
             throw SMKError.assertionError(description: "[\(type(of: self))] Invalid senderDeviceId.")
         }
 
@@ -262,7 +272,8 @@ public class SMKSecretSessionCipher: NSObject {
                 from: ProtocolAddress(from: sender),
                 sessionStore: currentSessionStore,
                 identityStore: currentIdentityStore,
-                context: context)
+                context: context,
+            )
         case .preKey:
             let cipherMessage = try PreKeySignalMessage(bytes: messageContent.contents)
             plaintextData = try signalDecryptPreKey(
@@ -280,7 +291,8 @@ public class SMKSecretSessionCipher: NSObject {
                 messageContent.contents,
                 from: ProtocolAddress(from: sender),
                 store: currentSenderKeyStore,
-                context: context)
+                context: context,
+            )
         case .plaintext:
             let plaintextMessage = try PlaintextContent(bytes: messageContent.contents)
             plaintextData = plaintextMessage.body

@@ -12,7 +12,7 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
 
         title = OWSLocalizedString(
             "SETTINGS_PRIVACY_ADVANCED_TITLE",
-            comment: "Title for the advanced privacy settings"
+            comment: "Title for the advanced privacy settings",
         )
 
         updateTableContents()
@@ -21,25 +21,25 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
             self,
             selector: #selector(updateTableContents),
             name: OWSChatConnection.chatConnectionStateDidChange,
-            object: nil
+            object: nil,
         )
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(updateTableContents),
             name: SSKReachability.owsReachabilityDidChange,
-            object: nil
+            object: nil,
         )
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(updateTableContents),
             name: .syncManagerConfigurationSyncDidComplete,
-            object: nil
+            object: nil,
         )
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(updateTableContents),
             name: .isSignalProxyReadyDidChange,
-            object: nil
+            object: nil,
         )
     }
 
@@ -61,12 +61,12 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
             if SSKEnvironment.shared.signalServiceRef.isCensorshipCircumventionManuallyDisabled {
                 censorshipCircumventionSection.footerTitle = OWSLocalizedString(
                     "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED",
-                    comment: "Table footer for the 'censorship circumvention' section shown when censorship circumvention has been manually disabled."
+                    comment: "Table footer for the 'censorship circumvention' section shown when censorship circumvention has been manually disabled.",
                 )
             } else {
                 censorshipCircumventionSection.footerTitle = OWSLocalizedString(
                     "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED",
-                    comment: "Table footer for the 'censorship circumvention' section shown when censorship circumvention has been auto-enabled based on local phone number."
+                    comment: "Table footer for the 'censorship circumvention' section shown when censorship circumvention has been auto-enabled based on local phone number.",
                 )
             }
         } else if
@@ -76,44 +76,44 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
             isCensorshipCircumventionSwitchEnabled = false
             censorshipCircumventionSection.footerTitle = OWSLocalizedString(
                 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED",
-                comment: "Table footer for the 'censorship circumvention' section shown when the app is connected to the Signal service."
+                comment: "Table footer for the 'censorship circumvention' section shown when the app is connected to the Signal service.",
             )
         } else if !SSKEnvironment.shared.signalServiceRef.isCensorshipCircumventionActive, !SSKEnvironment.shared.reachabilityManagerRef.isReachable {
             isCensorshipCircumventionSwitchEnabled = false
             censorshipCircumventionSection.footerTitle = OWSLocalizedString(
                 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION",
-                comment: "Table footer for the 'censorship circumvention' section shown when the app is not connected to the internet."
+                comment: "Table footer for the 'censorship circumvention' section shown when the app is not connected to the internet.",
             )
         } else {
             isCensorshipCircumventionSwitchEnabled = true
             censorshipCircumventionSection.footerTitle = OWSLocalizedString(
                 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER",
-                comment: "Table footer for the 'censorship circumvention' section when censorship circumvention can be manually enabled."
+                comment: "Table footer for the 'censorship circumvention' section when censorship circumvention can be manually enabled.",
             )
         }
 
         censorshipCircumventionSection.add(.switch(
             withText: OWSLocalizedString(
                 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION",
-                comment: "Label for the 'manual censorship circumvention' switch."
+                comment: "Label for the 'manual censorship circumvention' switch.",
             ),
             isOn: { SSKEnvironment.shared.signalServiceRef.isCensorshipCircumventionActive },
             isEnabled: { isCensorshipCircumventionSwitchEnabled || DebugFlags.exposeCensorshipCircumvention },
             target: self,
-            selector: #selector(didToggleEnableCensorshipCircumventionSwitch)
+            selector: #selector(didToggleEnableCensorshipCircumventionSwitch),
         ))
 
         if SSKEnvironment.shared.signalServiceRef.isCensorshipCircumventionManuallyActivated {
             censorshipCircumventionSection.add(.disclosureItem(
                 withText: OWSLocalizedString(
                     "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY",
-                    comment: "Label for the 'manual censorship circumvention' country."
+                    comment: "Label for the 'manual censorship circumvention' country.",
                 ),
                 accessoryText: ensureManualCensorshipCircumventionCountry().localizedCountryName,
                 actionBlock: { [weak self] in
                     let vc = DomainFrontingCountryViewController()
                     self?.navigationController?.pushViewController(vc, animated: true)
-                }
+                },
             ))
         }
 
@@ -123,48 +123,48 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
         proxySection.footerAttributedTitle = .composed(of: [
             OWSLocalizedString("USE_PROXY_EXPLANATION", comment: "Explanation of when you should use a signal proxy"),
             " ",
-            CommonStrings.learnMore.styled(with: .link(URL.Support.proxies))
+            CommonStrings.learnMore.styled(with: .link(URL.Support.proxies)),
         ])
         .styled(with: defaultFooterTextStyle)
 
         proxySection.add(.disclosureItem(
             withText: OWSLocalizedString(
                 "PROXY_SETTINGS_TITLE",
-                comment: "Title for the signal proxy settings"
+                comment: "Title for the signal proxy settings",
             ),
             accessoryText: SignalProxy.isEnabled ? CommonStrings.switchOn : CommonStrings.switchOff,
             actionBlock: { [weak self] in
                 let vc = ProxySettingsViewController()
                 self?.navigationController?.pushViewController(vc, animated: true)
-            }
+            },
         ))
         contents.add(proxySection)
 
         let relayCallsSection = OWSTableSection()
         relayCallsSection.footerTitle = OWSLocalizedString(
             "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL",
-            comment: "User settings section footer, a detailed explanation"
+            comment: "User settings section footer, a detailed explanation",
         )
         relayCallsSection.add(.switch(
             withText: OWSLocalizedString(
                 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE",
-                comment: "Table cell label"
+                comment: "Table cell label",
             ),
             isOn: { SSKEnvironment.shared.preferencesRef.doCallsHideIPAddress },
             target: self,
-            selector: #selector(didToggleCallsHideIPAddressSwitch)
+            selector: #selector(didToggleCallsHideIPAddressSwitch),
         ))
         contents.add(relayCallsSection)
 
         let sealedSenderSection = OWSTableSection()
         sealedSenderSection.headerTitle = OWSLocalizedString(
             "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE",
-            comment: "table section label"
+            comment: "table section label",
         )
         sealedSenderSection.add(.init(
             customCellBlock: { [weak self] in
                 let cell = OWSTableItem.newCell()
-                guard let self = self else { return cell }
+                guard let self else { return cell }
                 cell.selectionStyle = .none
 
                 let stackView = UIStackView()
@@ -204,28 +204,28 @@ class AdvancedPrivacySettingsViewController: OWSTableViewController2 {
             },
             actionBlock: {
 
-            }
+            },
         ))
 
         if DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegisteredPrimaryDevice {
             sealedSenderSection.add(.switch(
                 withText: OWSLocalizedString(
                     "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS",
-                    comment: "switch label"
+                    comment: "switch label",
                 ),
                 isOn: { SSKEnvironment.shared.udManagerRef.shouldAllowUnrestrictedAccessLocal() },
                 target: self,
-                selector: #selector(didToggleUDUnrestrictedAccessSwitch)
+                selector: #selector(didToggleUDUnrestrictedAccessSwitch),
             ))
             sealedSenderSection.footerAttributedTitle = NSAttributedString.composed(of: [
                 OWSLocalizedString(
                     "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER",
-                    comment: "table section footer"
+                    comment: "table section footer",
                 ),
                 " ",
                 CommonStrings.learnMore.styled(
-                    with: .link(URL(string: "https://signal.org/blog/sealed-sender/")!)
-                )
+                    with: .link(URL(string: "https://signal.org/blog/sealed-sender/")!),
+                ),
             ])
             .styled(with: defaultFooterTextStyle)
 

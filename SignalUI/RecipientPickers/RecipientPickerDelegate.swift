@@ -9,36 +9,36 @@ public protocol RecipientPickerDelegate: RecipientContextMenuHelperDelegate {
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
         selectionStyleForRecipient recipient: PickedRecipient,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> UITableViewCell.SelectionStyle
 
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
-        didSelectRecipient recipient: PickedRecipient
+        didSelectRecipient recipient: PickedRecipient,
     )
 
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
         accessoryMessageForRecipient recipient: PickedRecipient,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> String?
 
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
         accessoryViewForRecipient recipient: PickedRecipient,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> ContactCellAccessoryView?
 
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
         attributedSubtitleForRecipient recipient: PickedRecipient,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> NSAttributedString?
 
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
         shouldAllowUserInteractionForRecipient recipient: PickedRecipient,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> Bool
 
     func recipientPickerTableViewWillBeginDragging(_ recipientPickerViewController: RecipientPickerViewController)
@@ -53,24 +53,25 @@ public extension RecipientPickerDelegate {
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
         accessoryMessageForRecipient recipient: PickedRecipient,
-        transaction: DBReadTransaction) -> String? { nil }
+        transaction: DBReadTransaction,
+    ) -> String? { nil }
 
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
         accessoryViewForRecipient recipient: PickedRecipient,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> ContactCellAccessoryView? { nil }
 
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
         attributedSubtitleForRecipient recipient: PickedRecipient,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> NSAttributedString? { nil }
 
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
         shouldAllowUserInteractionForRecipient recipient: PickedRecipient,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> Bool { false }
 
     func recipientPickerTableViewWillBeginDragging(_ recipientPickerViewController: RecipientPickerViewController) {}
@@ -108,7 +109,7 @@ public class PickedRecipient: Hashable {
         return .init(.address(address))
     }
 
-    public static func == (lhs: PickedRecipient, rhs: PickedRecipient) -> Bool {
+    public static func ==(lhs: PickedRecipient, rhs: PickedRecipient) -> Bool {
         return lhs.identifier == rhs.identifier
     }
 

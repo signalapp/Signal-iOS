@@ -131,7 +131,7 @@ public final class AppContextObjCBridge: NSObject {
         SignalServiceKit.CurrentAppContext()
     }
 
-    private override init() {}
+    override private init() {}
 
     @objc
     public var isRunningTests: Bool {

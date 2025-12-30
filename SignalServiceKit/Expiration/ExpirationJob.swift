@@ -30,6 +30,7 @@ open class ExpirationJob<ExpiringElement> {
         var runLoopTask: Task<Void, Never>?
         var nextExpirationDelayTask: Task<Void, Never>?
     }
+
     private let state = AtomicValue(State(), lock: .init())
 
     public init(
@@ -86,7 +87,7 @@ open class ExpirationJob<ExpiringElement> {
                 block: { [weak self] _ in
                     self?.restart()
                 },
-            )
+            ),
         ]
     }
 

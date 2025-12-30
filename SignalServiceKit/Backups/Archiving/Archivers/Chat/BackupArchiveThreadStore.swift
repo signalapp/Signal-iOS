@@ -17,35 +17,35 @@ public final class BackupArchiveThreadStore {
 
     func enumerateNonStoryThreads(
         tx: DBReadTransaction,
-        block: (TSThread) throws -> Bool
+        block: (TSThread) throws -> Bool,
     ) throws {
         try threadStore.enumerateNonStoryThreads(tx: tx, block: block)
     }
 
     func enumerateGroupThreads(
         tx: DBReadTransaction,
-        block: (TSGroupThread) throws -> Bool
+        block: (TSGroupThread) throws -> Bool,
     ) throws {
         try threadStore.enumerateGroupThreads(tx: tx, block: block)
     }
 
     func enumerateStoryThreads(
         tx: DBReadTransaction,
-        block: (TSPrivateStoryThread) throws -> Bool
+        block: (TSPrivateStoryThread) throws -> Bool,
     ) throws {
         try threadStore.enumerateStoryThreads(tx: tx, block: block)
     }
 
     func fetchOrDefaultAssociatedData(
         for thread: TSThread,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> ThreadAssociatedData {
         return threadStore.fetchOrDefaultAssociatedData(for: thread, tx: tx)
     }
 
     func fetchContactThread(
         recipient: SignalRecipient,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> TSContactThread? {
         return threadStore.fetchContactThread(recipient: recipient, tx: tx)
     }
@@ -53,7 +53,7 @@ public final class BackupArchiveThreadStore {
     // MARK: - Restoring
 
     func createNoteToSelfThread(
-        context: BackupArchive.ChatRestoringContext
+        context: BackupArchive.ChatRestoringContext,
     ) throws -> TSContactThread {
         let thread = TSContactThread(contactAddress: context.recipientContext.localIdentifiers.aciAddress)
         let record = thread.asRecord()
@@ -63,7 +63,7 @@ public final class BackupArchiveThreadStore {
 
     func createContactThread(
         with address: BackupArchive.ContactAddress,
-        context: BackupArchive.ChatRestoringContext
+        context: BackupArchive.ChatRestoringContext,
     ) throws -> TSContactThread {
         let thread = TSContactThread(contactAddress: address.asInteropAddress())
         let record = thread.asRecord()
@@ -74,7 +74,7 @@ public final class BackupArchiveThreadStore {
     func createGroupThread(
         groupModel: TSGroupModelV2,
         isStorySendEnabled: Bool?,
-        context: BackupArchive.RestoringContext
+        context: BackupArchive.RestoringContext,
     ) throws -> TSGroupThread {
         let groupThread = TSGroupThread(groupModel: groupModel)
         switch isStorySendEnabled {
@@ -93,14 +93,14 @@ public final class BackupArchiveThreadStore {
     func insertFullGroupMemberRecords(
         acis: Set<Aci>,
         groupThread: TSGroupThread,
-        context: BackupArchive.RestoringContext
+        context: BackupArchive.RestoringContext,
     ) throws {
         for aci in acis {
             let groupMember = TSGroupMember(
                 address: NormalizedDatabaseRecordAddress(aci: aci),
                 groupThreadId: groupThread.uniqueId,
                 // This gets updated in post frame restore actions.
-                lastInteractionTimestamp: 0
+                lastInteractionTimestamp: 0,
             )
             try groupMember.insert(context.tx.database)
         }
@@ -112,7 +112,7 @@ public final class BackupArchiveThreadStore {
     func update(
         thread: BackupArchive.ChatThread,
         dontNotifyForMentionsIfMuted: Bool,
-        context: BackupArchive.ChatRestoringContext
+        context: BackupArchive.ChatRestoringContext,
     ) throws {
         guard dontNotifyForMentionsIfMuted else {
             // We only need to set if its not the default (false)
@@ -131,14 +131,14 @@ public final class BackupArchiveThreadStore {
             WHERE
                 \(TSThreadSerializer.idColumn.columnName) = ?;
             """,
-            arguments: [TSThreadMentionNotificationMode.never.rawValue, thread.threadRowId]
+            arguments: [TSThreadMentionNotificationMode.never.rawValue, thread.threadRowId],
         )
     }
 
     func markVisible(
         thread: BackupArchive.ChatThread,
         lastInteractionRowId: Int64?,
-        context: BackupArchive.ChatRestoringContext
+        context: BackupArchive.ChatRestoringContext,
     ) throws {
         try context.tx.database.execute(
             sql: """
@@ -149,7 +149,7 @@ public final class BackupArchiveThreadStore {
             WHERE
                 \(TSThreadSerializer.idColumn.columnName) = ?;
             """,
-            arguments: [lastInteractionRowId ?? 0, thread.threadRowId]
+            arguments: [lastInteractionRowId ?? 0, thread.threadRowId],
         )
     }
 
@@ -158,14 +158,14 @@ public final class BackupArchiveThreadStore {
         isArchived: Bool,
         isMarkedUnread: Bool,
         mutedUntilTimestamp: UInt64?,
-        context: BackupArchive.ChatRestoringContext
+        context: BackupArchive.ChatRestoringContext,
     ) throws {
         let threadAssociatedData = ThreadAssociatedData(
             threadUniqueId: thread.uniqueId,
             isArchived: isArchived,
             isMarkedUnread: isMarkedUnread,
             mutedUntilTimestamp: mutedUntilTimestamp ?? 0,
-            audioPlaybackRate: 1
+            audioPlaybackRate: 1,
         )
         try threadAssociatedData.insert(context.tx.database)
     }

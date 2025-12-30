@@ -9,11 +9,13 @@ import Testing
 @testable import SignalServiceKit
 
 struct UncooperativeTimeoutTest {
-    @Test func resolved() async throws {
+    @Test
+    func resolved() async throws {
         try await withUncooperativeTimeout(seconds: .day, operation: {})
     }
 
-    @Test func timeout() async throws {
+    @Test
+    func timeout() async throws {
         var streamContinuation: AsyncStream<CheckedContinuation<Void, Never>>.Continuation! = nil
         let continuationStream = AsyncStream<CheckedContinuation<Void, Never>> { streamContinuation = $0 }
         await #expect(throws: UncooperativeTimeoutError.self) {

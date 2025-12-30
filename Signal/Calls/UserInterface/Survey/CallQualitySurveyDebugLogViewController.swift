@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import Combine
 import SignalServiceKit
 import SignalUI
-import Combine
 
 final class SurveyDebugLogViewController: CallQualitySurveySheetViewController {
     private var sizeChangeSubscription: AnyCancellable?
@@ -22,13 +22,13 @@ final class SurveyDebugLogViewController: CallQualitySurveySheetViewController {
 
         title = OWSLocalizedString(
             "CALL_QUALITY_SURVEY_DEBUG_LOG_TITLE",
-            comment: "Title for the debug log sharing screen in the call quality survey"
+            comment: "Title for the debug log sharing screen in the call quality survey",
         )
 
         let headerLabel = UILabel()
         headerLabel.text = OWSLocalizedString(
             "CALL_QUALITY_SURVEY_DEBUG_LOG_HEADER",
-            comment: "Header text explaining the purpose of sharing debug logs in the call quality survey"
+            comment: "Header text explaining the purpose of sharing debug logs in the call quality survey",
         )
         headerLabel.numberOfLines = 0
         headerLabel.font = .dynamicTypeSubheadline
@@ -39,7 +39,7 @@ final class SurveyDebugLogViewController: CallQualitySurveySheetViewController {
             top: 0,
             leading: 36,
             bottom: 0,
-            trailing: 36
+            trailing: 36,
         ))
         view.addSubview(headerContainer)
         headerContainer.autoPinEdges(toSuperviewEdgesExcludingEdge: .bottom)
@@ -60,20 +60,20 @@ final class SurveyDebugLogViewController: CallQualitySurveySheetViewController {
                 .switch(
                     withText: OWSLocalizedString(
                         "CALL_QUALITY_SURVEY_DEBUG_LOG_TOGGLE",
-                        comment: "Label for the toggle to share debug log in the call quality survey"
+                        comment: "Label for the toggle to share debug log in the call quality survey",
                     ),
                     isOn: { [weak self] in
                         self?.shouldSubmitDebugLog ?? false
                     },
                     actionBlock: { [weak self] control in
                         self?.shouldSubmitDebugLog = control.isOn
-                    }
+                    },
                 ),
             ],
             footerTitle: OWSLocalizedString(
                 "CALL_QUALITY_SURVEY_DEBUG_LOG_FOOTER",
-                comment: "Footer text explaining what debug logs contain in the call quality survey"
-            )
+                comment: "Footer text explaining what debug logs contain in the call quality survey",
+            ),
         )
 
         tableViewController.setContents(OWSTableContents(sections: [section]))
@@ -92,7 +92,7 @@ final class SurveyDebugLogViewController: CallQualitySurveySheetViewController {
         })
         continueButton.configuration = .largePrimary(title: OWSLocalizedString(
             "CALL_QUALITY_SURVEY_SUBMIT_BUTTON",
-            comment: "Button text to submit the call quality survey"
+            comment: "Button text to submit the call quality survey",
         ))
         bottomStackView.addArrangedSubview(continueButton)
 

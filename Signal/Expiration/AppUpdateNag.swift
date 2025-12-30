@@ -10,9 +10,9 @@ class AppUpdateNag {
 
     // MARK: Public
 
-    public static let shared = AppUpdateNag(databaseStorage: SSKEnvironment.shared.databaseStorageRef)
+    static let shared = AppUpdateNag(databaseStorage: SSKEnvironment.shared.databaseStorageRef)
 
-    public func showAppUpgradeNagIfNecessary() {
+    func showAppUpgradeNagIfNecessary() {
         let currentVersion = AppVersionImpl.shared.currentAppVersion
 
         guard let bundleIdentifier = self.bundleIdentifier else {
@@ -98,13 +98,13 @@ class AppUpdateNag {
             return
         }
 
-        guard Date() > Date.init(timeInterval: 21 * .day, since: firstHeardOfNewVersionDate) else {
+        guard Date() > Date(timeInterval: 21 * .day, since: firstHeardOfNewVersionDate) else {
             Logger.info("firstHeardOfNewVersionDate: \(firstHeardOfNewVersionDate) not nagging for new release yet.")
             return
         }
 
         if let lastNagDate = self.lastNagDate {
-            guard Date() > Date.init(timeInterval: 14 * .day, since: lastNagDate) else {
+            guard Date() > Date(timeInterval: 14 * .day, since: lastNagDate) else {
                 Logger.info("lastNagDate: \(lastNagDate) not nagging again so soon.")
                 return
             }

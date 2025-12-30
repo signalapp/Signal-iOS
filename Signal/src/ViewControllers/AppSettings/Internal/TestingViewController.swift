@@ -36,14 +36,16 @@ class TestingViewController: OWSTableViewController2 {
         }
 
         func buildSwitchItem(title: String, testableFlag: TestableFlag) -> OWSTableItem {
-            OWSTableItem.switch(withText: title,
-                                isOn: { testableFlag.get() },
-                                target: testableFlag,
-                                selector: testableFlag.switchSelector)
+            OWSTableItem.switch(
+                withText: title,
+                isOn: { testableFlag.get() },
+                target: testableFlag,
+                selector: testableFlag.switchSelector,
+            )
         }
 
         var testableFlags = DebugFlags.allTestableFlags()
-        testableFlags.sort { (lhs, rhs) -> Bool in
+        testableFlags.sort { lhs, rhs -> Bool in
             lhs.title < rhs.title
         }
 

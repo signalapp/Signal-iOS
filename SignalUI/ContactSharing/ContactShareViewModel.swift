@@ -36,7 +36,7 @@ public class ContactShareViewModel: NSObject {
     private init(
         contactShareRecord: OWSContact,
         existingAvatarAttachment: ReferencedAttachment?,
-        avatarImageData: Data?
+        avatarImageData: Data?,
     ) {
         self.dbRecord = contactShareRecord
         self.existingAvatarAttachment = existingAvatarAttachment
@@ -46,13 +46,13 @@ public class ContactShareViewModel: NSObject {
     public convenience init(
         contactShareRecord: OWSContact,
         parentMessage: TSMessage,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) {
         if
             let parentMessageRowId = parentMessage.sqliteRowId,
             let avatarAttachment = DependenciesBridge.shared.attachmentStore.fetchFirstReferencedAttachment(
                 for: .messageContactAvatar(messageRowId: parentMessageRowId),
-                tx: transaction
+                tx: transaction,
             )?.asReferencedStream
         {
             let avatarImageData: Data?
@@ -65,13 +65,13 @@ public class ContactShareViewModel: NSObject {
             self.init(
                 contactShareRecord: contactShareRecord,
                 existingAvatarAttachment: avatarAttachment,
-                avatarImageData: avatarImageData
+                avatarImageData: avatarImageData,
             )
         } else {
             self.init(
                 contactShareRecord: contactShareRecord,
                 existingAvatarAttachment: nil,
-                avatarImageData: nil
+                avatarImageData: nil,
             )
         }
     }
@@ -83,7 +83,7 @@ public class ContactShareViewModel: NSObject {
     }
 
     public func getAvatarImage(diameter: CGFloat, transaction: DBReadTransaction) -> UIImage? {
-        if let avatarImage = avatarImage {
+        if let avatarImage {
             return avatarImage
         }
 
@@ -95,7 +95,7 @@ public class ContactShareViewModel: NSObject {
         return SSKEnvironment.shared.avatarBuilderRef.defaultAvatarImage(
             personNameComponents: name.components,
             diameterPoints: UInt(diameter),
-            transaction: transaction
+            transaction: transaction,
         )
     }
 
@@ -148,7 +148,7 @@ public class ContactShareViewModel: NSObject {
             emails: emails,
             phoneNumbers: phoneNumbers,
             existingAvatarAttachment: existingAvatarAttachment,
-            avatarImageData: avatarImageData
+            avatarImageData: avatarImageData,
         )
     }
 
@@ -157,7 +157,7 @@ public class ContactShareViewModel: NSObject {
         return ContactShareViewModel(
             contactShareRecord: newDbRecord,
             existingAvatarAttachment: existingAvatarAttachment,
-            avatarImageData: avatarImageData
+            avatarImageData: avatarImageData,
         )
     }
 }

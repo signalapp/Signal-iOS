@@ -7,11 +7,11 @@ import Foundation
 import UIKit
 
 enum ShareActivityUtil {
-    public static func present(
+    static func present(
         activityItems: [Any],
         from viewController: UIViewController,
         sourceView: UIView,
-        completion: @escaping () -> Void = {}
+        completion: @escaping () -> Void = {},
     ) {
         // HACK: `UIActivityViewController` will sometimes dismiss its parent due to an iOS bug
         // (see links below). To get around this, we present an invisible view controller and
@@ -31,7 +31,7 @@ enum ShareActivityUtil {
 
         let shareActivityViewController = UIActivityViewController(
             activityItems: activityItems,
-            applicationActivities: []
+            applicationActivities: [],
         )
         if let popoverPresentationController = shareActivityViewController.popoverPresentationController {
             popoverPresentationController.sourceView = sourceView
@@ -45,7 +45,7 @@ enum ShareActivityUtil {
             .postToTencentWeibo,
             .postToTwitter,
             .postToVimeo,
-            .postToWeibo
+            .postToWeibo,
         ]
         shareActivityViewController.completionWithItemsHandler = { _, _, _, _ in
             // If we're sharing to another app and that app crashes, we sometimes fail to dismiss

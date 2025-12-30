@@ -21,34 +21,6 @@ public struct DatabaseChangesSnapshot: DatabaseChanges {
 
     public let lastError: Error?
 
-    init(
-        threadUniqueIds: Set<UniqueId>,
-        threadUniqueIdsForChatListUpdate: Set<UniqueId>,
-        interactionUniqueIds: Set<UniqueId>,
-        storyMessageUniqueIds: Set<UniqueId>,
-        storyMessageRowIds: Set<RowId>,
-        interactionDeletedUniqueIds: Set<UniqueId>,
-        storyMessageDeletedUniqueIds: Set<UniqueId>,
-        tableNames: Set<String>,
-        tableRowIds: [String: Set<Int64>],
-        didUpdateInteractions: Bool,
-        didUpdateThreads: Bool,
-        lastError: Error?
-    ) {
-        self.threadUniqueIds = threadUniqueIds
-        self.threadUniqueIdsForChatListUpdate = threadUniqueIdsForChatListUpdate
-        self.interactionUniqueIds = interactionUniqueIds
-        self.storyMessageUniqueIds = storyMessageUniqueIds
-        self.storyMessageRowIds = storyMessageRowIds
-        self.interactionDeletedUniqueIds = interactionDeletedUniqueIds
-        self.storyMessageDeletedUniqueIds = storyMessageDeletedUniqueIds
-        self.tableNames = tableNames
-        self.tableRowIds = tableRowIds
-        self.didUpdateInteractions = didUpdateInteractions
-        self.didUpdateThreads = didUpdateThreads
-        self.lastError = lastError
-    }
-
     public var isEmpty: Bool {
         return
             threadUniqueIds.isEmpty &&

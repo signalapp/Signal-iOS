@@ -41,7 +41,7 @@ class StoryContextMenuGenerator {
 
     private(set) var isDisplayingFollowup = false {
         didSet {
-            if oldValue && !isDisplayingFollowup {
+            if oldValue, !isDisplayingFollowup {
                 delegate?.storyContextMenuDidFinishDisplayingFollowups()
             }
         }
@@ -52,10 +52,10 @@ class StoryContextMenuGenerator {
         self.delegate = delegate
     }
 
-    public func nativeContextMenuActions(
+    func nativeContextMenuActions(
         for model: StoryViewModel,
         spoilerState: SpoilerRenderState,
-        sourceView: @escaping () -> UIView?
+        sourceView: @escaping () -> UIView?,
     ) -> [UIAction] {
         return SSKEnvironment.shared.databaseStorageRef.read {
             let thread = model.context.thread(transaction: $0)
@@ -65,12 +65,12 @@ class StoryContextMenuGenerator {
                 attachment: model.latestMessageAttachment,
                 spoilerState: spoilerState,
                 sourceView: sourceView,
-                transaction: $0
+                transaction: $0,
             )
         }
     }
 
-    public func nativeContextMenuActions(
+    func nativeContextMenuActions(
         for message: StoryMessage,
         in thread: TSThread?,
         attachment: StoryThumbnailView.Attachment,
@@ -78,7 +78,7 @@ class StoryContextMenuGenerator {
         sourceView: @escaping () -> UIView?,
         hideSaveAction: Bool = false,
         onlyRenderMyStories: Bool = false,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> [UIAction] {
         return [
             deleteAction(for: message, in: thread),
@@ -87,12 +87,12 @@ class StoryContextMenuGenerator {
             hideSaveAction ? nil : saveAction(message: message, attachment: attachment, spoilerState: spoilerState),
             forwardAction(message: message),
             shareAction(message: message, attachment: attachment, sourceView: sourceView),
-            goToChatAction(thread: thread)
+            goToChatAction(thread: thread),
         ].compactMap({ $0?.asNativeContextMenuAction() })
     }
 
-    public func hideTableRowContextualAction(
-        for model: StoryViewModel
+    func hideTableRowContextualAction(
+        for model: StoryViewModel,
     ) -> UIContextualAction? {
         guard
             let action = SSKEnvironment.shared.databaseStorageRef.read(block: { transaction -> GenericContextAction? in
@@ -105,9 +105,9 @@ class StoryContextMenuGenerator {
         return action.asContextualAction(backgroundColor: backgroundColor)
     }
 
-    public func deleteTableRowContextualAction(
+    func deleteTableRowContextualAction(
         for message: StoryMessage,
-        thread: TSThread
+        thread: TSThread,
     ) -> UIContextualAction? {
         guard let action = deleteAction(for: message, in: thread) else {
             return nil
@@ -115,8 +115,8 @@ class StoryContextMenuGenerator {
         return action.asContextualAction(backgroundColor: .ows_accentRed)
     }
 
-    public func goToChatContextualAction(
-        for model: StoryViewModel
+    func goToChatContextualAction(
+        for model: StoryViewModel,
     ) -> UIContextualAction? {
         guard let thread = SSKEnvironment.shared.databaseStorageRef.read(block: { model.context.thread(transaction: $0) }) else {
             return nil
@@ -124,8 +124,8 @@ class StoryContextMenuGenerator {
         return goToChatContextualAction(thread: thread)
     }
 
-    public func goToChatContextualAction(
-        thread: TSThread
+    func goToChatContextualAction(
+        thread: TSThread,
     ) -> UIContextualAction? {
         guard let action = goToChatAction(thread: thread) else {
             return nil
@@ -141,7 +141,7 @@ extension StoryContextMenuGenerator {
     private func hideAction(
         for message: StoryMessage,
         useShortTitle: Bool = false,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> GenericContextAction? {
         if
             message.authorAddress.isLocalAddress,
@@ -164,12 +164,12 @@ extension StoryContextMenuGenerator {
             if useShortTitle {
                 title = OWSLocalizedString(
                     "STORIES_UNHIDE_STORY_ACTION_SHORT",
-                    comment: "Short context menu action to unhide the selected story"
+                    comment: "Short context menu action to unhide the selected story",
                 )
             } else {
                 title = OWSLocalizedString(
                     "STORIES_UNHIDE_STORY_ACTION",
-                    comment: "Context menu action to unhide the selected story"
+                    comment: "Context menu action to unhide the selected story",
                 )
             }
             icon = .contextMenuSelect
@@ -178,12 +178,12 @@ extension StoryContextMenuGenerator {
             if useShortTitle {
                 title = OWSLocalizedString(
                     "STORIES_HIDE_STORY_ACTION_SHORT",
-                    comment: "Short context menu action to hide the selected story"
+                    comment: "Short context menu action to hide the selected story",
                 )
             } else {
                 title = OWSLocalizedString(
                     "STORIES_HIDE_STORY_ACTION",
-                    comment: "Context menu action to hide the selected story"
+                    comment: "Context menu action to hide the selected story",
                 )
             }
             icon = .contextMenuXCircle
@@ -195,7 +195,7 @@ extension StoryContextMenuGenerator {
             contextualActionImage: contextualActionImage,
             handler: { [weak self] completion in
                 self?.showHidingActionSheetIfNeeded(for: message, associatedData: associatedData, shouldHide: !isHidden, completion: completion)
-            }
+            },
         )
     }
 
@@ -205,7 +205,7 @@ extension StoryContextMenuGenerator {
         for message: StoryMessage,
         associatedData: StoryContextAssociatedData,
         shouldHide: Bool,
-        completion: @escaping (Bool) -> Void
+        completion: @escaping (Bool) -> Void,
     ) {
         guard shouldHide else {
             // No need to show anything if unhiding, hide right away
@@ -219,12 +219,12 @@ extension StoryContextMenuGenerator {
         if shouldHide {
             actionTitle = OWSLocalizedString(
                 "STORIES_HIDE_STORY_ACTION",
-                comment: "Context menu action to hide the selected story"
+                comment: "Context menu action to hide the selected story",
             )
         } else {
             actionTitle = OWSLocalizedString(
                 "STORIES_UNHIDE_STORY_ACTION",
-                comment: "Context menu action to unhide the selected story"
+                comment: "Context menu action to unhide the selected story",
             )
         }
 
@@ -242,11 +242,11 @@ extension StoryContextMenuGenerator {
                 }
                 strongSelf.setHideStateAndShowToast(for: message, associatedData: associatedData, shouldHide: shouldHide)
                 completion(true)
-            }
+            },
         ))
         actionSheet.addAction(ActionSheetAction(
             title: CommonStrings.cancelButton,
-            style: .cancel
+            style: .cancel,
         ) { [weak self] _ in
             self?.isDisplayingFollowup = false
             completion(false)
@@ -260,17 +260,17 @@ extension StoryContextMenuGenerator {
         return ActionSheetController(
             title: OWSLocalizedString(
                 "STORIES_HIDE_STORY_ACTION_SHEET_TITLE",
-                comment: "Title asking the user if they are sure they want to hide stories from another user"
+                comment: "Title asking the user if they are sure they want to hide stories from another user",
             ),
             message: loadThreadDisplayNameWithSneakyTransaction(context: context).map {
                 String(
                     format: OWSLocalizedString(
                         "STORIES_HIDE_STORY_ACTION_SHEET_MESSAGE",
-                        comment: "Message asking the user if they are sure they want to hide stories from {{other user's name}}"
+                        comment: "Message asking the user if they are sure they want to hide stories from {{other user's name}}",
                     ),
-                    $0
+                    $0,
                 )
-            }
+            },
         )
     }
 
@@ -283,12 +283,12 @@ extension StoryContextMenuGenerator {
                 if authorAci == StoryMessage.systemStoryAuthor {
                     return OWSLocalizedString(
                         "SYSTEM_ADDRESS_NAME",
-                        comment: "Name to display for the 'system' sender, e.g. for release notes and the onboarding story"
+                        comment: "Name to display for the 'system' sender, e.g. for release notes and the onboarding story",
                     )
                 }
                 return SSKEnvironment.shared.contactManagerRef.displayName(
                     for: SignalServiceAddress(authorAci),
-                    tx: transaction
+                    tx: transaction,
                 ).resolvedValue(useShortNameIfAvailable: true)
             case .privateStory:
                 owsFailDebug("Unexpectedly had private story when hiding")
@@ -305,7 +305,7 @@ extension StoryContextMenuGenerator {
     private func setHideStateAndShowToast(
         for message: StoryMessage,
         associatedData: StoryContextAssociatedData,
-        shouldHide: Bool
+        shouldHide: Bool,
     ) {
         SSKEnvironment.shared.databaseStorageRef.write { transaction in
             guard !message.authorAddress.isSystemStoryAddress else {
@@ -319,12 +319,12 @@ extension StoryContextMenuGenerator {
         if shouldHide {
             toastText = OWSLocalizedString(
                 "STORIES_HIDE_STORY_CONFIRMATION_TOAST",
-                comment: "Toast shown when a story is successfuly hidden"
+                comment: "Toast shown when a story is successfuly hidden",
             )
         } else {
             toastText = OWSLocalizedString(
                 "STORIES_UNHIDE_STORY_CONFIRMATION_TOAST",
-                comment: "Toast shown when a story is successfuly unhidden"
+                comment: "Toast shown when a story is successfuly unhidden",
             )
         }
         if delegate?.storyContextMenuDidUpdateHiddenState(message, isHidden: shouldHide) ?? true {
@@ -341,14 +341,14 @@ extension StoryContextMenuGenerator {
         for message: StoryMessage,
         in thread: TSThread?,
         onlyRenderMyStories: Bool,
-        spoilerState: SpoilerRenderState
+        spoilerState: SpoilerRenderState,
     ) -> GenericContextAction? {
-        guard let thread = thread else { return nil }
+        guard let thread else { return nil }
 
         return .init(
             title: OWSLocalizedString(
                 "STORIES_INFO_ACTION",
-                comment: "Context menu action to view metadata about the story"
+                comment: "Context menu action to view metadata about the story",
             ),
             icon: .contextMenuInfo,
             handler: { [weak self] completion in
@@ -356,10 +356,10 @@ extension StoryContextMenuGenerator {
                     message,
                     in: thread,
                     onlyRenderMyStories: onlyRenderMyStories,
-                    spoilerState: spoilerState
+                    spoilerState: spoilerState,
                 )
                 completion(true)
-            }
+            },
         )
     }
 
@@ -367,7 +367,7 @@ extension StoryContextMenuGenerator {
         _ message: StoryMessage,
         in thread: TSThread,
         onlyRenderMyStories: Bool,
-        spoilerState: SpoilerRenderState
+        spoilerState: SpoilerRenderState,
     ) {
         if presentingController is StoryContextViewController {
             isDisplayingFollowup = true
@@ -382,7 +382,7 @@ extension StoryContextMenuGenerator {
                 spoilerState: spoilerState,
                 loadMessage: message,
                 action: .presentInfo,
-                onlyRenderMyStories: onlyRenderMyStories
+                onlyRenderMyStories: onlyRenderMyStories,
             )
             presentingController?.present(vc, animated: true)
         }
@@ -394,10 +394,10 @@ extension StoryContextMenuGenerator {
 extension StoryContextMenuGenerator {
 
     private func goToChatAction(
-        thread: TSThread?
+        thread: TSThread?,
     ) -> GenericContextAction? {
         guard
-            let thread = thread,
+            let thread,
             !(thread is TSPrivateStoryThread)
         else {
             return nil
@@ -406,14 +406,14 @@ extension StoryContextMenuGenerator {
         return .init(
             title: OWSLocalizedString(
                 "STORIES_GO_TO_CHAT_ACTION",
-                comment: "Context menu action to open the chat associated with the selected story"
+                comment: "Context menu action to open the chat associated with the selected story",
             ),
             icon: .contextMenuOpenInChat,
             contextualActionImage: "arrow-square-upright-fill",
             handler: { completion in
                 SignalApp.shared.presentConversationForThread(threadUniqueId: thread.uniqueId, action: .compose, animated: true)
                 completion(true)
-            }
+            },
         )
     }
 }
@@ -424,13 +424,13 @@ extension StoryContextMenuGenerator {
 
     private func deleteAction(
         for message: StoryMessage,
-        in thread: TSThread?
+        in thread: TSThread?,
     ) -> GenericContextAction? {
         guard message.authorAddress.isLocalAddress else {
             // Can only delete one's own stories.
             return nil
         }
-        guard let thread = thread else {
+        guard let thread else {
             owsFailDebug("Cannot delete a message without specifying its thread!")
             return nil
         }
@@ -439,7 +439,7 @@ extension StoryContextMenuGenerator {
             style: .destructive,
             title: OWSLocalizedString(
                 "STORIES_DELETE_STORY_ACTION",
-                comment: "Context menu action to delete the selected story"
+                comment: "Context menu action to delete the selected story",
             ),
             icon: .contextMenuDelete,
             contextualActionImage: "trash-fill",
@@ -468,9 +468,9 @@ extension StoryContextMenuGenerator {
                     didDelete: { [weak self] success in
                         self?.isDisplayingFollowup = false
                         completion(success)
-                    }
+                    },
                 )
-            }
+            },
         )
     }
 
@@ -479,13 +479,13 @@ extension StoryContextMenuGenerator {
         in thread: TSThread,
         from presentingController: UIViewController,
         willDelete: @escaping (@escaping () -> Void) -> Void,
-        didDelete: @escaping (Bool) -> Void
+        didDelete: @escaping (Bool) -> Void,
     ) {
         let actionSheet = ActionSheetController(
             message: OWSLocalizedString(
                 "STORIES_DELETE_STORY_ACTION_SHEET_TITLE",
-                comment: "Title asking the user if they are sure they want to delete their story"
-            )
+                comment: "Title asking the user if they are sure they want to delete their story",
+            ),
         )
         actionSheet.addAction(.init(title: CommonStrings.deleteButton, style: .destructive, handler: { _ in
             willDelete {
@@ -497,7 +497,7 @@ extension StoryContextMenuGenerator {
         }))
         actionSheet.addAction(ActionSheetAction(
             title: CommonStrings.cancelButton,
-            style: .cancel
+            style: .cancel,
         ) { _ in
             didDelete(false)
         })
@@ -512,7 +512,7 @@ extension StoryContextMenuGenerator {
     private func saveAction(
         message: StoryMessage,
         attachment: StoryThumbnailView.Attachment,
-        spoilerState: SpoilerRenderState
+        spoilerState: SpoilerRenderState,
     ) -> GenericContextAction? {
         guard
             message.authorAddress.isLocalAddress
@@ -526,13 +526,13 @@ extension StoryContextMenuGenerator {
         return .init(
             title: OWSLocalizedString(
                 "STORIES_SAVE_STORY_ACTION",
-                comment: "Context menu action to save the selected story"
+                comment: "Context menu action to save the selected story",
             ),
             icon: .contextMenuSave,
             handler: { completion in
                 attachment.save(interactionIdentifier: .fromStoryMessage(message), spoilerState: spoilerState)
                 completion(true)
-            }
+            },
         )
     }
 }
@@ -565,7 +565,7 @@ extension StoryThumbnailView.Attachment {
             let view = TextAttachmentView(
                 attachment: attachment,
                 interactionIdentifier: interactionIdentifier,
-                spoilerState: spoilerState
+                spoilerState: spoilerState,
             )
             view.frame.size = CGSize(width: 375, height: 666)
             view.layoutIfNeeded()
@@ -583,7 +583,7 @@ extension StoryThumbnailView.Attachment {
 extension StoryContextMenuGenerator: ForwardMessageDelegate {
 
     private func forwardAction(
-        message: StoryMessage
+        message: StoryMessage,
     ) -> GenericContextAction? {
         guard message.authorAddress.isLocalAddress else {
             // Can only forward one's own stories.
@@ -592,12 +592,12 @@ extension StoryContextMenuGenerator: ForwardMessageDelegate {
         return .init(
             title: OWSLocalizedString(
                 "STORIES_FORWARD_STORY_ACTION",
-                comment: "Context menu action to forward the selected story"
+                comment: "Context menu action to forward the selected story",
             ),
             icon: .contextMenuForward,
             handler: { [weak self] completion in
                 guard
-                    let self = self,
+                    let self,
                     let presentingController = self.presentingController
                 else {
                     completion(false)
@@ -608,14 +608,14 @@ extension StoryContextMenuGenerator: ForwardMessageDelegate {
                 // Its not actually complete, but the action is going through successfully, so for the sake of
                 // UIContextualAction we count it as a success.
                 completion(true)
-            }
+            },
         )
     }
 
     func forwardMessageFlowDidComplete(items: [ForwardMessageItem], recipientThreads: [TSThread]) {
         AssertIsOnMainThread()
 
-        guard let presentingController = presentingController else {
+        guard let presentingController else {
             return
         }
 
@@ -623,7 +623,7 @@ extension StoryContextMenuGenerator: ForwardMessageDelegate {
             ForwardMessageViewController.finalizeForward(
                 items: items,
                 recipientThreads: recipientThreads,
-                fromViewController: presentingController
+                fromViewController: presentingController,
             )
             self.isDisplayingFollowup = false
         }
@@ -643,7 +643,7 @@ extension StoryContextMenuGenerator {
     private func shareAction(
         message: StoryMessage,
         attachment: StoryThumbnailView.Attachment,
-        sourceView: @escaping () -> UIView?
+        sourceView: @escaping () -> UIView?,
     ) -> GenericContextAction? {
         guard message.authorAddress.isLocalAddress else {
             // Can only share one's own stories.
@@ -652,7 +652,7 @@ extension StoryContextMenuGenerator {
         return .init(
             title: OWSLocalizedString(
                 "STORIES_SHARE_STORY_ACTION",
-                comment: "Context menu action to share the selected story"
+                comment: "Context menu action to share the selected story",
             ),
             icon: .contextMenuShare,
             handler: { [weak self] completion in
@@ -703,7 +703,7 @@ extension StoryContextMenuGenerator {
                     owsFailDebug("Unexpectedly missing attachment for story.")
                     completion(false)
                 }
-            }
+            },
         )
     }
 }
@@ -724,7 +724,7 @@ private struct GenericContextAction {
         title: String,
         icon: ThemeIcon,
         contextualActionImage: String? = nil,
-        handler: @escaping Handler
+        handler: @escaping Handler,
     ) {
         self.style = style
         self.title = title
@@ -757,7 +757,7 @@ private struct GenericContextAction {
             attributes: attributes,
             handler: { _ in
                 handler({ _ in })
-            }
+            },
         )
     }
 
@@ -774,7 +774,7 @@ private struct GenericContextAction {
             style: style,
             color: backgroundColor,
             image: contextualActionImage ?? Theme.iconName(icon),
-            title: title
+            title: title,
         ) { completion in
             handler(completion)
         }

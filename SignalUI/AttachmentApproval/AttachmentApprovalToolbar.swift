@@ -46,13 +46,14 @@ class AttachmentApprovalToolbar: UIView {
 
         return view
     }()
+
     let buttonAddMedia: UIButton = RoundMediaButton(
         image: UIImage(imageLiteralResourceName: "plus-square-28"),
-        backgroundStyle: .blur
+        backgroundStyle: .blur,
     )
     let buttonViewOnce: UIButton = RoundMediaButton(
         image: UIImage(imageLiteralResourceName: "view_once-28"),
-        backgroundStyle: .blur
+        backgroundStyle: .blur,
     )
     // Contains message input field and a button to finish editing.
     let attachmentTextToolbar: AttachmentTextToolbar
@@ -63,14 +64,14 @@ class AttachmentApprovalToolbar: UIView {
     private let mediaToolbar = MediaToolbar()
 
     private lazy var opaqueContentView: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: [ attachmentTextToolbar, mediaToolbar ])
+        let stackView = UIStackView(arrangedSubviews: [attachmentTextToolbar, mediaToolbar])
         stackView.axis = .vertical
         stackView.preservesSuperviewLayoutMargins = true
         return stackView
     }()
 
     private lazy var containerStackView: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: [ opaqueContentView ])
+        let stackView = UIStackView(arrangedSubviews: [opaqueContentView])
         stackView.axis = .vertical
         stackView.preservesSuperviewLayoutMargins = true
         return stackView
@@ -145,12 +146,12 @@ class AttachmentApprovalToolbar: UIView {
 
     private var supplementaryViewContainer: UIView?
     func set(supplementaryView: UIView?) {
-        if let supplementaryViewContainer = supplementaryViewContainer {
+        if let supplementaryViewContainer {
             supplementaryViewContainer.removeFromSuperview()
             containerStackView.removeArrangedSubview(supplementaryViewContainer)
             self.supplementaryViewContainer = nil
         }
-        guard let supplementaryView = supplementaryView else {
+        guard let supplementaryView else {
             return
         }
 
@@ -195,7 +196,7 @@ class AttachmentApprovalToolbar: UIView {
         mediaToolbar.setIsMediaQualityHigh(enabled: configuration.isMediaHighQualityEnabled, animated: animated)
 
         let availableButtons: MediaToolbar.AvailableButtons = {
-            guard let currentAttachmentItem = currentAttachmentItem else {
+            guard let currentAttachmentItem else {
                 return []
             }
             var buttons: MediaToolbar.AvailableButtons = []
@@ -257,8 +258,8 @@ class AttachmentApprovalToolbar: UIView {
     // an intrinsicContentSize. Specifying CGSize.zero causes the height to be determined by autolayout.
     override var intrinsicContentSize: CGSize { .zero }
 
-    public var hasFirstResponder: Bool {
-        return (isFirstResponder || attachmentTextToolbar.textView.isFirstResponder)
+    var hasFirstResponder: Bool {
+        return isFirstResponder || attachmentTextToolbar.textView.isFirstResponder
     }
 }
 
@@ -295,7 +296,7 @@ extension AttachmentApprovalToolbar {
     // The tooltip lies outside this view's bounds, so we
     // need to special-case the hit testing so that it can
     // intercept touches within its bounds.
-    public override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
+    override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
         if let viewOnceTooltip = self.viewOnceTooltip {
             let tooltipFrame = convert(viewOnceTooltip.bounds, from: viewOnceTooltip)
             if tooltipFrame.contains(point) {
@@ -309,7 +310,7 @@ extension AttachmentApprovalToolbar {
         guard !configuration.isMediaStripVisible else {
             return false
         }
-        guard !configuration.isViewOnceOn && configuration.canToggleViewOnce else {
+        guard !configuration.isViewOnceOn, configuration.canToggleViewOnce else {
             return false
         }
         guard !SSKEnvironment.shared.preferencesRef.wasViewOnceTooltipShown else {
@@ -378,12 +379,12 @@ private class MediaToolbar: UIView {
     struct AvailableButtons: OptionSet {
         let rawValue: Int
 
-        static let pen  = AvailableButtons(rawValue: 1 << 0)
+        static let pen = AvailableButtons(rawValue: 1 << 0)
         static let crop = AvailableButtons(rawValue: 1 << 1)
         static let save = AvailableButtons(rawValue: 1 << 2)
         static let mediaQuality = AvailableButtons(rawValue: 1 << 3)
 
-        static let all: AvailableButtons = [ .pen, .crop, .save, .mediaQuality ]
+        static let all: AvailableButtons = [.pen, .crop, .save, .mediaQuality]
     }
 
     func set(availableButtons: AvailableButtons, animated: Bool) {
@@ -398,8 +399,14 @@ private class MediaToolbar: UIView {
 
         preservesSuperviewLayoutMargins = true
 
-        let stackView = UIStackView(arrangedSubviews: [ penToolButton, cropToolButton, mediaQualityButton,
-                                                        saveMediaButton, UIView.transparentSpacer(), sendButton ])
+        let stackView = UIStackView(arrangedSubviews: [
+            penToolButton,
+            cropToolButton,
+            mediaQualityButton,
+            saveMediaButton,
+            UIView.transparentSpacer(),
+            sendButton,
+        ])
         stackView.spacing = 4
         addSubview(stackView)
         stackView.autoPinLeadingToSuperviewMargin(withInset: -penToolButton.layoutMargins.leading)
@@ -419,28 +426,28 @@ private class MediaToolbar: UIView {
 
     // MARK: - Layout
 
-    static private let buttonBackgroundColor = RoundMediaButton.defaultBackgroundColor
+    private static let buttonBackgroundColor = RoundMediaButton.defaultBackgroundColor
     let penToolButton: UIButton = RoundMediaButton(
         image: UIImage(imageLiteralResourceName: "brush-pen-28"),
-        backgroundStyle: .solid(buttonBackgroundColor)
+        backgroundStyle: .solid(buttonBackgroundColor),
     )
     let cropToolButton: UIButton = RoundMediaButton(
         image: UIImage(imageLiteralResourceName: "crop-rotate-28"),
-        backgroundStyle: .solid(buttonBackgroundColor)
+        backgroundStyle: .solid(buttonBackgroundColor),
     )
     lazy var mediaQualityButton: UIButton = RoundMediaButton(
         image: MediaToolbar.imageMediaQualityStandard,
-        backgroundStyle: .solid(MediaToolbar.buttonBackgroundColor)
+        backgroundStyle: .solid(MediaToolbar.buttonBackgroundColor),
     )
     let saveMediaButton: UIButton = RoundMediaButton(
         image: UIImage(imageLiteralResourceName: "save-28"),
-        backgroundStyle: .solid(buttonBackgroundColor)
+        backgroundStyle: .solid(buttonBackgroundColor),
     )
     let sendButton: UIButton = {
         let button = UIButton(type: .system)
         button.setImage(
             UIImage(imageLiteralResourceName: AttachmentApprovalToolbar.Configuration.DoneButtonIcon.send.rawValue),
-            for: .normal
+            for: .normal,
         )
         button.ows_contentEdgeInsets = UIEdgeInsets(margin: UIDevice.current.isNarrowerThanIPhone6 ? 4 : 8)
         button.accessibilityLabel = MessageStrings.sendButton

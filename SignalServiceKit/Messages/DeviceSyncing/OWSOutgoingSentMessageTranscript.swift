@@ -11,7 +11,7 @@ extension OWSOutgoingSentMessageTranscript {
     @objc(prepareDataSyncMessageContentWithSentBuilder:tx:)
     func prepareDataSyncMessageContent(
         with sentBuilder: SSKProtoSyncMessageSentBuilder,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> Bool {
 
         let dataMessage: SSKProtoDataMessage
@@ -35,7 +35,7 @@ extension OWSOutgoingSentMessageTranscript {
                     do {
                         let groupContextV2 = try GroupsV2Protos.buildGroupContextProto(
                             groupModel: groupModel,
-                            groupChangeProtoData: nil
+                            groupChangeProtoData: nil,
                         )
                         dataBuilder.setGroupV2(groupContextV2)
                     } catch {
@@ -67,7 +67,7 @@ extension OWSOutgoingSentMessageTranscript {
     @objc(prepareUnidentifiedStatusSyncMessageContentWithSentBuilder:tx:)
     func prepareUnidentifiedStatusSyncMessageContent(
         with sentBuilder: SSKProtoSyncMessageSentBuilder,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) {
         for recipientAddress in message.sentRecipientAddresses() {
             guard let recipientState = message.recipientState(for: recipientAddress) else {

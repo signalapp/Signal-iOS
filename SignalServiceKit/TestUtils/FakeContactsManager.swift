@@ -23,7 +23,7 @@ public class FakeContactsManager: ContactManager {
                     nameComponents.familyName = signalAccount.familyName
                     return .systemContactName(DisplayName.SystemContactName(
                         nameComponents: nameComponents,
-                        multipleAccountLabel: nil
+                        multipleAccountLabel: nil,
                     ))
                 }
                 return .phoneNumber(phoneNumber)

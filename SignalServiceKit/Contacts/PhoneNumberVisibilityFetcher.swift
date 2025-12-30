@@ -22,7 +22,7 @@ private func _isPhoneNumberVisible(
     for recipient: SignalRecipient,
     localAci: () -> Aci?,
     isPhoneNumberShared: (Aci) -> Bool,
-    isSystemContact: (_ phoneNumber: String) -> Bool
+    isSystemContact: (_ phoneNumber: String) -> Bool,
 ) -> Bool {
     // If there's no ACI, the phone number can't be hidden. (You hide a number
     // via your encrypted profile, and that only exists for ACIs.)
@@ -40,7 +40,7 @@ public final class PhoneNumberVisibilityFetcherImpl: PhoneNumberVisibilityFetche
     init(
         contactsManager: any ContactManager,
         tsAccountManager: any TSAccountManager,
-        userProfileStore: any UserProfileStore
+        userProfileStore: any UserProfileStore,
     ) {
         self.contactsManager = contactsManager
         self.tsAccountManager = tsAccountManager
@@ -59,7 +59,7 @@ public final class PhoneNumberVisibilityFetcherImpl: PhoneNumberVisibilityFetche
             },
             isSystemContact: {
                 contactsManager.fetchSignalAccount(forPhoneNumber: $0, transaction: tx) != nil
-            }
+            },
         )
     }
 
@@ -67,11 +67,11 @@ public final class PhoneNumberVisibilityFetcherImpl: PhoneNumberVisibilityFetche
         return BulkPhoneNumberVisibilityFetcher(
             localAci: tsAccountManager.localIdentifiers(tx: tx)?.aci,
             acisWithHiddenPhoneNumbers: Set(
-                try UserProfileFinder().fetchAcisWithHiddenPhoneNumbers(tx: tx)
+                try UserProfileFinder().fetchAcisWithHiddenPhoneNumbers(tx: tx),
             ),
             phoneNumbersWithSystemContacts: Set(
-                try SignalAccountFinder().fetchPhoneNumbers(tx: tx)
-            )
+                try SignalAccountFinder().fetchPhoneNumbers(tx: tx),
+            ),
         )
     }
 }
@@ -84,7 +84,7 @@ public final class BulkPhoneNumberVisibilityFetcher {
     init(
         localAci: Aci?,
         acisWithHiddenPhoneNumbers: Set<Aci>,
-        phoneNumbersWithSystemContacts: Set<String>
+        phoneNumbersWithSystemContacts: Set<String>,
     ) {
         self.localAci = localAci
         self.acisWithHiddenPhoneNumbers = acisWithHiddenPhoneNumbers
@@ -96,7 +96,7 @@ public final class BulkPhoneNumberVisibilityFetcher {
             for: recipient,
             localAci: { localAci },
             isPhoneNumberShared: { !acisWithHiddenPhoneNumbers.contains($0) },
-            isSystemContact: { phoneNumbersWithSystemContacts.contains($0) }
+            isSystemContact: { phoneNumbersWithSystemContacts.contains($0) },
         )
     }
 }
@@ -116,7 +116,7 @@ final class MockPhoneNumberVisibilityFetcher: PhoneNumberVisibilityFetcher {
         return BulkPhoneNumberVisibilityFetcher(
             localAci: localAci,
             acisWithHiddenPhoneNumbers: acisWithHiddenPhoneNumbers,
-            phoneNumbersWithSystemContacts: phoneNumbersWithSystemContacts
+            phoneNumbersWithSystemContacts: phoneNumbersWithSystemContacts,
         )
     }
 }

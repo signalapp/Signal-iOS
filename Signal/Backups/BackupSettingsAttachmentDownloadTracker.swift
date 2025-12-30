@@ -36,7 +36,7 @@ final class BackupSettingsAttachmentDownloadTracker {
             self.progress = progress
         }
 
-        static func == (lhs: DownloadUpdate, rhs: DownloadUpdate) -> Bool {
+        static func ==(lhs: DownloadUpdate, rhs: DownloadUpdate) -> Bool {
             return lhs.state == rhs.state && lhs.percentageDownloaded == rhs.percentageDownloaded
         }
     }
@@ -57,7 +57,7 @@ final class BackupSettingsAttachmentDownloadTracker {
             let tracker = Tracker(
                 backupAttachmentDownloadQueueStatusReporter: backupAttachmentDownloadQueueStatusReporter,
                 backupAttachmentDownloadProgress: backupAttachmentDownloadProgress,
-                continuation: continuation
+                continuation: continuation,
             )
 
             tracker.start()
@@ -99,7 +99,7 @@ private class Tracker {
     init(
         backupAttachmentDownloadQueueStatusReporter: BackupAttachmentDownloadQueueStatusReporter,
         backupAttachmentDownloadProgress: BackupAttachmentDownloadProgress,
-        continuation: AsyncStream<DownloadUpdate?>.Continuation
+        continuation: AsyncStream<DownloadUpdate?>.Continuation,
     ) {
         self.backupAttachmentDownloadQueueStatusReporter = backupAttachmentDownloadQueueStatusReporter
         self.backupAttachmentDownloadProgress = backupAttachmentDownloadProgress
@@ -141,10 +141,10 @@ private class Tracker {
     @MainActor
     private func observeDownloadQueueStatus() -> (
         NotificationCenter.Observer,
-        BackupAttachmentDownloadQueueStatus
+        BackupAttachmentDownloadQueueStatus,
     ) {
         let observer = NotificationCenter.default.addObserver(
-            name: .backupAttachmentDownloadQueueStatusDidChange(mode: .fullsize)
+            name: .backupAttachmentDownloadQueueStatusDidChange(mode: .fullsize),
         ) { [weak self] _ in
             guard let self else { return }
 
@@ -153,7 +153,7 @@ private class Tracker {
 
         return (
             observer,
-            backupAttachmentDownloadQueueStatusReporter.currentStatus(for: .fullsize)
+            backupAttachmentDownloadQueueStatusReporter.currentStatus(for: .fullsize),
         )
     }
 
@@ -211,7 +211,7 @@ private class Tracker {
             case .lowDiskSpace:
                 return .outOfDiskSpace(bytesRequired: max(
                     lastReportedDownloadProgress.remainingUnitCount,
-                    backupAttachmentDownloadQueueStatusReporter.minimumRequiredDiskSpaceToCompleteDownloads()
+                    backupAttachmentDownloadQueueStatusReporter.minimumRequiredDiskSpaceToCompleteDownloads(),
                 ))
             case .empty, .notRegisteredAndReady, .appBackgrounded:
                 return nil
@@ -221,7 +221,7 @@ private class Tracker {
         if let downloadUpdateState {
             streamContinuation.yield(DownloadUpdate(
                 state: downloadUpdateState,
-                progress: lastReportedDownloadProgress
+                progress: lastReportedDownloadProgress,
             ))
         } else {
             streamContinuation.yield(nil)

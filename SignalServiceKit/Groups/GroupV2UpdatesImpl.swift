@@ -67,8 +67,8 @@ public class GroupV2UpdatesImpl: GroupV2Updates {
             var groupInfoToRefresh: GroupInfo?
             TSGroupThread.anyEnumerate(
                 transaction: transaction,
-                batched: true
-            ) { (thread, stop) in
+                batched: true,
+            ) { thread, stop in
                 guard
                     let groupThread = thread as? TSGroupThread,
                     let groupModel = groupThread.groupModel as? TSGroupModelV2,
@@ -82,16 +82,18 @@ public class GroupV2UpdatesImpl: GroupV2Updates {
                 }
 
                 let storeKey = groupId.serialize().toHex()
-                guard let lastRefreshDate: Date = Self.groupRefreshStore.getDate(
-                    storeKey,
-                    transaction: transaction
-                ) else {
+                guard
+                    let lastRefreshDate: Date = Self.groupRefreshStore.getDate(
+                        storeKey,
+                        transaction: transaction,
+                    )
+                else {
                     // If we find a group that we have no record of refreshing,
                     // pick that one immediately.
                     groupInfoToRefresh = GroupInfo(
                         groupId: groupId,
                         groupSecretParams: groupSecretParams,
-                        lastRefreshDate: nil
+                        lastRefreshDate: nil,
                     )
                     stop.pointee = true
                     return
@@ -116,7 +118,7 @@ public class GroupV2UpdatesImpl: GroupV2Updates {
                 groupInfoToRefresh = GroupInfo(
                     groupId: groupId,
                     groupSecretParams: groupSecretParams,
-                    lastRefreshDate: lastRefreshDate
+                    lastRefreshDate: lastRefreshDate,
                 )
             }
             return groupInfoToRefresh
@@ -129,7 +131,7 @@ public class GroupV2UpdatesImpl: GroupV2Updates {
         changeActionsProto: GroupsProtoGroupChangeActions,
         groupSendEndorsementsResponse: GroupSendEndorsementsResponse?,
         downloadedAvatars: GroupAvatarStateMap,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) throws -> TSGroupThread {
 
         guard let groupThread = TSGroupThread.fetch(forGroupId: groupId, tx: transaction) else {
@@ -143,7 +145,7 @@ public class GroupV2UpdatesImpl: GroupV2Updates {
             localIdentifiers: localIdentifiers,
             changeActionsProto: changeActionsProto,
             downloadedAvatars: downloadedAvatars,
-            options: []
+            options: [],
         )
         // The prior method throws if the revisions don't match.
         owsAssertDebug(changedGroupModel.newGroupModel.revision == changedGroupModel.oldGroupModel.revision + 1)
@@ -156,7 +158,7 @@ public class GroupV2UpdatesImpl: GroupV2Updates {
             groupUpdateSource: changedGroupModel.updateSource,
             localIdentifiers: localIdentifiers,
             spamReportingMetadata: spamReportingMetadata,
-            transaction: transaction
+            transaction: transaction,
         )
         // The prior method always updates the revision because we've confirmed it's newer.
         owsAssertDebug((groupThread.groupModel as? TSGroupModelV2)?.revision == changedGroupModel.newGroupModel.revision)
@@ -168,7 +170,7 @@ public class GroupV2UpdatesImpl: GroupV2Updates {
             allProfileKeysByAci: changedGroupModel.profileKeys,
             authoritativeProfileKeysByAci: authoritativeProfileKeys,
             localIdentifiers: localIdentifiers,
-            tx: transaction
+            tx: transaction,
         )
 
         if let groupSendEndorsementsResponse {
@@ -178,7 +180,7 @@ public class GroupV2UpdatesImpl: GroupV2Updates {
                 secretParams: try changedGroupModel.newGroupModel.secretParams(),
                 membership: groupThread.groupMembership,
                 localAci: localIdentifiers.aci,
-                tx: transaction
+                tx: transaction,
             )
         }
 
@@ -189,7 +191,7 @@ public class GroupV2UpdatesImpl: GroupV2Updates {
         secretParams: GroupSecretParams,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         source: GroupChangeActionFetchSource,
-        options: TSGroupModelOptions
+        options: TSGroupModelOptions,
     ) async throws {
         let groupId = try secretParams.getPublicParams().getGroupIdentifier()
 
@@ -234,7 +236,7 @@ public class GroupV2UpdatesImpl: GroupV2Updates {
                 secretParams: secretParams,
                 spamReportingMetadata: spamReportingMetadata,
                 source: source,
-                options: options
+                options: options,
             )
 
             switch source {
@@ -263,7 +265,7 @@ public class GroupV2UpdatesImpl: GroupV2Updates {
         secretParams: GroupSecretParams,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         source: GroupChangeActionFetchSource,
-        options: TSGroupModelOptions
+        options: TSGroupModelOptions,
     ) async throws {
         switch source {
         case .groupMessage:
@@ -279,7 +281,7 @@ public class GroupV2UpdatesImpl: GroupV2Updates {
                 secretParams: secretParams,
                 spamReportingMetadata: spamReportingMetadata,
                 source: source,
-                options: options
+                options: options,
             )
         } catch {
             Logger.warn("Group update failed: \(error)")
@@ -317,7 +319,7 @@ private extension GroupV2UpdatesImpl {
         secretParams: GroupSecretParams,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         source: GroupChangeActionFetchSource,
-        options: TSGroupModelOptions
+        options: TSGroupModelOptions,
     ) async throws {
         do {
             // Try to use individual changes.
@@ -325,7 +327,7 @@ private extension GroupV2UpdatesImpl {
                 secretParams: secretParams,
                 spamReportingMetadata: spamReportingMetadata,
                 source: source,
-                options: options
+                options: options,
             )
         } catch {
             let shouldTrySnapshot = { () -> Bool in
@@ -362,7 +364,7 @@ private extension GroupV2UpdatesImpl {
             try await self.fetchAndApplyCurrentGroupV2SnapshotFromService(
                 secretParams: secretParams,
                 spamReportingMetadata: spamReportingMetadata,
-                options: options
+                options: options,
             )
         }
     }
@@ -371,13 +373,13 @@ private extension GroupV2UpdatesImpl {
         secretParams: GroupSecretParams,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         source: GroupChangeActionFetchSource,
-        options: TSGroupModelOptions
+        options: TSGroupModelOptions,
     ) async throws {
         while true {
             let groupsV2 = SSKEnvironment.shared.groupsV2Ref
             let response = try await groupsV2.fetchSomeGroupChangeActions(
                 secretParams: secretParams,
-                source: source
+                source: source,
             )
 
             var groupChanges = response.groupChanges
@@ -400,7 +402,7 @@ private extension GroupV2UpdatesImpl {
                 spamReportingMetadata: spamReportingMetadata,
                 groupChanges: groupChanges,
                 groupSendEndorsementsResponse: groupSendEndorsementsResponse,
-                options: options
+                options: options,
             )
 
             if !response.shouldFetchMore {
@@ -414,7 +416,7 @@ private extension GroupV2UpdatesImpl {
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         groupChanges: [GroupV2Change],
         groupSendEndorsementsResponse: GroupSendEndorsementsResponse?,
-        options: TSGroupModelOptions
+        options: TSGroupModelOptions,
     ) async throws {
         try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
             let tsAccountManager = DependenciesBridge.shared.tsAccountManager
@@ -439,7 +441,7 @@ private extension GroupV2UpdatesImpl {
                     groupChanges: groupChanges,
                     groupModelOptions: options,
                     localIdentifiers: localIdentifiers,
-                    transaction: transaction
+                    transaction: transaction,
                 )
             }
 
@@ -456,12 +458,12 @@ private extension GroupV2UpdatesImpl {
                         authoritativeProfileKeysByAci: &authoritativeProfileKeysByAci,
                         localIdentifiers: localIdentifiers,
                         spamReportingMetadata: spamReportingMetadata,
-                        transaction: transaction
+                        transaction: transaction,
                     )
                 }
 
                 if
-                    let applyResult = applyResult,
+                    let applyResult,
                     applyResult.wasLocalUserAddedByChange
                 {
                     localUserWasAddedBy = applyResult.changeAuthor
@@ -472,7 +474,7 @@ private extension GroupV2UpdatesImpl {
                 allProfileKeysByAci: profileKeysByAci,
                 authoritativeProfileKeysByAci: authoritativeProfileKeysByAci,
                 localIdentifiers: localIdentifiers,
-                tx: transaction
+                tx: transaction,
             )
 
             let localUserWasAddedByBlockedUser: Bool
@@ -482,12 +484,12 @@ private extension GroupV2UpdatesImpl {
             case .legacyE164(let e164):
                 localUserWasAddedByBlockedUser = SSKEnvironment.shared.blockingManagerRef.isAddressBlocked(
                     .legacyAddress(serviceId: nil, phoneNumber: e164.stringValue),
-                    transaction: transaction
+                    transaction: transaction,
                 )
             case .aci(let aci):
                 localUserWasAddedByBlockedUser = SSKEnvironment.shared.blockingManagerRef.isAddressBlocked(
                     .init(aci),
-                    transaction: transaction
+                    transaction: transaction,
                 )
             case .rejectedInviteToPni:
                 owsFailDebug("Local user added, but group update source was a PNI invite decline?")
@@ -501,7 +503,7 @@ private extension GroupV2UpdatesImpl {
                 _ = GroupManager.localLeaveGroupOrDeclineInvite(
                     groupThread: groupThread,
                     waitForMessageProcessing: true,
-                    tx: transaction
+                    tx: transaction,
                 )
             } else if
                 let groupProfileKey = profileKeysByAci[localIdentifiers.aci],
@@ -514,7 +516,7 @@ private extension GroupV2UpdatesImpl {
                 // above, as it's redundant.
                 SSKEnvironment.shared.groupsV2Ref.updateLocalProfileKeyInGroup(
                     groupId: groupId.serialize(),
-                    transaction: transaction
+                    transaction: transaction,
                 )
             }
 
@@ -525,7 +527,7 @@ private extension GroupV2UpdatesImpl {
                     secretParams: secretParams,
                     membership: groupThread.groupMembership,
                     localAci: localIdentifiers.aci,
-                    tx: transaction
+                    tx: transaction,
                 )
             }
         }
@@ -546,7 +548,7 @@ private extension GroupV2UpdatesImpl {
         groupChanges: [GroupV2Change],
         groupModelOptions: TSGroupModelOptions,
         localIdentifiers: LocalIdentifiers,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) throws -> (TSGroupThread, addedToNewThreadBy: GroupUpdateSource?) {
         if TSGroupThread.fetch(forGroupId: groupId, tx: transaction) != nil {
             throw OWSAssertionError("Can't insert group thread that already exists.")
@@ -561,12 +563,12 @@ private extension GroupV2UpdatesImpl {
 
         let groupUpdateSource = try firstGroupChange.author(
             groupV2Params: groupV2Params,
-            localIdentifiers: localIdentifiers
+            localIdentifiers: localIdentifiers,
         )
 
         var builder = try TSGroupModelBuilder.builderForSnapshot(
             groupV2Snapshot: snapshot,
-            transaction: transaction
+            transaction: transaction,
         )
         builder.apply(options: groupModelOptions)
 
@@ -576,7 +578,7 @@ private extension GroupV2UpdatesImpl {
         let didAddLocalUserToV2Group = self.didAddLocalUserToV2Group(
             inGroupChange: firstGroupChange,
             groupV2Params: groupV2Params,
-            localIdentifiers: localIdentifiers
+            localIdentifiers: localIdentifiers,
         )
 
         let groupThread = GroupManager.tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(
@@ -588,7 +590,7 @@ private extension GroupV2UpdatesImpl {
             infoMessagePolicy: .insert,
             localIdentifiers: localIdentifiers,
             spamReportingMetadata: spamReportingMetadata,
-            transaction: transaction
+            transaction: transaction,
         )
 
         // NOTE: We don't need to worry about profile keys here.  This method is
@@ -597,7 +599,7 @@ private extension GroupV2UpdatesImpl {
 
         return (
             groupThread,
-            addedToNewThreadBy: didAddLocalUserToV2Group ? groupUpdateSource : nil
+            addedToNewThreadBy: didAddLocalUserToV2Group ? groupUpdateSource : nil,
         )
     }
 
@@ -615,7 +617,7 @@ private extension GroupV2UpdatesImpl {
         authoritativeProfileKeysByAci: inout [Aci: Data],
         localIdentifiers: LocalIdentifiers,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) throws -> ApplySingleChangeFromServiceResult? {
         guard let oldGroupModel = groupThread.groupModel as? TSGroupModelV2 else {
             throw OWSAssertionError("Invalid group model.")
@@ -629,7 +631,7 @@ private extension GroupV2UpdatesImpl {
 
         let logger = PrefixedLogger(
             prefix: "ApplySingleChange",
-            suffix: "\(oldGroupModel.revision) -> \(groupChange.revision)"
+            suffix: "\(oldGroupModel.revision) -> \(groupChange.revision)",
         )
 
         let newGroupModel: TSGroupModel
@@ -652,7 +654,7 @@ private extension GroupV2UpdatesImpl {
                 localIdentifiers: localIdentifiers,
                 changeActionsProto: changeActionsProto,
                 downloadedAvatars: groupChange.downloadedAvatars,
-                options: options
+                options: options,
             )
             newGroupModel = changedGroupModel.newGroupModel
             newDisappearingMessageToken = changedGroupModel.newDisappearingMessageToken
@@ -684,7 +686,7 @@ private extension GroupV2UpdatesImpl {
             groupUpdateSource: groupUpdateSource,
             localIdentifiers: localIdentifiers,
             spamReportingMetadata: spamReportingMetadata,
-            transaction: transaction
+            transaction: transaction,
         )
 
         switch groupUpdateSource {
@@ -697,15 +699,15 @@ private extension GroupV2UpdatesImpl {
         }
 
         // Merge known profile keys, always taking latest.
-        profileKeysByAci.merge(newProfileKeys) { (_, latest) in latest }
+        profileKeysByAci.merge(newProfileKeys) { _, latest in latest }
 
         return ApplySingleChangeFromServiceResult(
             changeAuthor: groupUpdateSource,
             wasLocalUserAddedByChange: didAddLocalUserToV2Group(
                 inGroupChange: groupChange,
                 groupV2Params: groupV2Params,
-                localIdentifiers: localIdentifiers
-            )
+                localIdentifiers: localIdentifiers,
+            ),
         )
     }
 
@@ -714,11 +716,11 @@ private extension GroupV2UpdatesImpl {
     private func fetchAndApplyCurrentGroupV2SnapshotFromService(
         secretParams: GroupSecretParams,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
-        options: TSGroupModelOptions
+        options: TSGroupModelOptions,
     ) async throws {
         let snapshotResponse = try await SSKEnvironment.shared.groupsV2Ref.fetchLatestSnapshot(
             secretParams: secretParams,
-            justUploadedAvatars: nil
+            justUploadedAvatars: nil,
         )
 
         let groupV2Snapshot = snapshotResponse.groupSnapshot
@@ -762,13 +764,13 @@ private extension GroupV2UpdatesImpl {
                 infoMessagePolicy: .insert,
                 localIdentifiers: localIdentifiers,
                 spamReportingMetadata: spamReportingMetadata,
-                transaction: transaction
+                transaction: transaction,
             )
 
             GroupManager.storeProfileKeysFromGroupProtos(
                 allProfileKeysByAci: groupV2Snapshot.profileKeys,
                 localIdentifiers: localIdentifiers,
-                tx: transaction
+                tx: transaction,
             )
 
             // If the group state includes a stale profile key for the
@@ -784,7 +786,7 @@ private extension GroupV2UpdatesImpl {
                     secretParams: secretParams,
                     membership: groupV2Snapshot.groupMembership,
                     localAci: localAci,
-                    tx: transaction
+                    tx: transaction,
                 )
             }
         }
@@ -793,7 +795,7 @@ private extension GroupV2UpdatesImpl {
     private func didAddLocalUserToV2Group(
         inGroupChange groupChange: GroupV2Change,
         groupV2Params: GroupV2Params,
-        localIdentifiers: LocalIdentifiers
+        localIdentifiers: LocalIdentifiers,
     ) -> Bool {
         let localAci = localIdentifiers.aci
         if groupChange.revision == 0 {
@@ -886,20 +888,20 @@ extension GroupsV2Error: IsRetryableProvider {
 
         switch self {
         case
-                .conflictingChangeOnService,
-                .timeout:
+            .conflictingChangeOnService,
+            .timeout:
             return true
         case
-                .localUserNotInGroup,
-                .cannotBuildGroupChangeProto_conflictingChange,
-                .cannotBuildGroupChangeProto_tooManyMembers,
-                .localUserIsNotARequestingMember,
-                .cantApplyChangesToPlaceholder,
-                .expiredGroupInviteLink,
-                .groupBlocked,
-                .localUserBlockedFromJoining,
-                .groupChangeProtoForIncompatibleRevision,
-                .serviceRequestHitRecoverable400:
+            .localUserNotInGroup,
+            .cannotBuildGroupChangeProto_conflictingChange,
+            .cannotBuildGroupChangeProto_tooManyMembers,
+            .localUserIsNotARequestingMember,
+            .cantApplyChangesToPlaceholder,
+            .expiredGroupInviteLink,
+            .groupBlocked,
+            .localUserBlockedFromJoining,
+            .groupChangeProtoForIncompatibleRevision,
+            .serviceRequestHitRecoverable400:
             return false
         }
     }
@@ -908,12 +910,12 @@ extension GroupsV2Error: IsRetryableProvider {
 private extension GroupV2Change {
     func author(
         groupV2Params: GroupV2Params,
-        localIdentifiers: LocalIdentifiers
+        localIdentifiers: LocalIdentifiers,
     ) throws -> GroupUpdateSource {
-        if let changeActionsProto = changeActionsProto {
+        if let changeActionsProto {
             return try changeActionsProto.updateSource(
                 groupV2Params: groupV2Params,
-                localIdentifiers: localIdentifiers
+                localIdentifiers: localIdentifiers,
             ).0
         }
         return .unknown
@@ -924,11 +926,11 @@ public extension GroupsProtoGroupChangeActions {
 
     func updateSource(
         groupV2Params: GroupV2Params,
-        localIdentifiers: LocalIdentifiers
+        localIdentifiers: LocalIdentifiers,
     ) throws -> (GroupUpdateSource, ServiceId?) {
         func compareToLocal(
             source: GroupUpdateSource,
-            serviceId: ServiceId
+            serviceId: ServiceId,
         ) -> (GroupUpdateSource, ServiceId) {
             if localIdentifiers.contains(serviceId: serviceId) {
                 return (.localUser(originalSource: source), serviceId)
@@ -947,7 +949,7 @@ public extension GroupsProtoGroupChangeActions {
         case .aci(let aci):
             return compareToLocal(
                 source: .aci(aci),
-                serviceId: aci
+                serviceId: aci,
             )
         case .pni(let pni):
             /// At the time of writing, the only change actions with a PNI
@@ -969,7 +971,7 @@ public extension GroupsProtoGroupChangeActions {
 
                 return compareToLocal(
                     source: .rejectedInviteToPni(pni),
-                    serviceId: pni
+                    serviceId: pni,
                 )
             } else if
                 self.promotePniPendingMembers.count == 1,
@@ -991,7 +993,7 @@ public extension GroupsProtoGroupChangeActions {
                 /// claim starting now that's who authored the change action.
                 return compareToLocal(
                     source: .aci(firstPromotePniPendingMemberAci),
-                    serviceId: firstPromotePniPendingMemberAci
+                    serviceId: firstPromotePniPendingMemberAci,
                 )
             } else if
                 self.addMembers.count == 1,
@@ -1010,7 +1012,7 @@ public extension GroupsProtoGroupChangeActions {
                 owsFailDebug("Canary: Legacy change action received from PNI change author!")
                 return compareToLocal(
                     source: .aci(firstPniMemberAddedByLinkAci),
-                    serviceId: firstPniMemberAddedByLinkAci
+                    serviceId: firstPniMemberAddedByLinkAci,
                 )
             } else if
                 self.addRequestingMembers.count == 1,
@@ -1028,7 +1030,7 @@ public extension GroupsProtoGroupChangeActions {
                 owsFailDebug("Canary: Legacy change action received from PNI change author!")
                 return compareToLocal(
                     source: .aci(firstPniMemberRequestingAddAci),
-                    serviceId: firstPniMemberRequestingAddAci
+                    serviceId: firstPniMemberRequestingAddAci,
                 )
             } else {
                 owsFailDebug("Canary: unknown type of PNI-authored group update!")

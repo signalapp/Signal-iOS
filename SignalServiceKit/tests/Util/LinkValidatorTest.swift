@@ -73,7 +73,7 @@ class LinkValidatorTest: XCTestCase {
             ("https://中国互联网络信息中心.cn", nil),
 
             // NSDataDetector parsing failures
-            ("https://中国互联网络信息中心。中国", nil),   // NSDataDetector does not parse a TLD of "。中国"
+            ("https://中国互联网络信息中心。中国", nil), // NSDataDetector does not parse a TLD of "。中国"
 
             // Valid, all ASCII or non-ASCII + period
             ("https://中国互联网络信息中心.中国", "https://xn--fiqa61au8b7zsevnm8ak20mc4a87e.xn--fiqs8s"),
@@ -106,7 +106,7 @@ class LinkValidatorTest: XCTestCase {
 
             // Code points that are valid outside the link, but not inside
             ("▶ https://signal.org", "https://signal.org"),
-            ("https://si▶gnal.org", nil)
+            ("https://si▶gnal.org", nil),
         ]
         for (entireMessage, expectedValue) in testCases {
             let actualValue = LinkValidator.firstLinkPreviewURL(in: .init(text: entireMessage, ranges: .empty))

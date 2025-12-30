@@ -62,7 +62,7 @@ public struct ArchivedPayment: Codable, Hashable, FetchableRecord, PersistableRe
         transaction: Data?,
         receipt: Data?,
         senderOrRecipientAci: Aci?,
-        interactionUniqueId: String?
+        interactionUniqueId: String?,
     ) {
         self.amount = amount
         self.fee = fee
@@ -80,7 +80,7 @@ public struct ArchivedPayment: Codable, Hashable, FetchableRecord, PersistableRe
         self.interactionUniqueId = interactionUniqueId
     }
 
-    mutating public func didInsert(with rowID: Int64, for column: String?) {
+    public mutating func didInsert(with rowID: Int64, for column: String?) {
         id = rowID
     }
 
@@ -169,7 +169,7 @@ extension ArchivedPayment {
                 \.timestamp,
                 on: &transaction,
                 \.timestamp,
-                allowZero: true
+                allowZero: true,
             )
             if let blockIndex { transaction.blockIndex = blockIndex }
             BackupArchive.Timestamps.setTimestampIfValid(
@@ -177,7 +177,7 @@ extension ArchivedPayment {
                 \.blockTimestamp,
                 on: &transaction,
                 \.blockTimestamp,
-                allowZero: true
+                allowZero: true,
             )
             if let _transaction = self.transaction { transaction.transaction = _transaction }
             if let receipt { transaction.receipt = receipt }
@@ -196,16 +196,16 @@ extension TSPaymentModel {
         if let incomingTransactionPublicKeys = mobileCoin?.incomingTransactionPublicKeys {
             identifier = ArchivedPayment.TransactionIdentifier(
                 publicKey: incomingTransactionPublicKeys,
-                keyImages: nil
+                keyImages: nil,
             )
-        } else if (mcOutputPublicKeys?.nilIfEmpty != nil || mcSpentKeyImages?.nilIfEmpty != nil) {
-            if (mcOutputPublicKeys?.nilIfEmpty == nil || mcSpentKeyImages?.nilIfEmpty == nil) {
+        } else if mcOutputPublicKeys?.nilIfEmpty != nil || mcSpentKeyImages?.nilIfEmpty != nil {
+            if mcOutputPublicKeys?.nilIfEmpty == nil || mcSpentKeyImages?.nilIfEmpty == nil {
                 owsFailDebug("one of public Keys or spent keys is nil")
                 identifier = nil
             } else {
                 identifier = ArchivedPayment.TransactionIdentifier(
                     publicKey: nil,
-                    keyImages: mcSpentKeyImages
+                    keyImages: mcSpentKeyImages,
                 )
             }
         }
@@ -214,19 +214,19 @@ extension TSPaymentModel {
             guard !isFailed else { return .error }
             switch paymentState {
             case .incomingComplete,
-                    .incomingVerified,
-                    .incomingUnverified,
-                    .outgoingComplete,
-                    .outgoingVerified,
-                    .outgoingUnverified:
+                 .incomingVerified,
+                 .incomingUnverified,
+                 .outgoingComplete,
+                 .outgoingVerified,
+                 .outgoingUnverified:
                 return .successful
             case .outgoingSent,
-                    .outgoingSending:
+                 .outgoingSending:
                 return .submitted
             case .outgoingUnsubmitted:
                 return .initial
             case .incomingFailed,
-                    .outgoingFailed:
+                 .outgoingFailed:
                 owsFailDebug("Invalid failure state in success path")
                 return .initial
             @unknown default:
@@ -243,10 +243,10 @@ extension TSPaymentModel {
             case .notificationSendFailed:
                 return .networkFailure
             case .expired,
-                    .invalid,
-                    .validationFailed,
-                    .unknown,
-                    .none:
+                 .invalid,
+                 .validationFailed,
+                 .unknown,
+                 .none:
                 return .genericFailure
             @unknown default:
                 owsFailDebug("Encountered invalid payment state")
@@ -275,8 +275,8 @@ extension TSPaymentModel {
             }
         }()
 
-        let formattedAmount = paymentAmount.map {PaymentsFormat.format(paymentAmount: $0, isShortForm: true)}
-        let formattedFee = mobileCoin?.feeAmount.map {PaymentsFormat.format(paymentAmount: $0, isShortForm: true)}
+        let formattedAmount = paymentAmount.map { PaymentsFormat.format(paymentAmount: $0, isShortForm: true) }
+        let formattedFee = mobileCoin?.feeAmount.map { PaymentsFormat.format(paymentAmount: $0, isShortForm: true) }
 
         return ArchivedPayment(
             amount: formattedAmount,
@@ -292,7 +292,7 @@ extension TSPaymentModel {
             transaction: mcTransactionData,
             receipt: mcReceiptData,
             senderOrRecipientAci: senderOrRecipientAci?.wrappedAciValue,
-            interactionUniqueId: interactionUniqueId
+            interactionUniqueId: interactionUniqueId,
         )
     }
 }

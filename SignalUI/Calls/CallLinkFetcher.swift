@@ -24,7 +24,7 @@ public class CallLinkFetcherImpl {
 
     public func readCallLink(
         _ rootKey: CallLinkRootKey,
-        authCredential: SignalServiceKit.CallLinkAuthCredential
+        authCredential: SignalServiceKit.CallLinkAuthCredential,
     ) async throws -> SignalServiceKit.CallLinkState {
         let sfuUrl = DebugFlags.callingUseTestSFU.get() ? TSConstants.sfuTestURL : TSConstants.sfuURL
         let secretParams = CallLinkSecretParams.deriveFromRootKey(rootKey.bytes)
@@ -33,7 +33,7 @@ public class CallLinkFetcherImpl {
             return try await SignalServiceKit.CallLinkState(self.sfuClient.readCallLink(
                 sfuUrl: sfuUrl,
                 authCredentialPresentation: [UInt8](authCredentialPresentation.serialize()),
-                linkRootKey: rootKey
+                linkRootKey: rootKey,
             ).unwrap())
         } catch where error.rawValue == 404 {
             throw CallLinkNotFoundError()

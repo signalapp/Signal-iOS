@@ -8,7 +8,7 @@ import SignalServiceKit
 public enum OWSActionSheets {
     public static func showActionSheet(
         _ actionSheet: ActionSheetController,
-        fromViewController: UIViewController? = nil
+        fromViewController: UIViewController? = nil,
     ) {
         guard let fromViewController = fromViewController ?? CurrentAppContext().frontmostViewController() else {
             owsFailDebug("frontmostViewController was unexpectedly nil")
@@ -23,7 +23,7 @@ public enum OWSActionSheets {
     @MainActor
     public static func showAndAwaitActionSheet(
         _ actionSheet: ActionSheetController,
-        fromViewController: UIViewController? = nil
+        fromViewController: UIViewController? = nil,
     ) async {
         await withCheckedContinuation { continuation in
             actionSheet.onDismiss = { continuation.resume() }
@@ -37,7 +37,7 @@ public enum OWSActionSheets {
         buttonTitle: String? = nil,
         buttonAction: ActionSheetAction.Handler? = nil,
         fromViewController: UIViewController? = nil,
-        dismissalDelegate: (any SheetDismissalDelegate)? = nil
+        dismissalDelegate: (any SheetDismissalDelegate)? = nil,
     ) {
         let actionSheet = ActionSheetController(title: title, message: message)
         actionSheet.addOkayAction(title: buttonTitle, action: buttonAction)
@@ -50,7 +50,7 @@ public enum OWSActionSheets {
         message: NSAttributedString,
         buttonTitle: String? = nil,
         buttonAction: ActionSheetAction.Handler? = nil,
-        fromViewController: UIViewController? = nil
+        fromViewController: UIViewController? = nil,
     ) {
         let actionSheet = ActionSheetController(title: title, message: message)
         actionSheet.addOkayAction(title: buttonTitle, action: buttonAction)
@@ -64,7 +64,7 @@ public enum OWSActionSheets {
         proceedStyle: ActionSheetAction.Style = .default,
         proceedAction: @escaping ActionSheetAction.Handler,
         fromViewController: UIViewController? = nil,
-        dismissalDelegate: (any SheetDismissalDelegate)? = nil
+        dismissalDelegate: (any SheetDismissalDelegate)? = nil,
     ) {
         assert(!title.isEmptyOrNil || !message.isEmptyOrNil)
 
@@ -75,7 +75,7 @@ public enum OWSActionSheets {
         let okAction = ActionSheetAction(
             title: actionTitle,
             style: proceedStyle,
-            handler: proceedAction
+            handler: proceedAction,
         )
         actionSheet.addAction(okAction)
         actionSheet.dismissalDelegate = dismissalDelegate
@@ -88,7 +88,7 @@ public enum OWSActionSheets {
         message: String? = nil,
         proceedTitle: String? = nil,
         proceedStyle: ActionSheetAction.Style = .default,
-        proceedAction: @escaping ActionSheetAction.Handler
+        proceedAction: @escaping ActionSheetAction.Handler,
     ) {
         assert(!title.isEmptyOrNil || message.isEmptyOrNil)
 
@@ -99,7 +99,7 @@ public enum OWSActionSheets {
         let okAction = ActionSheetAction(
             title: actionTitle,
             style: proceedStyle,
-            handler: proceedAction
+            handler: proceedAction,
         )
         actionSheet.addAction(okAction)
 
@@ -109,13 +109,13 @@ public enum OWSActionSheets {
     public static func showErrorAlert(
         message: String,
         fromViewController: UIViewController? = nil,
-        dismissalDelegate: (any SheetDismissalDelegate)? = nil
+        dismissalDelegate: (any SheetDismissalDelegate)? = nil,
     ) {
         showActionSheet(
             title: CommonStrings.errorAlertTitle,
             message: message,
             fromViewController: fromViewController,
-            dismissalDelegate: dismissalDelegate
+            dismissalDelegate: dismissalDelegate,
         )
     }
 
@@ -123,7 +123,7 @@ public enum OWSActionSheets {
         return ActionSheetAction(
             title: CommonStrings.okButton,
             style: .cancel,
-            handler: nil
+            handler: nil,
         )
     }
 
@@ -131,14 +131,14 @@ public enum OWSActionSheets {
         return ActionSheetAction(
             title: CommonStrings.cancelButton,
             style: .cancel,
-            handler: nil
+            handler: nil,
         )
     }
 
     public static var notNowAction: ActionSheetAction {
         let action = ActionSheetAction(
             title: CommonStrings.notNowButton,
-            style: .cancel
+            style: .cancel,
         ) { _ in
             Logger.debug("Not now item")
             // Do nothing.
@@ -149,7 +149,7 @@ public enum OWSActionSheets {
     public static var dismissAction: ActionSheetAction {
         let action = ActionSheetAction(
             title: CommonStrings.dismissButton,
-            style: .cancel
+            style: .cancel,
         ) { _ in
             Logger.debug("Dismiss item")
             // Do nothing.
@@ -159,15 +159,19 @@ public enum OWSActionSheets {
 
     public static func showPendingChangesActionSheet(discardAction: @escaping () -> Void) {
         let actionSheet = ActionSheetController(
-            title: OWSLocalizedString("PENDING_CHANGES_ACTION_SHEET_TITLE",
-                                      comment: "The alert title if user tries to exit a task without saving changes."),
-            message: OWSLocalizedString("PENDING_CHANGES_ACTION_SHEET_MESSAGE",
-                                        comment: "The alert message if user tries to exit a task without saving changes.")
+            title: OWSLocalizedString(
+                "PENDING_CHANGES_ACTION_SHEET_TITLE",
+                comment: "The alert title if user tries to exit a task without saving changes.",
+            ),
+            message: OWSLocalizedString(
+                "PENDING_CHANGES_ACTION_SHEET_MESSAGE",
+                comment: "The alert message if user tries to exit a task without saving changes.",
+            ),
         )
 
         let discardAction = ActionSheetAction(
             title: CommonStrings.discardButton,
-            style: .destructive
+            style: .destructive,
         ) { _ in discardAction() }
         actionSheet.addAction(discardAction)
         actionSheet.addAction(OWSActionSheets.cancelAction)
@@ -176,7 +180,7 @@ public enum OWSActionSheets {
     }
 }
 
-fileprivate extension ActionSheetController {
+private extension ActionSheetController {
     func addOkayAction(title: String? = nil, action: ActionSheetAction.Handler? = nil) {
         let actionTitle = title ?? CommonStrings.okButton
         let okAction = ActionSheetAction(title: actionTitle, style: .default, handler: action)

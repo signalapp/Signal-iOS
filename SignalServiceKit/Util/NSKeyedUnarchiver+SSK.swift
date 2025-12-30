@@ -9,7 +9,7 @@ extension NSKeyedUnarchiver {
     public static func unarchivedObject<DecodedObjectType>(
         ofClass cls: DecodedObjectType.Type,
         from data: Data,
-        requiringSecureCoding: Bool
+        requiringSecureCoding: Bool,
     ) throws -> DecodedObjectType? where DecodedObjectType: NSObject, DecodedObjectType: NSCoding {
         let coder = try NSKeyedUnarchiver(forReadingFrom: data)
         coder.requiresSecureCoding = requiringSecureCoding

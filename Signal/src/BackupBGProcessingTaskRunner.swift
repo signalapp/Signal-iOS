@@ -51,12 +51,12 @@ class BackupBGProcessingTaskRunner: BGProcessingTaskRunner {
                 await db.awaitableWrite { tx in
                     kvStore.setDate(dateProvider(), key: StoreKeys.lastCompletionDate, transaction: tx)
                 }
-            }
+            },
         )
     }
 
-    public func startCondition() -> BGProcessingTaskStartCondition {
-        return db.read { (tx) -> BGProcessingTaskStartCondition in
+    func startCondition() -> BGProcessingTaskStartCondition {
+        return db.read { tx -> BGProcessingTaskStartCondition in
             guard tsAccountManager().registrationState(tx: tx).isRegisteredPrimaryDevice else {
                 return .never
             }
@@ -84,7 +84,7 @@ class BackupBGProcessingTaskRunner: BGProcessingTaskRunner {
             let targetStartDate = calendar.nextDate(
                 after: Date(),
                 matching: DateComponents(hour: 3),
-                matchingPolicy: .nextTime
+                matchingPolicy: .nextTime,
             )
             if let targetStartDate {
                 return .after(targetStartDate)

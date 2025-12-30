@@ -135,7 +135,7 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
     public func currentStatusAndToken(for mode: BackupAttachmentDownloadQueueMode) -> (BackupAttachmentDownloadQueueStatus, BackupAttachmentDownloadQueueStatusToken) {
         return (
             state.asQueueStatus(mode: mode, dateProvider: dateProvider),
-            BackupAttachmentDownloadQueueStatusTokenImpl(lastNetworkOr5xxErrorTime: state.lastNetworkOr5xxErrorTime)
+            BackupAttachmentDownloadQueueStatusTokenImpl(lastNetworkOr5xxErrorTime: state.lastNetworkOr5xxErrorTime),
         )
     }
 
@@ -220,7 +220,7 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
             }
         }
 
-        if state.isThumbnailQueueEmpty == true && state.isFullsizeQueueEmpty == true {
+        if state.isThumbnailQueueEmpty == true, state.isFullsizeQueueEmpty == true {
             stopObservingDeviceAndLocalStates()
         }
     }
@@ -253,7 +253,7 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
         deviceBatteryLevelManager: (any DeviceBatteryLevelManager)?,
         reachabilityManager: SSKReachabilityManager,
         remoteConfigManager: RemoteConfigManager,
-        tsAccountManager: TSAccountManager
+        tsAccountManager: TSAccountManager,
     ) {
         self.appContext = appContext
         self.appReadiness = appReadiness
@@ -358,7 +358,7 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
 
         func asQueueStatus(
             mode: BackupAttachmentDownloadQueueMode,
-            dateProvider: DateProvider
+            dateProvider: DateProvider,
         ) -> BackupAttachmentDownloadQueueStatus {
 
             switch mode {
@@ -415,14 +415,14 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
                 return .lowPowerMode
             }
 
-            if !isMainAppAndActive && !isMainAppAndActiveOverride {
+            if !isMainAppAndActive, !isMainAppAndActiveOverride {
                 return .appBackgrounded
             }
 
             if let lastNetworkOr5xxErrorTime {
                 let restartTime = BackupAttachmentDownloadQueueStatusManagerImpl.queueRestartTimeAfterNetworkError(
                     at: lastNetworkOr5xxErrorTime,
-                    failureCount: networkOr5xxErrorCount
+                    failureCount: networkOr5xxErrorCount,
                 )
                 if dateProvider() <= restartTime {
                     return .noReachability
@@ -473,18 +473,18 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
         let (
             isFullsizeQueueEmpty,
             isThumbnailQueueEmpty,
-            areDownloadsSuspended
+            areDownloadsSuspended,
         ) = db.read { tx in
             return (
                 !backupAttachmentDownloadStore.hasAnyReadyDownloads(
                     isThumbnail: false,
-                    tx: tx
+                    tx: tx,
                 ),
                 !backupAttachmentDownloadStore.hasAnyReadyDownloads(
                     isThumbnail: true,
-                    tx: tx
+                    tx: tx,
                 ),
-                backupSettingsStore.isBackupAttachmentDownloadQueueSuspended(tx: tx)
+                backupSettingsStore.isBackupAttachmentDownloadQueueSuspended(tx: tx),
             )
 
         }
@@ -507,7 +507,7 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
         let (isRegistered, shouldAllowBackupDownloadsOnCellular) = db.read { tx in
             return (
                 tsAccountManager.registrationState(tx: tx).isRegistered,
-                backupSettingsStore.shouldAllowBackupDownloadsOnCellular(tx: tx)
+                backupSettingsStore.shouldAllowBackupDownloadsOnCellular(tx: tx),
             )
         }
 
@@ -527,7 +527,7 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
                 self,
                 selector: selector,
                 name: name,
-                object: nil
+                object: nil,
             )
         }
 
@@ -568,7 +568,7 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
     @objc
     private func registrationStateDidChange() {
         state.isRegistered = db.read { tx in
-            tsAccountManager.registrationState(tx: tx) .isRegistered
+            tsAccountManager.registrationState(tx: tx).isRegistered
         }
     }
 
@@ -619,7 +619,7 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
         do {
             OWSFileSystem.ensureDirectoryExists(AttachmentStream.attachmentsDirectory().path)
             return try OWSFileSystem.freeSpaceInBytes(
-                forPath: AttachmentStream.attachmentsDirectory()
+                forPath: AttachmentStream.attachmentsDirectory(),
             )
         } catch {
             owsFailDebug("Unable to determine disk space \(error)")
@@ -667,7 +667,7 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
 
     private nonisolated static func queueRestartTimeAfterNetworkError(
         at errorDate: Date,
-        failureCount: Int
+        failureCount: Int,
     ) -> Date {
         let delay = OWSOperation.retryIntervalForExponentialBackoff(
             failureCount: failureCount,
@@ -679,7 +679,7 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
 
     private func downloadDidExperienceNetworkOr5xxError(
         mode: BackupAttachmentDownloadQueueMode,
-        token: BackupAttachmentDownloadQueueStatusToken
+        token: BackupAttachmentDownloadQueueStatusToken,
     ) -> BackupAttachmentDownloadQueueStatus {
         guard
             let token = token as? BackupAttachmentDownloadQueueStatusTokenImpl,
@@ -691,7 +691,7 @@ public class BackupAttachmentDownloadQueueStatusManagerImpl: BackupAttachmentDow
         let errorDate = dateProvider()
         let restartDate = Self.queueRestartTimeAfterNetworkError(
             at: errorDate,
-            failureCount: failureCount
+            failureCount: failureCount,
         )
         state.networkOr5xxErrorCount = failureCount + 1
         state.lastNetworkOr5xxErrorTime = errorDate

@@ -94,7 +94,7 @@ public actor BackupAttachmentCoordinatorImpl: BackupAttachmentCoordinator {
         orphanRunner: OrphanedBackupAttachmentQueueRunner,
         orphanStore: OrphanedBackupAttachmentStore,
         tsAccountManager: TSAccountManager,
-        uploadRunner: BackupAttachmentUploadQueueRunner
+        uploadRunner: BackupAttachmentUploadQueueRunner,
     ) {
         self.appContext = appContext
         self.appReadiness = appReadiness
@@ -168,43 +168,43 @@ public actor BackupAttachmentCoordinatorImpl: BackupAttachmentCoordinator {
             self,
             selector: #selector(backUpAllAttachmentsFromNotification),
             name: .startBackupAttachmentUploadQueue,
-            object: nil
+            object: nil,
         )
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(fullsizeDownloadQueueStatusDidChange),
             name: .backupAttachmentDownloadQueueStatusDidChange(mode: .fullsize),
-            object: nil
+            object: nil,
         )
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(thumbnailDownloadQueueStatusDidChange),
             name: .backupAttachmentDownloadQueueStatusDidChange(mode: .thumbnail),
-            object: nil
+            object: nil,
         )
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(fullsizeUploadQueueStatusDidChange),
             name: .backupAttachmentUploadQueueStatusDidChange(for: .fullsize),
-            object: nil
+            object: nil,
         )
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(thumbnailUploadQueueStatusDidChange),
             name: .backupAttachmentUploadQueueStatusDidChange(for: .thumbnail),
-            object: nil
+            object: nil,
         )
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(backupPlanDidChange),
             name: .backupPlanChanged,
-            object: nil
+            object: nil,
         )
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(registrationStateDidChange),
             name: .registrationStateDidChange,
-            object: nil
+            object: nil,
         )
     }
 
@@ -303,6 +303,7 @@ public actor BackupAttachmentCoordinatorImpl: BackupAttachmentCoordinator {
     private func needsToRun(_ operation: Operation) -> Bool {
         return !(pendingObservers[operation]?.isEmpty ?? true)
     }
+
     private func isRunning(_ operation: Operation) -> Bool {
         return runningTasks[operation] != nil
     }
@@ -353,10 +354,10 @@ public actor BackupAttachmentCoordinatorImpl: BackupAttachmentCoordinator {
                             Task {
                                 await weakSelf.value?.cancelOperation(
                                     operation,
-                                    observerId: observerId
+                                    observerId: observerId,
                                 )
                             }
-                        }
+                        },
                     )
                 }
             }
@@ -366,7 +367,7 @@ public actor BackupAttachmentCoordinatorImpl: BackupAttachmentCoordinator {
 
     private func cancelOperation(
         _ operation: Operation,
-        observerId: UUID
+        observerId: UUID,
     ) {
         var pendingObservers = self.pendingObservers[operation] ?? []
         if let observer = pendingObservers.removeFirst(where: { $0.isCancellable && $0.id == observerId }) {
@@ -486,8 +487,8 @@ public actor BackupAttachmentCoordinatorImpl: BackupAttachmentCoordinator {
             let isRunningNonUploadDownload: Bool = runningTasks.contains(where: {
                 switch $0.key {
                 case
-                        .downloadFullsize, .downloadThumbnail,
-                        .uploadFullsize, .uploadThumbnail:
+                    .downloadFullsize, .downloadThumbnail,
+                    .uploadFullsize, .uploadThumbnail:
                     return false
                 case .listMedia, .deleteOrphans, .offloading:
                     return true

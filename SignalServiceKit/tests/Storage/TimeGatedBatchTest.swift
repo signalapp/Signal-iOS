@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import XCTest
 import GRDB
+import XCTest
 
 @testable import SignalServiceKit
 
@@ -21,7 +21,7 @@ class DBTimeBatchingTest: XCTestCase {
     func testEnumerateSeparateTransactions() async {
         let uniqueTransactions = await countUniqueTransactions(
             enumerationCount: 100,
-            yieldTxAfter: -1
+            yieldTxAfter: -1,
         )
 
         XCTAssertEqual(uniqueTransactions, 100)
@@ -30,7 +30,7 @@ class DBTimeBatchingTest: XCTestCase {
     func testEnumerateSingleTransaction() async {
         let uniqueTransactions = await countUniqueTransactions(
             enumerationCount: 1,
-            yieldTxAfter: .infinity
+            yieldTxAfter: .infinity,
         )
 
         XCTAssertEqual(uniqueTransactions, 1)
@@ -38,7 +38,7 @@ class DBTimeBatchingTest: XCTestCase {
 
     private func countUniqueTransactions(
         enumerationCount: Int,
-        yieldTxAfter: TimeInterval
+        yieldTxAfter: TimeInterval,
     ) async -> Int {
         var uniqueTransactions = 0
         let db = InMemoryDB()
@@ -48,7 +48,7 @@ class DBTimeBatchingTest: XCTestCase {
         await TimeGatedBatch.enumerateObjects(
             1...enumerationCount,
             db: db,
-            yieldTxAfter: yieldTxAfter
+            yieldTxAfter: yieldTxAfter,
         ) { _, tx in
             if tx !== currentTransaction {
                 uniqueTransactions += 1
@@ -166,7 +166,7 @@ class DBTimeBatchingTest: XCTestCase {
                 for i in 0..<10 {
                     try tx.database.execute(
                         sql: "INSERT INTO \(tableName) (id) VALUES (?);",
-                        arguments: [i * batchCounter]
+                        arguments: [i * batchCounter],
                     )
                 }
                 if batchCounter == 2 {

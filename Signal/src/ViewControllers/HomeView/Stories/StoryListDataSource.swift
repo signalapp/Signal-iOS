@@ -76,15 +76,15 @@ class StoryListDataSource: NSObject {
         return syncingModels.threadSafeHiddenStoryContexts
     }
 
-    public var shouldDisplayMyStory: Bool {
+    var shouldDisplayMyStory: Bool {
         return syncingModels.exposedModel.shouldDisplayMyStory
     }
 
-    public var shouldDisplayHiddenStoriesHeader: Bool {
+    var shouldDisplayHiddenStoriesHeader: Bool {
         return syncingModels.exposedModel.shouldDisplayHiddenStoriesHeader
     }
 
-    public var isHiddenStoriesSectionCollapsed: Bool {
+    var isHiddenStoriesSectionCollapsed: Bool {
         get {
             return syncingModels.exposedModel.isHiddenStoriesSectionCollapsed
         }
@@ -93,13 +93,13 @@ class StoryListDataSource: NSObject {
         }
     }
 
-    public var shouldDisplayHiddenStories: Bool {
+    var shouldDisplayHiddenStories: Bool {
         return syncingModels.exposedModel.shouldDisplayHiddenStories
     }
 
     private var previousSearchText: String?
 
-    public func setSearchText(_ text: String?) {
+    func setSearchText(_ text: String?) {
         guard text != previousSearchText else {
             return
         }
@@ -127,7 +127,7 @@ class StoryListDataSource: NSObject {
                     myStory: myStoryModel,
                     stories: listStories.sorted(by: Self.sortStoryModels),
                     searchText: oldModel.searchText,
-                    isHiddenStoriesSectionCollapsed: oldModel.isHiddenStoriesSectionCollapsed
+                    isHiddenStoriesSectionCollapsed: oldModel.isHiddenStoriesSectionCollapsed,
                 )
                 // Note everything but the new model gets ignored since we reload data
                 // rather than apply individual row updates.
@@ -136,7 +136,7 @@ class StoryListDataSource: NSObject {
                     newModel: newModel,
                     visibleStoryUpdates: [], // is ignored
                     hiddenStoryUpdates: [], // is ignored
-                    myStoryChanged: true // is ignored
+                    myStoryChanged: true, // is ignored
                 )
             } sync: { _ in
                 self.tableView?.reloadData()
@@ -155,7 +155,7 @@ class StoryListDataSource: NSObject {
             do {
                 let changes = try self.buildBatchUpdates(
                     oldViewModel: oldModel,
-                    changedMessageRowIds: rowIds
+                    changedMessageRowIds: rowIds,
                 )
                 return changes
             } catch {
@@ -179,7 +179,7 @@ class StoryListDataSource: NSObject {
                     oldViewModel: oldModel,
                     changedContexts: changedContextsDict,
                     deletedRowIds: .init(),
-                    myStoryModel: nil
+                    myStoryModel: nil,
                 )
                 return changes
             } catch {
@@ -197,7 +197,7 @@ class StoryListDataSource: NSObject {
                 newModel: newModel,
                 visibleStoryUpdates: [],
                 hiddenStoryUpdates: [],
-                myStoryChanged: false
+                myStoryChanged: false,
             )
         }
     }
@@ -209,7 +209,7 @@ class StoryListDataSource: NSObject {
                     myStory: oldModel.myStory,
                     stories: oldModel.unfilteredStories,
                     searchText: searchText,
-                    isHiddenStoriesSectionCollapsed: oldModel.isHiddenStoriesSectionCollapsed
+                    isHiddenStoriesSectionCollapsed: oldModel.isHiddenStoriesSectionCollapsed,
                 )
                 // Note everything but the new model gets ignored since we reload data
                 // rather than apply individual row updates.
@@ -218,7 +218,7 @@ class StoryListDataSource: NSObject {
                     newModel: newModel,
                     visibleStoryUpdates: [], // is ignored
                     hiddenStoryUpdates: [], // is ignored
-                    myStoryChanged: true // is ignored
+                    myStoryChanged: true, // is ignored
                 )
             } sync: { _ in
                 self.tableView?.reloadData()
@@ -234,10 +234,10 @@ class StoryListDataSource: NSObject {
         loadingQueue.async {
             let ok = self.syncingModels.mutate(
                 mutate,
-                sync: { (changes) in
+                sync: { changes in
                     self.applyChangesToTableView(changes)
                     self.observeAssociatedDataChangesForAvailableModels()
-                }
+                },
             )
 
             if !ok {
@@ -251,7 +251,7 @@ class StoryListDataSource: NSObject {
     // MARK: - Database Observation
 
     @MainActor
-    public func beginObservingDatabase() {
+    func beginObservingDatabase() {
         DependenciesBridge.shared.databaseChangeObserver.appendDatabaseChangeDelegate(self)
         SSKEnvironment.shared.systemStoryManagerRef.addStateChangedObserver(self)
         // NOTE: hidden state lives on StoryContextAssociatedData, so we observe changes on that.
@@ -291,7 +291,7 @@ class StoryListDataSource: NSObject {
             try StoryContextAssociatedData
                 .filter(
                     contactAciStrings.contains(Column(StoryContextAssociatedData.columnName(.contactAci)))
-                    || groupIds.contains(Column(StoryContextAssociatedData.columnName(.groupId)))
+                        || groupIds.contains(Column(StoryContextAssociatedData.columnName(.groupId))),
                 )
                 .fetchAll(db)
         }
@@ -303,7 +303,8 @@ class StoryListDataSource: NSObject {
             in: SSKEnvironment.shared.databaseStorageRef.grdbStorage.pool,
             onError: { error in
                 owsFailDebug("Failed to observe story hidden state: \(error))")
-            }, onChange: { [weak self] changedModels in
+            },
+            onChange: { [weak self] changedModels in
                 guard hasEmitted else {
                     hasEmitted = true
                     return
@@ -326,7 +327,7 @@ class StoryListDataSource: NSObject {
                         changedContexts.insert($0)
                     }
                 self?.updateStories(changedHiddenStateContexts: changedContexts)
-            }
+            },
         )
     }
 
@@ -334,7 +335,7 @@ class StoryListDataSource: NSObject {
 
     private func buildBatchUpdates(
         oldViewModel: StoryListViewModel,
-        changedMessageRowIds: Set<Int64>
+        changedMessageRowIds: Set<Int64>,
     ) throws -> StoryChanges {
         let updatedListMessages = SSKEnvironment.shared.databaseStorageRef.read {
             StoryFinder.listStoriesWithRowIds(Array(changedMessageRowIds), transaction: $0)
@@ -352,14 +353,14 @@ class StoryListDataSource: NSObject {
 
         let myStoryModel = self.buildMyStoryModel(
             oldModel: oldViewModel,
-            changedMessageRowIds: changedMessageRowIds
+            changedMessageRowIds: changedMessageRowIds,
         )
 
         return try buildBatchUpdates(
             oldViewModel: oldViewModel,
             changedContexts: changedContexts,
             deletedRowIds: deletedRowIds,
-            myStoryModel: myStoryModel
+            myStoryModel: myStoryModel,
         )
     }
 
@@ -381,7 +382,7 @@ class StoryListDataSource: NSObject {
         oldViewModel: StoryListViewModel,
         changedContexts: [StoryContext: StoryContextChanges],
         deletedRowIds: Set<Int64>,
-        myStoryModel: MyStoryViewModel?
+        myStoryModel: MyStoryViewModel?,
     ) throws -> StoryChanges {
         // Some of these will be totally new, some will be updates to contexts we knew about.
         // Below we start removing contexts from here when we find them in the old model.
@@ -409,8 +410,8 @@ class StoryListDataSource: NSObject {
 
                 let hasChanges =
                     !modelDeletedRowIds.isEmpty
-                    || contextChanges != nil
-                    || hiddenStateChanged
+                        || contextChanges != nil
+                        || hiddenStateChanged
 
                 guard hasChanges else {
                     // If there are no changes, just return the model we have.
@@ -427,7 +428,7 @@ class StoryListDataSource: NSObject {
                     updatedMessages: contextChanges?.changedMessages ?? [],
                     deletedMessageRowIds: modelDeletedRowIds,
                     isHidden: isHidden,
-                    transaction: transaction
+                    transaction: transaction,
                 )
             }
             // At this point all that remains is new contexts, any update ones got
@@ -449,7 +450,7 @@ class StoryListDataSource: NSObject {
         let newIsHiddenStoriesSectionCollapsed: Bool
         if !oldViewModel.isHiddenStoriesSectionCollapsed {
             newIsHiddenStoriesSectionCollapsed = false
-        } else if oldViewModel.unfilteredHiddenStories.isEmpty && newModels.contains(where: \.isHidden) {
+        } else if oldViewModel.unfilteredHiddenStories.isEmpty, newModels.contains(where: \.isHidden) {
             newIsHiddenStoriesSectionCollapsed = false
         } else {
             newIsHiddenStoriesSectionCollapsed = true
@@ -459,20 +460,20 @@ class StoryListDataSource: NSObject {
             myStory: myStoryModel ?? oldViewModel.myStory,
             stories: newModels,
             searchText: oldViewModel.searchText,
-            isHiddenStoriesSectionCollapsed: newIsHiddenStoriesSectionCollapsed
+            isHiddenStoriesSectionCollapsed: newIsHiddenStoriesSectionCollapsed,
         )
 
         let visibleBatchUpdates = try BatchUpdate.build(
             viewType: .uiTableView,
             oldValues: oldViewModel.visibleStories.map(\.context),
             newValues: newViewModel.visibleStories.map(\.context),
-            changedValues: changedVisibleContexts
+            changedValues: changedVisibleContexts,
         )
         let hiddenBatchUpdates = try BatchUpdate.build(
             viewType: .uiTableView,
             oldValues: oldViewModel.hiddenStories.map(\.context),
             newValues: newViewModel.hiddenStories.map(\.context),
-            changedValues: changedHiddenContexts
+            changedValues: changedHiddenContexts,
         )
 
         return StoryChanges(
@@ -480,7 +481,7 @@ class StoryListDataSource: NSObject {
             newModel: newViewModel,
             visibleStoryUpdates: visibleBatchUpdates,
             hiddenStoryUpdates: hiddenBatchUpdates,
-            myStoryChanged: myStoryModel != nil
+            myStoryChanged: myStoryModel != nil,
         )
     }
 
@@ -489,9 +490,9 @@ class StoryListDataSource: NSObject {
     //   * Any system story context with all its stories unviewed is always sorted at the top.
     // * We then show viewed stories, sorted by when they were viewed, with the most recently viewed at the top
     private static func sortStoryModels(lhs: StoryViewModel, rhs: StoryViewModel) -> Bool {
-        if lhs.isSystemStory && lhs.messages.allSatisfy(\.isViewed.negated) {
+        if lhs.isSystemStory, lhs.messages.allSatisfy(\.isViewed.negated) {
             return true
-        } else if rhs.isSystemStory && rhs.messages.allSatisfy(\.isViewed.negated) {
+        } else if rhs.isSystemStory, rhs.messages.allSatisfy(\.isViewed.negated) {
             return false
         } else if
             let lhsViewedTimestamp = lhs.latestMessageViewedTimestamp,
@@ -513,7 +514,7 @@ class StoryListDataSource: NSObject {
     /// or nil if there were no changes.
     private func buildMyStoryModel(
         oldModel: StoryListViewModel,
-        changedMessageRowIds: Set<Int64>
+        changedMessageRowIds: Set<Int64>,
     ) -> MyStoryViewModel? {
         let oldStoryModel = oldModel.myStory
         let outgoingStories = SSKEnvironment.shared.databaseStorageRef.read {
@@ -531,7 +532,7 @@ class StoryListDataSource: NSObject {
     // MARK: - Applying updates to TableView
 
     private func applyChangesToTableView(_ changes: StoryChanges) {
-        guard let tableView = tableView else {
+        guard let tableView else {
             return
         }
 
@@ -557,7 +558,7 @@ class StoryListDataSource: NSObject {
 
     /// Hidden stories section can be expanded and collapsed, so here we handle that as well as changes to the actual contents.
     private func applyHiddenStoryUpdates(_ changes: StoryChanges) {
-        guard let tableView = tableView else {
+        guard let tableView else {
             return
         }
 
@@ -585,6 +586,7 @@ class StoryListDataSource: NSObject {
 
         case (false, true):
             tableView.insertRows(at: [IndexPath(row: 0, section: Section.hiddenStories.rawValue)], with: .fade)
+
         case (true, false):
             tableView.deleteRows(at: [IndexPath(row: 0, section: Section.hiddenStories.rawValue)], with: .fade)
         }
@@ -605,37 +607,37 @@ class StoryListDataSource: NSObject {
                             value: $0.value,
                             updateType: .update(
                                 oldIndex: oldIndex + oldHeaderOffset,
-                                newIndex: newIndex + newHeaderOffset
-                            )
+                                newIndex: newIndex + newHeaderOffset,
+                            ),
                         )
                     case let .move(oldIndex, newIndex):
                         return .init(
                             value: $0.value,
                             updateType: .move(
                                 oldIndex: oldIndex + oldHeaderOffset,
-                                newIndex: newIndex + newHeaderOffset
-                            )
+                                newIndex: newIndex + newHeaderOffset,
+                            ),
                         )
                     case let .insert(newIndex):
                         return .init(
                             value: $0.value,
                             updateType: .insert(
-                                newIndex: newIndex + newHeaderOffset
-                            )
+                                newIndex: newIndex + newHeaderOffset,
+                            ),
                         )
                     case let .delete(oldIndex):
                         return .init(
                             value: $0.value,
                             updateType: .delete(
-                                oldIndex: oldIndex + oldHeaderOffset
-                            )
+                                oldIndex: oldIndex + oldHeaderOffset,
+                            ),
                         )
                     }
                 },
                 toSection: .hiddenStories,
                 models: [changes.newModel.hiddenStories.first].compactMap({
                     changes.newModel.shouldDisplayHiddenStoriesHeader ? $0 : nil
-                }) + changes.newModel.hiddenStories
+                }) + changes.newModel.hiddenStories,
             )
 
         case (false, true):
@@ -645,7 +647,7 @@ class StoryListDataSource: NSObject {
                     return .init(value: $1.context, updateType: .insert(newIndex: $0 + newHeaderOffset))
                 },
                 toSection: .hiddenStories,
-                models: changes.newModel.hiddenStories
+                models: changes.newModel.hiddenStories,
             )
 
         case (true, false):
@@ -655,7 +657,7 @@ class StoryListDataSource: NSObject {
                     return .init(value: $1.context, updateType: .delete(oldIndex: $0 + oldHeaderOffset))
                 },
                 toSection: .hiddenStories,
-                models: changes.oldModel.hiddenStories
+                models: changes.oldModel.hiddenStories,
             )
 
         case (false, false):
@@ -668,9 +670,9 @@ class StoryListDataSource: NSObject {
     private func applyTableViewBatchUpdates(
         _ updates: [BatchUpdate<StoryContext>.Item],
         toSection section: Section,
-        models: [StoryViewModel]
+        models: [StoryViewModel],
     ) {
-        guard let tableView = tableView else {
+        guard let tableView else {
             return
         }
 
@@ -759,7 +761,7 @@ private class SyncingStoryListViewModel {
     @discardableResult
     func mutate(
         _ closure: (_ models: StoryListViewModel) -> StoryChanges?,
-        sync: @escaping (StoryChanges) -> Void
+        sync: @escaping (StoryChanges) -> Void,
     ) -> Bool {
         dispatchPrecondition(condition: .onQueue(loadingQueue))
 
@@ -802,7 +804,7 @@ private struct StoryListViewModel {
         myStory: MyStoryViewModel?,
         stories: [StoryViewModel],
         searchText: String?,
-        isHiddenStoriesSectionCollapsed: Bool
+        isHiddenStoriesSectionCollapsed: Bool,
     ) {
         self.myStory = myStory
         self.unfilteredStories = stories
@@ -810,7 +812,7 @@ private struct StoryListViewModel {
         self.isHiddenStoriesSectionCollapsed = isHiddenStoriesSectionCollapsed
 
         self.stories = {
-            guard let searchText = searchText else {
+            guard let searchText else {
                 return stories
             }
             return stories.filter {
@@ -824,11 +826,11 @@ private struct StoryListViewModel {
     }
 
     func copy(isHiddenStoriesSectionCollapsed: Bool) -> Self {
-        return  .init(
+        return .init(
             myStory: myStory,
             stories: unfilteredStories,
             searchText: searchText,
-            isHiddenStoriesSectionCollapsed: isHiddenStoriesSectionCollapsed
+            isHiddenStoriesSectionCollapsed: isHiddenStoriesSectionCollapsed,
         )
     }
 

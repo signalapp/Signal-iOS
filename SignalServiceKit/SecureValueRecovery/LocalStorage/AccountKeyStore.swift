@@ -100,7 +100,7 @@ public class AccountKeyStore {
 
     public func getMessageRootBackupKey(
         aci: Aci,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> MessageRootBackupKey? {
         guard let aep = getAccountEntropyPool(tx: tx) else { return nil }
         return try MessageRootBackupKey(accountEntropyPool: aep, aci: aci)

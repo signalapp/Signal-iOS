@@ -33,7 +33,7 @@ class BackupConfirmKeyViewController: EnterAccountEntropyPoolViewController, OWS
                 image: UIImage(named: "chevron-left-bold-28"),
                 primaryAction: UIAction { _ in
                     onBackPressed()
-                }
+                },
             )
 
             isModalInPresentation = true
@@ -48,18 +48,18 @@ class BackupConfirmKeyViewController: EnterAccountEntropyPoolViewController, OWS
             headerStrings: HeaderStrings(
                 title: OWSLocalizedString(
                     "BACKUP_ONBOARDING_CONFIRM_KEY_TITLE",
-                    comment: "Title for a view asking users to confirm their 'Recovery Key'."
+                    comment: "Title for a view asking users to confirm their 'Recovery Key'.",
                 ),
                 subtitle: OWSLocalizedString(
                     "BACKUP_ONBOARDING_CONFIRM_KEY_SUBTITLE",
-                    comment: "Subtitle for a view asking users to confirm their 'Recovery Key'."
-                )
+                    comment: "Subtitle for a view asking users to confirm their 'Recovery Key'.",
+                ),
             ),
             footerButtonConfig: FooterButtonConfig(
                 title: BackupKeepKeySafeSheet.seeKeyAgainButtonTitle,
                 action: {
                     onSeeKeyAgain()
-                }
+                },
             ),
             onEntryConfirmed: { [weak self] aep in
                 guard let self else { return }
@@ -67,11 +67,11 @@ class BackupConfirmKeyViewController: EnterAccountEntropyPoolViewController, OWS
                 present(
                     BackupKeepKeySafeSheet(
                         onContinue: { onContinue(self) },
-                        onSeeKeyAgain: onSeeKeyAgain
+                        onSeeKeyAgain: onSeeKeyAgain,
                     ),
-                    animated: true
+                    animated: true,
                 )
-            }
+            },
         )
     }
 
@@ -90,15 +90,15 @@ class BackupConfirmKeyViewController: EnterAccountEntropyPoolViewController, OWS
 #Preview {
     let aep = try! AccountEntropyPool(key: String(
         repeating: "a",
-        count: AccountEntropyPool.Constants.byteLength
+        count: AccountEntropyPool.Constants.byteLength,
     ))
 
     return UINavigationController(
         rootViewController: BackupConfirmKeyViewController(
             aep: aep,
             onContinue: { _ in print("Continuing...!") },
-            onSeeKeyAgain: { print("Seeing key again...!") }
-        )
+            onSeeKeyAgain: { print("Seeing key again...!") },
+        ),
     )
 }
 

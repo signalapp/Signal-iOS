@@ -26,7 +26,7 @@ class MessageDetailViewController: OWSTableViewController2 {
 
     private(set) var message: TSMessage
     private let threadViewModel: ThreadViewModel
-    public let spoilerState: SpoilerRenderState
+    let spoilerState: SpoilerRenderState
     private let editManager: EditManager
     private var wasDeleted: Bool = false
     private var isIncoming: Bool { message is TSIncomingMessage }
@@ -37,6 +37,7 @@ class MessageDetailViewController: OWSTableViewController2 {
         let accessoryText: String
         let displayUDIndicator: Bool
     }
+
     private let messageRecipients = AtomicOptional<[MessageReceiptStatus: [MessageRecipientModel]]>(nil, lock: .sharedGlobal)
 
     private let cellView = CVCellView()
@@ -61,7 +62,7 @@ class MessageDetailViewController: OWSTableViewController2 {
     private var expiryLabelName: String {
         OWSLocalizedString(
             "MESSAGE_METADATA_VIEW_DISAPPEARS_IN",
-            comment: "Label for the 'disappears' field of the 'message metadata' view."
+            comment: "Label for the 'disappears' field of the 'message metadata' view.",
         )
     }
 
@@ -79,7 +80,7 @@ class MessageDetailViewController: OWSTableViewController2 {
             owsFailDebug("We should never hit this code, because we should never show the label")
             return OWSLocalizedString(
                 "MESSAGE_METADATA_VIEW_NEVER_DISAPPEARS",
-                comment: "On the 'message metadata' view, if a message never disappears, this text is shown as a fallback."
+                comment: "On the 'message metadata' view, if a message never disappears, this text is shown as a fallback.",
             )
         }
 
@@ -94,7 +95,7 @@ class MessageDetailViewController: OWSTableViewController2 {
             result = expirationLabelFormatter.string(from: 0)
         }
 
-        guard let result = result else {
+        guard let result else {
             owsFailDebug("Could not format duration")
             return ""
         }
@@ -114,7 +115,7 @@ class MessageDetailViewController: OWSTableViewController2 {
         threadViewModel: ThreadViewModel,
         spoilerState: SpoilerRenderState,
         editManager: EditManager,
-        thread: TSThread
+        thread: TSThread,
     ) {
         self.message = message
         self.threadViewModel = threadViewModel
@@ -142,7 +143,7 @@ class MessageDetailViewController: OWSTableViewController2 {
 
         title = OWSLocalizedString(
             "MESSAGE_METADATA_VIEW_TITLE",
-            comment: "Title for the 'message metadata' view."
+            comment: "Title for the 'message metadata' view.",
         )
 
         DependenciesBridge.shared.databaseChangeObserver.appendDatabaseChangeDelegate(self)
@@ -179,7 +180,7 @@ class MessageDetailViewController: OWSTableViewController2 {
         guard expiryLabelTimer == nil else { return }
         expiryLabelTimer = Timer.scheduledTimer(
             withTimeInterval: 1,
-            repeats: true
+            repeats: true,
         ) { [weak self] _ in
             self?.updateExpiryLabel()
         }
@@ -192,7 +193,8 @@ class MessageDetailViewController: OWSTableViewController2 {
 
         if
             !message.wasRemotelyDeleted,
-            let editHistorySection = buildEditHistorySection() {
+            let editHistorySection = buildEditHistorySection()
+        {
             contents.add(editHistorySection)
         }
 
@@ -208,12 +210,14 @@ class MessageDetailViewController: OWSTableViewController2 {
     private func buildRenderItem(
         message interaction: TSMessage,
         spoilerState: SpoilerRenderState,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> CVRenderItem? {
-        guard let thread = TSThread.anyFetch(
-            uniqueId: interaction.uniqueThreadId,
-            transaction: transaction
-        ) else {
+        guard
+            let thread = TSThread.anyFetch(
+                uniqueId: interaction.uniqueThreadId,
+                transaction: transaction,
+            )
+        else {
             owsFailDebug("Missing thread.")
             return nil
         }
@@ -227,8 +231,8 @@ class MessageDetailViewController: OWSTableViewController2 {
             isWallpaperPhoto: false,
             chatColor: DependenciesBridge.shared.chatColorSettingStore.resolvedChatColor(
                 for: thread,
-                tx: transaction
-            )
+                tx: transaction,
+            ),
         )
 
         return CVLoader.buildStandaloneRenderItem(
@@ -237,12 +241,12 @@ class MessageDetailViewController: OWSTableViewController2 {
             threadAssociatedData: threadAssociatedData,
             conversationStyle: conversationStyle,
             spoilerState: spoilerState,
-            transaction: transaction
+            transaction: transaction,
         )
     }
 
     private func buildMessageSection() -> OWSTableSection {
-        guard let renderItem = renderItem else {
+        guard let renderItem else {
             owsFailDebug("Missing renderItem.")
             return OWSTableSection()
         }
@@ -272,9 +276,11 @@ class MessageDetailViewController: OWSTableViewController2 {
         // Sent time
 
         let sentTimeLabel = Self.buildValueLabel(
-            name: OWSLocalizedString("MESSAGE_METADATA_VIEW_SENT_DATE_TIME",
-                                    comment: "Label for the 'sent date & time' field of the 'message metadata' view."),
-            value: DateUtil.formatPastTimestampRelativeToNow(message.timestamp)
+            name: OWSLocalizedString(
+                "MESSAGE_METADATA_VIEW_SENT_DATE_TIME",
+                comment: "Label for the 'sent date & time' field of the 'message metadata' view.",
+            ),
+            value: DateUtil.formatPastTimestampRelativeToNow(message.timestamp),
         )
         messageStack.addArrangedSubview(sentTimeLabel)
         sentTimeLabel.isUserInteractionEnabled = true
@@ -283,9 +289,11 @@ class MessageDetailViewController: OWSTableViewController2 {
         if isIncoming {
             // Received time
             messageStack.addArrangedSubview(Self.buildValueLabel(
-                name: OWSLocalizedString("MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME",
-                                        comment: "Label for the 'received date & time' field of the 'message metadata' view."),
-                value: DateUtil.formatPastTimestampRelativeToNow(message.receivedAtTimestamp)
+                name: OWSLocalizedString(
+                    "MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME",
+                    comment: "Label for the 'received date & time' field of the 'message metadata' view.",
+                ),
+                value: DateUtil.formatPastTimestampRelativeToNow(message.receivedAtTimestamp),
             ))
         }
 
@@ -298,17 +306,21 @@ class MessageDetailViewController: OWSTableViewController2 {
         if bodyMediaAttachments?.count == 1, let attachment = bodyMediaAttachments?.first {
             if let sourceFilename = attachment.reference.sourceFilename {
                 messageStack.addArrangedSubview(Self.buildValueLabel(
-                    name: OWSLocalizedString("MESSAGE_METADATA_VIEW_SOURCE_FILENAME",
-                                            comment: "Label for the original filename of any attachment in the 'message metadata' view."),
-                    value: sourceFilename
+                    name: OWSLocalizedString(
+                        "MESSAGE_METADATA_VIEW_SOURCE_FILENAME",
+                        comment: "Label for the original filename of any attachment in the 'message metadata' view.",
+                    ),
+                    value: sourceFilename,
                 ))
             }
 
             if let formattedByteCount = byteCountFormatter.string(for: attachment.attachment.asStream()?.unencryptedByteCount ?? 0) {
                 messageStack.addArrangedSubview(Self.buildValueLabel(
-                    name: OWSLocalizedString("MESSAGE_METADATA_VIEW_ATTACHMENT_FILE_SIZE",
-                                            comment: "Label for file size of attachments in the 'message metadata' view."),
-                    value: formattedByteCount
+                    name: OWSLocalizedString(
+                        "MESSAGE_METADATA_VIEW_ATTACHMENT_FILE_SIZE",
+                        comment: "Label for file size of attachments in the 'message metadata' view.",
+                    ),
+                    value: formattedByteCount,
                 ))
             } else {
                 owsFailDebug("formattedByteCount was unexpectedly nil")
@@ -317,9 +329,11 @@ class MessageDetailViewController: OWSTableViewController2 {
             if DebugFlags.messageDetailsExtraInfo {
                 let mimeType = attachment.attachment.mimeType
                 messageStack.addArrangedSubview(Self.buildValueLabel(
-                    name: OWSLocalizedString("MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE",
-                                            comment: "Label for the MIME type of attachments in the 'message metadata' view."),
-                    value: mimeType
+                    name: OWSLocalizedString(
+                        "MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE",
+                        comment: "Label for the MIME type of attachments in the 'message metadata' view.",
+                    ),
+                    value: mimeType,
                 ))
             }
         }
@@ -333,9 +347,10 @@ class MessageDetailViewController: OWSTableViewController2 {
                 messageStack.autoPinWidthToSuperviewMargins()
                 messageStack.autoPinHeightToSuperview(withMargin: 20)
                 return cell
-            }, actionBlock: {
+            },
+            actionBlock: {
 
-            }
+            },
         ))
 
         return section
@@ -361,12 +376,12 @@ class MessageDetailViewController: OWSTableViewController2 {
         let section = OWSTableSection()
         section.headerTitle = OWSLocalizedString(
             "MESSAGE_DETAILS_VIEW_SENT_FROM_TITLE",
-            comment: "Title for the 'sent from' section on the 'message details' view."
+            comment: "Title for the 'sent from' section on the 'message details' view.",
         )
         section.add(contactItem(
             for: incomingMessage.authorAddress,
             accessoryText: DateUtil.formatPastTimestampRelativeToNow(incomingMessage.timestamp),
-            displayUDIndicator: incomingMessage.wasReceivedByUD
+            displayUDIndicator: incomingMessage.wasReceivedByUD,
         ))
         return section
     }
@@ -381,7 +396,7 @@ class MessageDetailViewController: OWSTableViewController2 {
             icon: .buttonEdit,
             withText: OWSLocalizedString(
                 "MESSAGE_DETAILS_EDIT_HISTORY_TITLE",
-                comment: "Title for the 'edit history' section on the 'message details' view."
+                comment: "Title for the 'edit history' section on the 'message details' view.",
             ),
             actionBlock: { [weak self] in
                 guard let self else { return }
@@ -391,11 +406,11 @@ class MessageDetailViewController: OWSTableViewController2 {
                     spoilerState: self.spoilerState,
                     editManager: self.editManager,
                     database: SSKEnvironment.shared.databaseStorageRef,
-                    databaseChangeObserver: DependenciesBridge.shared.databaseChangeObserver
+                    databaseChangeObserver: DependenciesBridge.shared.databaseChangeObserver,
                 )
                 sheet.delegate = self.detailDelegate
                 self.present(sheet, animated: true)
-            }
+            },
         ))
         return section
     }
@@ -417,7 +432,7 @@ class MessageDetailViewController: OWSTableViewController2 {
             .sending,
             .pending,
             .failed,
-            .skipped
+            .skipped,
         ]
 
         guard let messageRecipients = messageRecipients.get() else { return [] }
@@ -435,7 +450,7 @@ class MessageDetailViewController: OWSTableViewController2 {
                     top: (defaultSpacingBetweenSections ?? 0) + 12,
                     left: Self.cellHInnerMargin * 0.5,
                     bottom: 10,
-                    right: Self.cellHInnerMargin * 0.5
+                    right: Self.cellHInnerMargin * 0.5,
                 )
 
                 let label = UILabel()
@@ -451,7 +466,7 @@ class MessageDetailViewController: OWSTableViewController2 {
                 iconView.contentMode = .scaleAspectFit
                 iconView.setTemplateImageName(
                     iconName,
-                    tintColor: Theme.isDarkThemeEnabled ? UIColor.ows_gray05 : UIColor.ows_gray90
+                    tintColor: Theme.isDarkThemeEnabled ? UIColor.ows_gray05 : UIColor.ows_gray90,
                 )
                 headerView.addSubview(iconView)
                 iconView.autoAlignAxis(.horizontal, toSameAxisOf: label)
@@ -470,7 +485,7 @@ class MessageDetailViewController: OWSTableViewController2 {
                 section.add(contactItem(
                     for: recipient.address,
                     accessoryText: recipient.accessoryText,
-                    displayUDIndicator: recipient.displayUDIndicator
+                    displayUDIndicator: recipient.displayUDIndicator,
                 ))
             }
         }
@@ -481,7 +496,7 @@ class MessageDetailViewController: OWSTableViewController2 {
     private func contactItem(for address: SignalServiceAddress, accessoryText: String, displayUDIndicator: Bool) -> OWSTableItem {
         return .init(
             customCellBlock: { [weak self] in
-                guard let self = self else { return UITableViewCell() }
+                guard let self else { return UITableViewCell() }
                 let tableView = self.tableView
                 guard let cell = tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.reuseIdentifier) as? ContactTableViewCell else {
                     owsFailDebug("Missing cell.")
@@ -490,22 +505,24 @@ class MessageDetailViewController: OWSTableViewController2 {
 
                 SSKEnvironment.shared.databaseStorageRef.read { transaction in
                     let configuration = ContactCellConfiguration(address: address, localUserDisplayMode: .asUser)
-                    configuration.accessoryView = self.buildAccessoryView(text: accessoryText,
-                                                                          displayUDIndicator: displayUDIndicator,
-                                                                          transaction: transaction)
+                    configuration.accessoryView = self.buildAccessoryView(
+                        text: accessoryText,
+                        displayUDIndicator: displayUDIndicator,
+                        transaction: transaction,
+                    )
                     cell.configure(configuration: configuration, transaction: transaction)
                 }
                 return cell
             },
             actionBlock: { [weak self] in
-                guard let self = self else { return }
+                guard let self else { return }
                 ProfileSheetSheetCoordinator(
                     address: address,
                     groupViewHelper: nil,
-                    spoilerState: self.spoilerState
+                    spoilerState: self.spoilerState,
                 )
                 .presentAppropriateSheet(from: self)
-            }
+            },
         )
     }
 
@@ -513,22 +530,24 @@ class MessageDetailViewController: OWSTableViewController2 {
         expiryLabel?.attributedText = expiryLabelAttributedText
     }
 
-    private func buildAccessoryView(text: String,
-                                    displayUDIndicator: Bool,
-                                    transaction: DBReadTransaction) -> ContactCellAccessoryView {
+    private func buildAccessoryView(
+        text: String,
+        displayUDIndicator: Bool,
+        transaction: DBReadTransaction,
+    ) -> ContactCellAccessoryView {
         let label = CVLabel()
         label.textAlignment = .right
         let labelConfig = CVLabelConfig.unstyledText(
             text,
             font: .dynamicTypeFootnoteClamped,
-            textColor: .Signal.tertiaryLabel
+            textColor: .Signal.tertiaryLabel,
         )
         labelConfig.applyForRendering(label: label)
         let labelSize = CVText.measureLabel(config: labelConfig, maxWidth: .greatestFiniteMagnitude)
 
         let shouldShowUD = SSKEnvironment.shared.preferencesRef.shouldShowUnidentifiedDeliveryIndicators(transaction: transaction)
 
-        guard displayUDIndicator && shouldShowUD else {
+        guard displayUDIndicator, shouldShowUD else {
             return ContactCellAccessoryView(accessoryView: label, size: labelSize)
         }
 
@@ -537,16 +556,20 @@ class MessageDetailViewController: OWSTableViewController2 {
         let imageSize = CGSize.square(20)
 
         let hStack = ManualStackView(name: "hStack")
-        let hStackConfig = CVStackViewConfig(axis: .horizontal,
-                                             alignment: .center,
-                                             spacing: 8,
-                                             layoutMargins: .zero)
-        let hStackMeasurement = hStack.configure(config: hStackConfig,
-                                                 subviews: [imageView, label],
-                                                 subviewInfos: [
-                                                    imageSize.asManualSubviewInfo(hasFixedSize: true),
-                                                    labelSize.asManualSubviewInfo
-                                                 ])
+        let hStackConfig = CVStackViewConfig(
+            axis: .horizontal,
+            alignment: .center,
+            spacing: 8,
+            layoutMargins: .zero,
+        )
+        let hStackMeasurement = hStack.configure(
+            config: hStackConfig,
+            subviews: [imageView, label],
+            subviewInfos: [
+                imageSize.asManualSubviewInfo(hasFixedSize: true),
+                labelSize.asManualSubviewInfo,
+            ],
+        )
         let hStackSize = hStackMeasurement.measuredSize
         return ContactCellAccessoryView(accessoryView: hStack, size: hStackSize)
     }
@@ -555,7 +578,7 @@ class MessageDetailViewController: OWSTableViewController2 {
         .composed(of: [
             name.styled(with: .font(UIFont.dynamicTypeFootnoteClamped.semibold())),
             " ",
-            value
+            value,
         ])
     }
 
@@ -587,32 +610,50 @@ class MessageDetailViewController: OWSTableViewController2 {
     private func sectionTitle(for messageReceiptStatus: MessageReceiptStatus) -> String {
         switch messageReceiptStatus {
         case .uploading:
-            return OWSLocalizedString("MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING",
-                              comment: "Status label for messages which are uploading.")
+            return OWSLocalizedString(
+                "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING",
+                comment: "Status label for messages which are uploading.",
+            )
         case .sending:
-            return OWSLocalizedString("MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING",
-                                     comment: "Status label for messages which are sending.")
+            return OWSLocalizedString(
+                "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING",
+                comment: "Status label for messages which are sending.",
+            )
         case .pending:
-            return OWSLocalizedString("MESSAGE_METADATA_VIEW_MESSAGE_STATUS_PAUSED",
-                                     comment: "Status label for messages which are paused.")
+            return OWSLocalizedString(
+                "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_PAUSED",
+                comment: "Status label for messages which are paused.",
+            )
         case .sent:
-            return OWSLocalizedString("MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT",
-                              comment: "Status label for messages which are sent.")
+            return OWSLocalizedString(
+                "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT",
+                comment: "Status label for messages which are sent.",
+            )
         case .delivered:
-            return OWSLocalizedString("MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED",
-                              comment: "Status label for messages which are delivered.")
+            return OWSLocalizedString(
+                "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED",
+                comment: "Status label for messages which are delivered.",
+            )
         case .read:
-            return OWSLocalizedString("MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ",
-                              comment: "Status label for messages which are read.")
+            return OWSLocalizedString(
+                "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ",
+                comment: "Status label for messages which are read.",
+            )
         case .failed:
-            return OWSLocalizedString("MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED",
-                                     comment: "Status label for messages which are failed.")
+            return OWSLocalizedString(
+                "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED",
+                comment: "Status label for messages which are failed.",
+            )
         case .skipped:
-            return OWSLocalizedString("MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED",
-                                     comment: "Status label for messages which were skipped.")
+            return OWSLocalizedString(
+                "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED",
+                comment: "Status label for messages which were skipped.",
+            )
         case .viewed:
-            return OWSLocalizedString("MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED",
-                              comment: "Status label for messages which are viewed.")
+            return OWSLocalizedString(
+                "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_VIEWED",
+                comment: "Status label for messages which are viewed.",
+            )
         }
     }
 
@@ -673,7 +714,7 @@ extension MessageDetailViewController {
 
         let toast = ToastController(text: OWSLocalizedString(
             "MESSAGE_DETAIL_VIEW_DID_COPY_SENT_TIMESTAMP",
-            comment: "Toast indicating that the user has copied the sent timestamp."
+            comment: "Toast indicating that the user has copied the sent timestamp.",
         ))
         toast.presentToastView(from: .bottom, of: view, inset: view.safeAreaInsets.bottom + 8)
     }
@@ -719,8 +760,10 @@ extension MessageDetailViewController: MediaGalleryDelegate {
     }
 
     func didReloadAllSectionsInMediaGallery(_ mediaGallery: MediaGallery) {
-        if let firstAttachment = self.bodyMediaAttachments?.first,
-           mediaGallery.ensureLoadedForDetailView(focusedAttachment: firstAttachment) == nil {
+        if
+            let firstAttachment = self.bodyMediaAttachments?.first,
+            mediaGallery.ensureLoadedForDetailView(focusedAttachment: firstAttachment) == nil
+        {
             // Assume the item was deleted.
             self.dismiss(animated: true) {
                 self.navigationController?.popViewController(animated: true)
@@ -743,7 +786,7 @@ extension MessageDetailViewController: ContactShareViewHelperDelegate {
 }
 
 extension MessageDetailViewController: LongTextViewDelegate {
-    public func longTextViewMessageWasDeleted(_ longTextViewController: LongTextViewController) {
+    func longTextViewMessageWasDeleted(_ longTextViewController: LongTextViewController) {
         self.detailDelegate?.detailViewMessageWasDeleted(self)
     }
 }
@@ -770,7 +813,7 @@ extension MessageDetailViewController: MediaPresentationContextProvider {
         return MediaPresentationContext(
             mediaView: mediaView,
             presentationFrame: presentationFrame,
-            mediaViewShape: .rectangle(CVComponentMessage.bubbleWideCornerRadius)
+            mediaViewShape: .rectangle(CVComponentMessage.bubbleWideCornerRadius),
         )
     }
 
@@ -788,7 +831,7 @@ extension MessageDetailViewController: MediaPresentationContextProvider {
             withDuration: MediaPresentationContext.animationDuration,
             animations: {
                 mediaOverlayViews.forEach { $0.alpha = 1 }
-            }
+            },
         )
     }
 }
@@ -809,7 +852,7 @@ extension MediaPresentationContext {
 
 extension MessageDetailViewController: DatabaseChangeDelegate {
 
-    public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
+    func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         guard databaseChanges.didUpdate(interaction: self.message) else {
             return
         }
@@ -817,11 +860,11 @@ extension MessageDetailViewController: DatabaseChangeDelegate {
         refreshContentForDatabaseUpdate()
     }
 
-    public func databaseChangesDidUpdateExternally() {
+    func databaseChangesDidUpdateExternally() {
         refreshContentForDatabaseUpdate()
     }
 
-    public func databaseChangesDidReset() {
+    func databaseChangesDidReset() {
         refreshContentForDatabaseUpdate()
     }
 
@@ -833,7 +876,7 @@ extension MessageDetailViewController: DatabaseChangeDelegate {
         // imporant, so we de-bounce to never update this view more than once every N seconds.
 
         let updateBlock = { [weak self] in
-            guard let self = self else {
+            guard let self else {
                 return
             }
             self.databaseUpdateTimer?.invalidate()
@@ -849,7 +892,7 @@ extension MessageDetailViewController: DatabaseChangeDelegate {
 
         self.databaseUpdateTimer = Timer.scheduledTimer(
             withTimeInterval: 2.0,
-            repeats: false
+            repeats: false,
         ) { _ in
             assert(self.databaseUpdateTimer != nil)
             updateBlock()
@@ -874,13 +917,15 @@ extension MessageDetailViewController: DatabaseChangeDelegate {
             self.bodyMediaAttachments = DependenciesBridge.shared.attachmentStore
                 .fetchReferencedAttachments(
                     for: .messageBodyAttachment(messageRowId: newMessage.sqliteRowId!),
-                    tx: transaction
+                    tx: transaction,
                 )
-            guard let renderItem = buildRenderItem(
-                message: newMessage,
-                spoilerState: spoilerState,
-                transaction: transaction
-            ) else {
+            guard
+                let renderItem = buildRenderItem(
+                    message: newMessage,
+                    spoilerState: spoilerState,
+                    transaction: transaction,
+                )
+            else {
                 return false
             }
             self.renderItem = renderItem
@@ -908,7 +953,7 @@ extension MessageDetailViewController: DatabaseChangeDelegate {
         }
 
         DispatchQueue.sharedUserInitiated.async { [weak self] in
-            guard let self = self else { return }
+            guard let self else { return }
 
             let messageRecipientAddressesUnsorted = outgoingMessage.recipientAddresses()
             let (hasBodyAttachments, messageRecipientAddressesSorted) = SSKEnvironment.shared.databaseStorageRef.read { transaction in
@@ -916,12 +961,12 @@ extension MessageDetailViewController: DatabaseChangeDelegate {
                     outgoingMessage.hasBodyAttachments(transaction: transaction),
                     SSKEnvironment.shared.contactManagerImplRef.sortSignalServiceAddresses(
                         messageRecipientAddressesUnsorted,
-                        transaction: transaction
-                    )
+                        transaction: transaction,
+                    ),
                 )
             }
             let messageRecipientAddressesGrouped = messageRecipientAddressesSorted.reduce(
-                into: [MessageReceiptStatus: [MessageRecipientModel]]()
+                into: [MessageReceiptStatus: [MessageRecipientModel]](),
             ) { result, address in
                 guard let recipientState = outgoingMessage.recipientState(for: address) else {
                     return owsFailDebug("no message status for recipient: \(address).")
@@ -930,7 +975,7 @@ extension MessageDetailViewController: DatabaseChangeDelegate {
                 let (status, statusMessage, _) = MessageRecipientStatusUtils.recipientStatusAndStatusMessage(
                     outgoingMessage: outgoingMessage,
                     recipientState: recipientState,
-                    hasBodyAttachments: hasBodyAttachments
+                    hasBodyAttachments: hasBodyAttachments,
                 )
                 var bucket = result[status] ?? []
 
@@ -939,13 +984,13 @@ extension MessageDetailViewController: DatabaseChangeDelegate {
                     bucket.append(MessageRecipientModel(
                         address: address,
                         accessoryText: statusMessage,
-                        displayUDIndicator: recipientState.wasSentByUD
+                        displayUDIndicator: recipientState.wasSentByUD,
                     ))
                 case .sending, .failed, .skipped, .uploading, .pending:
                     bucket.append(MessageRecipientModel(
                         address: address,
                         accessoryText: "",
-                        displayUDIndicator: false
+                        displayUDIndicator: false,
                     ))
                 }
 
@@ -991,39 +1036,49 @@ extension MessageDetailViewController: CVComponentDelegate {
     // MARK: - Long Press
 
     // TODO:
-    func didLongPressTextViewItem(_ cell: CVCell,
-                                  itemViewModel: CVItemViewModelImpl,
-                                  shouldAllowReply: Bool) {}
+    func didLongPressTextViewItem(
+        _ cell: CVCell,
+        itemViewModel: CVItemViewModelImpl,
+        shouldAllowReply: Bool,
+    ) {}
 
     // TODO:
-    func didLongPressMediaViewItem(_ cell: CVCell,
-                                   itemViewModel: CVItemViewModelImpl,
-                                   shouldAllowReply: Bool) {}
+    func didLongPressMediaViewItem(
+        _ cell: CVCell,
+        itemViewModel: CVItemViewModelImpl,
+        shouldAllowReply: Bool,
+    ) {}
 
     // TODO:
-    func didLongPressQuote(_ cell: CVCell,
-                           itemViewModel: CVItemViewModelImpl,
-                           shouldAllowReply: Bool) {}
+    func didLongPressQuote(
+        _ cell: CVCell,
+        itemViewModel: CVItemViewModelImpl,
+        shouldAllowReply: Bool,
+    ) {}
 
     // TODO:
-    func didLongPressSystemMessage(_ cell: CVCell,
-                                   itemViewModel: CVItemViewModelImpl) {}
+    func didLongPressSystemMessage(
+        _ cell: CVCell,
+        itemViewModel: CVItemViewModelImpl,
+    ) {}
 
     // TODO:
-    func didLongPressSticker(_ cell: CVCell,
-                             itemViewModel: CVItemViewModelImpl,
-                             shouldAllowReply: Bool) {}
+    func didLongPressSticker(
+        _ cell: CVCell,
+        itemViewModel: CVItemViewModelImpl,
+        shouldAllowReply: Bool,
+    ) {}
 
     func didLongPressPaymentMessage(
         _ cell: CVCell,
         itemViewModel: CVItemViewModelImpl,
-        shouldAllowReply: Bool
+        shouldAllowReply: Bool,
     ) { }
 
     func didLongPressPoll(
         _ cell: CVCell,
         itemViewModel: CVItemViewModelImpl,
-        shouldAllowReply: Bool
+        shouldAllowReply: Bool,
     ) {}
 
     // TODO:
@@ -1055,8 +1110,10 @@ extension MessageDetailViewController: CVComponentDelegate {
     func shouldAllowReplyForItem(_ itemViewModel: CVItemViewModelImpl) -> Bool { false }
 
     // TODO:
-    func didTapReactions(reactionState: InteractionReactionState,
-                         message: TSMessage) {}
+    func didTapReactions(
+        reactionState: InteractionReactionState,
+        message: TSMessage,
+    ) {}
 
     func didTapTruncatedTextMessage(_ itemViewModel: CVItemViewModelImpl) {}
 
@@ -1080,18 +1137,20 @@ extension MessageDetailViewController: CVComponentDelegate {
     func didTapBodyMedia(
         itemViewModel: CVItemViewModelImpl,
         attachmentStream: ReferencedAttachmentStream,
-        imageView: UIView
+        imageView: UIView,
     ) {
-        guard let thread = thread else {
+        guard let thread else {
             owsFailDebug("Missing thread.")
             return
         }
-        guard let mediaPageVC = MediaPageViewController(
-            initialMediaAttachment: attachmentStream,
-            thread: thread,
-            spoilerState: self.spoilerState,
-            showingSingleMessage: true
-        ) else {
+        guard
+            let mediaPageVC = MediaPageViewController(
+                initialMediaAttachment: attachmentStream,
+                thread: thread,
+                spoilerState: self.spoilerState,
+                showingSingleMessage: true,
+            )
+        else {
             return
         }
 
@@ -1175,7 +1234,7 @@ extension MessageDetailViewController: CVComponentDelegate {
 
     // MARK: - Selection
 
-    public var selectionState: CVSelectionState { CVSelectionState() }
+    var selectionState: CVSelectionState { CVSelectionState() }
 
     // MARK: - System Cell
 
@@ -1232,27 +1291,31 @@ extension MessageDetailViewController: CVComponentDelegate {
     func didTapBlockRequest(
         groupModel: TSGroupModelV2,
         requesterName: String,
-        requesterAci: Aci
+        requesterAci: Aci,
     ) {}
 
     // TODO:
     func didTapShowUpgradeAppUI() {}
 
     // TODO:
-    func didTapUpdateSystemContact(_ address: SignalServiceAddress,
-                                   newNameComponents: PersonNameComponents) {}
+    func didTapUpdateSystemContact(
+        _ address: SignalServiceAddress,
+        newNameComponents: PersonNameComponents,
+    ) {}
 
     // TODO:
     func didTapPhoneNumberChange(aci: Aci, phoneNumberOld: String, phoneNumberNew: String) {}
 
     func didTapViewOnceAttachment(_ interaction: TSInteraction) {
-        guard let renderItem = renderItem else {
+        guard let renderItem else {
             owsFailDebug("Missing renderItem.")
             return
         }
         let itemViewModel = CVItemViewModelImpl(renderItem: renderItem)
-        ViewOnceMessageViewController.tryToPresent(interaction: itemViewModel.interaction,
-                                                   from: self)
+        ViewOnceMessageViewController.tryToPresent(
+            interaction: itemViewModel.interaction,
+            from: self,
+        )
     }
 
     // TODO:
@@ -1313,8 +1376,10 @@ private class AnimationController: NSObject, UIViewControllerAnimatedTransitioni
     }
 
     func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
-        guard let fromView = transitionContext.view(forKey: .from),
-              let toView = transitionContext.view(forKey: .to) else {
+        guard
+            let fromView = transitionContext.view(forKey: .from),
+            let toView = transitionContext.view(forKey: .to)
+        else {
             owsFailDebug("Missing view controllers.")
             return transitionContext.completeTransition(false)
         }
@@ -1390,7 +1455,7 @@ private class AnimationController: NSObject, UIViewControllerAnimatedTransitioni
             UIView.animate(
                 .spring(duration: transitionDuration(using: transitionContext)),
                 changes: animations,
-                completion: completion
+                completion: completion,
             )
         } else {
             UIView.animate(

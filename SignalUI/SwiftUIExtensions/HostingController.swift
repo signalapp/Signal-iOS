@@ -45,7 +45,7 @@ open class HostingContainer<Wrapped: View>: UIViewController {
         fatalError("unimplemented")
     }
 
-    open override func viewDidLoad() {
+    override open func viewDidLoad() {
         addChild(hostingController)
         view.addSubview(hostingController.view)
         hostingController.view.autoPinEdgesToSuperviewEdges()
@@ -89,7 +89,7 @@ open class HostingController<Wrapped: View>: UIHostingController<_HostingControl
         fatalError("unimplemented")
     }
 
-    open override func viewWillAppear(_ animated: Bool) {
+    override open func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
         rootView.scrollOffsetDidChange = { [weak self] scrollOffset in
@@ -105,7 +105,7 @@ open class HostingController<Wrapped: View>: UIHostingController<_HostingControl
         }
     }
 
-    open override func viewDidAppear(_ animated: Bool) {
+    override open func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
         if transitionCoordinator == nil {
@@ -113,7 +113,7 @@ open class HostingController<Wrapped: View>: UIHostingController<_HostingControl
         }
     }
 
-    open override func viewWillDisappear(_ animated: Bool) {
+    override open func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
         rootView.appearanceTransitionState = nil

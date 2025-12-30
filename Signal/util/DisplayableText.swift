@@ -92,14 +92,14 @@ public class DisplayableText: NSObject {
         super.init()
     }
 
-    #if TESTABLE_BUILD
-    internal static func testOnlyInit(fullContent: CVTextValue, truncatedContent: CVTextValue?) -> DisplayableText {
-        return DisplayableText.init(
+#if TESTABLE_BUILD
+    static func testOnlyInit(fullContent: CVTextValue, truncatedContent: CVTextValue?) -> DisplayableText {
+        return DisplayableText(
             fullContent: .init(textValue: fullContent, naturalAlignment: fullContent.naturalTextAligment),
-            truncatedContent: truncatedContent.map { .init(textValue: $0, naturalAlignment: $0.naturalTextAligment) }
+            truncatedContent: truncatedContent.map { .init(textValue: $0, naturalAlignment: $0.naturalTextAligment) },
         )
     }
-    #endif
+#endif
 
     // MARK: Emoji
 
@@ -211,7 +211,7 @@ public class DisplayableText: NSObject {
     public class var empty: DisplayableText {
         return DisplayableText(
             fullContent: .init(textValue: .text(""), naturalAlignment: .natural),
-            truncatedContent: nil
+            truncatedContent: nil,
         )
     }
 
@@ -233,13 +233,13 @@ public class DisplayableText: NSObject {
 
     public class func displayableText(
         withMessageBody messageBody: MessageBody,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> DisplayableText {
         let textValue: CVTextValue
         if messageBody.ranges.hasRanges {
             let hydrated = messageBody
                 .hydrating(
-                    mentionHydrator: ContactsMentionHydrator.mentionHydrator(transaction: transaction)
+                    mentionHydrator: ContactsMentionHydrator.mentionHydrator(transaction: transaction),
                 )
             textValue = .messageBody(hydrated)
         } else {
@@ -247,7 +247,7 @@ public class DisplayableText: NSObject {
         }
         let fullContent = Content(
             textValue: textValue,
-            naturalAlignment: textValue.naturalTextAligment
+            naturalAlignment: textValue.naturalTextAligment,
         )
 
         // Only show up to N characters of text.
@@ -272,7 +272,7 @@ public class DisplayableText: NSObject {
                 truncatedText = truncatedText.ows_stripped() + Self.truncatedTextSuffix
                 return Content(
                     textValue: .text(truncatedText),
-                    naturalAlignment: truncatedText.naturalTextAlignment
+                    naturalAlignment: truncatedText.naturalTextAlignment,
                 )
 
             case .attributedText(let attributedText):
@@ -281,23 +281,25 @@ public class DisplayableText: NSObject {
                 }
                 let truncatedAttributedText = (
                     attributedText.attributedSubstring(from: truncatedPlaintext.entireRange).ows_stripped()
-                    + Self.truncatedTextSuffix
+                        + Self.truncatedTextSuffix,
                 )
                 return Content(
                     textValue: .attributedText(truncatedAttributedText),
-                    naturalAlignment: truncatedAttributedText.string.naturalTextAlignment
+                    naturalAlignment: truncatedAttributedText.string.naturalTextAlignment,
                 )
 
             case .messageBody(let messageBody):
-                guard let truncatedBody = messageBody.truncatingIfNeeded(
-                    maxGlyphCount: kMaxTextDisplayLength,
-                    truncationSuffix: Self.truncatedTextSuffix
-                ) else {
+                guard
+                    let truncatedBody = messageBody.truncatingIfNeeded(
+                        maxGlyphCount: kMaxTextDisplayLength,
+                        truncationSuffix: Self.truncatedTextSuffix,
+                    )
+                else {
                     return nil
                 }
                 return Content(
                     textValue: .messageBody(truncatedBody),
-                    naturalAlignment: truncatedBody.naturalTextAlignment
+                    naturalAlignment: truncatedBody.naturalTextAlignment,
                 )
             }
         }()

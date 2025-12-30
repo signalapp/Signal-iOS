@@ -16,10 +16,14 @@ final class HelpViewController: OWSTableViewController2 {
 
     private func updateTableContents() {
         let helpTitle = CommonStrings.help
-        let supportCenterLabel = OWSLocalizedString("HELP_SUPPORT_CENTER",
-                                                   comment: "Help item that takes the user to the Signal support website")
-        let contactLabel = OWSLocalizedString("HELP_CONTACT_US",
-                                             comment: "Help item allowing the user to file a support request")
+        let supportCenterLabel = OWSLocalizedString(
+            "HELP_SUPPORT_CENTER",
+            comment: "Help item that takes the user to the Signal support website",
+        )
+        let contactLabel = OWSLocalizedString(
+            "HELP_CONTACT_US",
+            comment: "Help item allowing the user to file a support request",
+        )
 
         let contents = OWSTableContents(title: helpTitle)
 
@@ -29,7 +33,7 @@ final class HelpViewController: OWSTableViewController2 {
             actionBlock: { [weak self] in
                 let vc = SFSafariViewController(url: URL.Support.generic)
                 self?.present(vc, animated: true, completion: nil)
-            }
+            },
         ))
         helpSection.add(.disclosureItem(
             withText: contactLabel,
@@ -37,14 +41,16 @@ final class HelpViewController: OWSTableViewController2 {
                 guard ComposeSupportEmailOperation.canSendEmails else {
                     let localizedSheetTitle = OWSLocalizedString(
                         "EMAIL_SIGNAL_TITLE",
-                        comment: "Title for the fallback support sheet if user cannot send email"
+                        comment: "Title for the fallback support sheet if user cannot send email",
                     )
                     let localizedSheetMessage = OWSLocalizedString(
                         "EMAIL_SIGNAL_MESSAGE",
-                        comment: "Description for the fallback support sheet if user cannot send email"
+                        comment: "Description for the fallback support sheet if user cannot send email",
                     )
-                    let fallbackSheet = ActionSheetController(title: localizedSheetTitle,
-                                                              message: localizedSheetMessage)
+                    let fallbackSheet = ActionSheetController(
+                        title: localizedSheetTitle,
+                        message: localizedSheetMessage,
+                    )
                     let buttonTitle = OWSLocalizedString("BUTTON_OKAY", comment: "Label for the 'okay' button.")
                     fallbackSheet.addAction(ActionSheetAction(title: buttonTitle, style: .default))
                     self.presentActionSheet(fallbackSheet)
@@ -53,7 +59,7 @@ final class HelpViewController: OWSTableViewController2 {
                 let supportVC = ContactSupportViewController()
                 let navVC = OWSNavigationController(rootViewController: supportVC)
                 self.presentFormSheet(navVC, animated: true)
-            }
+            },
         ))
         contents.add(helpSection)
 
@@ -65,7 +71,7 @@ final class HelpViewController: OWSTableViewController2 {
             accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "submit_debug_log"),
             actionBlock: {
                 DebugLogs.submitLogs(dumper: .fromGlobals())
-            }
+            },
         ))
         contents.add(loggingSection)
 
@@ -73,11 +79,11 @@ final class HelpViewController: OWSTableViewController2 {
         aboutSection.headerTitle = OWSLocalizedString("ABOUT_SECTION_TITLE", comment: "Title for the 'about' help section")
         aboutSection.footerTitle = OWSLocalizedString(
             "SETTINGS_COPYRIGHT",
-            comment: "Footer for the 'about' help section"
+            comment: "Footer for the 'about' help section",
         )
         aboutSection.add(.copyableItem(
             label: OWSLocalizedString("SETTINGS_VERSION", comment: ""),
-            value: AppVersionImpl.shared.prettyAppVersion
+            value: AppVersionImpl.shared.prettyAppVersion,
         ))
         aboutSection.add(.disclosureItem(
             withText: OWSLocalizedString("SETTINGS_LEGAL_TERMS_CELL", comment: ""),
@@ -85,7 +91,7 @@ final class HelpViewController: OWSTableViewController2 {
                 let url = TSConstants.legalTermsUrl
                 let vc = SFSafariViewController(url: url)
                 self?.present(vc, animated: true, completion: nil)
-            }
+            },
         ))
         contents.add(aboutSection)
 

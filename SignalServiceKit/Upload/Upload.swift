@@ -104,7 +104,7 @@ public enum Upload {
         public var localizedDescription: String {
             return OWSLocalizedString(
                 "ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED",
-                comment: "Error message indicating that attachment upload(s) failed."
+                comment: "Error message indicating that attachment upload(s) failed.",
             )
         }
     }
@@ -241,7 +241,7 @@ extension Upload.LocalUploadMetadata {
 
     static func validateAndBuild(
         fileUrl: URL,
-        metadata: EncryptionMetadata
+        metadata: EncryptionMetadata,
     ) throws -> Upload.LocalUploadMetadata {
         guard
             let encryptedLength = UInt32(exactly: metadata.encryptedLength),
@@ -266,7 +266,7 @@ extension Upload.LocalUploadMetadata {
             key: metadata.key.combinedKey,
             digest: digest,
             encryptedDataLength: encryptedLength,
-            plaintextDataLength: plaintextLength
+            plaintextDataLength: plaintextLength,
         )
     }
 }
@@ -275,7 +275,7 @@ extension UploadEndpoint {
     func readUploadFileChunk(
         fileSystem: Upload.Shims.FileSystem,
         url: URL,
-        startIndex chunkStartIndex: Int
+        startIndex chunkStartIndex: Int,
     ) throws(Upload.Error) -> (data: Data, truncated: Bool) {
         guard fileSystem.fileOrFolderExists(url: url) else {
             throw .missingFile
@@ -293,7 +293,7 @@ extension UploadEndpoint {
         let dataChunk = remainingData.prefix(fileSystem.maxFileChunkSizeBytes())
         return (
             dataChunk,
-            dataChunk.count != remainingData.count
+            dataChunk.count != remainingData.count,
         )
     }
 }

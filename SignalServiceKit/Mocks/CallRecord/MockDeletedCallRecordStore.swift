@@ -12,10 +12,10 @@ class MockDeletedCallRecordStore: DeletedCallRecordStore {
 
     func fetch(callId: UInt64, conversationId: CallRecord.ConversationID, tx: DBReadTransaction) -> DeletedCallRecord? {
         return deletedCallRecords.first { deletedCallRecord in
-            return (
+            return
                 deletedCallRecord.callId == callId
-                && deletedCallRecord.conversationId == conversationId
-            )
+                    && deletedCallRecord.conversationId == conversationId
+
         }
     }
 

@@ -31,7 +31,7 @@ struct CLVViewInfo: Equatable {
             hasVisibleReminders: false,
             shouldBackupDownloadProgressViewBeVisible: false,
             lastSelectedThreadId: nil,
-            requiredVisibleThreadIds: []
+            requiredVisibleThreadIds: [],
         )
     }
 
@@ -42,7 +42,7 @@ struct CLVViewInfo: Equatable {
         lastSelectedThreadId: String?,
         hasVisibleReminders: Bool,
         shouldBackupDownloadProgressViewBeVisible: Bool,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> CLVViewInfo {
         do {
             let requiredThreadIds: Set<String> = if inboxFilter != .none, let lastSelectedThreadId {
@@ -62,7 +62,7 @@ struct CLVViewInfo: Equatable {
                 hasVisibleReminders: hasVisibleReminders,
                 shouldBackupDownloadProgressViewBeVisible: shouldBackupDownloadProgressViewBeVisible,
                 lastSelectedThreadId: lastSelectedThreadId,
-                requiredVisibleThreadIds: requiredThreadIds
+                requiredVisibleThreadIds: requiredThreadIds,
             )
         } catch {
             owsFailDebug("Error: \(error)")

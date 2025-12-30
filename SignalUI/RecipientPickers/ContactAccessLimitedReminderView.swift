@@ -19,8 +19,8 @@ struct ContactAccessLimitedReminderView: View {
             Text(
                 OWSLocalizedString(
                     "COMPOSE_SCREEN_LIMITED_CONTACTS_PERMISSION",
-                    comment: "Multi-line label explaining why compose-screen contact picker is empty."
-                )
+                    comment: "Multi-line label explaining why compose-screen contact picker is empty.",
+                ),
             )
             .font(.system(.subheadline))
             Spacer()
@@ -33,8 +33,8 @@ struct ContactAccessLimitedReminderView: View {
                             Text(
                                 OWSLocalizedString(
                                     "COMPOSE_SCREEN_LIMITED_CONTACTS_ACTION_MANAGE",
-                                    comment: "Menu action to display limited contact picker."
-                                )
+                                    comment: "Menu action to display limited contact picker.",
+                                ),
                             )
                         } icon: {
                             Image(systemName: "person.crop.circle")
@@ -47,8 +47,8 @@ struct ContactAccessLimitedReminderView: View {
                             Text(
                                 OWSLocalizedString(
                                     "COMPOSE_SCREEN_LIMITED_CONTACTS_ACTION_SETTINGS",
-                                    comment: "Menu action visit app contact permission in settings."
-                                )
+                                    comment: "Menu action visit app contact permission in settings.",
+                                ),
                             )
                         } icon: {
                             Image(systemName: "gear")
@@ -58,8 +58,8 @@ struct ContactAccessLimitedReminderView: View {
                     Text(
                         OWSLocalizedString(
                             "COMPOSE_SCREEN_LIMITED_CONTACTS_CTA",
-                            comment: "Multi-line label explaining why compose-screen contact picker may be missing contacts."
-                        )
+                            comment: "Multi-line label explaining why compose-screen contact picker may be missing contacts.",
+                        ),
                     )
                     .font(.system(.subheadline).weight(.bold))
                 }

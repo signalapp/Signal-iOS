@@ -56,7 +56,7 @@ public class ProfileBadge: Codable, Equatable {
         duration = try params.optional(key: "duration")
     }
 
-    required public init(from decoder: Decoder) throws {
+    public required init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         id = try values.decode(String.self, forKey: .id)
         category = try values.decode(Category.self, forKey: .category)
@@ -68,15 +68,15 @@ public class ProfileBadge: Codable, Equatable {
         duration = try values.decodeIfPresent(TimeInterval.self, forKey: .duration)
     }
 
-    public static func == (lhs: ProfileBadge, rhs: ProfileBadge) -> Bool {
-        return (lhs.id == rhs.id &&
-                lhs.category == rhs.category &&
-                lhs.localizedName == rhs.localizedName &&
-                lhs.localizedDescriptionFormatString == rhs.localizedDescriptionFormatString &&
-                lhs.resourcePath == rhs.resourcePath &&
-                lhs.badgeVariant == rhs.badgeVariant &&
-                lhs.localization == rhs.localization &&
-                lhs.duration == rhs.duration)
+    public static func ==(lhs: ProfileBadge, rhs: ProfileBadge) -> Bool {
+        return lhs.id == rhs.id &&
+            lhs.category == rhs.category &&
+            lhs.localizedName == rhs.localizedName &&
+            lhs.localizedDescriptionFormatString == rhs.localizedDescriptionFormatString &&
+            lhs.resourcePath == rhs.resourcePath &&
+            lhs.badgeVariant == rhs.badgeVariant &&
+            lhs.localization == rhs.localization &&
+            lhs.duration == rhs.duration
         // Don't check assets -- it's essentially a derived property that doesn't
         // need to be included in equality checks.
     }
@@ -92,6 +92,7 @@ extension ProfileBadge {
         let encoded = resourcePath.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? resourcePath
         return Self.remoteAssetPrefix.appendingPathComponent(encoded)
     }
+
     var localAssetDir: URL {
         let extensionIndex = resourcePath.firstIndex(of: ".") ?? resourcePath.endIndex
         let trimmedPath = resourcePath.prefix(upTo: extensionIndex)
@@ -168,9 +169,11 @@ extension ProfileBadge {
 #if TESTABLE_BUILD
 extension ProfileBadge {
     public func _testingOnly_populateAssets() {
-        assets = BadgeAssets(scale: badgeVariant.intendedScale,
-                             remoteSourceUrl: remoteAssetUrl,
-                             localAssetDirectory: localAssetDir)
+        assets = BadgeAssets(
+            scale: badgeVariant.intendedScale,
+            remoteSourceUrl: remoteAssetUrl,
+            localAssetDirectory: localAssetDir,
+        )
     }
 }
 #endif
@@ -265,7 +268,8 @@ public class BadgeStore {
             badgeAssets = BadgeAssets(
                 scale: badge.badgeVariant.intendedScale,
                 remoteSourceUrl: badge.remoteAssetUrl,
-                localAssetDirectory: badge.localAssetDir)
+                localAssetDirectory: badge.localAssetDir,
+            )
             assetCache[badge.resourcePath] = badgeAssets
         }
         badge.assets = badgeAssets

@@ -45,14 +45,14 @@ class EmojiPickerCollectionView: UICollectionView {
 
     private let allSendableEmojiByCategory: [Emoji.Category: [EmojiWithSkinTones]]
     private lazy var allSendableEmoji: [EmojiWithSkinTones] = {
-        return Array(allSendableEmojiByCategory.values).flatMap({$0})
+        return Array(allSendableEmojiByCategory.values).flatMap({ $0 })
     }()
 
     static let emojiWidth: CGFloat = 38
     static let margins: CGFloat = 16
     static let minimumSpacing: CGFloat = 10
 
-    public var searchText: String? {
+    var searchText: String? {
         didSet {
             searchWithText(searchText)
         }
@@ -62,8 +62,8 @@ class EmojiPickerCollectionView: UICollectionView {
     private var emojiSearchLocalization: String?
     private var emojiSearchIndex: [String: [String]]?
 
-    public var isSearching: Bool {
-        if let searchText = searchText, !searchText.isEmpty {
+    var isSearching: Bool {
+        if let searchText, !searchText.isEmpty {
             return true
         }
 
@@ -90,7 +90,7 @@ class EmojiPickerCollectionView: UICollectionView {
             let recentEmoji = EmojiPickerCollectionView.getRecentEmoji(tx: transaction)
 
             let allSendableEmojiByCategory = Emoji.allSendableEmojiByCategoryWithPreferredSkinTones(
-                transaction: transaction
+                transaction: transaction,
             )
 
             return (messageReacts, recentEmoji, allSendableEmojiByCategory)
@@ -119,7 +119,7 @@ class EmojiPickerCollectionView: UICollectionView {
         register(
             EmojiSectionHeader.self,
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
-            withReuseIdentifier: EmojiSectionHeader.reuseIdentifier
+            withReuseIdentifier: EmojiSectionHeader.reuseIdentifier,
         )
 
         backgroundColor = nil
@@ -139,7 +139,7 @@ class EmojiPickerCollectionView: UICollectionView {
     }
 
     // This is not an exact calculation, but is simple and works for our purposes.
-    var numberOfColumns: Int { Int((width) / (EmojiPickerCollectionView.emojiWidth + EmojiPickerCollectionView.minimumSpacing)) }
+    var numberOfColumns: Int { Int(width / (EmojiPickerCollectionView.emojiWidth + EmojiPickerCollectionView.minimumSpacing)) }
 
     // At max, we show 3 rows of recent emoji
     private var maxRecentEmoji: Int { numberOfColumns * 3 }
@@ -232,12 +232,12 @@ class EmojiPickerCollectionView: UICollectionView {
         case .messageEmoji:
             return OWSLocalizedString(
                 "EMOJI_CATEGORY_ON_MESSAGE_NAME",
-                comment: "The name for the emoji section for emojis already used on the message"
+                comment: "The name for the emoji section for emojis already used on the message",
             )
         case .recentEmoji:
             return OWSLocalizedString(
                 "EMOJI_CATEGORY_RECENTS_NAME",
-                comment: "The name for the emoji category 'Recents'"
+                comment: "The name for the emoji category 'Recents'",
             )
         case .emojiCategory(let categoryIndex):
             guard let category = Emoji.Category.allCases[safe: categoryIndex] else {
@@ -268,7 +268,7 @@ class EmojiPickerCollectionView: UICollectionView {
         EmojiPickerCollectionView.keyValueStore.setObject(
             newRecentEmoji.map { $0.rawValue },
             key: EmojiPickerCollectionView.recentEmojiKey,
-            transaction: transaction
+            transaction: transaction,
         )
     }
 
@@ -376,12 +376,13 @@ class EmojiPickerCollectionView: UICollectionView {
 
     var scrollingToSection: EmojiPickerSection?
     func scrollToSectionHeader(_ section: EmojiPickerSection, animated: Bool) {
-        guard let attributes = layoutAttributesForSupplementaryElement(
-            ofKind: UICollectionView.elementKindSectionHeader,
-            at: IndexPath(item: 0, section: self.rawSection(from: section))
-        ) else { return }
+        guard
+            let attributes = layoutAttributesForSupplementaryElement(
+                ofKind: UICollectionView.elementKindSectionHeader,
+                at: IndexPath(item: 0, section: self.rawSection(from: section)),
+            ) else { return }
         scrollingToSection = section
-        setContentOffset(CGPoint(x: 0, y: (attributes.frame.minY - contentInset.top)), animated: animated)
+        setContentOffset(CGPoint(x: 0, y: attributes.frame.minY - contentInset.top), animated: animated)
     }
 
     private weak var currentSkinTonePicker: EmojiSkinTonePicker?
@@ -398,9 +399,9 @@ class EmojiPickerCollectionView: UICollectionView {
 
             currentSkinTonePicker?.dismiss()
             currentSkinTonePicker = EmojiSkinTonePicker.present(referenceView: cell, emoji: emoji) { [weak self] emoji in
-                guard let self = self else { return }
+                guard let self else { return }
 
-                if let emoji = emoji {
+                if let emoji {
                     SSKEnvironment.shared.databaseStorageRef.asyncWrite { transaction in
                         self.recordRecentEmoji(emoji, transaction: transaction)
                         emoji.baseEmoji.setPreferredSkinTones(emoji.skinTones, transaction: transaction)
@@ -490,7 +491,7 @@ extension EmojiPickerCollectionView: UICollectionViewDataSource {
         let supplementaryView = dequeueReusableSupplementaryView(
             ofKind: kind,
             withReuseIdentifier: EmojiSectionHeader.reuseIdentifier,
-            for: indexPath
+            for: indexPath,
         )
 
         guard let sectionHeader = supplementaryView as? EmojiSectionHeader else {
@@ -505,9 +506,11 @@ extension EmojiPickerCollectionView: UICollectionViewDataSource {
 }
 
 extension EmojiPickerCollectionView: UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView,
-                        layout collectionViewLayout: UICollectionViewLayout,
-                        referenceSizeForHeaderInSection section: Int) -> CGSize {
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        referenceSizeForHeaderInSection section: Int,
+    ) -> CGSize {
         guard !isSearching else {
             return CGSize.zero
         }
@@ -553,14 +556,14 @@ private class EmojiSectionHeader: UICollectionReusableView {
 
     let label = UILabel()
 
-    private override init(frame: CGRect) {
+    override private init(frame: CGRect) {
         super.init(frame: frame)
 
         layoutMargins = UIEdgeInsets(
             top: 16,
             leading: EmojiPickerCollectionView.margins,
             bottom: 6,
-            trailing: EmojiPickerCollectionView.margins
+            trailing: EmojiPickerCollectionView.margins,
         )
 
         label.font = UIFont.dynamicTypeFootnoteClamped.semibold()

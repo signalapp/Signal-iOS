@@ -32,10 +32,10 @@ final class VoiceMessageInterruptedDraft: VoiceMessageSendableDraft {
         self.waveformFileUrl = URL(fileURLWithPath: Constants.waveformFilename, relativeTo: directoryUrl)
     }
 
-    public static func currentDraft(for thread: TSThread, transaction: DBReadTransaction) -> VoiceMessageInterruptedDraft? {
+    static func currentDraft(for thread: TSThread, transaction: DBReadTransaction) -> VoiceMessageInterruptedDraft? {
         let directoryUrl = VoiceMessageInterruptedDraftStore.directoryUrl(
             threadUniqueId: thread.uniqueId,
-            transaction: transaction
+            transaction: transaction,
         )
         return directoryUrl.map { VoiceMessageInterruptedDraft(threadUniqueId: thread.uniqueId, directoryUrl: $0) }
     }
@@ -48,29 +48,29 @@ final class VoiceMessageInterruptedDraft: VoiceMessageSendableDraft {
 
     // MARK: -
 
-    public private(set) lazy var audioWaveformTask: Task<AudioWaveform, Error> = {
+    private(set) lazy var audioWaveformTask: Task<AudioWaveform, Error> = {
         // The file at `waveformPath` is created lazily by accessing this property.
         // It's used solely for UI and thus isn't created until it's needed.
         DependenciesBridge.shared.audioWaveformManager.audioWaveform(
             forAudioPath: audioFileUrl.path,
-            waveformPath: waveformFileUrl.path
+            waveformPath: waveformFileUrl.path,
         )
     }()
 
-    public private(set) lazy var audioPlayer: AudioPlayer = {
+    private(set) lazy var audioPlayer: AudioPlayer = {
         AudioPlayer(decryptedFileUrl: audioFileUrl, audioBehavior: .audioMessagePlayback)
     }()
 
-    public private(set) lazy var duration: TimeInterval? = {
+    private(set) lazy var duration: TimeInterval? = {
         guard OWSFileSystem.fileOrFolderExists(url: audioFileUrl) else { return nil }
         return try? AVAudioPlayer(
-            contentsOf: audioFileUrl
+            contentsOf: audioFileUrl,
         ).duration
     }()
 
     // MARK: -
 
-    public func prepareForSending() throws -> URL {
+    func prepareForSending() throws -> URL {
         let temporaryAudioFileUrl = OWSFileSystem.temporaryFileUrl()
         try FileManager.default.copyItem(at: audioFileUrl, to: temporaryAudioFileUrl)
         return temporaryAudioFileUrl

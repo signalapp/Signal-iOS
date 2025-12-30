@@ -27,8 +27,8 @@ extension UIDevice: UpgradableDevice {
     public func canUpgrade(to iosMajorVersion: Int) -> Bool {
         let isOsSupportedByThisFunction = (
             systemName.contains("iOS") ||
-            systemName.contains("iPhone") ||
-            systemName.contains("iPad")
+                systemName.contains("iPhone") ||
+                systemName.contains("iPad"),
         )
         guard isOsSupportedByThisFunction else {
             owsFailBeta("\(systemName) is not a supported OS")

@@ -260,7 +260,7 @@ class EmojiTests: XCTestCase {
             "🇷🇺",
             "🇸🇦",
             "🇸🇦",
-            "🇨🇦"
+            "🇨🇦",
         ]
         for emoji in moreEmojis {
             if !emoji.isSingleEmojiUsingEmojiWithSkinTones {

@@ -32,7 +32,7 @@ public struct SystemContact {
         for phoneNumber in cnContact.phoneNumbers.prefix(Constants.maxPhoneNumbers) {
             phoneNumbers.append((
                 phoneNumber.value.stringValue,
-                Self.inAppLocalizedString(forCNLabel: phoneNumber.label)
+                Self.inAppLocalizedString(forCNLabel: phoneNumber.label),
             ))
         }
 
@@ -124,7 +124,7 @@ public struct SystemContact {
 
     public static func localizedString<T>(
         forCNLabel cnLabel: String?,
-        labeledValueType: CNLabeledValue<T>.Type
+        labeledValueType: CNLabeledValue<T>.Type,
     ) -> String? {
         guard let cnLabel = cnLabel?.nilIfEmpty else {
             return nil

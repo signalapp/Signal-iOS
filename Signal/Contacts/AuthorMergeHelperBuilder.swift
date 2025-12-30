@@ -19,7 +19,7 @@ final class AuthorMergeHelperBuilder {
         authorMergeHelper: AuthorMergeHelper,
         db: any DB,
         modelReadCaches: Shims.ModelReadCaches,
-        recipientDatabaseTable: RecipientDatabaseTable
+        recipientDatabaseTable: RecipientDatabaseTable,
     ) {
         self.appContext = appContext
         self.authorMergeHelper = authorMergeHelper
@@ -218,6 +218,7 @@ class _AuthorMergeHelperBuilder_ModelReadCachesWrapper: _AuthorMergeHelperBuilde
     init(_ modelReadCaches: ModelReadCaches) {
         self.modelReadCaches = modelReadCaches
     }
+
     func evacuateAllCaches() {
         modelReadCaches.evacuateAllCaches()
     }

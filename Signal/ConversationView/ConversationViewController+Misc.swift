@@ -40,7 +40,7 @@ extension ConversationViewController {
         BlockListUIUtils.showUnblockThreadActionSheet(
             thread,
             from: CurrentAppContext().frontmostViewController() ?? self,
-            completion: completion
+            completion: completion,
         )
     }
 
@@ -64,13 +64,13 @@ extension ConversationViewController {
     func showSafetyNumberConfirmationIfNecessary(
         confirmationText: String,
         untrustedThreshold: Date?,
-        completion: @escaping (Bool) -> Void
+        completion: @escaping (Bool) -> Void,
     ) -> Bool {
         SafetyNumberConfirmationSheet.presentIfNecessary(
             addresses: thread.recipientAddressesWithSneakyTransaction,
             confirmationText: confirmationText,
             untrustedThreshold: untrustedThreshold,
-            completion: completion
+            completion: completion,
         )
     }
 
@@ -81,13 +81,13 @@ extension ConversationViewController {
     func showSafetyNumberConfirmationIfNecessary(
         from viewController: UIViewController,
         confirmationText: String,
-        untrustedThreshold: Date?
+        untrustedThreshold: Date?,
     ) async -> Bool {
         await SafetyNumberConfirmationSheet.presentRepeatedlyAsNecessary(
             for: { thread.recipientAddressesWithSneakyTransaction },
             from: viewController,
             confirmationText: confirmationText,
-            untrustedThreshold: untrustedThreshold
+            untrustedThreshold: untrustedThreshold,
         )
     }
 
@@ -121,7 +121,7 @@ extension ConversationViewController {
                     of: identityKey,
                     for: address,
                     isUserInitiatedChange: true,
-                    tx: transaction
+                    tx: transaction,
                 )
             }
         }
@@ -132,7 +132,7 @@ extension ConversationViewController {
 
         switch noLongerVerifiedIdentityKeys.count {
         case 0:
-             break
+            break
 
         case 1:
             showFingerprint(address: noLongerVerifiedIdentityKeys.first!.key)
@@ -154,32 +154,40 @@ extension ConversationViewController {
     func presentMissingQuotedReplyToast() {
         Logger.info("")
 
-        let toastText = OWSLocalizedString("QUOTED_REPLY_ORIGINAL_MESSAGE_DELETED",
-                                          comment: "Toast alert text shown when tapping on a quoted message which we cannot scroll to because the local copy of the message was since deleted.")
+        let toastText = OWSLocalizedString(
+            "QUOTED_REPLY_ORIGINAL_MESSAGE_DELETED",
+            comment: "Toast alert text shown when tapping on a quoted message which we cannot scroll to because the local copy of the message was since deleted.",
+        )
         presentToastCVC(toastText)
     }
 
     func presentRemotelySourcedQuotedReplyToast() {
         Logger.info("")
 
-        let toastText = OWSLocalizedString("QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED",
-                                          comment: "Toast alert text shown when tapping on a quoted message which we cannot scroll to because the local copy of the message didn't exist when the quote was received.")
+        let toastText = OWSLocalizedString(
+            "QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED",
+            comment: "Toast alert text shown when tapping on a quoted message which we cannot scroll to because the local copy of the message didn't exist when the quote was received.",
+        )
         presentToastCVC(toastText)
     }
 
     func presentViewOnceAlreadyViewedToast() {
         Logger.info("")
 
-        let toastText = OWSLocalizedString("VIEW_ONCE_ALREADY_VIEWED_TOAST",
-                                          comment: "Toast alert text shown when tapping on a view-once message that has already been viewed.")
+        let toastText = OWSLocalizedString(
+            "VIEW_ONCE_ALREADY_VIEWED_TOAST",
+            comment: "Toast alert text shown when tapping on a view-once message that has already been viewed.",
+        )
         presentToastCVC(toastText)
     }
 
     func presentViewOnceOutgoingToast() {
         Logger.info("")
 
-        let toastText = OWSLocalizedString("VIEW_ONCE_OUTGOING_TOAST",
-                                          comment: "Toast alert text shown when tapping on a view-once message that you have sent.")
+        let toastText = OWSLocalizedString(
+            "VIEW_ONCE_OUTGOING_TOAST",
+            comment: "Toast alert text shown when tapping on a view-once message that you have sent.",
+        )
         presentToastCVC(toastText)
     }
 
@@ -210,7 +218,7 @@ extension ConversationViewController {
         let settingsView = ConversationSettingsViewController(
             threadViewModel: threadViewModel,
             isSystemContact: conversationViewModel.isSystemContact,
-            spoilerState: viewState.spoilerState
+            spoilerState: viewState.spoilerState,
         )
         settingsView.conversationSettingsViewDelegate = self
         viewControllers.append(settingsView)
@@ -228,7 +236,7 @@ extension ConversationViewController {
             viewControllers.append(AllMediaViewController(
                 thread: thread,
                 spoilerState: viewState.spoilerState,
-                name: title
+                name: title,
             ))
         }
 
@@ -239,7 +247,7 @@ extension ConversationViewController {
     private var viewControllersUpToSelf: [UIViewController]? {
         AssertIsOnMainThread()
 
-        guard let navigationController = navigationController else {
+        guard let navigationController else {
             owsFailDebug("Missing navigationController.")
             return nil
         }
@@ -275,7 +283,7 @@ extension ConversationViewController {
         ProfileSheetSheetCoordinator(
             address: address,
             groupViewHelper: groupViewHelper,
-            spoilerState: spoilerState
+            spoilerState: spoilerState,
         )
         .presentAppropriateSheet(from: self)
     }
@@ -298,7 +306,7 @@ extension ConversationViewController: ConversationSettingsViewDelegate {
     private func popAllConversationSettingsViews(completion: @escaping () -> Void) {
         AssertIsOnMainThread()
 
-        guard let presentedViewController = presentedViewController else {
+        guard let presentedViewController else {
             navigationController?.popToViewController(self, animated: true, completion: completion)
             return
         }
@@ -397,8 +405,10 @@ extension ConversationViewController {
     private func reloadTimerDidFire() {
         AssertIsOnMainThread()
 
-        if isUserScrolling || !isViewCompletelyAppeared || !isViewVisible
-            || !CurrentAppContext().isAppForegroundAndActive() || !viewHasEverAppeared {
+        if
+            isUserScrolling || !isViewCompletelyAppeared || !isViewVisible
+            || !CurrentAppContext().isAppForegroundAndActive() || !viewHasEverAppeared
+        {
             return
         }
 
@@ -460,13 +470,13 @@ extension ConversationViewController {
 
         let lastVisibleSortId = self.lastVisibleSortId
         let isShowingUnreadMessage = lastVisibleSortId > self.lastSortIdMarkedRead
-        if !self.isMarkingAsRead && isShowingUnreadMessage {
+        if !self.isMarkingAsRead, isShowingUnreadMessage {
             self.isMarkingAsRead = true
 
             SSKEnvironment.shared.receiptManagerRef.markAsReadLocally(
                 beforeSortId: lastVisibleSortId,
                 thread: self.thread,
-                hasPendingMessageRequest: self.threadViewModel.hasPendingMessageRequest
+                hasPendingMessageRequest: self.threadViewModel.hasPendingMessageRequest,
             ) {
                 AssertIsOnMainThread()
                 self.setLastSortIdMarkedRead(lastSortIdMarkedRead: lastVisibleSortId)

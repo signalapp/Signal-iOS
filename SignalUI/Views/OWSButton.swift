@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import UIKit
 import SignalServiceKit
+import UIKit
 
 open class OWSButton: UIButton {
 
@@ -18,11 +18,11 @@ open class OWSButton: UIButton {
         didSet { updateAlpha() }
     }
 
-    public override var isHighlighted: Bool {
+    override public var isHighlighted: Bool {
         didSet { updateAlpha() }
     }
 
-    public override var isEnabled: Bool {
+    override public var isEnabled: Bool {
         didSet { updateAlpha() }
     }
 
@@ -39,7 +39,7 @@ open class OWSButton: UIButton {
         title: String,
         tintColor: UIColor? = nil,
         dimsWhenHighlighted: Bool = false,
-        block: @escaping () -> Void = { }
+        block: @escaping () -> Void = { },
     ) {
         self.dimsWhenHighlighted = dimsWhenHighlighted
         super.init(frame: .zero)
@@ -57,7 +57,7 @@ open class OWSButton: UIButton {
         imageName: String,
         tintColor: UIColor?,
         dimsWhenHighlighted: Bool = false,
-        block: @escaping () -> Void = {}
+        block: @escaping () -> Void = {},
     ) {
         self.dimsWhenHighlighted = dimsWhenHighlighted
         super.init(frame: .zero)
@@ -82,7 +82,7 @@ open class OWSButton: UIButton {
         imageName: String,
         tintColor: UIColor?,
         spacing: CGFloat,
-        block: @escaping () -> Void = {}
+        block: @escaping () -> Void = {},
     ) {
         super.init(frame: .zero)
 
@@ -98,7 +98,7 @@ open class OWSButton: UIButton {
     }
 
     public func setImage(imageName: String?) {
-        guard let imageName = imageName else {
+        guard let imageName else {
             setImage(nil, for: .normal)
             return
         }
@@ -186,7 +186,7 @@ open class OWSButton: UIButton {
     private func updateAlpha() {
         let isDimmed = (
             (dimsWhenHighlighted && isHighlighted) ||
-            (dimsWhenDisabled && !isEnabled)
+                (dimsWhenDisabled && !isEnabled),
         )
         alpha = isDimmed ? 0.4 : 1
     }

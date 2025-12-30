@@ -20,7 +20,7 @@ public class PaymentsTransferOutViewController: OWSTableViewController2 {
     }
 
     private var hasValidAddress: Bool {
-        guard let addressValue = addressValue else {
+        guard let addressValue else {
             return false
         }
         return !addressValue.isEmpty
@@ -30,16 +30,20 @@ public class PaymentsTransferOutViewController: OWSTableViewController2 {
         self.transferAmount = transferAmount
     }
 
-    public override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
 
-        title = OWSLocalizedString("SETTINGS_PAYMENTS_TRANSFER_OUT_TITLE",
-                                  comment: "Label for 'transfer currency out' view in the payment settings.")
+        title = OWSLocalizedString(
+            "SETTINGS_PAYMENTS_TRANSFER_OUT_TITLE",
+            comment: "Label for 'transfer currency out' view in the payment settings.",
+        )
 
-        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel,
-                                                           target: self,
-                                                           action: #selector(didTapDismiss),
-                                                           accessibilityIdentifier: "dismiss")
+        navigationItem.leftBarButtonItem = UIBarButtonItem(
+            barButtonSystemItem: .cancel,
+            target: self,
+            action: #selector(didTapDismiss),
+            accessibilityIdentifier: "dismiss",
+        )
 
         createViews()
 
@@ -49,16 +53,17 @@ public class PaymentsTransferOutViewController: OWSTableViewController2 {
     }
 
     private func updateNavbar() {
-        let rightBarButtonItem = UIBarButtonItem(title: CommonStrings.nextButton,
+        let rightBarButtonItem = UIBarButtonItem(
+            title: CommonStrings.nextButton,
             style: .plain,
             target: self,
-            action: #selector(didTapNext)
+            action: #selector(didTapNext),
         )
         rightBarButtonItem.isEnabled = hasValidAddress
         navigationItem.rightBarButtonItem = rightBarButtonItem
     }
 
-    public override func viewWillAppear(_ animated: Bool) {
+    override public func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
         updateTableContents()
@@ -67,7 +72,7 @@ public class PaymentsTransferOutViewController: OWSTableViewController2 {
         addressTextfield.becomeFirstResponder()
     }
 
-    public override func viewDidAppear(_ animated: Bool) {
+    override public func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
         SUIEnvironment.shared.paymentsSwiftRef.updateCurrentPaymentBalance()
@@ -84,7 +89,7 @@ public class PaymentsTransferOutViewController: OWSTableViewController2 {
         addressTextfield.addTarget(self, action: #selector(addressDidChange), for: .editingChanged)
     }
 
-    public override func themeDidChange() {
+    override public func themeDidChange() {
         super.themeDidChange()
 
         updateTableContents()
@@ -94,18 +99,24 @@ public class PaymentsTransferOutViewController: OWSTableViewController2 {
         AssertIsOnMainThread()
 
         addressTextfield.textColor = Theme.primaryTextColor
-        let placeholder = NSAttributedString(string: OWSLocalizedString("SETTINGS_PAYMENTS_TRANSFER_OUT_PLACEHOLDER",
-                                                                       comment: "Placeholder text for the address text field in the 'transfer currency out' settings view."),
-                                             attributes: [
-                                                .foregroundColor: Theme.secondaryTextAndIconColor
-                                             ])
+        let placeholder = NSAttributedString(
+            string: OWSLocalizedString(
+                "SETTINGS_PAYMENTS_TRANSFER_OUT_PLACEHOLDER",
+                comment: "Placeholder text for the address text field in the 'transfer currency out' settings view.",
+            ),
+            attributes: [
+                .foregroundColor: Theme.secondaryTextAndIconColor,
+            ],
+        )
         addressTextfield.attributedPlaceholder = placeholder
 
         let contents = OWSTableContents()
 
         let section = OWSTableSection()
-        section.footerTitle = OWSLocalizedString("SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER",
-                                                comment: "Footer of the 'transfer currency out' view in the payment settings.")
+        section.footerTitle = OWSLocalizedString(
+            "SETTINGS_PAYMENTS_TRANSFER_OUT_FOOTER",
+            comment: "Footer of the 'transfer currency out' view in the payment settings.",
+        )
         let addressTextfield = self.addressTextfield
 
         let iconView = UIImageView.withTemplateImageName("qr_code", tintColor: Theme.primaryIconColor)
@@ -116,19 +127,21 @@ public class PaymentsTransferOutViewController: OWSTableViewController2 {
         iconView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapScanQR)))
 
         section.shouldDisableCellSelection = true
-        section.add(OWSTableItem(customCellBlock: {
-            let cell = OWSTableItem.newCell()
+        section.add(OWSTableItem(
+            customCellBlock: {
+                let cell = OWSTableItem.newCell()
 
-            let stackView = UIStackView(arrangedSubviews: [ addressTextfield, iconView ])
-            stackView.axis = .horizontal
-            stackView.alignment = .center
-            stackView.spacing = 8
-            cell.contentView.addSubview(stackView)
-            stackView.autoPinEdgesToSuperviewMargins()
+                let stackView = UIStackView(arrangedSubviews: [addressTextfield, iconView])
+                stackView.axis = .horizontal
+                stackView.alignment = .center
+                stackView.spacing = 8
+                cell.contentView.addSubview(stackView)
+                stackView.autoPinEdgesToSuperviewMargins()
 
-            return cell
-        },
-        actionBlock: nil))
+                return cell
+            },
+            actionBlock: nil,
+        ))
         contents.add(section)
 
         self.contents = contents
@@ -144,27 +157,43 @@ public class PaymentsTransferOutViewController: OWSTableViewController2 {
     @objc
     private func didTapNext() {
         guard let publicAddress = tryToParseAddress() else {
-            OWSActionSheets.showActionSheet(title: OWSLocalizedString("SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS_TITLE",
-                                                                     comment: "Title for error alert indicating that MobileCoin public address is not valid."),
-                                            message: OWSLocalizedString("SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS",
-                                                                       comment: "Error indicating that MobileCoin public address is not valid."))
+            OWSActionSheets.showActionSheet(
+                title: OWSLocalizedString(
+                    "SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS_TITLE",
+                    comment: "Title for error alert indicating that MobileCoin public address is not valid.",
+                ),
+                message: OWSLocalizedString(
+                    "SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS",
+                    comment: "Error indicating that MobileCoin public address is not valid.",
+                ),
+            )
             return
         }
         let recipientAddressBase58 = PaymentsImpl.formatAsBase58(publicAddress: publicAddress)
-        guard let localWalletAddressBase58 = SUIEnvironment.shared.paymentsRef.walletAddressBase58(),
-              localWalletAddressBase58 != recipientAddressBase58 else {
-            OWSActionSheets.showActionSheet(title: OWSLocalizedString("SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS_TITLE",
-                                                                     comment: "Title for error alert indicating that MobileCoin public address is not valid."),
-                                            message: OWSLocalizedString("SETTINGS_PAYMENTS_TRANSFER_OUT_CANNOT_SEND_TO_SELF",
-                                                                       comment: "Error indicating that it is not valid to send yourself a payment."))
+        guard
+            let localWalletAddressBase58 = SUIEnvironment.shared.paymentsRef.walletAddressBase58(),
+            localWalletAddressBase58 != recipientAddressBase58
+        else {
+            OWSActionSheets.showActionSheet(
+                title: OWSLocalizedString(
+                    "SETTINGS_PAYMENTS_TRANSFER_OUT_INVALID_PUBLIC_ADDRESS_TITLE",
+                    comment: "Title for error alert indicating that MobileCoin public address is not valid.",
+                ),
+                message: OWSLocalizedString(
+                    "SETTINGS_PAYMENTS_TRANSFER_OUT_CANNOT_SEND_TO_SELF",
+                    comment: "Error indicating that it is not valid to send yourself a payment.",
+                ),
+            )
             return
         }
 
         let recipient: SendPaymentRecipientImpl = .publicAddress(publicAddress: publicAddress)
-        let view = SendPaymentViewController(recipient: recipient,
-                                             initialPaymentAmount: transferAmount,
-                                             isOutgoingTransfer: true,
-                                             mode: .fromTransferOutFlow)
+        let view = SendPaymentViewController(
+            recipient: recipient,
+            initialPaymentAmount: transferAmount,
+            isOutgoingTransfer: true,
+            mode: .fromTransferOutFlow,
+        )
         view.delegate = self
         navigationController?.pushViewController(view, animated: true)
     }

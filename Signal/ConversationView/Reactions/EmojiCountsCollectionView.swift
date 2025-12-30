@@ -50,7 +50,7 @@ public class EmojiCountsCollectionView: UICollectionView {
         selectItem(at: IndexPath(item: index, section: 0), animated: true, scrollPosition: .centeredHorizontally)
     }
 
-    required public init(coder: NSCoder) {
+    public required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 }
@@ -140,9 +140,11 @@ class EmojiCountCell: UICollectionViewCell {
             count.text = item.count.abbreviatedString
         } else {
             count.text = String(
-                format: OWSLocalizedString("REACTION_DETAIL_ALL_FORMAT",
-                                          comment: "The header used to indicate All reactions to a given message. Embeds {{number of reactions}}"),
-                item.count.abbreviatedString
+                format: OWSLocalizedString(
+                    "REACTION_DETAIL_ALL_FORMAT",
+                    comment: "The header used to indicate All reactions to a given message. Embeds {{number of reactions}}",
+                ),
+                item.count.abbreviatedString,
             )
         }
     }

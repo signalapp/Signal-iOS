@@ -35,7 +35,7 @@ final class BackupSettingsAttachmentUploadTracker {
             self.progress = progress
         }
 
-        static func == (lhs: UploadUpdate, rhs: UploadUpdate) -> Bool {
+        static func ==(lhs: UploadUpdate, rhs: UploadUpdate) -> Bool {
             return lhs.state == rhs.state && lhs.percentageUploaded == rhs.percentageUploaded
         }
     }
@@ -56,7 +56,7 @@ final class BackupSettingsAttachmentUploadTracker {
             let tracker = Tracker(
                 backupAttachmentUploadQueueStatusReporter: backupAttachmentUploadQueueStatusReporter,
                 backupAttachmentUploadProgress: backupAttachmentUploadProgress,
-                continuation: continuation
+                continuation: continuation,
             )
 
             tracker.start()
@@ -98,12 +98,12 @@ private class Tracker {
     init(
         backupAttachmentUploadQueueStatusReporter: BackupAttachmentUploadQueueStatusReporter,
         backupAttachmentUploadProgress: BackupAttachmentUploadProgress,
-        continuation: AsyncStream<UploadUpdate?>.Continuation
+        continuation: AsyncStream<UploadUpdate?>.Continuation,
     ) {
         self.backupAttachmentUploadQueueStatusReporter = backupAttachmentUploadQueueStatusReporter
         self.backupAttachmentUploadProgress = backupAttachmentUploadProgress
         self.state = SeriallyAccessedState(State(
-            streamContinuation: continuation
+            streamContinuation: continuation,
         ))
     }
 
@@ -133,19 +133,19 @@ private class Tracker {
     private func observeUploadQueueStatus() -> NotificationCenter.Observer {
         // We only care about fullsize uploads, ignore thumbnails
         let uploadQueueStatusObserver = NotificationCenter.default.addObserver(
-            name: .backupAttachmentUploadQueueStatusDidChange(for: .fullsize)
+            name: .backupAttachmentUploadQueueStatusDidChange(for: .fullsize),
         ) { [weak self] notification in
             guard let self else { return }
 
             handleQueueStatusUpdate(
-                backupAttachmentUploadQueueStatusReporter.currentStatus(for: .fullsize)
+                backupAttachmentUploadQueueStatusReporter.currentStatus(for: .fullsize),
             )
         }
 
         // Now that we're observing updates, handle the initial value as if we'd
         // just gotten it in an update.
         handleQueueStatusUpdate(
-            backupAttachmentUploadQueueStatusReporter.currentStatus(for: .fullsize)
+            backupAttachmentUploadQueueStatusReporter.currentStatus(for: .fullsize),
         )
 
         return uploadQueueStatusObserver
@@ -161,9 +161,9 @@ private class Tracker {
             case .empty:
                 yieldCurrentUploadUpdate(state: _state)
             case
-                    .running,
-                    .noWifiReachability, .lowBattery, .lowPowerMode, .noReachability,
-                    .notRegisteredAndReady, .appBackgrounded, .suspended, .hasConsumedMediaTierCapacity:
+                .running,
+                .noWifiReachability, .lowBattery, .lowPowerMode, .noReachability,
+                .notRegisteredAndReady, .appBackgrounded, .suspended, .hasConsumedMediaTierCapacity:
                 // The queue isn't empty, so attach a new progress observer.
                 //
                 // Progress observers snapshot and filter the queue's state, so

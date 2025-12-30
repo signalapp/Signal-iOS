@@ -12,11 +12,6 @@ public struct PaymentsHistoryModelItem: PaymentsHistoryItem {
 
     public let displayName: String
 
-    init(paymentModel: TSPaymentModel, displayName: String) {
-        self.paymentModel = paymentModel
-        self.displayName = displayName
-    }
-
     public var address: SignalServiceAddress? {
         paymentModel.senderOrRecipientAci.map { SignalServiceAddress($0.wrappedAciValue) }
     }
@@ -55,7 +50,8 @@ public struct PaymentsHistoryModelItem: PaymentsHistoryItem {
             paymentAmount: fee,
             isShortForm: false,
             withCurrencyCode: true,
-            withSpace: true)
+            withSpace: true,
+        )
     }
 
     public var paymentType: TSPaymentType {
@@ -99,7 +95,7 @@ public struct PaymentsHistoryModelItem: PaymentsHistoryItem {
         return PaymentsFormat.attributedFormat(
             paymentAmount: amount,
             isShortForm: false,
-            paymentType: paymentType
+            paymentType: paymentType,
         )
     }
 
@@ -119,7 +115,7 @@ public struct PaymentsHistoryModelItem: PaymentsHistoryItem {
             isShortForm: true,
             withCurrencyCode: true,
             withSpace: false,
-            withPaymentType: paymentModel.paymentType
+            withPaymentType: paymentModel.paymentType,
         )
     }
 
@@ -132,10 +128,11 @@ public struct PaymentsHistoryModelItem: PaymentsHistoryItem {
     }
 
     public func reload(tx: DBReadTransaction) -> Self? {
-        guard let newPaymentModel = TSPaymentModel.anyFetch(
-            uniqueId: paymentModel.uniqueId,
-            transaction: tx
-        ) else { return nil }
+        guard
+            let newPaymentModel = TSPaymentModel.anyFetch(
+                uniqueId: paymentModel.uniqueId,
+                transaction: tx,
+            ) else { return nil }
 
         return .init(paymentModel: newPaymentModel, displayName: displayName)
     }

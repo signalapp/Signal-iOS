@@ -12,13 +12,6 @@ public struct SDSError: Error, CustomStringConvertible {
     private let function: StaticString
     private let line: UInt
 
-    private init(descriptor: String, file: StaticString, function: StaticString, line: UInt) {
-        self.descriptor = descriptor
-        self.file = file
-        self.function = function
-        self.line = line
-    }
-
     public var description: String {
         return "SDSError: \(descriptor) at \(file)#\(function):\(line)"
     }
@@ -29,7 +22,7 @@ public struct SDSError: Error, CustomStringConvertible {
         fieldName: String? = nil,
         _ file: StaticString = #file,
         _ function: StaticString = #function,
-        _ line: UInt = #line
+        _ line: UInt = #line,
     ) -> SDSError {
         return SDSError(descriptor: "\(#function): \(fieldName ?? "unspecified")", file: file, function: function, line: line)
     }
@@ -37,7 +30,7 @@ public struct SDSError: Error, CustomStringConvertible {
     public static func unexpectedType(
         _ file: StaticString = #file,
         _ function: StaticString = #function,
-        _ line: UInt = #line
+        _ line: UInt = #line,
     ) -> SDSError {
         return SDSError(descriptor: #function, file: file, function: function, line: line)
     }
@@ -45,7 +38,7 @@ public struct SDSError: Error, CustomStringConvertible {
     public static func invalidResult(
         _ file: StaticString = #file,
         _ function: StaticString = #function,
-        _ line: UInt = #line
+        _ line: UInt = #line,
     ) -> SDSError {
         return SDSError(descriptor: #function, file: file, function: function, line: line)
     }
@@ -53,7 +46,7 @@ public struct SDSError: Error, CustomStringConvertible {
     public static func invalidValue(
         _ file: StaticString = #file,
         _ function: StaticString = #function,
-        _ line: UInt = #line
+        _ line: UInt = #line,
     ) -> SDSError {
         return SDSError(descriptor: #function, file: file, function: function, line: line)
     }
@@ -61,7 +54,7 @@ public struct SDSError: Error, CustomStringConvertible {
     public static func invalidTransaction(
         _ file: StaticString = #file,
         _ function: StaticString = #function,
-        _ line: UInt = #line
+        _ line: UInt = #line,
     ) -> SDSError {
         return SDSError(descriptor: #function, file: file, function: function, line: line)
     }

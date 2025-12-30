@@ -11,10 +11,10 @@ public struct PanDirection: OptionSet {
         self.rawValue = rawValue
     }
 
-    public static let left  = PanDirection(rawValue: 1 << 0)
+    public static let left = PanDirection(rawValue: 1 << 0)
     public static let right = PanDirection(rawValue: 1 << 1)
-    public static let up    = PanDirection(rawValue: 1 << 2)
-    public static let down  = PanDirection(rawValue: 1 << 3)
+    public static let up = PanDirection(rawValue: 1 << 2)
+    public static let down = PanDirection(rawValue: 1 << 3)
 
     public static let horizontal: PanDirection = [.left, .right]
     public static let vertical: PanDirection = [.up, .down]
@@ -45,19 +45,19 @@ public class DirectionalPanGestureRecognizer: UIPanGestureRecognizer {
 
             let isSatisified: Bool = {
                 if abs(deltaY) > abs(deltaX) {
-                    if direction.contains(.up) && deltaY < 0 {
+                    if direction.contains(.up), deltaY < 0 {
                         return true
                     }
 
-                    if direction.contains(.down) && deltaY > 0 {
+                    if direction.contains(.down), deltaY > 0 {
                         return true
                     }
                 } else {
-                    if direction.contains(.left) && deltaX < 0 {
+                    if direction.contains(.left), deltaX < 0 {
                         return true
                     }
 
-                    if direction.contains(.right) && deltaX > 0 {
+                    if direction.contains(.right), deltaX > 0 {
                         return true
                     }
                 }

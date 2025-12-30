@@ -43,7 +43,7 @@ final class APNSRotationStoreTest: SignalBaseTest {
             // Fake a missed message so we'd rotate.
             self.createIncomingMessage(
                 receivedTimestamp: now - UInt64.minuteInMs,
-                transaction: transaction
+                transaction: transaction,
             )
         }
 
@@ -266,7 +266,7 @@ final class APNSRotationStoreTest: SignalBaseTest {
         write { transaction in
             self.createIncomingMessage(
                 receivedTimestamp: lastPushTime,
-                transaction: transaction
+                transaction: transaction,
             )
         }
 
@@ -286,7 +286,7 @@ final class APNSRotationStoreTest: SignalBaseTest {
                 write { transaction in
                     self.createIncomingMessage(
                         receivedTimestamp: now,
-                        transaction: transaction
+                        transaction: transaction,
                     )
                 }
             },
@@ -299,7 +299,7 @@ final class APNSRotationStoreTest: SignalBaseTest {
 
     private func createIncomingMessage(
         receivedTimestamp: UInt64,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) {
         let message = self.messageFactory.create(transaction: transaction)
         message.replaceReceived(atTimestamp: receivedTimestamp, transaction: transaction)

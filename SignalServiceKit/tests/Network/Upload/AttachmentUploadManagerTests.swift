@@ -27,7 +27,7 @@ class AttachmentUploadManagerTests {
             remoteConfigProvider: helper.mockRemoteConfigProvider,
             signalService: helper.mockServiceManager,
             sleepTimer: helper.mockSleepTimer,
-            storyStore: helper.mockStoryStore
+            storyStore: helper.mockStoryStore,
         )
     }
 
@@ -40,7 +40,7 @@ class AttachmentUploadManagerTests {
         // Indexed to line up with helper.capturedRequests.
         // 0. Mock the form request
         // 1. Mock UploadLocation request
-        let attempt = helper.addUploadFormAndLocationRequestMock(cdn: cdn) { (auth, uploadLocation, resumeLocation) in
+        let attempt = helper.addUploadFormAndLocationRequestMock(cdn: cdn) { auth, uploadLocation, resumeLocation in
             // 2. Successful upload
             helper.addUploadRequestMock(auth: auth, location: resumeLocation, type: .success)
         }
@@ -77,7 +77,7 @@ class AttachmentUploadManagerTests {
         // Indexed to line up with helper.capturedRequests.
         // 0. Mock the form request
         // 1. Upload location request
-        let attempt = helper.addUploadFormAndLocationRequestMock(cdn: cdn) { (auth, _, location) in
+        let attempt = helper.addUploadFormAndLocationRequestMock(cdn: cdn) { auth, _, location in
             // 2. Fail the upload with a network error
             helper.addUploadRequestMock(auth: auth, location: location, type: .networkError)
             // 3. Fetch the progress (10 of 20 bytes)
@@ -120,7 +120,7 @@ class AttachmentUploadManagerTests {
 
         helper.setup(encryptedSize: UInt32(encryptedSize), unencryptedSize: UInt32(unencryptedSize))
 
-        let attempt2 = helper.addUploadFormAndLocationRequestMock(cdn: cdn) { (auth, _, location) in
+        let attempt2 = helper.addUploadFormAndLocationRequestMock(cdn: cdn) { auth, _, location in
             helper.addUploadRequestMock(auth: auth, location: location, type: .success)
             helper.addResumeProgressMock(cdn: cdn, auth: auth, location: location, type: .progress(count: Int(chunkSize)))
             helper.addUploadRequestMock(auth: auth, location: location, type: .success)
@@ -176,7 +176,7 @@ class AttachmentUploadManagerTests {
 
         helper.setup(encryptedSize: UInt32(encryptedSize), unencryptedSize: UInt32(unencryptedSize))
 
-        let attempt2 = helper.addUploadFormAndLocationRequestMock(cdn: cdn) { (auth, _, location) in
+        let attempt2 = helper.addUploadFormAndLocationRequestMock(cdn: cdn) { auth, _, location in
             helper.addUploadRequestMock(auth: auth, location: location, type: .success)
             helper.addResumeProgressMock(cdn: cdn, auth: auth, location: location, type: .progress(count: Int(chunkSize)))
             helper.addUploadRequestMock(auth: auth, location: location, type: .success)
@@ -456,8 +456,8 @@ class AttachmentUploadManagerTests {
             return MockAttachment.mock(
                 streamInfo: nil,
                 transitTierInfo: .mock(
-                    uploadTimestamp: uploadTimestamp.ows_millisecondsSince1970
-                )
+                    uploadTimestamp: uploadTimestamp.ows_millisecondsSince1970,
+                ),
             )
         }
 
@@ -477,8 +477,8 @@ class AttachmentUploadManagerTests {
         helper.mockAttachmentStore.mockFetcher = { _ in
             return MockAttachmentStream.mock(
                 transitTierInfo: .mock(
-                    uploadTimestamp: uploadTimestamp.ows_millisecondsSince1970
-                )
+                    uploadTimestamp: uploadTimestamp.ows_millisecondsSince1970,
+                ),
             ).attachment
         }
 
@@ -496,8 +496,8 @@ class AttachmentUploadManagerTests {
             mockAttachment: MockAttachmentStream.mock(
                 streamInfo: .mock(encryptedByteCount: encryptedSize),
                 transitTierInfo: nil,
-                mediaTierInfo: nil
-            ).attachment
+                mediaTierInfo: nil,
+            ).attachment,
         )
 
         // Indexed to line up with helper.capturedRequests.
@@ -541,17 +541,17 @@ class AttachmentUploadManagerTests {
             uploadTimestamp: helper.mockDate
                 .addingTimeInterval(Upload.Constants.uploadReuseWindow * -2)
                 .ows_millisecondsSince1970,
-            unencryptedByteCount: encryptedSize + 2
+            unencryptedByteCount: encryptedSize + 2,
         )
 
         let attachment = MockAttachmentStream.mock(
             streamInfo: streamInfo,
             transitTierInfo: transitTierInfo,
-            mediaTierInfo: nil
+            mediaTierInfo: nil,
         ).attachment
         helper.setup(
             encryptedUploadSize: encryptedSize,
-            mockAttachment: attachment
+            mockAttachment: attachment,
         )
 
         var didDecrypt = false
@@ -613,11 +613,11 @@ class AttachmentUploadManagerTests {
         let attachment = MockAttachmentStream.mock(
             streamInfo: streamInfo,
             transitTierInfo: nil,
-            mediaTierInfo: .mock()
+            mediaTierInfo: .mock(),
         ).attachment
         helper.setup(
             encryptedUploadSize: encryptedSize,
-            mockAttachment: attachment
+            mockAttachment: attachment,
         )
 
         var didDecrypt = false

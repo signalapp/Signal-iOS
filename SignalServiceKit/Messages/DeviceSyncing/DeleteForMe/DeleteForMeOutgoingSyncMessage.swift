@@ -11,33 +11,33 @@ import LibSignalClient
 /// - SeeAlso ``DeleteForMeOutgoingSyncMessageManager``
 @objc(DeleteForMeOutgoingSyncMessage)
 class DeleteForMeOutgoingSyncMessage: OWSOutgoingSyncMessage {
-    public required init?(coder: NSCoder) {
+    required init?(coder: NSCoder) {
         self.contents = coder.decodeObject(of: NSData.self, forKey: "contents") as Data?
         super.init(coder: coder)
     }
 
-    public override func encode(with coder: NSCoder) {
+    override func encode(with coder: NSCoder) {
         super.encode(with: coder)
         if let contents {
             coder.encode(contents, forKey: "contents")
         }
     }
 
-    public override var hash: Int {
+    override var hash: Int {
         var hasher = Hasher()
         hasher.combine(super.hash)
         hasher.combine(contents)
         return hasher.finalize()
     }
 
-    public override func isEqual(_ object: Any?) -> Bool {
+    override func isEqual(_ object: Any?) -> Bool {
         guard let object = object as? Self else { return false }
         guard super.isEqual(object) else { return false }
         guard self.contents == object.contents else { return false }
         return true
     }
 
-    public override func copy(with zone: NSZone? = nil) -> Any {
+    override func copy(with zone: NSZone? = nil) -> Any {
         let result = super.copy(with: zone) as! Self
         result.contents = self.contents
         return result
@@ -61,25 +61,25 @@ class DeleteForMeOutgoingSyncMessage: OWSOutgoingSyncMessage {
         let conversationDeletes: [Outgoing.ConversationDelete]
         let localOnlyConversationDelete: [Outgoing.LocalOnlyConversationDelete]
 
-        #if TESTABLE_BUILD
+#if TESTABLE_BUILD
         init(
             messageDeletes: [Outgoing.MessageDeletes],
             nilAttachmentDeletes: Void,
             conversationDeletes: [Outgoing.ConversationDelete],
-            localOnlyConversationDelete: [Outgoing.LocalOnlyConversationDelete]
+            localOnlyConversationDelete: [Outgoing.LocalOnlyConversationDelete],
         ) {
             self.messageDeletes = messageDeletes
             self.attachmentDeletes = nil
             self.conversationDeletes = conversationDeletes
             self.localOnlyConversationDelete = localOnlyConversationDelete
         }
-        #endif
+#endif
 
         init(
             messageDeletes: [Outgoing.MessageDeletes],
             attachmentDeletes: [Outgoing.AttachmentDelete],
             conversationDeletes: [Outgoing.ConversationDelete],
-            localOnlyConversationDelete: [Outgoing.LocalOnlyConversationDelete]
+            localOnlyConversationDelete: [Outgoing.LocalOnlyConversationDelete],
         ) {
             self.attachmentDeletes = attachmentDeletes
             self.messageDeletes = messageDeletes
@@ -90,7 +90,7 @@ class DeleteForMeOutgoingSyncMessage: OWSOutgoingSyncMessage {
         fileprivate var asProto: SSKProtoSyncMessageDeleteForMe {
             let protoBuilder = SSKProtoSyncMessageDeleteForMe.builder()
             protoBuilder.setMessageDeletes(messageDeletes.map { $0.asProto })
-            if let attachmentDeletes = attachmentDeletes {
+            if let attachmentDeletes {
                 protoBuilder.setAttachmentDeletes(attachmentDeletes.map { $0.asProto })
             }
             protoBuilder.setConversationDeletes(conversationDeletes.map { $0.asProto })
@@ -105,7 +105,7 @@ class DeleteForMeOutgoingSyncMessage: OWSOutgoingSyncMessage {
     init?(
         contents: Contents,
         localThread: TSContactThread,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) {
         do {
             self.contents = try JSONEncoder().encode(contents)
@@ -117,9 +117,9 @@ class DeleteForMeOutgoingSyncMessage: OWSOutgoingSyncMessage {
         super.init(localThread: localThread, transaction: tx)
     }
 
-    override public var isUrgent: Bool { false }
+    override var isUrgent: Bool { false }
 
-    override public func syncMessageBuilder(transaction: DBReadTransaction) -> SSKProtoSyncMessageBuilder? {
+    override func syncMessageBuilder(transaction: DBReadTransaction) -> SSKProtoSyncMessageBuilder? {
         let contents: Contents
         do {
             contents = try JSONDecoder().decode(Contents.self, from: self.contents)
@@ -176,22 +176,22 @@ extension DeleteForMeSyncMessage.Outgoing {
             self.sentTimestamp = sentTimestamp
         }
 
-        #if TESTABLE_BUILD
+#if TESTABLE_BUILD
         static func forTests(author: Author, sentTimestamp: UInt64) -> AddressableMessage {
             return AddressableMessage(author: author, sentTimestamp: sentTimestamp)
         }
-        #endif
+#endif
 
         static func addressing(
             message: TSMessage,
-            localIdentifiers: LocalIdentifiers
+            localIdentifiers: LocalIdentifiers,
         ) -> AddressableMessage? {
             if let incomingMessage = message as? TSIncomingMessage {
                 return AddressableMessage(incomingMessage: incomingMessage)
             } else if let outgoingMessage = message as? TSOutgoingMessage {
                 return AddressableMessage(
                     outgoingMessage: outgoingMessage,
-                    localIdentifiers: localIdentifiers
+                    localIdentifiers: localIdentifiers,
                 )
             }
 
@@ -283,25 +283,25 @@ extension DeleteForMeSyncMessage.Outgoing {
         let mostRecentNonExpiringAddressableMessages: [AddressableMessage]?
         let isFullDelete: Bool
 
-        #if TESTABLE_BUILD
+#if TESTABLE_BUILD
         init(
             conversationIdentifier: ConversationIdentifier,
             mostRecentAddressableMessages: [AddressableMessage],
             nilNonExpiringAddressableMessages: Void,
-            isFullDelete: Bool
+            isFullDelete: Bool,
         ) {
             self.conversationIdentifier = conversationIdentifier
             self.mostRecentAddressableMessages = mostRecentAddressableMessages
             self.mostRecentNonExpiringAddressableMessages = nil
             self.isFullDelete = isFullDelete
         }
-        #endif
+#endif
 
         init(
             conversationIdentifier: ConversationIdentifier,
             mostRecentAddressableMessages: [AddressableMessage],
             mostRecentNonExpiringAddressableMessages: [AddressableMessage],
-            isFullDelete: Bool
+            isFullDelete: Bool,
         ) {
             self.conversationIdentifier = conversationIdentifier
             self.mostRecentAddressableMessages = mostRecentAddressableMessages

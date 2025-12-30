@@ -41,7 +41,7 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
     @objc(fetchOrDefaultForThread:transaction:)
     public static func fetchOrDefault(
         for thread: TSThread,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> ThreadAssociatedData {
         fetchOrDefault(for: thread.uniqueId, ignoreMissing: false, transaction: transaction)
     }
@@ -49,7 +49,7 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
     @objc(fetchOrDefaultForThreadUniqueId:transaction:)
     public static func fetchOrDefault(
         for threadUniqueId: String,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> ThreadAssociatedData {
         fetchOrDefault(for: threadUniqueId, ignoreMissing: false, transaction: transaction)
     }
@@ -58,7 +58,7 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
     public static func fetchOrDefault(
         for thread: TSThread,
         ignoreMissing: Bool,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> ThreadAssociatedData {
         fetchOrDefault(for: thread.uniqueId, ignoreMissing: ignoreMissing, transaction: transaction)
     }
@@ -67,19 +67,19 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
     public static func fetchOrDefault(
         for threadUniqueId: String,
         ignoreMissing: Bool,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> ThreadAssociatedData {
         DependenciesBridge.shared.threadAssociatedDataStore.fetchOrDefault(
             for: threadUniqueId,
             ignoreMissing: ignoreMissing || CurrentAppContext().isRunningTests || threadUniqueId == "MockThread",
-            tx: transaction
+            tx: transaction,
         )
     }
 
     @objc(fetchForThreadUniqueId:transaction:)
     public static func fetch(
         for threadUniqueId: String,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> ThreadAssociatedData? {
         do {
             return try Self.filter(Column("threadUniqueId") == threadUniqueId).fetchOne(transaction.database)
@@ -117,7 +117,7 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
         isArchived: Bool,
         isMarkedUnread: Bool,
         mutedUntilTimestamp: UInt64,
-        audioPlaybackRate: Float
+        audioPlaybackRate: Float,
     ) {
         self.threadUniqueId = threadUniqueId
         self.isArchived = isArchived
@@ -133,7 +133,7 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
         mutedUntilTimestamp: UInt64? = nil,
         audioPlaybackRate: Float? = nil,
         updateStorageService: Bool,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) {
         guard
             isArchived != nil
@@ -145,16 +145,16 @@ public class ThreadAssociatedData: NSObject, Codable, FetchableRecord, Persistab
         }
 
         updateWith(updateStorageService: updateStorageService, transaction: transaction) { associatedData in
-            if let isArchived = isArchived {
+            if let isArchived {
                 associatedData.isArchived = isArchived
             }
-            if let isMarkedUnread = isMarkedUnread {
+            if let isMarkedUnread {
                 associatedData.isMarkedUnread = isMarkedUnread
             }
-            if let mutedUntilTimestamp = mutedUntilTimestamp {
+            if let mutedUntilTimestamp {
                 associatedData.mutedUntilTimestamp = mutedUntilTimestamp
             }
-            if let audioPlaybackRate = audioPlaybackRate {
+            if let audioPlaybackRate {
                 associatedData.audioPlaybackRate = audioPlaybackRate
             }
         }
@@ -248,7 +248,7 @@ public extension TSThread {
         associatedData.updateWith(isMarkedUnread: false, updateStorageService: updateStorageService, transaction: transaction)
     }
 
-    fileprivate func markAllAsRead(transaction: DBWriteTransaction) {
+    private func markAllAsRead(transaction: DBWriteTransaction) {
         let hasPendingMessageRequest = hasPendingMessageRequest(transaction: transaction)
         let circumstance: OWSReceiptCircumstance = hasPendingMessageRequest
             ? .onThisDeviceWhilePendingMessageRequest
@@ -263,7 +263,7 @@ public extension TSThread {
                     thread: self,
                     circumstance: circumstance,
                     shouldClearNotifications: true,
-                    transaction: transaction
+                    transaction: transaction,
                 )
             }
         } catch {

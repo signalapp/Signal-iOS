@@ -28,7 +28,7 @@ struct QRCodeGenerator {
 
         return QRCodeStyler().styleQRCode(
             unstyledQRCode: unstyledQRCode,
-            stylingMode: stylingMode
+            stylingMode: stylingMode,
         )
     }
 
@@ -51,7 +51,7 @@ struct QRCodeGenerator {
         // apply tint colors as desired.
         let colorParameters = [
             "inputColor0": CIColor(color: .black),
-            "inputColor1": CIColor(color: .clear)
+            "inputColor1": CIColor(color: .clear),
         ]
 
         let recoloredCIImage = ciImage.applyingFilter("CIFalseColor", parameters: colorParameters)
@@ -103,7 +103,7 @@ private struct QRCodeStyler {
 
     func styleQRCode(
         unstyledQRCode: UIImage,
-        stylingMode: StylingMode
+        stylingMode: StylingMode,
     ) -> UIImage {
         guard
             let cgQRCode = unstyledQRCode.cgImage,
@@ -118,7 +118,7 @@ private struct QRCodeStyler {
             // Specify a centered deadzone in the QR code.
             qrCodeBitmap.centeredDeadzone(
                 dimensionPercentage: Constants.deadzoneSizePointsPercentage,
-                paddingPoints: Constants.deadzonePaddingPoints
+                paddingPoints: Constants.deadzonePaddingPoints,
             )
         case .brandedWithoutLogo:
             nil
@@ -126,7 +126,7 @@ private struct QRCodeStyler {
 
         // Make a grid drawing of the QR code.
         let qrCodeGridDrawing = qrCodeBitmap.gridDrawingByMergingAdjacentPixels(
-            deadzone: deadzone
+            deadzone: deadzone,
         )
 
         // Paint the grid drawing into a CGContext.
@@ -134,7 +134,7 @@ private struct QRCodeStyler {
             gridDrawing: qrCodeGridDrawing,
             scaledBy: Constants.imagePixelsPerQRCodePoint,
             foregroundColor: UIColor.black.cgColor,
-            backgroundColor: UIColor.clear.cgColor
+            backgroundColor: UIColor.clear.cgColor,
         )
 
         if let deadzone {
@@ -143,13 +143,13 @@ private struct QRCodeStyler {
             // instead of straddling the edges (the CoreGraphics behavior).
             let circleRect = deadzone.cgRect(
                 scaledBy: CGFloat(Constants.imagePixelsPerQRCodePoint),
-                insetBy: CGFloat(Constants.deadzonePaddingPoints)
+                insetBy: CGFloat(Constants.deadzonePaddingPoints),
             )
             let circleStroke = circleRect.width * Constants.deadzoneCircleStrokePercentage
             styledQRCodeContext.setLineWidth(circleStroke)
             styledQRCodeContext.strokeEllipse(in: circleRect.insetBy(
                 dx: circleStroke / 2,
-                dy: circleStroke / 2
+                dy: circleStroke / 2,
             ))
 
             // Draw the logo inside the circle in the deadzone.
@@ -173,36 +173,36 @@ extension Bitmaps.Image {
     /// the given padding on each side.
     func centeredDeadzone(
         dimensionPercentage percentage: CGFloat,
-        paddingPoints: Int
+        paddingPoints: Int,
     ) -> Bitmaps.Rect {
         owsPrecondition(
             percentage < 0.5, // Roughly the dimension percentage for deadzoning 30% of the surface area
-            "Deadzoning too much of a QR code means it might not scan!"
+            "Deadzoning too much of a QR code means it might not scan!",
         )
 
         let widthRange = centeredRange(
             percentage: percentage,
             ofInt: width,
-            padding: paddingPoints
+            padding: paddingPoints,
         )
         let heightRange = centeredRange(
             percentage: percentage,
             ofInt: height,
-            padding: paddingPoints
+            padding: paddingPoints,
         )
 
         return Bitmaps.Rect(
             x: widthRange.lowerBound,
             y: heightRange.lowerBound,
             width: widthRange.upperBound - widthRange.lowerBound,
-            height: heightRange.upperBound - heightRange.lowerBound
+            height: heightRange.upperBound - heightRange.lowerBound,
         )
     }
 
     private func centeredRange(
         percentage: CGFloat,
         ofInt int: Int,
-        padding: Int
+        padding: Int,
     ) -> ClosedRange<Int> {
         var rangeLength = Int(CGFloat(int) * percentage) + padding * 2
         var remainder = int - rangeLength

@@ -49,7 +49,7 @@ open class RoundMediaButton: UIButton {
             }
         }()
 
-        super.init(frame: CGRect(origin: .zero, size: .square(Self.visibleButtonSize + 2*Self.defaultInset)))
+        super.init(frame: CGRect(origin: .zero, size: .square(Self.visibleButtonSize + 2 * Self.defaultInset)))
 
         ows_contentEdgeInsets = UIEdgeInsets(margin: Self.defaultContentInset)
         layoutMargins = UIEdgeInsets(margin: Self.defaultInset)
@@ -65,13 +65,13 @@ open class RoundMediaButton: UIButton {
             backgroundContainerView.autoPinEdgesToSuperviewMargins()
             self.backgroundContainerView = backgroundContainerView
 
-            if let backgroundView = backgroundView {
+            if let backgroundView {
                 backgroundView.isUserInteractionEnabled = false
                 backgroundContainerView.addSubview(backgroundView)
                 backgroundView.autoPinEdgesToSuperviewEdges()
             }
 
-            if let customView = customView {
+            if let customView {
                 backgroundContainerView.addSubview(customView)
                 customView.autoCenterInSuperview()
             }
@@ -102,17 +102,17 @@ open class RoundMediaButton: UIButton {
         fatalError("init(coder:) has not been implemented")
     }
 
-    public override func layoutSubviews() {
+    override public func layoutSubviews() {
         super.layoutSubviews()
-        if let backgroundContainerView = backgroundContainerView {
+        if let backgroundContainerView {
             sendSubviewToBack(backgroundContainerView)
         }
     }
 
-    private var backgroundColors: [ UIControl.State.RawValue: UIColor ] = [:]
+    private var backgroundColors: [UIControl.State.RawValue: UIColor] = [:]
 
     public func setBackgroundColor(_ color: UIColor?, for state: UIControl.State) {
-        if let color = color {
+        if let color {
             backgroundColors[state.rawValue] = color
         } else {
             backgroundColors.removeValue(forKey: state.rawValue)
@@ -141,19 +141,19 @@ open class RoundMediaButton: UIButton {
         }
     }
 
-    public override var isHighlighted: Bool {
+    override public var isHighlighted: Bool {
         didSet {
             updateBackgroundColor()
         }
     }
 
-    public override var isSelected: Bool {
+    override public var isSelected: Bool {
         didSet {
             updateBackgroundColor()
         }
     }
 
-    public override var isEnabled: Bool {
+    override public var isEnabled: Bool {
         didSet {
             updateBackgroundColor()
         }

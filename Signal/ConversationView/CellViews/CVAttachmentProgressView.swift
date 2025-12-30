@@ -36,15 +36,17 @@ public class CVAttachmentProgressView: ManualLayoutView {
         direction: Direction,
         diameter: CGFloat = 44,
         isDarkThemeEnabled: Bool,
-        mediaCache: CVMediaCache
+        mediaCache: CVMediaCache,
     ) {
         self.direction = direction
         self.diameter = diameter
         self.isDarkThemeEnabled = isDarkThemeEnabled
-        self.stateView = StateView(diameter: diameter,
-                                   direction: direction,
-                                   isDarkThemeEnabled: isDarkThemeEnabled,
-                                   mediaCache: mediaCache)
+        self.stateView = StateView(
+            diameter: diameter,
+            direction: direction,
+            isDarkThemeEnabled: isDarkThemeEnabled,
+            mediaCache: mediaCache,
+        )
 
         super.init(name: "CVAttachmentProgressView")
 
@@ -99,10 +101,12 @@ public class CVAttachmentProgressView: ManualLayoutView {
             }
         }
 
-        init(diameter: CGFloat,
-             direction: Direction,
-             isDarkThemeEnabled: Bool,
-             mediaCache: CVMediaCache) {
+        init(
+            diameter: CGFloat,
+            direction: Direction,
+            isDarkThemeEnabled: Bool,
+            mediaCache: CVMediaCache,
+        ) {
             self.diameter = diameter
             self.direction = direction
             self.isDarkThemeEnabled = isDarkThemeEnabled
@@ -149,8 +153,10 @@ public class CVAttachmentProgressView: ManualLayoutView {
             }
         }
 
-        private func presentIcon(templateName: String,
-                                 isInsideProgress: Bool) {
+        private func presentIcon(
+            templateName: String,
+            isInsideProgress: Bool,
+        ) {
             if !isInsideProgress {
                 reset()
             }
@@ -200,9 +206,11 @@ public class CVAttachmentProgressView: ManualLayoutView {
             addSubviewToFillSuperviewEdges(animationView)
         }
 
-        private func ensureAnimationView(_ animationView: LottieAnimationView?,
-                                         animationName: String) -> LottieAnimationView {
-            if let animationView = animationView {
+        private func ensureAnimationView(
+            _ animationView: LottieAnimationView?,
+            animationName: String,
+        ) -> LottieAnimationView {
+            if let animationView {
                 return animationView
             } else {
                 return mediaCache.buildLottieAnimationView(name: animationName)
@@ -210,7 +218,7 @@ public class CVAttachmentProgressView: ManualLayoutView {
         }
 
         private func updateProgress(progress: CGFloat) {
-            guard let progressView = progressView else {
+            guard let progressView else {
                 owsFailDebug("Missing progressView.")
                 return
             }
@@ -221,11 +229,13 @@ public class CVAttachmentProgressView: ManualLayoutView {
 
             // We DO NOT play this animation; we "scrub" it to reflect
             // attachment upload/download progress.
-            progressView.currentFrame = progress.lerp(animation.startFrame,
-                                                      animation.endFrame)
+            progressView.currentFrame = progress.lerp(
+                animation.startFrame,
+                animation.endFrame,
+            )
         }
 
-        public override func reset() {
+        override func reset() {
             super.reset()
 
             progressView?.stop()
@@ -258,7 +268,7 @@ public class CVAttachmentProgressView: ManualLayoutView {
                 self,
                 selector: #selector(processUploadNotification(notification:)),
                 name: Upload.Constants.attachmentUploadProgressNotification,
-                object: nil
+                object: nil,
             )
 
         case .download(_, let downloadState):
@@ -274,7 +284,7 @@ public class CVAttachmentProgressView: ManualLayoutView {
                     self,
                     selector: #selector(processDownloadNotification(notification:)),
                     name: AttachmentDownloads.attachmentDownloadProgressNotification,
-                    object: nil
+                    object: nil,
                 )
             }
         }
@@ -310,7 +320,7 @@ public class CVAttachmentProgressView: ManualLayoutView {
     }
 
     private func updateState(downloadProgress progress: CGFloat?) {
-        guard let progress = progress else {
+        guard let progress else {
             stateView.state = .downloadUnknownProgress
             return
         }
@@ -389,7 +399,7 @@ public class CVAttachmentProgressView: ManualLayoutView {
 
     public static func progressType(
         forAttachment attachment: CVAttachment,
-        interaction: TSInteraction
+        interaction: TSInteraction,
     ) -> ProgressType {
 
         switch attachment {
@@ -422,7 +432,7 @@ public class CVAttachmentProgressView: ManualLayoutView {
             case .failed, .enqueuedOrDownloading:
                 return .downloading(
                     attachmentPointer: attachmentPointer.attachmentPointer,
-                    downloadState: downloadState
+                    downloadState: downloadState,
                 )
             }
         case .undownloadable:

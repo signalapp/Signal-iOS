@@ -46,14 +46,14 @@ final class ScrubbingLogFormatterTest: XCTestCase {
                 "<00…>",
             "My data is: <01234567 89a23def 23234567 89ab1223>": "My data is: <01…>",
             "My data is <12345670 89a23def 23234567 89ab1223> their data is <87654321 89ab1234>":
-                "My data is <12…> their data is <87…>"
+                "My data is <12…> their data is <87…>",
         ]
 
         for (input, expectedOutput) in testCases {
             XCTAssertEqual(
                 format(input),
                 expectedOutput,
-                "Failed redaction: \(input)"
+                "Failed redaction: \(input)",
             )
         }
     }
@@ -87,14 +87,14 @@ final class ScrubbingLogFormatterTest: XCTestCase {
             "My data is: {length = 32, bytes = 0x0123456789a23def2323456789ab1223}":
                 "My data is: <01…>",
             "My data is {length = 32, bytes = 0x1234567089a23def2323456789ab1223} their data is {length = 16, bytes = 0x8765432189ab1234}":
-                "My data is <12…> their data is <87…>"
+                "My data is <12…> their data is <87…>",
         ]
 
         for (input, expectedOutput) in testCases {
             XCTAssertEqual(
                 format(input),
                 expectedOutput,
-                "Failed redaction: \(input)"
+                "Failed redaction: \(input)",
             )
         }
     }
@@ -106,7 +106,7 @@ final class ScrubbingLogFormatterTest: XCTestCase {
             .init([1]): "<01…>",
             .init([1, 2, 3, 0x10, 0x20]): "<01…>",
             .init([0xff]): "<ff…>",
-            .init([0xff, 0xff, 0xff]): "<ff…>"
+            .init([0xff, 0xff, 0xff]): "<ff…>",
         ]
 
         for (inputData, expectedOutput) in testCases {
@@ -114,7 +114,7 @@ final class ScrubbingLogFormatterTest: XCTestCase {
             XCTAssertEqual(
                 format(input),
                 expectedOutput,
-                "Failed redaction: \(input)"
+                "Failed redaction: \(input)",
             )
         }
     }
@@ -169,7 +169,7 @@ final class ScrubbingLogFormatterTest: XCTestCase {
     func testCallLinkScrubbed() {
         XCTAssertEqual(
             format("https://signal.link/call/#key=bcdf-ghkm-npqr-stxz-bcdf-ghkm-npqr-stxz"),
-            "https://signal.link/call/#key=bcdf-…-xxxx"
+            "https://signal.link/call/#key=bcdf-…-xxxx",
         )
     }
 
@@ -184,7 +184,7 @@ final class ScrubbingLogFormatterTest: XCTestCase {
             "0.0.0.0": "x.x.x.0",
             "127.0.0.1": "x.x.x.1",
             "255.255.255.255": "x.x.x.255",
-            "1.2.3.4": "x.x.x.4"
+            "1.2.3.4": "x.x.x.4",
         ]
         let messageFormats: [String] = [
             "a%@b",
@@ -194,7 +194,7 @@ final class ScrubbingLogFormatterTest: XCTestCase {
             "%@",
             "%@ %@",
             "no ip address!",
-            ""
+            "",
         ]
 
         for (ipAddress, redactedIpAddress) in valueMap {
@@ -276,24 +276,24 @@ final class ScrubbingLogFormatterTest: XCTestCase {
             "%@",
             "%@ %@",
             "no ip address!",
-            ""
+            "",
         ]
 
         for ipAddress in testAddresses {
-            for messageFormat in (messageFormats + ["x%@y"]) {
+            for messageFormat in messageFormats + ["x%@y"] {
                 runTest(messageFormat: messageFormat, ipAddress: ipAddress)
             }
         }
 
         for ipAddress in testAddressesWithZoneIndex {
-            for messageFormat in (messageFormats + ["x%@"]) {
+            for messageFormat in messageFormats + ["x%@"] {
                 runTest(messageFormat: messageFormat, ipAddress: ipAddress)
             }
         }
     }
 
     func testUUIDsScrubbed_Random() {
-        for _ in (1...10) {
+        for _ in 1...10 {
             let uuidString = UUID().uuidString
             let result = format("My UUID is \(uuidString)")
             XCTAssertEqual(result, "My UUID is xxxx-xx-xx-xxx\(uuidString.suffix(3))")
@@ -314,14 +314,14 @@ final class ScrubbingLogFormatterTest: XCTestCase {
             "Sending message: TSOutgoingMessage, timestamp: \(timestamp)": "Sending message: TSOutgoingMessage, timestamp: \(timestamp)",
             // Leave timestamp, but UUID and phone number should be redacted
             "attempting to send message: TSOutgoingMessage, timestamp: \(timestamp), recipient: <SignalServiceAddress phoneNumber: +12345550123, uuid: BAF1768C-2A25-4D8F-83B7-A89C59C98748>":
-                "attempting to send message: TSOutgoingMessage, timestamp: \(timestamp), recipient: <SignalServiceAddress phoneNumber: +x…123, uuid: xxxx-xx-xx-xxx748>"
+                "attempting to send message: TSOutgoingMessage, timestamp: \(timestamp), recipient: <SignalServiceAddress phoneNumber: +x…123, uuid: xxxx-xx-xx-xxx748>",
         ]
 
         for (input, expectedOutput) in testCases {
             XCTAssertEqual(
                 format(input),
                 expectedOutput,
-                "Failed redaction: \(input)"
+                "Failed redaction: \(input)",
             )
         }
     }
@@ -339,20 +339,20 @@ final class ScrubbingLogFormatterTest: XCTestCase {
             "0102030405060708": "…708",
             "010203040506070809": "…809",
             "010203040506070809ab": "…9ab",
-            "010203040506070809abcd": "…bcd"
+            "010203040506070809abcd": "…bcd",
         ]
 
         for (input, expectedOutput) in testCases {
             XCTAssertEqual(
                 format(input),
                 expectedOutput,
-                "Failed redaction: \(input)"
+                "Failed redaction: \(input)",
             )
         }
     }
 
     func testBase64UUIDsScrubbed_Random() {
-        for _ in (1...10) {
+        for _ in 1...10 {
             let uuid = UUID().data.base64EncodedString()
             let result = format("My base64 UUID is \(uuid)")
             XCTAssertEqual(result, "My base64 UUID is …\(uuid.suffix(5))")
@@ -378,7 +378,7 @@ final class ScrubbingLogFormatterTest: XCTestCase {
 
     func testBase64UUIDsScrubbed_dontScrubDifferentLengths() {
         for byteLength in [15, 17, 1] {
-            for _ in (1...10) {
+            for _ in 1...10 {
                 let stringValue = Randomness.generateRandomBytes(UInt(byteLength)).base64EncodedString()
                 let result = format("My base64 UUID is not \(stringValue)")
                 XCTAssert(result.contains(stringValue), "Incorrectly redacted non UUID base64 string: \(result)")

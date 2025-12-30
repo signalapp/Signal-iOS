@@ -137,12 +137,12 @@ public class CommonCallLinksUI {
             context.cgContext.clip()
 
             theme.foregroundColor.set()
-            let centerOffset = Constants.circleViewDimension/2 - Constants.iconDimension/2
+            let centerOffset = Constants.circleViewDimension / 2 - Constants.iconDimension / 2
             let imageRect = CGRect(
                 x: centerOffset,
                 y: centerOffset,
                 width: Constants.iconDimension,
-                height: Constants.iconDimension
+                height: Constants.iconDimension,
             )
             image.withRenderingMode(.alwaysTemplate).draw(in: imageRect)
         }

@@ -7,14 +7,14 @@ extension OWSGroupCallMessage {
     private var groupCallEndedMessage: String {
         return OWSLocalizedString(
             "GROUP_CALL_ENDED_MESSAGE",
-            comment: "Text in conversation view for a group call that has since ended"
+            comment: "Text in conversation view for a group call that has since ended",
         )
     }
 
     private var groupCallStartedByYou: String {
         return OWSLocalizedString(
             "GROUP_CALL_STARTED_BY_YOU",
-            comment: "Text explaining that you started a group call."
+            comment: "Text explaining that you started a group call.",
         )
     }
 
@@ -34,27 +34,27 @@ extension OWSGroupCallMessage {
         let threeOrMoreFormat = OWSLocalizedString(
             "GROUP_CALL_MANY_PEOPLE_HERE_%d",
             tableName: "PluralAware",
-            comment: "Text explaining that there are three or more people in the group call. Embeds {{ %1$@ participantCount-2, %2$@ participant1, %3$@ participant2 }}"
+            comment: "Text explaining that there are three or more people in the group call. Embeds {{ %1$@ participantCount-2, %2$@ participant1, %3$@ participant2 }}",
         )
         let twoFormat = OWSLocalizedString(
             "GROUP_CALL_TWO_PEOPLE_HERE_FORMAT",
-            comment: "Text explaining that there are two people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }}"
+            comment: "Text explaining that there are two people in the group call. Embeds {{ %1$@ participant1, %2$@ participant2 }}",
         )
         let onlyCreatorFormat = OWSLocalizedString(
             "GROUP_CALL_STARTED_MESSAGE_FORMAT",
-            comment: "Text explaining that someone started a group call. Embeds {{call creator display name}}"
+            comment: "Text explaining that someone started a group call. Embeds {{call creator display name}}",
         )
         let onlyYouString = OWSLocalizedString(
             "GROUP_CALL_YOU_ARE_HERE",
-            comment: "Text explaining that you are in the group call."
+            comment: "Text explaining that you are in the group call.",
         )
         let onlyOneFormat = OWSLocalizedString(
             "GROUP_CALL_ONE_PERSON_HERE_FORMAT",
-            comment: "Text explaining that there is one person in the group call. Embeds {member name}"
+            comment: "Text explaining that there is one person in the group call. Embeds {member name}",
         )
         let someoneString = OWSLocalizedString(
             "GROUP_CALL_SOMEONE_STARTED_MESSAGE",
-            comment: "Text in conversation view for a group call that someone started. We don't know who"
+            comment: "Text in conversation view for a group call that someone started. We don't know who",
         )
 
         let joinedMemberAddresses = self.joinedMemberAcis.map { SignalServiceAddress($0.wrappedValue) }
@@ -121,13 +121,13 @@ extension OWSGroupCallMessage: OWSPreviewText {
             let creatorDisplayName = self.participantName(for: SignalServiceAddress(creatorAci.wrappedAciValue), tx: transaction)
             let formatString = OWSLocalizedString(
                 "GROUP_CALL_STARTED_MESSAGE_FORMAT",
-                comment: "Text explaining that someone started a group call. Embeds {{call creator display name}}"
+                comment: "Text explaining that someone started a group call. Embeds {{call creator display name}}",
             )
             return String(format: formatString, creatorDisplayName)
         }
         return OWSLocalizedString(
             "GROUP_CALL_SOMEONE_STARTED_MESSAGE",
-            comment: "Text in conversation view for a group call that someone started. We don't know who"
+            comment: "Text in conversation view for a group call that someone started. We don't know who",
         )
     }
 }
@@ -145,7 +145,7 @@ extension OWSGroupCallMessage: OWSReadTracking {
         thread: TSThread,
         circumstance: OWSReceiptCircumstance,
         shouldClearNotifications: Bool,
-        transaction tx: DBWriteTransaction
+        transaction tx: DBWriteTransaction,
     ) {
         if wasRead {
             return
@@ -161,15 +161,16 @@ extension OWSGroupCallMessage: OWSReadTracking {
             let missedCallManager = DependenciesBridge.shared.callRecordMissedCallManager
 
             if
-                let sqliteRowId = sqliteRowId,
+                let sqliteRowId,
                 let associatedCallRecord = callRecordStore.fetch(
-                    interactionRowId: sqliteRowId, tx: tx
+                    interactionRowId: sqliteRowId,
+                    tx: tx,
                 )
             {
                 missedCallManager.markUnreadCallsInConversationAsRead(
                     beforeCallRecord: associatedCallRecord,
                     sendSyncMessage: true,
-                    tx: tx
+                    tx: tx,
                 )
             }
         case .onLinkedDevice, .onLinkedDeviceWhilePendingMessageRequest:

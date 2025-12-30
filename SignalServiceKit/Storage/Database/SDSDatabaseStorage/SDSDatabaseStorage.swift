@@ -27,7 +27,7 @@ public class SDSDatabaseStorage: NSObject, DB {
     public let keychainStorage: any KeychainStorage
     public let keyFetcher: GRDBKeyFetcher
 
-    private(set) public var grdbStorage: GRDBDatabaseStorageAdapter
+    public private(set) var grdbStorage: GRDBDatabaseStorageAdapter
     public var databaseChangeObserver: DatabaseChangeObserver { _databaseChangeObserver }
 
     public init(appReadiness: AppReadiness, databaseFileUrl: URL, keychainStorage: any KeychainStorage) throws {
@@ -39,7 +39,7 @@ public class SDSDatabaseStorage: NSObject, DB {
         self.grdbStorage = try GRDBDatabaseStorageAdapter(
             databaseChangeObserver: _databaseChangeObserver,
             databaseFileUrl: databaseFileUrl,
-            keyFetcher: self.keyFetcher
+            keyFetcher: self.keyFetcher,
         )
 
         super.init()
@@ -50,17 +50,19 @@ public class SDSDatabaseStorage: NSObject, DB {
             self.crossProcess = SDSCrossProcess(callback: { @MainActor [weak self] () -> Void in
                 self?.handleCrossProcessWrite()
             })
-            NotificationCenter.default.addObserver(self,
-                                                   selector: #selector(didBecomeActive),
-                                                   name: UIApplication.didBecomeActiveNotification,
-                                                   object: nil)
+            NotificationCenter.default.addObserver(
+                self,
+                selector: #selector(didBecomeActive),
+                name: UIApplication.didBecomeActiveNotification,
+                object: nil,
+            )
         }
     }
 
     public class var baseDir: URL {
         return URL(
             fileURLWithPath: CurrentAppContext().appDatabaseBaseDirectoryPath(),
-            isDirectory: true
+            isDirectory: true,
         )
     }
 
@@ -88,7 +90,7 @@ public class SDSDatabaseStorage: NSObject, DB {
         failIfThrows {
             _ = try GRDBSchemaMigrator.migrateDatabase(
                 databaseStorage: self,
-                runDataMigrations: true
+                runDataMigrations: true,
             )
         }
     }
@@ -98,13 +100,13 @@ public class SDSDatabaseStorage: NSObject, DB {
         // (e.g. SQLite connection) in the GRDB pool ends up "stale" after
         // a schema migration and does not reflect the migrations.
         grdbStorage.pool.releaseMemory()
-        #if compiler(>=6.2.3)
+#if compiler(>=6.2.3)
         weak let weakPool: DatabasePool?
         weak let weakGrdbStorage: GRDBDatabaseStorageAdapter?
-        #else
+#else
         weak var weakPool: DatabasePool?
         weak var weakGrdbStorage: GRDBDatabaseStorageAdapter?
-        #endif
+#endif
         weakPool = grdbStorage.pool
         weakGrdbStorage = grdbStorage
         owsAssertDebug(weakPool != nil)
@@ -112,7 +114,7 @@ public class SDSDatabaseStorage: NSObject, DB {
         grdbStorage = try GRDBDatabaseStorageAdapter(
             databaseChangeObserver: _databaseChangeObserver,
             databaseFileUrl: databaseFileUrl,
-            keyFetcher: keyFetcher
+            keyFetcher: keyFetcher,
         )
 
         // We want to make sure all db connections from the old adapter/pool are closed.
@@ -231,7 +233,7 @@ public class SDSDatabaseStorage: NSObject, DB {
         file: String,
         function: String,
         line: Int,
-        block: (DBReadTransaction) throws -> T
+        block: (DBReadTransaction) throws -> T,
     ) throws -> T {
         try grdbStorage.read { try block($0) }
     }
@@ -245,7 +247,7 @@ public class SDSDatabaseStorage: NSObject, DB {
         file: String,
         function: String,
         line: Int,
-        block: (DBReadTransaction) throws(E) -> T
+        block: (DBReadTransaction) throws(E) -> T,
     ) throws(E) -> T {
         var value: T!
         var thrown: E?
@@ -272,7 +274,7 @@ public class SDSDatabaseStorage: NSObject, DB {
         isAwaitableWrite: Bool = false,
         block: (DBWriteTransaction) -> Database.TransactionCompletion,
     ) throws {
-        #if DEBUG
+#if DEBUG
         // When running in a Task, we should ensure that callers don't use
         // synchronous writes, as that could block forward progress for other
         // tasks. This seems like a reasonable way to check for this in debug
@@ -280,7 +282,7 @@ public class SDSDatabaseStorage: NSObject, DB {
         withUnsafeCurrentTask {
             owsAssertDebug(isAwaitableWrite || Thread.isMainThread || $0 == nil, "Must use awaitableWrite in Tasks.")
         }
-        #endif
+#endif
 
         let benchTitle = "Slow Write Transaction \(Self.owsFormatLogMessage(file: file, function: function, line: line))"
         let timeoutThreshold = DebugFlags.internalLogging ? 0.1 : 0.5
@@ -302,7 +304,7 @@ public class SDSDatabaseStorage: NSObject, DB {
         file: String,
         function: String,
         line: Int,
-        block: (DBWriteTransaction) throws(E) -> T
+        block: (DBWriteTransaction) throws(E) -> T,
     ) throws(E) -> T {
         return try _writeWithTxCompletionIfThrows(
             file: file,
@@ -318,7 +320,7 @@ public class SDSDatabaseStorage: NSObject, DB {
         file: String,
         function: String,
         line: Int,
-        block: (DBWriteTransaction) throws(E) -> T
+        block: (DBWriteTransaction) throws(E) -> T,
     ) throws(E) -> T {
         return try _writeWithTxCompletionIfThrows(
             file: file,
@@ -345,7 +347,7 @@ public class SDSDatabaseStorage: NSObject, DB {
                 file: file,
                 function: function,
                 line: line,
-                isAwaitableWrite: isAwaitableWrite
+                isAwaitableWrite: isAwaitableWrite,
             ) { tx in
                 do throws(E) {
                     value = try block(tx)
@@ -370,7 +372,7 @@ public class SDSDatabaseStorage: NSObject, DB {
         line: Int,
         block: @escaping (DBReadTransaction) -> T,
         completionQueue: DispatchQueue = .main,
-        completion: ((T) -> Void)? = nil
+        completion: ((T) -> Void)? = nil,
     ) {
         DispatchQueue.global().async {
             let result = self.read(file: file, function: function, line: line, block: block)
@@ -385,7 +387,7 @@ public class SDSDatabaseStorage: NSObject, DB {
         file: String,
         function: String,
         line: Int,
-        block: @escaping (DBWriteTransaction) -> Void
+        block: @escaping (DBWriteTransaction) -> Void,
     ) {
         asyncWrite(file: file, function: function, line: line, block: block, completion: nil)
     }
@@ -395,7 +397,7 @@ public class SDSDatabaseStorage: NSObject, DB {
         function: String,
         line: Int,
         block: @escaping (DBWriteTransaction) -> T,
-        completion: ((T) -> Void)?
+        completion: ((T) -> Void)?,
     ) {
         asyncWrite(file: file, function: function, line: line, block: block, completionQueue: .main, completion: completion)
     }
@@ -406,7 +408,7 @@ public class SDSDatabaseStorage: NSObject, DB {
         line: Int,
         block: @escaping (DBWriteTransaction) -> T,
         completionQueue: DispatchQueue,
-        completion: ((T) -> Void)?
+        completion: ((T) -> Void)?,
     ) {
         self.asyncWriteQueue.async {
             let result = self.write(file: file, function: function, line: line, block: block)
@@ -422,7 +424,7 @@ public class SDSDatabaseStorage: NSObject, DB {
         file: String,
         function: String,
         line: Int,
-        block: (DBWriteTransaction) throws(E) -> T
+        block: (DBWriteTransaction) throws(E) -> T,
     ) async throws(E) -> T {
         return try await self.awaitableWriteQueue.runWithoutTaskCancellationHandler { () throws(E) -> T in
             return try self._writeWithTxCompletionIfThrows(
@@ -431,7 +433,7 @@ public class SDSDatabaseStorage: NSObject, DB {
                 line: line,
                 isAwaitableWrite: true,
                 completionIfThrows: .commit,
-                block: block
+                block: block,
             )
         }
     }
@@ -440,7 +442,7 @@ public class SDSDatabaseStorage: NSObject, DB {
         file: String,
         function: String,
         line: Int,
-        block: (DBWriteTransaction) throws(E) -> T
+        block: (DBWriteTransaction) throws(E) -> T,
     ) async throws(E) -> T {
         return try await self.awaitableWriteQueue.runWithoutTaskCancellationHandler { () throws(E) -> T in
             return try self._writeWithTxCompletionIfThrows(
@@ -449,7 +451,7 @@ public class SDSDatabaseStorage: NSObject, DB {
                 line: line,
                 isAwaitableWrite: true,
                 completionIfThrows: .rollback,
-                block: block
+                block: block,
             )
         }
     }
@@ -463,7 +465,7 @@ public class SDSDatabaseStorage: NSObject, DB {
         file: String,
         function: String,
         line: Int,
-        block: (DBWriteTransaction) -> Void
+        block: (DBWriteTransaction) -> Void,
     ) {
         _writeWithTxCompletionIfThrows(
             file: file,
@@ -483,7 +485,7 @@ public class SDSDatabaseStorage: NSObject, DB {
         file: String,
         function: String,
         line: Int,
-        block: @escaping (DBWriteTransaction) -> Void
+        block: @escaping (DBWriteTransaction) -> Void,
     ) {
         asyncWrite(file: file, function: function, line: line, block: block, completion: nil)
     }
@@ -501,8 +503,8 @@ public class SDSDatabaseStorage: NSObject, DB {
 @inlinable
 @inline(__always)
 public func DEBUG_INDEXED_BY(_ indexName: @autoclosure () -> String, or oldIndexName: @autoclosure () -> String? = nil) -> String {
-    // In DEBUG builds, confirm that we use the expected index.
-    #if DEBUG
+// In DEBUG builds, confirm that we use the expected index.
+#if DEBUG
     if oldIndexName() != nil {
         // If we're in an ambiguous state, we can't enforce a single index. (This
         // state should be temporary and eventually replaced by a blocking
@@ -511,9 +513,9 @@ public func DEBUG_INDEXED_BY(_ indexName: @autoclosure () -> String, or oldIndex
     } else {
         return "INDEXED BY \(indexName())"
     }
-    #else
+#else
     return ""
-    #endif
+#endif
 }
 
 // MARK: -

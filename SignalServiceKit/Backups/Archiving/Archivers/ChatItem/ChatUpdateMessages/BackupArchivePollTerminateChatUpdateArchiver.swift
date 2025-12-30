@@ -24,16 +24,16 @@ final class BackupArchivePollTerminateChatUpdateArchiver {
     func archivePollTerminateChatUpdate(
         infoMessage: TSInfoMessage,
         threadInfo: BackupArchive.ChatArchivingContext.CachedThreadInfo,
-        context: BackupArchive.ChatArchivingContext
+        context: BackupArchive.ChatArchivingContext,
     ) -> ArchiveChatUpdateMessageResult {
         func messageFailure(
             _ errorType: ArchiveFrameError.ErrorType,
-            line: UInt = #line
+            line: UInt = #line,
         ) -> ArchiveChatUpdateMessageResult {
             return .messageFailure([.archiveFrameError(
                 errorType,
                 infoMessage.uniqueInteractionId,
-                line: line
+                line: line,
             )])
         }
 
@@ -50,9 +50,9 @@ final class BackupArchivePollTerminateChatUpdateArchiver {
             chatUpdateAuthorAddress = BackupArchive.InteractionArchiveDetails.AuthorAddress.contact(
                 BackupArchive.ContactAddress(
                     aci: try Aci.parseFrom(
-                        serviceIdBinary: endPollItem.authorServiceIdBinary
-                    )
-                )
+                        serviceIdBinary: endPollItem.authorServiceIdBinary,
+                    ),
+                ),
             )
         } catch {
             return messageFailure(.endPollUpdateInvalidAuthorAci)
@@ -77,7 +77,7 @@ final class BackupArchivePollTerminateChatUpdateArchiver {
             isSmsPreviouslyRestoredFromBackup: false,
             threadInfo: threadInfo,
             pinMessageDetails: nil,
-            context: context.recipientContext
+            context: context.recipientContext,
         )
     }
 
@@ -87,16 +87,16 @@ final class BackupArchivePollTerminateChatUpdateArchiver {
         _ pollTerminateUpdateProto: BackupProto_PollTerminateUpdate,
         chatItem: BackupProto_ChatItem,
         chatThread: BackupArchive.ChatThread,
-        context: BackupArchive.ChatItemRestoringContext
+        context: BackupArchive.ChatItemRestoringContext,
     ) -> RestoreChatUpdateMessageResult {
         func invalidProtoData(
             _ error: RestoreFrameError.ErrorType.InvalidProtoDataError,
-            line: UInt = #line
+            line: UInt = #line,
         ) -> RestoreChatUpdateMessageResult {
             return .messageFailure([.restoreFrameError(
                 .invalidProtoData(error),
                 chatItem.id,
-                line: line
+                line: line,
             )])
         }
 
@@ -126,14 +126,14 @@ final class BackupArchivePollTerminateChatUpdateArchiver {
         userInfoForNewMessage[.endPoll] = PersistableEndPollItem(
             question: pollTerminateUpdateProto.question,
             authorServiceIdBinary: aci.serviceIdBinary,
-            timestamp: Int64(pollTerminateUpdateProto.targetSentTimestamp)
+            timestamp: Int64(pollTerminateUpdateProto.targetSentTimestamp),
         )
 
         let infoMessage = TSInfoMessage(
             thread: groupThread,
             messageType: .typeEndPoll,
             timestamp: chatItem.dateSent,
-            infoMessageUserInfo: userInfoForNewMessage
+            infoMessageUserInfo: userInfoForNewMessage,
         )
 
         do {
@@ -141,7 +141,7 @@ final class BackupArchivePollTerminateChatUpdateArchiver {
                 infoMessage,
                 in: chatThread,
                 chatId: chatItem.typedChatId,
-                context: context
+                context: context,
             )
         } catch let error {
             return .messageFailure([.restoreFrameError(.databaseInsertionFailed(error), chatItem.id)])

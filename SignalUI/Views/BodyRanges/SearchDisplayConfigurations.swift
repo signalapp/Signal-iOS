@@ -11,7 +11,7 @@ extension HydratedMessageBody.DisplayConfiguration.SearchRanges {
         return HydratedMessageBody.DisplayConfiguration.SearchRanges(
             matchingBackgroundColor: .fixed(ConversationStyle.searchMatchHighlightColor),
             matchingForegroundColor: .fixed(.ows_black),
-            matchedRanges: ranges
+            matchedRanges: ranges,
         )
     }
 }

@@ -63,7 +63,7 @@ class _IdentityKeyCheckerImpl_ProfileFetcher_Wrapper: _IdentityKeyCheckerImpl_Pr
     func fetchIdentityPublicKey(serviceId: ServiceId) async throws -> IdentityKey {
         let request = OWSRequestFactory.getUnversionedProfileRequest(
             serviceId: serviceId,
-            auth: .identified(.implicit())
+            auth: .identified(.implicit()),
         )
         let response = try await networkManager.asyncRequest(request)
 
@@ -71,7 +71,7 @@ class _IdentityKeyCheckerImpl_ProfileFetcher_Wrapper: _IdentityKeyCheckerImpl_Pr
             var identityKey: Data
         }
 
-        let decodedResponse = try JSONDecoder().decode(Response.self, from: (response.responseBodyData ?? Data()))
+        let decodedResponse = try JSONDecoder().decode(Response.self, from: response.responseBodyData ?? Data())
         return try IdentityKey(bytes: decodedResponse.identityKey)
     }
 }

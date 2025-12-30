@@ -20,7 +20,7 @@ public struct AvatarView: View {
         sizeClass: Configuration.SizeClass,
         localUserDisplayMode: LocalUserDisplayMode,
         badged: Bool = true,
-        shape: Configuration.Shape = .circular
+        shape: Configuration.Shape = .circular,
     ) {
         self.dataSource = dataSource
         self.sizeClass = sizeClass
@@ -36,7 +36,7 @@ public struct AvatarView: View {
             localUserDisplayMode: self.localUserDisplayMode,
             badged: self.badged,
             shape: self.shape,
-            useAutolayout: true
+            useAutolayout: true,
         )
         .fixedSize()
     }
@@ -55,7 +55,7 @@ public struct AvatarView: View {
                 localUserDisplayMode: self.localUserDisplayMode,
                 badged: self.badged,
                 shape: self.shape,
-                useAutolayout: self.useAutolayout
+                useAutolayout: self.useAutolayout,
             )
             if let dataSource {
                 uiView.updateWithSneakyTransactionIfNecessary { config in
@@ -82,11 +82,11 @@ public struct AvatarView: View {
     AvatarView(
         dataSource: .asset(
             avatar: .init(named: "avatar_cat"),
-            badge: nil
+            badge: nil,
         ),
         sizeClass: .eightyEight,
         localUserDisplayMode: .asLocalUser,
         badged: false,
-        shape: .circular
+        shape: .circular,
     )
 }

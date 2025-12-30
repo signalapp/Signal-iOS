@@ -38,7 +38,7 @@ public class ReactionFlybyAnimation: UIView {
             relativeStartTime: 0,
             relativeDuration: 0.4,
             size: 25,
-            rotation: -27...27
+            rotation: -27...27,
         )
 
         let emoji2Animation = prepareAnimation(
@@ -46,7 +46,7 @@ public class ReactionFlybyAnimation: UIView {
             relativeStartTime: 0,
             relativeDuration: 0.44,
             size: 36,
-            rotation: -30...0
+            rotation: -30...0,
         )
 
         let emoji3Animation = prepareAnimation(
@@ -54,7 +54,7 @@ public class ReactionFlybyAnimation: UIView {
             relativeStartTime: 0,
             relativeDuration: 0.4,
             size: 25,
-            rotation: -8...8
+            rotation: -8...8,
         )
 
         let emoji4Animation = prepareAnimation(
@@ -62,7 +62,7 @@ public class ReactionFlybyAnimation: UIView {
             relativeStartTime: 0,
             relativeDuration: 0.52,
             size: 32,
-            rotation: -12...12
+            rotation: -12...12,
         )
 
         let emoji5Animation = prepareAnimation(
@@ -70,21 +70,21 @@ public class ReactionFlybyAnimation: UIView {
             relativeStartTime: 0,
             relativeDuration: 0.56,
             size: 29,
-            rotation: -12...12
+            rotation: -12...12,
         )
 
         let emoji6Animation = prepareAnimation(
             relativeXPosition: .right(offset: 30),
             relativeStartTime: 0,
             relativeDuration: 0.48,
-            size: 32
+            size: 32,
         )
 
         let emoji7Animation = prepareAnimation(
             relativeXPosition: .center(offset: -9),
             relativeStartTime: 0,
             relativeDuration: 0.64,
-            size: 18
+            size: 18,
         )
 
         let emoji8Animation = prepareAnimation(
@@ -92,21 +92,21 @@ public class ReactionFlybyAnimation: UIView {
             relativeStartTime: 0,
             relativeDuration: 0.68,
             size: 32,
-            rotation: -8...12
+            rotation: -8...12,
         )
 
         let emoji9Animation = prepareAnimation(
             relativeXPosition: .left(offset: 52),
             relativeStartTime: 0,
             relativeDuration: 0.8,
-            size: 45
+            size: 45,
         )
 
         let emoji10Animation = prepareAnimation(
             relativeXPosition: .left(offset: 12),
             relativeStartTime: 0,
             relativeDuration: 1,
-            size: 27
+            size: 27,
         )
 
         let emoji11Animation = prepareAnimation(
@@ -114,7 +114,7 @@ public class ReactionFlybyAnimation: UIView {
             relativeStartTime: 0,
             relativeDuration: 0.88,
             size: 22,
-            rotation: -4...8
+            rotation: -4...8,
         )
 
         UIView.animateKeyframes(withDuration: 2.5, delay: 0) {
@@ -145,7 +145,7 @@ public class ReactionFlybyAnimation: UIView {
         relativeStartTime: Double,
         relativeDuration: Double,
         size: CGFloat,
-        rotation: ClosedRange<CGFloat>? = nil
+        rotation: ClosedRange<CGFloat>? = nil,
     ) -> () -> Void {
         let font = UIFont.systemFont(ofSize: size)
 
@@ -158,14 +158,14 @@ public class ReactionFlybyAnimation: UIView {
             with: CGSize(square: .greatestFiniteMagnitude),
             options: .init(rawValue: 0),
             attributes: [.font: font],
-            context: nil
+            context: nil,
         ).size
 
         let container = OWSLayerView(frame: CGRect(origin: .zero, size: reactionSize * 4)) { view in
             label.frame = view.bounds
         }
         container.addSubview(label)
-        if let rotation = rotation {
+        if let rotation {
             container.transform = .init(rotationAngle: rotation.lowerBound.toRadians)
         }
 
@@ -184,7 +184,7 @@ public class ReactionFlybyAnimation: UIView {
         return {
             UIView.addKeyframe(withRelativeStartTime: relativeStartTime, relativeDuration: relativeDuration) {
                 container.frame.origin.y = -container.height
-                if let rotation = rotation {
+                if let rotation {
                     container.transform = .init(rotationAngle: rotation.upperBound.toRadians)
                 }
                 container.transform = container.transform.scaledBy(x: 2, y: 2)

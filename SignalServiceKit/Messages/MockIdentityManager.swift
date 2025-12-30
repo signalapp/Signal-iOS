@@ -52,7 +52,7 @@ open class MockIdentityManager: OWSIdentityManager {
                 identityKey: fromValue.identityKey,
                 isFirstKnownKey: fromValue.isFirstKnownKey,
                 createdAt: fromValue.createdAt,
-                verificationState: fromValue.verificationState
+                verificationState: fromValue.verificationState,
             )
         }
         recipientIdentities[recipient.uniqueId] = nil
@@ -72,12 +72,15 @@ open class MockIdentityManager: OWSIdentityManager {
     open func identityKeyPair(for identity: OWSIdentity, tx: DBReadTransaction) -> ECKeyPair? {
         return identityKeyPairs[identity]
     }
+
     open func setIdentityKeyPair(_ keyPair: ECKeyPair?, for identity: OWSIdentity, tx: DBWriteTransaction) {
         identityKeyPairs[identity] = keyPair
     }
+
     open func wipeIdentityKeysFromFailedProvisioning(tx: DBWriteTransaction) {
         identityKeyPairs = [:]
     }
+
     open func identityKey(for address: SignalServiceAddress, tx: DBReadTransaction) -> Data? { fatalError() }
     open func saveIdentityKey(_ identityKey: Data, for serviceId: ServiceId, tx: DBWriteTransaction) -> Result<IdentityChange, RecipientIdError> { fatalError() }
     open func untrustedIdentityForSending(to address: SignalServiceAddress, untrustedThreshold: Date?, tx: DBReadTransaction) -> OWSRecipientIdentity? { fatalError() }

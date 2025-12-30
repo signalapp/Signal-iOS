@@ -23,13 +23,15 @@ open class ReminderView: UIView {
     public var text: String {
         didSet { render() }
     }
+
     public var actionTitle: String? {
         didSet { render() }
     }
+
     public var tapAction: () -> Void
 
     @available(*, unavailable, message: "use other constructor instead.")
-    required public init(coder: NSCoder) {
+    public required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
@@ -42,7 +44,7 @@ open class ReminderView: UIView {
         style: Style,
         text: String,
         actionTitle: String? = nil,
-        tapAction: @escaping () -> Void = {}
+        tapAction: @escaping () -> Void = {},
     ) {
         self.style = style
         self.text = text
@@ -56,12 +58,12 @@ open class ReminderView: UIView {
             self,
             selector: #selector(render),
             name: .themeDidChange,
-            object: nil
+            object: nil,
         )
 
         self.addGestureRecognizer(UITapGestureRecognizer(
             target: self,
-            action: #selector(handleTap(gestureRecognizer:))
+            action: #selector(handleTap(gestureRecognizer:)),
         ))
 
         initialRender()

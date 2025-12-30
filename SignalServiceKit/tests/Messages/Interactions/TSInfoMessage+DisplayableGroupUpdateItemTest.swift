@@ -38,7 +38,7 @@ final class DisplayableGroupUpdateItemCopyTest: XCTestCase {
         .descriptionChangedByOtherUser(
             newDescription: "A long time ago in a galaxy far, far away...",
             updaterName: .otherUser1,
-            updaterAddress: .otherUser1
+            updaterAddress: .otherUser1,
         ),
         .descriptionChangedByUnknownUser(newDescription: "A long time ago in a galaxy far, far away..."),
 
@@ -189,7 +189,7 @@ final class DisplayableGroupUpdateItemCopyTest: XCTestCase {
         .otherUserJoinedViaInviteLink(userName: .otherUser2, userAddress: .otherUser2),
 
         .sequenceOfInviteLinkRequestAndCancels(userName: .otherUser2, userAddress: .otherUser2, count: 1, isTail: true),
-        .sequenceOfInviteLinkRequestAndCancels(userName: .otherUser2, userAddress: .otherUser2, count: 4, isTail: true)
+        .sequenceOfInviteLinkRequestAndCancels(userName: .otherUser2, userAddress: .otherUser2, count: 4, isTail: true),
     ]
 
     /// The strings for group update copy were migrated from one file to
@@ -215,12 +215,12 @@ private extension SignalServiceAddress {
     static let otherUser1: SignalServiceAddress = SignalServiceAddress(
         serviceId: Aci.randomForTesting(),
         phoneNumber: nil,
-        cache: SignalServiceAddressCache()
+        cache: SignalServiceAddressCache(),
     )
 
     static let otherUser2: SignalServiceAddress = SignalServiceAddress(
         serviceId: Aci.randomForTesting(),
         phoneNumber: nil,
-        cache: SignalServiceAddressCache()
+        cache: SignalServiceAddressCache(),
     )
 }

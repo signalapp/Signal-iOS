@@ -59,7 +59,7 @@ public class CipherContext {
                     keyBytes.baseAddress,
                     keyBytes.count,
                     ivBytes.baseAddress,
-                    &cryptor
+                    &cryptor,
                 )
             }
         }
@@ -110,7 +110,7 @@ public class CipherContext {
         inputLength: Int? = nil,
         output: inout Data,
         offsetInOutput: Int = 0,
-        outputLength: Int? = nil
+        outputLength: Int? = nil,
     ) throws -> Int {
         guard let cryptor else {
             throw OWSAssertionError("Unexpectedly attempted to update a finalized cipher")
@@ -126,7 +126,7 @@ public class CipherContext {
                     inputLength ?? input.count,
                     outputPointer.baseAddress.map { $0 + offsetInOutput },
                     outputLength,
-                    &actualOutputLength
+                    &actualOutputLength,
                 )
             }
         }
@@ -157,9 +157,9 @@ public class CipherContext {
     public func finalize(
         output: inout Data,
         offsetInOutput: Int = 0,
-        outputLength: Int? = nil
+        outputLength: Int? = nil,
     ) throws -> Int {
-        guard let cryptor = cryptor else {
+        guard let cryptor else {
             throw OWSAssertionError("Unexpectedly attempted to finalize a finalized cipher")
         }
 
@@ -175,7 +175,7 @@ public class CipherContext {
                 cryptor,
                 outputPointer.baseAddress.map { $0 + offsetInOutput },
                 outputLength,
-                &actualOutputLength
+                &actualOutputLength,
             )
         }
         guard result == CCStatus(kCCSuccess) else {

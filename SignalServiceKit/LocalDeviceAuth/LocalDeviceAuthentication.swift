@@ -48,7 +48,7 @@ public struct LocalDeviceAuthentication {
         var error: NSError?
         let canEvaluatePolicy = context.canEvaluatePolicy(.deviceOwnerAuthentication, error: &error)
 
-        guard canEvaluatePolicy && error == nil else {
+        guard canEvaluatePolicy, error == nil else {
             return .failure(parseAuthError(error))
         }
 
@@ -63,8 +63,8 @@ public struct LocalDeviceAuthentication {
                 .deviceOwnerAuthentication,
                 localizedReason: OWSLocalizedString(
                     "LINK_NEW_DEVICE_AUTHENTICATION_REASON",
-                    comment: "Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock device linking."
-                )
+                    comment: "Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock device linking.",
+                ),
             )
 
             return .success(AuthSuccess())
@@ -84,17 +84,17 @@ public struct LocalDeviceAuthentication {
 
         switch laError.code {
         case
-                .biometryNotAvailable,
-                .biometryNotEnrolled,
-                .passcodeNotSet,
-                .touchIDNotAvailable,
-                .touchIDNotEnrolled:
+            .biometryNotAvailable,
+            .biometryNotEnrolled,
+            .passcodeNotSet,
+            .touchIDNotAvailable,
+            .touchIDNotEnrolled:
             return .notRequired
         case
-                .userCancel,
-                .userFallback,
-                .systemCancel,
-                .appCancel:
+            .userCancel,
+            .userFallback,
+            .systemCancel,
+            .appCancel:
             return .canceled
         case .biometryLockout, .touchIDLockout:
             return .genericError(localizedErrorMessage: DeviceAuthenticationErrorMessage.lockout)

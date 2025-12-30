@@ -138,7 +138,7 @@ public protocol RegistrationCoordinator {
         givenName: OWSUserProfile.NameComponent,
         familyName: OWSUserProfile.NameComponent?,
         avatarData: Data?,
-        phoneNumberDiscoverability: PhoneNumberDiscoverability
+        phoneNumberDiscoverability: PhoneNumberDiscoverability,
     ) -> Guarantee<RegistrationStep>
 
     /// The user has hit a reglock timeout and is acknowledging it.
@@ -155,12 +155,12 @@ public protocol RegistrationCoordinator {
     func resetRestoreMode() -> Guarantee<RegistrationStep>
 
     /// Clear out the chosen restore method.  This will result in the user being sent back
-    /// to the UI to choose a new restore method. 
+    /// to the UI to choose a new restore method.
     func resetRestoreMethodChoice() -> Guarantee<RegistrationStep>
 
     /// Additional step to have the user confirm restoring from backup.
     func confirmRestoreFromBackup(
-        progress: OWSSequentialProgressRootSink<BackupRestoreProgressPhase>
+        progress: OWSSequentialProgressRootSink<BackupRestoreProgressPhase>,
     ) -> Guarantee<RegistrationStep>
 
     /// Cancel from the backup entry screen and clear out any key that has been entered.

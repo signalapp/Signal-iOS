@@ -30,14 +30,14 @@ public class SafetyNumberConfirmationSheet: UIViewController {
         addressesToConfirm: [SignalServiceAddress],
         confirmationText: String,
         cancelText: String = CommonStrings.cancelButton,
-        completionHandler: @escaping (Bool) -> Void
+        completionHandler: @escaping (Bool) -> Void,
     ) {
         assert(!addressesToConfirm.isEmpty)
 
         self.confirmationItems = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             Self.buildConfirmationItems(
                 addressesToConfirm: addressesToConfirm,
-                transaction: transaction
+                transaction: transaction,
             )
         }
 
@@ -59,7 +59,7 @@ public class SafetyNumberConfirmationSheet: UIViewController {
 
     fileprivate static func buildConfirmationItems(
         addressesToConfirm: [SignalServiceAddress],
-        transaction tx: DBReadTransaction
+        transaction tx: DBReadTransaction,
     ) -> [Item] {
         let identityManager = DependenciesBridge.shared.identityManager
         return addressesToConfirm.map { address in
@@ -68,7 +68,7 @@ public class SafetyNumberConfirmationSheet: UIViewController {
                 address: address,
                 displayName: SSKEnvironment.shared.contactManagerRef.displayName(for: address, tx: tx).resolvedValue(),
                 verificationState: recipientIdentity?.verificationState ?? .default,
-                identityKey: recipientIdentity?.identityKey
+                identityKey: recipientIdentity?.identityKey,
             )
         }
     }
@@ -80,7 +80,7 @@ public class SafetyNumberConfirmationSheet: UIViewController {
             self,
             selector: #selector(identityStateDidChange),
             name: .identityStateDidChange,
-            object: nil
+            object: nil,
         )
     }
 
@@ -94,7 +94,7 @@ public class SafetyNumberConfirmationSheet: UIViewController {
 
             confirmationItems = Self.buildConfirmationItems(
                 addressesToConfirm: addressesToConfirm,
-                transaction: transaction
+                transaction: transaction,
             )
         }
 
@@ -107,13 +107,13 @@ public class SafetyNumberConfirmationSheet: UIViewController {
         address: SignalServiceAddress,
         confirmationText: String,
         forceDarkTheme: Bool = false,
-        completion: @escaping (Bool) -> Void
+        completion: @escaping (Bool) -> Void,
     ) -> Bool {
         return presentIfNecessary(
             addresses: [address],
             confirmationText: confirmationText,
             forceDarkTheme: forceDarkTheme,
-            completion: completion
+            completion: completion,
         )
     }
 
@@ -128,7 +128,7 @@ public class SafetyNumberConfirmationSheet: UIViewController {
         confirmationText: String,
         untrustedThreshold: Date? = nil,
         forceDarkTheme: Bool = false,
-        completion: @escaping (Bool) -> Void
+        completion: @escaping (Bool) -> Void,
     ) -> Bool {
         return presentIfNecessary(
             for: addresses,
@@ -136,7 +136,7 @@ public class SafetyNumberConfirmationSheet: UIViewController {
             confirmationText: confirmationText,
             untrustedThreshold: untrustedThreshold,
             forceDarkTheme: forceDarkTheme,
-            completion: completion
+            completion: completion,
         )
     }
 
@@ -177,7 +177,7 @@ public class SafetyNumberConfirmationSheet: UIViewController {
                         } else {
                             continuation.resume(returning: false)
                         }
-                    }
+                    },
                 )
                 if didPresent {
                     didPresentBlock()
@@ -197,7 +197,7 @@ public class SafetyNumberConfirmationSheet: UIViewController {
         confirmationText: String,
         untrustedThreshold: Date?,
         forceDarkTheme: Bool = false,
-        completion: @escaping (Bool) -> Void
+        completion: @escaping (Bool) -> Void,
     ) -> Bool {
         let identityManager = DependenciesBridge.shared.identityManager
         let untrustedAddresses = SSKEnvironment.shared.databaseStorageRef.read { tx in
@@ -214,7 +214,7 @@ public class SafetyNumberConfirmationSheet: UIViewController {
         let sheet = SafetyNumberConfirmationSheet(
             addressesToConfirm: untrustedAddresses,
             confirmationText: confirmationText,
-            completionHandler: completion
+            completionHandler: completion,
         )
         if forceDarkTheme {
             sheet.overrideUserInterfaceStyle = .dark
@@ -267,8 +267,10 @@ public class SafetyNumberConfirmationSheet: UIViewController {
         titleLabel.lineBreakMode = .byWordWrapping
         titleLabel.font = UIFont.dynamicTypeSubheadline.semibold()
         titleLabel.textColor = UIColor.Signal.label
-        titleLabel.text = OWSLocalizedString("SAFETY_NUMBER_CONFIRMATION_TITLE",
-                                             comment: "Title for the 'safety number confirmation' view")
+        titleLabel.text = OWSLocalizedString(
+            "SAFETY_NUMBER_CONFIRMATION_TITLE",
+            comment: "Title for the 'safety number confirmation' view",
+        )
 
         let messageLabel = UILabel()
         messageLabel.textAlignment = .natural
@@ -276,12 +278,14 @@ public class SafetyNumberConfirmationSheet: UIViewController {
         messageLabel.lineBreakMode = .byWordWrapping
         messageLabel.font = .dynamicTypeSubheadline
         messageLabel.textColor = UIColor.Signal.label
-        messageLabel.text = OWSLocalizedString("SAFETY_NUMBER_CONFIRMATION_MESSAGE",
-                                               comment: "Message for the 'safety number confirmation' view")
+        messageLabel.text = OWSLocalizedString(
+            "SAFETY_NUMBER_CONFIRMATION_MESSAGE",
+            comment: "Message for the 'safety number confirmation' view",
+        )
 
         let headerStack = UIStackView(arrangedSubviews: [
             titleLabel,
-            messageLabel
+            messageLabel,
         ])
         headerStack.axis = .vertical
         headerStack.spacing = 4
@@ -305,7 +309,7 @@ public class SafetyNumberConfirmationSheet: UIViewController {
         stackView.setCustomSpacing(10, after: confirmAction.button)
         confirmAction.button.autoPinWidthToSuperview(withMargin: 16)
         confirmAction.button.releaseAction = { [weak self] in
-            guard let self = self else { return }
+            guard let self else { return }
             SSKEnvironment.shared.databaseStorageRef.asyncWrite(block: { tx in
                 let identityManager = DependenciesBridge.shared.identityManager
                 for item in self.confirmationItems {
@@ -325,7 +329,7 @@ public class SafetyNumberConfirmationSheet: UIViewController {
                         of: identityKey,
                         for: item.address,
                         isUserInitiatedChange: true,
-                        tx: tx
+                        tx: tx,
                     )
                 }
             }, completionQueue: .main) {
@@ -342,7 +346,7 @@ public class SafetyNumberConfirmationSheet: UIViewController {
     }
 
     private var hasPreparedInitialLayout = false
-    public override func viewWillLayoutSubviews() {
+    override public func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
 
         guard !hasPreparedInitialLayout else { return }
@@ -352,7 +356,7 @@ public class SafetyNumberConfirmationSheet: UIViewController {
         setupInteractiveSizing()
     }
 
-    public override func viewWillAppear(_ animated: Bool) {
+    override public func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
         let profileFetcher = SSKEnvironment.shared.profileFetcherRef
@@ -426,15 +430,15 @@ public class SafetyNumberConfirmationSheet: UIViewController {
         // To prevent views from getting compressed, if the desired appearance height is less than
         // the minimized height, we translate the content off the bottom edge
         let newHeightConstant = max(minimizedHeight, desiredVisibleContentHeight)
-        let newBottomOffset = max((minimizedHeight - desiredVisibleContentHeight), 0)
+        let newBottomOffset = max(minimizedHeight - desiredVisibleContentHeight, 0)
 
-        if let heightConstraint = heightConstraint {
+        if let heightConstraint {
             heightConstraint.constant = newHeightConstant
         } else {
             heightConstraint = contentView.autoSetDimension(.height, toSize: newHeightConstant)
         }
 
-        if let bottomConstraint = bottomConstraint {
+        if let bottomConstraint {
             bottomConstraint.constant = newBottomOffset
         } else {
             bottomConstraint = contentView.autoPinEdge(toSuperviewEdge: .bottom, withInset: -newBottomOffset)
@@ -471,11 +475,13 @@ public class SafetyNumberConfirmationSheet: UIViewController {
     private func handlePan(_ sender: UIPanGestureRecognizer) {
         switch sender.state {
         case .began, .changed:
-            guard beginInteractiveTransitionIfNecessary(sender),
-                let startingHeight = startingHeight,
-                let startingTranslation = startingTranslation,
-                let pinnedContentOffset = pinnedContentOffset else {
-                    return resetInteractiveTransition()
+            guard
+                beginInteractiveTransitionIfNecessary(sender),
+                let startingHeight,
+                let startingTranslation,
+                let pinnedContentOffset
+            else {
+                return resetInteractiveTransition()
             }
 
             // We're in an interactive transition, so don't let the scrollView scroll.
@@ -502,7 +508,7 @@ public class SafetyNumberConfirmationSheet: UIViewController {
             desiredVisibleContentHeight = newHeight
             view.layoutIfNeeded()
         case .ended, .cancelled, .failed:
-            guard let startingHeight = startingHeight else { break }
+            guard let startingHeight else { break }
 
             let dismissThreshold = startingHeight * 0.5
             let growThreshold = (maximizedHeight - startingHeight) * 0.5
@@ -561,7 +567,7 @@ public class SafetyNumberConfirmationSheet: UIViewController {
 
             backdropView.alpha = 1
 
-            guard let startingHeight = startingHeight else { break }
+            guard let startingHeight else { break }
             desiredVisibleContentHeight = startingHeight
         }
     }
@@ -592,14 +598,14 @@ public class SafetyNumberConfirmationSheet: UIViewController {
     func resetInteractiveTransition() {
         startingTranslation = nil
         startingHeight = nil
-        if let pinnedContentOffset = pinnedContentOffset {
+        if let pinnedContentOffset {
             tableView.contentOffset = pinnedContentOffset
         }
         pinnedContentOffset = nil
         tableView.showsVerticalScrollIndicator = true
     }
 
-    public override func viewSafeAreaInsetsDidChange() {
+    override public func viewSafeAreaInsetsDidChange() {
         // The minimized height is dependent on safe the current safe area insets
         // If they every change, reset the content height to the new minimized height
         super.viewSafeAreaInsetsDidChange()
@@ -619,8 +625,10 @@ extension SafetyNumberConfirmationSheet: UITableViewDelegate, UITableViewDataSou
     }
 
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: SafetyNumberCell.reuseIdentifier,
-                                                 for: indexPath)
+        let cell = tableView.dequeueReusableCell(
+            withIdentifier: SafetyNumberCell.reuseIdentifier,
+            for: indexPath,
+        )
 
         guard let contactCell = cell as? SafetyNumberCell else {
             return cell
@@ -642,7 +650,7 @@ extension SafetyNumberConfirmationSheet: UITableViewDelegate, UITableViewDataSou
 
 private class SafetyNumberCell: ContactTableViewCell {
 
-    open override class var reuseIdentifier: String { "SafetyNumberCell" }
+    override open class var reuseIdentifier: String { "SafetyNumberCell" }
 
     let button = UIButton()
 
@@ -657,7 +665,7 @@ private class SafetyNumberCell: ContactTableViewCell {
         config.contentInsets = .init(hMargin: 16, vMargin: 6)
         config.title = OWSLocalizedString(
             "SAFETY_NUMBER_CONFIRMATION_VIEW_ACTION",
-            comment: "View safety number action for the 'safety number confirmation' view"
+            comment: "View safety number action for the 'safety number confirmation' view",
         )
         config.titleTextAttributesTransformer = .defaultFont(.dynamicTypeSubheadline.semibold())
         button.configuration = config
@@ -682,19 +690,21 @@ private class SafetyNumberCell: ContactTableViewCell {
             let buttonSize = button.intrinsicContentSize
             button.removeFromSuperview()
             let buttonWrapper = ManualLayoutView.wrapSubviewUsingIOSAutoLayout(button)
-            configuration.accessoryView = ContactCellAccessoryView(accessoryView: buttonWrapper,
-                                                                   size: buttonSize)
+            configuration.accessoryView = ContactCellAccessoryView(
+                accessoryView: buttonWrapper,
+                size: buttonSize,
+            )
 
             switch item.verificationState {
             case .noLongerVerified:
                 configuration.attributedSubtitle = .prefixedWithCheck(text: OWSLocalizedString(
                     "SAFETY_NUMBER_CONFIRMATION_PREVIOUSLY_VERIFIED",
-                    comment: "Text explaining that the given contact previously had their safety number verified."
+                    comment: "Text explaining that the given contact previously had their safety number verified.",
                 ))
             case .verified:
                 configuration.attributedSubtitle = .prefixedWithCheck(text: OWSLocalizedString(
                     "SAFETY_NUMBER_CONFIRMATION_VERIFIED",
-                    comment: "Text explaining that the given contact has had their safety number verified."
+                    comment: "Text explaining that the given contact has had their safety number verified.",
                 ))
             case .`default`, .defaultAcknowledged:
                 if let phoneNumber = item.address.phoneNumber {
@@ -725,7 +735,7 @@ private class SafetyNumberCell: ContactTableViewCell {
 
 private extension NSAttributedString {
     static func prefixedWithCheck(
-        text: String
+        text: String,
     ) -> NSAttributedString {
         let string = NSMutableAttributedString()
 
@@ -738,6 +748,7 @@ private extension NSAttributedString {
 }
 
 // MARK: -
+
 extension SafetyNumberConfirmationSheet: UIGestureRecognizerDelegate {
     public func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         switch gestureRecognizer {
@@ -775,7 +786,7 @@ private class SafetyNumberConfirmationAnimationController: UIPresentationControl
     }
 
     override func presentationTransitionWillBegin() {
-        guard let containerView = containerView, let backdropView = backdropView else { return }
+        guard let containerView, let backdropView else { return }
         backdropView.alpha = 0
         containerView.addSubview(backdropView)
         backdropView.autoPinEdgesToSuperviewEdges()
@@ -796,7 +807,7 @@ private class SafetyNumberConfirmationAnimationController: UIPresentationControl
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
-        guard let presentedView = presentedView else { return }
+        guard let presentedView else { return }
         coordinator.animate(alongsideTransition: { _ in
             presentedView.frame = self.frameOfPresentedViewInContainerView
             presentedView.layoutIfNeeded()

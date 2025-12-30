@@ -39,7 +39,7 @@ public enum OWSDeviceNames {
         let protoBuilder = SignalIOSProtoDeviceName.builder(
             ephemeralPublic: ephemeralKeyPair.publicKey.serialize(),
             syntheticIv: syntheticIV,
-            ciphertext: ciphertext
+            ciphertext: ciphertext,
         )
         return try protoBuilder.buildSerializedData()
     }

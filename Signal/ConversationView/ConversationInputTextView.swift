@@ -58,7 +58,7 @@ class ConversationInputTextView: BodyRangesTextView {
 
         placeholderView.text = OWSLocalizedString(
             "INPUT_TOOLBAR_MESSAGE_PLACEHOLDER",
-            comment: "Placeholder text displayed in empty input box in chat screen."
+            comment: "Placeholder text displayed in empty input box in chat screen.",
         )
         placeholderView.textColor = UIColor.Signal.secondaryLabel
         placeholderView.isUserInteractionEnabled = false
@@ -82,7 +82,7 @@ class ConversationInputTextView: BodyRangesTextView {
 
     // MARK: -
 
-    public var placeholderTextColor: UIColor? {
+    var placeholderTextColor: UIColor? {
         get { placeholderView.textColor }
         set { placeholderView.textColor = newValue }
     }
@@ -117,7 +117,7 @@ class ConversationInputTextView: BodyRangesTextView {
         placeholderConstraints = [
             placeholderView.autoMatch(.width, to: .width, of: self, withOffset: -(leftInset + rightInset)),
             placeholderView.autoPinEdge(toSuperviewEdge: .left, withInset: leftInset),
-            placeholderView.autoPinEdge(toSuperviewEdge: .top, withInset: topInset)
+            placeholderView.autoPinEdge(toSuperviewEdge: .top, withInset: topInset),
         ]
     }
 
@@ -241,7 +241,7 @@ class ConversationInputTextView: BodyRangesTextView {
             // Alt + Return, inserts a new line
             UIKeyCommand(input: "\r", modifierFlags: .alternate, action: #selector(modifiedReturnPressed(_:))),
             // Shift + Return, inserts a new line
-            UIKeyCommand(input: "\r", modifierFlags: .shift, action: #selector(modifiedReturnPressed(_:)))
+            UIKeyCommand(input: "\r", modifierFlags: .shift, action: #selector(modifiedReturnPressed(_:))),
         ]
     }
 

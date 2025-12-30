@@ -43,7 +43,7 @@ public class DBWriteTransaction: DBReadTransaction, LibSignalClient.StoreContext
     deinit {
         owsAssertDebug(
             transactionState == .finalized,
-            "Write transaction deallocated without finalization!"
+            "Write transaction deallocated without finalization!",
         )
     }
 

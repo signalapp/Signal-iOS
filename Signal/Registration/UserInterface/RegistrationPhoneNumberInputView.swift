@@ -13,7 +13,7 @@ protocol RegistrationPhoneNumberInputViewDelegate: AnyObject {
 }
 
 class RegistrationPhoneNumberInputView: UIView {
-    public weak var delegate: RegistrationPhoneNumberInputViewDelegate?
+    weak var delegate: RegistrationPhoneNumberInputViewDelegate?
 
     // We impose a limit on the number of digits. This is much higher than what a valid E164 allows
     // and is just here for safety.
@@ -80,17 +80,17 @@ class RegistrationPhoneNumberInputView: UIView {
 
     // MARK: - Data
 
-    public private(set) var country: PhoneNumberCountry {
+    private(set) var country: PhoneNumberCountry {
         didSet { update() }
     }
 
-    public var nationalNumber: String { nationalNumberView.text?.asciiDigitsOnly ?? "" }
+    var nationalNumber: String { nationalNumberView.text?.asciiDigitsOnly ?? "" }
 
-    public var phoneNumber: RegistrationPhoneNumber {
+    var phoneNumber: RegistrationPhoneNumber {
         return RegistrationPhoneNumber(country: country, nationalNumber: nationalNumber)
     }
 
-    public var isEnabled: Bool = true {
+    var isEnabled: Bool = true {
         didSet {
             if !isEnabled {
                 nationalNumberView.resignFirstResponder()
@@ -136,7 +136,7 @@ class RegistrationPhoneNumberInputView: UIView {
         container.isUserInteractionEnabled = true
         container.addGestureRecognizer(UITapGestureRecognizer(
             target: self,
-            action: #selector(didTapCountryCode)
+            action: #selector(didTapCountryCode),
         ))
 
         container.isAccessibilityElement = true
@@ -144,7 +144,7 @@ class RegistrationPhoneNumberInputView: UIView {
         container.accessibilityIdentifier = "registration.phonenumber.countryCode"
         container.accessibilityLabel = OWSLocalizedString(
             "REGISTRATION_DEFAULT_COUNTRY_NAME",
-            comment: "Label for the country code field"
+            comment: "Label for the country code field",
         )
 
         return container
@@ -159,7 +159,7 @@ class RegistrationPhoneNumberInputView: UIView {
         result.keyboardType = .phonePad
         result.placeholder = OWSLocalizedString(
             "ONBOARDING_PHONE_NUMBER_PLACEHOLDER",
-            comment: "Placeholder string for phone number field during registration"
+            comment: "Placeholder string for phone number field during registration",
         )
         result.delegate = self
         return result
@@ -185,15 +185,15 @@ class RegistrationPhoneNumberInputView: UIView {
 
     // MARK: - Responder pass-through
 
-    public override var isFirstResponder: Bool { nationalNumberView.isFirstResponder }
+    override var isFirstResponder: Bool { nationalNumberView.isFirstResponder }
 
-    public override var canBecomeFirstResponder: Bool { nationalNumberView.canBecomeFirstResponder }
-
-    @discardableResult
-    public override func becomeFirstResponder() -> Bool { nationalNumberView.becomeFirstResponder() }
+    override var canBecomeFirstResponder: Bool { nationalNumberView.canBecomeFirstResponder }
 
     @discardableResult
-    public override func resignFirstResponder() -> Bool { nationalNumberView.resignFirstResponder() }
+    override func becomeFirstResponder() -> Bool { nationalNumberView.becomeFirstResponder() }
+
+    @discardableResult
+    override func resignFirstResponder() -> Bool { nationalNumberView.resignFirstResponder() }
 }
 
 // MARK: - UITextFieldDelegate
@@ -202,7 +202,7 @@ extension RegistrationPhoneNumberInputView: UITextFieldDelegate {
     func textField(
         _ textField: UITextField,
         shouldChangeCharactersIn range: NSRange,
-        replacementString: String
+        replacementString: String,
     ) -> Bool {
         let wasEmpty = textField.text.isEmptyOrNil
         var replacementString = replacementString
@@ -226,7 +226,7 @@ extension RegistrationPhoneNumberInputView: UITextFieldDelegate {
             replacementString: replacementString,
             allowedCharacters: .numbers,
             maxCharacters: maxNationalNumberDigits,
-            format: formatNationalNumber
+            format: formatNationalNumber,
         )
 
         if wasEmpty {
@@ -234,7 +234,7 @@ extension RegistrationPhoneNumberInputView: UITextFieldDelegate {
                 // Move the cursor back to the end.
                 textField.selectedTextRange = textField.textRange(
                     from: textField.endOfDocument,
-                    to: textField.endOfDocument
+                    to: textField.endOfDocument,
                 )
             }
         }
@@ -263,7 +263,7 @@ extension RegistrationPhoneNumberInputView: UITextFieldDelegate {
 extension RegistrationPhoneNumberInputView: CountryCodeViewControllerDelegate {
     func countryCodeViewController(
         _ vc: CountryCodeViewController,
-        didSelectCountry country: PhoneNumberCountry
+        didSelectCountry country: PhoneNumberCountry,
     ) {
         self.country = country
 

@@ -6,14 +6,18 @@
 import SignalServiceKit
 
 enum CVLoadType: Equatable, CustomStringConvertible {
-    case loadInitialMapping(focusMessageIdOnOpen: String?,
-                            scrollAction: CVScrollAction)
+    case loadInitialMapping(
+        focusMessageIdOnOpen: String?,
+        scrollAction: CVScrollAction,
+    )
     case loadSameLocation(scrollAction: CVScrollAction)
     case loadOlder
     case loadNewer
     case loadNewest(scrollAction: CVScrollAction)
-    case loadPageAroundInteraction(interactionId: String,
-                                   scrollAction: CVScrollAction)
+    case loadPageAroundInteraction(
+        interactionId: String,
+        scrollAction: CVScrollAction,
+    )
 
     fileprivate var priority: UInt {
         switch self {
@@ -54,7 +58,7 @@ enum CVLoadType: Equatable, CustomStringConvertible {
 
     // MARK: - CustomStringConvertible
 
-    public var description: String {
+    var description: String {
         switch self {
         case .loadInitialMapping:
             return "loadInitialMapping"
@@ -75,7 +79,7 @@ enum CVLoadType: Equatable, CustomStringConvertible {
 // MARK: -
 
 struct CVLoadRequest {
-    public typealias RequestId = UInt
+    typealias RequestId = UInt
     let requestId: RequestId
     let loadType: CVLoadType
     let updatedInteractionIds: Set<String>
@@ -125,9 +129,11 @@ struct CVLoadRequest {
                 return
             }
 
-            if case .loadSameLocation = loadType,
-               case .loadSameLocation = newValue,
-               newValue.scrollAction == .none {
+            if
+                case .loadSameLocation = loadType,
+                case .loadSameLocation = newValue,
+                newValue.scrollAction == .none
+            {
                 // Don't lose the scroll action:
                 //
                 // Don't replace and old .loadSameLocation with a scroll action
@@ -142,8 +148,10 @@ struct CVLoadRequest {
         private var canReuseComponentStates = true
         private var didReset = false
 
-        mutating func reload(updatedInteractionIds: Set<String>,
-                             deletedInteractionIds: Set<String>) {
+        mutating func reload(
+            updatedInteractionIds: Set<String>,
+            deletedInteractionIds: Set<String>,
+        ) {
             AssertIsOnMainThread()
 
             self.updatedInteractionIds.formUnion(updatedInteractionIds)
@@ -156,10 +164,14 @@ struct CVLoadRequest {
             AssertIsOnMainThread()
 
             // Configure for initial mapping.
-            let scrollAction = CVScrollAction(action: .initialPosition,
-                                              isAnimated: false)
-            tryToUpdateLoadType(.loadInitialMapping(focusMessageIdOnOpen: focusMessageIdOnOpen,
-                                                    scrollAction: scrollAction))
+            let scrollAction = CVScrollAction(
+                action: .initialPosition,
+                isAnimated: false,
+            )
+            tryToUpdateLoadType(.loadInitialMapping(
+                focusMessageIdOnOpen: focusMessageIdOnOpen,
+                scrollAction: scrollAction,
+            ))
             shouldLoad = true
         }
 
@@ -180,31 +192,41 @@ struct CVLoadRequest {
         mutating func loadAndScrollToNewestItems(isAnimated: Bool) {
             AssertIsOnMainThread()
 
-            let scrollAction = CVScrollAction(action: .bottomOfLoadWindow,
-                                              isAnimated: isAnimated)
+            let scrollAction = CVScrollAction(
+                action: .bottomOfLoadWindow,
+                isAnimated: isAnimated,
+            )
             tryToUpdateLoadType(.loadNewest(scrollAction: scrollAction))
             shouldLoad = true
         }
 
-        mutating func loadAndScrollToInteraction(interactionId: String,
-                                                 onScreenPercentage: CGFloat,
-                                                 alignment: ScrollAlignment,
-                                                 isAnimated: Bool) {
+        mutating func loadAndScrollToInteraction(
+            interactionId: String,
+            onScreenPercentage: CGFloat,
+            alignment: ScrollAlignment,
+            isAnimated: Bool,
+        ) {
             AssertIsOnMainThread()
 
-            let scrollAction = CVScrollAction(action: .scrollTo(interactionId: interactionId,
-                                                                onScreenPercentage: onScreenPercentage,
-                                                                alignment: alignment),
-                                              isAnimated: isAnimated)
-            tryToUpdateLoadType(.loadPageAroundInteraction(interactionId: interactionId,
-                                                           scrollAction: scrollAction))
+            let scrollAction = CVScrollAction(
+                action: .scrollTo(
+                    interactionId: interactionId,
+                    onScreenPercentage: onScreenPercentage,
+                    alignment: alignment,
+                ),
+                isAnimated: isAnimated,
+            )
+            tryToUpdateLoadType(.loadPageAroundInteraction(
+                interactionId: interactionId,
+                scrollAction: scrollAction,
+            ))
             shouldLoad = true
         }
 
         mutating func reload(scrollAction: CVScrollAction?) {
             AssertIsOnMainThread()
 
-            if let scrollAction = scrollAction {
+            if let scrollAction {
                 tryToUpdateLoadType(.loadSameLocation(scrollAction: scrollAction))
             }
             shouldLoad = true
@@ -214,9 +236,11 @@ struct CVLoadRequest {
             reload(canReuseInteractionModels: false, canReuseComponentStates: false, didReset: true)
         }
 
-        mutating func reload(canReuseInteractionModels: Bool = true,
-                             canReuseComponentStates: Bool = true,
-                             didReset: Bool = false) {
+        mutating func reload(
+            canReuseInteractionModels: Bool = true,
+            canReuseComponentStates: Bool = true,
+            didReset: Bool = false,
+        ) {
             AssertIsOnMainThread()
 
             self.canReuseInteractionModels = self.canReuseInteractionModels && canReuseInteractionModels
@@ -240,7 +264,7 @@ struct CVLoadRequest {
                 deletedInteractionIds: deletedInteractionIds,
                 canReuseInteractionModels: canReuseInteractionModels,
                 canReuseComponentStates: canReuseComponentStates,
-                didReset: didReset
+                didReset: didReset,
             )
         }
     }

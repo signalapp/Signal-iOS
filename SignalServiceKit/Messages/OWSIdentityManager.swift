@@ -39,7 +39,7 @@ public protocol OWSIdentityManager {
     func untrustedIdentityForSending(
         to address: SignalServiceAddress,
         untrustedThreshold: Date?,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> OWSRecipientIdentity?
 
     func tryToSyncQueuedVerificationStates()
@@ -50,7 +50,7 @@ public protocol OWSIdentityManager {
         of identityKey: Data,
         for address: SignalServiceAddress,
         isUserInitiatedChange: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) -> ChangeVerificationStateResult
 
     func processIncomingVerifiedProto(_ verified: SSKProtoVerified, tx: DBWriteTransaction) throws
@@ -111,7 +111,7 @@ public class IdentityStore: IdentityKeyStore {
     fileprivate init(
         identityManager: OWSIdentityManagerImpl,
         identityKeyPair: IdentityKeyPair,
-        fetchLocalRegistrationId: @escaping (DBWriteTransaction) -> UInt32
+        fetchLocalRegistrationId: @escaping (DBWriteTransaction) -> UInt32,
     ) {
         self.identityManager = identityManager
         self.identityKeyPair = identityKeyPair
@@ -129,12 +129,12 @@ public class IdentityStore: IdentityKeyStore {
     public func saveIdentity(
         _ identityKey: IdentityKey,
         for address: ProtocolAddress,
-        context: StoreContext
+        context: StoreContext,
     ) throws -> IdentityChange {
         try identityManager.saveIdentityKey(
             identityKey,
             for: address.serviceId,
-            tx: context.asTransaction
+            tx: context.asTransaction,
         ).get()
     }
 
@@ -142,13 +142,13 @@ public class IdentityStore: IdentityKeyStore {
         _ identityKey: IdentityKey,
         for address: ProtocolAddress,
         direction: Direction,
-        context: StoreContext
+        context: StoreContext,
     ) throws -> Bool {
         return try identityManager.isTrustedIdentityKey(
             identityKey,
             serviceId: address.serviceId,
             direction: TSMessageDirection(direction),
-            tx: context.asTransaction
+            tx: context.asTransaction,
         )
     }
 
@@ -219,7 +219,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         recipientIdFinder: RecipientIdFinder,
         sessionStore: SessionStore,
         storageServiceManager: StorageServiceManager,
-        tsAccountManager: TSAccountManager
+        tsAccountManager: TSAccountManager,
     ) {
         self.appReadiness = appReadiness
         self.db = db
@@ -227,19 +227,19 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         self.networkManager = networkManager
         self.notificationPresenter = notificationPresenter
         self.ownIdentityKeyValueStore = KeyValueStore(
-            collection: "TSStorageManagerIdentityKeyStoreCollection"
+            collection: "TSStorageManagerIdentityKeyStoreCollection",
         )
         self.pniProtocolStore = pniProtocolStore
         self.profileManager = profileManager
         self.queuedVerificationStateSyncMessagesKeyValueStore = KeyValueStore(
-            collection: "OWSIdentityManager_QueuedVerificationStateSyncMessages"
+            collection: "OWSIdentityManager_QueuedVerificationStateSyncMessages",
         )
         self.recipientDatabaseTable = recipientDatabaseTable
         self.recipientFetcher = recipientFetcher
         self.recipientIdFinder = recipientIdFinder
         self.sessionStore = sessionStore
         self.shareMyPhoneNumberStore = KeyValueStore(
-            collection: "OWSIdentityManager.shareMyPhoneNumberStore"
+            collection: "OWSIdentityManager.shareMyPhoneNumberStore",
         )
         self.storageServiceManager = storageServiceManager
         self.tsAccountManager = tsAccountManager
@@ -262,7 +262,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
                     owsFail("Missing registrationId for \(identity)")
                 }
                 return registrationId
-            }
+            },
         )
     }
 
@@ -363,7 +363,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
                 identityKey: identityKey,
                 isFirstKnownKey: true,
                 createdAt: Date(),
-                verificationState: .default
+                verificationState: .default,
             ).anyInsert(transaction: tx)
             // Cancel any pending verification state sync messages for this recipient.
             clearSyncMessage(for: recipient.uniqueId, tx: tx)
@@ -390,7 +390,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
             identityKey: identityKey,
             isFirstKnownKey: false,
             createdAt: Date(),
-            verificationState: verificationState.rawValue
+            verificationState: verificationState.rawValue,
         ).anyUpsert(transaction: tx)
         sessionStore.archiveSessions(forRecipientId: recipient.id, localIdentity: .aci, tx: tx)
         // Cancel any pending verification state sync messages for this recipient.
@@ -402,16 +402,16 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
     public func insertIdentityChangeInfoMessage(
         for serviceId: ServiceId,
         wasIdentityVerified: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         let contactThread = TSContactThread.getOrCreateThread(
             withContactAddress: SignalServiceAddress(serviceId),
-            transaction: tx
+            transaction: tx,
         )
         let contactThreadMessage: TSErrorMessage = .nonblockingIdentityChange(
             thread: contactThread,
             address: SignalServiceAddress(serviceId),
-            wasIdentityVerified: wasIdentityVerified
+            wasIdentityVerified: wasIdentityVerified,
         )
         contactThreadMessage.anyInsert(transaction: tx)
 
@@ -419,7 +419,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
             TSErrorMessage.nonblockingIdentityChange(
                 thread: groupThread,
                 address: SignalServiceAddress(serviceId),
-                wasIdentityVerified: wasIdentityVerified
+                wasIdentityVerified: wasIdentityVerified,
             ).anyInsert(transaction: tx)
         }
 
@@ -430,14 +430,14 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
     public func insertSessionSwitchoverEvent(
         for recipient: SignalRecipient,
         phoneNumber: String?,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         guard let contactThread = TSContactThread.getWithContactAddress(recipient.address, transaction: tx) else {
             return
         }
         let sessionSwitchoverEvent: TSInfoMessage = .makeForSessionSwitchover(
             contactThread: contactThread,
-            phoneNumber: phoneNumber
+            phoneNumber: phoneNumber,
         )
         sessionSwitchoverEvent.anyInsert(transaction: tx)
     }
@@ -456,7 +456,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
                 identityKey: fromValue.identityKey,
                 isFirstKnownKey: fromValue.isFirstKnownKey,
                 createdAt: fromValue.createdAt,
-                verificationState: fromValue.verificationState
+                verificationState: fromValue.verificationState,
             ).anyInsert(transaction: tx)
         }
         fromValue.anyRemove(transaction: tx)
@@ -467,14 +467,14 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
     public func untrustedIdentityForSending(
         to address: SignalServiceAddress,
         untrustedThreshold: Date?,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> OWSRecipientIdentity? {
         let recipientIdentity = recipientIdentity(for: address, tx: tx)
         let isTrusted = isIdentityKeyTrustedForSending(
             address: address,
             recipientIdentity: recipientIdentity,
             untrustedThreshold: untrustedThreshold,
-            tx: tx
+            tx: tx,
         )
         return isTrusted ? nil : recipientIdentity
     }
@@ -483,7 +483,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         address: SignalServiceAddress,
         recipientIdentity: OWSRecipientIdentity?,
         untrustedThreshold: Date?,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> Bool {
         owsAssertDebug(address.isValid)
 
@@ -502,7 +502,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         _ identityKey: IdentityKey,
         serviceId: ServiceId,
         direction: TSMessageDirection,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> Bool {
         let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx)
         if localIdentifiers?.aci == serviceId {
@@ -519,7 +519,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
             }
             let recipientIdentity = OWSRecipientIdentity.anyFetch(
                 uniqueId: recipientUniqueId,
-                transaction: tx
+                transaction: tx,
             )
             if let recipientIdentity, recipientIdentity.identityKey != identityKey.publicKey.keyBytes {
                 Logger.warn("Key mismatch for \(serviceId)")
@@ -602,7 +602,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         // database write transactions. If we do end up with thousands of keys,
         // using a separate transaction avoids long blocks.
         for key in allKeys {
-            let syncMessage = db.write { (tx) -> OWSVerificationStateSyncMessage? in
+            let syncMessage = db.write { tx -> OWSVerificationStateSyncMessage? in
                 guard let syncMessage = buildVerificationStateSyncMessage(for: key, localThread: thread, tx: tx) else {
                     queuedVerificationStateSyncMessagesKeyValueStore.removeValue(forKey: key, transaction: tx)
                     return nil
@@ -619,12 +619,12 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
     private func buildVerificationStateSyncMessage(
         for key: String,
         localThread: TSContactThread,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> OWSVerificationStateSyncMessage? {
         let value: Any? = queuedVerificationStateSyncMessagesKeyValueStore.getObject(
             key,
             ofClasses: [NSNumber.self, NSString.self, SignalServiceAddress.self],
-            transaction: tx
+            transaction: tx,
         )
         guard let value else {
             return nil
@@ -683,7 +683,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
             verificationState: recipientIdentity.verificationState,
             identityKey: identityKey.serialize(),
             verificationForRecipientAddress: recipient.address,
-            transaction: tx
+            transaction: tx,
         )
     }
 
@@ -699,16 +699,16 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
             let nullMessage = OWSOutgoingNullMessage(
                 contactThread: contactThread,
                 verificationStateSyncMessage: message,
-                transaction: tx
+                transaction: tx,
             )
             let preparedMessage = PreparedOutgoingMessage.preprepared(
-                transientMessageWithoutAttachments: nullMessage
+                transientMessageWithoutAttachments: nullMessage,
             )
             return messageSenderJobQueue.add(
                 .promise,
                 message: preparedMessage,
                 limitToCurrentProcessLifetime: true,
-                transaction: tx
+                transaction: tx,
             )
         }
 
@@ -716,13 +716,13 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
             Logger.info("Successfully sent verification state NullMessage")
             let syncMessagePromise = self.db.write { tx in
                 let preparedMessage = PreparedOutgoingMessage.preprepared(
-                    transientMessageWithoutAttachments: message
+                    transientMessageWithoutAttachments: message,
                 )
                 return self.messageSenderJobQueue.add(
                     .promise,
                     message: preparedMessage,
                     limitToCurrentProcessLifetime: true,
-                    transaction: tx
+                    transaction: tx,
                 )
             }
             syncMessagePromise.done(on: DispatchQueue.global()) {
@@ -751,7 +751,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         of identityKey: Data,
         for address: SignalServiceAddress,
         isUserInitiatedChange: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) -> ChangeVerificationStateResult {
         owsAssertDebug(identityKey.count == Constants.storedIdentityKeyLength)
 
@@ -808,7 +808,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
                     profileManager.addUser(
                         toProfileWhitelist: recipient.address,
                         userProfileWriter: .localUser,
-                        transaction: tx
+                        transaction: tx,
                     )
                 case .noLongerVerified, .implicit:
                     break
@@ -846,7 +846,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
                 aci: aci,
                 identityKey: identityKey,
                 overwriteOnConflict: false,
-                tx: tx
+                tx: tx,
             )
         case .verified:
             applyVerificationStateAction(
@@ -854,7 +854,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
                 aci: aci,
                 identityKey: identityKey,
                 overwriteOnConflict: true,
-                tx: tx
+                tx: tx,
             )
         case .unverified:
             return owsFailDebug("Verification state sync message for \(aci) has unverified state")
@@ -873,7 +873,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         aci: Aci,
         identityKey: IdentityKey,
         overwriteOnConflict: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         let recipient = recipientFetcher.fetchOrCreate(serviceId: aci, tx: tx)
         let recipientUniqueId = recipient.uniqueId
@@ -929,7 +929,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         case .clearVerification:
             switch oldVerificationState {
             case .implicit:
-                return  // We can keep any implicit state.
+                return // We can keep any implicit state.
             case .verified, .noLongerVerified:
                 newVerificationState = .implicit(isAcknowledged: false)
             }
@@ -948,7 +948,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
         for signalRecipient: SignalRecipient,
         verificationState: VerificationState,
         isLocalChange: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         let address = signalRecipient.address
 
@@ -962,7 +962,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
                 timestamp: MessageTimestampGenerator.sharedInstance.generateTimestamp(),
                 recipientAddress: address,
                 verificationState: verificationState.rawValue,
-                isLocalChange: isLocalChange
+                isLocalChange: isLocalChange,
             ).anyInsert(transaction: tx)
         }
     }

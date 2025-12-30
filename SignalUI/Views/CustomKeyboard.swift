@@ -19,7 +19,7 @@ open class CustomKeyboard: UIInputView {
         allowsSelfSizing = false
     }
 
-    required public init?(coder aDecoder: NSCoder) {
+    public required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
@@ -28,7 +28,7 @@ open class CustomKeyboard: UIInputView {
     open func willDismiss() {}
     open func wasDismissed() {}
 
-    open override func willMove(toSuperview newSuperview: UIView?) {
+    override open func willMove(toSuperview newSuperview: UIView?) {
         if newSuperview != nil {
             self.willPresent()
         } else {
@@ -36,11 +36,11 @@ open class CustomKeyboard: UIInputView {
         }
     }
 
-    open override func didMoveToSuperview() {
+    override open func didMoveToSuperview() {
         // Call wasPresented/wasDismissed on the next run loop,
         // once this view hierarchy change has finished.
         DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
+            guard let self else { return }
             if self.superview == nil {
                 self.wasDismissed()
             } else {
@@ -53,14 +53,16 @@ open class CustomKeyboard: UIInputView {
 
     public func setSystemKeyboardHeight(
         _ height: CGFloat,
-        forTraitCollection traitCollection: UITraitCollection
+        forTraitCollection traitCollection: UITraitCollection,
     ) {
         // Only respect this height if it's reasonable, we don't want
         // to have a tiny keyboard.
         guard height > 170 else { return }
 
-        let key = SizeClassKey(horizontal: traitCollection.horizontalSizeClass,
-                               vertical: traitCollection.verticalSizeClass)
+        let key = SizeClassKey(
+            horizontal: traitCollection.horizontalSizeClass,
+            vertical: traitCollection.verticalSizeClass,
+        )
         if CustomKeyboard.cachedKeyboardHeights[key] == nil {
             CustomKeyboard.cachedKeyboardHeights[key] = height
         }
@@ -71,8 +73,10 @@ open class CustomKeyboard: UIInputView {
     }
 
     public class func hasCachedHeight(forTraitCollection traitCollection: UITraitCollection) -> Bool {
-        let key = SizeClassKey(horizontal: traitCollection.horizontalSizeClass,
-                               vertical: traitCollection.verticalSizeClass)
+        let key = SizeClassKey(
+            horizontal: traitCollection.horizontalSizeClass,
+            vertical: traitCollection.verticalSizeClass,
+        )
         return CustomKeyboard.cachedKeyboardHeights[key] != nil
     }
 
@@ -87,16 +91,15 @@ open class CustomKeyboard: UIInputView {
             hasher.combine(vertical.rawValue)
         }
 
-        static func == (lhs: SizeClassKey, rhs: SizeClassKey) -> Bool {
-            lhs.horizontal == rhs.horizontal && lhs.vertical == rhs.vertical
-        }
     }
 
     private static var cachedKeyboardHeights = [SizeClassKey: CGFloat]()
 
     private func updateHeightConstraint() {
-        let key = SizeClassKey(horizontal: traitCollection.horizontalSizeClass,
-                               vertical: traitCollection.verticalSizeClass)
+        let key = SizeClassKey(
+            horizontal: traitCollection.horizontalSizeClass,
+            vertical: traitCollection.verticalSizeClass,
+        )
         guard let cachedHeight = CustomKeyboard.cachedKeyboardHeights[key] else {
             // We don't have a cached height for this orientation,
             // let the auto sizing do its best guess at what the
@@ -114,14 +117,14 @@ open class CustomKeyboard: UIInputView {
         heightConstraint.constant = cachedHeight
     }
 
-    open override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+    override open func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
 
         // We only care about changes in size classes, which would be triggered by interface rotation.
         guard
             previousTraitCollection?.horizontalSizeClass != traitCollection.horizontalSizeClass ||
-            previousTraitCollection?.verticalSizeClass != traitCollection.verticalSizeClass else
-        {
+            previousTraitCollection?.verticalSizeClass != traitCollection.verticalSizeClass
+        else {
             return
         }
 

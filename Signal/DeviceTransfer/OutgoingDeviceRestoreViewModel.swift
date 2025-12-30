@@ -4,8 +4,8 @@
 //
 
 import Foundation
-import SignalServiceKit
 import MultipeerConnectivity
+import SignalServiceKit
 
 enum DeviceRestoreError: Error {
     case invalidRestoreData
@@ -21,8 +21,8 @@ class OutgoingDeviceRestoreViewModel: ObservableObject, DeviceTransferServiceObs
             var certificateHash: Data
         }
 
-        public let restoreMethod: QuickRestoreManager.RestoreMethodType
-        public let peerConnectionData: PeerConnectionData?
+        let restoreMethod: QuickRestoreManager.RestoreMethodType
+        let peerConnectionData: PeerConnectionData?
 
         fileprivate init(restoreMethod: QuickRestoreManager.RestoreMethodType, peerConnectionData: PeerConnectionData?) {
             self.restoreMethod = restoreMethod
@@ -41,7 +41,7 @@ class OutgoingDeviceRestoreViewModel: ObservableObject, DeviceTransferServiceObs
     )?> = AtomicValue(nil, lock: .init())
 
     private var finishTransferContinuation: AtomicValue<
-        CheckedContinuation<Bool, Never>?
+        CheckedContinuation<Bool, Never>?,
     > = AtomicValue(nil, lock: .init())
 
     init(
@@ -53,7 +53,7 @@ class OutgoingDeviceRestoreViewModel: ObservableObject, DeviceTransferServiceObs
         self.quickRestoreManager = quickRestoreManager
         self.provisioningURL = deviceProvisioningURL
 
-       transferStatusViewModel.cancelTransferBlock = { [weak self] in
+        transferStatusViewModel.cancelTransferBlock = { [weak self] in
             self?.cancelTransfer()
         }
     }
@@ -95,8 +95,8 @@ class OutgoingDeviceRestoreViewModel: ObservableObject, DeviceTransferServiceObs
                 restoreMethod: restoreMethod,
                 peerConnectionData: RestoreMethodData.PeerConnectionData(
                     peerId: peerId,
-                    certificateHash: certificateHash
-                )
+                    certificateHash: certificateHash,
+                ),
             )
         } catch {
             Logger.error("Failed to parse transfer URL: \(error)")
@@ -129,7 +129,7 @@ class OutgoingDeviceRestoreViewModel: ObservableObject, DeviceTransferServiceObs
         do {
             try deviceTransferService.transferAccountToNewDevice(
                 with: peerConnectionData.peerId,
-                certificateHash: peerConnectionData.certificateHash
+                certificateHash: peerConnectionData.certificateHash,
             )
         } catch {
             stopListeningForTransfer()

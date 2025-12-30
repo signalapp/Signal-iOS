@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SwiftUI
-import SignalUI
 import SignalServiceKit
+import SignalUI
+import SwiftUI
 
 class BaseQuickRestoreQRCodeViewController:
     OWSViewController,
@@ -21,7 +21,7 @@ class BaseQuickRestoreQRCodeViewController:
             urlDisplayMode: .loading,
             onRefreshButtonPressed: { [weak provisioningSocketManager] in
                 provisioningSocketManager?.reset()
-            }
+            },
         )
         super.init()
 
@@ -33,7 +33,7 @@ class BaseQuickRestoreQRCodeViewController:
         model: model,
         cancelAction: { [weak self] in
             self?.cancel()
-        }
+        },
     ))
 
     func cancel() {
@@ -74,7 +74,7 @@ class BaseQuickRestoreQRCodeViewController:
 
     func provisioningSocketManager(
         _ provisioningSocketManager: ProvisioningSocketManager,
-        didUpdateProvisioningURL url: URL
+        didUpdateProvisioningURL url: URL,
     ) {
         self.model.updateURLDisplayMode(.loaded(url))
     }
@@ -85,9 +85,9 @@ class BaseQuickRestoreQRCodeViewController:
 
     // MARK: OWSNavigationChildController
 
-    public var preferredNavigationBarStyle: OWSNavigationBarStyle { .solid }
+    var preferredNavigationBarStyle: OWSNavigationBarStyle { .solid }
 
-    public var navbarBackgroundColorOverride: UIColor? { .clear }
+    var navbarBackgroundColorOverride: UIColor? { .clear }
 }
 
 // MARK: - SwiftUI
@@ -102,7 +102,7 @@ private struct ContentStack: View {
             VStack(spacing: 36) {
                 Text(OWSLocalizedString(
                     "REGISTRATION_SCAN_QR_CODE_TITLE",
-                    comment: "Title for screen containing QR code that users scan with their old phone when they want to transfer/restore their message history to a new device."
+                    comment: "Title for screen containing QR code that users scan with their old phone when they want to transfer/restore their message history to a new device.",
                 ))
                 .font(.title.weight(.semibold))
                 .multilineTextAlignment(.center)
@@ -129,26 +129,26 @@ private struct TutorialStack: View {
         VStack(alignment: .leading, spacing: 24) {
             Label(
                 OWSLocalizedString(
-                "REGISTRATION_SCAN_QR_CODE_TUTORIAL_OPEN_SIGNAL",
-                comment: "Tutorial text describing the first step to scanning the restore/transfer QR code with your old phone: opening Signal"
+                    "REGISTRATION_SCAN_QR_CODE_TUTORIAL_OPEN_SIGNAL",
+                    comment: "Tutorial text describing the first step to scanning the restore/transfer QR code with your old phone: opening Signal",
                 ),
-                image: "device-phone"
+                image: "device-phone",
             )
             .fixedSize(horizontal: false, vertical: true)
             Label(
                 OWSLocalizedString(
-                "REGISTRATION_SCAN_QR_CODE_TUTORIAL_TAP_CAMERA",
-                comment: "Tutorial text describing the second step to scanning the restore/transfer QR code with your old phone: tap the camera icon"
+                    "REGISTRATION_SCAN_QR_CODE_TUTORIAL_TAP_CAMERA",
+                    comment: "Tutorial text describing the second step to scanning the restore/transfer QR code with your old phone: tap the camera icon",
                 ),
-                image: "camera"
+                image: "camera",
             )
             .fixedSize(horizontal: false, vertical: true)
             Label(
                 OWSLocalizedString(
-                "REGISTRATION_SCAN_QR_CODE_TUTORIAL_SCAN",
-                comment: "Tutorial text describing the third step to scanning the restore/transfer QR code with your old phone: scan the code"
+                    "REGISTRATION_SCAN_QR_CODE_TUTORIAL_SCAN",
+                    comment: "Tutorial text describing the third step to scanning the restore/transfer QR code with your old phone: scan the code",
                 ),
-                image: "qr_code"
+                image: "qr_code",
             )
             .fixedSize(horizontal: false, vertical: true)
         }
@@ -166,7 +166,7 @@ private struct TutorialStack: View {
     let url2 = URL(string: "https://support.signal.org")!
     let cycle: () async -> Void = { @MainActor in
         displayMode = .loading
-        try? await Task.sleep(nanoseconds: NSEC_PER_SEC/2)
+        try? await Task.sleep(nanoseconds: NSEC_PER_SEC / 2)
         displayMode = .loaded(url1)
         try? await Task.sleep(nanoseconds: NSEC_PER_SEC * 3)
         displayMode = .loaded(url2)
@@ -177,9 +177,9 @@ private struct TutorialStack: View {
     ContentStack(
         model: .init(
             urlDisplayMode: displayMode,
-            onRefreshButtonPressed: { Task { await cycle() } }
+            onRefreshButtonPressed: { Task { await cycle() } },
         ),
-        cancelAction: {}
+        cancelAction: {},
     )
     .task {
         await cycle()

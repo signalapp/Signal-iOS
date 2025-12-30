@@ -7,9 +7,15 @@ import SignalServiceKit
 
 enum CropRegion {
     // The sides of the crop region.
-    case left, right, top, bottom
+    case left
+    case right
+    case top
+    case bottom
     // The corners of the crop region.
-    case topLeft, topRight, bottomLeft, bottomRight
+    case topLeft
+    case topRight
+    case bottomLeft
+    case bottomRight
 }
 
 private class CropCornerView: UIView {
@@ -23,8 +29,8 @@ private class CropCornerView: UIView {
         }
     }
 
-    lazy private var widthConstraint: NSLayoutConstraint = self.widthAnchor.constraint(equalToConstant: size.width)
-    lazy private var heightConstraint: NSLayoutConstraint = self.heightAnchor.constraint(equalToConstant: size.width)
+    private lazy var widthConstraint: NSLayoutConstraint = self.widthAnchor.constraint(equalToConstant: size.width)
+    private lazy var heightConstraint: NSLayoutConstraint = self.heightAnchor.constraint(equalToConstant: size.width)
 
     init(cropRegion: CropRegion) {
         self.cropRegion = cropRegion
@@ -32,7 +38,7 @@ private class CropCornerView: UIView {
         isUserInteractionEnabled = false
         translatesAutoresizingMaskIntoConstraints = false
         shapeLayer?.fillColor = UIColor.white.cgColor
-        addConstraints([ widthConstraint, heightConstraint ])
+        addConstraints([widthConstraint, heightConstraint])
     }
 
     @available(*, unavailable, message: "Use init(cropRegion:) instead.")
@@ -57,7 +63,7 @@ private class CropCornerView: UIView {
     }
 
     private func updatePath() {
-        guard let shapeLayer = shapeLayer else {
+        guard let shapeLayer else {
             return
         }
 
@@ -72,7 +78,7 @@ private class CropCornerView: UIView {
                 CGPoint(x: shapeFrame.maxX - cornerThickness, y: shapeFrame.minY + cornerThickness),
                 CGPoint(x: shapeFrame.minX + cornerThickness, y: shapeFrame.minY + cornerThickness),
                 CGPoint(x: shapeFrame.minX + cornerThickness, y: shapeFrame.maxY - cornerThickness),
-                CGPoint(x: shapeFrame.minX, y: shapeFrame.maxY - cornerThickness)
+                CGPoint(x: shapeFrame.minX, y: shapeFrame.maxY - cornerThickness),
             ])
         case .topRight:
             bezierPath.addRegion(withPoints: [
@@ -81,7 +87,7 @@ private class CropCornerView: UIView {
                 CGPoint(x: shapeFrame.maxX - cornerThickness, y: shapeFrame.maxY - cornerThickness),
                 CGPoint(x: shapeFrame.maxX - cornerThickness, y: shapeFrame.minY + cornerThickness),
                 CGPoint(x: shapeFrame.minX + cornerThickness, y: shapeFrame.minY + cornerThickness),
-                CGPoint(x: shapeFrame.minX + cornerThickness, y: shapeFrame.minY)
+                CGPoint(x: shapeFrame.minX + cornerThickness, y: shapeFrame.minY),
             ])
         case .bottomLeft:
             bezierPath.addRegion(withPoints: [
@@ -90,7 +96,7 @@ private class CropCornerView: UIView {
                 CGPoint(x: shapeFrame.minX + cornerThickness, y: shapeFrame.minY + cornerThickness),
                 CGPoint(x: shapeFrame.minX + cornerThickness, y: shapeFrame.maxY - cornerThickness),
                 CGPoint(x: shapeFrame.maxX - cornerThickness, y: shapeFrame.maxY - cornerThickness),
-                CGPoint(x: shapeFrame.maxX - cornerThickness, y: shapeFrame.maxY)
+                CGPoint(x: shapeFrame.maxX - cornerThickness, y: shapeFrame.maxY),
             ])
         case .bottomRight:
             bezierPath.addRegion(withPoints: [
@@ -99,7 +105,7 @@ private class CropCornerView: UIView {
                 CGPoint(x: shapeFrame.minX + cornerThickness, y: shapeFrame.maxY - cornerThickness),
                 CGPoint(x: shapeFrame.maxX - cornerThickness, y: shapeFrame.maxY - cornerThickness),
                 CGPoint(x: shapeFrame.maxX - cornerThickness, y: shapeFrame.minY + cornerThickness),
-                CGPoint(x: shapeFrame.maxX, y: shapeFrame.minY + cornerThickness)
+                CGPoint(x: shapeFrame.maxX, y: shapeFrame.minY + cornerThickness),
             ])
         default:
             owsFailDebug("Invalid crop region: \(cropRegion)")
@@ -168,7 +174,7 @@ private class CropBackgroundView: UIView {
     var lastKnownMaskRect: CGRect?
 
     fileprivate func setMaskRect(_ maskRect: CGRect, animationDuration: TimeInterval) {
-        if let lastKnownMaskRect = lastKnownMaskRect, lastKnownMaskRect == maskRect {
+        if let lastKnownMaskRect, lastKnownMaskRect == maskRect {
             return
         }
 
@@ -218,17 +224,18 @@ class CropView: UIView {
         CropCornerView(cropRegion: .topLeft),
         CropCornerView(cropRegion: .topRight),
         CropCornerView(cropRegion: .bottomLeft),
-        CropCornerView(cropRegion: .bottomRight)
+        CropCornerView(cropRegion: .bottomRight),
     ]
 
-    private let verticalGridLines: [UIView] = [ UIView(), UIView() ]
-    private let horizontalGridLines: [UIView] = [ UIView(), UIView() ]
+    private let verticalGridLines: [UIView] = [UIView(), UIView()]
+    private let horizontalGridLines: [UIView] = [UIView(), UIView()]
 
     enum State {
-        case initial    // no crop frame visible, background set to `blackout`
-        case normal     // default look: crop frame visible, grid lines hidden, background set to `blur`
-        case resizing   // user is resizing: crop frame and grid lines visible, background set to `darkening`
+        case initial // no crop frame visible, background set to `blackout`
+        case normal // default look: crop frame visible, grid lines hidden, background set to `blur`
+        case resizing // user is resizing: crop frame and grid lines visible, background set to `darkening`
     }
+
     private var state: State = .initial
 
     // Defines crop frame.
@@ -249,7 +256,7 @@ class CropView: UIView {
             cropFrameView.leadingAnchor.constraint(equalTo: cropFrameLayoutGuide.leadingAnchor),
             cropFrameView.topAnchor.constraint(equalTo: cropFrameLayoutGuide.topAnchor),
             cropFrameView.trailingAnchor.constraint(equalTo: cropFrameLayoutGuide.trailingAnchor),
-            cropFrameView.bottomAnchor.constraint(equalTo: cropFrameLayoutGuide.bottomAnchor)
+            cropFrameView.bottomAnchor.constraint(equalTo: cropFrameLayoutGuide.bottomAnchor),
         ])
 
         // Crop Frame Corners
@@ -277,14 +284,42 @@ class CropView: UIView {
         // Spacer Layout Guide that allows to space grid lines evenly
         let spacerLayoutGuide = UILayoutGuide()
         cropFrameView.addLayoutGuide(spacerLayoutGuide)
-        NSLayoutConstraint(item: spacerLayoutGuide, attribute: .left, relatedBy: .equal,
-                           toItem: cropFrameView, attribute: .left, multiplier: 1, constant: 0).isActive = true
-        NSLayoutConstraint(item: spacerLayoutGuide, attribute: .top, relatedBy: .equal,
-                           toItem: cropFrameView, attribute: .top, multiplier: 1, constant: 0).isActive = true
-        NSLayoutConstraint(item: spacerLayoutGuide, attribute: .width, relatedBy: .equal,
-                           toItem: cropFrameView, attribute: .width, multiplier: 1/CGFloat(verticalGridLines.count + 1), constant: 0).isActive = true
-        NSLayoutConstraint(item: spacerLayoutGuide, attribute: .height, relatedBy: .equal,
-                           toItem: cropFrameView, attribute: .height, multiplier: 1/CGFloat(horizontalGridLines.count + 1), constant: 0).isActive = true
+        NSLayoutConstraint(
+            item: spacerLayoutGuide,
+            attribute: .left,
+            relatedBy: .equal,
+            toItem: cropFrameView,
+            attribute: .left,
+            multiplier: 1,
+            constant: 0,
+        ).isActive = true
+        NSLayoutConstraint(
+            item: spacerLayoutGuide,
+            attribute: .top,
+            relatedBy: .equal,
+            toItem: cropFrameView,
+            attribute: .top,
+            multiplier: 1,
+            constant: 0,
+        ).isActive = true
+        NSLayoutConstraint(
+            item: spacerLayoutGuide,
+            attribute: .width,
+            relatedBy: .equal,
+            toItem: cropFrameView,
+            attribute: .width,
+            multiplier: 1 / CGFloat(verticalGridLines.count + 1),
+            constant: 0,
+        ).isActive = true
+        NSLayoutConstraint(
+            item: spacerLayoutGuide,
+            attribute: .height,
+            relatedBy: .equal,
+            toItem: cropFrameView,
+            attribute: .height,
+            multiplier: 1 / CGFloat(horizontalGridLines.count + 1),
+            constant: 0,
+        ).isActive = true
 
         // Grid Lines
         for (index, line) in verticalGridLines.enumerated() {
@@ -292,20 +327,30 @@ class CropView: UIView {
             cropFrameView.addSubview(line)
             line.autoSetDimension(.width, toSize: 1)
             line.autoPinHeightToSuperview()
-            NSLayoutConstraint(item: line, attribute: .centerX, relatedBy: .equal,
-                               toItem: spacerLayoutGuide, attribute: .right,
-                               multiplier: CGFloat(index + 1),
-                               constant: 0).isActive = true
+            NSLayoutConstraint(
+                item: line,
+                attribute: .centerX,
+                relatedBy: .equal,
+                toItem: spacerLayoutGuide,
+                attribute: .right,
+                multiplier: CGFloat(index + 1),
+                constant: 0,
+            ).isActive = true
         }
         for (index, line) in horizontalGridLines.enumerated() {
             line.backgroundColor = .ows_white
             cropFrameView.addSubview(line)
             line.autoSetDimension(.height, toSize: 1)
             line.autoPinWidthToSuperview()
-            NSLayoutConstraint(item: line, attribute: .centerY, relatedBy: .equal,
-                               toItem: spacerLayoutGuide, attribute: .bottom,
-                               multiplier: CGFloat(index + 1),
-                               constant: 0).isActive = true
+            NSLayoutConstraint(
+                item: line,
+                attribute: .centerY,
+                relatedBy: .equal,
+                toItem: spacerLayoutGuide,
+                attribute: .bottom,
+                multiplier: CGFloat(index + 1),
+                constant: 0,
+            ).isActive = true
         }
         setState(.initial, animated: false)
     }
@@ -355,8 +400,10 @@ class CropView: UIView {
     private func updateCornerSize() {
         guard cropFrameView.width > 0, cropFrameView.height > 0 else { return }
 
-        self.cornerSize = CGSize(width: min(cropFrameView.width * 0.5, CropView.desiredCornerSize),
-                                 height: min(cropFrameView.height * 0.5, CropView.desiredCornerSize))
+        self.cornerSize = CGSize(
+            width: min(cropFrameView.width * 0.5, CropView.desiredCornerSize),
+            height: min(cropFrameView.height * 0.5, CropView.desiredCornerSize),
+        )
         cropCornerViews.forEach { $0.size = cornerSize }
     }
 }

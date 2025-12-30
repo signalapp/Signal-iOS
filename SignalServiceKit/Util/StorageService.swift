@@ -40,7 +40,7 @@ public struct StorageService {
             }
         }
 
-        public static func == (lhs: StorageService.MasterKeySource, rhs: StorageService.MasterKeySource) -> Bool {
+        public static func ==(lhs: StorageService.MasterKeySource, rhs: StorageService.MasterKeySource) -> Bool {
             switch (lhs, rhs) {
             case (.implicit, .implicit):
                 return true
@@ -232,7 +232,7 @@ public struct StorageService {
             do {
                 manifestData = try masterKey.decrypt(
                     keyType: .storageServiceManifest(version: encryptedManifestContainer.version),
-                    encryptedData: encryptedManifestContainer.value
+                    encryptedData: encryptedManifestContainer.value,
                 )
             } catch {
                 throw StorageError.manifestDecryptionFailed(version: encryptedManifestContainer.version)
@@ -262,7 +262,7 @@ public struct StorageService {
         deletedIdentifiers: [StorageIdentifier],
         deleteAllExistingRecords: Bool,
         masterKey: MasterKey,
-        chatServiceAuth: ChatServiceAuth
+        chatServiceAuth: ChatServiceAuth,
     ) async throws {
         Logger.info("newItems: \(newItems.count), deletedIdentifiers: \(deletedIdentifiers.count), deleteAllExistingRecords: \(deleteAllExistingRecords)")
 
@@ -272,12 +272,12 @@ public struct StorageService {
         let manifestData = try manifest.serializedData()
         let encryptedManifestData = try masterKey.encrypt(
             keyType: .storageServiceManifest(version: manifest.version),
-            data: manifestData
+            data: manifestData,
         )
 
         let manifestWrapperBuilder = StorageServiceProtoStorageManifest.builder(
             version: manifest.version,
-            value: encryptedManifestData
+            value: encryptedManifestData,
         )
         writeOperationBuilder.setManifest(manifestWrapperBuilder.buildInfallibly())
 
@@ -320,7 +320,7 @@ public struct StorageService {
             withMethod: .put,
             endpoint: "v1/storage",
             body: writeOperationData,
-            chatServiceAuth: chatServiceAuth
+            chatServiceAuth: chatServiceAuth,
         )
 
         switch httpResponse.responseStatusCode {
@@ -361,7 +361,7 @@ public struct StorageService {
         for identifiers: [StorageIdentifier],
         manifest: StorageServiceProtoManifestRecord,
         masterKey: MasterKey,
-        chatServiceAuth: ChatServiceAuth
+        chatServiceAuth: ChatServiceAuth,
     ) async throws -> [StorageItem] {
         Logger.info("")
 
@@ -453,7 +453,7 @@ public struct StorageService {
 
             return ManifestRecordIkm(
                 data: recordIkm,
-                manifestVersion: manifest.version
+                manifestVersion: manifest.version,
             )
         }
 
@@ -465,24 +465,24 @@ public struct StorageService {
 
         func encryptStorageItem(
             plaintextRecordData: Data,
-            itemIdentifier: StorageIdentifier
+            itemIdentifier: StorageIdentifier,
         ) throws -> Data {
             let recordKey = try recordKey(forIdentifier: itemIdentifier)
 
             return try Aes256GcmEncryptedData.encrypt(
                 plaintextRecordData,
-                key: recordKey
+                key: recordKey,
             ).concatenate()
         }
 
         func decryptStorageItem(
             encryptedRecordData: Data,
-            itemIdentifier: StorageIdentifier
+            itemIdentifier: StorageIdentifier,
         ) throws -> Data {
             let recordKey = try recordKey(forIdentifier: itemIdentifier)
 
             return try Aes256GcmEncryptedData(
-                concatenated: encryptedRecordData
+                concatenated: encryptedRecordData,
             ).decrypt(key: recordKey)
         }
 
@@ -495,7 +495,7 @@ public struct StorageService {
                 outputLength: 32,
                 inputKeyMaterial: data,
                 salt: Data(),
-                info: infoData
+                info: infoData,
             )
         }
     }
@@ -536,7 +536,7 @@ public struct StorageService {
                 endpoint,
                 method: method,
                 headers: httpHeaders,
-                body: body
+                body: body,
             )
         } catch {
             Logger.warn("Failure. <- \(requestDescription): \(error)")
@@ -548,7 +548,7 @@ public struct StorageService {
     }
 
     private static func requestStorageAuth(
-        chatServiceAuth: ChatServiceAuth
+        chatServiceAuth: ChatServiceAuth,
     ) async throws -> (username: String, password: String) {
         let request = OWSRequestFactory.storageAuthRequest(auth: chatServiceAuth)
 

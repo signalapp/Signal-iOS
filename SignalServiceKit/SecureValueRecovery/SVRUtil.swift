@@ -23,18 +23,18 @@ public final class SVRUtil: NSObject {
         return normalizedPin.decomposedStringWithCompatibilityMapping
     }
 
-    internal enum Constants {
+    enum Constants {
         static let pinSaltLengthBytes: UInt = 16
     }
 
-    internal static func deriveEncodedPINVerificationString(pin: String) throws -> String {
+    static func deriveEncodedPINVerificationString(pin: String) throws -> String {
         let pinData = Data(normalizePin(pin).utf8)
         return try LibSignalClient.hashLocalPin(pinData)
     }
 
-    internal static func verifyPIN(
+    static func verifyPIN(
         pin: String,
-        againstEncodedPINVerificationString encodedPINVerificationString: String
+        againstEncodedPINVerificationString encodedPINVerificationString: String,
     ) -> Bool {
         let pinData = Data(normalizePin(pin).utf8)
         do {

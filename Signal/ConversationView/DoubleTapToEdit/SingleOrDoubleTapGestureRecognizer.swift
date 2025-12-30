@@ -84,7 +84,7 @@ public class SingleOrDoubleTapGestureRecognizer: UIGestureRecognizer {
                             return
                         }
                         endGesture()
-                    }
+                    },
                 )
             }
         } else if numTouches == 1 {

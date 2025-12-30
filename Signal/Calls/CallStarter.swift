@@ -4,9 +4,9 @@
 //
 
 import LibSignalClient
-import SignalUI
-import SignalServiceKit
 import SignalRingRTC
+import SignalServiceKit
+import SignalUI
 
 /// A type that allows calls to be started with a given recipient after various
 /// checks are performed. See ``startCall(from:)`` for details of those checks.
@@ -142,13 +142,13 @@ struct CallStarter {
         OWSActionSheets.showActionSheet(
             title: OWSLocalizedString(
                 "GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE",
-                comment: "Title for error alert indicating that only group administrators can start calls in announcement-only groups."
+                comment: "Title for error alert indicating that only group administrators can start calls in announcement-only groups.",
             ),
             message: OWSLocalizedString(
                 "GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE",
-                comment: "Message for error alert indicating that only group administrators can start calls in announcement-only groups."
+                comment: "Message for error alert indicating that only group administrators can start calls in announcement-only groups.",
             ),
-            fromViewController: viewController
+            fromViewController: viewController,
         )
     }
 
@@ -193,7 +193,7 @@ struct CallStarter {
         case .notRegistered:
             OWSActionSheets.showActionSheet(title: OWSLocalizedString(
                 "YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING",
-                comment: "alert body shown when trying to use features in the app before completing registration-related setup."
+                comment: "alert body shown when trying to use features in the app before completing registration-related setup.",
             ))
         case .missingMicrophonePermission:
             viewController.ows_showNoMicrophonePermissionActionSheet()

@@ -35,7 +35,7 @@ public protocol AttachmentManager {
         from ownedBackupProto: OwnedAttachmentBackupPointerProto,
         uploadEra: String,
         attachmentByteCounter: BackupArchiveAttachmentByteCounter,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) -> OwnedAttachmentBackupPointerProto.CreationError?
 
     /// Create attachment streams from the given data sources.
@@ -57,7 +57,7 @@ public protocol AttachmentManager {
     func updateAttachmentWithOversizeTextFromBackup(
         attachmentId: Attachment.IDType,
         pendingAttachment: PendingAttachment,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws
 
     // MARK: - Quoted Replies
@@ -75,13 +75,13 @@ public protocol AttachmentManager {
     /// Typically because the owner has been deleted.
     func removeAttachment(
         reference: AttachmentReference,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws
 
     /// Removed all attachments of the provided types from the provided owners.
     /// Will only delete attachments if they are left without any owners.
     func removeAllAttachments(
         from owners: [AttachmentReference.OwnerId],
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws
 }

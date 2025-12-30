@@ -13,14 +13,18 @@ public enum ColorOrGradientSetting: Equatable, Codable {
     // If angleRadians = 0, gradientColor1 is N.
     // If angleRadians = PI / 2, gradientColor1 is E.
     // etc.
-    case gradient(gradientColor1: OWSColor,
-                  gradientColor2: OWSColor,
-                  angleRadians: CGFloat)
-    case themedGradient(lightGradientColor1: OWSColor,
-                        lightGradientColor2: OWSColor,
-                        darkGradientColor1: OWSColor,
-                        darkGradientColor2: OWSColor,
-                        angleRadians: CGFloat)
+    case gradient(
+        gradientColor1: OWSColor,
+        gradientColor2: OWSColor,
+        angleRadians: CGFloat,
+    )
+    case themedGradient(
+        lightGradientColor1: OWSColor,
+        lightGradientColor2: OWSColor,
+        darkGradientColor1: OWSColor,
+        darkGradientColor2: OWSColor,
+        angleRadians: CGFloat,
+    )
 
     private enum TypeKey: UInt, Codable {
         case solidColor = 0
@@ -59,20 +63,24 @@ public enum ColorOrGradientSetting: Equatable, Codable {
             let gradientColor1 = try container.decode(OWSColor.self, forKey: .gradientColor1)
             let gradientColor2 = try container.decode(OWSColor.self, forKey: .gradientColor2)
             let angleRadians = try container.decode(CGFloat.self, forKey: .angleRadians)
-            self = .gradient(gradientColor1: gradientColor1,
-                             gradientColor2: gradientColor2,
-                             angleRadians: angleRadians)
+            self = .gradient(
+                gradientColor1: gradientColor1,
+                gradientColor2: gradientColor2,
+                angleRadians: angleRadians,
+            )
         case .themedGradient:
             let lightGradientColor1 = try container.decode(OWSColor.self, forKey: .lightGradientColor1)
             let lightGradientColor2 = try container.decode(OWSColor.self, forKey: .lightGradientColor2)
             let darkGradientColor1 = try container.decode(OWSColor.self, forKey: .darkGradientColor1)
             let darkGradientColor2 = try container.decode(OWSColor.self, forKey: .darkGradientColor2)
             let angleRadians = try container.decode(CGFloat.self, forKey: .angleRadians)
-            self = .themedGradient(lightGradientColor1: lightGradientColor1,
-                                   lightGradientColor2: lightGradientColor2,
-                                   darkGradientColor1: darkGradientColor1,
-                                   darkGradientColor2: darkGradientColor2,
-                                   angleRadians: angleRadians)
+            self = .themedGradient(
+                lightGradientColor1: lightGradientColor1,
+                lightGradientColor2: lightGradientColor2,
+                darkGradientColor1: darkGradientColor1,
+                darkGradientColor2: darkGradientColor2,
+                angleRadians: angleRadians,
+            )
         }
     }
 
@@ -92,11 +100,13 @@ public enum ColorOrGradientSetting: Equatable, Codable {
             try container.encode(gradientColor1, forKey: .gradientColor1)
             try container.encode(gradientColor2, forKey: .gradientColor2)
             try container.encode(angleRadians, forKey: .angleRadians)
-        case .themedGradient(let lightGradientColor1,
-                             let lightGradientColor2,
-                             let darkGradientColor1,
-                             let darkGradientColor2,
-                             let angleRadians):
+        case .themedGradient(
+            let lightGradientColor1,
+            let lightGradientColor2,
+            let darkGradientColor1,
+            let darkGradientColor2,
+            let angleRadians,
+        ):
             try container.encode(TypeKey.themedGradient, forKey: .typeKey)
             try container.encode(lightGradientColor1, forKey: .lightGradientColor1)
             try container.encode(lightGradientColor2, forKey: .lightGradientColor2)

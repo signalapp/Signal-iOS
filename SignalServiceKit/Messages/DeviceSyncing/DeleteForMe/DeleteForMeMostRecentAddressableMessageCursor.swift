@@ -33,7 +33,7 @@ final class DeleteForMeMostRecentAddressableMessageCursor: InterleavingComposite
                 }
 
                 return lhsRowId > rhsRowId
-            }
+            },
         )
     }
 }
@@ -68,10 +68,10 @@ private struct MostRecentIncomingMessageCursor: DeleteForMeAddressableMessageCur
 
     init(threadUniqueId: String, sdsTx: DBReadTransaction) {
         self.interactionCursor = InteractionFinder(
-            threadUniqueId: threadUniqueId
+            threadUniqueId: threadUniqueId,
         ).buildIncomingMessagesCursor(
             rowIdFilter: .newest,
-            tx: sdsTx
+            tx: sdsTx,
         )
     }
 
@@ -86,10 +86,10 @@ private struct MostRecentOutgoingMessageCursor: DeleteForMeAddressableMessageCur
 
     init(threadUniqueId: String, sdsTx: DBReadTransaction) {
         self.interactionCursor = InteractionFinder(
-            threadUniqueId: threadUniqueId
+            threadUniqueId: threadUniqueId,
         ).buildOutgoingMessagesCursor(
             rowIdFilter: .newest,
-            tx: sdsTx
+            tx: sdsTx,
         )
     }
 

@@ -13,7 +13,7 @@ public protocol SearchableNameIndexer {
         for searchText: String,
         maxResults: Int,
         tx: DBReadTransaction,
-        block: (_ indexableName: any IndexableName) throws(CancellationError) -> Void
+        block: (_ indexableName: any IndexableName) throws(CancellationError) -> Void,
     ) throws(CancellationError)
 
     /// Inserts `indexableName` into the FTS index.
@@ -60,8 +60,8 @@ class SearchableNameIndexerImpl: SearchableNameIndexer {
     private let nicknameRecordStore: any NicknameRecordStore
 
     enum Constants {
-        public static let databaseTableName = "SearchableName"
-        public static let databaseTableNameFTS = "SearchableNameFTS"
+        static let databaseTableName = "SearchableName"
+        static let databaseTableNameFTS = "SearchableNameFTS"
     }
 
     init(
@@ -86,7 +86,7 @@ class SearchableNameIndexerImpl: SearchableNameIndexer {
         for searchText: String,
         maxResults: Int,
         tx: DBReadTransaction,
-        block: (_ indexableName: IndexableName) throws(CancellationError) -> Void
+        block: (_ indexableName: IndexableName) throws(CancellationError) -> Void,
     ) throws(CancellationError) {
         let query = FullTextSearchIndexer.buildQuery(for: searchText)
         if query.isEmpty {
@@ -111,7 +111,7 @@ class SearchableNameIndexerImpl: SearchableNameIndexer {
                 ORDER BY rank
                 LIMIT \(maxResults)
                 """,
-                arguments: [query]
+                arguments: [query],
             )
         } catch {
             Logger.warn("Couldn't search for names: \(error.grdbErrorForLogging)")
@@ -181,7 +181,7 @@ class SearchableNameIndexerImpl: SearchableNameIndexer {
                 sql: """
                 INSERT INTO "\(Constants.databaseTableName)" ("\(identifierColumn.rawValue)", "value") VALUES (?, ?)
                 """,
-                arguments: [identifierValue, normalizedValue]
+                arguments: [identifierValue, normalizedValue],
             )
         } catch {
             Logger.warn("Couldn't insert object: \(error.grdbErrorForLogging)")
@@ -200,7 +200,7 @@ class SearchableNameIndexerImpl: SearchableNameIndexer {
                 sql: """
                 DELETE FROM "\(Constants.databaseTableName)" WHERE "\(identifierColumn.rawValue)"=?
                 """,
-                arguments: [identifierValue]
+                arguments: [identifierValue],
             )
         } catch {
             Logger.warn("Couldn't delete object: \(error.grdbErrorForLogging)")
@@ -307,7 +307,7 @@ extension SignalAccount: IndexableName {
 
         let systemContactName = DisplayName.SystemContactName(
             nameComponents: nameComponents,
-            multipleAccountLabel: nil
+            multipleAccountLabel: nil,
         )
 
         let fullName = systemContactName.resolvedValue(config: DisplayName.Config(shouldUseSystemContactNicknames: false))

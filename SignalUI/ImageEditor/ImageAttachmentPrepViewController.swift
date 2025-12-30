@@ -29,7 +29,7 @@ class ImageAttachmentPrepViewController: AttachmentPrepViewController {
 
     override func prepareContentView() {
         editorView.setHasRoundCorners(true)
-        editorView.textInteractionModes = [ .tap, .move ]
+        editorView.textInteractionModes = [.tap, .move]
         editorView.configureSubviews()
     }
 
@@ -49,9 +49,11 @@ class ImageAttachmentPrepViewController: AttachmentPrepViewController {
      */
     private static let editModeToolbarHeight: CGFloat = {
         let toolbar = ImageEditorBottomBar(buttonProvider: nil)
-        let size = toolbar.systemLayoutSizeFitting(CGSize(width: UIView.noIntrinsicMetric, height: .greatestFiniteMagnitude),
-                                                   withHorizontalFittingPriority: .fittingSizeLevel,
-                                                   verticalFittingPriority: .fittingSizeLevel)
+        let size = toolbar.systemLayoutSizeFitting(
+            CGSize(width: UIView.noIntrinsicMetric, height: .greatestFiniteMagnitude),
+            withHorizontalFittingPriority: .fittingSizeLevel,
+            verticalFittingPriority: .fittingSizeLevel,
+        )
         return size.height
     }()
 

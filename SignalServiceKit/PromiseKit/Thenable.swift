@@ -15,21 +15,21 @@ public protocol Thenable: AnyObject {
 public extension Thenable {
     func map<T>(
         on scheduler: Scheduler? = nil,
-        _ block: @escaping (Value) throws -> T
+        _ block: @escaping (Value) throws -> T,
     ) -> Promise<T> {
         observe(on: scheduler, block: block)
     }
 
     func done(
         on queue: Scheduler? = nil,
-        _ block: @escaping (Value) throws -> Void
+        _ block: @escaping (Value) throws -> Void,
     ) -> Promise<Void> {
         observe(on: queue, block: block)
     }
 
     func then<T: Thenable>(
         on scheduler: Scheduler? = nil,
-        _ block: @escaping (Value) throws -> T
+        _ block: @escaping (Value) throws -> T,
     ) -> Promise<T.Value> {
         let (promise, future) = Promise<T.Value>.pending()
         observe(on: scheduler) { result in
@@ -53,16 +53,16 @@ public extension Thenable {
     }
 
     func asVoid(
-        on scheduler: Scheduler? = nil
+        on scheduler: Scheduler? = nil,
     ) -> Promise<Void> {
         map(on: scheduler) { _ in }
     }
 }
 
-fileprivate extension Thenable {
+private extension Thenable {
     func observe<T>(
         on scheduler: Scheduler?,
-        block: @escaping (Value) throws -> T
+        block: @escaping (Value) throws -> T,
     ) -> Promise<T> {
         let (promise, future) = Promise<T>.pending()
         observe(on: scheduler) { result in

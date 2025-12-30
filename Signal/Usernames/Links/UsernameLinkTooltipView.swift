@@ -15,7 +15,7 @@ class UsernameLinkTooltipView: TooltipView {
         fromView: UIView,
         referenceView: UIView,
         hInsetFromReferenceView: CGFloat,
-        onDismiss: @escaping () -> Void
+        onDismiss: @escaping () -> Void,
     ) {
         self.hInsetFromReferenceView = hInsetFromReferenceView
         self.onDismiss = onDismiss
@@ -24,7 +24,7 @@ class UsernameLinkTooltipView: TooltipView {
             fromView: fromView,
             widthReferenceView: referenceView,
             tailReferenceView: referenceView,
-            wasTappedBlock: nil
+            wasTappedBlock: nil,
         )
     }
 
@@ -65,7 +65,7 @@ class UsernameLinkTooltipView: TooltipView {
         label.lineBreakMode = .byWordWrapping
         label.text = OWSLocalizedString(
             "USERNAME_LINK_TOOLTIP_TITLE",
-            comment: "Title for a tooltip describing ways to share your username."
+            comment: "Title for a tooltip describing ways to share your username.",
         )
 
         return label
@@ -80,7 +80,7 @@ class UsernameLinkTooltipView: TooltipView {
         label.lineBreakMode = .byWordWrapping
         label.text = OWSLocalizedString(
             "USERNAME_LINK_TOOLTIP_SUBTITLE",
-            comment: "Subtitle for a tooltip describing ways to share your username."
+            comment: "Subtitle for a tooltip describing ways to share your username.",
         )
 
         return label
@@ -147,7 +147,7 @@ class UsernameLinkTooltipView: TooltipView {
     override func setupRelationshipWithSuperview(
         superview: UIView,
         tailReferenceView: UIView,
-        widthReferenceView: UIView
+        widthReferenceView: UIView,
     ) {
         self.layer.opacity = .zero
         if !UIAccessibility.isReduceMotionEnabled {
@@ -157,7 +157,7 @@ class UsernameLinkTooltipView: TooltipView {
         super.setupRelationshipWithSuperview(
             superview: superview,
             tailReferenceView: tailReferenceView,
-            widthReferenceView: widthReferenceView
+            widthReferenceView: widthReferenceView,
         )
 
         let animator = self.transitionAnimator()
@@ -205,7 +205,7 @@ class UsernameLinkTooltipView: TooltipView {
         UIViewPropertyAnimator(
             duration: 0.35,
             springDamping: 0.8,
-            springResponse: 0.35
+            springResponse: 0.35,
         )
     }
 

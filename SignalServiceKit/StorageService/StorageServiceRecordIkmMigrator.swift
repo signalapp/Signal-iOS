@@ -22,7 +22,7 @@ struct StorageServiceRecordIkmMigratorImpl: StorageServiceRecordIkmMigrator {
     init(
         db: any DB,
         storageServiceManager: StorageServiceManager,
-        tsAccountManager: TSAccountManager
+        tsAccountManager: TSAccountManager,
     ) {
         self.db = db
         self.storageServiceManager = storageServiceManager
@@ -39,21 +39,21 @@ struct StorageServiceRecordIkmMigratorImpl: StorageServiceRecordIkmMigrator {
 
         let (
             alreadyHasRecordIkm,
-            isRegisteredPrimaryDevice
+            isRegisteredPrimaryDevice,
         ): (
             Bool,
-            Bool
+            Bool,
         ) = db.read { tx in
             return (
                 storageServiceManager.currentManifestHasRecordIkm(tx: tx),
-                tsAccountManager.registrationState(tx: tx).isRegisteredPrimaryDevice
+                tsAccountManager.registrationState(tx: tx).isRegisteredPrimaryDevice,
             )
         }
 
         guard isRegisteredPrimaryDevice else {
             owsFailDebug(
                 "Unexpectedly attempting to migrate to recordIkm, but not a primary device!",
-                logger: logger
+                logger: logger,
             )
             return
         }
@@ -75,7 +75,7 @@ struct StorageServiceRecordIkmMigratorImpl: StorageServiceRecordIkmMigrator {
         do {
             try await storageServiceManager.rotateManifest(
                 mode: .alsoRotatingRecords,
-                authedDevice: .implicit
+                authedDevice: .implicit,
             )
 
             logger.info("Successfully rotated Storage Service manifest.")
@@ -83,7 +83,7 @@ struct StorageServiceRecordIkmMigratorImpl: StorageServiceRecordIkmMigrator {
             owsAssertDebug(
                 db.read { storageServiceManager.currentManifestHasRecordIkm(tx: $0) },
                 "Unexpectedly missing recordIkm after Storage Service manifest rotation!",
-                logger: logger
+                logger: logger,
             )
         } catch {
             logger.error("Failed to rotate Storage Service manifest! \(error)")

@@ -24,7 +24,7 @@ public struct ChangedGroupModel {
         newDisappearingMessageToken: DisappearingMessageToken?,
         updateSource: GroupUpdateSource,
         profileKeys: [Aci: Data],
-        newlyLearnedPniToAciAssociations: [Pni: Aci]
+        newlyLearnedPniToAciAssociations: [Pni: Aci],
     ) {
         self.oldGroupModel = oldGroupModel
         self.newGroupModel = newGroupModel
@@ -60,7 +60,7 @@ public class GroupsV2IncomingChanges {
         localIdentifiers: LocalIdentifiers,
         changeActionsProto: GroupsProtoGroupChangeActions,
         downloadedAvatars: GroupAvatarStateMap,
-        options: TSGroupModelOptions
+        options: TSGroupModelOptions,
     ) throws -> ChangedGroupModel {
         guard let oldGroupModel = groupThread.groupModel as? TSGroupModelV2 else {
             throw OWSAssertionError("Invalid group model.")
@@ -71,7 +71,7 @@ public class GroupsV2IncomingChanges {
         let groupV2Params = try oldGroupModel.groupV2Params()
         let (updateSource, changeAuthor) = try changeActionsProto.updateSource(
             groupV2Params: groupV2Params,
-            localIdentifiers: localIdentifiers
+            localIdentifiers: localIdentifiers,
         )
         guard let changeAuthor else {
             // Many change actions have author info, e.g. addedByUserID. But we can
@@ -151,7 +151,7 @@ public class GroupsV2IncomingChanges {
         for action in changeActionsProto.addMembers {
             let didJoinFromInviteLink = action.joinFromInviteLink
 
-            if !canAddMembers && !didJoinFromInviteLink {
+            if !canAddMembers, !didJoinFromInviteLink {
                 owsFailDebug("Cannot add members.")
             }
 
@@ -164,7 +164,7 @@ public class GroupsV2IncomingChanges {
             guard let role = TSGroupMemberRole.role(for: member.role) else {
                 throw OWSAssertionError("Invalid role: \(member.role.rawValue)")
             }
-            if role == .administrator && !isChangeAuthorAdmin {
+            if role == .administrator, !isChangeAuthorAdmin {
                 owsFailDebug("Only admins can add admins.")
             }
 
@@ -200,7 +200,7 @@ public class GroupsV2IncomingChanges {
             // the service. This is one.
             let aci = try groupV2Params.aci(for: userId)
 
-            if !canRemoveMembers && aci != changeAuthor {
+            if !canRemoveMembers, aci != changeAuthor {
                 // Admin can kick any member.
                 // Any member can leave the group.
                 owsFailDebug("Cannot kick member.")
@@ -282,7 +282,7 @@ public class GroupsV2IncomingChanges {
             // the service. This is one.
             let addedByAci = try groupV2Params.aci(for: addedByUserId)
 
-            if role == .administrator && !isChangeAuthorAdmin {
+            if role == .administrator, !isChangeAuthorAdmin {
                 owsFailDebug("Only admins can add admins.")
             }
             if addedByAci != changeAuthor {
@@ -324,8 +324,10 @@ public class GroupsV2IncomingChanges {
                     owsFailDebug("Cannot revoke invitation.")
                 }
 
-                guard oldGroupMembership.hasInvalidInvite(forUserId: userId) ||
-                        oldGroupMembership.isInvitedMember(serviceId) else {
+                guard
+                    oldGroupMembership.hasInvalidInvite(forUserId: userId) ||
+                    oldGroupMembership.isInvitedMember(serviceId)
+                else {
                     throw OWSAssertionError("Invalid membership.")
                 }
                 groupMembershipBuilder.removeInvalidInvite(userId: userId)
@@ -438,7 +440,7 @@ public class GroupsV2IncomingChanges {
             // the service. This is one.
             let aci = try groupV2Params.aci(for: userId)
 
-            if !canRemoveMembers && aci != changeAuthor {
+            if !canRemoveMembers, aci != changeAuthor {
                 owsFailDebug("Cannot remove members.")
             }
 
@@ -460,7 +462,7 @@ public class GroupsV2IncomingChanges {
 
             if oldGroupModel.isJoinRequestPlaceholder {
                 // We can't check permissions using a placeholder.
-            } else if !canAddMembers && aci != changeAuthor {
+            } else if !canAddMembers, aci != changeAuthor {
                 owsFailDebug("Cannot add members.")
             }
 
@@ -477,7 +479,7 @@ public class GroupsV2IncomingChanges {
             groupMembershipBuilder.addFullMember(
                 aci,
                 role: role,
-                didJoinFromAcceptedJoinRequest: true
+                didJoinFromAcceptedJoinRequest: true,
             )
         }
 
@@ -634,7 +636,7 @@ public class GroupsV2IncomingChanges {
             newDisappearingMessageToken: newDisappearingMessageToken,
             updateSource: updateSource,
             profileKeys: profileKeys,
-            newlyLearnedPniToAciAssociations: newlyLearnedPniToAciAssociations
+            newlyLearnedPniToAciAssociations: newlyLearnedPniToAciAssociations,
         )
     }
 }
@@ -692,7 +694,7 @@ private extension HasAciAndProfileKey {
             return AciProperties(
                 aci: aci,
                 aciCiphertext: aciCiphertext,
-                profileKey: profileKey
+                profileKey: profileKey,
             )
         } else if let presentationData = presentation {
             // We should only ever fall back to presentation data if a client
@@ -709,7 +711,7 @@ private extension HasAciAndProfileKey {
             return AciProperties(
                 aci: aci,
                 aciCiphertext: aciCiphertext.serialize(),
-                profileKey: profileKey
+                profileKey: profileKey,
             )
         } else {
             throw OWSAssertionError("Malformed proto!")
@@ -732,7 +734,7 @@ private extension HasPniAndAciAndProfileKey {
         return PniAndAciProperties(
             pni: pni,
             pniCiphertext: pniCiphertext,
-            aciProperties: aciProperties
+            aciProperties: aciProperties,
         )
     }
 }

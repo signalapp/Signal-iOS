@@ -65,7 +65,7 @@ class VideoAttachmentPrepViewController: AttachmentPrepViewController {
         editorView.pauseIfPlaying()
     }
 
-    override public var canSaveMedia: Bool {
+    override var canSaveMedia: Bool {
         if model.needsRender {
             return true
         }
@@ -139,7 +139,7 @@ extension VideoAttachmentPrepViewController: VideoTimelineViewDataSource {
                     thumbnailHeight: VideoTimelineView.preferredHeight,
                     contextSize: contextSize,
                     screenScale: screenScale,
-                    untrimmedDurationSeconds: untrimmedDurationSeconds
+                    untrimmedDurationSeconds: untrimmedDurationSeconds,
                 )
                 self?.videoThumbnails = thumbnails
                 self?.timelineView.updateThumbnailView()
@@ -155,7 +155,7 @@ extension VideoAttachmentPrepViewController: VideoTimelineViewDataSource {
         thumbnailHeight: CGFloat,
         contextSize: CGSize,
         screenScale: CGFloat,
-        untrimmedDurationSeconds: TimeInterval
+        untrimmedDurationSeconds: TimeInterval,
     ) async throws -> [UIImage] {
         // We generate enough thumbnails for the worst case (full-screen landscape)
         // to avoid the complexity of regeneration.

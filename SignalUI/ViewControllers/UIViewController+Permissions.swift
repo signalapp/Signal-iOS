@@ -36,7 +36,7 @@ extension UIViewController {
 
             let actionSheet = ActionSheetController(
                 title: OWSLocalizedString("MISSING_CAMERA_PERMISSION_TITLE", comment: "Alert title"),
-                message: OWSLocalizedString("MISSING_CAMERA_PERMISSION_MESSAGE", comment: "Alert body")
+                message: OWSLocalizedString("MISSING_CAMERA_PERMISSION_MESSAGE", comment: "Alert body"),
             )
             if let openSettingsAction = AppContextUtils.openSystemSettingsAction(completion: { threadSafeCallback(false) }) {
                 actionSheet.addAction(openSettingsAction)
@@ -46,7 +46,7 @@ extension UIViewController {
                 style: .cancel,
                 handler: { _ in
                     threadSafeCallback(false)
-                }
+                },
             ))
             self.presentActionSheet(actionSheet)
         }
@@ -105,6 +105,7 @@ extension UIViewController {
                 await self.presentMediaLibraryAccessDeniedSheet()
                 return false
             }
+
         case .denied, .restricted:
             await self.presentMediaLibraryAccessDeniedSheet()
             return false
@@ -123,18 +124,20 @@ extension UIViewController {
         let actionSheet = ActionSheetController(
             title: OWSLocalizedString(
                 "MISSING_MEDIA_LIBRARY_PERMISSION_TITLE",
-                comment: "Alert title when user has previously denied media library access"
+                comment: "Alert title when user has previously denied media library access",
             ),
             message: OWSLocalizedString(
                 "MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE",
-                comment: "Alert body when user has previously denied media library access"
-            )
+                comment: "Alert body when user has previously denied media library access",
+            ),
         )
 
         return await withCheckedContinuation { continuation in
-            if let openSettingsAction = AppContextUtils.openSystemSettingsAction(completion: {
-                continuation.resume()
-            }) {
+            if
+                let openSettingsAction = AppContextUtils.openSystemSettingsAction(completion: {
+                    continuation.resume()
+                })
+            {
                 actionSheet.addAction(openSettingsAction)
             }
             actionSheet.addAction(ActionSheetAction(
@@ -142,7 +145,7 @@ extension UIViewController {
                 style: .cancel,
                 handler: { _ in
                     continuation.resume()
-                }
+                },
             ))
             self.presentActionSheet(actionSheet)
         }
@@ -180,12 +183,12 @@ extension UIViewController {
         let actionSheet = ActionSheetController(
             title: OWSLocalizedString(
                 "CALL_AUDIO_PERMISSION_TITLE",
-                comment: "Alert title when calling and permissions for microphone are missing"
+                comment: "Alert title when calling and permissions for microphone are missing",
             ),
             message: OWSLocalizedString(
                 "CALL_AUDIO_PERMISSION_MESSAGE",
-                comment: "Alert message when calling and permissions for microphone are missing"
-            )
+                comment: "Alert message when calling and permissions for microphone are missing",
+            ),
         )
 
         if let openSettingsAction = AppContextUtils.openSystemSettingsAction() {

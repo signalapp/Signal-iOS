@@ -76,7 +76,7 @@ public struct OWSDeviceStore {
     public func setName(
         _ name: String,
         for device: OWSDevice,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         var device = device
         device.name = name
@@ -91,12 +91,12 @@ public struct OWSDeviceStore {
     // MARK: -
 
     public func mostRecentlyLinkedDeviceDetails(
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> MostRecentlyLinkedDeviceDetails? {
         do {
             return try kvStore.getCodableValue(
                 forKey: StoreKeys.mostRecentlyLinkedDeviceDetails,
-                transaction: tx
+                transaction: tx,
             )
         } catch {
             owsFailDebug("Failed to get MostRecentlyLinkedDeviceDetails! \(error)")
@@ -107,16 +107,16 @@ public struct OWSDeviceStore {
     public func setMostRecentlyLinkedDeviceDetails(
         linkedTime: Date,
         notificationDelay: TimeInterval,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         do {
             try kvStore.setCodable(
                 MostRecentlyLinkedDeviceDetails(
                     linkedTime: linkedTime,
-                    notificationDelay: notificationDelay
+                    notificationDelay: notificationDelay,
                 ),
                 key: StoreKeys.mostRecentlyLinkedDeviceDetails,
-                transaction: tx
+                transaction: tx,
             )
         } catch {
             owsFailDebug("Failed to set MostRecentlyLinkedDeviceDetails!")
@@ -126,7 +126,7 @@ public struct OWSDeviceStore {
     public func clearMostRecentlyLinkedDeviceDetails(tx: DBWriteTransaction) {
         kvStore.removeValue(
             forKey: StoreKeys.mostRecentlyLinkedDeviceDetails,
-            transaction: tx
+            transaction: tx,
         )
     }
 }

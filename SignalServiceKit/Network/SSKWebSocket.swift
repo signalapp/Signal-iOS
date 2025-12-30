@@ -7,7 +7,9 @@ import Foundation
 
 @objc
 public enum SSKWebSocketState: UInt {
-    case open, connecting, disconnected
+    case open
+    case connecting
+    case disconnected
 }
 
 // MARK: -
@@ -59,11 +61,15 @@ public enum WebSocketError: Error {
 // MARK: -
 
 public extension SSKWebSocket {
-    func sendResponse(for request: WebSocketProtoWebSocketRequestMessage,
-                      status: UInt32,
-                      message: String) throws {
-        let responseBuilder = WebSocketProtoWebSocketResponseMessage.builder(requestID: request.requestID,
-                                                                             status: status)
+    func sendResponse(
+        for request: WebSocketProtoWebSocketRequestMessage,
+        status: UInt32,
+        message: String,
+    ) throws {
+        let responseBuilder = WebSocketProtoWebSocketResponseMessage.builder(
+            requestID: request.requestID,
+            status: status,
+        )
         responseBuilder.setMessage(message)
         let response = try responseBuilder.build()
 
@@ -112,7 +118,7 @@ public struct WebSocketRequest {
                 urlString,
                 overrideUrlScheme: "wss",
                 method: .get,
-                headers: extraHeaders
+                headers: extraHeaders,
             )
         } catch {
             Logger.warn("Couldn't build web socket request: \(error)")
@@ -162,7 +168,7 @@ public class SSKWebSocketNative: SSKWebSocket {
     public init?(
         request: WebSocketRequest,
         signalService: OWSSignalServiceProtocol,
-        callbackScheduler: Scheduler
+        callbackScheduler: Scheduler,
     ) {
         let signalServiceInfo = request.signalService.signalServiceInfo()
 
@@ -183,7 +189,7 @@ public class SSKWebSocketNative: SSKWebSocket {
             for: signalServiceInfo,
             endpoint: endpoint,
             configuration: configuration,
-            maxResponseSize: nil
+            maxResponseSize: nil,
         )
         self.requestUrl = urlRequest.url!
         self.callbackScheduler = callbackScheduler
@@ -223,7 +229,7 @@ public class SSKWebSocketNative: SSKWebSocket {
             webSocketTask = urlSession.webSocketTask(
                 requestUrl: requestUrl,
                 didOpenBlock: { [weak self] _ in self?.didOpen() },
-                didCloseBlock: { [weak self] error in self?.didClose(error: error) }
+                didCloseBlock: { [weak self] error in self?.didClose(error: error) },
             )
             return webSocketTask
         }
@@ -307,7 +313,6 @@ public class SSKWebSocketNative: SSKWebSocket {
             DispatchQueue.global().asyncAfter(deadline: .now() + 10) { [weak self] in
                 self?.reportReceivedMessageError(error)
             }
-
             // Don't try to listen again.
         }
     }

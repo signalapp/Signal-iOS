@@ -7,7 +7,7 @@ extension TSInfoMessage {
     static func makeForThreadMerge(
         mergedThread: TSContactThread,
         timestamp: UInt64 = MessageTimestampGenerator.sharedInstance.generateTimestamp(),
-        previousE164: String?
+        previousE164: String?,
     ) -> TSInfoMessage {
         let infoMessageUserInfo: [InfoMessageUserInfoKey: Any] = if let previousE164 {
             [.threadMergePhoneNumber: previousE164]
@@ -19,7 +19,7 @@ extension TSInfoMessage {
             thread: mergedThread,
             messageType: .threadMerge,
             timestamp: timestamp,
-            infoMessageUserInfo: infoMessageUserInfo
+            infoMessageUserInfo: infoMessageUserInfo,
         )
     }
 }
@@ -37,14 +37,14 @@ public extension TSInfoMessage {
         if let phoneNumber = threadMergePhoneNumber {
             let formatString = OWSLocalizedString(
                 "THREAD_MERGE_PHONE_NUMBER",
-                comment: "A system event shown in a conversation when multiple conversations for the same person have been merged into one. The parameters are replaced with the contact's name (eg John Doe) and their phone number (eg +1 650 555 0100)."
+                comment: "A system event shown in a conversation when multiple conversations for the same person have been merged into one. The parameters are replaced with the contact's name (eg John Doe) and their phone number (eg +1 650 555 0100).",
             )
             let formattedPhoneNumber = PhoneNumber.bestEffortLocalizedPhoneNumber(e164: phoneNumber)
             return String(format: formatString, displayName, formattedPhoneNumber)
         } else {
             let formatString = OWSLocalizedString(
                 "THREAD_MERGE_NO_PHONE_NUMBER",
-                comment: "A system event shown in a conversation when multiple conversations for the same person have been merged into one. The parameter is replaced with the contact's name (eg John Doe)."
+                comment: "A system event shown in a conversation when multiple conversations for the same person have been merged into one. The parameter is replaced with the contact's name (eg John Doe).",
             )
             return String(format: formatString, displayName)
         }
@@ -60,7 +60,7 @@ public extension TSInfoMessage {
 
         return SSKEnvironment.shared.contactManagerRef.displayName(
             for: contactThread.contactAddress,
-            tx: tx
+            tx: tx,
         ).resolvedValue()
     }
 }

@@ -15,7 +15,7 @@ public class BackupArchiveReactionStore {
     /// Returns a list of all reactions to this message
     func allReactions(
         message: TSMessage,
-        context: BackupArchive.RecipientArchivingContext
+        context: BackupArchive.RecipientArchivingContext,
     ) throws -> [OWSReaction] {
         let sql = """
             SELECT * FROM \(OWSReaction.databaseTableName)
@@ -34,14 +34,14 @@ public class BackupArchiveReactionStore {
         reactorAci: Aci,
         sentAtTimestamp: UInt64,
         sortOrder: UInt64,
-        context: BackupArchive.RecipientRestoringContext
+        context: BackupArchive.RecipientRestoringContext,
     ) throws {
         let reaction = OWSReaction.fromRestoredBackup(
             uniqueMessageId: uniqueMessageId,
             emoji: emoji,
             reactorAci: reactorAci,
             sentAtTimestamp: sentAtTimestamp,
-            sortOrder: sortOrder
+            sortOrder: sortOrder,
         )
         try reaction.insert(context.tx.database)
     }
@@ -53,14 +53,14 @@ public class BackupArchiveReactionStore {
         reactorE164: E164,
         sentAtTimestamp: UInt64,
         sortOrder: UInt64,
-        context: BackupArchive.RecipientRestoringContext
+        context: BackupArchive.RecipientRestoringContext,
     ) throws {
         let reaction = OWSReaction.fromRestoredBackup(
             uniqueMessageId: uniqueMessageId,
             emoji: emoji,
             reactorE164: reactorE164,
             sentAtTimestamp: sentAtTimestamp,
-            sortOrder: sortOrder
+            sortOrder: sortOrder,
         )
         try reaction.insert(context.tx.database)
     }

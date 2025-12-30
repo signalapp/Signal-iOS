@@ -11,19 +11,19 @@ public struct RecipientDatabaseTable {
 
     func fetchRecipient(contactThread: TSContactThread, tx: DBReadTransaction) -> SignalRecipient? {
         return fetchServiceIdAndRecipient(contactThread: contactThread, tx: tx)
-            .flatMap { (_, recipient) in recipient }
+            .flatMap { _, recipient in recipient }
     }
 
     func fetchServiceId(contactThread: TSContactThread, tx: DBReadTransaction) -> ServiceId? {
         return fetchServiceIdAndRecipient(contactThread: contactThread, tx: tx)
-            .map { (serviceId, _) in serviceId }
+            .map { serviceId, _ in serviceId }
     }
 
     /// Fetch the `ServiceId` for the owner of this contact thread, and its
     /// corresponding `SignalRecipient` if one exists.
     private func fetchServiceIdAndRecipient(
         contactThread: TSContactThread,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> (ServiceId, SignalRecipient?)? {
         let threadServiceId = contactThread.contactUUID.flatMap { try? ServiceId.parseFrom(serviceIdString: $0) }
 
@@ -63,10 +63,10 @@ public struct RecipientDatabaseTable {
     // MARK: -
 
     public func fetchRecipient(address: SignalServiceAddress, tx: DBReadTransaction) -> SignalRecipient? {
-        return (
+        return
             address.serviceId.flatMap({ fetchRecipient(serviceId: $0, transaction: tx) })
-            ?? address.phoneNumber.flatMap({ fetchRecipient(phoneNumber: $0, transaction: tx) })
-        )
+                ?? address.phoneNumber.flatMap({ fetchRecipient(phoneNumber: $0, transaction: tx) })
+
     }
 
     public func fetchAuthorRecipient(incomingMessage: TSIncomingMessage, tx: DBReadTransaction) -> SignalRecipient? {

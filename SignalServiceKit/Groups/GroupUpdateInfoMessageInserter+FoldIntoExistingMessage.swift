@@ -30,14 +30,14 @@ extension GroupUpdateInfoMessageInserterImpl {
         localIdentifiers: LocalIdentifiers,
         groupThread: TSGroupThread,
         newGroupModel: TSGroupModel,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) -> CollapsibleMembershipChangeResult? {
         guard
             let (mostRecentInfoMsg, secondMostRecentInfoMsgMaybe) =
-                Self.mostRecentVisibleInteractionsAsInfoMessages(
-                    forGroupThread: groupThread,
-                    withTransaction: transaction
-                )
+            Self.mostRecentVisibleInteractionsAsInfoMessages(
+                forGroupThread: groupThread,
+                withTransaction: transaction,
+            )
         else {
             return nil
         }
@@ -58,7 +58,7 @@ extension GroupUpdateInfoMessageInserterImpl {
                 mostRecentInfoMsg: mostRecentInfoMsg,
                 withNewJoinRequestFrom: requestingAci,
                 localIdentifiers: localIdentifiers,
-                transaction: transaction
+                transaction: transaction,
             )
         case .canceledJoinRequestFromSingleUser(let cancelingAci):
             /// See the comment above for why we care about this case.
@@ -73,7 +73,7 @@ extension GroupUpdateInfoMessageInserterImpl {
                 withCanceledJoinRequestFrom: cancelingAci,
                 newGroupModel: newGroupModel,
                 localIdentifiers: localIdentifiers,
-                transaction: transaction
+                transaction: transaction,
             )
         }
     }
@@ -82,7 +82,7 @@ extension GroupUpdateInfoMessageInserterImpl {
         mostRecentInfoMsg: TSInfoMessage,
         withNewJoinRequestFrom requestingAci: Aci,
         localIdentifiers: LocalIdentifiers,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) -> CollapsibleMembershipChangeResult? {
 
         // For a new join request we always want a new info message. However,
@@ -115,8 +115,8 @@ extension GroupUpdateInfoMessageInserterImpl {
             singleUpdateItem: .sequenceOfInviteLinkRequestAndCancels(
                 requester: requestingAci.codableUuid,
                 count: count,
-                isTail: false
-            )
+                isTail: false,
+            ),
         )
         mostRecentInfoMsg.anyUpsert(transaction: transaction)
 
@@ -124,8 +124,8 @@ extension GroupUpdateInfoMessageInserterImpl {
             .sequenceOfInviteLinkRequestAndCancels(
                 requester: requestingAci.codableUuid,
                 count: 0,
-                isTail: true
-            )
+                isTail: true,
+            ),
         )
     }
 
@@ -135,7 +135,7 @@ extension GroupUpdateInfoMessageInserterImpl {
         withCanceledJoinRequestFrom cancelingAci: Aci,
         newGroupModel: TSGroupModel,
         localIdentifiers: LocalIdentifiers,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) -> CollapsibleMembershipChangeResult? {
 
         // If the most recent message represents the join request that's being
@@ -146,9 +146,11 @@ extension GroupUpdateInfoMessageInserterImpl {
         // increment that message's collapse counter and delete the most recent
         // message.
 
-        if let (mostRecentInfoMsgJoiner, count) = mostRecentInfoMsg.representsSequenceOfRequestsAndCancelsWithAdditionalRequestToJoin(
-            localIdentifiers: localIdentifiers
-        ) {
+        if
+            let (mostRecentInfoMsgJoiner, count) = mostRecentInfoMsg.representsSequenceOfRequestsAndCancelsWithAdditionalRequestToJoin(
+                localIdentifiers: localIdentifiers,
+            )
+        {
             guard mostRecentInfoMsgJoiner == cancelingAci else {
                 return nil
             }
@@ -158,8 +160,8 @@ extension GroupUpdateInfoMessageInserterImpl {
                 singleUpdateItem: .sequenceOfInviteLinkRequestAndCancels(
                     requester: cancelingAci.codableUuid,
                     count: count + 1,
-                    isTail: true
-                )
+                    isTail: true,
+                ),
             )
             mostRecentInfoMsg.anyUpsert(transaction: transaction)
 
@@ -169,7 +171,7 @@ extension GroupUpdateInfoMessageInserterImpl {
         guard
             let mostRecentInfoMsgJoiner = mostRecentInfoMsg.representsCollapsibleSingleRequestToJoin(
                 localIdentifiers: localIdentifiers,
-                tx: transaction
+                tx: transaction,
             ),
             cancelingAci == mostRecentInfoMsgJoiner
         else {
@@ -180,7 +182,7 @@ extension GroupUpdateInfoMessageInserterImpl {
             let secondMostRecentInfoMsg,
             let (requester, count) = secondMostRecentInfoMsg
                 .representsSingleSequenceOfRequestsAndCancels(
-                    localIdentifiers: localIdentifiers
+                    localIdentifiers: localIdentifiers,
                 ),
             cancelingAci == requester
         {
@@ -191,8 +193,8 @@ extension GroupUpdateInfoMessageInserterImpl {
                 singleUpdateItem: .sequenceOfInviteLinkRequestAndCancels(
                     requester: cancelingAci.codableUuid,
                     count: count + 1,
-                    isTail: true
-                )
+                    isTail: true,
+                ),
             )
             secondMostRecentInfoMsg.anyUpsert(transaction: transaction)
 
@@ -202,8 +204,8 @@ extension GroupUpdateInfoMessageInserterImpl {
                 singleUpdateItem: .sequenceOfInviteLinkRequestAndCancels(
                     requester: cancelingAci.codableUuid,
                     count: 1,
-                    isTail: true
-                )
+                    isTail: true,
+                ),
             )
             mostRecentInfoMsg.anyUpsert(transaction: transaction)
 
@@ -213,7 +215,7 @@ extension GroupUpdateInfoMessageInserterImpl {
 
     private static func mostRecentVisibleInteractionsAsInfoMessages(
         forGroupThread groupThread: TSGroupThread,
-        withTransaction transaction: DBReadTransaction
+        withTransaction transaction: DBReadTransaction,
     ) -> (first: TSInfoMessage, second: TSInfoMessage?)? {
         var mostRecentVisibleInteraction: TSInteraction?
         var secondMostRecentVisibleInteraction: TSInteraction?
@@ -221,7 +223,7 @@ extension GroupUpdateInfoMessageInserterImpl {
             try InteractionFinder(threadUniqueId: groupThread.uniqueId)
                 .enumerateInteractionsForConversationView(
                     rowIdFilter: .newest,
-                    tx: transaction
+                    tx: transaction,
                 ) { interaction -> Bool in
                     if mostRecentVisibleInteraction == nil {
                         mostRecentVisibleInteraction = interaction
@@ -267,7 +269,7 @@ private extension TSInfoMessage {
 
     func representsCollapsibleSingleRequestToJoin(
         localIdentifiers: LocalIdentifiers,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> Aci? {
         switch groupUpdateMetadata(localIdentifiers: localIdentifiers) {
         case .newGroup, .nonGroupUpdate, .legacyRawString:
@@ -284,7 +286,7 @@ private extension TSInfoMessage {
             guard
                 let groupUpdateItems = computedGroupUpdateItems(
                     localIdentifiers: localIdentifiers,
-                    tx: tx
+                    tx: tx,
                 ),
                 groupUpdateItems.count == 1
             else {
@@ -296,7 +298,7 @@ private extension TSInfoMessage {
     }
 
     func representsSingleSequenceOfRequestsAndCancels(
-        localIdentifiers: LocalIdentifiers
+        localIdentifiers: LocalIdentifiers,
     ) -> (Aci, count: UInt)? {
         switch self.groupUpdateMetadata(localIdentifiers: localIdentifiers) {
         case .modelDiff, .legacyRawString, .newGroup, .nonGroupUpdate:
@@ -315,7 +317,7 @@ private extension TSInfoMessage {
     /// If this is the latest message, and we get a new cancel, we want to collapse everything down to
     /// a single ``sequenceOfInviteLinkRequestAndCancels`` with an incremented count.
     func representsSequenceOfRequestsAndCancelsWithAdditionalRequestToJoin(
-        localIdentifiers: LocalIdentifiers
+        localIdentifiers: LocalIdentifiers,
     ) -> (Aci, count: UInt)? {
         switch groupUpdateMetadata(localIdentifiers: localIdentifiers) {
         case .newGroup, .nonGroupUpdate, .legacyRawString, .modelDiff:
@@ -338,8 +340,9 @@ private extension TSInfoMessage {
                 return nil
             }
 
-            guard let secondItemRequester = precomputedItems[1]
-                .representsCollapsibleSingleRequestToJoin()
+            guard
+                let secondItemRequester = precomputedItems[1]
+                    .representsCollapsibleSingleRequestToJoin()
             else {
                 return nil
             }
@@ -349,7 +352,7 @@ private extension TSInfoMessage {
             }
             owsAssertDebug(
                 !firstMessageIsTail,
-                "Should not be tail when there is a subsequent request!"
+                "Should not be tail when there is a subsequent request!",
             )
             return (firstItemRequester, firstItemCount)
         }

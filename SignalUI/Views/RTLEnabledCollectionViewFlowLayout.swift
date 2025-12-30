@@ -7,5 +7,5 @@ import UIKit
 
 public class RTLEnabledCollectionViewFlowLayout: UICollectionViewFlowLayout {
 
-    public override var flipsHorizontallyInOppositeLayoutDirection: Bool { true }
+    override public var flipsHorizontallyInOppositeLayoutDirection: Bool { true }
 }

@@ -20,7 +20,7 @@ class ChatsSettingsViewController: OWSTableViewController2 {
             self,
             selector: #selector(updateTableContents),
             name: .syncManagerConfigurationSyncDidComplete,
-            object: nil
+            object: nil,
         )
     }
 
@@ -31,53 +31,55 @@ class ChatsSettingsViewController: OWSTableViewController2 {
         let linkPreviewSection = OWSTableSection()
         linkPreviewSection.footerTitle = OWSLocalizedString(
             "SETTINGS_LINK_PREVIEWS_FOOTER",
-            comment: "Footer for setting for enabling & disabling link previews."
+            comment: "Footer for setting for enabling & disabling link previews.",
         )
         linkPreviewSection.add(.switch(
             withText: OWSLocalizedString(
                 "SETTINGS_LINK_PREVIEWS",
-                comment: "Setting for enabling & disabling link previews."
+                comment: "Setting for enabling & disabling link previews.",
             ),
             isOn: {
                 SSKEnvironment.shared.databaseStorageRef.read { DependenciesBridge.shared.linkPreviewSettingStore.areLinkPreviewsEnabled(tx: $0) }
             },
             target: self,
-            selector: #selector(didToggleLinkPreviewsEnabled)
+            selector: #selector(didToggleLinkPreviewsEnabled),
         ))
         contents.add(linkPreviewSection)
 
         let sharingSuggestionsSection = OWSTableSection()
         sharingSuggestionsSection.footerTitle = OWSLocalizedString(
             "SETTINGS_SHARING_SUGGESTIONS_NOTIFICATIONS_FOOTER",
-            comment: "Footer for setting for enabling & disabling contact and notification sharing with iOS."
+            comment: "Footer for setting for enabling & disabling contact and notification sharing with iOS.",
         )
 
         sharingSuggestionsSection.add(.switch(
             withText: OWSLocalizedString(
                 "SETTINGS_SHARING_SUGGESTIONS",
-                comment: "Setting for enabling & disabling iOS contact sharing."
+                comment: "Setting for enabling & disabling iOS contact sharing.",
             ),
             isOn: {
                 SSKEnvironment.shared.databaseStorageRef.read { SSKPreferences.areIntentDonationsEnabled(transaction: $0) }
             },
             target: self,
-            selector: #selector(didToggleSharingSuggestionsEnabled)
+            selector: #selector(didToggleSharingSuggestionsEnabled),
         ))
         contents.add(sharingSuggestionsSection)
 
         let contactSection = OWSTableSection()
         contactSection.footerTitle = OWSLocalizedString(
             "SETTINGS_APPEARANCE_AVATAR_FOOTER",
-            comment: "Footer for avatar section in appearance settings")
+            comment: "Footer for avatar section in appearance settings",
+        )
         contactSection.add(.switch(
             withText: OWSLocalizedString(
                 "SETTINGS_APPEARANCE_AVATAR_PREFERENCE_LABEL",
-                comment: "Title for switch to toggle preference between contact and profile avatars"),
+                comment: "Title for switch to toggle preference between contact and profile avatars",
+            ),
             isOn: {
                 SSKEnvironment.shared.databaseStorageRef.read { SSKPreferences.preferContactAvatars(transaction: $0) }
             },
             target: self,
-            selector: #selector(didToggleAvatarPreference)
+            selector: #selector(didToggleAvatarPreference),
         ))
         contents.add(contactSection)
 
@@ -88,11 +90,11 @@ class ChatsSettingsViewController: OWSTableViewController2 {
                 SSKEnvironment.shared.databaseStorageRef.read { SSKPreferences.shouldKeepMutedChatsArchived(transaction: $0) }
             },
             target: self,
-            selector: #selector(didToggleShouldKeepMutedChatsArchivedSwitch)
+            selector: #selector(didToggleShouldKeepMutedChatsArchivedSwitch),
         ))
         keepMutedChatsArchived.footerTitle = OWSLocalizedString(
             "SETTINGS_KEEP_MUTED_ARCHIVED_DESCRIPTION",
-            comment: "When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a thorough description paired with a labeled switch above, in the Chats settings."
+            comment: "When a chat is archived and receives a new message, it is unarchived. Turning this switch on disables this feature if the chat in question is also muted. This string is a thorough description paired with a labeled switch above, in the Chats settings.",
         )
         contents.add(keepMutedChatsArchived)
 
@@ -103,7 +105,7 @@ class ChatsSettingsViewController: OWSTableViewController2 {
             accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "clear_chat_history"),
             actionBlock: { [weak self] in
                 self?.didTapClearHistory()
-            }
+            },
         ))
         contents.add(clearHistorySection)
 
@@ -130,12 +132,12 @@ class ChatsSettingsViewController: OWSTableViewController2 {
             }
         } else {
             INInteraction.deleteAll { error in
-                if let error = error {
+                if let error {
                     owsFailDebug("Failed to disable sharing suggestions \(error)")
                     sender.setOn(true, animated: true)
                     OWSActionSheets.showActionSheet(title: OWSLocalizedString(
                         "SHARING_SUGGESTIONS_DISABLE_ERROR",
-                        comment: "Title of alert indicating sharing suggestions failed to deactivate"
+                        comment: "Title of alert indicating sharing suggestions failed to deactivate",
                     ))
                 } else {
                     SSKEnvironment.shared.databaseStorageRef.write { transaction in
@@ -171,19 +173,19 @@ class ChatsSettingsViewController: OWSTableViewController2 {
     private func didTapClearHistory() {
         let primaryConfirmDeletionTitle = OWSLocalizedString(
             "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION",
-            comment: "Alert message before user confirms clearing history"
+            comment: "Alert message before user confirms clearing history",
         )
         let secondaryConfirmDeletionTitle = OWSLocalizedString(
             "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_SECONDARY_TITLE",
-            comment: "Secondary alert title before user confirms clearing history"
+            comment: "Secondary alert title before user confirms clearing history",
         )
         let secondaryConfirmDeletionMessage = OWSLocalizedString(
             "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_SECONDARY_MESSAGE",
-            comment: "Secondary alert message before user confirms clearing history"
+            comment: "Secondary alert message before user confirms clearing history",
         )
         let confirmDeletionButtonTitle = OWSLocalizedString(
             "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON",
-            comment: "Confirmation text for button which deletes all message, calling, attachments, etc."
+            comment: "Confirmation text for button which deletes all message, calling, attachments, etc.",
         )
 
         // Show two layers of confirmation here – this is a maximally
@@ -197,7 +199,7 @@ class ChatsSettingsViewController: OWSTableViewController2 {
                 title: secondaryConfirmDeletionTitle,
                 message: secondaryConfirmDeletionMessage,
                 proceedTitle: confirmDeletionButtonTitle,
-                proceedStyle: .destructive
+                proceedStyle: .destructive,
             ) { [weak self] _ in
                 self?.clearHistoryBehindSpinner()
             }
@@ -214,18 +216,18 @@ class ChatsSettingsViewController: OWSTableViewController2 {
             backgroundBlockQueueQos: .userInitiated,
             backgroundBlock: { modal in
                 self.clearHistoryWithSneakyTransaction(
-                    threadSoftDeleteManager: threadSoftDeleteManager
+                    threadSoftDeleteManager: threadSoftDeleteManager,
                 )
 
                 DispatchQueue.main.async {
                     modal.dismiss()
                 }
-            }
+            },
         )
     }
 
     private func clearHistoryWithSneakyTransaction(
-        threadSoftDeleteManager: any ThreadSoftDeleteManager
+        threadSoftDeleteManager: any ThreadSoftDeleteManager,
     ) {
         Logger.info("")
 
@@ -233,7 +235,7 @@ class ChatsSettingsViewController: OWSTableViewController2 {
             threadSoftDeleteManager.softDelete(
                 threads: TSThread.anyFetchAll(transaction: tx),
                 sendDeleteForMeSyncMessage: true,
-                tx: tx
+                tx: tx,
             )
 
             // Need to instantiate these to remove them, since `StoryMessage`

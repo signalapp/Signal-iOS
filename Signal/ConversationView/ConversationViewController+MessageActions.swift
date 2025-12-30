@@ -7,15 +7,17 @@ public import SignalServiceKit
 
 extension ConversationViewController {
 
-    func presentContextMenu(with messageActions: [MessageAction],
-                            focusedOn cell: UICollectionViewCell,
-                            andModel model: CVItemViewModelImpl) {
+    func presentContextMenu(
+        with messageActions: [MessageAction],
+        focusedOn cell: UICollectionViewCell,
+        andModel model: CVItemViewModelImpl,
+    ) {
         let keyboardActive = inputToolbar?.isInputViewFirstResponder ?? false
         let interaction = ChatHistoryContextMenuInteraction(delegate: self, itemViewModel: model, thread: thread, messageActions: messageActions, initiatingGestureRecognizer: collectionViewContextMenuGestureRecognizer, keyboardWasActive: keyboardActive)
         collectionViewActiveContextMenuInteraction = interaction
         cell.addInteraction(interaction)
         let cellCenterPoint = cell.frame.center
-        let screenPoint = self.collectionView .convert(cellCenterPoint, from: cell)
+        let screenPoint = self.collectionView.convert(cellCenterPoint, from: cell)
         var presentImmediately = false
         if collectionViewContextMenuSecondaryClickRecognizer.state == .ended {
             presentImmediately = true
@@ -63,14 +65,18 @@ extension ConversationViewController {
 
         let messageId = reactionsDetailSheet.messageId
 
-        guard let indexPath = self.indexPath(forInteractionUniqueId: messageId),
-              let renderItem = self.renderItem(forIndex: indexPath.row) else {
+        guard
+            let indexPath = self.indexPath(forInteractionUniqueId: messageId),
+            let renderItem = self.renderItem(forIndex: indexPath.row)
+        else {
             // The message no longer exists, dismiss the sheet.
             dismissReactionsDetailSheet(animated: true)
             return
         }
-        guard let reactionState = renderItem.reactionState,
-              reactionState.hasReactions else {
+        guard
+            let reactionState = renderItem.reactionState,
+            reactionState.hasReactions
+        else {
             // There are no longer reactions on this message, dismiss the sheet.
             dismissReactionsDetailSheet(animated: true)
             return
@@ -100,11 +106,12 @@ extension ConversationViewController: ContextMenuInteractionDelegate {
 
     public func contextMenuInteraction(
         _ interaction: ContextMenuInteraction,
-        configurationForMenuAtLocation location: CGPoint) -> ContextMenuConfiguration? {
+        configurationForMenuAtLocation location: CGPoint,
+    ) -> ContextMenuConfiguration? {
 
         return ContextMenuConfiguration(identifier: UUID() as NSCopying, actionProvider: { [weak self] _ in
 
-            guard let self = self else {
+            guard let self else {
                 owsFailDebug("conversationViewController was unexpectedly nil")
                 return ContextMenu([])
             }
@@ -124,7 +131,7 @@ extension ConversationViewController: ContextMenuInteractionDelegate {
                             attributes: messageAction.contextMenuAttributes,
                             handler: { _ in
                                 messageAction.block(nil)
-                            }
+                            },
                         ))
                     }
                 }
@@ -136,7 +143,8 @@ extension ConversationViewController: ContextMenuInteractionDelegate {
 
     public func contextMenuInteraction(
         _ interaction: ContextMenuInteraction,
-        previewForHighlightingMenuWithConfiguration configuration: ContextMenuConfiguration) -> ContextMenuTargetedPreview? {
+        previewForHighlightingMenuWithConfiguration configuration: ContextMenuConfiguration,
+    ) -> ContextMenuTargetedPreview? {
 
         guard let contextInteraction = interaction as? ChatHistoryContextMenuInteraction else {
             owsFailDebug("Expected ChatHistoryContextMenuInteraction.")
@@ -156,7 +164,7 @@ extension ConversationViewController: ContextMenuInteractionDelegate {
         var accessories = cell.rootComponent?.contextMenuAccessoryViews(componentView: componentView) ?? []
 
         // Add reaction bar if necessary
-        if thread.canSendReactionToThread && shouldShowReactionPickerForInteraction(contextInteraction.itemViewModel.interaction) {
+        if thread.canSendReactionToThread, shouldShowReactionPickerForInteraction(contextInteraction.itemViewModel.interaction) {
             let reactionBarAccessory = ContextMenuReactionBarAccessory(thread: self.thread, itemViewModel: contextInteraction.itemViewModel)
             reactionBarAccessory.didSelectReactionHandler = { [weak self] (message: TSMessage, reaction: String, isRemoving: Bool) in
 
@@ -170,7 +178,7 @@ extension ConversationViewController: ContextMenuInteractionDelegate {
                         to: message.uniqueId,
                         emoji: reaction,
                         isRemoving: isRemoving,
-                        tx: transaction
+                        tx: transaction,
                     )
                 }
             }

@@ -47,7 +47,7 @@ public class CVCell: UICollectionViewCell, CVRootComponentHost {
     }
 
     @available(*, unavailable, message: "Unimplemented")
-    required public init?(coder aDecoder: NSCoder) {
+    public required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
@@ -57,8 +57,8 @@ public class CVCell: UICollectionViewCell, CVRootComponentHost {
         }
     }
 
-    public override func systemLayoutSizeFitting(_ targetSize: CGSize) -> CGSize {
-        guard let renderItem = renderItem else {
+    override public func systemLayoutSizeFitting(_ targetSize: CGSize) -> CGSize {
+        guard let renderItem else {
             owsFailDebug("Missing renderItem.")
             return super.systemLayoutSizeFitting(targetSize)
         }
@@ -70,14 +70,18 @@ public class CVCell: UICollectionViewCell, CVRootComponentHost {
         return targetSize
     }
 
-    public override func systemLayoutSizeFitting(_ targetSize: CGSize,
-                                                 withHorizontalFittingPriority horizontalFittingPriority: UILayoutPriority,
-                                                 verticalFittingPriority: UILayoutPriority) -> CGSize {
-        guard let renderItem = renderItem else {
+    override public func systemLayoutSizeFitting(
+        _ targetSize: CGSize,
+        withHorizontalFittingPriority horizontalFittingPriority: UILayoutPriority,
+        verticalFittingPriority: UILayoutPriority,
+    ) -> CGSize {
+        guard let renderItem else {
             owsFailDebug("Missing renderItem.")
-            return super.systemLayoutSizeFitting(targetSize,
-                                                 withHorizontalFittingPriority: horizontalFittingPriority,
-                                                 verticalFittingPriority: verticalFittingPriority)
+            return super.systemLayoutSizeFitting(
+                targetSize,
+                withHorizontalFittingPriority: horizontalFittingPriority,
+                verticalFittingPriority: verticalFittingPriority,
+            )
         }
         let cellSize = renderItem.cellSize
         if cellSize.width > targetSize.width || cellSize.height > targetSize.height {
@@ -88,13 +92,13 @@ public class CVCell: UICollectionViewCell, CVRootComponentHost {
     }
 
     // For perf reasons, skip the default implementation which is only relevant for self-sizing cells.
-    public override func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
+    override public func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
         layoutAttributes
     }
 
     private var lastLayoutAttributes: CVCollectionViewLayoutAttributes?
 
-    public override func apply(_ layoutAttributes: UICollectionViewLayoutAttributes) {
+    override public func apply(_ layoutAttributes: UICollectionViewLayoutAttributes) {
         super.apply(layoutAttributes)
 
         guard let layoutAttributes = layoutAttributes as? CVCollectionViewLayoutAttributes else {
@@ -107,9 +111,11 @@ public class CVCell: UICollectionViewCell, CVRootComponentHost {
         applyLastLayoutAttributes()
     }
 
-    func configure(renderItem: CVRenderItem,
-                   componentDelegate: CVComponentDelegate,
-                   messageSwipeActionState: CVMessageSwipeActionState) {
+    func configure(
+        renderItem: CVRenderItem,
+        componentDelegate: CVComponentDelegate,
+        messageSwipeActionState: CVMessageSwipeActionState,
+    ) {
 
         let isReusingDedicatedCell = componentView != nil && renderItem.rootComponent.isDedicatedCell
 
@@ -118,9 +124,11 @@ public class CVCell: UICollectionViewCell, CVRootComponentHost {
             contentView.layoutMargins = .zero
         }
 
-        configureForHosting(renderItem: renderItem,
-                            componentDelegate: componentDelegate,
-                            messageSwipeActionState: messageSwipeActionState)
+        configureForHosting(
+            renderItem: renderItem,
+            componentDelegate: componentDelegate,
+            messageSwipeActionState: messageSwipeActionState,
+        )
 
         self.messageSwipeActionState = messageSwipeActionState
 
@@ -133,13 +141,17 @@ public class CVCell: UICollectionViewCell, CVRootComponentHost {
             return
         }
 
-        guard let rootComponent = self.rootComponent,
-              let componentView = self.componentView else {
+        guard
+            let rootComponent = self.rootComponent,
+            let componentView = self.componentView
+        else {
             return
         }
 
-        rootComponent.apply(layoutAttributes: layoutAttributes,
-                            componentView: componentView)
+        rootComponent.apply(
+            layoutAttributes: layoutAttributes,
+            componentView: componentView,
+        )
     }
 
     override public func prepareForReuse() {
@@ -158,7 +170,7 @@ public class CVCell: UICollectionViewCell, CVRootComponentHost {
             contentView.removeAllSubviews()
         }
 
-        if let componentView = componentView {
+        if let componentView {
             componentView.reset()
         } else {
             owsFailDebug("Missing componentView.")
@@ -193,20 +205,24 @@ public class CVCellView: UIView, CVRootComponentHost {
         super.init(frame: .zero)
     }
 
-    public func configure(renderItem: CVRenderItem,
-                          componentDelegate: CVComponentDelegate) {
+    public func configure(
+        renderItem: CVRenderItem,
+        componentDelegate: CVComponentDelegate,
+    ) {
 
         self.layoutMargins = .zero
 
         let messageSwipeActionState = CVMessageSwipeActionState()
-        configureForHosting(renderItem: renderItem,
-                            componentDelegate: componentDelegate,
-                            messageSwipeActionState: messageSwipeActionState)
+        configureForHosting(
+            renderItem: renderItem,
+            componentDelegate: componentDelegate,
+            messageSwipeActionState: messageSwipeActionState,
+        )
         owsAssertDebug(componentView != nil)
     }
 
     @available(*, unavailable, message: "Unimplemented")
-    required public init?(coder aDecoder: NSCoder) {
+    public required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
@@ -215,7 +231,7 @@ public class CVCellView: UIView, CVRootComponentHost {
 
         removeAllSubviews()
 
-        if let componentView = componentView {
+        if let componentView {
             componentView.reset()
         }
     }
@@ -234,14 +250,16 @@ public protocol CVRootComponentHost: AnyObject {
 // MARK: -
 
 public extension CVRootComponentHost {
-    fileprivate func configureForHosting(renderItem: CVRenderItem,
-                                         componentDelegate: CVComponentDelegate,
-                                         messageSwipeActionState: CVMessageSwipeActionState) {
+    fileprivate func configureForHosting(
+        renderItem: CVRenderItem,
+        componentDelegate: CVComponentDelegate,
+        messageSwipeActionState: CVMessageSwipeActionState,
+    ) {
         self.renderItem = renderItem
 
-        #if TESTABLE_BUILD
+#if TESTABLE_BUILD
         GRDBDatabaseStorageAdapter.canOpenTransaction = false
-        #endif
+#endif
 
         let rootComponent = renderItem.rootComponent
 
@@ -256,34 +274,38 @@ public extension CVRootComponentHost {
 
         componentView.isDedicatedCellView = rootComponent.isDedicatedCell
 
-        rootComponent.configureCellRootComponent(cellView: hostView,
-                                                 cellMeasurement: renderItem.cellMeasurement,
-                                                 componentDelegate: componentDelegate,
-                                                 messageSwipeActionState: messageSwipeActionState,
-                                                 componentView: componentView)
+        rootComponent.configureCellRootComponent(
+            cellView: hostView,
+            cellMeasurement: renderItem.cellMeasurement,
+            componentDelegate: componentDelegate,
+            messageSwipeActionState: messageSwipeActionState,
+            componentView: componentView,
+        )
 
-        #if TESTABLE_BUILD
+#if TESTABLE_BUILD
         GRDBDatabaseStorageAdapter.canOpenTransaction = true
-        #endif
+#endif
     }
 
     func handleTap(sender: UIGestureRecognizer, componentDelegate: CVComponentDelegate) -> Bool {
-        guard let renderItem = renderItem else {
+        guard let renderItem else {
             owsFailDebug("Missing renderItem.")
             return false
         }
-        guard let componentView = componentView else {
+        guard let componentView else {
             owsFailDebug("Missing componentView.")
             return false
         }
-        return renderItem.rootComponent.handleTap(sender: sender,
-                                                  componentDelegate: componentDelegate,
-                                                  componentView: componentView,
-                                                  renderItem: renderItem)
+        return renderItem.rootComponent.handleTap(
+            sender: sender,
+            componentDelegate: componentDelegate,
+            componentView: componentView,
+            renderItem: renderItem,
+        )
     }
 
     func canHandleDoubleTap(sender: UIGestureRecognizer, componentDelegate: any CVComponentDelegate) -> Bool {
-        guard let componentView = componentView else {
+        guard let componentView else {
             owsFailDebug("Missing componentView.")
             return false
         }
@@ -293,7 +315,7 @@ public extension CVRootComponentHost {
             return false
         }
 
-        guard let renderItem = renderItem else {
+        guard let renderItem else {
             owsFailDebug("Missing renderItem.")
             return false
         }
@@ -305,93 +327,109 @@ public extension CVRootComponentHost {
         guard canHandleDoubleTap(sender: sender, componentDelegate: componentDelegate) else {
             return false
         }
-        guard let renderItem = renderItem else {
+        guard let renderItem else {
             owsFailDebug("Missing renderItem.")
             return false
         }
         return renderItem.rootComponent.handleDoubleTap(sender: sender, componentDelegate: componentDelegate, renderItem: renderItem)
     }
 
-    func findLongPressHandler(sender: UIGestureRecognizer,
-                              componentDelegate: CVComponentDelegate) -> CVLongPressHandler? {
-        guard let renderItem = renderItem else {
+    func findLongPressHandler(
+        sender: UIGestureRecognizer,
+        componentDelegate: CVComponentDelegate,
+    ) -> CVLongPressHandler? {
+        guard let renderItem else {
             owsFailDebug("Missing renderItem.")
             return nil
         }
-        guard let componentView = componentView else {
+        guard let componentView else {
             owsFailDebug("Missing componentView.")
             return nil
         }
-        return renderItem.rootComponent.findLongPressHandler(sender: sender,
-                                                             componentDelegate: componentDelegate,
-                                                             componentView: componentView,
-                                                             renderItem: renderItem)
+        return renderItem.rootComponent.findLongPressHandler(
+            sender: sender,
+            componentDelegate: componentDelegate,
+            componentView: componentView,
+            renderItem: renderItem,
+        )
     }
 
-    func findPanHandler(sender: UIPanGestureRecognizer,
-                        componentDelegate: CVComponentDelegate,
-                        messageSwipeActionState: CVMessageSwipeActionState) -> CVPanHandler? {
-        guard let renderItem = renderItem else {
+    func findPanHandler(
+        sender: UIPanGestureRecognizer,
+        componentDelegate: CVComponentDelegate,
+        messageSwipeActionState: CVMessageSwipeActionState,
+    ) -> CVPanHandler? {
+        guard let renderItem else {
             owsFailDebug("Missing renderItem.")
             return nil
         }
-        guard let componentView = componentView else {
+        guard let componentView else {
             owsFailDebug("Missing componentView.")
             return nil
         }
-        return renderItem.rootComponent.findPanHandler(sender: sender,
-                                                       componentDelegate: componentDelegate,
-                                                       componentView: componentView,
-                                                       renderItem: renderItem,
-                                                       messageSwipeActionState: messageSwipeActionState)
+        return renderItem.rootComponent.findPanHandler(
+            sender: sender,
+            componentDelegate: componentDelegate,
+            componentView: componentView,
+            renderItem: renderItem,
+            messageSwipeActionState: messageSwipeActionState,
+        )
     }
 
-    func startPanGesture(sender: UIPanGestureRecognizer,
-                         panHandler: CVPanHandler,
-                         componentDelegate: CVComponentDelegate,
-                         messageSwipeActionState: CVMessageSwipeActionState) {
-        guard let renderItem = renderItem else {
+    func startPanGesture(
+        sender: UIPanGestureRecognizer,
+        panHandler: CVPanHandler,
+        componentDelegate: CVComponentDelegate,
+        messageSwipeActionState: CVMessageSwipeActionState,
+    ) {
+        guard let renderItem else {
             owsFailDebug("Missing renderItem.")
             return
         }
-        guard let componentView = componentView else {
+        guard let componentView else {
             owsFailDebug("Missing componentView.")
             return
         }
-        renderItem.rootComponent.startPanGesture(sender: sender,
-                                                 panHandler: panHandler,
-                                                 componentDelegate: componentDelegate,
-                                                 componentView: componentView,
-                                                 renderItem: renderItem,
-                                                 messageSwipeActionState: messageSwipeActionState)
+        renderItem.rootComponent.startPanGesture(
+            sender: sender,
+            panHandler: panHandler,
+            componentDelegate: componentDelegate,
+            componentView: componentView,
+            renderItem: renderItem,
+            messageSwipeActionState: messageSwipeActionState,
+        )
     }
 
-    func handlePanGesture(sender: UIPanGestureRecognizer,
-                          panHandler: CVPanHandler,
-                          componentDelegate: CVComponentDelegate,
-                          messageSwipeActionState: CVMessageSwipeActionState) {
-        guard let renderItem = renderItem else {
+    func handlePanGesture(
+        sender: UIPanGestureRecognizer,
+        panHandler: CVPanHandler,
+        componentDelegate: CVComponentDelegate,
+        messageSwipeActionState: CVMessageSwipeActionState,
+    ) {
+        guard let renderItem else {
             owsFailDebug("Missing renderItem.")
             return
         }
-        guard let componentView = componentView else {
+        guard let componentView else {
             owsFailDebug("Missing componentView.")
             return
         }
-        renderItem.rootComponent.handlePanGesture(sender: sender,
-                                                  panHandler: panHandler,
-                                                  componentDelegate: componentDelegate,
-                                                  componentView: componentView,
-                                                  renderItem: renderItem,
-                                                  messageSwipeActionState: messageSwipeActionState)
+        renderItem.rootComponent.handlePanGesture(
+            sender: sender,
+            panHandler: panHandler,
+            componentDelegate: componentDelegate,
+            componentView: componentView,
+            renderItem: renderItem,
+            messageSwipeActionState: messageSwipeActionState,
+        )
     }
 
     func albumItemView(forAttachment attachment: ReferencedAttachment) -> UIView? {
-        guard let renderItem = renderItem else {
+        guard let renderItem else {
             owsFailDebug("Missing renderItem.")
             return nil
         }
-        guard let componentView = componentView else {
+        guard let componentView else {
             owsFailDebug("Missing componentView.")
             return nil
         }
@@ -399,13 +437,17 @@ public extension CVRootComponentHost {
             owsFailDebug("Invalid rootComponent.")
             return nil
         }
-        return messageComponent.albumItemView(forAttachment: attachment,
-                                              componentView: componentView)
+        return messageComponent.albumItemView(
+            forAttachment: attachment,
+            componentView: componentView,
+        )
     }
 
     func updateScrollingContent() {
-        guard let rootComponent = rootComponent,
-              let componentView = componentView else {
+        guard
+            let rootComponent,
+            let componentView
+        else {
             owsFailDebug("Missing component.")
             return
         }

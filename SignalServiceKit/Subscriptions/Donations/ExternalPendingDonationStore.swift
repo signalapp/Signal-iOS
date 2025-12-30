@@ -12,7 +12,7 @@ public struct PendingOneTimeIDEALDonation: Codable, Equatable {
 
     public init(
         paymentIntentId: String,
-        amount: FiatMoney
+        amount: FiatMoney,
     ) {
         self.paymentIntentId = paymentIntentId
         self.amount = amount
@@ -35,7 +35,7 @@ public struct PendingMonthlyIDEALDonation: Codable, Equatable {
         setupIntentId: String,
         newSubscriptionLevel: DonationSubscriptionLevel,
         oldSubscriptionLevel: DonationSubscriptionLevel?,
-        amount: FiatMoney
+        amount: FiatMoney,
     ) {
         self.subscriberId = subscriberId
         self.clientSecret = clientSecret

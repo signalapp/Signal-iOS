@@ -11,9 +11,9 @@ public protocol StickerPickerSheetDelegate: AnyObject {
 
 public class StickerPickerSheet: InteractiveSheetViewController {
 
-    public override var interactiveScrollViews: [UIScrollView] { stickerPickerView.stickerPackCollectionViewPages }
+    override public var interactiveScrollViews: [UIScrollView] { stickerPickerView.stickerPackCollectionViewPages }
 
-    public override var sheetBackgroundColor: UIColor { .clear }
+    override public var sheetBackgroundColor: UIColor { .clear }
 
     /// Used for presenting the sticker manager from the toolbar.
     ///
@@ -29,15 +29,16 @@ public class StickerPickerSheet: InteractiveSheetViewController {
             stickerPickerView.delegate = sheetDelegate == nil ? nil : self
         }
     }
+
     /// Used for handling sticker selection.
-    private weak var pickerDelegate: (StickerPickerDelegate&StoryStickerPickerDelegate)?
+    private weak var pickerDelegate: (StickerPickerDelegate & StoryStickerPickerDelegate)?
 
     private lazy var stickerPickerView = StickerPickerView(
         delegate: self,
-        storyStickerConfiguration: .showWithDelegate(pickerDelegate!)
+        storyStickerConfiguration: .showWithDelegate(pickerDelegate!),
     )
 
-    public init(pickerDelegate: StickerPickerDelegate&StoryStickerPickerDelegate) {
+    public init(pickerDelegate: StickerPickerDelegate & StoryStickerPickerDelegate) {
         self.pickerDelegate = pickerDelegate
 
         let useBlurEffect = !UIAccessibility.isReduceTransparencyEnabled
@@ -48,14 +49,14 @@ public class StickerPickerSheet: InteractiveSheetViewController {
         }
     }
 
-    public override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
 
         overrideUserInterfaceStyle = .dark
 
         stickerPickerView.directionalLayoutMargins = .init(
             hMargin: OWSTableViewController2.cellHInnerMargin,
-            vMargin: 8
+            vMargin: 8,
         )
         contentView.addSubview(stickerPickerView)
         stickerPickerView.autoPinEdgesToSuperviewEdges()
@@ -64,19 +65,19 @@ public class StickerPickerSheet: InteractiveSheetViewController {
 
     private var viewHasAppeared = false
 
-    public override func viewWillAppear(_ animated: Bool) {
+    override public func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
         stickerPickerView.willBePresented()
     }
 
-    public override func viewDidAppear(_ animated: Bool) {
+    override public func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
         viewHasAppeared = true
     }
 
-    public override func viewDidLayoutSubviews() {
+    override public func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
         if !viewHasAppeared {

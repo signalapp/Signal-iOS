@@ -47,7 +47,7 @@ class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
     private func presentThread(
         performAction action: ConversationViewAction,
         to phoneNumbers: [String],
-        from viewController: UIViewController
+        from viewController: UIViewController,
     ) {
         guard phoneNumbers.count > 0 else {
             owsFailDebug("No registered phone numbers.")
@@ -63,7 +63,7 @@ class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
             SignalApp.shared.presentConversationForAddress(
                 SignalServiceAddress(phoneNumber: phoneNumber),
                 action: action,
-                animated: true
+                animated: true,
             )
         }
         let actionSheet = ActionSheetController(title: nil, message: nil)
@@ -71,7 +71,7 @@ class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
         for phoneNumber in phoneNumbers {
             actionSheet.addAction(ActionSheetAction(
                 title: PhoneNumber.bestEffortLocalizedPhoneNumber(e164: phoneNumber),
-                style: .default
+                style: .default,
             ) { _ in
                 completion(phoneNumber)
             })
@@ -111,17 +111,18 @@ class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
         actionSheet.addAction(ActionSheetAction(
             title: OWSLocalizedString(
                 "CONVERSATION_SETTINGS_NEW_CONTACT",
-                comment: "Label for 'new contact' button in conversation settings view."
+                comment: "Label for 'new contact' button in conversation settings view.",
             ),
-            style: .default
+            style: .default,
         ) { _ in
             self.presentCreateNewContactFlow(contactShare: contactShare, from: viewController)
         })
         actionSheet.addAction(ActionSheetAction(
-            title: OWSLocalizedString("CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT",
-                                      comment: "Label for 'new contact' button in conversation settings view."
-                                     ),
-            style: .default
+            title: OWSLocalizedString(
+                "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT",
+                comment: "Label for 'new contact' button in conversation settings view.",
+            ),
+            style: .default,
         ) { _ in
             self.presentAddToExistingContactFlow(contactShare: contactShare, from: viewController)
         })
@@ -139,11 +140,11 @@ class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
                     flow: .init(contactShare: contactShare, operation: .createNew),
                     completion: {
                         self.delegate?.didCreateOrEditContact()
-                    }
+                    },
                 )
                 viewController.present(modalViewController, animated: true)
             },
-            presentErrorFrom: viewController
+            presentErrorFrom: viewController,
         )
     }
 
@@ -156,11 +157,11 @@ class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
                     flow: .init(contactShare: contactShare, operation: .addToExisting),
                     completion: {
                         self.delegate?.didCreateOrEditContact()
-                    }
+                    },
                 )
                 viewController.present(modalViewController, animated: true)
             },
-            presentErrorFrom: viewController
+            presentErrorFrom: viewController,
         )
     }
 }
@@ -197,7 +198,7 @@ private class AddContactShareToContactsFlow {
     private func mergeContact(
         _ newCNContact: CNContact,
         into oldCNContact: CNContact,
-        localPhoneNumber: CanonicalPhoneNumber?
+        localPhoneNumber: CanonicalPhoneNumber?,
     ) -> CNContact {
         let oldContact = SystemContact(cnContact: oldCNContact)
         let mergedCNContact = oldCNContact.mutableCopy() as! CNMutableContact
@@ -223,7 +224,7 @@ private class AddContactShareToContactsFlow {
         var existingCanonicalPhoneNumbers = Set(FetchedSystemContacts.parsePhoneNumbers(
             for: oldContact,
             phoneNumberUtil: SSKEnvironment.shared.phoneNumberUtilRef,
-            localPhoneNumber: localPhoneNumber
+            localPhoneNumber: localPhoneNumber,
         ))
         var mergedPhoneNumbers = mergedCNContact.phoneNumbers
         for labeledPhoneNumber in newCNContact.phoneNumbers {
@@ -234,7 +235,7 @@ private class AddContactShareToContactsFlow {
             let canonicalPhoneNumbers = FetchedSystemContacts.parsePhoneNumber(
                 phoneNumber,
                 phoneNumberUtil: SSKEnvironment.shared.phoneNumberUtilRef,
-                localPhoneNumber: localPhoneNumber
+                localPhoneNumber: localPhoneNumber,
             )
             guard existingCanonicalPhoneNumbers.isDisjoint(with: canonicalPhoneNumbers) else {
                 continue

@@ -20,7 +20,7 @@ class ReceiptSenderTest: XCTestCase {
         recipientDatabaseTable = RecipientDatabaseTable()
         receiptSender = ReceiptSender(
             appReadiness: AppReadinessMock(),
-            recipientDatabaseTable: recipientDatabaseTable
+            recipientDatabaseTable: recipientDatabaseTable,
         )
     }
 

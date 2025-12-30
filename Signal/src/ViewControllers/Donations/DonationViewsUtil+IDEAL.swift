@@ -16,7 +16,7 @@ extension DonationViewsUtil {
         type donationType: Stripe.IDEALCallbackType,
         rootViewController: UIViewController,
         databaseStorage: SDSDatabaseStorage,
-        appReadiness: AppReadinessSetter
+        appReadiness: AppReadinessSetter,
     ) async throws {
         let donationStore = DependenciesBridge.shared.externalPendingIDEALDonationStore
         let (success, intent, localIntent) = databaseStorage.read { tx in
@@ -42,7 +42,7 @@ extension DonationViewsUtil {
         let appSettings = AppSettingsViewController.inModalNavigationController(appReadiness: appReadiness)
         let donationsVC = DonationSettingsViewController()
         donationsVC.showExpirationSheet = false
-        appSettings.viewControllers += [ donationsVC ]
+        appSettings.viewControllers += [donationsVC]
 
         await frontVc.awaitablePresentFormSheet(appSettings, animated: false)
 
@@ -50,14 +50,14 @@ extension DonationViewsUtil {
             try await Self.completeDonation(
                 type: donationType,
                 from: donationsVC,
-                databaseStorage: databaseStorage
+                databaseStorage: databaseStorage,
             )
         } else {
             Self.handleIDEALDonationIssue(
                 success: success,
                 donationType: donationType,
                 from: donationsVC,
-                databaseStorage: databaseStorage
+                databaseStorage: databaseStorage,
             )
         }
     }
@@ -71,7 +71,7 @@ extension DonationViewsUtil {
     @MainActor
     static func attemptToContinueActiveIDEALDonation(
         type donationType: Stripe.IDEALCallbackType,
-        databaseStorage: SDSDatabaseStorage
+        databaseStorage: SDSDatabaseStorage,
     ) async -> Bool {
         // Inspect this view controller to find out if the layout is as expected.
         guard
@@ -102,7 +102,7 @@ extension DonationViewsUtil {
         // failed, pass that into the existing donation flow to be handled inline
         return donationPaymentVC.completeExternal3DS(
             success: success,
-            intentID: intentId
+            intentID: intentId,
         )
     }
 
@@ -110,7 +110,7 @@ extension DonationViewsUtil {
     private static func completeDonation(
         type donationType: Stripe.IDEALCallbackType,
         from donationsVC: DonationSettingsViewController,
-        databaseStorage: SDSDatabaseStorage
+        databaseStorage: SDSDatabaseStorage,
     ) async throws {
         let badge = try await Self.loadBadgeForDonation(type: donationType, databaseStorage: databaseStorage)
 
@@ -126,20 +126,20 @@ extension DonationViewsUtil {
                 operation: {
                     try await DonationViewsUtil.completeIDEALDonation(
                         donationType: donationType,
-                        databaseStorage: databaseStorage
+                        databaseStorage: databaseStorage,
                     )
-                }
+                },
             )
             // Do this after the `wrapPromiseInProgressView` completes
             // to dismiss the progress spinner.  Then display the
             // result of the donation.
             let badgeThanksSheetPresenter = BadgeThanksSheetPresenter.fromGlobalsWithSneakyTransaction(
-                successMode: donationType.asSuccessMode
+                successMode: donationType.asSuccessMode,
             )
 
             Task {
                 await badgeThanksSheetPresenter?.presentAndRecordBadgeThanks(
-                    fromViewController: donationsVC
+                    fromViewController: donationsVC,
                 )
             }
         } catch {
@@ -149,7 +149,7 @@ extension DonationViewsUtil {
                     error: error,
                     mode: donationType.asDonationMode,
                     badge: badge,
-                    paymentMethod: .ideal
+                    paymentMethod: .ideal,
                 )
             } else {
                 owsFailDebug("[Donations] Failed to load donation badge")
@@ -163,7 +163,7 @@ extension DonationViewsUtil {
         success: Bool,
         donationType: Stripe.IDEALCallbackType,
         from donationsVC: DonationSettingsViewController,
-        databaseStorage: SDSDatabaseStorage
+        databaseStorage: SDSDatabaseStorage,
     ) {
         let clearPendingDonation = { @MainActor in
             let idealStore = DependenciesBridge.shared.externalPendingIDEALDonationStore
@@ -180,12 +180,12 @@ extension DonationViewsUtil {
         let actionSheet = ActionSheetController(
             title: OWSLocalizedString(
                 "DONATION_SETTINGS_MY_SUPPORT_DONATION_FAILED_ALERT_TITLE",
-                comment: "Title for a sheet explaining that a payment failed."
+                comment: "Title for a sheet explaining that a payment failed.",
             ),
             message: OWSLocalizedString(
                 "DONATION_REDIRECT_ERROR_PAYMENT_DENIED_MESSAGE",
-                comment: "Error message displayed if something goes wrong with 3DSecure/iDEAL payment authorization.  This will be encountered if the user denies the payment."
-            )
+                comment: "Error message displayed if something goes wrong with 3DSecure/iDEAL payment authorization.  This will be encountered if the user denies the payment.",
+            ),
         )
         actionSheet.addAction(.init(title: CommonStrings.okButton, style: .default, handler: { _ in
             if !success {
@@ -194,16 +194,18 @@ extension DonationViewsUtil {
                 clearPendingDonation()
             }
         }))
-        actionSheet.addAction(.init(
-            title: OWSLocalizedString(
-                "DONATION_BADGE_ISSUE_SHEET_TRY_AGAIN_BUTTON_TITLE",
-                comment: "Title for a button asking the user to try their donation again, because something went wrong."
+        actionSheet.addAction(
+            .init(
+                title: OWSLocalizedString(
+                    "DONATION_BADGE_ISSUE_SHEET_TRY_AGAIN_BUTTON_TITLE",
+                    comment: "Title for a button asking the user to try their donation again, because something went wrong.",
+                ),
+                style: .default,
+                handler: { _ in
+                    clearPendingDonation()
+                    donationsVC.showDonateViewController(preferredDonateMode: donationType.asDonationMode)
+                },
             ),
-            style: .default,
-            handler: { _ in
-                clearPendingDonation()
-                donationsVC.showDonateViewController(preferredDonateMode: donationType.asDonationMode)
-            })
         )
 
         if let frontVc = CurrentAppContext().frontmostViewController() {
@@ -213,7 +215,7 @@ extension DonationViewsUtil {
 
     private static func loadBadgeForDonation(
         type donationType: Stripe.IDEALCallbackType,
-        databaseStorage: SDSDatabaseStorage
+        databaseStorage: SDSDatabaseStorage,
     ) async throws -> ProfileBadge? {
         switch donationType {
         case .oneTime:

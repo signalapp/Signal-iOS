@@ -12,7 +12,7 @@ final class RecipientStateMerger {
 
     init(
         recipientDatabaseTable: RecipientDatabaseTable,
-        signalServiceAddressCache: SignalServiceAddressCache
+        signalServiceAddressCache: SignalServiceAddressCache,
     ) {
         self.recipientDatabaseTable = recipientDatabaseTable
         self.signalServiceAddressCache = signalServiceAddressCache
@@ -48,7 +48,7 @@ final class RecipientStateMerger {
             return SignalServiceAddress(
                 serviceId: aci,
                 phoneNumber: nil,
-                cache: signalServiceAddressCache
+                cache: signalServiceAddressCache,
             )
         }
     }

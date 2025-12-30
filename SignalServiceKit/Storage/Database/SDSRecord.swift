@@ -33,8 +33,10 @@ public extension SDSRecord {
     // This is a "fault-tolerant" save method that will upsert in production.
     // In DEBUG builds it will fail if the intention (insert v. update)
     // doesn't match the database contents.
-    func sdsSave(saveMode: SDSSaveMode,
-                 transaction: DBWriteTransaction) {
+    func sdsSave(
+        saveMode: SDSSaveMode,
+        transaction: DBWriteTransaction,
+    ) {
         // GRDB TODO: the record has an id property, but we can't use it here
         //            until we modify the upsert logic.
         //            grdbIdByUniqueId() verifies that the model hasn't been
@@ -69,23 +71,27 @@ public extension SDSRecord {
 
 // MARK: -
 
-fileprivate extension SDSRecord {
+private extension SDSRecord {
 
     func grdbIdByUniqueId(transaction: DBReadTransaction) -> Int64? {
-        BaseModel.grdbIdByUniqueId(tableMetadata: tableMetadata,
-                                   uniqueIdColumnName: uniqueIdColumnName,
-                                   uniqueIdColumnValue: uniqueIdColumnValue,
-                                   transaction: transaction)
+        BaseModel.grdbIdByUniqueId(
+            tableMetadata: tableMetadata,
+            uniqueIdColumnName: uniqueIdColumnName,
+            uniqueIdColumnValue: uniqueIdColumnValue,
+            transaction: transaction,
+        )
     }
 }
 
 // MARK: -
 
 extension BaseModel {
-    static func grdbIdByUniqueId(tableMetadata: SDSTableMetadata,
-                                 uniqueIdColumnName: String,
-                                 uniqueIdColumnValue: String,
-                                 transaction: DBReadTransaction) -> Int64? {
+    static func grdbIdByUniqueId(
+        tableMetadata: SDSTableMetadata,
+        uniqueIdColumnName: String,
+        uniqueIdColumnValue: String,
+        transaction: DBReadTransaction,
+    ) -> Int64? {
         return failIfThrows {
             let tableName = tableMetadata.tableName
             let sql = "SELECT id FROM \(tableName.quotedDatabaseIdentifier) WHERE \(uniqueIdColumnName.quotedDatabaseIdentifier)=?"

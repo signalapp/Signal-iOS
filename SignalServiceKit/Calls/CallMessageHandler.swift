@@ -26,12 +26,12 @@ public protocol CallMessageHandler {
         sentAtTimestamp: UInt64,
         serverReceivedTimestamp: UInt64,
         serverDeliveryTimestamp: UInt64,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     )
 
     func receivedGroupCallUpdateMessage(
         _ updateMessage: SSKProtoDataMessageGroupCallUpdate,
         forGroupId groupId: GroupIdentifier,
-        serverReceivedTimestamp: UInt64
+        serverReceivedTimestamp: UInt64,
     ) async
 }

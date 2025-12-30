@@ -28,20 +28,20 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
 
         try db.write { tx in
             try attachmentRecord.insert(
-                tx.database
+                tx.database,
             )
             let reference = try insertMessageAttachmentReferenceRecord(
                 attachmentRowId: attachmentRecord.sqliteId!,
                 messageRowId: messageRowId,
                 threadRowId: threadRowId,
                 timestamp: 1234,
-                tx: tx
+                tx: tx,
             )
             store.enqueue(
                 try Attachment(record: attachmentRecord).asStream()!,
                 owner: reference.owner.asEligibleUploadOwnerType,
                 fullsize: true,
-                tx: tx
+                tx: tx,
             )
 
             // Ensure the row exists.
@@ -63,13 +63,13 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
                 messageRowId: messageRowId,
                 threadRowId: threadRowId,
                 timestamp: 5678,
-                tx: tx
+                tx: tx,
             )
             store.enqueue(
                 try Attachment(record: attachmentRecord).asStream()!,
                 owner: reference.owner.asEligibleUploadOwnerType,
                 fullsize: true,
-                tx: tx
+                tx: tx,
             )
 
             let row = try QueuedBackupAttachmentUpload.fetchOne(tx.database)
@@ -85,18 +85,18 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
 
         // Re enqueue with a nil timestamp
         try db.write { tx in
-            let referenceRecord = AttachmentReference.ThreadAttachmentReferenceRecord.init(
+            let referenceRecord = AttachmentReference.ThreadAttachmentReferenceRecord(
                 attachmentRowId: attachmentRecord.sqliteId!,
                 // Confusingly, this owner _has_ a timestamp; we just don't use it
                 // for the backup attachment upload queue.
-                threadSource: .globalThreadWallpaperImage(creationTimestamp: 1)
+                threadSource: .globalThreadWallpaperImage(creationTimestamp: 1),
             )
             try referenceRecord.insert(tx.database)
             try store.enqueue(
                 Attachment(record: attachmentRecord).asStream()!,
                 owner: AttachmentReference(record: referenceRecord).owner.asEligibleUploadOwnerType,
                 fullsize: true,
-                tx: tx
+                tx: tx,
             )
 
             let row = try QueuedBackupAttachmentUpload.fetchOne(tx.database)
@@ -117,13 +117,13 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
                 messageRowId: messageRowId,
                 threadRowId: threadRowId,
                 timestamp: 9999,
-                tx: tx
+                tx: tx,
             )
             try store.enqueue(
                 Attachment(record: attachmentRecord).asStream()!,
                 owner: reference.owner.asEligibleUploadOwnerType,
                 fullsize: true,
-                tx: tx
+                tx: tx,
             )
 
             let row = try QueuedBackupAttachmentUpload.fetchOne(tx.database)
@@ -147,7 +147,7 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
 
             try db.write { tx in
                 try attachmentRecord.insert(
-                    tx.database
+                    tx.database,
                 )
                 let reference: AttachmentReference = try {
                     if let timestamp {
@@ -156,14 +156,14 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
                             messageRowId: messageRowId,
                             threadRowId: threadRowId,
                             timestamp: timestamp,
-                            tx: tx
+                            tx: tx,
                         )
                     } else {
-                        let referenceRecord = AttachmentReference.ThreadAttachmentReferenceRecord.init(
+                        let referenceRecord = AttachmentReference.ThreadAttachmentReferenceRecord(
                             attachmentRowId: attachmentRecord.sqliteId!,
                             // Confusingly, this owner _has_ a timestamp; we just don't use it
                             // for the backup attachment upload queue.
-                            threadSource: .globalThreadWallpaperImage(creationTimestamp: 1)
+                            threadSource: .globalThreadWallpaperImage(creationTimestamp: 1),
                         )
                         try referenceRecord.insert(tx.database)
                         return try AttachmentReference(record: referenceRecord)
@@ -173,7 +173,7 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
                     try Attachment(record: attachmentRecord).asStream()!,
                     owner: reference.owner.asEligibleUploadOwnerType,
                     fullsize: true,
-                    tx: tx
+                    tx: tx,
                 )
             }
         }
@@ -182,13 +182,13 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
         try db.read { tx in
             XCTAssertEqual(
                 timestamps.count,
-                try QueuedBackupAttachmentUpload.fetchCount(tx.database)
+                try QueuedBackupAttachmentUpload.fetchCount(tx.database),
             )
 
             dequeuedRecords = try store.fetchNextUploads(
                 count: UInt(timestamps.count),
                 isFullsize: true,
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -211,7 +211,7 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
                 try store.markUploadDone(
                     for: record.attachmentRowId,
                     fullsize: true,
-                    tx: tx
+                    tx: tx,
                 )
             }
         }
@@ -229,7 +229,7 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
             _ = try store.markUploadDone(
                 for: dequeuedRecords.last!.attachmentRowId,
                 fullsize: true,
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -237,7 +237,7 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
             // all rows but one should now be deleted.
             XCTAssertEqual(
                 0,
-                try QueuedBackupAttachmentUpload.fetchCount(tx.database)
+                try QueuedBackupAttachmentUpload.fetchCount(tx.database),
             )
         }
     }
@@ -250,27 +250,27 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
 
             try db.write { tx in
                 try attachmentRecord.insert(
-                    tx.database
+                    tx.database,
                 )
                 let reference: AttachmentReference = try insertMessageAttachmentReferenceRecord(
                     attachmentRowId: attachmentRecord.sqliteId!,
                     messageRowId: messageRowId,
                     threadRowId: threadRowId,
                     timestamp: timestamp,
-                    tx: tx
+                    tx: tx,
                 )
                 // Enqueue both fullsize and thumbnail
                 store.enqueue(
                     try Attachment(record: attachmentRecord).asStream()!,
                     owner: reference.owner.asEligibleUploadOwnerType,
                     fullsize: true,
-                    tx: tx
+                    tx: tx,
                 )
                 store.enqueue(
                     try Attachment(record: attachmentRecord).asStream()!,
                     owner: reference.owner.asEligibleUploadOwnerType,
                     fullsize: false,
-                    tx: tx
+                    tx: tx,
                 )
             }
         }
@@ -279,13 +279,13 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
         try db.read { tx in
             XCTAssertEqual(
                 timestamps.count * 2,
-                try QueuedBackupAttachmentUpload.fetchCount(tx.database)
+                try QueuedBackupAttachmentUpload.fetchCount(tx.database),
             )
 
             dequeuedRecords = try store.fetchNextUploads(
                 count: UInt(timestamps.count * 2),
                 isFullsize: true,
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -306,7 +306,7 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
                 try store.markUploadDone(
                     for: record.attachmentRowId,
                     fullsize: record.isFullsize,
-                    tx: tx
+                    tx: tx,
                 )
             }
         }
@@ -348,9 +348,9 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
         messageRowId: Int64,
         threadRowId: Int64,
         timestamp: UInt64,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws -> AttachmentReference {
-        let record = AttachmentReference.MessageAttachmentReferenceRecord.init(
+        let record = AttachmentReference.MessageAttachmentReferenceRecord(
             attachmentRowId: attachmentRowId,
             sourceFilename: nil,
             sourceUnencryptedByteCount: nil,
@@ -360,15 +360,15 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
                 receivedAtTimestamp: timestamp,
                 threadRowId: threadRowId,
                 contentType: nil,
-                isPastEditRevision: false
-            ))
+                isPastEditRevision: false,
+            )),
         )
         try record.insert(tx.database)
         return try AttachmentReference(record: record)
     }
 }
 
-fileprivate extension AttachmentReference.Owner {
+private extension AttachmentReference.Owner {
 
     var asEligibleUploadOwnerType: QueuedBackupAttachmentUpload.OwnerType! {
         switch self {

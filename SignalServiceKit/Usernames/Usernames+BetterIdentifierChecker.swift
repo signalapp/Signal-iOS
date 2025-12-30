@@ -28,7 +28,7 @@ extension Usernames {
             forRecipient recipient: SignalRecipient,
             profileManager: any ProfileManager,
             contactManager: any ContactManager,
-            transaction: DBReadTransaction
+            transaction: DBReadTransaction,
         ) -> BetterIdentifierChecker {
             var checker = BetterIdentifierChecker(forRecipient: recipient)
 
@@ -41,7 +41,7 @@ extension Usernames {
             if
                 let account = contactManager.fetchSignalAccount(
                     for: recipient.address,
-                    transaction: transaction
+                    transaction: transaction,
                 )
             {
                 checker.add(systemContactGivenName: account.givenName)
@@ -57,11 +57,11 @@ extension Usernames {
         public func usernameIsBestIdentifier() -> Bool {
             return !(
                 hasE164
-                || hasProfileGivenName
-                || hasProfileFamilyName
-                || hasSystemContactGivenName
-                || hasSystemContactFamilyName
-                || hasSystemContactNickname
+                    || hasProfileGivenName
+                    || hasProfileFamilyName
+                    || hasSystemContactGivenName
+                    || hasSystemContactFamilyName
+                    || hasSystemContactNickname
             )
         }
 

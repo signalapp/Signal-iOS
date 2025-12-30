@@ -36,6 +36,7 @@ class MediaTransitionImageView: UIImageView {
             }
         }
     }
+
     private var updateShapeOnBoundsChange = false
 
     override var bounds: CGRect {
@@ -125,7 +126,7 @@ class MediaTransitionImageView: UIImageView {
             topLeftRounding: roundedCorners.topLeft,
             topRightRounding: roundedCorners.topRight,
             bottomRightRounding: roundedCorners.bottomRight,
-            bottomLeftRounding: roundedCorners.bottomLeft
+            bottomLeftRounding: roundedCorners.bottomLeft,
         )
 
         if let animation {
@@ -150,7 +151,7 @@ private extension RoundedCorners {
                 cornerMask.insert(corner)
                 result[cornerRadius] = cornerMask
             } else {
-                result[cornerRadius] = [ corner ]
+                result[cornerRadius] = [corner]
             }
         }
         populateResult(topLeft, .layerMinXMinYCorner)

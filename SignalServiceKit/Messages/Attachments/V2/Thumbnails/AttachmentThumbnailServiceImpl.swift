@@ -15,7 +15,7 @@ public class AttachmentThumbnailServiceImpl: AttachmentThumbnailService {
 
     public func thumbnailImage(
         for attachmentStream: AttachmentStream,
-        quality: AttachmentThumbnailQuality
+        quality: AttachmentThumbnailQuality,
     ) async -> UIImage? {
         // Check if we even need to generate anything before enqueing.
         switch thumbnailSpec(for: attachmentStream, quality: quality) {
@@ -32,7 +32,7 @@ public class AttachmentThumbnailServiceImpl: AttachmentThumbnailService {
 
     public func thumbnailImageSync(
         for attachmentStream: AttachmentStream,
-        quality: AttachmentThumbnailQuality
+        quality: AttachmentThumbnailQuality,
     ) -> UIImage? {
         switch thumbnailSpec(for: attachmentStream, quality: quality) {
         case .cannotGenerate:
@@ -57,11 +57,11 @@ public class AttachmentThumbnailServiceImpl: AttachmentThumbnailService {
             thumbnailImage = try? UIImage
                 .fromEncryptedFile(
                     at: AttachmentStream.absoluteAttachmentFileURL(
-                        relativeFilePath: attachmentStream.localRelativeFilePath
+                        relativeFilePath: attachmentStream.localRelativeFilePath,
                     ),
                     attachmentKey: AttachmentKey(combinedKey: attachmentStream.attachment.encryptionKey),
                     plaintextLength: attachmentStream.unencryptedByteCount,
-                    mimeType: attachmentStream.mimeType
+                    mimeType: attachmentStream.mimeType,
                 )
                 .resized(maxDimensionPoints: quality.thumbnailDimensionPoints())
         }
@@ -79,42 +79,44 @@ public class AttachmentThumbnailServiceImpl: AttachmentThumbnailService {
         return try backupThumbnailData(
             image: image,
             targetMaxFileSize: initialMaxFileSize,
-            targetMaxPixelSize: AttachmentThumbnailQuality.backupThumbnailDimensionPixels
+            targetMaxPixelSize: AttachmentThumbnailQuality.backupThumbnailDimensionPixels,
         )
     }
 
     private func backupThumbnailData(
         image: UIImage,
         targetMaxFileSize: UInt32,
-        targetMaxPixelSize: CGFloat
+        targetMaxPixelSize: CGFloat,
     ) throws -> Data {
         let targetSize: CGSize
         if image.pixelSize.largerAxis > targetMaxPixelSize {
             let scaleRatio = targetMaxPixelSize / image.pixelSize.largerAxis
             targetSize = CGSize(
                 width: image.size.width * scaleRatio,
-                height: image.size.height * scaleRatio
+                height: image.size.height * scaleRatio,
             )
         } else {
             targetSize = image.size
         }
 
-        guard let data = SDImageWebPCoder.shared.encodedData(
-            with: image,
-            format: .webP,
-            options: [
-                .encodeWebPMethod: 6,
-                .encodeMaxFileSize: targetMaxFileSize,
-                .encodeMaxPixelSize: targetSize
-            ]
-        ) else {
+        guard
+            let data = SDImageWebPCoder.shared.encodedData(
+                with: image,
+                format: .webP,
+                options: [
+                    .encodeWebPMethod: 6,
+                    .encodeMaxFileSize: targetMaxFileSize,
+                    .encodeMaxPixelSize: targetSize,
+                ],
+            )
+        else {
             throw OWSAssertionError("Unable to generate webp")
         }
         if data.count > AttachmentThumbnailQuality.backupThumbnailMaxSizeBytes {
             let nextTargetMaxPixelSize = targetMaxPixelSize * 0.5
             let nextTargetMaxFileSize = UInt32(Double(targetMaxFileSize) * 0.25)
             if
-                nextTargetMaxFileSize < AttachmentThumbnailQuality.backupThumbnailMinSizeBytes &&
+                nextTargetMaxFileSize < AttachmentThumbnailQuality.backupThumbnailMinSizeBytes,
                 nextTargetMaxPixelSize < AttachmentThumbnailQuality.backupThumbnailMinPixelSize
             {
                 throw OWSAssertionError("Generated thumbnail too large")
@@ -124,13 +126,13 @@ public class AttachmentThumbnailServiceImpl: AttachmentThumbnailService {
                 return try backupThumbnailData(
                     image: image,
                     targetMaxFileSize: targetMaxFileSize,
-                    targetMaxPixelSize: nextTargetMaxPixelSize
+                    targetMaxPixelSize: nextTargetMaxPixelSize,
                 )
             } else {
                 return try backupThumbnailData(
                     image: image,
                     targetMaxFileSize: nextTargetMaxFileSize,
-                    targetMaxPixelSize: targetMaxPixelSize
+                    targetMaxPixelSize: targetMaxPixelSize,
                 )
             }
         }
@@ -145,7 +147,7 @@ public class AttachmentThumbnailServiceImpl: AttachmentThumbnailService {
 
     private func thumbnailSpec(
         for attachmentStream: AttachmentStream,
-        quality: AttachmentThumbnailQuality
+        quality: AttachmentThumbnailQuality,
     ) -> ThumbnailSpec {
         switch attachmentStream.contentType {
         case .invalid, .file, .audio:
@@ -179,11 +181,11 @@ public class AttachmentThumbnailServiceImpl: AttachmentThumbnailService {
 
     private func cachedThumbnail(
         for attachmentStream: AttachmentStream,
-        quality: AttachmentThumbnailQuality
+        quality: AttachmentThumbnailQuality,
     ) -> UIImage? {
         let cacheUrl = AttachmentThumbnailQuality.thumbnailCacheFileUrl(
             for: attachmentStream,
-            at: quality
+            at: quality,
         )
         if OWSFileSystem.fileOrFolderExists(url: cacheUrl) {
             do {
@@ -195,8 +197,8 @@ public class AttachmentThumbnailServiceImpl: AttachmentThumbnailService {
                     plaintextLength: nil,
                     mimeType: MimeTypeUtil.thumbnailMimetype(
                         fullsizeMimeType: attachmentStream.mimeType,
-                        quality: quality
-                    )
+                        quality: quality,
+                    ),
                 )
             } catch {
                 Logger.error("Failed to read cached attachment.")
@@ -211,21 +213,21 @@ public class AttachmentThumbnailServiceImpl: AttachmentThumbnailService {
     private func cacheThumbnail(
         _ thumbnail: UIImage,
         for attachmentStream: AttachmentStream,
-        quality: AttachmentThumbnailQuality
+        quality: AttachmentThumbnailQuality,
     ) {
         let cacheUrl = AttachmentThumbnailQuality.thumbnailCacheFileUrl(
             for: attachmentStream,
-            at: quality
+            at: quality,
         )
         do {
             try OWSFileSystem.deleteFileIfExists(url: cacheUrl)
             let thumbnailMimeType = MimeTypeUtil.thumbnailMimetype(
                 fullsizeMimeType: attachmentStream.mimeType,
-                quality: quality
+                quality: quality,
             )
 
             let imageData: Data?
-            switch thumbnailMimeType{
+            switch thumbnailMimeType {
             case MimeType.imagePng.rawValue:
                 imageData = thumbnail.pngData()
             case MimeType.imageJpeg.rawValue:

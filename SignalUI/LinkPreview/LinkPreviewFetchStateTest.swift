@@ -14,18 +14,21 @@ private extension LinkPreviewFetchState.State {
         }
         return false
     }
+
     var isLoaded: Bool {
         if case .loaded = self {
             return true
         }
         return false
     }
+
     var isFailed: Bool {
         if case .failed = self {
             return true
         }
         return false
     }
+
     var isLoading: Bool {
         if case .loading = self {
             return true
@@ -48,7 +51,7 @@ class LinkPreviewFetchStateTest: XCTestCase {
 
     private func linkPreviewFetchState(
         areLinkPreviewsEnabled: Bool = true,
-        onlyParseIfEnabled: Bool = false
+        onlyParseIfEnabled: Bool = false,
     ) -> LinkPreviewFetchState {
         let linkPreviewSettingStore = LinkPreviewSettingStore.mock()
         mockDB.write { tx in
@@ -59,7 +62,7 @@ class LinkPreviewFetchStateTest: XCTestCase {
             linkPreviewFetcher: mockLinkPreviewFetcher,
             linkPreviewSettingStore: linkPreviewSettingStore,
             onlyParseIfEnabled: onlyParseIfEnabled,
-            linkPreviewDraft: nil
+            linkPreviewDraft: nil,
         )
     }
 
@@ -315,7 +318,7 @@ class LinkPreviewFetchStateTest: XCTestCase {
         do {
             let linkPreviewFetchState = self.linkPreviewFetchState(
                 areLinkPreviewsEnabled: false,
-                onlyParseIfEnabled: true
+                onlyParseIfEnabled: true,
             )
 
             await linkPreviewFetchState.update(.init(text: "https://signal.org", ranges: .empty))?.value
@@ -324,7 +327,7 @@ class LinkPreviewFetchStateTest: XCTestCase {
         do {
             let linkPreviewFetchState = self.linkPreviewFetchState(
                 areLinkPreviewsEnabled: false,
-                onlyParseIfEnabled: false
+                onlyParseIfEnabled: false,
             )
 
             // If link previews are disabled, we may still want to parse URLs in the
@@ -343,7 +346,7 @@ class LinkPreviewFetchStateTest: XCTestCase {
         }
 
         let linkPreviewFetchState = self.linkPreviewFetchState(
-            onlyParseIfEnabled: true
+            onlyParseIfEnabled: true,
         )
 
         // Bold should have no effect
@@ -351,8 +354,8 @@ class LinkPreviewFetchStateTest: XCTestCase {
             text: "https://signal.org",
             ranges: .init(
                 mentions: [:],
-                styles: [.init(.bold, range: NSRange(location: 0, length: 18))]
-            )
+                styles: [.init(.bold, range: NSRange(location: 0, length: 18))],
+            ),
         ))?.value
         XCTAssertNotNil(linkPreviewFetchState.currentUrl)
 
@@ -361,8 +364,8 @@ class LinkPreviewFetchStateTest: XCTestCase {
             text: "https://signal.org",
             ranges: .init(
                 mentions: [:],
-                styles: [.init(.spoiler, range: NSRange(location: 0, length: 18))]
-            )
+                styles: [.init(.spoiler, range: NSRange(location: 0, length: 18))],
+            ),
         ))?.value
         XCTAssertNil(linkPreviewFetchState.currentUrl)
 
@@ -371,8 +374,8 @@ class LinkPreviewFetchStateTest: XCTestCase {
             text: "https://signal.org",
             ranges: .init(
                 mentions: [:],
-                styles: [.init(.spoiler, range: NSRange(location: 3, length: 5))]
-            )
+                styles: [.init(.spoiler, range: NSRange(location: 3, length: 5))],
+            ),
         ))?.value
         XCTAssertNil(linkPreviewFetchState.currentUrl)
 
@@ -381,8 +384,8 @@ class LinkPreviewFetchStateTest: XCTestCase {
             text: "signal.org",
             ranges: .init(
                 mentions: [:],
-                styles: [.init(.spoiler, range: NSRange(location: 5, length: 5))]
-            )
+                styles: [.init(.spoiler, range: NSRange(location: 5, length: 5))],
+            ),
         ))?.value
         XCTAssertNil(linkPreviewFetchState.currentUrl)
     }

@@ -41,9 +41,11 @@ public class OWSPaymentsLock {
         }
 
         return SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            return self.keyValueStore.getBool(.isPaymentsLockEnabledKey,
-                                              defaultValue: false,
-                                              transaction: transaction)
+            return self.keyValueStore.getBool(
+                .isPaymentsLockEnabledKey,
+                defaultValue: false,
+                transaction: transaction,
+            )
         }
     }
 
@@ -58,9 +60,11 @@ public class OWSPaymentsLock {
         AssertIsOnMainThread()
         assert(appReadiness.isAppReady)
 
-        self.keyValueStore.setBool(value,
-                                   key: .isPaymentsLockEnabledKey,
-                                   transaction: transaction)
+        self.keyValueStore.setBool(
+            value,
+            key: .isPaymentsLockEnabledKey,
+            transaction: transaction,
+        )
     }
 
     public func isTimeToShowSuggestion() -> Bool {
@@ -73,8 +77,10 @@ public class OWSPaymentsLock {
 
         let defaultDate = Date.distantPast
         let date = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            return self.keyValueStore.getDate(.timeToShowSuggestionKey,
-                                              transaction: transaction) ?? defaultDate
+            return self.keyValueStore.getDate(
+                .timeToShowSuggestionKey,
+                transaction: transaction,
+            ) ?? defaultDate
         }
 
         return Date() > date
@@ -87,12 +93,14 @@ public class OWSPaymentsLock {
         let currentDate = Date()
         let numberOfSnoozeDays = 30.0
         let nextTimeToShowSuggestion = currentDate.addingTimeInterval(
-            Double(numberOfSnoozeDays * .day)
+            Double(numberOfSnoozeDays * .day),
         )
 
-        self.keyValueStore.setDate(nextTimeToShowSuggestion,
-                                   key: .timeToShowSuggestionKey,
-                                   transaction: transaction)
+        self.keyValueStore.setDate(
+            nextTimeToShowSuggestion,
+            key: .timeToShowSuggestionKey,
+            transaction: transaction,
+        )
     }
 
     // MARK: - Biometry Types
@@ -106,7 +114,7 @@ public class OWSPaymentsLock {
     // * Asynchronously.
     // * On the main thread.
     public func tryToUnlock(
-        completion completionParam: @escaping ((LocalAuthOutcome) -> Void)
+        completion completionParam: @escaping ((LocalAuthOutcome) -> Void),
     ) {
         AssertIsOnMainThread()
 
@@ -127,11 +135,12 @@ public class OWSPaymentsLock {
         var authError: NSError?
         let canEvaluatePolicy = context.canEvaluatePolicy(
             .deviceOwnerAuthentication,
-            error: &authError)
+            error: &authError,
+        )
 
-        guard canEvaluatePolicy && authError == nil else {
+        guard canEvaluatePolicy, authError == nil else {
             Logger.error("could not determine if local authentication is supported: " +
-                         "\(String(describing: authError))")
+                "\(String(describing: authError))")
 
             let outcome = Self.outcomeForLAError(errorParam: authError)
             switch outcome {
@@ -146,7 +155,7 @@ public class OWSPaymentsLock {
 
         context.evaluatePolicy(
             .deviceOwnerAuthentication,
-            localizedReason: .localizedAuthReason
+            localizedReason: .localizedAuthReason,
         ) { success, evaluateError in
 
             guard success else {
@@ -176,21 +185,23 @@ public class OWSPaymentsLock {
     // MARK: - Outcome
 
     private static func outcomeForLAError(errorParam: Error?) -> LocalAuthOutcome {
-        guard let error = errorParam,
-              let laError = error as? LAError
+        guard
+            let error = errorParam,
+            let laError = error as? LAError
         else {
             return .failure(error: .localizedDefaultErrorDescription)
         }
 
         return LocalAuthOutcome.outcomeFromLAError(
             laError,
-            defaultErrorDescription: .localizedDefaultErrorDescription)
+            defaultErrorDescription: .localizedDefaultErrorDescription,
+        )
     }
 }
 
 // MARK: - File-Specific Constants & Computed Values
 
-fileprivate extension String {
+private extension String {
     static let isPaymentsLockEnabledKey = "isPaymentsLockEnabled"
     static let timeToShowSuggestionKey = "timeToShowSuggestion"
 
@@ -199,21 +210,23 @@ fileprivate extension String {
     static var localizedDefaultErrorDescription: String {
         OWSLocalizedString(
             "PAYMENTS_LOCK_AUTHENTICATION_ENABLE_UNKNOWN_ERROR",
-            comment: "Indicates that an unknown error occurred while using Touch ID/Face ID/Phone Passcode.")
+            comment: "Indicates that an unknown error occurred while using Touch ID/Face ID/Phone Passcode.",
+        )
     }
 
     static var localizedAuthReason: String {
         OWSLocalizedString(
             "PAYMENTS_LOCK_REASON_UNLOCK_PAYMENTS_LOCK",
-            comment: "Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'payments lock'.")
+            comment: "Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'payments lock'.",
+        )
     }
 
 }
 
-fileprivate extension OWSPaymentsLock.LocalAuthOutcome {
+private extension OWSPaymentsLock.LocalAuthOutcome {
     static func outcomeFromLAError(
         _ laError: LAError,
-        defaultErrorDescription: String
+        defaultErrorDescription: String,
     ) -> OWSPaymentsLock.LocalAuthOutcome {
         switch laError.code {
         case .biometryNotAvailable:
@@ -259,37 +272,42 @@ fileprivate extension OWSPaymentsLock.LocalAuthOutcome {
     }
 }
 
-fileprivate extension LAError {
+private extension LAError {
 
     // Localized LAError Descriptions
 
     static var authenticationFailedLocalized: String {
         OWSLocalizedString(
             "PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED",
-            comment: "Indicates that Touch ID/Face ID/Phone Passcode authentication failed.")
+            comment: "Indicates that Touch ID/Face ID/Phone Passcode authentication failed.",
+        )
     }
 
     static var passcodeNotSetLocalized: String {
         OWSLocalizedString(
             "PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET",
-            comment: "Indicates that Touch ID/Face ID/Phone Passcode passcode is not set.")
+            comment: "Indicates that Touch ID/Face ID/Phone Passcode passcode is not set.",
+        )
     }
 
     static var notAvailableLocalized: String {
         OWSLocalizedString(
             "PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE",
-            comment: "Indicates that Touch ID/Face ID/Phone Passcode are not available on this device.")
+            comment: "Indicates that Touch ID/Face ID/Phone Passcode are not available on this device.",
+        )
     }
 
     static var notEnrolledLocalized: String {
         OWSLocalizedString(
             "PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED",
-            comment: "Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device.")
+            comment: "Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device.",
+        )
     }
 
     static var lockoutLocalized: String {
         OWSLocalizedString(
             "PAYMENTS_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT",
-            comment: "Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures.")
+            comment: "Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures.",
+        )
     }
 }

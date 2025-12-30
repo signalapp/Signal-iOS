@@ -33,7 +33,7 @@ public protocol PreKeyManager {
     /// the task is handled separately (but can be optionally waited on by the caller).
     func createPreKeysForProvisioning(
         aciIdentityKeyPair: ECKeyPair,
-        pniIdentityKeyPair: ECKeyPair
+        pniIdentityKeyPair: ECKeyPair,
     ) -> Task<RegistrationPreKeyUploadBundles, Error>
 
     /// Called on a best-effort basis. Consequences of not calling this is that the keys are still
@@ -44,7 +44,7 @@ public protocol PreKeyManager {
     /// the task is handled separately (but can be optionally waited on by the caller).
     func finalizeRegistrationPreKeys(
         _ bundles: RegistrationPreKeyUploadBundles,
-        uploadDidSucceed: Bool
+        uploadDidSucceed: Bool,
     ) -> Task<Void, Error>
 
     /// - returns: A task representing the completion of the prekey operation. This task is _not_
@@ -59,7 +59,7 @@ public protocol PreKeyManager {
 
     func refreshOneTimePreKeys(
         forIdentity identity: OWSIdentity,
-        alsoRefreshSignedPreKey shouldRefreshSignedPreKey: Bool
+        alsoRefreshSignedPreKey shouldRefreshSignedPreKey: Bool,
     )
 
     func setIsChangingNumber(_ isChangingNumber: Bool)

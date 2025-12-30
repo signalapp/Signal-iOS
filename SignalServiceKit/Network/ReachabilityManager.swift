@@ -7,7 +7,9 @@ import Foundation
 import Reachability
 
 public enum ReachabilityType {
-    case any, wifi, cellular
+    case any
+    case wifi
+    case cellular
 }
 
 // MARK: -
@@ -44,7 +46,7 @@ public class SSKReachabilityManagerImpl: SSKReachabilityManager {
     private let backgroundSession = OWSURLSession(
         securityPolicy: OWSURLSession.signalServiceSecurityPolicy,
         configuration: .background(withIdentifier: "SSKReachabilityManagerImpl"),
-        canUseSignalProxy: false
+        canUseSignalProxy: false,
     )
 
     // This property should only be accessed on the main thread.
@@ -59,6 +61,7 @@ public class SSKReachabilityManagerImpl: SSKReachabilityManager {
             Token(isReachable: false, isReachableViaWiFi: false, isReachableViaWWAN: false)
         }
     }
+
     private let token = AtomicValue<Token>(.empty, lock: .sharedGlobal)
 
     // This property can be safely accessed from any thread.
@@ -94,18 +97,22 @@ public class SSKReachabilityManagerImpl: SSKReachabilityManager {
     private func updateToken() {
         AssertIsOnMainThread()
 
-        token.set(Token(isReachable: reachability.isReachable(),
-                        isReachableViaWiFi: reachability.isReachableViaWiFi(),
-                        isReachableViaWWAN: reachability.isReachableViaWWAN()))
+        token.set(Token(
+            isReachable: reachability.isReachable(),
+            isReachableViaWiFi: reachability.isReachableViaWiFi(),
+            isReachableViaWWAN: reachability.isReachableViaWWAN(),
+        ))
     }
 
     private func configure() {
         AssertIsOnMainThread()
 
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(reachabilityChanged),
-                                               name: .reachabilityChanged,
-                                               object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(reachabilityChanged),
+            name: .reachabilityChanged,
+            object: nil,
+        )
 
         startNotifier()
     }
@@ -188,6 +195,7 @@ public class MockSSKReachabilityManager: SSKReachabilityManager {
     public var isReachable: Bool {
         return isReachableViaCellular || isReachableViaWifi
     }
+
     public func isReachable(via reachabilityType: ReachabilityType) -> Bool {
         switch reachabilityType {
         case .wifi: return isReachableViaWifi

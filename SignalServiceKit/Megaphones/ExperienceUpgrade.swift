@@ -111,18 +111,18 @@ extension ExperienceUpgrade {
     public func anyDidRemove(transaction: DBWriteTransaction) {
         switch manifest {
         case
-                .introducingPins,
-                .notificationPermissionReminder,
-                .newLinkedDeviceNotification,
-                .createUsernameReminder,
-                .inactiveLinkedDeviceReminder,
-                .inactivePrimaryDeviceReminder,
-                .pinReminder,
-                .contactPermissionReminder,
-                .backupKeyReminder,
-                .enableBackupsReminder,
-                .haveEnabledBackupsNotification,
-                .unrecognized:
+            .introducingPins,
+            .notificationPermissionReminder,
+            .newLinkedDeviceNotification,
+            .createUsernameReminder,
+            .inactiveLinkedDeviceReminder,
+            .inactivePrimaryDeviceReminder,
+            .pinReminder,
+            .contactPermissionReminder,
+            .backupKeyReminder,
+            .enableBackupsReminder,
+            .haveEnabledBackupsNotification,
+            .unrecognized:
             return
         case .remoteMegaphone(let megaphone):
             guard megaphone.translation.hasImage else {

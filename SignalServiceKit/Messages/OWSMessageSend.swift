@@ -17,7 +17,7 @@ final class SealedSenderParameters {
         message: TSOutgoingMessage,
         senderCertificate: SenderCertificate,
         accessKey: OWSUDAccess?,
-        endorsement: GroupSendFullTokenBuilder?
+        endorsement: GroupSendFullTokenBuilder?,
     ) {
         self.message = message
         self.senderCertificate = senderCertificate
@@ -45,12 +45,12 @@ final class SealedSenderParameters {
 // to multiple recipients and therefore require multiple instances of
 // OWSMessageSend.
 final class OWSMessageSend {
-    public let message: TSOutgoingMessage
-    public let plaintextContent: Data
-    public let plaintextPayloadId: Int64?
-    public let thread: TSThread
-    public let serviceId: ServiceId
-    public let localIdentifiers: LocalIdentifiers
+    let message: TSOutgoingMessage
+    let plaintextContent: Data
+    let plaintextPayloadId: Int64?
+    let thread: TSThread
+    let serviceId: ServiceId
+    let localIdentifiers: LocalIdentifiers
 
     init(
         message: TSOutgoingMessage,
@@ -58,7 +58,7 @@ final class OWSMessageSend {
         plaintextPayloadId: Int64?,
         thread: TSThread,
         serviceId: ServiceId,
-        localIdentifiers: LocalIdentifiers
+        localIdentifiers: LocalIdentifiers,
     ) {
         self.message = message
         self.plaintextContent = plaintextContent

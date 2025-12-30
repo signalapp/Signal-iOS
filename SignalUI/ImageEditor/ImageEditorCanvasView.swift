@@ -31,9 +31,11 @@ struct ImageEditorItemBackground {
     var horizontalMargin: CGFloat {
         6 * scaleFactor
     }
+
     var verticalMargin: CGFloat {
         2 * scaleFactor
     }
+
     var cornerRadius: CGFloat {
         corners.rawValue * scaleFactor
     }
@@ -68,9 +70,9 @@ class EditorTextLayer: CATextLayer {
         rootLayer.frame = frame.inset(
             by: UIEdgeInsets(
                 hMargin: background.horizontalMargin,
-                vMargin: background.verticalMargin
+                vMargin: background.verticalMargin,
             )
-            .inverted()
+            .inverted(),
         )
         rootLayer.backgroundColor = background.color
         rootLayer.cornerRadius = background.cornerRadius
@@ -129,6 +131,7 @@ private class TextFrameLayer: CAShapeLayer {
     private var frameRect: CGRect {
         bounds.insetBy(dx: TextFrameLayer.circleRadius, dy: 0)
     }
+
     private lazy var leftCircleLayer = TextFrameLayer.createCircleLayer()
     private lazy var rightCircleLayer = TextFrameLayer.createCircleLayer()
     private static func createCircleLayer() -> CAShapeLayer {
@@ -176,7 +179,7 @@ class ImageEditorCanvasView: UIView {
                     selectedTextFrameLayer?.isHidden = false
                 }
             }
-            if let hiddenItemId = hiddenItemId, let layer = contentLayerMap[hiddenItemId] {
+            if let hiddenItemId, let layer = contentLayerMap[hiddenItemId] {
                 layer.isHidden = true
                 // Hide text object's frame when hiding selected text object.
                 if hiddenItemId == selectedTransformableItemID {
@@ -217,7 +220,7 @@ class ImageEditorCanvasView: UIView {
     }
 
     @available(*, unavailable, message: "use other init() instead.")
-    required public init?(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
@@ -255,7 +258,7 @@ class ImageEditorCanvasView: UIView {
 
         clipView.clipsToBounds = true
         clipView.isOpaque = false
-        clipView.layoutCallback = { [weak self] (_) in
+        clipView.layoutCallback = { [weak self] _ in
             guard let strongSelf = self else {
                 return
             }
@@ -270,7 +273,7 @@ class ImageEditorCanvasView: UIView {
 
         contentView.isOpaque = false
         contentView.layer.addSublayer(imageLayer)
-        contentView.layoutCallback = { [weak self] (_) in
+        contentView.layoutCallback = { [weak self] _ in
             guard let strongSelf = self else {
                 return
             }
@@ -288,12 +291,16 @@ class ImageEditorCanvasView: UIView {
 
     private func updateLayout() {
         NSLayoutConstraint.deactivate(contentViewConstraints)
-        contentViewConstraints = ImageEditorCanvasView.updateContentLayout(transform: model.currentTransform(),
-                                                                           contentView: clipView)
+        contentViewConstraints = ImageEditorCanvasView.updateContentLayout(
+            transform: model.currentTransform(),
+            contentView: clipView,
+        )
     }
 
-    class func updateContentLayout(transform: ImageEditorTransform,
-                                   contentView: UIView) -> [NSLayoutConstraint] {
+    class func updateContentLayout(
+        transform: ImageEditorTransform,
+        contentView: UIView,
+    ) -> [NSLayoutConstraint] {
         guard let superview = contentView.superview else {
             owsFailDebug("Content view has no superview.")
             return []
@@ -364,28 +371,28 @@ class ImageEditorCanvasView: UIView {
         let text = NSAttributedString(
             string: OWSLocalizedString(
                 "MEDIA_EDITOR_TAP_FOR_MORE",
-                comment: "Tooltip to display above a clock sticker in the media editor saying to tap for more clock styles"
+                comment: "Tooltip to display above a clock sticker in the media editor saying to tap for more clock styles",
             ),
             attributes: [
                 .font: UIFont.dynamicTypeBody,
                 .foregroundColor: UIColor.ows_white,
-            ]
+            ],
         )
         label.attributedText = text
         label.frame = .init(
             origin: .init(
                 x: hMargin,
-                y: vMargin
+                y: vMargin,
             ),
             size: text.boundingRect(
                 with: .init(
                     width: self.width,
-                    height: .greatestFiniteMagnitude
+                    height: .greatestFiniteMagnitude,
                 ),
                 options: [.usesLineFragmentOrigin],
-                context: nil
+                context: nil,
             )
-            .size
+            .size,
         )
         let background = UIView()
         background.backgroundColor = .ows_blackAlpha40
@@ -395,14 +402,17 @@ class ImageEditorCanvasView: UIView {
         label.frame.origin = .init(x: 9, y: 5)
         return background
     }()
+
     private var tooltipTimer: Timer?
 
     // Negative insets because text object frame is larger than object itself.
     private static let textFrameInsets = UIEdgeInsets(hMargin: -16, vMargin: -4)
 
     private func updateSelectedTransformableItemFrame() {
-        guard let selectedItemID = selectedTransformableItemID,
-              let textLayer = contentLayerMap[selectedItemID] else {
+        guard
+            let selectedItemID = selectedTransformableItemID,
+            let textLayer = contentLayerMap[selectedItemID]
+        else {
             selectedTextFrameLayer?.removeFromSuperlayer()
             selectedTextFrameLayer = nil
             return
@@ -479,7 +489,7 @@ class ImageEditorCanvasView: UIView {
 
         tooltipView.layer.position = stickerLayer.position.offsetBy(
             dx: 0,
-            dy: -(selectedTextFrameLayer.bounds.height/2 + tooltipView.frame.height/2 + 8)
+            dy: -(selectedTextFrameLayer.bounds.height / 2 + tooltipView.frame.height / 2 + 8),
         )
     }
 
@@ -506,21 +516,25 @@ class ImageEditorCanvasView: UIView {
 
         let viewSize = clipView.bounds.size
         let transform = model.currentTransform()
-        if viewSize.width > 0,
-            viewSize.height > 0 {
+        if
+            viewSize.width > 0,
+            viewSize.height > 0
+        {
 
             applyTransform()
 
             updateImageLayer()
 
             for item in model.items() {
-                guard let layer = ImageEditorCanvasView.layerForItem(
-                    item: item,
-                    model: model,
-                    shouldFadeTransformableItemWithID: fadedItemID,
-                    transform: transform,
-                    viewSize: viewSize
-                ) else {
+                guard
+                    let layer = ImageEditorCanvasView.layerForItem(
+                        item: item,
+                        model: model,
+                        shouldFadeTransformableItemWithID: fadedItemID,
+                        transform: transform,
+                        viewSize: viewSize,
+                    )
+                else {
                     continue
                 }
 
@@ -559,8 +573,10 @@ class ImageEditorCanvasView: UIView {
 
         let viewSize = clipView.bounds.size
         let transform = model.currentTransform()
-        if viewSize.width > 0,
-            viewSize.height > 0 {
+        if
+            viewSize.width > 0,
+            viewSize.height > 0
+        {
 
             applyTransform()
 
@@ -574,13 +590,15 @@ class ImageEditorCanvasView: UIView {
                 }
 
                 // Item was inserted or updated.
-                guard let layer = ImageEditorCanvasView.layerForItem(
-                    item: item,
-                    model: model,
-                    shouldFadeTransformableItemWithID: fadedItemID,
-                    transform: transform,
-                    viewSize: viewSize
-                ) else {
+                guard
+                    let layer = ImageEditorCanvasView.layerForItem(
+                        item: item,
+                        model: model,
+                        shouldFadeTransformableItemWithID: fadedItemID,
+                        transform: transform,
+                        viewSize: viewSize,
+                    )
+                else {
                     continue
                 }
 
@@ -604,10 +622,12 @@ class ImageEditorCanvasView: UIView {
 
     private func updateImageLayer() {
         let viewSize = clipView.bounds.size
-        ImageEditorCanvasView.updateImageLayer(imageLayer: imageLayer,
-                                               viewSize: viewSize,
-                                               imageSize: model.srcImageSizePixels,
-                                               transform: model.currentTransform())
+        ImageEditorCanvasView.updateImageLayer(
+            imageLayer: imageLayer,
+            viewSize: viewSize,
+            imageSize: model.srcImageSizePixels,
+            transform: model.currentTransform(),
+        )
     }
 
     class func updateImageLayer(imageLayer: CALayer, viewSize: CGSize, imageSize: CGSize, transform: ImageEditorTransform) {
@@ -644,8 +664,10 @@ class ImageEditorCanvasView: UIView {
         //       reflect the rotation.
         let sinValue = abs(sin(transform.rotationRadians))
         let cosValue = abs(cos(transform.rotationRadians))
-        let outputSize = CGSize(width: viewSize.width * cosValue + viewSize.height * sinValue,
-                                height: viewSize.width * sinValue + viewSize.height * cosValue)
+        let outputSize = CGSize(
+            width: viewSize.width * cosValue + viewSize.height * sinValue,
+            height: viewSize.width * sinValue + viewSize.height * cosValue,
+        )
 
         var width = outputSize.width
         var height = outputSize.width * imageSize.height / imageSize.width
@@ -653,17 +675,21 @@ class ImageEditorCanvasView: UIView {
             width = outputSize.height * imageSize.width / imageSize.height
             height = outputSize.height
         }
-        let imageFrame = CGRect(x: (width - viewSize.width) * -0.5,
-                                y: (height - viewSize.height) * -0.5,
-                                width: width,
-                                height: height)
+        let imageFrame = CGRect(
+            x: (width - viewSize.width) * -0.5,
+            y: (height - viewSize.height) * -0.5,
+            width: width,
+            height: height,
+        )
 
         return imageFrame
     }
 
-    private class func imageLayerForItem(model: ImageEditorModel,
-                                         transform: ImageEditorTransform,
-                                         viewSize: CGSize) -> CALayer? {
+    private class func imageLayerForItem(
+        model: ImageEditorModel,
+        transform: ImageEditorTransform,
+        viewSize: CGSize,
+    ) -> CALayer? {
         guard let srcImage = loadSrcImage(model: model) else {
             owsFailDebug("Could not load src image.")
             return nil
@@ -671,10 +697,12 @@ class ImageEditorCanvasView: UIView {
         let imageLayer = CALayer()
         imageLayer.contents = srcImage.cgImage
         imageLayer.contentsScale = srcImage.scale
-        updateImageLayer(imageLayer: imageLayer,
-                         viewSize: viewSize,
-                         imageSize: model.srcImageSizePixels,
-                         transform: transform)
+        updateImageLayer(
+            imageLayer: imageLayer,
+            viewSize: viewSize,
+            imageSize: model.srcImageSizePixels,
+            transform: transform,
+        )
         return imageLayer
     }
 
@@ -683,7 +711,7 @@ class ImageEditorCanvasView: UIView {
         model: ImageEditorModel,
         shouldFadeTransformableItemWithID fadedItemID: String?,
         transform: ImageEditorTransform,
-        viewSize: CGSize
+        viewSize: CGSize,
     ) -> CALayer? {
         AssertIsOnMainThread()
 
@@ -696,10 +724,12 @@ class ImageEditorCanvasView: UIView {
                 owsFailDebug("Item has unexpected type: \(type(of: item)).")
                 return nil
             }
-            return strokeLayerForItem(item: strokeItem,
-                                      model: model,
-                                      transform: transform,
-                                      viewSize: viewSize)
+            return strokeLayerForItem(
+                item: strokeItem,
+                model: model,
+                transform: transform,
+                viewSize: viewSize,
+            )
         case .text:
             guard let textItem = item as? ImageEditorTextItem else {
                 owsFailDebug("Item has unexpected type: \(type(of: item)).")
@@ -711,7 +741,7 @@ class ImageEditorCanvasView: UIView {
                 model: model,
                 isFaded: isFaded,
                 transform: transform,
-                viewSize: viewSize
+                viewSize: viewSize,
             )
         case .sticker:
             guard let stickerItem = item as? ImageEditorStickerItem else {
@@ -724,24 +754,28 @@ class ImageEditorCanvasView: UIView {
                 model: model,
                 isFaded: isFaded,
                 transform: transform,
-                viewSize: viewSize
+                viewSize: viewSize,
             )
         case .blurRegions:
             guard let blurRegionsItem = item as? ImageEditorBlurRegionsItem else {
                 owsFailDebug("Item has unexpected type: \(type(of: item)).")
                 return nil
             }
-            return blurRegionsLayerForItem(item: blurRegionsItem,
-                                           model: model,
-                                           transform: transform,
-                                           viewSize: viewSize)
+            return blurRegionsLayerForItem(
+                item: blurRegionsItem,
+                model: model,
+                transform: transform,
+                viewSize: viewSize,
+            )
         }
     }
 
-    private class func strokeLayerForItem(item: ImageEditorStrokeItem,
-                                          model: ImageEditorModel,
-                                          transform: ImageEditorTransform,
-                                          viewSize: CGSize) -> CALayer? {
+    private class func strokeLayerForItem(
+        item: ImageEditorStrokeItem,
+        model: ImageEditorModel,
+        transform: ImageEditorTransform,
+        viewSize: CGSize,
+    ) -> CALayer? {
         AssertIsOnMainThread()
 
         let optionalBlurredImageLayer: CALayer?
@@ -781,7 +815,7 @@ class ImageEditorCanvasView: UIView {
         // Use bezier curves to smooth stroke.
         let bezierPath = UIBezierPath()
 
-        let points = applySmoothing(to: unitSamples.map { (unitSample) in
+        let points = applySmoothing(to: unitSamples.map { unitSample in
             transformSampleToPoint(unitSample)
         })
         var previousForwardVector = CGPoint.zero
@@ -866,10 +900,12 @@ class ImageEditorCanvasView: UIView {
         }
     }
 
-    private class func blurRegionsLayerForItem(item: ImageEditorBlurRegionsItem,
-                                               model: ImageEditorModel,
-                                               transform: ImageEditorTransform,
-                                               viewSize: CGSize) -> CALayer? {
+    private class func blurRegionsLayerForItem(
+        item: ImageEditorBlurRegionsItem,
+        model: ImageEditorModel,
+        transform: ImageEditorTransform,
+        viewSize: CGSize,
+    ) -> CALayer? {
         AssertIsOnMainThread()
 
         guard !item.unitBoundingBoxes.isEmpty else { return nil }
@@ -914,9 +950,11 @@ class ImageEditorCanvasView: UIView {
         return blurredImageLayer
     }
 
-    private class func zPositionForItem(item: ImageEditorItem,
-                                        model: ImageEditorModel,
-                                        zPositionBase: CGFloat) -> CGFloat {
+    private class func zPositionForItem(
+        item: ImageEditorItem,
+        model: ImageEditorModel,
+        zPositionBase: CGFloat,
+    ) -> CGFloat {
         let itemIds = model.itemIds()
         guard let itemIndex = itemIds.firstIndex(of: item.itemId) else {
             owsFailDebug("Couldn't find index of item.")
@@ -930,7 +968,7 @@ class ImageEditorCanvasView: UIView {
         model: ImageEditorModel,
         isFaded: Bool,
         transform: ImageEditorTransform,
-        viewSize: CGSize
+        viewSize: CGSize,
     ) -> CALayer? {
         AssertIsOnMainThread()
 
@@ -946,19 +984,28 @@ class ImageEditorCanvasView: UIView {
         let text = item.text.filterForDisplay
         let textStorage = NSTextStorage(
             string: text,
-            attributes: [ .font: font, .foregroundColor: item.textForegroundColor ]
+            attributes: [.font: font, .foregroundColor: item.textForegroundColor],
         )
 
         if let textDecorationColor = item.textDecorationColor {
             switch item.decorationStyle {
             case .underline:
-                textStorage.addAttributes([ .underlineStyle: NSUnderlineStyle.single.rawValue,
-                                            .underlineColor: textDecorationColor],
-                                          range: textStorage.entireRange)
+                textStorage.addAttributes(
+                    [
+                        .underlineStyle: NSUnderlineStyle.single.rawValue,
+                        .underlineColor: textDecorationColor,
+                    ],
+                    range: textStorage.entireRange,
+                )
+
             case .outline:
-                textStorage.addAttributes([ .strokeWidth: -3,
-                                            .strokeColor: textDecorationColor ],
-                                          range: textStorage.entireRange)
+                textStorage.addAttributes(
+                    [
+                        .strokeWidth: -3,
+                        .strokeColor: textDecorationColor,
+                    ],
+                    range: textStorage.entireRange,
+                )
 
             default:
                 break
@@ -978,7 +1025,7 @@ class ImageEditorCanvasView: UIView {
             model: model,
             isFaded: isFaded,
             transform: transform,
-            viewSize: viewSize
+            viewSize: viewSize,
         )
     }
 
@@ -991,7 +1038,7 @@ class ImageEditorCanvasView: UIView {
         model: ImageEditorModel,
         isFaded: Bool,
         transform: ImageEditorTransform,
-        viewSize: CGSize
+        viewSize: CGSize,
     ) -> CALayer? {
         let textLayer = EditorTextLayer(itemId: item.itemId)
         textLayer.string = attributedString
@@ -1011,10 +1058,10 @@ class ImageEditorCanvasView: UIView {
         let textSize = attributedString.boundingRect(
             with: CGSize(
                 width: maxWidth,
-                height: .greatestFiniteMagnitude
+                height: .greatestFiniteMagnitude,
             ),
-            options: [ .usesLineFragmentOrigin ],
-            context: nil
+            options: [.usesLineFragmentOrigin],
+            context: nil,
         ).size.ceil
 
         // The text item's center is specified in "image unit" coordinates, but
@@ -1022,9 +1069,13 @@ class ImageEditorCanvasView: UIView {
         // is the bounds of the image specified in "canvas" coordinates,
         // so to transform we can simply convert from image frame units.
         let centerInCanvas = item.unitCenter.fromUnitCoordinates(viewBounds: imageFrame)
-        textLayer.frame = CGRect(origin: CGPoint(x: centerInCanvas.x - textSize.width * 0.5,
-                                                 y: centerInCanvas.y - textSize.height * 0.5),
-                                 size: textSize)
+        textLayer.frame = CGRect(
+            origin: CGPoint(
+                x: centerInCanvas.x - textSize.width * 0.5,
+                y: centerInCanvas.y - textSize.height * 0.5,
+            ),
+            size: textSize,
+        )
 
         // Enlarge the layer slightly when setting the background color to add some horizontal padding around the text.
         let layer: EditorTextLayer
@@ -1048,14 +1099,14 @@ class ImageEditorCanvasView: UIView {
         model: ImageEditorModel,
         isFaded: Bool,
         transform: ImageEditorTransform,
-        viewSize: CGSize
+        viewSize: CGSize,
     ) -> CALayer? {
         AssertIsOnMainThread()
 
         let imageFrame = ImageEditorCanvasView.imageFrame(
             forViewSize: viewSize,
             imageSize: model.srcImageSizePixels,
-            transform: transform
+            transform: transform,
         )
 
         let image: UIImage
@@ -1084,7 +1135,7 @@ class ImageEditorCanvasView: UIView {
                 model: model,
                 isFaded: isFaded,
                 transform: transform,
-                viewSize: viewSize
+                viewSize: viewSize,
             )
         }
 
@@ -1098,7 +1149,7 @@ class ImageEditorCanvasView: UIView {
             model: model,
             isFaded: isFaded,
             transform: transform,
-            viewSize: viewSize
+            viewSize: viewSize,
         )
     }
 
@@ -1109,7 +1160,7 @@ class ImageEditorCanvasView: UIView {
         model: ImageEditorModel,
         isFaded: Bool,
         transform: ImageEditorTransform,
-        viewSize: CGSize
+        viewSize: CGSize,
     ) -> CALayer {
         imageLayer.contentsScale = UIScreen.main.scale * item.scaling * transform.scaling
         let stickerSize = CGSize(square: 175 * imageFrame.size.width / item.referenceImageWidth)
@@ -1119,9 +1170,9 @@ class ImageEditorCanvasView: UIView {
         imageLayer.frame = CGRect(
             origin: CGPoint(
                 x: centerInCanvas.x - stickerSize.width * 0.5,
-                y: centerInCanvas.y - stickerSize.height * 0.5
+                y: centerInCanvas.y - stickerSize.height * 0.5,
             ),
-            size: stickerSize
+            size: stickerSize,
         )
 
         let transform = CGAffineTransform.scale(item.scaling).rotated(by: item.rotationRadians)
@@ -1141,7 +1192,7 @@ class ImageEditorCanvasView: UIView {
         model: ImageEditorModel,
         isFaded: Bool,
         transform: ImageEditorTransform,
-        viewSize: CGSize
+        viewSize: CGSize,
     ) -> CALayer? {
         switch storySticker {
         case .clockDigital(let digitalClockStyle):
@@ -1149,7 +1200,7 @@ class ImageEditorCanvasView: UIView {
 
             let attributedString = digitalClockStyle.attributedString(
                 date: item.date,
-                scaleFactor: scaleFactor
+                scaleFactor: scaleFactor,
             )
 
             let background = digitalClockStyle.backgroundColor.map { color in
@@ -1164,7 +1215,7 @@ class ImageEditorCanvasView: UIView {
                 model: model,
                 isFaded: isFaded,
                 transform: transform,
-                viewSize: viewSize
+                viewSize: viewSize,
             )
         case .clockAnalog(let clockStyle):
             let clockLayer = clockStyle.drawClock(date: item.date)
@@ -1176,7 +1227,7 @@ class ImageEditorCanvasView: UIView {
                 model: model,
                 isFaded: isFaded,
                 transform: transform,
-                viewSize: viewSize
+                viewSize: viewSize,
             )
         }
     }
@@ -1203,9 +1254,13 @@ class ImageEditorCanvasView: UIView {
                 let lastPoint = points[index - 1]
                 let nextPoint = points[index + 1]
                 let alpha: CGFloat = 0.1
-                let smoothedPoint = CGPoint.add(CGPoint.scale(point, factor: 1.0 - 2.0 * alpha),
-                                                CGPoint.add(CGPoint.scale(lastPoint, factor: alpha),
-                                                            CGPoint.scale(nextPoint, factor: alpha)))
+                let smoothedPoint = CGPoint.add(
+                    CGPoint.scale(point, factor: 1.0 - 2.0 * alpha),
+                    CGPoint.add(
+                        CGPoint.scale(lastPoint, factor: alpha),
+                        CGPoint.scale(nextPoint, factor: alpha),
+                    ),
+                )
                 result.append(smoothedPoint)
             }
         }
@@ -1227,7 +1282,7 @@ class ImageEditorCanvasView: UIView {
                     radius: 25,
                     resizeToMaxPixelDimension: 300,
                 )
-                guard let self = self else { return }
+                guard let self else { return }
                 self.model.blurredSourceImage = blurredImage
 
                 // Once the blur is ready, update any content in case the user already blurred
@@ -1240,9 +1295,11 @@ class ImageEditorCanvasView: UIView {
         }
     }
 
-    private class func blurredImageLayerForItem(model: ImageEditorModel,
-                                                transform: ImageEditorTransform,
-                                                viewSize: CGSize) -> CALayer? {
+    private class func blurredImageLayerForItem(
+        model: ImageEditorModel,
+        transform: ImageEditorTransform,
+        viewSize: CGSize,
+    ) -> CALayer? {
         guard let blurredSourceImage = model.blurredSourceImage else {
             // If we fail to generate the blur image, or it's not ready yet, use a black mask
             let layer = CALayer()
@@ -1254,10 +1311,12 @@ class ImageEditorCanvasView: UIView {
         // The image layer renders the blurred image in canvas coordinates
         let blurredImageLayer = CALayer()
         blurredImageLayer.contents = blurredSourceImage
-        updateImageLayer(imageLayer: blurredImageLayer,
-                         viewSize: viewSize,
-                         imageSize: model.srcImageSizePixels,
-                         transform: transform)
+        updateImageLayer(
+            imageLayer: blurredImageLayer,
+            viewSize: viewSize,
+            imageSize: model.srcImageSizePixels,
+            transform: transform,
+        )
 
         // The container holds the blurred image, and can be masked using canvas
         // coordinates to partially blur the image.
@@ -1305,24 +1364,30 @@ class ImageEditorCanvasView: UIView {
 
         contentView.layer.setAffineTransform(transform.affineTransform(viewSize: viewSize))
 
-        guard let imageLayer = imageLayerForItem(model: model,
-                                                 transform: transform,
-                                                 viewSize: viewSize) else {
-                                                    owsFailDebug("Could not load src image.")
-                                                    return nil
+        guard
+            let imageLayer = imageLayerForItem(
+                model: model,
+                transform: transform,
+                viewSize: viewSize,
+            )
+        else {
+            owsFailDebug("Could not load src image.")
+            return nil
         }
         imageLayer.contentsScale = dstScale * transform.scaling
         contentView.layer.addSublayer(imageLayer)
 
         var layers = [CALayer]()
         for item in model.items() {
-            guard let layer = layerForItem(
-                item: item,
-                model: model,
-                shouldFadeTransformableItemWithID: nil,
-                transform: transform,
-                viewSize: viewSize
-            ) else {
+            guard
+                let layer = layerForItem(
+                    item: item,
+                    model: model,
+                    shouldFadeTransformableItemWithID: nil,
+                    transform: transform,
+                    viewSize: viewSize,
+                )
+            else {
                 owsFailDebug("Couldn't create layer for item.")
                 continue
             }
@@ -1332,7 +1397,7 @@ class ImageEditorCanvasView: UIView {
         // UIView.renderAsImage() doesn't honor zPosition of layers,
         // so sort the item layers to ensure they are added in the
         // correct order.
-        let sortedLayers = layers.sorted(by: { (left, right) -> Bool in
+        let sortedLayers = layers.sorted(by: { left, right -> Bool in
             return left.zPosition < right.zPosition
         })
         for layer in sortedLayers {
@@ -1354,10 +1419,12 @@ class ImageEditorCanvasView: UIView {
 
         // Allow to interact with selected text layer when user taps within
         // selection frame (which is larger than text itself).
-        if let selectedTextFrameLayer = selectedTextFrameLayer,
-           let selectedTextItemId = selectedTransformableItemID,
-           let selectedTextLayer = contentLayerMap[selectedTextItemId] as? EditorTextLayer,
-           selectedTextFrameLayer.hitTest(point) != nil {
+        if
+            let selectedTextFrameLayer,
+            let selectedTextItemId = selectedTransformableItemID,
+            let selectedTextLayer = contentLayerMap[selectedTextItemId] as? EditorTextLayer,
+            selectedTextFrameLayer.hitTest(point) != nil
+        {
             return selectedTextLayer
         }
 
@@ -1380,10 +1447,12 @@ class ImageEditorCanvasView: UIView {
 
     // MARK: - Coordinates
 
-    class func locationImageUnit(forLocationInView locationInView: CGPoint,
-                                 viewBounds: CGRect,
-                                 model: ImageEditorModel,
-                                 transform: ImageEditorTransform) -> CGPoint {
+    class func locationImageUnit(
+        forLocationInView locationInView: CGPoint,
+        viewBounds: CGRect,
+        model: ImageEditorModel,
+        transform: ImageEditorTransform,
+    ) -> CGPoint {
         let imageFrame = self.imageFrame(forViewSize: viewBounds.size, imageSize: model.srcImageSizePixels, transform: transform)
         let affineTransformStart = transform.affineTransform(viewSize: viewBounds.size)
         let locationInContent = locationInView.minus(viewBounds.center).applyingInverse(affineTransformStart).plus(viewBounds.center)

@@ -35,7 +35,7 @@ class ContactReminderTableViewCell: UITableViewCell {
         label.textColor = textColor
         label.text = OWSLocalizedString(
             "LINKED_DEVICE_MANAGE_CONTACTS_BANNER",
-            comment: "Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats."
+            comment: "Shown in a banner when you tap the 'New Chat' icon at the top of the list of chats.",
         )
         return label
     }()
@@ -45,8 +45,9 @@ class ContactReminderTableViewCell: UITableViewCell {
         button.setTitle(
             OWSLocalizedString(
                 "LINKED_DEVICE_MANAGE_CONTACTS_LEARN_MORE",
-                comment: "A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details."),
-            for: .normal
+                comment: "A button shown in a banner when you tap the 'New Chat' icon at the top of the list of chats. Tapping it opens a website with more details.",
+            ),
+            for: .normal,
         )
         button.setTitleColor(textColor, for: .normal)
         button.titleLabel!.font = .dynamicTypeSubheadline.semibold()

@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalUI
 import SignalServiceKit
+import SignalUI
 import SwiftUI
 
 class QRCodeView: UIView {
@@ -18,7 +18,7 @@ class QRCodeView: UIView {
         qrCodeTintColor: QRCodeColor = .blue,
         contentInset: CGFloat = 20,
         cornerRadius: CGFloat = 12,
-        borderWidth: CGFloat = 2
+        borderWidth: CGFloat = 2,
     ) {
         self.qrCodeTintColor = qrCodeTintColor
 
@@ -104,11 +104,11 @@ class QRCodeView: UIView {
 
     func setQRCode(
         url: URL,
-        stylingMode: QRCodeGenerator.StylingMode = .brandedWithLogo
+        stylingMode: QRCodeGenerator.StylingMode = .brandedWithLogo,
     ) {
         let qrCodeImage = QRCodeGenerator().generateQRCode(
             url: url,
-            stylingMode: stylingMode
+            stylingMode: stylingMode,
         )
 
         if let qrCodeImage {
@@ -145,7 +145,7 @@ struct QRCodeViewRepresentable: UIViewRepresentable {
         qrCodeTintColor: QRCodeColor = .blue,
         contentInset: CGFloat = 20,
         cornerRadius: CGFloat = 12,
-        borderWidth: CGFloat = 2
+        borderWidth: CGFloat = 2,
     ) {
         self.model = model
         self.qrCodeStylingMode = qrCodeStylingMode
@@ -164,7 +164,7 @@ struct QRCodeViewRepresentable: UIViewRepresentable {
             qrCodeTintColor: qrCodeTintColor,
             contentInset: contentInset,
             cornerRadius: cornerRadius,
-            borderWidth: borderWidth
+            borderWidth: borderWidth,
         )
 
         updateUIView(qrCodeView, context: context)
@@ -175,7 +175,7 @@ struct QRCodeViewRepresentable: UIViewRepresentable {
         if let url = model.qrCodeURL {
             qrCodeView.setQRCode(
                 url: url,
-                stylingMode: qrCodeStylingMode
+                stylingMode: qrCodeStylingMode,
             )
         } else {
             qrCodeView.setLoading()
@@ -234,7 +234,7 @@ struct RotatingQRCodeView: View {
 
                             Text(OWSLocalizedString(
                                 "SECONDARY_ONBOARDING_SCAN_CODE_REFRESH_CODE_BUTTON",
-                                comment: "Text for a button offering to refresh the QR code to link an iPad."
+                                comment: "Text for a button offering to refresh the QR code to link an iPad.",
                             ))
                             .font(.body)
                             .fontWeight(.bold)
@@ -259,7 +259,7 @@ struct RotatingQRCodeView: View {
     VStack {
         RotatingQRCodeView(model: .init(
             urlDisplayMode: .loaded(URL(string: "https://signal.org")!),
-            onRefreshButtonPressed: {}
+            onRefreshButtonPressed: {},
         ))
 
         RotatingQRCodeView(model: .init(urlDisplayMode: .loading, onRefreshButtonPressed: {}))

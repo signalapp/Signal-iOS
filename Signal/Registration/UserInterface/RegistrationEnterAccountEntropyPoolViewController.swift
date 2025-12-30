@@ -26,7 +26,7 @@ class RegistrationEnterAccountEntropyPoolViewController: EnterAccountEntropyPool
     init(
         state: RegistrationEnterAccountEntropyPoolState,
         presenter: RegistrationEnterAccountEntropyPoolPresenter,
-        aepValidationPolicy: AEPValidationPolicy = .acceptAnyWellFormed
+        aepValidationPolicy: AEPValidationPolicy = .acceptAnyWellFormed,
     ) {
         self.state = state
         self.presenter = presenter
@@ -38,7 +38,7 @@ class RegistrationEnterAccountEntropyPoolViewController: EnterAccountEntropyPool
             footerButtonConfig = FooterButtonConfig(
                 title: OWSLocalizedString(
                     "REGISTRATION_NO_BACKUP_KEY_BUTTON_TITLE",
-                    comment: "Title of button to tap if you do not have a recovery key during registration."
+                    comment: "Title of button to tap if you do not have a recovery key during registration.",
                 ),
                 action: { [weak self] in
                     self?.didTapNoKeyButton()
@@ -46,14 +46,14 @@ class RegistrationEnterAccountEntropyPoolViewController: EnterAccountEntropyPool
             )
         }
 
-        switch(aepValidationPolicy) {
+        switch aepValidationPolicy {
         case .acceptAnyWellFormed:
             break
-        case .acceptOnly(_):
+        case .acceptOnly:
             footerButtonConfig = FooterButtonConfig(
                 title: OWSLocalizedString(
                     "BACKUP_KEY_REMINDER_FORGOT_KEY",
-                    comment: "Title of button to tap if you forgot your recovery key."
+                    comment: "Title of button to tap if you forgot your recovery key.",
                 ),
                 action: {
                     presenter.forgotKeyAction()
@@ -70,12 +70,12 @@ class RegistrationEnterAccountEntropyPoolViewController: EnterAccountEntropyPool
             headerStrings: HeaderStrings(
                 title: OWSLocalizedString(
                     "REGISTRATION_ENTER_BACKUP_KEY_TITLE",
-                    comment: "Title for the screen that allows users to enter their recovery key."
+                    comment: "Title for the screen that allows users to enter their recovery key.",
                 ),
                 subtitle: OWSLocalizedString(
                     "REGISTRATION_ENTER_BACKUP_KEY_DESCRIPTION",
-                    comment: "Description for the screen that allows users to enter their recovery key."
-                )
+                    comment: "Description for the screen that allows users to enter their recovery key.",
+                ),
             ),
             footerButtonConfig: footerButtonConfig,
             onEntryConfirmed: { [weak self] aep in
@@ -94,9 +94,9 @@ class RegistrationEnterAccountEntropyPoolViewController: EnterAccountEntropyPool
 
     // MARK: OWSNavigationChildController
 
-    public var preferredNavigationBarStyle: OWSNavigationBarStyle { .solid }
+    var preferredNavigationBarStyle: OWSNavigationBarStyle { .solid }
 
-    public var navbarBackgroundColorOverride: UIColor? { .clear }
+    var navbarBackgroundColorOverride: UIColor? { .clear }
 
     // MARK: UI
 
@@ -106,19 +106,19 @@ class RegistrationEnterAccountEntropyPoolViewController: EnterAccountEntropyPool
                 icon: UIImage(named: "key")!,
                 iconSize: 35,
                 tintColor: UIColor.Signal.label,
-                backgroundColor: UIColor.Signal.background
+                backgroundColor: UIColor.Signal.background,
             ),
             title: OWSLocalizedString(
                 "REGISTRATION_NO_BACKUP_KEY_SHEET_TITLE",
-                comment: "Title for sheet with info for what to do if you don't have a recovery key"
+                comment: "Title for sheet with info for what to do if you don't have a recovery key",
             ),
             body: OWSLocalizedString(
                 "REGISTRATION_NO_BACKUP_KEY_SHEET_BODY",
-                comment: "Body text on a sheet with info for what to do if you don't have a recovery key"
+                comment: "Body text on a sheet with info for what to do if you don't have a recovery key",
             ),
             primaryButton: .init(title: OWSLocalizedString(
                 "REGISTRATION_NO_BACKUP_KEY_SKIP_RESTORE_BUTTON_TITLE",
-                comment: "Title for button on sheet for when you don't have a recovery key"
+                comment: "Title for button on sheet for when you don't have a recovery key",
             )) { [weak self] _ in
                 self?.dismiss(animated: true) {
                     self?.presenter?.forgotKeyAction()
@@ -130,7 +130,7 @@ class RegistrationEnterAccountEntropyPoolViewController: EnterAccountEntropyPool
                 self.dismiss(animated: true) {
                     self.present(vc, animated: true, completion: nil)
                 }
-            }))
+            })),
         )
         self.present(sheet, animated: true)
     }
@@ -163,8 +163,8 @@ private class PreviewRegistrationEnterAccountEntropyPoolPresenter: RegistrationE
                 canShowBackButton: true,
                 canShowNoKeyHelpButton: true,
             ),
-            presenter: presenter
-        )
+            presenter: presenter,
+        ),
     )
 }
 
@@ -177,8 +177,8 @@ private class PreviewRegistrationEnterAccountEntropyPoolPresenter: RegistrationE
                 canShowBackButton: true,
                 canShowNoKeyHelpButton: false,
             ),
-            presenter: presenter
-        )
+            presenter: presenter,
+        ),
     )
 }
 

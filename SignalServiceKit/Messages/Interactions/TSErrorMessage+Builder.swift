@@ -12,7 +12,7 @@ public class TSErrorMessageBuilder: TSMessageBuilder {
 
     init(
         thread: TSThread,
-        errorType: TSErrorMessageType
+        errorType: TSErrorMessageType,
     ) {
         self.errorType = errorType
 
@@ -37,7 +37,7 @@ public class TSErrorMessageBuilder: TSMessageBuilder {
             linkPreview: nil,
             messageSticker: nil,
             giftBadge: nil,
-            isPoll: false
+            isPoll: false,
         )
     }
 

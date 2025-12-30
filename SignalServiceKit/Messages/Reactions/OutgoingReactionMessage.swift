@@ -45,9 +45,9 @@ extension OWSOutgoingReactionMessage {
         }
     }
 
-    public override func updateWithAllSendingRecipientsMarkedAsFailed(
+    override public func updateWithAllSendingRecipientsMarkedAsFailed(
         error: (any Error)? = nil,
-        transaction tx: DBWriteTransaction
+        transaction tx: DBWriteTransaction,
     ) {
         super.updateWithAllSendingRecipientsMarkedAsFailed(error: error, transaction: tx)
 
@@ -86,7 +86,7 @@ extension OWSOutgoingReactionMessage {
                 emoji: previousReaction.emoji,
                 sentAtTimestamp: previousReaction.sentAtTimestamp,
                 sortOrder: previousReaction.sortOrder,
-                tx: tx
+                tx: tx,
             )
         } else {
             message.removeReaction(for: localAci, tx: tx)

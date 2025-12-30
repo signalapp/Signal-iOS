@@ -49,7 +49,7 @@ enum OWSMultipartBody {
             try writeBodyPart(inputFile: inputFile, name: name, fileName: fileName, mimeType: mimeType, boundary: boundary, initialBoundary: isFirstPart, finalBoundary: true, outputStream: outputStream)
         }
 
-        guard outputStream.streamStatus == .closed && !outputStreamDelegate.hadError else {
+        guard outputStream.streamStatus == .closed, !outputStreamDelegate.hadError else {
             throw URLError(.badURL)
         }
     }
@@ -95,7 +95,7 @@ enum OWSMultipartBody {
             try write(inputStream, outputStream: outputStream)
         }
 
-        guard inputStream.streamStatus == .closed && !inputStreamDelegate.hadError else {
+        guard inputStream.streamStatus == .closed, !inputStreamDelegate.hadError else {
             throw URLError(.badURL)
         }
     }
@@ -130,7 +130,7 @@ enum OWSMultipartBody {
         try write(Data(startingBoundary.utf8), outputStream: outputStream)
 
         let headersString = stringForHeaders([
-            "Content-Disposition": "form-data; name=\"\(textPart.key)\""
+            "Content-Disposition": "form-data; name=\"\(textPart.key)\"",
         ])
         try write(Data(headersString.utf8), outputStream: outputStream)
 

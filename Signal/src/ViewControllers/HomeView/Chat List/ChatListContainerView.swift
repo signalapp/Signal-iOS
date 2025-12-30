@@ -25,6 +25,7 @@ final class ChatListContainerView: UIView {
             tableViewHorizontalEdgeConstraints.forEach { $0.constant = tableViewHorizontalInset }
         }
     }
+
     private var tableViewHorizontalEdgeConstraints: [NSLayoutConstraint] = []
 
     var filterControl: ChatListFilterControl? {

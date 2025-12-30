@@ -23,7 +23,7 @@ public protocol GroupCallRecordRingUpdateDelegate: AnyObject {
         ringId: Int64,
         ringUpdate: RingUpdate,
         ringUpdateSender: Aci,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     )
 }
 
@@ -40,7 +40,7 @@ public final class GroupCallRecordRingUpdateHandler: GroupCallRecordRingUpdateDe
         callRecordStore: CallRecordStore,
         groupCallRecordManager: GroupCallRecordManager,
         interactionStore: InteractionStore,
-        threadStore: ThreadStore
+        threadStore: ThreadStore,
     ) {
         self.callRecordStore = callRecordStore
         self.groupCallRecordManager = groupCallRecordManager
@@ -53,7 +53,7 @@ public final class GroupCallRecordRingUpdateHandler: GroupCallRecordRingUpdateDe
         ringId: Int64,
         ringUpdate: RingUpdate,
         ringUpdateSender: Aci,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         let ringUpdateLogger = logger.suffixed(with: "\(ringUpdate)")
 
@@ -82,7 +82,7 @@ public final class GroupCallRecordRingUpdateHandler: GroupCallRecordRingUpdateDe
         switch callRecordStore.fetch(
             callId: callId,
             conversationId: .thread(threadRowId: groupThreadRowId),
-            tx: tx
+            tx: tx,
         ) {
         case .matchDeleted:
             ringUpdateLogger.warn("Ignoring ring update: existing record was deleted!")
@@ -175,7 +175,7 @@ public final class GroupCallRecordRingUpdateHandler: GroupCallRecordRingUpdateDe
                 newGroupCallRingerAci: ringerAci,
                 callEventTimestamp: callEventTimestamp,
                 shouldSendSyncMessage: false,
-                tx: tx
+                tx: tx,
             )
         case .matchNotFound:
             let groupCallStatus: CallRecord.CallStatus.GroupCallStatus = {
@@ -199,7 +199,7 @@ public final class GroupCallRecordRingUpdateHandler: GroupCallRecordRingUpdateDe
             let (newGroupCallInteraction, interactionRowId) = interactionStore.insertGroupCallInteraction(
                 groupThread: groupThread,
                 callEventTimestamp: callEventTimestamp,
-                tx: tx
+                tx: tx,
             )
 
             ringUpdateLogger.info("Creating group call record for ring update.")
@@ -214,7 +214,7 @@ public final class GroupCallRecordRingUpdateHandler: GroupCallRecordRingUpdateDe
                     groupCallRingerAci: ringerAci,
                     callEventTimestamp: callEventTimestamp,
                     shouldSendSyncMessage: false,
-                    tx: tx
+                    tx: tx,
                 )
             } catch let error {
                 owsFailBeta("Failed to insert call record: \(error)")

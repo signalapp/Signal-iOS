@@ -3,11 +3,11 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SwiftUI
-import SignalUI
-import SignalRingRTC
 import LibSignalClient
+import SignalRingRTC
 import SignalServiceKit
+import SignalUI
+import SwiftUI
 
 private typealias ApprovalRequest = CallLinkApprovalRequest
 
@@ -19,7 +19,7 @@ private struct ApprovalRequestView: View {
         case many(
             topRequest: ApprovalRequest,
             amountMore: Int,
-            didTapMore: () -> Void
+            didTapMore: () -> Void,
         )
     }
 
@@ -47,7 +47,7 @@ private struct ApprovalRequestView: View {
                         dataSource: .address(self.request.address),
                         sizeClass: .fortyEight,
                         localUserDisplayMode: .asLocalUser,
-                        badged: true
+                        badged: true,
                     )
                 }
 
@@ -57,9 +57,9 @@ private struct ApprovalRequestView: View {
                             Text("\(self.request.name)")
                                 .lineLimit(1)
                             Text("\(Image(systemName: "chevron.forward"))")
-                            // Per design, we want a new chevron that fades
-                            // in/out with the new name instead of the same one
-                            // sliding around as the name length changes.
+                                // Per design, we want a new chevron that fades
+                                // in/out with the new name instead of the same one
+                                // sliding around as the name length changes.
                                 .id(self.request.name)
                         }
                         .font(.body.bold())
@@ -69,8 +69,8 @@ private struct ApprovalRequestView: View {
                         Text(
                             OWSLocalizedString(
                                 "CALL_LINK_JOIN_REQUEST_PROMPT",
-                                comment: "Tappable label that appears below a user's name on a toast when they request to join a call link."
-                            )
+                                comment: "Tappable label that appears below a user's name on a toast when they request to join a call link.",
+                            ),
                         )
                         .multilineTextAlignment(.leading)
                         .font(.subheadline)
@@ -184,23 +184,23 @@ struct ApprovalRequestStack: View {
                 let isBottomOfStack = displayedRequests.count == 2 && request == displayedRequests.last
                 let isOnlyRequest = self.viewModel.requests.count == 1
                 let requests: ApprovalRequestView.Requests =
-                if self.viewModel.requests.count <= 2 {
-                    .single(request)
-                } else {
-                    .many(
-                        topRequest: request,
-                        amountMore: self.viewModel.requests.count - 1,
-                        didTapMore: {
-                            self.didTapMore(self.viewModel.requests)
-                        }
-                    )
-                }
+                    if self.viewModel.requests.count <= 2 {
+                        .single(request)
+                    } else {
+                        .many(
+                            topRequest: request,
+                            amountMore: self.viewModel.requests.count - 1,
+                            didTapMore: {
+                                self.didTapMore(self.viewModel.requests)
+                            },
+                        )
+                    }
 
                 ApprovalRequestView(
                     requests: requests,
                     openProfileDetails: { self.viewModel.performRequestAction.send((.viewDetails, request)) },
                     didApprove: { self.viewModel.performRequestAction.send((.approve, request)) },
-                    didDeny: { self.viewModel.performRequestAction.send((.deny, request)) }
+                    didDeny: { self.viewModel.performRequestAction.send((.deny, request)) },
                 )
                 .zIndex({
                     if isTopOfStack {
@@ -213,7 +213,7 @@ struct ApprovalRequestStack: View {
                 }())
                 .transition(.asymmetric(
                     insertion: isOnlyRequest ? .offset(y: 12).combined(with: .opacity) : .offset(y: -10).combined(with: .opacity),
-                    removal: .move(edge: .top).combined(with: .opacity)
+                    removal: .move(edge: .top).combined(with: .opacity),
                 ))
                 .padding(.bottom, isTopOfStack ? 12 : 0)
                 .scaleEffect(isBottomOfStack ? .init(width: 0.95, height: 0.95) : .init(width: 1, height: 1), anchor: .bottom)
@@ -309,7 +309,7 @@ private struct PreviewView: View {
             ApprovalRequestStack(
                 viewModel: self.viewModel,
                 didTapMore: { _ in },
-                didChangeHeight: { height in self.height = height }
+                didChangeHeight: { height in self.height = height },
             )
         }
     }

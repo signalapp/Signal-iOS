@@ -31,18 +31,8 @@ struct IncomingCallLogEventSyncMessageParams {
     let anchorCallIdentifiers: CallIdentifiers?
     let anchorTimestamp: UInt64
 
-    init(
-        eventType: EventType,
-        anchorCallIdentifiers: CallIdentifiers?,
-        anchorTimestamp: UInt64
-    ) {
-        self.eventType = eventType
-        self.anchorCallIdentifiers = anchorCallIdentifiers
-        self.anchorTimestamp = anchorTimestamp
-    }
-
     static func parse(
-        callLogEvent: SSKProtoSyncMessageCallLogEvent
+        callLogEvent: SSKProtoSyncMessageCallLogEvent,
     ) throws -> Self {
         enum ParseError: Error {
             case missingOrInvalidParams
@@ -69,14 +59,14 @@ struct IncomingCallLogEventSyncMessageParams {
 
             return CallIdentifiers(
                 callId: callLogEvent.callID,
-                conversationId: conversationId
+                conversationId: conversationId,
             )
         }()
 
         return IncomingCallLogEventSyncMessageParams(
             eventType: eventType,
             anchorCallIdentifiers: callIdentifiers,
-            anchorTimestamp: timestamp
+            anchorTimestamp: timestamp,
         )
     }
 }

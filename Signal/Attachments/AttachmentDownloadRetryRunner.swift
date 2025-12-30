@@ -16,13 +16,13 @@ public class AttachmentDownloadRetryRunner {
     public init(
         attachmentDownloadManager: AttachmentDownloadManager,
         attachmentDownloadStore: AttachmentDownloadStore,
-        db: SDSDatabaseStorage
+        db: SDSDatabaseStorage,
     ) {
         self.db = db
         self.runner = Runner(
             attachmentDownloadManager: attachmentDownloadManager,
             attachmentDownloadStore: attachmentDownloadStore,
-            db: db
+            db: db,
         )
         self.dbObserver = DownloadTableObserver(runner: runner)
     }
@@ -30,7 +30,7 @@ public class AttachmentDownloadRetryRunner {
     public static let shared = AttachmentDownloadRetryRunner(
         attachmentDownloadManager: DependenciesBridge.shared.attachmentDownloadManager,
         attachmentDownloadStore: DependenciesBridge.shared.attachmentDownloadStore,
-        db: SSKEnvironment.shared.databaseStorageRef
+        db: SSKEnvironment.shared.databaseStorageRef,
     )
 
     public func beginObserving() {
@@ -43,7 +43,7 @@ public class AttachmentDownloadRetryRunner {
             self,
             selector: #selector(didEnterForeground),
             name: .OWSApplicationWillEnterForeground,
-            object: nil
+            object: nil,
         )
     }
 
@@ -66,7 +66,7 @@ public class AttachmentDownloadRetryRunner {
         init(
             attachmentDownloadManager: AttachmentDownloadManager,
             attachmentDownloadStore: AttachmentDownloadStore,
-            db: SDSDatabaseStorage
+            db: SDSDatabaseStorage,
         ) {
             self.attachmentDownloadManager = attachmentDownloadManager
             self.attachmentDownloadStore = attachmentDownloadStore
@@ -123,7 +123,7 @@ public class AttachmentDownloadRetryRunner {
             case let .update(tableName, columnNames):
                 return
                     tableName == QueuedAttachmentDownloadRecord.databaseTableName
-                    && columnNames.contains(QueuedAttachmentDownloadRecord.CodingKeys.minRetryTimestamp.rawValue)
+                        && columnNames.contains(QueuedAttachmentDownloadRecord.CodingKeys.minRetryTimestamp.rawValue)
             case .insert, .delete:
                 // We _never_ insert a download in the retry state to begin with,
                 // so we really only care about observing updates.

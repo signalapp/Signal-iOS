@@ -42,9 +42,9 @@ open class ManualLayoutView: UIView, CVView {
 
         translatesAutoresizingMaskIntoConstraints = false
 
-        #if TESTABLE_BUILD
+#if TESTABLE_BUILD
         self.accessibilityLabel = name
-        #endif
+#endif
     }
 
     @available(*, unavailable, message: "use other constructor instead.")
@@ -58,7 +58,7 @@ open class ManualLayoutView: UIView, CVView {
 
     public var shouldDeactivateConstraints = true
 
-    public override func updateConstraints() {
+    override public func updateConstraints() {
         super.updateConstraints()
 
         if shouldDeactivateConstraints {
@@ -84,18 +84,20 @@ open class ManualLayoutView: UIView, CVView {
 
     public var preferredSize: CGSize?
 
-    open override func sizeThatFits(_ size: CGSize) -> CGSize {
+    override open func sizeThatFits(_ size: CGSize) -> CGSize {
         preferredSize ?? .zero
     }
 
-    public override var intrinsicContentSize: CGSize {
-        return sizeThatFits(CGSize(width: CGFloat.greatestFiniteMagnitude,
-                                   height: CGFloat.greatestFiniteMagnitude))
+    override public var intrinsicContentSize: CGSize {
+        return sizeThatFits(CGSize(
+            width: CGFloat.greatestFiniteMagnitude,
+            height: CGFloat.greatestFiniteMagnitude,
+        ))
     }
 
     // MARK: - Layout
 
-    public override var bounds: CGRect {
+    override public var bounds: CGRect {
         didSet {
             if oldValue.size != bounds.size {
                 viewSizeDidChange()
@@ -103,7 +105,7 @@ open class ManualLayoutView: UIView, CVView {
         }
     }
 
-    public override var frame: CGRect {
+    override public var frame: CGRect {
         didSet {
             if oldValue.size != frame.size {
                 viewSizeDidChange()
@@ -117,7 +119,7 @@ open class ManualLayoutView: UIView, CVView {
         layoutSubviews()
     }
 
-    open override func layoutSubviews() {
+    override open func layoutSubviews() {
         layoutSubviews(skipLayoutBlocks: false)
     }
 
@@ -190,8 +192,10 @@ open class ManualLayoutView: UIView, CVView {
         }
     }
 
-    public func addSubview(_ subview: UIView,
-                           withLayoutBlock layoutBlock: @escaping LayoutBlock) {
+    public func addSubview(
+        _ subview: UIView,
+        withLayoutBlock layoutBlock: @escaping LayoutBlock,
+    ) {
         owsAssertDebug(subview.superview == nil)
 
         subview.translatesAutoresizingMaskIntoConstraints = false
@@ -213,9 +217,11 @@ open class ManualLayoutView: UIView, CVView {
         transformBlocks.removeAll()
     }
 
-    public func centerSubviewWithLayoutBlock(_ subview: UIView,
-                                             onSiblingView siblingView: UIView,
-                                             size: CGSize) {
+    public func centerSubviewWithLayoutBlock(
+        _ subview: UIView,
+        onSiblingView siblingView: UIView,
+        size: CGSize,
+    ) {
         owsAssertDebug(subview.superview != nil)
         owsAssertDebug(subview.superview == siblingView.superview)
 
@@ -228,8 +234,10 @@ open class ManualLayoutView: UIView, CVView {
             }
             owsAssertDebug(superview == siblingView.superview)
 
-            let siblingCenter = superview.convert(siblingView.center,
-                                                  from: siblingView.superview)
+            let siblingCenter = superview.convert(
+                siblingView.center,
+                from: siblingView.superview,
+            )
             let subviewOrigin = siblingCenter - (size.asPoint * 0.5)
             let subviewFrame = CGRect(origin: subviewOrigin, size: size)
             Self.setSubviewFrame(subview: subview, frame: subviewFrame)
@@ -313,8 +321,10 @@ open class ManualLayoutView: UIView, CVView {
         layoutSubviewToFillSuperview(subview, honorLayoutsMargins: true)
     }
 
-    public func layoutSubviewToFillSuperview(_ subview: UIView,
-                                             honorLayoutsMargins: Bool) {
+    public func layoutSubviewToFillSuperview(
+        _ subview: UIView,
+        honorLayoutsMargins: Bool,
+    ) {
         owsAssertDebug(subview.superview != nil)
 
         subview.translatesAutoresizingMaskIntoConstraints = false
@@ -346,7 +356,7 @@ open class ManualLayoutView: UIView, CVView {
 
     @objc
     private func didTap() {
-        guard let tapBlock = tapBlock else {
+        guard let tapBlock else {
             owsFailDebug("Missing tapBlock.")
             return
         }
@@ -358,9 +368,11 @@ open class ManualLayoutView: UIView, CVView {
 
 public extension ManualLayoutView {
 
-    static func wrapSubviewUsingIOSAutoLayout(_ subview: UIView,
-                                              isWrapperRendering: Bool = false,
-                                              wrapperName: String = "iOS auto layout wrapper") -> ManualLayoutView {
+    static func wrapSubviewUsingIOSAutoLayout(
+        _ subview: UIView,
+        isWrapperRendering: Bool = false,
+        wrapperName: String = "iOS auto layout wrapper",
+    ) -> ManualLayoutView {
         let wrapper: ManualLayoutView
         if isWrapperRendering {
             wrapper = ManualLayoutViewWithLayer(name: wrapperName)

@@ -18,7 +18,7 @@ public import GRDB
 /// the period is 8h – after which point we assume the call it refers to will
 /// have ended and it can be deleted. See ``DeletedCallRecordExpirationJob``
 /// for that cleanup of "expired" ``DeletedCallRecord``s.
-final public class DeletedCallRecord: Codable, PersistableRecord, FetchableRecord {
+public final class DeletedCallRecord: Codable, PersistableRecord, FetchableRecord {
 
     /// This record's SQLite row ID, if it represents a record that has already
     /// been inserted.
@@ -36,7 +36,7 @@ final public class DeletedCallRecord: Codable, PersistableRecord, FetchableRecor
     init(
         callId: UInt64,
         conversationId: CallRecord.ConversationID,
-        deletedAtTimestamp: UInt64 = Date().ows_millisecondsSince1970
+        deletedAtTimestamp: UInt64 = Date().ows_millisecondsSince1970,
     ) {
         self.callId = callId
         self.conversationId = conversationId
@@ -46,7 +46,7 @@ final public class DeletedCallRecord: Codable, PersistableRecord, FetchableRecor
     convenience init(callRecord: CallRecord) {
         self.init(
             callId: callRecord.callId,
-            conversationId: callRecord.conversationId
+            conversationId: callRecord.conversationId,
         )
     }
 
@@ -96,19 +96,19 @@ final public class DeletedCallRecord: Codable, PersistableRecord, FetchableRecor
 
 extension DeletedCallRecord {
     func matches(callRecord: CallRecord) -> Bool {
-        return (
+        return
             self.callId == callRecord.callId
-            && self.conversationId == callRecord.conversationId
-        )
+                && self.conversationId == callRecord.conversationId
+
     }
 
     func matches(_ other: DeletedCallRecord) -> Bool {
-        return (
+        return
             self.id == other.id
-            && self.callId == other.callId
-            && self.conversationId == other.conversationId
-            && self.deletedAtTimestamp == other.deletedAtTimestamp
-        )
+                && self.callId == other.callId
+                && self.conversationId == other.conversationId
+                && self.deletedAtTimestamp == other.deletedAtTimestamp
+
     }
 }
 

@@ -23,7 +23,7 @@ public class CVComponentBottomLabel: CVComponentBase, CVComponent {
             axis: .horizontal,
             alignment: .center,
             spacing: 0,
-            layoutMargins: .init(top: 0, leading: 0, bottom: 24, trailing: 0)
+            layoutMargins: .init(top: 0, leading: 0, bottom: 24, trailing: 0),
         )
     }
 
@@ -34,7 +34,7 @@ public class CVComponentBottomLabel: CVComponentBase, CVComponent {
             textColor: conversationStyle.bubbleTextColor(isIncoming: isIncoming),
             numberOfLines: 0,
             lineBreakMode: .byWordWrapping,
-            textAlignment: .center
+            textAlignment: .center,
         )
     }
 
@@ -42,9 +42,11 @@ public class CVComponentBottomLabel: CVComponentBase, CVComponent {
         CVComponentViewBottomLabel()
     }
 
-    public func configureForRendering(componentView componentViewParam: CVComponentView,
-                                      cellMeasurement: CVCellMeasurement,
-                                      componentDelegate: CVComponentDelegate) {
+    public func configureForRendering(
+        componentView componentViewParam: CVComponentView,
+        cellMeasurement: CVCellMeasurement,
+        componentDelegate: CVComponentDelegate,
+    ) {
         guard let componentView = componentViewParam as? CVComponentViewBottomLabel else {
             owsFailDebug("Unexpected componentView.")
             componentViewParam.reset()
@@ -58,10 +60,12 @@ public class CVComponentBottomLabel: CVComponentBase, CVComponent {
 
         let stackView = componentView.stackView
         stackView.reset()
-        stackView.configure(config: stackConfig,
-                            cellMeasurement: cellMeasurement,
-                            measurementKey: Self.measurementKey_stackView,
-                            subviews: [label])
+        stackView.configure(
+            config: stackConfig,
+            cellMeasurement: cellMeasurement,
+            measurementKey: Self.measurementKey_stackView,
+            subviews: [label],
+        )
     }
 
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
@@ -69,14 +73,14 @@ public class CVComponentBottomLabel: CVComponentBase, CVComponent {
 
         let bottomLabelSize = CVText.measureLabel(
             config: bottomLabelConfig,
-            maxWidth: maxWidth
+            maxWidth: maxWidth,
         )
         let stackMeasurement = ManualStackView.measure(
             config: stackConfig,
             measurementBuilder: measurementBuilder,
             measurementKey: Self.measurementKey_stackView,
             subviewInfos: [bottomLabelSize.asManualSubviewInfo],
-            maxWidth: maxWidth
+            maxWidth: maxWidth,
         )
 
         return stackMeasurement.measuredSize

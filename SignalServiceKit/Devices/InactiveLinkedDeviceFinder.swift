@@ -8,11 +8,6 @@
 public struct InactiveLinkedDevice: Equatable {
     public let displayName: String
     public let expirationDate: Date
-
-    init(displayName: String, expirationDate: Date) {
-        self.displayName = displayName
-        self.expirationDate = expirationDate
-    }
 }
 
 /// Responsible for finding "inactive" linked devices, or those who have not
@@ -43,9 +38,9 @@ public protocol InactiveLinkedDeviceFinder {
     /// This is irreversible for the life of this app install. Use with care.
     func permanentlyDisableFinders(tx: DBWriteTransaction)
 
-    #if TESTABLE_BUILD
+#if TESTABLE_BUILD
     func reenablePermanentlyDisabledFinders(tx: DBWriteTransaction)
-    #endif
+#endif
 }
 
 public extension InactiveLinkedDeviceFinder {
@@ -92,7 +87,7 @@ class InactiveLinkedDeviceFinderImpl: InactiveLinkedDeviceFinder {
         deviceService: OWSDeviceService,
         deviceStore: OWSDeviceStore,
         remoteConfigProvider: any RemoteConfigProvider,
-        tsAccountManager: TSAccountManager
+        tsAccountManager: TSAccountManager,
     ) {
         self.dateProvider = dateProvider
         self.db = db
@@ -157,8 +152,8 @@ class InactiveLinkedDeviceFinderImpl: InactiveLinkedDeviceFinder {
                 return InactiveLinkedDevice(
                     displayName: device.displayName,
                     expirationDate: device.lastSeenAt.addingTimeInterval(
-                        intervalForDeviceExpiration
-                    )
+                        intervalForDeviceExpiration,
+                    ),
                 )
             }
     }

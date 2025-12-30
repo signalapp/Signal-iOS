@@ -52,14 +52,14 @@ public final class MessageSticker: NSObject, NSCoding, NSCopying {
         coder.encode(self.info, forKey: "info")
     }
 
-    public override var hash: Int {
+    override public var hash: Int {
         var hasher = Hasher()
         hasher.combine(emoji)
         hasher.combine(info)
         return hasher.finalize()
     }
 
-    public override func isEqual(_ object: Any?) -> Bool {
+    override public func isEqual(_ object: Any?) -> Bool {
         guard let object = object as? Self else { return false }
         guard type(of: self) == type(of: object) else { return false }
         guard self.emoji == object.emoji else { return false }

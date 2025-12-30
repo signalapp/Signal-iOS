@@ -30,7 +30,7 @@ class MediaControlPanelView: UIView {
     init(
         mediaGallery: MediaGallery,
         delegate: MediaControlPanelDelegate,
-        spoilerState: SpoilerRenderState
+        spoilerState: SpoilerRenderState,
     ) {
         self.mediaGallery = mediaGallery
         self.delegate = delegate
@@ -62,7 +62,7 @@ class MediaControlPanelView: UIView {
 
         // New APIs for tracking trait changes.
         if #available(iOS 17, *) {
-            registerForTraitChanges([ UITraitVerticalSizeClass.self ]) { (self: Self, previousTraitCollection) in
+            registerForTraitChanges([UITraitVerticalSizeClass.self]) { (self: Self, previousTraitCollection) in
                 self.isVerticallyCompactLayout = self.traitCollection.verticalSizeClass == .compact
             }
         }
@@ -215,7 +215,10 @@ class MediaControlPanelView: UIView {
         //
         // i. Content layout guide.
         //
-        let topEdgeConstraint, leadingEdgeConstraint, trailingEdgeConstraint, bottomEdgeConstraint: NSLayoutConstraint
+        let topEdgeConstraint: NSLayoutConstraint
+        let leadingEdgeConstraint: NSLayoutConstraint
+        let trailingEdgeConstraint: NSLayoutConstraint
+        let bottomEdgeConstraint: NSLayoutConstraint
 
         if #available(iOS 26, *) {
             // Top edge is always at the view's top edge.
@@ -230,7 +233,7 @@ class MediaControlPanelView: UIView {
             // Fixed distance to bottom edge on all devices in all orientations.
             bottomEdgeConstraint = contentLayoutGuide.bottomAnchor.constraint(
                 equalTo: bottomAnchor,
-                constant: -Self.contentLayoutGuideBottomMargin
+                constant: -Self.contentLayoutGuideBottomMargin,
             )
         } else {
             // Top edge is always at the view's top edge with a default padding.
@@ -248,7 +251,7 @@ class MediaControlPanelView: UIView {
             topEdgeConstraint,
             leadingEdgeConstraint,
             trailingEdgeConstraint,
-            bottomEdgeConstraint
+            bottomEdgeConstraint,
         ])
 
         // Keep reference to constraints and update them as necessary (see `updateConstraints`).
@@ -257,7 +260,7 @@ class MediaControlPanelView: UIView {
                 top: topEdgeConstraint,
                 leading: leadingEdgeConstraint,
                 trailing: trailingEdgeConstraint,
-                bottom: bottomEdgeConstraint
+                bottom: bottomEdgeConstraint,
             )
             updateContentLayoutGuideEdgeConstraints()
         }
@@ -288,10 +291,10 @@ class MediaControlPanelView: UIView {
             equalTo: captionViewArea.bottomAnchor,
         )
         videoPlayerControlsAreaBottomToThumbnailStripTop = thumbnailStripArea.topAnchor.constraint(
-            equalTo: videoPlayerControlsArea.bottomAnchor
+            equalTo: videoPlayerControlsArea.bottomAnchor,
         )
         thumbnailStripAreaBottomToButtonsAreaTop = buttonArea.topAnchor.constraint(
-            equalTo: thumbnailStripArea.bottomAnchor
+            equalTo: thumbnailStripArea.bottomAnchor,
         )
 
         NSLayoutConstraint.activate([
@@ -567,7 +570,7 @@ class MediaControlPanelView: UIView {
         let portraitConstraints = [
             videoPlaybackControlView.topAnchor.constraint(equalTo: buttonArea.topAnchor),
             videoPlaybackControlView.bottomAnchor.constraint(equalTo: buttonArea.bottomAnchor),
-            videoPlaybackControlView.centerXAnchor.constraint(equalTo: buttonArea.centerXAnchor)
+            videoPlaybackControlView.centerXAnchor.constraint(equalTo: buttonArea.centerXAnchor),
         ]
         videoPlayerControlsConstraintsPortrait += portraitConstraints
 
@@ -611,11 +614,11 @@ class MediaControlPanelView: UIView {
             videoPlaybackProgressView.trailingAnchor.constraint(equalTo: videoPlayerControlsArea.trailingAnchor),
             {
                 let constraint = videoPlaybackProgressView.bottomAnchor.constraint(
-                    equalTo: videoPlayerControlsArea.bottomAnchor
+                    equalTo: videoPlayerControlsArea.bottomAnchor,
                 )
                 constraint.priority = .defaultHigh + 100
                 return constraint
-            }()
+            }(),
         ]
         videoPlayerControlsConstraintsPortrait += portraitConstraints
 
@@ -652,7 +655,7 @@ class MediaControlPanelView: UIView {
         _ item: MediaGalleryItem,
         videoPlayer: VideoPlayer?,
         transitionDirection: UIPageViewController.NavigationDirection,
-        animated: Bool
+        animated: Bool,
     ) {
         guard currentItem !== item else { return }
 
@@ -666,7 +669,7 @@ class MediaControlPanelView: UIView {
             animator = UIViewPropertyAnimator(
                 duration: 0.35,
                 springDamping: 1,
-                springResponse: 0.35
+                springResponse: 0.35,
             )
         }
 
@@ -695,7 +698,7 @@ class MediaControlPanelView: UIView {
                 cellViewBuilder: { _ in
                     return GalleryRailCellView(configuration: Self.galleryCellConfiguration)
                 },
-                animated: animated && thumbnailStrip.isHidden == false
+                animated: animated && thumbnailStrip.isHidden == false,
             )
         }
         updateThumbnailStripLayout(using: animator, transitionDirection: transitionDirection)
@@ -837,7 +840,7 @@ class MediaControlPanelView: UIView {
 
                 captionViewAreaBottomToVideoPlayerControlsAreaTop?.constant = captionViewAreaBottomSpacing
                 videoPlayerControlsAreaBottomToThumbnailStripTop?.constant = videoPlayerControlsAreaBottomSpacing
-           }
+            }
         }
 
         //
@@ -943,7 +946,7 @@ class MediaControlPanelView: UIView {
 
     private func updateThumbnailStripLayout(
         using animator: UIViewPropertyAnimator? = nil,
-        transitionDirection: UIPageViewController.NavigationDirection? = nil
+        transitionDirection: UIPageViewController.NavigationDirection? = nil,
     ) {
 
         let isThumbnailStripHidden = thumbnailStripAreaZeroHeightConstraint.isActive

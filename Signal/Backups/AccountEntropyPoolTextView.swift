@@ -3,11 +3,11 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalUI
 import SignalServiceKit
+import SignalUI
 
 class AccountEntropyPoolTextView: UIView {
-    public enum Mode {
+    enum Mode {
         case entry(onTextViewChanged: () -> Void)
         case display(aep: AccountEntropyPool)
     }
@@ -55,7 +55,7 @@ class AccountEntropyPoolTextView: UIView {
         textView.autoPinEdgesToSuperviewMargins()
         textView.placeholderText = OWSLocalizedString(
             "BACKUP_KEY_PLACEHOLDER",
-            comment: "Text used as placeholder in recovery key text view."
+            comment: "Text used as placeholder in recovery key text view.",
         )
         textView.setSecureTextEntry(val: true)
         textView.setTextContentType(val: .password)
@@ -87,8 +87,8 @@ class AccountEntropyPoolTextView: UIView {
         let referenceFontSize = "0".size(withAttributes: [
             .font: UIFont.monospacedSystemFont(
                 ofSize: referenceFontSizePts,
-                weight: .regular
-            )
+                weight: .regular,
+            ),
         ])
 
         let characterWidth = width / CGFloat(Constants.charactersPerRow)
@@ -102,7 +102,7 @@ class AccountEntropyPoolTextView: UIView {
         self.heightConstraint.constant = sizingAttributedString.boundingRect(
             with: CGSize(width: width, height: .greatestFiniteMagnitude),
             options: [.usesLineFragmentOrigin, .usesFontLeading],
-            context: nil
+            context: nil,
         ).size.ceil.height
     }
 
@@ -115,7 +115,7 @@ class AccountEntropyPoolTextView: UIView {
                 .font: textView.editorFont ?? UIFont.monospacedDigitFont(ofSize: 17),
                 .foregroundColor: UIColor.Signal.label,
                 .paragraphStyle: paragraphStyle,
-            ]
+            ],
         )
     }
 }
@@ -129,10 +129,12 @@ extension AccountEntropyPoolTextView: TextViewWithPlaceholderDelegate {
         // Detect if the text is not formatted by looking for spaced chunks, and call the
         // formatting function if not.
         let formattedSpace = String(repeating: " ", count: Constants.spacesBetweenChunks)
-        if let t = textView.text,
-           !t.isEmpty,
-           t.count > Constants.spacesBetweenChunks,
-           !t.contains(formattedSpace) {
+        if
+            let t = textView.text,
+            !t.isEmpty,
+            t.count > Constants.spacesBetweenChunks,
+            !t.contains(formattedSpace)
+        {
             textView.reformatText(replacementText: t)
         }
 
@@ -148,7 +150,7 @@ extension AccountEntropyPoolTextView: TextViewWithPlaceholderDelegate {
         _ textView: TextViewWithPlaceholder,
         uiTextView: UITextView,
         shouldChangeTextIn range: NSRange,
-        replacementText text: String
+        replacementText text: String,
     ) -> Bool {
         defer {
             // This isn't called when this function returns false, but
@@ -173,7 +175,7 @@ extension AccountEntropyPoolTextView: TextViewWithPlaceholderDelegate {
                         }
                     }
                     .joined()
-            }
+            },
         )
 
         let selectedTextRange = uiTextView.selectedTextRange

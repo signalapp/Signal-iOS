@@ -85,7 +85,7 @@ struct TestProtocolRunner {
                     id: signedPrekeyId,
                     timestamp: 42000,
                     privateKey: bobSignedPreKey,
-                    signature: bobSignedPreKeySignature
+                    signature: bobSignedPreKeySignature,
                 ),
                 replacedAt: nil,
                 context: transaction,
@@ -108,7 +108,7 @@ struct TestProtocolRunner {
     /// Sets up a session between `senderClient` and `recipientClient`, so that either can talk to the other.
     ///
     /// Messages between both clients will be "Whisper" / "ciphertext" / "Signal" messages.
-    public func initialize(
+    func initialize(
         senderClient: TestSignalClient,
         recipientClient: TestSignalClient,
         hasSignedPreKey: Bool = true,
@@ -124,10 +124,12 @@ struct TestProtocolRunner {
         )
 
         // Then Alice sends a message to Bob so he gets her pre-key as well.
-        let aliceMessage = try encrypt(Data(),
-                                       senderClient: senderClient,
-                                       recipient: recipientClient.protocolAddress,
-                                       context: transaction)
+        let aliceMessage = try encrypt(
+            Data(),
+            senderClient: senderClient,
+            recipient: recipientClient.protocolAddress,
+            context: transaction,
+        )
         _ = try signalDecryptPreKey(
             message: PreKeySignalMessage(bytes: aliceMessage.serialize()),
             from: senderClient.protocolAddress,
@@ -140,32 +142,42 @@ struct TestProtocolRunner {
         )
 
         // Finally, Bob sends a message back to acknowledge the pre-key.
-        let bobMessage = try encrypt(Data(),
-                                     senderClient: recipientClient,
-                                     recipient: senderClient.protocolAddress,
-                                     context: transaction)
-        _ = try signalDecrypt(message: SignalMessage(bytes: bobMessage.serialize()),
-                              from: recipientClient.protocolAddress,
-                              sessionStore: senderClient.sessionStore,
-                              identityStore: senderClient.identityKeyStore,
-                              context: transaction)
+        let bobMessage = try encrypt(
+            Data(),
+            senderClient: recipientClient,
+            recipient: senderClient.protocolAddress,
+            context: transaction,
+        )
+        _ = try signalDecrypt(
+            message: SignalMessage(bytes: bobMessage.serialize()),
+            from: recipientClient.protocolAddress,
+            sessionStore: senderClient.sessionStore,
+            identityStore: senderClient.identityKeyStore,
+            context: transaction,
+        )
     }
 
-    public func encrypt(_ plaintext: Data,
-                        senderClient: TestSignalClient,
-                        recipient: ProtocolAddress,
-                        context: StoreContext) throws -> CiphertextMessage {
-        return try signalEncrypt(message: plaintext,
-                                 for: recipient,
-                                 sessionStore: senderClient.sessionStore,
-                                 identityStore: senderClient.identityKeyStore,
-                                 context: context)
+    func encrypt(
+        _ plaintext: Data,
+        senderClient: TestSignalClient,
+        recipient: ProtocolAddress,
+        context: StoreContext,
+    ) throws -> CiphertextMessage {
+        return try signalEncrypt(
+            message: plaintext,
+            for: recipient,
+            sessionStore: senderClient.sessionStore,
+            identityStore: senderClient.identityKeyStore,
+            context: context,
+        )
     }
 
-    public func decrypt(_ cipherMessage: CiphertextMessage,
-                        recipientClient: TestSignalClient,
-                        sender: ProtocolAddress,
-                        context: StoreContext) throws -> Data {
+    func decrypt(
+        _ cipherMessage: CiphertextMessage,
+        recipientClient: TestSignalClient,
+        sender: ProtocolAddress,
+        context: StoreContext,
+    ) throws -> Data {
         owsPrecondition(cipherMessage.messageType == .whisper, "only bare SignalMessages are supported")
         let message = try SignalMessage(bytes: cipherMessage.serialize())
         return try signalDecrypt(
@@ -240,21 +252,21 @@ struct FakeSignalClient: TestSignalClient {
         return FakeSignalClient(
             e164Identifier: CommonGenerator.e164(),
             serviceId: Aci.randomForTesting(),
-            protocolStore: InMemorySignalProtocolStore(identity: .generate(), registrationId: 1)
+            protocolStore: InMemorySignalProtocolStore(identity: .generate(), registrationId: 1),
         )
     }
 
     static func generate(
         e164Identifier: SignalE164Identifier? = nil,
         aci: Aci? = nil,
-        deviceID: UInt32? = nil
+        deviceID: UInt32? = nil,
     ) -> FakeSignalClient {
         var result = FakeSignalClient(
             e164Identifier: e164Identifier,
             serviceId: aci ?? Aci.randomForTesting(),
-            protocolStore: InMemorySignalProtocolStore(identity: .generate(), registrationId: 1)
+            protocolStore: InMemorySignalProtocolStore(identity: .generate(), registrationId: 1),
         )
-        if let deviceID = deviceID {
+        if let deviceID {
             result.deviceId = deviceID
         }
         return result
@@ -314,18 +326,18 @@ struct LocalSignalClient: TestSignalClient {
         return self._preKeyStore.forIdentity(self.identity)
     }
 
-    public var identityKeyStore: IdentityKeyStore {
+    var identityKeyStore: IdentityKeyStore {
         return SSKEnvironment.shared.databaseStorageRef.read { transaction in
             return try! DependenciesBridge.shared.identityManager.libSignalStore(for: identity, tx: transaction)
         }
     }
 
-    public func linkedDevice(deviceID: UInt32) -> FakeSignalClient {
+    func linkedDevice(deviceID: UInt32) -> FakeSignalClient {
         return FakeSignalClient(
             e164Identifier: e164Identifier,
             serviceId: serviceId,
             protocolStore: InMemorySignalProtocolStore(identity: identityKeyPair.identityKeyPair, registrationId: 1),
-            deviceId: deviceID
+            deviceId: deviceID,
         )
     }
 }
@@ -408,10 +420,12 @@ struct FakeService {
     func buildEncryptedContentData(fromSenderClient senderClient: TestSignalClient, timestamp: UInt64, bodyText: String?) throws -> Data {
         let plaintext = try buildContentData(timestamp: timestamp, bodyText: bodyText)
         let cipherMessage: CiphertextMessage = SSKEnvironment.shared.databaseStorageRef.write { transaction in
-            return try! self.runner.encrypt(plaintext,
-                                            senderClient: senderClient,
-                                            recipient: self.localClient.protocolAddress,
-                                            context: transaction)
+            return try! self.runner.encrypt(
+                plaintext,
+                senderClient: senderClient,
+                recipient: self.localClient.protocolAddress,
+                context: transaction,
+            )
         }
 
         assert(cipherMessage.messageType == .whisper)
@@ -421,10 +435,12 @@ struct FakeService {
     func buildEncryptedContentData(fromSenderClient senderClient: TestSignalClient, groupV2Context: SSKProtoGroupContextV2) throws -> Data {
         let plaintext = try buildContentData(groupV2Context: groupV2Context)
         let cipherMessage: CiphertextMessage = SSKEnvironment.shared.databaseStorageRef.write { transaction in
-            return try! self.runner.encrypt(plaintext,
-                                            senderClient: senderClient,
-                                            recipient: self.localClient.protocolAddress,
-                                            context: transaction)
+            return try! self.runner.encrypt(
+                plaintext,
+                senderClient: senderClient,
+                recipient: self.localClient.protocolAddress,
+                context: transaction,
+            )
         }
 
         assert(cipherMessage.messageType == .whisper)
@@ -434,10 +450,12 @@ struct FakeService {
     func buildEncryptedContentData(fromSenderClient senderClient: TestSignalClient, deliveryReceiptForMessage timestamp: UInt64) throws -> Data {
         let plaintext = try buildContentData(deliveryReceiptForMessage: timestamp)
         let cipherMessage: CiphertextMessage = SSKEnvironment.shared.databaseStorageRef.write { transaction in
-            return try! self.runner.encrypt(plaintext,
-                                            senderClient: senderClient,
-                                            recipient: self.localClient.protocolAddress,
-                                            context: transaction)
+            return try! self.runner.encrypt(
+                plaintext,
+                senderClient: senderClient,
+                recipient: self.localClient.protocolAddress,
+                context: transaction,
+            )
         }
 
         assert(cipherMessage.messageType == .whisper)
@@ -447,7 +465,7 @@ struct FakeService {
     func buildContentData(timestamp: UInt64, bodyText: String?) throws -> Data {
         let dataMessageBuilder = SSKProtoDataMessage.builder()
         dataMessageBuilder.setTimestamp(timestamp)
-        if let bodyText = bodyText {
+        if let bodyText {
             dataMessageBuilder.setBody(bodyText)
         } else {
             dataMessageBuilder.setBody(CommonGenerator.paragraph)

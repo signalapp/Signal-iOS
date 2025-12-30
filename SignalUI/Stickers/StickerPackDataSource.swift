@@ -46,11 +46,13 @@ public class BaseStickerPackDataSource: NSObject {
     }
 
     private lazy var didChangeEvent: DebouncedEvent = {
-        DebouncedEvents.build(mode: .firstLast,
-                              maxFrequencySeconds: 0.5,
-                              onQueue: .main) { [weak self] in
+        DebouncedEvents.build(
+            mode: .firstLast,
+            maxFrequencySeconds: 0.5,
+            onQueue: .main,
+        ) { [weak self] in
             AssertIsOnMainThread()
-            guard let self = self else {
+            guard let self else {
                 return
             }
             // Inform any observing views or data sources that they of the change.
@@ -132,14 +134,18 @@ public class InstalledStickerPackDataSource: BaseStickerPackDataSource {
 
         super.init()
 
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(stickersOrPacksDidChange),
-                                               name: StickerManager.stickersOrPacksDidChange,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(didBecomeActive),
-                                               name: .OWSApplicationDidBecomeActive,
-                                               object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(stickersOrPacksDidChange),
+            name: StickerManager.stickersOrPacksDidChange,
+            object: nil,
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(didBecomeActive),
+            name: .OWSApplicationDidBecomeActive,
+            object: nil,
+        )
 
         ensureState()
     }
@@ -195,8 +201,12 @@ public class InstalledStickerPackDataSource: BaseStickerPackDataSource {
     ) {
 
         // Update Sticker Pack.
-        guard let stickerPack = StickerManager.fetchStickerPack(stickerPackInfo: stickerPackInfo,
-                                                                transaction: readTx) else {
+        guard
+            let stickerPack = StickerManager.fetchStickerPack(
+                stickerPackInfo: stickerPackInfo,
+                transaction: readTx,
+            )
+        else {
             return (nil, nil, [])
         }
         guard stickerPack.isInstalled else {
@@ -212,15 +222,17 @@ public class InstalledStickerPackDataSource: BaseStickerPackDataSource {
         } else {
             coverInfo = nil
         }
-        let stickerInfos = StickerManager.installedStickers(forStickerPack: stickerPack,
-                                                            verifyExists: false,
-                                                            transaction: readTx)
+        let stickerInfos = StickerManager.installedStickers(
+            forStickerPack: stickerPack,
+            verifyExists: false,
+            transaction: readTx,
+        )
 
         return (stickerPack, coverInfo, stickerInfos)
     }
 
     private func ensureDownloads() {
-        guard let stickerPack = stickerPack else {
+        guard let stickerPack else {
             return
         }
         // Download any missing stickers.
@@ -321,8 +333,10 @@ public class TransientStickerPackDataSource: BaseStickerPackDataSource {
     private var stickerMetadataMap = [String: any StickerMetadata]()
     private var temporaryFileUrls = [URL]()
 
-    public init(stickerPackInfo: StickerPackInfo,
-                shouldDownloadAllStickers: Bool) {
+    public init(
+        stickerPackInfo: StickerPackInfo,
+        shouldDownloadAllStickers: Bool,
+    ) {
         self.stickerPackInfo = stickerPackInfo
         self.shouldDownloadAllStickers = shouldDownloadAllStickers
 
@@ -332,10 +346,12 @@ public class TransientStickerPackDataSource: BaseStickerPackDataSource {
 
         self.installedDataSource.add(delegate: self)
 
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(didBecomeActive),
-                                               name: .OWSApplicationDidBecomeActive,
-                                               object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(didBecomeActive),
+            name: .OWSApplicationDidBecomeActive,
+            object: nil,
+        )
 
         ensureState()
     }
@@ -364,7 +380,7 @@ public class TransientStickerPackDataSource: BaseStickerPackDataSource {
         }
 
         // If necessary, download and parse the pack's manifest.
-        guard let stickerPack = stickerPack else {
+        guard let stickerPack else {
             downloadStickerPack()
             return
         }
@@ -403,8 +419,8 @@ public class TransientStickerPackDataSource: BaseStickerPackDataSource {
         downloadKeySet.insert(key)
 
         StickerManager.tryToDownloadStickerPack(stickerPackInfo: stickerPackInfo)
-            .done(on: DispatchQueue.main) { [weak self] (stickerPack) in
-                guard let self = self else {
+            .done(on: DispatchQueue.main) { [weak self] stickerPack in
+                guard let self else {
                     return
                 }
                 guard self.stickerPack == nil else {
@@ -415,9 +431,9 @@ public class TransientStickerPackDataSource: BaseStickerPackDataSource {
                 self.downloadKeySet.remove(key)
                 self.ensureState()
                 self.fireDidChange()
-            }.catch { [weak self] (error) in
+            }.catch { [weak self] error in
                 owsFailDebug("error: \(error)")
-                guard let self = self else {
+                guard let self else {
                     return
                 }
                 assert(self.downloadKeySet.contains(key))
@@ -455,17 +471,17 @@ public class TransientStickerPackDataSource: BaseStickerPackDataSource {
         // This sticker is not downloaded; try to download now.
         firstly(on: DispatchQueue.global()) {
             StickerManager.tryToDownloadSticker(stickerInfo: stickerInfo)
-        }.done(on: DispatchQueue.main) { [weak self] (temporaryFileUrl) in
-            guard let self = self else {
+        }.done(on: DispatchQueue.main) { [weak self] temporaryFileUrl in
+            guard let self else {
                 return
             }
             self.temporaryFileUrls.append(temporaryFileUrl)
             assert(self.downloadKeySet.contains(key))
             self.downloadKeySet.remove(key)
             self.set(temporaryFileUrl: temporaryFileUrl, stickerInfo: stickerInfo, stickerPackItem: stickerPackItem)
-        }.catch { [weak self] (error) in
+        }.catch { [weak self] error in
             owsFailDebug("error: \(error)")
-            guard let self = self else {
+            guard let self else {
                 return
             }
             assert(self.downloadKeySet.contains(key))
@@ -474,9 +490,11 @@ public class TransientStickerPackDataSource: BaseStickerPackDataSource {
         return false
     }
 
-    private func set(temporaryFileUrl: URL,
-                     stickerInfo: StickerInfo,
-                     stickerPackItem: StickerPackItem) {
+    private func set(
+        temporaryFileUrl: URL,
+        stickerInfo: StickerInfo,
+        stickerPackItem: StickerPackItem,
+    ) {
         AssertIsOnMainThread()
 
         let key = stickerInfo.asKey()
@@ -488,7 +506,7 @@ public class TransientStickerPackDataSource: BaseStickerPackDataSource {
             stickerInfo: stickerInfo,
             stickerType: stickerType,
             stickerDataUrl: temporaryFileUrl,
-            emojiString: stickerPackItem.emojiString
+            emojiString: stickerPackItem.emojiString,
         )
         stickerMetadataMap[key] = stickerMetadata
         ensureState()
@@ -574,7 +592,7 @@ extension TransientStickerPackDataSource: StickerPackDataSource {
         }
 
         guard let stickerMetadata = StickerManager.installedStickerMetadataWithSneakyTransaction(stickerInfo: stickerInfo) else {
-                                                                                                    return nil
+            return nil
         }
         stickerMetadataMap[key] = stickerMetadata
         return stickerMetadata
@@ -594,13 +612,15 @@ extension TransientStickerPackDataSource: StickerPackDataSourceDelegate {
 // Supplies sticker pack data for recently used stickers.
 public class RecentStickerPackDataSource: BaseStickerPackDataSource {
 
-    public override init() {
+    override public init() {
         super.init()
 
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(recentStickersDidChange),
-                                               name: StickerManager.recentStickersDidChange,
-                                               object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(recentStickersDidChange),
+            name: StickerManager.recentStickersDidChange,
+            object: nil,
+        )
 
         ensureState()
     }

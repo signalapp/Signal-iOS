@@ -21,7 +21,7 @@ public class BackupArchiveReleaseNotesRecipientArchiver: BackupArchiveProtoStrea
 
     func archiveReleaseNotesRecipient(
         stream: BackupArchiveProtoOutputStream,
-        context: BackupArchive.RecipientArchivingContext
+        context: BackupArchive.RecipientArchivingContext,
     ) -> ArchiveFrameResult {
         return context.bencher.processFrame { frameBencher in
             let releaseNotesAppId: RecipientAppId = .releaseNotesChannel
@@ -39,7 +39,7 @@ public class BackupArchiveReleaseNotesRecipientArchiver: BackupArchiveProtoStrea
                     var frame = BackupProto_Frame()
                     frame.item = .recipient(recipient)
                     return frame
-                }
+                },
             )
 
             if let maybeError {
@@ -55,7 +55,7 @@ public class BackupArchiveReleaseNotesRecipientArchiver: BackupArchiveProtoStrea
     func restoreReleaseNotesRecipientProto(
         _ releaseNotesRecipientProto: BackupProto_ReleaseNotes,
         recipient: BackupProto_Recipient,
-        context: BackupArchive.RecipientRestoringContext
+        context: BackupArchive.RecipientRestoringContext,
     ) -> RestoreFrameResult {
         context[recipient.recipientId] = .releaseNotesChannel
 

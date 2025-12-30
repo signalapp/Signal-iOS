@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalUI
 import SignalServiceKit
+import SignalUI
 
 class NameEducationSheet: StackSheetViewController {
     override var stackViewInsets: UIEdgeInsets {
@@ -14,13 +14,14 @@ class NameEducationSheet: StackSheetViewController {
     override var sheetBackgroundColor: UIColor {
         UIColor.Signal.secondaryBackground
     }
+
     override var handleBackgroundColor: UIColor {
         UIColor.Signal.transparentSeparator
     }
 
     private let type: SafetyTipsType
 
-    public init(type: SafetyTipsType) {
+    init(type: SafetyTipsType) {
         self.type = type
         super.init()
 
@@ -58,17 +59,17 @@ class NameEducationSheet: StackSheetViewController {
         case .contact:
             OWSLocalizedString(
                 "PROFILE_NAME_EDUCATION_SHEET_HEADER_FORMAT",
-                comment: "Header for the explainer sheet for profile names"
+                comment: "Header for the explainer sheet for profile names",
             )
         case .group:
             OWSLocalizedString(
                 "GROUP_NAME_EDUCATION_SHEET_HEADER_FORMAT",
-                comment: "Header for the explainer sheet for group names"
+                comment: "Header for the explainer sheet for group names",
             )
         }
         label.attributedText = text.styled(
             with: .font(.dynamicTypeBody),
-            .xmlRules([.style("bold", .init(.font(UIFont.dynamicTypeHeadline)))])
+            .xmlRules([.style("bold", .init(.font(UIFont.dynamicTypeHeadline)))]),
         )
         label.textColor = .label
         label.numberOfLines = 0
@@ -82,30 +83,30 @@ class NameEducationSheet: StackSheetViewController {
             [
                 OWSLocalizedString(
                     "PROFILE_NAME_EDUCATION_SHEET_BULLET_1",
-                    comment: "First bullet point for the explainer sheet for profile names"
+                    comment: "First bullet point for the explainer sheet for profile names",
                 ),
                 OWSLocalizedString(
                     "PROFILE_NAME_EDUCATION_SHEET_BULLET_2",
-                    comment: "Second bullet point for the explainer sheet for profile names"
+                    comment: "Second bullet point for the explainer sheet for profile names",
                 ),
                 OWSLocalizedString(
                     "PROFILE_NAME_EDUCATION_SHEET_BULLET_3",
-                    comment: "Third bullet point for the explainer sheet for profile names"
+                    comment: "Third bullet point for the explainer sheet for profile names",
                 ),
             ]
         case .group:
             [
                 OWSLocalizedString(
                     "GROUP_NAME_EDUCATION_SHEET_BULLET_1",
-                    comment: "First bullet point for the explainer sheet for group names"
+                    comment: "First bullet point for the explainer sheet for group names",
                 ),
                 OWSLocalizedString(
                     "GROUP_NAME_EDUCATION_SHEET_BULLET_2",
-                    comment: "Second bullet point for the explainer sheet for group names"
+                    comment: "Second bullet point for the explainer sheet for group names",
                 ),
                 OWSLocalizedString(
                     "GROUP_NAME_EDUCATION_SHEET_BULLET_3",
-                    comment: "Third bullet point for the explainer sheet for group names"
+                    comment: "Third bullet point for the explainer sheet for group names",
                 ),
             ]
         }

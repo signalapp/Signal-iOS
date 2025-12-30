@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import XCTest
 import SignalServiceKit
+import XCTest
 
 final class AccountDataReportTest: XCTestCase {
     func testWithValidData() throws {
@@ -30,7 +30,7 @@ final class AccountDataReportTest: XCTestCase {
             "{\"missing\": \"text field\"}".data(using: .ascii)!,
             "{\"text\": null}".data(using: .ascii)!,
             "{\"text\": 123}".data(using: .ascii)!,
-            "{\"TEXT\": \"should be ignored\"}".data(using: .ascii)!
+            "{\"TEXT\": \"should be ignored\"}".data(using: .ascii)!,
         ]
 
         for rawData in rawDatas {

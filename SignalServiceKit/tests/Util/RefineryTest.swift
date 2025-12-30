@@ -20,7 +20,7 @@ class RefineryTest: XCTestCase {
             }
         }.refine { values in
             return values.lazy.map {
-                XCTAssertFalse($0 == 1)  // Already handled 1 and we shouldn't be called again.
+                XCTAssertFalse($0 == 1) // Already handled 1 and we shouldn't be called again.
                 if $0 == 3 {
                     return "three"
                 }
@@ -70,7 +70,7 @@ class RefineryTest: XCTestCase {
             }
         }.refine { values in
             return values.lazy.map {
-                XCTAssertFalse($0 == 1)  // Already handled 1 and we shouldn't be called again.
+                XCTAssertFalse($0 == 1) // Already handled 1 and we shouldn't be called again.
                 if $0 == 3 {
                     return "three"
                 }
@@ -113,7 +113,7 @@ class RefineryTest: XCTestCase {
             return true
         } then: { values -> [String?] in
             thenCalls += 1
-            return values.map { "\($0)"}
+            return values.map { "\($0)" }
         } otherwise: { values -> [String?] in
             otherwiseCalls += 1
             return values.map { _ in "fail" }

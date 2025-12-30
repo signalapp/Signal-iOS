@@ -4,9 +4,9 @@
 //
 
 import Combine
-import SwiftUI
 import LibSignalClient
 import SignalServiceKit
+import SwiftUI
 
 // MARK: ApprovalRequest
 
@@ -39,7 +39,7 @@ class CallLinkApprovalViewModel: ObservableObject {
 
     private let deps = Deps(
         contactsManager: SSKEnvironment.shared.contactManagerRef,
-        db: DependenciesBridge.shared.db
+        db: DependenciesBridge.shared.db,
     )
 
     @Published var requests: [ApprovalRequest] = []
@@ -49,7 +49,9 @@ class CallLinkApprovalViewModel: ObservableObject {
     private var requestsToIgnore = Set<Aci>()
 
     enum RequestAction {
-        case approve, deny, viewDetails
+        case approve
+        case deny
+        case viewDetails
     }
 
     let performRequestAction = PassthroughSubject<(RequestAction, ApprovalRequest), Never>()
@@ -78,13 +80,13 @@ class CallLinkApprovalViewModel: ObservableObject {
         let names = self.deps.db.read { tx in
             self.deps.contactsManager.displayNames(
                 for: acis.map(SignalServiceAddress.init),
-                tx: tx
+                tx: tx,
             )
         }.map { displayName in
             displayName.resolvedValue(config: nameConfig, useShortNameIfAvailable: false)
         }
 
-        var requests = zip(acis, names).map { (aci, name) in
+        var requests = zip(acis, names).map { aci, name in
             ApprovalRequest(aci: aci, name: name)
         }
 

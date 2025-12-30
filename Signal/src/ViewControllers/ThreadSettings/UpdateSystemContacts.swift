@@ -24,7 +24,7 @@ class CreateOrEditContactFlow: SystemContactsFlow {
         address: SignalServiceAddress,
         contact: CNContact? = nil,
         editImmediately: Bool = true,
-        nameComponents: PersonNameComponents? = nil
+        nameComponents: PersonNameComponents? = nil,
     ) {
         self.address = address
         self.contact = contact
@@ -130,7 +130,7 @@ extension ContactsViewHelper {
     func presentSystemContactsFlow(
         _ flow: SystemContactsFlow,
         from viewController: UIViewController,
-        completion: (() -> Void)? = nil
+        completion: (() -> Void)? = nil,
     ) {
         checkEditAuthorization(
             performWhenAllowed: {
@@ -138,7 +138,7 @@ extension ContactsViewHelper {
                 flowNavigationController.completion = completion
                 viewController.present(flowNavigationController, animated: true)
             },
-            presentErrorFrom: viewController
+            presentErrorFrom: viewController,
         )
     }
 
@@ -169,7 +169,7 @@ extension ContactsViewHelper {
                     var phoneNumbers = existingContact.phoneNumbers
                     phoneNumbers.append(CNLabeledValue(
                         label: CNLabelPhoneNumberMain,
-                        value: CNPhoneNumber(stringValue: phoneNumber)
+                        value: CNPhoneNumber(stringValue: phoneNumber),
                     ))
                     let updatedContact = existingContact.mutableCopy() as! CNMutableContact
                     updatedContact.phoneNumbers = phoneNumbers
@@ -210,9 +210,9 @@ extension ContactsViewHelper {
         if contactViewController == nil {
             let newContact = CNMutableContact()
             if let phoneNumber = address.phoneNumber {
-                newContact.phoneNumbers = [ CNLabeledValue(
+                newContact.phoneNumbers = [CNLabeledValue(
                     label: CNLabelPhoneNumberMain,
-                    value: CNPhoneNumber(stringValue: phoneNumber)
+                    value: CNPhoneNumber(stringValue: phoneNumber),
                 )]
             }
 

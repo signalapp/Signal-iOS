@@ -65,15 +65,17 @@ public extension NSAttributedString {
     static func make(
         fromFormat format: String,
         attributedFormatArgs formatArgs: [AttributedFormatArg],
-        defaultAttributes: AttributedFormatArg.Attributes = [:]
+        defaultAttributes: AttributedFormatArg.Attributes = [:],
     ) -> NSAttributedString {
         do {
             // Confirm format string does not contain Unicode isolates, since
             // we'll be adding those ourselves later.
 
-            guard !format.contains(where: { c in
-                c == .unicodeFirstStrongIsolate || c == .unicodePopDirectionalIsolate
-            }) else {
+            guard
+                !format.contains(where: { c in
+                    c == .unicodeFirstStrongIsolate || c == .unicodePopDirectionalIsolate
+                })
+            else {
                 throw OWSAssertionError("Format string contained unicode isolates!")
             }
 
@@ -81,7 +83,7 @@ public extension NSAttributedString {
 
             let (formattedCopyWithPlaceholders, placeholdersInStringOrder) = try formatWithPlaceholders(
                 format: format,
-                formatArgs: formatArgs
+                formatArgs: formatArgs,
             )
 
             // Build an attributed string from the formatted string, replacing
@@ -96,7 +98,7 @@ public extension NSAttributedString {
                 let chunkUpToPlaceholder = formattedCopyWithPlaceholders[nextChunkStartIndex..<range.lowerBound]
                 formattedCopyWithAttributes.append(
                     String(chunkUpToPlaceholder),
-                    attributes: defaultAttributes
+                    attributes: defaultAttributes,
                 )
 
                 // ...and mark that the next chunk starts at the end of this placeholder.
@@ -107,14 +109,14 @@ public extension NSAttributedString {
                 // RTL/LTR formatting issues.
                 formattedCopyWithAttributes.append(
                     "\(Character.unicodeFirstStrongIsolate)\(placeholder.substitutionToApply)\(Character.unicodePopDirectionalIsolate)",
-                    attributes: placeholder.attributesToApply
+                    attributes: placeholder.attributesToApply,
                 )
             }
 
             let chunkAfterFinalPlaceholder = String(formattedCopyWithPlaceholders[nextChunkStartIndex..<formattedCopyWithPlaceholders.endIndex])
             formattedCopyWithAttributes.append(
                 chunkAfterFinalPlaceholder,
-                attributes: defaultAttributes
+                attributes: defaultAttributes,
             )
 
             return formattedCopyWithAttributes
@@ -132,7 +134,7 @@ public extension NSAttributedString {
             let formattedString = String(
                 format: format,
                 locale: NSLocale.current,
-                arguments: formatArgs.map { $0.fallback }
+                arguments: formatArgs.map { $0.fallback },
             )
 
             return NSAttributedString(string: formattedString, attributes: defaultAttributes)
@@ -147,10 +149,10 @@ public extension NSAttributedString {
 
     private static func formatWithPlaceholders(
         format: String,
-        formatArgs: [AttributedFormatArg]
+        formatArgs: [AttributedFormatArg],
     ) throws -> (
         formattedCopyWithPlaceholders: String,
-        placeholdersInStringOrder: [(placeholder: FormatArgPlaceholder, range: Range<String.Index>)]
+        placeholdersInStringOrder: [(placeholder: FormatArgPlaceholder, range: Range<String.Index>)],
     ) {
         var placeholders = [FormatArgPlaceholder]()
         let formattedCopyWithPlaceholders = String(
@@ -163,13 +165,13 @@ public extension NSAttributedString {
                 case let .string(value, attributes):
                     let placeholder = FormatArgPlaceholder(
                         substitutionToApply: value,
-                        attributesToApply: attributes
+                        attributesToApply: attributes,
                     )
 
                     placeholders.append(placeholder)
                     return placeholder.value
                 }
-            }
+            },
         )
 
         // Find the ranges of the placeholder values, in order
@@ -211,7 +213,7 @@ public extension NSAttributedString {
 
         return (
             formattedCopyWithPlaceholders: formattedCopyWithPlaceholders,
-            placeholdersInStringOrder: placeholdersInStringOrder
+            placeholdersInStringOrder: placeholdersInStringOrder,
         )
     }
 }
@@ -248,7 +250,7 @@ public struct OWSAdaptiveImageGlyph {
             imageContent: glyph.imageContent,
             contentIdentifier: glyph.contentIdentifier,
             contentDescription: glyph.contentDescription,
-            contentType: type(of: glyph).contentType
+            contentType: type(of: glyph).contentType,
         )
     }
 

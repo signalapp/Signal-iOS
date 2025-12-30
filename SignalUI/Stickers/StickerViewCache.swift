@@ -12,9 +12,11 @@ public class StickerViewCache {
 
     public init(maxSize: Int) {
         // Always use a nseMaxSize of zero.
-        backingCache = LRUCache(maxSize: maxSize,
-                                nseMaxSize: 0,
-                                shouldEvacuateInBackground: true)
+        backingCache = LRUCache(
+            maxSize: maxSize,
+            nseMaxSize: 0,
+            shouldEvacuateInBackground: true,
+        )
     }
 
     func get(key: StickerInfo) -> StickerReusableView? {

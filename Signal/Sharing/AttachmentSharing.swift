@@ -14,24 +14,24 @@ public class AttachmentSharing {
     public static func showShareUI(
         for attachment: ShareableAttachment,
         sender: Any? = nil,
-        completion: (() -> Void)? = nil
+        completion: (() -> Void)? = nil,
     ) {
         showShareUIForActivityItems(
             [attachment],
             sender: sender,
-            completion: completion
+            completion: completion,
         )
     }
 
     public static func showShareUI(
         for attachments: [ShareableAttachment],
         sender: Any? = nil,
-        completion: (() -> Void)? = nil
+        completion: (() -> Void)? = nil,
     ) {
         showShareUIForActivityItems(
             attachments,
             sender: sender,
-            completion: completion
+            completion: completion,
         )
     }
 
@@ -40,7 +40,7 @@ public class AttachmentSharing {
     public static func showShareUI(
         for url: URL,
         sender: Any? = nil,
-        completion: (() -> Void)? = nil
+        completion: (() -> Void)? = nil,
     ) {
         showShareUIForActivityItems([url], sender: sender, completion: completion)
     }
@@ -48,7 +48,7 @@ public class AttachmentSharing {
     public static func showShareUI(
         for urls: [URL],
         sender: Any? = nil,
-        completion: (() -> Void)? = nil
+        completion: (() -> Void)? = nil,
     ) {
         showShareUIForActivityItems(urls, sender: sender, completion: completion)
     }
@@ -58,31 +58,31 @@ public class AttachmentSharing {
     public static func showShareUI(
         for text: String,
         sender: Any? = nil,
-        completion: (() -> Void)? = nil
+        completion: (() -> Void)? = nil,
     ) {
         showShareUIForActivityItems([text], sender: sender, completion: completion)
     }
 
     // MARK: -
 
-    #if USE_DEBUG_UI
+#if USE_DEBUG_UI
 
     public static func showShareUI(
         for image: UIImage,
         sender: Any? = nil,
-        completion: (() -> Void)? = nil
+        completion: (() -> Void)? = nil,
     ) {
         showShareUIForActivityItems([image], sender: sender, completion: completion)
     }
 
-    #endif
+#endif
 
     // MARK: -
 
-    internal static func showShareUIForActivityItems(
+    static func showShareUIForActivityItems(
         _ activityItems: [Any],
         sender: Any?,
-        completion: (() -> Void)? = nil
+        completion: (() -> Void)? = nil,
     ) {
         DispatchMainThreadSafe {
             let activityViewController = UIActivityViewController(activityItems: activityItems, applicationActivities: nil)
@@ -119,7 +119,7 @@ public class AttachmentSharing {
                         x: fromViewController.view.center.x,
                         y: fromViewController.view.frame.maxY,
                         width: 0,
-                        height: 0
+                        height: 0,
                     )
 
                     popoverPresentationController.sourceView = fromViewController.view
@@ -152,7 +152,7 @@ extension Array where Element == ReferencedAttachmentStream {
 
             let filename = AttachmentSaving.uniqueFilename(
                 sourceFilename: attachment.reference.sourceFilename,
-                existingFilenames: &sourceFilenamesSet
+                existingFilenames: &sourceFilenamesSet,
             )
             dedupedSourceFilenames.append(filename)
         }
@@ -166,7 +166,7 @@ extension Array where Element == ReferencedAttachmentStream {
             return try ShareableAttachment(
                 attachment.attachmentStream,
                 sourceFilename: sourceFilename,
-                shareType: shareType
+                shareType: shareType,
             )
         }
     }
@@ -193,7 +193,7 @@ public class ShareableAttachment: NSObject, UIActivityItemSource {
     fileprivate init?(
         _ attachmentStream: AttachmentStream,
         sourceFilename: String?,
-        shareType: ShareType
+        shareType: ShareType,
     ) throws {
         self.attachmentStream = attachmentStream
         switch shareType {
@@ -273,7 +273,7 @@ public class ShareableAttachment: NSObject, UIActivityItemSource {
     // called to fetch data after an activity is selected. you can return nil.
     public func activityViewController(
         _ activityViewController: UIActivityViewController,
-        itemForActivityType activityType: UIActivity.ActivityType?
+        itemForActivityType activityType: UIActivity.ActivityType?,
     ) -> Any? {
         switch shareType {
         case .decryptedFileURL(let url):

@@ -27,7 +27,7 @@ class StoryThumbnailView: UIView {
             }
         }
 
-        static func == (lhs: StoryThumbnailView.Attachment, rhs: StoryThumbnailView.Attachment) -> Bool {
+        static func ==(lhs: StoryThumbnailView.Attachment, rhs: StoryThumbnailView.Attachment) -> Bool {
             switch (lhs, rhs) {
             case (.file(let lhsAttachment), .file(let rhsAttachment)):
                 return lhsAttachment.attachment.id == rhsAttachment.attachment.id
@@ -69,7 +69,7 @@ class StoryThumbnailView: UIView {
             let textThumbnailView = TextAttachmentView(
                 attachment: attachment,
                 interactionIdentifier: interactionIdentifier,
-                spoilerState: spoilerState
+                spoilerState: spoilerState,
             ).asThumbnailView()
             addSubview(textThumbnailView)
             textThumbnailView.autoPinEdgesToSuperviewEdges()

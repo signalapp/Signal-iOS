@@ -192,7 +192,7 @@ class PhotoLibrary: NSObject, PHPhotoLibraryChangeObserver {
         PHAssetCollection.fetchAssetCollections(
             with: .smartAlbum,
             subtype: .smartAlbumUserLibrary,
-            options: fetchOptions
+            options: fetchOptions,
         ).enumerateObjects { collection, _, stop in
             fetchedCollection = PhotoAlbum(collection: collection)
             stop.pointee = true

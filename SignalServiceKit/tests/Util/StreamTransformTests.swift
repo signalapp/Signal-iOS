@@ -49,7 +49,7 @@ final class ChunkedStreamTransformTests: XCTestCase {
             "aa".data(using: .utf8)!,
             "bbb".data(using: .utf8)!,
             "cccc".data(using: .utf8)!,
-            "d".data(using: .utf8)!
+            "d".data(using: .utf8)!,
         ]
 
         let transformedData = try data1.reduce(into: Data()) { $0.append(try outputStream.transform(data: $1)) }
@@ -75,7 +75,7 @@ final class ChunkedStreamTransformTests: XCTestCase {
             "aa".data(using: .utf8)!,
             "bbb".data(using: .utf8)!,
             "cccc".data(using: .utf8)!,
-            "d".data(using: .utf8)!
+            "d".data(using: .utf8)!,
         ]
 
         let transformedData = try data1.reduce(into: Data()) { $0.append(try outputStream.transform(data: $1)) }
@@ -99,7 +99,7 @@ final class ChunkedStreamTransformTests: XCTestCase {
             "aa".data(using: .utf8)!,
             "bbb".data(using: .utf8)!,
             "cccc".data(using: .utf8)!,
-            "d".data(using: .utf8)!
+            "d".data(using: .utf8)!,
         ]
 
         let transformedData = try data1.reduce(into: Data()) { $0.append(try outputStream.transform(data: $1)) }
@@ -110,7 +110,7 @@ final class ChunkedStreamTransformTests: XCTestCase {
         // This allows testing reads of chunks that span multiple buffered reads.
         let chunkSize: Int = 1
         var count: Int = 0
-        while count < transformedData.count  {
+        while count < transformedData.count {
             let chunk = transformedData.subdata(in: count..<chunkSize)
             let result = try inputStream.transform(data: chunk)
             count += chunkSize

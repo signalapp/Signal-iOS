@@ -10,20 +10,22 @@ public import SignalServiceKit
 public class ContactCell: UITableViewCell, ReusableTableViewCell {
     public static let reuseIdentifier = "ContactCell"
 
-    static private let avatarDiameter: CGFloat = 36
+    private static let avatarDiameter: CGFloat = 36
 
     private let contactImageView = AvatarImageView()
     private lazy var textStackView: UIStackView = {
         let stackView = UIStackView(arrangedSubviews: [titleLabel])
         stackView.axis = .vertical
         return stackView
-     }()
+    }()
+
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .dynamicTypeBody
         label.adjustsFontForContentSizeCategory = true
         return label
     }()
+
     private let subtitleLabel: UILabel = {
         let label = UILabel()
         label.font = .dynamicTypeSubheadline
@@ -53,12 +55,12 @@ public class ContactCell: UITableViewCell, ReusableTableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    public override func prepareForReuse() {
+    override public func prepareForReuse() {
         accessoryType = .none
         subtitleLabel.removeFromSuperview()
     }
 
-    public override func setSelected(_ selected: Bool, animated: Bool) {
+    override public func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
         if showsWhenSelected {
             accessoryType = selected ? .checkmark : .none
@@ -95,7 +97,7 @@ public class ContactCell: UITableViewCell, ReusableTableViewCell {
                 SSKEnvironment.shared.avatarBuilderRef.defaultAvatarImage(
                     personNameComponents: nameComponents,
                     diameterPoints: UInt(ContactCell.avatarDiameter),
-                    transaction: transaction
+                    transaction: transaction,
                 )
             }
             contactImage = avatar
@@ -126,7 +128,7 @@ public class ContactCell: UITableViewCell, ReusableTableViewCell {
         }
     }
 
-    public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+    override public func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
 
         titleLabel.textColor = Theme.primaryTextColor
@@ -136,7 +138,7 @@ public class ContactCell: UITableViewCell, ReusableTableViewCell {
     }
 }
 
-fileprivate extension CNContact {
+private extension CNContact {
     /**
      * Bold the sorting portion of the name. e.g. if we sort by family name, bold the family name.
      */
@@ -145,12 +147,12 @@ fileprivate extension CNContact {
 
         let boldDescriptor = font.fontDescriptor.withSymbolicTraits(.traitBold)
         let boldAttributes = [
-            NSAttributedString.Key.font: UIFont(descriptor: boldDescriptor!, size: 0)
+            NSAttributedString.Key.font: UIFont(descriptor: boldDescriptor!, size: 0),
         ]
 
         if let attributedName = CNContactFormatter.attributedString(from: self, style: .fullName, defaultAttributes: nil) {
             let highlightedName = attributedName.mutableCopy() as! NSMutableAttributedString
-            highlightedName.enumerateAttributes(in: highlightedName.entireRange, options: [], using: { (attrs, range, _) in
+            highlightedName.enumerateAttributes(in: highlightedName.entireRange, options: [], using: { attrs, range, _ in
                 if let property = attrs[NSAttributedString.Key(rawValue: CNContactPropertyAttribute)] as? String, property == keyToHighlight {
                     highlightedName.addAttributes(boldAttributes, range: range)
                 }

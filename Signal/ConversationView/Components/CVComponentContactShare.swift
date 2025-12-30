@@ -26,9 +26,11 @@ public class CVComponentContactShare: CVComponentBase, CVComponent {
         CVComponentViewContactShare()
     }
 
-    public func configureForRendering(componentView componentViewParam: CVComponentView,
-                                      cellMeasurement: CVCellMeasurement,
-                                      componentDelegate: CVComponentDelegate) {
+    public func configureForRendering(
+        componentView componentViewParam: CVComponentView,
+        cellMeasurement: CVCellMeasurement,
+        componentDelegate: CVComponentDelegate,
+    ) {
         guard let componentView = componentViewParam as? CVComponentViewContactShare else {
             owsFailDebug("Unexpected componentView.")
             componentViewParam.reset()
@@ -36,22 +38,28 @@ public class CVComponentContactShare: CVComponentBase, CVComponent {
         }
 
         let contactShareView = componentView.contactShareView
-        contactShareView.configureForRendering(state: contactShareState.state,
-                                               cellMeasurement: cellMeasurement)
+        contactShareView.configureForRendering(
+            state: contactShareState.state,
+            cellMeasurement: cellMeasurement,
+        )
     }
 
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
         owsAssertDebug(maxWidth > 0)
 
-        return CVContactShareView.measure(maxWidth: maxWidth,
-                                          measurementBuilder: measurementBuilder,
-                                          state: contactShareState.state)
+        return CVContactShareView.measure(
+            maxWidth: maxWidth,
+            measurementBuilder: measurementBuilder,
+            state: contactShareState.state,
+        )
     }
 
-    public override func handleTap(sender: UIGestureRecognizer,
-                                   componentDelegate: CVComponentDelegate,
-                                   componentView: CVComponentView,
-                                   renderItem: CVRenderItem) -> Bool {
+    override public func handleTap(
+        sender: UIGestureRecognizer,
+        componentDelegate: CVComponentDelegate,
+        componentView: CVComponentView,
+        renderItem: CVRenderItem,
+    ) -> Bool {
 
         componentDelegate.didTapContactShare(contactShare)
         return true
@@ -85,12 +93,16 @@ public class CVComponentContactShare: CVComponentBase, CVComponent {
 extension CVComponentContactShare: CVAccessibilityComponent {
     public var accessibilityDescription: String {
         if let contactName = contactShare.displayName.filterForDisplay.nilIfEmpty {
-            let format = OWSLocalizedString("ACCESSIBILITY_LABEL_CONTACT_FORMAT",
-                                           comment: "Accessibility label for contact. Embeds: {{ the contact name }}.")
+            let format = OWSLocalizedString(
+                "ACCESSIBILITY_LABEL_CONTACT_FORMAT",
+                comment: "Accessibility label for contact. Embeds: {{ the contact name }}.",
+            )
             return String(format: format, contactName)
         } else {
-            return OWSLocalizedString("ACCESSIBILITY_LABEL_CONTACT",
-                                     comment: "Accessibility label for contact.")
+            return OWSLocalizedString(
+                "ACCESSIBILITY_LABEL_CONTACT",
+                comment: "Accessibility label for contact.",
+            )
         }
     }
 }

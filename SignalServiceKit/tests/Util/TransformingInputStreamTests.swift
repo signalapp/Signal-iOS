@@ -17,9 +17,9 @@ final class TransformingInputStreamTests: XCTestCase {
             transforms: [
                 ChunkedOutputStreamTransform(),
                 try GzipStreamTransform(.compress),
-                try EncryptingStreamTransform(iv: iv, encryptionKey: encryptionKey)
+                try EncryptingStreamTransform(iv: iv, encryptionKey: encryptionKey),
             ],
-            outputStream: outputStream
+            outputStream: outputStream,
         )
 
         try transformingOutputStream.write(data: "w".data(using: .utf8)!)
@@ -35,9 +35,9 @@ final class TransformingInputStreamTests: XCTestCase {
             transforms: [
                 try DecryptingStreamTransform(encryptionKey: encryptionKey),
                 try GzipStreamTransform(.decompress),
-                ChunkedInputStreamTransform()
+                ChunkedInputStreamTransform(),
             ],
-            inputStream: inputStream
+            inputStream: inputStream,
         )
 
         var results = [Data]()
@@ -46,6 +46,6 @@ final class TransformingInputStreamTests: XCTestCase {
         }
         try transformingIntputStream.close()
 
-        XCTAssertEqual(results.filter({$0.count > 0}).count, 3)
+        XCTAssertEqual(results.filter({ $0.count > 0 }).count, 3)
     }
 }

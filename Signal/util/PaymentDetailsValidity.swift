@@ -41,7 +41,7 @@ extension PaymentMethodFieldValidity where Invalidity == Void {
 
 #if TESTABLE_BUILD
 extension PaymentMethodFieldValidity: Equatable where Invalidity: Equatable {
-    static func == (lhs: PaymentMethodFieldValidity<Invalidity>, rhs: PaymentMethodFieldValidity<Invalidity>) -> Bool where Invalidity: Equatable {
+    static func ==(lhs: PaymentMethodFieldValidity<Invalidity>, rhs: PaymentMethodFieldValidity<Invalidity>) -> Bool where Invalidity: Equatable {
         switch (lhs, rhs) {
         case (.potentiallyValid, .potentiallyValid):
             return true
@@ -178,7 +178,7 @@ enum CreditAndDebitCards {
         ofExpirationMonth month: String,
         andYear year: String,
         currentMonth: Int,
-        currentYear: Int
+        currentYear: Int,
     ) -> Validity {
         let monthValidity = validity(ofExpirationMonth: month)
         let yearValidity = validity(ofExpirationYear: year)
@@ -263,7 +263,7 @@ enum CreditAndDebitCards {
 
 // MARK: Luhn Validation
 
-fileprivate extension String {
+private extension String {
     var isLuhnValid: Bool {
         var checksum = 0
         var shouldDouble = false
@@ -313,7 +313,7 @@ enum SEPABankAccounts {
 
         func potentiallyInvalid(
             _ invalidity: IBANInvalidity,
-            isPotentiallyValid: Bool
+            isPotentiallyValid: Bool,
         ) -> IBANValidity {
             if isPotentiallyValid {
                 return .potentiallyValid

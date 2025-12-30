@@ -24,14 +24,14 @@ public final class MessageSenderJobRecord: JobRecord, FactoryInitializableFromRe
     private let transientMessage: TSOutgoingMessage?
 
     // exposed for tests
-    internal let removeMessageAfterSending: Bool
+    let removeMessageAfterSending: Bool
 
     public enum MessageType {
         case persisted(messageId: String, useMediaQueue: Bool)
         case editMessage(
             editedMessageId: String?,
             messageForSending: OutgoingEditMessage,
-            useMediaQueue: Bool
+            useMediaQueue: Bool,
         )
         case transient(TSOutgoingMessage)
         /// Generally considered invalid, but failed at processing time not deserialization time.
@@ -43,7 +43,7 @@ public final class MessageSenderJobRecord: JobRecord, FactoryInitializableFromRe
             return .editMessage(
                 editedMessageId: persistedMessageId ?? editMessage.editedMessage?.uniqueId,
                 messageForSending: editMessage,
-                useMediaQueue: useMediaQueue
+                useMediaQueue: useMediaQueue,
             )
         } else if let transientMessage {
             return .transient(transientMessage)
@@ -55,13 +55,13 @@ public final class MessageSenderJobRecord: JobRecord, FactoryInitializableFromRe
     }
 
     // exposed for tests
-    internal init(
+    init(
         threadId: String?,
         messageType: MessageType,
         removeMessageAfterSending: Bool,
         isHighPriority: Bool,
         failureCount: UInt = 0,
-        status: Status = .ready
+        status: Status = .ready,
     ) {
         self.threadId = threadId
         self.removeMessageAfterSending = removeMessageAfterSending
@@ -88,51 +88,51 @@ public final class MessageSenderJobRecord: JobRecord, FactoryInitializableFromRe
 
         super.init(
             failureCount: failureCount,
-            status: status
+            status: status,
         )
     }
 
     convenience init(
         persistedMessage: PreparedOutgoingMessage.MessageType.Persisted,
         isHighPriority: Bool,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) throws {
         let messageType = MessageType.persisted(
             messageId: persistedMessage.message.uniqueId,
-            useMediaQueue: persistedMessage.message.hasMediaAttachments(transaction: transaction)
+            useMediaQueue: persistedMessage.message.hasMediaAttachments(transaction: transaction),
         )
 
         self.init(
             threadId: persistedMessage.message.uniqueThreadId,
             messageType: messageType,
             removeMessageAfterSending: false,
-            isHighPriority: isHighPriority
+            isHighPriority: isHighPriority,
         )
     }
 
     convenience init(
         editMessage: PreparedOutgoingMessage.MessageType.EditMessage,
         isHighPriority: Bool,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) throws {
         let messageType = MessageType.editMessage(
             editedMessageId: editMessage.editedMessage.uniqueId,
             messageForSending: editMessage.messageForSending,
             // This would ideally only check for un-uploaded attachments.
-            useMediaQueue: editMessage.editedMessage.hasMediaAttachments(transaction: transaction)
+            useMediaQueue: editMessage.editedMessage.hasMediaAttachments(transaction: transaction),
         )
 
         self.init(
             threadId: editMessage.editedMessage.uniqueThreadId,
             messageType: messageType,
             removeMessageAfterSending: false,
-            isHighPriority: isHighPriority
+            isHighPriority: isHighPriority,
         )
     }
 
     convenience init(
         storyMessage: PreparedOutgoingMessage.MessageType.Story,
-        isHighPriority: Bool
+        isHighPriority: Bool,
     ) {
         let messageType = MessageType.transient(storyMessage.message)
 
@@ -140,18 +140,18 @@ public final class MessageSenderJobRecord: JobRecord, FactoryInitializableFromRe
             threadId: storyMessage.message.uniqueThreadId,
             messageType: messageType,
             removeMessageAfterSending: false,
-            isHighPriority: isHighPriority
+            isHighPriority: isHighPriority,
         )
     }
 
     convenience init(
         transientMessage: TSOutgoingMessage,
-        isHighPriority: Bool
+        isHighPriority: Bool,
     ) {
         owsPrecondition(
             !transientMessage.shouldBeSaved
-            && !(transientMessage is OutgoingStoryMessage),
-            "Invalid transient message type!"
+                && !(transientMessage is OutgoingStoryMessage),
+            "Invalid transient message type!",
         )
         let messageType = MessageType.transient(transientMessage)
 
@@ -159,7 +159,7 @@ public final class MessageSenderJobRecord: JobRecord, FactoryInitializableFromRe
             threadId: transientMessage.uniqueThreadId,
             messageType: messageType,
             removeMessageAfterSending: false,
-            isHighPriority: isHighPriority
+            isHighPriority: isHighPriority,
         )
     }
 
@@ -182,12 +182,12 @@ public final class MessageSenderJobRecord: JobRecord, FactoryInitializableFromRe
 
         transientMessage = try container.decodeIfPresent(
             Data.self,
-            forKey: .transientMessage
+            forKey: .transientMessage,
         ).flatMap { invisibleMessageData -> TSOutgoingMessage? in
             do {
                 return try LegacySDSSerializer().deserializeLegacySDSData(
                     invisibleMessageData,
-                    propertyName: "invisibleMessage"
+                    propertyName: "invisibleMessage",
                 )
             } catch let error {
                 owsFailDebug("Failed to deserialize invisible message data! Has this message type been removed? \(error)")
@@ -211,7 +211,7 @@ public final class MessageSenderJobRecord: JobRecord, FactoryInitializableFromRe
         try container.encode(useMediaQueue, forKey: .useMediaQueue)
         try container.encodeIfPresent(
             LegacySDSSerializer().serializeAsLegacySDSData(property: transientMessage),
-            forKey: .transientMessage
+            forKey: .transientMessage,
         )
         try container.encode(removeMessageAfterSending, forKey: .removeMessageAfterSending)
         try container.encode(isHighPriority, forKey: .isHighPriority)

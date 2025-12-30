@@ -52,8 +52,9 @@ class PhoneNumberChangedMessageInserterTest: XCTestCase {
                         fullGroupMember: TSGroupMember(
                             address: NormalizedDatabaseRecordAddress(address: fullMemberAddress)!,
                             groupThreadId: thread.uniqueId,
-                            lastInteractionTimestamp: 0),
-                        tx: tx
+                            lastInteractionTimestamp: 0,
+                        ),
+                        tx: tx,
                     )
                 }
             }
@@ -68,7 +69,7 @@ class PhoneNumberChangedMessageInserterTest: XCTestCase {
             isArchived: true,
             isMarkedUnread: false,
             mutedUntilTimestamp: 0,
-            audioPlaybackRate: 1
+            audioPlaybackRate: 1,
         )
 
         let interactionStore = MockInteractionStore()
@@ -77,7 +78,7 @@ class PhoneNumberChangedMessageInserterTest: XCTestCase {
             groupMemberStore: groupMemberStore,
             interactionStore: interactionStore,
             threadAssociatedDataStore: threadAssociatedDataStore,
-            threadStore: threadStore
+            threadStore: threadStore,
         )
 
         // Alice changes her number.
@@ -91,7 +92,7 @@ class PhoneNumberChangedMessageInserterTest: XCTestCase {
                     isLocalRecipient: false,
                     tx: tx,
                 ),
-                tx: tx
+                tx: tx,
             )
 
             let threadIds = interactionStore.insertedInteractions.map { $0.uniqueThreadId }
@@ -110,7 +111,7 @@ class PhoneNumberChangedMessageInserterTest: XCTestCase {
             )
             mergeObserver.didLearnAssociation(
                 mergedRecipient: mergedRecipient,
-                tx: tx
+                tx: tx,
             )
             try! mergedRecipient.oldRecipient?.delete(tx.database)
 
@@ -129,7 +130,7 @@ class PhoneNumberChangedMessageInserterTest: XCTestCase {
                     isLocalRecipient: false,
                     tx: tx,
                 ),
-                tx: tx
+                tx: tx,
             )
 
             let threadIds = interactionStore.insertedInteractions.map { $0.uniqueThreadId }
@@ -147,7 +148,7 @@ class PhoneNumberChangedMessageInserterTest: XCTestCase {
                     isLocalRecipient: true,
                     tx: tx,
                 ),
-                tx: tx
+                tx: tx,
             )
 
             let threadIds = interactionStore.insertedInteractions.map { $0.uniqueThreadId }

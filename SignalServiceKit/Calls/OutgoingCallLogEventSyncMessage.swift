@@ -14,28 +14,28 @@ public class OutgoingCallLogEventSyncMessage: OWSOutgoingSyncMessage {
         super.init(coder: coder)
     }
 
-    public override func encode(with coder: NSCoder) {
+    override public func encode(with coder: NSCoder) {
         super.encode(with: coder)
         if let callLogEvent {
             coder.encode(callLogEvent, forKey: "callLogEvent")
         }
     }
 
-    public override var hash: Int {
+    override public var hash: Int {
         var hasher = Hasher()
         hasher.combine(super.hash)
         hasher.combine(callLogEvent)
         return hasher.finalize()
     }
 
-    public override func isEqual(_ object: Any?) -> Bool {
+    override public func isEqual(_ object: Any?) -> Bool {
         guard let object = object as? Self else { return false }
         guard super.isEqual(object) else { return false }
         guard self.callLogEvent == object.callLogEvent else { return false }
         return true
     }
 
-    public override func copy(with zone: NSZone? = nil) -> Any {
+    override public func copy(with zone: NSZone? = nil) -> Any {
         let result = super.copy(with: zone) as! Self
         result.callLogEvent = self.callLogEvent
         return result
@@ -47,7 +47,7 @@ public class OutgoingCallLogEventSyncMessage: OWSOutgoingSyncMessage {
     init(
         callLogEvent: CallLogEvent,
         localThread: TSContactThread,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) {
         self.callLogEvent = callLogEvent
         super.init(localThread: localThread, transaction: tx)
@@ -108,7 +108,7 @@ public extension OutgoingCallLogEventSyncMessage {
             eventType: EventType,
             callId: UInt64?,
             conversationId: Data?,
-            timestamp: UInt64
+            timestamp: UInt64,
         ) {
             self.eventType = eventType
             self.callId = callId
@@ -125,7 +125,7 @@ public extension OutgoingCallLogEventSyncMessage {
             static let conversationId = "conversationId"
         }
 
-        required public init?(coder: NSCoder) {
+        public required init?(coder: NSCoder) {
             guard
                 let eventTypeRaw = coder.decodeObject(of: NSNumber.self, forKey: Keys.eventType) as? UInt,
                 let eventType = EventType(rawValue: eventTypeRaw),

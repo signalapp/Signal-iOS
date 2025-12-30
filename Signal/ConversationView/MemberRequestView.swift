@@ -24,8 +24,10 @@ class MemberRequestView: ConversationBottomPanelView {
         let label = UILabel()
         label.font = .dynamicTypeSubheadlineClamped
         label.textColor = Theme.secondaryTextAndIconColor
-        label.text = OWSLocalizedString("MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR",
-                                       comment: "Indicator that you have requested to join this group.")
+        label.text = OWSLocalizedString(
+            "MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR",
+            comment: "Indicator that you have requested to join this group.",
+        )
         label.numberOfLines = 0
         label.textAlignment = .center
         label.lineBreakMode = .byWordWrapping
@@ -33,11 +35,11 @@ class MemberRequestView: ConversationBottomPanelView {
         let cancelButton = UIButton(
             configuration: .largeSecondary(title: OWSLocalizedString(
                 "MESSAGE_REQUESTS_CANCEL_REQUEST_BUTTON",
-                comment: "Label for button to cancel your request to join the group."
+                comment: "Label for button to cancel your request to join the group.",
             )),
             primaryAction: UIAction { [weak self] _ in
                 self?.didTapCancelButton()
-            }
+            },
         )
         cancelButton.configuration?.baseForegroundColor = .Signal.red
         cancelButton.translatesAutoresizingMaskIntoConstraints = false
@@ -75,31 +77,38 @@ class MemberRequestView: ConversationBottomPanelView {
     }
 
     private func showCancelRequestUI() {
-        guard let fromViewController = fromViewController else {
+        guard let fromViewController else {
             owsFailDebug("Missing fromViewController.")
             return
         }
 
-        let title = OWSLocalizedString("MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE",
-                                            comment: "Title for the confirmation alert when cancelling your request to join the group.")
+        let title = OWSLocalizedString(
+            "MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE",
+            comment: "Title for the confirmation alert when cancelling your request to join the group.",
+        )
         let actionSheet = ActionSheetController(title: title)
 
-        actionSheet.addAction(ActionSheetAction(title: CommonStrings.yesButton,
-                                                style: .destructive) { [weak self] _ in
-                                                    self?.cancelRequestToJoin()
+        actionSheet.addAction(ActionSheetAction(
+            title: CommonStrings.yesButton,
+            style: .destructive,
+        ) { [weak self] _ in
+            self?.cancelRequestToJoin()
         })
-        actionSheet.addAction(ActionSheetAction(title: CommonStrings.noButton,
-                                                style: .cancel) { _ in
-                                                    // Do nothing.
+        actionSheet.addAction(ActionSheetAction(
+            title: CommonStrings.noButton,
+            style: .cancel,
+        ) { _ in
+            // Do nothing.
         })
 
         fromViewController.presentActionSheet(actionSheet)
     }
 
     private func cancelRequestToJoin() {
-        guard let fromViewController = fromViewController,
-              let groupThread = thread as? TSGroupThread,
-              let groupModelV2 = groupThread.groupModel as? TSGroupModelV2
+        guard
+            let fromViewController,
+            let groupThread = thread as? TSGroupThread,
+            let groupModelV2 = groupThread.groupModel as? TSGroupModelV2
         else {
             GroupViewUtils.showUpdateErrorUI(error: OWSAssertionError("Missing properties needed to update group"))
             return
@@ -110,7 +119,7 @@ class MemberRequestView: ConversationBottomPanelView {
             updateBlock: {
                 try await GroupManager.cancelRequestToJoin(groupModel: groupModelV2)
             },
-            completion: nil
+            completion: nil,
         )
     }
 }

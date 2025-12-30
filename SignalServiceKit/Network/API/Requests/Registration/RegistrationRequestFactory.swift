@@ -14,17 +14,17 @@ public enum RegistrationRequestFactory {
         e164: E164,
         pushToken: String?,
         mcc: String?,
-        mnc: String?
+        mnc: String?,
     ) -> TSRequest {
         let urlPathComponents = URLPathComponents(
-            ["v1", "verification", "session"]
+            ["v1", "verification", "session"],
         )
         var urlComponents = URLComponents()
         urlComponents.percentEncodedPath = urlPathComponents.percentEncoded
         let url = urlComponents.url!
 
         var parameters: [String: Any] = [
-            "number": e164.stringValue
+            "number": e164.stringValue,
         ]
         if let pushToken {
             owsAssertDebug(!pushToken.isEmpty)
@@ -45,12 +45,12 @@ public enum RegistrationRequestFactory {
 
     /// See `RegistrationServiceResponses.FetchSessionResponseCodes` for possible responses.
     public static func fetchSessionRequest(
-        sessionId: String
+        sessionId: String,
     ) -> TSRequest {
         owsAssertDebug(sessionId.isEmpty.negated)
 
         let urlPathComponents = URLPathComponents(
-            ["v1", "verification", "session", sessionId]
+            ["v1", "verification", "session", sessionId],
         )
         var urlComponents = URLComponents()
         urlComponents.percentEncodedPath = urlPathComponents.percentEncoded
@@ -68,13 +68,13 @@ public enum RegistrationRequestFactory {
     public static func fulfillChallengeRequest(
         sessionId: String,
         captchaToken: String?,
-        pushChallengeToken: String?
+        pushChallengeToken: String?,
     ) -> TSRequest {
         owsAssertDebug(sessionId.isEmpty.negated)
         owsAssertDebug(!captchaToken.isEmptyOrNil || !pushChallengeToken.isEmptyOrNil)
 
         let urlPathComponents = URLPathComponents(
-            ["v1", "verification", "session", sessionId]
+            ["v1", "verification", "session", sessionId],
         )
         var urlComponents = URLComponents()
         urlComponents.percentEncodedPath = urlPathComponents.percentEncoded
@@ -108,12 +108,12 @@ public enum RegistrationRequestFactory {
         sessionId: String,
         languageCode: String?,
         countryCode: String?,
-        transport: VerificationCodeTransport
+        transport: VerificationCodeTransport,
     ) -> TSRequest {
         owsAssertDebug(sessionId.isEmpty.negated)
 
         let urlPathComponents = URLPathComponents(
-            ["v1", "verification", "session", sessionId, "code"]
+            ["v1", "verification", "session", sessionId, "code"],
         )
         var urlComponents = URLComponents()
         urlComponents.percentEncodedPath = urlPathComponents.percentEncoded
@@ -121,7 +121,7 @@ public enum RegistrationRequestFactory {
 
         let parameters: [String: Any] = [
             "transport": transport.rawValue,
-            "client": "ios"
+            "client": "ios",
         ]
 
         var languageCodes = [String]()
@@ -147,20 +147,20 @@ public enum RegistrationRequestFactory {
     /// See `RegistrationServiceResponses.SubmitVerificationCodeResponseCodes` for possible responses.
     public static func submitVerificationCodeRequest(
         sessionId: String,
-        code: String
+        code: String,
     ) -> TSRequest {
         owsAssertDebug(sessionId.isEmpty.negated)
         owsAssertDebug(code.isEmpty.negated)
 
         let urlPathComponents = URLPathComponents(
-            ["v1", "verification", "session", sessionId, "code"]
+            ["v1", "verification", "session", sessionId, "code"],
         )
         var urlComponents = URLComponents()
         urlComponents.percentEncodedPath = urlPathComponents.percentEncoded
         let url = urlComponents.url!
 
         let parameters: [String: Any] = [
-            "code": code
+            "code": code,
         ]
 
         var result = TSRequest(url: url, method: "PUT", parameters: parameters)
@@ -173,12 +173,12 @@ public enum RegistrationRequestFactory {
 
     public static func svr2AuthCredentialCheckRequest(
         e164: E164,
-        credentials: [SVR2AuthCredential]
+        credentials: [SVR2AuthCredential],
     ) -> TSRequest {
         owsAssertDebug(!credentials.isEmpty)
 
         let urlPathComponents = URLPathComponents(
-            ["v2", "svr", "auth", "check"]
+            ["v2", "svr", "auth", "check"],
         )
         var urlComponents = URLComponents()
         urlComponents.percentEncodedPath = urlPathComponents.percentEncoded
@@ -188,7 +188,7 @@ public enum RegistrationRequestFactory {
             "number": e164.stringValue,
             "passwords": credentials.map {
                 "\($0.credential.username):\($0.credential.password)"
-            }
+            },
         ]
 
         var result = TSRequest(url: url, method: "POST", parameters: parameters)
@@ -239,12 +239,12 @@ public enum RegistrationRequestFactory {
         accountAttributes: AccountAttributes,
         skipDeviceTransfer: Bool,
         apnRegistrationId: ApnRegistrationId?,
-        prekeyBundles: RegistrationPreKeyUploadBundles
+        prekeyBundles: RegistrationPreKeyUploadBundles,
     ) -> TSRequest {
         owsAssertDebug((apnRegistrationId != nil) != accountAttributes.isManualMessageFetchEnabled)
 
         let urlPathComponents = URLPathComponents(
-            ["v1", "registration"]
+            ["v1", "registration"],
         )
         var urlComponents = URLComponents()
         urlComponents.percentEncodedPath = urlPathComponents.percentEncoded
@@ -263,7 +263,7 @@ public enum RegistrationRequestFactory {
             "pniSignedPreKey": OWSRequestFactory.signedPreKeyRequestParameters(prekeyBundles.pni.signedPreKey),
             "aciPqLastResortPreKey": OWSRequestFactory.pqPreKeyRequestParameters(prekeyBundles.aci.lastResortPreKey),
             "pniPqLastResortPreKey": OWSRequestFactory.pqPreKeyRequestParameters(prekeyBundles.pni.lastResortPreKey),
-            "requireAtomic": true
+            "requireAtomic": true,
         ]
         switch verificationMethod {
         case .sessionId(let sessionId):
@@ -297,17 +297,17 @@ public enum RegistrationRequestFactory {
         verificationMethod: VerificationMethod,
         e164: E164,
         reglockToken: String?,
-        pniChangeNumberParameters: PniDistribution.Parameters
+        pniChangeNumberParameters: PniDistribution.Parameters,
     ) -> TSRequest {
         let urlPathComponents = URLPathComponents(
-            ["v2", "accounts", "number"]
+            ["v2", "accounts", "number"],
         )
         var urlComponents = URLComponents()
         urlComponents.percentEncodedPath = urlPathComponents.percentEncoded
         let url = urlComponents.url!
 
         var parameters: [String: Any] = [
-            "number": e164.stringValue
+            "number": e164.stringValue,
         ]
         switch verificationMethod {
         case .sessionId(let sessionId):
@@ -323,7 +323,7 @@ public enum RegistrationRequestFactory {
             pniChangeNumberParameters.requestParameters(),
             uniquingKeysWith: { _, _ in
                 owsFail("Unexpectedly encountered duplicate keys!")
-            }
+            },
         )
 
         return TSRequest(url: url, method: "PUT", parameters: parameters)
@@ -331,10 +331,10 @@ public enum RegistrationRequestFactory {
 
     public static func updatePrimaryDeviceAccountAttributesRequest(
         _ accountAttributes: AccountAttributes,
-        auth: ChatServiceAuth
+        auth: ChatServiceAuth,
     ) -> TSRequest {
         let urlPathComponents = URLPathComponents(
-            ["v1", "accounts", "attributes"]
+            ["v1", "accounts", "attributes"],
         )
         var urlComponents = URLComponents()
         urlComponents.percentEncodedPath = urlPathComponents.percentEncoded
@@ -354,7 +354,7 @@ public enum RegistrationRequestFactory {
 
     private static func redactSessionIdFromLogs(_ sessionId: String, in request: inout TSRequest) {
         request.applyRedactionStrategy(.redactURL(
-            replacement: request.url.absoluteString.replacingOccurrences(of: sessionId, with: "[REDACTED]")
+            replacement: request.url.absoluteString.replacingOccurrences(of: sessionId, with: "[REDACTED]"),
         ))
     }
 }

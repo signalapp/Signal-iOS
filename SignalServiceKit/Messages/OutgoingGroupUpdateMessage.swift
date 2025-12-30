@@ -54,13 +54,13 @@ final class OutgoingGroupUpdateMessage: TSOutgoingMessage {
         additionalRecipients: some Sequence<ServiceId>,
         isUrgent: Bool = false,
         isDeletingAccount: Bool = false,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) {
         let builder: TSOutgoingMessageBuilder = .withDefaultValues(
             thread: thread,
             expiresInSeconds: expiresInSeconds,
             groupMetaMessage: groupMetaMessage,
-            groupChangeProtoData: groupChangeProtoData
+            groupChangeProtoData: groupChangeProtoData,
         )
         self.isUpdateUrgent = isUrgent
         self.isDeletingAccount = isDeletingAccount
@@ -69,7 +69,7 @@ final class OutgoingGroupUpdateMessage: TSOutgoingMessage {
             additionalRecipients: additionalRecipients.map { ServiceIdObjC.wrapValue($0) },
             explicitRecipients: [],
             skippedRecipients: [],
-            transaction: transaction
+            transaction: transaction,
         )
     }
 

@@ -15,7 +15,9 @@ public protocol ContactPickerDelegate: AnyObject {
 }
 
 public enum SubtitleCellValue {
-    case phoneNumber, email, none
+    case phoneNumber
+    case email
+    case none
 }
 
 open class ContactPickerViewController: OWSViewController, OWSNavigationChildController {
@@ -35,7 +37,7 @@ open class ContactPickerViewController: OWSViewController, OWSNavigationChildCon
 
     // MARK: UIViewController
 
-    public override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
 
         navigationItem.leftBarButtonItem = .cancelButton { [weak self] in
@@ -69,7 +71,7 @@ open class ContactPickerViewController: OWSViewController, OWSNavigationChildCon
         // Do not automatically deselect - keep cell selected until screen becomes not visible.
         viewController.selectionBehavior = .toggleSelectionWithAction
         viewController.defaultSeparatorInsetLeading = OWSTableViewController2.cellHInnerMargin
-        + CGFloat(AvatarBuilder.smallAvatarSizePoints) + ContactCellView.avatarTextHSpacing
+            + CGFloat(AvatarBuilder.smallAvatarSizePoints) + ContactCellView.avatarTextHSpacing
         viewController.tableView.register(ContactCell.self)
         viewController.tableView.allowsMultipleSelection = allowsMultipleSelection
         viewController.view.setCompressionResistanceVerticalHigh()
@@ -79,7 +81,7 @@ open class ContactPickerViewController: OWSViewController, OWSNavigationChildCon
 
     private var tableView: UITableView { tableViewController.tableView }
 
-    public override func themeDidChange() {
+    override public func themeDidChange() {
         super.themeDidChange()
         applyTheme()
     }
@@ -122,14 +124,14 @@ open class ContactPickerViewController: OWSViewController, OWSNavigationChildCon
             let contactFetchRequest = CNContactFetchRequest(keysToFetch: allowedContactKeys)
             contactFetchRequest.sortOrder = .userDefault
             do {
-                try contactStore.enumerateContacts(with: contactFetchRequest) { (contact, _) -> Void in
+                try contactStore.enumerateContacts(with: contactFetchRequest) { contact, _ -> Void in
                     contacts.append(contact)
                 }
             } catch {
                 Logger.error("Failed to fetch contacts with error: \(error)")
             }
             contents = OWSTableContents(sections: contactsSections(for: contacts))
-            contents.sectionForSectionIndexTitleBlock = { [weak self] (sectionIndexTitle, index) in
+            contents.sectionForSectionIndexTitleBlock = { [weak self] sectionIndexTitle, index in
                 return self?.collation.section(forSectionIndexTitle: index) ?? 0
             }
             contents.sectionIndexTitlesForTableViewBlock = { [weak self] in
@@ -172,7 +174,7 @@ open class ContactPickerViewController: OWSViewController, OWSNavigationChildCon
             },
             actionBlock: { [weak self] in
                 self?.tryToSelectContact(systemContact)
-            }
+            },
         )
     }
 
@@ -183,7 +185,7 @@ open class ContactPickerViewController: OWSViewController, OWSNavigationChildCon
             systemContact: systemContact,
             sortOrder: sortOrder,
             subtitleType: subtitleCellType,
-            showsWhenSelected: allowsMultipleSelection
+            showsWhenSelected: allowsMultipleSelection,
         )
 
         if let delegate, !delegate.contactPicker(self, shouldSelect: systemContact) {

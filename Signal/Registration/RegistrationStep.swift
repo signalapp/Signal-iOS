@@ -8,6 +8,7 @@ import Foundation
 public enum RegistrationStep: Equatable {
 
     // MARK: - Opening Steps
+
     case registrationSplash
     case changeNumberSplash
     case permissions

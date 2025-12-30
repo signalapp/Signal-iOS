@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import XCTest
 import LibSignalClient
+import XCTest
 
 @testable import SignalServiceKit
 
@@ -30,12 +30,12 @@ final class GroupCallRecordManagerTest: XCTestCase {
         snoopingGroupCallRecordManager = SnoopingGroupCallRecordManagerImpl(
             callRecordStore: mockCallRecordStore,
             interactionStore: mockInteractionStore,
-            outgoingSyncMessageManager: mockOutgoingSyncMessageManager
+            outgoingSyncMessageManager: mockOutgoingSyncMessageManager,
         )
         groupCallRecordManager = GroupCallRecordManagerImpl(
             callRecordStore: mockCallRecordStore,
             interactionStore: mockInteractionStore,
-            outgoingSyncMessageManager: mockOutgoingSyncMessageManager
+            outgoingSyncMessageManager: mockOutgoingSyncMessageManager,
         )
     }
 
@@ -47,7 +47,7 @@ final class GroupCallRecordManagerTest: XCTestCase {
             joinedMemberAcis: [],
             creatorAci: nil,
             thread: thread,
-            sentAtTimestamp: .maxRandom
+            sentAtTimestamp: .maxRandom,
         )
         interaction.updateRowId(.maxRandom)
 
@@ -68,7 +68,7 @@ final class GroupCallRecordManagerTest: XCTestCase {
                 groupCallStatus: .joined,
                 callEventTimestamp: .maxRandomInt64Compat,
                 shouldSendSyncMessage: true,
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -86,7 +86,7 @@ final class GroupCallRecordManagerTest: XCTestCase {
             callType: .groupCall,
             callDirection: .incoming,
             callStatus: .group(.generic),
-            callBeganTimestamp: .maxRandomInt64Compat
+            callBeganTimestamp: .maxRandomInt64Compat,
         )
         mockCallRecordStore.callRecords.append(callRecord)
 
@@ -99,7 +99,7 @@ final class GroupCallRecordManagerTest: XCTestCase {
                 groupCallStatus: .joined,
                 callEventTimestamp: .maxRandomInt64Compat,
                 shouldSendSyncMessage: true,
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -120,7 +120,7 @@ final class GroupCallRecordManagerTest: XCTestCase {
                 groupCallStatus: .joined,
                 callEventTimestamp: .maxRandomInt64Compat,
                 shouldSendSyncMessage: true,
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -144,7 +144,7 @@ final class GroupCallRecordManagerTest: XCTestCase {
                 groupCallRingerAci: nil,
                 callEventTimestamp: .maxRandomInt64Compat,
                 shouldSendSyncMessage: false,
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -162,7 +162,7 @@ final class GroupCallRecordManagerTest: XCTestCase {
                 groupCallRingerAci: .randomForTesting(),
                 callEventTimestamp: .maxRandomInt64Compat,
                 shouldSendSyncMessage: true,
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -180,7 +180,7 @@ final class GroupCallRecordManagerTest: XCTestCase {
                 groupCallInteraction: interaction,
                 groupCallInteractionRowId: interaction.sqliteRowId!,
                 groupThreadRowId: thread.sqliteRowId!,
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -207,7 +207,7 @@ final class GroupCallRecordManagerTest: XCTestCase {
             callType: .groupCall,
             callDirection: .incoming,
             callStatus: .group(.generic),
-            callBeganTimestamp: .maxRandomInt64Compat
+            callBeganTimestamp: .maxRandomInt64Compat,
         )
         mockCallRecordStore.callRecords.append(callRecord)
 
@@ -220,7 +220,7 @@ final class GroupCallRecordManagerTest: XCTestCase {
                 groupCallStatus: .ringingAccepted,
                 callEventTimestamp: callRecord.callBeganTimestamp + 5,
                 shouldSendSyncMessage: true,
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -239,7 +239,7 @@ final class GroupCallRecordManagerTest: XCTestCase {
             callType: .groupCall,
             callDirection: .incoming,
             callStatus: .group(.generic),
-            callBeganTimestamp: .maxRandomInt64Compat
+            callBeganTimestamp: .maxRandomInt64Compat,
         )
         mockCallRecordStore.callRecords.append(callRecord)
 
@@ -252,7 +252,7 @@ final class GroupCallRecordManagerTest: XCTestCase {
                 groupCallStatus: .joined,
                 callEventTimestamp: callRecord.callBeganTimestamp + 5,
                 shouldSendSyncMessage: false,
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -275,7 +275,7 @@ final class GroupCallRecordManagerTest: XCTestCase {
             callType: .groupCall,
             callDirection: .incoming,
             callStatus: .group(.joined),
-            callBeganTimestamp: .maxRandomInt64Compat
+            callBeganTimestamp: .maxRandomInt64Compat,
         )
         mockCallRecordStore.callRecords.append(callRecord)
 
@@ -288,7 +288,7 @@ final class GroupCallRecordManagerTest: XCTestCase {
                 groupCallStatus: .generic,
                 callEventTimestamp: callRecord.callBeganTimestamp + 5,
                 shouldSendSyncMessage: true,
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -307,7 +307,7 @@ final class GroupCallRecordManagerTest: XCTestCase {
             callType: .groupCall,
             callDirection: .incoming,
             callStatus: .group(.joined),
-            callBeganTimestamp: .maxRandomInt64Compat
+            callBeganTimestamp: .maxRandomInt64Compat,
         )
         mockCallRecordStore.callRecords.append(callRecord)
 
@@ -320,7 +320,7 @@ final class GroupCallRecordManagerTest: XCTestCase {
                 groupCallStatus: .generic,
                 callEventTimestamp: callRecord.callBeganTimestamp - 5,
                 shouldSendSyncMessage: true,
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -339,14 +339,14 @@ final class GroupCallRecordManagerTest: XCTestCase {
             callType: .groupCall,
             callDirection: .incoming,
             callStatus: .group(.generic),
-            callBeganTimestamp: 12
+            callBeganTimestamp: 12,
         )
 
         mockDB.write { tx in
             groupCallRecordManager.updateCallBeganTimestampIfEarlier(
                 existingCallRecord: callRecord,
                 callEventTimestamp: 15,
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -356,13 +356,14 @@ final class GroupCallRecordManagerTest: XCTestCase {
             groupCallRecordManager.updateCallBeganTimestampIfEarlier(
                 existingCallRecord: callRecord,
                 callEventTimestamp: 9,
-                tx: tx
+                tx: tx,
             )
         }
 
         XCTAssertEqual(mockCallRecordStore.askedToUpdateCallBeganTimestampTo, 9)
     }
 }
+
 // MARK: - SnoopingGroupCallRecordManagerImpl
 
 /// In testing ``GroupCallRecordManagerImpl``'s `createOrUpdate` method, we only

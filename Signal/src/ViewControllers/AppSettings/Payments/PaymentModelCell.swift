@@ -67,8 +67,8 @@ public class PaymentModelCell: UITableViewCell {
 
         amountLabel.font = .dynamicTypeBodyClamped
         amountLabel.textColor = (paymentItem.isIncoming
-                                    ? UIColor.ows_accentGreen
-                                    : Theme.primaryTextColor)
+            ? UIColor.ows_accentGreen
+            : Theme.primaryTextColor)
 
         var avatarView: UIView
         if let address = paymentItem.address {
@@ -107,7 +107,7 @@ public class PaymentModelCell: UITableViewCell {
         accessoryType = .disclosureIndicator
     }
 
-    public override func prepareForReuse() {
+    override public func prepareForReuse() {
         super.prepareForReuse()
 
         contactAvatarView.reset()

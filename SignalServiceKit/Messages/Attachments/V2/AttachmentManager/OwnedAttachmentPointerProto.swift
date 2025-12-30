@@ -29,7 +29,7 @@ public struct OwnedAttachmentBackupPointerProto {
         proto: BackupProto_FilePointer,
         renderingFlag: AttachmentReference.RenderingFlag,
         clientUUID: UUID?,
-        owner: AttachmentReference.OwnerBuilder
+        owner: AttachmentReference.OwnerBuilder,
     ) {
         self.proto = proto
         self.renderingFlag = renderingFlag

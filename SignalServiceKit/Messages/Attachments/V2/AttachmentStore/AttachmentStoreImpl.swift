@@ -18,27 +18,27 @@ public class AttachmentStoreImpl: AttachmentStore {
 
     public func fetchReferences(
         owners: [AttachmentReference.OwnerId],
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> [AttachmentReference] {
         return AttachmentReference.recordTypes.flatMap { recordType in
             return fetchReferences(
                 owners: owners,
                 recordType: recordType,
-                tx: tx
+                tx: tx,
             )
         }
     }
 
     public func fetchAllReferences(
         owningMessageRowId: Int64,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> [AttachmentReference] {
         do {
             let statement = try tx.database.cachedStatement(sql: """
-                SELECT *
-                FROM \(MessageAttachmentReferenceRecord.databaseTableName)
-                WHERE \(Column(MessageAttachmentReferenceRecord.CodingKeys.ownerRowId).name) = ?
-                """)
+            SELECT *
+            FROM \(MessageAttachmentReferenceRecord.databaseTableName)
+            WHERE \(Column(MessageAttachmentReferenceRecord.CodingKeys.ownerRowId).name) = ?
+            """)
             return try MessageAttachmentReferenceRecord
                 .fetchAll(statement, arguments: [owningMessageRowId])
                 .map { try AttachmentReference(record: $0) }
@@ -51,7 +51,7 @@ public class AttachmentStoreImpl: AttachmentStore {
     private func fetchReferences<RecordType: FetchableAttachmentReferenceRecord>(
         owners: [AttachmentReference.OwnerId],
         recordType: RecordType.Type,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> [AttachmentReference] {
         var filterClauses = [String]()
         var arguments = StatementArguments()
@@ -111,7 +111,7 @@ public class AttachmentStoreImpl: AttachmentStore {
 
     public func fetch(
         ids: [Attachment.IDType],
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> [Attachment] {
         if ids.isEmpty {
             return []
@@ -120,7 +120,7 @@ public class AttachmentStoreImpl: AttachmentStore {
             return try Attachment.Record
                 .fetchAll(
                     tx.database,
-                    keys: ids
+                    keys: ids,
                 )
                 .compactMap { record in
                     // Errors will be logged by the initializer.
@@ -136,14 +136,14 @@ public class AttachmentStoreImpl: AttachmentStore {
 
     public func fetchAttachment(
         sha256ContentHash: Data,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> Attachment? {
         return try? fetchAttachmentThrows(sha256ContentHash: sha256ContentHash, tx: tx)
     }
 
     private func fetchAttachmentThrows(
         sha256ContentHash: Data,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> Attachment? {
         return try Attachment.Record
             .filter(Column(Attachment.Record.CodingKeys.sha256ContentHash) == sha256ContentHash)
@@ -153,14 +153,14 @@ public class AttachmentStoreImpl: AttachmentStore {
 
     public func fetchAttachment(
         mediaName: String,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> Attachment? {
         return try? fetchAttachmentThrows(mediaName: mediaName, tx: tx)
     }
 
     private func fetchAttachmentThrows(
         mediaName: String,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> Attachment? {
         return try Attachment.Record
             .filter(Column(Attachment.Record.CodingKeys.mediaName) == mediaName)
@@ -170,7 +170,7 @@ public class AttachmentStoreImpl: AttachmentStore {
 
     public func allQuotedReplyAttachments(
         forOriginalAttachmentId originalAttachmentId: Attachment.IDType,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> [Attachment] {
         return try Attachment.Record
             .filter(Column(Attachment.Record.CodingKeys.originalAttachmentIdForQuotedReply) == originalAttachmentId)
@@ -181,14 +181,14 @@ public class AttachmentStoreImpl: AttachmentStore {
     public func enumerateAllReferences(
         toAttachmentId attachmentId: Attachment.IDType,
         tx: DBReadTransaction,
-        block: (AttachmentReference, _ stop: inout Bool) -> Void
+        block: (AttachmentReference, _ stop: inout Bool) -> Void,
     ) {
         AttachmentReference.recordTypes.forEach { recordType in
             enumerateReferences(
                 attachmentId: attachmentId,
                 recordType: recordType,
                 tx: tx,
-                block: block
+                block: block,
             )
         }
     }
@@ -197,7 +197,7 @@ public class AttachmentStoreImpl: AttachmentStore {
         attachmentId: Attachment.IDType,
         recordType: RecordType.Type,
         tx: DBReadTransaction,
-        block: (AttachmentReference, _ stop: inout Bool) -> Void
+        block: (AttachmentReference, _ stop: inout Bool) -> Void,
     ) {
         failIfThrows {
             let cursor = try recordType
@@ -223,12 +223,14 @@ public class AttachmentStoreImpl: AttachmentStore {
     }
 
     public func oldestStickerPackReferences(
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> [AttachmentReference.Owner.MessageSource.StickerMetadata] {
         let ownerRowIdColumn = Column(MessageAttachmentReferenceRecord.CodingKeys.ownerRowId)
         let packIdColumn = Column(MessageAttachmentReferenceRecord.CodingKeys.stickerPackId)
         return try MessageAttachmentReferenceRecord
-            .fetchAll(tx.database, sql: """
+            .fetchAll(
+                tx.database,
+                sql: """
                 SELECT *
                 FROM \(MessageAttachmentReferenceRecord.databaseTableName)
                 WHERE (\(packIdColumn.name), \(ownerRowIdColumn.name)) IN (
@@ -236,7 +238,7 @@ public class AttachmentStoreImpl: AttachmentStore {
                     FROM \(MessageAttachmentReferenceRecord.databaseTableName)
                     GROUP BY \(packIdColumn.name)
                 );
-                """
+                """,
             )
             .compactMap { record in
                 switch try AttachmentReference(record: record).owner {
@@ -250,7 +252,7 @@ public class AttachmentStoreImpl: AttachmentStore {
 
     public func allAttachmentIdsForSticker(
         _ stickerInfo: StickerInfo,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> [Attachment.IDType] {
         let attachmentIdColumn = Column(MessageAttachmentReferenceRecord.CodingKeys.attachmentRowId)
         let packIdColumn = Column(MessageAttachmentReferenceRecord.CodingKeys.stickerPackId)
@@ -258,13 +260,13 @@ public class AttachmentStoreImpl: AttachmentStore {
         return try Attachment.IDType.fetchAll(
             tx.database,
             sql: """
-                SELECT \(attachmentIdColumn.name)
-                FROM \(MessageAttachmentReferenceRecord.databaseTableName)
-                WHERE
-                    \(packIdColumn.name) = ?
-                    AND \(stickerIdColumn.name) = ?;
-                """,
-            arguments: [stickerInfo.packId, stickerInfo.stickerId]
+            SELECT \(attachmentIdColumn.name)
+            FROM \(MessageAttachmentReferenceRecord.databaseTableName)
+            WHERE
+                \(packIdColumn.name) = ?
+                AND \(stickerIdColumn.name) = ?;
+            """,
+            arguments: [stickerInfo.packId, stickerInfo.stickerId],
         )
     }
 
@@ -276,11 +278,11 @@ public class AttachmentStoreImpl: AttachmentStore {
         newOwnerMessageRowId: Int64,
         newOwnerThreadRowId: Int64,
         newOwnerIsPastEditRevision: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         var newRecord = MessageAttachmentReferenceRecord(
             attachmentReference: existingReference,
-            messageSource: existingOwnerSource
+            messageSource: existingOwnerSource,
         )
         // Check that the thread id on the record we just duplicated
         // (the thread id of the original owner) matches the new thread id.
@@ -298,11 +300,11 @@ public class AttachmentStoreImpl: AttachmentStore {
         _ existingOwnerSource: AttachmentReference.Owner.ThreadSource,
         with existingReference: AttachmentReference,
         newOwnerThreadRowId: Int64,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         var newRecord = ThreadAttachmentReferenceRecord(
             attachmentReference: existingReference,
-            threadSource: existingOwnerSource
+            threadSource: existingOwnerSource,
         )
         newRecord.ownerRowId = newOwnerThreadRowId
         try newRecord.insert(tx.database)
@@ -311,7 +313,7 @@ public class AttachmentStoreImpl: AttachmentStore {
     public func update(
         _ reference: AttachmentReference,
         withReceivedAtTimestamp receivedAtTimestamp: UInt64,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         guard SDS.fitsInInt64(receivedAtTimestamp) else {
             throw OWSAssertionError("UInt64 doesn't fit in Int64")
@@ -326,14 +328,14 @@ public class AttachmentStoreImpl: AttachmentStore {
             let ownerRowIdColumn = Column(MessageAttachmentReferenceRecord.CodingKeys.ownerRowId)
             try tx.database.execute(
                 sql:
-                    "UPDATE \(MessageAttachmentReferenceRecord.databaseTableName) "
-                + "SET \(receivedAtTimestampColumn.name) = ? "
-                + "WHERE \(ownerTypeColumn.name) = ? AND \(ownerRowIdColumn.name) = ?;",
+                "UPDATE \(MessageAttachmentReferenceRecord.databaseTableName) "
+                    + "SET \(receivedAtTimestampColumn.name) = ? "
+                    + "WHERE \(ownerTypeColumn.name) = ? AND \(ownerRowIdColumn.name) = ?;",
                 arguments: [
                     receivedAtTimestamp,
                     messageSource.rawMessageOwnerType.rawValue,
-                    messageSource.messageRowId
-                ]
+                    messageSource.messageRowId,
+                ],
             )
         case .storyMessage:
             throw OWSAssertionError("Cannot update timestamp on story attachment reference")
@@ -349,7 +351,7 @@ public class AttachmentStoreImpl: AttachmentStore {
         validatedMimeType: String,
         streamInfo: Attachment.StreamInfo,
         timestamp: UInt64,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         let existingAttachment = fetch(ids: [id], tx: tx).first
         guard let existingAttachment else {
@@ -362,7 +364,7 @@ public class AttachmentStoreImpl: AttachmentStore {
         // Find if there is already an attachment with the same plaintext hash.
         let existingRecord = try fetchAttachmentThrows(
             sha256ContentHash: streamInfo.sha256ContentHash,
-            tx: tx
+            tx: tx,
         )
 
         if let existingRecord, existingRecord.id != id {
@@ -373,9 +375,9 @@ public class AttachmentStoreImpl: AttachmentStore {
         let existingMediaNameRecord = try fetchAttachmentThrows(
             mediaName: Attachment.mediaName(
                 sha256ContentHash: streamInfo.sha256ContentHash,
-                encryptionKey: existingAttachment.encryptionKey
+                encryptionKey: existingAttachment.encryptionKey,
             ),
-            tx: tx
+            tx: tx,
         )
         if let existingMediaNameRecord, existingMediaNameRecord.id != id {
             throw AttachmentInsertError.duplicateMediaName(existingAttachmentId: existingMediaNameRecord.id)
@@ -402,7 +404,7 @@ public class AttachmentStoreImpl: AttachmentStore {
                     digestSHA256Ciphertext: streamInfo.digestSHA256Ciphertext,
                     mediaName: streamInfo.mediaName,
                     lastFullscreenViewTimestamp: lastFullscreenViewTimestamp,
-                )
+                ),
             )
         case .mediaTierFullsize:
             newRecord = Attachment.Record(
@@ -413,15 +415,15 @@ public class AttachmentStoreImpl: AttachmentStore {
                     sha256ContentHash: streamInfo.sha256ContentHash,
                     mediaName: streamInfo.mediaName,
                     lastFullscreenViewTimestamp: lastFullscreenViewTimestamp,
-                )
+                ),
             )
         case .mediaTierThumbnail:
             newRecord = Attachment.Record(
                 params: .forUpdatingAsDownlodedThumbnailFromMediaTier(
                     attachment: existingAttachment,
                     validatedMimeType: validatedMimeType,
-                    streamInfo: streamInfo
-                )
+                    streamInfo: streamInfo,
+                ),
             )
         }
         newRecord.sqliteId = id
@@ -437,7 +439,7 @@ public class AttachmentStoreImpl: AttachmentStore {
         originalTransitTierInfo: Attachment.TransitTierInfo?,
         mediaTierInfo: Attachment.MediaTierInfo?,
         thumbnailMediaTierInfo: Attachment.ThumbnailMediaTierInfo?,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         guard attachment.asStream() == nil else {
             throw OWSAssertionError("Already a stream!")
@@ -451,7 +453,7 @@ public class AttachmentStoreImpl: AttachmentStore {
             latestTransitTierInfo: latestTransitTierInfo,
             originalTransitTierInfo: originalTransitTierInfo,
             mediaTierInfo: mediaTierInfo,
-            thumbnailMediaTierInfo: thumbnailMediaTierInfo
+            thumbnailMediaTierInfo: thumbnailMediaTierInfo,
         ))
 
         newRecord.sqliteId = attachment.id
@@ -462,7 +464,7 @@ public class AttachmentStoreImpl: AttachmentStore {
         from source: QueuedAttachmentDownloadRecord.SourceType,
         id: Attachment.IDType,
         timestamp: UInt64,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         let existingAttachment = fetch(ids: [id], tx: tx).first
         guard let existingAttachment else {
@@ -478,22 +480,22 @@ public class AttachmentStoreImpl: AttachmentStore {
             newRecord = Attachment.Record(
                 params: .forUpdatingAsFailedDownlodFromTransitTier(
                     attachment: existingAttachment,
-                    timestamp: timestamp
-                )
+                    timestamp: timestamp,
+                ),
             )
         case .mediaTierFullsize:
             newRecord = Attachment.Record(
                 params: .forUpdatingAsFailedDownlodFromMediaTier(
                     attachment: existingAttachment,
-                    timestamp: timestamp
-                )
+                    timestamp: timestamp,
+                ),
             )
         case .mediaTierThumbnail:
             newRecord = Attachment.Record(
                 params: .forUpdatingAsFailedThumbnailDownlodFromMediaTier(
                     attachment: existingAttachment,
-                    timestamp: timestamp
-                )
+                    timestamp: timestamp,
+                ),
             )
         }
         newRecord.sqliteId = id
@@ -502,7 +504,7 @@ public class AttachmentStoreImpl: AttachmentStore {
 
     public func removeMediaTierInfo(
         forAttachmentId id: Attachment.IDType,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         let existingAttachment = fetch(ids: [id], tx: tx).first
         guard let existingAttachment else {
@@ -510,7 +512,7 @@ public class AttachmentStoreImpl: AttachmentStore {
         }
 
         var newRecord = Attachment.Record(
-            params: .forRemovingMediaTierInfo(attachment: existingAttachment)
+            params: .forRemovingMediaTierInfo(attachment: existingAttachment),
         )
         newRecord.sqliteId = id
         try newRecord.update(tx.database)
@@ -518,7 +520,7 @@ public class AttachmentStoreImpl: AttachmentStore {
 
     public func removeThumbnailMediaTierInfo(
         forAttachmentId id: Attachment.IDType,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         let existingAttachment = fetch(ids: [id], tx: tx).first
         guard let existingAttachment else {
@@ -526,7 +528,7 @@ public class AttachmentStoreImpl: AttachmentStore {
         }
 
         var newRecord = Attachment.Record(
-            params: .forRemovingThumbnailMediaTierInfo(attachment: existingAttachment)
+            params: .forRemovingThumbnailMediaTierInfo(attachment: existingAttachment),
         )
         newRecord.sqliteId = id
         try newRecord.update(tx.database)
@@ -537,15 +539,15 @@ public class AttachmentStoreImpl: AttachmentStore {
         revalidatedContentType contentType: Attachment.ContentType,
         mimeType: String,
         blurHash: String?,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         var newRecord = Attachment.Record(
             params: .forUpdatingWithRevalidatedContentType(
                 attachment: attachment,
                 contentType: contentType,
                 mimeType: mimeType,
-                blurHash: blurHash
-            )
+                blurHash: blurHash,
+            ),
         )
         newRecord.sqliteId = attachment.id
         // NOTE: a sqlite trigger handles updating all attachment reference rows
@@ -556,7 +558,7 @@ public class AttachmentStoreImpl: AttachmentStore {
     public func addOwner(
         _ referenceParams: AttachmentReference.ConstructionParams,
         for attachmentRowId: Attachment.IDType,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         switch referenceParams.owner {
         case .thread(.globalThreadWallpaperImage):
@@ -564,7 +566,7 @@ public class AttachmentStoreImpl: AttachmentStore {
             try insertGlobalThreadAttachmentReference(
                 referenceParams: referenceParams,
                 attachmentRowId: attachmentRowId,
-                tx: tx
+                tx: tx,
             )
         default:
             let referenceRecord = try referenceParams.buildRecord(attachmentRowId: attachmentRowId)
@@ -575,7 +577,7 @@ public class AttachmentStoreImpl: AttachmentStore {
     public func removeAllOwners(
         withId owner: AttachmentReference.OwnerId,
         for attachmentId: Attachment.IDType,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         try AttachmentReference.recordTypes.forEach { recordType in
             try removeOwner(
@@ -583,14 +585,14 @@ public class AttachmentStoreImpl: AttachmentStore {
                 idInOwner: nil,
                 for: attachmentId,
                 recordType: recordType,
-                tx: tx
+                tx: tx,
             )
         }
     }
 
     public func removeOwner(
         reference: AttachmentReference,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         let idInOwner: UUID?
         switch reference.owner {
@@ -599,25 +601,25 @@ public class AttachmentStoreImpl: AttachmentStore {
             case .bodyAttachment(let metadata):
                 idInOwner = metadata.idInOwner
             case
-                    .oversizeText,
-                    .linkPreview,
-                    .quotedReply,
-                    .sticker,
-                    .contactAvatar:
+                .oversizeText,
+                .linkPreview,
+                .quotedReply,
+                .sticker,
+                .contactAvatar:
                 idInOwner = nil
             }
         case .storyMessage(let storyMessageSource):
             switch storyMessageSource {
             case
-                    .media,
-                    .textStoryLinkPreview:
+                .media,
+                .textStoryLinkPreview:
                 idInOwner = nil
             }
         case .thread(let threadSource):
             switch threadSource {
             case
-                    .threadWallpaperImage,
-                    .globalThreadWallpaperImage:
+                .threadWallpaperImage,
+                .globalThreadWallpaperImage:
                 idInOwner = nil
             }
         }
@@ -627,7 +629,7 @@ public class AttachmentStoreImpl: AttachmentStore {
                 idInOwner: idInOwner,
                 for: reference.attachmentRowId,
                 recordType: recordType,
-                tx: tx
+                tx: tx,
             )
         }
     }
@@ -637,7 +639,7 @@ public class AttachmentStoreImpl: AttachmentStore {
         idInOwner: UUID?,
         for attachmentId: Attachment.IDType,
         recordType: RecordType.Type,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         // GRDB's swift query API can't help us here because the AttachmentReference tables
         // lack a primary id column. Just use manual SQL.
@@ -668,21 +670,21 @@ public class AttachmentStoreImpl: AttachmentStore {
         sql += ";"
         try tx.database.execute(
             sql: sql,
-            arguments: arguments
+            arguments: arguments,
         )
     }
 
     public func insert(
         _ attachmentParams: Attachment.ConstructionParams,
         reference referenceParams: AttachmentReference.ConstructionParams,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws -> Attachment.IDType {
         // Find if there is already an attachment with the same plaintext hash.
         let sha256ContentHash = attachmentParams.sha256ContentHash ?? attachmentParams.streamInfo?.sha256ContentHash
         let existingRecord = try sha256ContentHash.map {
             return try fetchAttachmentThrows(
                 sha256ContentHash: $0,
-                tx: tx
+                tx: tx,
             ).map(Attachment.Record.init(attachment:))
         } ?? nil
 
@@ -694,7 +696,7 @@ public class AttachmentStoreImpl: AttachmentStore {
         let existingMediaNameRecord = try attachmentParams.mediaName.map { mediaName in
             try fetchAttachmentThrows(
                 mediaName: mediaName,
-                tx: tx
+                tx: tx,
             )
         } ?? nil
         if let existingMediaNameRecord {
@@ -715,7 +717,7 @@ public class AttachmentStoreImpl: AttachmentStore {
             try addOwner(
                 referenceParams,
                 for: attachmentRowId,
-                tx: tx
+                tx: tx,
             )
         } catch let ownerError {
             // We have to delete the ownerless attachment if owner creation failed.
@@ -735,7 +737,7 @@ public class AttachmentStoreImpl: AttachmentStore {
     private func insertGlobalThreadAttachmentReference(
         referenceParams: AttachmentReference.ConstructionParams,
         attachmentRowId: Attachment.IDType,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         let db = tx.database
         let ownerRowIdColumn = Column(ThreadAttachmentReferenceRecord.CodingKeys.ownerRowId)
@@ -793,7 +795,7 @@ public class AttachmentStoreImpl: AttachmentStore {
     public func updateMessageAttachmentThreadRowIdsForThreadMerge(
         fromThreadRowId: Int64,
         intoThreadRowId: Int64,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         let threadRowIdColumn = GRDB.Column(AttachmentReference.MessageAttachmentReferenceRecord.CodingKeys.threadRowId)
         try AttachmentReference.MessageAttachmentReferenceRecord
@@ -804,13 +806,13 @@ public class AttachmentStoreImpl: AttachmentStore {
     public func markViewedFullscreen(
         attachment: Attachment,
         timestamp: UInt64,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         var newRecord = Attachment.Record(
             params: .forMarkingViewedFullscreen(
                 attachment: attachment,
-                viewTimestamp: timestamp
-            )
+                viewTimestamp: timestamp,
+            ),
         )
         newRecord.sqliteId = attachment.id
         try newRecord.update(tx.database)

@@ -22,7 +22,7 @@ final class OWSFingerprintTest: XCTestCase {
             myAciIdentityKey: aliceIdentityKey,
             theirAciIdentityKey: bobIdentityKey,
             theirName: "Bob",
-            hashIterations: 2
+            hashIterations: 2,
         )
         let displayableText = aliceToBobFingerprint.displayableText
 
@@ -56,7 +56,7 @@ final class OWSFingerprintTest: XCTestCase {
             myAciIdentityKey: aliceIdentityKey,
             theirAciIdentityKey: bobIdentityKey,
             theirName: "Bob",
-            hashIterations: 2
+            hashIterations: 2,
         )
         let bobToAliceFingerprint = OWSFingerprint(
             myAci: bobAci,
@@ -64,11 +64,11 @@ final class OWSFingerprintTest: XCTestCase {
             myAciIdentityKey: bobIdentityKey,
             theirAciIdentityKey: aliceIdentityKey,
             theirName: "Alice",
-            hashIterations: 2
+            hashIterations: 2,
         )
         XCTAssertEqual(
             aliceToBobFingerprint.displayableText,
-            bobToAliceFingerprint.displayableText
+            bobToAliceFingerprint.displayableText,
         )
 
         let charlieToAliceFingerprint = OWSFingerprint(
@@ -77,11 +77,11 @@ final class OWSFingerprintTest: XCTestCase {
             myAciIdentityKey: charlieIdentityKey,
             theirAciIdentityKey: aliceIdentityKey,
             theirName: "Alice",
-            hashIterations: 2
+            hashIterations: 2,
         )
         XCTAssertNotEqual(
             aliceToBobFingerprint.displayableText,
-            charlieToAliceFingerprint.displayableText
+            charlieToAliceFingerprint.displayableText,
         )
     }
 }

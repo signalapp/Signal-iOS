@@ -16,7 +16,7 @@ public class BlockListUIUtils {
     public static func showBlockThreadActionSheet(
         _ thread: TSThread,
         from viewController: UIViewController,
-        completion: Completion?
+        completion: Completion?,
     ) {
         if let contactThread = thread as? TSContactThread {
             showBlockAddressActionSheet(contactThread.contactAddress, from: viewController, completion: completion)
@@ -32,7 +32,7 @@ public class BlockListUIUtils {
     public static func showBlockAddressActionSheet(
         _ address: SignalServiceAddress,
         from viewController: UIViewController,
-        completion: Completion?
+        completion: Completion?,
     ) {
         let displayName = SSKEnvironment.shared.databaseStorageRef.read { tx in SSKEnvironment.shared.contactManagerRef.displayName(for: address, tx: tx).resolvedValue() }
         showBlockAddressesActionSheet(address, displayName: displayName, from: viewController, completion: completion)
@@ -42,7 +42,7 @@ public class BlockListUIUtils {
         _ address: SignalServiceAddress,
         displayName: String,
         from viewController: UIViewController,
-        completion: Completion?
+        completion: Completion?,
     ) {
         owsAssertDebug(address.isValid)
         owsAssertDebug(!displayName.isEmpty)
@@ -51,16 +51,16 @@ public class BlockListUIUtils {
             showOkActionSheet(
                 title: OWSLocalizedString(
                     "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE",
-                    comment: "The title of the 'You can't block yourself' alert."
+                    comment: "The title of the 'You can't block yourself' alert.",
                 ),
                 message: OWSLocalizedString(
                     "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE",
-                    comment: "The message of the 'You can't block yourself' alert."
+                    comment: "The message of the 'You can't block yourself' alert.",
                 ),
                 from: viewController,
                 completion: { _ in
                     completion?(false)
-                }
+                },
             )
             return
         }
@@ -68,16 +68,16 @@ public class BlockListUIUtils {
         let actionSheetTitle = String(
             format: OWSLocalizedString(
                 "BLOCK_LIST_BLOCK_USER_TITLE_FORMAT",
-                comment: "A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}."
+                comment: "A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}.",
             ),
-            displayName.formattedForActionSheetTitle()
+            displayName.formattedForActionSheetTitle(),
         )
         let actionSheet = ActionSheetController(
             title: actionSheetTitle,
             message: OWSLocalizedString(
                 "BLOCK_USER_BEHAVIOR_EXPLANATION",
-                comment: "An explanation of the consequences of blocking another user."
-            )
+                comment: "An explanation of the consequences of blocking another user.",
+            ),
         )
         actionSheet.addAction(ActionSheetAction(
             title: OWSLocalizedString("BLOCK_LIST_BLOCK_BUTTON", comment: "Button label for the 'block' button"),
@@ -86,14 +86,14 @@ public class BlockListUIUtils {
                 blockAddress(address, displayName: displayName, from: viewController) { _ in
                     completion?(true)
                 }
-            }
+            },
         ))
         actionSheet.addAction(ActionSheetAction(
             title: CommonStrings.cancelButton,
             style: .cancel,
             handler: { _ in
                 completion?(false)
-            }
+            },
         ))
         viewController.presentActionSheet(actionSheet)
     }
@@ -101,21 +101,21 @@ public class BlockListUIUtils {
     private static func showBlockGroupActionSheet(
         _ groupThread: TSGroupThread,
         from viewController: UIViewController,
-        completion: Completion?
+        completion: Completion?,
     ) {
         let actionSheetTitle = String(
             format: OWSLocalizedString(
                 "BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT",
-                comment: "A format for the 'block group' action sheet title. Embeds the {{group name}}."
+                comment: "A format for the 'block group' action sheet title. Embeds the {{group name}}.",
             ),
-            groupThread.groupNameOrDefault.formattedForActionSheetTitle()
+            groupThread.groupNameOrDefault.formattedForActionSheetTitle(),
         )
         let actionSheet = ActionSheetController(
             title: actionSheetTitle,
             message: OWSLocalizedString(
                 "BLOCK_GROUP_BEHAVIOR_EXPLANATION",
-                comment: "An explanation of the consequences of blocking a group."
-            )
+                comment: "An explanation of the consequences of blocking a group.",
+            ),
         )
         actionSheet.addAction(ActionSheetAction(
             title: OWSLocalizedString("BLOCK_LIST_BLOCK_BUTTON", comment: "Button label for the 'block' button"),
@@ -124,14 +124,14 @@ public class BlockListUIUtils {
                 blockGroup(groupThread, from: viewController) { _ in
                     completion?(true)
                 }
-            }
+            },
         ))
         actionSheet.addAction(ActionSheetAction(
             title: CommonStrings.cancelButton,
             style: .cancel,
             handler: { _ in
                 completion?(false)
-            }
+            },
         ))
         viewController.presentActionSheet(actionSheet)
     }
@@ -140,7 +140,7 @@ public class BlockListUIUtils {
         _ address: SignalServiceAddress,
         displayName: String,
         from viewController: UIViewController,
-        completion: ((ActionSheetAction) -> Void)?
+        completion: ((ActionSheetAction) -> Void)?,
     ) {
         owsAssertDebug(!displayName.isEmpty)
         owsAssertDebug(address.isValid)
@@ -152,17 +152,17 @@ public class BlockListUIUtils {
         showOkActionSheet(
             title: OWSLocalizedString(
                 "BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE",
-                comment: "The title of the 'user blocked' alert."
+                comment: "The title of the 'user blocked' alert.",
             ),
             message: String(
                 format: OWSLocalizedString(
                     "BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT",
-                    comment: "The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}."
+                    comment: "The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}.",
                 ),
-                displayName.formattedForActionSheetMessage()
+                displayName.formattedForActionSheetMessage(),
             ),
             from: viewController,
-            completion: completion
+            completion: completion,
         )
     }
 
@@ -170,7 +170,7 @@ public class BlockListUIUtils {
     private static func blockGroup(
         _ groupThread: TSGroupThread,
         from viewController: UIViewController,
-        completion: ((ActionSheetAction) -> Void)?
+        completion: ((ActionSheetAction) -> Void)?,
     ) {
         guard groupThread.groupModel.groupMembership.isLocalUserMemberOfAnyKind else {
             blockGroupStep2(groupThread, from: viewController, completion: completion)
@@ -182,14 +182,14 @@ public class BlockListUIUtils {
             fromViewController: viewController,
             success: {
                 blockGroupStep2(groupThread, from: viewController, completion: completion)
-            }
+            },
         )
     }
 
     private static func blockGroupStep2(
         _ groupThread: TSGroupThread,
         from viewController: UIViewController,
-        completion: ((ActionSheetAction) -> Void)?
+        completion: ((ActionSheetAction) -> Void)?,
     ) {
         // block the group regardless of the ability to deliver the
         // "leave group" message.
@@ -197,17 +197,17 @@ public class BlockListUIUtils {
             SSKEnvironment.shared.blockingManagerRef.addBlockedGroupId(
                 groupThread.groupId,
                 blockMode: .localShouldLeaveGroups,
-                transaction: tx
+                transaction: tx,
             )
         })
 
         let actionSheetTitle = OWSLocalizedString(
             "BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE",
-            comment: "The title of the 'group blocked' alert."
+            comment: "The title of the 'group blocked' alert.",
         )
         let actionSheetMessageFormat = OWSLocalizedString(
             "BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT",
-            comment: "The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}."
+            comment: "The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}.",
         )
         let actionSheetMessage = String(format: actionSheetMessageFormat, groupThread.groupNameOrDefault.formattedForActionSheetMessage())
 
@@ -219,7 +219,7 @@ public class BlockListUIUtils {
     public static func showUnblockThreadActionSheet(
         _ thread: TSThread,
         from viewController: UIViewController,
-        completion: Completion?
+        completion: Completion?,
     ) {
         if let contactThread = thread as? TSContactThread {
             showUnblockAddressActionSheet(contactThread.contactAddress, from: viewController, completion: completion)
@@ -230,7 +230,7 @@ public class BlockListUIUtils {
                 groupId: groupThread.groupModel.groupId,
                 groupNameOrDefault: groupThread.groupModel.groupNameOrDefault,
                 from: viewController,
-                completion: completion
+                completion: completion,
             )
             return
         }
@@ -240,7 +240,7 @@ public class BlockListUIUtils {
     public static func showUnblockAddressActionSheet(
         _ address: SignalServiceAddress,
         from viewController: UIViewController,
-        completion: Completion?
+        completion: Completion?,
     ) {
         let displayName = SSKEnvironment.shared.databaseStorageRef.read { tx in SSKEnvironment.shared.contactManagerRef.displayName(for: address, tx: tx).resolvedValue() }
         owsAssertDebug(!displayName.isEmpty)
@@ -248,9 +248,9 @@ public class BlockListUIUtils {
         let actionSheetTitle = String(
             format: OWSLocalizedString(
                 "BLOCK_LIST_UNBLOCK_TITLE_FORMAT",
-                comment: "A format for the 'unblock conversation' action sheet title. Embeds the {{conversation title}}."
+                comment: "A format for the 'unblock conversation' action sheet title. Embeds the {{conversation title}}.",
             ),
-            displayName.formattedForActionSheetTitle()
+            displayName.formattedForActionSheetTitle(),
         )
         let actionSheet = ActionSheetController(title: actionSheetTitle)
         actionSheet.addAction(ActionSheetAction(
@@ -260,14 +260,14 @@ public class BlockListUIUtils {
                 unblockAddress(address, displayName: displayName, from: viewController) { _ in
                     completion?(false)
                 }
-            }
+            },
         ))
         actionSheet.addAction(ActionSheetAction(
             title: CommonStrings.cancelButton,
             style: .cancel,
             handler: { _ in
                 completion?(true)
-            }
+            },
         ))
         viewController.presentActionSheet(actionSheet)
     }
@@ -276,15 +276,15 @@ public class BlockListUIUtils {
         groupId: Data,
         groupNameOrDefault: String,
         from viewController: UIViewController,
-        completion: Completion?
+        completion: Completion?,
     ) {
         let actionSheetTitle = OWSLocalizedString(
             "BLOCK_LIST_UNBLOCK_GROUP_TITLE",
-            comment: "Action sheet title when confirming you want to unblock a group."
+            comment: "Action sheet title when confirming you want to unblock a group.",
         )
         let actionSheetMessage = OWSLocalizedString(
             "BLOCK_LIST_UNBLOCK_GROUP_BODY",
-            comment: "Action sheet body when confirming you want to unblock a group"
+            comment: "Action sheet body when confirming you want to unblock a group",
         )
         let actionSheet = ActionSheetController(title: actionSheetTitle, message: actionSheetMessage)
         actionSheet.addAction(ActionSheetAction(
@@ -294,14 +294,14 @@ public class BlockListUIUtils {
                 unblockGroup(groupId: groupId, groupNameOrDefault: groupNameOrDefault, from: viewController) { _ in
                     completion?(false)
                 }
-            }
+            },
         ))
         actionSheet.addAction(ActionSheetAction(
             title: CommonStrings.cancelButton,
             style: .cancel,
             handler: { _ in
                 completion?(true)
-            }
+            },
         ))
         viewController.presentActionSheet(actionSheet)
     }
@@ -310,7 +310,7 @@ public class BlockListUIUtils {
         _ address: SignalServiceAddress,
         displayName: String,
         from viewController: UIViewController,
-        completion: ((ActionSheetAction) -> Void)?
+        completion: ((ActionSheetAction) -> Void)?,
     ) {
         owsAssertDebug(address.isValid)
         owsAssertDebug(!displayName.isEmpty)
@@ -321,7 +321,7 @@ public class BlockListUIUtils {
 
         let actionSheetTitleFormat = OWSLocalizedString(
             "BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT",
-            comment: "Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}."
+            comment: "Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}.",
         )
         let actionSheetTitle = String(format: actionSheetTitleFormat, displayName.formattedForActionSheetTitle())
         showOkActionSheet(title: actionSheetTitle, message: nil, from: viewController, completion: completion)
@@ -331,7 +331,7 @@ public class BlockListUIUtils {
         groupId: Data,
         groupNameOrDefault: String,
         from viewController: UIViewController,
-        completion: ((ActionSheetAction) -> Void)?
+        completion: ((ActionSheetAction) -> Void)?,
     ) {
         SSKEnvironment.shared.databaseStorageRef.write { tx in
             SSKEnvironment.shared.blockingManagerRef.removeBlockedGroup(groupId: groupId, wasLocallyInitiated: true, transaction: tx)
@@ -339,12 +339,12 @@ public class BlockListUIUtils {
 
         let actionSheetTitleFormat = OWSLocalizedString(
             "BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT",
-            comment: "Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}."
+            comment: "Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}.",
         )
         let actionSheetTitle = String(format: actionSheetTitleFormat, groupNameOrDefault.formattedForActionSheetMessage())
         let actionSheetMessage = OWSLocalizedString(
             "BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY",
-            comment: "Alert body after unblocking a group."
+            comment: "Alert body after unblocking a group.",
         )
         showOkActionSheet(title: actionSheetTitle, message: actionSheetMessage, from: viewController, completion: completion)
     }
@@ -355,13 +355,13 @@ public class BlockListUIUtils {
         title: String,
         message: String?,
         from viewController: UIViewController,
-        completion: ((ActionSheetAction) -> Void)?
+        completion: ((ActionSheetAction) -> Void)?,
     ) {
         let actionSheet = ActionSheetController(title: title, message: message)
         actionSheet.addAction(ActionSheetAction(
             title: CommonStrings.okButton,
             style: .default,
-            handler: completion
+            handler: completion,
         ))
         viewController.presentActionSheet(actionSheet)
     }

@@ -107,7 +107,7 @@ extension MediaZoomAnimationController: UIViewControllerAnimatedTransitioning {
 
         let backgroundView = UIView(frame: containerView.bounds)
         backgroundView.backgroundColor = fromMediaContext.backgroundColor
-        backgroundView.autoresizingMask = [ .flexibleWidth, .flexibleHeight ]
+        backgroundView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         containerView.addSubview(backgroundView)
 
         // Sometimes the initial (from) or the final (to) media view is partially obscured
@@ -117,7 +117,7 @@ extension MediaZoomAnimationController: UIViewControllerAnimatedTransitioning {
         let clippingView = UIView(frame: containerView.bounds)
         clippingView.clipsToBounds = true
         if let clippingAreaInsets = fromMediaContext.clippingAreaInsets {
-           clippingView.frame = containerView.bounds.inset(by: clippingAreaInsets)
+            clippingView.frame = containerView.bounds.inset(by: clippingAreaInsets)
         }
         containerView.addSubview(clippingView)
 

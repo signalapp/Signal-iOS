@@ -16,24 +16,30 @@ class ConversationViewTest: SignalBaseTest {
         Theme.setIsDarkThemeEnabledForTests(false)
         XCTAssertFalse(Theme.isDarkThemeEnabled)
 
-        let style1 = ConversationStyle(type: .`default`,
-                                       thread: thread,
-                                       viewWidth: 100,
-                                       hasWallpaper: false,
-                                       isWallpaperPhoto: false,
-                                       chatColor: ChatColorSettingStore.Constants.defaultColor.colorSetting)
-        let style2 = ConversationStyle(type: .`default`,
-                                       thread: thread,
-                                       viewWidth: 100,
-                                       hasWallpaper: false,
-                                       isWallpaperPhoto: false,
-                                       chatColor: ChatColorSettingStore.Constants.defaultColor.colorSetting)
-        let style3 = ConversationStyle(type: .`default`,
-                                       thread: thread,
-                                       viewWidth: 101,
-                                       hasWallpaper: false,
-                                       isWallpaperPhoto: false,
-                                       chatColor: ChatColorSettingStore.Constants.defaultColor.colorSetting)
+        let style1 = ConversationStyle(
+            type: .`default`,
+            thread: thread,
+            viewWidth: 100,
+            hasWallpaper: false,
+            isWallpaperPhoto: false,
+            chatColor: ChatColorSettingStore.Constants.defaultColor.colorSetting,
+        )
+        let style2 = ConversationStyle(
+            type: .`default`,
+            thread: thread,
+            viewWidth: 100,
+            hasWallpaper: false,
+            isWallpaperPhoto: false,
+            chatColor: ChatColorSettingStore.Constants.defaultColor.colorSetting,
+        )
+        let style3 = ConversationStyle(
+            type: .`default`,
+            thread: thread,
+            viewWidth: 101,
+            hasWallpaper: false,
+            isWallpaperPhoto: false,
+            chatColor: ChatColorSettingStore.Constants.defaultColor.colorSetting,
+        )
 
         XCTAssertFalse(style1.isDarkThemeEnabled)
         XCTAssertFalse(style2.isDarkThemeEnabled)
@@ -46,12 +52,14 @@ class ConversationViewTest: SignalBaseTest {
         Theme.setIsDarkThemeEnabledForTests(true)
         XCTAssertTrue(Theme.isDarkThemeEnabled)
 
-        let style4 = ConversationStyle(type: .`default`,
-                                       thread: thread,
-                                       viewWidth: 100,
-                                       hasWallpaper: false,
-                                       isWallpaperPhoto: false,
-                                       chatColor: ChatColorSettingStore.Constants.defaultColor.colorSetting)
+        let style4 = ConversationStyle(
+            type: .`default`,
+            thread: thread,
+            viewWidth: 100,
+            hasWallpaper: false,
+            isWallpaperPhoto: false,
+            chatColor: ChatColorSettingStore.Constants.defaultColor.colorSetting,
+        )
 
         XCTAssertFalse(style1.isDarkThemeEnabled)
         XCTAssertFalse(style2.isDarkThemeEnabled)

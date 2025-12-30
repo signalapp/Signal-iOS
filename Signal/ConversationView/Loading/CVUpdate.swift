@@ -5,7 +5,7 @@
 
 public import SignalServiceKit
 
-// The outcome of a CVC load is an update that describes how to 
+// The outcome of a CVC load is an update that describes how to
 // transition from the last render state to the new render state.
 struct CVUpdate {
 
@@ -23,7 +23,7 @@ struct CVUpdate {
 
         // MARK: -
 
-        public var debugName: String {
+        var debugName: String {
             switch self {
             case .minor:
                 return "minor"
@@ -59,14 +59,16 @@ extension CVUpdate {
     static func build(
         renderState: CVRenderState,
         prevRenderState: CVRenderState,
-        loadRequest: CVLoadRequest
+        loadRequest: CVLoadRequest,
     ) -> CVUpdate {
 
         func buildUpdate(type: CVUpdateType) -> CVUpdate {
-            CVUpdate(type: type,
-                     renderState: renderState,
-                     prevRenderState: prevRenderState,
-                     loadRequest: loadRequest)
+            CVUpdate(
+                type: type,
+                renderState: renderState,
+                prevRenderState: prevRenderState,
+                loadRequest: loadRequest,
+            )
         }
 
         let loadType = loadRequest.loadType
@@ -114,23 +116,27 @@ extension CVUpdate {
         }
 
         do {
-            let batchUpdateItems = try BatchUpdate.build(viewType: .uiCollectionView,
-                                                         oldValues: prevRenderState.items,
-                                                         newValues: renderState.items,
-                                                         changedValues: changedRenderItems)
+            let batchUpdateItems = try BatchUpdate.build(
+                viewType: .uiCollectionView,
+                oldValues: prevRenderState.items,
+                newValues: renderState.items,
+                changedValues: changedRenderItems,
+            )
 
             guard !batchUpdateItems.isEmpty else {
                 return buildUpdate(type: .minor)
             }
             let oldItems = prevRenderState.items
-            let shouldAnimateUpdate = Self.shouldAnimateUpdate(loadType: loadType,
-                                                               updateItems: batchUpdateItems,
-                                                               oldItemCount: oldItems.count,
-                                                               appearanceChangedItemIdSet: appearanceChangedItemIdSet)
+            let shouldAnimateUpdate = Self.shouldAnimateUpdate(
+                loadType: loadType,
+                updateItems: batchUpdateItems,
+                oldItemCount: oldItems.count,
+                appearanceChangedItemIdSet: appearanceChangedItemIdSet,
+            )
 
             return buildUpdate(type: .diff(
                 items: batchUpdateItems,
-                shouldAnimateUpdate: shouldAnimateUpdate
+                shouldAnimateUpdate: shouldAnimateUpdate,
             ))
         } catch {
             owsFailDebug("Error: \(error)")
@@ -138,10 +144,12 @@ extension CVUpdate {
         }
     }
 
-    private static func shouldAnimateUpdate(loadType: CVLoadType,
-                                            updateItems: [CVUpdate.Item],
-                                            oldItemCount: Int,
-                                            appearanceChangedItemIdSet: Set<ItemId>) -> Bool {
+    private static func shouldAnimateUpdate(
+        loadType: CVLoadType,
+        updateItems: [CVUpdate.Item],
+        oldItemCount: Int,
+        appearanceChangedItemIdSet: Set<ItemId>,
+    ) -> Bool {
 
         switch loadType {
         case .loadInitialMapping, .loadOlder, .loadNewer, .loadNewest, .loadPageAroundInteraction:

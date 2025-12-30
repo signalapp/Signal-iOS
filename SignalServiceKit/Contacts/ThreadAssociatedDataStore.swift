@@ -36,7 +36,7 @@ extension ThreadAssociatedDataStore {
     func fetchOrDefault(
         for thread: TSThread,
         ignoreMissing: Bool = false,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> ThreadAssociatedData {
         fetchOrDefault(for: thread.uniqueId, ignoreMissing: ignoreMissing, tx: tx)
     }
@@ -44,7 +44,7 @@ extension ThreadAssociatedDataStore {
     func fetchOrDefault(
         for threadUniqueId: String,
         ignoreMissing: Bool = false,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> ThreadAssociatedData {
         if let result = fetch(for: threadUniqueId, tx: tx) {
             return result

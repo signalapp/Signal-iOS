@@ -40,35 +40,45 @@ public protocol CVComponentDelegate: AnyObject, AudioMessageViewDelegate, CVPoll
 
     // MARK: - Long Press
 
-    func didLongPressTextViewItem(_ cell: CVCell,
-                                  itemViewModel: CVItemViewModelImpl,
-                                  shouldAllowReply: Bool)
+    func didLongPressTextViewItem(
+        _ cell: CVCell,
+        itemViewModel: CVItemViewModelImpl,
+        shouldAllowReply: Bool,
+    )
 
-    func didLongPressMediaViewItem(_ cell: CVCell,
-                                   itemViewModel: CVItemViewModelImpl,
-                                   shouldAllowReply: Bool)
+    func didLongPressMediaViewItem(
+        _ cell: CVCell,
+        itemViewModel: CVItemViewModelImpl,
+        shouldAllowReply: Bool,
+    )
 
-    func didLongPressQuote(_ cell: CVCell,
-                           itemViewModel: CVItemViewModelImpl,
-                           shouldAllowReply: Bool)
+    func didLongPressQuote(
+        _ cell: CVCell,
+        itemViewModel: CVItemViewModelImpl,
+        shouldAllowReply: Bool,
+    )
 
-    func didLongPressSystemMessage(_ cell: CVCell,
-                                   itemViewModel: CVItemViewModelImpl)
+    func didLongPressSystemMessage(
+        _ cell: CVCell,
+        itemViewModel: CVItemViewModelImpl,
+    )
 
-    func didLongPressSticker(_ cell: CVCell,
-                             itemViewModel: CVItemViewModelImpl,
-                             shouldAllowReply: Bool)
+    func didLongPressSticker(
+        _ cell: CVCell,
+        itemViewModel: CVItemViewModelImpl,
+        shouldAllowReply: Bool,
+    )
 
     func didLongPressPaymentMessage(
         _ cell: CVCell,
         itemViewModel: CVItemViewModelImpl,
-        shouldAllowReply: Bool
+        shouldAllowReply: Bool,
     )
 
     func didLongPressPoll(
         _ cell: CVCell,
         itemViewModel: CVItemViewModelImpl,
-        shouldAllowReply: Bool
+        shouldAllowReply: Bool,
     )
 
     func didChangeLongPress(_ itemViewModel: CVItemViewModelImpl)
@@ -93,8 +103,10 @@ public protocol CVComponentDelegate: AnyObject, AudioMessageViewDelegate, CVPoll
 
     func shouldAllowReplyForItem(_ itemViewModel: CVItemViewModelImpl) -> Bool
 
-    func didTapReactions(reactionState: InteractionReactionState,
-                         message: TSMessage)
+    func didTapReactions(
+        reactionState: InteractionReactionState,
+        message: TSMessage,
+    )
 
     var hasPendingMessageRequest: Bool { get }
 
@@ -119,7 +131,7 @@ public protocol CVComponentDelegate: AnyObject, AudioMessageViewDelegate, CVPoll
     func didTapBodyMedia(
         itemViewModel: CVItemViewModelImpl,
         attachmentStream: ReferencedAttachmentStream,
-        imageView: UIView
+        imageView: UIView,
     )
 
     func didTapGenericAttachment(_ attachment: CVComponentGenericAttachment) -> CVAttachmentTapAction
@@ -232,8 +244,10 @@ public protocol CVComponentDelegate: AnyObject, AudioMessageViewDelegate, CVPoll
 
     func didTapShowUpgradeAppUI()
 
-    func didTapUpdateSystemContact(_ address: SignalServiceAddress,
-                                   newNameComponents: PersonNameComponents)
+    func didTapUpdateSystemContact(
+        _ address: SignalServiceAddress,
+        newNameComponents: PersonNameComponents,
+    )
     func didTapPhoneNumberChange(aci: Aci, phoneNumberOld: String, phoneNumberNew: String)
 
     func didTapViewOnceAttachment(_ interaction: TSInteraction)

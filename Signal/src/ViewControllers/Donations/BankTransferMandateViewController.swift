@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalUI
 import SignalServiceKit
+import SignalUI
 
 @MainActor
 class BankTransferMandateViewController: OWSTableViewController2 {
@@ -30,7 +30,7 @@ class BankTransferMandateViewController: OWSTableViewController2 {
 
     init(
         bankTransferType: OWSRequestFactory.StripePaymentMethod.BankTransfer,
-        didAgree: @escaping (Stripe.PaymentMethod.Mandate) -> Void
+        didAgree: @escaping (Stripe.PaymentMethod.Mandate) -> Void,
     ) {
         self.bankTransferType = bankTransferType
         self.didAgree = didAgree
@@ -105,7 +105,7 @@ class BankTransferMandateViewController: OWSTableViewController2 {
 
         let titleLabel = UILabel.title1Label(text: OWSLocalizedString(
             "BANK_MANDATE_TITLE",
-            comment: "Users can donate to Signal with a bank account. We are required to show them a mandate with information about bank transfers. This is the title above that mandate."
+            comment: "Users can donate to Signal with a bank account. We are required to show them a mandate with information about bank transfers. This is the title above that mandate.",
         ))
 
         let subtitleTextView = LinkingTextView()
@@ -113,10 +113,10 @@ class BankTransferMandateViewController: OWSTableViewController2 {
         subtitleTextView.attributedText = .composed(of: [
             OWSLocalizedString(
                 "BANK_MANDATE_SUBTITLE",
-                comment: "Users can donate to Signal with a bank account. We are required to show them a mandate with information about bank transfers. This is a subtitle about the payment processor Stripe above that mandate."
+                comment: "Users can donate to Signal with a bank account. We are required to show them a mandate with information about bank transfers. This is a subtitle about the payment processor Stripe above that mandate.",
             ),
             " ",
-            CommonStrings.learnMore.styled(with: .link(Self.learnMoreURL))
+            CommonStrings.learnMore.styled(with: .link(Self.learnMoreURL)),
         ]).styled(with: .color(.Signal.secondaryLabel), .font(.dynamicTypeSubheadline))
         subtitleTextView.textAlignment = .center
 
@@ -193,7 +193,7 @@ class BankTransferMandateViewController: OWSTableViewController2 {
         configuration: .largePrimary(title: ""),
         primaryAction: UIAction { [weak self] _ in
             self?.didTapBottomFooterButton()
-        }
+        },
     )
 
     private lazy var bottomFooterContainer: UIView = {
@@ -229,12 +229,12 @@ class BankTransferMandateViewController: OWSTableViewController2 {
         if isScrolledCloseToBottom {
             title = OWSLocalizedString(
                 "BANK_MANDATE_AGREE",
-                comment: "Users can donate to Signal with a bank account. We are required to show them a mandate with information about bank transfers. This is a label for a button to agree to the mandate."
+                comment: "Users can donate to Signal with a bank account. We are required to show them a mandate with information about bank transfers. This is a label for a button to agree to the mandate.",
             )
         } else {
             title = OWSLocalizedString(
                 "BANK_MANDATE_READ_MORE",
-                comment: "Users can donate to Signal with a bank account. We are required to show them a mandate with information about bank transfers. This is a label for a button that shows more of the mandate if it is not all visible."
+                comment: "Users can donate to Signal with a bank account. We are required to show them a mandate with information about bank transfers. This is a label for a button that shows more of the mandate if it is not all visible.",
             )
         }
         bottomFooterButton.configuration?.title = title
@@ -247,7 +247,7 @@ class BankTransferMandateViewController: OWSTableViewController2 {
             let pageHeight = tableView.bounds.height - tableView.safeAreaInsets.top - tableView.safeAreaInsets.bottom
             let yOffset = min(
                 tableView.contentOffset.y + pageHeight,
-                tableView.contentSize.height - tableView.bounds.height
+                tableView.contentSize.height - tableView.bounds.height,
             )
             let newOffset = CGPoint(x: tableView.contentOffset.x, y: yOffset)
             tableView.setContentOffset(newOffset, animated: true)
@@ -294,7 +294,7 @@ extension Stripe.PaymentMethod.Mandate {
     fileprivate static func accept() -> Self {
         .init(mode: .online(
             userAgent: OWSURLSession.userAgentHeaderValueSignalIos,
-            ipAddress: "0.0.0.0"
+            ipAddress: "0.0.0.0",
         ))
     }
 }

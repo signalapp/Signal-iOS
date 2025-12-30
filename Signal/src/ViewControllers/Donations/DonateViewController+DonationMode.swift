@@ -34,7 +34,7 @@ extension DonateViewController {
             }
         }
 
-        public var debugDescription: String {
+        var debugDescription: String {
             switch self {
             case .oneTime: return "one-time"
             case .monthly: return "monthly"

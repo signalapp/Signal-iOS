@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalUI
 import SignalServiceKit
+import SignalUI
 
 class LinkOrSyncPickerSheet: StackSheetViewController {
 
@@ -32,7 +32,7 @@ class LinkOrSyncPickerSheet: StackSheetViewController {
         freeTierMediaDays: UInt64,
         didDismiss: @escaping () -> Void,
         linkAndSync: @escaping () -> Void,
-        linkOnly: @escaping () -> Void
+        linkOnly: @escaping () -> Void,
     ) {
         self.currentBackupPlan = currentBackupPlan
         self.freeTierMediaDays = freeTierMediaDays
@@ -45,14 +45,14 @@ class LinkOrSyncPickerSheet: StackSheetViewController {
     static func load(
         didDismiss: @escaping () -> Void,
         linkAndSync: @escaping () -> Void,
-        linkOnly: @escaping () -> Void
+        linkOnly: @escaping () -> Void,
     ) -> LinkOrSyncPickerSheet {
         let backupSettingsStore = BackupSettingsStore()
         let db = DependenciesBridge.shared.db
         let subscriptionConfigManager = DependenciesBridge.shared.subscriptionConfigManager
         let (currentBackupPlan, freeTierMediaDays): (
             BackupPlan,
-            UInt64
+            UInt64,
         ) = db.read { tx in
             (
                 backupSettingsStore.backupPlan(tx: tx),
@@ -82,7 +82,7 @@ class LinkOrSyncPickerSheet: StackSheetViewController {
         titleContainer.addSubview(titleLabel)
         titleLabel.text = OWSLocalizedString(
             "LINK_DEVICE_CONFIRMATION_ALERT_TITLE",
-            comment: "confirm the users intent to link a new device"
+            comment: "confirm the users intent to link a new device",
         )
         titleLabel.font = .dynamicTypeHeadlineClamped
         titleLabel.textColor = UIColor.Signal.label
@@ -90,7 +90,7 @@ class LinkOrSyncPickerSheet: StackSheetViewController {
         titleLabel.numberOfLines = 0
         // Give space for the close button
         titleLabel.autoPinEdgesToSuperviewEdges(
-            with: .init(hMargin: 36, vMargin: 0)
+            with: .init(hMargin: 36, vMargin: 0),
         )
         self.stackView.addArrangedSubview(titleContainer)
         self.stackView.setCustomSpacing(33, after: titleContainer)
@@ -103,10 +103,10 @@ class LinkOrSyncPickerSheet: StackSheetViewController {
         let closeButton = UIButton(
             configuration: closeButtonConfig,
             primaryAction: .init(
-                image: UIImage(named: "x-compact-bold")
+                image: UIImage(named: "x-compact-bold"),
             ) { [weak self] _ in
                 self?.dismiss(animated: true)
-            }
+            },
         )
 
         contentView.addSubview(closeButton)
@@ -119,7 +119,7 @@ class LinkOrSyncPickerSheet: StackSheetViewController {
                 icon: "chat-check",
                 titleText: OWSLocalizedString(
                     "LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_TITLE",
-                    comment: "title for choosing to send message history when linking a new device"
+                    comment: "title for choosing to send message history when linking a new device",
                 ),
                 subtitleText: {
                     switch currentBackupPlan {
@@ -128,7 +128,7 @@ class LinkOrSyncPickerSheet: StackSheetViewController {
                             OWSLocalizedString(
                                 "LINK_DEVICE_CONFIRMATION_ALERT_TRANSFER_SUBTITLE_%d",
                                 tableName: "PluralAware",
-                                comment: "Subtitle for choosing to send message history when linking a new device. Embeds {{ the number of days that files are available, e.g. '45' }}."
+                                comment: "Subtitle for choosing to send message history when linking a new device. Embeds {{ the number of days that files are available, e.g. '45' }}.",
                             ),
                             freeTierMediaDays,
                         )
@@ -151,12 +151,12 @@ class LinkOrSyncPickerSheet: StackSheetViewController {
                 icon: "chat-x",
                 titleText: OWSLocalizedString(
                     "LINK_DEVICE_CONFIRMATION_ALERT_DONT_TRANSFER_TITLE",
-                    comment: "title for declining to send message history when linking a new device"
+                    comment: "title for declining to send message history when linking a new device",
                 ),
                 subtitleText: OWSLocalizedString(
                     "LINK_DEVICE_CONFIRMATION_ALERT_DONT_TRANSFER_SUBTITLE",
-                    comment: "subtitle for declining to send message history when linking a new device"
-                )
+                    comment: "subtitle for declining to send message history when linking a new device",
+                ),
             ) { [weak self] in
                 guard let self else { return }
                 self.didSelectAnAction = true
@@ -181,7 +181,7 @@ class LinkOrSyncPickerSheet: StackSheetViewController {
         icon: String,
         titleText: String,
         subtitleText: String,
-        action: @escaping () -> Void
+        action: @escaping () -> Void,
     ) -> UIView {
         let stackView = UIStackView()
         stackView.axis = .horizontal
@@ -195,7 +195,7 @@ class LinkOrSyncPickerSheet: StackSheetViewController {
         let imageView = UIImageView()
         imageView.setTemplateImageName(
             icon,
-            tintColor: .Signal.accent
+            tintColor: .Signal.accent,
         )
         imageView.autoSetDimensions(to: .square(40))
         imageView.setContentHuggingHigh()
@@ -207,12 +207,12 @@ class LinkOrSyncPickerSheet: StackSheetViewController {
         label.attributedText = .composed(of: [
             titleText.styled(
                 with: .font(.dynamicTypeHeadline),
-                .color(UIColor.Signal.label)
+                .color(UIColor.Signal.label),
             ),
             "\n",
             subtitleText.styled(
                 with: .font(.dynamicTypeFootnote),
-                .color(UIColor.Signal.secondaryLabel)
+                .color(UIColor.Signal.secondaryLabel),
             ),
         ])
         stackView.addArrangedSubview(label)
@@ -220,7 +220,7 @@ class LinkOrSyncPickerSheet: StackSheetViewController {
         let chevron = UIImageView()
         chevron.setTemplateImageName(
             "chevron-right-20",
-            tintColor: UIColor.Signal.tertiaryLabel
+            tintColor: UIColor.Signal.tertiaryLabel,
         )
         chevron.setContentHuggingHigh()
         chevron.setCompressionResistanceHigh()

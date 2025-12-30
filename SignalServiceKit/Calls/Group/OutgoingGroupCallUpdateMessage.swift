@@ -14,28 +14,28 @@ public final class OutgoingGroupCallUpdateMessage: TSOutgoingMessage {
         super.init(coder: coder)
     }
 
-    public override func encode(with coder: NSCoder) {
+    override public func encode(with coder: NSCoder) {
         super.encode(with: coder)
         if let eraId {
             coder.encode(eraId, forKey: "eraId")
         }
     }
 
-    public override var hash: Int {
+    override public var hash: Int {
         var hasher = Hasher()
         hasher.combine(super.hash)
         hasher.combine(eraId)
         return hasher.finalize()
     }
 
-    public override func isEqual(_ object: Any?) -> Bool {
+    override public func isEqual(_ object: Any?) -> Bool {
         guard let object = object as? Self else { return false }
         guard super.isEqual(object) else { return false }
         guard self.eraId == object.eraId else { return false }
         return true
     }
 
-    public override func copy(with zone: NSZone? = nil) -> Any {
+    override public func copy(with zone: NSZone? = nil) -> Any {
         let result = super.copy(with: zone) as! Self
         result.eraId = self.eraId
         return result
@@ -47,7 +47,7 @@ public final class OutgoingGroupCallUpdateMessage: TSOutgoingMessage {
     public init(
         thread: TSGroupThread,
         eraId: String?,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) {
         self.eraId = eraId
 
@@ -56,7 +56,7 @@ public final class OutgoingGroupCallUpdateMessage: TSOutgoingMessage {
             additionalRecipients: [],
             explicitRecipients: [],
             skippedRecipients: [],
-            transaction: tx
+            transaction: tx,
         )
     }
 
@@ -66,12 +66,14 @@ public final class OutgoingGroupCallUpdateMessage: TSOutgoingMessage {
 
     override public func dataMessageBuilder(
         with thread: TSThread,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> SSKProtoDataMessageBuilder? {
-        guard let dataMessageBuilder = super.dataMessageBuilder(
-            with: thread,
-            transaction: transaction
-        ) else {
+        guard
+            let dataMessageBuilder = super.dataMessageBuilder(
+                with: thread,
+                transaction: transaction,
+            )
+        else {
             return nil
         }
 
@@ -82,7 +84,7 @@ public final class OutgoingGroupCallUpdateMessage: TSOutgoingMessage {
         }
 
         dataMessageBuilder.setGroupCallUpdate(
-            groupCallUpdateBuilder.buildInfallibly()
+            groupCallUpdateBuilder.buildInfallibly(),
         )
 
         return dataMessageBuilder

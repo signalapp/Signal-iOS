@@ -16,7 +16,7 @@ public protocol BackupPlanManager {
     /// Must only be called on linked devices!
     func setBackupPlan(
         fromStorageService backupLevel: LibSignalClient.BackupLevel?,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     )
 
     /// Set the current `BackupPlan`.
@@ -112,7 +112,7 @@ class BackupPlanManagerImpl: BackupPlanManager {
         configureDownloadsForBackupPlanChange(
             oldPlan: oldBackupPlan,
             newPlan: newBackupPlan,
-            tx: tx
+            tx: tx,
         )
 
         switch newBackupPlan {
@@ -169,6 +169,7 @@ class BackupPlanManagerImpl: BackupPlanManager {
             (.free, .free):
             // No change.
             return
+
         case
             (.disabling, .free),
             (.disabling, .paid),
@@ -177,6 +178,7 @@ class BackupPlanManagerImpl: BackupPlanManager {
             (.disabled, .disabling):
             owsFailDebug("Unexpected BackupPlan transition: \(oldPlan) -> \(newPlan)")
             return
+
         case (.free, .disabling):
             // While in free tier, we may have been continuing downloads
             // from when you were previously paid tier. But that was nice
@@ -184,6 +186,7 @@ class BackupPlanManagerImpl: BackupPlanManager {
             Logger.info("Configuring downloads for disabling free backups")
             backupAttachmentDownloadStore.markAllReadyIneligible(tx: tx)
             backupAttachmentDownloadStore.deleteAllDone(tx: tx)
+
         case
             let (.paid(optimizeLocalStorage), .disabling),
             let (.paidExpiringSoon(optimizeLocalStorage), .disabling),
@@ -197,6 +200,7 @@ class BackupPlanManagerImpl: BackupPlanManager {
                 // attachments) now eligible.
                 backupAttachmentDownloadStore.markAllIneligibleReady(tx: tx)
             }
+
         case (_, .disabled):
             configureDownloadsForDisablingBackups(tx: tx)
 
@@ -291,7 +295,7 @@ class BackupPlanManagerImpl: BackupPlanManager {
         let threshold = dateProvider().ows_millisecondsSince1970 - Attachment.offloadingThresholdMs
         backupAttachmentDownloadStore.markAllMediaTierFullsizeDownloadsIneligible(
             olderThan: threshold,
-            tx: tx
+            tx: tx,
         )
         // Un-suspend; when optimization is enabled we always auto-download
         // the stuff that is eligible (newer attachments).

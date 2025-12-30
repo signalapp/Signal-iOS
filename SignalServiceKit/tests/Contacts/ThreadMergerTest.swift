@@ -50,10 +50,10 @@ final class ThreadMergerTest: XCTestCase {
         threadReplyInfoStore = ThreadReplyInfoStore()
         threadStore = MockThreadStore()
         wallpaperStore = WallpaperStore(
-            wallpaperImageStore: MockWallpaperImageStore()
+            wallpaperImageStore: MockWallpaperImageStore(),
         )
         chatColorSettingStore = ChatColorSettingStore(
-            wallpaperStore: wallpaperStore
+            wallpaperStore: wallpaperStore,
         )
         threadRemover = ThreadRemoverImpl(
             chatColorSettingStore: chatColorSettingStore,
@@ -65,7 +65,7 @@ final class ThreadMergerTest: XCTestCase {
             threadReplyInfoStore: threadReplyInfoStore,
             threadSoftDeleteManager: MockThreadSoftDeleteManager(),
             threadStore: threadStore,
-            wallpaperStore: wallpaperStore
+            wallpaperStore: wallpaperStore,
         )
         threadMerger = ThreadMerger(
             callRecordStore: callRecordStore,
@@ -82,7 +82,7 @@ final class ThreadMergerTest: XCTestCase {
             threadReplyInfoStore: threadReplyInfoStore,
             threadStore: threadStore,
             wallpaperImageStore: MockWallpaperImageStore(),
-            wallpaperStore: wallpaperStore
+            wallpaperStore: wallpaperStore,
         )
 
         serviceIdThread = makeThread(aci: aci, phoneNumber: nil)
@@ -144,14 +144,14 @@ final class ThreadMergerTest: XCTestCase {
                 threadId: serviceIdThread.uniqueId,
                 enabled: serviceIdValue != nil,
                 durationSeconds: serviceIdValue ?? 0,
-                timerVersion: 1
+                timerVersion: 1,
             ),
             phoneNumberThread.uniqueId: OWSDisappearingMessagesConfiguration(
                 threadId: phoneNumberThread.uniqueId,
                 enabled: phoneNumberValue != nil,
                 durationSeconds: phoneNumberValue ?? 0,
-                timerVersion: 1
-            )
+                timerVersion: 1,
+            ),
         ]
     }
 
@@ -202,7 +202,7 @@ final class ThreadMergerTest: XCTestCase {
             isArchived: isArchived,
             isMarkedUnread: isMarkedUnread,
             mutedUntilTimestamp: mutedUntilTimestamp,
-            audioPlaybackRate: audioPlaybackRate
+            audioPlaybackRate: audioPlaybackRate,
         )
     }
 
@@ -322,7 +322,7 @@ final class ThreadMergerTest: XCTestCase {
                     oldRecipient: nil,
                     newRecipient: try! SignalRecipient.insertRecord(aci: aci, phoneNumber: phoneNumber, tx: tx),
                 ),
-                tx: tx
+                tx: tx,
             )
         }
     }
@@ -331,7 +331,7 @@ final class ThreadMergerTest: XCTestCase {
         let result = TSContactThread(contactAddress: SignalServiceAddress(
             serviceId: aci,
             phoneNumber: phoneNumber?.stringValue,
-            cache: _signalServiceAddressCache
+            cache: _signalServiceAddressCache,
         ))
         threadAssociatedDataStore.values[result.uniqueId] = ThreadAssociatedData(threadUniqueId: result.uniqueId)
         return result

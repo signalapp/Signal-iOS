@@ -13,16 +13,16 @@ class EmojiMoodPickerView: UIView {
 
     var selectedMood: Mood? {
         didSet {
-            moodButtons.forEach { (mood, button) in
+            moodButtons.forEach { mood, button in
                 button.isSelected = (mood == selectedMood)
             }
         }
     }
 
-    private let moodButtons: [Mood: UIButton] = Mood.allCases.dictionaryMappingToValues { (mood) in
+    private let moodButtons: [Mood: UIButton] = Mood.allCases.dictionaryMappingToValues { mood in
         let button = UIButton(type: .custom)
         let title = NSAttributedString(string: "\(mood.emojiRepresentation)", attributes: [
-            .font: UIFont.boldSystemFont(ofSize: 24)
+            .font: UIFont.boldSystemFont(ofSize: 24),
         ])
         button.clipsToBounds = true
         button.setAttributedTitle(title, for: .normal)
@@ -96,7 +96,7 @@ class EmojiMoodPickerView: UIView {
         let defaultButtonBackground = Theme.isDarkThemeEnabled ? UIColor.ows_gray80 : UIColor.ows_gray05
         let selectedButtonBackground = Theme.accentBlueColor
 
-        moodButtons.values.forEach { (button) in
+        moodButtons.values.forEach { button in
             button.setBackgroundImage(UIImage.image(color: defaultButtonBackground), for: .normal)
             button.setBackgroundImage(UIImage.image(color: selectedButtonBackground), for: .selected)
         }

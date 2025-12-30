@@ -23,7 +23,7 @@ open class SheetViewController: UIViewController {
         Logger.verbose("")
     }
 
-    public override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+    override public init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
         self.transitioningDelegate = self
         self.modalPresentationStyle = .overCurrentContext
@@ -86,13 +86,15 @@ open class SheetViewController: UIViewController {
 
         NSLayoutConstraint.deactivate([sheetViewVerticalConstraint])
         self.sheetViewVerticalConstraint = self.sheetView.autoPinEdge(toSuperviewEdge: .bottom)
-        UIView.animate(withDuration: 0.2,
-                       delay: backgroundDuration,
-                       options: .curveEaseOut,
-                       animations: {
-                        self.sheetView.superview?.layoutIfNeeded()
-        },
-                       completion: completion)
+        UIView.animate(
+            withDuration: 0.2,
+            delay: backgroundDuration,
+            options: .curveEaseOut,
+            animations: {
+                self.sheetView.superview?.layoutIfNeeded()
+            },
+            completion: completion,
+        )
     }
 
     fileprivate func animateDismiss(completion: @escaping (Bool) -> Void) {
@@ -106,14 +108,16 @@ open class SheetViewController: UIViewController {
 
         let dismissDuration: TimeInterval = 0.2
         self.sheetViewVerticalConstraint = self.sheetView.autoPinEdge(.top, to: .bottom, of: self.view)
-        UIView.animate(withDuration: dismissDuration,
-                       delay: 0,
-                       options: .curveEaseOut,
-                       animations: {
-                        self.view.backgroundColor = UIColor.clear
-                        self.sheetView.superview?.layoutIfNeeded()
-        },
-                       completion: completion)
+        UIView.animate(
+            withDuration: dismissDuration,
+            delay: 0,
+            options: .curveEaseOut,
+            animations: {
+                self.view.backgroundColor = UIColor.clear
+                self.sheetView.superview?.layoutIfNeeded()
+            },
+            completion: completion,
+        )
     }
 
     // MARK: Actions
@@ -149,12 +153,12 @@ private class SheetViewPresentationController: NSObject, UIViewControllerAnimate
     // This is used for percent driven interactive transitions, as well as for
     // container controllers that have companion animations that might need to
     // synchronize with the main animation.
-    public func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
+    func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
         return 0.3
     }
 
     // This method can only be a nop if the transition is interactive and not a percentDriven interactive transition.
-    public func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
+    func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
         Logger.debug("")
         transitionContext.containerView.addSubview(sheetViewController.view)
         sheetViewController.view.autoPinEdgesToSuperviewEdges()
@@ -175,12 +179,12 @@ private class SheetViewDismissalController: NSObject, UIViewControllerAnimatedTr
     // This is used for percent driven interactive transitions, as well as for
     // container controllers that have companion animations that might need to
     // synchronize with the main animation.
-    public func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
+    func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
         return 0.3
     }
 
     // This method can only be a nop if the transition is interactive and not a percentDriven interactive transition.
-    public func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
+    func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
         Logger.debug("")
         sheetViewController.animateDismiss { didComplete in
             Logger.debug("completed: \(didComplete)")
@@ -209,9 +213,11 @@ private class SheetView: UIView {
 
     private func updateMask() {
         let cornerRadius: CGFloat = 16
-        let path: UIBezierPath = UIBezierPath(roundedRect: bounds,
-                                              byRoundingCorners: [.topLeft, .topRight],
-                                              cornerRadii: CGSize(square: cornerRadius))
+        let path: UIBezierPath = UIBezierPath(
+            roundedRect: bounds,
+            byRoundingCorners: [.topLeft, .topRight],
+            cornerRadii: CGSize(square: cornerRadius),
+        )
         let mask = CAShapeLayer()
         mask.path = path.cgPath
         self.layer.mask = mask

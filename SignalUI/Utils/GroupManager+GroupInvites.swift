@@ -13,7 +13,7 @@ public extension GroupManager {
         groupThread: TSGroupThread,
         fromViewController: UIViewController,
         replacementAdminAci: Aci? = nil,
-        success: (() -> Void)?
+        success: (() -> Void)?,
     ) {
 
         guard groupThread.groupModel.groupMembership.isLocalUserMemberOfAnyKind else {
@@ -43,23 +43,23 @@ public extension GroupManager {
                         OWSActionSheets.showActionSheet(
                             title: OWSLocalizedString(
                                 "LEAVE_GROUP_FAILED",
-                                comment: "Error indicating that a group could not be left."
-                            )
+                                comment: "Error indicating that a group could not be left.",
+                            ),
                         )
                     }
                 }
-            }
+            },
         )
     }
 
     @MainActor
     static func acceptGroupInviteWithModal(
         _ groupThread: TSGroupThread,
-        fromViewController: UIViewController
+        fromViewController: UIViewController,
     ) async throws {
         do {
             try await ModalActivityIndicatorViewController.presentAndPropagateResult(
-                from: fromViewController
+                from: fromViewController,
             ) {
                 guard let groupModelV2 = groupThread.groupModel as? TSGroupModelV2 else {
                     throw OWSAssertionError("Invalid group model")
@@ -67,13 +67,13 @@ public extension GroupManager {
 
                 try await self.localAcceptInviteToGroupV2(
                     groupModel: groupModelV2,
-                    waitForMessageProcessing: true
+                    waitForMessageProcessing: true,
                 )
             }
         } catch {
             OWSActionSheets.showActionSheet(title: OWSLocalizedString(
                 "GROUPS_INVITE_ACCEPT_INVITE_FAILED",
-                comment: "Error indicating that an error occurred while accepting an invite."
+                comment: "Error indicating that an error occurred while accepting an invite.",
             ))
             throw error
         }

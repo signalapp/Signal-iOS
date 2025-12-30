@@ -20,7 +20,7 @@ extension AttachmentReference {
     }
 }
 
-internal protocol FetchableAttachmentReferenceRecord: Codable, PersistableRecord, FetchableRecord, Equatable {
+protocol FetchableAttachmentReferenceRecord: Codable, PersistableRecord, FetchableRecord, Equatable {
 
     static var ownerRowIdColumn: Column { get }
 
@@ -47,7 +47,7 @@ extension AttachmentReference {
         return [
             MessageAttachmentReferenceRecord.self,
             StoryMessageAttachmentReferenceRecord.self,
-            ThreadAttachmentReferenceRecord.self
+            ThreadAttachmentReferenceRecord.self,
         ]
     }
 
@@ -129,10 +129,10 @@ extension AttachmentReference {
             case .messageContactAvatar(let messageRowId):
                 return ownerTypeAndRowId(messageRowId, .contactAvatar)
             case
-                    .storyMessageMedia,
-                    .storyMessageLinkPreview,
-                    .threadWallpaperImage,
-                    .globalThreadWallpaperImage:
+                .storyMessageMedia,
+                .storyMessageLinkPreview,
+                .threadWallpaperImage,
+                .globalThreadWallpaperImage:
                 return .nonMatchingOwnerType
             }
         }
@@ -143,7 +143,7 @@ extension AttachmentReference {
 
         // MARK: - Initializers
 
-        internal init(
+        init(
             ownerType: UInt32,
             ownerRowId: Int64,
             attachmentRowId: Int64,
@@ -161,7 +161,7 @@ extension AttachmentReference {
             stickerPackId: Data?,
             stickerId: UInt32?,
             isViewOnce: Bool,
-            ownerIsPastEditRevision: Bool
+            ownerIsPastEditRevision: Bool,
         ) {
             self.ownerType = ownerType
             self.ownerRowId = ownerRowId
@@ -183,31 +183,31 @@ extension AttachmentReference {
             self.ownerIsPastEditRevision = ownerIsPastEditRevision
         }
 
-        internal init(
+        init(
             attachmentReference: AttachmentReference,
-            messageSource: AttachmentReference.Owner.MessageSource
+            messageSource: AttachmentReference.Owner.MessageSource,
         ) {
             self.init(
                 attachmentRowId: attachmentReference.attachmentRowId,
                 sourceFilename: attachmentReference.sourceFilename,
                 sourceUnencryptedByteCount: attachmentReference.sourceUnencryptedByteCount,
                 sourceMediaSizePixels: attachmentReference.sourceMediaSizePixels,
-                messageSource: messageSource
+                messageSource: messageSource,
             )
         }
 
-        internal init(
+        init(
             attachmentRowId: Attachment.IDType,
             sourceFilename: String?,
             sourceUnencryptedByteCount: UInt32?,
             sourceMediaSizePixels: CGSize?,
-            messageSource: AttachmentReference.Owner.MessageSource
+            messageSource: AttachmentReference.Owner.MessageSource,
         ) {
             self.ownerType = UInt32(messageSource.rawMessageOwnerType.rawValue)
             self.attachmentRowId = attachmentRowId
             self.sourceFilename = sourceFilename
             self.sourceUnencryptedByteCount = sourceUnencryptedByteCount
-            if let sourceMediaSizePixels = sourceMediaSizePixels {
+            if let sourceMediaSizePixels {
                 self.sourceMediaHeightPixels = UInt32(exactly: sourceMediaSizePixels.height.rounded())
                 self.sourceMediaWidthPixels = UInt32(exactly: sourceMediaSizePixels.width.rounded())
             } else {
@@ -354,14 +354,14 @@ extension AttachmentReference {
             case .storyMessageLinkPreview(let storyMessageRowId):
                 return ownerTypeAndRowId(storyMessageRowId, .linkPreview)
             case
-                    .messageBodyAttachment,
-                    .messageOversizeText,
-                    .messageLinkPreview,
-                    .quotedReplyAttachment,
-                    .messageSticker,
-                    .messageContactAvatar,
-                    .threadWallpaperImage,
-                    .globalThreadWallpaperImage:
+                .messageBodyAttachment,
+                .messageOversizeText,
+                .messageLinkPreview,
+                .quotedReplyAttachment,
+                .messageSticker,
+                .messageContactAvatar,
+                .threadWallpaperImage,
+                .globalThreadWallpaperImage:
                 return .nonMatchingOwnerType
             }
         }
@@ -372,7 +372,7 @@ extension AttachmentReference {
 
         // MARK: - Initializers
 
-        internal init(
+        init(
             ownerType: UInt32,
             ownerRowId: Int64,
             attachmentRowId: Int64,
@@ -382,7 +382,7 @@ extension AttachmentReference {
             sourceFilename: String?,
             sourceUnencryptedByteCount: UInt32?,
             sourceMediaHeightPixels: UInt32?,
-            sourceMediaWidthPixels: UInt32?
+            sourceMediaWidthPixels: UInt32?,
         ) {
             self.ownerType = ownerType
             self.ownerRowId = ownerRowId
@@ -396,31 +396,31 @@ extension AttachmentReference {
             self.sourceMediaWidthPixels = sourceMediaWidthPixels
         }
 
-        internal init(
+        init(
             attachmentReference: AttachmentReference,
-            storyMessageSource: AttachmentReference.Owner.StoryMessageSource
+            storyMessageSource: AttachmentReference.Owner.StoryMessageSource,
         ) throws {
             try self.init(
                 attachmentRowId: attachmentReference.attachmentRowId,
                 sourceFilename: attachmentReference.sourceFilename,
                 sourceUnencryptedByteCount: attachmentReference.sourceUnencryptedByteCount,
                 sourceMediaSizePixels: attachmentReference.sourceMediaSizePixels,
-                storyMessageSource: storyMessageSource
+                storyMessageSource: storyMessageSource,
             )
         }
 
-        internal init(
+        init(
             attachmentRowId: Attachment.IDType,
             sourceFilename: String?,
             sourceUnencryptedByteCount: UInt32?,
             sourceMediaSizePixels: CGSize?,
-            storyMessageSource: AttachmentReference.Owner.StoryMessageSource
+            storyMessageSource: AttachmentReference.Owner.StoryMessageSource,
         ) throws {
             self.ownerType = UInt32(storyMessageSource.rawStoryMessageOwnerType.rawValue)
             self.attachmentRowId = attachmentRowId
             self.sourceFilename = sourceFilename
             self.sourceUnencryptedByteCount = sourceUnencryptedByteCount
-            if let sourceMediaSizePixels = sourceMediaSizePixels {
+            if let sourceMediaSizePixels {
                 self.sourceMediaHeightPixels = UInt32(exactly: sourceMediaSizePixels.height.rounded())
                 self.sourceMediaWidthPixels = UInt32(exactly: sourceMediaSizePixels.width.rounded())
             } else {
@@ -485,14 +485,14 @@ extension AttachmentReference {
             case .globalThreadWallpaperImage:
                 return .nullOwnerRowId
             case
-                    .messageBodyAttachment,
-                    .messageOversizeText,
-                    .messageLinkPreview,
-                    .quotedReplyAttachment,
-                    .messageSticker,
-                    .messageContactAvatar,
-                    .storyMessageMedia,
-                    .storyMessageLinkPreview:
+                .messageBodyAttachment,
+                .messageOversizeText,
+                .messageLinkPreview,
+                .quotedReplyAttachment,
+                .messageSticker,
+                .messageContactAvatar,
+                .storyMessageMedia,
+                .storyMessageLinkPreview:
                 return .nonMatchingOwnerType
             }
         }
@@ -503,29 +503,29 @@ extension AttachmentReference {
 
         // MARK: - Initializers
 
-        internal init(
+        init(
             ownerRowId: Int64?,
             attachmentRowId: Int64,
-            creationTimestamp: UInt64
+            creationTimestamp: UInt64,
         ) {
             self.ownerRowId = ownerRowId
             self.attachmentRowId = attachmentRowId
             self._creationTimestamp = DBUInt64(wrappedValue: creationTimestamp)
         }
 
-        internal init(
+        init(
             attachmentReference: AttachmentReference,
-            threadSource: AttachmentReference.Owner.ThreadSource
+            threadSource: AttachmentReference.Owner.ThreadSource,
         ) {
             self.init(
                 attachmentRowId: attachmentReference.attachmentRowId,
-                threadSource: threadSource
+                threadSource: threadSource,
             )
         }
 
-        internal init(
+        init(
             attachmentRowId: Attachment.IDType,
-            threadSource: AttachmentReference.Owner.ThreadSource
+            threadSource: AttachmentReference.Owner.ThreadSource,
         ) {
             self.attachmentRowId = attachmentRowId
             switch threadSource {

@@ -14,9 +14,9 @@ final class TransformingOutputStreamTests: XCTestCase {
             transforms: [
                 TestStreamTransform3(),
                 TestStreamTransform2(),
-                TestStreamTransform1()
+                TestStreamTransform1(),
             ],
-            outputStream: outputStream
+            outputStream: outputStream,
         )
         try transformingStream.write(data: "w".data(using: .utf8)!)
         try transformingStream.write(data: "xx".data(using: .utf8)!)

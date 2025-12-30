@@ -8,27 +8,35 @@ import Foundation
 extension DispatchQueue {
 
     public static let sharedUserInteractive: DispatchQueue = {
-        return DispatchQueue(label: "org.signal.serial-user-interactive",
-                             qos: .userInteractive,
-                             autoreleaseFrequency: .workItem)
+        return DispatchQueue(
+            label: "org.signal.serial-user-interactive",
+            qos: .userInteractive,
+            autoreleaseFrequency: .workItem,
+        )
     }()
 
     public static let sharedUserInitiated: DispatchQueue = {
-        return DispatchQueue(label: "org.signal.serial-user-initiated",
-                             qos: .userInitiated,
-                             autoreleaseFrequency: .workItem)
+        return DispatchQueue(
+            label: "org.signal.serial-user-initiated",
+            qos: .userInitiated,
+            autoreleaseFrequency: .workItem,
+        )
     }()
 
     public static let sharedUtility: DispatchQueue = {
-        return DispatchQueue(label: "org.signal.serial-utility",
-                             qos: .utility,
-                             autoreleaseFrequency: .workItem)
+        return DispatchQueue(
+            label: "org.signal.serial-utility",
+            qos: .utility,
+            autoreleaseFrequency: .workItem,
+        )
     }()
 
     public static let sharedBackground: DispatchQueue = {
-        return DispatchQueue(label: "org.signal.serial-background",
-                             qos: .background,
-                             autoreleaseFrequency: .workItem)
+        return DispatchQueue(
+            label: "org.signal.serial-background",
+            qos: .background,
+            autoreleaseFrequency: .workItem,
+        )
     }()
 
     /// Returns the shared serial queue appropriate for the provided QoS
@@ -48,12 +56,11 @@ extension DispatchQueue {
 
         default:
             return DispatchQueue.sharedUtility
-
         }
     }
 }
 
-internal extension DispatchQoS.QoSClass {
+extension DispatchQoS.QoSClass {
 
     /// Floors a UInt32-backed qos_class_t to a valid QoSClass enum.
     init(flooring rawQoS: qos_class_t) {

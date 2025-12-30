@@ -102,6 +102,7 @@ public class StorageServiceUnknownFieldMigrator {
         case dontNotifyForMentionsIfMuted = 1
 
         // MARK: - Migration Insertion Point
+
         // Never, ever, ever insert another migration before an existing one.
         // Increase the value only.
 
@@ -126,39 +127,39 @@ public class StorageServiceUnknownFieldMigrator {
             record: StorageServiceProtoAccountRecord.self,
             mergeUnknownFields: { accountRecords, isPrimaryDevice, tx in
                 /**
-                let isRemoteDarkMode = accountRecords.first?.isDarkMode ?? false
-                guard isPrimaryDevice else {
-                    // Just take what we have in storage service.
-                    localDarkModeSetting.set(isRemoteDarkMode, tx: tx)
-                }
-                switch (localDarkModeSetting.get(tx: tx)) {
-                case .TRUE, .FALSE:
-                    // Ignore if set locally, schedule an update so we overwrite
-                    // storage service with our local value.
-                    NSObject.storageServiceManager.recordPendingLocalAccountUpdates()
-                case .UNSET:
-                    // Just take what we have in storage service.
-                    localDarkModeSetting.set(isRemoteDarkMode, tx: tx)
-                }
-                */
+                 let isRemoteDarkMode = accountRecords.first?.isDarkMode ?? false
+                 guard isPrimaryDevice else {
+                     // Just take what we have in storage service.
+                     localDarkModeSetting.set(isRemoteDarkMode, tx: tx)
+                 }
+                 switch (localDarkModeSetting.get(tx: tx)) {
+                 case .TRUE, .FALSE:
+                     // Ignore if set locally, schedule an update so we overwrite
+                     // storage service with our local value.
+                     NSObject.storageServiceManager.recordPendingLocalAccountUpdates()
+                 case .UNSET:
+                     // Just take what we have in storage service.
+                     localDarkModeSetting.set(isRemoteDarkMode, tx: tx)
+                 }
+                 */
             },
             interceptRemoteManifest: { accountRecord, accountRecordBuilder, isPrimaryDevice, tx in
                 /**
-                if isPrimaryDevice {
-                    // Until we get the chance to write to storage service, we want to
-                    // always use our local value. Overwrite the value to our local value
-                    // so that the merge logic uses it.
-                    accountRecordBuilder.setIsDarkMode(localDarkModeSetting.get(tx: tx))
-                }
-                */
+                 if isPrimaryDevice {
+                     // Until we get the chance to write to storage service, we want to
+                     // always use our local value. Overwrite the value to our local value
+                     // so that the merge logic uses it.
+                     accountRecordBuilder.setIsDarkMode(localDarkModeSetting.get(tx: tx))
+                 }
+                 */
                 return
             },
             interceptLocalManifest: { accountRecord, accountRecordBuilder, isPrimaryDevice, tx in
                 /**
-                // Nothing to intercept for writes in this case
-                 */
+                 // Nothing to intercept for writes in this case
+                  */
                 return
-            }
+            },
         )
 
         migrator.registerMigration(
@@ -215,7 +216,7 @@ public class StorageServiceUnknownFieldMigrator {
             },
             interceptLocalManifest: { record, recordBuilder, isPrimaryDevice, tx in
                 // Nothing to do
-            }
+            },
         )
 
         // MARK: - Migration Insertion Point
@@ -248,14 +249,14 @@ public class StorageServiceUnknownFieldMigrator {
     /// Given an array of every record from the latest synced manifest known to have unknown fields, runs any necessary migrations.
     public static func runMigrationsForRecordsWithUnknownFields(
         records: [any MigrateableStorageServiceRecordType],
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         return _runMigrationsForRecordsWithUnknownFields(records: records, tx: tx)
     }
 
     public static func interceptRemoteManifestBeforeMerging<RecordType>(
         record: RecordType,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> RecordType {
         guard let recordTypecast = record as? (any MigrateableStorageServiceRecordType) else {
             // Not migrateable. Just no-op.
@@ -266,7 +267,7 @@ public class StorageServiceUnknownFieldMigrator {
 
     public static func interceptLocalManifestBeforeUploading<RecordType>(
         record: RecordType,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> RecordType {
         guard let recordTypecast = record as? (any MigrateableStorageServiceRecordType) else {
             // Not migrateable. Just no-op.
@@ -292,6 +293,7 @@ public class StorageServiceUnknownFieldMigrator {
         // locally.
         static let lastSuccessfulStorageServiceWrite = "lastSuccessfulStorageServiceWrite"
     }
+
     private static var kvStore = KeyValueStore(collection: "StorageServiceUnknownFieldMigrator")
 
     private class Migrator {
@@ -302,13 +304,13 @@ public class StorageServiceUnknownFieldMigrator {
             record: RecordType.Type,
             mergeUnknownFields: @escaping Actions<RecordType>.MergeUnknownFields,
             interceptRemoteManifest: @escaping Actions<RecordType>.InterceptRemoteManifest,
-            interceptLocalManifest: @escaping Actions<RecordType>.InterceptLocalManifest
+            interceptLocalManifest: @escaping Actions<RecordType>.InterceptLocalManifest,
         ) {
             let migration = StorageServiceUnknownFieldMigrationImpl(
                 id: migrationId,
                 mergeUnknownFields: mergeUnknownFields,
                 interceptRemoteManifest: interceptRemoteManifest,
-                interceptLocalManifest: interceptLocalManifest
+                interceptLocalManifest: interceptLocalManifest,
             )
             migrations[migrationId] = migration
         }
@@ -328,7 +330,7 @@ public class StorageServiceUnknownFieldMigrator {
 
     private static func necessaryMigrations(
         forKey key: String,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> LazyFilterSequence<[MigrationId]> {
         guard let latestMigrationId = kvStore.getUInt(key, transaction: tx) else {
             // We've never run any migrations!
@@ -339,7 +341,7 @@ public class StorageServiceUnknownFieldMigrator {
 
     private static func _runMigrationsForRecordsWithUnknownFields(
         records: [any MigrateableStorageServiceRecordType],
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         let necessaryMigrations = Self.necessaryMigrations(forKey: Keys.lastRunUnknownFieldsMerge, tx: tx)
         if necessaryMigrations.isEmpty {
@@ -353,7 +355,7 @@ public class StorageServiceUnknownFieldMigrator {
 
         func doMergeUnknownFields<Migration: StorageServiceUnknownFieldMigration>(
             records: [any MigrateableStorageServiceRecordType],
-            migration: Migration
+            migration: Migration,
         ) {
             let filteredRecords = records.compactMap { $0 as? Migration.RecordType }
             migration.mergeUnknownFields(filteredRecords, registeredState.isPrimary, tx)
@@ -371,7 +373,7 @@ public class StorageServiceUnknownFieldMigrator {
 
     private static func _interceptRemoteManifestBeforeMerging<RecordType: MigrateableStorageServiceRecordType>(
         record: RecordType,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> RecordType {
         let necessaryMigrations = Self.necessaryMigrations(forKey: Keys.lastSuccessfulStorageServiceWrite, tx: tx)
         if necessaryMigrations.isEmpty {
@@ -386,7 +388,7 @@ public class StorageServiceUnknownFieldMigrator {
         var _builder: RecordType.Builder?
 
         func doModifyRemoteManifest<Migration: StorageServiceUnknownFieldMigration>(
-            migration: Migration
+            migration: Migration,
         ) {
             guard RecordType.self == Migration.RecordType.self else {
                 return
@@ -414,7 +416,7 @@ public class StorageServiceUnknownFieldMigrator {
 
     private static func _interceptLocalManifestBeforeUploading<RecordType: MigrateableStorageServiceRecordType>(
         record: RecordType,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> RecordType {
         let necessaryMigrations = Self.necessaryMigrations(forKey: Keys.lastSuccessfulStorageServiceWrite, tx: tx)
         if necessaryMigrations.isEmpty {
@@ -429,7 +431,7 @@ public class StorageServiceUnknownFieldMigrator {
         var _builder: RecordType.Builder?
 
         func doModifyLocalManifest<Migration: StorageServiceUnknownFieldMigration>(
-            migration: Migration
+            migration: Migration,
         ) {
             guard RecordType.self == Migration.RecordType.self else {
                 return

@@ -64,7 +64,7 @@ public class ChainedPromise<Value> {
     public func enqueue<T>(
         recoverValue: T,
         _ nextPromise: @escaping (Value) -> Promise<T>,
-        _ map: @escaping (T) -> Value
+        _ map: @escaping (T) -> Value,
     ) -> Promise<T> {
         _enqueue(nextPromise, recoverValue: map(recoverValue), map: map)
     }
@@ -75,13 +75,13 @@ public class ChainedPromise<Value> {
     /// Future enqueued blocks will not begin until the returned promise is resolved.
     ///
     /// - Parameter recoverValue: The value to fallback to if the Promise returned by `nextPromise` fails.
-    /// This the value that will be given as input to the next enqueued block. 
+    /// This the value that will be given as input to the next enqueued block.
     /// - Parameter nextPromise: A closure to be executed when previous enqueued work has
     /// completed, returning a promise whose resolution blocks future enqueued work. Takes the previous result as input.
     /// - Returns a promise representing the result of the provided block, when it eventually executes.
     public func enqueue(
         recoverValue: Value,
-        _ nextPromise: @escaping (Value) -> Promise<Value>
+        _ nextPromise: @escaping (Value) -> Promise<Value>,
     ) -> Promise<Value> {
         _enqueue(nextPromise, recoverValue: recoverValue)
     }
@@ -106,7 +106,7 @@ extension ChainedPromise where Value == Void {
     /// completed, returning a promise whose resolution blocks future enqueued work.
     /// - Returns a promise representing the result of the provided block, when it eventually executes.
     public func enqueue(
-        _ nextPromise: @escaping () -> Promise<Void>
+        _ nextPromise: @escaping () -> Promise<Void>,
     ) -> Promise<Void> {
         _enqueue(nextPromise, recoverValue: ())
     }
@@ -116,9 +116,9 @@ extension ChainedPromise where Value == Void {
     ///
     /// - Parameter nextPromise: A closure to be executed when previous enqueued work has
     /// completed, returning a promise whose resolution blocks future enqueued work.
-    /// - Returns a promise representing the result of the provided block, when it eventually executes. 
+    /// - Returns a promise representing the result of the provided block, when it eventually executes.
     public func enqueue<T>(
-        _ nextPromise: @escaping () -> Promise<T>
+        _ nextPromise: @escaping () -> Promise<T>,
     ) -> Promise<T> {
         _enqueue(nextPromise, recoverValue: (), map: { _ in () })
     }
@@ -133,7 +133,7 @@ extension ChainedPromise {
 
     private func _enqueue(
         _ nextPromise: @escaping (Value) -> Promise<Value>,
-        recoverValue: Value
+        recoverValue: Value,
     ) -> Promise<Value> {
         let (returnPromise, returnFuture) = Promise<Value>.pending()
         scheduler.asyncIfNecessary {
@@ -150,7 +150,7 @@ extension ChainedPromise {
     private func _enqueue<T>(
         _ nextPromise: @escaping (Value) -> Promise<T>,
         recoverValue: Value,
-        map: @escaping (T) -> Value
+        map: @escaping (T) -> Value,
     ) -> Promise<T> {
         let (returnPromise, returnFuture) = Promise<T>.pending()
         scheduler.asyncIfNecessary {

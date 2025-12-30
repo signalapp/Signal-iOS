@@ -4,9 +4,9 @@
 //
 
 import Foundation
+import LibSignalClient
 import SignalRingRTC
 import SignalServiceKit
-import LibSignalClient
 import SignalUI
 import UIKit
 
@@ -78,7 +78,7 @@ final class GroupCallSheetDataSource<Call: GroupCall>: CallDrawerSheetDataSource
                 if member.aci == localIdentifiers.aci {
                     resolvedName = OWSLocalizedString(
                         "GROUP_CALL_YOU_ON_ANOTHER_DEVICE",
-                        comment: "Text describing the local user in the group call members sheet when connected from another device."
+                        comment: "Text describing the local user in the group call members sheet when connected from another device.",
                     )
                     comparableName = .nameValue(resolvedName)
                 } else {
@@ -97,7 +97,7 @@ final class GroupCallSheetDataSource<Call: GroupCall>: CallDrawerSheetDataSource
                     isUnknown: false,
                     isAudioMuted: member.audioMuted,
                     isVideoMuted: member.videoMuted,
-                    isPresenting: member.presenting
+                    isPresenting: member.presenting,
                 )
             }
 
@@ -122,7 +122,7 @@ final class GroupCallSheetDataSource<Call: GroupCall>: CallDrawerSheetDataSource
                 isUnknown: false,
                 isAudioMuted: self.ringRtcCall.isOutgoingAudioMuted,
                 isVideoMuted: self.ringRtcCall.isOutgoingVideoMuted,
-                isPresenting: false
+                isPresenting: false,
             ))
         } else {
             // If we're not yet in the call, `remoteDeviceStates` will not exist.
@@ -147,7 +147,7 @@ final class GroupCallSheetDataSource<Call: GroupCall>: CallDrawerSheetDataSource
                     isUnknown: isUnknown,
                     isAudioMuted: nil,
                     isVideoMuted: nil,
-                    isPresenting: nil
+                    isPresenting: nil,
                 )
             } ?? []
         }
@@ -233,7 +233,7 @@ class IndividualCallSheetDataSource: CallDrawerSheetDataSource {
     init(
         thread: TSContactThread,
         call: SignalCall,
-        individualCall: IndividualCall
+        individualCall: IndividualCall,
     ) {
         self.call = call
         self.thread = thread
@@ -247,7 +247,7 @@ class IndividualCallSheetDataSource: CallDrawerSheetDataSource {
         if let remoteServiceId = thread.contactAddress.serviceId {
             let remoteDisplayName = SSKEnvironment.shared.contactManagerRef.displayName(
                 for: thread.contactAddress,
-                tx: tx
+                tx: tx,
             ).resolvedValue()
             let remoteComparableName: DisplayName.ComparableValue = .nameValue(remoteDisplayName)
             members.append(JoinedMember(
@@ -260,7 +260,7 @@ class IndividualCallSheetDataSource: CallDrawerSheetDataSource {
                 isUnknown: false,
                 isAudioMuted: self.individualCall.isRemoteAudioMuted,
                 isVideoMuted: self.individualCall.isRemoteVideoEnabled.negated,
-                isPresenting: self.individualCall.isRemoteSharingScreen
+                isPresenting: self.individualCall.isRemoteSharingScreen,
             ))
         }
 
@@ -278,13 +278,13 @@ class IndividualCallSheetDataSource: CallDrawerSheetDataSource {
                 isUnknown: false,
                 isAudioMuted: self.call.isOutgoingAudioMuted,
                 isVideoMuted: self.call.isOutgoingVideoMuted,
-                isPresenting: false
+                isPresenting: false,
             ))
         }
         return members
     }
 
-    func raisedHandMemberIds() -> [JoinedMember.ID] {[]}
+    func raisedHandMemberIds() -> [JoinedMember.ID] { [] }
     func raiseHand(raise: Bool) {
         owsFailDebug("Should not be able to raise hand in individual call")
     }

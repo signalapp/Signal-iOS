@@ -28,6 +28,7 @@ class AttachmentKeyboard: CustomKeyboard {
         collectionView.recentPhotosDelegate = self
         return collectionView
     }()
+
     private lazy var attachmentFormatPickerView: AttachmentFormatPickerView = {
         let pickerView = AttachmentFormatPickerView(isGroup: delegate?.isGroup ?? false)
         pickerView.attachmentFormatPickerDelegate = self
@@ -72,7 +73,7 @@ class AttachmentKeyboard: CustomKeyboard {
 
         // Variable top inset on iOS 26.
         if #available(iOS 26, *) {
-            registerForTraitChanges([ UITraitVerticalSizeClass.self ]) { (self: Self, _) in
+            registerForTraitChanges([UITraitVerticalSizeClass.self]) { (self: Self, _) in
                 topEdgeConstraint.constant = self.topInset
             }
         }

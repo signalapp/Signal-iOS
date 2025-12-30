@@ -22,10 +22,10 @@ class WideMediaTileViewLayout: UICollectionViewFlowLayout, ScrollPositionPreserv
         contentSizeBeforeInsertingToTop = collectionViewContentSize
     }
 
-    override public func prepare() {
+    override func prepare() {
         super.prepare()
 
-        if let collectionView = collectionView, let oldContentSize = contentSizeBeforeInsertingToTop {
+        if let collectionView, let oldContentSize = contentSizeBeforeInsertingToTop {
             let newContentSize = collectionViewContentSize
             collectionView.contentOffset.y += newContentSize.height - oldContentSize.height
             contentSizeBeforeInsertingToTop = nil

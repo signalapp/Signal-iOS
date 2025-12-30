@@ -52,7 +52,7 @@ extension AttachmentReference.RenderingFlag {
     public static func fromProto(_ proto: SSKProtoAttachmentPointer) -> Self {
         guard
             proto.hasFlags,
-            let rawValue = Int32.init(exactly: proto.flags)
+            let rawValue = Int32(exactly: proto.flags)
         else {
             return .default
         }

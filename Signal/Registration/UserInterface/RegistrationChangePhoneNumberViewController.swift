@@ -25,9 +25,9 @@ class RegistrationChangePhoneNumberViewController: OWSTableViewController2 {
     private let oldValueViews: ChangePhoneNumberValueViews
     private let newValueViews: ChangePhoneNumberValueViews
 
-    public init(
+    init(
         state: RegistrationPhoneNumberViewState.ChangeNumberInitialEntry,
-        presenter: RegistrationChangePhoneNumberPresenter
+        presenter: RegistrationChangePhoneNumberPresenter,
     ) {
         self.state = state
         self.presenter = presenter
@@ -47,7 +47,7 @@ class RegistrationChangePhoneNumberViewController: OWSTableViewController2 {
         shouldAvoidKeyboard = true
     }
 
-    public func updateState(_ newState: RegistrationPhoneNumberViewState.ChangeNumberInitialEntry) {
+    func updateState(_ newState: RegistrationPhoneNumberViewState.ChangeNumberInitialEntry) {
         self.state = newState
         updateTableContents()
 
@@ -64,12 +64,12 @@ class RegistrationChangePhoneNumberViewController: OWSTableViewController2 {
             OWSActionSheets.showActionSheet(
                 title: OWSLocalizedString(
                     "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE",
-                    comment: "Title of alert indicating that users needs to enter a valid phone number to register."
+                    comment: "Title of alert indicating that users needs to enter a valid phone number to register.",
                 ),
                 message: OWSLocalizedString(
                     "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE",
-                    comment: "Message of alert indicating that users needs to enter a valid phone number to register."
-                )
+                    comment: "Message of alert indicating that users needs to enter a valid phone number to register.",
+                ),
             )
         }
 
@@ -81,7 +81,7 @@ class RegistrationChangePhoneNumberViewController: OWSTableViewController2 {
 
         title = OWSLocalizedString(
             "SETTINGS_CHANGE_PHONE_NUMBER_VIEW_TITLE",
-            comment: "Title for the 'change phone number' views in settings."
+            comment: "Title for the 'change phone number' views in settings.",
         )
 
         navigationItem.leftBarButtonItem = .cancelButton { [weak self] in
@@ -113,26 +113,26 @@ class RegistrationChangePhoneNumberViewController: OWSTableViewController2 {
 
         let countryCodeFormat = OWSLocalizedString(
             "SETTINGS_CHANGE_PHONE_NUMBER_COUNTRY_CODE_FORMAT",
-            comment: "Format for the 'country code' in the 'change phone number' settings. Embeds: {{ %1$@ the numeric country code prefix, %2$@ the country code abbreviation }}."
+            comment: "Format for the 'country code' in the 'change phone number' settings. Embeds: {{ %1$@ the numeric country code prefix, %2$@ the country code abbreviation }}.",
         )
         let countryCodeFormatted = String(format: countryCodeFormat, valueViews.plusPrefixedCallingCode, valueViews.countryCode)
         section.add(.item(
             name: OWSLocalizedString(
                 "SETTINGS_CHANGE_PHONE_NUMBER_COUNTRY_CODE_FIELD",
-                comment: "Label for the 'country code' row in the 'change phone number' settings."
+                comment: "Label for the 'country code' row in the 'change phone number' settings.",
             ),
             textColor: .Signal.label,
             accessoryText: countryCodeFormatted,
             accessoryType: .disclosureIndicator,
-            actionBlock: { [weak self] in self?.showCountryCodePicker(valueViews: valueViews) }
+            actionBlock: { [weak self] in self?.showCountryCodePicker(valueViews: valueViews) },
         ))
         section.add(.item(
             name: OWSLocalizedString(
                 "SETTINGS_CHANGE_PHONE_NUMBER_PHONE_NUMBER_FIELD",
-                comment: "Label for the 'phone number' row in the 'change phone number' settings."
+                comment: "Label for the 'phone number' row in the 'change phone number' settings.",
             ),
             textColor: .Signal.label,
-            accessoryContentView: valueViews.nationalNumberTextField
+            accessoryContentView: valueViews.nationalNumberTextField,
         ))
 
         switch valueViews.type {
@@ -145,7 +145,7 @@ class RegistrationChangePhoneNumberViewController: OWSTableViewController2 {
                 section.add(.init(customCellBlock: {
                     let cell = OWSTableItem.buildCell(
                         itemName: invalidE164Error.warningLabelText(),
-                        textColor: .ows_accentRed
+                        textColor: .ows_accentRed,
                     )
                     cell.isUserInteractionEnabled = false
                     return cell
@@ -157,7 +157,7 @@ class RegistrationChangePhoneNumberViewController: OWSTableViewController2 {
 
         section.footerTitle = TextFieldFormatting.exampleNationalNumber(
             forCountryCode: valueViews.countryCode,
-            includeExampleLabel: true
+            includeExampleLabel: true,
         )
 
         return section
@@ -175,7 +175,7 @@ class RegistrationChangePhoneNumberViewController: OWSTableViewController2 {
     private func tryToParseNewE164() -> E164? {
         func tryToParse(
             _ valueViews: ChangePhoneNumberValueViews,
-            isOldValue: Bool
+            isOldValue: Bool,
         ) -> E164? {
             switch valueViews.tryToParse() {
             case .noNumber:
@@ -229,26 +229,30 @@ class RegistrationChangePhoneNumberViewController: OWSTableViewController2 {
 
     private func showInvalidPhoneNumberAlert(isOldValue: Bool) {
         let message = (isOldValue
-                       ? OWSLocalizedString(
-                        "CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD",
-                        comment: "Error indicating that the user's old phone number is not valid.")
-                       : OWSLocalizedString(
-                        "CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW",
-                        comment: "Error indicating that the user's new phone number is not valid."))
+            ? OWSLocalizedString(
+                "CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_OLD",
+                comment: "Error indicating that the user's old phone number is not valid.",
+            )
+            : OWSLocalizedString(
+                "CHANGE_PHONE_NUMBER_INVALID_PHONE_NUMBER_ALERT_MESSAGE_NEW",
+                comment: "Error indicating that the user's new phone number is not valid.",
+            ))
         OWSActionSheets.showActionSheet(title: nil, message: message)
     }
 
     private func showIncorrectOldPhoneNumberAlert() {
         let message = OWSLocalizedString(
-                        "CHANGE_PHONE_NUMBER_INCORRECT_OLD_PHONE_NUMBER_ALERT_MESSAGE",
-                        comment: "Error indicating that the user's old phone number was not entered correctly.")
+            "CHANGE_PHONE_NUMBER_INCORRECT_OLD_PHONE_NUMBER_ALERT_MESSAGE",
+            comment: "Error indicating that the user's old phone number was not entered correctly.",
+        )
         OWSActionSheets.showActionSheet(title: nil, message: message)
     }
 
     private func showIdenticalPhoneNumbersAlert() {
         let message = OWSLocalizedString(
-                        "CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE",
-                        comment: "Error indicating that the user's old and new phone numbers are identical.")
+            "CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE",
+            comment: "Error indicating that the user's old and new phone numbers are identical.",
+        )
         OWSActionSheets.showActionSheet(title: nil, message: message)
     }
 }
@@ -287,7 +291,7 @@ private class ChangePhoneNumberValueViews: NSObject {
 
     fileprivate let type: `Type`
 
-    public init(e164: E164?, type: `Type`) {
+    init(e164: E164?, type: `Type`) {
         let phoneNumber = e164.flatMap({ RegistrationPhoneNumberParser(phoneNumberUtil: SSKEnvironment.shared.phoneNumberUtilRef).parseE164($0) })
         self.country = phoneNumber?.country ?? .defaultValue
         self.type = type
@@ -337,7 +341,8 @@ private class ChangePhoneNumberValueViews: NSObject {
 
         field.placeholder = OWSLocalizedString(
             "ONBOARDING_PHONE_NUMBER_PLACEHOLDER",
-            comment: "Placeholder string for phone number field during registration")
+            comment: "Placeholder string for phone number field during registration",
+        )
 
         return field
     }()
@@ -350,11 +355,15 @@ private class ChangePhoneNumberValueViews: NSObject {
     var sectionHeaderTitle: String {
         switch type {
         case .oldNumber:
-            return OWSLocalizedString("SETTINGS_CHANGE_PHONE_NUMBER_OLD_PHONE_NUMBER_SECTION_TITLE",
-                                     comment: "Title for the 'old phone number' section in the 'change phone number' settings.")
+            return OWSLocalizedString(
+                "SETTINGS_CHANGE_PHONE_NUMBER_OLD_PHONE_NUMBER_SECTION_TITLE",
+                comment: "Title for the 'old phone number' section in the 'change phone number' settings.",
+            )
         case .newNumber:
-            return OWSLocalizedString("SETTINGS_CHANGE_PHONE_NUMBER_NEW_PHONE_NUMBER_SECTION_TITLE",
-                                     comment: "Title for the 'new phone number' section in the 'change phone number' settings.")
+            return OWSLocalizedString(
+                "SETTINGS_CHANGE_PHONE_NUMBER_NEW_PHONE_NUMBER_SECTION_TITLE",
+                comment: "Title for the 'new phone number' section in the 'change phone number' settings.",
+            )
         }
     }
 
@@ -398,25 +407,26 @@ extension ChangePhoneNumberValueViews: UITextFieldDelegate {
     public func textField(
         _ textField: UITextField,
         shouldChangeCharactersIn range: NSRange,
-        replacementString string: String) -> Bool {
+        replacementString string: String,
+    ) -> Bool {
 
-            if case .invalidNumber = phoneNumberError {
-                phoneNumberError = nil
-            }
-
-            // If ViewControllerUtils applied the edit on our behalf, inform UIKit
-            // so the edit isn't applied twice.
-            let result = TextFieldFormatting.phoneNumberTextField(
-                textField,
-                shouldChangeCharactersIn: range,
-                replacementString: string,
-                plusPrefixedCallingCode: plusPrefixedCallingCode
-            )
-
-            textFieldDidChange(textField)
-
-            return result
+        if case .invalidNumber = phoneNumberError {
+            phoneNumberError = nil
         }
+
+        // If ViewControllerUtils applied the edit on our behalf, inform UIKit
+        // so the edit isn't applied twice.
+        let result = TextFieldFormatting.phoneNumberTextField(
+            textField,
+            shouldChangeCharactersIn: range,
+            replacementString: string,
+            plusPrefixedCallingCode: plusPrefixedCallingCode,
+        )
+
+        textFieldDidChange(textField)
+
+        return result
+    }
 
     @objc
     private func textFieldDidChange(_ textField: UITextField) {
@@ -468,10 +478,10 @@ private class PreviewRegistrationChangePhoneNumberPresenter: RegistrationChangeP
                 oldE164: E164("+12395550180")!,
                 newE164: nil,
                 hasConfirmed: false,
-                invalidE164Error: nil
+                invalidE164Error: nil,
             ),
-            presenter: presenter
-        )
+            presenter: presenter,
+        ),
     )
 }
 

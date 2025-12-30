@@ -24,7 +24,7 @@ public final class Guarantee<Value>: Thenable {
     }
 
     public convenience init(
-        _ block: (@escaping (Value) -> Void) -> Void
+        _ block: (@escaping (Value) -> Void) -> Void,
     ) {
         self.init()
         block { self.future.resolve($0) }
@@ -32,7 +32,7 @@ public final class Guarantee<Value>: Thenable {
 
     public convenience init(
         on scheduler: Scheduler,
-        _ block: @escaping (@escaping (Value) -> Void) -> Void
+        _ block: @escaping (@escaping (Value) -> Void) -> Void,
     ) {
         self.init()
         scheduler.asyncIfNecessary { block { self.future.resolve($0) } }
@@ -96,7 +96,7 @@ extension Guarantee {
 public extension Guarantee {
     func map<T>(
         on scheduler: Scheduler? = nil,
-        _ block: @escaping (Value) -> T
+        _ block: @escaping (Value) -> T,
     ) -> Guarantee<T> {
         observe(on: scheduler, block: block)
     }
@@ -104,7 +104,7 @@ public extension Guarantee {
     @discardableResult
     func done(
         on scheduler: Scheduler? = nil,
-        _ block: @escaping (Value) -> Void
+        _ block: @escaping (Value) -> Void,
     ) -> Guarantee<Void> {
         observe(on: scheduler, block: block)
     }
@@ -112,16 +112,16 @@ public extension Guarantee {
     @discardableResult
     func then<T>(
         on scheduler: Scheduler? = nil,
-        _ block: @escaping (Value) -> Guarantee<T>
+        _ block: @escaping (Value) -> Guarantee<T>,
     ) -> Guarantee<T> {
         observe(on: scheduler, block: block)
     }
 }
 
-fileprivate extension Guarantee {
+private extension Guarantee {
     func observe<T>(
         on scheduler: Scheduler? = nil,
-        block: @escaping (Value) -> T
+        block: @escaping (Value) -> T,
     ) -> Guarantee<T> {
         let (guarantee, future) = Guarantee<T>.pending()
         observe(on: scheduler) { result in
@@ -137,7 +137,7 @@ fileprivate extension Guarantee {
 
     func observe<T>(
         on scheduler: Scheduler? = nil,
-        block: @escaping (Value) -> Guarantee<T>
+        block: @escaping (Value) -> Guarantee<T>,
     ) -> Guarantee<T> {
         let (guarantee, future) = Guarantee<T>.pending()
         observe(on: scheduler) { result in

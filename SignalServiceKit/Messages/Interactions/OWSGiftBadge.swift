@@ -33,14 +33,14 @@ public final class OWSGiftBadge: NSObject, NSCoding, NSCopying {
         coder.encode(NSNumber(value: self.redemptionState.rawValue), forKey: "redemptionState")
     }
 
-    public override var hash: Int {
+    override public var hash: Int {
         var hasher = Hasher()
         hasher.combine(redemptionCredential)
         hasher.combine(redemptionState)
         return hasher.finalize()
     }
 
-    public override func isEqual(_ object: Any?) -> Bool {
+    override public func isEqual(_ object: Any?) -> Bool {
         guard let object = object as? Self else { return false }
         guard type(of: self) == type(of: object) else { return false }
         guard self.redemptionCredential == object.redemptionCredential else { return false }
@@ -62,13 +62,13 @@ public final class OWSGiftBadge: NSObject, NSCoding, NSCopying {
     public convenience init(redemptionCredential: Data) {
         self.init(
             redemptionCredential: redemptionCredential,
-            redemptionState: .pending
+            redemptionState: .pending,
         )
     }
 
     private init(
         redemptionCredential: Data?,
-        redemptionState: OWSGiftBadgeRedemptionState
+        redemptionState: OWSGiftBadgeRedemptionState,
     ) {
         self.redemptionCredential = redemptionCredential
         self.redemptionState = redemptionState
@@ -102,11 +102,11 @@ public final class OWSGiftBadge: NSObject, NSCoding, NSCopying {
 
     public class func restoreFromBackup(
         receiptCredentialPresentation: Data?,
-        redemptionState: OWSGiftBadgeRedemptionState
+        redemptionState: OWSGiftBadgeRedemptionState,
     ) -> OWSGiftBadge {
         return OWSGiftBadge(
             redemptionCredential: receiptCredentialPresentation,
-            redemptionState: redemptionState
+            redemptionState: redemptionState,
         )
     }
 

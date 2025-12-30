@@ -12,7 +12,7 @@ class UserProfileMerger: RecipientMergeObserver {
 
     init(
         userProfileStore: UserProfileStore,
-        setProfileKeyShim: @escaping (OWSUserProfile, Aes256Key, DBWriteTransaction) -> Void
+        setProfileKeyShim: @escaping (OWSUserProfile, Aes256Key, DBWriteTransaction) -> Void,
     ) {
         self.userProfileStore = userProfileStore
         self.setProfileKeyShim = setProfileKeyShim
@@ -25,14 +25,14 @@ class UserProfileMerger: RecipientMergeObserver {
                 userProfile.update(
                     profileKey: .setTo(profileKey),
                     userProfileWriter: .localUser,
-                    transaction: tx
+                    transaction: tx,
                 )
                 tx.addSyncCompletion {
                     Task {
                         switch userProfile.internalAddress {
                         case .localUser:
                             break
-                        case .otherUser(_):
+                        case .otherUser:
                             guard let serviceId = userProfile.serviceId else {
                                 return
                             }
@@ -41,7 +41,7 @@ class UserProfileMerger: RecipientMergeObserver {
                         }
                     }
                 }
-            }
+            },
         )
     }
 
@@ -71,7 +71,7 @@ class UserProfileMerger: RecipientMergeObserver {
         let normalizedAddress = NormalizedDatabaseRecordAddress(
             aci: recipient.aci,
             phoneNumber: recipient.phoneNumber?.stringValue,
-            pni: recipient.pni
+            pni: recipient.pni,
         )
         // One of these might not be set, or one of them might have a non-canonical
         // representation (eg upper vs. lowercase ServiceId). Make sure both of
@@ -96,7 +96,7 @@ class UserProfileMerger: RecipientMergeObserver {
             uniqueIdField: \.uniqueId,
             fetchObjectsForServiceId: { userProfileStore.fetchUserProfiles(for: $0, tx: tx) },
             fetchObjectsForPhoneNumber: { userProfileStore.fetchUserProfiles(for: $0, tx: tx) },
-            updateObject: { userProfileStore.updateUserProfile($0, tx: tx) }
+            updateObject: { userProfileStore.updateUserProfile($0, tx: tx) },
         )
     }
 }

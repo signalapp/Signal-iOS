@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalUI
 import SignalRingRTC
 import SignalServiceKit
+import SignalUI
 
 // MARK: - RaisedHandsToastDelegate
 
@@ -33,7 +33,7 @@ class RaisedHandsToast: UIView {
 
     private let deps = Dependencies(
         db: SSKEnvironment.shared.databaseStorageRef,
-        contactsManager: SSKEnvironment.shared.contactManagerRef
+        contactsManager: SSKEnvironment.shared.contactManagerRef,
     )
 
     private let outerHStack = UIStackView()
@@ -43,14 +43,15 @@ class RaisedHandsToast: UIView {
     private lazy var viewButton = OWSButton(
         title: CommonStrings.viewButton,
         tintColor: .ows_white,
-        dimsWhenHighlighted: true
+        dimsWhenHighlighted: true,
     ) { [weak self] in
         self?.delegate?.didTapViewRaisedHands()
     }
+
     private lazy var lowerHandButton = OWSButton(
         title: CallStrings.lowerHandButton,
         tintColor: .ows_white,
-        dimsWhenHighlighted: true
+        dimsWhenHighlighted: true,
     ) { [weak self] in
         self?.call.ringRtcCall.raiseHand(raise: false)
     }
@@ -91,7 +92,7 @@ class RaisedHandsToast: UIView {
         raisedHandIcon.attributedText = .with(
             image: UIImage(named: "raise_hand")!,
             font: .dynamicTypeTitle3,
-            attributes: [.foregroundColor: UIColor.white]
+            attributes: [.foregroundColor: UIColor.white],
         )
         raisedHandIcon.setContentCompressionResistancePriority(.required, for: .horizontal)
         raisedHandIcon.contentMode = .scaleAspectFit
@@ -134,7 +135,7 @@ class RaisedHandsToast: UIView {
                 top: 8,
                 leading: 8,
                 bottom: 8,
-                trailing: Constants.hMarginExpanded
+                trailing: Constants.hMarginExpanded,
             )
             button.titleLabel?.font = .dynamicTypeSubheadline.bold()
         }
@@ -210,7 +211,7 @@ class RaisedHandsToast: UIView {
             self.outerHStack.layer.cornerRadius = self.isCollapsed ? self.outerHStack.height / 2 : 10
             self.iconLabelContainer.layoutMargins = .init(
                 hMargin: self.isCollapsed ? Constants.hMarginCollapsed : Constants.hMarginExpanded,
-                vMargin: Constants.vMargin
+                vMargin: Constants.vMargin,
             )
         }
 
@@ -241,9 +242,9 @@ class RaisedHandsToast: UIView {
             String(
                 format: OWSLocalizedString(
                     "RAISED_HANDS_TOAST_YOU_PLUS_OTHERS_COUNT",
-                    comment: "A compact member count on the call view's raised hands toast indicating that you and a number of other users raised a hand. Embeds {{number of other users}}"
+                    comment: "A compact member count on the call view's raised hands toast indicating that you and a number of other users raised a hand. Embeds {{number of other users}}",
                 ),
-                raisedHands.count - 1
+                raisedHands.count - 1,
             )
         } else if self.yourHandIsRaised {
             CommonStrings.you
@@ -255,7 +256,7 @@ class RaisedHandsToast: UIView {
             if self.yourHandIsRaised, raisedHands.count == 1 {
                 return OWSLocalizedString(
                     "RAISED_HANDS_TOAST_YOUR_HAND_MESSAGE",
-                    comment: "A message appearing on the call view's raised hands toast indicating that you raised your own hand."
+                    comment: "A message appearing on the call view's raised hands toast indicating that you raised your own hand.",
                 )
             }
 
@@ -266,7 +267,7 @@ class RaisedHandsToast: UIView {
                 firstRaisedHandMemberName = self.deps.db.read { tx -> String in
                     self.deps.contactsManager.displayName(
                         for: firstRaisedHandRemoteDeviceState.address,
-                        tx: tx
+                        tx: tx,
                     ).resolvedValue(useShortNameIfAvailable: true)
                 }
             } else {
@@ -279,7 +280,7 @@ class RaisedHandsToast: UIView {
                 let format = OWSLocalizedString(
                     "RAISED_HANDS_TOAST_MULTIPLE_HANDS_MESSAGE",
                     tableName: "PluralAware",
-                    comment: "A message appearing on the call view's raised hands toast indicating that multiple members have raised their hands. Example: 'Alice +4 raised a hand'. Embeds {{number of other users}}, {{name}}"
+                    comment: "A message appearing on the call view's raised hands toast indicating that multiple members have raised their hands. Example: 'Alice +4 raised a hand'. Embeds {{number of other users}}, {{name}}",
                 )
                 return String.localizedStringWithFormat(format, otherMembersCount, firstRaisedHandMemberName)
             }
@@ -287,9 +288,9 @@ class RaisedHandsToast: UIView {
             return String(
                 format: OWSLocalizedString(
                     "RAISED_HANDS_TOAST_SINGLE_HAND_MESSAGE",
-                    comment: "A message appearing on the call view's raised hands toast indicating that another named member has raised their hand."
+                    comment: "A message appearing on the call view's raised hands toast indicating that another named member has raised their hand.",
                 ),
-                firstRaisedHandMemberName
+                firstRaisedHandMemberName,
             )
         }()
 

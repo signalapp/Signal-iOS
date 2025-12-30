@@ -12,7 +12,7 @@ struct MergePair<T> {
     func map<Result>(_ block: (T) throws -> Result) rethrows -> MergePair<Result> {
         return MergePair<Result>(
             fromValue: try block(fromValue),
-            intoValue: try block(intoValue)
+            intoValue: try block(intoValue),
         )
     }
 }

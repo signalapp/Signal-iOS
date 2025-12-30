@@ -9,8 +9,8 @@ import Foundation
 /// https://tus.io/protocols/resumable-upload
 struct UploadEndpointCDN3: UploadEndpoint {
 
-    public enum Constants {
-        public static let checksumHeaderKey = "x-signal-checksum-sha256"
+    enum Constants {
+        static let checksumHeaderKey = "x-signal-checksum-sha256"
     }
 
     private let uploadForm: Upload.Form
@@ -22,7 +22,7 @@ struct UploadEndpointCDN3: UploadEndpoint {
         form: Upload.Form,
         signalService: OWSSignalServiceProtocol,
         fileSystem: Upload.Shims.FileSystem,
-        logger: PrefixedLogger
+        logger: PrefixedLogger,
     ) {
         self.uploadForm = form
         self.signalService = signalService
@@ -37,7 +37,7 @@ struct UploadEndpointCDN3: UploadEndpoint {
         return url
     }
 
-    internal func getResumableUploadProgress<Metadata: UploadMetadata>(attempt: Upload.Attempt<Metadata>) async throws -> Upload.ResumeProgress {
+    func getResumableUploadProgress<Metadata: UploadMetadata>(attempt: Upload.Attempt<Metadata>) async throws -> Upload.ResumeProgress {
         var headers = uploadForm.headers
         headers["Tus-Resumable"] = "1.0.0"
 
@@ -49,7 +49,7 @@ struct UploadEndpointCDN3: UploadEndpoint {
             response = try await urlSession.performRequest(
                 url.absoluteString,
                 method: .head,
-                headers: headers
+                headers: headers,
             )
         } catch {
             switch error.httpStatusCode ?? 0 {
@@ -84,7 +84,7 @@ struct UploadEndpointCDN3: UploadEndpoint {
     func performUpload<Metadata: UploadMetadata>(
         startPoint: Int,
         attempt: Upload.Attempt<Metadata>,
-        progress: OWSProgressSource?
+        progress: OWSProgressSource?,
     ) async throws(Upload.Error) {
         let urlSession = await signalService.sharedUrlSessionForCdn(cdnNumber: uploadForm.cdnNumber, maxResponseSize: nil)
         let totalDataLength = attempt.encryptedDataLength
@@ -93,7 +93,7 @@ struct UploadEndpointCDN3: UploadEndpoint {
         let (uploadData, truncated) = try readUploadFileChunk(
             fileSystem: fileSystem,
             url: attempt.fileUrl,
-            startIndex: startPoint
+            startIndex: startPoint,
         )
         guard uploadData.count > 0 else {
             attempt.logger.error("No data to upload")
@@ -130,7 +130,7 @@ struct UploadEndpointCDN3: UploadEndpoint {
                 method: method,
                 headers: headers,
                 requestData: uploadData,
-                progress: progress
+                progress: progress,
             )
 
             switch response.responseStatusCode {

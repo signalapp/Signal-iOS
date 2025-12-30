@@ -69,7 +69,7 @@ class GroupCallVideoOverflow: UICollectionView {
             self,
             selector: #selector(updateOrientationOverride),
             name: UIDevice.orientationDidChangeNotification,
-            object: nil
+            object: nil,
         )
     }
 
@@ -81,6 +81,7 @@ class GroupCallVideoOverflow: UICollectionView {
         case landscapeLeft
         case landscapeRight
     }
+
     private var orientationOverride: OrientationOverride? {
         didSet {
             guard orientationOverride != oldValue else { return }
@@ -93,7 +94,7 @@ class GroupCallVideoOverflow: UICollectionView {
         // If we're on iPhone and screen sharing, we want to allow
         // the user to change the orientation. We fake this by
         // manually transforming the cells.
-        guard !UIDevice.current.isIPad && isAnyRemoteDeviceScreenSharing else {
+        guard !UIDevice.current.isIPad, isAnyRemoteDeviceScreenSharing else {
             orientationOverride = nil
             return
         }
@@ -131,7 +132,7 @@ class GroupCallVideoOverflow: UICollectionView {
             if hasVisibleCells { super.reloadData() }
             UIView.animate(
                 withDuration: 0.15,
-                animations: { self.alpha = hasVisibleCells ? 1 : 0 }
+                animations: { self.alpha = hasVisibleCells ? 1 : 0 },
             ) { _ in
                 self.isAnimating = false
                 self.reloadData()
@@ -155,7 +156,7 @@ extension GroupCallVideoOverflow: UICollectionViewDelegate {
         }
         cell.configureRemoteVideo(device: remoteDevice)
 
-        if let orientationOverride = orientationOverride {
+        if let orientationOverride {
             switch orientationOverride {
             case .landscapeRight:
                 cell.transform = .init(rotationAngle: -.halfPi)
@@ -195,7 +196,7 @@ extension GroupCallVideoOverflow: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(
             withReuseIdentifier: GroupCallVideoOverflowCell.reuseIdentifier,
-            for: indexPath
+            for: indexPath,
         ) as! GroupCallVideoOverflowCell
 
         guard let remoteDevice = overflowedRemoteDeviceStates[safe: indexPath.row] else {

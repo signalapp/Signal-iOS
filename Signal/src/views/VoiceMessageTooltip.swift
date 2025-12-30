@@ -8,10 +8,12 @@ import SignalUI
 
 class VoiceMessageTooltip: TooltipView {
 
-    class func present(fromView: UIView,
-                       widthReferenceView: UIView,
-                       tailReferenceView: UIView,
-                       wasTappedBlock: (() -> Void)?) -> VoiceMessageTooltip {
+    class func present(
+        fromView: UIView,
+        widthReferenceView: UIView,
+        tailReferenceView: UIView,
+        wasTappedBlock: (() -> Void)?,
+    ) -> VoiceMessageTooltip {
         return VoiceMessageTooltip(fromView: fromView, widthReferenceView: widthReferenceView, tailReferenceView: tailReferenceView, wasTappedBlock: wasTappedBlock)
     }
 
@@ -19,7 +21,7 @@ class VoiceMessageTooltip: TooltipView {
         let label = UILabel()
         label.text = OWSLocalizedString(
             "VOICE_MESSAGE_TOO_SHORT_TOOLTIP",
-            comment: "Message for the tooltip indicating the 'voice message' needs to be held to be held down to record."
+            comment: "Message for the tooltip indicating the 'voice message' needs to be held to be held down to record.",
         )
         label.font = UIFont.dynamicTypeBodyClamped
         label.textColor = Theme.primaryTextColor

@@ -9,7 +9,7 @@ public protocol BackupArchiveErrorPresenterFactory {
 
     func build(
         db: any DB,
-        tsAccountManager: TSAccountManager
+        tsAccountManager: TSAccountManager,
     ) -> BackupArchiveErrorPresenter
 }
 
@@ -37,7 +37,7 @@ public class NoOpBackupArchiveErrorPresenterFactory: BackupArchiveErrorPresenter
 
     public func build(
         db: any DB,
-        tsAccountManager: TSAccountManager
+        tsAccountManager: TSAccountManager,
     ) -> BackupArchiveErrorPresenter {
         return NoOpBackupArchiveErrorPresenter()
     }

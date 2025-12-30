@@ -4,31 +4,31 @@
 //
 
 import Foundation
-import SignalUI
 import SignalServiceKit
+import SignalUI
 
 class PinDisappearingMessageViewController: HeroSheetViewController {
     init(
         pinnedMessageManager: PinnedMessageManager,
         db: DB,
-        completion: @escaping () -> Void
+        completion: @escaping () -> Void,
     ) {
         super.init(
             hero: .image(.timer),
             title: OWSLocalizedString(
                 "PINNING_DISAPPEARING_MESSAGE_WARNING_TITLE",
-                comment: "Title for a sheet warning users they are pinning a disappearing message."
+                comment: "Title for a sheet warning users they are pinning a disappearing message.",
             ),
             body: OWSLocalizedString(
                 "PINNING_DISAPPEARING_MESSAGE_WARNING_BODY",
-                comment: "Body for a sheet warning users they are pinning a disappearing message."
+                comment: "Body for a sheet warning users they are pinning a disappearing message.",
             ),
             primary: .button(HeroSheetViewController.Button(
                 title: CommonStrings.okButton,
                 action: { sheet in
                     sheet.dismiss(animated: true)
                     completion()
-                }
+                },
             )),
             secondary: .button(HeroSheetViewController.Button(
                 title: CommonStrings.dontShowAgainButton,

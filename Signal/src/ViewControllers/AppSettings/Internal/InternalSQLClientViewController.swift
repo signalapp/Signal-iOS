@@ -86,11 +86,13 @@ class InternalSQLClientViewController: UIViewController {
         ])
     }
 
-    @objc private func didTapView() {
+    @objc
+    private func didTapView() {
         queryTextField.resignFirstResponder()
     }
 
-    @objc private func runQuery() {
+    @objc
+    private func runQuery() {
         queryTextField.resignFirstResponder()
 
         guard let query = queryTextField.text, !query.isEmpty else {
@@ -127,7 +129,8 @@ class InternalSQLClientViewController: UIViewController {
         outputTextView.text = output
     }
 
-    @objc private func copyOutput() {
+    @objc
+    private func copyOutput() {
         queryTextField.resignFirstResponder()
         guard let output = outputTextView.text, !output.isEmpty else {
             return

@@ -41,6 +41,7 @@ class CallMemberVideoView: UIView, CallMemberComposableView {
         case remoteInIndividual(RemoteVideoView)
         case remoteInGroup(GroupCallRemoteVideoView)
     }
+
     private var callViewWrapper: CallViewWrapper?
 
     func remoteVideoViewIfApplicable() -> RemoteVideoView? {
@@ -55,7 +56,7 @@ class CallMemberVideoView: UIView, CallMemberComposableView {
     func configure(
         call: SignalCall,
         isFullScreen: Bool = false,
-        remoteGroupMemberDeviceState: RemoteDeviceState?
+        remoteGroupMemberDeviceState: RemoteDeviceState?,
     ) {
         layer.cornerRadius = isFullScreen ? 0 : CallMemberView.Constants.defaultPipCornerRadius
         clipsToBounds = true
@@ -71,7 +72,7 @@ class CallMemberVideoView: UIView, CallMemberComposableView {
             guard let remoteGroupMemberDeviceState else { return }
             self.blurredAvatarBackgroundView.update(
                 type: self.type,
-                remoteGroupMemberDeviceState: remoteGroupMemberDeviceState
+                remoteGroupMemberDeviceState: remoteGroupMemberDeviceState,
             )
             if remoteGroupMemberDeviceState.mediaKeysReceived, remoteGroupMemberDeviceState.videoTrack != nil {
                 self.isHidden = (remoteGroupMemberDeviceState.videoMuted == true)
@@ -99,7 +100,7 @@ class CallMemberVideoView: UIView, CallMemberComposableView {
 
     func configureRemoteVideo(
         device: RemoteDeviceState,
-        context: CallMemberVisualContext
+        context: CallMemberVisualContext,
     ) {
         if case let .remoteInGroup(videoView) = callViewWrapper {
             if videoView.superview == self { videoView.removeFromSuperview() }

@@ -20,7 +20,7 @@ class StoryContextOnboardingOverlayView: UIView {
 
     private weak var delegate: StoryContextOnboardingOverlayViewDelegate?
 
-    public init(delegate: StoryContextOnboardingOverlayViewDelegate) {
+    init(delegate: StoryContextOnboardingOverlayViewDelegate) {
         self.delegate = delegate
         super.init(frame: .zero)
 
@@ -86,7 +86,7 @@ class StoryContextOnboardingOverlayView: UIView {
             },
             completion: { [weak self] _ in
                 self?.startAnimations()
-            }
+            },
         )
     }
 
@@ -106,7 +106,7 @@ class StoryContextOnboardingOverlayView: UIView {
             completion: { _ in
                 self.isHidden = true
                 self.isDisplaying = false
-            }
+            },
         )
     }
 
@@ -170,9 +170,9 @@ class StoryContextOnboardingOverlayView: UIView {
         confirmButton.setTitle(
             OWSLocalizedString(
                 "STORY_VIEWER_ONBOARDING_CONFIRMATION",
-                comment: "Confirmation text shown the first time the user opens the story viewer to dismiss instructions."
+                comment: "Confirmation text shown the first time the user opens the story viewer to dismiss instructions.",
             ),
-            for: .normal
+            for: .normal,
         )
         confirmButton.titleLabel?.font = .dynamicTypeSubheadlineClamped.semibold()
         confirmButton.backgroundColor = .ows_white
@@ -191,7 +191,7 @@ class StoryContextOnboardingOverlayView: UIView {
         closeButton.setImage(Theme.iconImage(.buttonX).withTintColor(.ows_white, renderingMode: .alwaysOriginal), for: .normal)
         closeButton.contentMode = .center
         closeButton.block = { [weak self] in
-            guard let self = self else { return }
+            guard let self else { return }
             self.delegate?.storyContextOnboardingOverlayWantsToExitStoryViewer(self)
         }
         blurView.contentView.addSubview(closeButton)
@@ -212,7 +212,7 @@ class StoryContextOnboardingOverlayView: UIView {
         NSLayoutConstraint.activate([
             vStackLayoutGuide.topAnchor.constraint(equalTo: closeButton.bottomAnchor, constant: 12),
             vStackLayoutGuide.bottomAnchor.constraint(equalTo: confirmButtonContainer.topAnchor, constant: -42),
-            vStack.centerYAnchor.constraint(equalTo: vStackLayoutGuide.centerYAnchor)
+            vStack.centerYAnchor.constraint(equalTo: vStackLayoutGuide.centerYAnchor),
         ])
 
         closeButton.autoSetDimensions(to: .square(42))
@@ -250,23 +250,23 @@ class StoryContextOnboardingOverlayView: UIView {
                 lottieName: "story_viewer_onboarding_1",
                 text: OWSLocalizedString(
                     "STORY_VIEWER_ONBOARDING_1",
-                    comment: "Text shown the first time the user opens the story viewer instructing them how to use it."
-                )
+                    comment: "Text shown the first time the user opens the story viewer instructing them how to use it.",
+                ),
             ),
             Asset(
                 lottieName: "story_viewer_onboarding_2",
                 text: OWSLocalizedString(
                     "STORY_VIEWER_ONBOARDING_2",
-                    comment: "Text shown the first time the user opens the story viewer instructing them how to use it."
-                )
+                    comment: "Text shown the first time the user opens the story viewer instructing them how to use it.",
+                ),
             ),
             Asset(
                 lottieName: "story_viewer_onboarding_3",
                 text: OWSLocalizedString(
                     "STORY_VIEWER_ONBOARDING_3",
-                    comment: "Text shown the first time the user opens the story viewer instructing them how to use it."
-                )
-            )
+                    comment: "Text shown the first time the user opens the story viewer instructing them how to use it.",
+                ),
+            ),
         ]
     }
 }

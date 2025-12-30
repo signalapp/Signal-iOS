@@ -14,7 +14,7 @@ public class OutgoingCallLinkUpdateMessage: OWSOutgoingSyncMessage {
         super.init(coder: coder)
     }
 
-    public override func encode(with coder: NSCoder) {
+    override public func encode(with coder: NSCoder) {
         super.encode(with: coder)
         if let adminPasskey {
             coder.encode(adminPasskey, forKey: "adminPasskey")
@@ -24,7 +24,7 @@ public class OutgoingCallLinkUpdateMessage: OWSOutgoingSyncMessage {
         }
     }
 
-    public override var hash: Int {
+    override public var hash: Int {
         var hasher = Hasher()
         hasher.combine(super.hash)
         hasher.combine(adminPasskey)
@@ -32,7 +32,7 @@ public class OutgoingCallLinkUpdateMessage: OWSOutgoingSyncMessage {
         return hasher.finalize()
     }
 
-    public override func isEqual(_ object: Any?) -> Bool {
+    override public func isEqual(_ object: Any?) -> Bool {
         guard let object = object as? Self else { return false }
         guard super.isEqual(object) else { return false }
         guard self.adminPasskey == object.adminPasskey else { return false }
@@ -40,7 +40,7 @@ public class OutgoingCallLinkUpdateMessage: OWSOutgoingSyncMessage {
         return true
     }
 
-    public override func copy(with zone: NSZone? = nil) -> Any {
+    override public func copy(with zone: NSZone? = nil) -> Any {
         let result = super.copy(with: zone) as! Self
         result.adminPasskey = self.adminPasskey
         result.rootKey = self.rootKey
@@ -54,16 +54,16 @@ public class OutgoingCallLinkUpdateMessage: OWSOutgoingSyncMessage {
         localThread: TSContactThread,
         rootKey: CallLinkRootKey,
         adminPasskey: Data?,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) {
         self.rootKey = rootKey.bytes
         self.adminPasskey = adminPasskey
         super.init(localThread: localThread, transaction: tx)
     }
 
-    public override var isUrgent: Bool { false }
+    override public var isUrgent: Bool { false }
 
-    public override func syncMessageBuilder(transaction: DBReadTransaction) -> SSKProtoSyncMessageBuilder? {
+    override public func syncMessageBuilder(transaction: DBReadTransaction) -> SSKProtoSyncMessageBuilder? {
         let callLinkUpdateBuilder = SSKProtoSyncMessageCallLinkUpdate.builder()
         callLinkUpdateBuilder.setType(.update)
         callLinkUpdateBuilder.setRootKey(self.rootKey)

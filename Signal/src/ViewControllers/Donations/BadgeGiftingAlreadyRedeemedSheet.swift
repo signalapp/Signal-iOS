@@ -10,7 +10,7 @@ class BadgeGiftingAlreadyRedeemedSheet: OWSTableSheetViewController {
     private let profileBadge: ProfileBadge
     private let shortName: String
 
-    public init(badge: ProfileBadge, shortName: String) {
+    init(badge: ProfileBadge, shortName: String) {
         owsAssertDebug(badge.assets != nil)
 
         self.profileBadge = badge
@@ -21,7 +21,7 @@ class BadgeGiftingAlreadyRedeemedSheet: OWSTableSheetViewController {
         updateTableContents()
     }
 
-    public override func tableContents() -> OWSTableContents {
+    override func tableContents() -> OWSTableContents {
         let contents = OWSTableContents()
 
         let headerSection = OWSTableSection()
@@ -31,7 +31,7 @@ class BadgeGiftingAlreadyRedeemedSheet: OWSTableSheetViewController {
 
         headerSection.add(.init(customCellBlock: { [weak self] in
             let cell = OWSTableItem.newCell()
-            guard let self = self else { return cell }
+            guard let self else { return cell }
             cell.selectionStyle = .none
 
             let stackView = UIStackView()
@@ -52,7 +52,7 @@ class BadgeGiftingAlreadyRedeemedSheet: OWSTableSheetViewController {
             let titleLabel = UILabel()
             let titleFormat = OWSLocalizedString(
                 "DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_TITLE_FORMAT",
-                comment: "A friend has donated on your behalf and you received a badge. A sheet opens for you to redeem this badge. Embeds {{contact's short name, such as a first name}}."
+                comment: "A friend has donated on your behalf and you received a badge. A sheet opens for you to redeem this badge. Embeds {{contact's short name, such as a first name}}.",
             )
             titleLabel.font = .dynamicTypeTitle2.semibold()
             titleLabel.textColor = .Signal.label
@@ -65,7 +65,7 @@ class BadgeGiftingAlreadyRedeemedSheet: OWSTableSheetViewController {
             let label = UILabel()
             let labelFormat = OWSLocalizedString(
                 "DONATION_ON_BEHALF_OF_A_FRIEND_YOU_RECEIVED_A_BADGE_FORMAT",
-                comment: "A friend has donated on your behalf and you received a badge. This text says that you received a badge, and from whom. Embeds {{contact's short name, such as a first name}}."
+                comment: "A friend has donated on your behalf and you received a badge. This text says that you received a badge, and from whom. Embeds {{contact's short name, such as a first name}}.",
             )
             label.font = .dynamicTypeBody
             label.textColor = .Signal.label
@@ -80,7 +80,7 @@ class BadgeGiftingAlreadyRedeemedSheet: OWSTableSheetViewController {
         return contents
     }
 
-    public override func willDismissInteractively() {
+    override func willDismissInteractively() {
         super.willDismissInteractively()
         self.dismiss(animated: true)
     }

@@ -30,6 +30,7 @@ class StoryReplyInputToolbar: UIView {
             reactionPicker.delegate = delegate
         }
     }
+
     let isGroupStory: Bool
     let quotedReplyModel: QuotedReplyModel?
 
@@ -57,6 +58,7 @@ class StoryReplyInputToolbar: UIView {
         // Otherwise we risk obscuring too much of the content.
         return UIDevice.current.orientation.isPortrait ? 160 : 100
     }
+
     private var textViewHeightConstraint: NSLayoutConstraint?
 
     // MARK: - Initializers
@@ -64,7 +66,7 @@ class StoryReplyInputToolbar: UIView {
     init(
         isGroupStory: Bool,
         quotedReplyModel: QuotedReplyModel? = nil,
-        spoilerState: SpoilerRenderState
+        spoilerState: SpoilerRenderState,
     ) {
         self.isGroupStory = isGroupStory
         self.quotedReplyModel = quotedReplyModel
@@ -219,12 +221,12 @@ class StoryReplyInputToolbar: UIView {
             if isGroupStory {
                 return OWSLocalizedString(
                     "STORY_REPLY_TO_GROUP_TEXT_FIELD_PLACEHOLDER",
-                    comment: "placeholder text for replying to a group story"
+                    comment: "placeholder text for replying to a group story",
                 )
             } else if let quotedReplyModel {
                 let format = OWSLocalizedString(
                     "STORY_REPLY_TO_PRIVATE_TEXT_FIELD_PLACEHOLDER",
-                    comment: "placeholder text for replying to a private story. Embeds {{author name}}"
+                    comment: "placeholder text for replying to a private story. Embeds {{author name}}",
                 )
                 let authorName = SSKEnvironment.shared.databaseStorageRef.read { tx in
                     return SSKEnvironment.shared.contactManagerRef.displayName(for: quotedReplyModel.originalMessageAuthorAddress, tx: tx).resolvedValue()
@@ -233,7 +235,7 @@ class StoryReplyInputToolbar: UIView {
             } else {
                 return OWSLocalizedString(
                     "STORY_REPLY_TEXT_FIELD_PLACEHOLDER",
-                    comment: "placeholder text for replying to a story"
+                    comment: "placeholder text for replying to a story",
                 )
             }
         }()
@@ -339,7 +341,7 @@ class StoryReplyInputToolbar: UIView {
             let animator = UIViewPropertyAnimator(
                 duration: ConversationInputToolbar.heightChangeAnimationDuration,
                 springDamping: 1,
-                springResponse: 0.25
+                springResponse: 0.25,
             )
             animator.addAnimations {
                 textViewHeightConstraint.constant = newHeight
@@ -375,20 +377,20 @@ extension StoryReplyInputToolbar: BodyRangesTextViewDelegate {
         return delegate?.storyReplyInputToolbarMentionCacheInvalidationKey() ?? UUID().uuidString
     }
 
-    public func textViewDisplayConfiguration(_ textView: BodyRangesTextView) -> HydratedMessageBody.DisplayConfiguration {
+    func textViewDisplayConfiguration(_ textView: BodyRangesTextView) -> HydratedMessageBody.DisplayConfiguration {
         return .composingGroupStoryReply()
     }
 
-    public func mentionPickerStyle(_ textView: BodyRangesTextView) -> MentionPickerStyle {
+    func mentionPickerStyle(_ textView: BodyRangesTextView) -> MentionPickerStyle {
         return .groupReply
     }
 
-    public func textViewDidChange(_ textView: UITextView) {
+    func textViewDidChange(_ textView: UITextView) {
         updateHeight(textView: textView)
         updateContent(animated: true)
     }
 
-    public func textViewDidBeginEditing(_ textView: UITextView) {
+    func textViewDidBeginEditing(_ textView: UITextView) {
         delegate?.storyReplyInputToolbarDidBeginEditing(self)
     }
 }

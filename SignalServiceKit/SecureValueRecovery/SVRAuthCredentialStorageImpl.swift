@@ -69,7 +69,7 @@ public class SVRAuthCredentialStorageImpl: SVRAuthCredentialStorage {
 
     private func currentUsername(
         for type: CredentialType,
-        _ transaction: DBReadTransaction
+        _ transaction: DBReadTransaction,
     ) -> String? {
         return kvStore(for: type).getString(Self.usernameKey, transaction: transaction)
     }
@@ -140,7 +140,7 @@ public class SVRAuthCredentialStorageImpl: SVRAuthCredentialStorage {
     private func updateCredentials(
         for type: CredentialType,
         _ transaction: DBWriteTransaction,
-        _ block: (inout [AuthCredential]) -> Void
+        _ block: (inout [AuthCredential]) -> Void,
     ) {
         var credentials = consolidateLocalAndiCloud(for: type, transaction)
         block(&credentials)
@@ -153,13 +153,13 @@ public class SVRAuthCredentialStorageImpl: SVRAuthCredentialStorage {
 
     private func consolidateLocalAndiCloud(for type: CredentialType, _ transaction: DBReadTransaction) -> [AuthCredential] {
         return Self.consolidateCredentials(
-            allUnsortedCredentials: localCredentials(for: type, transaction) + getiCloudCredentials(for: type)
+            allUnsortedCredentials: localCredentials(for: type, transaction) + getiCloudCredentials(for: type),
         )
     }
 
     // Exposed for testing.
-    internal static func consolidateCredentials(
-        allUnsortedCredentials: [AuthCredential]
+    static func consolidateCredentials(
+        allUnsortedCredentials: [AuthCredential],
     ) -> [AuthCredential] {
         let groupedByUsername = Dictionary(grouping: allUnsortedCredentials, by: \.username).values
 
@@ -171,28 +171,28 @@ public class SVRAuthCredentialStorageImpl: SVRAuthCredentialStorage {
         // The size limit is small; just merge and sort even though
         // this could be done in O(n).
         let consolidated =
-        groupedByUsername.compactMap {
-            // First group by password; two with the same password are identical
-            // and we should use the *oldest* one so we don't update the timestamp
-            // if it is re-inserted.
-            return Dictionary(grouping: $0, by: \.password)
-                .values
-                .compactMap {
-                    // max when sorted newest to oldest = oldest
-                    return $0.max(by: sort)
-                }
-            // min when sorted newest to oldest = newest
-                .min(by: sort)
-        }
-        // Sort by time, which is set locally and subject to
-        // clock shenanigans, but this is all best effort anyway.
-        .sorted(by: sort)
-        // Take the first N up to the limit
-        .prefix(SVR.maxSVRAuthCredentialsBackedUp)
+            groupedByUsername.compactMap {
+                // First group by password; two with the same password are identical
+                // and we should use the *oldest* one so we don't update the timestamp
+                // if it is re-inserted.
+                return Dictionary(grouping: $0, by: \.password)
+                    .values
+                    .compactMap {
+                        // max when sorted newest to oldest = oldest
+                        return $0.max(by: sort)
+                    }
+                    // min when sorted newest to oldest = newest
+                    .min(by: sort)
+            }
+            // Sort by time, which is set locally and subject to
+            // clock shenanigans, but this is all best effort anyway.
+            .sorted(by: sort)
+            // Take the first N up to the limit
+            .prefix(SVR.maxSVRAuthCredentialsBackedUp)
         return Array(consolidated)
     }
 
-    internal enum CredentialType: Hashable {
+    enum CredentialType: Hashable {
         case svr2
 
         var iCloudCredentialsKey: String {
@@ -210,7 +210,7 @@ public class SVRAuthCredentialStorageImpl: SVRAuthCredentialStorage {
         }
     }
 
-    internal struct AuthCredential: Codable, Equatable {
+    struct AuthCredential: Codable, Equatable {
         let username: String
         let password: String
         let insertionTime: Date
@@ -219,7 +219,7 @@ public class SVRAuthCredentialStorageImpl: SVRAuthCredentialStorage {
             return AuthCredential(
                 username: credential.credential.username,
                 password: credential.credential.password,
-                insertionTime: Date()
+                insertionTime: Date(),
             )
         }
 
@@ -236,7 +236,7 @@ public class SVRAuthCredentialStorageImpl: SVRAuthCredentialStorage {
             return AuthCredential(
                 username: credential.credential.username,
                 password: credential.credential.password,
-                insertionTime: self.insertionTime
+                insertionTime: self.insertionTime,
             ) == self
         }
     }

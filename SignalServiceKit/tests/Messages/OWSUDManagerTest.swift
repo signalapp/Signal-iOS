@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import XCTest
 import Foundation
 import LibSignalClient
+import XCTest
 @testable import SignalServiceKit
 
 class OWSUDManagerTest: SSKBaseTest {
@@ -24,7 +24,7 @@ class OWSUDManagerTest: SSKBaseTest {
         SSKEnvironment.shared.databaseStorageRef.write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
                 localIdentifiers: localIdentifiers,
-                tx: tx
+                tx: tx,
             )
         }
 

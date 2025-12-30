@@ -15,10 +15,14 @@ public class CVMediaCache: NSObject {
         case backupThumbnail(Attachment.IDType)
     }
 
-    private let stillMediaCache = LRUCache<CacheKey, AnyObject>(maxSize: 16,
-                                                              shouldEvacuateInBackground: true)
-    private let animatedMediaCache = LRUCache<CacheKey, AnyObject>(maxSize: 8,
-                                                                 shouldEvacuateInBackground: true)
+    private let stillMediaCache = LRUCache<CacheKey, AnyObject>(
+        maxSize: 16,
+        shouldEvacuateInBackground: true,
+    )
+    private let animatedMediaCache = LRUCache<CacheKey, AnyObject>(
+        maxSize: 8,
+        shouldEvacuateInBackground: true,
+    )
 
     private typealias MediaViewCache = LRUCache<CacheKey, ThreadSafeCacheHandle<ReusableMediaView>>
     private let stillMediaViewCache = MediaViewCache(maxSize: 12, shouldEvacuateInBackground: true)
@@ -27,7 +31,7 @@ public class CVMediaCache: NSObject {
     private let lottieAnimationCache = LRUCache<String, LottieAnimation>(maxSize: 8, shouldEvacuateInBackground: true)
     private let lottieImageProvider = BundleImageProvider(bundle: .main, searchPath: nil)
 
-    public override init() {
+    override public init() {
         AssertIsOnMainThread()
 
         super.init()

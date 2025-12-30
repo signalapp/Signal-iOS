@@ -34,7 +34,7 @@ final class DecimalTest: XCTestCase {
             (123, 123),
             (123.4, 123),
             (123.5, 124),
-            (123.6, 124)
+            (123.6, 124),
         ]
         for (input, expected) in testCases {
             let actual = input.rounded()

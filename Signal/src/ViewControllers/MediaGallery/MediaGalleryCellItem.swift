@@ -35,7 +35,7 @@ enum MediaGalleryCellItem {
 }
 
 extension MediaGalleryCellItem: Equatable {
-    public static func == (lhs: MediaGalleryCellItem, rhs: MediaGalleryCellItem) -> Bool {
+    static func ==(lhs: MediaGalleryCellItem, rhs: MediaGalleryCellItem) -> Bool {
         switch (lhs, rhs) {
         case let (.photoVideo(lvalue), .photoVideo(rvalue)):
             return lvalue === rvalue
@@ -62,6 +62,7 @@ struct MediaGalleryCellItemAudio {
     var size: UInt {
         UInt(attachmentStream.attachmentStream.unencryptedByteCount)
     }
+
     var duration: TimeInterval {
         switch attachmentStream.attachmentStream.contentType {
         case .audio(let duration, _):
@@ -73,11 +74,15 @@ struct MediaGalleryCellItemAudio {
 
     var localizedString: String {
         if isVoiceMessage {
-            return OWSLocalizedString("MEDIA_GALLERY_A11Y_VOICE_MESSAGE",
-                                      comment: "VoiceOver description for a voice messages in All Media")
+            return OWSLocalizedString(
+                "MEDIA_GALLERY_A11Y_VOICE_MESSAGE",
+                comment: "VoiceOver description for a voice messages in All Media",
+            )
         } else {
-            return OWSLocalizedString("MEDIA_GALLERY_A11Y_AUDIO_FILE",
-                                      comment: "VoiceOver description for a generic audio file in All Media")
+            return OWSLocalizedString(
+                "MEDIA_GALLERY_A11Y_AUDIO_FILE",
+                comment: "VoiceOver description for a generic audio file in All Media",
+            )
 
         }
     }
@@ -99,7 +104,7 @@ struct MediaGalleryCellItemOtherFile {
     var localizedString: String {
         return OWSLocalizedString(
             "MEDIA_GALLERY_A11Y_OTHER_FILE",
-            comment: "VoiceOver description for a generic non-audiovisual file in All Media"
+            comment: "VoiceOver description for a generic non-audiovisual file in All Media",
         )
     }
 }
@@ -136,6 +141,7 @@ class MediaGalleryCellItemPhotoVideo: PhotoGridItem {
             return .value(duration)
         }
     }
+
     var mediaMetadata: MediaMetadata? {
         return galleryItem.mediaMetadata
     }
@@ -147,7 +153,7 @@ extension MediaGalleryItem {
             sender: sender?.name ?? "",
             abbreviatedSender: sender?.abbreviatedName ?? "",
             byteSize: Int(attachmentStream.attachmentStream.unencryptedByteCount),
-            creationDate: receivedAtDate
+            creationDate: receivedAtDate,
         )
     }
 }

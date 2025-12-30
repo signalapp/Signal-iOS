@@ -28,12 +28,12 @@ final class IndividualCallRecordManagerTest: XCTestCase {
         individualCallRecordManager = SnoopingIndividualCallRecordManagerImpl(
             callRecordStore: mockCallRecordStore,
             interactionStore: mockInteractionStore,
-            outgoingSyncMessageManager: mockOutgoingSyncMessageManager
+            outgoingSyncMessageManager: mockOutgoingSyncMessageManager,
         )
     }
 
     private func createInteraction(
-        callType: RPRecentCallType = .incomingIncomplete
+        callType: RPRecentCallType = .incomingIncomplete,
     ) -> (TSContactThread, TSCall) {
         let thread = TSContactThread(contactAddress: .isolatedRandomForTesting())
         thread.updateRowId(.maxRandom)
@@ -55,7 +55,7 @@ final class IndividualCallRecordManagerTest: XCTestCase {
                 individualCallInteractionRowId: interaction.sqliteRowId!,
                 contactThread: thread,
                 newCallInteractionType: .incomingAnsweredElsewhere,
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -75,7 +75,7 @@ final class IndividualCallRecordManagerTest: XCTestCase {
             callType: .audioCall,
             callDirection: .incoming,
             callStatus: .individual(.pending),
-            callBeganTimestamp: interaction.timestamp
+            callBeganTimestamp: interaction.timestamp,
         )
         mockCallRecordStore.callRecords.append(callRecord)
 
@@ -85,7 +85,7 @@ final class IndividualCallRecordManagerTest: XCTestCase {
                 individualCallInteractionRowId: interaction.sqliteRowId!,
                 contactThread: thread,
                 newCallInteractionType: .incomingAnsweredElsewhere,
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -106,7 +106,7 @@ final class IndividualCallRecordManagerTest: XCTestCase {
                 contactThread: thread,
                 contactThreadRowId: thread.sqliteRowId!,
                 callId: .maxRandom,
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -125,7 +125,7 @@ final class IndividualCallRecordManagerTest: XCTestCase {
             callType: .audioCall,
             callDirection: .incoming,
             callStatus: .individual(.pending),
-            callBeganTimestamp: interaction.timestamp
+            callBeganTimestamp: interaction.timestamp,
         )
         mockCallRecordStore.callRecords.append(callRecord)
 
@@ -136,7 +136,7 @@ final class IndividualCallRecordManagerTest: XCTestCase {
                 contactThread: thread,
                 contactThreadRowId: thread.sqliteRowId!,
                 callId: callId,
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -157,7 +157,7 @@ final class IndividualCallRecordManagerTest: XCTestCase {
                 contactThread: thread,
                 contactThreadRowId: thread.sqliteRowId!,
                 callId: callId,
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -182,7 +182,7 @@ final class IndividualCallRecordManagerTest: XCTestCase {
                 individualCallStatus: .accepted,
                 callEventTimestamp: interaction.timestamp,
                 shouldSendSyncMessage: false,
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -205,7 +205,7 @@ final class IndividualCallRecordManagerTest: XCTestCase {
                 individualCallStatus: .accepted,
                 callEventTimestamp: interaction.timestamp,
                 shouldSendSyncMessage: true,
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -224,7 +224,7 @@ final class IndividualCallRecordManagerTest: XCTestCase {
             callType: .audioCall,
             callDirection: .incoming,
             callStatus: .individual(.notAccepted),
-            callBeganTimestamp: interaction.timestamp
+            callBeganTimestamp: interaction.timestamp,
         )
 
         mockDB.write { tx in
@@ -233,7 +233,7 @@ final class IndividualCallRecordManagerTest: XCTestCase {
                 existingCallRecord: callRecord,
                 newIndividualCallStatus: .accepted,
                 shouldSendSyncMessage: false,
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -254,7 +254,7 @@ final class IndividualCallRecordManagerTest: XCTestCase {
             callType: .audioCall,
             callDirection: .incoming,
             callStatus: .individual(.accepted),
-            callBeganTimestamp: interaction.timestamp
+            callBeganTimestamp: interaction.timestamp,
         )
 
         mockDB.write { tx in
@@ -263,7 +263,7 @@ final class IndividualCallRecordManagerTest: XCTestCase {
                 existingCallRecord: callRecord,
                 newIndividualCallStatus: .pending,
                 shouldSendSyncMessage: true,
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -280,7 +280,7 @@ final class IndividualCallRecordManagerTest: XCTestCase {
             callType: .audioCall,
             callDirection: .incoming,
             callStatus: .individual(.notAccepted),
-            callBeganTimestamp: interaction.timestamp
+            callBeganTimestamp: interaction.timestamp,
         )
 
         mockDB.write { tx in
@@ -289,7 +289,7 @@ final class IndividualCallRecordManagerTest: XCTestCase {
                 existingCallRecord: callRecord,
                 newIndividualCallStatus: .accepted,
                 shouldSendSyncMessage: true,
-                tx: tx
+                tx: tx,
             )
         }
 

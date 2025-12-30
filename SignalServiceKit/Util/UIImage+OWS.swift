@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import CoreImage
+import Foundation
 
 extension UIImage {
     public static func image(color: UIColor, size: CGSize = CGSize(width: 1, height: 1)) -> UIImage {
@@ -47,7 +47,7 @@ extension UIImage {
         color: UIColor,
         maxTitleWidth: CGFloat,
         minimumScaleFactor: CGFloat,
-        spacing: CGFloat
+        spacing: CGFloat,
     ) -> UIImage? {
         let titleLabel = UILabel()
         titleLabel.text = title
@@ -61,8 +61,11 @@ extension UIImage {
 
         let titleSize = titleLabel.textRect(forBounds: CGRect(
             origin: .zero,
-            size: CGSize(width: maxTitleWidth, height: .greatestFiniteMagnitude
-        )), limitedToNumberOfLines: titleLabel.numberOfLines).size
+            size: CGSize(
+                width: maxTitleWidth,
+                height: .greatestFiniteMagnitude,
+            ),
+        ), limitedToNumberOfLines: titleLabel.numberOfLines).size
         let additionalWidth = size.width >= titleSize.width ? 0 : titleSize.width - size.width
 
         var newSize = size
@@ -77,7 +80,7 @@ extension UIImage {
         // Draw the title label into the new image
         titleLabel.drawText(in: CGRect(origin: CGPoint(
             x: size.width > titleSize.width ? (size.width - titleSize.width) / 2 : 0,
-            y: size.height + spacing
+            y: size.height + spacing,
         ), size: titleSize))
 
         let newImage = UIGraphicsGetImageFromCurrentImageContext()
@@ -87,17 +90,17 @@ extension UIImage {
         return newImage
     }
 
-    #if compiler(>=6.2)
+#if compiler(>=6.2)
     @concurrent
-    #endif
+#endif
     public func withGaussianBlurAsync(radius: CGFloat, resizeToMaxPixelDimension: CGFloat) async throws -> UIImage {
         AssertNotOnMainThread()
         return UIImage(cgImage: try _cgImageWithGaussianBlur(radius: radius, resizeToMaxPixelDimension: resizeToMaxPixelDimension))
     }
 
-    #if compiler(>=6.2)
+#if compiler(>=6.2)
     @concurrent
-    #endif
+#endif
     public func cgImageWithGaussianBlurAsync(radius: CGFloat, resizeToMaxPixelDimension: CGFloat) async throws -> CGImage {
         AssertNotOnMainThread()
         return try self._cgImageWithGaussianBlur(radius: radius, resizeToMaxPixelDimension: resizeToMaxPixelDimension)
@@ -119,8 +122,12 @@ extension UIImage {
             throw OWSAssertionError("Failed to create blur filter")
         }
 
-        guard let blurFilter = CIFilter(name: "CIGaussianBlur",
-                                        parameters: [kCIInputRadiusKey: radius]) else {
+        guard
+            let blurFilter = CIFilter(
+                name: "CIGaussianBlur",
+                parameters: [kCIInputRadiusKey: radius],
+            )
+        else {
             throw OWSAssertionError("Failed to create blur filter")
         }
         guard let cgImage = self.cgImage else {
@@ -143,22 +150,30 @@ extension UIImage {
         }
 
         var outputImage: CIImage = blurredOutput
-        if let tintColor = tintColor {
-            guard let tintFilter = CIFilter(name: "CIConstantColorGenerator",
-                                            parameters: [
-                                                kCIInputColorKey: CIColor(color: tintColor)
-                                            ]) else {
+        if let tintColor {
+            guard
+                let tintFilter = CIFilter(
+                    name: "CIConstantColorGenerator",
+                    parameters: [
+                        kCIInputColorKey: CIColor(color: tintColor),
+                    ],
+                )
+            else {
                 throw OWSAssertionError("Could not create tintFilter.")
             }
             guard let tintImage = tintFilter.outputImage else {
                 throw OWSAssertionError("Could not create tintImage.")
             }
 
-            guard let tintOverlayFilter = CIFilter(name: "CISourceOverCompositing",
-                                                   parameters: [
-                                                    kCIInputBackgroundImageKey: outputImage,
-                                                    kCIInputImageKey: tintImage
-                                                   ]) else {
+            guard
+                let tintOverlayFilter = CIFilter(
+                    name: "CISourceOverCompositing",
+                    parameters: [
+                        kCIInputBackgroundImageKey: outputImage,
+                        kCIInputImageKey: tintImage,
+                    ],
+                )
+            else {
                 throw OWSAssertionError("Could not create tintOverlayFilter.")
             }
             guard let tintOverlayImage = tintOverlayFilter.outputImage else {
@@ -188,9 +203,9 @@ extension UIImage {
                 return false
             case .premultipliedLast,
                  .premultipliedFirst,
-             .last,
-             .first,
-             .alphaOnly:
+                 .last,
+                 .first,
+                 .alphaOnly:
                 return true
             @unknown default:
                 owsFailDebug("Unknown CGImageAlphaInfo value.")
@@ -202,13 +217,17 @@ extension UIImage {
         let colourSpace = CGColorSpaceCreateDeviceRGB()
         let alphaInfo: CGImageAlphaInfo = hasAlpha ? .premultipliedFirst : .noneSkipFirst
         let bitmapInfo: UInt32 = alphaInfo.rawValue | CGBitmapInfo.byteOrder32Little.rawValue
-        guard let imageContext = CGContext(data: nil,
-                                           width: width,
-                                           height: height,
-                                           bitsPerComponent: 8,
-                                           bytesPerRow: width * 4,
-                                           space: colourSpace,
-                                           bitmapInfo: bitmapInfo) else {
+        guard
+            let imageContext = CGContext(
+                data: nil,
+                width: width,
+                height: height,
+                bitsPerComponent: 8,
+                bytesPerRow: width * 4,
+                space: colourSpace,
+                bitmapInfo: bitmapInfo,
+            )
+        else {
             owsFailDebug("Could not create context.")
             return self
         }
@@ -250,7 +269,7 @@ extension UIImage {
         if self.scale == scale {
             return self
         } else {
-            guard let cgImage = cgImage else {
+            guard let cgImage else {
                 owsFailDebug("Missing cgImage.")
                 return self
             }
@@ -299,9 +318,11 @@ extension UIImage {
         // on linked devices (e.g. in a call view).  If so, we should also modify `avatarDataForCNContact`
         // to _not_ use `thumbnailImageData`.  This would make contact syncs much more expensive, however.
         let maxAvatarDimensionPixels = 600
-        if imageMetadata.imageFormat == .jpeg
+        if
+            imageMetadata.imageFormat == .jpeg
             && imageMetadata.pixelSize.width <= CGFloat(maxAvatarDimensionPixels)
-            && imageMetadata.pixelSize.height <= CGFloat(maxAvatarDimensionPixels) {
+            && imageMetadata.pixelSize.height <= CGFloat(maxAvatarDimensionPixels)
+        {
 
             return avatarData
         }
@@ -457,9 +478,13 @@ extension UIImage {
             unroundedThumbnailSize = CGSize(width: maxDimension * originalSize.width / originalSize.height, height: maxDimension)
         }
 
-        var renderRect = CGRect(origin: .zero,
-                                size: CGSize.init(width: round(unroundedThumbnailSize.width),
-                                                  height: round(unroundedThumbnailSize.height)))
+        var renderRect = CGRect(
+            origin: .zero,
+            size: CGSize(
+                width: round(unroundedThumbnailSize.width),
+                height: round(unroundedThumbnailSize.height),
+            ),
+        )
         if unroundedThumbnailSize.width < 1 {
             // crop instead of resizing.
             let newWidth = min(maxDimension, originalSize.width)
@@ -481,8 +506,10 @@ extension UIImage {
             unroundedThumbnailSize.width = maxDimension
         }
 
-        let thumbnailSize = CGSize(width: round(unroundedThumbnailSize.width),
-                                   height: round(unroundedThumbnailSize.height))
+        let thumbnailSize = CGSize(
+            width: round(unroundedThumbnailSize.width),
+            height: round(unroundedThumbnailSize.height),
+        )
 
         let format = UIGraphicsImageRendererFormat()
         if isPixels {

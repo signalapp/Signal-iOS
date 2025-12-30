@@ -11,12 +11,12 @@ public protocol NicknameManager {
     func createOrUpdate(
         nicknameRecord: NicknameRecord,
         updateStorageServiceFor recipientUniqueId: RecipientUniqueId?,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     )
     func deleteNickname(
         recipientRowID: Int64,
         updateStorageServiceFor recipientUniqueId: RecipientUniqueId?,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     )
 }
 
@@ -45,7 +45,7 @@ public struct NicknameManagerImpl: NicknameManager {
 
     public func fetchNickname(
         for recipient: SignalRecipient,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> NicknameRecord? {
         return nicknameRecordStore.fetch(recipientRowID: recipient.id, tx: tx)
     }
@@ -55,12 +55,14 @@ public struct NicknameManagerImpl: NicknameManager {
     public func createOrUpdate(
         nicknameRecord: NicknameRecord,
         updateStorageServiceFor recipientUniqueId: RecipientUniqueId?,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
-        if self.nicknameRecordStore.nicknameExists(
-            recipientRowID: nicknameRecord.recipientRowID,
-            tx: tx
-        ) {
+        if
+            self.nicknameRecordStore.nicknameExists(
+                recipientRowID: nicknameRecord.recipientRowID,
+                tx: tx,
+            )
+        {
             self.update(nicknameRecord, tx: tx)
         } else {
             self.insert(nicknameRecord, tx: tx)
@@ -86,12 +88,13 @@ public struct NicknameManagerImpl: NicknameManager {
     public func deleteNickname(
         recipientRowID: Int64,
         updateStorageServiceFor recipientUniqueId: RecipientUniqueId?,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
-        guard let nicknameRecord = self.nicknameRecordStore.fetch(
-            recipientRowID: recipientRowID,
-            tx: tx
-        ) else { return }
+        guard
+            let nicknameRecord = self.nicknameRecordStore.fetch(
+                recipientRowID: recipientRowID,
+                tx: tx,
+            ) else { return }
         self.delete(nicknameRecord, tx: tx)
 
         if let recipientUniqueId {

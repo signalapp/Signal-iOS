@@ -46,7 +46,7 @@ class _Upload_FileSystemMock: Upload.Shims.FileSystem {
 
     func deleteFile(url: URL) throws { }
 
-    public func maxFileChunkSizeBytes() -> Int { 32 }
+    func maxFileChunkSizeBytes() -> Int { 32 }
 
     func readMemoryMappedFileData(url: URL) throws -> Data {
         return Data(repeating: 0, count: size)
@@ -72,17 +72,17 @@ class _AttachmentUploadManager_NetworkManagerMock: NetworkManager {
 public class _AttachmentUploadManager_OWSURLSessionMock: BaseOWSURLSessionMock {
 
     public var performUploadDataBlock: ((URLRequest, Data, OWSProgressSource?) async throws -> HTTPResponse)?
-    public override func performUpload(request: URLRequest, requestData: Data, progress: OWSProgressSource?) async throws -> HTTPResponse {
+    override public func performUpload(request: URLRequest, requestData: Data, progress: OWSProgressSource?) async throws -> HTTPResponse {
         return try await performUploadDataBlock!(request, requestData, progress)
     }
 
     public var performUploadFileBlock: ((URLRequest, URL, Bool, OWSProgressSource?) async throws -> HTTPResponse)?
-    public override func performUpload(request: URLRequest, fileUrl: URL, ignoreAppExpiry: Bool, progress: OWSProgressSource?) async throws -> HTTPResponse {
+    override public func performUpload(request: URLRequest, fileUrl: URL, ignoreAppExpiry: Bool, progress: OWSProgressSource?) async throws -> HTTPResponse {
         return try await performUploadFileBlock!(request, fileUrl, ignoreAppExpiry, progress)
     }
 
     public var performRequestBlock: ((URLRequest) async throws -> HTTPResponse)?
-    public override func performRequest(request: URLRequest, ignoreAppExpiry: Bool) async throws -> HTTPResponse {
+    override public func performRequest(request: URLRequest, ignoreAppExpiry: Bool) async throws -> HTTPResponse {
         return try await performRequestBlock!(request)
     }
 }
@@ -93,7 +93,7 @@ class _AttachmentUploadManager_BackupRequestManagerMock: BackupRequestManager {
     func fetchBackupServiceAuthForRegistration(
         key: BackupKeyMaterial,
         localAci: Aci,
-        chatServiceAuth: ChatServiceAuth
+        chatServiceAuth: ChatServiceAuth,
     ) async throws -> BackupServiceAuth {
         fatalError("Unimplemented for tests")
     }
@@ -102,7 +102,7 @@ class _AttachmentUploadManager_BackupRequestManagerMock: BackupRequestManager {
         for key: BackupKeyMaterial,
         localAci: Aci,
         auth: ChatServiceAuth,
-        forceRefreshUnlessCachedPaidCredential: Bool
+        forceRefreshUnlessCachedPaidCredential: Bool,
     ) async throws -> BackupServiceAuth {
         fatalError("Unimplemented for tests")
     }
@@ -111,7 +111,7 @@ class _AttachmentUploadManager_BackupRequestManagerMock: BackupRequestManager {
 
     func fetchBackupUploadForm(
         backupByteLength: UInt32,
-        auth: BackupServiceAuth
+        auth: BackupServiceAuth,
     ) async throws -> Upload.Form {
         fatalError("Unimplemented for tests")
     }
@@ -131,14 +131,14 @@ class _AttachmentUploadManager_BackupRequestManagerMock: BackupRequestManager {
     func copyToMediaTier(
         item: BackupArchive.Request.MediaItem,
         auth: BackupServiceAuth,
-        logger: PrefixedLogger? = nil
+        logger: PrefixedLogger? = nil,
     ) async throws -> UInt32 {
         return 3
     }
 
     func copyToMediaTier(
         items: [BackupArchive.Request.MediaItem],
-        auth: BackupServiceAuth
+        auth: BackupServiceAuth,
     ) async throws -> [BackupArchive.Response.BatchedBackupMediaResult] {
         return []
     }
@@ -146,14 +146,14 @@ class _AttachmentUploadManager_BackupRequestManagerMock: BackupRequestManager {
     func listMediaObjects(
         cursor: String?,
         limit: UInt32?,
-        auth: BackupServiceAuth
+        auth: BackupServiceAuth,
     ) async throws -> BackupArchive.Response.ListMediaResult {
         fatalError("Unimplemented for tests")
     }
 
     func deleteMediaObjects(
         objects: [BackupArchive.Request.DeleteMediaTarget],
-        auth: BackupServiceAuth
+        auth: BackupServiceAuth,
     ) async throws {
     }
 
@@ -163,7 +163,7 @@ class _AttachmentUploadManager_BackupRequestManagerMock: BackupRequestManager {
     func fetchSVRBAuthCredential(
         key: SignalServiceKit.MessageRootBackupKey,
         chatServiceAuth auth: SignalServiceKit.ChatServiceAuth,
-        forceRefresh: Bool
+        forceRefresh: Bool,
     ) async throws -> LibSignalClient.Auth {
         return LibSignalClient.Auth(username: "", password: "")
     }
@@ -187,7 +187,7 @@ class AttachmentUploadStoreMock: AttachmentUploadStoreImpl {
     override func markUploadedToTransitTier(
         attachmentStream: AttachmentStream,
         info: Attachment.TransitTierInfo,
-        tx: SignalServiceKit.DBWriteTransaction
+        tx: SignalServiceKit.DBWriteTransaction,
     ) throws {
         uploadedAttachments.append(attachmentStream)
     }
@@ -195,7 +195,7 @@ class AttachmentUploadStoreMock: AttachmentUploadStoreImpl {
     override func markTransitTierUploadExpired(
         attachment: Attachment,
         info: Attachment.TransitTierInfo,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         // Do nothing
     }
@@ -204,24 +204,24 @@ class AttachmentUploadStoreMock: AttachmentUploadStoreImpl {
         attachment: Attachment,
         mediaTierInfo: Attachment.MediaTierInfo,
         mediaName: String,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {}
 
     override func markMediaTierUploadExpired(
         attachment: Attachment,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {}
 
     override func markThumbnailUploadedToMediaTier(
         attachment: Attachment,
         thumbnailMediaTierInfo: Attachment.ThumbnailMediaTierInfo,
         mediaName: String,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {}
 
     override func markThumbnailMediaTierUploadExpired(
         attachment: Attachment,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {}
 
     override func upsert(record: AttachmentUploadRecord, tx: DBWriteTransaction) throws { }
@@ -235,13 +235,13 @@ class AttachmentUploadStoreMock: AttachmentUploadStoreImpl {
     override func removeRecord(
         for attachmentId: Attachment.IDType,
         sourceType: AttachmentUploadRecord.SourceType,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws { }
 
     override func fetchAttachmentUploadRecord(
         for attachmentId: Attachment.IDType,
         sourceType: AttachmentUploadRecord.SourceType,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> AttachmentUploadRecord? {
         return nil
     }

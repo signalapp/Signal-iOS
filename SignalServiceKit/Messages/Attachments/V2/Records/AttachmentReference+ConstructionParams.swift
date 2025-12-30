@@ -61,7 +61,7 @@ extension AttachmentReference {
             knownIdInOwner: KnownIdInOwner,
             renderingFlag: AttachmentReference.RenderingFlag,
             contentType: AttachmentReference.ContentType?,
-            caption: String? = nil
+            caption: String? = nil,
         ) throws -> AttachmentReference.Owner {
             switch self {
             case .messageBodyAttachment(let metadata):
@@ -82,7 +82,7 @@ extension AttachmentReference {
                         case .known(let knownValue): return knownValue
                         }
                     }(),
-                    isViewOnce: metadata.isViewOnce
+                    isViewOnce: metadata.isViewOnce,
                 )))
             case .messageOversizeText(let metadata):
                 return .message(.oversizeText(.init(
@@ -90,7 +90,7 @@ extension AttachmentReference {
                     receivedAtTimestamp: metadata.receivedAtTimestamp,
                     threadRowId: metadata.threadRowId,
                     contentType: contentType,
-                    isPastEditRevision: metadata.isPastEditRevision
+                    isPastEditRevision: metadata.isPastEditRevision,
                 )))
             case .messageLinkPreview(let metadata):
                 return .message(.linkPreview(.init(
@@ -98,7 +98,7 @@ extension AttachmentReference {
                     receivedAtTimestamp: metadata.receivedAtTimestamp,
                     threadRowId: metadata.threadRowId,
                     contentType: contentType,
-                    isPastEditRevision: metadata.isPastEditRevision
+                    isPastEditRevision: metadata.isPastEditRevision,
                 )))
             case .quotedReplyAttachment(let metadata):
                 return .message(.quotedReply(.init(
@@ -107,7 +107,7 @@ extension AttachmentReference {
                     threadRowId: metadata.threadRowId,
                     contentType: contentType,
                     isPastEditRevision: metadata.isPastEditRevision,
-                    renderingFlag: renderingFlag
+                    renderingFlag: renderingFlag,
                 )))
             case .messageSticker(let metadata):
                 return .message(.sticker(.init(
@@ -117,7 +117,7 @@ extension AttachmentReference {
                     contentType: contentType,
                     isPastEditRevision: metadata.isPastEditRevision,
                     stickerPackId: metadata.stickerPackId,
-                    stickerId: metadata.stickerId
+                    stickerId: metadata.stickerId,
                 )))
             case .messageContactAvatar(let metadata):
                 return .message(.contactAvatar(.init(
@@ -125,20 +125,20 @@ extension AttachmentReference {
                     receivedAtTimestamp: metadata.receivedAtTimestamp,
                     threadRowId: metadata.threadRowId,
                     contentType: contentType,
-                    isPastEditRevision: metadata.isPastEditRevision
+                    isPastEditRevision: metadata.isPastEditRevision,
                 )))
             case .storyMessageMedia(let metadata):
                 return .storyMessage(.media(.init(
                     storyMessageRowId: metadata.storyMessageRowId,
                     caption: metadata.caption,
-                    shouldLoop: renderingFlag == .shouldLoop
+                    shouldLoop: renderingFlag == .shouldLoop,
                 )))
             case .storyMessageLinkPreview(let storyMessageRowId):
                 return .storyMessage(.textStoryLinkPreview(.init(storyMessageRowId: storyMessageRowId)))
             case .threadWallpaperImage(let threadRowId):
                 return .thread(.threadWallpaperImage(.init(
                     threadRowId: threadRowId,
-                    creationTimestamp: Date().ows_millisecondsSince1970
+                    creationTimestamp: Date().ows_millisecondsSince1970,
                 )))
             case .globalThreadWallpaperImage:
                 return .thread(.globalThreadWallpaperImage(creationTimestamp: Date().ows_millisecondsSince1970))
@@ -156,7 +156,7 @@ extension AttachmentReference {
                 messageRowId: Int64,
                 receivedAtTimestamp: UInt64,
                 threadRowId: Int64,
-                isPastEditRevision: Bool
+                isPastEditRevision: Bool,
             ) {
                 self.messageRowId = messageRowId
                 self.receivedAtTimestamp = receivedAtTimestamp
@@ -208,7 +208,7 @@ extension AttachmentReference {
                 threadRowId: Int64,
                 isPastEditRevision: Bool,
                 stickerPackId: Data,
-                stickerId: UInt32
+                stickerId: UInt32,
             ) {
                 self.messageRowId = messageRowId
                 self.receivedAtTimestamp = receivedAtTimestamp
@@ -225,7 +225,7 @@ extension AttachmentReference {
 
             public init(
                 storyMessageRowId: Int64,
-                caption: StyleOnlyMessageBody?
+                caption: StyleOnlyMessageBody?,
             ) {
                 self.storyMessageRowId = storyMessageRowId
                 self.caption = caption
@@ -252,7 +252,7 @@ extension AttachmentReference {
             owner: Owner,
             sourceFilename: String?,
             sourceUnencryptedByteCount: UInt32?,
-            sourceMediaSizePixels: CGSize?
+            sourceMediaSizePixels: CGSize?,
         ) {
             self.owner = owner
             self.sourceFilename = sourceFilename
@@ -260,7 +260,7 @@ extension AttachmentReference {
             self.sourceMediaSizePixels = sourceMediaSizePixels
         }
 
-        internal func buildRecord(attachmentRowId: Attachment.IDType) throws -> any FetchableAttachmentReferenceRecord {
+        func buildRecord(attachmentRowId: Attachment.IDType) throws -> any FetchableAttachmentReferenceRecord {
             switch owner {
             case .message(let messageSource):
                 return MessageAttachmentReferenceRecord(
@@ -268,7 +268,7 @@ extension AttachmentReference {
                     sourceFilename: sourceFilename,
                     sourceUnencryptedByteCount: sourceUnencryptedByteCount,
                     sourceMediaSizePixels: sourceMediaSizePixels,
-                    messageSource: messageSource
+                    messageSource: messageSource,
                 )
             case .storyMessage(let storyMessageSource):
                 return try StoryMessageAttachmentReferenceRecord(
@@ -276,12 +276,12 @@ extension AttachmentReference {
                     sourceFilename: sourceFilename,
                     sourceUnencryptedByteCount: sourceUnencryptedByteCount,
                     sourceMediaSizePixels: sourceMediaSizePixels,
-                    storyMessageSource: storyMessageSource
+                    storyMessageSource: storyMessageSource,
                 )
             case .thread(let threadSource):
                 return ThreadAttachmentReferenceRecord(
                     attachmentRowId: attachmentRowId,
-                    threadSource: threadSource
+                    threadSource: threadSource,
                 )
             }
         }
@@ -290,7 +290,7 @@ extension AttachmentReference {
 
 extension AttachmentReference.OwnerBuilder {
 
-    internal var id: AttachmentReference.OwnerId {
+    var id: AttachmentReference.OwnerId {
         switch self {
         case .messageBodyAttachment(let bodyOwnerBuilder):
             return .messageBodyAttachment(messageRowId: bodyOwnerBuilder.messageRowId)

@@ -20,7 +20,7 @@ class StickerPackViewController: OWSViewController {
         self.stickerPackInfo = stickerPackInfo
         self.dataSource = TransientStickerPackDataSource(
             stickerPackInfo: stickerPackInfo,
-            shouldDownloadAllStickers: true
+            shouldDownloadAllStickers: true,
         )
 
         super.init()
@@ -33,7 +33,7 @@ class StickerPackViewController: OWSViewController {
             self,
             selector: #selector(stickersOrPacksDidChange),
             name: StickerManager.stickersOrPacksDidChange,
-            object: nil
+            object: nil,
         )
     }
 
@@ -50,28 +50,28 @@ class StickerPackViewController: OWSViewController {
                 image: Theme.iconImage(.buttonX),
                 primaryAction: UIAction { [weak self] _ in
                     self?.dismissButtonPressed()
-                }
+                },
             ),
             UIBarButtonItem.flexibleSpace(),
-            shareBarButtonItem
+            shareBarButtonItem,
         ]
         if #unavailable(iOS 26) {
             toolbar.tintColor = Theme.darkThemeLegacyPrimaryIconColor
         }
 
         // Header: Cover, Text.
-        let textRowsView = UIStackView(arrangedSubviews: [ titleLabel ])
+        let textRowsView = UIStackView(arrangedSubviews: [titleLabel])
         textRowsView.axis = .vertical
         textRowsView.alignment = .leading
 
         // Default Pack icon, Author
-        let bottomRow = UIStackView(arrangedSubviews: [ defaultPackIconView, authorLabel ])
+        let bottomRow = UIStackView(arrangedSubviews: [defaultPackIconView, authorLabel])
         bottomRow.axis = .horizontal
         bottomRow.alignment = .center
         bottomRow.spacing = 6
         textRowsView.addArrangedSubview(bottomRow)
 
-        let packInfoView = UIStackView(arrangedSubviews: [ coverView, textRowsView ])
+        let packInfoView = UIStackView(arrangedSubviews: [coverView, textRowsView])
         packInfoView.axis = .horizontal
         packInfoView.alignment = .center
         packInfoView.spacing = 12
@@ -79,7 +79,7 @@ class StickerPackViewController: OWSViewController {
         packInfoView.preservesSuperviewLayoutMargins = true
         self.stickerPackInfoView = packInfoView
 
-        let headerView = UIStackView(arrangedSubviews: [ toolbar, packInfoView ])
+        let headerView = UIStackView(arrangedSubviews: [toolbar, packInfoView])
         headerView.axis = .vertical
         headerView.spacing = 16
         headerView.preservesSuperviewLayoutMargins = true
@@ -226,7 +226,7 @@ class StickerPackViewController: OWSViewController {
             image: UIImage(named: "forward"),
             primaryAction: UIAction { [weak self] _ in
                 self?.shareButtonPressed()
-            }
+            },
         )
     }()
 
@@ -288,11 +288,11 @@ class StickerPackViewController: OWSViewController {
         UIButton(
             configuration: .largePrimary(title: OWSLocalizedString(
                 "STICKERS_INSTALL_BUTTON",
-                comment: "Label for the 'install sticker pack' button."
+                comment: "Label for the 'install sticker pack' button.",
             )),
             primaryAction: UIAction { [weak self] _ in
                 self?.didTapInstall()
-            }
+            },
         )
     }()
 
@@ -300,18 +300,18 @@ class StickerPackViewController: OWSViewController {
         let button = UIButton(
             configuration: .largePrimary(title: OWSLocalizedString(
                 "STICKERS_UNINSTALL_BUTTON",
-                comment: "Label for the 'uninstall sticker pack' button."
+                comment: "Label for the 'uninstall sticker pack' button.",
             )),
             primaryAction: UIAction { [weak self] _ in
                 self?.didTapUninstall()
-            }
+            },
         )
         button.configuration?.baseBackgroundColor = .Signal.red
         return button
     }()
 
     private lazy var bottomButtonContainer: UIView = {
-        UIStackView.verticalButtonStack(buttons: [ installButton, uninstallButton ], isFullWidthButtons: true)
+        UIStackView.verticalButtonStack(buttons: [installButton, uninstallButton], isFullWidthButtons: true)
     }()
 
     private var loadingIndicator = UIActivityIndicatorView(style: .large)
@@ -320,7 +320,7 @@ class StickerPackViewController: OWSViewController {
         let label = UILabel()
         label.text = OWSLocalizedString(
             "STICKERS_PACK_VIEW_FAILED_TO_LOAD",
-            comment: "Label indicating that the sticker pack failed to load."
+            comment: "Label indicating that the sticker pack failed to load.",
         )
         label.font = UIFont.dynamicTypeBody
         label.textColor = .Signal.label
@@ -385,7 +385,7 @@ class StickerPackViewController: OWSViewController {
         // Title and author
         let defaultTitle = OWSLocalizedString(
             "STICKERS_PACK_VIEW_DEFAULT_TITLE",
-            comment: "The default title for the 'sticker pack' view."
+            comment: "The default title for the 'sticker pack' view.",
         )
         if let title = stickerPack.title?.ows_stripped(), !title.isEmpty {
             titleLabel.text = title.filterForDisplay
@@ -410,10 +410,12 @@ class StickerPackViewController: OWSViewController {
 
         guard let stickerPack = dataSource.getStickerPack() else { return }
         let coverInfo = stickerPack.coverInfo
-        guard let stickerView = StickerView.stickerView(
-            forStickerInfo: coverInfo,
-            dataSource: dataSource
-        ) else {
+        guard
+            let stickerView = StickerView.stickerView(
+                forStickerInfo: coverInfo,
+                dataSource: dataSource,
+            )
+        else {
             coverView.showPlaceholder(color: .ows_blackAlpha60)
             return
         }
@@ -438,11 +440,11 @@ class StickerPackViewController: OWSViewController {
             canCancel: false,
             presentationDelay: 0,
             backgroundBlock: { modal in
-                SSKEnvironment.shared.databaseStorageRef.write { (transaction) in
+                SSKEnvironment.shared.databaseStorageRef.write { transaction in
                     StickerManager.installStickerPack(
                         stickerPack: stickerPack,
                         wasLocallyInitiated: true,
-                        transaction: transaction
+                        transaction: transaction,
                     )
                 }
                 DispatchQueue.main.async {
@@ -450,7 +452,7 @@ class StickerPackViewController: OWSViewController {
                         self.dismiss(animated: true)
                     }
                 }
-            }
+            },
         )
     }
 
@@ -463,11 +465,11 @@ class StickerPackViewController: OWSViewController {
             canCancel: false,
             presentationDelay: 0,
             backgroundBlock: { modal in
-                SSKEnvironment.shared.databaseStorageRef.write { (transaction) in
+                SSKEnvironment.shared.databaseStorageRef.write { transaction in
                     StickerManager.uninstallStickerPack(
                         stickerPackInfo: stickerPackInfo,
                         wasLocallyInitiated: true,
-                        transaction: transaction
+                        transaction: transaction,
                     )
                 }
                 DispatchQueue.main.async {
@@ -475,7 +477,7 @@ class StickerPackViewController: OWSViewController {
                         self.dismiss(animated: true)
                     }
                 }
-            }
+            },
         )
     }
 
@@ -506,7 +508,7 @@ class StickerPackViewController: OWSViewController {
         let sendMessageFlow = SendMessageFlow(
             unapprovedContent: unapprovedContent,
             presentationStyle: .pushOnto(navigationController),
-            delegate: self
+            delegate: self,
         )
         // Retain the flow until it is complete.
         self.sendMessageFlow = sendMessageFlow
@@ -534,7 +536,7 @@ private class StickerPackViewControllerAnimationController: UIPresentationContro
     }
 
     override func presentationTransitionWillBegin() {
-        guard let containerView = containerView else { return }
+        guard let containerView else { return }
         backdropView.alpha = 0
         containerView.addSubview(backdropView)
         backdropView.autoPinEdgesToSuperviewEdges()

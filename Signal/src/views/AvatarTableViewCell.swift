@@ -19,8 +19,8 @@ public class AvatarTableViewCell: UITableViewCell {
     private let _detailTextLabel: UILabel
     override public var detailTextLabel: UILabel? { _detailTextLabel }
 
-    public override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        self.avatarView =  AvatarImageView()
+    override public init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        self.avatarView = AvatarImageView()
         avatarView.autoSetDimensions(to: CGSize(square: CGFloat(AvatarBuilder.standardAvatarSizePoints)))
 
         self._textLabel = UILabel()
@@ -41,7 +41,7 @@ public class AvatarTableViewCell: UITableViewCell {
         OWSTableItem.configureCell(self)
     }
 
-    required public init?(coder aDecoder: NSCoder) {
+    public required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
@@ -53,7 +53,7 @@ public class AvatarTableViewCell: UITableViewCell {
         OWSTableItem.configureCell(self)
     }
 
-    public override func prepareForReuse() {
+    override public func prepareForReuse() {
         super.prepareForReuse()
 
         self.avatarView.image = nil

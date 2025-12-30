@@ -18,13 +18,13 @@ public struct TSPaymentsActivationRequestModel: Codable, FetchableRecord, Persis
     public let threadUniqueId: String
     public let senderAci: Aci
 
-    mutating public func didInsert(with rowID: Int64, for column: String?) {
+    public mutating func didInsert(with rowID: Int64, for column: String?) {
         id = rowID
     }
 
     public init(
         threadUniqueId: String,
-        senderAci: Aci
+        senderAci: Aci,
     ) {
         self.threadUniqueId = threadUniqueId
         self.senderAci = senderAci
@@ -54,7 +54,7 @@ public struct TSPaymentsActivationRequestModel: Codable, FetchableRecord, Persis
     public static func createIfNotExists(
         threadUniqueId: String,
         senderAci: Aci,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) {
         let sql = """
             SELECT EXISTS (
@@ -63,20 +63,20 @@ public struct TSPaymentsActivationRequestModel: Codable, FetchableRecord, Persis
             )
         """
         let arguments: StatementArguments = [
-            threadUniqueId
+            threadUniqueId,
         ]
         failIfThrows {
             let exists = try Bool.fetchOne(transaction.database, sql: sql, arguments: arguments) ?? false
             if exists {
                 return
             }
-            let model = Self.init(threadUniqueId: threadUniqueId, senderAci: senderAci)
+            let model = Self(threadUniqueId: threadUniqueId, senderAci: senderAci)
             try model.insert(transaction.database)
         }
     }
 
     public static func allThreadsWithPaymentActivationRequests(
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> [TSThread] {
         // This could be a SQL join, but the table is really small
         // so its fine to do an in-memory join.

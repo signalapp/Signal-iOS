@@ -11,7 +11,8 @@ public class SpamChallengeResolver: NSObject, SpamChallengeSchedulingDelegate {
     var workQueue: DispatchQueue { Self.workQueue }
     private static let workQueue = DispatchQueue(
         label: "org.signal.spam-challenge-resolver",
-        target: .sharedUtility)
+        target: .sharedUtility,
+    )
 
     public var isPausingMessages: Bool {
         challenges?.pausesMessages ?? false
@@ -26,6 +27,7 @@ public class SpamChallengeResolver: NSObject, SpamChallengeSchedulingDelegate {
             }
         }
     }
+
     private var nextAttemptTimer: Timer? {
         didSet {
             guard oldValue !== nextAttemptTimer else { return }
@@ -78,7 +80,8 @@ public class SpamChallengeResolver: NSObject, SpamChallengeSchedulingDelegate {
     private func scheduleNextUpdate() {
         assertOnQueue(workQueue)
 
-        guard let deferral = challenges?
+        guard
+            let deferral = challenges?
                 .map({ $0.nextActionableDate })
                 .min() else { return }
         guard deferral.isAfterNow else { return }
@@ -86,9 +89,9 @@ public class SpamChallengeResolver: NSObject, SpamChallengeSchedulingDelegate {
 
         nextAttemptTimer = Timer(
             timeInterval: deferral.timeIntervalSinceNow,
-            repeats: false
+            repeats: false,
         ) { [weak self] _ in
-            guard let self = self else { return }
+            guard let self else { return }
             self.workQueue.async {
                 self.nextAttemptTimer = nil
                 self.recheckChallenges()
@@ -120,7 +123,7 @@ public class SpamChallengeResolver: NSObject, SpamChallengeSchedulingDelegate {
                 .forEach { message in
                     let preparedMessage = PreparedOutgoingMessage.preprepared(
                         forResending: message,
-                        messageRowId: message.sqliteRowId!
+                        messageRowId: message.sqliteRowId!,
                     )
                     SSKEnvironment.shared.messageSenderJobQueueRef.add(message: preparedMessage, transaction: writeTx)
                 }
@@ -132,7 +135,7 @@ public class SpamChallengeResolver: NSObject, SpamChallengeSchedulingDelegate {
 
 extension SpamChallengeResolver {
     @objc
-    static public var NeedsCaptchaNotification: Notification.Name { .init("NeedsCaptchaNotification") }
+    public static var NeedsCaptchaNotification: Notification.Name { .init("NeedsCaptchaNotification") }
 
     public static let didCompleteAnyChallenge = Notification.Name("SpamChallengeResolver.DidCompleteAnyChallenge")
 
@@ -212,7 +215,7 @@ extension SpamChallengeResolver {
     public func handleServerChallengeBody(
         _ body: Data,
         retryAfter: Date,
-        silentRecoveryCompletionHandler: ((Bool) -> Void)? = nil
+        silentRecoveryCompletionHandler: ((Bool) -> Void)? = nil,
     ) {
         guard appReadiness.isAppReady else { return owsFailDebug("App not ready") }
         guard let payload = try? JSONDecoder().decode(ServerChallengePayload.self, from: body) else {
@@ -280,8 +283,8 @@ extension SpamChallengeResolver {
 // MARK: - Storage
 
 extension SpamChallengeResolver {
-    static private let outstandingChallengesKey = "OutstandingChallengesArray"
-    static private let keyValueStore = KeyValueStore(collection: "SpamChallengeResolver")
+    private static let outstandingChallengesKey = "OutstandingChallengesArray"
+    private static let keyValueStore = KeyValueStore(collection: "SpamChallengeResolver")
     private var outstandingChallengesKey: String { Self.outstandingChallengesKey }
     private var keyValueStore: KeyValueStore { Self.keyValueStore }
 
@@ -296,7 +299,8 @@ extension SpamChallengeResolver {
             challenges = try SSKEnvironment.shared.databaseStorageRef.read { readTx in
                 try keyValueStore.getCodableValue(
                     forKey: outstandingChallengesKey,
-                    transaction: readTx)
+                    transaction: readTx,
+                )
             } ?? []
         } catch {
             owsFailDebug("Failed to fetch saved challenges")
@@ -311,7 +315,7 @@ extension SpamChallengeResolver {
 
         do {
             try SSKEnvironment.shared.databaseStorageRef.write { writeTx in
-                if let challenges = challenges {
+                if let challenges {
                     try keyValueStore.setCodable(challenges, key: outstandingChallengesKey, transaction: writeTx)
                 } else {
                     keyValueStore.removeValue(forKey: outstandingChallengesKey, transaction: writeTx)
@@ -326,8 +330,10 @@ extension SpamChallengeResolver {
 // MARK: - <SpamChallengeSchedulingDelegate>
 
 extension SpamChallengeResolver {
-    func spamChallenge(_ challenge: SpamChallenge,
-                       stateDidChangeFrom priorState: SpamChallenge.State) {
+    func spamChallenge(
+        _ challenge: SpamChallenge,
+        stateDidChangeFrom priorState: SpamChallenge.State,
+    ) {
         if challenge.state != .inProgress, challenge.state != priorState {
             workQueue.async { self.recheckChallenges() }
         }

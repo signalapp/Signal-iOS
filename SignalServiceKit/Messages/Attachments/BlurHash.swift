@@ -17,10 +17,10 @@ public class BlurHash {
     private static let validCharacterSet = CharacterSet(charactersIn: "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz#$%*+,-.:;=?@[]^_{|}~")
 
     public class func isValidBlurHash(_ blurHash: String?) -> Bool {
-        guard let blurHash = blurHash else {
+        guard let blurHash else {
             return false
         }
-        guard blurHash.count >= 6 && blurHash.count < maxLength else {
+        guard blurHash.count >= 6, blurHash.count < maxLength else {
             return false
         }
         return blurHash.unicodeScalars.allSatisfy { validCharacterSet.contains($0) }
@@ -95,14 +95,18 @@ public class BlurHash {
         let colorSpace = CGColorSpaceCreateDeviceRGB()
         // RGBA8888 pixel format
         let bitmapInfo = CGBitmapInfo.byteOrder32Big.rawValue | CGImageAlphaInfo.premultipliedLast.rawValue
-        guard let context = CGContext(data: nil,
-                                      width: dstWidth,
-                                      height: dstHeight,
-                                      bitsPerComponent: 8,
-                                      bytesPerRow: dstWidth * 4,
-                                      space: colorSpace,
-                                      bitmapInfo: bitmapInfo) else {
-                                        return nil
+        guard
+            let context = CGContext(
+                data: nil,
+                width: dstWidth,
+                height: dstHeight,
+                bitsPerComponent: 8,
+                bytesPerRow: dstWidth * 4,
+                space: colorSpace,
+                bitmapInfo: bitmapInfo,
+            )
+        else {
+            return nil
         }
         context.setFillColor(backgroundColor.cgColor)
         context.fill(dstRect)

@@ -31,7 +31,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
             }
             return InteractionSnapshotIdentifier(
                 timestamp: timestamp,
-                authorAci: quotedReplyModel.originalMessageAuthorAddress.aci
+                authorAci: quotedReplyModel.originalMessageAuthorAddress.aci,
             )
         }
     }
@@ -64,7 +64,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         displayableQuotedText: DisplayableText?,
         conversationStyle: ConversationStyle,
         isOutgoing: Bool,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> State {
         return State(
             quotedReplyModel: quotedReplyModel,
@@ -74,21 +74,21 @@ public class QuotedMessageView: ManualStackViewWithLayer {
             isForPreview: false,
             quotedAuthorName: SSKEnvironment.shared.contactManagerRef.displayName(
                 for: quotedReplyModel.originalMessageAuthorAddress,
-                tx: transaction
-            ).resolvedValue()
+                tx: transaction,
+            ).resolvedValue(),
         )
     }
 
     static func stateForPreview(
         quotedReplyModel: QuotedReplyModel,
         conversationStyle: ConversationStyle,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> State {
         var displayableQuotedText: DisplayableText?
         if let body = quotedReplyModel.originalMessageBody, !body.text.isEmpty {
             displayableQuotedText = DisplayableText.displayableText(
                 withMessageBody: body,
-                transaction: transaction
+                transaction: transaction,
             )
         }
 
@@ -100,8 +100,8 @@ public class QuotedMessageView: ManualStackViewWithLayer {
             isForPreview: true,
             quotedAuthorName: SSKEnvironment.shared.contactManagerRef.displayName(
                 for: quotedReplyModel.originalMessageAuthorAddress,
-                tx: transaction
-            ).resolvedValue()
+                tx: transaction,
+            ).resolvedValue(),
         )
     }
 
@@ -140,47 +140,61 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                 return CGSize(square: height)
             }
         }
+
         var quotedReactionRect: CGRect {
             CGRect(x: 0, y: quotedAttachmentSize.height - 32, width: hasQuotedThumbnail ? 32 : 40, height: 32)
         }
+
         let remotelySourcedContentIconSize: CGFloat = 16
         let cancelIconSize: CGFloat = 20
         let cancelIconMargins = UIEdgeInsets(top: 6, leading: 6, bottom: 0, trailing: 6)
 
         var outerStackConfig: CVStackViewConfig {
-            CVStackViewConfig(axis: .vertical,
-                              alignment: .fill,
-                              spacing: 8,
-                              layoutMargins: UIEdgeInsets(hMargin: isForPreview ? 0 : 8,
-                                                          vMargin: 0))
+            CVStackViewConfig(
+                axis: .vertical,
+                alignment: .fill,
+                spacing: 8,
+                layoutMargins: UIEdgeInsets(
+                    hMargin: isForPreview ? 0 : 8,
+                    vMargin: 0,
+                ),
+            )
         }
 
         var hStackConfig: CVStackViewConfig {
-            CVStackViewConfig(axis: .horizontal,
-                              alignment: .fill,
-                              spacing: 8,
-                              layoutMargins: .zero)
+            CVStackViewConfig(
+                axis: .horizontal,
+                alignment: .fill,
+                spacing: 8,
+                layoutMargins: .zero,
+            )
         }
 
         var innerVStackConfig: CVStackViewConfig {
-            CVStackViewConfig(axis: .vertical,
-                              alignment: .leading,
-                              spacing: 2,
-                              layoutMargins: UIEdgeInsets(hMargin: 0, vMargin: 6))
+            CVStackViewConfig(
+                axis: .vertical,
+                alignment: .leading,
+                spacing: 2,
+                layoutMargins: UIEdgeInsets(hMargin: 0, vMargin: 6),
+            )
         }
 
         var outerVStackConfig: CVStackViewConfig {
-            CVStackViewConfig(axis: .vertical,
-                              alignment: .fill,
-                              spacing: 0,
-                              layoutMargins: .zero)
+            CVStackViewConfig(
+                axis: .vertical,
+                alignment: .fill,
+                spacing: 0,
+                layoutMargins: .zero,
+            )
         }
 
         var remotelySourcedContentStackConfig: CVStackViewConfig {
-            CVStackViewConfig(axis: .horizontal,
-                              alignment: .center,
-                              spacing: 3,
-                              layoutMargins: UIEdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 4))
+            CVStackViewConfig(
+                axis: .horizontal,
+                alignment: .center,
+                spacing: 3,
+                layoutMargins: UIEdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 4),
+            )
         }
 
         var hasQuotedThumbnail: Bool {
@@ -192,8 +206,10 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         }
 
         var mimeType: String? {
-            guard let mimeType = quotedReplyModel.originalContent.attachmentMimeType,
-                  !mimeType.isEmpty else {
+            guard
+                let mimeType = quotedReplyModel.originalContent.attachmentMimeType,
+                !mimeType.isEmpty
+            else {
                 return nil
             }
             return mimeType
@@ -253,8 +269,10 @@ public class QuotedMessageView: ManualStackViewWithLayer {
 
             let text: String
             if quotedReplyModel.originalContent.isStory {
-                let format = OWSLocalizedString("QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT",
-                                               comment: "Message header when you are quoting a story. Embeds {{ story author name }}")
+                let format = OWSLocalizedString(
+                    "QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT",
+                    comment: "Message header when you are quoting a story. Embeds {{ story author name }}",
+                )
                 text = String(format: format, authorName)
             } else {
                 text = authorName
@@ -265,18 +283,21 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                 font: quotedAuthorFont,
                 textColor: quotedAuthorColor,
                 numberOfLines: 1,
-                lineBreakMode: .byTruncatingTail
+                lineBreakMode: .byTruncatingTail,
             )
         }
 
         var hasQuotedText: Bool {
-            if let displayableQuotedText = self.displayableQuotedText,
-               !displayableQuotedText.displayTextValue.isEmpty {
+            if
+                let displayableQuotedText = self.displayableQuotedText,
+                !displayableQuotedText.displayTextValue.isEmpty
+            {
                 return true
             } else {
                 return false
             }
         }
+
         var quotedTextLabelConfig: CVLabelConfig {
             let labelText: CVTextValue
             var textAlignment: NSTextAlignment?
@@ -287,11 +308,11 @@ public class QuotedMessageView: ManualStackViewWithLayer {
             case .text(let text):
                 if state.quotedReplyModel.originalContent.isPoll {
                     let pollIcon = SignalSymbol.poll.attributedString(
-                        dynamicTypeBaseSize: quotedTextFont.pointSize
+                        dynamicTypeBaseSize: quotedTextFont.pointSize,
                     ) + " "
                     let pollPrefix = OWSLocalizedString(
                         "POLL_LABEL",
-                        comment: "Label specifying the message type as a poll"
+                        comment: "Label specifying the message type as a poll",
                     ) + ": "
 
                     labelText = .attributedText(pollIcon + NSAttributedString(string: pollPrefix + text))
@@ -303,7 +324,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                 let mutableText = NSMutableAttributedString(attributedString: attributedText)
                 mutableText.addAttributesToEntireString([
                     .font: quotedTextFont,
-                    .foregroundColor: quotedTextColor
+                    .foregroundColor: quotedTextColor,
                 ])
                 labelText = .attributedText(mutableText)
                 textAlignment = attributedText.string.naturalTextAlignment
@@ -316,42 +337,44 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                         string: fileTypeForSnippet,
                         attributes: [
                             .font: fileTypeFont,
-                            .foregroundColor: fileTypeTextColor
-                        ]
+                            .foregroundColor: fileTypeTextColor,
+                        ],
                     ))
                 } else if let sourceFilename = quotedReplyModel.originalAttachmentSourceFilename?.filterStringForDisplay() {
                     labelText = .attributedText(NSAttributedString(
                         string: sourceFilename,
                         attributes: [
                             .font: filenameFont,
-                            .foregroundColor: filenameTextColor
-                        ]
+                            .foregroundColor: filenameTextColor,
+                        ],
                     ))
                 } else if self.quotedReplyModel.originalContent.isGiftBadge {
                     labelText = .attributedText(NSAttributedString(
                         string: OWSLocalizedString(
                             "DONATION_ON_BEHALF_OF_A_FRIEND_REPLY",
-                            comment: "Shown when you're replying to a donation message."
+                            comment: "Shown when you're replying to a donation message.",
                         ),
                         // This appears in the same context as fileType, so use the same font/color.
-                        attributes: [.font: self.fileTypeFont, .foregroundColor: self.fileTypeTextColor]
+                        attributes: [.font: self.fileTypeFont, .foregroundColor: self.fileTypeTextColor],
                     ))
                 } else {
-                    let string = OWSLocalizedString("QUOTED_REPLY_TYPE_ATTACHMENT",
-                                                    comment: "Indicates this message is a quoted reply to an attachment of unknown type.")
+                    let string = OWSLocalizedString(
+                        "QUOTED_REPLY_TYPE_ATTACHMENT",
+                        comment: "Indicates this message is a quoted reply to an attachment of unknown type.",
+                    )
                     labelText = .attributedText(NSAttributedString(
                         string: string,
                         attributes: [
                             .font: fileTypeFont,
-                            .foregroundColor: fileTypeTextColor
-                        ]
+                            .foregroundColor: fileTypeTextColor,
+                        ],
                     ))
                 }
             }
 
             let displayConfig = HydratedMessageBody.DisplayConfiguration.quotedReply(
                 font: quotedTextFont,
-                textColor: .fixed(quotedTextColor)
+                textColor: .fixed(quotedTextColor),
             )
 
             return CVLabelConfig(
@@ -361,37 +384,43 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                 textColor: quotedTextColor,
                 numberOfLines: isForPreview || hasQuotedThumbnail ? 1 : 2,
                 lineBreakMode: .byTruncatingTail,
-                textAlignment: textAlignment
+                textAlignment: textAlignment,
             )
         }
 
         var quoteContentSourceLabelConfig: CVLabelConfig {
-            let text = OWSLocalizedString("QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE",
-                                         comment: "Footer label that appears below quoted messages when the quoted content was not derived locally. When the local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead show the content specified by the sender.")
+            let text = OWSLocalizedString(
+                "QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE",
+                comment: "Footer label that appears below quoted messages when the quoted content was not derived locally. When the local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead show the content specified by the sender.",
+            )
             return CVLabelConfig.unstyledText(
                 text,
                 font: UIFont.dynamicTypeFootnote,
                 textColor: Theme.lightThemePrimaryColor,
                 numberOfLines: 0,
-                lineBreakMode: .byWordWrapping
+                lineBreakMode: .byWordWrapping,
             )
         }
 
         var quoteReactionHeaderLabelConfig: CVLabelConfig {
             let text: String
             if quotedReplyModel.originalMessageAuthorAddress.isLocalAddress {
-                text = OWSLocalizedString("QUOTED_REPLY_REACTION_TO_OWN_STORY",
-                                         comment: "Header label that appears above quoted messages when the quoted content was includes a reaction to your own story.")
+                text = OWSLocalizedString(
+                    "QUOTED_REPLY_REACTION_TO_OWN_STORY",
+                    comment: "Header label that appears above quoted messages when the quoted content was includes a reaction to your own story.",
+                )
             } else {
-                let formatText = OWSLocalizedString("QUOTED_REPLY_REACTION_TO_STORY_FORMAT",
-                                                   comment: "Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }}")
+                let formatText = OWSLocalizedString(
+                    "QUOTED_REPLY_REACTION_TO_STORY_FORMAT",
+                    comment: "Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }}",
+                )
                 text = String(format: formatText, quotedAuthorName)
             }
 
             return CVLabelConfig.unstyledText(
                 text,
                 font: UIFont.dynamicTypeFootnote,
-                textColor: conversationStyle.bubbleSecondaryTextColor(isIncoming: isIncoming)
+                textColor: conversationStyle.bubbleSecondaryTextColor(isIncoming: isIncoming),
             )
         }
 
@@ -401,7 +430,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                 text: .attributedText((quotedReplyModel.storyReactionEmoji ?? "").styled(with: .lineHeightMultiple(0.6))),
                 displayConfig: .forUnstyledText(font: font, textColor: quotedTextColor),
                 font: font,
-                textColor: quotedTextColor
+                textColor: quotedTextColor,
             )
         }
 
@@ -412,22 +441,32 @@ public class QuotedMessageView: ManualStackViewWithLayer {
             }
 
             if MimeTypeUtil.isSupportedAudioMimeType(mimeType) {
-                return OWSLocalizedString("QUOTED_REPLY_TYPE_AUDIO",
-                                         comment: "Indicates this message is a quoted reply to an audio file.")
+                return OWSLocalizedString(
+                    "QUOTED_REPLY_TYPE_AUDIO",
+                    comment: "Indicates this message is a quoted reply to an audio file.",
+                )
             } else if MimeTypeUtil.isSupportedVideoMimeType(mimeType) {
-                return OWSLocalizedString("QUOTED_REPLY_TYPE_VIDEO",
-                                         comment: "Indicates this message is a quoted reply to a video file.")
+                return OWSLocalizedString(
+                    "QUOTED_REPLY_TYPE_VIDEO",
+                    comment: "Indicates this message is a quoted reply to a video file.",
+                )
             } else if MimeTypeUtil.isSupportedDefinitelyAnimatedMimeType(mimeType) {
                 if mimeType.caseInsensitiveCompare(MimeType.imageGif.rawValue) == .orderedSame {
-                    return OWSLocalizedString("QUOTED_REPLY_TYPE_GIF",
-                                             comment: "Indicates this message is a quoted reply to animated GIF file.")
+                    return OWSLocalizedString(
+                        "QUOTED_REPLY_TYPE_GIF",
+                        comment: "Indicates this message is a quoted reply to animated GIF file.",
+                    )
                 } else {
-                    return OWSLocalizedString("QUOTED_REPLY_TYPE_IMAGE",
-                                             comment: "Indicates this message is a quoted reply to an image file.")
+                    return OWSLocalizedString(
+                        "QUOTED_REPLY_TYPE_IMAGE",
+                        comment: "Indicates this message is a quoted reply to an image file.",
+                    )
                 }
             } else if MimeTypeUtil.isSupportedImageMimeType(mimeType) {
-                return OWSLocalizedString("QUOTED_REPLY_TYPE_PHOTO",
-                                         comment: "Indicates this message is a quoted reply to a photo file.")
+                return OWSLocalizedString(
+                    "QUOTED_REPLY_TYPE_PHOTO",
+                    comment: "Indicates this message is a quoted reply to a photo file.",
+                )
             }
             return nil
         }
@@ -436,27 +475,33 @@ public class QuotedMessageView: ManualStackViewWithLayer {
     private static let sharpCornerRadius: CGFloat = 4
     private static let wideCornerRadius: CGFloat = 10
 
-    private func createBubbleView(sharpCorners: OWSDirectionalRectCorner,
-                                  conversationStyle: ConversationStyle,
-                                  configurator: Configurator,
-                                  componentDelegate: CVComponentDelegate) -> ManualLayoutView {
+    private func createBubbleView(
+        sharpCorners: OWSDirectionalRectCorner,
+        conversationStyle: ConversationStyle,
+        configurator: Configurator,
+        componentDelegate: CVComponentDelegate,
+    ) -> ManualLayoutView {
 
         // Background
-        chatColorView.configure(value: conversationStyle.bubbleChatColorOutgoing,
-                                referenceView: componentDelegate.view)
+        chatColorView.configure(
+            value: conversationStyle.bubbleChatColorOutgoing,
+            referenceView: componentDelegate.view,
+        )
         bubbleView.addSubviewToFillSuperviewEdges(chatColorView)
         tintView.backgroundColor = (conversationStyle.isDarkThemeEnabled
-                                        ? UIColor(white: 0, alpha: 0.4)
-                                        : UIColor(white: 1, alpha: 0.6))
+            ? UIColor(white: 0, alpha: 0.4)
+            : UIColor(white: 1, alpha: 0.6))
         bubbleView.addSubviewToFillSuperviewMargins(tintView)
         // For incoming messages, manipulate leading margin
         // to render stripe.
-        bubbleView.layoutMargins = UIEdgeInsets(top: 0,
-                                                leading: (configurator.isIncoming
-                                                            ? configurator.stripeThickness
-                                                            : 0),
-                                                bottom: 0,
-                                                trailing: 0)
+        bubbleView.layoutMargins = UIEdgeInsets(
+            top: 0,
+            leading: configurator.isIncoming
+                ? configurator.stripeThickness
+                : 0,
+            bottom: 0,
+            trailing: 0,
+        )
 
         // Mask & Rounding
         if sharpCorners.isEmpty || sharpCorners.contains(.allCorners) {
@@ -468,10 +513,12 @@ public class QuotedMessageView: ManualStackViewWithLayer {
             let maskLayer = CAShapeLayer()
             bubbleView.addLayoutBlock { view in
                 let sharpCorners = UIView.uiRectCorner(forOWSDirectionalRectCorner: sharpCorners)
-                let bezierPath = UIBezierPath.roundedRect(view.bounds,
-                                                          sharpCorners: sharpCorners,
-                                                          sharpCornerRadius: Self.sharpCornerRadius,
-                                                          wideCornerRadius: Self.wideCornerRadius)
+                let bezierPath = UIBezierPath.roundedRect(
+                    view.bounds,
+                    sharpCorners: sharpCorners,
+                    sharpCornerRadius: Self.sharpCornerRadius,
+                    wideCornerRadius: Self.wideCornerRadius,
+                )
                 maskLayer.path = bezierPath.cgPath
             }
             bubbleView.layer.mask = maskLayer
@@ -485,7 +532,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         delegate: QuotedMessageViewDelegate?,
         componentDelegate: CVComponentDelegate,
         sharpCorners: OWSDirectionalRectCorner,
-        cellMeasurement: CVCellMeasurement
+        cellMeasurement: CVCellMeasurement,
     ) {
         self.state = state
         self.delegate = delegate
@@ -517,10 +564,12 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         quotedTextSpoilerConfigBuilder.animationManager = componentDelegate.spoilerState.animationManager
         innerVStackSubviews.append(quotedTextLabel)
 
-        innerVStack.configure(config: configurator.innerVStackConfig,
-                              cellMeasurement: cellMeasurement,
-                              measurementKey: Self.measurementKey_innerVStack,
-                              subviews: innerVStackSubviews)
+        innerVStack.configure(
+            config: configurator.innerVStackConfig,
+            cellMeasurement: cellMeasurement,
+            measurementKey: Self.measurementKey_innerVStack,
+            subviews: innerVStackSubviews,
+        )
         hStackSubviews.append(innerVStack)
 
         let thumbnailView: UIView? = { () -> UIView? in
@@ -548,7 +597,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                 // For outgoing replies to gift messages, the wrapping image is blue, and
                 // the bubble can be the same shade of blue. This looks odd, so add a 1pt
                 // white border in that case.
-                if configurator.isOutgoing && !configurator.isForPreview {
+                if configurator.isOutgoing, !configurator.isForPreview {
                     // The gift badge needs to know which corners to round, which depends on
                     // whether or not there's adjacent content in the parent container. We care
                     // about "edges that are against the rounded parent edges", and then we
@@ -568,13 +617,13 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                         maskLayer.path = UIBezierPath.roundedRect(
                             maskRect,
                             sharpCorners: UIView.uiRectCorner(
-                                forOWSDirectionalRectCorner: sharpCorners.intersection(eligibleCorners)
+                                forOWSDirectionalRectCorner: sharpCorners.intersection(eligibleCorners),
                             ),
                             sharpCornerRadius: Self.sharpCornerRadius - borderWidth,
                             wideCorners: UIView.uiRectCorner(
-                                forOWSDirectionalRectCorner: eligibleCorners.subtracting(sharpCorners)
+                                forOWSDirectionalRectCorner: eligibleCorners.subtracting(sharpCorners),
                             ),
-                            wideCornerRadius: Self.wideCornerRadius - borderWidth
+                            wideCornerRadius: Self.wideCornerRadius - borderWidth,
                         ).cgPath
                     }
                     quotedImageView.layer.mask = maskLayer
@@ -615,14 +664,17 @@ public class QuotedMessageView: ManualStackViewWithLayer {
                     let iconSize = CGSize.square(configurator.quotedAttachmentSize.width * 0.5)
                     wrapper.addSubviewToCenterOnSuperview(quotedImageView, size: iconSize)
 
-                    wrapper.addGestureRecognizer(UITapGestureRecognizer(target: self,
-                                                                        action: #selector(didTapFailedThumbnailDownload)))
+                    wrapper.addGestureRecognizer(UITapGestureRecognizer(
+                        target: self,
+                        action: #selector(didTapFailedThumbnailDownload),
+                    ))
                     wrapper.isUserInteractionEnabled = true
 
                     return wrapper
                 } else {
                     fallthrough
                 }
+
             default:
                 // TODO: Should we overlay the file extension like we do with CVComponentGenericAttachment
                 quotedImageView.setTemplateImageName("generic-attachment", tintColor: .clear)
@@ -638,7 +690,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         }()
 
         let trailingView: UIView
-        if let thumbnailView = thumbnailView {
+        if let thumbnailView {
             if configurator.hasReaction {
                 let wrapper = ManualLayoutView(name: "thumbnailWithReactionWrapper")
 
@@ -687,10 +739,12 @@ public class QuotedMessageView: ManualStackViewWithLayer {
             hStackSubviews.append(cancelWrapper)
         }
 
-        hStack.configure(config: configurator.hStackConfig,
-                         cellMeasurement: cellMeasurement,
-                         measurementKey: Self.measurementKey_hStack,
-                         subviews: hStackSubviews)
+        hStack.configure(
+            config: configurator.hStackConfig,
+            cellMeasurement: cellMeasurement,
+            measurementKey: Self.measurementKey_hStack,
+            subviews: hStackSubviews,
+        )
 
         var outerVStackSubviews = [UIView]()
 
@@ -702,21 +756,25 @@ public class QuotedMessageView: ManualStackViewWithLayer {
             let quoteContentSourceLabelConfig = configurator.quoteContentSourceLabelConfig
             quoteContentSourceLabelConfig.applyForRendering(label: quoteContentSourceLabel)
 
-            remotelySourcedContentStack.configure(config: configurator.remotelySourcedContentStackConfig,
-                                                  cellMeasurement: cellMeasurement,
-                                                  measurementKey: Self.measurementKey_remotelySourcedContentStack,
-                                                  subviews: [
-                                                    remotelySourcedContentIconView,
-                                                    quoteContentSourceLabel
-                                                  ])
+            remotelySourcedContentStack.configure(
+                config: configurator.remotelySourcedContentStackConfig,
+                cellMeasurement: cellMeasurement,
+                measurementKey: Self.measurementKey_remotelySourcedContentStack,
+                subviews: [
+                    remotelySourcedContentIconView,
+                    quoteContentSourceLabel,
+                ],
+            )
             remotelySourcedContentStack.backgroundColor = UIColor.white.withAlphaComponent(0.4)
             outerVStackSubviews.append(remotelySourcedContentStack)
         }
 
-        outerVStack.configure(config: configurator.outerVStackConfig,
-                              cellMeasurement: cellMeasurement,
-                              measurementKey: Self.measurementKey_outerVStack,
-                              subviews: outerVStackSubviews)
+        outerVStack.configure(
+            config: configurator.outerVStackConfig,
+            cellMeasurement: cellMeasurement,
+            measurementKey: Self.measurementKey_outerVStack,
+            subviews: outerVStackSubviews,
+        )
 
         var outerStackViews = [UIView]()
 
@@ -726,18 +784,22 @@ public class QuotedMessageView: ManualStackViewWithLayer {
             outerStackViews.append(quoteReactionHeaderLabel)
         }
 
-        let bubbleView = createBubbleView(sharpCorners: sharpCorners,
-                                          conversationStyle: conversationStyle,
-                                          configurator: configurator,
-                                          componentDelegate: componentDelegate)
+        let bubbleView = createBubbleView(
+            sharpCorners: sharpCorners,
+            conversationStyle: conversationStyle,
+            configurator: configurator,
+            componentDelegate: componentDelegate,
+        )
         bubbleView.addSubviewToFillSuperviewEdges(outerVStack)
         bubbleView.clipsToBounds = true
         outerStackViews.append(bubbleView)
 
-        self.configure(config: configurator.outerStackConfig,
-                       cellMeasurement: cellMeasurement,
-                       measurementKey: Self.measurementKey_outerStack,
-                       subviews: outerStackViews)
+        self.configure(
+            config: configurator.outerStackConfig,
+            cellMeasurement: cellMeasurement,
+            measurementKey: Self.measurementKey_outerStack,
+            subviews: outerStackViews,
+        )
     }
 
     public func setIsCellVisible(_ isCellVisible: Bool) {
@@ -752,9 +814,11 @@ public class QuotedMessageView: ManualStackViewWithLayer {
     private static let measurementKey_outerVStack = "QuotedMessageView.measurementKey_outerVStack"
     private static let measurementKey_remotelySourcedContentStack = "QuotedMessageView.measurementKey_remotelySourcedContentStack"
 
-    public static func measure(state: State,
-                               maxWidth: CGFloat,
-                               measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
+    public static func measure(
+        state: State,
+        maxWidth: CGFloat,
+        measurementBuilder: CVCellMeasurement.Builder,
+    ) -> CGSize {
 
         let configurator = Configurator(state: state)
 
@@ -769,11 +833,11 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         let quotedReplyModel = configurator.quotedReplyModel
 
         var maxLabelWidth = (maxWidth - (configurator.stripeThickness +
-                                            hStackConfig.spacing * 2 +
-                                            hStackConfig.layoutMargins.totalWidth +
-                                            innerVStackConfig.layoutMargins.totalWidth +
-                                            outerVStackConfig.layoutMargins.totalWidth +
-                                            outerStackConfig.layoutMargins.totalWidth))
+                hStackConfig.spacing * 2 +
+                hStackConfig.layoutMargins.totalWidth +
+                innerVStackConfig.layoutMargins.totalWidth +
+                outerVStackConfig.layoutMargins.totalWidth +
+                outerStackConfig.layoutMargins.totalWidth))
         if hasQuotedThumbnail {
             maxLabelWidth -= quotedAttachmentSize.width
             if hasReaction { maxLabelWidth -= quotedReactionRect.width / 2 }
@@ -785,19 +849,25 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         var innerVStackSubviewInfos = [ManualStackSubviewInfo]()
 
         let quotedAuthorLabelConfig = configurator.quotedAuthorLabelConfig
-        let quotedAuthorSize = CVText.measureLabel(config: quotedAuthorLabelConfig,
-                                                   maxWidth: maxLabelWidth)
+        let quotedAuthorSize = CVText.measureLabel(
+            config: quotedAuthorLabelConfig,
+            maxWidth: maxLabelWidth,
+        )
         innerVStackSubviewInfos.append(quotedAuthorSize.asManualSubviewInfo)
 
         let quotedTextLabelConfig = configurator.quotedTextLabelConfig
-        let quotedTextSize = CVText.measureLabel(config: quotedTextLabelConfig,
-                                                 maxWidth: maxLabelWidth)
+        let quotedTextSize = CVText.measureLabel(
+            config: quotedTextLabelConfig,
+            maxWidth: maxLabelWidth,
+        )
         innerVStackSubviewInfos.append(quotedTextSize.asManualSubviewInfo)
 
-        let innerVStackMeasurement = ManualStackView.measure(config: innerVStackConfig,
-                                                             measurementBuilder: measurementBuilder,
-                                                             measurementKey: Self.measurementKey_innerVStack,
-                                                             subviewInfos: innerVStackSubviewInfos)
+        let innerVStackMeasurement = ManualStackView.measure(
+            config: innerVStackConfig,
+            measurementBuilder: measurementBuilder,
+            measurementKey: Self.measurementKey_innerVStack,
+            subviewInfos: innerVStackSubviewInfos,
+        )
 
         var hStackSubviewInfos = [ManualStackSubviewInfo]()
 
@@ -825,10 +895,12 @@ public class QuotedMessageView: ManualStackViewWithLayer {
             hStackSubviewInfos.append(cancelWrapperSize.asManualSubviewInfo(hasFixedWidth: true))
         }
 
-        let hStackMeasurement = ManualStackView.measure(config: hStackConfig,
-                                                        measurementBuilder: measurementBuilder,
-                                                        measurementKey: Self.measurementKey_hStack,
-                                                        subviewInfos: hStackSubviewInfos)
+        let hStackMeasurement = ManualStackView.measure(
+            config: hStackConfig,
+            measurementBuilder: measurementBuilder,
+            measurementKey: Self.measurementKey_hStack,
+            subviewInfos: hStackSubviewInfos,
+        )
 
         var outerVStackSubviewInfos = [ManualStackSubviewInfo]()
 
@@ -838,23 +910,29 @@ public class QuotedMessageView: ManualStackViewWithLayer {
             let remotelySourcedContentIconSize = CGSize.square(configurator.remotelySourcedContentIconSize)
 
             let quoteContentSourceLabelConfig = configurator.quoteContentSourceLabelConfig
-            let quoteContentSourceSize = CVText.measureLabel(config: quoteContentSourceLabelConfig,
-                                                             maxWidth: maxLabelWidth)
+            let quoteContentSourceSize = CVText.measureLabel(
+                config: quoteContentSourceLabelConfig,
+                maxWidth: maxLabelWidth,
+            )
 
-            let innerVStackMeasurement = ManualStackView.measure(config: configurator.remotelySourcedContentStackConfig,
-                                                                 measurementBuilder: measurementBuilder,
-                                                                 measurementKey: Self.measurementKey_remotelySourcedContentStack,
-                                                                 subviewInfos: [
-                                                                    remotelySourcedContentIconSize.asManualSubviewInfo(hasFixedSize: true),
-                                                                    quoteContentSourceSize.asManualSubviewInfo
-                                                                 ])
+            let innerVStackMeasurement = ManualStackView.measure(
+                config: configurator.remotelySourcedContentStackConfig,
+                measurementBuilder: measurementBuilder,
+                measurementKey: Self.measurementKey_remotelySourcedContentStack,
+                subviewInfos: [
+                    remotelySourcedContentIconSize.asManualSubviewInfo(hasFixedSize: true),
+                    quoteContentSourceSize.asManualSubviewInfo,
+                ],
+            )
             outerVStackSubviewInfos.append(innerVStackMeasurement.measuredSize.asManualSubviewInfo)
         }
 
-        let outerVStackMeasurement = ManualStackView.measure(config: outerVStackConfig,
-                                                             measurementBuilder: measurementBuilder,
-                                                             measurementKey: Self.measurementKey_outerVStack,
-                                                             subviewInfos: outerVStackSubviewInfos)
+        let outerVStackMeasurement = ManualStackView.measure(
+            config: outerVStackConfig,
+            measurementBuilder: measurementBuilder,
+            measurementKey: Self.measurementKey_outerVStack,
+            subviewInfos: outerVStackSubviewInfos,
+        )
 
         var outerStackSubviewInfos = [ManualStackSubviewInfo]()
 
@@ -866,11 +944,13 @@ public class QuotedMessageView: ManualStackViewWithLayer {
 
         outerStackSubviewInfos.append(outerVStackMeasurement.measuredSize.asManualSubviewInfo)
 
-        let outerStackMeasurement = ManualStackView.measure(config: outerStackConfig,
-                                                            measurementBuilder: measurementBuilder,
-                                                            measurementKey: Self.measurementKey_outerStack,
-                                                            subviewInfos: outerStackSubviewInfos,
-                                                            maxWidth: maxWidth)
+        let outerStackMeasurement = ManualStackView.measure(
+            config: outerStackConfig,
+            measurementBuilder: measurementBuilder,
+            measurementKey: Self.measurementKey_outerStack,
+            subviewInfos: outerStackSubviewInfos,
+            maxWidth: maxWidth,
+        )
         return outerStackMeasurement.measuredSize
     }
 
@@ -912,7 +992,7 @@ public class QuotedMessageView: ManualStackViewWithLayer {
         chatColorView.updateAppearance()
     }
 
-    public override func reset() {
+    override public func reset() {
         super.reset()
 
         self.state = nil

@@ -16,49 +16,65 @@ public protocol CVComponent: AnyObject {
 
     func buildComponentView(componentDelegate: CVComponentDelegate) -> CVComponentView
 
-    func configureForRendering(componentView: CVComponentView,
-                               cellMeasurement: CVCellMeasurement,
-                               componentDelegate: CVComponentDelegate)
+    func configureForRendering(
+        componentView: CVComponentView,
+        cellMeasurement: CVCellMeasurement,
+        componentDelegate: CVComponentDelegate,
+    )
 
     // This method should only be called on workQueue.
     func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize
 
     // return true IFF the tap was handled.
-    func handleTap(sender: UIGestureRecognizer,
-                   componentDelegate: CVComponentDelegate,
-                   componentView: CVComponentView,
-                   renderItem: CVRenderItem) -> Bool
+    func handleTap(
+        sender: UIGestureRecognizer,
+        componentDelegate: CVComponentDelegate,
+        componentView: CVComponentView,
+        renderItem: CVRenderItem,
+    ) -> Bool
 
-    func canHandleDoubleTap(sender: UIGestureRecognizer,
-                            componentDelegate: any CVComponentDelegate,
-                            renderItem: CVRenderItem) -> Bool
+    func canHandleDoubleTap(
+        sender: UIGestureRecognizer,
+        componentDelegate: any CVComponentDelegate,
+        renderItem: CVRenderItem,
+    ) -> Bool
 
-    func handleDoubleTap(sender: UIGestureRecognizer,
-                         componentDelegate: any CVComponentDelegate,
-                         renderItem: CVRenderItem) -> Bool
+    func handleDoubleTap(
+        sender: UIGestureRecognizer,
+        componentDelegate: any CVComponentDelegate,
+        renderItem: CVRenderItem,
+    ) -> Bool
 
-    func findLongPressHandler(sender: UIGestureRecognizer,
-                              componentDelegate: CVComponentDelegate,
-                              componentView: CVComponentView,
-                              renderItem: CVRenderItem) -> CVLongPressHandler?
+    func findLongPressHandler(
+        sender: UIGestureRecognizer,
+        componentDelegate: CVComponentDelegate,
+        componentView: CVComponentView,
+        renderItem: CVRenderItem,
+    ) -> CVLongPressHandler?
 
-    func findPanHandler(sender: UIPanGestureRecognizer,
-                        componentDelegate: CVComponentDelegate,
-                        componentView: CVComponentView,
-                        renderItem: CVRenderItem,
-                        messageSwipeActionState: CVMessageSwipeActionState) -> CVPanHandler?
-    func startPanGesture(sender: UIPanGestureRecognizer,
-                         panHandler: CVPanHandler,
-                         componentDelegate: CVComponentDelegate,
-                         componentView: CVComponentView,
-                         renderItem: CVRenderItem,
-                         messageSwipeActionState: CVMessageSwipeActionState)
-    func handlePanGesture(sender: UIPanGestureRecognizer,
-                          panHandler: CVPanHandler,
-                          componentDelegate: CVComponentDelegate,
-                          componentView: CVComponentView,
-                          renderItem: CVRenderItem,
-                          messageSwipeActionState: CVMessageSwipeActionState)
+    func findPanHandler(
+        sender: UIPanGestureRecognizer,
+        componentDelegate: CVComponentDelegate,
+        componentView: CVComponentView,
+        renderItem: CVRenderItem,
+        messageSwipeActionState: CVMessageSwipeActionState,
+    ) -> CVPanHandler?
+    func startPanGesture(
+        sender: UIPanGestureRecognizer,
+        panHandler: CVPanHandler,
+        componentDelegate: CVComponentDelegate,
+        componentView: CVComponentView,
+        renderItem: CVRenderItem,
+        messageSwipeActionState: CVMessageSwipeActionState,
+    )
+    func handlePanGesture(
+        sender: UIPanGestureRecognizer,
+        panHandler: CVPanHandler,
+        componentDelegate: CVComponentDelegate,
+        componentView: CVComponentView,
+        renderItem: CVRenderItem,
+        messageSwipeActionState: CVMessageSwipeActionState,
+    )
 
     func cellWillBecomeVisible(componentDelegate: CVComponentDelegate)
 
@@ -66,8 +82,10 @@ public protocol CVComponent: AnyObject {
 
     func contextMenuAccessoryViews(componentView: CVComponentView) -> [ContextMenuTargetedPreviewAccessory]?
 
-    func apply(layoutAttributes: CVCollectionViewLayoutAttributes,
-               componentView: CVComponentView)
+    func apply(
+        layoutAttributes: CVCollectionViewLayoutAttributes,
+        componentView: CVComponentView,
+    )
 }
 
 // MARK: -
@@ -78,11 +96,13 @@ public protocol CVRootComponent: CVComponent {
 
     var cellReuseIdentifier: CVCellReuseIdentifier { get }
 
-    func configureCellRootComponent(cellView: UIView,
-                                    cellMeasurement: CVCellMeasurement,
-                                    componentDelegate: CVComponentDelegate,
-                                    messageSwipeActionState: CVMessageSwipeActionState,
-                                    componentView: CVComponentView)
+    func configureCellRootComponent(
+        cellView: UIView,
+        cellMeasurement: CVCellMeasurement,
+        componentDelegate: CVComponentDelegate,
+        messageSwipeActionState: CVMessageSwipeActionState,
+        componentView: CVComponentView,
+    )
 
     var isDedicatedCell: Bool { get }
 }
@@ -105,55 +125,69 @@ public class CVComponentBase: NSObject {
         self.itemModel = itemModel
     }
 
-    public func handleTap(sender: UIGestureRecognizer,
-                          componentDelegate: CVComponentDelegate,
-                          componentView: CVComponentView,
-                          renderItem: CVRenderItem) -> Bool {
+    public func handleTap(
+        sender: UIGestureRecognizer,
+        componentDelegate: CVComponentDelegate,
+        componentView: CVComponentView,
+        renderItem: CVRenderItem,
+    ) -> Bool {
         return false
     }
 
-    public func canHandleDoubleTap(sender: UIGestureRecognizer,
-                                   componentDelegate: any CVComponentDelegate,
-                                   renderItem: CVRenderItem) -> Bool {
+    public func canHandleDoubleTap(
+        sender: UIGestureRecognizer,
+        componentDelegate: any CVComponentDelegate,
+        renderItem: CVRenderItem,
+    ) -> Bool {
         return false
     }
 
-    public func handleDoubleTap(sender: UIGestureRecognizer,
-                                componentDelegate: any CVComponentDelegate,
-                                renderItem: CVRenderItem) -> Bool {
+    public func handleDoubleTap(
+        sender: UIGestureRecognizer,
+        componentDelegate: any CVComponentDelegate,
+        renderItem: CVRenderItem,
+    ) -> Bool {
         false
     }
 
-    public func findLongPressHandler(sender: UIGestureRecognizer,
-                                     componentDelegate: CVComponentDelegate,
-                                     componentView: CVComponentView,
-                                     renderItem: CVRenderItem) -> CVLongPressHandler? {
+    public func findLongPressHandler(
+        sender: UIGestureRecognizer,
+        componentDelegate: CVComponentDelegate,
+        componentView: CVComponentView,
+        renderItem: CVRenderItem,
+    ) -> CVLongPressHandler? {
         return nil
     }
 
-    public func findPanHandler(sender: UIPanGestureRecognizer,
-                               componentDelegate: CVComponentDelegate,
-                               componentView: CVComponentView,
-                               renderItem: CVRenderItem,
-                               messageSwipeActionState: CVMessageSwipeActionState) -> CVPanHandler? {
+    public func findPanHandler(
+        sender: UIPanGestureRecognizer,
+        componentDelegate: CVComponentDelegate,
+        componentView: CVComponentView,
+        renderItem: CVRenderItem,
+        messageSwipeActionState: CVMessageSwipeActionState,
+    ) -> CVPanHandler? {
         return nil
     }
 
-    public func startPanGesture(sender: UIPanGestureRecognizer,
-                                panHandler: CVPanHandler,
-                                componentDelegate: CVComponentDelegate,
-                                componentView: CVComponentView,
-                                renderItem: CVRenderItem,
-                                messageSwipeActionState: CVMessageSwipeActionState) {
+    public func startPanGesture(
+        sender: UIPanGestureRecognizer,
+        panHandler: CVPanHandler,
+        componentDelegate: CVComponentDelegate,
+        componentView: CVComponentView,
+        renderItem: CVRenderItem,
+        messageSwipeActionState: CVMessageSwipeActionState,
+    ) {
         owsFailDebug("No pan in progress.")
     }
 
-    public func handlePanGesture(sender: UIPanGestureRecognizer,
-                                 panHandler: CVPanHandler,
-                                 componentDelegate: CVComponentDelegate,
-                                 componentView: CVComponentView,
-                                 renderItem: CVRenderItem,
-                                 messageSwipeActionState: CVMessageSwipeActionState) {
+    public func handlePanGesture(
+        sender: UIPanGestureRecognizer,
+        panHandler: CVPanHandler,
+        componentDelegate: CVComponentDelegate,
+        componentView: CVComponentView,
+        renderItem: CVRenderItem,
+        messageSwipeActionState: CVMessageSwipeActionState,
+    ) {
         owsFailDebug("No pan in progress.")
     }
 
@@ -165,8 +199,10 @@ public class CVComponentBase: NSObject {
         return nil
     }
 
-    public func apply(layoutAttributes: CVCollectionViewLayoutAttributes,
-                      componentView: CVComponentView) {
+    public func apply(
+        layoutAttributes: CVCollectionViewLayoutAttributes,
+        componentView: CVComponentView,
+    ) {
         // Do nothing.
     }
 
@@ -177,16 +213,20 @@ public class CVComponentBase: NSObject {
 
     // MARK: - Root Components
 
-    public static func configureCellRootComponent(rootComponent: CVRootComponent,
-                                                  cellView: UIView,
-                                                  cellMeasurement: CVCellMeasurement,
-                                                  componentDelegate: CVComponentDelegate,
-                                                  componentView: CVComponentView) {
+    public static func configureCellRootComponent(
+        rootComponent: CVRootComponent,
+        cellView: UIView,
+        cellMeasurement: CVCellMeasurement,
+        componentDelegate: CVComponentDelegate,
+        componentView: CVComponentView,
+    ) {
         owsAssertDebug(cellView.layoutMargins == .zero)
 
-        rootComponent.configureForRendering(componentView: componentView,
-                                            cellMeasurement: cellMeasurement,
-                                            componentDelegate: componentDelegate)
+        rootComponent.configureForRendering(
+            componentView: componentView,
+            cellMeasurement: cellMeasurement,
+            componentDelegate: componentDelegate,
+        )
 
         let rootView = componentView.rootView
         if rootView.superview == nil {
@@ -198,28 +238,36 @@ public class CVComponentBase: NSObject {
         }
     }
 
-    // MARK: - 
+    // MARK: -
 
     public func wallpaperBlurView(componentView: CVComponentView) -> CVWallpaperBlurView? {
         nil
     }
 
-    public func configureWallpaperBlurView(wallpaperBlurView: CVWallpaperBlurView,
-                                           maskCornerRadius: CGFloat,
-                                           componentDelegate: CVComponentDelegate) {
-        Self.configureWallpaperBlurView(wallpaperBlurView: wallpaperBlurView,
-                                        maskCornerRadius: maskCornerRadius,
-                                        componentDelegate: componentDelegate)
+    public func configureWallpaperBlurView(
+        wallpaperBlurView: CVWallpaperBlurView,
+        maskCornerRadius: CGFloat,
+        componentDelegate: CVComponentDelegate,
+    ) {
+        Self.configureWallpaperBlurView(
+            wallpaperBlurView: wallpaperBlurView,
+            maskCornerRadius: maskCornerRadius,
+            componentDelegate: componentDelegate,
+        )
     }
 
-    public static func configureWallpaperBlurView(wallpaperBlurView: CVWallpaperBlurView,
-                                                  maskCornerRadius: CGFloat,
-                                                  componentDelegate: CVComponentDelegate) {
+    public static func configureWallpaperBlurView(
+        wallpaperBlurView: CVWallpaperBlurView,
+        maskCornerRadius: CGFloat,
+        componentDelegate: CVComponentDelegate,
+    ) {
         if componentDelegate.isConversationPreview {
             wallpaperBlurView.configureForPreview(maskCornerRadius: maskCornerRadius)
         } else if let wallpaperBlurProvider = componentDelegate.wallpaperBlurProvider {
-            wallpaperBlurView.configure(provider: wallpaperBlurProvider,
-                                        maskCornerRadius: maskCornerRadius)
+            wallpaperBlurView.configure(
+                provider: wallpaperBlurProvider,
+                maskCornerRadius: maskCornerRadius,
+            )
         } else {
             owsFailDebug("Missing wallpaperBlurProvider.")
             wallpaperBlurView.configureForPreview(maskCornerRadius: maskCornerRadius)

@@ -27,7 +27,7 @@ public extension CGSize {
         guard screenScale > 1 else { return self }
         return CGSize(
             width: (width * screenScale).rounded(.up) / screenScale,
-            height: (height * screenScale).rounded(.up) / screenScale
+            height: (height * screenScale).rounded(.up) / screenScale,
         )
     }
 }

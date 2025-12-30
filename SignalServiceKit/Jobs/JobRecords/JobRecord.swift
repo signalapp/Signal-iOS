@@ -101,17 +101,17 @@ public class JobRecord: SDSCodableModel {
     public let uniqueId: String
 
     let label: String
-    #if TESTABLE_BUILD
+#if TESTABLE_BUILD
     var exclusiveProcessIdentifier: String?
-    #else
+#else
     let exclusiveProcessIdentifier: String?
-    #endif
+#endif
     public private(set) var failureCount: UInt
     private(set) var status: Status
 
     init(
         failureCount: UInt,
-        status: Status
+        status: Status,
     ) {
         uniqueId = UUID().uuidString
 

@@ -9,7 +9,7 @@ import SignalUI
 import UIKit
 
 class BadgeDetailsSheet: OWSTableSheetViewController {
-    public enum Owner: Equatable {
+    enum Owner: Equatable {
         // TODO: Eventually we won't need a short name for self, the server will provide copy for us.
         case local(shortName: String)
         case remote(shortName: String)
@@ -30,6 +30,7 @@ class BadgeDetailsSheet: OWSTableSheetViewController {
             }
         }
     }
+
     private let owner: Owner
     private let focusedBadge: ProfileBadge
 
@@ -66,7 +67,7 @@ class BadgeDetailsSheet: OWSTableSheetViewController {
         !owner.isLocal && !localProfileHasBadges()
     }
 
-    override public func tableContents() -> OWSTableContents {
+    override func tableContents() -> OWSTableContents {
         let contents = OWSTableContents()
 
         let focusedBadgeSection = OWSTableSection()
@@ -75,7 +76,7 @@ class BadgeDetailsSheet: OWSTableSheetViewController {
 
         focusedBadgeSection.add(.init(customCellBlock: { [weak self] in
             let cell = OWSTableItem.newCell()
-            guard let self = self else { return cell }
+            guard let self else { return cell }
             cell.selectionStyle = .none
 
             let badgeImageView = UIImageView()
@@ -97,7 +98,7 @@ class BadgeDetailsSheet: OWSTableSheetViewController {
                 if let remoteSupporterName = self.remoteSupporterName {
                     let format = OWSLocalizedString(
                         "BADGE_DETAILS_TITLE_FOR_SUPPORTER",
-                        comment: "When viewing someone else's donor badge, you'll see a sheet. This is the title on that sheet. Embeds {badge owner's short name}"
+                        comment: "When viewing someone else's donor badge, you'll see a sheet. This is the title on that sheet. Embeds {badge owner's short name}",
                     )
                     return String(format: format, remoteSupporterName)
                 } else {
@@ -129,15 +130,15 @@ class BadgeDetailsSheet: OWSTableSheetViewController {
                 let cell = OWSTableItem.newCell()
                 cell.selectionStyle = .none
 
-                guard let self = self else { return cell }
+                guard let self else { return cell }
                 let button = UIButton(
                     configuration: .largePrimary(title: OWSLocalizedString(
                         "BADGE_DETAILS_DONATE_TO_SIGNAL",
-                        comment: "When viewing someone else's badge, you'll see a sheet. If they got the badge by donating, a \"Donate to Signal\" button will be shown. This is the text in that button."
+                        comment: "When viewing someone else's badge, you'll see a sheet. If they got the badge by donating, a \"Donate to Signal\" button will be shown. This is the text in that button.",
                     )),
                     primaryAction: UIAction { [weak self] _ in
                         self?.didTapDonate()
-                    }
+                    },
                 )
                 let buttonContainer = button.enclosedInVerticalStackView(isFullWidthButton: true)
                 buttonContainer.directionalLayoutMargins.top = 16
@@ -155,9 +156,11 @@ class BadgeDetailsSheet: OWSTableSheetViewController {
 
     private func didTapDonate() {
         dismiss(animated: true) {
-            if DonationUtilities.canDonateInAnyWay(
-                tsAccountManager: DependenciesBridge.shared.tsAccountManager,
-            ) {
+            if
+                DonationUtilities.canDonateInAnyWay(
+                    tsAccountManager: DependenciesBridge.shared.tsAccountManager,
+                )
+            {
                 let frontVc = { CurrentAppContext().frontmostViewController() }
 
                 let donateVc = DonateViewController(preferredDonateMode: .oneTime) { finishResult in
@@ -167,13 +170,13 @@ class BadgeDetailsSheet: OWSTableSheetViewController {
                             guard
                                 let frontVc = frontVc(),
                                 let badgeThanksSheetPresenter = BadgeThanksSheetPresenter.fromGlobalsWithSneakyTransaction(
-                                    successMode: receiptCredentialSuccessMode
+                                    successMode: receiptCredentialSuccessMode,
                                 )
                             else { return }
 
                             Task {
                                 await badgeThanksSheetPresenter.presentAndRecordBadgeThanks(
-                                    fromViewController: frontVc
+                                    fromViewController: frontVc,
                                 )
                             }
                         }

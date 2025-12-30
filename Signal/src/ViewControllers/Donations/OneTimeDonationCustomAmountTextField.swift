@@ -100,7 +100,7 @@ class OneTimeDonationCustomAmountTextField: UIView {
             if #available(iOS 26, *) {
                 textField.tintColor = newValue // caret color
             }
-       }
+        }
     }
 
     var placeholder: String? {
@@ -153,10 +153,12 @@ extension OneTimeDonationCustomAmountTextField: UITextFieldDelegate {
         if let numberString = self.valueString(for: newString) {
             textField.text = numberString
             // Make a best effort to preserve cursor position
-            if let newPosition = textField.position(
-                from: textField.beginningOfDocument,
-                offset: editingRange.location + max(0, numberString.count - existingString.count)
-            ) {
+            if
+                let newPosition = textField.position(
+                    from: textField.beginningOfDocument,
+                    offset: editingRange.location + max(0, numberString.count - existingString.count),
+                )
+            {
                 textField.selectedTextRange = textField.textRange(from: newPosition, to: newPosition)
             }
         } else {
@@ -172,7 +174,7 @@ extension OneTimeDonationCustomAmountTextField: UITextFieldDelegate {
     /// Converts an arbitrary string into a string representing a valid value
     /// for the current currency. If no valid value is represented, returns nil
     func valueString(for string: String?) -> String? {
-        guard let string = string else { return nil }
+        guard let string else { return nil }
 
         let isZeroDecimalCurrency = DonationUtilities.zeroDecimalCurrencyCodes.contains(currencyCode)
         guard !isZeroDecimalCurrency else { return string.digitsOnly() }

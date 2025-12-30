@@ -6,10 +6,12 @@
 public struct ThemeDataStore {
 
     public enum Appearance: UInt {
-        case system, light, dark
+        case system
+        case light
+        case dark
     }
 
-    private struct Keys {
+    private enum Keys {
         static var currentMode = "ThemeKeyCurrentMode"
         static var legacyThemeEnabled = "ThemeKeyThemeEnabled"
     }
@@ -24,7 +26,7 @@ public struct ThemeDataStore {
             let rawMode = keyValueStore.getUInt(
                 Keys.currentMode,
                 defaultValue: Appearance.system.rawValue,
-                transaction: tx
+                transaction: tx,
             )
             if let definedMode = Appearance(rawValue: rawMode) {
                 currentMode = definedMode
@@ -37,7 +39,7 @@ public struct ThemeDataStore {
                 let isLegacyModeDark = keyValueStore.getBool(
                     Keys.legacyThemeEnabled,
                     defaultValue: false,
-                    transaction: tx
+                    transaction: tx,
                 )
                 currentMode = isLegacyModeDark ? .dark : .light
             }

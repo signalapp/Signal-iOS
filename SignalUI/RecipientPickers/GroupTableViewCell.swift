@@ -67,7 +67,7 @@ public class GroupTableViewCell: UITableViewCell {
             config.dataSource = .thread(thread)
         }
 
-        if let accessoryMessage = accessoryMessage, !accessoryMessage.isEmpty {
+        if let accessoryMessage, !accessoryMessage.isEmpty {
             accessoryLabel.text = accessoryMessage
             accessoryLabel.isHidden = false
         } else {

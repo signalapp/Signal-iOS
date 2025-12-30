@@ -167,7 +167,7 @@ private extension TSOutgoingMessage {
     convenience init(in thread: TSThread, messageBody: String) {
         let builder: TSOutgoingMessageBuilder = .withDefaultValues(
             thread: thread,
-            messageBody: AttachmentContentValidatorMock.mockValidatedBody(messageBody)
+            messageBody: AttachmentContentValidatorMock.mockValidatedBody(messageBody),
         )
         self.init(outgoingMessageWith: builder, recipientAddressStates: [:])
     }

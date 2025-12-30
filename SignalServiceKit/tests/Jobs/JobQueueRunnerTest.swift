@@ -153,14 +153,14 @@ private class MockJobRunnerFactory: JobRunnerFactory {
 
     func buildRunner(
         completionContinuation: CheckedContinuation<JobResult<Void>, Never>? = nil,
-        retryInterval: TimeInterval? = nil
+        retryInterval: TimeInterval? = nil,
     ) -> MockJobRunner {
         return MockJobRunner(
             completionContinuation: completionContinuation,
             executedJobs: executedJobs,
             jobFinder: jobFinder,
             mockDb: mockDb,
-            retryInterval: retryInterval
+            retryInterval: retryInterval,
         )
     }
 }
@@ -177,7 +177,7 @@ private class MockJobRunner: JobRunner {
         executedJobs: AtomicArray<String>,
         jobFinder: MockJobFinder,
         mockDb: InMemoryDB,
-        retryInterval: TimeInterval?
+        retryInterval: TimeInterval?,
     ) {
         self.completionContinuation = completionContinuation
         self.executedJobs = executedJobs

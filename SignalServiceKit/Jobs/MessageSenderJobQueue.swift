@@ -42,14 +42,14 @@ public class MessageSenderJobQueue {
         message: PreparedOutgoingMessage,
         limitToCurrentProcessLifetime: Bool = false,
         isHighPriority: Bool = false,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) {
         self.add(
             message: message,
             exclusiveToCurrentProcessIdentifier: limitToCurrentProcessLifetime,
             isHighPriority: isHighPriority,
             future: nil,
-            transaction: transaction
+            transaction: transaction,
         )
     }
 
@@ -58,7 +58,7 @@ public class MessageSenderJobQueue {
         message: PreparedOutgoingMessage,
         limitToCurrentProcessLifetime: Bool = false,
         isHighPriority: Bool = false,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) -> Promise<Void> {
         return Promise { future in
             self.add(
@@ -66,7 +66,7 @@ public class MessageSenderJobQueue {
                 exclusiveToCurrentProcessIdentifier: limitToCurrentProcessLifetime,
                 isHighPriority: isHighPriority,
                 future: future,
-                transaction: transaction
+                transaction: transaction,
             )
         }
     }
@@ -76,7 +76,7 @@ public class MessageSenderJobQueue {
         exclusiveToCurrentProcessIdentifier: Bool,
         isHighPriority: Bool,
         future: Future<Void>?,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) {
         // Mark as sending now so the UI updates immediately.
         message.updateAllUnsentRecipientsAsSending(tx: transaction)
@@ -263,7 +263,7 @@ public class MessageSenderJobQueue {
         TSOutgoingMessage
             .anyFetch(
                 uniqueId: uniqueId,
-                transaction: transaction
+                transaction: transaction,
             )
             .flatMap { $0 as? TSOutgoingMessage }?
             .updateAllUnsentRecipientsAsSending(transaction: transaction)
@@ -321,7 +321,7 @@ public class MessageSenderJobQueue {
         let operation = QueuedOperationState(
             job: job,
             message: message,
-            future: future
+            future: future,
         )
 
         let queueKey = QueueKey(threadId: job.record.threadId, priority: sendPriority)
@@ -363,7 +363,7 @@ public class MessageSenderJobQueue {
             NotificationCenter.default.addObserver(
                 forName: SSKReachability.owsReachabilityDidChange,
                 object: nil,
-                queue: nil
+                queue: nil,
             ) { _ in
                 if SSKEnvironment.shared.reachabilityManagerRef.isReachable {
                     becameReachableBlock()
@@ -588,7 +588,7 @@ public class MessageSenderJobQueue {
             Logger.warn("Resending \(operation.message.description) after \(String(format: "%.1f", retryDelay))s\(httpBlurb)")
             try? await withCooperativeTimeout(
                 seconds: retryDelay,
-                operation: { try await operation.waitForAnyExternalRetryTrigger(fromExternalRetryTriggers: externalRetryTriggers) }
+                operation: { try await operation.waitForAnyExternalRetryTrigger(fromExternalRetryTriggers: externalRetryTriggers) },
             )
         }
     }

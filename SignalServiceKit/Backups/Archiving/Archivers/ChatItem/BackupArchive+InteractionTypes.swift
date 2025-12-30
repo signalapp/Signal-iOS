@@ -31,6 +31,7 @@ extension BackupArchive {
             }
             return "TSInteraction"
         }
+
         public var idLogString: String { "\(value):\(timestamp)" }
     }
 }
@@ -102,7 +103,7 @@ extension BackupArchive {
 
         // MARK: - Construction
 
-        public enum AuthorAddress {
+        enum AuthorAddress {
             case localUser
             case contact(BackupArchive.ContactAddress)
         }
@@ -117,7 +118,7 @@ extension BackupArchive {
             chatItemType: ChatItemType,
             isSmsPreviouslyRestoredFromBackup: Bool,
             pastRevisions: [InteractionArchiveDetails],
-            pinMessageDetails: PinMessageDetails?
+            pinMessageDetails: PinMessageDetails?,
         ) {
             self.author = author
             self.directionalDetails = directionalDetails
@@ -144,7 +145,7 @@ extension BackupArchive {
             pastRevisions: [InteractionArchiveDetails] = [],
             threadInfo: BackupArchive.ChatArchivingContext.CachedThreadInfo,
             pinMessageDetails: PinMessageDetails?,
-            context: BackupArchive.RecipientArchivingContext
+            context: BackupArchive.RecipientArchivingContext,
         ) -> BackupArchive.ArchiveInteractionResult<Self> {
             var authorRecipientId: RecipientId
             var author = author
@@ -155,7 +156,7 @@ extension BackupArchive {
                 guard let recipientId = context[.contact(contactAddress)] else {
                     return .messageFailure([.archiveFrameError(
                         .referencedRecipientIdMissing(.contact(contactAddress)),
-                        interactionUniqueId
+                        interactionUniqueId,
                     )])
                 }
                 authorRecipientId = recipientId
@@ -196,7 +197,7 @@ extension BackupArchive {
                     // Add a partial error so we log these.
                     partialErrors.append(.archiveFrameError(
                         .messageFromOtherRecipientInContactThread,
-                        interactionUniqueId
+                        interactionUniqueId,
                     ))
                 }
             }
@@ -221,7 +222,7 @@ extension BackupArchive {
                 chatItemType: chatItemType,
                 isSmsPreviouslyRestoredFromBackup: isSmsPreviouslyRestoredFromBackup,
                 pastRevisions: pastRevisions,
-                pinMessageDetails: pinMessageDetails
+                pinMessageDetails: pinMessageDetails,
             )
             if partialErrors.isEmpty {
                 return .success(details)
@@ -418,7 +419,7 @@ extension BackupArchive.ArchiveInteractionResult {
     /// }
     func bubbleUp<ErrorComponentType>(
         _ errorComponentType: ErrorComponentType.Type = Component.self,
-        partialErrors: inout [BackupArchive.ArchiveFrameError<BackupArchive.InteractionUniqueId>]
+        partialErrors: inout [BackupArchive.ArchiveFrameError<BackupArchive.InteractionUniqueId>],
     ) -> BubbleUp<Component, ErrorComponentType> {
         switch self {
         case .success(let value):
@@ -432,6 +433,7 @@ extension BackupArchive.ArchiveInteractionResult {
         // These types are just bubbled up as-is
         case .skippableInteraction(let skippableInteraction):
             return .bubbleUpError(.skippableInteraction(skippableInteraction))
+
         case .completeFailure(let error):
             return .bubbleUpError(.completeFailure(error))
 
@@ -481,7 +483,7 @@ extension BackupArchive.RestoreInteractionResult {
     /// }
     func bubbleUp<ErrorComponentType>(
         _ errorComponentType: ErrorComponentType.Type = Component.self,
-        partialErrors: inout [BackupArchive.RestoreFrameError<BackupArchive.ChatItemId>]
+        partialErrors: inout [BackupArchive.RestoreFrameError<BackupArchive.ChatItemId>],
     ) -> BubbleUp<Component, ErrorComponentType> {
         switch self {
         case .success(let component):

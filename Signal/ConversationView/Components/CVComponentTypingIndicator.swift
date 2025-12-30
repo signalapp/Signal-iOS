@@ -18,32 +18,40 @@ public class CVComponentTypingIndicator: CVComponentBase, CVRootComponent {
 
     private let typingIndicator: CVComponentState.TypingIndicator
 
-    init(itemModel: CVItemModel,
-         typingIndicator: CVComponentState.TypingIndicator) {
+    init(
+        itemModel: CVItemModel,
+        typingIndicator: CVComponentState.TypingIndicator,
+    ) {
         self.typingIndicator = typingIndicator
 
         super.init(itemModel: itemModel)
     }
 
-    public func configureCellRootComponent(cellView: UIView,
-                                           cellMeasurement: CVCellMeasurement,
-                                           componentDelegate: CVComponentDelegate,
-                                           messageSwipeActionState: CVMessageSwipeActionState,
-                                           componentView: CVComponentView) {
-        Self.configureCellRootComponent(rootComponent: self,
-                                        cellView: cellView,
-                                        cellMeasurement: cellMeasurement,
-                                        componentDelegate: componentDelegate,
-                                        componentView: componentView)
+    public func configureCellRootComponent(
+        cellView: UIView,
+        cellMeasurement: CVCellMeasurement,
+        componentDelegate: CVComponentDelegate,
+        messageSwipeActionState: CVMessageSwipeActionState,
+        componentView: CVComponentView,
+    ) {
+        Self.configureCellRootComponent(
+            rootComponent: self,
+            cellView: cellView,
+            cellMeasurement: cellMeasurement,
+            componentDelegate: componentDelegate,
+            componentView: componentView,
+        )
     }
 
     public func buildComponentView(componentDelegate: CVComponentDelegate) -> CVComponentView {
         CVComponentViewTypingIndicator()
     }
 
-    public func configureForRendering(componentView: CVComponentView,
-                                      cellMeasurement: CVCellMeasurement,
-                                      componentDelegate: CVComponentDelegate) {
+    public func configureForRendering(
+        componentView: CVComponentView,
+        cellMeasurement: CVCellMeasurement,
+        componentDelegate: CVComponentDelegate,
+    ) {
         guard let componentView = componentView as? CVComponentViewTypingIndicator else {
             owsFailDebug("Unexpected componentView.")
             return
@@ -79,31 +87,41 @@ public class CVComponentTypingIndicator: CVComponentBase, CVRootComponent {
         // We always use a stretching spacer.
         outerViews.append(UIView.hStretchingSpacer())
 
-        innerStackView.configure(config: innerStackViewConfig,
-                             cellMeasurement: cellMeasurement,
-                             measurementKey: Self.measurementKey_innerStack,
-                             subviews: [ typingIndicatorView ])
-        outerStackView.configure(config: outerStackViewConfig,
-                                 cellMeasurement: cellMeasurement,
-                                 measurementKey: Self.measurementKey_outerStack,
-                                 subviews: outerViews)
+        innerStackView.configure(
+            config: innerStackViewConfig,
+            cellMeasurement: cellMeasurement,
+            measurementKey: Self.measurementKey_innerStack,
+            subviews: [typingIndicatorView],
+        )
+        outerStackView.configure(
+            config: outerStackViewConfig,
+            cellMeasurement: cellMeasurement,
+            measurementKey: Self.measurementKey_outerStack,
+            subviews: outerViews,
+        )
     }
 
     private var outerStackViewConfig: CVStackViewConfig {
-        CVStackViewConfig(axis: .horizontal,
-                          alignment: .center,
-                          spacing: ConversationStyle.messageStackSpacing,
-                          layoutMargins: UIEdgeInsets(top: 0,
-                                                      leading: conversationStyle.gutterLeading,
-                                                      bottom: 0,
-                                                      trailing: conversationStyle.gutterTrailing))
+        CVStackViewConfig(
+            axis: .horizontal,
+            alignment: .center,
+            spacing: ConversationStyle.messageStackSpacing,
+            layoutMargins: UIEdgeInsets(
+                top: 0,
+                leading: conversationStyle.gutterLeading,
+                bottom: 0,
+                trailing: conversationStyle.gutterTrailing,
+            ),
+        )
     }
 
     private var innerStackViewConfig: CVStackViewConfig {
-        CVStackViewConfig(axis: .horizontal,
-                          alignment: .center,
-                          spacing: 0,
-                          layoutMargins: conversationStyle.textInsets)
+        CVStackViewConfig(
+            axis: .horizontal,
+            alignment: .center,
+            spacing: 0,
+            layoutMargins: conversationStyle.textInsets,
+        )
     }
 
     private let minBubbleHeight: CGFloat = 36
@@ -125,10 +143,12 @@ public class CVComponentTypingIndicator: CVComponentBase, CVRootComponent {
         let typingIndicatorSize = TypingIndicatorView.measure(measurementBuilder: measurementBuilder)
         innerSubviewInfos.append(typingIndicatorSize.asManualSubviewInfo(hasFixedSize: true))
 
-        let innerStackMeasurement = ManualStackView.measure(config: innerStackViewConfig,
-                                                            measurementBuilder: measurementBuilder,
-                                                            measurementKey: Self.measurementKey_innerStack,
-                                                            subviewInfos: innerSubviewInfos)
+        let innerStackMeasurement = ManualStackView.measure(
+            config: innerStackViewConfig,
+            measurementBuilder: measurementBuilder,
+            measurementKey: Self.measurementKey_innerStack,
+            subviewInfos: innerSubviewInfos,
+        )
         var innerStackSize = innerStackMeasurement.measuredSize
         innerStackSize.height = max(minBubbleHeight, innerStackSize.height)
         outerSubviewInfos.append(innerStackSize.asManualSubviewInfo(hasFixedWidth: true))
@@ -136,11 +156,13 @@ public class CVComponentTypingIndicator: CVComponentBase, CVRootComponent {
         // We always use a stretching spacer.
         outerSubviewInfos.append(ManualStackSubviewInfo.empty)
 
-        let outerStackMeasurement = ManualStackView.measure(config: outerStackViewConfig,
-                                                            measurementBuilder: measurementBuilder,
-                                                            measurementKey: Self.measurementKey_outerStack,
-                                                            subviewInfos: outerSubviewInfos,
-                                                            maxWidth: maxWidth)
+        let outerStackMeasurement = ManualStackView.measure(
+            config: outerStackViewConfig,
+            measurementBuilder: measurementBuilder,
+            measurementKey: Self.measurementKey_outerStack,
+            subviewInfos: outerSubviewInfos,
+            maxWidth: maxWidth,
+        )
         return outerStackMeasurement.measuredSize
     }
 
@@ -156,7 +178,8 @@ public class CVComponentTypingIndicator: CVComponentBase, CVRootComponent {
         fileprivate let avatarView = ConversationAvatarView(
             sizeClass: ConversationStyle.groupMessageAvatarSizeClass,
             localUserDisplayMode: .asUser,
-            useAutolayout: false)
+            useAutolayout: false,
+        )
         fileprivate let bubbleView = ManualLayoutViewWithLayer.pillView(name: "bubbleView")
         fileprivate let typingIndicatorView = TypingIndicatorView()
 

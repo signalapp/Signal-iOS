@@ -12,14 +12,14 @@ public extension TSInteraction {
     func presentDeletionActionSheet(from fromViewController: UIViewController, forceDarkTheme: Bool = false) {
         let (
             associatedThread,
-            hasLinkedDevices
+            hasLinkedDevices,
         ): (
             TSThread?,
-            Bool
+            Bool,
         ) = SSKEnvironment.shared.databaseStorageRef.read { tx in
             return (
                 thread(tx: tx),
-                DependenciesBridge.shared.deviceStore.hasLinkedDevices(tx: tx)
+                DependenciesBridge.shared.deviceStore.hasLinkedDevices(tx: tx),
             )
         }
 
@@ -49,26 +49,26 @@ public extension TSInteraction {
     ) {
         let deleteMessageHeaderText = OWSLocalizedString(
             "DELETE_FOR_ME_NOTE_TO_SELF_ACTION_SHEET_HEADER",
-            comment: "Header text for an action sheet confirming deleting a message in Note to Self."
+            comment: "Header text for an action sheet confirming deleting a message in Note to Self.",
         )
         let deleteActionSheetButtonTitle = OWSLocalizedString(
             "DELETE_FOR_ME_NOTE_TO_SELF_ACTION_SHEET_BUTTON_TITLE",
-            comment: "Title for an action sheet button explaining that a message will be deleted."
+            comment: "Title for an action sheet button explaining that a message will be deleted.",
         )
         let (title, message, deleteActionTitle): (String?, String, String) = if hasLinkedDevices {
             (
                 deleteMessageHeaderText,
                 OWSLocalizedString(
                     "DELETE_FOR_ME_NOTE_TO_SELF_LINKED_DEVICES_PRESENT_ACTION_SHEET_SUBHEADER",
-                    comment: "Subheader for an action sheet explaining that a Note to Self deleted on this device will be deleted on the user's other devices as well."
+                    comment: "Subheader for an action sheet explaining that a Note to Self deleted on this device will be deleted on the user's other devices as well.",
                 ),
-                deleteActionSheetButtonTitle
+                deleteActionSheetButtonTitle,
             )
         } else {
             (
                 nil,
                 deleteMessageHeaderText,
-                deleteActionSheetButtonTitle
+                deleteActionSheetButtonTitle,
             )
         }
 
@@ -96,7 +96,7 @@ public extension TSInteraction {
         let actionSheetController = ActionSheetController(
             message: OWSLocalizedString(
                 "MESSAGE_ACTION_DELETE_FOR_TITLE",
-                comment: "The title for the action sheet asking who the user wants to delete the message for."
+                comment: "The title for the action sheet asking who the user wants to delete the message for.",
             ),
         )
         if forceDarkTheme {
@@ -114,14 +114,14 @@ public extension TSInteraction {
         {
             let deleteForEveryoneAction = ActionSheetAction(
                 title: CommonStrings.deleteForEveryoneButton,
-                style: .destructive
+                style: .destructive,
             ) { [weak self] _ in
                 guard self != nil else { return }
                 Self.showDeleteForEveryoneConfirmationIfNecessary {
                     SSKEnvironment.shared.databaseStorageRef.write { tx in
                         let latestMessage = TSOutgoingMessage.anyFetchOutgoingMessage(
                             uniqueId: outgoingMessage.uniqueId,
-                            transaction: tx
+                            transaction: tx,
                         )
                         guard let latestMessage, let latestThread = latestMessage.thread(tx: tx) else {
                             // We can't reach this point in the UI if a message doesn't have a thread.
@@ -130,7 +130,7 @@ public extension TSInteraction {
                         let deleteMessage = TSOutgoingDeleteMessage(
                             thread: latestThread,
                             message: latestMessage,
-                            transaction: tx
+                            transaction: tx,
                         )
                         // Reset the sending states, so we can render the sending state of the deleted message.
                         // TSOutgoingDeleteMessage will automatically pass through it's send state to the message
@@ -143,13 +143,13 @@ public extension TSInteraction {
                                 sentAtTimestamp: latestMessage.timestamp,
                                 threadUniqueId: latestThread.uniqueId,
                                 serverTimestamp: 0, // TSOutgoingMessage won't have server timestamp.
-                                transaction: tx
+                                transaction: tx,
                             )
                         } else {
                             owsFailDebug("Local ACI missing during message deletion.")
                         }
                         let preparedMessage = PreparedOutgoingMessage.preprepared(
-                            transientMessageWithoutAttachments: deleteMessage
+                            transientMessageWithoutAttachments: deleteMessage,
                         )
 
                         SSKEnvironment.shared.messageSenderJobQueueRef.add(message: preparedMessage, transaction: tx)
@@ -170,10 +170,11 @@ public extension TSInteraction {
         OWSActionSheets.showConfirmationAlert(
             title: OWSLocalizedString(
                 "MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION",
-                comment: "A one-time confirmation that you want to delete for everyone"
+                comment: "A one-time confirmation that you want to delete for everyone",
             ),
             proceedTitle: CommonStrings.deleteForEveryoneButton,
-            proceedStyle: .destructive) { _ in
+            proceedStyle: .destructive,
+        ) { _ in
             SSKEnvironment.shared.preferencesRef.setWasDeleteForEveryoneConfirmationShown()
             completion()
         }
@@ -188,7 +189,7 @@ public extension TSInteraction {
 
         return ActionSheetAction(
             title: CommonStrings.deleteForMeButton,
-            style: .destructive
+            style: .destructive,
         ) { [weak self] _ in
             guard let self else { return }
 
@@ -201,9 +202,9 @@ public extension TSInteraction {
                 interactionDeleteManager.delete(
                     interactions: [freshSelf],
                     sideEffects: .custom(
-                        deleteForMeSyncMessage: .sendSyncMessage(interactionsThread: freshThread)
+                        deleteForMeSyncMessage: .sendSyncMessage(interactionsThread: freshThread),
                     ),
-                    tx: tx
+                    tx: tx,
                 )
             }
         }
@@ -211,10 +212,10 @@ public extension TSInteraction {
 }
 
 extension CommonStrings {
-    static public var deleteForEveryoneButton: String {
+    public static var deleteForEveryoneButton: String {
         OWSLocalizedString(
             "MESSAGE_ACTION_DELETE_FOR_EVERYONE",
-            comment: "The title for the action that deletes a message for all users in the conversation."
+            comment: "The title for the action that deletes a message for all users in the conversation.",
         )
     }
 }

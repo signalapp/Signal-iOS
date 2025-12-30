@@ -33,15 +33,18 @@ enum PhotoGridItemType {
         case .animated:
             return OWSLocalizedString(
                 "ALL_MEDIA_THUMBNAIL_LABEL_GIF",
-                comment: "Label shown over thumbnails of GIFs in the All Media view")
+                comment: "Label shown over thumbnails of GIFs in the All Media view",
+            )
         case .photo:
             return OWSLocalizedString(
                 "ALL_MEDIA_THUMBNAIL_LABEL_IMAGE",
-                comment: "Label shown by thumbnails of images in the All Media view")
+                comment: "Label shown by thumbnails of images in the All Media view",
+            )
         case .video:
             return OWSLocalizedString(
                 "ALL_MEDIA_THUMBNAIL_LABEL_VIDEO",
-                comment: "Label shown by thumbnails of videos in the All Media view")
+                comment: "Label shown by thumbnails of videos in the All Media view",
+            )
         }
     }
 }
@@ -63,7 +66,7 @@ class PhotoGridViewCell: UICollectionViewCell {
 
     static let reuseIdentifier = "PhotoGridViewCell"
 
-    public let imageView: UIImageView
+    let imageView: UIImageView
 
     private var durationLabel: UILabel?
     private var durationLabelBackground: UIView?
@@ -74,7 +77,7 @@ class PhotoGridViewCell: UICollectionViewCell {
 
     private(set) var photoGridItem: PhotoGridItem?
 
-    public var loadingColor = Theme.washColor
+    var loadingColor = Theme.washColor
 
     var allowsMultipleSelection = false {
         didSet {
@@ -82,13 +85,13 @@ class PhotoGridViewCell: UICollectionViewCell {
         }
     }
 
-    public override var isHighlighted: Bool {
+    override var isHighlighted: Bool {
         didSet {
             highlightedMaskView.isHidden = !isHighlighted
         }
     }
 
-    override public var isSelected: Bool {
+    override var isSelected: Bool {
         didSet {
             updateSelectionState()
         }
@@ -126,7 +129,7 @@ class PhotoGridViewCell: UICollectionViewCell {
     }
 
     @available(*, unavailable, message: "Unimplemented")
-    required public init?(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
@@ -136,11 +139,13 @@ class PhotoGridViewCell: UICollectionViewCell {
         selectionButton.allowsMultipleSelection = allowsMultipleSelection
     }
 
-    public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
 
-        if let durationLabel = durationLabel,
-           previousTraitCollection?.preferredContentSizeCategory != traitCollection.preferredContentSizeCategory {
+        if
+            let durationLabel,
+            previousTraitCollection?.preferredContentSizeCategory != traitCollection.preferredContentSizeCategory
+        {
             durationLabel.font = Self.durationLabelFont()
         }
     }
@@ -206,7 +211,7 @@ class PhotoGridViewCell: UICollectionViewCell {
             self.durationLabelBackground = gradientView
         }
 
-        guard let durationLabel = durationLabel, let durationLabelBackground = durationLabelBackground else {
+        guard let durationLabel, let durationLabelBackground else {
             return
         }
 
@@ -235,16 +240,16 @@ class PhotoGridViewCell: UICollectionViewCell {
         if let item {
             self.accessibilityLabel = [
                 item.type.localizedString,
-                MediaTileDateFormatter.formattedDateString(for: item.mediaMetadata?.creationDate)
+                MediaTileDateFormatter.formattedDateString(for: item.mediaMetadata?.creationDate),
             ]
-                .compactMap { $0 }
-                .joined(separator: ", ")
+            .compactMap { $0 }
+            .joined(separator: ", ")
         } else {
             self.accessibilityLabel = ""
         }
     }
 
-    public func makePlaceholder() {
+    func makePlaceholder() {
         photoGridItem = nil
         image = nil
         setMedia(itemType: .photo)
@@ -281,7 +286,7 @@ class PhotoGridViewCell: UICollectionViewCell {
         setUpAccessibility(item: item)
     }
 
-    override public func prepareForReuse() {
+    override func prepareForReuse() {
         super.prepareForReuse()
 
         photoGridItem = nil
@@ -303,12 +308,12 @@ class PhotoGridViewCell: UICollectionViewCell {
             top: collectionView.adjustedContentInset.top,
             leading: 0,
             bottom: collectionView.adjustedContentInset.bottom,
-            trailing: 0
+            trailing: 0,
         )
         return MediaPresentationContext(
             mediaView: imageView,
             presentationFrame: presentationFrame,
-            clippingAreaInsets: clippingAreaInsets
+            clippingAreaInsets: clippingAreaInsets,
         )
     }
 }

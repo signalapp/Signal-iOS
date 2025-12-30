@@ -21,7 +21,7 @@ extension UIFont {
                 "PingFangTC-Regular",
                 "PingFangSC-Regular",
                 "HiraginoSans-W3",
-                UIFont.systemFont(ofSize: 10, weight: .regular).fontDescriptor    // Sans Serif Regular
+                UIFont.systemFont(ofSize: 10, weight: .regular).fontDescriptor, // Sans Serif Regular
             ]
 
         case .bold:
@@ -32,7 +32,7 @@ extension UIFont {
                 "PingFangTC-Semibold",
                 "PingFangSC-Semibold",
                 "HiraginoSans-W7",
-                UIFont.systemFont(ofSize: 10, weight: .bold).fontDescriptor // Sans Serif Bold
+                UIFont.systemFont(ofSize: 10, weight: .bold).fontDescriptor, // Sans Serif Bold
 
             ]
 
@@ -44,12 +44,14 @@ extension UIFont {
                 "PingFangTC-Ultralight",
                 "PingFangSC-Ultralight",
                 "GeezaPro",
-                "HiraMinProN-W3"
+                "HiraMinProN-W3",
             ]
             // Serif Regular
-            if let fontDescriptor = UIFontDescriptor
-                .preferredFontDescriptor(withTextStyle: .body)
-                .withSymbolicTraits(.classModernSerifs) {
+            if
+                let fontDescriptor = UIFontDescriptor
+                    .preferredFontDescriptor(withTextStyle: .body)
+                    .withSymbolicTraits(.classModernSerifs)
+            {
                 fontNamesOrDescriptors.append(fontDescriptor)
             }
 
@@ -62,13 +64,15 @@ extension UIFont {
                 "PingFangTC-Thin",
                 "PingFangSC-Thin",
                 "GeezaPro-Bold",
-                "HiraMinProN-W6"
+                "HiraMinProN-W6",
             ]
             // Serif Bold
-            if let fontDescriptor = UIFontDescriptor
-                .preferredFontDescriptor(withTextStyle: .body)
-                .withSymbolicTraits(.classModernSerifs)?
-                .withSymbolicTraits(.traitBold) {
+            if
+                let fontDescriptor = UIFontDescriptor
+                    .preferredFontDescriptor(withTextStyle: .body)
+                    .withSymbolicTraits(.classModernSerifs)?
+                    .withSymbolicTraits(.traitBold)
+            {
                 fontNamesOrDescriptors.append(fontDescriptor)
             }
 
@@ -80,7 +84,7 @@ extension UIFont {
                 "PingFangTC-Light",
                 "PingFangSC-Light",
                 "HiraMaruProN-W4",
-                UIFont.systemFont(ofSize: 10, weight: .black).fontDescriptor // Sans Serif Black
+                UIFont.systemFont(ofSize: 10, weight: .black).fontDescriptor, // Sans Serif Black
             ]
         }
 
@@ -89,7 +93,7 @@ extension UIFont {
                 return fontDescriptor
             }
             if let fontName = fontNameOrDescriptor as? String {
-                return UIFontDescriptor(fontAttributes: [ .name: fontName ])
+                return UIFontDescriptor(fontAttributes: [.name: fontName])
             }
             owsFailDebug("Not a String or UIFontDescriptor.")
             return nil
@@ -97,7 +101,7 @@ extension UIFont {
 
         let descriptor = UIFontDescriptor(fontAttributes: [
             .name: primaryFontName,
-            .cascadeList: cascadeList
+            .cascadeList: cascadeList,
         ])
 
         return UIFont(descriptor: descriptor, size: pointSize)

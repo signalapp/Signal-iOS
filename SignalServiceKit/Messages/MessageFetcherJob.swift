@@ -22,7 +22,7 @@ public class MessageFetcherJob {
     func preconditionForFetchingComplete() -> some Precondition {
         return NotificationPrecondition(
             notificationName: OWSChatConnection.chatConnectionStateDidChange,
-            isSatisfied: { await self.hasCompletedInitialFetch }
+            isSatisfied: { await self.hasCompletedInitialFetch },
         )
     }
 }

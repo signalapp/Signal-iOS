@@ -44,7 +44,7 @@ public class CVTextLabel: NSObject {
             spoilerId: Int,
             interactionUniqueId: String,
             interactionIdentifier: InteractionSnapshotIdentifier,
-            range: NSRange
+            range: NSRange,
         ) {
             self.spoilerId = spoilerId
             self.interactionUniqueId = interactionUniqueId
@@ -119,7 +119,7 @@ public class CVTextLabel: NSObject {
             numberOfLines: Int = 0,
             cacheKey: String? = nil,
             items: [Item],
-            linkifyStyle: CVTextLabel.LinkifyStyle
+            linkifyStyle: CVTextLabel.LinkifyStyle,
         ) {
             self.text = text
             self.displayConfig = displayConfig
@@ -130,7 +130,7 @@ public class CVTextLabel: NSObject {
             self.lineBreakMode = lineBreakMode
             self.numberOfLines = numberOfLines
 
-            if let cacheKey = cacheKey {
+            if let cacheKey {
                 self.cacheKey = cacheKey
             } else {
                 self.cacheKey = "\(text.cacheKey),\(displayConfig.sizingCacheKey),\(font.fontName),\(font.pointSize),\(numberOfLines),\(lineBreakMode.rawValue),\(textAlignment.rawValue)"
@@ -147,7 +147,7 @@ public class CVTextLabel: NSObject {
 
     public var view: UIView { label }
 
-    public override init() {
+    override public init() {
         label.backgroundColor = .clear
         label.isOpaque = false
 
@@ -183,7 +183,7 @@ public class CVTextLabel: NSObject {
 
         // MARK: - Equatable
 
-        public static func == (lhs: Measurement, rhs: Measurement) -> Bool {
+        public static func ==(lhs: Measurement, rhs: Measurement) -> Bool {
             lhs.size == rhs.size && lhs.lastLineRect == rhs.lastLineRect
         }
     }
@@ -219,12 +219,16 @@ public class CVTextLabel: NSObject {
         return withExtendedLifetime(textStorage) {
             let glyphRange = layoutManager.glyphRange(for: textContainer)
             var lastLineRect: CGRect?
-            if glyphRange.location != NSNotFound,
-               glyphRange.length > 0 {
+            if
+                glyphRange.location != NSNotFound,
+                glyphRange.length > 0
+            {
                 let lastGlyphIndex = glyphRange.length - 1
-                lastLineRect = layoutManager.lineFragmentUsedRect(forGlyphAt: lastGlyphIndex,
-                                                                      effectiveRange: nil,
-                                                                      withoutAdditionalLayout: true)
+                lastLineRect = layoutManager.lineFragmentUsedRect(
+                    forGlyphAt: lastGlyphIndex,
+                    effectiveRange: nil,
+                    withoutAdditionalLayout: true,
+                )
             }
 
             let size = layoutManager.usedRect(for: textContainer).size.ceil
@@ -247,7 +251,7 @@ public class CVTextLabel: NSObject {
     public static func linkifyData(
         attributedText: NSMutableAttributedString,
         linkifyStyle: LinkifyStyle,
-        items: [CVTextLabel.Item]
+        items: [CVTextLabel.Item],
     ) {
 
         // Sort so that we can detect overlap.
@@ -309,7 +313,7 @@ public class CVTextLabel: NSObject {
 
         // MARK: -
 
-        override public init(frame: CGRect) {
+        override init(frame: CGRect) {
             AssertIsOnMainThread()
 
             super.init(frame: frame)
@@ -323,7 +327,7 @@ public class CVTextLabel: NSObject {
         }
 
         @available(*, unavailable, message: "Unimplemented")
-        required public init?(coder aDecoder: NSCoder) {
+        required init?(coder aDecoder: NSCoder) {
             super.init(coder: aDecoder)
         }
 
@@ -357,14 +361,14 @@ public class CVTextLabel: NSObject {
         private func apply(config: Config?) {
             AssertIsOnMainThread()
 
-            guard let config = config else {
+            guard let config else {
                 reset()
                 return
             }
             updateTextStorage(config: config)
         }
 
-        open override func draw(_ rect: CGRect) {
+        override open func draw(_ rect: CGRect) {
             super.draw(rect)
 
             textContainer.size = bounds.size
@@ -404,19 +408,19 @@ public class CVTextLabel: NSObject {
                 attributedString = NSMutableAttributedString(string: text)
                 config.displayConfig.searchRanges?.apply(
                     attributedString,
-                    isDarkThemeEnabled: Theme.isDarkThemeEnabled
+                    isDarkThemeEnabled: Theme.isDarkThemeEnabled,
                 )
             case .attributedText(let attributedText):
                 attributedString = NSMutableAttributedString(attributedString: attributedText)
                 config.displayConfig.searchRanges?.apply(
                     attributedString,
-                    isDarkThemeEnabled: Theme.isDarkThemeEnabled
+                    isDarkThemeEnabled: Theme.isDarkThemeEnabled,
                 )
             case .messageBody(let messageBody):
                 // This will internally apply search ranges, no need to handle separately.
                 let attributedText = messageBody.asAttributedStringForDisplay(
                     config: config.displayConfig,
-                    isDarkThemeEnabled: Theme.isDarkThemeEnabled
+                    isDarkThemeEnabled: Theme.isDarkThemeEnabled,
                 )
                 attributedString = (attributedText as? NSMutableAttributedString) ?? NSMutableAttributedString(attributedString: attributedText)
             }
@@ -432,7 +436,7 @@ public class CVTextLabel: NSObject {
             CVTextLabel.linkifyData(
                 attributedText: attributedString,
                 linkifyStyle: config.linkifyStyle,
-                items: config.items
+                items: config.items,
             )
 
             var range = NSRange(location: 0, length: 0)
@@ -449,11 +453,11 @@ public class CVTextLabel: NSObject {
         fileprivate func updateAttributesForSelection(selectedItem: Item? = nil) {
             AssertIsOnMainThread()
 
-            guard let config = config else {
+            guard let config else {
                 reset()
                 return
             }
-            guard let selectedItem = selectedItem else {
+            guard let selectedItem else {
                 apply(config: config)
                 return
             }
@@ -479,11 +483,13 @@ public class CVTextLabel: NSObject {
                 return nil
             }
 
-            guard let characterIndex = textContainer.characterIndex(
-                of: location,
-                textStorage: textStorage,
-                layoutManager: layoutManager
-            ) else {
+            guard
+                let characterIndex = textContainer.characterIndex(
+                    of: location,
+                    textStorage: textStorage,
+                    layoutManager: layoutManager,
+                )
+            else {
                 return nil
             }
 
@@ -498,7 +504,7 @@ public class CVTextLabel: NSObject {
 
         // MARK: - Animation
 
-        public func animate(selectedItem: Item) {
+        func animate(selectedItem: Item) {
             AssertIsOnMainThread()
 
             updateAttributesForSelection(selectedItem: selectedItem)
@@ -544,7 +550,7 @@ public class CVTextLabel: NSObject {
 
         // MARK: - Gestures
 
-        public func itemForGesture(sender: UIGestureRecognizer) -> Item? {
+        func itemForGesture(sender: UIGestureRecognizer) -> Item? {
             AssertIsOnMainThread()
 
             let location = sender.location(in: self)
@@ -557,7 +563,7 @@ public class CVTextLabel: NSObject {
 
         // MARK: -
 
-        public override func updateConstraints() {
+        override func updateConstraints() {
             super.updateConstraints()
 
             deactivateAllConstraints()
@@ -585,7 +591,7 @@ extension CVTextLabel.Label: SpoilerableViewAnimator {
                 textContainer: textContainer,
                 textStorage: textStorage,
                 layoutManager: layoutManager,
-                bounds: self.bounds.size
+                bounds: self.bounds.size,
             )
         }
     }
@@ -608,7 +614,7 @@ extension CVTextLabel.Label: SpoilerableViewAnimator {
         textContainer: NSTextContainer,
         textStorage: NSTextStorage,
         layoutManager: NSLayoutManager,
-        bounds: CGSize
+        bounds: CGSize,
     ) -> [SpoilerFrame] {
         let spoilerRanges = messageBody.spoilerRangesForAnimation(config: displayConfig)
         return textContainer.boundingRects(
@@ -620,9 +626,9 @@ extension CVTextLabel.Label: SpoilerableViewAnimator {
                 return .init(
                     frame: rect,
                     color: spoilerRange.color,
-                    style: spoilerRange.isSearchResult ? .highlight : .standard
+                    style: spoilerRange.isSearchResult ? .highlight : .standard,
                 )
-            }
+            },
         )
     }
 }
@@ -630,8 +636,10 @@ extension CVTextLabel.Label: SpoilerableViewAnimator {
 // MARK: -
 
 extension CVTextLabel.Label: UIDragInteractionDelegate {
-    public func dragInteraction(_ interaction: UIDragInteraction,
-                                itemsForBeginning session: UIDragSession) -> [UIDragItem] {
+    public func dragInteraction(
+        _ interaction: UIDragInteraction,
+        itemsForBeginning session: UIDragSession,
+    ) -> [UIDragItem] {
         guard nil != self.config else {
             owsFailDebug("Missing config.")
             return []
@@ -657,13 +665,19 @@ extension CVTextLabel.Label: UIDragInteractionDelegate {
             let itemProvider = NSItemProvider(object: dataItem.snippet as NSString)
             let dragItem = UIDragItem(itemProvider: itemProvider)
 
-            let glyphRange = self.layoutManager.glyphRange(forCharacterRange: selectedItem.range,
-                                                           actualCharacterRange: nil)
+            let glyphRange = self.layoutManager.glyphRange(
+                forCharacterRange: selectedItem.range,
+                actualCharacterRange: nil,
+            )
             var textLineRects = [NSValue]()
-            self.layoutManager.enumerateEnclosingRects(forGlyphRange: glyphRange,
-                                                       withinSelectedGlyphRange: NSRange(location: NSNotFound,
-                                                                                         length: 0),
-                                                       in: self.textContainer) { (rect, _) in
+            self.layoutManager.enumerateEnclosingRects(
+                forGlyphRange: glyphRange,
+                withinSelectedGlyphRange: NSRange(
+                    location: NSNotFound,
+                    length: 0,
+                ),
+                in: self.textContainer,
+            ) { rect, _ in
                 textLineRects.append(NSValue(cgRect: rect))
             }
             let previewParameters = UIDragPreviewParameters(textLineRects: textLineRects)

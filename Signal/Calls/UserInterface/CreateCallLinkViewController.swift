@@ -22,7 +22,7 @@ class CreateCallLinkViewController: InteractiveSheetViewController {
         self._callLinkViewController = CallLinkViewController.forJustCreated(
             callLink: callLink,
             adminPasskey: adminPasskey,
-            callLinkState: callLinkState
+            callLinkState: callLinkState,
         )
         super.init()
         self.allowsExpansion = false
@@ -31,7 +31,7 @@ class CreateCallLinkViewController: InteractiveSheetViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self._navigationController.viewControllers = [ self._callLinkViewController ]
+        self._navigationController.viewControllers = [self._callLinkViewController]
         self.addChild(self._navigationController)
         self._navigationController.didMove(toParent: self)
         self.contentView.addSubview(self._navigationController.view)
@@ -41,7 +41,7 @@ class CreateCallLinkViewController: InteractiveSheetViewController {
             action: { [unowned self] in
                 self._callLinkViewController.persistIfNeeded()
                 self.dismiss(animated: true)
-            }
+            },
         )
     }
 
@@ -55,13 +55,13 @@ class CreateCallLinkViewController: InteractiveSheetViewController {
             top: self._navigationController.navigationBar.bounds.size.height,
             left: 0,
             bottom: self.view.safeAreaInsets.bottom,
-            right: 0
+            right: 0,
         )
 
         self.minimizedHeight = (
             self._callLinkViewController.tableView.contentSize.height
-            + self._callLinkViewController.tableView.contentInset.totalHeight
-            + InteractiveSheetViewController.Constants.handleHeight
+                + self._callLinkViewController.tableView.contentInset.totalHeight
+                + InteractiveSheetViewController.Constants.handleHeight,
         )
     }
 
@@ -81,7 +81,7 @@ class CreateCallLinkViewController: InteractiveSheetViewController {
                         viewController.present(CreateCallLinkViewController(
                             callLink: callLink,
                             adminPasskey: createResult.adminPasskey,
-                            callLinkState: createResult.callLinkState
+                            callLinkState: createResult.callLinkState,
                         ), animated: true)
                     }
                 } catch {
@@ -91,12 +91,12 @@ class CreateCallLinkViewController: InteractiveSheetViewController {
                             title: CallStrings.callLinkErrorSheetTitle,
                             message: OWSLocalizedString(
                                 "CALL_LINK_CREATION_FAILURE_SHEET_DESCRIPTION",
-                                comment: "Description of sheet presented when call link creation fails."
-                            )
+                                comment: "Description of sheet presented when call link creation fails.",
+                            ),
                         )
                     }
                 }
-            }
+            },
         )
     }
 }

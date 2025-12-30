@@ -33,7 +33,7 @@ final class BackupEnablingManager {
         backupTestFlightEntitlementManager: BackupTestFlightEntitlementManager,
         db: DB,
         tsAccountManager: TSAccountManager,
-        notificationPresenter: NotificationPresenter
+        notificationPresenter: NotificationPresenter,
     ) {
         self.backupAttachmentUploadEraStore = backupAttachmentUploadEraStore
         self.backupDisablingManager = backupDisablingManager
@@ -59,7 +59,7 @@ final class BackupEnablingManager {
             localIdentifiers,
         ): (
             TSRegistrationState,
-            LocalIdentifiers?
+            LocalIdentifiers?,
         ) = db.read { tx in
             return (
                 tsAccountManager.registrationState(tx: tx),
@@ -73,21 +73,21 @@ final class BackupEnablingManager {
         else {
             throw ActionSheetDisplayableError(localizedMessage: OWSLocalizedString(
                 "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NOT_REGISTERED",
-                comment: "Message shown in an action sheet when the user tries to confirm a plan selection, but is not registered."
+                comment: "Message shown in an action sheet when the user tries to confirm a plan selection, but is not registered.",
             ))
         }
 
         owsPrecondition(
             registrationState.isRegisteredPrimaryDevice,
-            "Attempting to enable Backups on a non-primary device!"
+            "Attempting to enable Backups on a non-primary device!",
         )
 
         try await ModalActivityIndicatorViewController.presentAndPropagateResult(
-            from: fromViewController
+            from: fromViewController,
         ) { [self] () throws(SheetDisplayableError) in
             try await _enableBackups(
                 planSelection: planSelection,
-                localIdentifiers: localIdentifiers
+                localIdentifiers: localIdentifiers,
             )
         }
 
@@ -112,7 +112,7 @@ final class BackupEnablingManager {
 
             _ = try await self.backupKeyService.registerBackupKey(
                 localIdentifiers: localIdentifiers,
-                auth: .implicit()
+                auth: .implicit(),
             )
         } catch where error.isNetworkFailureOrTimeout {
             throw .networkError
@@ -121,19 +121,19 @@ final class BackupEnablingManager {
             if let retryAfterTimeInterval = error.responseHeaders?.retryAfterTimeInterval {
                 let title = OWSLocalizedString(
                     "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_RATE_LIMITED_TITLE",
-                    comment: "Message shown in an action sheet when the user tries to confirm a plan selection, but encounters a rate limit. They should wait the requested amount of time and try again. {{ Embeds 1 & 2: the preformatted time they must wait before enabling backups, such as \"1 week\" or \"6 hours\". }}"
+                    comment: "Message shown in an action sheet when the user tries to confirm a plan selection, but encounters a rate limit. They should wait the requested amount of time and try again. {{ Embeds 1 & 2: the preformatted time they must wait before enabling backups, such as \"1 week\" or \"6 hours\". }}",
                 )
                 let message = OWSLocalizedString(
                     "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_RATE_LIMITED",
-                    comment: "Message shown in an action sheet when the user tries to confirm a plan selection, but encounters a rate limit. They should wait the requested amount of time and try again."
+                    comment: "Message shown in an action sheet when the user tries to confirm a plan selection, but encounters a rate limit. They should wait the requested amount of time and try again.",
                 )
                 let nextRetryString = DateUtil.formatDuration(
                     seconds: UInt32(retryAfterTimeInterval),
-                    useShortFormat: false
+                    useShortFormat: false,
                 )
                 throw ActionSheetDisplayableError(
                     localizedTitle: title,
-                    localizedMessage: String(format: message, nextRetryString)
+                    localizedMessage: String(format: message, nextRetryString),
                 )
             } else {
                 throw .genericError
@@ -171,7 +171,7 @@ final class BackupEnablingManager {
             backupSettingsStore.setLastBackupEnabledDetails(
                 backupsEnabledTime: backupsEnabledTimestamp,
                 notificationDelay: notificationDelay,
-                tx: tx
+                tx: tx,
             )
         }
         notificationPresenter.scheduleNotifyForBackupsEnabled(backupsTimestamp: backupsEnabledTimestamp)
@@ -189,7 +189,7 @@ final class BackupEnablingManager {
             owsFailDebug("StoreKit purchase unexpectedly failed: \(error)", logger: logger)
             throw ActionSheetDisplayableError(localizedMessage: OWSLocalizedString(
                 "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE",
-                comment: "Message shown in an action sheet when the user tries to confirm selecting the paid plan, but encountered an error from Apple while purchasing."
+                comment: "Message shown in an action sheet when the user tries to confirm selecting the paid plan, but encountered an error from Apple while purchasing.",
             ))
         }
 
@@ -210,7 +210,7 @@ final class BackupEnablingManager {
                     owsFailDebug("Unexpectedly failed to redeem subscription! \(error)", logger: logger)
                     throw ActionSheetDisplayableError(localizedMessage: OWSLocalizedString(
                         "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE_REDEMPTION",
-                        comment: "Message shown in an action sheet when the user tries to confirm selecting the paid plan, but encountered an error while redeeming their completed purchase."
+                        comment: "Message shown in an action sheet when the user tries to confirm selecting the paid plan, but encountered an error while redeeming their completed purchase.",
                     ))
                 }
             }
@@ -221,9 +221,9 @@ final class BackupEnablingManager {
                 case .disabled, .disabling, .free:
                     currentOptimizeLocalStorage = false
                 case
-                        .paid(let optimizeLocalStorage),
-                        .paidExpiringSoon(let optimizeLocalStorage),
-                        .paidAsTester(let optimizeLocalStorage):
+                    .paid(let optimizeLocalStorage),
+                    .paidExpiringSoon(let optimizeLocalStorage),
+                    .paidAsTester(let optimizeLocalStorage):
                     currentOptimizeLocalStorage = optimizeLocalStorage
                 }
 
@@ -239,7 +239,6 @@ final class BackupEnablingManager {
 
         case .userCancelled:
             throw .userCancelled
-
         }
     }
 

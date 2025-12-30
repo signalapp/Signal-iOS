@@ -16,7 +16,7 @@ public protocol GroupUpdateItemBuilder {
     func displayableUpdateItemsForPrecomputed(
         precomputedUpdateItems: [TSInfoMessage.PersistableGroupUpdateItem],
         localIdentifiers: LocalIdentifiers,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> [DisplayableGroupUpdateItem]
 
     /// Build group update items for a just-inserted group.
@@ -29,7 +29,7 @@ public protocol GroupUpdateItemBuilder {
         newDisappearingMessageToken: DisappearingMessageToken?,
         localIdentifiers: LocalIdentifiers,
         groupUpdateSource: GroupUpdateSource,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> [TSInfoMessage.PersistableGroupUpdateItem]
 
     /// Build a list of group updates by "diffing" the old and new group states.
@@ -45,7 +45,7 @@ public protocol GroupUpdateItemBuilder {
         newDisappearingMessageToken: DisappearingMessageToken?,
         localIdentifiers: LocalIdentifiers,
         groupUpdateSource: GroupUpdateSource,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> [TSInfoMessage.PersistableGroupUpdateItem]
 }
 
@@ -60,19 +60,19 @@ extension GroupUpdateItemBuilder {
         newDisappearingMessageToken: DisappearingMessageToken?,
         localIdentifiers: LocalIdentifiers,
         groupUpdateSource: GroupUpdateSource,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> [DisplayableGroupUpdateItem] {
         let precomputedItems = precomputedUpdateItemsForNewGroup(
             newGroupModel: newGroupModel,
             newDisappearingMessageToken: newDisappearingMessageToken,
             localIdentifiers: localIdentifiers,
             groupUpdateSource: groupUpdateSource,
-            tx: tx
+            tx: tx,
         )
         return displayableUpdateItemsForPrecomputed(
             precomputedUpdateItems: precomputedItems,
             localIdentifiers: localIdentifiers,
-            tx: tx
+            tx: tx,
         )
     }
 
@@ -89,7 +89,7 @@ extension GroupUpdateItemBuilder {
         newDisappearingMessageToken: DisappearingMessageToken?,
         localIdentifiers: LocalIdentifiers,
         groupUpdateSource: GroupUpdateSource,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> [DisplayableGroupUpdateItem] {
         let precomputedItems = precomputedUpdateItemsByDiffingModels(
             oldGroupModel: oldGroupModel,
@@ -98,12 +98,12 @@ extension GroupUpdateItemBuilder {
             newDisappearingMessageToken: newDisappearingMessageToken,
             localIdentifiers: localIdentifiers,
             groupUpdateSource: groupUpdateSource,
-            tx: tx
+            tx: tx,
         )
         return displayableUpdateItemsForPrecomputed(
             precomputedUpdateItems: precomputedItems,
             localIdentifiers: localIdentifiers,
-            tx: tx
+            tx: tx,
         )
     }
 }
@@ -114,7 +114,7 @@ public struct GroupUpdateItemBuilderImpl: GroupUpdateItemBuilder {
 
     init(
         contactsManager: ContactManager,
-        recipientDatabaseTable: RecipientDatabaseTable
+        recipientDatabaseTable: RecipientDatabaseTable,
     ) {
         self.contactsManager = contactsManager
         self.recipientDatabaseTable = recipientDatabaseTable
@@ -125,45 +125,45 @@ public struct GroupUpdateItemBuilderImpl: GroupUpdateItemBuilder {
         newDisappearingMessageToken: DisappearingMessageToken?,
         localIdentifiers: LocalIdentifiers,
         groupUpdateSource: GroupUpdateSource,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> [TSInfoMessage.PersistableGroupUpdateItem] {
         let groupUpdateSource = groupUpdateSource.sanitize(recipientDatabaseTable: recipientDatabaseTable, tx: tx)
 
         let precomputedItems = NewGroupUpdateItemBuilder(
-            contactsManager: contactsManager
+            contactsManager: contactsManager,
         ).buildGroupUpdateItems(
             newGroupModel: newGroupModel,
             newDisappearingMessageToken: newDisappearingMessageToken,
             groupUpdateSource: groupUpdateSource,
-            localIdentifiers: localIdentifiers
+            localIdentifiers: localIdentifiers,
         )
 
         return validateUpdateItemsNotEmpty(
             tentativeUpdateItems: precomputedItems,
             groupUpdateSource: groupUpdateSource,
-            localIdentifiers: localIdentifiers
+            localIdentifiers: localIdentifiers,
         )
     }
 
     public func displayableUpdateItemsForPrecomputed(
         precomputedUpdateItems: [TSInfoMessage.PersistableGroupUpdateItem],
         localIdentifiers: LocalIdentifiers,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> [DisplayableGroupUpdateItem] {
         let precomputedUpdateItems = validateUpdateItemsNotEmpty(
             tentativeUpdateItems: precomputedUpdateItems,
             groupUpdateSource: .unknown,
-            localIdentifiers: localIdentifiers
+            localIdentifiers: localIdentifiers,
         )
 
         let builder = PrecomputedGroupUpdateItemBuilder(
-            contactsManager: contactsManager
+            contactsManager: contactsManager,
         )
         let items = precomputedUpdateItems.map {
             builder.buildGroupUpdateItem(
                 precomputedUpdateItem: $0,
                 localIdentifiers: localIdentifiers,
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -177,7 +177,7 @@ public struct GroupUpdateItemBuilderImpl: GroupUpdateItemBuilder {
         newDisappearingMessageToken: DisappearingMessageToken?,
         localIdentifiers: LocalIdentifiers,
         groupUpdateSource: GroupUpdateSource,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> [TSInfoMessage.PersistableGroupUpdateItem] {
         // Sanitize first so we map e164s to known acis.
         let groupUpdateSource = groupUpdateSource.sanitize(recipientDatabaseTable: recipientDatabaseTable, tx: tx)
@@ -188,13 +188,13 @@ public struct GroupUpdateItemBuilderImpl: GroupUpdateItemBuilder {
             oldDisappearingMessageToken: oldDisappearingMessageToken,
             newDisappearingMessageToken: newDisappearingMessageToken,
             groupUpdateSource: groupUpdateSource,
-            localIdentifiers: localIdentifiers
+            localIdentifiers: localIdentifiers,
         ).itemList
 
         return validateUpdateItemsNotEmpty(
             tentativeUpdateItems: precomputedItems,
             groupUpdateSource: groupUpdateSource,
-            localIdentifiers: localIdentifiers
+            localIdentifiers: localIdentifiers,
         )
     }
 
@@ -204,7 +204,7 @@ public struct GroupUpdateItemBuilderImpl: GroupUpdateItemBuilder {
         localIdentifiers: LocalIdentifiers,
         file: String = #file,
         function: String = #function,
-        line: Int = #line
+        line: Int = #line,
     ) -> [TSInfoMessage.PersistableGroupUpdateItem] {
         guard tentativeUpdateItems.isEmpty else {
             return tentativeUpdateItems
@@ -255,7 +255,7 @@ private enum MembershipStatus: Equatable {
 
     static func of(
         address: SignalServiceAddress,
-        groupMembership: GroupMembership
+        groupMembership: GroupMembership,
     ) -> MembershipStatus? {
         guard let serviceId = address.serviceId else {
             return nil
@@ -275,8 +275,8 @@ private enum MembershipStatus: Equatable {
                 serviceId,
                 role: role,
                 invitedBy: groupMembership.addedByAci(
-                    forInvitedMember: serviceId
-                )
+                    forInvitedMember: serviceId,
+                ),
             )
         } else if
             let aci = serviceId as? Aci,
@@ -320,14 +320,14 @@ private struct PrecomputedGroupUpdateItemBuilder {
     func buildGroupUpdateItem(
         precomputedUpdateItem: TSInfoMessage.PersistableGroupUpdateItem,
         localIdentifiers: LocalIdentifiers,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> DisplayableGroupUpdateItem {
         func expandAci(_ aci: AciUuid) -> (String, SignalServiceAddress) {
             let address = SignalServiceAddress(aci.wrappedValue)
 
             return (
                 contactsManager.displayNameString(for: address, transaction: tx),
-                address
+                address,
             )
         }
 
@@ -337,8 +337,9 @@ private struct PrecomputedGroupUpdateItemBuilder {
                 requesterAci: requesterAci.wrappedValue,
                 count: count,
                 isTail: isTail,
-                tx: tx
+                tx: tx,
             )
+
         case let .invitedPniPromotedToFullMemberAci(newMember, inviter):
             if newMember.wrappedValue == localIdentifiers.aci {
                 // Local user promoted.
@@ -346,7 +347,7 @@ private struct PrecomputedGroupUpdateItemBuilder {
                     let (inviterName, inviterAddress) = expandAci(inviter)
                     return .localUserAcceptedInviteFromInviter(
                         inviterName: inviterName,
-                        inviterAddress: inviterAddress
+                        inviterAddress: inviterAddress,
                     )
                 } else {
                     return .localUserAcceptedInviteFromUnknownUser
@@ -357,7 +358,7 @@ private struct PrecomputedGroupUpdateItemBuilder {
                 if let inviter, inviter.wrappedValue == localIdentifiers.aci {
                     return .otherUserAcceptedInviteFromLocalUser(
                         userName: userName,
-                        userAddress: userAddress
+                        userAddress: userAddress,
                     )
                 } else if let inviter {
                     let (inviterName, inviterAddress) = expandAci(inviter)
@@ -365,15 +366,16 @@ private struct PrecomputedGroupUpdateItemBuilder {
                         userName: userName,
                         userAddress: userAddress,
                         inviterName: inviterName,
-                        inviterAddress: inviterAddress
+                        inviterAddress: inviterAddress,
                     )
                 } else {
                     return .otherUserAcceptedInviteFromUnknownUser(
                         userName: userName,
-                        userAddress: userAddress
+                        userAddress: userAddress,
                     )
                 }
             }
+
         case .genericUpdateByLocalUser:
             return .genericUpdateByLocalUser
 
@@ -399,10 +401,13 @@ private struct PrecomputedGroupUpdateItemBuilder {
 
         case .wasMigrated:
             return .wasMigrated
+
         case .localUserInvitedAfterMigration:
             return .localUserInvitedAfterMigration
+
         case .otherUsersInvitedAfterMigration(let count):
             return .otherUsersInvitedAfterMigration(count: count)
+
         case .otherUsersDroppedAfterMigration(let count):
             return .otherUsersDroppedAfterMigration(count: count)
 
@@ -454,7 +459,7 @@ private struct PrecomputedGroupUpdateItemBuilder {
             return .descriptionChangedByOtherUser(
                 newDescription: newDescription,
                 updaterName: updaterName,
-                updaterAddress: updaterAddress
+                updaterAddress: updaterAddress,
             )
 
         case .descriptionChangedByUnknownUser(let newDescription):
@@ -583,7 +588,7 @@ private struct PrecomputedGroupUpdateItemBuilder {
             let (userName, userAddress) = expandAci(userAci)
             return .otherUserRemovedByUnknownUser(
                 userName: userName,
-                userAddress: userAddress
+                userAddress: userAddress,
             )
 
         case .localUserWasInvitedByLocalUser:
@@ -600,11 +605,11 @@ private struct PrecomputedGroupUpdateItemBuilder {
             let inviteeAddress = SignalServiceAddress(invitee.wrappedValue)
             let inviteeName = contactsManager.displayNameString(
                 for: inviteeAddress,
-                transaction: tx
+                transaction: tx,
             )
             return .otherUserWasInvitedByLocalUser(
                 userName: inviteeName,
-                userAddress: inviteeAddress
+                userAddress: inviteeAddress,
             )
 
         case .unnamedUsersWereInvitedByLocalUser(let count):
@@ -673,50 +678,59 @@ private struct PrecomputedGroupUpdateItemBuilder {
                     for: SignalServiceAddress(inviterAci.wrappedValue),
                     transaction: tx,
                 ),
-                inviterAddress: .init(inviterAci.wrappedValue)
+                inviterAddress: .init(inviterAci.wrappedValue),
             )
+
         case .localUserDeclinedInviteFromUnknownUser:
             return .localUserDeclinedInviteFromUnknownUser
+
         case .otherUserDeclinedInviteFromLocalUser(let invitee):
             return .otherUserDeclinedInviteFromLocalUser(
                 userName: contactsManager.displayNameString(
                     for: SignalServiceAddress(invitee.wrappedValue),
                     transaction: tx,
                 ),
-                userAddress: SignalServiceAddress(invitee.wrappedValue)
+                userAddress: SignalServiceAddress(invitee.wrappedValue),
             )
+
         case let .otherUserDeclinedInviteFromInviter(_, inviterAci),
-            let .unnamedUserDeclinedInviteFromInviter(inviterAci):
+             let .unnamedUserDeclinedInviteFromInviter(inviterAci):
             return .otherUserDeclinedInviteFromInviter(
                 inviterName: contactsManager.displayNameString(
                     for: SignalServiceAddress(inviterAci.wrappedValue),
                     transaction: tx,
                 ),
-                inviterAddress: .init(inviterAci.wrappedValue)
+                inviterAddress: .init(inviterAci.wrappedValue),
             )
+
         case .otherUserDeclinedInviteFromUnknownUser,
-            .unnamedUserDeclinedInviteFromUnknownUser:
+             .unnamedUserDeclinedInviteFromUnknownUser:
             return .otherUserDeclinedInviteFromUnknownUser
+
         case .localUserInviteRevoked(let revokerAci):
             return .localUserInviteRevoked(
                 revokerName: contactsManager.displayNameString(
                     for: SignalServiceAddress(revokerAci.wrappedValue),
                     transaction: tx,
                 ),
-                revokerAddress: .init(revokerAci.wrappedValue)
+                revokerAddress: .init(revokerAci.wrappedValue),
             )
+
         case .localUserInviteRevokedByUnknownUser:
             return .localUserInviteRevokedByUnknownUser
+
         case .otherUserInviteRevokedByLocalUser(let invitee):
             return .otherUserInviteRevokedByLocalUser(
                 userName: contactsManager.displayNameString(
                     for: SignalServiceAddress(invitee.wrappedValue),
                     transaction: tx,
                 ),
-                userAddress: .init(invitee.wrappedValue)
+                userAddress: .init(invitee.wrappedValue),
             )
+
         case .unnamedUserInvitesWereRevokedByLocalUser(let count):
             return .unnamedUserInvitesWereRevokedByLocalUser(count: count)
+
         case let .unnamedUserInvitesWereRevokedByOtherUser(updaterAci, count):
             return .unnamedUserInvitesWereRevokedByOtherUser(
                 updaterName: contactsManager.displayNameString(
@@ -724,8 +738,9 @@ private struct PrecomputedGroupUpdateItemBuilder {
                     transaction: tx,
                 ),
                 updaterAddress: .init(updaterAci.wrappedValue),
-                count: count
+                count: count,
             )
+
         case .unnamedUserInvitesWereRevokedByUnknownUser(let count):
             return .unnamedUserInvitesWereRevokedByUnknownUser(count: count)
 
@@ -756,7 +771,7 @@ private struct PrecomputedGroupUpdateItemBuilder {
             let (userName, userAddress) = expandAci(userAci)
             return .otherUserRequestApprovedByUnknownUser(
                 userName: userName,
-                userAddress: userAddress
+                userAddress: userAddress,
             )
 
         case .localUserRequestCanceledByLocalUser:
@@ -875,7 +890,7 @@ private struct PrecomputedGroupUpdateItemBuilder {
         requesterAci: Aci,
         count: UInt,
         isTail: Bool,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> DisplayableGroupUpdateItem {
         let updaterAddress = SignalServiceAddress(requesterAci)
         let updaterName = contactsManager.displayNameString(for: updaterAddress, transaction: tx)
@@ -885,7 +900,7 @@ private struct PrecomputedGroupUpdateItemBuilder {
             // the regular ol' "user requested to join".
             return .otherUserRequestedToJoin(
                 userName: updaterName,
-                userAddress: updaterAddress
+                userAddress: updaterAddress,
             )
         }
 
@@ -893,7 +908,7 @@ private struct PrecomputedGroupUpdateItemBuilder {
             userName: updaterName,
             userAddress: updaterAddress,
             count: count,
-            isTail: isTail
+            isTail: isTail,
         )
     }
 }
@@ -913,7 +928,7 @@ private struct PrecomputedGroupUpdateItemBuilder {
 /// ``PrecomputedGroupUpdateItemBuilder``.
 private struct NewGroupUpdateItemBuilder {
 
-    public typealias PersistableGroupUpdateItem = TSInfoMessage.PersistableGroupUpdateItem
+    typealias PersistableGroupUpdateItem = TSInfoMessage.PersistableGroupUpdateItem
 
     private let contactsManager: ContactManager
 
@@ -925,7 +940,7 @@ private struct NewGroupUpdateItemBuilder {
         newGroupModel: TSGroupModel,
         newDisappearingMessageToken: DisappearingMessageToken?,
         groupUpdateSource: GroupUpdateSource,
-        localIdentifiers: LocalIdentifiers
+        localIdentifiers: LocalIdentifiers,
     ) -> [PersistableGroupUpdateItem] {
         var items = [PersistableGroupUpdateItem]()
 
@@ -934,7 +949,7 @@ private struct NewGroupUpdateItemBuilder {
             groupUpdateSource: groupUpdateSource,
             localIdentifiers: localIdentifiers,
             newGroupModel: newGroupModel,
-            newGroupMembership: newGroupModel.groupMembership
+            newGroupMembership: newGroupModel.groupMembership,
         )
 
         items.append(contentsOf: groupInsertedUpdateItems)
@@ -949,11 +964,11 @@ private struct NewGroupUpdateItemBuilder {
                 groupUpdateSource: groupUpdateSource,
                 oldToken: nil,
                 newToken: newDisappearingMessageToken,
-                forceUnknownAttribution: true
+                forceUnknownAttribution: true,
             ).map { items.append($0) }
         }
 
-        if items.contains(where: { if case .createdByLocalUser = $0 { return true } ; return false }) {
+        if items.contains(where: { if case .createdByLocalUser = $0 { return true }; return false }) {
             // If we just created the group, add an update item to let users
             // know about the group link.
             items.append(.inviteFriendsToNewlyCreatedGroup)
@@ -966,7 +981,7 @@ private struct NewGroupUpdateItemBuilder {
         groupUpdateSource: GroupUpdateSource,
         localIdentifiers: LocalIdentifiers,
         newGroupModel: TSGroupModel,
-        newGroupMembership: GroupMembership
+        newGroupMembership: GroupMembership,
     ) -> [PersistableGroupUpdateItem] {
         guard let newGroupModel = newGroupModel as? TSGroupModelV2 else {
             // This is a V1 group. While we may be able to be more specific, we
@@ -978,12 +993,12 @@ private struct NewGroupUpdateItemBuilder {
             groupUpdateSource: groupUpdateSource,
             localIdentifiers: localIdentifiers,
             newGroupModel: newGroupModel,
-            newGroupMembership: newGroupMembership
+            newGroupMembership: newGroupMembership,
         )
 
         let createItem: PersistableGroupUpdateItem? = groupCreationUpdateItems(
             groupUpdateSource: groupUpdateSource,
-            newGroupModel: newGroupModel
+            newGroupModel: newGroupModel,
         )
 
         return [createItem, inviteItem].compacted()
@@ -993,7 +1008,7 @@ private struct NewGroupUpdateItemBuilder {
         groupUpdateSource: GroupUpdateSource,
         localIdentifiers: LocalIdentifiers,
         newGroupModel: TSGroupModelV2,
-        newGroupMembership: GroupMembership
+        newGroupMembership: GroupMembership,
     ) -> PersistableGroupUpdateItem? {
         let localMembershipStatus: MembershipStatus
         if
@@ -1007,7 +1022,7 @@ private struct NewGroupUpdateItemBuilder {
             let localPni = localIdentifiers.pni,
             let pniMembership: MembershipStatus = .of(
                 address: SignalServiceAddress(localPni),
-                groupMembership: newGroupMembership
+                groupMembership: newGroupMembership,
             )
         {
             localMembershipStatus = pniMembership
@@ -1020,7 +1035,7 @@ private struct NewGroupUpdateItemBuilder {
             switch groupUpdateSource {
             case let .aci(updaterAci):
                 return .localUserAddedByOtherUser(
-                    updaterAci: updaterAci.codableUuid
+                    updaterAci: updaterAci.codableUuid,
                 )
             case .localUser:
                 if newGroupModel.didJustAddSelfViaGroupLink || newGroupMembership.didJoinFromInviteLink(forFullMember: localIdentifiers.aciAddress) {
@@ -1035,7 +1050,7 @@ private struct NewGroupUpdateItemBuilder {
         case .invited(_, _, let inviterAci):
             if let inviterAci {
                 return .localUserWasInvitedByOtherUser(
-                    updaterAci: inviterAci.codableUuid
+                    updaterAci: inviterAci.codableUuid,
                 )
             } else {
                 return .localUserWasInvitedByUnknownUser
@@ -1047,7 +1062,7 @@ private struct NewGroupUpdateItemBuilder {
 
     private func groupCreationUpdateItems(
         groupUpdateSource: GroupUpdateSource,
-        newGroupModel: TSGroupModelV2
+        newGroupModel: TSGroupModelV2,
     ) -> PersistableGroupUpdateItem? {
         let wasGroupJustCreated = newGroupModel.revision == 0
         if wasGroupJustCreated {
@@ -1113,7 +1128,7 @@ private struct DiffingGroupUpdateItemBuilder {
         oldDisappearingMessageToken: DisappearingMessageToken?,
         newDisappearingMessageToken: DisappearingMessageToken?,
         groupUpdateSource: GroupUpdateSource,
-        localIdentifiers: LocalIdentifiers
+        localIdentifiers: LocalIdentifiers,
     ) {
         self.localIdentifiers = localIdentifiers
         self.groupUpdateSource = groupUpdateSource
@@ -1129,7 +1144,7 @@ private struct DiffingGroupUpdateItemBuilder {
             newGroupModel: newGroupModel,
             oldDisappearingMessageToken: oldDisappearingMessageToken,
             newDisappearingMessageToken: newDisappearingMessageToken,
-            groupUpdateSource: groupUpdateSource
+            groupUpdateSource: groupUpdateSource,
         )
 
         switch groupUpdateSource {
@@ -1153,7 +1168,7 @@ private struct DiffingGroupUpdateItemBuilder {
         newGroupModel: TSGroupModel,
         oldDisappearingMessageToken: DisappearingMessageToken?,
         newDisappearingMessageToken: DisappearingMessageToken?,
-        groupUpdateSource: GroupUpdateSource
+        groupUpdateSource: GroupUpdateSource,
     ) {
         if isReplacingJoinRequestPlaceholder {
             addMembershipUpdates(
@@ -1161,18 +1176,18 @@ private struct DiffingGroupUpdateItemBuilder {
                 newGroupMembership: newGroupModel.groupMembership,
                 newGroupModel: newGroupModel,
                 groupUpdateSource: groupUpdateSource,
-                forLocalUserOnly: true
+                forLocalUserOnly: true,
             )
 
             addDisappearingMessageUpdates(
                 oldToken: oldDisappearingMessageToken,
-                newToken: newDisappearingMessageToken
+                newToken: newDisappearingMessageToken,
             )
         } else if newGroupModel.wasJustMigratedToV2 {
             addMigrationUpdates(
                 oldGroupMembership: oldGroupModel.groupMembership,
                 newGroupMembership: newGroupModel.groupMembership,
-                newGroupModel: newGroupModel
+                newGroupModel: newGroupModel,
             )
         } else {
             addMembershipUpdates(
@@ -1180,32 +1195,32 @@ private struct DiffingGroupUpdateItemBuilder {
                 newGroupMembership: newGroupModel.groupMembership,
                 newGroupModel: newGroupModel,
                 groupUpdateSource: groupUpdateSource,
-                forLocalUserOnly: false
+                forLocalUserOnly: false,
             )
 
             addAttributesUpdates(
                 oldGroupModel: oldGroupModel,
-                newGroupModel: newGroupModel
+                newGroupModel: newGroupModel,
             )
 
             addAccessUpdates(
                 oldGroupModel: oldGroupModel,
-                newGroupModel: newGroupModel
+                newGroupModel: newGroupModel,
             )
 
             addDisappearingMessageUpdates(
                 oldToken: oldDisappearingMessageToken,
-                newToken: newDisappearingMessageToken
+                newToken: newDisappearingMessageToken,
             )
 
             addGroupInviteLinkUpdates(
                 oldGroupModel: oldGroupModel,
-                newGroupModel: newGroupModel
+                newGroupModel: newGroupModel,
             )
 
             addIsAnnouncementOnlyLinkUpdates(
                 oldGroupModel: oldGroupModel,
-                newGroupModel: newGroupModel
+                newGroupModel: newGroupModel,
             )
         }
     }
@@ -1214,7 +1229,7 @@ private struct DiffingGroupUpdateItemBuilder {
 
     mutating func addAttributesUpdates(
         oldGroupModel: TSGroupModel,
-        newGroupModel: TSGroupModel
+        newGroupModel: TSGroupModel,
     ) {
         let groupName = { (groupModel: TSGroupModel) -> String? in
             groupModel.groupName?.stripped.nilIfEmpty
@@ -1231,7 +1246,7 @@ private struct DiffingGroupUpdateItemBuilder {
                 case let .aci(updaterAci):
                     addItem(.nameChangedByOtherUser(
                         updaterAci: updaterAci.codableUuid,
-                        newGroupName: name
+                        newGroupName: name,
                     ))
                 case .rejectedInviteToPni, .legacyE164, .unknown:
                     addItem(.nameChangedByUnknownUser(newGroupName: name))
@@ -1255,7 +1270,7 @@ private struct DiffingGroupUpdateItemBuilder {
                     addItem(.avatarChangedByLocalUser)
                 case let .aci(updaterAci):
                     addItem(.avatarChangedByOtherUser(
-                        updaterAci: updaterAci.codableUuid
+                        updaterAci: updaterAci.codableUuid,
                     ))
                 case .rejectedInviteToPni, .legacyE164, .unknown:
                     addItem(.avatarChangedByUnknownUser)
@@ -1266,7 +1281,7 @@ private struct DiffingGroupUpdateItemBuilder {
                     addItem(.avatarRemovedByLocalUser)
                 case let .aci(updaterAci):
                     addItem(.avatarRemovedByOtherUser(
-                        updaterAci: updaterAci.codableUuid
+                        updaterAci: updaterAci.codableUuid,
                     ))
                 case .rejectedInviteToPni, .legacyE164, .unknown:
                     addItem(.avatarRemovedByUnknownUser)
@@ -1274,8 +1289,9 @@ private struct DiffingGroupUpdateItemBuilder {
             }
         }
 
-        guard let oldGroupModel = oldGroupModel as? TSGroupModelV2,
-              let newGroupModel = newGroupModel as? TSGroupModelV2 else { return }
+        guard
+            let oldGroupModel = oldGroupModel as? TSGroupModelV2,
+            let newGroupModel = newGroupModel as? TSGroupModelV2 else { return }
 
         let groupDescription = { (groupModel: TSGroupModelV2) -> String? in
             return groupModel.descriptionText?.stripped.nilIfEmpty
@@ -1290,7 +1306,7 @@ private struct DiffingGroupUpdateItemBuilder {
                 case let .aci(updaterAci):
                     addItem(.descriptionChangedByOtherUser(
                         updaterAci: updaterAci.codableUuid,
-                        newDescription: newGroupDescription
+                        newDescription: newGroupDescription,
                     ))
                 case .rejectedInviteToPni, .legacyE164, .unknown:
                     addItem(.descriptionChangedByUnknownUser(newDescription: newGroupDescription))
@@ -1301,7 +1317,7 @@ private struct DiffingGroupUpdateItemBuilder {
                     addItem(.descriptionRemovedByLocalUser)
                 case let .aci(updaterAci):
                     addItem(.descriptionRemovedByOtherUser(
-                        updaterAci: updaterAci.codableUuid
+                        updaterAci: updaterAci.codableUuid,
                     ))
                 case .rejectedInviteToPni, .legacyE164, .unknown:
                     addItem(.descriptionRemovedByUnknownUser)
@@ -1314,7 +1330,7 @@ private struct DiffingGroupUpdateItemBuilder {
 
     mutating func addAccessUpdates(
         oldGroupModel: TSGroupModel,
-        newGroupModel: TSGroupModel
+        newGroupModel: TSGroupModel,
     ) {
         guard let oldGroupModel = oldGroupModel as? TSGroupModelV2 else {
             return
@@ -1334,7 +1350,7 @@ private struct DiffingGroupUpdateItemBuilder {
             case let .aci(updaterAci):
                 addItem(.membersAccessChangedByOtherUser(
                     updaterAci: updaterAci.codableUuid,
-                    newAccess: newAccess.members
+                    newAccess: newAccess.members,
                 ))
             case .rejectedInviteToPni, .legacyE164, .unknown:
                 addItem(.membersAccessChangedByUnknownUser(newAccess: newAccess.members))
@@ -1348,7 +1364,7 @@ private struct DiffingGroupUpdateItemBuilder {
             case let .aci(updaterAci):
                 addItem(.attributesAccessChangedByOtherUser(
                     updaterAci: updaterAci.codableUuid,
-                    newAccess: newAccess.attributes
+                    newAccess: newAccess.attributes,
                 ))
             case .rejectedInviteToPni, .legacyE164, .unknown:
                 addItem(.attributesAccessChangedByUnknownUser(newAccess: newAccess.attributes))
@@ -1363,7 +1379,7 @@ private struct DiffingGroupUpdateItemBuilder {
         newGroupMembership: GroupMembership,
         newGroupModel: TSGroupModel,
         groupUpdateSource: GroupUpdateSource,
-        forLocalUserOnly: Bool
+        forLocalUserOnly: Bool,
     ) {
         var unnamedInviteCounts = UnnamedInviteCounts()
 
@@ -1375,7 +1391,7 @@ private struct DiffingGroupUpdateItemBuilder {
             init?(
                 address: SignalServiceAddress,
                 oldGroupMembership: GroupMembership,
-                newGroupMembership: GroupMembership
+                newGroupMembership: GroupMembership,
             ) {
                 guard let serviceId = address.serviceId else {
                     // No membership change if no serviceId.
@@ -1398,11 +1414,13 @@ private struct DiffingGroupUpdateItemBuilder {
         var membershipChanges: [MembershipChange] = []
 
         if forLocalUserOnly {
-            if let aciMembershipChange = MembershipChange(
-                address: SignalServiceAddress(localIdentifiers.aci),
-                oldGroupMembership: oldGroupMembership,
-                newGroupMembership: newGroupMembership,
-            ) {
+            if
+                let aciMembershipChange = MembershipChange(
+                    address: SignalServiceAddress(localIdentifiers.aci),
+                    oldGroupMembership: oldGroupMembership,
+                    newGroupMembership: newGroupMembership,
+                )
+            {
                 membershipChanges.append(aciMembershipChange)
             }
 
@@ -1411,7 +1429,7 @@ private struct DiffingGroupUpdateItemBuilder {
                 let pniMembershipChange = MembershipChange(
                     address: SignalServiceAddress(localPni),
                     oldGroupMembership: oldGroupMembership,
-                    newGroupMembership: newGroupMembership
+                    newGroupMembership: newGroupMembership,
                 )
             {
                 membershipChanges.append(pniMembershipChange)
@@ -1423,7 +1441,7 @@ private struct DiffingGroupUpdateItemBuilder {
                 return MembershipChange(
                     address: address,
                     oldGroupMembership: oldGroupMembership,
-                    newGroupMembership: newGroupMembership
+                    newGroupMembership: newGroupMembership,
                 )
             }
         }
@@ -1484,7 +1502,7 @@ private struct DiffingGroupUpdateItemBuilder {
                         userAci: memberAci,
                         oldRole: roleBefore,
                         newRole: roleAfter,
-                        newGroupModel: newGroupModel
+                        newGroupModel: newGroupModel,
                     )
                 case .invited:
                     addUserLeftOrWasKickedOutOfGroupThenWasInvitedToTheGroup(
@@ -1516,7 +1534,7 @@ private struct DiffingGroupUpdateItemBuilder {
                     addUserInviteWasDeclinedOrRevoked(
                         inviteeServiceId: inviteeServiceId,
                         inviterAci: inviterAci,
-                        unnamedInviteCounts: &unnamedInviteCounts
+                        unnamedInviteCounts: &unnamedInviteCounts,
                     )
                 }
 
@@ -1525,18 +1543,18 @@ private struct DiffingGroupUpdateItemBuilder {
                 case .normalMember:
                     if newGroupMembership.didJoinFromAcceptedJoinRequest(forFullMember: SignalServiceAddress(requesterAci)) {
                         addUserRequestWasApproved(
-                            requesterAci: requesterAci
+                            requesterAci: requesterAci,
                         )
                     } else {
                         addUserWasAddedToTheGroup(
                             newMember: requesterAci,
-                            newGroupModel: newGroupModel
+                            newGroupModel: newGroupModel,
                         )
                     }
                 case .invited:
                     addUserWasInvitedToTheGroup(
                         invitee: requesterAci,
-                        unnamedInviteCounts: &unnamedInviteCounts
+                        unnamedInviteCounts: &unnamedInviteCounts,
                     )
                 case .requesting:
                     // Membership status didn't change.
@@ -1552,18 +1570,18 @@ private struct DiffingGroupUpdateItemBuilder {
                         addUserJoinedFromInviteLink(newMember: memberAci)
                     } else if newGroupMembership.didJoinFromAcceptedJoinRequest(forFullMember: SignalServiceAddress(memberAci)) {
                         addUserRequestWasApproved(
-                            requesterAci: memberAci
+                            requesterAci: memberAci,
                         )
                     } else {
                         addUserWasAddedToTheGroup(
                             newMember: memberAci,
-                            newGroupModel: newGroupModel
+                            newGroupModel: newGroupModel,
                         )
                     }
                 case .invited(let inviteeServiceId, _, _):
                     addUserWasInvitedToTheGroup(
                         invitee: inviteeServiceId,
-                        unnamedInviteCounts: &unnamedInviteCounts
+                        unnamedInviteCounts: &unnamedInviteCounts,
                     )
                 case .requesting(let requesterAci):
                     addUserRequestedToJoinGroup(requesterAci: requesterAci)
@@ -1579,14 +1597,14 @@ private struct DiffingGroupUpdateItemBuilder {
 
         addInvalidInviteUpdates(
             oldGroupMembership: oldGroupMembership,
-            newGroupMembership: newGroupMembership
+            newGroupMembership: newGroupMembership,
         )
     }
 
     /// "Invalid invites" become unnamed invites; we don't distinguish the two beyond this point.
     mutating func addInvalidInviteUpdates(
         oldGroupMembership: GroupMembership,
-        newGroupMembership: GroupMembership
+        newGroupMembership: GroupMembership,
     ) {
         let oldInvalidInviteUserIds = Set(oldGroupMembership.invalidInviteUserIds)
         let newInvalidInviteUserIds = Set(newGroupMembership.invalidInviteUserIds)
@@ -1600,7 +1618,7 @@ private struct DiffingGroupUpdateItemBuilder {
             case let .aci(updaterAci):
                 addItem(.unnamedUsersWereInvitedByOtherUser(
                     updaterAci: updaterAci.codableUuid,
-                    count: UInt(addedInvalidInviteCount)
+                    count: UInt(addedInvalidInviteCount),
                 ))
             case .rejectedInviteToPni, .legacyE164, .unknown:
                 addItem(.unnamedUsersWereInvitedByUnknownUser(count: UInt(addedInvalidInviteCount)))
@@ -1614,7 +1632,7 @@ private struct DiffingGroupUpdateItemBuilder {
             case let .aci(updaterAci):
                 addItem(.unnamedUserInvitesWereRevokedByOtherUser(
                     updaterAci: updaterAci.codableUuid,
-                    count: UInt(removedInvalidInviteCount)
+                    count: UInt(removedInvalidInviteCount),
                 ))
             case .rejectedInviteToPni, .legacyE164, .unknown:
                 addItem(.unnamedUserInvitesWereRevokedByUnknownUser(count: UInt(removedInvalidInviteCount)))
@@ -1626,7 +1644,7 @@ private struct DiffingGroupUpdateItemBuilder {
         userAci: Aci,
         oldRole: TSGroupMemberRole,
         newRole: TSGroupMemberRole,
-        newGroupModel: TSGroupModel
+        newGroupModel: TSGroupModel,
     ) {
         switch (oldRole, newRole) {
         case (.normal, .normal), (.administrator, .administrator):
@@ -1634,7 +1652,7 @@ private struct DiffingGroupUpdateItemBuilder {
         case (.normal, .administrator):
             addUserWasGrantedAdministrator(
                 userAci: userAci,
-                newGroupModel: newGroupModel
+                newGroupModel: newGroupModel,
             )
         case (.administrator, .normal):
             addUserWasRevokedAdministrator(userAci: userAci)
@@ -1643,11 +1661,13 @@ private struct DiffingGroupUpdateItemBuilder {
 
     mutating func addUserWasGrantedAdministrator(
         userAci: Aci,
-        newGroupModel: TSGroupModel
+        newGroupModel: TSGroupModel,
     ) {
 
-        if let newGroupModelV2 = newGroupModel as? TSGroupModelV2,
-           newGroupModelV2.wasJustMigrated {
+        if
+            let newGroupModelV2 = newGroupModel as? TSGroupModelV2,
+            newGroupModelV2.wasJustMigrated
+        {
             // All v1 group members become admins when the
             // group is migrated to v2. We don't need to
             // surface this to the user.
@@ -1661,7 +1681,7 @@ private struct DiffingGroupUpdateItemBuilder {
                 addItem(.localUserWasGrantedAdministratorByLocalUser)
             case let .aci(updaterAci):
                 addItem(.localUserWasGrantedAdministratorByOtherUser(
-                    updaterAci: updaterAci.codableUuid
+                    updaterAci: updaterAci.codableUuid,
                 ))
             case .rejectedInviteToPni, .legacyE164, .unknown:
                 addItem(.localUserWasGrantedAdministratorByUnknownUser)
@@ -1670,30 +1690,30 @@ private struct DiffingGroupUpdateItemBuilder {
             switch groupUpdateSource {
             case .localUser:
                 addItem(.otherUserWasGrantedAdministratorByLocalUser(
-                    userAci: userAci.codableUuid
+                    userAci: userAci.codableUuid,
                 ))
             case let .aci(updaterAci):
                 if updaterAci == userAci {
                     owsFailDebug("Remote user made themselves administrator!")
                     addItem(.otherUserWasGrantedAdministratorByUnknownUser(
-                        userAci: userAci.codableUuid
+                        userAci: userAci.codableUuid,
                     ))
                 } else {
                     addItem(.otherUserWasGrantedAdministratorByOtherUser(
                         updaterAci: updaterAci.codableUuid,
-                        userAci: userAci.codableUuid
+                        userAci: userAci.codableUuid,
                     ))
                 }
             case .rejectedInviteToPni, .legacyE164, .unknown:
                 addItem(.otherUserWasGrantedAdministratorByUnknownUser(
-                    userAci: userAci.codableUuid
+                    userAci: userAci.codableUuid,
                 ))
             }
         }
     }
 
     mutating func addUserWasRevokedAdministrator(
-        userAci: Aci
+        userAci: Aci,
     ) {
         if localIdentifiers.aci == userAci {
             switch groupUpdateSource {
@@ -1701,7 +1721,7 @@ private struct DiffingGroupUpdateItemBuilder {
                 addItem(.localUserWasRevokedAdministratorByLocalUser)
             case let .aci(updaterAci):
                 addItem(.localUserWasRevokedAdministratorByOtherUser(
-                    updaterAci: updaterAci.codableUuid
+                    updaterAci: updaterAci.codableUuid,
                 ))
             case .rejectedInviteToPni, .legacyE164, .unknown:
                 addItem(.localUserWasRevokedAdministratorByUnknownUser)
@@ -1710,29 +1730,29 @@ private struct DiffingGroupUpdateItemBuilder {
             switch groupUpdateSource {
             case .localUser:
                 addItem(.otherUserWasRevokedAdministratorByLocalUser(
-                    userAci: userAci.codableUuid
+                    userAci: userAci.codableUuid,
                 ))
             case let .aci(updaterAci):
                 if updaterAci == userAci {
                     addItem(.otherUserWasRevokedAdministratorByUnknownUser(
-                        userAci: userAci.codableUuid
+                        userAci: userAci.codableUuid,
                     ))
                 } else {
                     addItem(.otherUserWasRevokedAdministratorByOtherUser(
                         updaterAci: updaterAci.codableUuid,
-                        userAci: userAci.codableUuid
+                        userAci: userAci.codableUuid,
                     ))
                 }
             case .rejectedInviteToPni, .legacyE164, .unknown:
                 addItem(.otherUserWasRevokedAdministratorByUnknownUser(
-                    userAci: userAci.codableUuid
+                    userAci: userAci.codableUuid,
                 ))
             }
         }
     }
 
     mutating func addUserLeftOrWasKickedOutOfGroup(
-        userAci: Aci
+        userAci: Aci,
     ) {
         if localIdentifiers.aci == userAci {
             switch groupUpdateSource {
@@ -1740,7 +1760,7 @@ private struct DiffingGroupUpdateItemBuilder {
                 addItem(.localUserLeft)
             case let .aci(updaterAci):
                 addItem(.localUserRemoved(
-                    removerAci: updaterAci.codableUuid
+                    removerAci: updaterAci.codableUuid,
                 ))
             case .rejectedInviteToPni, .legacyE164, .unknown:
                 addItem(.localUserRemovedByUnknownUser)
@@ -1749,7 +1769,7 @@ private struct DiffingGroupUpdateItemBuilder {
             switch groupUpdateSource {
             case .localUser:
                 addItem(.otherUserRemovedByLocalUser(
-                    userAci: userAci.codableUuid
+                    userAci: userAci.codableUuid,
                 ))
             case let .aci(updaterAci):
                 if updaterAci == userAci {
@@ -1757,19 +1777,19 @@ private struct DiffingGroupUpdateItemBuilder {
                 } else {
                     addItem(.otherUserRemoved(
                         removerAci: updaterAci.codableUuid,
-                        userAci: userAci.codableUuid
+                        userAci: userAci.codableUuid,
                     ))
                 }
             case .rejectedInviteToPni, .legacyE164, .unknown:
                 addItem(.otherUserRemovedByUnknownUser(
-                    userAci: userAci.codableUuid
+                    userAci: userAci.codableUuid,
                 ))
             }
         }
     }
 
     mutating func addUserLeftOrWasKickedOutOfGroupThenWasInvitedToTheGroup(
-        userAci: Aci
+        userAci: Aci,
     ) {
         if localIdentifiers.aci == userAci {
             addItem(.localUserRemovedByUnknownUser)
@@ -1780,14 +1800,14 @@ private struct DiffingGroupUpdateItemBuilder {
                 addItem(.localUserWasInvitedByLocalUser)
             case let .aci(updaterAci):
                 addItem(.localUserWasInvitedByOtherUser(
-                    updaterAci: updaterAci.codableUuid
+                    updaterAci: updaterAci.codableUuid,
                 ))
             case .rejectedInviteToPni, .legacyE164, .unknown:
                 addItem(.localUserWasInvitedByUnknownUser)
             }
         } else {
             addItem(.otherUserLeft(
-                userAci: userAci.codableUuid
+                userAci: userAci.codableUuid,
             ))
 
             switch groupUpdateSource {
@@ -1796,7 +1816,7 @@ private struct DiffingGroupUpdateItemBuilder {
             case let .aci(updaterAci):
                 addItem(.unnamedUsersWereInvitedByOtherUser(
                     updaterAci: updaterAci.codableUuid,
-                    count: 1
+                    count: 1,
                 ))
             case .rejectedInviteToPni, .legacyE164, .unknown:
                 addItem(.unnamedUsersWereInvitedByUnknownUser(count: 1))
@@ -1820,7 +1840,7 @@ private struct DiffingGroupUpdateItemBuilder {
             case .localUser:
                 if let inviterAci {
                     addItem(.localUserAcceptedInviteFromInviter(
-                        inviterAci: inviterAci.codableUuid
+                        inviterAci: inviterAci.codableUuid,
                     ))
                 } else {
                     owsFailDebug("Missing inviter name!")
@@ -1828,7 +1848,7 @@ private struct DiffingGroupUpdateItemBuilder {
                 }
             case let .aci(updaterAci):
                 addItem(.localUserAddedByOtherUser(
-                    updaterAci: updaterAci.codableUuid
+                    updaterAci: updaterAci.codableUuid,
                 ))
             case .rejectedInviteToPni, .legacyE164, .unknown:
                 addItem(.localUserJoined)
@@ -1837,7 +1857,7 @@ private struct DiffingGroupUpdateItemBuilder {
             switch groupUpdateSource {
             case .localUser:
                 addItem(.otherUserAddedByLocalUser(
-                    userAci: inviteeAci.codableUuid
+                    userAci: inviteeAci.codableUuid,
                 ))
             case let .aci(updaterAci):
                 if inviteeAci == updaterAci {
@@ -1845,28 +1865,28 @@ private struct DiffingGroupUpdateItemBuilder {
 
                     if let inviterAci, localIdentifiers.aci == inviterAci {
                         addItem(.otherUserAcceptedInviteFromLocalUser(
-                            userAci: inviteeAci.codableUuid
+                            userAci: inviteeAci.codableUuid,
                         ))
                     } else if let inviterAci {
                         addItem(.otherUserAcceptedInviteFromInviter(
                             userAci: inviteeAci.codableUuid,
-                            inviterAci: inviterAci.codableUuid
+                            inviterAci: inviterAci.codableUuid,
                         ))
                     } else {
                         owsFailDebug("Missing inviter name.")
                         addItem(.otherUserAcceptedInviteFromUnknownUser(
-                            userAci: inviteeAci.codableUuid
+                            userAci: inviteeAci.codableUuid,
                         ))
                     }
                 } else {
                     addItem(.otherUserAddedByOtherUser(
                         updaterAci: updaterAci.codableUuid,
-                        userAci: inviteeAci.codableUuid
+                        userAci: inviteeAci.codableUuid,
                     ))
                 }
             case .rejectedInviteToPni, .legacyE164, .unknown:
                 addItem(.otherUserJoined(
-                    userAci: inviteeAci.codableUuid
+                    userAci: inviteeAci.codableUuid,
                 ))
             }
         }
@@ -1880,22 +1900,22 @@ private struct DiffingGroupUpdateItemBuilder {
     mutating func addUserInviteWasDeclinedOrRevoked(
         inviteeServiceId: ServiceId,
         inviterAci: Aci?,
-        unnamedInviteCounts: inout UnnamedInviteCounts
+        unnamedInviteCounts: inout UnnamedInviteCounts,
     ) {
         if localIdentifiers.contains(serviceId: inviteeServiceId) {
             switch groupUpdateSource {
             case .localUser:
                 if let inviterAci {
                     addItem(.localUserDeclinedInviteFromInviter(
-                        inviterAci: inviterAci.codableUuid
+                        inviterAci: inviterAci.codableUuid,
                     ))
                 } else {
                     owsFailDebug("Missing inviter name!")
-                    addItem( .localUserDeclinedInviteFromUnknownUser)
+                    addItem(.localUserDeclinedInviteFromUnknownUser)
                 }
             case let .aci(updaterAci):
                 addItem(.localUserInviteRevoked(
-                    revokerAci: updaterAci.codableUuid
+                    revokerAci: updaterAci.codableUuid,
                 ))
             case .rejectedInviteToPni, .legacyE164, .unknown:
                 addItem(.localUserInviteRevokedByUnknownUser)
@@ -1906,16 +1926,16 @@ private struct DiffingGroupUpdateItemBuilder {
                 if inviteeServiceId == updaterServiceId {
                     if let inviterAci, localIdentifiers.aci == inviterAci {
                         addItem(.otherUserDeclinedInviteFromLocalUser(
-                            invitee: inviteeServiceId.codableUppercaseString
+                            invitee: inviteeServiceId.codableUppercaseString,
                         ))
                     } else if let inviterAci {
                         addItem(.otherUserDeclinedInviteFromInviter(
                             invitee: inviteeServiceId.codableUppercaseString,
-                            inviterAci: inviterAci.codableUuid
+                            inviterAci: inviterAci.codableUuid,
                         ))
                     } else {
                         addItem(.otherUserDeclinedInviteFromUnknownUser(
-                            invitee: inviteeServiceId.codableUppercaseString
+                            invitee: inviteeServiceId.codableUppercaseString,
                         ))
                     }
                 } else {
@@ -1926,7 +1946,7 @@ private struct DiffingGroupUpdateItemBuilder {
             switch groupUpdateSource {
             case .localUser:
                 addItem(.otherUserInviteRevokedByLocalUser(
-                    invitee: inviteeServiceId.codableUppercaseString
+                    invitee: inviteeServiceId.codableUppercaseString,
                 ))
             case .aci(let updaterAci):
                 addItemForOtherUser(updaterAci)
@@ -1940,7 +1960,7 @@ private struct DiffingGroupUpdateItemBuilder {
 
     mutating func addUserWasAddedToTheGroup(
         newMember: Aci,
-        newGroupModel: TSGroupModel
+        newGroupModel: TSGroupModel,
     ) {
         if newGroupModel.didJustAddSelfViaGroupLinkV2 {
             addItem(.localUserJoined)
@@ -1951,7 +1971,7 @@ private struct DiffingGroupUpdateItemBuilder {
                 addItem(.localUserAddedByLocalUser)
             case let .aci(updaterAci):
                 addItem(.localUserAddedByOtherUser(
-                    updaterAci: updaterAci.codableUuid
+                    updaterAci: updaterAci.codableUuid,
                 ))
             case .rejectedInviteToPni, .legacyE164, .unknown:
                 addItem(.localUserAddedByUnknownUser)
@@ -1960,31 +1980,31 @@ private struct DiffingGroupUpdateItemBuilder {
             switch groupUpdateSource {
             case .localUser:
                 addItem(.otherUserAddedByLocalUser(
-                    userAci: newMember.codableUuid
+                    userAci: newMember.codableUuid,
                 ))
             case let .aci(updaterAci):
                 if updaterAci == newMember {
                     owsFailDebug("Remote user added themselves to the group!")
 
                     addItem(.otherUserAddedByUnknownUser(
-                        userAci: newMember.codableUuid
+                        userAci: newMember.codableUuid,
                     ))
                 } else {
                     addItem(.otherUserAddedByOtherUser(
                         updaterAci: updaterAci.codableUuid,
-                        userAci: newMember.codableUuid
+                        userAci: newMember.codableUuid,
                     ))
                 }
             case .rejectedInviteToPni, .legacyE164, .unknown:
                 addItem(.otherUserAddedByUnknownUser(
-                    userAci: newMember.codableUuid
+                    userAci: newMember.codableUuid,
                 ))
             }
         }
     }
 
     mutating func addUserJoinedFromInviteLink(
-        newMember: Aci
+        newMember: Aci,
     ) {
         if localIdentifiers.aci == newMember {
             switch groupUpdateSource {
@@ -2000,12 +2020,12 @@ private struct DiffingGroupUpdateItemBuilder {
             switch groupUpdateSource {
             case .aci(let updaterAci) where updaterAci == newMember:
                 addItem(.otherUserJoinedViaInviteLink(
-                    userAci: newMember.codableUuid
+                    userAci: newMember.codableUuid,
                 ))
             default:
                 owsFailDebug("If user joined via group link, they should be the updater!")
                 addItem(.otherUserAddedByUnknownUser(
-                    userAci: newMember.codableUuid
+                    userAci: newMember.codableUuid,
                 ))
             }
         }
@@ -2013,7 +2033,7 @@ private struct DiffingGroupUpdateItemBuilder {
 
     mutating func addUserWasInvitedToTheGroup(
         invitee: ServiceId,
-        unnamedInviteCounts: inout UnnamedInviteCounts
+        unnamedInviteCounts: inout UnnamedInviteCounts,
     ) {
         if localIdentifiers.contains(serviceId: invitee) {
             switch groupUpdateSource {
@@ -2023,7 +2043,7 @@ private struct DiffingGroupUpdateItemBuilder {
                 addItem(.localUserWasInvitedByLocalUser)
             case let .aci(updaterAci):
                 addItem(.localUserWasInvitedByOtherUser(
-                    updaterAci: updaterAci.codableUuid
+                    updaterAci: updaterAci.codableUuid,
                 ))
             case .rejectedInviteToPni, .legacyE164, .unknown:
                 addItem(.localUserWasInvitedByUnknownUser)
@@ -2032,7 +2052,7 @@ private struct DiffingGroupUpdateItemBuilder {
             switch groupUpdateSource {
             case .localUser:
                 addItem(.otherUserWasInvitedByLocalUser(
-                    inviteeServiceId: invitee.codableUppercaseString
+                    inviteeServiceId: invitee.codableUppercaseString,
                 ))
             default:
                 unnamedInviteCounts.newInviteCount += 1
@@ -2052,7 +2072,7 @@ private struct DiffingGroupUpdateItemBuilder {
         case let .aci(updaterAci):
             addItem(.unnamedUsersWereInvitedByOtherUser(
                 updaterAci: updaterAci.codableUuid,
-                count: count
+                count: count,
             ))
         case .rejectedInviteToPni, .legacyE164, .unknown:
             addItem(.unnamedUsersWereInvitedByUnknownUser(count: count))
@@ -2071,7 +2091,7 @@ private struct DiffingGroupUpdateItemBuilder {
         case let .aci(updaterAci):
             addItem(.unnamedUserInvitesWereRevokedByOtherUser(
                 updaterAci: updaterAci.codableUuid,
-                count: count
+                count: count,
             ))
         case .rejectedInviteToPni, .legacyE164, .unknown:
             addItem(.unnamedUserInvitesWereRevokedByUnknownUser(count: count))
@@ -2081,19 +2101,19 @@ private struct DiffingGroupUpdateItemBuilder {
     // MARK: Requesting Members
 
     mutating func addUserRequestedToJoinGroup(
-        requesterAci: Aci
+        requesterAci: Aci,
     ) {
         if localIdentifiers.aci == requesterAci {
             addItem(.localUserRequestedToJoin)
         } else {
             addItem(.otherUserRequestedToJoin(
-                userAci: requesterAci.codableUuid
+                userAci: requesterAci.codableUuid,
             ))
         }
     }
 
     mutating func addUserRequestWasApproved(
-        requesterAci: Aci
+        requesterAci: Aci,
     ) {
         if localIdentifiers.aci == requesterAci {
             switch groupUpdateSource {
@@ -2106,7 +2126,7 @@ private struct DiffingGroupUpdateItemBuilder {
                 addItem(.localUserAddedByLocalUser)
             case .aci(let updaterAci):
                 addItem(.localUserRequestApproved(
-                    approverAci: updaterAci.codableUuid
+                    approverAci: updaterAci.codableUuid,
                 ))
             case .rejectedInviteToPni, .legacyE164, .unknown:
                 addItem(.localUserRequestApprovedByUnknownUser)
@@ -2115,23 +2135,23 @@ private struct DiffingGroupUpdateItemBuilder {
             switch groupUpdateSource {
             case .localUser:
                 addItem(.otherUserRequestApprovedByLocalUser(
-                    userAci: requesterAci.codableUuid
+                    userAci: requesterAci.codableUuid,
                 ))
             case .aci(let updaterAci):
                 addItem(.otherUserRequestApproved(
                     userAci: requesterAci.codableUuid,
-                    approverAci: updaterAci.codableUuid
+                    approverAci: updaterAci.codableUuid,
                 ))
             case .rejectedInviteToPni, .legacyE164, .unknown:
                 addItem(.otherUserRequestApprovedByUnknownUser(
-                    userAci: requesterAci.codableUuid
+                    userAci: requesterAci.codableUuid,
                 ))
             }
         }
     }
 
     mutating func addUserRequestWasRejected(
-        requesterAci: Aci
+        requesterAci: Aci,
     ) {
         if localIdentifiers.aci == requesterAci {
             switch groupUpdateSource {
@@ -2144,22 +2164,22 @@ private struct DiffingGroupUpdateItemBuilder {
             switch groupUpdateSource {
             case .localUser:
                 addItem(.otherUserRequestRejectedByLocalUser(
-                    requesterAci: requesterAci.codableUuid
+                    requesterAci: requesterAci.codableUuid,
                 ))
             case let .aci(updaterAci):
                 if updaterAci == requesterAci {
                     addItem(.otherUserRequestCanceledByOtherUser(
-                        requesterAci: requesterAci.codableUuid
+                        requesterAci: requesterAci.codableUuid,
                     ))
                 } else {
                     addItem(.otherUserRequestRejectedByOtherUser(
                         updaterAci: updaterAci.codableUuid,
-                        requesterAci: requesterAci.codableUuid
+                        requesterAci: requesterAci.codableUuid,
                     ))
                 }
             case .rejectedInviteToPni, .legacyE164, .unknown:
                 addItem(.otherUserRequestRejectedByUnknownUser(
-                    requesterAci: requesterAci.codableUuid
+                    requesterAci: requesterAci.codableUuid,
                 ))
             }
         }
@@ -2174,7 +2194,7 @@ private struct DiffingGroupUpdateItemBuilder {
     /// caution when reorganizing any calls to this method.
     mutating func addDisappearingMessageUpdates(
         oldToken: DisappearingMessageToken?,
-        newToken: DisappearingMessageToken?
+        newToken: DisappearingMessageToken?,
     ) {
         // If this update represents us joining the group, we want to make
         // sure we use "unknown" attribution for whatever the disappearing
@@ -2183,10 +2203,10 @@ private struct DiffingGroupUpdateItemBuilder {
         let localUserJustJoined = itemList.contains { updateItem in
             switch updateItem {
             case
-                    .localUserJoined,
-                    .localUserJoinedViaInviteLink,
-                    .localUserRequestApproved,
-                    .localUserRequestApprovedByUnknownUser:
+                .localUserJoined,
+                .localUserJoinedViaInviteLink,
+                .localUserRequestApproved,
+                .localUserRequestApprovedByUnknownUser:
                 return true
             default:
                 return false
@@ -2197,7 +2217,7 @@ private struct DiffingGroupUpdateItemBuilder {
             groupUpdateSource: groupUpdateSource,
             oldToken: oldToken,
             newToken: newToken,
-            forceUnknownAttribution: localUserJustJoined
+            forceUnknownAttribution: localUserJustJoined,
         ).map {
             addItem($0)
         }
@@ -2207,7 +2227,7 @@ private struct DiffingGroupUpdateItemBuilder {
         groupUpdateSource: GroupUpdateSource,
         oldToken: DisappearingMessageToken?,
         newToken: DisappearingMessageToken?,
-        forceUnknownAttribution: Bool
+        forceUnknownAttribution: Bool,
     ) -> PersistableGroupUpdateItem? {
         guard let newToken else {
             // This info message was created before we embedded DM state.
@@ -2226,14 +2246,14 @@ private struct DiffingGroupUpdateItemBuilder {
             return nil
         }
 
-        if newToken.isEnabled && durationMs > 0 {
+        if newToken.isEnabled, durationMs > 0 {
             switch groupUpdateSource {
             case .localUser:
                 return .disappearingMessagesEnabledByLocalUser(durationMs: durationMs)
             case let .aci(updaterAci):
                 return .disappearingMessagesEnabledByOtherUser(
                     updaterAci: updaterAci.codableUuid,
-                    durationMs: durationMs
+                    durationMs: durationMs,
                 )
             case .rejectedInviteToPni, .legacyE164, .unknown:
                 return .disappearingMessagesEnabledByUnknownUser(durationMs: durationMs)
@@ -2244,7 +2264,7 @@ private struct DiffingGroupUpdateItemBuilder {
                 return .disappearingMessagesDisabledByLocalUser
             case let .aci(updaterAci):
                 return .disappearingMessagesDisabledByOtherUser(
-                    updaterAci: updaterAci.codableUuid
+                    updaterAci: updaterAci.codableUuid,
                 )
             case .rejectedInviteToPni, .legacyE164, .unknown:
                 return .disappearingMessagesDisabledByUnknownUser
@@ -2256,7 +2276,7 @@ private struct DiffingGroupUpdateItemBuilder {
 
     mutating func addGroupInviteLinkUpdates(
         oldGroupModel: TSGroupModel,
-        newGroupModel: TSGroupModel
+        newGroupModel: TSGroupModel,
     ) {
         guard let oldGroupModel = oldGroupModel as? TSGroupModelV2 else {
             return
@@ -2279,7 +2299,7 @@ private struct DiffingGroupUpdateItemBuilder {
                     addItem(.inviteLinkResetByLocalUser)
                 case let .aci(updaterAci):
                     addItem(.inviteLinkResetByOtherUser(
-                        updaterAci: updaterAci.codableUuid
+                        updaterAci: updaterAci.codableUuid,
                     ))
                 case .rejectedInviteToPni, .legacyE164, .unknown:
                     addItem(.inviteLinkResetByUnknownUser)
@@ -2300,7 +2320,7 @@ private struct DiffingGroupUpdateItemBuilder {
                     addItem(.inviteLinkEnabledWithoutApprovalByLocalUser)
                 case let .aci(updaterAci):
                     addItem(.inviteLinkEnabledWithoutApprovalByOtherUser(
-                        updaterAci: updaterAci.codableUuid
+                        updaterAci: updaterAci.codableUuid,
                     ))
                 case .rejectedInviteToPni, .legacyE164, .unknown:
                     addItem(.inviteLinkEnabledWithoutApprovalByUnknownUser)
@@ -2311,7 +2331,7 @@ private struct DiffingGroupUpdateItemBuilder {
                     addItem(.inviteLinkEnabledWithApprovalByLocalUser)
                 case let .aci(updaterAci):
                     addItem(.inviteLinkEnabledWithApprovalByOtherUser(
-                        updaterAci: updaterAci.codableUuid
+                        updaterAci: updaterAci.codableUuid,
                     ))
                 case .rejectedInviteToPni, .legacyE164, .unknown:
                     addItem(.inviteLinkEnabledWithApprovalByUnknownUser)
@@ -2325,7 +2345,7 @@ private struct DiffingGroupUpdateItemBuilder {
                     addItem(.inviteLinkDisabledByLocalUser)
                 case let .aci(updaterAci):
                     addItem(.inviteLinkDisabledByOtherUser(
-                        updaterAci: updaterAci.codableUuid
+                        updaterAci: updaterAci.codableUuid,
                     ))
                 case .rejectedInviteToPni, .legacyE164, .unknown:
                     addItem(.inviteLinkDisabledByUnknownUser)
@@ -2336,7 +2356,7 @@ private struct DiffingGroupUpdateItemBuilder {
                     addItem(.inviteLinkApprovalDisabledByLocalUser)
                 case let .aci(updaterAci):
                     addItem(.inviteLinkApprovalDisabledByOtherUser(
-                        updaterAci: updaterAci.codableUuid
+                        updaterAci: updaterAci.codableUuid,
                     ))
                 case .rejectedInviteToPni, .legacyE164, .unknown:
                     addItem(.inviteLinkApprovalDisabledByUnknownUser)
@@ -2347,7 +2367,7 @@ private struct DiffingGroupUpdateItemBuilder {
                     addItem(.inviteLinkApprovalEnabledByLocalUser)
                 case let .aci(updaterAci):
                     addItem(.inviteLinkApprovalEnabledByOtherUser(
-                        updaterAci: updaterAci.codableUuid
+                        updaterAci: updaterAci.codableUuid,
                     ))
                 case .rejectedInviteToPni, .legacyE164, .unknown:
                     addItem(.inviteLinkApprovalEnabledByUnknownUser)
@@ -2360,7 +2380,7 @@ private struct DiffingGroupUpdateItemBuilder {
 
     mutating func addIsAnnouncementOnlyLinkUpdates(
         oldGroupModel: TSGroupModel,
-        newGroupModel: TSGroupModel
+        newGroupModel: TSGroupModel,
     ) {
         guard let oldGroupModel = oldGroupModel as? TSGroupModelV2 else {
             return
@@ -2382,7 +2402,7 @@ private struct DiffingGroupUpdateItemBuilder {
                 addItem(.announcementOnlyEnabledByLocalUser)
             case let .aci(aci):
                 addItem(.announcementOnlyEnabledByOtherUser(
-                    updaterAci: aci.codableUuid
+                    updaterAci: aci.codableUuid,
                 ))
             case .rejectedInviteToPni, .legacyE164, .unknown:
                 addItem(.announcementOnlyEnabledByUnknownUser)
@@ -2404,7 +2424,7 @@ private struct DiffingGroupUpdateItemBuilder {
     mutating func addMigrationUpdates(
         oldGroupMembership: GroupMembership,
         newGroupMembership: GroupMembership,
-        newGroupModel: TSGroupModel
+        newGroupModel: TSGroupModel,
     ) {
         owsAssertDebug(newGroupModel.wasJustMigratedToV2)
         addItem(.wasMigrated)

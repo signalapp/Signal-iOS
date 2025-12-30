@@ -5,25 +5,29 @@
 
 import AVFoundation
 import Foundation
+import LibSignalClient
 import Lottie
 import Photos
-import UIKit
 import SignalServiceKit
 import SignalUI
-import LibSignalClient
+import UIKit
 
 protocol PhotoCaptureViewControllerDelegate: AnyObject {
     func photoCaptureViewControllerDidFinish(_ photoCaptureViewController: PhotoCaptureViewController)
-    func photoCaptureViewController(_ photoCaptureViewController: PhotoCaptureViewController,
-                                    didFinishWithTextAttachment textAttachment: UnsentTextAttachment)
+    func photoCaptureViewController(
+        _ photoCaptureViewController: PhotoCaptureViewController,
+        didFinishWithTextAttachment textAttachment: UnsentTextAttachment,
+    )
     func photoCaptureViewControllerDidCancel(_ photoCaptureViewController: PhotoCaptureViewController)
     func photoCaptureViewControllerDidTryToCaptureTooMany(_ photoCaptureViewController: PhotoCaptureViewController)
     func photoCaptureViewControllerViewWillAppear(_ photoCaptureViewController: PhotoCaptureViewController)
     func photoCaptureViewControllerCanCaptureMoreItems(_ photoCaptureViewController: PhotoCaptureViewController) -> Bool
     func photoCaptureViewControllerDidRequestPresentPhotoLibrary(_ photoCaptureViewController: PhotoCaptureViewController)
-    func photoCaptureViewController(_ photoCaptureViewController: PhotoCaptureViewController,
-                                    didRequestSwitchCaptureModeTo captureMode: PhotoCaptureViewController.CaptureMode,
-                                    completion: @escaping (Bool) -> Void)
+    func photoCaptureViewController(
+        _ photoCaptureViewController: PhotoCaptureViewController,
+        didRequestSwitchCaptureModeTo captureMode: PhotoCaptureViewController.CaptureMode,
+        completion: @escaping (Bool) -> Void,
+    )
     func photoCaptureViewControllerCanShowTextEditor(_ photoCaptureViewController: PhotoCaptureViewController) -> Bool
 }
 
@@ -42,7 +46,7 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
     private lazy var cameraCaptureSession = CameraCaptureSession(
         delegate: self,
         maxPlaintextVideoBytes: RemoteConfig.current.attachmentMaxPlaintextVideoBytes,
-        qrCodeSampleBufferScanner: qrCodeSampleBufferScanner
+        qrCodeSampleBufferScanner: qrCodeSampleBufferScanner,
     )
 
     private var qrCodeScanned = false {
@@ -74,11 +78,13 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
             }
         }
     }
+
     private var hasCameraStarted = false {
         didSet {
             isCameraReady = isViewVisible && hasCameraStarted
         }
     }
+
     private var isViewVisible = false {
         didSet {
             isCameraReady = isViewVisible && hasCameraStarted
@@ -108,7 +114,7 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
 
         updateFlashModeControl(animated: false)
 
-        if let navigationController = navigationController {
+        if let navigationController {
             let interactiveDismiss = PhotoCaptureInteractiveDismiss(viewController: navigationController)
             interactiveDismiss.interactiveDismissDelegate = self
             interactiveDismiss.addGestureRecognizer(to: view)
@@ -135,12 +141,12 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
             self,
             selector: #selector(sessionWasInterrupted),
             name: AVCaptureSession.wasInterruptedNotification,
-            object: nil
+            object: nil,
         )
 
         resumePhotoCapture()
 
-        if let dataSource = dataSource, dataSource.numberOfMediaItems > 0 {
+        if let dataSource, dataSource.numberOfMediaItems > 0 {
             captureMode = .multi
         }
         updateDoneButtonAppearance()
@@ -182,12 +188,14 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
         // Rotating the preview layer is really distracting, so we fade out the preview layer
         // while the rotation occurs.
         self.previewView.alpha = 0
-        coordinator.animate(alongsideTransition: { _ in },
-                            completion: { _ in
-            UIView.animate(withDuration: 0.1) {
-                self.previewView.alpha = 1
-            }
-        })
+        coordinator.animate(
+            alongsideTransition: { _ in },
+            completion: { _ in
+                UIView.animate(withDuration: 0.1) {
+                    self.previewView.alpha = 1
+                }
+            },
+        )
     }
 
     override func viewSafeAreaInsetsDidChange() {
@@ -203,7 +211,7 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
             previewView.previewLayer.cornerRadius = view.safeAreaInsets.top > 0 ? 18 : 0
         }
 
-        if let bottomBarControlsLayoutGuideBottom = bottomBarControlsLayoutGuideBottom {
+        if let bottomBarControlsLayoutGuideBottom {
             bottomBarControlsLayoutGuideBottom.constant = -view.safeAreaInsets.bottom
         }
     }
@@ -230,6 +238,7 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
         case camera = 0
         case text
     }
+
     private var _internalComposerMode: ComposerMode = .camera
     private var composerMode: ComposerMode { _internalComposerMode }
     private func setComposerMode(_ composerMode: ComposerMode, animated: Bool) {
@@ -289,19 +298,19 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
             let captureControlState: CameraCaptureControl.State = UIAccessibility.isVoiceOverRunning ? .recordingUsingVoiceOver : .recording
             let animationDuration: TimeInterval = animated ? 0.4 : 0
             bottomBar.captureControl.setState(captureControlState, animationDuration: animationDuration)
-            if let sideBar = sideBar {
+            if let sideBar {
                 sideBar.cameraCaptureControl.setState(captureControlState, animationDuration: animationDuration)
             }
         } else {
             let animationDuration: TimeInterval = animated ? 0.2 : 0
             bottomBar.captureControl.setState(.initial, animationDuration: animationDuration)
-            if let sideBar = sideBar {
+            if let sideBar {
                 sideBar.cameraCaptureControl.setState(.initial, animationDuration: animationDuration)
             }
         }
 
         bottomBar.setMode(isRecordingVideo ? .videoRecording : .camera, animated: animated)
-        if let sideBar = sideBar {
+        if let sideBar {
             sideBar.isRecordingVideo = isRecordingVideo
         }
 
@@ -312,10 +321,11 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
         case single
         case multi
     }
+
     var captureMode: CaptureMode = .single {
         didSet {
             topBar.batchModeButton.setCaptureMode(captureMode, animated: true)
-            if let sideBar = sideBar {
+            if let sideBar {
                 sideBar.batchModeButton.setCaptureMode(captureMode, animated: true)
             }
         }
@@ -355,7 +365,7 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
 
     private var sideBar: CameraSideBar? // Optional because most devices are iPhones and will never need this.
     private func updateSideBarVisibility(animated: Bool) {
-        guard let sideBar = sideBar else { return }
+        guard let sideBar else { return }
         sideBar.setIsHidden(composerMode == .text || !isIPadUIInRegularMode, animated: true)
     }
 
@@ -376,6 +386,7 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
         view.setContentHuggingHigh()
         return view
     }()
+
     private lazy var tapToFocusCenterXConstraint = tapToFocusView.centerXAnchor.constraint(equalTo: previewView.leftAnchor)
     private lazy var tapToFocusCenterYConstraint = tapToFocusView.centerYAnchor.constraint(equalTo: previewView.topAnchor)
     private var lastUserFocusTapPoint: CGPoint?
@@ -393,12 +404,13 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
     private lazy var textStoryComposerView = TextStoryComposerView(text: "")
 
     private lazy var textEditorToolbar: UIView = {
-        let stackView = UIStackView(arrangedSubviews: [ textBackgroundSelectionButton, textViewAttachLinkButton ])
+        let stackView = UIStackView(arrangedSubviews: [textBackgroundSelectionButton, textViewAttachLinkButton])
         stackView.axis = .horizontal
         stackView.spacing = 16
         stackView.translatesAutoresizingMaskIntoConstraints = false
         return stackView
     }()
+
     private lazy var textBackgroundSelectionButton = RoundGradientButton()
     private lazy var textViewAttachLinkButton: UIButton = {
         let button = RoundMediaButton(image: UIImage(imageLiteralResourceName: "link"), backgroundStyle: .blur)
@@ -418,11 +430,15 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
         button.overrideUserInterfaceStyle = .dark
         return button
     }()
+
     private var shouldHideDoneButton: Bool {
         isRecordingVideo || composerMode == .text || doneButton.badgeNumber == 0
     }
-    private lazy var doneButtonIPhoneConstraints = [ doneButton.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
-                                                     doneButton.centerYAnchor.constraint(equalTo: bottomBar.shutterButtonLayoutGuide.centerYAnchor) ]
+
+    private lazy var doneButtonIPhoneConstraints = [
+        doneButton.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
+        doneButton.centerYAnchor.constraint(equalTo: bottomBar.shutterButtonLayoutGuide.centerYAnchor),
+    ]
     private var doneButtonIPadConstraints: [NSLayoutConstraint]?
 
     private func initializeUI() {
@@ -430,17 +446,21 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
         // either camera viewfinder or text story composing area.
         view.addLayoutGuide(previewViewLayoutGuide)
         // Always full-width.
-        view.addConstraints([ previewViewLayoutGuide.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-                              previewViewLayoutGuide.trailingAnchor.constraint(equalTo: view.trailingAnchor) ])
+        view.addConstraints([
+            previewViewLayoutGuide.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            previewViewLayoutGuide.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+        ])
         if UIDevice.current.isIPad {
             // Full-height on iPads.
-            view.addConstraints([ previewViewLayoutGuide.topAnchor.constraint(equalTo: view.topAnchor),
-                                  previewViewLayoutGuide.bottomAnchor.constraint(equalTo: view.bottomAnchor) ])
+            view.addConstraints([
+                previewViewLayoutGuide.topAnchor.constraint(equalTo: view.topAnchor),
+                previewViewLayoutGuide.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            ])
         } else {
             // 9:16 aspect ratio on iPhones.
             // Note that there's no constraint on the bottom edge of the `previewViewLayoutGuide`.
             // This works because all iPhones have screens 9:16 or taller.
-            view.addConstraint(previewViewLayoutGuide.heightAnchor.constraint(equalTo: previewViewLayoutGuide.widthAnchor, multiplier: 16/9))
+            view.addConstraint(previewViewLayoutGuide.heightAnchor.constraint(equalTo: previewViewLayoutGuide.widthAnchor, multiplier: 16 / 9))
             // Constrain to the top of the view now and update offset with the height of top safe area later.
             // Can't constrain to the safe area layout guide because safe area insets changes during interactive dismiss.
             let constraint = previewViewLayoutGuide.topAnchor.constraint(equalTo: view.topAnchor)
@@ -453,10 +473,12 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
         // Camera Viewfinder - simply occupies the entire frame of `previewViewLayoutGuide`.
         previewView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(previewView)
-        view.addConstraints([ previewView.leadingAnchor.constraint(equalTo: previewViewLayoutGuide.leadingAnchor),
-                              previewView.topAnchor.constraint(equalTo: previewViewLayoutGuide.topAnchor),
-                              previewView.trailingAnchor.constraint(equalTo: previewViewLayoutGuide.trailingAnchor),
-                              previewView.bottomAnchor.constraint(equalTo: previewViewLayoutGuide.bottomAnchor) ])
+        view.addConstraints([
+            previewView.leadingAnchor.constraint(equalTo: previewViewLayoutGuide.leadingAnchor),
+            previewView.topAnchor.constraint(equalTo: previewViewLayoutGuide.topAnchor),
+            previewView.trailingAnchor.constraint(equalTo: previewViewLayoutGuide.trailingAnchor),
+            previewView.bottomAnchor.constraint(equalTo: previewViewLayoutGuide.bottomAnchor),
+        ])
         configureCameraGestures()
 
         // Top Bar
@@ -512,8 +534,10 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
             self.frontCameraZoomControl = cameraZoomControl
 
             let cameraZoomControlConstraints =
-            [ cameraZoomControl.centerXAnchor.constraint(equalTo: bottomBar.shutterButtonLayoutGuide.centerXAnchor),
-              cameraZoomControl.bottomAnchor.constraint(equalTo: bottomBar.shutterButtonLayoutGuide.topAnchor, constant: -32) ]
+                [
+                    cameraZoomControl.centerXAnchor.constraint(equalTo: bottomBar.shutterButtonLayoutGuide.centerXAnchor),
+                    cameraZoomControl.bottomAnchor.constraint(equalTo: bottomBar.shutterButtonLayoutGuide.topAnchor, constant: -32),
+                ]
             view.addConstraints(cameraZoomControlConstraints)
             cameraZoomControlIPhoneConstraints?.append(contentsOf: cameraZoomControlConstraints)
         }
@@ -528,8 +552,10 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
             self.rearCameraZoomControl = cameraZoomControl
 
             let cameraZoomControlConstraints =
-            [ cameraZoomControl.centerXAnchor.constraint(equalTo: bottomBar.shutterButtonLayoutGuide.centerXAnchor),
-              cameraZoomControl.bottomAnchor.constraint(equalTo: bottomBar.shutterButtonLayoutGuide.topAnchor, constant: -32) ]
+                [
+                    cameraZoomControl.centerXAnchor.constraint(equalTo: bottomBar.shutterButtonLayoutGuide.centerXAnchor),
+                    cameraZoomControl.bottomAnchor.constraint(equalTo: bottomBar.shutterButtonLayoutGuide.topAnchor, constant: -32),
+                ]
             view.addConstraints(cameraZoomControlConstraints)
             cameraZoomControlIPhoneConstraints?.append(contentsOf: cameraZoomControlConstraints)
         }
@@ -544,7 +570,7 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
 
         // Focusing frame
         previewView.addSubview(tapToFocusView)
-        previewView.addConstraints([ tapToFocusCenterXConstraint, tapToFocusCenterYConstraint ])
+        previewView.addConstraints([tapToFocusCenterXConstraint, tapToFocusCenterYConstraint])
 
         // Step 2. Check if we're running on an iPad and update UI accordingly.
         // Note that `traitCollectionDidChange` won't be called during initial view loading process.
@@ -579,18 +605,24 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
         sideBar.batchModeButton.setImage(topBar.batchModeButton.image(for: .normal), for: .normal)
         updateFlashModeControl(animated: false)
 
-        doneButtonIPadConstraints = [ doneButton.centerXAnchor.constraint(equalTo: sideBar.centerXAnchor),
-                                      doneButton.bottomAnchor.constraint(equalTo: sideBar.topAnchor, constant: -8)]
+        doneButtonIPadConstraints = [
+            doneButton.centerXAnchor.constraint(equalTo: sideBar.centerXAnchor),
+            doneButton.bottomAnchor.constraint(equalTo: sideBar.topAnchor, constant: -8),
+        ]
 
         cameraZoomControlIPadConstraints = []
         if let cameraZoomControl = frontCameraZoomControl {
-            let constraints = [ cameraZoomControl.centerYAnchor.constraint(equalTo: sideBar.cameraCaptureControl.shutterButtonLayoutGuide.centerYAnchor),
-                                cameraZoomControl.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 32)]
+            let constraints = [
+                cameraZoomControl.centerYAnchor.constraint(equalTo: sideBar.cameraCaptureControl.shutterButtonLayoutGuide.centerYAnchor),
+                cameraZoomControl.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 32),
+            ]
             cameraZoomControlIPadConstraints?.append(contentsOf: constraints)
         }
         if let cameraZoomControl = rearCameraZoomControl {
-            let constraints = [ cameraZoomControl.centerYAnchor.constraint(equalTo: sideBar.cameraCaptureControl.shutterButtonLayoutGuide.centerYAnchor),
-                                cameraZoomControl.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 32)]
+            let constraints = [
+                cameraZoomControl.centerYAnchor.constraint(equalTo: sideBar.cameraCaptureControl.shutterButtonLayoutGuide.centerYAnchor),
+                cameraZoomControl.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 32),
+            ]
             cameraZoomControlIPadConstraints?.append(contentsOf: constraints)
         }
 
@@ -606,11 +638,11 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
             initializeIPadSpecificUIIfNecessary()
 
             view.removeConstraints(doneButtonIPhoneConstraints)
-            if let doneButtonIPadConstraints = doneButtonIPadConstraints {
+            if let doneButtonIPadConstraints {
                 view.addConstraints(doneButtonIPadConstraints)
             }
         } else {
-            if let doneButtonIPadConstraints = doneButtonIPadConstraints {
+            if let doneButtonIPadConstraints {
                 view.removeConstraints(doneButtonIPadConstraints)
             }
             view.addConstraints(doneButtonIPhoneConstraints)
@@ -622,8 +654,10 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
         if let cameraZoomControl = rearCameraZoomControl {
             cameraZoomControl.axis = isIPadUIInRegularMode ? .vertical : .horizontal
         }
-        if let iPhoneConstraints = cameraZoomControlIPhoneConstraints,
-           let iPadConstraints = cameraZoomControlIPadConstraints {
+        if
+            let iPhoneConstraints = cameraZoomControlIPhoneConstraints,
+            let iPadConstraints = cameraZoomControlIPadConstraints
+        {
             if isIPadUIInRegularMode {
                 view.removeConstraints(iPhoneConstraints)
                 view.addConstraints(iPadConstraints)
@@ -647,7 +681,7 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
 
                 bottomBar.constrainControlButtonsLayoutGuideHorizontallyTo(
                     leadingAnchor: textStoryComposerView.leadingAnchor,
-                    trailingAnchor: textStoryComposerView.trailingAnchor
+                    trailingAnchor: textStoryComposerView.trailingAnchor,
                 )
             } else {
                 view.removeConstraints(textEditoriPadConstraints)
@@ -671,7 +705,7 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
         frontCameraZoomControl?.setIsHidden(!isFrontCamera, animated: animated)
         rearCameraZoomControl?.setIsHidden(isFrontCamera, animated: animated)
         bottomBar.switchCameraButton.isFrontCameraActive = isFrontCamera
-        if let sideBar = sideBar {
+        if let sideBar {
             sideBar.switchCameraButton.isFrontCameraActive = isFrontCamera
         }
     }
@@ -697,7 +731,7 @@ class PhotoCaptureViewController: OWSViewController, OWSNavigationChildControlle
         // Don't "unrotate" the switch camera icon if the front facing camera had been selected.
         let transformFromCameraType: CGAffineTransform = cameraCaptureSession.desiredPosition == .front ? CGAffineTransform(rotationAngle: -.pi) : .identity
 
-        var buttonsToUpdate: [UIView] = [ topBar.batchModeButton, topBar.flashModeButton, bottomBar.photoLibraryButton ]
+        var buttonsToUpdate: [UIView] = [topBar.batchModeButton, topBar.flashModeButton, bottomBar.photoLibraryButton]
         if let cameraZoomControl = frontCameraZoomControl {
             buttonsToUpdate.append(contentsOf: cameraZoomControl.cameraZoomLevelIndicators)
         }
@@ -739,7 +773,7 @@ extension PhotoCaptureViewController {
             textStoryComposerView.leadingAnchor.constraint(equalTo: previewViewLayoutGuide.leadingAnchor),
             textStoryComposerView.topAnchor.constraint(equalTo: previewViewLayoutGuide.topAnchor),
             textStoryComposerView.trailingAnchor.constraint(equalTo: previewViewLayoutGuide.trailingAnchor),
-            textStoryComposerView.bottomAnchor.constraint(equalTo: previewViewLayoutGuide.bottomAnchor)
+            textStoryComposerView.bottomAnchor.constraint(equalTo: previewViewLayoutGuide.bottomAnchor),
         ])
 
         // Swipe right to switch to camera.
@@ -793,13 +827,15 @@ extension PhotoCaptureViewController {
             textStoryComposerView.topAnchor.constraint(equalTo: topBar.bottomAnchor, constant: -8),
             textStoryComposerView.bottomAnchor.constraint(equalTo: bottomBar.controlButtonsLayoutGuide.topAnchor, constant: -24),
             textStoryComposerView.centerXAnchor.constraint(equalTo: previewViewLayoutGuide.centerXAnchor),
-            textStoryComposerView.widthAnchor.constraint(equalTo: textStoryComposerView.heightAnchor, multiplier: 9/16)
+            textStoryComposerView.widthAnchor.constraint(equalTo: textStoryComposerView.heightAnchor, multiplier: 9 / 16),
         ])
 
         // This constraint defines bottom edge of the text content area
         // and would allow to resize content to clear onscreen keyboard.
         textStoryComposerContentLayoutGuideBottomIpad = textStoryComposerView.contentLayoutGuide.bottomAnchor.constraint(
-            equalTo: textStoryComposerView.bottomAnchor, constant: -8)
+            equalTo: textStoryComposerView.bottomAnchor,
+            constant: -8,
+        )
         textEditoriPadConstraints.append(textStoryComposerContentLayoutGuideBottomIpad!)
 
         // Background and Add Link buttons are vertically centered with CAMERA|TEXT switch and Proceed button.
@@ -811,13 +847,13 @@ extension PhotoCaptureViewController {
         textEditoriPadConstraints.append(
             textEditorToolbar.trailingAnchor.constraint(
                 lessThanOrEqualTo: bottomBar.contentTypeSelectionControl.leadingAnchor,
-                constant: -20
-            )
+                constant: -20,
+            ),
         )
         if isIPadUIInRegularMode {
             bottomBar.constrainControlButtonsLayoutGuideHorizontallyTo(
                 leadingAnchor: textStoryComposerView.leadingAnchor,
-                trailingAnchor: textStoryComposerView.trailingAnchor
+                trailingAnchor: textStoryComposerView.trailingAnchor,
             )
         }
 
@@ -832,7 +868,7 @@ extension PhotoCaptureViewController {
     private func updateTextBackgroundSelectionButton() {
         switch textStoryComposerView.background {
         case .color(let color):
-            textBackgroundSelectionButton.gradientView.colors = [ color, color ]
+            textBackgroundSelectionButton.gradientView.colors = [color, color]
 
         case .gradient(let gradient):
             textBackgroundSelectionButton.gradientView.colors = gradient.colors
@@ -850,19 +886,19 @@ extension PhotoCaptureViewController {
             self,
             selector: #selector(handleKeyboardNotification(_:)),
             name: UIResponder.keyboardWillShowNotification,
-            object: nil
+            object: nil,
         )
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(handleKeyboardNotification(_:)),
             name: UIResponder.keyboardWillHideNotification,
-            object: nil
+            object: nil,
         )
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(handleKeyboardNotification(_:)),
             name: UIResponder.keyboardWillChangeFrameNotification,
-            object: nil
+            object: nil,
         )
         observingKeyboardNotifications = true
     }
@@ -874,8 +910,9 @@ extension PhotoCaptureViewController {
         guard let iPhoneConstraint = textStoryComposerContentLayoutGuideBottomIphone else { return }
         let iPadConstraint = textStoryComposerContentLayoutGuideBottomIpad
 
-        guard let userInfo = notification.userInfo,
-              let endFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else { return }
+        guard
+            let userInfo = notification.userInfo,
+            let endFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else { return }
 
         // Detect floating keyboards - those should not adjust bottom inset for text input area.
         // Note that floating keyboard could co-exist with iPhone-like layouts.
@@ -899,9 +936,11 @@ extension PhotoCaptureViewController {
             iPhoneConstraint.constant = min(iPhoneInset, 0) - 8
             iPadConstraint?.constant = min(iPadInset, 0) - 8
         }
-        if let animationDuration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval,
-           let rawAnimationCurve = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? Int,
-           let animationCurve = UIView.AnimationCurve(rawValue: rawAnimationCurve) {
+        if
+            let animationDuration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval,
+            let rawAnimationCurve = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? Int,
+            let animationCurve = UIView.AnimationCurve(rawValue: rawAnimationCurve)
+        {
             UIView.animate(
                 withDuration: animationDuration,
                 delay: 0,
@@ -910,7 +949,7 @@ extension PhotoCaptureViewController {
                     layoutUpdateBlock()
                     view.setNeedsLayout()
                     view.layoutIfNeeded()
-                }
+                },
             )
         } else {
             UIView.performWithoutAnimation {
@@ -983,7 +1022,7 @@ extension PhotoCaptureViewController {
             textForegroundColor: textForegroundColor,
             textBackgroundColor: textBackgroundColor,
             background: background,
-            linkPreviewDraft: textStoryComposerView.linkPreviewDraft
+            linkPreviewDraft: textStoryComposerView.linkPreviewDraft,
         )
 
         delegate?.photoCaptureViewController(self, didFinishWithTextAttachment: unsentTextAttachment)
@@ -1015,8 +1054,10 @@ extension PhotoCaptureViewController: TextStoryComposerViewDelegate {
 
 extension PhotoCaptureViewController: LinkPreviewAttachmentViewControllerDelegate {
 
-    func linkPreviewAttachmentViewController(_ viewController: LinkPreviewAttachmentViewController,
-                                             didFinishWith linkPreview: OWSLinkPreviewDraft) {
+    func linkPreviewAttachmentViewController(
+        _ viewController: LinkPreviewAttachmentViewController,
+        didFinishWith linkPreview: OWSLinkPreviewDraft,
+    ) {
         textStoryComposerView.linkPreviewDraft = linkPreview
         viewController.dismiss(animated: true)
     }
@@ -1059,7 +1100,7 @@ extension PhotoCaptureViewController {
 
     @objc
     private func didTapBatchMode() {
-        guard let delegate = delegate else {
+        guard let delegate else {
             return
         }
         let targetMode: CaptureMode = {
@@ -1179,7 +1220,7 @@ extension PhotoCaptureViewController {
     }
 
     private func completeFocusAnimation(forFocusPoint focusPoint: CGPoint) {
-        guard let lastUserFocusTapPoint = lastUserFocusTapPoint else { return }
+        guard let lastUserFocusTapPoint else { return }
 
         guard lastUserFocusTapPoint.within(0.005, of: focusPoint) else {
             return
@@ -1195,7 +1236,7 @@ extension PhotoCaptureViewController {
 
     private func setupPhotoCapture() {
         bottomBar.captureControl.delegate = cameraCaptureSession
-        if let sideBar = sideBar {
+        if let sideBar {
             sideBar.cameraCaptureControl.delegate = cameraCaptureSession
         }
 
@@ -1208,7 +1249,7 @@ extension PhotoCaptureViewController {
         firstly {
             cameraCaptureSession.prepare()
         }.catch { [weak self] error in
-            guard let self = self else { return }
+            guard let self else { return }
             self.showFailureUI(error: error)
         }
     }
@@ -1243,7 +1284,7 @@ extension PhotoCaptureViewController {
 
     private func updateFlashModeControl(animated: Bool) {
         topBar.flashModeButton.setFlashMode(cameraCaptureSession.flashMode, animated: animated)
-        if let sideBar = sideBar {
+        if let sideBar {
             sideBar.flashModeButton.setFlashMode(cameraCaptureSession.flashMode, animated: animated)
         }
     }
@@ -1255,9 +1296,11 @@ extension PhotoCaptureViewController: InteractiveDismissDelegate {
         view.backgroundColor = .clear
     }
 
-    func interactiveDismiss(_ interactiveDismiss: UIPercentDrivenInteractiveTransition,
-                            didChangeProgress: CGFloat,
-                            touchOffset: CGPoint) { }
+    func interactiveDismiss(
+        _ interactiveDismiss: UIPercentDrivenInteractiveTransition,
+        didChangeProgress: CGFloat,
+        touchOffset: CGPoint,
+    ) { }
 
     func interactiveDismiss(_ interactiveDismiss: UIPercentDrivenInteractiveTransition, didFinishWithVelocity: CGVector?) {
         dismiss(animated: true)
@@ -1299,11 +1342,13 @@ extension PhotoCaptureViewController: QRCodeSampleBufferScannerDelegate {
             qrCodeScanned = true
 
             Task {
-                guard let (username, aci) = await UsernameQuerier().queryForUsernameLink(
-                    link: usernameLink,
-                    fromViewController: self,
-                    failureSheetDismissalDelegate: self,
-                ) else {
+                guard
+                    let (username, aci) = await UsernameQuerier().queryForUsernameLink(
+                        link: usernameLink,
+                        fromViewController: self,
+                        failureSheetDismissalDelegate: self,
+                    )
+                else {
                     return
                 }
 
@@ -1319,8 +1364,8 @@ extension PhotoCaptureViewController: QRCodeSampleBufferScannerDelegate {
                 let linkDeviceWarningActionSheet = ActionSheetController(
                     message: OWSLocalizedString(
                         "LINKED_DEVICE_URL_OPENED_ACTION_SHEET_IN_APP_CAMERA_MESSAGE",
-                        comment: "Message for an action sheet telling users how to link a device, when trying to open a device-linking URL from the in-app camera."
-                    )
+                        comment: "Message for an action sheet telling users how to link a device, when trying to open a device-linking URL from the in-app camera.",
+                    ),
                 )
 
                 let showLinkedDevicesAction = ActionSheetAction(title: CommonStrings.continueButton) { _ in
@@ -1344,7 +1389,7 @@ extension PhotoCaptureViewController: QRCodeSampleBufferScannerDelegate {
                         AppEnvironment.shared.outgoingDeviceRestorePresenter.present(
                             provisioningURL: provisioningURL,
                             presentingViewController: CurrentAppContext().frontmostViewController()!,
-                            animated: true
+                            animated: true,
                         )
                     }
                 }
@@ -1370,7 +1415,7 @@ extension PhotoCaptureViewController: QRCodeSampleBufferScannerDelegate {
 
     private func showUsernameLinkSheet(
         username: String,
-        aci: Aci
+        aci: Aci,
     ) {
         // `shouldProcessQRCodes` should prevent QR codes being scanned after a
         // recording is done, but a race condition between the recording ending
@@ -1381,30 +1426,30 @@ extension PhotoCaptureViewController: QRCodeSampleBufferScannerDelegate {
             title: String(
                 format: OWSLocalizedString(
                     "PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_TITLE_FORMAT",
-                    comment: "Title for sheet presented from photo capture view indicating that a username QR code was found. Embeds {{username}}."
+                    comment: "Title for sheet presented from photo capture view indicating that a username QR code was found. Embeds {{username}}.",
                 ),
-                username
+                username,
             ),
             message: String(
                 format: OWSLocalizedString(
                     "PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_MESSAGE_FORMAT",
-                    comment: "Message for a sheet presented from photo capture view indicating that a username QR code was found. Embeds {{username}}."
+                    comment: "Message for a sheet presented from photo capture view indicating that a username QR code was found. Embeds {{username}}.",
                 ),
-                username
+                username,
             ),
             proceedTitle: OWSLocalizedString(
                 "PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_CTA",
-                comment: "Button label for opening the chat on a sheet presented from photo capture view indicating that a username QR code was found."
+                comment: "Button label for opening the chat on a sheet presented from photo capture view indicating that a username QR code was found.",
             ),
             proceedAction: { [weak self] _ in
                 SignalApp.shared.presentConversationForAddress(
                     SignalServiceAddress(aci),
-                    animated: false
+                    animated: false,
                 )
                 self?.dismiss(animated: true)
             },
             fromViewController: self,
-            dismissalDelegate: self
+            dismissalDelegate: self,
         )
     }
 }
@@ -1505,14 +1550,14 @@ extension PhotoCaptureViewController: CameraCaptureSessionDelegate {
 
     func beginCaptureButtonAnimation(_ duration: TimeInterval) {
         bottomBar.captureControl.setState(.recording, animationDuration: duration)
-        if let sideBar = sideBar {
+        if let sideBar {
             sideBar.cameraCaptureControl.setState(.recording, animationDuration: duration)
         }
     }
 
     func endCaptureButtonAnimation(_ duration: TimeInterval) {
         bottomBar.captureControl.setState(.initial, animationDuration: duration)
-        if let sideBar = sideBar {
+        if let sideBar {
             sideBar.cameraCaptureControl.setState(.initial, animationDuration: duration)
         }
     }
@@ -1531,8 +1576,10 @@ extension PhotoCaptureViewController: CameraCaptureSessionDelegate {
     @objc
     func sessionWasInterrupted(notification: Notification) {
         if let userInfo = notification.userInfo {
-            guard let reasonValue = userInfo[AVCaptureSessionInterruptionReasonKey] as? NSNumber,
-                  let reason = AVCaptureSession.InterruptionReason(rawValue: reasonValue.intValue) else {
+            guard
+                let reasonValue = userInfo[AVCaptureSessionInterruptionReasonKey] as? NSNumber,
+                let reason = AVCaptureSession.InterruptionReason(rawValue: reasonValue.intValue)
+            else {
                 Logger.info("session was interrupted for no apparent reason")
                 return
             }
@@ -1557,7 +1604,7 @@ private class TextStoryComposerView: TextAttachmentView, UITextViewDelegate {
             style: .regular,
             textForegroundColor: .white,
             textBackgroundColor: nil,
-            background: TextStoryComposerView.defaultBackground
+            background: TextStoryComposerView.defaultBackground,
         )
 
         // Placeholder Label
@@ -1567,14 +1614,14 @@ private class TextStoryComposerView: TextAttachmentView, UITextViewDelegate {
             textPlaceholderLabel.leadingAnchor.constraint(equalTo: contentLayoutGuide.leadingAnchor),
             textPlaceholderLabel.topAnchor.constraint(equalTo: contentLayoutGuide.topAnchor),
             textPlaceholderLabel.trailingAnchor.constraint(equalTo: contentLayoutGuide.trailingAnchor),
-            textPlaceholderLabel.bottomAnchor.constraint(equalTo: contentLayoutGuide.bottomAnchor)
+            textPlaceholderLabel.bottomAnchor.constraint(equalTo: contentLayoutGuide.bottomAnchor),
         ])
 
         // Prepare text styling toolbar - attached to keyboard.
         let toolbarSize = textViewAccessoryToolbar.systemLayoutSizeFitting(
             CGSize(width: UIScreen.main.bounds.width, height: .greatestFiniteMagnitude),
             withHorizontalFittingPriority: .required,
-            verticalFittingPriority: .fittingSizeLevel
+            verticalFittingPriority: .fittingSizeLevel,
         )
         textViewAccessoryToolbar.bounds.size = toolbarSize
         textView.inputAccessoryView = textViewAccessoryToolbar
@@ -1599,7 +1646,7 @@ private class TextStoryComposerView: TextAttachmentView, UITextViewDelegate {
     private static let textViewBackgroundVMargin = LayoutConstants.textBackgroundVMargin - 8
     private static let textViewBackgroundHMargin = LayoutConstants.textBackgroundHMargin
 
-    override public func layoutSubviews() {
+    override func layoutSubviews() {
         super.layoutSubviews()
         let contentWidth = layoutMarginsGuide.layoutFrame.width
         if
@@ -1611,7 +1658,7 @@ private class TextStoryComposerView: TextAttachmentView, UITextViewDelegate {
         }
     }
 
-    public override func layoutTextContentAndLinkPreview() {
+    override func layoutTextContentAndLinkPreview() {
         super.layoutTextContentAndLinkPreview()
 
         var textViewSize = textContentSize
@@ -1627,7 +1674,7 @@ private class TextStoryComposerView: TextAttachmentView, UITextViewDelegate {
         }
         textViewSize.height = min(
             textViewSize.height,
-            contentLayoutGuide.layoutFrame.height - linkPreviewAreaHeight - 2 * TextStoryComposerView.textViewBackgroundVMargin
+            contentLayoutGuide.layoutFrame.height - linkPreviewAreaHeight - 2 * TextStoryComposerView.textViewBackgroundVMargin,
         )
 
         // Enable / disable vertical text scrolling if all text doesn't fit the available screen space.
@@ -1640,17 +1687,17 @@ private class TextStoryComposerView: TextAttachmentView, UITextViewDelegate {
 
         textViewBackgroundView.bounds.size = CGSize(
             width: textViewSize.width + 2 * TextStoryComposerView.textViewBackgroundHMargin,
-            height: textViewSize.height + 2 * TextStoryComposerView.textViewBackgroundVMargin
+            height: textViewSize.height + 2 * TextStoryComposerView.textViewBackgroundVMargin,
         )
         textViewBackgroundView.center = CGPoint(
             x: contentLayoutGuide.layoutFrame.center.x,
-            y: contentLayoutGuide.layoutFrame.center.y - 0.5 * linkPreviewAreaHeight
+            y: contentLayoutGuide.layoutFrame.center.y - 0.5 * linkPreviewAreaHeight,
         )
         textView.center = textViewBackgroundView.bounds.center
 
         linkPreviewWrapperView.center = CGPoint(
             x: linkPreviewWrapperView.center.x,
-            y: textViewBackgroundView.frame.maxY + LayoutConstants.linkPreviewAreaTopMargin + 0.5 * linkPreviewWrapperView.bounds.height
+            y: textViewBackgroundView.frame.maxY + LayoutConstants.linkPreviewAreaTopMargin + 0.5 * linkPreviewWrapperView.bounds.height,
         )
     }
 
@@ -1660,12 +1707,12 @@ private class TextStoryComposerView: TextAttachmentView, UITextViewDelegate {
         }
         let maxTextViewSize = contentLayoutGuide.layoutFrame.insetBy(
             dx: LayoutConstants.textBackgroundHMargin,
-            dy: TextStoryComposerView.textViewBackgroundVMargin
+            dy: TextStoryComposerView.textViewBackgroundVMargin,
         ).size
         return textView.systemLayoutSizeFitting(
             maxTextViewSize,
             withHorizontalFittingPriority: .required,
-            verticalFittingPriority: .fittingSizeLevel
+            verticalFittingPriority: .fittingSizeLevel,
         )
     }
 
@@ -1692,7 +1739,7 @@ private class TextStoryComposerView: TextAttachmentView, UITextViewDelegate {
 
     private var textStyle: TextAttachment.TextStyle = .regular {
         didSet {
-            guard let text = text else {
+            guard let text else {
                 return
             }
             super.textContent = .styled(body: text, style: self.textStyle)
@@ -1700,7 +1747,7 @@ private class TextStoryComposerView: TextAttachmentView, UITextViewDelegate {
     }
 
     var isEmpty: Bool {
-        guard let text = text else { return true }
+        guard let text else { return true }
         return text.isEmpty && linkPreview == nil
     }
 
@@ -1731,12 +1778,14 @@ private class TextStoryComposerView: TextAttachmentView, UITextViewDelegate {
         label.numberOfLines = 0
         label.textColor = .ows_whiteAlpha60
         label.font = .dynamicTypeLargeTitle1Clamped
-        label.text = OWSLocalizedString("STORY_COMPOSER_TAP_ADD_TEXT",
-                                       comment: "Placeholder text in text stories compose UI")
+        label.text = OWSLocalizedString(
+            "STORY_COMPOSER_TAP_ADD_TEXT",
+            comment: "Placeholder text in text stories compose UI",
+        )
         return label
     }()
 
-    override public func updateVisibilityOfComponents(animated: Bool) {
+    override func updateVisibilityOfComponents(animated: Bool) {
         super.updateVisibilityOfComponents(animated: animated)
 
         let isEditing = isEditing
@@ -1756,7 +1805,8 @@ private class TextStoryComposerView: TextAttachmentView, UITextViewDelegate {
             font: .font(for: textStyle, withPointSize: fontPointSize),
             textAlignment: textAlignment,
             textDecorationColor: nil,
-            decorationStyle: .none)
+            decorationStyle: .none,
+        )
         textView.selectedTextRange = selectedTextRange
         textViewBackgroundView.backgroundColor = textBackgroundColor
     }
@@ -1780,7 +1830,7 @@ private class TextStoryComposerView: TextAttachmentView, UITextViewDelegate {
         attributedString.enumerateAttribute(.font, in: attributedString.entireRange) { attributeValue, range, stop in
             guard let font = attributeValue as? UIFont else { return }
 
-            if let previousFont = previousFont, !previousFont.isEqual(font) {
+            if let previousFont, !previousFont.isEqual(font) {
                 shouldReapplyAttributes = true
                 stop.pointee = true
             }
@@ -1880,10 +1930,10 @@ private class TextStoryComposerView: TextAttachmentView, UITextViewDelegate {
             with: originalInput,
             editingRange: range,
             replacementString: replacementText,
-            maxGlyphCount: 700
+            maxGlyphCount: 700,
         )
 
-        if let changedString = changedString {
+        if let changedString {
             text = changedString
             textView.text = transformedText(changedString, for: textStyle)
             textView.delegate?.textViewDidChange?(textView)
@@ -1931,7 +1981,7 @@ private class TextStoryComposerView: TextAttachmentView, UITextViewDelegate {
 
     fileprivate var linkPreviewDraft: OWSLinkPreviewDraft? {
         didSet {
-            if let linkPreviewDraft = linkPreviewDraft {
+            if let linkPreviewDraft {
                 let state: LinkPreviewState
                 if let callLink = CallLink(url: linkPreviewDraft.url) {
                     state = LinkPreviewCallLink(previewType: .draft(linkPreviewDraft), callLink: callLink)
@@ -1959,7 +2009,7 @@ private class TextStoryComposerView: TextAttachmentView, UITextViewDelegate {
     override func reloadLinkPreviewAppearance() {
         super.reloadLinkPreviewAppearance()
 
-        guard let linkPreviewView = linkPreviewView else { return }
+        guard let linkPreviewView else { return }
 
         if deleteLinkPreviewButton.superview == nil {
             linkPreviewWrapperView.addSubview(deleteLinkPreviewButton)
@@ -1967,7 +2017,7 @@ private class TextStoryComposerView: TextAttachmentView, UITextViewDelegate {
         linkPreviewWrapperView.bringSubviewToFront(deleteLinkPreviewButton)
         linkPreviewWrapperView.addConstraints([
             deleteLinkPreviewButton.centerXAnchor.constraint(equalTo: linkPreviewView.trailingAnchor, constant: -5),
-            deleteLinkPreviewButton.centerYAnchor.constraint(equalTo: linkPreviewView.topAnchor, constant: 5)
+            deleteLinkPreviewButton.centerYAnchor.constraint(equalTo: linkPreviewView.topAnchor, constant: 5),
         ])
 
         updateVisibilityOfComponents(animated: true)
@@ -1994,9 +2044,9 @@ private class TextStoryComposerView: TextAttachmentView, UITextViewDelegate {
         .color(.init(rgbHex: 0xB47F8C)),
         .color(.init(rgbHex: 0x899188)),
         .color(.init(rgbHex: 0x539383)),
-        .gradient(.init(colors: [ .init(rgbHex: 0x19A9FA), .init(rgbHex: 0x7097D7), .init(rgbHex: 0xD1998D), .init(rgbHex: 0xFFC369) ])),
-        .gradient(.init(colors: [ .init(rgbHex: 0x4437D8), .init(rgbHex: 0x6B70DE), .init(rgbHex: 0xB774E0), .init(rgbHex: 0xFF8E8E) ])),
-        .gradient(.init(colors: [ .init(rgbHex: 0x004044), .init(rgbHex: 0x2C5F45), .init(rgbHex: 0x648E52), .init(rgbHex: 0x93B864) ]))
+        .gradient(.init(colors: [.init(rgbHex: 0x19A9FA), .init(rgbHex: 0x7097D7), .init(rgbHex: 0xD1998D), .init(rgbHex: 0xFFC369)])),
+        .gradient(.init(colors: [.init(rgbHex: 0x4437D8), .init(rgbHex: 0x6B70DE), .init(rgbHex: 0xB774E0), .init(rgbHex: 0xFF8E8E)])),
+        .gradient(.init(colors: [.init(rgbHex: 0x004044), .init(rgbHex: 0x2C5F45), .init(rgbHex: 0x648E52), .init(rgbHex: 0x93B864)])),
     ]
 
     func switchToNextBackground() {

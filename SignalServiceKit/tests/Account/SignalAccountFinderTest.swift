@@ -15,7 +15,7 @@ class SignalAccountFinderTest: SSKBaseTest {
         SSKEnvironment.shared.databaseStorageRef.write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
                 localIdentifiers: .forUnitTests,
-                tx: tx
+                tx: tx,
             )
         }
     }
@@ -61,7 +61,7 @@ class SignalAccountFinderTest: SSKBaseTest {
             let actualAccounts = accountFinder.signalAccounts(for: phoneNumbersToFetch.map(\.stringValue), tx: tx)
             XCTAssertEqual(
                 actualAccounts.map { $0?.recipientPhoneNumber },
-                expectedAccounts.map { $0?.recipientPhoneNumber }
+                expectedAccounts.map { $0?.recipientPhoneNumber },
             )
         }
     }

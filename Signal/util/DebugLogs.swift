@@ -4,9 +4,9 @@
 //
 
 import Foundation
-import zlib
 import SignalServiceKit
 import SignalUI
+import zlib
 
 public struct DebugLogDumper {
     fileprivate var accountManager: (any TSAccountManager)?
@@ -87,14 +87,14 @@ enum DebugLogs {
 
             let alert = ActionSheetController(
                 title: NSLocalizedString("DEBUG_LOG_ALERT_TITLE", comment: "Title of the debug log alert."),
-                message: NSLocalizedString("DEBUG_LOG_ALERT_MESSAGE", comment: "Message of the debug log alert.")
+                message: NSLocalizedString("DEBUG_LOG_ALERT_MESSAGE", comment: "Message of the debug log alert."),
             )
 
             if ComposeSupportEmailOperation.canSendEmails {
                 alert.addAction(ActionSheetAction(
                     title: NSLocalizedString(
                         "DEBUG_LOG_ALERT_OPTION_EMAIL",
-                        comment: "Label for the 'email debug log' option of the debug log alert."
+                        comment: "Label for the 'email debug log' option of the debug log alert.",
                     ),
                     style: .default,
                     handler: { _ in
@@ -102,43 +102,43 @@ enum DebugLogs {
                             await ComposeSupportEmailOperation.sendEmailWithDefaultErrorHandling(
                                 supportFilter: supportFilter,
                                 logUrl: url,
-                                hasRecentChallenge: dumper.challengeReceivedRecently()
+                                hasRecentChallenge: dumper.challengeReceivedRecently(),
                             )
                         }
                         submitLogsCompletion()
-                    }
+                    },
                 ))
             }
             alert.addAction(ActionSheetAction(
                 title: NSLocalizedString(
                     "DEBUG_LOG_ALERT_OPTION_COPY_LINK",
-                    comment: "Label for the 'copy link' option of the debug log alert."
+                    comment: "Label for the 'copy link' option of the debug log alert.",
                 ),
                 style: .default,
                 handler: { _ in
                     UIPasteboard.general.string = url.absoluteString
                     presentingViewController.presentToast(text: CommonStrings.copiedToClipboardToast)
                     submitLogsCompletion()
-                }
+                },
             ))
             alert.addAction(ActionSheetAction(
                 title: NSLocalizedString(
                     "DEBUG_LOG_ALERT_OPTION_SHARE",
-                    comment: "Label for the 'Share' option of the debug log alert."
+                    comment: "Label for the 'Share' option of the debug log alert.",
                 ),
                 style: .default,
                 handler: { _ in
                     AttachmentSharing.showShareUI(
                         for: url.absoluteString,
                         sender: nil,
-                        completion: submitLogsCompletion
+                        completion: submitLogsCompletion,
                     )
-                }
+                },
             ))
             alert.addAction(ActionSheetAction(
                 title: CommonStrings.cancelButton,
                 style: .cancel,
-                handler: { _ in submitLogsCompletion() }
+                handler: { _ in submitLogsCompletion() },
             ))
             presentingViewController.presentActionSheet(alert)
         }
@@ -151,7 +151,7 @@ enum DebugLogs {
         ModalActivityIndicatorViewController.present(
             fromViewController: viewController,
             canCancel: true,
-            asyncBlock: { await _uploadLogs(dumper: dumper, modalActivityIndicator: $0, completion: completion) }
+            asyncBlock: { await _uploadLogs(dumper: dumper, modalActivityIndicator: $0, completion: completion) },
         )
     }
 
@@ -174,7 +174,7 @@ enum DebugLogs {
             modalActivityIndicator.dismiss {
                 DebugLogs.showFailureAlert(
                     with: error.localizedErrorMessage,
-                    logArchiveOrDirectoryPath: error.logArchiveOrDirectoryPath
+                    logArchiveOrDirectoryPath: error.logArchiveOrDirectoryPath,
                 )
             }
         }
@@ -186,7 +186,7 @@ enum DebugLogs {
         var errorString: String {
             OWSLocalizedString(
                 "DEBUG_LOG_ALERT_NO_LOGS",
-                comment: "Error indicating that no debug logs could be found."
+                comment: "Error indicating that no debug logs could be found.",
             )
         }
     }
@@ -222,7 +222,7 @@ enum DebugLogs {
         return .success(zipDirPath)
     }
 
-    public static func exportLogs() {
+    static func exportLogs() {
         AssertIsOnMainThread()
         switch collectLogs() {
         case let .success(logsDirPath):
@@ -275,7 +275,7 @@ enum DebugLogs {
         if zipError != nil || !OWSFileSystem.fileOrFolderExists(url: zipFileUrl) {
             let errorMessage = OWSLocalizedString(
                 "DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS",
-                comment: "Error indicating that the debug logs could not be packaged."
+                comment: "Error indicating that the debug logs could not be packaged.",
             )
             throw UploadDebugLogError(localizedErrorMessage: errorMessage, logArchiveOrDirectoryPath: zipDirPath)
         }
@@ -291,7 +291,7 @@ enum DebugLogs {
         } catch {
             let errorMessage = OWSLocalizedString(
                 "DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG",
-                comment: "Error indicating that a debug log could not be uploaded."
+                comment: "Error indicating that a debug log could not be uploaded.",
             )
             throw UploadDebugLogError(localizedErrorMessage: errorMessage, logArchiveOrDirectoryPath: zipFileUrl.path)
         }
@@ -308,7 +308,7 @@ enum DebugLogs {
             alert.addAction(.init(
                 title: OWSLocalizedString(
                     "DEBUG_LOG_ALERT_OPTION_EXPORT_LOG_ARCHIVE",
-                    comment: "Label for the 'Export Logs' fallback option for the alert when debug log uploading fails."
+                    comment: "Label for the 'Export Logs' fallback option for the alert when debug log uploading fails.",
                 ),
             ) { _ in
                 AttachmentSharing.showShareUI(
@@ -316,7 +316,7 @@ enum DebugLogs {
                     sender: nil,
                     completion: {
                         deleteArchive(logArchiveOrDirectoryPath)
-                    }
+                    },
                 )
             })
         }
@@ -347,7 +347,7 @@ private enum DebugLogUploader {
     private static func buildOWSURLSession() -> OWSURLSessionProtocol {
         OWSURLSession(
             securityPolicy: OWSURLSession.defaultSecurityPolicy,
-            configuration: OWSURLSession.defaultConfigurationWithoutCaching
+            configuration: OWSURLSession.defaultConfigurationWithoutCaching,
         )
     }
 
@@ -363,10 +363,12 @@ private enum DebugLogUploader {
             throw OWSAssertionError("Empty fieldMap!")
         }
         for (key, value) in fieldMap {
-            guard nil != key.nilIfEmpty,
-                  nil != value.nilIfEmpty else {
-                      throw OWSAssertionError("Empty key or value in fieldMap!")
-                  }
+            guard
+                nil != key.nilIfEmpty,
+                nil != value.nilIfEmpty
+            else {
+                throw OWSAssertionError("Empty key or value in fieldMap!")
+            }
         }
         guard let rawUploadKey = fieldMap["key"]?.nilIfEmpty else {
             throw OWSAssertionError("Missing rawUploadKey!")
@@ -394,7 +396,7 @@ private enum DebugLogUploader {
     private static func uploadFile(
         fileUrl: URL,
         mimeType: String,
-        uploadParameters: UploadParameters
+        uploadParameters: UploadParameters,
     ) async throws -> URL {
         let urlSession = buildOWSURLSession()
 
@@ -414,12 +416,12 @@ private enum DebugLogUploader {
             mimeType: mimeType,
             textParts: textParts,
             ignoreAppExpiry: true,
-            progress: nil
+            progress: nil,
         )
 
         let statusCode = response.responseStatusCode
         // We'll accept any 2xx status code.
-        guard statusCode/100 == 2 else {
+        guard statusCode / 100 == 2 else {
             Logger.error("statusCode: \(statusCode)")
             Logger.error("headers: \(response.headers)")
             throw OWSAssertionError("Invalid status code: \(statusCode)")

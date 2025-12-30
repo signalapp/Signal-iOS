@@ -8,12 +8,12 @@ import Foundation
 public protocol OWSDeviceManager {
     func setHasReceivedSyncMessage(
         lastReceivedAt: Date,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     )
 
     func hasReceivedSyncMessage(
         inLastSeconds seconds: UInt,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> Bool
 }
 
@@ -33,7 +33,7 @@ class OWSDeviceManagerImpl: OWSDeviceManager {
 
     init() {
         self.keyValueStore = KeyValueStore(
-            collection: Constants.keyValueStoreCollectionName
+            collection: Constants.keyValueStoreCollectionName,
         )
     }
 
@@ -42,7 +42,7 @@ class OWSDeviceManagerImpl: OWSDeviceManager {
     func hasReceivedSyncMessage(inLastSeconds lastSeconds: UInt, transaction tx: DBReadTransaction) -> Bool {
         let lastReceivedSyncMessageAt = keyValueStore.getDate(
             Constants.lastReceivedSyncMessageKey,
-            transaction: tx
+            transaction: tx,
         )
 
         guard let lastReceivedSyncMessageAt else {
@@ -56,12 +56,12 @@ class OWSDeviceManagerImpl: OWSDeviceManager {
 
     func setHasReceivedSyncMessage(
         lastReceivedAt: Date,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) {
         keyValueStore.setDate(
             lastReceivedAt,
             key: Constants.lastReceivedSyncMessageKey,
-            transaction: transaction
+            transaction: transaction,
         )
     }
 }

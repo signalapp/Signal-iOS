@@ -8,7 +8,7 @@ import Foundation
 public extension Guarantee {
     func nilTimeout(
         on scheduler: Scheduler,
-        seconds: TimeInterval
+        seconds: TimeInterval,
     ) -> Guarantee<Value?> {
         let withOptionalValue: Guarantee<Value?> = self.map(on: scheduler) { $0 }
         return withOptionalValue.timeout(on: scheduler, seconds: seconds, substituteValue: nil)
@@ -17,7 +17,7 @@ public extension Guarantee {
     func timeout(
         on scheduler: Scheduler,
         seconds: TimeInterval,
-        substituteValue: Value
+        substituteValue: Value,
     ) -> Guarantee<Value> {
         let substitute: Guarantee<Value> = Guarantee<Void>
             .after(on: scheduler, seconds: seconds)

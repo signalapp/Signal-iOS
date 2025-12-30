@@ -49,12 +49,12 @@ class WidePhotoCell: MediaTileListModeCell {
     }
 
     private func setupViews() {
-        let vStack = UIStackView(arrangedSubviews: [ titleLabel, subtitleLabel ])
+        let vStack = UIStackView(arrangedSubviews: [titleLabel, subtitleLabel])
         vStack.alignment = .leading
         vStack.axis = .vertical
         vStack.spacing = 2
 
-        let hStack = UIStackView(arrangedSubviews: [ thumbnailView, vStack ])
+        let hStack = UIStackView(arrangedSubviews: [thumbnailView, vStack])
         hStack.alignment = .center
         hStack.axis = .horizontal
         hStack.spacing = 12
@@ -67,11 +67,13 @@ class WidePhotoCell: MediaTileListModeCell {
 
         separator.autoPinEdge(.leading, to: .leading, of: vStack)
 
-        super.setupViews(constraintWithSelectionButton: constraintWithSelectionButton,
-                         constraintWithoutSelectionButton: constraintWithoutSelectionButton)
+        super.setupViews(
+            constraintWithSelectionButton: constraintWithSelectionButton,
+            constraintWithoutSelectionButton: constraintWithoutSelectionButton,
+        )
     }
 
-    override public func prepareForReuse() {
+    override func prepareForReuse() {
         super.prepareForReuse()
 
         thumbnailView.image = nil
@@ -83,21 +85,21 @@ class WidePhotoCell: MediaTileListModeCell {
         if let item {
             accessibilityLabel = [
                 item.type.localizedString,
-                MediaTileDateFormatter.formattedDateString(for: item.mediaMetadata?.creationDate)
+                MediaTileDateFormatter.formattedDateString(for: item.mediaMetadata?.creationDate),
             ]
-                .compactMap { $0 }
-                .joined(separator: ", ")
+            .compactMap { $0 }
+            .joined(separator: ", ")
         } else {
             accessibilityLabel = ""
         }
     }
 
-    override public func makePlaceholder() {
+    override func makePlaceholder() {
         thumbnailView.image = nil
         setUpAccessibility(item: nil)
     }
 
-    override public func configure(item: MediaGalleryCellItem, spoilerState: SpoilerRenderState) {
+    override func configure(item: MediaGalleryCellItem, spoilerState: SpoilerRenderState) {
         switch item {
         case .photoVideo(let photoGridItem):
             super.configure(item: item, spoilerState: spoilerState)
@@ -159,12 +161,12 @@ class WidePhotoCell: MediaTileListModeCell {
             top: collectionView.adjustedContentInset.top,
             leading: 0,
             bottom: collectionView.adjustedContentInset.bottom,
-            trailing: 0
+            trailing: 0,
         )
         return MediaPresentationContext(
             mediaView: thumbnailView.imageView,
             presentationFrame: presentationFrame,
-            clippingAreaInsets: clippingAreaInsets
+            clippingAreaInsets: clippingAreaInsets,
         )
     }
 
@@ -214,7 +216,7 @@ class WidePhotoCell: MediaTileListModeCell {
                 x: 0.5 * (bounds.width - thumbnailSize.width),
                 y: 0.5 * (bounds.height - thumbnailSize.height),
                 width: thumbnailSize.width,
-                height: thumbnailSize.height
+                height: thumbnailSize.height,
             )
         }
     }

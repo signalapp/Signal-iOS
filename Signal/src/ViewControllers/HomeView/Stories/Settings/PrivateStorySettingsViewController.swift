@@ -25,12 +25,12 @@ final class PrivateStorySettingsViewController: OWSTableViewController2 {
                 failIfThrows {
                     try storyRecipientManager.fetchRecipients(forStoryThread: thread, tx: tx)
                 }.map { $0.address },
-                transaction: tx
+                transaction: tx,
             )
         }
     }
 
-    public override func viewWillAppear(_ animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         updateBarButtons()
         updateSortedAddresses()
@@ -61,12 +61,12 @@ final class PrivateStorySettingsViewController: OWSTableViewController2 {
         let viewersSection = OWSTableSection()
         viewersSection.headerTitle = OWSLocalizedString(
             "STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER",
-            comment: "Section header for the 'viewers' section on the 'story settings' view"
+            comment: "Section header for the 'viewers' section on the 'story settings' view",
         )
         // TODO: Add 'learn more' sheet button
         viewersSection.footerTitle = OWSLocalizedString(
             "STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER",
-            comment: "Section footer for the 'viewers' section on the 'story settings' view"
+            comment: "Section footer for the 'viewers' section on the 'story settings' view",
         )
         viewersSection.separatorInsetLeading = Self.cellHInnerMargin + CGFloat(AvatarBuilder.smallAvatarSizePoints) + ContactCellView.avatarTextHSpacing
         contents.add(viewersSection)
@@ -81,19 +81,19 @@ final class PrivateStorySettingsViewController: OWSTableViewController2 {
                 icon: .groupInfoAddMembers,
                 iconSize: AvatarBuilder.smallAvatarSizePoints,
                 innerIconSize: 20,
-                iconTintColor: Theme.primaryTextColor
+                iconTintColor: Theme.primaryTextColor,
             )
 
             let rowLabel = UILabel()
             rowLabel.text = OWSLocalizedString(
                 "PRIVATE_STORY_SETTINGS_ADD_VIEWER_BUTTON",
-                comment: "Button to add a new viewer on the 'private story settings' view"
+                comment: "Button to add a new viewer on the 'private story settings' view",
             )
             rowLabel.textColor = Theme.primaryTextColor
             rowLabel.font = OWSTableItem.primaryLabelFont
             rowLabel.lineBreakMode = .byTruncatingTail
 
-            let contentRow = UIStackView(arrangedSubviews: [ iconView, rowLabel ])
+            let contentRow = UIStackView(arrangedSubviews: [iconView, rowLabel])
             contentRow.spacing = ContactCellView.avatarTextHSpacing
 
             cell.contentView.addSubview(contentRow)
@@ -148,7 +148,7 @@ final class PrivateStorySettingsViewController: OWSTableViewController2 {
                         icon: .groupInfoShowAllMembers,
                         iconSize: AvatarBuilder.smallAvatarSizePoints,
                         innerIconSize: 20,
-                        iconTintColor: Theme.primaryTextColor
+                        iconTintColor: Theme.primaryTextColor,
                     )
 
                     let rowLabel = UILabel()
@@ -157,7 +157,7 @@ final class PrivateStorySettingsViewController: OWSTableViewController2 {
                     rowLabel.font = OWSTableItem.primaryLabelFont
                     rowLabel.lineBreakMode = .byTruncatingTail
 
-                    let contentRow = UIStackView(arrangedSubviews: [ iconView, rowLabel ])
+                    let contentRow = UIStackView(arrangedSubviews: [iconView, rowLabel])
                     contentRow.spacing = ContactCellView.avatarTextHSpacing
 
                     cell.contentView.addSubview(contentRow)
@@ -168,7 +168,7 @@ final class PrivateStorySettingsViewController: OWSTableViewController2 {
                 },
                 actionBlock: { [weak self] in
                     self?.showAllViewers(revealingIndices: expandedViewerIndices)
-                }
+                },
             ))
         }
 
@@ -181,7 +181,7 @@ final class PrivateStorySettingsViewController: OWSTableViewController2 {
             withText: StoryStrings.repliesAndReactionsToggle,
             isOn: { [thread] in thread.allowsReplies },
             target: self,
-            selector: #selector(didToggleReplies(_:))
+            selector: #selector(didToggleReplies(_:)),
         ))
 
         let deleteSection = OWSTableSection()
@@ -189,34 +189,36 @@ final class PrivateStorySettingsViewController: OWSTableViewController2 {
         deleteSection.add(.actionItem(
             withText: OWSLocalizedString(
                 "PRIVATE_STORY_SETTINGS_DELETE_BUTTON",
-                comment: "Button to delete the story on the 'private story settings' view"
+                comment: "Button to delete the story on the 'private story settings' view",
             ),
             textColor: .ows_accentRed,
             accessibilityIdentifier: nil,
             actionBlock: { [weak self] in
                 self?.deleteStoryWithConfirmation()
-            }))
+            },
+        ))
     }
 
     private func deleteStoryWithConfirmation() {
         let format = OWSLocalizedString(
             "PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT",
-            comment: "Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }}"
+            comment: "Action sheet title confirming deletion of a private story on the 'private story settings' view. Embeds {{ $1%@ private story name }}",
         )
 
         let actionSheet = ActionSheetController(
-            message: String.localizedStringWithFormat(format, thread.name)
+            message: String.localizedStringWithFormat(format, thread.name),
         )
         actionSheet.addAction(OWSActionSheets.cancelAction)
         actionSheet.addAction(.init(
             title: OWSLocalizedString(
                 "PRIVATE_STORY_SETTINGS_DELETE_BUTTON",
-                comment: "Button to delete the story on the 'private story settings' view"
+                comment: "Button to delete the story on the 'private story settings' view",
             ),
             style: .destructive,
             handler: { [weak self] _ in
                 self?.deleteStory()
-            }))
+            },
+        ))
         presentActionSheet(actionSheet)
     }
 
@@ -239,13 +241,13 @@ final class PrivateStorySettingsViewController: OWSTableViewController2 {
                     .disabled,
                     storyRecipientIds: .noChange,
                     updateStorageService: true,
-                    transaction: transaction
+                    transaction: transaction,
                 )
 
                 DependenciesBridge.shared.privateStoryThreadDeletionManager.recordDeletedAtTimestamp(
                     Date.ows_millisecondTimestamp(),
                     forDistributionListIdentifier: dlistIdentifier,
-                    tx: transaction
+                    tx: transaction,
                 )
 
                 transaction.addSyncCompletion {
@@ -286,7 +288,7 @@ final class PrivateStorySettingsViewController: OWSTableViewController2 {
     private func didSelectViewer(_ address: SignalServiceAddress) {
         let format = OWSLocalizedString(
             "PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_TITLE_FORMAT",
-            comment: "Action sheet title prompting to remove a viewer from a story on the 'private story settings' view. Embeds {{ viewer name }}"
+            comment: "Action sheet title prompting to remove a viewer from a story on the 'private story settings' view. Embeds {{ viewer name }}",
         )
 
         let actionSheet = ActionSheetController(
@@ -295,13 +297,13 @@ final class PrivateStorySettingsViewController: OWSTableViewController2 {
             }),
             message: OWSLocalizedString(
                 "PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION",
-                comment: "Action sheet description prompting to remove a viewer from a story on the 'private story settings' view."
-            )
+                comment: "Action sheet description prompting to remove a viewer from a story on the 'private story settings' view.",
+            ),
         )
         actionSheet.addAction(OWSActionSheets.cancelAction)
         actionSheet.addAction(.init(title: OWSLocalizedString(
             "PRIVATE_STORY_SETTINGS_REMOVE_BUTTON",
-            comment: "Action sheet button to remove a viewer from a story on the 'private story settings' view."
+            comment: "Action sheet button to remove a viewer from a story on the 'private story settings' view.",
         ), style: .destructive, handler: { [unowned self] _ in
             let databaseStorage = SSKEnvironment.shared.databaseStorageRef
             databaseStorage.write { transaction in
@@ -319,7 +321,7 @@ final class PrivateStorySettingsViewController: OWSTableViewController2 {
                         [recipientId],
                         for: storyThread,
                         shouldUpdateStorageService: true,
-                        tx: transaction
+                        tx: transaction,
                     )
                 }
             }

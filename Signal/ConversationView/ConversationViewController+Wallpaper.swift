@@ -12,7 +12,7 @@ extension ConversationViewController {
             self,
             selector: #selector(wallpaperDidChange),
             name: WallpaperStore.wallpaperDidChangeNotification,
-            object: nil
+            object: nil,
         )
         updateWallpaperView()
     }

@@ -22,7 +22,7 @@ struct AvatarDefaultColorStorageServiceMigrator {
         db: any DB,
         recipientDatabaseTable: RecipientDatabaseTable,
         storageServiceManager: StorageServiceManager,
-        threadStore: ThreadStore
+        threadStore: ThreadStore,
     ) {
         self.db = db
         self.kvStore = KeyValueStore(collection: "AvatarDefaultColorStorageServiceMigrator")

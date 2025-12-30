@@ -28,7 +28,7 @@ final class CallRecordMissedCallManagerTest: XCTestCase {
             callRecordConversationIdAdapter: mockConversationIdAdapter,
             callRecordQuerier: mockCallRecordQuerier,
             callRecordStore: mockCallRecordStore,
-            syncMessageSender: mockSyncMessageSender
+            syncMessageSender: mockSyncMessageSender,
         )
     }
 
@@ -88,7 +88,7 @@ final class CallRecordMissedCallManagerTest: XCTestCase {
                 missedCallManager.markUnreadCallsAsRead(
                     beforeTimestamp: 1,
                     sendSyncMessage: false,
-                    tx: tx
+                    tx: tx,
                 )
             }
         }
@@ -106,7 +106,7 @@ final class CallRecordMissedCallManagerTest: XCTestCase {
                 missedCallManager.markUnreadCallsAsRead(
                     beforeTimestamp: nil,
                     sendSyncMessage: false,
-                    tx: tx
+                    tx: tx,
                 )
             }
         }
@@ -121,7 +121,7 @@ final class CallRecordMissedCallManagerTest: XCTestCase {
                 missedCallManager.markUnreadCallsAsRead(
                     beforeTimestamp: nil,
                     sendSyncMessage: false,
-                    tx: tx
+                    tx: tx,
                 )
             }
         }
@@ -177,7 +177,7 @@ final class CallRecordMissedCallManagerTest: XCTestCase {
                 missedCallManager.markUnreadCallsInConversationAsRead(
                     beforeCallRecord: anchorCall1,
                     sendSyncMessage: true,
-                    tx: tx
+                    tx: tx,
                 )
             }
         }
@@ -195,7 +195,7 @@ final class CallRecordMissedCallManagerTest: XCTestCase {
                 missedCallManager.markUnreadCallsInConversationAsRead(
                     beforeCallRecord: anchorCall2,
                     sendSyncMessage: false,
-                    tx: tx
+                    tx: tx,
                 )
             }
         }
@@ -210,7 +210,7 @@ final class CallRecordMissedCallManagerTest: XCTestCase {
                 missedCallManager.markUnreadCallsInConversationAsRead(
                     beforeCallRecord: anchorCall3,
                     sendSyncMessage: true,
-                    tx: tx
+                    tx: tx,
                 )
             }
         }
@@ -223,7 +223,7 @@ private extension CallRecord {
     static func fixture(
         callId: UInt64,
         threadRowId: Int64? = nil,
-        unreadStatus: CallRecord.CallUnreadStatus
+        unreadStatus: CallRecord.CallUnreadStatus,
     ) -> CallRecord {
         let callStatus: CallRecord.CallStatus = {
             switch unreadStatus {
@@ -241,7 +241,7 @@ private extension CallRecord {
             callType: .audioCall,
             callDirection: .incoming,
             callStatus: callStatus,
-            callBeganTimestamp: callId
+            callBeganTimestamp: callId,
         )
     }
 }
@@ -259,14 +259,14 @@ private class MockConversationIdAdapter: CallRecordSyncMessageConversationIdAdap
 private class MockSyncMessageSender: CallRecordMissedCallManagerImpl.Shims.SyncMessageSender {
     var sendSyncMessageMock: ((
         _ eventType: OutgoingCallLogEventSyncMessage.CallLogEvent.EventType,
-        _ callId: UInt64
+        _ callId: UInt64,
     ) -> Void)!
     func sendCallLogEventSyncMessage(
         eventType: OutgoingCallLogEventSyncMessage.CallLogEvent.EventType,
         callId: UInt64,
         conversationId: Data,
         timestamp: UInt64,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         sendSyncMessageMock(eventType, callId)
     }

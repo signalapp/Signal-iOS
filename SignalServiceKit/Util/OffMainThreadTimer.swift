@@ -22,10 +22,12 @@ public class OffMainThreadTimer {
         set { _isValid.set(newValue) }
     }
 
-    public init(timeInterval: TimeInterval,
-                repeats: Bool,
-                queue: DispatchQueue = .global(),
-                _ block: @escaping Block) {
+    public init(
+        timeInterval: TimeInterval,
+        repeats: Bool,
+        queue: DispatchQueue = .global(),
+        _ block: @escaping Block,
+    ) {
         owsAssertDebug(timeInterval > 0)
 
         self.timeInterval = max(0, timeInterval)

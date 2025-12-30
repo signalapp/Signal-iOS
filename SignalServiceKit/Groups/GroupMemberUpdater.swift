@@ -14,7 +14,7 @@ protocol GroupMemberUpdaterTemporaryShims {
     func fetchLatestInteractionTimestamp(
         groupThreadId: String,
         groupMemberAddress: SignalServiceAddress,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> UInt64?
 
     func didUpdateRecords(groupThreadId: String, transaction: DBWriteTransaction)
@@ -28,7 +28,7 @@ class GroupMemberUpdaterImpl: GroupMemberUpdater {
     init(
         temporaryShims: GroupMemberUpdaterTemporaryShims,
         groupMemberStore: GroupMemberStore,
-        signalServiceAddressCache: SignalServiceAddressCache
+        signalServiceAddressCache: SignalServiceAddressCache,
     ) {
         self.temporaryShims = temporaryShims
         self.groupMemberStore = groupMemberStore
@@ -68,13 +68,13 @@ class GroupMemberUpdaterImpl: GroupMemberUpdater {
         for groupMember in groupMemberStore.sortedFullGroupMembers(in: groupThreadId, tx: transaction) {
             let oldAddress = PersistableDatabaseRecordAddress(
                 serviceId: groupMember.serviceId,
-                phoneNumber: groupMember.phoneNumber
+                phoneNumber: groupMember.phoneNumber,
             )
 
             let expectedAddress = expectedAddresses.remove(SignalServiceAddress(
                 serviceId: oldAddress.serviceId,
                 phoneNumber: oldAddress.phoneNumber,
-                cache: signalServiceAddressCache
+                cache: signalServiceAddressCache,
             ))
 
             let newAddress = NormalizedDatabaseRecordAddress(address: expectedAddress)
@@ -92,7 +92,7 @@ class GroupMemberUpdaterImpl: GroupMemberUpdater {
                 groupMembersToInsert.append(TSGroupMember(
                     address: newAddress,
                     groupThreadId: groupThreadId,
-                    lastInteractionTimestamp: groupMember.lastInteractionTimestamp
+                    lastInteractionTimestamp: groupMember.lastInteractionTimestamp,
                 ))
             }
         }
@@ -107,12 +107,12 @@ class GroupMemberUpdaterImpl: GroupMemberUpdater {
             let latestInteractionTimestamp = temporaryShims.fetchLatestInteractionTimestamp(
                 groupThreadId: groupThreadId,
                 groupMemberAddress: expectedAddress,
-                transaction: transaction
+                transaction: transaction,
             )
             groupMembersToInsert.append(TSGroupMember(
                 address: newAddress,
                 groupThreadId: groupThreadId,
-                lastInteractionTimestamp: latestInteractionTimestamp ?? 0
+                lastInteractionTimestamp: latestInteractionTimestamp ?? 0,
             ))
         }
 
@@ -133,12 +133,12 @@ class GroupMemberUpdaterTemporaryShimsImpl: GroupMemberUpdaterTemporaryShims {
     func fetchLatestInteractionTimestamp(
         groupThreadId: String,
         groupMemberAddress: SignalServiceAddress,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> UInt64? {
         let interactionFinder = InteractionFinder(threadUniqueId: groupThreadId)
         return interactionFinder.latestInteraction(
             from: groupMemberAddress,
-            transaction: transaction
+            transaction: transaction,
         )?.timestamp
     }
 

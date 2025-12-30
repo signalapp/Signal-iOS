@@ -22,7 +22,7 @@ struct OWSPollTest {
             allowsMultiSelect: false,
             votes: [:],
             isEnded: false,
-            ownerIsLocalUser: true
+            ownerIsLocalUser: true,
         )
 
         let sortedOptions = poll.sortedOptions()

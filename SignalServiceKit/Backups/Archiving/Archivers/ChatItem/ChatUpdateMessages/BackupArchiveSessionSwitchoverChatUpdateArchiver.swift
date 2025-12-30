@@ -22,16 +22,16 @@ final class BackupArchiveSessionSwitchoverChatUpdateArchiver {
     func archiveSessionSwitchoverChatUpdate(
         infoMessage: TSInfoMessage,
         threadInfo: BackupArchive.ChatArchivingContext.CachedThreadInfo,
-        context: BackupArchive.ChatArchivingContext
+        context: BackupArchive.ChatArchivingContext,
     ) -> ArchiveChatUpdateMessageResult {
         func messageFailure(
             _ errorType: ArchiveFrameError.ErrorType,
-            line: UInt = #line
+            line: UInt = #line,
         ) -> ArchiveChatUpdateMessageResult {
             return .messageFailure([.archiveFrameError(
                 errorType,
                 infoMessage.uniqueInteractionId,
-                line: line
+                line: line,
             )])
         }
 
@@ -72,7 +72,7 @@ final class BackupArchiveSessionSwitchoverChatUpdateArchiver {
             isSmsPreviouslyRestoredFromBackup: false,
             threadInfo: threadInfo,
             pinMessageDetails: nil,
-            context: context.recipientContext
+            context: context.recipientContext,
         )
     }
 
@@ -82,16 +82,16 @@ final class BackupArchiveSessionSwitchoverChatUpdateArchiver {
         _ sessionSwitchoverUpdateProto: BackupProto_SessionSwitchoverChatUpdate,
         chatItem: BackupProto_ChatItem,
         chatThread: BackupArchive.ChatThread,
-        context: BackupArchive.ChatItemRestoringContext
+        context: BackupArchive.ChatItemRestoringContext,
     ) -> RestoreChatUpdateMessageResult {
         func invalidProtoData(
             _ error: RestoreFrameError.ErrorType.InvalidProtoDataError,
-            line: UInt = #line
+            line: UInt = #line,
         ) -> RestoreChatUpdateMessageResult {
             return .messageFailure([.restoreFrameError(
                 .invalidProtoData(error),
                 chatItem.id,
-                line: line
+                line: line,
             )])
         }
 
@@ -106,7 +106,7 @@ final class BackupArchiveSessionSwitchoverChatUpdateArchiver {
         let sessionSwitchoverInfoMessage: TSInfoMessage = .makeForSessionSwitchover(
             contactThread: switchedOverContactThread,
             timestamp: chatItem.dateSent,
-            phoneNumber: e164.stringValue
+            phoneNumber: e164.stringValue,
         )
 
         do {
@@ -114,7 +114,7 @@ final class BackupArchiveSessionSwitchoverChatUpdateArchiver {
                 sessionSwitchoverInfoMessage,
                 in: chatThread,
                 chatId: chatItem.typedChatId,
-                context: context
+                context: context,
             )
         } catch let error {
             return .messageFailure([.restoreFrameError(.databaseInsertionFailed(error), chatItem.id)])

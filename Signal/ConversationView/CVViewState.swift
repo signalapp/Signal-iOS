@@ -44,6 +44,7 @@ public class CVViewState: NSObject {
 
         return scrollingAnimationCompletionTimer != nil
     }
+
     public var scrollActionForSizeTransition: CVScrollAction?
     public var scrollActionForUpdate: CVScrollAction?
     public var lastKnownDistanceFromBottom: CGFloat?
@@ -151,13 +152,13 @@ public class CVViewState: NSObject {
 
     var manuallyCanceledDownloadsMessageIds = Set<String>()
 
-    // MARK: - 
+    // MARK: -
 
     public init(
         threadUniqueId: String,
         conversationStyle: ConversationStyle,
         chatColor: ColorOrGradientSetting,
-        wallpaperViewBuilder: WallpaperViewBuilder?
+        wallpaperViewBuilder: WallpaperViewBuilder?,
     ) {
         self.threadUniqueId = threadUniqueId
         self.conversationStyle = conversationStyle
@@ -282,15 +283,19 @@ extension ConversationViewController {
     var collectionViewTapGestureRecognizer: SingleOrDoubleTapGestureRecognizer {
         viewState.collectionViewTapGestureRecognizer
     }
+
     var collectionViewLongPressGestureRecognizer: UILongPressGestureRecognizer {
         viewState.collectionViewLongPressGestureRecognizer
     }
+
     var collectionViewContextMenuGestureRecognizer: UILongPressGestureRecognizer {
         viewState.collectionViewContextMenuGestureRecognizer
     }
+
     var collectionViewContextMenuSecondaryClickRecognizer: UITapGestureRecognizer {
         viewState.collectionViewContextMenuSecondaryClickRecognizer
     }
+
     var collectionViewPanGestureRecognizer: UIPanGestureRecognizer {
         viewState.collectionViewPanGestureRecognizer
     }
@@ -301,10 +306,11 @@ extension ConversationViewController {
     }
 
     var backgroundContainer: CVBackgroundContainer { viewState.backgroundContainer }
-    internal var reactionsDetailSheet: ReactionsDetailSheet? {
+    var reactionsDetailSheet: ReactionsDetailSheet? {
         get { viewState.reactionsDetailSheet }
         set { viewState.reactionsDetailSheet = newValue }
     }
+
     var contactShareViewHelper: ContactShareViewHelper { viewState.contactShareViewHelper }
 }
 
@@ -373,7 +379,7 @@ public class CVTextExpansion {
     private var expandedTextInteractionsIds = Set<String>()
 
     init(expandedTextInteractionsIds: Set<String>? = nil) {
-        if let expandedTextInteractionsIds = expandedTextInteractionsIds {
+        if let expandedTextInteractionsIds {
             self.expandedTextInteractionsIds = expandedTextInteractionsIds
         }
     }
@@ -405,7 +411,7 @@ public class CVMessageSwipeActionState {
     private var progressMap = ProgressMap()
 
     init(progressMap: ProgressMap? = nil) {
-        if let progressMap = progressMap {
+        if let progressMap {
             self.progressMap = progressMap
         }
     }

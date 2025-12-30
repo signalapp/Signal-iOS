@@ -93,7 +93,7 @@ public struct RegistrationCoordinatorDependencies {
             tsAccountManager: DependenciesBridge.shared.tsAccountManager,
             udManager: RegistrationCoordinatorImpl.Wrappers.UDManager(SSKEnvironment.shared.udManagerRef),
             usernameApiClient: RegistrationCoordinatorImpl.Wrappers.UsernameApiClient(DependenciesBridge.shared.usernameApiClient),
-            usernameLinkManager: DependenciesBridge.shared.usernameLinkManager
+            usernameLinkManager: DependenciesBridge.shared.usernameLinkManager,
         )
     }
 }

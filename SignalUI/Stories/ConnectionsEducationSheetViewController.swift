@@ -6,14 +6,15 @@
 import SignalServiceKit
 
 public class ConnectionsEducationSheetViewController: StackSheetViewController {
-    public override var stackViewInsets: UIEdgeInsets {
+    override public var stackViewInsets: UIEdgeInsets {
         .init(top: 24, left: 24, bottom: 32, right: 24)
     }
 
-    public override var sheetBackgroundColor: UIColor {
+    override public var sheetBackgroundColor: UIColor {
         UIColor.Signal.secondaryBackground
     }
-    public override var handleBackgroundColor: UIColor {
+
+    override public var handleBackgroundColor: UIColor {
         UIColor.Signal.transparentSeparator
     }
 
@@ -46,10 +47,10 @@ public class ConnectionsEducationSheetViewController: StackSheetViewController {
         let label = UILabel()
         label.attributedText = OWSLocalizedString(
             "STORY_SETTINGS_LEARN_MORE_SHEET_HEADER_FORMAT",
-            comment: "Header for the explainer sheet for signal connections"
+            comment: "Header for the explainer sheet for signal connections",
         ).styled(
             with: .font(.dynamicTypeBody),
-            .xmlRules([.style("bold", .init(.font(UIFont.dynamicTypeHeadline)))])
+            .xmlRules([.style("bold", .init(.font(UIFont.dynamicTypeHeadline)))]),
         )
         label.textColor = .label
         label.numberOfLines = 0
@@ -61,16 +62,16 @@ public class ConnectionsEducationSheetViewController: StackSheetViewController {
         return [
             OWSLocalizedString(
                 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_1",
-                comment: "First bullet point for the explainer sheet for signal connections"
+                comment: "First bullet point for the explainer sheet for signal connections",
             ),
             OWSLocalizedString(
                 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_2",
-                comment: "Second bullet point for the explainer sheet for signal connections"
+                comment: "Second bullet point for the explainer sheet for signal connections",
             ),
             OWSLocalizedString(
                 "STORY_SETTINGS_LEARN_MORE_SHEET_BULLET_3",
-                comment: "Third bullet point for the explainer sheet for signal connections"
-            )
+                comment: "Third bullet point for the explainer sheet for signal connections",
+            ),
         ].map { text in
             return ListPointView(text: text)
         }
@@ -80,7 +81,7 @@ public class ConnectionsEducationSheetViewController: StackSheetViewController {
         let label = UILabel()
         label.text = OWSLocalizedString(
             "STORY_SETTINGS_LEARN_MORE_SHEET_FOOTER",
-            comment: "Footer for the explainer sheet for signal connections"
+            comment: "Footer for the explainer sheet for signal connections",
         )
         label.textColor = .label
         label.font = .dynamicTypeBody

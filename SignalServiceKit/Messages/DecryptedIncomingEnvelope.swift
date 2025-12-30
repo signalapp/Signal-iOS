@@ -40,7 +40,7 @@ class DecryptedIncomingEnvelope {
         sourceDeviceId: DeviceId,
         wasReceivedByUD: Bool,
         plaintextData: Data,
-        isPlaintextCipher: Bool?
+        isPlaintextCipher: Bool?,
     ) throws {
         self.envelope = updatedEnvelope
         self.timestamp = validatedEnvelope.timestamp
@@ -60,21 +60,21 @@ class DecryptedIncomingEnvelope {
         }()
 
         let hasDecryptionError = (
-            content?.decryptionErrorMessage != nil
+            content?.decryptionErrorMessage != nil,
         )
         let hasAnythingElse = (
             content?.dataMessage != nil
-            || content?.syncMessage != nil
-            || content?.callMessage != nil
-            || content?.nullMessage != nil
-            || content?.receiptMessage != nil
-            || content?.typingMessage != nil
-            || content?.storyMessage != nil
-            || content?.pniSignatureMessage != nil
-            || content?.senderKeyDistributionMessage != nil
-            || content?.unknownFields != nil
+                || content?.syncMessage != nil
+                || content?.callMessage != nil
+                || content?.nullMessage != nil
+                || content?.receiptMessage != nil
+                || content?.typingMessage != nil
+                || content?.storyMessage != nil
+                || content?.pniSignatureMessage != nil
+                || content?.senderKeyDistributionMessage != nil
+                || content?.unknownFields != nil,
         )
-        if hasDecryptionError && hasAnythingElse {
+        if hasDecryptionError, hasAnythingElse {
             throw OWSGenericError("Message content must contain one type.")
         }
         if let isPlaintextCipher, isPlaintextCipher != hasDecryptionError {

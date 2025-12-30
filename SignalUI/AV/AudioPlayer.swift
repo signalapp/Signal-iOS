@@ -96,7 +96,7 @@ public class AudioPlayer: NSObject {
             self,
             selector: #selector(applicationDidEnterBackground),
             name: .OWSApplicationDidEnterBackground,
-            object: nil
+            object: nil,
         )
     }
 
@@ -212,11 +212,11 @@ public class AudioPlayer: NSObject {
                 if let extensionOverride = MimeTypeUtil.alternativeAudioFileExtension(fileExtension: mediaUrl.pathExtension) {
                     let symlinkUrl = OWSFileSystem.temporaryFileUrl(
                         fileExtension: extensionOverride,
-                        isAvailableWhileDeviceLocked: true
+                        isAvailableWhileDeviceLocked: true,
                     )
                     try FileManager.default.createSymbolicLink(
                         at: symlinkUrl,
-                        withDestinationURL: mediaUrl
+                        withDestinationURL: mediaUrl,
                     )
                     asset = AVURLAsset(url: symlinkUrl)
                 }
@@ -242,8 +242,8 @@ public class AudioPlayer: NSObject {
                     OWSActionSheets.showErrorAlert(
                         message: OWSLocalizedString(
                             "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE",
-                            comment: "Message for the alert indicating that an audio file is invalid."
-                        )
+                            comment: "Message for the alert indicating that an audio file is invalid.",
+                        ),
                     )
                 }
             }
@@ -255,7 +255,7 @@ public class AudioPlayer: NSObject {
             self,
             selector: #selector(audioPlayerDidFinishPlaying),
             name: AVPlayerItem.didPlayToEndTimeNotification,
-            object: audioPlayer.currentItem
+            object: audioPlayer.currentItem,
         )
         audioPlayer.rate = playbackRate
         // Pause it; it starts off playing.
@@ -343,7 +343,7 @@ public class AudioPlayer: NSObject {
         MPNowPlayingInfoCenter.default().nowPlayingInfo = [
             MPMediaItemPropertyTitle: backgroundPlaybackName,
             MPMediaItemPropertyPlaybackDuration: self.duration,
-            MPNowPlayingInfoPropertyElapsedPlaybackTime: self.currentTime
+            MPNowPlayingInfoPropertyElapsedPlaybackTime: self.currentTime,
         ]
     }
 
@@ -407,7 +407,7 @@ public class AudioPlayer: NSObject {
 extension AudioPlayer {
 
     @objc
-    fileprivate func audioPlayerDidFinishPlaying() {
+    private func audioPlayerDidFinishPlaying() {
         AssertIsOnMainThread()
 
         stop()

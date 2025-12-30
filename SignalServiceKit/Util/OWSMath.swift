@@ -105,7 +105,9 @@ extension CGPoint {
 extension CGRect {
     @inlinable
     public static func scale(_ rect: CGRect, factor: CGFloat) -> CGRect {
-        CGRect(origin: CGPoint.scale(rect.origin, factor: factor),
-               size: CGSize.scale(rect.size, factor: factor))
+        CGRect(
+            origin: CGPoint.scale(rect.origin, factor: factor),
+            size: CGSize.scale(rect.size, factor: factor),
+        )
     }
 }

@@ -54,7 +54,7 @@ public struct BackupAttachmentDownloadEligibility {
         currentTimestamp: UInt64,
         backupPlan: BackupPlan,
         remoteConfig: RemoteConfig,
-        isPrimaryDevice: Bool
+        isPrimaryDevice: Bool,
     ) -> Self {
         return forAttachment(
             attachment,
@@ -62,7 +62,7 @@ public struct BackupAttachmentDownloadEligibility {
             currentTimestamp: currentTimestamp,
             backupPlan: backupPlan,
             remoteConfig: remoteConfig,
-            isPrimaryDevice: isPrimaryDevice
+            isPrimaryDevice: isPrimaryDevice,
         )
     }
 
@@ -72,7 +72,7 @@ public struct BackupAttachmentDownloadEligibility {
         currentTimestamp: UInt64,
         backupPlan: BackupPlan,
         remoteConfig: RemoteConfig,
-        isPrimaryDevice: Bool
+        isPrimaryDevice: Bool,
     ) rethrows -> Self {
         return try forAttachment(
             attachment,
@@ -87,7 +87,7 @@ public struct BackupAttachmentDownloadEligibility {
             currentTimestamp: currentTimestamp,
             backupPlan: backupPlan,
             remoteConfig: remoteConfig,
-            isPrimaryDevice: isPrimaryDevice
+            isPrimaryDevice: isPrimaryDevice,
         )
     }
 
@@ -97,14 +97,14 @@ public struct BackupAttachmentDownloadEligibility {
         currentTimestamp: UInt64,
         backupPlan: BackupPlan,
         remoteConfig: RemoteConfig,
-        isPrimaryDevice: Bool
+        isPrimaryDevice: Bool,
     ) rethrows -> Self {
         if attachment.asStream() != nil {
             // If we have a stream already, no need to download anything.
             return Self(
                 thumbnailMediaTierState: .done,
                 fullsizeTransitTierState: .done,
-                fullsizeMediaTierState: .done
+                fullsizeMediaTierState: .done,
             )
         }
 
@@ -133,14 +133,14 @@ public struct BackupAttachmentDownloadEligibility {
                 currentTimestamp: currentTimestamp,
                 remoteConfig: remoteConfig,
                 backupPlan: backupPlan,
-                isPrimaryDevice: isPrimaryDevice
+                isPrimaryDevice: isPrimaryDevice,
             ),
             fullsizeMediaTierState: try Self.mediaTierFullsizeState(
                 attachment: attachment,
                 attachmentTimestamp: { try cached(getAttachmentTimestamp) }(),
                 currentTimestamp: currentTimestamp,
-                backupPlan: backupPlan
-            )
+                backupPlan: backupPlan,
+            ),
         )
     }
 
@@ -150,7 +150,7 @@ public struct BackupAttachmentDownloadEligibility {
         attachment: Attachment,
         attachmentTimestamp getAttachmentTimestamp: @autoclosure () throws -> UInt64?,
         currentTimestamp: UInt64,
-        backupPlan: BackupPlan
+        backupPlan: BackupPlan,
     ) rethrows -> QueuedBackupAttachmentDownload.State? {
         guard attachment.asStream() == nil else {
             return .done
@@ -178,16 +178,15 @@ public struct BackupAttachmentDownloadEligibility {
             // but for eligibility purposes "free" is the same as paid with optimize off.
             return .ready
         case
-                .paid(optimizeLocalStorage: false),
-                .paidExpiringSoon(optimizeLocalStorage: false),
-                .paidAsTester(optimizeLocalStorage: false):
+            .paid(optimizeLocalStorage: false),
+            .paidExpiringSoon(optimizeLocalStorage: false),
+            .paidAsTester(optimizeLocalStorage: false):
             // Everything is eligible for download when optimize is off.
             return .ready
-
         case
-                .paid(optimizeLocalStorage: true),
-                .paidExpiringSoon(optimizeLocalStorage: true),
-                .paidAsTester(optimizeLocalStorage: true):
+            .paid(optimizeLocalStorage: true),
+            .paidExpiringSoon(optimizeLocalStorage: true),
+            .paidAsTester(optimizeLocalStorage: true):
             guard let attachmentTimestamp = try getAttachmentTimestamp() else {
                 // Nil timestamps are used for thread wallpapers, which we never offload.
                 return .ready
@@ -244,9 +243,9 @@ public struct BackupAttachmentDownloadEligibility {
             }
             return .ineligible
         case
-                .paid(let optimizeLocalStorage),
-                .paidAsTester(let optimizeLocalStorage),
-                .paidExpiringSoon(let optimizeLocalStorage):
+            .paid(let optimizeLocalStorage),
+            .paidAsTester(let optimizeLocalStorage),
+            .paidExpiringSoon(let optimizeLocalStorage):
             // free tier and optimize off dont download thumbnails by default;
             // only download if the fullsize download failed.
             if
@@ -278,7 +277,7 @@ public struct BackupAttachmentDownloadEligibility {
         currentTimestamp: UInt64,
         remoteConfig: RemoteConfig,
         backupPlan: BackupPlan,
-        isPrimaryDevice: Bool
+        isPrimaryDevice: Bool,
     ) rethrows -> QueuedBackupAttachmentDownload.State? {
         guard attachment.asStream() == nil else {
             return .done

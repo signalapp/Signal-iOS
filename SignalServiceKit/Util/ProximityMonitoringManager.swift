@@ -17,6 +17,7 @@ public class OWSProximityMonitoringManagerImpl: OWSProximityMonitoringManager {
         var didAddObserver = false
         var lifetimes = [Weak<AnyObject>]()
     }
+
     private var state = AtomicValue(State(), lock: .init())
 
     public func add(lifetime: AnyObject) {
@@ -81,7 +82,7 @@ public class OWSProximityMonitoringManagerImpl: OWSProximityMonitoringManager {
                     self,
                     selector: #selector(self.proximitySensorStateDidChange(notification:)),
                     name: UIDevice.proximityStateDidChangeNotification,
-                    object: nil
+                    object: nil,
                 )
             }
         }

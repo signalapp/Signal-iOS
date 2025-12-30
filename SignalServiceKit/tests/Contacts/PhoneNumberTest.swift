@@ -103,12 +103,12 @@ class PhoneNumberTest: XCTestCase {
         for testCase in testCases {
             let phoneNumbers = phoneNumberUtilRef.parsePhoneNumbers(
                 userSpecifiedText: testCase.inputValue,
-                localPhoneNumber: localNumber
+                localPhoneNumber: localNumber,
             )
             XCTAssertEqual(
                 phoneNumbers.contains(where: { $0.e164 == testCase.expectedValue }),
                 testCase.isExpected,
-                testCase.inputValue
+                testCase.inputValue,
             )
         }
     }
@@ -134,12 +134,12 @@ class PhoneNumberTest: XCTestCase {
         for testCase in testCases {
             let phoneNumbers = phoneNumberUtilRef.parsePhoneNumbers(
                 userSpecifiedText: testCase.inputValue,
-                localPhoneNumber: localNumber
+                localPhoneNumber: localNumber,
             )
             XCTAssertEqual(
                 phoneNumbers.contains(where: { $0.e164 == testCase.expectedValue }),
                 testCase.isExpected,
-                testCase.inputValue
+                testCase.inputValue,
             )
         }
     }

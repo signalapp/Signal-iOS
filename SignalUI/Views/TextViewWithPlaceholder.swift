@@ -105,20 +105,20 @@ public class TextViewWithPlaceholder: UIView {
     }
 
     @discardableResult
-    public override func becomeFirstResponder() -> Bool {
+    override public func becomeFirstResponder() -> Bool {
         textView.becomeFirstResponder()
     }
 
     @discardableResult
-    public override func resignFirstResponder() -> Bool {
+    override public func resignFirstResponder() -> Bool {
         textView.resignFirstResponder()
     }
 
-    public override var canBecomeFirstResponder: Bool {
+    override public var canBecomeFirstResponder: Bool {
         textView.canBecomeFirstResponder
     }
 
-    public override var isFirstResponder: Bool {
+    override public var isFirstResponder: Bool {
         textView.isFirstResponder
     }
 
@@ -152,12 +152,13 @@ public class TextViewWithPlaceholder: UIView {
         // textView.textContainerInset = .zero
         return textView
     }
+
     private lazy var textView = buildTextView()
     private lazy var placeholderTextView = buildTextView()
 
     // MARK: - Lifecycle
 
-    public override init(frame: CGRect) {
+    override public init(frame: CGRect) {
         super.init(frame: frame)
         applyTheme()
 

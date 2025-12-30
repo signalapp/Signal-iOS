@@ -17,7 +17,7 @@ public protocol BackupAttachmentDownloadScheduler {
         backupPlan: BackupPlan,
         remoteConfig: RemoteConfig,
         isPrimaryDevice: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     )
 }
 
@@ -37,7 +37,7 @@ public class BackupAttachmentDownloadSchedulerImpl: BackupAttachmentDownloadSche
         backupPlan: BackupPlan,
         remoteConfig: RemoteConfig,
         isPrimaryDevice: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         let eligibility = BackupAttachmentDownloadEligibility.forAttachment(
             referencedAttachment.attachment,
@@ -45,7 +45,7 @@ public class BackupAttachmentDownloadSchedulerImpl: BackupAttachmentDownloadSche
             currentTimestamp: restoreStartTimestampMs,
             backupPlan: backupPlan,
             remoteConfig: remoteConfig,
-            isPrimaryDevice: isPrimaryDevice
+            isPrimaryDevice: isPrimaryDevice,
         )
 
         if
@@ -63,7 +63,7 @@ public class BackupAttachmentDownloadSchedulerImpl: BackupAttachmentDownloadSche
                 // Don't trigger per-item logs from backups; too noisy
                 file: nil,
                 function: nil,
-                line: nil
+                line: nil,
             )
         }
         if
@@ -80,7 +80,7 @@ public class BackupAttachmentDownloadSchedulerImpl: BackupAttachmentDownloadSche
                 // Don't trigger per-item logs from backups; too noisy
                 file: nil,
                 function: nil,
-                line: nil
+                line: nil,
             )
         }
     }
@@ -98,7 +98,7 @@ open class BackupAttachmentDownloadSchedulerMock: BackupAttachmentDownloadSchedu
         backupPlan: BackupPlan,
         remoteConfig: RemoteConfig,
         isPrimaryDevice: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         // Do nothing
     }

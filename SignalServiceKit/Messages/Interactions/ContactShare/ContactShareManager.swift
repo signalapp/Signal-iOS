@@ -21,7 +21,7 @@ public protocol ContactShareManager {
     ) -> ValidatedContactShareProto
 
     func validateAndPrepare(
-        draft: ContactShareDraft
+        draft: ContactShareDraft,
     ) async throws -> ContactShareDraft.ForSending
 
     func validateAndBuild(
@@ -31,7 +31,7 @@ public protocol ContactShareManager {
     func buildProtoForSending(
         from contactShare: OWSContact,
         parentMessage: TSMessage,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> SSKProtoDataMessageContact
 }
 
@@ -46,7 +46,7 @@ class ContactShareManagerImpl: ContactShareManager {
     init(
         attachmentManager: AttachmentManager,
         attachmentStore: AttachmentStore,
-        attachmentValidator: AttachmentContentValidator
+        attachmentValidator: AttachmentContentValidator,
     ) {
         self.attachmentManager = attachmentManager
         self.attachmentStore = attachmentStore
@@ -90,7 +90,7 @@ class ContactShareManagerImpl: ContactShareManager {
             namePrefix: namePrefix,
             nameSuffix: nameSuffix,
             middleName: middleName,
-            organizationName: organizationName
+            organizationName: organizationName,
         )
 
         contactName.ensureDisplayName()
@@ -108,7 +108,7 @@ class ContactShareManagerImpl: ContactShareManager {
     }
 
     func validateAndPrepare(
-        draft: ContactShareDraft
+        draft: ContactShareDraft,
     ) async throws -> ContactShareDraft.ForSending {
         let avatarDataSource: AttachmentDataSource? = try await {
             if
@@ -117,7 +117,7 @@ class ContactShareManagerImpl: ContactShareManager {
             {
                 return .forwarding(
                     existingAttachment: stream,
-                    with: existingAvatarAttachment.reference
+                    with: existingAvatarAttachment.reference,
                 )
             } else if let avatarImage = draft.avatarImage {
                 guard let imageData = avatarImage.jpegData(compressionQuality: 0.9) else {
@@ -128,7 +128,7 @@ class ContactShareManagerImpl: ContactShareManager {
                     data: imageData,
                     mimeType: mimeType,
                     renderingFlag: .default,
-                    sourceFilename: nil
+                    sourceFilename: nil,
                 )
                 return .pendingAttachment(pendingAttachment)
             } else {
@@ -140,7 +140,7 @@ class ContactShareManagerImpl: ContactShareManager {
             addresses: draft.addresses,
             emails: draft.emails,
             phoneNumbers: draft.phoneNumbers,
-            avatar: avatarDataSource
+            avatar: avatarDataSource,
         )
     }
 
@@ -161,7 +161,7 @@ class ContactShareManagerImpl: ContactShareManager {
     func buildProtoForSending(
         from contactShare: OWSContact,
         parentMessage: TSMessage,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> SSKProtoDataMessageContact {
 
         let contactBuilder = SSKProtoDataMessageContact.builder()
@@ -197,7 +197,7 @@ class ContactShareManagerImpl: ContactShareManager {
             let parentMessageRowId = parentMessage.sqliteRowId,
             let avatarAttachment = attachmentStore.fetchFirstReferencedAttachment(
                 for: .messageContactAvatar(messageRowId: parentMessageRowId),
-                tx: tx
+                tx: tx,
             ),
             let avatarPointer = avatarAttachment.attachment.asTransitTierPointer(),
             case let .digestSHA256Ciphertext(digestSHA256Ciphertext) = avatarPointer.info.integrityCheck

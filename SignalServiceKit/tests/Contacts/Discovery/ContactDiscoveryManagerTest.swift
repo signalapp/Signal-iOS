@@ -145,7 +145,7 @@ final class ContactDiscoveryManagerTest: XCTestCase {
     func testModeRateLimitPriority() {
         let allCases = ContactDiscoveryMode.allCasesOrderedByRateLimitPriority
         let uniqueCases = Set(allCases)
-        XCTAssertEqual(allCases.count, uniqueCases.count)  // no duplicates
+        XCTAssertEqual(allCases.count, uniqueCases.count) // no duplicates
         var caseCount = 0
         for mode in Set(ContactDiscoveryMode.allCasesOrderedByRateLimitPriority) {
             switch mode {
@@ -153,6 +153,6 @@ final class ContactDiscoveryManagerTest: XCTestCase {
                 caseCount += 1
             }
         }
-        XCTAssertEqual(caseCount, 3)  // every case appears
+        XCTAssertEqual(caseCount, 3) // every case appears
     }
 }

@@ -12,9 +12,11 @@ public typealias CVStackViewConfig = OWSStackView.Config
 
 public extension UIStackView {
 
-    static func measure(config: CVStackViewConfig,
-                        subviewSizes: [CGSize],
-                        verboseLogging: Bool = false) -> CGSize {
+    static func measure(
+        config: CVStackViewConfig,
+        subviewSizes: [CGSize],
+        verboseLogging: Bool = false,
+    ) -> CGSize {
 
         let spacingCount = max(0, subviewSizes.count - 1)
 

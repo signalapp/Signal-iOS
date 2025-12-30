@@ -14,12 +14,12 @@ public enum StoryUtil {
         contactsManager: any ContactManager,
         useFullNameForLocalAddress: Bool = true,
         useShortGroupName: Bool = true,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> String {
         guard !storyMessage.authorAddress.isSystemStoryAddress else {
             return OWSLocalizedString(
                 "SYSTEM_ADDRESS_NAME",
-                comment: "Name to display for the 'system' sender, e.g. for release notes and the onboarding story"
+                comment: "Name to display for the 'system' sender, e.g. for release notes and the onboarding story",
             )
         }
         if let groupId = storyMessage.groupId {
@@ -39,22 +39,22 @@ public enum StoryUtil {
             } else {
                 authorShortName = contactsManager.displayName(
                     for: storyMessage.authorAddress,
-                    tx: transaction
+                    tx: transaction,
                 ).resolvedValue(useShortNameIfAvailable: true)
             }
 
             let nameFormat = OWSLocalizedString(
                 "GROUP_STORY_NAME_FORMAT",
-                comment: "Name for a group story on the stories list. Embeds {author's name}, {group name}"
+                comment: "Name for a group story on the stories list. Embeds {author's name}, {group name}",
             )
             return String.localizedStringWithFormat(nameFormat, authorShortName, groupName)
         } else {
-            if !useFullNameForLocalAddress && storyMessage.authorAddress.isLocalAddress {
+            if !useFullNameForLocalAddress, storyMessage.authorAddress.isLocalAddress {
                 return CommonStrings.you
             }
             return contactsManager.displayName(
                 for: storyMessage.authorAddress,
-                tx: transaction
+                tx: transaction,
             ).resolvedValue()
         }
     }
@@ -62,7 +62,7 @@ public enum StoryUtil {
     /// Avatar for the _context_ of a story message. e.g. the group avatar if a group thread story, or the author's avatar otherwise.
     static func contextAvatarDataSource(
         for storyMessage: StoryMessage,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) throws -> ConversationAvatarDataSource {
         guard let groupId = storyMessage.groupId else {
             return try authorAvatarDataSource(for: storyMessage, transaction: transaction)
@@ -76,7 +76,7 @@ public enum StoryUtil {
     /// Avatar for the author of a story message, regardless of its context.
     static func authorAvatarDataSource(
         for storyMessage: StoryMessage,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) throws -> ConversationAvatarDataSource {
         guard !storyMessage.authorAddress.isSystemStoryAddress else {
             return systemStoryAvatar
@@ -89,7 +89,7 @@ public enum StoryUtil {
             avatar: UIImage(named: "signal-logo-128")?
                 .withTintColor(.white, renderingMode: .alwaysTemplate)
                 .withBackgroundColor(.ows_accentBlue, insets: UIEdgeInsets(margin: 24)),
-            badge: nil
+            badge: nil,
         )
     }
 
@@ -100,12 +100,12 @@ public enum StoryUtil {
         if message.hasSentToAnyRecipients {
             title = OWSLocalizedString(
                 "STORY_RESEND_PARTIALLY_FAILED_MESSAGE_ACTION_SHEET",
-                comment: "Title for the dialog asking user if they wish to resend a partially failed story message."
+                comment: "Title for the dialog asking user if they wish to resend a partially failed story message.",
             )
         } else {
             title = OWSLocalizedString(
                 "STORY_RESEND_FAILED_MESSAGE_ACTION_SHEET",
-                comment: "Title for the dialog asking user if they wish to resend a failed story message."
+                comment: "Title for the dialog asking user if they wish to resend a failed story message.",
             )
         }
 
@@ -134,7 +134,7 @@ public enum StoryUtil {
 
         let sheet = SafetyNumberConfirmationSheet(
             addressesToConfirm: recipientsWithChangedSafetyNumber,
-            confirmationText: MessageStrings.sendButton
+            confirmationText: MessageStrings.sendButton,
         ) { confirmedSafetyNumberChange in
             guard confirmedSafetyNumberChange else { return }
             SSKEnvironment.shared.databaseStorageRef.write { transaction in

@@ -66,20 +66,20 @@ class RingerSwitch {
     private var ringerStateToken: Int32?
 
     private var isSilenced: Bool? {
-        guard let ringerStateToken = ringerStateToken else {
+        guard let ringerStateToken else {
             return nil
         }
         return isRingerStateSilenced(token: ringerStateToken)
     }
 
     private func startObserving() -> Bool {
-        if let ringerStateToken = ringerStateToken {
+        if let ringerStateToken {
             // Already observing.
             return isRingerStateSilenced(token: ringerStateToken)
         }
         let token = DarwinNotificationCenter.addObserver(
             name: Self.ringerStateNotificationName,
-            queue: .main
+            queue: .main,
         ) { [weak self] token in
             guard let strongSelf = self else {
                 return
@@ -92,7 +92,7 @@ class RingerSwitch {
     }
 
     private func stopObserving() {
-        guard let ringerStateToken = ringerStateToken else { return }
+        guard let ringerStateToken else { return }
         DarwinNotificationCenter.removeObserver(ringerStateToken)
         self.ringerStateToken = nil
     }

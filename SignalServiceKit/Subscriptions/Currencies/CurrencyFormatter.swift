@@ -7,7 +7,7 @@
 public class CurrencyFormatter {
     public static func format(
         money: FiatMoney,
-        locale: Locale = .current
+        locale: Locale = .current,
     ) -> String {
         let value = money.value
         let currencyCode = money.currencyCode
@@ -25,9 +25,9 @@ public class CurrencyFormatter {
 
         let formatStyle = Decimal.FormatStyle.Currency(
             code: currencyCode,
-            locale: locale
+            locale: locale,
         )
-            .precision(.fractionLength(decimalPlaces))
+        .precision(.fractionLength(decimalPlaces))
 
         return formatStyle.format(value)
     }

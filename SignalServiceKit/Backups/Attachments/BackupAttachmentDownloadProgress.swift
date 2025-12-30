@@ -46,7 +46,7 @@ public protocol BackupAttachmentDownloadProgress: AnyObject {
     /// Create an OWSProgressSink for a single attachment to be downloaded.
     /// Should be called prior to downloading any backup attachment.
     func willBeginDownloadingFullsizeAttachment(
-        withId id: Attachment.IDType
+        withId id: Attachment.IDType,
     ) async -> OWSProgressSink
 
     /// Stopgap to inform that an attachment finished downloading.
@@ -55,7 +55,7 @@ public protocol BackupAttachmentDownloadProgress: AnyObject {
     /// attachments as finished in all cases.
     func didFinishDownloadOfFullsizeAttachment(
         withId id: Attachment.IDType,
-        byteCount: UInt64
+        byteCount: UInt64,
     ) async
 
     /// Called when there are no more enqueued downloads.
@@ -128,13 +128,13 @@ public actor BackupAttachmentDownloadProgressImpl: BackupAttachmentDownloadProgr
     /// Create an OWSProgressSink for a single attachment to be downloaded.
     /// Should be called prior to downloading any backup attachment.
     public func willBeginDownloadingFullsizeAttachment(
-        withId id: Attachment.IDType
+        withId id: Attachment.IDType,
     ) async -> OWSProgressSink {
         let sink = OWSProgress.createSink { [weak self] progress in
             Task { await self?.didUpdateProgressForActiveDownload(
                 id: .init(atachmentId: id),
                 completedByteCount: progress.completedUnitCount,
-                totalByteCount: progress.totalUnitCount
+                totalByteCount: progress.totalUnitCount,
             )
             }
         }
@@ -143,12 +143,12 @@ public actor BackupAttachmentDownloadProgressImpl: BackupAttachmentDownloadProgr
 
     public func didFinishDownloadOfFullsizeAttachment(
         withId id: Attachment.IDType,
-        byteCount: UInt64
+        byteCount: UInt64,
     ) {
         didUpdateProgressForActiveDownload(
             id: .init(atachmentId: id),
             completedByteCount: byteCount,
-            totalByteCount: byteCount
+            totalByteCount: byteCount,
         )
     }
 
@@ -180,7 +180,7 @@ public actor BackupAttachmentDownloadProgressImpl: BackupAttachmentDownloadProgr
         backupSettingsStore: BackupSettingsStore,
         dateProvider: @escaping DateProvider,
         db: DB,
-        remoteConfigProvider: RemoteConfigProvider
+        remoteConfigProvider: RemoteConfigProvider,
     ) {
         self.appContext = appContext
         self.backupAttachmentDownloadStore = backupAttachmentDownloadStore
@@ -250,7 +250,7 @@ public actor BackupAttachmentDownloadProgressImpl: BackupAttachmentDownloadProgr
     private func didUpdateProgressForActiveDownload(
         id: DownloadId,
         completedByteCount: UInt64,
-        totalByteCount: UInt64
+        totalByteCount: UInt64,
     ) {
         guard totalByteCount != 0 else {
             return
@@ -281,7 +281,7 @@ public actor BackupAttachmentDownloadProgressImpl: BackupAttachmentDownloadProgr
 extension QueuedBackupAttachmentDownload: TableRecord {
     static let attachment = belongsTo(
         Attachment.Record.self,
-        using: ForeignKey([QueuedBackupAttachmentDownload.CodingKeys.attachmentRowId.rawValue])
+        using: ForeignKey([QueuedBackupAttachmentDownload.CodingKeys.attachmentRowId.rawValue]),
     )
 }
 
@@ -292,7 +292,7 @@ open class BackupAttachmentDownloadProgressMock: BackupAttachmentDownloadProgres
     init() {}
 
     open func addObserver(
-        _ block: @escaping (OWSProgress) -> Void
+        _ block: @escaping (OWSProgress) -> Void,
     ) async -> BackupAttachmentDownloadProgressObserver {
         return BackupAttachmentDownloadProgressObserver(block: block)
     }
@@ -310,14 +310,14 @@ open class BackupAttachmentDownloadProgressMock: BackupAttachmentDownloadProgres
     }
 
     open func willBeginDownloadingFullsizeAttachment(
-        withId id: Attachment.IDType
+        withId id: Attachment.IDType,
     ) async -> any OWSProgressSink {
         return OWSProgress.createSink({ _ in })
     }
 
     open func didFinishDownloadOfFullsizeAttachment(
         withId id: Attachment.IDType,
-        byteCount: UInt64
+        byteCount: UInt64,
     ) async {
         // Do nothing
     }

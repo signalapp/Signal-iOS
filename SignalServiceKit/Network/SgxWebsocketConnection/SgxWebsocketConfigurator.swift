@@ -47,7 +47,7 @@ public protocol SgxWebsocketConfigurator {
     static func client(
         mrenclave: MrEnclave,
         attestationMessage: Data,
-        currentDate: Date
+        currentDate: Date,
     ) throws -> Client
 
     /// Name to use for logging connection events. Defaults to class name.

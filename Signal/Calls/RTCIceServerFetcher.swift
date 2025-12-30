@@ -22,7 +22,7 @@ struct RTCIceServerFetcher {
         static func update(servers: [RTCIceServer], ttl: Int) -> Cache {
             return Cache(
                 servers: servers,
-                expirationTimestamp: MonotonicDate().adding(TimeInterval(ttl))
+                expirationTimestamp: MonotonicDate().adding(TimeInterval(ttl)),
             )
         }
     }
@@ -76,7 +76,7 @@ struct RTCIceServerFetcher {
     static func parse(turnServerInfoJsonData: Data) throws -> ([RTCIceServer], Int) {
         let relays = try JSONDecoder().decode(
             CallingRelays.self,
-            from: turnServerInfoJsonData
+            from: turnServerInfoJsonData,
         ).relays
 
         var minTTL: Int = Int.max
@@ -97,7 +97,7 @@ struct RTCIceServerFetcher {
                     username: turnServer.username,
                     credential: turnServer.password,
                     tlsCertPolicy: .secure,
-                    hostname: turnServer.hostname ?? ""
+                    hostname: turnServer.hostname ?? "",
                 )
             }
 
@@ -105,7 +105,7 @@ struct RTCIceServerFetcher {
                 return RTCIceServer(
                     urlStrings: [urlWithoutIP],
                     username: turnServer.username,
-                    credential: turnServer.password
+                    credential: turnServer.password,
                 )
             }
 

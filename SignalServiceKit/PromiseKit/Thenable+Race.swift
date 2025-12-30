@@ -8,14 +8,14 @@ import Foundation
 public extension Thenable {
     static func race<T: Thenable>(
         on scheduler: Scheduler? = nil,
-        _ thenables: T...
+        _ thenables: T...,
     ) -> Promise<T.Value> where T.Value == Value {
         race(on: scheduler, thenables)
     }
 
     static func race<T: Thenable>(
         on scheduler: Scheduler? = nil,
-        _ thenables: [T]
+        _ thenables: [T],
     ) -> Promise<T.Value> where T.Value == Value {
         let (returnPromise, future) = Promise<T.Value>.pending()
 

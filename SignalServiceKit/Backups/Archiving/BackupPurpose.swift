@@ -61,7 +61,7 @@ public enum BackupExportPurpose {
 // MARK: - Libsignal.MessageBackupPurpose
 
 extension BackupImportSource {
-    internal var libsignalPurpose: LibSignalClient.MessageBackupPurpose {
+    var libsignalPurpose: LibSignalClient.MessageBackupPurpose {
         switch self {
         case .linkNsync:
             return .deviceTransfer
@@ -72,7 +72,7 @@ extension BackupImportSource {
 }
 
 extension BackupExportPurpose {
-    internal var libsignalPurpose: LibSignalClient.MessageBackupPurpose {
+    var libsignalPurpose: LibSignalClient.MessageBackupPurpose {
         switch self {
         case .linkNsync:
             return .deviceTransfer
@@ -122,7 +122,7 @@ extension BackupImportSource {
 
     /// Derive the encryption key used to decrypt the backup file, potentially
     /// performing a fetch from SVRB, depending on the purpose and available data.
-    internal func deriveBackupEncryptionKeyWithSVRBIfNeeded(
+    func deriveBackupEncryptionKeyWithSVRBIfNeeded(
         backupRequestManager: BackupRequestManager,
         db: any DB,
         libsignalNet: LibSignalClient.Net,
@@ -148,7 +148,7 @@ extension BackupImportSource {
                                 backupRequestManager: backupRequestManager,
                                 db: db,
                                 libsignalNet: libsignalNet,
-                                nonceStore: nonceStore
+                                nonceStore: nonceStore,
                             )
                         } catch .cancellationError {
                             throw CancellationError()
@@ -163,14 +163,14 @@ extension BackupImportSource {
             return try MessageBackupKey(
                 backupKey: key.backupKey,
                 backupId: key.backupId,
-                forwardSecrecyToken: forwardSecrecyToken
+                forwardSecrecyToken: forwardSecrecyToken,
             )
 
         case let .linkNsync(ephemeralKey, aci):
             return try MessageBackupKey(
                 backupKey: ephemeralKey,
                 backupId: ephemeralKey.deriveBackupId(aci: aci),
-                forwardSecrecyToken: nil
+                forwardSecrecyToken: nil,
             )
         }
     }
@@ -192,7 +192,7 @@ extension BackupImportSource {
                 chatServiceAuth: chatAuth,
                 // Force fetch new credentials on retries to make sure
                 // it wasn't stale credentials that caused the problem.
-                forceRefresh: isRetry
+                forceRefresh: isRetry,
             )
         } catch is CancellationError {
             throw .cancellationError
@@ -213,7 +213,7 @@ extension BackupImportSource {
         do {
             response = try await svrB.restore(
                 backupKey: key.backupKey,
-                metadata: metadataHeader.data
+                metadata: metadataHeader.data,
             )
         } catch is CancellationError {
             throw .cancellationError
@@ -244,7 +244,7 @@ extension BackupImportSource {
                     backupRequestManager: backupRequestManager,
                     db: db,
                     libsignalNet: libsignalNet,
-                    nonceStore: nonceStore
+                    nonceStore: nonceStore,
                 )
             case .connectionFailed, .connectionTimeoutError, .ioError:
                 // Network-level failures mostly end up in these buckets;
@@ -271,7 +271,7 @@ extension BackupImportSource {
             nonceStore.setNextSecretMetadata(
                 BackupNonce.NextSecretMetadata(data: response.nextBackupSecretData),
                 for: key,
-                tx: tx
+                tx: tx,
             )
         }
         return forwardSecrecyToken
@@ -299,7 +299,7 @@ extension BackupExportPurpose {
 
     /// Derive the encryption key used to encrypt the backup file, potentially
     /// performing an upload to SVRB, depending on the purpose and available data.
-    internal func deriveEncryptionMetadataWithSVRBIfNeeded(
+    func deriveEncryptionMetadataWithSVRBIfNeeded(
         backupRequestManager: BackupRequestManager,
         db: any DB,
         libsignalNet: LibSignalClient.Net,
@@ -319,7 +319,7 @@ extension BackupExportPurpose {
                             backupRequestManager: backupRequestManager,
                             db: db,
                             libsignalNet: libsignalNet,
-                            nonceStore: nonceStore
+                            nonceStore: nonceStore,
                         )
                     } catch .cancellationError {
                         throw CancellationError()
@@ -334,13 +334,13 @@ extension BackupExportPurpose {
             let encryptionKey = try MessageBackupKey(
                 backupKey: ephemeralKey,
                 backupId: backupId,
-                forwardSecrecyToken: nil
+                forwardSecrecyToken: nil,
             )
             return BackupExportPurpose.EncryptionMetadata(
                 encryptionKey: encryptionKey,
                 backupId: backupId,
                 metadataHeader: nil,
-                nonceMetadata: nil
+                nonceMetadata: nil,
             )
         }
     }
@@ -361,7 +361,7 @@ extension BackupExportPurpose {
                 chatServiceAuth: chatAuth,
                 // Force fetch new credentials on retries to make sure
                 // it wasn't stale credentials that caused the problem.
-                forceRefresh: isRetry
+                forceRefresh: isRetry,
             )
         } catch let error {
             if error is CancellationError {
@@ -382,9 +382,11 @@ extension BackupExportPurpose {
         // This is used as an input into the generator for the metadata for this new
         // backup (which is the "next" backup from that last time).
         let mostRecentSecretData: BackupNonce.NextSecretMetadata
-        if let storedSecretData = db.read(block: { tx in
-            nonceStore.getNextSecretMetadata(for: key, tx: tx)
-        }) {
+        if
+            let storedSecretData = db.read(block: { tx in
+                nonceStore.getNextSecretMetadata(for: key, tx: tx)
+            })
+        {
             mostRecentSecretData = storedSecretData
         } else {
             mostRecentSecretData = BackupNonce.NextSecretMetadata(data: svrB.createNewBackupChain(backupKey: key.backupKey))
@@ -392,7 +394,7 @@ extension BackupExportPurpose {
                 nonceStore.setNextSecretMetadata(
                     mostRecentSecretData,
                     for: key,
-                    tx: tx
+                    tx: tx,
                 )
             }
         }
@@ -418,7 +420,7 @@ extension BackupExportPurpose {
                     backupRequestManager: backupRequestManager,
                     db: db,
                     libsignalNet: libsignalNet,
-                    nonceStore: nonceStore
+                    nonceStore: nonceStore,
                 )
             case .rateLimitedError(let retryAfter, _):
                 // Do a quite rudimentary thing where we just wait
@@ -433,7 +435,7 @@ extension BackupExportPurpose {
                     backupRequestManager: backupRequestManager,
                     db: db,
                     libsignalNet: libsignalNet,
-                    nonceStore: nonceStore
+                    nonceStore: nonceStore,
                 )
             case .connectionFailed, .connectionTimeoutError, .ioError:
                 // Network-level failures mostly end up in these buckets;
@@ -452,7 +454,7 @@ extension BackupExportPurpose {
             encryptionKey = try MessageBackupKey(
                 backupKey: key.backupKey,
                 backupId: key.backupId,
-                forwardSecrecyToken: response.forwardSecrecyToken
+                forwardSecrecyToken: response.forwardSecrecyToken,
             )
         } catch {
             owsFailDebug("Failed to derive encryption key!")
@@ -466,7 +468,7 @@ extension BackupExportPurpose {
             nonceMetadata: NonceMetadata(
                 forwardSecrecyToken: response.forwardSecrecyToken,
                 nextSecretMetadata: BackupNonce.NextSecretMetadata(data: response.nextBackupSecretData),
-            )
+            ),
         )
     }
 }

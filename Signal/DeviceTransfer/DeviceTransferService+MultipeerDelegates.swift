@@ -26,7 +26,7 @@ extension DeviceTransferService: MCNearbyServiceAdvertiserDelegate {
         _ advertiser: MCNearbyServiceAdvertiser,
         didReceiveInvitationFromPeer peerId: MCPeerID,
         withContext context: Data?,
-        invitationHandler: @escaping (Bool, MCSession?) -> Void
+        invitationHandler: @escaping (Bool, MCSession?) -> Void,
     ) {
         Logger.info("Accepting invitation from old device \(peerId)")
         invitationHandler(true, session)
@@ -88,6 +88,7 @@ extension DeviceTransferService: MCSessionDelegate {
         switch transferState {
         case .idle:
             break
+
         case .outgoing(let newDevicePeerId, _, _, _, _):
             guard peerId == newDevicePeerId else {
                 return owsFailDebug("Ignoring data from unexpected peer \(peerId)")
@@ -135,10 +136,12 @@ extension DeviceTransferService: MCSessionDelegate {
             // it indicates that the old device thinks we should have received
             // everything at this point.
 
-            guard verifyTransferCompletedSuccessfully(
-                receivedFileIds: receivedFileIds,
-                skippedFileIds: skippedFileIds
-            ) else {
+            guard
+                verifyTransferCompletedSuccessfully(
+                    receivedFileIds: receivedFileIds,
+                    skippedFileIds: skippedFileIds,
+                )
+            else {
                 return failTransfer(.assertion, "transfer is missing data")
             }
 
@@ -189,7 +192,7 @@ extension DeviceTransferService: MCSessionDelegate {
         _ session: MCSession,
         didStartReceivingResourceWithName resourceName: String,
         fromPeer peerId: MCPeerID,
-        with fileProgress: Progress
+        with fileProgress: Progress,
     ) {
         switch transferState {
         case .idle:
@@ -217,16 +220,18 @@ extension DeviceTransferService: MCSessionDelegate {
                 return Logger.info("Ignoring previously skipped file: \(fileIdentifier)")
             }
 
-            guard let file: DeviceTransferProtoFile = {
-                switch fileIdentifier {
-                case DeviceTransferService.databaseIdentifier:
-                    return manifest.database?.database
-                case DeviceTransferService.databaseWALIdentifier:
-                    return manifest.database?.wal
-                default:
-                    return manifest.files.first(where: { $0.identifier == fileIdentifier })
-                }
-            }() else {
+            guard
+                let file: DeviceTransferProtoFile = {
+                    switch fileIdentifier {
+                    case DeviceTransferService.databaseIdentifier:
+                        return manifest.database?.database
+                    case DeviceTransferService.databaseWALIdentifier:
+                        return manifest.database?.wal
+                    default:
+                        return manifest.files.first(where: { $0.identifier == fileIdentifier })
+                    }
+                }()
+            else {
                 return owsFailDebug("Received unexpected file on new device: \(fileIdentifier)")
             }
 
@@ -240,7 +245,7 @@ extension DeviceTransferService: MCSessionDelegate {
         didFinishReceivingResourceWithName resourceName: String,
         fromPeer peerId: MCPeerID,
         at localURL: URL?,
-        withError error: Swift.Error?
+        withError error: Swift.Error?,
     ) {
         switch transferState {
         case .idle:
@@ -248,9 +253,9 @@ extension DeviceTransferService: MCSessionDelegate {
                 return Logger.info("Ignoring unexpected incoming file \(resourceName)")
             }
 
-            if let error = error {
+            if let error {
                 owsFailDebug("Failed to receive manifest \(error)")
-            } else if let localURL = localURL {
+            } else if let localURL {
                 handleReceivedManifest(at: localURL, fromPeer: peerId)
             } else {
                 owsFailDebug("Unexpectedly completed transfer of resource with no URL or error")
@@ -276,22 +281,24 @@ extension DeviceTransferService: MCSessionDelegate {
                 return Logger.info("Ignoring previously skipped file: \(fileIdentifier)")
             }
 
-            guard let file: DeviceTransferProtoFile = {
-                switch fileIdentifier {
-                case DeviceTransferService.databaseIdentifier:
-                    return manifest.database?.database
-                case DeviceTransferService.databaseWALIdentifier:
-                    return manifest.database?.wal
-                default:
-                    return manifest.files.first(where: { $0.identifier == fileIdentifier })
-                }
-            }() else {
+            guard
+                let file: DeviceTransferProtoFile = {
+                    switch fileIdentifier {
+                    case DeviceTransferService.databaseIdentifier:
+                        return manifest.database?.database
+                    case DeviceTransferService.databaseWALIdentifier:
+                        return manifest.database?.wal
+                    default:
+                        return manifest.files.first(where: { $0.identifier == fileIdentifier })
+                    }
+                }()
+            else {
                 return owsFailDebug("Received unexpected file on new device: \(fileIdentifier)")
             }
 
-            if let error = error {
+            if let error {
                 failTransfer(.assertion, "Failed to receive file \(file.identifier) \(error)")
-            } else if let localURL = localURL {
+            } else if let localURL {
                 OWSFileSystem.ensureDirectoryExists(DeviceTransferService.pendingTransferFilesDirectory.path)
 
                 guard let computedHash = try? Cryptography.computeSHA256DigestOfFile(at: localURL) else {
@@ -313,8 +320,8 @@ extension DeviceTransferService: MCSessionDelegate {
                         localURL.path,
                         toFilePath: URL(
                             fileURLWithPath: file.identifier,
-                            relativeTo: DeviceTransferService.pendingTransferFilesDirectory
-                        ).path
+                            relativeTo: DeviceTransferService.pendingTransferFilesDirectory,
+                        ).path,
                     )
                 } catch {
                     Logger.warn("Couldn't move file: \(error.shortDescription)")
@@ -333,7 +340,7 @@ extension DeviceTransferService: MCSessionDelegate {
         _ session: MCSession,
         didReceiveCertificate certificates: [Any]?,
         fromPeer peerId: MCPeerID,
-        certificateHandler: @escaping (Bool) -> Void
+        certificateHandler: @escaping (Bool) -> Void,
     ) {
         var certificateIsTrusted = false
 

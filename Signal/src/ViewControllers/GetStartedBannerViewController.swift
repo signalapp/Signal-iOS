@@ -24,7 +24,8 @@ class GetStartedBannerViewController: UIViewController, UICollectionViewDelegate
         label.adjustsFontForContentSizeCategory = true
         label.text = OWSLocalizedString(
             "GET_STARTED_BANNER_TITLE",
-            comment: "Title for the 'Get Started' banner")
+            comment: "Title for the 'Get Started' banner",
+        )
         return label
     }()
 
@@ -53,9 +54,9 @@ class GetStartedBannerViewController: UIViewController, UICollectionViewDelegate
 
     // MARK: - Data
 
-    public var hasIncompleteCards: Bool { bannerContent.count > 0 }
+    var hasIncompleteCards: Bool { bannerContent.count > 0 }
 
-    public var opaqueHeight: CGFloat { view.height - gradientBackdrop.height }
+    var opaqueHeight: CGFloat { view.height - gradientBackdrop.height }
 
     private weak var delegate: GetStartedBannerViewControllerDelegate?
     private let threadFinder = ThreadFinder()
@@ -75,18 +76,21 @@ class GetStartedBannerViewController: UIViewController, UICollectionViewDelegate
             self,
             selector: #selector(applyTheme),
             name: .themeDidChange,
-            object: nil)
+            object: nil,
+        )
 
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(activeCardsDidChange),
             name: Self.activeCardsDidChange,
-            object: nil)
+            object: nil,
+        )
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(localProfileDidChange),
             name: UserProfileNotifications.localProfileDidChange,
-            object: nil)
+            object: nil,
+        )
     }
 
     required init?(coder: NSCoder) {
@@ -134,9 +138,9 @@ class GetStartedBannerViewController: UIViewController, UICollectionViewDelegate
         opaqueBackdrop.backgroundColor = backdropColor
 
         if Theme.isDarkThemeEnabled {
-            gradientBackdrop.colors = [ .clear, backdropColor ]
+            gradientBackdrop.colors = [.clear, backdropColor]
         } else {
-            gradientBackdrop.colors = [ .ows_whiteAlpha00, backdropColor ]
+            gradientBackdrop.colors = [.ows_whiteAlpha00, backdropColor]
         }
     }
 
@@ -228,10 +232,13 @@ extension GetStartedBannerViewController: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard indexPath.item < bannerContent.count,
-              let cell = collectionView.dequeueReusableCell(
+        guard
+            indexPath.item < bannerContent.count,
+            let cell = collectionView.dequeueReusableCell(
                 withReuseIdentifier: GetStartedBannerCell.reuseIdentifier,
-                for: indexPath) as? GetStartedBannerCell else {
+                for: indexPath,
+            ) as? GetStartedBannerCell
+        else {
             owsFailDebug("Unrecognized cell type")
             return UICollectionViewCell()
         }
@@ -301,7 +308,7 @@ extension GetStartedBannerViewController {
         }
     }
 
-    static private func getActiveCards(readTx: DBReadTransaction) -> [GetStartedBannerEntry] {
+    private static func getActiveCards(readTx: DBReadTransaction) -> [GetStartedBannerEntry] {
         GetStartedBannerEntry.allCases.filter { entry in
             let key = completePrefix + entry.identifier
             let isActive = keyValueStore.getBool(key, defaultValue: false, transaction: readTx)
@@ -334,7 +341,7 @@ extension GetStartedBannerViewController {
         }
     }
 
-    static private func completeCard(_ model: GetStartedBannerEntry, writeTx: DBWriteTransaction) {
+    private static func completeCard(_ model: GetStartedBannerEntry, writeTx: DBWriteTransaction) {
         let key = Self.completePrefix + model.identifier
 
         let isActive = keyValueStore.getBool(key, defaultValue: false, transaction: writeTx)
@@ -355,17 +362,17 @@ extension GetStartedBannerViewController {
 
 extension GetStartedBannerViewController: DatabaseChangeDelegate {
 
-    public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
+    func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         if databaseChanges.didUpdateThreads {
             updateContent()
         }
     }
 
-    public func databaseChangesDidUpdateExternally() {
+    func databaseChangesDidUpdateExternally() {
         updateContent()
     }
 
-    public func databaseChangesDidReset() {
+    func databaseChangesDidReset() {
         updateContent()
     }
 

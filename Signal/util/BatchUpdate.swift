@@ -169,10 +169,12 @@ public class BatchUpdate<T: BatchUpdateValue> {
     //
     // * This WWDC is very useful:
     //   https://developer.apple.com/videos/play/wwdc2018/225/?time=2016
-    public static func build(viewType: ViewType,
-                             oldValues: [T],
-                             newValues: [T],
-                             changedValues: [T]) throws -> [Item] {
+    public static func build(
+        viewType: ViewType,
+        oldValues: [T],
+        newValues: [T],
+        changedValues: [T],
+    ) throws -> [Item] {
 
         func buildValueMap(values: [T]) throws -> [ValueId: T] {
             var valueMap = [ValueId: T]()
@@ -188,8 +190,10 @@ public class BatchUpdate<T: BatchUpdateValue> {
         let oldValueMap = try buildValueMap(values: oldValues)
         let newValueMap = try buildValueMap(values: newValues)
 
-        guard oldValueMap.count == oldValues.count,
-              newValueMap.count == newValues.count else {
+        guard
+            oldValueMap.count == oldValues.count,
+            newValueMap.count == newValues.count
+        else {
             throw OWSAssertionError("Duplicate values.")
         }
 
@@ -257,9 +261,11 @@ public class BatchUpdate<T: BatchUpdateValue> {
 
         // Identify values that we need to move.  This is non-trival.
         // See comment on findValueIdsToMove().
-        let valueIdsToMoveAll = try findValueIdsToMove(oldValueIds: oldValueIdList,
-                                                       newValueIds: newValueIdList,
-                                                       holdoverValueIdSet: holdoverValueIdSet)
+        let valueIdsToMoveAll = try findValueIdsToMove(
+            oldValueIds: oldValueIdList,
+            newValueIds: newValueIdList,
+            holdoverValueIdSet: holdoverValueIdSet,
+        )
         // In addition to deletions, insertions and updates, we need to
         // support moves. Moves can be implemented as .delete + .insert
         // items. We sometimes implement them that way (rather than as a
@@ -300,8 +306,10 @@ public class BatchUpdate<T: BatchUpdateValue> {
         var valueIdsToDelete = Set(oldValueIdList).subtracting(newValueIdSet)
         valueIdsToDelete.formUnion(valueIdsToMoveWithDeleteInsert)
         for valueId in valueIdsToDelete {
-            guard oldValueIdSet.contains(valueId),
-                  !newValueIdSet.contains(valueId) || valueIdsToMoveWithDeleteInsert.contains(valueId) else {
+            guard
+                oldValueIdSet.contains(valueId),
+                !newValueIdSet.contains(valueId) || valueIdsToMoveWithDeleteInsert.contains(valueId)
+            else {
                 throw OWSAssertionError("Invalid delete.")
             }
             // .delete items use the old index.
@@ -325,8 +333,10 @@ public class BatchUpdate<T: BatchUpdateValue> {
         let valueIdsAfterDeletes = oldValueIdSet.subtracting(valueIdsToDelete)
         let valueIdsToInsert = Set(newValueIdSet).subtracting(valueIdsAfterDeletes)
         for valueId in valueIdsToInsert {
-            guard !oldValueIdSet.contains(valueId) || valueIdsToMoveWithDeleteInsert.contains(valueId),
-                  newValueIdSet.contains(valueId) else {
+            guard
+                !oldValueIdSet.contains(valueId) || valueIdsToMoveWithDeleteInsert.contains(valueId),
+                newValueIdSet.contains(valueId)
+            else {
                 throw OWSAssertionError("Invalid insert.")
             }
             // .insert items use the new index.
@@ -353,8 +363,10 @@ public class BatchUpdate<T: BatchUpdateValue> {
         // We need to .move all values which haven't already been moved with
         // a .delete/.insert pair.
         let valueIdsToMove = newValueIdList.filter { valueIdsToMoveWithMove.contains($0) }
-        guard valueIdsToMove.count == valueIdsToMoveWithMove.count,
-              Set(valueIdsToMove) == valueIdsToMoveWithMove else {
+        guard
+            valueIdsToMove.count == valueIdsToMoveWithMove.count,
+            Set(valueIdsToMove) == valueIdsToMoveWithMove
+        else {
             throw OWSAssertionError("Couldn't build list of value ids to move.")
         }
         for valueId in valueIdsToMove {
@@ -458,13 +470,17 @@ public class BatchUpdate<T: BatchUpdateValue> {
     //   state, and note that it moved.
     // * Continue until old and new states have identical ordering.
     // * Return the set of values that need to move ("the wanderers").
-    private static func findValueIdsToMove(oldValueIds: [ValueId],
-                                           newValueIds: [ValueId],
-                                           holdoverValueIdSet: Set<String>) throws -> Set<ValueId> {
+    private static func findValueIdsToMove(
+        oldValueIds: [ValueId],
+        newValueIds: [ValueId],
+        holdoverValueIdSet: Set<String>,
+    ) throws -> Set<ValueId> {
         let oldHoldoverIds = oldValueIds.filter { holdoverValueIdSet.contains($0) }
         let newHoldoverIds = newValueIds.filter { holdoverValueIdSet.contains($0) }
-        return try findValueIdsToMoveStep(currentValueIds: oldHoldoverIds,
-                                          finalValueIds: newHoldoverIds)
+        return try findValueIdsToMoveStep(
+            currentValueIds: oldHoldoverIds,
+            finalValueIds: newHoldoverIds,
+        )
     }
 
     private struct ValueDistance {
@@ -472,20 +488,26 @@ public class BatchUpdate<T: BatchUpdateValue> {
         let distance: Int
     }
 
-    private static func findValueIdsToMoveStep(currentValueIds: [ValueId],
-                                               finalValueIds: [ValueId]) throws -> Set<ValueId> {
+    private static func findValueIdsToMoveStep(
+        currentValueIds: [ValueId],
+        finalValueIds: [ValueId],
+    ) throws -> Set<ValueId> {
         guard currentValueIds != finalValueIds else {
             // Values already have the correct order, stop recursing.
             return Set()
         }
         var greatestValueDistance: ValueDistance?
         for valueId in currentValueIds {
-            guard let currentIndex = currentValueIds.firstIndex(of: valueId),
-                  let finalIndex = finalValueIds.firstIndex(of: valueId) else {
+            guard
+                let currentIndex = currentValueIds.firstIndex(of: valueId),
+                let finalIndex = finalValueIds.firstIndex(of: valueId)
+            else {
                 throw OWSAssertionError("Could not find value indices.")
             }
-            let newDistance = ValueDistance(valueId: valueId,
-                                            distance: abs(currentIndex - finalIndex))
+            let newDistance = ValueDistance(
+                valueId: valueId,
+                distance: abs(currentIndex - finalIndex),
+            )
             if let otherDistance = greatestValueDistance {
                 if otherDistance.distance < newDistance.distance {
                     greatestValueDistance = newDistance
@@ -503,13 +525,17 @@ public class BatchUpdate<T: BatchUpdateValue> {
         // It's important that we ensure that the "current" and "final" value id
         // lists decrease in size with each pass or we may never converge and
         // risk recursing forever.
-        guard newCurrentValueIds.count < currentValueIds.count,
-              newFinalValueIds.count < finalValueIds.count,
-              Set(newCurrentValueIds) == Set(newFinalValueIds) else {
+        guard
+            newCurrentValueIds.count < currentValueIds.count,
+            newFinalValueIds.count < finalValueIds.count,
+            Set(newCurrentValueIds) == Set(newFinalValueIds)
+        else {
             throw OWSAssertionError("Could not remove value with greatest distance.")
         }
-        valueIdsToMove.formUnion(try findValueIdsToMoveStep(currentValueIds: newCurrentValueIds,
-                                                            finalValueIds: newFinalValueIds))
+        valueIdsToMove.formUnion(try findValueIdsToMoveStep(
+            currentValueIds: newCurrentValueIds,
+            finalValueIds: newFinalValueIds,
+        ))
         return valueIdsToMove
     }
 

@@ -16,6 +16,7 @@ class PreviewWallpaperViewController: UIViewController {
         case preset(selectedWallpaper: Wallpaper)
         case photo(selectedPhoto: UIImage)
     }
+
     private(set) var mode: Mode { didSet { modeDidChange() }}
     let thread: TSThread?
     weak var delegate: PreviewWallpaperDelegate?
@@ -24,13 +25,13 @@ class PreviewWallpaperViewController: UIViewController {
     let pageViewController = UIPageViewController(
         transitionStyle: .scroll,
         navigationOrientation: .horizontal,
-        options: [:]
+        options: [:],
     )
 
     lazy var mockConversationView = MockConversationView(
         model: buildMockConversationModel(),
         hasWallpaper: true,
-        customChatColor: nil
+        customChatColor: nil,
     )
 
     init(mode: Mode, thread: TSThread? = nil, delegate: PreviewWallpaperDelegate) {
@@ -73,7 +74,7 @@ class PreviewWallpaperViewController: UIViewController {
         buttonStack.autoSetDimension(.height, toSize: 48, relation: .greaterThanOrEqual)
 
         let cancelButton = OWSButton(title: CommonStrings.cancelButton) { [weak self] in
-            guard let self = self else { return }
+            guard let self else { return }
             self.delegate?.previewWallpaperDidCancel(self)
         }
         cancelButton.setTitleColor(Theme.primaryTextColor, for: .normal)
@@ -177,23 +178,23 @@ class PreviewWallpaperViewController: UIViewController {
             DependenciesBridge.shared.chatColorSettingStore.resolvedChatColor(
                 for: thread,
                 previewWallpaper: resolvedWallpaper,
-                tx: tx
+                tx: tx,
             )
         }
     }
 
     func buildMockConversationModel() -> MockConversationView.MockModel {
         let outgoingText: String = {
-            guard let thread = thread else {
+            guard let thread else {
                 return OWSLocalizedString(
                     "WALLPAPER_PREVIEW_OUTGOING_MESSAGE_ALL_CHATS",
-                    comment: "The outgoing bubble text when setting a wallpaper for all chats."
+                    comment: "The outgoing bubble text when setting a wallpaper for all chats.",
                 )
             }
 
             let formatString = OWSLocalizedString(
                 "WALLPAPER_PREVIEW_OUTGOING_MESSAGE_FORMAT",
-                comment: "The outgoing bubble text when setting a wallpaper for specific chat. Embeds {{chat name}}"
+                comment: "The outgoing bubble text when setting a wallpaper for specific chat. Embeds {{chat name}}",
             )
             let displayName = SSKEnvironment.shared.databaseStorageRef.read { tx in SSKEnvironment.shared.contactManagerRef.displayName(for: thread, transaction: tx) }
             return String(format: formatString, displayName)
@@ -204,19 +205,19 @@ class PreviewWallpaperViewController: UIViewController {
         case .photo:
             incomingText = OWSLocalizedString(
                 "WALLPAPER_PREVIEW_INCOMING_MESSAGE_PHOTO",
-                comment: "The incoming bubble text when setting a photo"
+                comment: "The incoming bubble text when setting a photo",
             )
         case .preset:
             incomingText = OWSLocalizedString(
                 "WALLPAPER_PREVIEW_INCOMING_MESSAGE_PRESET",
-                comment: "The incoming bubble text when setting a preset"
+                comment: "The incoming bubble text when setting a preset",
             )
         }
 
         return MockConversationView.MockModel(items: [
             .date,
             .incoming(text: incomingText),
-            .outgoing(text: outgoingText)
+            .outgoing(text: outgoingText),
         ])
     }
 }
@@ -226,24 +227,28 @@ class PreviewWallpaperViewController: UIViewController {
 extension PreviewWallpaperViewController: UIPageViewControllerDataSource, UIPageViewControllerDelegate {
 
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
-        guard let currentPage = currentPage, currentPage.wallpaper != .photo else { return nil }
-        return WallpaperPage(wallpaper: wallpaper(before: currentPage.wallpaper),
-                             thread: thread)
+        guard let currentPage, currentPage.wallpaper != .photo else { return nil }
+        return WallpaperPage(
+            wallpaper: wallpaper(before: currentPage.wallpaper),
+            thread: thread,
+        )
     }
 
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
-        guard let currentPage = currentPage, currentPage.wallpaper != .photo else { return nil }
-        return WallpaperPage(wallpaper: wallpaper(after: currentPage.wallpaper),
-                             thread: thread)
+        guard let currentPage, currentPage.wallpaper != .photo else { return nil }
+        return WallpaperPage(
+            wallpaper: wallpaper(after: currentPage.wallpaper),
+            thread: thread,
+        )
     }
 
     func pageViewController(
         _ pageViewController: UIPageViewController,
         didFinishAnimating finished: Bool,
         previousViewControllers: [UIViewController],
-        transitionCompleted completed: Bool
+        transitionCompleted completed: Bool,
     ) {
-        guard let currentPage = currentPage else {
+        guard let currentPage else {
             return owsFailDebug("Missing current page after transition")
         }
 
@@ -256,7 +261,7 @@ extension PreviewWallpaperViewController: UIPageViewControllerDataSource, UIPage
         get { pageViewController.viewControllers?.first as? WallpaperPage }
         set {
             let viewControllers: [UIViewController]
-            if let newValue = newValue {
+            if let newValue {
                 viewControllers = [newValue]
             } else {
                 viewControllers = []
@@ -298,9 +303,11 @@ private class WallpaperPage: UIViewController {
     let photo: UIImage?
     var shouldBlur = false { didSet { updatePhoto() } }
 
-    init(wallpaper: Wallpaper,
-         thread: TSThread?,
-         photo: UIImage? = nil) {
+    init(
+        wallpaper: Wallpaper,
+        thread: TSThread?,
+        photo: UIImage? = nil,
+    ) {
         self.wallpaper = wallpaper
         self.thread = thread
         self.photo = photo
@@ -332,13 +339,13 @@ private class WallpaperPage: UIViewController {
         let shouldDimInDarkTheme = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             DependenciesBridge.shared.wallpaperStore.fetchDimInDarkModeForRendering(
                 for: thread?.uniqueId,
-                tx: transaction
+                tx: transaction,
             )
         }
         let wallpaperView = Wallpaper.viewBuilder(
             for: wallpaper,
             customPhoto: { photo },
-            shouldDimInDarkTheme: shouldDimInDarkTheme
+            shouldDimInDarkTheme: shouldDimInDarkTheme,
         )?.build()
         guard let wallpaperView else {
             owsFailDebug("Failed to create photo wallpaper view")
@@ -350,7 +357,7 @@ private class WallpaperPage: UIViewController {
         self.wallpaperPreviewView = wallpaperPreviewView
 
         // If this is a photo, embed it in a scrollView for pinch & zoom
-        if case .photo = wallpaper, let photo = photo {
+        if case .photo = wallpaper, let photo {
             let scrollView = UIScrollView()
             scrollView.minimumZoomScale = 1.0
             scrollView.maximumZoomScale = 6.0
@@ -367,14 +374,14 @@ private class WallpaperPage: UIViewController {
                 wallpaperPreviewView.autoMatch(
                     .width,
                     to: .width,
-                    of: scrollView
+                    of: scrollView,
                 ),
                 wallpaperPreviewView.autoMatch(
                     .height,
                     to: .width,
                     of: scrollView,
-                    withMultiplier: 1 / photo.size.aspectRatio
-                )
+                    withMultiplier: 1 / photo.size.aspectRatio,
+                ),
             ]
             wallpaperViewWidthPriorityConstraints.forEach { $0.isActive = false }
 
@@ -382,14 +389,14 @@ private class WallpaperPage: UIViewController {
                 wallpaperPreviewView.autoMatch(
                     .height,
                     to: .height,
-                    of: scrollView
+                    of: scrollView,
                 ),
                 wallpaperPreviewView.autoMatch(
                     .width,
                     to: .height,
                     of: scrollView,
-                    withMultiplier: photo.size.aspectRatio
-                )
+                    withMultiplier: photo.size.aspectRatio,
+                ),
             ]
             wallpaperViewHeightPriorityConstraints.forEach { $0.isActive = false }
 
@@ -397,13 +404,13 @@ private class WallpaperPage: UIViewController {
                 wallpaperPreviewView.autoMatch(
                     .height,
                     to: .height,
-                    of: scrollView
+                    of: scrollView,
                 ),
                 wallpaperPreviewView.autoMatch(
                     .width,
                     to: .width,
-                    of: scrollView
-                )
+                    of: scrollView,
+                ),
             ]
             wallpaperViewHeightAndWidthPriorityConstraints.forEach { $0.isActive = false }
 
@@ -427,7 +434,7 @@ private class WallpaperPage: UIViewController {
             do {
                 let blurredPhoto = try await photo?.withGaussianBlurAsync(
                     radius: 10,
-                    resizeToMaxPixelDimension: 1024
+                    resizeToMaxPixelDimension: 1024,
                 )
                 self?.blurredPhoto = blurredPhoto
                 self?.updatePhoto()
@@ -463,12 +470,12 @@ private class WallpaperPage: UIViewController {
 
         let imageSizeMatchingReferenceHeight = CGSize(
             width: reference.height * imageSize.aspectRatio,
-            height: reference.height
+            height: reference.height,
         )
 
         let imageSizeMatchingReferenceWidth = CGSize(
             width: reference.width,
-            height: reference.width / imageSize.aspectRatio
+            height: reference.width / imageSize.aspectRatio,
         )
 
         if imageSizeMatchingReferenceHeight.width >= reference.width {
@@ -493,7 +500,7 @@ private class WallpaperPage: UIViewController {
             x: -scrollView.contentOffset.x,
             y: -scrollView.contentOffset.y,
             width: scrollView.contentScaleFactor * scrollView.contentSize.width,
-            height: scrollView.contentScaleFactor * scrollView.contentSize.height
+            height: scrollView.contentScaleFactor * scrollView.contentSize.height,
         )
         return viewForSnapshotting.renderAsImage()
     }
@@ -534,8 +541,10 @@ class BlurButton: UIButton {
 
         label.font = .semiboldFont(ofSize: 14)
         label.textColor = .white
-        label.text = OWSLocalizedString("WALLPAPER_PREVIEW_BLUR_BUTTON",
-                                       comment: "Blur button on wallpaper preview.")
+        label.text = OWSLocalizedString(
+            "WALLPAPER_PREVIEW_BLUR_BUTTON",
+            comment: "Blur button on wallpaper preview.",
+        )
         addSubview(label)
         label.autoPinHeightToSuperviewMargins()
         label.autoPinEdge(toSuperviewMargin: .trailing)

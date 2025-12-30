@@ -47,7 +47,7 @@ extension Contact {
 
     public static func uniquePhoneNumberLabel(
         userProvidedLabel: String,
-        discoverablePhoneNumberCount: Int
+        discoverablePhoneNumberCount: Int,
     ) -> String? {
         // If there's only one phone number for this contact, don't show the label.
         if discoverablePhoneNumberCount <= 1 {
@@ -62,7 +62,7 @@ extension Contact {
     public static func fullName(
         fromGivenName givenName: String?,
         familyName: String?,
-        nickname: String?
+        nickname: String?,
     ) -> String? {
         if
             givenName == nil,
@@ -79,7 +79,7 @@ extension Contact {
 
         return PersonNameComponentsFormatter.localizedString(
             from: components,
-            style: .default
+            style: .default,
         )
     }
 }

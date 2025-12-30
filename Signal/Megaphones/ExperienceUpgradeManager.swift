@@ -8,7 +8,7 @@ import SignalUI
 
 class ExperienceUpgradeManager {
 
-    private static weak var lastPresented: ExperienceUpgradeView?
+    private weak static var lastPresented: ExperienceUpgradeView?
 
     // The first day is day 0, so this gives the user 1 week of megaphone
     // before we display the splash.
@@ -35,7 +35,7 @@ class ExperienceUpgradeManager {
                         upgrade.manifest.shouldCheckPreconditions(
                             timeIntervalSinceRegistration: timeIntervalSinceRegistration,
                             isRegisteredPrimaryDevice: isRegisteredPrimaryDevice,
-                            tx: tx
+                            tx: tx,
                         )
                     else {
                         return false
@@ -197,12 +197,12 @@ class ExperienceUpgradeManager {
     }
 
     private static func dismissLastPresented(ifMatching manifest: ExperienceUpgradeManifest? = nil) {
-        guard let lastPresented = lastPresented else {
+        guard let lastPresented else {
             return
         }
 
         if
-            let manifest = manifest,
+            let manifest,
             lastPresented.experienceUpgrade.manifest != manifest
         {
             return
@@ -233,17 +233,17 @@ class ExperienceUpgradeManager {
     private static func hasMegaphone(forExperienceUpgrade experienceUpgrade: ExperienceUpgrade) -> Bool {
         switch experienceUpgrade.manifest {
         case
-                .introducingPins,
-                .pinReminder,
-                .notificationPermissionReminder,
-                .newLinkedDeviceNotification,
-                .createUsernameReminder,
-                .inactiveLinkedDeviceReminder,
-                .inactivePrimaryDeviceReminder,
-                .contactPermissionReminder,
-                .backupKeyReminder,
-                .enableBackupsReminder,
-                .haveEnabledBackupsNotification:
+            .introducingPins,
+            .pinReminder,
+            .notificationPermissionReminder,
+            .newLinkedDeviceNotification,
+            .createUsernameReminder,
+            .inactiveLinkedDeviceReminder,
+            .inactivePrimaryDeviceReminder,
+            .contactPermissionReminder,
+            .backupKeyReminder,
+            .enableBackupsReminder,
+            .haveEnabledBackupsNotification:
             return true
         case .remoteMegaphone:
             // Remote megaphones are always presentable. We filter out any with
@@ -282,7 +282,7 @@ class ExperienceUpgradeManager {
                 db: DependenciesBridge.shared.db,
                 deviceStore: DependenciesBridge.shared.deviceStore,
                 experienceUpgrade: experienceUpgrade,
-                mostRecentlyLinkedDeviceDetails: mostRecentlyLinkedDeviceDetails
+                mostRecentlyLinkedDeviceDetails: mostRecentlyLinkedDeviceDetails,
             )
         case .createUsernameReminder:
             let usernameIsUnset: Bool = db.read { tx in
@@ -302,11 +302,11 @@ class ExperienceUpgradeManager {
                         networkManager: SSKEnvironment.shared.networkManagerRef,
                         storageServiceManager: SSKEnvironment.shared.storageServiceManagerRef,
                         usernameEducationManager: DependenciesBridge.shared.usernameEducationManager,
-                        localUsernameManager: DependenciesBridge.shared.localUsernameManager
-                    )
+                        localUsernameManager: DependenciesBridge.shared.localUsernameManager,
+                    ),
                 ),
                 experienceUpgrade: experienceUpgrade,
-                fromViewController: fromViewController
+                fromViewController: fromViewController,
             )
         case .inactiveLinkedDeviceReminder:
             let inactiveLinkedDevice: InactiveLinkedDevice? = db.read { tx in
@@ -321,7 +321,7 @@ class ExperienceUpgradeManager {
             return InactiveLinkedDeviceReminderMegaphone(
                 inactiveLinkedDevice: inactiveLinkedDevice,
                 fromViewController: fromViewController,
-                experienceUpgrade: experienceUpgrade
+                experienceUpgrade: experienceUpgrade,
             )
         case .inactivePrimaryDeviceReminder:
             let isPrimaryDevice = db.read { tx in
@@ -341,14 +341,14 @@ class ExperienceUpgradeManager {
             return RemoteMegaphone(
                 experienceUpgrade: experienceUpgrade,
                 remoteMegaphoneModel: megaphone,
-                fromViewController: fromViewController
+                fromViewController: fromViewController,
             )
         case .backupKeyReminder:
             return RecoveryKeyReminderMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         case .enableBackupsReminder:
             return BackupEnablementMegaphone(
                 experienceUpgrade: experienceUpgrade,
-                fromViewController: fromViewController
+                fromViewController: fromViewController,
             )
         case .haveEnabledBackupsNotification:
             let lastBackupsEnabledDetails = db.read { tx in
@@ -364,7 +364,7 @@ class ExperienceUpgradeManager {
                 experienceUpgrade: experienceUpgrade,
                 fromViewController: fromViewController,
                 backupsEnabledTime: lastBackupsEnabledDetails.enabledTime,
-                db: db
+                db: db,
             )
         case .unrecognized:
             return nil
@@ -386,7 +386,7 @@ extension ExperienceUpgradeView {
         SSKEnvironment.shared.databaseStorageRef.write { transaction in
             ExperienceUpgradeFinder.markAsSnoozed(
                 experienceUpgrade: self.experienceUpgrade,
-                transaction: transaction
+                transaction: transaction,
             )
         }
     }
@@ -395,7 +395,7 @@ extension ExperienceUpgradeView {
         SSKEnvironment.shared.databaseStorageRef.write { transaction in
             ExperienceUpgradeFinder.markAsComplete(
                 experienceUpgrade: self.experienceUpgrade,
-                transaction: transaction
+                transaction: transaction,
             )
         }
     }

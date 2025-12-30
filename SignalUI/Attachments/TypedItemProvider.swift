@@ -203,7 +203,7 @@ public struct TypedItemProvider {
                 Logger.warn("failed to parse image directly from file; checking for loading UIImage directly")
                 let image: UIImage = try await loadObjectWithKeyedUnarchiverFallback(
                     cannotLoadError: .cannotLoadUIImageObject,
-                    failedLoadError: .loadUIImageObjectFailed
+                    failedLoadError: .loadUIImageObjectFailed,
                 )
                 attachment = try Self.createAttachment(withImage: image)
             }
@@ -215,11 +215,11 @@ public struct TypedItemProvider {
             let url: NSURL = try await loadObjectWithKeyedUnarchiverFallback(
                 overrideTypeIdentifier: TypedItemProvider.ItemType.fileUrl.typeIdentifier,
                 cannotLoadError: .cannotLoadURLObject,
-                failedLoadError: .loadURLObjectFailed
+                failedLoadError: .loadURLObjectFailed,
             )
             let (dataSource, dataUTI) = try Self.copyFileUrl(
                 fileUrl: url as URL,
-                defaultTypeIdentifier: UTType.data.identifier
+                defaultTypeIdentifier: UTType.data.identifier,
             )
             attachment = try await _buildFileAttachment(
                 dataSource: dataSource,
@@ -230,7 +230,7 @@ public struct TypedItemProvider {
         case .webUrl:
             let url: NSURL = try await loadObjectWithKeyedUnarchiverFallback(
                 cannotLoadError: .cannotLoadURLObject,
-                failedLoadError: .loadURLObjectFailed
+                failedLoadError: .loadURLObjectFailed,
             )
             return try Self.createAttachment(withText: (url as URL).absoluteString)
         case .contact:
@@ -239,7 +239,7 @@ public struct TypedItemProvider {
         case .plainText, .text:
             let text: NSString = try await loadObjectWithKeyedUnarchiverFallback(
                 cannotLoadError: .cannotLoadStringObject,
-                failedLoadError: .loadStringObjectFailed
+                failedLoadError: .loadStringObjectFailed,
             )
             return try Self.createAttachment(withText: text as String)
         case .pkPass:
@@ -257,7 +257,7 @@ public struct TypedItemProvider {
     private nonisolated func buildFileAttachment(mustBeVisualMedia: Bool, progress: Progress?) async throws -> PreviewableAttachment {
         let (dataSource, dataUTI): (DataSourcePath, String) = try await withCheckedThrowingContinuation { continuation in
             let typeIdentifier = itemType.typeIdentifier
-            _ = itemProvider.loadFileRepresentation(forTypeIdentifier: typeIdentifier)  { fileUrl, error in
+            _ = itemProvider.loadFileRepresentation(forTypeIdentifier: typeIdentifier) { fileUrl, error in
                 if let error {
                     continuation.resume(throwing: error)
                 } else if let fileUrl {
@@ -284,7 +284,7 @@ public struct TypedItemProvider {
     ) async throws -> Data {
         try await withCheckedThrowingContinuation { continuation in
             _ = itemProvider.loadDataRepresentation(
-                forTypeIdentifier: overrideTypeIdentifier ?? itemType.typeIdentifier
+                forTypeIdentifier: overrideTypeIdentifier ?? itemType.typeIdentifier,
             ) { data, error in
                 if let error {
                     continuation.resume(throwing: error)
@@ -300,7 +300,7 @@ public struct TypedItemProvider {
     private nonisolated func loadObjectWithKeyedUnarchiverFallback<T>(
         overrideTypeIdentifier: String? = nil,
         cannotLoadError: ItemProviderError,
-        failedLoadError: ItemProviderError
+        failedLoadError: ItemProviderError,
     ) async throws -> T where T: NSItemProviderReading, T: NSCoding, T: NSObject {
         do {
             guard itemProvider.canLoadObject(ofClass: T.self) else {
@@ -367,7 +367,7 @@ public struct TypedItemProvider {
 
     private nonisolated static func copyFileUrl(
         fileUrl: URL,
-        defaultTypeIdentifier: String
+        defaultTypeIdentifier: String,
     ) throws -> (DataSourcePath, dataUTI: String) {
         guard fileUrl.isFileURL else {
             throw OWSAssertionError("Unexpectedly not a file URL: \(fileUrl)")
@@ -388,7 +388,7 @@ public struct TypedItemProvider {
         dataSource: DataSourcePath,
         dataUTI: String,
         mustBeVisualMedia: Bool,
-        progress: Progress?
+        progress: Progress?,
     ) async throws -> PreviewableAttachment {
         if SignalAttachment.videoUTISet.contains(dataUTI) {
             // TODO: Move waiting for this export to the end of the share flow rather than up front
@@ -402,7 +402,7 @@ public struct TypedItemProvider {
                     guard let progress else { return }
                     progressPoller = ProgressPoller(progress: progress, pollInterval: 0.1, fractionCompleted: { return exportSession.progress })
                     progressPoller?.startPolling()
-                }
+                },
             )
         } else if mustBeVisualMedia {
             // If it's not a video but must be visual media, then we must parse it as
@@ -440,7 +440,7 @@ private class ProgressPoller: NSObject {
             return
         }
 
-        self.timer = WeakTimer.scheduledTimer(timeInterval: pollInterval, target: self, userInfo: nil, repeats: true) { [weak self] (timer) in
+        self.timer = WeakTimer.scheduledTimer(timeInterval: pollInterval, target: self, userInfo: nil, repeats: true) { [weak self] timer in
             guard let self else {
                 timer.invalidate()
                 return

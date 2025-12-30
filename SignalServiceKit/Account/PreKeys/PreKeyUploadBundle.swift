@@ -35,12 +35,12 @@ public final class PartialPreKeyUploadBundle: PreKeyUploadBundle {
     public let lastResortPreKey: LibSignalClient.KyberPreKeyRecord?
     public let pqPreKeyRecords: [LibSignalClient.KyberPreKeyRecord]?
 
-    internal init(
+    init(
         identity: OWSIdentity,
         signedPreKey: LibSignalClient.SignedPreKeyRecord? = nil,
         preKeyRecords: [LibSignalClient.PreKeyRecord]? = nil,
         lastResortPreKey: LibSignalClient.KyberPreKeyRecord? = nil,
-        pqPreKeyRecords: [LibSignalClient.KyberPreKeyRecord]? = nil
+        pqPreKeyRecords: [LibSignalClient.KyberPreKeyRecord]? = nil,
     ) {
         self.identity = identity
         self.signedPreKey = signedPreKey
@@ -65,7 +65,7 @@ public final class RegistrationPreKeyUploadBundle: PreKeyUploadBundle {
         identity: OWSIdentity,
         identityKeyPair: ECKeyPair,
         signedPreKey: LibSignalClient.SignedPreKeyRecord,
-        lastResortPreKey: LibSignalClient.KyberPreKeyRecord
+        lastResortPreKey: LibSignalClient.KyberPreKeyRecord,
     ) {
         self.identity = identity
         self.identityKeyPair = identityKeyPair

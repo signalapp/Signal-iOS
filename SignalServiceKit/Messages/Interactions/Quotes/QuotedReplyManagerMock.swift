@@ -21,7 +21,7 @@ open class QuotedReplyManagerMock: QuotedReplyManager {
 
     open func buildDraftQuotedReply(
         originalMessage: TSMessage,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> DraftQuotedReplyModel? {
         return nil
     }
@@ -30,13 +30,13 @@ open class QuotedReplyManagerMock: QuotedReplyManager {
         quotedReplyMessage: TSMessage,
         quotedReply: TSQuotedMessage,
         originalMessage: TSMessage?,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> DraftQuotedReplyModel {
         fatalError("Unimplemented!")
     }
 
     open func prepareDraftForSending(
-        _ draft: DraftQuotedReplyModel
+        _ draft: DraftQuotedReplyModel,
     ) throws -> DraftQuotedReplyModel.ForSending {
         return .init(
             originalMessageTimestamp: draft.originalMessageTimestamp,
@@ -47,7 +47,7 @@ open class QuotedReplyManagerMock: QuotedReplyManager {
             threadUniqueId: draft.threadUniqueId,
             quoteBody: draft.bodyForSending,
             attachment: nil,
-            quotedMessageFromEdit: nil
+            quotedMessageFromEdit: nil,
         )
     }
 
@@ -61,7 +61,7 @@ open class QuotedReplyManagerMock: QuotedReplyManager {
     open func buildProtoForSending(
         _ quote: TSQuotedMessage,
         parentMessage: TSMessage,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> SSKProtoDataMessageQuote {
         fatalError("Unimplemented!")
     }

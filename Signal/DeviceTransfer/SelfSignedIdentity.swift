@@ -7,7 +7,7 @@ import CryptoKit
 import LibSignalClient
 import SignalServiceKit
 
-struct SelfSignedIdentity {
+enum SelfSignedIdentity {
     private static let temporaryIdentityKeychainIdentifier = "org.signal.temporaryIdentityKeychainIdentifier"
 
     static func create(name: String, validForDays: Int) throws -> SecIdentity {
@@ -22,7 +22,7 @@ struct SelfSignedIdentity {
             let addquery: [CFString: Any] = [
                 kSecClass: kSecClassCertificate,
                 kSecValueRef: certificate,
-                kSecAttrLabel: temporaryIdentityKeychainIdentifier
+                kSecAttrLabel: temporaryIdentityKeychainIdentifier,
             ]
             guard SecItemAdd(addquery as CFDictionary, nil) == errSecSuccess else {
                 throw OWSAssertionError("failed to add certificate to keychain")
@@ -35,7 +35,7 @@ struct SelfSignedIdentity {
                 kSecClass: kSecClassKey,
                 kSecAttrKeyClass: kSecAttrKeyClassPrivate,
                 kSecValueRef: key,
-                kSecAttrLabel: temporaryIdentityKeychainIdentifier
+                kSecAttrLabel: temporaryIdentityKeychainIdentifier,
             ]
             guard SecItemAdd(addquery as CFDictionary, nil) == errSecSuccess else {
                 throw OWSAssertionError("failed to add private key to keychain")
@@ -47,7 +47,7 @@ struct SelfSignedIdentity {
             let copyQuery: [CFString: Any] = [
                 kSecClass: kSecClassIdentity,
                 kSecReturnRef: true,
-                kSecAttrLabel: temporaryIdentityKeychainIdentifier
+                kSecAttrLabel: temporaryIdentityKeychainIdentifier,
             ]
 
             var typeRef: CFTypeRef?
@@ -69,7 +69,7 @@ struct SelfSignedIdentity {
     private static func deleteSelfSignedIdentityFromKeychain() throws {
         let deleteQuery: [CFString: Any] = [
             kSecClass: kSecClassIdentity,
-            kSecAttrLabel: temporaryIdentityKeychainIdentifier
+            kSecAttrLabel: temporaryIdentityKeychainIdentifier,
         ]
         let status = SecItemDelete(deleteQuery as CFDictionary)
         guard [errSecSuccess, errSecItemNotFound].contains(status) else {
@@ -87,15 +87,17 @@ struct SelfSignedIdentity {
             throw OWSAssertionError("Failed to initialize SecCertificate")
         }
 
-        guard let privateKey = SecKeyCreateWithData(
-            deviceTransferKey.privateKey as CFData,
-            [
-                kSecAttrKeyType: kSecAttrKeyTypeRSA,
-                kSecAttrKeyClass: kSecAttrKeyClassPrivate,
-                kSecAttrKeySizeInBits: 4096
-            ] as [CFString: Any] as CFDictionary,
-            nil
-        ) else {
+        guard
+            let privateKey = SecKeyCreateWithData(
+                deviceTransferKey.privateKey as CFData,
+                [
+                    kSecAttrKeyType: kSecAttrKeyTypeRSA,
+                    kSecAttrKeyClass: kSecAttrKeyClassPrivate,
+                    kSecAttrKeySizeInBits: 4096,
+                ] as [CFString: Any] as CFDictionary,
+                nil,
+            )
+        else {
             throw OWSAssertionError("Failed to initialize SecKey")
         }
 

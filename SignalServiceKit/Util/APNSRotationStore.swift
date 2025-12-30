@@ -11,7 +11,7 @@ public final class APNSRotationStore {
     private static let kvStore = KeyValueStore(collection: "APNSRotationStore")
 
     // exposed for testing. we need a better way to do this.
-    internal static var nowMs: () -> UInt64 = { Date().ows_millisecondsSince1970 }
+    static var nowMs: () -> UInt64 = { Date().ows_millisecondsSince1970 }
 
     public static func didReceiveAPNSPush(transaction: DBWriteTransaction) {
         // See comments on `setAppVersionTimeForAPNSRotationIfNeeded`.
@@ -22,7 +22,7 @@ public final class APNSRotationStore {
         kvStore.setUInt64(
             nowMs() - Constants.appVersionBakeTimeMs - 1,
             key: Constants.apnsRotationAppVersionUpdateTimestampKey,
-            transaction: transaction
+            transaction: transaction,
         )
         // Mark the current token as one we know works!
         guard let token = SSKEnvironment.shared.preferencesRef.getPushToken(tx: transaction) else {
@@ -39,12 +39,12 @@ public final class APNSRotationStore {
         kvStore.setString(
             token,
             key: Constants.lastKnownWorkingAPNSTokenKey,
-            transaction: transaction
+            transaction: transaction,
         )
         kvStore.setUInt64(
             nowMs(),
             key: Constants.lastKnownWorkingAPNSTokenTimestampKey,
-            transaction: transaction
+            transaction: transaction,
         )
     }
 
@@ -52,15 +52,15 @@ public final class APNSRotationStore {
         kvStore.setUInt64(
             nowMs(),
             key: Constants.lastAPNSRotationTimestampKey,
-            transaction: transaction
+            transaction: transaction,
         )
         kvStore.removeValue(
             forKey: Constants.lastKnownWorkingAPNSTokenKey,
-            transaction: transaction
+            transaction: transaction,
         )
         kvStore.removeValue(
             forKey: Constants.lastKnownWorkingAPNSTokenTimestampKey,
-            transaction: transaction
+            transaction: transaction,
         )
     }
 
@@ -68,7 +68,7 @@ public final class APNSRotationStore {
     /// Takes a closure that rotates the APNS token. If the token should be rotated, calls this closure.
     public static func rotateIfNeededOnAppLaunchAndReadiness(
         waitForFetchingAndProcessing: () async throws(CancellationError) -> Void,
-        performRotation: () async throws -> Void
+        performRotation: () async throws -> Void,
     ) async throws {
         // Structuring as efficiently as possible: in a single read we check if we
         // are eligible to rotate, if not whether we need to open an expensive write transaction
@@ -81,10 +81,10 @@ public final class APNSRotationStore {
             SSKEnvironment.shared.databaseStorageRef.read { transaction -> (Bool, Bool, UInt64?) in
                 let needsKnownWorkingWrite = APNSRotationStore.kvStore.hasValue(
                     Constants.lastKnownWorkingAPNSTokenKey,
-                    transaction: transaction
+                    transaction: transaction,
                 ) && !APNSRotationStore.kvStore.hasValue(
                     Constants.lastKnownWorkingAPNSTokenTimestampKey,
-                    transaction: transaction
+                    transaction: transaction,
                 )
                 if APNSRotationStore.needsAppVersionWrite(transaction: transaction) {
                     // We need to do a write to set the app version check.
@@ -123,7 +123,7 @@ public final class APNSRotationStore {
                     APNSRotationStore.kvStore.setUInt64(
                         APNSRotationStore.nowMs(),
                         key: Constants.lastKnownWorkingAPNSTokenTimestampKey,
-                        transaction: transaction
+                        transaction: transaction,
                     )
                 }
             }
@@ -153,14 +153,14 @@ public final class APNSRotationStore {
         }
         let knownGoodToken = self.kvStore.getString(
             Constants.lastKnownWorkingAPNSTokenKey,
-            transaction: transaction
+            transaction: transaction,
         )
         let now = nowMs()
         // Default to now; the initial release of this code didn't track
         // this date, so it may be nil even if the known-good token is not.
         let knownGoodTokenTimestamp = self.kvStore.getUInt64(
             Constants.lastKnownWorkingAPNSTokenTimestampKey,
-            transaction: transaction
+            transaction: transaction,
         ) ?? now
         let isUsingKnownGoodToken = currentToken == knownGoodToken
         if isUsingKnownGoodToken {
@@ -186,7 +186,7 @@ public final class APNSRotationStore {
     private static func needsAppVersionWrite(transaction: DBReadTransaction) -> Bool {
         return kvStore.getUInt64(
             Constants.apnsRotationAppVersionUpdateTimestampKey,
-            transaction: transaction
+            transaction: transaction,
         ) == nil
     }
 
@@ -209,7 +209,7 @@ public final class APNSRotationStore {
         kvStore.setUInt64(
             nowMs(),
             key: Constants.apnsRotationAppVersionUpdateTimestampKey,
-            transaction: transaction
+            transaction: transaction,
         )
     }
 
@@ -223,7 +223,7 @@ public final class APNSRotationStore {
         guard
             let clientUpdateTime = kvStore.getUInt64(
                 Constants.apnsRotationAppVersionUpdateTimestampKey,
-                transaction: transaction
+                transaction: transaction,
             ),
             // Protect against negative UInt64 values if the clock changes back in time.
             nowMs > clientUpdateTime,
@@ -235,10 +235,12 @@ public final class APNSRotationStore {
     }
 
     private static func hasLockoutPeriodElapsed(transaction: DBReadTransaction) -> Bool {
-        guard let lastRotationTime = kvStore.getUInt64(
-            Constants.lastAPNSRotationTimestampKey,
-            transaction: transaction
-        ) else {
+        guard
+            let lastRotationTime = kvStore.getUInt64(
+                Constants.lastAPNSRotationTimestampKey,
+                transaction: transaction,
+            )
+        else {
             // We haven't rotated before
             return true
         }
@@ -247,25 +249,25 @@ public final class APNSRotationStore {
         return nowMs > lastRotationTime && nowMs - lastRotationTime > Constants.minRotationInterval
     }
 
-    internal enum Constants {
+    enum Constants {
         /// When we get an APNS push, we store the current token under this key
         /// since we know it is working.
         fileprivate static let lastKnownWorkingAPNSTokenKey = "lastKnownWorkingAPNSTokenKey"
         /// We also store the date at which the token last worked,
         /// if it was too long ago we might be eligible to rotate.
         fileprivate static let lastKnownWorkingAPNSTokenTimestampKey = "lastKnownWorkingAPNSTokenTimestampKey"
-        internal static let lastKnownWorkingAPNSTokenExpirationTimeMs: UInt64 = 60 /*days*/ * UInt64.dayInMs
+        static let lastKnownWorkingAPNSTokenExpirationTimeMs: UInt64 = 60 /* days */ * UInt64.dayInMs
 
         /// See comments on `setAppVersionTimeForAPNSRotationIfNeeded`.
         /// Time we wait after the app first updates to a version with this code before we issue
         /// a token rotation due to missed messages.
-        internal static let appVersionBakeTimeMs: UInt64 = UInt64.weekInMs
+        static let appVersionBakeTimeMs: UInt64 = UInt64.weekInMs
         /// See comments on `setAppVersionTimeForAPNSRotationIfNeeded`.
         /// This is the key where we store when we have updated.
         fileprivate static let apnsRotationAppVersionUpdateTimestampKey = "apnsRotationAppVersionUpdateTimestampKey"
 
         /// Don't ever rotate tokens more often than this.
-        internal static let minRotationInterval: UInt64 = UInt64.weekInMs
+        static let minRotationInterval: UInt64 = UInt64.weekInMs
         fileprivate static let lastAPNSRotationTimestampKey = "lastAPNSRotationTimestampKey"
     }
 }

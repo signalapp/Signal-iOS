@@ -33,7 +33,7 @@ class InternalListMediaViewController: OWSTableViewController2 {
                     self?.updateTableContents()
                 }
                 modal.dismiss(animated: true)
-            }
+            },
         )
     }
 
@@ -64,7 +64,7 @@ class InternalListMediaViewController: OWSTableViewController2 {
                     .fetchCount(tx.database),
                 try! OrphanedBackupAttachment.fetchCount(tx.database),
                 try! DependenciesBridge.shared.backupListMediaStore.getLastFailingIntegrityCheckResult(tx: tx),
-                try! DependenciesBridge.shared.backupListMediaStore.getMostRecentIntegrityCheckResult(tx: tx)
+                try! DependenciesBridge.shared.backupListMediaStore.getMostRecentIntegrityCheckResult(tx: tx),
             )
         }
 
@@ -97,7 +97,7 @@ class InternalListMediaViewController: OWSTableViewController2 {
                         self?.updateTableContents()
                         self?.dismiss(animated: false)
                     }
-                }
+                },
             )
         }))
         contents.add(lastResultSection)
@@ -111,12 +111,12 @@ class InternalListMediaViewController: OWSTableViewController2 {
         section.add(.copyableItem(
             label: "Ineligible count: Fullsize",
             subtitle: "e.g. DMs, view once, etc",
-            value: "\(listMediaResult.fullsize.ineligibleCount)"
+            value: "\(listMediaResult.fullsize.ineligibleCount)",
         ))
         section.add(.copyableItem(
             label: "Missing count: Fullsize",
             subtitle: "Bad if > 0",
-            value: "\(listMediaResult.fullsize.missingFromCdnCount)"
+            value: "\(listMediaResult.fullsize.missingFromCdnCount)",
         ))
         section.add(.copyableItem(label: "Unscheduled count: Fullsize", value: "\(listMediaResult.fullsize.notScheduledForUploadCount ?? 0)"))
         section.add(.copyableItem(label: "Discovered count: Fullsize", value: "\(listMediaResult.fullsize.discoveredOnCdnCount)"))
@@ -124,19 +124,19 @@ class InternalListMediaViewController: OWSTableViewController2 {
         section.add(.copyableItem(
             label: "Ineligible count: Thumbnail",
             subtitle: "e.g. DMs, view once, etc",
-            value: "\(listMediaResult.thumbnail.ineligibleCount)"
+            value: "\(listMediaResult.thumbnail.ineligibleCount)",
         ))
         section.add(.copyableItem(
             label: "Missing count: Thumbnail",
             subtitle: "Not good if > 0, but nbd",
-            value: "\(listMediaResult.thumbnail.missingFromCdnCount)"
+            value: "\(listMediaResult.thumbnail.missingFromCdnCount)",
         ))
         section.add(.copyableItem(label: "Unscheduled count: Thumbnail", value: "\(listMediaResult.thumbnail.notScheduledForUploadCount ?? 0)"))
         section.add(.copyableItem(label: "Discovered count: Thumbnail", value: "\(listMediaResult.thumbnail.discoveredOnCdnCount)"))
         section.add(.copyableItem(
             label: "Orphan count",
             subtitle: "Should roughy match pending deletion",
-            value: "\(listMediaResult.orphanedObjectCount)"
+            value: "\(listMediaResult.orphanedObjectCount)",
         ))
     }
 }

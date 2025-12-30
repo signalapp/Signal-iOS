@@ -4,9 +4,9 @@
 //
 
 import Lottie
-import SwiftUI
-import SignalUI
 import SignalServiceKit
+import SignalUI
+import SwiftUI
 
 // MARK: View Model
 
@@ -49,7 +49,7 @@ class BackupProgressViewModel: ObservableObject {
 
         updateProgress(
             progress: progress.percentComplete,
-            canBeCancelled: false
+            canBeCancelled: false,
         )
 
 #if DEBUG
@@ -91,7 +91,7 @@ class BackupProgressViewModel: ObservableObject {
 
         updateProgress(
             progress: progress.percentComplete,
-            canBeCancelled: canBeCancelled
+            canBeCancelled: canBeCancelled,
         )
 
         if canBeCancelled {
@@ -100,7 +100,7 @@ class BackupProgressViewModel: ObservableObject {
         } else if !(waitForLinkingTimeoutTimer?.isValid ?? false) {
             waitForLinkingTimeoutTimer = Timer.scheduledTimer(
                 withTimeInterval: 60,
-                repeats: false
+                repeats: false,
             ) { [weak self] _ in
                 self?.didTimeoutWaitForLinking = true
                 self?.canBeCancelled = true
@@ -130,7 +130,7 @@ class BackupProgressViewModel: ObservableObject {
 
 class BackupProgressModal: HostingController<BackupProgressView>, LinkAndSyncProgressUI {
 
-    public var shouldSuppressNotifications: Bool { true }
+    var shouldSuppressNotifications: Bool { true }
 
     let viewModel = BackupProgressViewModel()
 
@@ -142,7 +142,7 @@ class BackupProgressModal: HostingController<BackupProgressView>, LinkAndSyncPro
     init(style: BackupProgressView.Style) {
         super.init(wrappedView: BackupProgressView(
             style: style,
-            viewModel: viewModel
+            viewModel: viewModel,
         ))
 
         self.modalPresentationStyle = .overFullScreen
@@ -152,7 +152,7 @@ class BackupProgressModal: HostingController<BackupProgressView>, LinkAndSyncPro
             self,
             selector: #selector(appDidBackground),
             name: .OWSApplicationDidEnterBackground,
-            object: nil
+            object: nil,
         )
     }
 
@@ -237,17 +237,17 @@ struct BackupProgressView: View {
             if progressToShow.isZero {
                 OWSLocalizedString(
                     "BACKUP_RESTORE_MODAL_PREPARING_SUBTITLE",
-                    comment: "Subtitle for a progress spinner on a modal when waiting for a backup restore to start"
+                    comment: "Subtitle for a progress spinner on a modal when waiting for a backup restore to start",
                 )
             } else if let downloadProgress = viewModel.downloadProgress {
                 String(
                     format: OWSLocalizedString(
                         "BACKUP_RESTORE_MODAL_DOWNLOAD_PROGRESS_SUBTITLE",
-                        comment: "Subtitle for a progress spinner on a modal tracking active downloading. Embeds 1:{{ the amount downloaded as a file size, e.g. 100 MB }}; 2:{{ the total amount to download as a file size, e.g. 1 GB }}; 3:{{ the amount downloaded as a percentage, e.g. 10% }}."
+                        comment: "Subtitle for a progress spinner on a modal tracking active downloading. Embeds 1:{{ the amount downloaded as a file size, e.g. 100 MB }}; 2:{{ the total amount to download as a file size, e.g. 1 GB }}; 3:{{ the amount downloaded as a percentage, e.g. 10% }}.",
                     ),
                     downloadProgress.downloadedByteCount.formatted(byteCountFormat),
                     downloadProgress.totalByteCount.formatted(byteCountFormat),
-                    progressToShow.formatted(.percent.precision(.fractionLength(0)))
+                    progressToShow.formatted(.percent.precision(.fractionLength(0))),
                 )
             } else {
                 percentCompleteString
@@ -259,9 +259,9 @@ struct BackupProgressView: View {
         String(
             format: OWSLocalizedString(
                 "LINK_NEW_DEVICE_SYNC_PROGRESS_PERCENT",
-                comment: "On a progress modal indicating the percent complete the sync process is. Embeds {{ formatted percentage }}"
+                comment: "On a progress modal indicating the percent complete the sync process is. Embeds {{ formatted percentage }}",
             ),
-            progressToShow.formatted(.percent.precision(.fractionLength(0)))
+            progressToShow.formatted(.percent.precision(.fractionLength(0))),
         )
     }
 
@@ -281,7 +281,7 @@ struct BackupProgressView: View {
         case .backupRestore:
             OWSLocalizedString(
                 "BACKUP_RESTORE_MODAL_TITLE",
-                comment: "Title for a progress spinner on a modal when restoring messages"
+                comment: "Title for a progress spinner on a modal when restoring messages",
             )
         }
     }
@@ -290,17 +290,17 @@ struct BackupProgressView: View {
         if viewModel.didTapCancel {
             OWSLocalizedString(
                 "LINK_NEW_DEVICE_SYNC_PROGRESS_TILE_CANCELLING",
-                comment: "Title for a progress modal that would be indicating the sync progress while it's cancelling that sync"
+                comment: "Title for a progress modal that would be indicating the sync progress while it's cancelling that sync",
             )
         } else if indeterminateProgressShouldShow || appearanceTransitionState != .finished {
             OWSLocalizedString(
                 "LINK_NEW_DEVICE_SYNC_PROGRESS_TITLE_PREPARING",
-                comment: "Title for a progress modal indicating the sync progress while it's preparing for upload"
+                comment: "Title for a progress modal indicating the sync progress while it's preparing for upload",
             )
         } else {
             OWSLocalizedString(
                 "LINK_NEW_DEVICE_SYNC_PROGRESS_TITLE",
-                comment: "Title for a progress modal indicating the sync progress"
+                comment: "Title for a progress modal indicating the sync progress",
             )
         }
     }
@@ -368,7 +368,7 @@ struct BackupProgressView: View {
             if style == .linkAndSync {
                 Text(OWSLocalizedString(
                     "LINK_NEW_DEVICE_SYNC_PROGRESS_DO_NOT_CLOSE_APP",
-                    comment: "On a progress modal"
+                    comment: "On a progress modal",
                 ))
                 .font(.subheadline)
                 .foregroundStyle(Color.Signal.secondaryLabel)
@@ -442,12 +442,12 @@ private func setupDemoProgressBackupRestore(
 
     let importingBackupProgress = await progress.child(for: .importingBackup).addSource(
         withLabel: BackupRestoreProgressPhase.importingBackup.rawValue,
-        unitCount: BackupRestoreProgressPhase.importingBackup.progressUnitCount
+        unitCount: BackupRestoreProgressPhase.importingBackup.progressUnitCount,
     )
 
     let finishingProgress = await progress.child(for: .finishing).addSource(
         withLabel: BackupRestoreProgressPhase.finishing.rawValue,
-        unitCount: BackupRestoreProgressPhase.finishing.progressUnitCount
+        unitCount: BackupRestoreProgressPhase.finishing.progressUnitCount,
     )
 
     try await Task.sleep(for: .milliseconds(700))
@@ -476,7 +476,7 @@ private func setupDemoProgressBackupRestore(
 @available(iOS 17, *)
 private func setupDemoProgress(
     modal: BackupProgressModal,
-    slowLinking: Bool
+    slowLinking: Bool,
 ) async throws {
     let progress = await OWSSequentialProgress<PrimaryLinkNSyncProgressPhase>.createSink { progress in
         modal.viewModel.updatePrimaryLinkingProgress(progress: progress)
@@ -484,19 +484,19 @@ private func setupDemoProgress(
 
     let waitForLinkingProgress = await progress.child(for: .waitingForLinking).addSource(
         withLabel: PrimaryLinkNSyncProgressPhase.waitingForLinking.rawValue,
-        unitCount: PrimaryLinkNSyncProgressPhase.waitingForLinking.progressUnitCount
+        unitCount: PrimaryLinkNSyncProgressPhase.waitingForLinking.progressUnitCount,
     )
     let exportingBackupProgress = await progress.child(for: .exportingBackup).addSource(
         withLabel: PrimaryLinkNSyncProgressPhase.exportingBackup.rawValue,
-        unitCount: PrimaryLinkNSyncProgressPhase.exportingBackup.progressUnitCount
+        unitCount: PrimaryLinkNSyncProgressPhase.exportingBackup.progressUnitCount,
     )
     let uploadingBackupProgress = await progress.child(for: .uploadingBackup).addSource(
         withLabel: PrimaryLinkNSyncProgressPhase.uploadingBackup.rawValue,
-        unitCount: PrimaryLinkNSyncProgressPhase.uploadingBackup.progressUnitCount
+        unitCount: PrimaryLinkNSyncProgressPhase.uploadingBackup.progressUnitCount,
     )
     let markUploadedProgress = await progress.child(for: .finishing).addSource(
         withLabel: PrimaryLinkNSyncProgressPhase.finishing.rawValue,
-        unitCount: PrimaryLinkNSyncProgressPhase.finishing.progressUnitCount
+        unitCount: PrimaryLinkNSyncProgressPhase.finishing.progressUnitCount,
     )
 
     if slowLinking {
@@ -528,13 +528,13 @@ private func setupDemoProgress(
 @available(iOS 17, *)
 func demoTask(
     modal: BackupProgressModal,
-    slowLinking: Bool
+    slowLinking: Bool,
 ) -> Task<Void, Never> {
     Task {
         do {
             try await setupDemoProgress(
                 modal: modal,
-                slowLinking: slowLinking
+                slowLinking: slowLinking,
             )
         } catch {
             try? await Task.detached {

@@ -79,7 +79,7 @@ public class SignalProxy: NSObject {
         }
         let isValidScheme = (
             scheme.caseInsensitiveCompare("https") == .orderedSame ||
-            scheme.caseInsensitiveCompare("sgnl") == .orderedSame
+                scheme.caseInsensitiveCompare("sgnl") == .orderedSame,
         )
         guard isValidScheme else {
             return false
@@ -132,7 +132,7 @@ public class SignalProxy: NSObject {
         guard !CurrentAppContext().isNSE else { return }
 
         if isEnabled {
-            if restartIfNeeded && relayServer.isStarted {
+            if restartIfNeeded, relayServer.isStarted {
                 relayServer.restartIfNeeded(ignoreBackoff: true)
             } else {
                 relayServer.start()

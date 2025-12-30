@@ -7,7 +7,7 @@ import LibSignalClient
 
 protocol PreKeyTaskAPIClient {
     func getAvailablePreKeys(
-        for identity: OWSIdentity
+        for identity: OWSIdentity,
     ) async throws -> (ecCount: Int, pqCount: Int)
 
     func registerPreKeys(
@@ -16,7 +16,7 @@ protocol PreKeyTaskAPIClient {
         preKeyRecords: [LibSignalClient.PreKeyRecord]?,
         pqLastResortPreKeyRecord: LibSignalClient.KyberPreKeyRecord?,
         pqPreKeyRecords: [LibSignalClient.KyberPreKeyRecord]?,
-        auth: ChatServiceAuth
+        auth: ChatServiceAuth,
     ) async throws
 }
 
@@ -28,7 +28,7 @@ struct PreKeyTaskAPIClientImpl: PreKeyTaskAPIClient {
     }
 
     func getAvailablePreKeys(
-        for identity: OWSIdentity
+        for identity: OWSIdentity,
     ) async throws -> (ecCount: Int, pqCount: Int) {
         let request = OWSRequestFactory.availablePreKeysCountRequest(for: identity)
         let response = try await networkManager.asyncRequest(request)
@@ -49,7 +49,7 @@ struct PreKeyTaskAPIClientImpl: PreKeyTaskAPIClient {
         preKeyRecords: [LibSignalClient.PreKeyRecord]?,
         pqLastResortPreKeyRecord: LibSignalClient.KyberPreKeyRecord?,
         pqPreKeyRecords: [LibSignalClient.KyberPreKeyRecord]?,
-        auth: ChatServiceAuth
+        auth: ChatServiceAuth,
     ) async throws {
         let request = OWSRequestFactory.registerPrekeysRequest(
             identity: identity,
@@ -57,7 +57,7 @@ struct PreKeyTaskAPIClientImpl: PreKeyTaskAPIClient {
             prekeyRecords: preKeyRecords,
             pqLastResortPreKeyRecord: pqLastResortPreKeyRecord,
             pqPreKeyRecords: pqPreKeyRecords,
-            auth: auth
+            auth: auth,
         )
 
         _ = try await networkManager.asyncRequest(request)

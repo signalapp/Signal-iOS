@@ -21,16 +21,16 @@ struct PinnedMessageManagerTest {
             db: db,
             threadStore: MockThreadStore(),
             dateProvider: Date.provider,
-            expirationJob: PinnedMessageExpirationJob(dateProvider: { Date() }, db: db)
+            expirationJob: PinnedMessageExpirationJob(dateProvider: { Date() }, db: db),
         )
     }
 
     private func createIncomingMessage(
         with thread: TSThread,
-        customizeBlock: ((TSIncomingMessageBuilder) -> Void)
+        customizeBlock: (TSIncomingMessageBuilder) -> Void,
     ) -> TSIncomingMessage {
         let messageBuilder: TSIncomingMessageBuilder = .withDefaultValues(
-            thread: thread
+            thread: thread,
         )
         customizeBlock(messageBuilder)
         let targetMessage = messageBuilder.build()
@@ -42,7 +42,7 @@ struct PinnedMessageManagerTest {
             let db = tx.database
 
             let messageBuilder: TSIncomingMessageBuilder = .withDefaultValues(
-                thread: thread
+                thread: thread,
             )
             let targetMessage = messageBuilder.build()
             try! targetMessage.asRecord().insert(db)
@@ -68,7 +68,7 @@ struct PinnedMessageManagerTest {
                 threadId: threadId,
                 sentTimestamp: NSDate.ows_millisecondTimeStamp(),
                 receivedTimestamp: NSDate.ows_millisecondTimeStamp(),
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -99,7 +99,7 @@ struct PinnedMessageManagerTest {
                 threadId: threadId,
                 sentTimestamp: olderTimestamp,
                 receivedTimestamp: olderTimestamp,
-                tx: tx
+                tx: tx,
             )
 
             _ = try PinnedMessageRecord.insertRecord(
@@ -107,7 +107,7 @@ struct PinnedMessageManagerTest {
                 threadId: threadId,
                 sentTimestamp: newerTimestamp,
                 receivedTimestamp: newerTimestamp,
-                tx: tx
+                tx: tx,
             )
         }
 

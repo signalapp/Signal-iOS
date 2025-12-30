@@ -11,14 +11,14 @@ public extension Paypal {
     /// Create a payment and get a PayPal approval URL to present to the user.
     static func createBoost(
         amount: FiatMoney,
-        level: OneTimeBadgeLevel
+        level: OneTimeBadgeLevel,
     ) async throws -> (URL, String) {
         let createBoostRequest = OWSRequestFactory.boostPaypalCreatePayment(
             integerMoneyValue: DonationUtilities.integralAmount(for: amount),
             inCurrencyCode: amount.currencyCode,
             level: level.rawValue,
             returnUrl: Self.webAuthReturnUrl,
-            cancelUrl: Self.webAuthCancelUrl
+            cancelUrl: Self.webAuthCancelUrl,
         )
 
         let response = try await SSKEnvironment.shared.networkManagerRef
@@ -44,7 +44,7 @@ public extension Paypal {
         amount: FiatMoney,
         level: OneTimeBadgeLevel,
         paymentId: String,
-        approvalParams: OneTimePaymentWebAuthApprovalParams
+        approvalParams: OneTimePaymentWebAuthApprovalParams,
     ) async throws -> String {
         let confirmOneTimePaymentRequest = OWSRequestFactory.oneTimePaypalConfirmPayment(
             integerMoneyValue: DonationUtilities.integralAmount(for: amount),
@@ -52,7 +52,7 @@ public extension Paypal {
             level: level.rawValue,
             payerId: approvalParams.payerId,
             paymentId: paymentId,
-            paymentToken: approvalParams.paymentToken
+            paymentToken: approvalParams.paymentToken,
         )
 
         let response = try await SSKEnvironment.shared.networkManagerRef
@@ -84,12 +84,12 @@ public extension Paypal {
     /// - Returns
     /// PayPal params used to authorize payment for the new subscription.
     static func createSignalPaymentMethodForSubscription(
-        subscriberId: Data
+        subscriberId: Data,
     ) async throws -> SubscriptionAuthorizationParams {
         let request = OWSRequestFactory.subscriptionCreatePaypalPaymentMethodRequest(
             subscriberID: subscriberId,
             returnURL: Self.webAuthReturnUrl,
-            cancelURL: Self.webAuthCancelUrl
+            cancelURL: Self.webAuthCancelUrl,
         )
 
         let response = try await SSKEnvironment.shared.networkManagerRef
@@ -107,7 +107,7 @@ public extension Paypal {
 
         return SubscriptionAuthorizationParams(
             approvalUrl: approvalUrl,
-            paymentMethodId: paymentMethodId
+            paymentMethodId: paymentMethodId,
         )
     }
 }

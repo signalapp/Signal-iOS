@@ -22,9 +22,9 @@ extension TSContactThread {
 
 extension TSGroupThread {
     var canCall: Bool {
-        return (
+        return
             isGroupV2Thread
-            && groupMembership.isLocalUserFullMember
-        )
+                && groupMembership.isLocalUserFullMember
+
     }
 }

@@ -24,7 +24,7 @@ open class MockRegistrationStateChangeManager: RegistrationStateChangeManager {
         _ e164: E164,
         _ aci: Aci,
         _ pni: Pni,
-        _ authToken: String
+        _ authToken: String,
     ) -> Void = { [weak self] _, _, _, _ in
         self?.registrationStateMock = { .registered }
     }
@@ -34,7 +34,7 @@ open class MockRegistrationStateChangeManager: RegistrationStateChangeManager {
         aci: Aci,
         pni: Pni,
         authToken: String,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         didRegisterPrimaryMock(e164, aci, pni, authToken)
     }
@@ -44,7 +44,7 @@ open class MockRegistrationStateChangeManager: RegistrationStateChangeManager {
         _ aci: Aci,
         _ pni: Pni,
         _ authToken: String,
-        _ deviceId: DeviceId
+        _ deviceId: DeviceId,
     ) -> Void = { [weak self] _, _, _, _, _ in
         self?.registrationStateMock = { .provisioned }
     }
@@ -64,7 +64,7 @@ open class MockRegistrationStateChangeManager: RegistrationStateChangeManager {
     public var didUpdateLocalPhoneNumberMock: (
         _ e164: E164,
         _ aci: Aci,
-        _ pni: Pni
+        _ pni: Pni,
     ) -> Void = { _, _, _ in }
 
     open func didUpdateLocalPhoneNumber(_ e164: E164, aci: Aci, pni: Pni, tx: DBWriteTransaction) {
@@ -74,7 +74,7 @@ open class MockRegistrationStateChangeManager: RegistrationStateChangeManager {
     public lazy var resetForReregistrationMock: (
         _ localPhoneNumber: E164,
         _ localAci: Aci,
-        _ wasPrimaryDevice: Bool
+        _ wasPrimaryDevice: Bool,
     ) -> Void = { [weak self] phoneNumber, aci, _ in
         self?.registrationStateMock = { .reregistering(phoneNumber: phoneNumber.stringValue, aci: aci) }
     }
@@ -84,7 +84,7 @@ open class MockRegistrationStateChangeManager: RegistrationStateChangeManager {
         localAci: Aci,
         discoverability: PhoneNumberDiscoverability?,
         wasPrimaryDevice: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         return resetForReregistrationMock(localPhoneNumber, localAci, wasPrimaryDevice)
     }
@@ -120,7 +120,7 @@ open class MockRegistrationStateChangeManager: RegistrationStateChangeManager {
     }
 
     public lazy var setIsDeregisteredOrDelinkedMock: (
-        _ isDeregisteredOrDelinked: Bool
+        _ isDeregisteredOrDelinked: Bool,
     ) -> Void = { [weak self] isDeregisteredOrDelinked in
         let wasPrimary = self?.registrationStateMock().isPrimaryDevice ?? true
         if isDeregisteredOrDelinked {

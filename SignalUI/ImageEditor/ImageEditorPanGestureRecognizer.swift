@@ -42,12 +42,14 @@ class ImageEditorPanGestureRecognizer: UIPanGestureRecognizer {
     }
 
     private func updateLocationHistory(event: UIEvent) {
-        guard let touches = event.allTouches,
-            touches.count > 0 else {
-                owsFailDebug("no touches.")
-                return
+        guard
+            let touches = event.allTouches,
+            touches.count > 0
+        else {
+            owsFailDebug("no touches.")
+            return
         }
-        guard let referenceView = referenceView else {
+        guard let referenceView else {
             owsFailDebug("Missing view")
             return
         }

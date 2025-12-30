@@ -17,21 +17,21 @@ extension ConversationViewController {
         let inProgressVoiceMessage = VoiceMessageInProgressDraft(
             thread: thread,
             audioSession: SUIEnvironment.shared.audioSessionRef,
-            sleepManager: DependenciesBridge.shared.deviceSleepManager!
+            sleepManager: DependenciesBridge.shared.deviceSleepManager!,
         )
         viewState.inProgressVoiceMessage = inProgressVoiceMessage
 
         // Delay showing the voice memo UI for N ms to avoid a jarring transition
         // when you just tap and don't hold.
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
-            guard let self = self else { return }
+            guard let self else { return }
             guard self.viewState.inProgressVoiceMessage === inProgressVoiceMessage else { return }
             self.configureScrollDownButtons()
             self.inputToolbar?.showVoiceMemoUI()
         }
 
         ows_askForMicrophonePermissions { [weak self] granted in
-            guard let self = self else { return }
+            guard let self else { return }
             guard self.viewState.inProgressVoiceMessage === inProgressVoiceMessage else { return }
 
             guard granted else {

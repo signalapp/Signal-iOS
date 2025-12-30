@@ -85,7 +85,7 @@ public struct HttpHeaders: Codable, CustomDebugStringConvertible, ExpressibleByD
     }
 
     public mutating func addHeaderMap(_ newHttpHeaders: [String: String]?, overwriteOnConflict: Bool) {
-        guard let newHttpHeaders = newHttpHeaders else {
+        guard let newHttpHeaders else {
             return
         }
         for (key, value) in newHttpHeaders {
@@ -114,7 +114,7 @@ public struct HttpHeaders: Codable, CustomDebugStringConvertible, ExpressibleByD
     }
 
     public mutating func addHeaderList(_ newHttpHeaders: [String]?, overwriteOnConflict: Bool) {
-        guard let newHttpHeaders = newHttpHeaders else {
+        guard let newHttpHeaders else {
             return
         }
         for header in newHttpHeaders {
@@ -231,7 +231,7 @@ public struct HttpHeaders: Codable, CustomDebugStringConvertible, ExpressibleByD
 
     static let whitelistedLoggedHeaderKeys = Set([
         "retry-after",
-        "x-signal-timestamp"
+        "x-signal-timestamp",
         // Have a header key who's value you'd like to see logged? Add it here (lowercased)!
     ])
 

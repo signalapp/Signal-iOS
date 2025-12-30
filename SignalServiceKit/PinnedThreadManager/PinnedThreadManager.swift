@@ -20,19 +20,19 @@ public protocol PinnedThreadManager {
     func updatePinnedThreadIds(
         _ pinnedThreadIds: [String],
         updateStorageService: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     )
 
     func pinThread(
         _ thread: TSThread,
         updateStorageService: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws
 
     func unpinThread(
         _ thread: TSThread,
         updateStorageService: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws
 
     func handleUpdatedThread(_ thread: TSThread, tx: DBWriteTransaction)

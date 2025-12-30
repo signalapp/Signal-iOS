@@ -21,7 +21,7 @@ public struct ArchivedPaymentHistoryItem: PaymentsHistoryItem {
         archivedPayment: ArchivedPayment,
         address: SignalServiceAddress?,
         displayName: String,
-        interaction: TSInteraction
+        interaction: TSInteraction,
     ) {
         self.archivedPayment = archivedPayment
         self.displayName = displayName
@@ -40,7 +40,7 @@ public struct ArchivedPaymentHistoryItem: PaymentsHistoryItem {
     }
 
     public var isOutgoing: Bool {
-       !isIncoming
+        !isIncoming
     }
 
     public var isUnidentified: Bool {
@@ -61,7 +61,7 @@ public struct ArchivedPaymentHistoryItem: PaymentsHistoryItem {
 
     public var paymentAmount: TSPaymentAmount? {
         return SUIEnvironment.shared.paymentsImplRef.unmaskReceiptAmount(
-            data: archivedPayment.receipt
+            data: archivedPayment.receipt,
         )?.tsPaymentAmount
     }
 
@@ -73,7 +73,7 @@ public struct ArchivedPaymentHistoryItem: PaymentsHistoryItem {
         return PaymentsFormat.format(
             amountString: fee,
             withCurrencyCode: true,
-            withSpace: true
+            withSpace: true,
         )
     }
 
@@ -114,7 +114,7 @@ public struct ArchivedPaymentHistoryItem: PaymentsHistoryItem {
             amountString: amount,
             withCurrencyCode: false,
             withSpace: false,
-            isIncoming: isIncoming
+            isIncoming: isIncoming,
         )
         return PaymentsFormat.attributedFormat(mobileCoinString: formattedAmount, withSpace: false)
     }
@@ -127,7 +127,7 @@ public struct ArchivedPaymentHistoryItem: PaymentsHistoryItem {
         return PaymentsFormat.format(
             amountString: amount,
             withCurrencyCode: true,
-            withSpace: true
+            withSpace: true,
         )
     }
 

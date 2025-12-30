@@ -20,20 +20,20 @@ class StorySharingTests: SignalBaseTest {
             "https://signal.org\ntest\nhttps://signal.org": "test\nhttps://signal.org",
             "some https://signal.org test": "some https://signal.org test",
             "https://signal.org": nil,
-            "something else": "something else"
+            "something else": "something else",
         ]
 
         for (input, expectedOutput) in inputOutput {
             let output = StorySharing.text(
                 for: .init(
                     text: input,
-                    ranges: .empty
+                    ranges: .empty,
                 ),
                 with: OWSLinkPreviewDraft(
                     url: URL(string: "https://signal.org")!,
                     title: nil,
                     isForwarded: false,
-                )
+                ),
             )?.text
             XCTAssertEqual(output, expectedOutput)
         }
@@ -45,9 +45,9 @@ class StorySharingTests: SignalBaseTest {
         let output = StorySharing.text(
             for: .init(
                 text: "\(MessageBody.mentionPlaceholder) Some text",
-                ranges: .init(mentions: [range: mentionAci], styles: [])
+                ranges: .init(mentions: [range: mentionAci], styles: []),
             ),
-            with: nil
+            with: nil,
         )?.text
 
         XCTAssertEqual(output, "@Unknown Some text")

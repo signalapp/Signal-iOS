@@ -58,7 +58,7 @@ extension ChatConnectionManager {
 public class ChatConnectionManagerImpl: ChatConnectionManager {
     private let connectionIdentified: OWSAuthConnectionUsingLibSignal
     private let connectionUnidentified: OWSUnauthConnectionUsingLibSignal
-    private var connections: [OWSChatConnection] { [ connectionIdentified, connectionUnidentified ]}
+    private var connections: [OWSChatConnection] { [connectionIdentified, connectionUnidentified] }
 
     @MainActor
     public init(

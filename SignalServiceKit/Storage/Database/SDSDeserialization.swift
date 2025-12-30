@@ -21,9 +21,9 @@ public class SDSDeserialization {
         name: String,
         _ file: StaticString = #file,
         _ function: StaticString = #function,
-        _ line: UInt = #line
+        _ line: UInt = #line,
     ) throws -> T {
-        guard let value = value else {
+        guard let value else {
             owsFailDebug("Missing required field: \(name).")
             throw SDSError.missingRequiredField(file, function, line)
         }
@@ -43,7 +43,7 @@ public class SDSDeserialization {
     }
 
     public class func optionalDoubleAsDate(_ value: Double?, name: String) -> Date? {
-        guard let value = value else {
+        guard let value else {
             return nil
         }
         return requiredDoubleAsDate(value, name: name)
@@ -52,7 +52,7 @@ public class SDSDeserialization {
     // MARK: - Numeric Primitive
 
     public class func optionalNumericAsNSNumber<T>(_ value: T?, name: String, conversion: (T) -> NSNumber) -> NSNumber? {
-        guard let value = value else {
+        guard let value else {
             return nil
         }
         return conversion(value)
@@ -61,7 +61,7 @@ public class SDSDeserialization {
     // MARK: - Blob
 
     public class func optionalUnarchive<T: Any>(_ encoded: Data?, name: String) throws -> T? {
-        guard let encoded = encoded else {
+        guard let encoded else {
             return nil
         }
         return try unarchive(encoded, name: name)
@@ -72,9 +72,9 @@ public class SDSDeserialization {
         name: String,
         _ file: StaticString = #file,
         _ function: StaticString = #function,
-        _ line: UInt = #line
+        _ line: UInt = #line,
     ) throws -> T {
-        guard let encoded = encoded else {
+        guard let encoded else {
             owsFailDebug("Missing required field: \(name).")
             throw SDSError.missingRequiredField(file, function, line)
         }

@@ -4,10 +4,10 @@
 //
 
 import XCTest
+@testable import MobileCoin
+@testable import Signal
 @testable import SignalServiceKit
 @testable import SignalUI
-@testable import Signal
-@testable import MobileCoin
 
 private struct MockTransactionHistoryItem: MCTransactionHistoryItem {
     let amountPicoMob: UInt64
@@ -91,12 +91,14 @@ class PaymentsReconciliationTest: SignalBaseTest {
 
     func test_reconcileAccountActivity_empty() {
         do {
-            try SSKEnvironment.shared.databaseStorageRef.read { (transaction) -> Void in
+            try SSKEnvironment.shared.databaseStorageRef.read { transaction -> Void in
                 let transactionHistory = Self.buildTransactionHistory_empty()
                 let databaseState = Self.buildPaymentsDatabaseState_empty()
-                try PaymentsReconciliation.reconcile(transactionHistory: transactionHistory,
-                                                     databaseState: databaseState,
-                                                     transaction: transaction)
+                try PaymentsReconciliation.reconcile(
+                    transactionHistory: transactionHistory,
+                    databaseState: databaseState,
+                    transaction: transaction,
+                )
             }
         } catch {
             owsFailDebug("Error: \(error)")
@@ -107,8 +109,10 @@ class PaymentsReconciliationTest: SignalBaseTest {
     private static func buildTransactionHistory_empty() -> MCTransactionHistory {
         let items = [MockTransactionHistoryItem]()
         let blockCount: UInt64 = 5
-        return MockTransactionHistory(items: items,
-                                      blockCount: blockCount)
+        return MockTransactionHistory(
+            items: items,
+            blockCount: blockCount,
+        )
     }
 
     private static func buildPaymentsDatabaseState_empty() -> PaymentsDatabaseState {
@@ -117,16 +121,20 @@ class PaymentsReconciliationTest: SignalBaseTest {
 
     func test_reconcileAccountActivity_unsavedChanges() {
         do {
-            try SSKEnvironment.shared.databaseStorageRef.read { (transaction) -> Void in
+            try SSKEnvironment.shared.databaseStorageRef.read { transaction -> Void in
                 let buildItem2a_incomingUnspent = Self.buildItem2a_incomingUnspent()
-                let transactionHistory = MockTransactionHistory(items: [
-                    buildItem2a_incomingUnspent
-                ],
-                blockCount: 3)
+                let transactionHistory = MockTransactionHistory(
+                    items: [
+                        buildItem2a_incomingUnspent,
+                    ],
+                    blockCount: 3,
+                )
                 let databaseState = Self.buildPaymentsDatabaseState_empty()
-                try PaymentsReconciliation.reconcile(transactionHistory: transactionHistory,
-                                                     databaseState: databaseState,
-                                                     transaction: transaction)
+                try PaymentsReconciliation.reconcile(
+                    transactionHistory: transactionHistory,
+                    databaseState: databaseState,
+                    transaction: transaction,
+                )
             }
             XCTFail("Missing error.")
         } catch {
@@ -141,13 +149,15 @@ class PaymentsReconciliationTest: SignalBaseTest {
 
     func test_reconcileAccountActivity_fillIn1() {
         do {
-            try SSKEnvironment.shared.databaseStorageRef.write { (transaction) -> Void in
+            try SSKEnvironment.shared.databaseStorageRef.write { transaction -> Void in
 
                 let buildItem2a_incomingUnspent = Self.buildItem2a_incomingUnspent()
-                let transactionHistory = MockTransactionHistory(items: [
-                    buildItem2a_incomingUnspent
-                ],
-                blockCount: 3)
+                let transactionHistory = MockTransactionHistory(
+                    items: [
+                        buildItem2a_incomingUnspent,
+                    ],
+                    blockCount: 3,
+                )
 
                 // Reconciliation 1
 
@@ -163,9 +173,11 @@ class PaymentsReconciliationTest: SignalBaseTest {
                     XCTAssertEqual(databaseState.outputPublicKeyMap.count, 0)
 
                     // This reconciliation pass should create an "unidentified incoming" payment model.
-                    try PaymentsReconciliation.reconcile(transactionHistory: transactionHistory,
-                                                         databaseState: databaseState,
-                                                         transaction: transaction)
+                    try PaymentsReconciliation.reconcile(
+                        transactionHistory: transactionHistory,
+                        databaseState: databaseState,
+                        transaction: transaction,
+                    )
                     databaseState = PaymentsReconciliation.buildPaymentsDatabaseState(transaction: transaction)
 
                     XCTAssertEqual(databaseState.allPaymentState.count, 1)
@@ -210,9 +222,11 @@ class PaymentsReconciliationTest: SignalBaseTest {
                 do {
                     // This reconciliation pass should have no effect.
                     var databaseState = PaymentsReconciliation.buildPaymentsDatabaseState(transaction: transaction)
-                    try PaymentsReconciliation.reconcile(transactionHistory: transactionHistory,
-                                                         databaseState: databaseState,
-                                                         transaction: transaction)
+                    try PaymentsReconciliation.reconcile(
+                        transactionHistory: transactionHistory,
+                        databaseState: databaseState,
+                        transaction: transaction,
+                    )
                     databaseState = PaymentsReconciliation.buildPaymentsDatabaseState(transaction: transaction)
 
                     XCTAssertEqual(databaseState.allPaymentState.count, 1)
@@ -232,16 +246,18 @@ class PaymentsReconciliationTest: SignalBaseTest {
 
     func test_reconcileAccountActivity_unspentThenSpent() {
         do {
-            try SSKEnvironment.shared.databaseStorageRef.write { (transaction) -> Void in
+            try SSKEnvironment.shared.databaseStorageRef.write { transaction -> Void in
 
                 // Reconciliation 1
 
                 do {
                     let buildItem2a_incomingUnspent = Self.buildItem2a_incomingUnspent()
-                    let transactionHistory2 = MockTransactionHistory(items: [
-                        buildItem2a_incomingUnspent
-                    ],
-                    blockCount: 2)
+                    let transactionHistory2 = MockTransactionHistory(
+                        items: [
+                            buildItem2a_incomingUnspent,
+                        ],
+                        blockCount: 2,
+                    )
 
                     var databaseState = PaymentsReconciliation.buildPaymentsDatabaseState(transaction: transaction)
 
@@ -254,9 +270,11 @@ class PaymentsReconciliationTest: SignalBaseTest {
                     XCTAssertEqual(databaseState.outputPublicKeyMap.count, 0)
 
                     // This reconciliation pass should create an "unidentified incoming" payment model.
-                    try PaymentsReconciliation.reconcile(transactionHistory: transactionHistory2,
-                                                         databaseState: databaseState,
-                                                         transaction: transaction)
+                    try PaymentsReconciliation.reconcile(
+                        transactionHistory: transactionHistory2,
+                        databaseState: databaseState,
+                        transaction: transaction,
+                    )
                     databaseState = PaymentsReconciliation.buildPaymentsDatabaseState(transaction: transaction)
 
                     XCTAssertEqual(databaseState.allPaymentState.count, 1)
@@ -300,16 +318,20 @@ class PaymentsReconciliationTest: SignalBaseTest {
 
                 do {
                     let buildItem2a_incomingSpentIn4 = Self.buildItem2a_incomingSpentIn4()
-                    let transactionHistory4 = MockTransactionHistory(items: [
-                        buildItem2a_incomingSpentIn4
-                    ],
-                    blockCount: 4)
+                    let transactionHistory4 = MockTransactionHistory(
+                        items: [
+                            buildItem2a_incomingSpentIn4,
+                        ],
+                        blockCount: 4,
+                    )
 
                     // This reconciliation pass should create an "unidentified outgoing" payment model.
                     var databaseState = PaymentsReconciliation.buildPaymentsDatabaseState(transaction: transaction)
-                    try PaymentsReconciliation.reconcile(transactionHistory: transactionHistory4,
-                                                         databaseState: databaseState,
-                                                         transaction: transaction)
+                    try PaymentsReconciliation.reconcile(
+                        transactionHistory: transactionHistory4,
+                        databaseState: databaseState,
+                        transaction: transaction,
+                    )
                     databaseState = PaymentsReconciliation.buildPaymentsDatabaseState(transaction: transaction)
 
                     XCTAssertEqual(databaseState.allPaymentState.count, 2)
@@ -348,16 +370,20 @@ class PaymentsReconciliationTest: SignalBaseTest {
 
                 do {
                     let buildItem2a_incomingSpentIn4 = Self.buildItem2a_incomingSpentIn4()
-                    let transactionHistory4 = MockTransactionHistory(items: [
-                        buildItem2a_incomingSpentIn4
-                    ],
-                    blockCount: 4)
+                    let transactionHistory4 = MockTransactionHistory(
+                        items: [
+                            buildItem2a_incomingSpentIn4,
+                        ],
+                        blockCount: 4,
+                    )
 
                     // This reconciliation pass should have no effect.
                     var databaseState = PaymentsReconciliation.buildPaymentsDatabaseState(transaction: transaction)
-                    try PaymentsReconciliation.reconcile(transactionHistory: transactionHistory4,
-                                                         databaseState: databaseState,
-                                                         transaction: transaction)
+                    try PaymentsReconciliation.reconcile(
+                        transactionHistory: transactionHistory4,
+                        databaseState: databaseState,
+                        transaction: transaction,
+                    )
                     databaseState = PaymentsReconciliation.buildPaymentsDatabaseState(transaction: transaction)
 
                     XCTAssertEqual(databaseState.allPaymentState.count, 2)
@@ -391,18 +417,22 @@ class PaymentsReconciliationTest: SignalBaseTest {
     private static let keyImage2a = randomKeyImage()
 
     private static func buildItem2a_incomingUnspent() -> MCTransactionHistoryItem {
-        MockTransactionHistoryItem(amountPicoMob: 1002,
-                                   txoPublicKey: txoPublicKey2a,
-                                   keyImage: keyImage2a,
-                                   receivedBlock: block2,
-                                   spentBlock: nil)
+        MockTransactionHistoryItem(
+            amountPicoMob: 1002,
+            txoPublicKey: txoPublicKey2a,
+            keyImage: keyImage2a,
+            receivedBlock: block2,
+            spentBlock: nil,
+        )
     }
 
     private static func buildItem2a_incomingSpentIn4() -> MCTransactionHistoryItem {
-        MockTransactionHistoryItem(amountPicoMob: 1002,
-                                   txoPublicKey: txoPublicKey2a,
-                                   keyImage: keyImage2a,
-                                   receivedBlock: block2,
-                                   spentBlock: block4)
+        MockTransactionHistoryItem(
+            amountPicoMob: 1002,
+            txoPublicKey: txoPublicKey2a,
+            keyImage: keyImage2a,
+            receivedBlock: block2,
+            spentBlock: block4,
+        )
     }
 }

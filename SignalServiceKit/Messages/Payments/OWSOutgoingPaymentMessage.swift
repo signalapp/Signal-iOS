@@ -11,7 +11,7 @@ extension OWSOutgoingPaymentMessage {
         paymentNotification: TSPaymentNotification,
         expiresInSeconds: UInt32,
         expireTimerVersion: UInt32?,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) {
         let messageBuilder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: thread)
         messageBuilder.setMessageBody(messageBody)
@@ -22,7 +22,7 @@ extension OWSOutgoingPaymentMessage {
         self.init(
             builder: messageBuilder,
             paymentNotification: paymentNotification,
-            transaction: tx
+            transaction: tx,
         )
     }
 }

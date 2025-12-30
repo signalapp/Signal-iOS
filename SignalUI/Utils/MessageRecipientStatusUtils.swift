@@ -25,13 +25,13 @@ public class MessageRecipientStatusUtils {
     public class func recipientStatusAndStatusMessage(
         outgoingMessage: TSOutgoingMessage,
         recipientState: TSOutgoingMessageRecipientState,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> (status: MessageReceiptStatus, shortStatusMessage: String, longStatusMessage: String) {
         let hasBodyAttachments = outgoingMessage.hasBodyAttachments(transaction: transaction)
         return recipientStatusAndStatusMessage(
             outgoingMessage: outgoingMessage,
             recipientState: recipientState,
-            hasBodyAttachments: hasBodyAttachments
+            hasBodyAttachments: hasBodyAttachments,
         )
     }
 
@@ -39,7 +39,7 @@ public class MessageRecipientStatusUtils {
     public class func recipientStatusAndStatusMessage(
         outgoingMessage: TSOutgoingMessage,
         recipientState: TSOutgoingMessageRecipientState,
-        hasBodyAttachments: Bool
+        hasBodyAttachments: Bool,
     ) -> (status: MessageReceiptStatus, shortStatusMessage: String, longStatusMessage: String) {
 
         switch recipientState.status {
@@ -55,27 +55,35 @@ public class MessageRecipientStatusUtils {
             if hasBodyAttachments {
                 assert(outgoingMessage.messageState == .sending)
 
-                let statusMessage = OWSLocalizedString("MESSAGE_STATUS_UPLOADING",
-                                                      comment: "status message while attachment is uploading")
+                let statusMessage = OWSLocalizedString(
+                    "MESSAGE_STATUS_UPLOADING",
+                    comment: "status message while attachment is uploading",
+                )
                 return (status: .uploading, shortStatusMessage: statusMessage, longStatusMessage: statusMessage)
             } else {
                 assert(outgoingMessage.messageState == .sending)
 
-                let statusMessage = OWSLocalizedString("MESSAGE_STATUS_SENDING",
-                                                      comment: "message status while message is sending.")
+                let statusMessage = OWSLocalizedString(
+                    "MESSAGE_STATUS_SENDING",
+                    comment: "message status while message is sending.",
+                )
                 return (status: .sending, shortStatusMessage: statusMessage, longStatusMessage: statusMessage)
             }
         case .sent:
             let timestampString = DateUtil.formatPastTimestampRelativeToNow(outgoingMessage.timestamp)
             let shortStatusMessage = timestampString
-            let longStatusMessage = OWSLocalizedString("MESSAGE_STATUS_SENT",
-                                                      comment: "status message for sent messages") + " " + timestampString
+            let longStatusMessage = OWSLocalizedString(
+                "MESSAGE_STATUS_SENT",
+                comment: "status message for sent messages",
+            ) + " " + timestampString
             return (status: .sent, shortStatusMessage: shortStatusMessage, longStatusMessage: longStatusMessage)
         case .delivered:
             let timestampString = DateUtil.formatPastTimestampRelativeToNow(recipientState.statusTimestamp)
             let shortStatusMessage = timestampString
-            let longStatusMessage = OWSLocalizedString("MESSAGE_STATUS_DELIVERED",
-                                                       comment: "message status for message delivered to their recipient.") + " " + timestampString
+            let longStatusMessage = OWSLocalizedString(
+                "MESSAGE_STATUS_DELIVERED",
+                comment: "message status for message delivered to their recipient.",
+            ) + " " + timestampString
             return (status: .delivered, shortStatusMessage: shortStatusMessage, longStatusMessage: longStatusMessage)
         case .read:
             let timestampString = DateUtil.formatPastTimestampRelativeToNow(recipientState.statusTimestamp)
@@ -88,8 +96,10 @@ public class MessageRecipientStatusUtils {
             let longStatusMessage = OWSLocalizedString("MESSAGE_STATUS_VIEWED", comment: "status message for viewed messages") + " " + timestampString
             return (status: .viewed, shortStatusMessage: shortStatusMessage, longStatusMessage: longStatusMessage)
         case .skipped:
-            let statusMessage = OWSLocalizedString("MESSAGE_STATUS_RECIPIENT_SKIPPED",
-                                                  comment: "message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or unregistered their Signal account.")
+            let statusMessage = OWSLocalizedString(
+                "MESSAGE_STATUS_RECIPIENT_SKIPPED",
+                comment: "message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or unregistered their Signal account.",
+            )
             return (status: .skipped, shortStatusMessage: statusMessage, longStatusMessage: statusMessage)
         }
     }
@@ -97,7 +107,7 @@ public class MessageRecipientStatusUtils {
     // This method is per-message.
     public class func receiptStatusAndMessage(
         outgoingMessage: TSOutgoingMessage,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> (status: MessageReceiptStatus, message: String) {
         let hasBodyAttachments = outgoingMessage.hasBodyAttachments(transaction: transaction)
         return receiptStatusAndMessage(outgoingMessage: outgoingMessage, hasBodyAttachments: hasBodyAttachments)
@@ -105,7 +115,7 @@ public class MessageRecipientStatusUtils {
 
     public class func receiptStatusAndMessage(
         outgoingMessage: TSOutgoingMessage,
-        hasBodyAttachments: Bool
+        hasBodyAttachments: Bool,
     ) -> (status: MessageReceiptStatus, message: String) {
         switch outgoingMessage.messageState {
         case .failed:
@@ -115,11 +125,15 @@ public class MessageRecipientStatusUtils {
             return (.pending, OWSLocalizedString("MESSAGE_STATUS_PENDING", comment: "Label indicating that a message send was paused."))
         case .sending:
             if hasBodyAttachments {
-                return (.uploading, OWSLocalizedString("MESSAGE_STATUS_UPLOADING",
-                                         comment: "status message while attachment is uploading"))
+                return (.uploading, OWSLocalizedString(
+                    "MESSAGE_STATUS_UPLOADING",
+                    comment: "status message while attachment is uploading",
+                ))
             } else {
-                return (.sending, OWSLocalizedString("MESSAGE_STATUS_SENDING",
-                                         comment: "message status while message is sending."))
+                return (.sending, OWSLocalizedString(
+                    "MESSAGE_STATUS_SENDING",
+                    comment: "message status while message is sending.",
+                ))
             }
         case .sent:
             if outgoingMessage.viewedRecipientAddresses().count > 0 {
@@ -129,57 +143,63 @@ public class MessageRecipientStatusUtils {
                 return (.read, OWSLocalizedString("MESSAGE_STATUS_READ", comment: "status message for read messages"))
             }
             if outgoingMessage.wasDeliveredToAnyRecipient {
-                return (.delivered, OWSLocalizedString("MESSAGE_STATUS_DELIVERED",
-                                         comment: "message status for message delivered to their recipient."))
+                return (.delivered, OWSLocalizedString(
+                    "MESSAGE_STATUS_DELIVERED",
+                    comment: "message status for message delivered to their recipient.",
+                ))
             }
-            return (.sent, OWSLocalizedString("MESSAGE_STATUS_SENT",
-                                     comment: "status message for sent messages"))
+            return (.sent, OWSLocalizedString(
+                "MESSAGE_STATUS_SENT",
+                comment: "status message for sent messages",
+            ))
         default:
             owsFailDebug("Message has unexpected status: \(outgoingMessage.messageState).")
-            return (.sent, OWSLocalizedString("MESSAGE_STATUS_SENT",
-                                     comment: "status message for sent messages"))
+            return (.sent, OWSLocalizedString(
+                "MESSAGE_STATUS_SENT",
+                comment: "status message for sent messages",
+            ))
         }
     }
 
     // This method is per-message.
     public class func receiptMessage(
         outgoingMessage: TSOutgoingMessage,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> String {
-        let (_, message ) = receiptStatusAndMessage(outgoingMessage: outgoingMessage, transaction: transaction)
+        let (_, message) = receiptStatusAndMessage(outgoingMessage: outgoingMessage, transaction: transaction)
         return message
     }
 
     // This method is per-message.
     public class func receiptMessage(
         outgoingMessage: TSOutgoingMessage,
-        hasBodyAttachments: Bool
+        hasBodyAttachments: Bool,
     ) -> String {
-        let (_, message ) = receiptStatusAndMessage(outgoingMessage: outgoingMessage, hasBodyAttachments: hasBodyAttachments)
+        let (_, message) = receiptStatusAndMessage(outgoingMessage: outgoingMessage, hasBodyAttachments: hasBodyAttachments)
         return message
     }
 
     // This method is per-message.
     public class func recipientStatus(
         outgoingMessage: TSOutgoingMessage,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> MessageReceiptStatus {
-        let (status, _ ) = receiptStatusAndMessage(outgoingMessage: outgoingMessage, transaction: transaction)
+        let (status, _) = receiptStatusAndMessage(outgoingMessage: outgoingMessage, transaction: transaction)
         return status
     }
 
     // This method is per-message.
     public class func recipientStatus(
         outgoingMessage: TSOutgoingMessage,
-        hasBodyAttachments: Bool
+        hasBodyAttachments: Bool,
     ) -> MessageReceiptStatus {
-        let (status, _ ) = receiptStatusAndMessage(outgoingMessage: outgoingMessage, hasBodyAttachments: hasBodyAttachments)
+        let (status, _) = receiptStatusAndMessage(outgoingMessage: outgoingMessage, hasBodyAttachments: hasBodyAttachments)
         return status
     }
 
     public class func recipientStatus(
         outgoingMessage: TSOutgoingMessage,
-        paymentModel: TSPaymentModel
+        paymentModel: TSPaymentModel,
     ) -> MessageReceiptStatus {
         return paymentModel.paymentState.combinedMessageReceiptStatus(with: outgoingMessage)
     }
@@ -187,7 +207,7 @@ public class MessageRecipientStatusUtils {
     @objc
     public class func receiptMessage(
         outgoingMessage: TSOutgoingMessage,
-        paymentModel: TSPaymentModel
+        paymentModel: TSPaymentModel,
     ) -> String {
         let status = paymentModel.paymentState.combinedMessageReceiptStatus(with: outgoingMessage)
         switch status {
@@ -195,37 +215,37 @@ public class MessageRecipientStatusUtils {
             // Use the "long" version of this message here.
             return OWSLocalizedString(
                 "MESSAGE_STATUS_FAILED",
-                comment: "status message for failed messages"
+                comment: "status message for failed messages",
             )
         case .pending:
             return OWSLocalizedString(
                 "MESSAGE_STATUS_PENDING",
-                comment: "Label indicating that a message send was paused."
+                comment: "Label indicating that a message send was paused.",
             )
         case .sending:
             return OWSLocalizedString(
                 "MESSAGE_STATUS_SENDING",
-                comment: "message status while message is sending."
+                comment: "message status while message is sending.",
             )
         case .sent:
             return OWSLocalizedString(
                 "MESSAGE_STATUS_SENT",
-                comment: "status message for sent messages"
+                comment: "status message for sent messages",
             )
         case .delivered:
             return OWSLocalizedString(
                 "MESSAGE_STATUS_DELIVERED",
-                comment: "message status for message delivered to their recipient."
+                comment: "message status for message delivered to their recipient.",
             )
         case .read:
             return OWSLocalizedString(
                 "MESSAGE_STATUS_READ",
-                comment: "status message for read messages"
+                comment: "status message for read messages",
             )
         case .viewed:
             return OWSLocalizedString(
                 "MESSAGE_STATUS_VIEWED",
-                comment: "status message for viewed messages"
+                comment: "status message for viewed messages",
             )
         case .uploading, .skipped:
             fallthrough
@@ -233,7 +253,7 @@ public class MessageRecipientStatusUtils {
             owsFailDebug("Message has unexpected status")
             return OWSLocalizedString(
                 "MESSAGE_STATUS_SENT",
-                comment: "status message for sent messages"
+                comment: "status message for sent messages",
             )
         }
     }
@@ -282,7 +302,7 @@ extension TSPaymentState {
     }
 
     fileprivate func combinedMessageReceiptStatus(
-        with message: TSOutgoingMessage
+        with message: TSOutgoingMessage,
     ) -> MessageReceiptStatus {
 
         // Computed with `TSPaymentModel` && `TSOutgoingMessage.messageState`.

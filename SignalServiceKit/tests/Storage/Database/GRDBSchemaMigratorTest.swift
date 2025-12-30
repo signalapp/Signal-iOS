@@ -15,7 +15,7 @@ class GRDBSchemaMigratorTest: XCTestCase {
         let databaseStorage = try SDSDatabaseStorage(
             appReadiness: AppReadinessMock(),
             databaseFileUrl: OWSFileSystem.temporaryFileUrl(),
-            keychainStorage: MockKeychainStorage()
+            keychainStorage: MockKeychainStorage(),
         )
         // Run all schema migrations. This should succeed without globals!
         try GRDBSchemaMigrator.migrateDatabase(
@@ -85,14 +85,14 @@ class GRDBSchemaMigratorTest: XCTestCase {
             """)
             try db.execute(
                 sql: """
-                    INSERT INTO "model_TSThread" (uniqueId, lastReceivedStoryTimestamp, lastViewedStoryTimestamp, contactUUID) VALUES (?, ?, ?, ?)
-                    """,
+                INSERT INTO "model_TSThread" (uniqueId, lastReceivedStoryTimestamp, lastViewedStoryTimestamp, contactUUID) VALUES (?, ?, ?, ?)
+                """,
                 arguments: ["A", nowMs - 20_002, nowMs - 20_001, "00000000-0000-4000-8000-00000000000A"],
             )
             try db.execute(
                 sql: """
-                    INSERT INTO "model_TSThread" (uniqueId, lastReceivedStoryTimestamp, lastViewedStoryTimestamp, groupModel) VALUES (?, ?, ?, ?)
-                    """,
+                INSERT INTO "model_TSThread" (uniqueId, lastReceivedStoryTimestamp, lastViewedStoryTimestamp, groupModel) VALUES (?, ?, ?, ?)
+                """,
                 arguments: ["B", nowMs - 86400_002, nowMs - 86400_001, encodeGroupIdInGroupModel(groupId: Data(repeating: 9, count: 32))],
             )
             let tx = DBWriteTransaction(database: db)
@@ -160,7 +160,7 @@ class GRDBSchemaMigratorTest: XCTestCase {
             (collection, "00000000-0000-4000-8000-000000000003", keyedArchiverData(rootObject: NSNumber(false))),
             (collection, "00000000-0000-4000-8000-000000000004", keyedArchiverData(rootObject: [6, 7, 8, 9, 10])),
             (collection, "abc1+/==", keyedArchiverData(rootObject: NSNumber(true))),
-            ("UnrelatedCollection", "SomeKey", Data(count: 3))
+            ("UnrelatedCollection", "SomeKey", Data(count: 3)),
         ]
 
         // Set up the database with sample data that may have existed.
@@ -170,12 +170,12 @@ class GRDBSchemaMigratorTest: XCTestCase {
             // added. If the key value store's schema is updated in the future, don't
             // update this call site. It must remain as a snapshot.
             try db.execute(
-                sql: "CREATE TABLE keyvalue (key TEXT NOT NULL, collection TEXT NOT NULL, value BLOB NOT NULL, PRIMARY KEY (key, collection))"
+                sql: "CREATE TABLE keyvalue (key TEXT NOT NULL, collection TEXT NOT NULL, value BLOB NOT NULL, PRIMARY KEY (key, collection))",
             )
             for (collection, key, value) in initialEntries {
                 try db.execute(
                     sql: "INSERT INTO keyvalue (collection, key, value) VALUES (?, ?, ?)",
-                    arguments: [collection, key, value]
+                    arguments: [collection, key, value],
                 )
             }
         }
@@ -193,7 +193,7 @@ class GRDBSchemaMigratorTest: XCTestCase {
             try GRDBSchemaMigrator.migrateVoiceMessageDrafts(
                 transaction: transaction,
                 appSharedDataUrl: baseUrl,
-                copyItem: copyItem
+                copyItem: copyItem,
             )
         }
 
@@ -209,14 +209,14 @@ class GRDBSchemaMigratorTest: XCTestCase {
         XCTAssertEqual(rows[0]["key"], "00000000-0000-4000-8000-000000000001")
         XCTAssertEqual(
             rows[0]["value"],
-            keyedArchiverData(rootObject: migratedFilenames["00000000%2D0000%2D4000%2D8000%2D000000000001"]!)
+            keyedArchiverData(rootObject: migratedFilenames["00000000%2D0000%2D4000%2D8000%2D000000000001"]!),
         )
 
         XCTAssertEqual(rows[1]["collection"], collection)
         XCTAssertEqual(rows[1]["key"], "abc1+/==")
         XCTAssertEqual(
             rows[1]["value"],
-            keyedArchiverData(rootObject: migratedFilenames["abc1%2B%2F%3D%3D"]!)
+            keyedArchiverData(rootObject: migratedFilenames["abc1%2B%2F%3D%3D"]!),
         )
 
         XCTAssertEqual(rows[2]["collection"], "UnrelatedCollection")
@@ -231,7 +231,7 @@ class GRDBSchemaMigratorTest: XCTestCase {
             (collection, "00000000-0000-4000-8000-000000000001", #"{"author":{"backingUuid":"00000000-0000-4000-8000-00000000000A","backingPhoneNumber":null},"timestamp":1683201600000}"#),
             (collection, "00000000-0000-4000-8000-000000000002", #"{"author":{"backingUuid":null,"backingPhoneNumber":"+16505550100"},"timestamp":1683201600000}"#),
             (collection, "00000000-0000-4000-8000-000000000003", "ABC123"),
-            ("UnrelatedCollection", "00000000-0000-4000-8000-000000000001", #"{"author":{"backingUuid":"00000000-0000-4000-8000-00000000000A","backingPhoneNumber":null},"timestamp":1683201600000}"#)
+            ("UnrelatedCollection", "00000000-0000-4000-8000-000000000001", #"{"author":{"backingUuid":"00000000-0000-4000-8000-00000000000A","backingPhoneNumber":null},"timestamp":1683201600000}"#),
         ]
 
         // Set up the database with sample data that may have existed.
@@ -241,12 +241,12 @@ class GRDBSchemaMigratorTest: XCTestCase {
             // added. If the key value store's schema is updated in the future, don't
             // update this call site. It must remain as a snapshot.
             try db.execute(
-                sql: "CREATE TABLE keyvalue (key TEXT NOT NULL, collection TEXT NOT NULL, value BLOB NOT NULL, PRIMARY KEY (key, collection))"
+                sql: "CREATE TABLE keyvalue (key TEXT NOT NULL, collection TEXT NOT NULL, value BLOB NOT NULL, PRIMARY KEY (key, collection))",
             )
             for (collection, key, value) in initialEntries {
                 try db.execute(
                     sql: "INSERT INTO keyvalue (collection, key, value) VALUES (?, ?, ?)",
-                    arguments: [collection, key, try XCTUnwrap(value.data(using: .utf8))]
+                    arguments: [collection, key, try XCTUnwrap(value.data(using: .utf8))],
                 )
             }
         }
@@ -288,12 +288,12 @@ class GRDBSchemaMigratorTest: XCTestCase {
             (2, 3, 4),
             (3, 4, 5),
             (4, 6, 7),
-            (5, 6, 8)
+            (5, 6, 8),
         ]
         try setupEditRecordMigrationTables(
             databaseQueue: databaseQueue,
             initialRecords: initialValues,
-            initialInteractionIds: Array(0...8)
+            initialInteractionIds: Array(0...8),
         )
 
         try databaseQueue.write { db in
@@ -319,7 +319,7 @@ class GRDBSchemaMigratorTest: XCTestCase {
         try setupEditRecordMigrationTables(
             databaseQueue: databaseQueue,
             initialRecords: [],
-            initialInteractionIds: Array(0...8)
+            initialInteractionIds: Array(0...8),
         )
 
         try databaseQueue.write { db in
@@ -349,7 +349,7 @@ class GRDBSchemaMigratorTest: XCTestCase {
     fileprivate func setupEditRecordMigrationTables(
         databaseQueue: DatabaseQueue,
         initialRecords: [(Int64, Int64, Int64)],
-        initialInteractionIds: [Int64]
+        initialInteractionIds: [Int64],
     ) throws {
         try databaseQueue.write { db in
             try db.execute(
@@ -357,13 +357,13 @@ class GRDBSchemaMigratorTest: XCTestCase {
                     CREATE TABLE model_TSInteraction (
                         id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
                     );
-                """
+                """,
             )
 
             for x in initialInteractionIds {
                 try db.execute(
                     sql: "INSERT INTO model_TSInteraction (id) VALUES (?)",
-                    arguments: [x]
+                    arguments: [x],
                 )
             }
 
@@ -374,7 +374,7 @@ class GRDBSchemaMigratorTest: XCTestCase {
             for (id, latest, past) in initialRecords {
                 try db.execute(
                     sql: "INSERT INTO EditRecord (id, latestRevisionId, pastRevisionId) VALUES (?, ?, ?)",
-                    arguments: [id, latest, past]
+                    arguments: [id, latest, past],
                 )
             }
         }
@@ -426,7 +426,7 @@ class GRDBSchemaMigratorTest: XCTestCase {
                 in: db,
                 tableName: "SampleTable",
                 serviceIdColumn: "serviceIdString",
-                phoneNumberColumn: "phoneNumber"
+                phoneNumberColumn: "phoneNumber",
             )
             let cursor = try Row.fetchCursor(db, sql: "SELECT * FROM SampleTable")
             var row: Row
@@ -575,19 +575,19 @@ class GRDBSchemaMigratorTest: XCTestCase {
                 sql: """
                 INSERT INTO "keyvalue" ("collection", "key", "value") VALUES (?, ?, ?)
                 """,
-                arguments: ["kOWSBlockingManager_BlockedPhoneNumbersCollection", "kOWSBlockingManager_BlockedUUIDsKey", blockedAciData]
+                arguments: ["kOWSBlockingManager_BlockedPhoneNumbersCollection", "kOWSBlockingManager_BlockedUUIDsKey", blockedAciData],
             )
             try db.execute(
                 sql: """
                 INSERT INTO "keyvalue" ("collection", "key", "value") VALUES (?, ?, ?)
                 """,
-                arguments: ["kOWSBlockingManager_BlockedPhoneNumbersCollection", "kOWSBlockingManager_BlockedPhoneNumbersKey", blockedPhoneNumberData]
+                arguments: ["kOWSBlockingManager_BlockedPhoneNumbersCollection", "kOWSBlockingManager_BlockedPhoneNumbersKey", blockedPhoneNumberData],
             )
             try db.execute(
                 sql: """
                 INSERT INTO "keyvalue" ("collection", "key", "value") VALUES (?, ?, ?)
                 """,
-                arguments: ["kOWSStorageServiceOperation_IdentifierMap", "state", #"{"accountIdChangeMap":{"00000000-0000-4000-B000-000000000009": 0, "00000000-0000-4000-B000-000000000123": 0}}"#]
+                arguments: ["kOWSStorageServiceOperation_IdentifierMap", "state", #"{"accountIdChangeMap":{"00000000-0000-4000-B000-000000000009": 0, "00000000-0000-4000-B000-000000000123": 0}}"#],
             )
 
             do {
@@ -695,7 +695,7 @@ class GRDBSchemaMigratorTest: XCTestCase {
         }
         @objc(TSGroupModelV2MigrateBlockedGroups)
         class TSGroupModelV2MigrateBlockedGroups: TSGroupModelMigrateBlockedGroups {
-            class override var supportsSecureCoding: Bool { true }
+            override class var supportsSecureCoding: Bool { true }
             override init() { super.init() }
             required init?(coder: NSCoder) { super.init(coder: coder) }
         }
@@ -832,11 +832,11 @@ class GRDBSchemaMigratorTest: XCTestCase {
             """)
             try db.execute(
                 sql: "INSERT INTO model_TSThread (id, recordType, addresses) VALUES (2, 72, ?)",
-                arguments: [Self.encodedAddresses([])]
+                arguments: [Self.encodedAddresses([])],
             )
             try db.execute(
                 sql: "INSERT INTO model_TSThread (id, recordType, addresses) VALUES (3, 72, ?)",
-                arguments: [Self.encodedAddresses([.init(serviceId: Aci.parseFrom(aciString: "00000000-0000-4000-A000-000000000000")!, phoneNumber: nil)])]
+                arguments: [Self.encodedAddresses([.init(serviceId: Aci.parseFrom(aciString: "00000000-0000-4000-A000-000000000000")!, phoneNumber: nil)])],
             )
             try db.execute(
                 sql: "INSERT INTO model_TSThread (id, recordType, addresses) VALUES (4, 72, ?)",
@@ -847,7 +847,7 @@ class GRDBSchemaMigratorTest: XCTestCase {
                     .init(serviceId: Pni.parseFrom(pniString: "00000000-0000-4000-A000-000000000FFF")!, phoneNumber: nil),
                     .init(serviceId: nil, phoneNumber: "+17635550100"),
                     .init(serviceId: nil, phoneNumber: "+17635550142"),
-                ])]
+                ])],
             )
             do {
                 let tx = DBWriteTransaction(database: db)
@@ -857,19 +857,19 @@ class GRDBSchemaMigratorTest: XCTestCase {
 
             let storyRecipients = try Row.fetchAll(
                 db,
-                sql: "SELECT threadId, recipientId FROM StoryRecipient ORDER BY threadId, recipientId"
+                sql: "SELECT threadId, recipientId FROM StoryRecipient ORDER BY threadId, recipientId",
             ).map { [$0[0] as Int64, $0[1] as Int64] }
             XCTAssertEqual(storyRecipients, [[3, 1], [4, 1], [4, 3], [4, 4], [4, 5], [4, 6]])
 
             let storyAddresses = try (Data?).fetchAll(
                 db,
-                sql: "SELECT addresses FROM model_TSThread ORDER BY id"
+                sql: "SELECT addresses FROM model_TSThread ORDER BY id",
             )
             XCTAssertEqual(storyAddresses, [Data(), nil, nil, nil])
 
             let signalRecipients = try Row.fetchAll(
                 db,
-                sql: "SELECT * FROM model_SignalRecipient ORDER BY id"
+                sql: "SELECT * FROM model_SignalRecipient ORDER BY id",
             )
             XCTAssertEqual(signalRecipients.count, 6)
             XCTAssertEqual(signalRecipients[3]["recipientUUID"], "00000000-0000-4000-A000-000000000AAA")
@@ -916,7 +916,7 @@ class GRDBSchemaMigratorTest: XCTestCase {
             }
             let signalRecipients = try Row.fetchAll(
                 db,
-                sql: "SELECT * FROM model_SignalRecipient ORDER BY id"
+                sql: "SELECT * FROM model_SignalRecipient ORDER BY id",
             )
             XCTAssertEqual(signalRecipients.count, 3)
             XCTAssertEqual([UInt8](signalRecipients[0]["devices"] as Data), [])
@@ -1020,7 +1020,7 @@ class GRDBSchemaMigratorTest: XCTestCase {
                 CREATE TABLE UsernameLookupRecord (aci BLOB PRIMARY KEY NOT NULL, username TEXT NOT NULL);
                 INSERT INTO UsernameLookupRecord VALUES (?, ?), (?, ?), (?, ?);
                 """,
-                arguments: [aci1, "florp.01", aci2, "blorp.01", aci3, "florp.01"]
+                arguments: [aci1, "florp.01", aci2, "blorp.01", aci3, "florp.01"],
             )
 
             do {
@@ -1053,7 +1053,7 @@ class GRDBSchemaMigratorTest: XCTestCase {
                 CREATE TABLE UsernameLookupRecord (aci BLOB PRIMARY KEY NOT NULL, username TEXT NOT NULL);
                 INSERT INTO UsernameLookupRecord VALUES (?, ?), (?, ?);
                 """,
-                arguments: [aci1, "florp.01", aci2, "FLORP.01"]
+                arguments: [aci1, "florp.01", aci2, "FLORP.01"],
             )
 
             do {
@@ -1082,13 +1082,19 @@ class GRDBSchemaMigratorTest: XCTestCase {
                 INSERT INTO "CallLink" VALUES (?, ?), (?, ?), (?, ?), (?, ?), (?, ?), (?, ?);
                 """,
                 arguments: [
-                    true, Data(count: 32),
-                    false, Data(count: 32),
-                    nil as Bool?, Data(count: 32),
-                    true, nil as Data?,
-                    false, nil as Data?,
-                    nil as Bool?, nil as Data?,
-                ]
+                    true,
+                    Data(count: 32),
+                    false,
+                    Data(count: 32),
+                    nil as Bool?,
+                    Data(count: 32),
+                    true,
+                    nil as Data?,
+                    false,
+                    nil as Data?,
+                    nil as Bool?,
+                    nil as Data?,
+                ],
             )
 
             do {
@@ -1117,10 +1123,13 @@ class GRDBSchemaMigratorTest: XCTestCase {
                 INSERT INTO "CallLink" VALUES (?, ?), (?, ?), (?, ?);
                 """,
                 arguments: [
-                    true, 0,
-                    nil as Bool?, nil as Int?,
-                    nil as Bool?, 0,
-                ]
+                    true,
+                    0,
+                    nil as Bool?,
+                    nil as Int?,
+                    nil as Bool?,
+                    0,
+                ],
             )
 
             do {
@@ -1213,7 +1222,8 @@ class GRDBSchemaMigratorTest: XCTestCase {
                 arguments: ["TSStorageManagerSessionStoreCollection", recipient3UniqueId, keyedArchiverSessionData(deviceIds: [1])],
             )
 
-            @objc(FakeLegacySession) class FakeLegacySession: NSObject, NSCoding {
+            @objc(FakeLegacySession)
+            class FakeLegacySession: NSObject, NSCoding {
                 override init() {}
                 required init?(coder: NSCoder) { fatalError("should never be deserialized") }
                 func encode(with coder: NSCoder) {}

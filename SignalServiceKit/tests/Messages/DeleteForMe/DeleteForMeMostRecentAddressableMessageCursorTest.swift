@@ -11,7 +11,7 @@ final class DeleteForMeMostRecentAddressableMessageCursorTest: XCTestCase {
     func makeMessage(rowId: Int64) -> TSMessage {
         let message = TSOutgoingMessage(
             outgoingMessageWith: .withDefaultValues(thread: TSThread(uniqueId: .uniqueId())),
-            recipientAddressStates: [:]
+            recipientAddressStates: [:],
         )
         message.updateRowId(rowId)
         return message
@@ -32,7 +32,7 @@ final class DeleteForMeMostRecentAddressableMessageCursorTest: XCTestCase {
         ])
 
         let addressableMessageCursor = try DeleteForMeMostRecentAddressableMessageCursor(
-            addressableMessageCursors: [incomingMessageCursor, outgoingMessageCursor]
+            addressableMessageCursors: [incomingMessageCursor, outgoingMessageCursor],
         )
 
         XCTAssertEqual(try! addressableMessageCursor.next()!.sqliteRowId!, 111)

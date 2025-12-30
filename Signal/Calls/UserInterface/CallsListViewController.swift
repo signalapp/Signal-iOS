@@ -4,9 +4,9 @@
 //
 
 import LibSignalClient
-import SignalUI
 import SignalRingRTC
 import SignalServiceKit
+import SignalUI
 
 // MARK: - CallCellDelegate
 
@@ -76,10 +76,10 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             contactManager: SSKEnvironment.shared.contactManagerRef,
             searchableNameIndexer: DependenciesBridge.shared.searchableNameIndexer,
             phoneNumberVisibilityFetcher: DependenciesBridge.shared.phoneNumberVisibilityFetcher,
-            recipientDatabaseTable: DependenciesBridge.shared.recipientDatabaseTable
+            recipientDatabaseTable: DependenciesBridge.shared.recipientDatabaseTable,
         ),
         threadStore: DependenciesBridge.shared.threadStore,
-        tsAccountManager: DependenciesBridge.shared.tsAccountManager
+        tsAccountManager: DependenciesBridge.shared.tsAccountManager,
     )
 
     private let appReadiness: AppReadinessSetter
@@ -198,14 +198,14 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
                         image: Theme.iconImage(.contextMenuSelect),
                         handler: { [weak self] _ in
                             self?.startMultiselect()
-                        }
+                        },
                     ),
                     settingsAction,
                 ]
             },
             showAppSettings: { [weak self] in
                 self?.showAppSettings()
-            }
+            },
         )
     }
 
@@ -235,7 +235,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         title: CommonStrings.deleteButton,
         style: .plain,
         target: self,
-        action: #selector(deleteSelectedCalls)
+        action: #selector(deleteSelectedCalls),
     )
 
     private func showToolbar() {
@@ -268,7 +268,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             DispatchQueue.main.async {
                 self.multiselectToolbar?.setItems(
                     [.flexibleSpace(), self.toolbarDeleteButton],
-                    animated: false
+                    animated: false,
                 )
                 self.updateMultiselectToolbarButtons()
             }
@@ -299,7 +299,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
                 try await self?.deleteCalls(modelReferenceses: selectedModelReferenceses)
                 self?.presentToast(text: String.localizedStringWithFormat(
                     Strings.deleteMultipleSuccessFormat,
-                    selectedModelReferenceses.count
+                    selectedModelReferenceses.count,
                 ))
             } catch {
                 Logger.warn("\(error)")
@@ -321,15 +321,15 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             image: Theme.iconImage(.buttonNewCall),
             style: .plain,
             target: self,
-            action: #selector(newCall)
+            action: #selector(newCall),
         )
         barButtonItem.accessibilityLabel = OWSLocalizedString(
             "NEW_CALL_LABEL",
-            comment: "Accessibility label for the new call button on the Calls Tab"
+            comment: "Accessibility label for the new call button on the Calls Tab",
         )
         barButtonItem.accessibilityHint = OWSLocalizedString(
             "NEW_CALL_HINT",
-            comment: "Accessibility hint describing the action of the new call button on the Calls Tab"
+            comment: "Accessibility hint describing the action of the new call button on the Calls Tab",
         )
         return barButtonItem
     }
@@ -384,7 +384,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             title: Strings.deleteAllCallsButtonTitle,
             style: .plain,
             target: self,
-            action: #selector(promptAboutDeletingAllCalls)
+            action: #selector(promptAboutDeletingAllCalls),
         )
     }
 
@@ -394,7 +394,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             title: Strings.deleteAllCallsPromptTitle,
             message: Strings.deleteAllCallsPromptMessage,
             proceedTitle: Strings.deleteAllCallsButtonTitle,
-            proceedStyle: .destructive
+            proceedStyle: .destructive,
         ) { [weak self] _ in
             Task {
                 do {
@@ -440,7 +440,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
                 self.deps.callRecordDeleteAllJobQueue.addJob(
                     sendDeleteAllSyncMessage: true,
                     deleteAllBefore: .callRecord(mostRecentCallRecord),
-                    tx: tx
+                    tx: tx,
                 )
             }
             return callLinksToDelete
@@ -458,7 +458,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     private lazy var filterPicker: UISegmentedControl = {
         let segmentedControl = UISegmentedControl(items: [
             Strings.filterPickerOptionAll,
-            Strings.filterPickerOptionMissed
+            Strings.filterPickerOptionMissed,
         ])
         segmentedControl.selectedSegmentIndex = 0
         segmentedControl.addTarget(self, action: #selector(filterChangedFromPrimary), for: .valueChanged)
@@ -471,7 +471,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     private lazy var sidebarFilterPicker: UISegmentedControl = {
         let segmentedControl = UISegmentedControl(items: [
             Strings.filterPickerOptionAll,
-            Strings.filterPickerOptionMissed
+            Strings.filterPickerOptionMissed,
         ])
         segmentedControl.selectedSegmentIndex = 0
         segmentedControl.addTarget(self, action: #selector(filterChangedFromSidebar), for: .valueChanged)
@@ -483,7 +483,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         container.addSubview(sidebarFilterPicker)
         sidebarFilterPicker.autoPinWidthToSuperview()
         // idk why but it's gotta baaarely shift to align with the profile pic
-        sidebarFilterPicker.autoAlignAxis(.horizontal, toSameAxisOf: container, withOffset: -2/3)
+        sidebarFilterPicker.autoAlignAxis(.horizontal, toSameAxisOf: container, withOffset: -2 / 3)
         sidebarFilterPicker.autoPinHeightToSuperview(relation: .lessThanOrEqual)
         return container
     }()
@@ -530,21 +530,21 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             self,
             selector: #selector(significantTimeChangeOccurred),
             name: UIApplication.significantTimeChangeNotification,
-            object: nil
+            object: nil,
         )
 
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(groupCallInteractionWasUpdated),
             name: GroupCallInteractionUpdatedNotification.name,
-            object: nil
+            object: nil,
         )
 
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(receivedCallRecordStoreNotification),
             name: CallRecordStoreNotification.name,
-            object: nil
+            object: nil,
         )
 
         // There might be an ongoing call when the calls tab appears, and if that's
@@ -591,7 +591,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
 
         let callRecordIdForGroupCall = CallRecord.ID(
             conversationId: .thread(threadRowId: notification.groupThreadRowId),
-            callId: notification.callId
+            callId: notification.callId,
         )
 
         reloadRows(callRecordIds: [callRecordIdForGroupCall])
@@ -663,7 +663,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         // When a SignalCall ends, reload it if we know its callId.
         if let oldValue, let callId = self.currentCallId {
             switch oldValue.mode {
-            case .individual(_):
+            case .individual:
                 break
             case .groupThread(let call as GroupCall), .callLink(let call as GroupCall):
                 call.removeObserver(self)
@@ -759,7 +759,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
                 self.deps.callRecordMissedCallManager.markUnreadCallsAsRead(
                     beforeTimestamp: nil,
                     sendSyncMessage: true,
-                    tx: tx
+                    tx: tx,
                 )
             }
         }
@@ -789,7 +789,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         setAndPrimeViewModelLoader(
             onlyLoadMissedCalls: onlyLoadMissedCalls,
             onlyMatchThreadRowIds: onlyMatchThreadRowIds,
-            animated: false
+            animated: false,
         )
     }
 
@@ -829,7 +829,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         setAndPrimeViewModelLoader(
             onlyLoadMissedCalls: onlyLoadMissedCalls,
             onlyMatchThreadRowIds: threadRowIdsMatchingSearchTerm,
-            animated: animated
+            animated: animated,
         )
     }
 
@@ -840,7 +840,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     /// query. Importantly, this method is `nonisolated` such that it doesn't
     /// inherit the `@MainActor` isolation of `UIViewController`.
     private nonisolated func findThreadRowIdsMatchingSearchTerm(
-        _ searchTerm: String
+        _ searchTerm: String,
     ) async throws(CancellationError) -> [Int64] {
         return try self.deps.databaseStorage.read { tx throws(CancellationError) -> [Int64] in
             guard let localIdentifiers = self.deps.tsAccountManager.localIdentifiers(tx: tx) else {
@@ -859,7 +859,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
                     }
                     threadRowIdsMatchingSearchTerm.insert(sqliteRowId)
                 },
-                addStoryThread: { _ in }
+                addStoryThread: { _ in },
             )
 
             for address in addresses {
@@ -882,14 +882,14 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     private func setAndPrimeViewModelLoader(
         onlyLoadMissedCalls: Bool,
         onlyMatchThreadRowIds: [Int64]?,
-        animated: Bool
+        animated: Bool,
     ) {
         let callRecordLoader = CallRecordLoaderImpl(
             callRecordQuerier: self.deps.callRecordQuerier,
             configuration: CallRecordLoaderImpl.Configuration(
                 onlyLoadMissedCalls: onlyLoadMissedCalls,
-                onlyMatchThreadRowIds: onlyMatchThreadRowIds
-            )
+                onlyMatchThreadRowIds: onlyMatchThreadRowIds,
+            ),
         )
 
         /// We don't want to capture self in the blocks we pass when creating
@@ -905,7 +905,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
                     forCallRecords: callRecords,
                     upcomingCallLinkRowId: nil,
                     deps: capturedDeps,
-                    tx: tx
+                    tx: tx,
                 )
             },
             callViewModelForUpcomingCallLink: { callLinkRowId, tx in
@@ -913,16 +913,16 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
                     forCallRecords: [],
                     upcomingCallLinkRowId: callLinkRowId,
                     deps: capturedDeps,
-                    tx: tx
+                    tx: tx,
                 )
             },
             fetchCallRecordBlock: { callRecordId, tx -> CallRecord? in
                 return capturedDeps.callRecordStore.fetch(
                     callRecordId: callRecordId,
-                    tx: tx
+                    tx: tx,
                 ).unwrapped
             },
-            shouldFetchUpcomingCallLinks: !onlyLoadMissedCalls && onlyMatchThreadRowIds == nil
+            shouldFetchUpcomingCallLinks: !onlyLoadMissedCalls && onlyMatchThreadRowIds == nil,
         )
 
         self.reloadUpcomingCallLinks()
@@ -932,7 +932,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         self.loadMoreCalls(
             direction: .older,
             animated: animated,
-            forceUpdateSnapshot: true
+            forceUpdateSnapshot: true,
         )
     }
 
@@ -959,7 +959,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     private func loadMoreCalls(
         direction loadDirection: ViewModelLoader.LoadDirection,
         animated: Bool,
-        forceUpdateSnapshot: Bool = false
+        forceUpdateSnapshot: Bool = false,
     ) {
         let (shouldUpdateSnapshot, updatedReferences) = deps.db.read { tx in
             return viewModelLoader.loadCallHistoryItemReferences(direction: loadDirection, tx: tx)
@@ -986,23 +986,23 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         forCallRecords callRecords: [CallRecord],
         upcomingCallLinkRowId: Int64?,
         deps: Dependencies,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> CallViewModel {
         owsPrecondition(
             Set(callRecords.map(\.conversationId)).count <= 1,
-            "Coalesced call records were for a different conversation than the primary!"
+            "Coalesced call records were for a different conversation than the primary!",
         )
         owsPrecondition(
             Set(callRecords.map(\.callDirection)).count <= 1,
-            "Coalesced call records were of a different direction than the primary!"
+            "Coalesced call records were of a different direction than the primary!",
         )
         owsPrecondition(
             Set(callRecords.map(\.callStatus.isMissedCall)).count <= 1,
-            "Coalesced call records were of a different missed status than the primary!"
+            "Coalesced call records were of a different missed status than the primary!",
         )
         owsPrecondition(
             callRecords.isSortedByTimestamp(.descending),
-            "Primary and coalesced call records were not ordered descending by timestamp!"
+            "Primary and coalesced call records were not ordered descending by timestamp!",
         )
 
         let callLinkRecord = { () -> CallLinkRecord? in
@@ -1039,7 +1039,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
                         return .active
                     }
                     return .inactive
-                }()
+                }(),
             )
         }
 
@@ -1102,10 +1102,12 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
 
         switch callRecord.conversationId {
         case .thread(let threadRowId):
-            guard let callThread = deps.threadStore.fetchThread(
-                rowId: threadRowId,
-                tx: tx
-            ) else {
+            guard
+                let callThread = deps.threadStore.fetchThread(
+                    rowId: threadRowId,
+                    tx: tx,
+                )
+            else {
                 owsFail("Missing thread for call record! This should be impossible, per the DB schema.")
             }
             switch callThread {
@@ -1131,7 +1133,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             default:
                 owsFail("Call thread was neither contact nor group! This should be impossible.")
             }
-        case .callLink(_):
+        case .callLink:
             owsFail("Can't reach this point because we've already handled Call Links.")
         }
 
@@ -1142,7 +1144,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             recipientType: recipientType,
             direction: callDirection,
             medium: medium,
-            state: callState
+            state: callState,
         )
     }
 
@@ -1222,7 +1224,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         self.peekAllowance -= peekBatch.count
     }
 
-    private static nonisolated func peekCallLink(rootKey: CallLinkRootKey, deps: Dependencies) async throws {
+    private nonisolated static func peekCallLink(rootKey: CallLinkRootKey, deps: Dependencies) async throws {
         let registeredState = try deps.tsAccountManager.registeredStateWithMaybeSneakyTransaction()
         let authCredential = try await deps.callService.authCredentialManager.fetchCallLinkAuthCredential(
             localIdentifiers: registeredState.localIdentifiers,
@@ -1272,7 +1274,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
                 }
                 self.peekActiveCalls()
                 self.peekIfPossible()
-            }
+            },
         )
     }
 
@@ -1408,11 +1410,11 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             var symbol: SignalSymbol {
                 switch self {
                 case .outgoing:
-                        .arrowUpRight
+                    .arrowUpRight
                 case .incoming, .missed:
-                        .arrowDownLeft
+                    .arrowDownLeft
                 case .callLink:
-                        .link
+                    .link
                 }
             }
         }
@@ -1459,7 +1461,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             recipientType: RecipientType,
             direction: Direction,
             medium: Medium,
-            state: State
+            state: State,
         ) {
             self.reference = reference
             self.callRecords = callRecords
@@ -1494,6 +1496,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
             tableView.reloadData()
         }
     }
+
     private var tableViewHorizontalEdgeConstraints: [NSLayoutConstraint] = []
 
     /// iOS 26+: checks if this VC is displayed in the collapsed split view controller and updates `useSidebarCallListCellAppearance` accordingly.
@@ -1501,7 +1504,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     private func updateTableViewPaddingIfNeeded() {
         guard #available(iOS 26, *) else { return }
 
-        if let splitViewController = splitViewController, !splitViewController.isCollapsed {
+        if let splitViewController, !splitViewController.isCollapsed {
             useSidebarCallListCellAppearance = true
         } else {
             useSidebarCallListCellAppearance = false
@@ -1512,7 +1515,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     private static let callCellReuseIdentifier = "callCell"
 
     private lazy var dataSource = DiffableDataSource(
-        tableView: tableView
+        tableView: tableView,
     ) { [weak self] tableView, indexPath, _ -> UITableViewCell? in
         return self?.buildTableViewCell(tableView: tableView, indexPath: indexPath) ?? UITableViewCell()
     }
@@ -1520,19 +1523,21 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     private func buildTableViewCell(tableView: UITableView, indexPath: IndexPath) -> UITableViewCell? {
         switch Section(rawValue: indexPath.section) {
         case .createCallLink:
-            guard let createCallLinkCell = tableView.dequeueReusableCell(
-                withIdentifier: Self.createCallLinkReuseIdentifier,
-                for: indexPath
-            ) as? CreateCallLinkCell else { return nil }
+            guard
+                let createCallLinkCell = tableView.dequeueReusableCell(
+                    withIdentifier: Self.createCallLinkReuseIdentifier,
+                    for: indexPath,
+                ) as? CreateCallLinkCell else { return nil }
 
             createCallLinkCell.useSidebarAppearance = useSidebarCallListCellAppearance
             return createCallLinkCell
 
         case .existingCalls:
-            guard let callCell = tableView.dequeueReusableCell(
-                withIdentifier: Self.callCellReuseIdentifier,
-                for: indexPath
-            ) as? CallCell else { return nil }
+            guard
+                let callCell = tableView.dequeueReusableCell(
+                    withIdentifier: Self.callCellReuseIdentifier,
+                    for: indexPath,
+                ) as? CallCell else { return nil }
 
             callCell.useSidebarAppearance = useSidebarCallListCellAppearance
             // These loads should be sufficiently fast that doing them here,
@@ -1594,7 +1599,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         /// it'll reflect the new underlying state for that row.
         let referencesToReload = viewModelLoader.invalidate(
             callLinkRowIds: [],
-            callRecordIds: Set(callRecordIdsToReload)
+            callRecordIds: Set(callRecordIdsToReload),
         )
 
         if referencesToReload.isEmpty {
@@ -1627,7 +1632,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         case (true, .some(let searchTerm)) where !searchTerm.isEmpty:
             noSearchResultsView.text = String(
                 format: Strings.searchNoResultsFoundLabelFormat,
-                arguments: [searchTerm]
+                arguments: [searchTerm],
             )
             noSearchResultsView.alpha = 1
             emptyStateMessageView.alpha = 0
@@ -1643,13 +1648,13 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
                     ]
                 case .missed:
                     return [
-                        Strings.noMissedCallsLabel
+                        Strings.noMissedCallsLabel,
                     ]
                 }
             }())
-            .styled(
-                with: .font(.dynamicTypeSubheadline.semibold())
-            )
+                .styled(
+                    with: .font(.dynamicTypeSubheadline.semibold()),
+                )
             noSearchResultsView.alpha = 0
             emptyStateMessageView.alpha = 1
         case (_, _):
@@ -1664,7 +1669,7 @@ private extension IndexPath {
     static func indexPathForPrimarySection(row: Int) -> IndexPath {
         return IndexPath(
             row: row,
-            section: CallsListViewController.Section.existingCalls.rawValue
+            section: CallsListViewController.Section.existingCalls.rawValue,
         )
     }
 }
@@ -1683,12 +1688,12 @@ private extension SignalCall {
 private extension CallRecordStore {
     func fetch(
         callRecordId: CallRecord.ID,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> CallRecordStore.MaybeDeletedFetchResult {
         return fetch(
             callId: callRecordId.callId,
             conversationId: callRecordId.conversationId,
-            tx: tx
+            tx: tx,
         )
     }
 }
@@ -1715,7 +1720,7 @@ extension CallsListViewController: UITableViewDelegate {
     private func viewModelWithSneakyTransaction(at indexPath: IndexPath) -> CallViewModel? {
         owsPrecondition(
             indexPath.section == Section.existingCalls.rawValue,
-            "Unexpected section for index path: \(indexPath.section)"
+            "Unexpected section for index path: \(indexPath.section)",
         )
 
         guard let viewModel = viewModelLoader.viewModel(at: indexPath.row, sneakyTransactionDb: deps.db) else {
@@ -1786,7 +1791,7 @@ extension CallsListViewController: UITableViewDelegate {
         }
 
         return self.longPressActions(forRowAt: indexPath)
-            .map { actions in UIMenu.init(children: actions) }
+            .map { actions in UIMenu(children: actions) }
             .map { menu in
                 UIContextMenuConfiguration(identifier: indexPath as NSCopying, previewProvider: nil) { _ in menu }
             }
@@ -1812,7 +1817,7 @@ extension CallsListViewController: UITableViewDelegate {
             style: .normal,
             color: .ows_accentBlue,
             image: "arrow-square-upright-fill",
-            title: Strings.goToChatActionTitle
+            title: Strings.goToChatActionTitle,
         ) { [weak self] in
             self?.goToChat(for: chatThread()!)
         }
@@ -1834,7 +1839,7 @@ extension CallsListViewController: UITableViewDelegate {
             style: .destructive,
             color: .ows_accentRed,
             image: "trash-fill",
-            title: CommonStrings.deleteButton
+            title: CommonStrings.deleteButton,
         ) { [weak self] in
             self?.promptToDeleteCallIfNeeded(modelReferences: modelReferences)
         }
@@ -1866,7 +1871,7 @@ extension CallsListViewController: UITableViewDelegate {
             let joinCallAction = UIAction(
                 title: joinCallTitle,
                 image: UIImage(named: joinCallIconName),
-                attributes: []
+                attributes: [],
             ) { [weak self] _ in
                 self?.joinCall(from: viewModel)
             }
@@ -1882,7 +1887,7 @@ extension CallsListViewController: UITableViewDelegate {
             let returnToCallAction = UIAction(
                 title: Strings.returnToCallActionTitle,
                 image: UIImage(named: returnToCallIconName),
-                attributes: []
+                attributes: [],
             ) { [weak self] _ in
                 self?.returnToCall(from: viewModel)
             }
@@ -1893,7 +1898,7 @@ extension CallsListViewController: UITableViewDelegate {
                 let audioCallAction = UIAction(
                     title: Strings.startVoiceCallActionTitle,
                     image: Theme.iconImage(.contextMenuVoiceCall),
-                    attributes: []
+                    attributes: [],
                 ) { [weak self] _ in
                     self?.startCall(from: viewModel, withVideo: false)
                 }
@@ -1905,7 +1910,7 @@ extension CallsListViewController: UITableViewDelegate {
             let videoCallAction = UIAction(
                 title: Strings.startVideoCallActionTitle,
                 image: Theme.iconImage(.contextMenuVideoCall),
-                attributes: []
+                attributes: [],
             ) { [weak self] _ in
                 self?.startCall(from: viewModel, withVideo: true)
             }
@@ -1916,7 +1921,7 @@ extension CallsListViewController: UITableViewDelegate {
             let goToChatAction = UIAction(
                 title: Strings.goToChatActionTitle,
                 image: Theme.iconImage(.contextMenuOpenInChat),
-                attributes: []
+                attributes: [],
             ) { [weak self] _ in
                 self?.goToChat(for: chatThread()!)
             }
@@ -1926,7 +1931,7 @@ extension CallsListViewController: UITableViewDelegate {
         let infoAction = UIAction(
             title: Strings.viewCallInfoActionTitle,
             image: Theme.iconImage(.contextMenuInfo),
-            attributes: []
+            attributes: [],
         ) { [weak self] _ in
             self?.showCallInfo(from: viewModel)
         }
@@ -1935,7 +1940,7 @@ extension CallsListViewController: UITableViewDelegate {
         let selectAction = UIAction(
             title: Strings.selectCallActionTitle,
             image: Theme.iconImage(.contextMenuSelect),
-            attributes: []
+            attributes: [],
         ) { [weak self] _ in
             self?.selectCall(forRowAt: indexPath)
         }
@@ -1946,7 +1951,7 @@ extension CallsListViewController: UITableViewDelegate {
             let deleteAction = UIAction(
                 title: Strings.deleteCallActionTitle,
                 image: Theme.iconImage(.contextMenuDelete),
-                attributes: .destructive
+                attributes: .destructive,
             ) { [weak self] _ in
                 self?.promptToDeleteCallIfNeeded(modelReferences: modelReferences)
             }
@@ -1967,7 +1972,7 @@ extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelega
         .init(
             blockingManager: deps.blockingManager,
             databaseStorage: deps.databaseStorage,
-            callService: deps.callService
+            callService: deps.callService,
         )
     }
 
@@ -1977,20 +1982,20 @@ extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelega
             CallStarter(
                 contactThread: contactThread,
                 withVideo: withVideo ?? (type == .video),
-                context: self.callStarterContext
+                context: self.callStarterContext,
             ).startCall(from: self)
         case let .groupThread(groupId):
             owsPrecondition(withVideo != false, "Can't start voice call.")
             let groupId = try! GroupIdentifier(contents: groupId)
             CallStarter(
                 groupId: groupId,
-                context: self.callStarterContext
+                context: self.callStarterContext,
             ).startCall(from: self)
         case .callLink(let rootKey):
             owsPrecondition(withVideo != false, "Can't start voice call.")
             CallStarter(
                 callLink: rootKey,
-                context: self.callStarterContext
+                context: self.callStarterContext,
             ).startCall(from: self)
         }
     }
@@ -2002,7 +2007,7 @@ extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelega
             proceedTitle: Strings.deleteCallActionTitle,
             proceedStyle: .destructive,
             proceedAction: { _ in Task { await proceedAction() } },
-            fromViewController: self
+            fromViewController: self,
         )
     }
 
@@ -2087,7 +2092,7 @@ extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelega
             self.deps.interactionDeleteManager.delete(
                 alongsideAssociatedCallRecords: callRecordsWithInteractions,
                 sideEffects: .default(),
-                tx: tx
+                tx: tx,
             )
 
             return callLinksToDelete
@@ -2112,7 +2117,7 @@ extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelega
                         stateUpdater: callLinkStateUpdater,
                         storageServiceManager: SSKEnvironment.shared.storageServiceManagerRef,
                         rootKey: callLinkToDelete.rootKey,
-                        adminPasskey: callLinkToDelete.adminPasskey
+                        adminPasskey: callLinkToDelete.adminPasskey,
                     )
                 }
             }
@@ -2167,11 +2172,11 @@ extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelega
             let threadViewModel = ThreadViewModel(
                 thread: thread,
                 forChatList: false,
-                transaction: tx
+                transaction: tx,
             )
             let isSystemContact = thread.isSystemContact(
                 contactsManager: deps.contactsManager,
-                tx: tx
+                tx: tx,
             )
             return (threadViewModel, isSystemContact)
         }
@@ -2181,7 +2186,7 @@ extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelega
             isSystemContact: isSystemContact,
             // Nothing would have been revealed, so this can be a fresh instance
             spoilerState: SpoilerRenderState(),
-            callRecords: callRecords
+            callRecords: callRecords,
         )
 
         showCallInfo(viewController: callDetailsView)
@@ -2215,7 +2220,7 @@ extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelega
             return { [deps] in
                 return deps.db.read { tx in deps.threadStore.fetchGroupThread(groupId: groupId, tx: tx) }
             }
-        case .callLink(_):
+        case .callLink:
             return nil
         }
     }
@@ -2224,7 +2229,7 @@ extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelega
         SignalApp.shared.presentConversationForThread(
             threadUniqueId: thread.uniqueId,
             action: .compose,
-            animated: false
+            animated: false,
         )
     }
 }
@@ -2282,7 +2287,7 @@ private extension CallsListViewController {
 
         private lazy var avatarView = ConversationAvatarView(
             sizeClass: .fortyFour,
-            localUserDisplayMode: .asUser
+            localUserDisplayMode: .asUser,
         )
 
         private lazy var titleLabel: UILabel = {
@@ -2325,16 +2330,16 @@ private extension CallsListViewController {
                 configuration: config,
                 primaryAction: UIAction { [weak self] _ in
                     self?.detailsTapped(viewModel: viewModel)
-                }
+                },
             )
         }
 
         private func makeJoinButton(viewModel: CallViewModel) -> UIButton {
             var config = UIButton.Configuration.borderedProminent()
             if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
-    #if compiler(>=6.2)
+#if compiler(>=6.2)
                 config = UIButton.Configuration.prominentGlass()
-    #endif
+#endif
             } else {
                 config.cornerStyle = .capsule
             }
@@ -2366,7 +2371,7 @@ private extension CallsListViewController {
                 configuration: config,
                 primaryAction: UIAction { [weak self] _ in
                     self?.detailsTapped(viewModel: viewModel)
-                }
+                },
             )
             button.tintColor = UIColor.Signal.green
             return button
@@ -2461,7 +2466,7 @@ private extension CallsListViewController {
             if let nextRefreshDate {
                 timestampDisplayRefreshTimer = .scheduledTimer(
                     withTimeInterval: max(1, nextRefreshDate.timeIntervalSinceNow),
-                    repeats: false
+                    repeats: false,
                 ) { [weak self] _ in
                     guard let self else { return }
                     self.updateDisplayedDateAndScheduleRefresh()
@@ -2579,7 +2584,7 @@ private extension CallsListViewController {
             label.lineBreakMode = .byTruncatingTail
             label.text = OWSLocalizedString(
                 "CREATE_CALL_LINK_LABEL",
-                comment: "Label for button that enables you to make a new call link."
+                comment: "Label for button that enables you to make a new call link.",
             )
             return label
         }()

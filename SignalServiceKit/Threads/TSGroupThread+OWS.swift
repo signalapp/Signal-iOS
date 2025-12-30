@@ -25,8 +25,10 @@ public extension TSGroupThread {
         groupId.hexadecimalString
     }
 
-    private static func existingThreadId(forGroupId groupId: Data,
-                                         transaction: DBReadTransaction) -> String? {
+    private static func existingThreadId(
+        forGroupId groupId: Data,
+        transaction: DBReadTransaction,
+    ) -> String? {
         owsAssertDebug(!groupId.isEmpty)
 
         let mappingKey = self.mappingKey(forGroupId: groupId)
@@ -47,13 +49,16 @@ public extension TSGroupThread {
     /// necessary.
     static func threadId(
         forGroupId groupId: Data,
-        transaction tx: DBReadTransaction
+        transaction tx: DBReadTransaction,
     ) -> String {
         owsAssertDebug(!groupId.isEmpty)
 
-        if let threadUniqueId = existingThreadId(
-            forGroupId: groupId, transaction: tx
-        ) {
+        if
+            let threadUniqueId = existingThreadId(
+                forGroupId: groupId,
+                transaction: tx,
+            )
+        {
             return threadUniqueId
         }
 
@@ -76,7 +81,7 @@ public extension TSGroupThread {
     static func setGroupIdMappingForLegacyThread(
         threadUniqueId: String,
         groupId: Data,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         setGroupIdMapping(threadUniqueId: threadUniqueId, groupId: groupId, tx: tx)
 
@@ -94,14 +99,16 @@ public extension TSGroupThread {
         owsPrecondition(GroupManager.isV1GroupId(v1GroupId))
 
         let infoString = "GV2 Migration"
-        guard let keyBytes = try infoString.utf8.withContiguousStorageIfAvailable({ ptr in
-            try hkdf(
-                outputLength: GroupMasterKey.SIZE,
-                inputKeyMaterial: v1GroupId,
-                salt: [],
-                info: ptr
-            )
-        }) else {
+        guard
+            let keyBytes = try infoString.utf8.withContiguousStorageIfAvailable({ ptr in
+                try hkdf(
+                    outputLength: GroupMasterKey.SIZE,
+                    inputKeyMaterial: v1GroupId,
+                    salt: [],
+                    info: ptr,
+                )
+            })
+        else {
             owsFail("Failed to compute key bytes!")
         }
 
@@ -112,7 +119,7 @@ public extension TSGroupThread {
     private static func setGroupIdMapping(
         threadUniqueId: String,
         groupId: Data,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         let mappingKey = mappingKey(forGroupId: groupId)
         uniqueIdMappingStore.setString(threadUniqueId, key: mappingKey, transaction: tx)

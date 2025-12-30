@@ -12,11 +12,15 @@ protocol InteractivelyDismissableViewController: UIViewController {
 
 protocol InteractiveDismissDelegate: AnyObject {
     func interactiveDismissDidBegin(_ interactiveDismiss: UIPercentDrivenInteractiveTransition)
-    func interactiveDismiss(_ interactiveDismiss: UIPercentDrivenInteractiveTransition,
-                            didChangeProgress: CGFloat,
-                            touchOffset: CGPoint)
-    func interactiveDismiss(_ interactiveDismiss: UIPercentDrivenInteractiveTransition,
-                            didFinishWithVelocity: CGVector?)
+    func interactiveDismiss(
+        _ interactiveDismiss: UIPercentDrivenInteractiveTransition,
+        didChangeProgress: CGFloat,
+        touchOffset: CGPoint,
+    )
+    func interactiveDismiss(
+        _ interactiveDismiss: UIPercentDrivenInteractiveTransition,
+        didFinishWithVelocity: CGVector?,
+    )
     func interactiveDismissDidCancel(_ interactiveDismiss: UIPercentDrivenInteractiveTransition)
 }
 
@@ -31,10 +35,12 @@ class MediaInteractiveDismiss: UIPercentDrivenInteractiveTransition {
         self.targetViewController = targetViewController
     }
 
-    public func addGestureRecognizer(to view: UIView) {
-        let gesture = DirectionalPanGestureRecognizer(direction: .vertical,
-                                                      target: self,
-                                                      action: #selector(handleGesture(_:)))
+    func addGestureRecognizer(to view: UIView) {
+        let gesture = DirectionalPanGestureRecognizer(
+            direction: .vertical,
+            target: self,
+            action: #selector(handleGesture(_:)),
+        )
         // Allow panning with trackpad
         gesture.allowedScrollTypesMask = .continuous
         view.addGestureRecognizer(gesture)
@@ -101,7 +107,7 @@ class MediaInteractiveDismiss: UIPercentDrivenInteractiveTransition {
             let animationVelocity = initialAnimationVelocity(
                 for: gestureVelocity,
                 from: .zero,
-                to: gestureRecognizer.translation(in: coordinateSpace)
+                to: gestureRecognizer.translation(in: coordinateSpace),
             )
             // Call `interactiveDismiss(_:, didFinishWithVelocity:) even when transition is canceled
             // to restore initial state with a proper spring animation.

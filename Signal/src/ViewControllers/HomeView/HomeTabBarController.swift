@@ -32,17 +32,17 @@ class HomeTabBarController: UITabBarController {
             case .chatList:
                 return OWSLocalizedString(
                     "CHAT_LIST_TITLE_INBOX",
-                    comment: "Title for the chat list's default mode."
+                    comment: "Title for the chat list's default mode.",
                 )
             case .calls:
                 return OWSLocalizedString(
                     "CALLS_LIST_TITLE",
-                    comment: "Title for the calls list view."
+                    comment: "Title for the calls list view.",
                 )
             case .stories:
                 return OWSLocalizedString(
                     "STORIES_TITLE",
-                    comment: "Title for the stories view."
+                    comment: "Title for the stories view.",
                 )
             }
         }
@@ -73,7 +73,7 @@ class HomeTabBarController: UITabBarController {
             return UITabBarItem(
                 title: title,
                 image: image,
-                selectedImage: selectedImage
+                selectedImage: selectedImage,
             )
         }
 
@@ -96,7 +96,7 @@ class HomeTabBarController: UITabBarController {
     // No need to share spoiler render state across the whole app.
     lazy var storiesViewController = StoriesViewController(
         appReadiness: appReadiness,
-        spoilerState: SpoilerRenderState()
+        spoilerState: SpoilerRenderState(),
     )
     lazy var storiesNavController = OWSNavigationController(rootViewController: storiesViewController)
     lazy var storiesTabBarItem = Tabs.stories.tabBarItem
@@ -111,7 +111,7 @@ class HomeTabBarController: UITabBarController {
     // UITabs are constructed with a 'viewControllerBuilder' completion that is required to return a
     // fresh UIViewController instance each time a tab is replaced.  This behavior is in conflict with
     // how this view controller manages the same set of child viewcontroller throughout it's lifetime.
-    // To avoid having to rebuild the ViewControllers whenever there's a change (e.g. - hiding stories), 
+    // To avoid having to rebuild the ViewControllers whenever there's a change (e.g. - hiding stories),
     // build UITabs once and persist them in a type erasing array.
     private var _uiTabs = [String: Any]()
     @available(iOS 18, *)
@@ -192,7 +192,7 @@ class HomeTabBarController: UITabBarController {
     private func updateCustomTabBar(newTabs: [Tabs]) {
         viewControllers = newTabs
             .map(childControllers(for:))
-            .map { (navController, tabBarItem) in
+            .map { navController, tabBarItem in
                 navController.tabBarItem = tabBarItem
                 return navController
             }
@@ -200,7 +200,7 @@ class HomeTabBarController: UITabBarController {
 
     private func childControllers(for tab: HomeTabBarController.Tabs) -> (
         navigationController: OWSNavigationController,
-        tabBarItem: UITabBarItem
+        tabBarItem: UITabBarItem,
     ) {
         switch tab {
         case .chatList:
@@ -238,11 +238,11 @@ class HomeTabBarController: UITabBarController {
 
     /// Hides or displays the tab bar, resizing the selected view controller to
     /// fill the space remaining.
-    public func setTabBarHidden(
+    func setTabBarHidden(
         _ hidden: Bool,
         animated: Bool = true,
         duration: TimeInterval = 0.15,
-        completion: ((Bool) -> Void)? = nil
+        completion: ((Bool) -> Void)? = nil,
     ) {
         defer {
             _isTabBarHidden = hidden
@@ -313,11 +313,11 @@ extension HomeTabBarController: BadgeObserver {
 
 extension HomeTabBarController: StoryBadgeCountObserver {
 
-    public var isStoriesTabActive: Bool {
+    var isStoriesTabActive: Bool {
         return selectedHomeTab == .stories && CurrentAppContext().isAppForegroundAndActive()
     }
 
-    public func didUpdateStoryBadge(_ badge: String?) {
+    func didUpdateStoryBadge(_ badge: String?) {
         if #available(iOS 18, *), UIDevice.current.isIPad {
             uiTab(for: .stories).badgeValue = badge
         } else {
@@ -390,13 +390,15 @@ public class OWSTabBar: UITabBar {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(themeDidChange),
-                                               name: .themeDidChange,
-                                               object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(themeDidChange),
+            name: .themeDidChange,
+            object: nil,
+        )
     }
 
-    public override var isHidden: Bool {
+    override public var isHidden: Bool {
         didSet {
             if !isHidden {
                 applyTheme()
@@ -450,9 +452,11 @@ public class OWSTabBar: UITabBar {
             // so the tabbar, when over a solid color background matching tabBarBackgroundColor,
             // exactly matches the background color. This is brittle, but there is no way to get
             // this behavior from UIVisualEffectView otherwise.
-            if let tintingView = blurEffectView.subviews.first(where: {
-                String(describing: type(of: $0)) == "_UIVisualEffectSubview"
-            }) {
+            if
+                let tintingView = blurEffectView.subviews.first(where: {
+                    String(describing: type(of: $0)) == "_UIVisualEffectSubview"
+                })
+            {
                 tintingView.backgroundColor = tabBarBackgroundColor.withAlphaComponent(OWSNavigationBar.backgroundBlurMutingFactor)
                 self.backgroundImage = UIImage()
             } else {

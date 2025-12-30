@@ -22,26 +22,26 @@ public class ContactsMentionHydrator {
 
     public static func mentionHydrator(
         excludedAcis: Set<Aci>? = nil,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> MentionHydrator {
         return { mentionAci in
             if excludedAcis?.contains(mentionAci) == true {
                 return .preserveMention
             }
             return .hydrate(
-                Self.hydrateMention(with: mentionAci, transaction: transaction).1
+                Self.hydrateMention(with: mentionAci, transaction: transaction).1,
             )
         }
     }
 
     public static func hydrateMention(
         with mentionAci: Aci,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> (SignalServiceAddress, String) {
         let address = SignalServiceAddress(mentionAci)
         let displayName = SSKEnvironment.shared.contactManagerRef.displayName(
             for: address,
-            tx: transaction
+            tx: transaction,
         ).resolvedValue()
         return (address, displayName)
     }

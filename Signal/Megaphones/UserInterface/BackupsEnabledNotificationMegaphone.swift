@@ -14,7 +14,7 @@ class BackupsEnabledNotificationMegaphone: MegaphoneView {
         fromViewController: UIViewController,
         backupsEnabledTime: Date,
         db: DB,
-        backupSettingsStore: BackupSettingsStore = BackupSettingsStore()
+        backupSettingsStore: BackupSettingsStore = BackupSettingsStore(),
     ) {
         self.db = db
         self.backupSettingsStore = backupSettingsStore
@@ -23,21 +23,21 @@ class BackupsEnabledNotificationMegaphone: MegaphoneView {
 
         titleText = OWSLocalizedString(
             "BACKUPS_TURNED_ON_TITLE",
-            comment: "Title for system notification or megaphone when backups is enabled"
+            comment: "Title for system notification or megaphone when backups is enabled",
         )
 
         bodyText = String(
             format: OWSLocalizedString(
                 "BACKUPS_TURNED_ON_NOTIFICATION_BODY_FORMAT",
-                comment: "Body for system notification or megaphone when backups is enabled. Embeds {{ time backups was enabled }}"
+                comment: "Body for system notification or megaphone when backups is enabled. Embeds {{ time backups was enabled }}",
             ),
-            backupsEnabledTime.formatted(date: .omitted, time: .shortened)
+            backupsEnabledTime.formatted(date: .omitted, time: .shortened),
         )
         imageName = "backups-logo"
 
         let primaryButtonTitle = OWSLocalizedString(
             "BACKUPS_VIEW_SETTINGS_BUTTON",
-            comment: "Action text for backups enabled megaphone taking user to backup settings"
+            comment: "Action text for backups enabled megaphone taking user to backup settings",
         )
         let primaryButton = MegaphoneView.Button(title: primaryButtonTitle) { [weak self] in
             SignalApp.shared.showAppSettings(mode: .backups)

@@ -13,7 +13,7 @@ extension DonationPaymentDetailsViewController {
             subscriptionLevel: DonationSubscriptionLevel,
             subscriberID: Data?,
             currentSubscription: Subscription?,
-            currentSubscriptionLevel: DonationSubscriptionLevel?
+            currentSubscriptionLevel: DonationSubscriptionLevel?,
         )
         case gift(thread: TSContactThread, messageText: String)
     }

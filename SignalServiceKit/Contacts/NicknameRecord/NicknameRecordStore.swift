@@ -22,12 +22,12 @@ public class NicknameRecordStoreImpl: NicknameRecordStore {
 
     public func fetch(
         recipientRowID: Int64,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> NicknameRecord? {
         do {
             return try NicknameRecord.fetchOne(
                 tx.database,
-                key: recipientRowID
+                key: recipientRowID,
             )
         } catch {
             owsFailDebug("Error fetching nickname by user profile ID: \(error.grdbErrorForLogging)")
@@ -37,12 +37,12 @@ public class NicknameRecordStoreImpl: NicknameRecordStore {
 
     public func nicknameExists(
         recipientRowID: Int64,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> Bool {
         do {
             return try NicknameRecord.exists(
                 tx.database,
-                key: recipientRowID
+                key: recipientRowID,
             )
         } catch {
             owsFailDebug("Error fetching nickname by user profile ID: \(error.grdbErrorForLogging)")

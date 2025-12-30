@@ -13,7 +13,7 @@ public enum Logger {
         flag: DDLogFlag,
         file: String,
         function: String,
-        line: Int
+        line: Int,
     ) {
         guard ShouldLogFlag(flag) else {
             return
@@ -27,7 +27,7 @@ public enum Logger {
             function: function,
             line: UInt(line),
             tag: nil,
-            timestamp: nil
+            timestamp: nil,
         ))
     }
 
@@ -36,7 +36,7 @@ public enum Logger {
         flag: DDLogFlag,
         fileID: String,
         function: String,
-        line: Int
+        line: Int,
     ) {
         log(logString(), flag: flag, file: (fileID as NSString).lastPathComponent, function: function, line: line)
     }
@@ -45,7 +45,7 @@ public enum Logger {
         _ logString: @autoclosure () -> String,
         file: String = #fileID,
         function: String = #function,
-        line: Int = #line
+        line: Int = #line,
     ) {
         log(logString(), flag: .verbose, fileID: file, function: function, line: line)
     }
@@ -54,7 +54,7 @@ public enum Logger {
         _ logString: @autoclosure () -> String,
         file: String = #fileID,
         function: String = #function,
-        line: Int = #line
+        line: Int = #line,
     ) {
         log(logString(), flag: .debug, fileID: file, function: function, line: line)
     }
@@ -63,7 +63,7 @@ public enum Logger {
         _ logString: @autoclosure () -> String,
         file: String = #fileID,
         function: String = #function,
-        line: Int = #line
+        line: Int = #line,
     ) {
         log(logString(), flag: .info, fileID: file, function: function, line: line)
     }
@@ -72,7 +72,7 @@ public enum Logger {
         _ logString: @autoclosure () -> String,
         file: String = #fileID,
         function: String = #function,
-        line: Int = #line
+        line: Int = #line,
     ) {
         log(logString(), flag: .warning, fileID: file, function: function, line: line)
     }
@@ -81,7 +81,7 @@ public enum Logger {
         _ logString: @autoclosure () -> String,
         file: String = #fileID,
         function: String = #function,
-        line: Int = #line
+        line: Int = #line,
     ) {
         log(logString(), flag: .error, fileID: file, function: function, line: line)
     }

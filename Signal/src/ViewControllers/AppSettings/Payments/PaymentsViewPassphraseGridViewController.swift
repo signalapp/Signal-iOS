@@ -14,13 +14,15 @@ public class PaymentsViewPassphraseGridViewController: OWSTableViewController2 {
 
     private let bottomStack = UIStackView()
 
-    open override var bottomFooter: UIView? {
+    override open var bottomFooter: UIView? {
         get { bottomStack }
         set {}
     }
 
-    public init(passphrase: PaymentsPassphrase,
-                viewPassphraseDelegate: PaymentsViewPassphraseDelegate) {
+    public init(
+        passphrase: PaymentsPassphrase,
+        viewPassphraseDelegate: PaymentsViewPassphraseDelegate,
+    ) {
         self.passphrase = passphrase
         self.viewPassphraseDelegate = viewPassphraseDelegate
 
@@ -29,23 +31,25 @@ public class PaymentsViewPassphraseGridViewController: OWSTableViewController2 {
         self.shouldAvoidKeyboard = true
     }
 
-    public override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
 
-        title = OWSLocalizedString("SETTINGS_PAYMENTS_VIEW_PASSPHRASE_TITLE",
-                                  comment: "Title for the 'view payments passphrase' view of the app settings.")
+        title = OWSLocalizedString(
+            "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_TITLE",
+            comment: "Title for the 'view payments passphrase' view of the app settings.",
+        )
 
         buildBottomView()
         updateTableContents()
     }
 
-    public override func viewWillAppear(_ animated: Bool) {
+    override public func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
         updateTableContents()
     }
 
-    public override func themeDidChange() {
+    override public func themeDidChange() {
         super.themeDidChange()
 
         updateTableContents()
@@ -58,7 +62,7 @@ public class PaymentsViewPassphraseGridViewController: OWSTableViewController2 {
             titleColor: .white,
             backgroundColor: .ows_accentBlue,
             target: self,
-            selector: #selector(didTapNextButton)
+            selector: #selector(didTapNextButton),
         )
 
         nextButton.autoSetHeightUsingFont()
@@ -84,15 +88,17 @@ public class PaymentsViewPassphraseGridViewController: OWSTableViewController2 {
         section.shouldDisableCellSelection = true
 
         let passphrase = self.passphrase
-        section.add(OWSTableItem(customCellBlock: { [weak self] in
-            let cell = OWSTableItem.newCell()
-            guard let self = self else { return cell }
-            let passphraseGrid = self.buildPassphraseGrid(passphrase: passphrase)
-            cell.contentView.addSubview(passphraseGrid)
-            passphraseGrid.autoPinEdgesToSuperviewEdges()
-            return cell
-        },
-        actionBlock: nil))
+        section.add(OWSTableItem(
+            customCellBlock: { [weak self] in
+                let cell = OWSTableItem.newCell()
+                guard let self else { return cell }
+                let passphraseGrid = self.buildPassphraseGrid(passphrase: passphrase)
+                cell.contentView.addSubview(passphraseGrid)
+                passphraseGrid.autoPinEdgesToSuperviewEdges()
+                return cell
+            },
+            actionBlock: nil,
+        ))
         contents.add(section)
 
         self.contents = contents
@@ -100,8 +106,10 @@ public class PaymentsViewPassphraseGridViewController: OWSTableViewController2 {
 
     private func buildPassphraseGrid(passphrase: PaymentsPassphrase) -> UIView {
         let copyToClipboardLabel = UILabel()
-        copyToClipboardLabel.text = OWSLocalizedString("SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD",
-                                                      comment: "Label for the 'copy to clipboard' button in the 'view payments passphrase' views.")
+        copyToClipboardLabel.text = OWSLocalizedString(
+            "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD",
+            comment: "Label for the 'copy to clipboard' button in the 'view payments passphrase' views.",
+        )
         copyToClipboardLabel.textColor = .ows_accentBlue
         copyToClipboardLabel.font = UIFont.dynamicTypeSubheadlineClamped.semibold()
 
@@ -111,17 +119,23 @@ public class PaymentsViewPassphraseGridViewController: OWSTableViewController2 {
         copyToClipboardButton.layoutMargins = .init(hMargin: 16, vMargin: 4)
         copyToClipboardLabel.autoPinEdgesToSuperviewMargins()
         copyToClipboardButton.isUserInteractionEnabled = true
-        copyToClipboardButton.addGestureRecognizer(UITapGestureRecognizer(target: self,
-                                                                          action: #selector(showCopyToClipboardConfirmUI)))
+        copyToClipboardButton.addGestureRecognizer(UITapGestureRecognizer(
+            target: self,
+            action: #selector(showCopyToClipboardConfirmUI),
+        ))
 
-        return PaymentsViewUtils.buildPassphraseGrid(passphrase: passphrase,
-                                                     footerButton: copyToClipboardButton)
+        return PaymentsViewUtils.buildPassphraseGrid(
+            passphrase: passphrase,
+            footerButton: copyToClipboardButton,
+        )
     }
 
     private func buildHeader() -> UIView {
         let explanationLabel = UILabel()
-        explanationLabel.text = OWSLocalizedString("SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_EXPLANATION",
-                                                  comment: "Header text for the 'review payments passphrase words' step in the 'view payments passphrase' settings.")
+        explanationLabel.text = OWSLocalizedString(
+            "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_EXPLANATION",
+            comment: "Header text for the 'review payments passphrase words' step in the 'view payments passphrase' settings.",
+        )
         explanationLabel.font = .dynamicTypeSubheadlineClamped
         explanationLabel.textColor = Theme.secondaryTextAndIconColor
         explanationLabel.textAlignment = .center
@@ -129,7 +143,7 @@ public class PaymentsViewPassphraseGridViewController: OWSTableViewController2 {
         explanationLabel.lineBreakMode = .byWordWrapping
 
         let topStack = UIStackView(arrangedSubviews: [
-            explanationLabel
+            explanationLabel,
         ])
         topStack.axis = .vertical
         topStack.alignment = .center
@@ -140,8 +154,10 @@ public class PaymentsViewPassphraseGridViewController: OWSTableViewController2 {
 
     private func buildFooter() -> UIView {
         let explanationLabel = UILabel()
-        explanationLabel.text = OWSLocalizedString("SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_FOOTER_2",
-                                                  comment: "Footer text for the 'review payments passphrase words' step in the 'view payments passphrase' settings.")
+        explanationLabel.text = OWSLocalizedString(
+            "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_WORDS_FOOTER_2",
+            comment: "Footer text for the 'review payments passphrase words' step in the 'view payments passphrase' settings.",
+        )
         explanationLabel.font = .dynamicTypeSubheadlineClamped
         explanationLabel.textColor = Theme.secondaryTextAndIconColor
         explanationLabel.textAlignment = .center
@@ -149,7 +165,7 @@ public class PaymentsViewPassphraseGridViewController: OWSTableViewController2 {
         explanationLabel.lineBreakMode = .byWordWrapping
 
         let topStack = UIStackView(arrangedSubviews: [
-            explanationLabel
+            explanationLabel,
         ])
         topStack.axis = .vertical
         topStack.alignment = .center
@@ -162,26 +178,34 @@ public class PaymentsViewPassphraseGridViewController: OWSTableViewController2 {
 
     @objc
     private func didTapNextButton() {
-        guard let viewPassphraseDelegate = viewPassphraseDelegate else {
+        guard let viewPassphraseDelegate else {
             dismiss(animated: false, completion: nil)
             return
         }
-        let view = PaymentsViewPassphraseConfirmViewController(passphrase: passphrase,
-                                                               viewPassphraseDelegate: viewPassphraseDelegate)
+        let view = PaymentsViewPassphraseConfirmViewController(
+            passphrase: passphrase,
+            viewPassphraseDelegate: viewPassphraseDelegate,
+        )
         navigationController?.pushViewController(view, animated: true)
     }
 
     @objc
     private func showCopyToClipboardConfirmUI() {
 
-        let actionSheet = ActionSheetController(title: OWSLocalizedString("SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_TITLE",
-                                                                         comment: "Title for the 'copy recovery passphrase to clipboard confirm' alert in the payment settings."),
-                                                message: OWSLocalizedString("SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_MESSAGE",
-                                                                           comment: "Message for the 'copy recovery passphrase to clipboard confirm' alert in the payment settings."))
+        let actionSheet = ActionSheetController(
+            title: OWSLocalizedString(
+                "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_TITLE",
+                comment: "Title for the 'copy recovery passphrase to clipboard confirm' alert in the payment settings.",
+            ),
+            message: OWSLocalizedString(
+                "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPY_TO_CLIPBOARD_CONFIRM_MESSAGE",
+                comment: "Message for the 'copy recovery passphrase to clipboard confirm' alert in the payment settings.",
+            ),
+        )
 
         actionSheet.addAction(ActionSheetAction(
             title: CommonStrings.copyButton,
-            style: .default
+            style: .default,
         ) { [weak self] _ in
             self?.didTapCopyToClipboard()
         })
@@ -196,11 +220,17 @@ public class PaymentsViewPassphraseGridViewController: OWSTableViewController2 {
         // Ensure that passphrase only resides in pasteboard for short window of time.
         let pasteboardDuration: TimeInterval = .second * 30
         let expireDate = Date().addingTimeInterval(pasteboardDuration)
-        UIPasteboard.general.setItems([[UIPasteboard.typeAutomatic: passphrase.asPassphrase]],
-                                      options: [.expirationDate: expireDate])
+        UIPasteboard.general.setItems(
+            [[UIPasteboard.typeAutomatic: passphrase.asPassphrase]],
+            options: [.expirationDate: expireDate],
+        )
 
-        self.presentToast(text: OWSLocalizedString("SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPIED_TO_CLIPBOARD",
-                                                  comment: "Indicator that the payments passphrase has been copied to the clipboard in the 'view payments passphrase' views."),
-                          extraVInset: bottomStack.height)
+        self.presentToast(
+            text: OWSLocalizedString(
+                "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_COPIED_TO_CLIPBOARD",
+                comment: "Indicator that the payments passphrase has been copied to the clipboard in the 'view payments passphrase' views.",
+            ),
+            extraVInset: bottomStack.height,
+        )
     }
 }

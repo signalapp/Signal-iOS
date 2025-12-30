@@ -67,7 +67,7 @@ public class RegistrationCoordinatorLoaderImpl: RegistrationCoordinatorLoader {
                 oldAuthToken: String,
                 localAci: Aci,
                 localDeviceId: DeviceId,
-                pniState: PendingPniState?
+                pniState: PendingPniState?,
             ) {
                 self.oldE164 = oldE164
                 self.oldAuthToken = oldAuthToken
@@ -103,7 +103,7 @@ public class RegistrationCoordinatorLoaderImpl: RegistrationCoordinatorLoader {
 
     public func coordinator(
         forDesiredMode desiredMode: RegistrationMode,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) -> RegistrationCoordinator {
         let mode = loadMode(transaction: transaction) ?? desiredMode.asInternalMode()
         do {
@@ -158,7 +158,7 @@ public class RegistrationCoordinatorLoaderImpl: RegistrationCoordinatorLoader {
         func savePendingChangeNumber(
             oldState: Mode.ChangeNumberState,
             pniState: Mode.ChangeNumberState.PendingPniState?,
-            transaction: DBWriteTransaction
+            transaction: DBWriteTransaction,
         ) throws -> Mode.ChangeNumberState {
             var newState = oldState
             newState.pniState = pniState
@@ -167,7 +167,7 @@ public class RegistrationCoordinatorLoaderImpl: RegistrationCoordinatorLoader {
             let preKeyManager = loader.deps.preKeyManager
             transaction.addSyncCompletion {
                 let hasPendingChangeNumber = Mode.changingNumber(newState).hasPendingChangeNumber
-                if  hasPendingChangeNumber {
+                if hasPendingChangeNumber {
                     messagePipelineSupervisor.suspendMessageProcessingWithoutHandle(for: .pendingChangeNumber)
                 } else {
                     messagePipelineSupervisor.unsuspendMessageProcessing(for: .pendingChangeNumber)
@@ -200,7 +200,7 @@ extension RegistrationMode {
                 oldAuthToken: params.oldAuthToken,
                 localAci: params.localAci,
                 localDeviceId: params.localDeviceId,
-                pniState: nil
+                pniState: nil,
             ))
         }
     }
@@ -219,7 +219,7 @@ extension RegistrationCoordinatorLoaderImpl.Mode {
                 oldE164: state.oldE164,
                 oldAuthToken: state.oldAuthToken,
                 localAci: state.localAci,
-                localDeviceId: state.localDeviceId
+                localDeviceId: state.localDeviceId,
             ))
         }
     }
@@ -245,7 +245,7 @@ extension ChangePhoneNumberPni.PendingState {
             pniIdentityKeyPair: pniIdentityKeyPair,
             localDevicePniSignedPreKeyRecord: .success(localDevicePniSignedPreKeyRecord),
             localDevicePniPqLastResortPreKeyRecord: .success(localDevicePniPqLastResortPreKeyRecord),
-            localDevicePniRegistrationId: localDevicePniRegistrationId
+            localDevicePniRegistrationId: localDevicePniRegistrationId,
         )
     }
 }
@@ -316,7 +316,7 @@ extension RegistrationCoordinatorLoaderImpl.Mode.ChangeNumberState.PendingPniSta
         guard
             let pniIdentityKeyPair: ECKeyPair = try Self.decodeKeyedArchive(
                 fromDecodingContainer: container,
-                forKey: .pniIdentityKeyPair
+                forKey: .pniIdentityKeyPair,
             )
         else {
             throw OWSAssertionError("Unable to deserialize NSKeyedArchiver fields!")
@@ -336,7 +336,7 @@ extension RegistrationCoordinatorLoaderImpl.Mode.ChangeNumberState.PendingPniSta
         try Self.encodeKeyedArchive(
             value: pniIdentityKeyPair,
             toEncodingContainer: &container,
-            forKey: .pniIdentityKeyPair
+            forKey: .pniIdentityKeyPair,
         )
     }
 
@@ -350,7 +350,7 @@ extension RegistrationCoordinatorLoaderImpl.Mode.ChangeNumberState.PendingPniSta
 
     private static func decodeKeyedArchive<T: NSObject & NSSecureCoding>(
         fromDecodingContainer decodingContainer: KeyedDecodingContainer<CodingKeys>,
-        forKey key: CodingKeys
+        forKey key: CodingKeys,
     ) throws -> T? {
         let data = try decodingContainer.decode(Data.self, forKey: key)
 
@@ -360,11 +360,11 @@ extension RegistrationCoordinatorLoaderImpl.Mode.ChangeNumberState.PendingPniSta
     private static func encodeKeyedArchive<T: NSObject & NSSecureCoding>(
         value: T,
         toEncodingContainer encodingContainer: inout KeyedEncodingContainer<CodingKeys>,
-        forKey key: CodingKeys
+        forKey key: CodingKeys,
     ) throws {
         let data = try NSKeyedArchiver.archivedData(
             withRootObject: value,
-            requiringSecureCoding: true
+            requiringSecureCoding: true,
         )
 
         try encodingContainer.encode(data, forKey: key)

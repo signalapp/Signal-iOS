@@ -18,7 +18,7 @@ public protocol UsernameApiClient {
     /// An ID for this attempt, to later disambiguate between multiple
     /// potentially-overlapping attempts.
     func reserveUsernameCandidates(
-        usernameCandidates: Usernames.HashedUsername.GeneratedCandidates
+        usernameCandidates: Usernames.HashedUsername.GeneratedCandidates,
     ) async throws -> Usernames.ApiClientReservationResult
 
     /// Confirms the given username, which must have previously been reserved.
@@ -28,7 +28,7 @@ public protocol UsernameApiClient {
     func confirmReservedUsername(
         reservedUsername: Usernames.HashedUsername,
         encryptedUsernameForLink: Data,
-        chatServiceAuth: ChatServiceAuth
+        chatServiceAuth: ChatServiceAuth,
     ) async throws -> Usernames.ApiClientConfirmationResult
 
     // MARK: Deletion
@@ -40,7 +40,7 @@ public protocol UsernameApiClient {
 
     /// Looks up the ACI corresponding to the given username, if one exists.
     func lookupAci(
-        forHashedUsername hashedUsername: Usernames.HashedUsername
+        forHashedUsername hashedUsername: Usernames.HashedUsername,
     ) async throws -> Aci?
 
     // MARK: Links
@@ -60,7 +60,7 @@ public protocol UsernameApiClient {
     /// The handle for the local user's encrypted username.
     func setUsernameLink(
         encryptedUsername: Data,
-        keepLinkHandle: Bool
+        keepLinkHandle: Bool,
     ) async throws -> UUID
 
     /// Gets the encrypted username for the given handle, if any.
@@ -74,7 +74,7 @@ public extension Usernames {
     enum ApiClientReservationResult {
         case successful(
             username: Usernames.ParsedUsername,
-            hashedUsername: Usernames.HashedUsername
+            hashedUsername: Usernames.HashedUsername,
         )
         case rejected
         case rateLimited

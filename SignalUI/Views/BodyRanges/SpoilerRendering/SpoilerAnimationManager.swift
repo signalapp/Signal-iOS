@@ -100,7 +100,7 @@ public class SpoilerAnimationManager {
 
     /// Add a view animator. Handles duplicates, so adding is idempotent.
     public func addViewAnimator(_ animator: SpoilerableViewAnimator) {
-        if animators.contains(where: { $0.equals(animator)}) {
+        if animators.contains(where: { $0.equals(animator) }) {
             return
         }
         animators.append(animator)
@@ -140,7 +140,7 @@ public class SpoilerAnimationManager {
             animator: animator,
             forceRecomputeFrames: forceRecomputeFrames,
             viewBounds: view.bounds.size,
-            metalConfig: metalConfig
+            metalConfig: metalConfig,
         )
         renderer?.render(result, onto: view)
     }
@@ -160,7 +160,7 @@ public class SpoilerAnimationManager {
         animator: SpoilerableViewAnimator,
         forceRecomputeFrames: Bool,
         viewBounds: CGSize,
-        metalConfig: SpoilerMetalConfiguration
+        metalConfig: SpoilerMetalConfiguration,
     ) -> [Spec] {
         let cacheKey = animator.spoilerFramesCacheKey
         if !forceRecomputeFrames, let cachedFrames = specCache[cacheKey] {
@@ -170,7 +170,7 @@ public class SpoilerAnimationManager {
         let result = specs(
             forComputedFrames: computedFrames,
             viewBounds: viewBounds,
-            metalConfig: metalConfig
+            metalConfig: metalConfig,
         )
         specCache[cacheKey] = result
         return result
@@ -181,7 +181,7 @@ public class SpoilerAnimationManager {
     private func specs(
         forComputedFrames computedFrames: [SpoilerFrame],
         viewBounds: CGSize,
-        metalConfig: SpoilerMetalConfiguration
+        metalConfig: SpoilerMetalConfiguration,
     ) -> [Spec] {
         // A Metal texture, and by extension an MTKView, can
         // only be of a fixed maximum size. If the view is bigger,
@@ -234,13 +234,13 @@ public class SpoilerAnimationManager {
                         x: xInTile,
                         y: yInTile,
                         width: widthInTile,
-                        height: heightInTile
+                        height: heightInTile,
                     )
                     let surfaceAreaInTile = frameInTile.width * frameInTile.height
                     let spoilerFrameInTile = SpoilerRenderer.SpoilerFrame(
                         frame: frameInTile,
                         surfaceArea: surfaceAreaInTile,
-                        config: config
+                        config: config,
                     )
                     if
                         let index = specIndexMap[column]?[row],
@@ -257,8 +257,8 @@ public class SpoilerAnimationManager {
                                 x: tileMinX,
                                 y: tileMinY,
                                 width: tileMaxX - tileMinX,
-                                height: tileMaxY - tileMinY
-                            )
+                                height: tileMaxY - tileMinY,
+                            ),
                         )
                         specs.append(spec)
                         var subMap = specIndexMap[column] ?? [:]

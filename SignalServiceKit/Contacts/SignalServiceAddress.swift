@@ -74,7 +74,7 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
             serviceId: identifiers.serviceId,
             // If there's no ServiceId, then we look up the phone number in the cache.
             phoneNumber: (identifiers.serviceId == nil) ? identifiers.phoneNumber : nil,
-            cache: cache ?? SSKEnvironment.shared.signalServiceAddressCacheRef
+            cache: cache ?? SSKEnvironment.shared.signalServiceAddressCacheRef,
         )
     }
 
@@ -98,7 +98,7 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
         return SignalServiceAddress(
             serviceId: nil,
             phoneNumber: phoneNumber,
-            cache: cache ?? SSKEnvironment.shared.signalServiceAddressCacheRef
+            cache: cache ?? SSKEnvironment.shared.signalServiceAddressCacheRef,
         )
     }
 
@@ -117,17 +117,17 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
     public convenience init(
         serviceId: ServiceId?,
         legacyPhoneNumber phoneNumber: String?,
-        cache: SignalServiceAddressCache
+        cache: SignalServiceAddressCache,
     ) {
         let normalizedAddress = NormalizedDatabaseRecordAddress(
             serviceId: serviceId,
-            phoneNumber: phoneNumber
+            phoneNumber: phoneNumber,
         )
         self.init(
             serviceId: normalizedAddress?.serviceId,
             phoneNumber: normalizedAddress?.phoneNumber,
             isLegacyPhoneNumber: true,
-            cache: cache
+            cache: cache,
         )
     }
 
@@ -135,7 +135,7 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
         return SignalServiceAddress(
             serviceId: serviceId,
             legacyPhoneNumber: phoneNumber,
-            cache: SSKEnvironment.shared.signalServiceAddressCacheRef
+            cache: SSKEnvironment.shared.signalServiceAddressCacheRef,
         )
     }
 
@@ -143,7 +143,7 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
         return SignalServiceAddress(
             serviceId: Aci.parseFrom(aciString: aciString),
             legacyPhoneNumber: phoneNumber,
-            cache: SSKEnvironment.shared.signalServiceAddressCacheRef
+            cache: SSKEnvironment.shared.signalServiceAddressCacheRef,
         )
     }
 
@@ -152,7 +152,7 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
         return SignalServiceAddress(
             serviceId: serviceIdString.flatMap { try? ServiceId.parseFrom(serviceIdString: $0) },
             legacyPhoneNumber: phoneNumber,
-            cache: SSKEnvironment.shared.signalServiceAddressCacheRef
+            cache: SSKEnvironment.shared.signalServiceAddressCacheRef,
         )
     }
 
@@ -212,7 +212,7 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
                 owsFailDebug("Unexpectedly initialized SignalServiceAddress with invalid serviceIdString.")
                 return nil
             },
-            phoneNumber: phoneNumber
+            phoneNumber: phoneNumber,
         )
     }
 
@@ -234,24 +234,24 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
             serviceId: serviceId,
             phoneNumber: phoneNumber,
             isLegacyPhoneNumber: false,
-            cache: SSKEnvironment.shared.signalServiceAddressCacheRef
+            cache: SSKEnvironment.shared.signalServiceAddressCacheRef,
         )
     }
 
-    internal convenience init(from address: ProtocolAddress) {
+    convenience init(from address: ProtocolAddress) {
         self.init(address.serviceId)
     }
 
     public convenience init(
         serviceId: ServiceId?,
         phoneNumber: String?,
-        cache: SignalServiceAddressCache
+        cache: SignalServiceAddressCache,
     ) {
         self.init(
             serviceId: serviceId,
             phoneNumber: phoneNumber,
             isLegacyPhoneNumber: false,
-            cache: cache
+            cache: cache,
         )
     }
 
@@ -259,7 +259,7 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
         serviceId: ServiceId?,
         phoneNumber: String?,
         isLegacyPhoneNumber: Bool,
-        cache: SignalServiceAddressCache
+        cache: SignalServiceAddressCache,
     ) {
         if let phoneNumber, phoneNumber.isEmpty {
             owsFailDebug("Unexpectedly initialized signal service address with invalid phone number")
@@ -268,9 +268,9 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
         self.cachedAddress = cache.registerAddress(
             proposedIdentifiers: CachedAddress.Identifiers(
                 serviceId: serviceId,
-                phoneNumber: phoneNumber
+                phoneNumber: phoneNumber,
             ),
-            isLegacyPhoneNumber: isLegacyPhoneNumber
+            isLegacyPhoneNumber: isLegacyPhoneNumber,
         )
 
         super.init()
@@ -283,7 +283,8 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
     // MARK: - Codable
 
     private enum CodingKeys: String, CodingKey {
-        case backingUuid, backingPhoneNumber
+        case backingUuid
+        case backingPhoneNumber
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -303,7 +304,7 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
         self.init(
             serviceId: decodedServiceId,
             legacyPhoneNumber: decodedPhoneNumber,
-            cache: SSKEnvironment.shared.signalServiceAddressCacheRef
+            cache: SSKEnvironment.shared.signalServiceAddressCacheRef,
         )
     }
 
@@ -327,7 +328,7 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
         aCoder.encode(identifiers.serviceId != nil ? nil : identifiers.phoneNumber, forKey: "backingPhoneNumber")
     }
 
-    public convenience required init?(coder aDecoder: NSCoder) {
+    public required convenience init?(coder aDecoder: NSCoder) {
         let decodedServiceId: ServiceId?
         switch aDecoder.decodeObject(of: [NSUUID.self, NSData.self], forKey: "backingUuid") {
         case nil:
@@ -348,7 +349,7 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
         self.init(
             serviceId: decodedServiceId,
             legacyPhoneNumber: decodedPhoneNumber,
-            cache: SSKEnvironment.shared.signalServiceAddressCacheRef
+            cache: SSKEnvironment.shared.signalServiceAddressCacheRef,
         )
     }
 
@@ -357,7 +358,7 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
     @objc
     public func copy(with zone: NSZone? = nil) -> Any { return self }
 
-    public override func isEqual(_ object: Any?) -> Bool {
+    override public func isEqual(_ object: Any?) -> Bool {
         guard let otherAddress = object as? SignalServiceAddress else {
             return false
         }
@@ -393,7 +394,7 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
     // This allows us to dynamically update the backing values to maintain
     // the most complete address object as we learn phone <-> UUID mapping,
     // while also allowing addresses to live in hash tables.
-    public override var hash: Int { return cachedAddress.hashValue }
+    override public var hash: Int { return cachedAddress.hashValue }
 
     // MARK: -
 
@@ -422,7 +423,7 @@ public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable 
         let identifiers = cachedAddress.identifiers.get()
         return Self.addressComponentsDescription(
             uuidString: identifiers.serviceId?.logString,
-            phoneNumber: identifiers.phoneNumber
+            phoneNumber: identifiers.phoneNumber,
         )
     }
 
@@ -484,7 +485,7 @@ public class SignalServiceAddressCache: NSObject {
     }
 
     // TODO: Remove this initializer after fixing DependenciesBridge setup.
-    public override init() {
+    override public init() {
         self._phoneNumberVisibilityFetcher = nil
     }
 
@@ -506,8 +507,8 @@ public class SignalServiceAddressCache: NSObject {
                 updateRecipient(
                     recipient,
                     isPhoneNumberVisible: (
-                        bulkFetcher?.isPhoneNumberVisible(for: recipient) ?? false
-                    )
+                        bulkFetcher?.isPhoneNumberVisible(for: recipient) ?? false,
+                    ),
                 )
             }
         }
@@ -522,20 +523,20 @@ public class SignalServiceAddressCache: NSObject {
     public func updateRecipient(_ signalRecipient: SignalRecipient, tx: DBWriteTransaction) {
         updateRecipient(
             signalRecipient,
-            isPhoneNumberVisible: phoneNumberVisibilityFetcher.isPhoneNumberVisible(for: signalRecipient, tx: tx)
+            isPhoneNumberVisible: phoneNumberVisibilityFetcher.isPhoneNumberVisible(for: signalRecipient, tx: tx),
         )
     }
 
-    internal func updateRecipient(_ signalRecipient: SignalRecipient, isPhoneNumberVisible: Bool) {
+    func updateRecipient(_ signalRecipient: SignalRecipient, isPhoneNumberVisible: Bool) {
         updateRecipient(
             aci: signalRecipient.aci,
             phoneNumber: signalRecipient.phoneNumber?.stringValue,
             pni: signalRecipient.pni,
-            isPhoneNumberVisible: isPhoneNumberVisible
+            isPhoneNumberVisible: isPhoneNumberVisible,
         )
     }
 
-    internal func updateRecipient(aci: Aci?, phoneNumber: String?, pni: Pni?, isPhoneNumberVisible: Bool) {
+    func updateRecipient(aci: Aci?, phoneNumber: String?, pni: Pni?, isPhoneNumberVisible: Bool) {
         state.update { cacheState in
             // This cache associates phone numbers to the other identifiers. If we
             // don't have a phone number, there's nothing to associate.
@@ -549,7 +550,7 @@ public class SignalServiceAddressCache: NSObject {
             }
 
             let oldPotentiallyVisibleServiceIds: [PotentiallyVisible<ServiceId>] = (
-                cacheState.phoneNumberToServiceIds[phoneNumber] ?? []
+                cacheState.phoneNumberToServiceIds[phoneNumber] ?? [],
             )
             let newPotentiallyVisibleServiceIds: [PotentiallyVisible<ServiceId>] = [
                 aci.map { PotentiallyVisible(wrappedValue: $0, isVisible: isPhoneNumberVisible) },
@@ -577,7 +578,7 @@ public class SignalServiceAddressCache: NSObject {
             for newOrUpdatedServiceId in newPotentiallyVisibleServiceIds {
                 let oldPhoneNumber = cacheState.serviceIdToPhoneNumber.updateValue(
                     PotentiallyVisible(wrappedValue: phoneNumber, isVisible: newOrUpdatedServiceId.isVisible),
-                    forKey: newOrUpdatedServiceId.wrappedValue
+                    forKey: newOrUpdatedServiceId.wrappedValue,
                 )
                 // If this ServiceId was associated with some other phone number, we need
                 // to break that association.
@@ -618,14 +619,14 @@ public class SignalServiceAddressCache: NSObject {
                 phoneNumberOnlyCachedAddresses: &cacheState.phoneNumberOnlyLegacyCachedAddresses,
                 serviceIdCachedAddresses: &cacheState.serviceIdCachedAddresses,
                 phoneNumber: phoneNumber,
-                serviceId: newPotentiallyVisibleServiceIds.first
+                serviceId: newPotentiallyVisibleServiceIds.first,
             )
             // Other addresses can only be resolved with a visible ServiceId.
             updatePhoneNumberOnlyAddresses(
                 phoneNumberOnlyCachedAddresses: &cacheState.phoneNumberOnlyCachedAddresses,
                 serviceIdCachedAddresses: &cacheState.serviceIdCachedAddresses,
                 phoneNumber: phoneNumber,
-                serviceId: newPotentiallyVisibleServiceIds.first(where: { $0.isVisible })
+                serviceId: newPotentiallyVisibleServiceIds.first(where: { $0.isVisible }),
             )
         }
     }
@@ -640,7 +641,7 @@ public class SignalServiceAddressCache: NSObject {
         phoneNumberOnlyCachedAddresses: inout [String: [CachedAddress]],
         serviceIdCachedAddresses: inout [ServiceId: [CachedAddress]],
         phoneNumber: String,
-        serviceId: PotentiallyVisible<ServiceId>?
+        serviceId: PotentiallyVisible<ServiceId>?,
     ) {
         guard let serviceId else {
             return
@@ -660,7 +661,7 @@ public class SignalServiceAddressCache: NSObject {
             let resolvedIdentifiers = resolveIdentifiers(
                 proposedIdentifiers,
                 isLegacyPhoneNumber: isLegacyPhoneNumber,
-                cacheState: cacheState
+                cacheState: cacheState,
             )
 
             // We try our best to share hash values for ServiceIds and phone numbers
@@ -668,12 +669,12 @@ public class SignalServiceAddressCache: NSObject {
             let hashValue = hashValue(
                 cacheState: &cacheState,
                 serviceId: resolvedIdentifiers.serviceId,
-                phoneNumber: resolvedIdentifiers.phoneNumber
+                phoneNumber: resolvedIdentifiers.phoneNumber,
             )
 
             func getOrCreateCachedAddress<T>(key: T, in cachedAddresses: inout [T: [CachedAddress]]) -> CachedAddress {
                 for cachedAddress in cachedAddresses[key, default: []] {
-                    if cachedAddress.hashValue == hashValue && cachedAddress.identifiers.get() == resolvedIdentifiers {
+                    if cachedAddress.hashValue == hashValue, cachedAddress.identifiers.get() == resolvedIdentifiers {
                         return cachedAddress
                     }
                 }
@@ -707,13 +708,13 @@ public class SignalServiceAddressCache: NSObject {
     private func resolveIdentifiers(
         _ proposedIdentifiers: CachedAddress.Identifiers,
         isLegacyPhoneNumber: Bool,
-        cacheState: CacheState
+        cacheState: CacheState,
     ) -> CachedAddress.Identifiers {
         var resolvedIdentifiers = proposedIdentifiers
         resolveServiceId(
             in: &resolvedIdentifiers,
             isLegacyPhoneNumber: isLegacyPhoneNumber,
-            cacheState: cacheState
+            cacheState: cacheState,
         )
         resolvePhoneNumber(in: &resolvedIdentifiers, cacheState: cacheState)
         return resolvedIdentifiers
@@ -722,12 +723,12 @@ public class SignalServiceAddressCache: NSObject {
     private func resolveServiceId(
         in identifiers: inout CachedAddress.Identifiers,
         isLegacyPhoneNumber: Bool,
-        cacheState: CacheState
+        cacheState: CacheState,
     ) {
         guard identifiers.serviceId == nil, let phoneNumber = identifiers.phoneNumber else {
             return
         }
-        for serviceId in (cacheState.phoneNumberToServiceIds[phoneNumber] ?? []) {
+        for serviceId in cacheState.phoneNumberToServiceIds[phoneNumber] ?? [] {
             if serviceId.isVisible {
                 identifiers.serviceId = serviceId.wrappedValue
                 return
@@ -744,7 +745,7 @@ public class SignalServiceAddressCache: NSObject {
 
     private func resolvePhoneNumber(
         in identifiers: inout CachedAddress.Identifiers,
-        cacheState: CacheState
+        cacheState: CacheState,
     ) {
         guard identifiers.phoneNumber == nil, let serviceId = identifiers.serviceId else {
             return
@@ -787,8 +788,8 @@ public class SignalServiceAddressCache: NSObject {
     private func hashValue(cacheState: inout CacheState, serviceId: ServiceId?, phoneNumber: String?) -> Int {
         let hashValue = (
             serviceId.flatMap { cacheState.serviceIdHashValues[$0] }
-            ?? phoneNumber.flatMap { cacheState.phoneNumberHashValues[$0] }
-            ?? Int.random(in: Int.min...Int.max)
+                ?? phoneNumber.flatMap { cacheState.phoneNumberHashValues[$0] }
+                ?? Int.random(in: Int.min...Int.max),
         )
         // We *never* change a hash value once it's been generated.
         if let serviceId, cacheState.serviceIdHashValues[serviceId] == nil {
@@ -812,18 +813,18 @@ extension SignalServiceAddress {
         SignalServiceAddress(
             serviceId: Aci.randomForTesting(),
             phoneNumber: nil,
-            cache: SignalServiceAddressCache()
+            cache: SignalServiceAddressCache(),
         )
     }
 
     static func isolatedForTesting(
         serviceId: ServiceId? = nil,
-        phoneNumber: String? = nil
+        phoneNumber: String? = nil,
     ) -> SignalServiceAddress {
         SignalServiceAddress(
             serviceId: serviceId,
             phoneNumber: phoneNumber,
-            cache: SignalServiceAddressCache()
+            cache: SignalServiceAddressCache(),
         )
     }
 }
@@ -833,7 +834,7 @@ extension SignalServiceAddressCache {
         SignalServiceAddress(
             serviceId: serviceId,
             phoneNumber: phoneNumber?.stringValue,
-            cache: self
+            cache: self,
         )
     }
 }

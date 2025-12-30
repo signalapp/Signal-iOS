@@ -8,11 +8,11 @@ public import SignalServiceKit
 public class TypingIndicatorInteraction: TSInteraction {
     public static let TypingIndicatorId = "TypingIndicator"
 
-    public override var isDynamicInteraction: Bool {
+    override public var isDynamicInteraction: Bool {
         true
     }
 
-    public override var interactionType: OWSInteractionType {
+    override public var interactionType: OWSInteractionType {
         .typingIndicator
     }
 
@@ -30,15 +30,15 @@ public class TypingIndicatorInteraction: TSInteraction {
             customUniqueId: TypingIndicatorInteraction.TypingIndicatorId,
             timestamp: timestamp,
             receivedAtTimestamp: 0,
-            thread: thread
+            thread: thread,
         )
     }
 
-    public override var shouldBeSaved: Bool {
+    override public var shouldBeSaved: Bool {
         return false
     }
 
-    public override func anyWillInsert(with transaction: DBWriteTransaction) {
+    override public func anyWillInsert(with transaction: DBWriteTransaction) {
         owsFailDebug("The transient interaction should not be saved in the database.")
     }
 }

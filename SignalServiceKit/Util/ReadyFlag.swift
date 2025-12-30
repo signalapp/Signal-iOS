@@ -70,7 +70,7 @@ public class ReadyFlag: NSObject {
     @MainActor
     public func runNowOrWhenWillBecomeReady(
         _ readyBlock: @escaping ReadyBlock,
-        label: String? = nil
+        label: String? = nil,
     ) {
         let task = ReadyTask(label: label, block: readyBlock)
 
@@ -89,7 +89,7 @@ public class ReadyFlag: NSObject {
             BenchManager.bench(
                 title: self.name + ".willBecomeReady " + task.displayLabel,
                 logIfLongerThan: Self.blockLogDuration,
-                logInProduction: true
+                logInProduction: true,
             ) {
                 autoreleasepool {
                     task.block()
@@ -101,7 +101,7 @@ public class ReadyFlag: NSObject {
     @MainActor
     public func runNowOrWhenDidBecomeReadySync(
         _ readyBlock: @escaping ReadyBlock,
-        label: String? = nil
+        label: String? = nil,
     ) {
         let task = ReadyTask(label: label, block: readyBlock)
 
@@ -120,7 +120,7 @@ public class ReadyFlag: NSObject {
             BenchManager.bench(
                 title: self.name + ".didBecomeReady " + task.displayLabel,
                 logIfLongerThan: Self.blockLogDuration,
-                logInProduction: true
+                logInProduction: true,
             ) {
                 autoreleasepool {
                     task.block()
@@ -131,7 +131,7 @@ public class ReadyFlag: NSObject {
 
     public func runNowOrWhenDidBecomeReadyAsync(
         _ readyBlock: @escaping ReadyBlock,
-        label: String? = nil
+        label: String? = nil,
     ) {
         AssertIsOnMainThread()
 
@@ -155,7 +155,7 @@ public class ReadyFlag: NSObject {
                 BenchManager.bench(
                     title: self.name + ".didBecomeReadyPolite " + task.displayLabel,
                     logIfLongerThan: Self.blockLogDuration,
-                    logInProduction: true
+                    logInProduction: true,
                 ) {
                     autoreleasepool {
                         task.block()
@@ -178,14 +178,16 @@ public class ReadyFlag: NSObject {
         let didBecomeReadyAsyncTasks = tasksToPerform.didBecomeReadyAsyncTasks
 
         // We bench the blocks individually and as a group.
-        BenchManager.bench(title: self.name + ".willBecomeReady group",
-                           logIfLongerThan: Self.groupLogDuration,
-                           logInProduction: true) {
+        BenchManager.bench(
+            title: self.name + ".willBecomeReady group",
+            logIfLongerThan: Self.groupLogDuration,
+            logInProduction: true,
+        ) {
             for task in willBecomeReadyTasks {
                 BenchManager.bench(
                     title: self.name + ".willBecomeReady " + task.displayLabel,
                     logIfLongerThan: Self.blockLogDuration,
-                    logInProduction: true
+                    logInProduction: true,
                 ) {
                     autoreleasepool {
                         task.block()
@@ -197,13 +199,13 @@ public class ReadyFlag: NSObject {
         BenchManager.bench(
             title: self.name + ".didBecomeReady group",
             logIfLongerThan: Self.groupLogDuration,
-            logInProduction: true
+            logInProduction: true,
         ) {
             for task in didBecomeReadySyncTasks {
                 BenchManager.bench(
                     title: self.name + ".didBecomeReady " + task.displayLabel,
                     logIfLongerThan: Self.blockLogDuration,
-                    logInProduction: true
+                    logInProduction: true,
                 ) {
                     autoreleasepool {
                         task.block()
@@ -235,7 +237,7 @@ public class ReadyFlag: NSObject {
             let tasksToPerform = TasksToPerform(
                 willBecomeReadyTasks: self.willBecomeReadyTasks,
                 didBecomeReadySyncTasks: self.didBecomeReadySyncTasks,
-                didBecomeReadyAsyncTasks: self.didBecomeReadyAsyncTasks
+                didBecomeReadyAsyncTasks: self.didBecomeReadyAsyncTasks,
             )
             self.willBecomeReadyTasks = []
             self.didBecomeReadySyncTasks = []
@@ -246,7 +248,7 @@ public class ReadyFlag: NSObject {
 
     private func performDidBecomeReadyAsyncTasks(_ tasks: [ReadyTask]) {
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.025) { [weak self] in
-            guard let self = self else {
+            guard let self else {
                 return
             }
             guard let task = tasks.first else {
@@ -256,7 +258,7 @@ public class ReadyFlag: NSObject {
                 title: self.name + ".didBecomeReadyPolite " + task.displayLabel,
                 logIfLongerThan: Self.blockLogDuration,
                 logInProduction: true,
-                block: task.block
+                block: task.block,
             )
 
             let remainder = Array(tasks.suffix(from: 1))

@@ -31,7 +31,7 @@ extension ConversationViewController {
             .map { $0.indexPath }
             .min { $0.row < $1.row }
 
-        if let firstVisibleIndexPath = firstVisibleIndexPath {
+        if let firstVisibleIndexPath {
             owsAssertDebug(percentOfIndexPathVisibleAboveBottom(firstVisibleIndexPath) > 0)
         }
         return firstVisibleIndexPath
@@ -53,14 +53,14 @@ extension ConversationViewController {
             .map { $0.indexPath }
             .max { $0.row < $1.row }
 
-        if let lastVisibleIndexPath = lastVisibleIndexPath {
+        if let lastVisibleIndexPath {
             owsAssertDebug(percentOfIndexPathVisibleAboveBottom(lastVisibleIndexPath) > 0)
         }
         return lastVisibleIndexPath
     }
 
     var lastVisibleSortId: UInt64 {
-        guard let lastVisibleIndexPath = lastVisibleIndexPath else { return 0 }
+        guard let lastVisibleIndexPath else { return 0 }
         return firstRenderItemReferenceWithSortId(atOrBeforeIndexPath: lastVisibleIndexPath)?.sortId ?? 0
     }
 
@@ -105,7 +105,7 @@ extension ConversationViewController {
                 DependenciesBridge.shared.lastVisibleInteractionStore.setLastVisibleInteraction(
                     newValue,
                     for: thread,
-                    tx: tx
+                    tx: tx,
                 )
             }
         }
@@ -143,9 +143,11 @@ extension ConversationViewController {
 
         var matchingIndexPath = indexPath
 
-        while matchingIndexPath.row >= 0,
-              matchingIndexPath.row < renderItems.count,
-              let renderItem = renderItem(forIndex: matchingIndexPath.row) {
+        while
+            matchingIndexPath.row >= 0,
+            matchingIndexPath.row < renderItems.count,
+            let renderItem = renderItem(forIndex: matchingIndexPath.row)
+        {
             guard !renderItem.interaction.isDynamicInteraction else {
                 guard matchingIndexPath.row > 0 else {
                     return nil

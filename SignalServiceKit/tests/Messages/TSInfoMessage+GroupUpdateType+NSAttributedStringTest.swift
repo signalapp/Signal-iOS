@@ -4,8 +4,8 @@
 //
 
 import Foundation
-@testable import SignalServiceKit
 import XCTest
+@testable import SignalServiceKit
 
 class NSAttributedStringInGroupUpdateCopyTest: SSKBaseTest {
     private func assertEqual(_ one: NSAttributedString, _ two: NSAttributedString) {
@@ -57,12 +57,12 @@ class NSAttributedStringInGroupUpdateCopyTest: SSKBaseTest {
     func test_NameAtEndOfString() {
         assertEqual(
             .aliceSomethingWithBobsNameAtEndOfString,
-            NSAttributedString.makeWithNameAtEndOfString(firstUser: .alice, userAtEndOfString: .bob, lang: "en")
+            NSAttributedString.makeWithNameAtEndOfString(firstUser: .alice, userAtEndOfString: .bob, lang: "en"),
         )
 
         assertEqual(
             .aliceSomethingWithBobsNameAtEndOfString_Arabic,
-            NSAttributedString.makeWithNameAtEndOfString(firstUser: .alice, userAtEndOfString: .bob, lang: "ar")
+            NSAttributedString.makeWithNameAtEndOfString(firstUser: .alice, userAtEndOfString: .bob, lang: "ar"),
         )
     }
 
@@ -73,7 +73,7 @@ class NSAttributedStringInGroupUpdateCopyTest: SSKBaseTest {
     func test_LocalizedStringInvertsFormatArgOrder() {
         assertEqual(
             .aliceSomethingBobWithInvertedNameOrder,
-            NSAttributedString.makeWithInvertedFormatArgOrder(firstUser: .alice, secondUser: .bob)
+            NSAttributedString.makeWithInvertedFormatArgOrder(firstUser: .alice, secondUser: .bob),
         )
     }
 }
@@ -145,8 +145,8 @@ private extension NSAttributedString {
             fromFormat: .xMadeYAnAdminFormat,
             groupUpdateFormatArgs: [
                 .name(firstUser.name, firstUser.address),
-                .name(secondUser.name, secondUser.address)
-            ]
+                .name(secondUser.name, secondUser.address),
+            ],
         )
     }
 }
@@ -191,8 +191,8 @@ private extension NSAttributedString {
             fromFormat: .xMadeYAnAdminFormat_Arabic,
             groupUpdateFormatArgs: [
                 .name(firstUser.name, firstUser.address),
-                .name(secondUser.name, secondUser.address)
-            ]
+                .name(secondUser.name, secondUser.address),
+            ],
         )
     }
 }
@@ -231,7 +231,7 @@ private extension NSAttributedString {
     static func make(user: ReferencedUser, invitedNPeople: Int) -> NSAttributedString {
         make(
             fromFormat: .xInvitedNPeopleFormat,
-            groupUpdateFormatArgs: [.raw(invitedNPeople), .name(user.name, user.address)]
+            groupUpdateFormatArgs: [.raw(invitedNPeople), .name(user.name, user.address)],
         )
     }
 }
@@ -258,11 +258,11 @@ private extension NSAttributedString {
     static func makeWithNameAtEndOfString(
         firstUser: ReferencedUser,
         userAtEndOfString otherUser: ReferencedUser,
-        lang: String
+        lang: String,
     ) -> NSAttributedString {
         make(
             fromFormat: String.newGroupMessageNotificationTitleFormat(lang: lang),
-            groupUpdateFormatArgs: [.name(firstUser.name, firstUser.address), .name(otherUser.name, otherUser.address)]
+            groupUpdateFormatArgs: [.name(firstUser.name, firstUser.address), .name(otherUser.name, otherUser.address)],
         )
     }
 }
@@ -283,7 +283,7 @@ private extension NSAttributedString {
     static func makeWithInvertedFormatArgOrder(firstUser: ReferencedUser, secondUser: ReferencedUser) -> NSAttributedString {
         make(
             fromFormat: .addToGroupActionSheetMessage_Bangla,
-            groupUpdateFormatArgs: [.name(firstUser.name, firstUser.address), .name(secondUser.name, secondUser.address)]
+            groupUpdateFormatArgs: [.name(firstUser.name, firstUser.address), .name(secondUser.name, secondUser.address)],
         )
     }
 }
@@ -362,7 +362,7 @@ private extension String {
     static func localized(
         key: String,
         tableName: String? = nil,
-        lang: String = "en"
+        lang: String = "en",
     ) throws -> String {
         guard
             let bundlePath = Bundle.main.path(forResource: lang, ofType: "lproj"),
@@ -376,7 +376,7 @@ private extension String {
             tableName: tableName,
             bundle: bundle,
             value: "",
-            comment: ""
+            comment: "",
         )
     }
 }

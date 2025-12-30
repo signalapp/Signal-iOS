@@ -34,7 +34,7 @@ public extension ConversationViewController {
         .init(
             blockingManager: SSKEnvironment.shared.blockingManagerRef,
             databaseStorage: SSKEnvironment.shared.databaseStorageRef,
-            callService: AppEnvironment.shared.callService
+            callService: AppEnvironment.shared.callService,
         )
     }
 
@@ -47,7 +47,7 @@ public extension ConversationViewController {
 
         _ = CallStarter(
             groupId: groupId,
-            context: self.callStarterContext
+            context: self.callStarterContext,
         ).startCall(from: self)
     }
 
@@ -70,7 +70,7 @@ public extension ConversationViewController {
         let startCallResult = CallStarter(
             contactThread: contactThread,
             withVideo: withVideo,
-            context: self.callStarterContext
+            context: self.callStarterContext,
         ).startCall(from: self)
 
         switch startCallResult {
@@ -89,7 +89,7 @@ public extension ConversationViewController {
             Task {
                 await SSKEnvironment.shared.groupCallManagerRef.peekGroupCallAndUpdateThread(
                     forGroupId: groupId,
-                    peekTrigger: .localEvent()
+                    peekTrigger: .localEvent(),
                 )
             }
         }

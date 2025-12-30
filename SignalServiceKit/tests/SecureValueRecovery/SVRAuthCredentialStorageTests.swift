@@ -19,7 +19,7 @@ class SVRAuthCredentialStorageTests: XCTestCase {
     func testConsolidation_noOverlap() {
         let consolidated = SVRAuthCredentialStorageImpl.consolidateCredentials(allUnsortedCredentials: [
             .init(username: "luke", password: "vaderismyfather", insertionTime: Date()),
-            .init(username: "vader", password: "lukeismyson", insertionTime: Date().addingTimeInterval(-1))
+            .init(username: "vader", password: "lukeismyson", insertionTime: Date().addingTimeInterval(-1)),
         ])
         XCTAssertEqual(consolidated.map(\.username), ["luke", "vader"])
     }
@@ -28,7 +28,7 @@ class SVRAuthCredentialStorageTests: XCTestCase {
         let consolidated = SVRAuthCredentialStorageImpl.consolidateCredentials(allUnsortedCredentials: [
             .init(username: "luke", password: "leiaismysister?!?", insertionTime: Date()),
             .init(username: "luke", password: "vaderismyfather", insertionTime: Date().addingTimeInterval(-2)),
-            .init(username: "vader", password: "lukeismyson", insertionTime: Date().addingTimeInterval(-1))
+            .init(username: "vader", password: "lukeismyson", insertionTime: Date().addingTimeInterval(-1)),
         ])
         XCTAssertEqual(consolidated.map(\.username), ["luke", "vader"])
         XCTAssertEqual(consolidated.map(\.password), ["leiaismysister?!?", "lukeismyson"])
@@ -38,7 +38,7 @@ class SVRAuthCredentialStorageTests: XCTestCase {
         let consolidated = SVRAuthCredentialStorageImpl.consolidateCredentials(allUnsortedCredentials: [
             .init(username: "luke", password: "vaderismyfather", insertionTime: Date()),
             .init(username: "luke", password: "vaderismyfather", insertionTime: Date().addingTimeInterval(-2)),
-            .init(username: "vader", password: "lukeismyson", insertionTime: Date().addingTimeInterval(-1))
+            .init(username: "vader", password: "lukeismyson", insertionTime: Date().addingTimeInterval(-1)),
         ])
         XCTAssertEqual(consolidated.map(\.username), ["vader", "luke"])
         XCTAssertEqual(consolidated.map(\.password), ["lukeismyson", "vaderismyfather"])
@@ -52,7 +52,7 @@ class SVRAuthCredentialStorageTests: XCTestCase {
             var credential = AuthCredential(
                 username: "\(i)",
                 password: "\(i)",
-                insertionTime: now.addingTimeInterval(Double(-i))
+                insertionTime: now.addingTimeInterval(Double(-i)),
             )
             credentials.append(credential)
             if i < SVR.maxSVRAuthCredentialsBackedUp {
@@ -63,7 +63,7 @@ class SVRAuthCredentialStorageTests: XCTestCase {
                 credential = AuthCredential(
                     username: "\(i)",
                     password: "\(i)_\(j)",
-                    insertionTime: now.addingTimeInterval(Double(-i - j))
+                    insertionTime: now.addingTimeInterval(Double(-i - j)),
                 )
                 credentials.append(credential)
             }

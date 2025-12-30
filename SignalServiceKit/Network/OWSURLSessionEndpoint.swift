@@ -25,7 +25,7 @@ public class OWSURLSessionEndpoint {
         baseUrl: URL?,
         frontingInfo: OWSUrlFrontingInfo?,
         securityPolicy: HttpSecurityPolicy,
-        extraHeaders: HttpHeaders
+        extraHeaders: HttpHeaders,
     ) {
         self.baseUrl = baseUrl
         self.frontingInfo = frontingInfo
@@ -38,7 +38,7 @@ public class OWSURLSessionEndpoint {
         overrideUrlScheme: String? = nil,
         method: HTTPMethod,
         headers: HttpHeaders = HttpHeaders(),
-        body: Data? = nil
+        body: Data? = nil,
     ) throws -> URLRequest {
         guard let url = buildUrl(urlString, overrideUrlScheme: overrideUrlScheme) else {
             throw OWSAssertionError("Invalid url.")
@@ -87,7 +87,7 @@ public class OWSURLSessionEndpoint {
         return OWSURLBuilderUtil.joinUrl(
             urlString: urlString,
             overrideUrlScheme: overrideUrlScheme,
-            baseUrl: baseUrl
+            baseUrl: baseUrl,
         )
     }
 }

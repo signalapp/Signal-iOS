@@ -43,25 +43,39 @@ class PaymentsTest: SignalBaseTest {
     func test_paymentAddressSigning() {
         let identityKeyPair = ECKeyPair.generateKeyPair()
         let publicAddressData = Randomness.generateRandomBytes(256)
-        let signatureData = try! TSPaymentAddress.sign(identityKeyPair: identityKeyPair,
-                                                       publicAddressData: publicAddressData)
-        XCTAssertTrue(TSPaymentAddress.verifySignature(identityKey: identityKeyPair.keyPair.identityKey,
-                                                       publicAddressData: publicAddressData,
-                                                       signatureData: signatureData))
+        let signatureData = try! TSPaymentAddress.sign(
+            identityKeyPair: identityKeyPair,
+            publicAddressData: publicAddressData,
+        )
+        XCTAssertTrue(TSPaymentAddress.verifySignature(
+            identityKey: identityKeyPair.keyPair.identityKey,
+            publicAddressData: publicAddressData,
+            signatureData: signatureData,
+        ))
         let fakeSignatureData = Randomness.generateRandomBytes(UInt(signatureData.count))
-        XCTAssertFalse(TSPaymentAddress.verifySignature(identityKey: identityKeyPair.keyPair.identityKey,
-                                                        publicAddressData: publicAddressData,
-                                                        signatureData: fakeSignatureData))
+        XCTAssertFalse(TSPaymentAddress.verifySignature(
+            identityKey: identityKeyPair.keyPair.identityKey,
+            publicAddressData: publicAddressData,
+            signatureData: fakeSignatureData,
+        ))
     }
 
     func test_isValidPhoneNumberForPayments_remoteConfigBlocklist() {
-        XCTAssertTrue(PaymentsHelperImpl.isValidPhoneNumberForPayments_remoteConfigBlocklist("+523456",
-                                                                                             paymentsDisabledRegions: ["1", "234"]))
-        XCTAssertFalse(PaymentsHelperImpl.isValidPhoneNumberForPayments_remoteConfigBlocklist("+123456",
-                                                                                              paymentsDisabledRegions: ["1", "234"]))
-        XCTAssertTrue(PaymentsHelperImpl.isValidPhoneNumberForPayments_remoteConfigBlocklist("+233333333",
-                                                                                             paymentsDisabledRegions: ["1", "234"]))
-        XCTAssertFalse(PaymentsHelperImpl.isValidPhoneNumberForPayments_remoteConfigBlocklist("+234333333",
-                                                                                              paymentsDisabledRegions: ["1", "234"]))
+        XCTAssertTrue(PaymentsHelperImpl.isValidPhoneNumberForPayments_remoteConfigBlocklist(
+            "+523456",
+            paymentsDisabledRegions: ["1", "234"],
+        ))
+        XCTAssertFalse(PaymentsHelperImpl.isValidPhoneNumberForPayments_remoteConfigBlocklist(
+            "+123456",
+            paymentsDisabledRegions: ["1", "234"],
+        ))
+        XCTAssertTrue(PaymentsHelperImpl.isValidPhoneNumberForPayments_remoteConfigBlocklist(
+            "+233333333",
+            paymentsDisabledRegions: ["1", "234"],
+        ))
+        XCTAssertFalse(PaymentsHelperImpl.isValidPhoneNumberForPayments_remoteConfigBlocklist(
+            "+234333333",
+            paymentsDisabledRegions: ["1", "234"],
+        ))
     }
 }

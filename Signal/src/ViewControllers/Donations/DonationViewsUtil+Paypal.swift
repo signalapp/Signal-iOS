@@ -14,14 +14,14 @@ extension DonationViewsUtil {
         static func createPaypalPaymentBehindActivityIndicator(
             amount: FiatMoney,
             level: OneTimeBadgeLevel,
-            fromViewController: UIViewController
+            fromViewController: UIViewController,
         ) async throws -> (URL, String) {
             return try await ModalActivityIndicatorViewController.presentAndPropagateResult(
-                from: fromViewController
+                from: fromViewController,
             ) {
                 return try await SignalServiceKit.Paypal.createBoost(
                     amount: amount,
-                    level: level
+                    level: level,
                 )
             }
         }

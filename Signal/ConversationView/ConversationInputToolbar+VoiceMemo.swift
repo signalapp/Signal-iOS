@@ -11,7 +11,7 @@ extension ConversationInputToolbar {
 
     class VoiceMemoLockView: UIView {
 
-        public override init(frame: CGRect) {
+        override init(frame: CGRect) {
             super.init(frame: frame)
 
             directionalLayoutMargins = .init(top: 12, leading: 8, bottom: 8, trailing: 8)
@@ -47,7 +47,7 @@ extension ConversationInputToolbar {
                 let maskLayer = CAShapeLayer()
                 maskLayer.path = UIBezierPath(
                     roundedRect: bounds,
-                    cornerRadius: bounds.size.smallerAxis / 2
+                    cornerRadius: bounds.size.smallerAxis / 2,
                 ).cgPath
                 visualEffectView.layer.mask = maskLayer
             }
@@ -98,6 +98,7 @@ extension ConversationInputToolbar {
             label.setCompressionResistanceHorizontalHigh()
             return label
         }()
+
         private lazy var playPauseButton: LottieToggleButton = {
             let button = LottieToggleButton()
             button.animationName = "playPauseButton"
@@ -105,13 +106,13 @@ extension ConversationInputToolbar {
             button.animationSpeed = 3
             button.setValueProvider(
                 ColorValueProvider(Theme.primaryIconColor.lottieColorValue),
-                keypath: AnimationKeypath(keypath: "**.Fill 1.Color")
+                keypath: AnimationKeypath(keypath: "**.Fill 1.Color"),
             )
             button.addAction(
                 UIAction { [weak self] _ in
                     self?.didTogglePlayPause()
                 },
-                for: .primaryActionTriggered
+                for: .primaryActionTriggered,
             )
             return button
         }()
@@ -123,7 +124,7 @@ extension ConversationInputToolbar {
 
         init(
             voiceMessageInterruptedDraft: VoiceMessageInterruptedDraft,
-            mediaCache: CVMediaCache
+            mediaCache: CVMediaCache,
         ) {
             self.voiceMessageInterruptedDraft = voiceMessageInterruptedDraft
             self.waveformView = AudioWaveformProgressView(mediaCache: mediaCache)
@@ -142,7 +143,7 @@ extension ConversationInputToolbar {
             let stackView = UIStackView(arrangedSubviews: [
                 playPauseButton,
                 waveformView,
-                playbackTimeLabel
+                playbackTimeLabel,
             ])
             stackView.axis = .horizontal
             stackView.spacing = 12

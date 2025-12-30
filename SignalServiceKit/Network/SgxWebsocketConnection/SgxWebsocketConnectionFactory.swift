@@ -20,7 +20,7 @@ public protocol SgxWebsocketConnectionFactory {
     ///     returned connection is properly disconnected.
     func connectAndPerformHandshake<Configurator: SgxWebsocketConfigurator>(
         configurator: Configurator,
-        on scheduler: Scheduler
+        on scheduler: Scheduler,
     ) -> Promise<SgxWebsocketConnection<Configurator>>
 }
 
@@ -28,23 +28,23 @@ final class SgxWebsocketConnectionFactoryImpl: SgxWebsocketConnectionFactory {
 
     private let websocketFactory: WebSocketFactory
 
-    public init(websocketFactory: WebSocketFactory) {
+    init(websocketFactory: WebSocketFactory) {
         self.websocketFactory = websocketFactory
     }
 
     func connectAndPerformHandshake<Configurator: SgxWebsocketConfigurator>(
         configurator: Configurator,
-        on scheduler: Scheduler
+        on scheduler: Scheduler,
     ) -> Promise<SgxWebsocketConnection<Configurator>> {
         let websocketFactory = self.websocketFactory
         return Promise.wrapAsync {
             return try await configurator.fetchAuth()
-        }.then(on: scheduler) { (auth) -> Promise<SgxWebsocketConnection<Configurator>> in
+        }.then(on: scheduler) { auth -> Promise<SgxWebsocketConnection<Configurator>> in
             return try SgxWebsocketConnectionImpl<Configurator>.connectAndPerformHandshake(
                 configurator: configurator,
                 auth: auth,
                 websocketFactory: websocketFactory,
-                scheduler: scheduler
+                scheduler: scheduler,
             )
         }
     }

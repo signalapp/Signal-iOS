@@ -13,7 +13,7 @@ class UsernameLinkShareSheetViewController: OWSTableSheetViewController {
 
     init(
         usernameLink: Usernames.UsernameLink,
-        didCopyUsername: (() -> Void)? = nil
+        didCopyUsername: (() -> Void)? = nil,
     ) {
         self.usernameLink = usernameLink
         self.didCopyUsername = didCopyUsername
@@ -28,8 +28,8 @@ class UsernameLinkShareSheetViewController: OWSTableSheetViewController {
             items: [
                 .label(
                     withText: usernameLink.url.absoluteString,
-                    accessoryType: .none
-                )
+                    accessoryType: .none,
+                ),
             ],
             headerView: { () -> UIView in
                 let label = UILabel()
@@ -41,7 +41,7 @@ class UsernameLinkShareSheetViewController: OWSTableSheetViewController {
                 label.layoutMargins = UIEdgeInsets(hMargin: 8, vMargin: 0)
                 label.text = OWSLocalizedString(
                     "USERNAME_LINK_SHARE_SHEET_HEADER",
-                    comment: "Text describing what you can do with a username link, on a sheet for sharing it."
+                    comment: "Text describing what you can do with a username link, on a sheet for sharing it.",
                 )
 
                 let wrapper = UIView()
@@ -51,7 +51,7 @@ class UsernameLinkShareSheetViewController: OWSTableSheetViewController {
                 label.autoPinEdgesToSuperviewMargins()
 
                 return wrapper
-            }()
+            }(),
         )
 
         let actionsSection = OWSTableSection(items: [
@@ -59,14 +59,14 @@ class UsernameLinkShareSheetViewController: OWSTableSheetViewController {
                 icon: .buttonCopy,
                 name: OWSLocalizedString(
                     "USERNAME_LINK_SHARE_SHEET_COPY_LINK_ACTION",
-                    comment: "Text for a tappable cell that copies the user's username link when selected."
+                    comment: "Text for a tappable cell that copies the user's username link when selected.",
                 ),
                 actionBlock: { [weak self] in
                     guard let self else { return }
 
                     UIPasteboard.general.url = self.usernameLink.url
                     self.didCopyUsername?()
-                }
+                },
             ),
             .item(
                 icon: .buttonShare,
@@ -77,15 +77,15 @@ class UsernameLinkShareSheetViewController: OWSTableSheetViewController {
                     ShareActivityUtil.present(
                         activityItems: [self.usernameLink.url],
                         from: self,
-                        sourceView: self.view
+                        sourceView: self.view,
                     )
-                }
-            )
+                },
+            ),
         ])
 
         contents.add(sections: [
             displayLinkSection,
-            actionsSection
+            actionsSection,
         ])
 
         return contents

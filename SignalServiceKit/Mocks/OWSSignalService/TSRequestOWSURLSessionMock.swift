@@ -26,7 +26,7 @@ public class TSRequestOWSURLSessionMock: BaseOWSURLSessionMock {
             matcher: @escaping (TSRequest) -> Bool,
             statusCode: Int = 200,
             headers: HttpHeaders = HttpHeaders(),
-            bodyData: Data? = nil
+            bodyData: Data? = nil,
         ) {
             self.matcher = matcher
             self.statusCode = statusCode
@@ -39,7 +39,7 @@ public class TSRequestOWSURLSessionMock: BaseOWSURLSessionMock {
             matcher: @escaping (TSRequest) -> Bool,
             statusCode: Int = 200,
             headers: [String: String] = [:],
-            bodyJson: Codable? = nil
+            bodyJson: Codable? = nil,
         ) {
             var bodyData: Data?
             do {
@@ -60,19 +60,19 @@ public class TSRequestOWSURLSessionMock: BaseOWSURLSessionMock {
             urlSuffix: String,
             statusCode: Int = 200,
             headers: [String: String] = [:],
-            bodyJson: Codable? = nil
+            bodyJson: Codable? = nil,
         ) {
             self.init(
                 matcher: { $0.url.relativeString.hasSuffix(urlSuffix) },
                 statusCode: statusCode,
                 headers: headers,
-                bodyJson: bodyJson
+                bodyJson: bodyJson,
             )
         }
 
         private init(
             matcher: @escaping (TSRequest) -> Bool,
-            error: Error
+            error: Error,
         ) {
             self.matcher = matcher
             self.statusCode = 0
@@ -86,30 +86,30 @@ public class TSRequestOWSURLSessionMock: BaseOWSURLSessionMock {
             statusCode: Int,
             headers: HttpHeaders = HttpHeaders(),
             bodyData: Data? = nil,
-            url: URL
+            url: URL,
         ) -> Self {
-            Self.init(
+            Self(
                 matcher: matcher,
                 error: OWSHTTPError.serviceResponse(.init(
                     requestUrl: url,
                     responseStatus: statusCode,
                     responseHeaders: headers,
-                    responseData: bodyData
-                ))
+                    responseData: bodyData,
+                )),
             )
         }
 
         public static func networkError(
-            url: URL
+            url: URL,
         ) -> Self {
-            Self.init(matcher: { $0.url == url }, error: OWSHTTPError.networkFailure(.unknownNetworkFailure))
+            Self(matcher: { $0.url == url }, error: OWSHTTPError.networkFailure(.unknownNetworkFailure))
         }
 
         public static func networkError(
             matcher: @escaping (TSRequest) -> Bool,
-            url: URL
+            url: URL,
         ) -> Self {
-            Self.init(matcher: matcher, error: OWSHTTPError.networkFailure(.unknownNetworkFailure))
+            Self(matcher: matcher, error: OWSHTTPError.networkFailure(.unknownNetworkFailure))
         }
     }
 
@@ -123,13 +123,13 @@ public class TSRequestOWSURLSessionMock: BaseOWSURLSessionMock {
         matcher: @escaping (TSRequest) -> Bool,
         statusCode: Int = 200,
         headers: [String: String] = [:],
-        bodyJson: Codable? = nil
+        bodyJson: Codable? = nil,
     ) {
         addResponse(Response(
             matcher: matcher,
             statusCode: statusCode,
             headers: headers,
-            bodyJson: bodyJson
+            bodyJson: bodyJson,
         ))
     }
 
@@ -138,19 +138,19 @@ public class TSRequestOWSURLSessionMock: BaseOWSURLSessionMock {
         statusCode: Int = 200,
         headers: [String: String] = [:],
         bodyJson: Codable? = nil,
-        numRepeats: Int = 1
+        numRepeats: Int = 1,
     ) {
         for _ in 0..<numRepeats {
             addResponse(Response(
                 urlSuffix: forUrlSuffix,
                 statusCode: statusCode,
                 headers: headers,
-                bodyJson: bodyJson
+                bodyJson: bodyJson,
             ))
         }
     }
 
-    public override func performRequest(_ rawRequest: TSRequest) async throws -> HTTPResponse {
+    override public func performRequest(_ rawRequest: TSRequest) async throws -> HTTPResponse {
         guard let responseIndex = responses.firstIndex(where: { $0.0.matcher(rawRequest) }) else {
             fatalError("Got a request with no response set up!")
         }
@@ -162,7 +162,7 @@ public class TSRequestOWSURLSessionMock: BaseOWSURLSessionMock {
             requestUrl: rawRequest.url,
             status: response.statusCode,
             headers: response.headers,
-            bodyData: response.bodyData
+            bodyData: response.bodyData,
         )
     }
 }

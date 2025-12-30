@@ -15,7 +15,7 @@ class UserProfileTest: SignalBaseTest {
         SSKEnvironment.shared.databaseStorageRef.write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
                 localIdentifiers: .forUnitTests,
-                tx: tx
+                tx: tx,
             )
         }
     }
@@ -155,11 +155,11 @@ final class UserProfile2Test: XCTestCase {
     func testNameComponent() {
         XCTAssertEqual(
             OWSUserProfile.NameComponent(truncating: String(repeating: "A", count: 27))?.stringValue.rawValue,
-            String(repeating: "A", count: 26)
+            String(repeating: "A", count: 26),
         )
         XCTAssertEqual(
             OWSUserProfile.NameComponent(truncating: String(repeating: "👨‍👩‍👧‍👦", count: 6))?.stringValue.rawValue,
-            String(repeating: "👨‍👩‍👧‍👦", count: 5)
+            String(repeating: "👨‍👩‍👧‍👦", count: 5),
         )
         // If you strip and then truncate this string, the resulting string would
         // become empty if you strip it again. While you'd normally expect a

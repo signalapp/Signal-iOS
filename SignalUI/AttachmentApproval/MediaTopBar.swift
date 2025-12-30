@@ -15,9 +15,11 @@ open class MediaTopBar: UIView {
     private lazy var controlsLayoutGuideTop: NSLayoutConstraint = {
         controlsLayoutGuide.topAnchor.constraint(equalTo: topAnchor)
     }()
+
     private lazy var controlsLayoutGuideLeading: NSLayoutConstraint = {
         controlsLayoutGuide.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor)
     }()
+
     private lazy var controlsLayoutGuideTrailing: NSLayoutConstraint = {
         controlsLayoutGuide.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor)
     }()
@@ -31,7 +33,7 @@ open class MediaTopBar: UIView {
         installConstraints()
     }
 
-    required public init?(coder: NSCoder) {
+    public required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
@@ -43,7 +45,7 @@ open class MediaTopBar: UIView {
         controlsLayoutGuide.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
     }
 
-    public override func updateConstraints() {
+    override public func updateConstraints() {
         super.updateConstraints()
 
         let isIPadUIInRegularMode = traitCollection.horizontalSizeClass == .regular && traitCollection.verticalSizeClass == .regular
@@ -70,7 +72,7 @@ open class MediaTopBar: UIView {
         controlsLayoutGuideTop.constant = topMargin
     }
 
-    public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+    override public func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         setNeedsUpdateConstraints()
     }

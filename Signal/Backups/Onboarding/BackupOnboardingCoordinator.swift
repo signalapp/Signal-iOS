@@ -37,7 +37,7 @@ class BackupOnboardingCoordinator {
     ) {
         owsPrecondition(
             db.read { tsAccountManager.registrationState(tx: $0).isPrimaryDevice == true },
-            "Unsafe to let a linked device do Backups Onboarding!"
+            "Unsafe to let a linked device do Backups Onboarding!",
         )
 
         self.accountKeyStore = accountKeyStore
@@ -76,7 +76,7 @@ class BackupOnboardingCoordinator {
                             comment: "A toast shown when 'Not Now' is tapped from the Backups onboarding intro.",
                         ))
                     }
-                }
+                },
             )
 
             // At the end of onboarding we'll look for this as the "root" of the
@@ -97,16 +97,16 @@ class BackupOnboardingCoordinator {
             BackupOnboardingKeyIntroViewController(
                 onDeviceAuthSucceeded: { [self] authSuccess in
                     showRecordRecoveryKey(localDeviceAuthSuccess: authSuccess)
-                }
+                },
             ),
-            animated: true
+            animated: true,
         )
     }
 
     // MARK: -
 
     private func showRecordRecoveryKey(
-        localDeviceAuthSuccess: LocalDeviceAuthentication.AuthSuccess
+        localDeviceAuthSuccess: LocalDeviceAuthentication.AuthSuccess,
     ) {
         guard
             let onboardingNavController,
@@ -124,7 +124,7 @@ class BackupOnboardingCoordinator {
                     self?.promptToCancelOnboarding()
                 },
             ),
-            animated: true
+            animated: true,
         )
     }
 
@@ -149,7 +149,7 @@ class BackupOnboardingCoordinator {
             },
             onBackPressed: { [weak self] in
                 self?.promptToCancelOnboarding()
-            }
+            },
         )
 
         onboardingNavController.pushViewController(
@@ -170,14 +170,14 @@ class BackupOnboardingCoordinator {
             Task {
                 await enableBackups(
                     planSelection: planSelection,
-                    fromViewController: chooseBackupPlanViewController
+                    fromViewController: chooseBackupPlanViewController,
                 )
             }
         }
 
         onboardingNavController.pushViewController(
             chooseBackupPlanViewController,
-            animated: true
+            animated: true,
         )
     }
 
@@ -188,7 +188,7 @@ class BackupOnboardingCoordinator {
         do throws(SheetDisplayableError) {
             try await backupEnablingManager.enableBackups(
                 fromViewController: fromViewController,
-                planSelection: planSelection
+                planSelection: planSelection,
             )
 
             completeOnboarding()
@@ -211,7 +211,7 @@ class BackupOnboardingCoordinator {
 
         onboardingNavController.setViewControllers(
             preOnboardingViewControllers + [backupSettingsViewController],
-            animated: true
+            animated: true,
         )
     }
 
@@ -219,22 +219,22 @@ class BackupOnboardingCoordinator {
         let actionSheet = ActionSheetController(
             title: OWSLocalizedString(
                 "BACKUP_ONBOARDING_CANCEL_SHEET_TITLE",
-                comment: "Title for action sheet when attempting to cancel backup onboarding"
+                comment: "Title for action sheet when attempting to cancel backup onboarding",
             ),
             message: OWSLocalizedString(
                 "BACKUP_ONBOARDING_CANCEL_SHEET_MESSAGE",
-                comment: "Message for action sheet when attempting to cancel backup onboarding"
-            )
+                comment: "Message for action sheet when attempting to cancel backup onboarding",
+            ),
         )
         actionSheet.addAction(.init(
             title: OWSLocalizedString(
                 "BACKUP_ONBOARDING_CANCEL_SHEET_ACTION",
-                comment: "Button label for action sheet to cancel backup onboarding"
+                comment: "Button label for action sheet to cancel backup onboarding",
             ),
             style: .default,
             handler: { [weak onboardingNavController] _ in
                 onboardingNavController?.popToRootViewController(animated: true)
-            }
+            },
         ))
         actionSheet.addAction(.cancel)
 

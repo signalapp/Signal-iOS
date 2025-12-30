@@ -9,30 +9,30 @@ extension TSInfoMessage {
     static func paymentsActivatedMessage(
         thread: TSThread,
         timestamp: UInt64 = MessageTimestampGenerator.sharedInstance.generateTimestamp(),
-        senderAci: Aci
+        senderAci: Aci,
     ) -> TSInfoMessage {
         return TSInfoMessage(
             thread: thread,
             messageType: .paymentsActivated,
             timestamp: timestamp,
             infoMessageUserInfo: [
-                .paymentActivatedAci: senderAci.serviceIdString
-            ]
+                .paymentActivatedAci: senderAci.serviceIdString,
+            ],
         )
     }
 
     static func paymentsActivationRequestMessage(
         thread: TSThread,
         timestamp: UInt64 = MessageTimestampGenerator.sharedInstance.generateTimestamp(),
-        senderAci: Aci
+        senderAci: Aci,
     ) -> TSInfoMessage {
         return TSInfoMessage(
             thread: thread,
             messageType: .paymentsActivationRequest,
             timestamp: timestamp,
             infoMessageUserInfo: [
-                .paymentActivationRequestSenderAci: senderAci.serviceIdString
-            ]
+                .paymentActivationRequestSenderAci: senderAci.serviceIdString,
+            ],
         )
     }
 }
@@ -51,7 +51,7 @@ extension TSInfoMessage {
 
         return paymentsInfoMessageAuthor(
             identifyingAci: requestSenderAci,
-            localIdentifiers: localIdentifiers
+            localIdentifiers: localIdentifiers,
         )
     }
 
@@ -63,13 +63,13 @@ extension TSInfoMessage {
 
         return paymentsInfoMessageAuthor(
             identifyingAci: authorAci,
-            localIdentifiers: localIdentifiers
+            localIdentifiers: localIdentifiers,
         )
     }
 
     private func paymentsInfoMessageAuthor(
         identifyingAci: Aci?,
-        localIdentifiers: LocalIdentifiers
+        localIdentifiers: LocalIdentifiers,
     ) -> PaymentsInfoMessageAuthor? {
         guard let identifyingAci else { return nil }
 
@@ -90,20 +90,20 @@ extension TSInfoMessage {
     private func paymentsActivationRequestType(transaction tx: DBReadTransaction) -> PaymentsInfoMessageType? {
         return paymentsInfoMessageType(
             authorBlock: self.paymentsActivationRequestAuthor(localIdentifiers:),
-            tx: tx
+            tx: tx,
         )
     }
 
     private func paymentsActivatedType(transaction tx: DBReadTransaction) -> PaymentsInfoMessageType? {
         return paymentsInfoMessageType(
             authorBlock: self.paymentsActivatedAuthor(localIdentifiers:),
-            tx: tx
+            tx: tx,
         )
     }
 
     private func paymentsInfoMessageType(
         authorBlock: (LocalIdentifiers) -> PaymentsInfoMessageAuthor?,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> PaymentsInfoMessageType? {
         guard let localIdentiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx) else {
             return nil
@@ -154,13 +154,13 @@ extension TSInfoMessage {
             aci = fromAci
             formatString = OWSLocalizedString(
                 "INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_RECEIVED",
-                comment: "Shown when a user receives a payment activation request. Embeds: {{ the user's name}}"
+                comment: "Shown when a user receives a payment activation request. Embeds: {{ the user's name}}",
             )
         case .outgoing(let toAci):
             aci = toAci
             formatString = OWSLocalizedString(
                 "INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_SENT",
-                comment: "Shown when requesting a user activates payments. Embeds: {{ the user's name}}"
+                comment: "Shown when requesting a user activates payments. Embeds: {{ the user's name}}",
             )
         }
 
@@ -176,13 +176,13 @@ extension TSInfoMessage {
         case .outgoing:
             return OWSLocalizedString(
                 "INFO_MESSAGE_PAYMENTS_ACTIVATED",
-                comment: "Shown when a user activates payments from a chat"
+                comment: "Shown when a user activates payments from a chat",
             )
         case .incoming(let aci):
             let displayName = SSKEnvironment.shared.contactManagerRef.displayName(for: SignalServiceAddress(aci), tx: transaction)
             let format = OWSLocalizedString(
                 "INFO_MESSAGE_PAYMENTS_ACTIVATION_REQUEST_FINISHED",
-                comment: "Shown when a user activates payments from a chat. Embeds: {{ the user's name}}"
+                comment: "Shown when a user activates payments from a chat. Embeds: {{ the user's name}}",
             )
             return String(format: format, displayName.resolvedValue())
         }

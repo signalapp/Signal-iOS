@@ -25,7 +25,7 @@ public protocol PhoneNumberDiscoverabilityManager {
         updateAccountAttributes: Bool,
         updateStorageService: Bool,
         authedAccount: AuthedAccount,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     )
 }
 

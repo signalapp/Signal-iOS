@@ -35,29 +35,29 @@ public class AttachmentReference {
 
     // MARK: - Init
 
-    internal init(record: MessageAttachmentReferenceRecord) throws {
+    init(record: MessageAttachmentReferenceRecord) throws {
         self.owner = try Owner.validateAndBuild(record: record)
         self.attachmentRowId = record.attachmentRowId
         self.sourceFilename = record.sourceFilename
         self.sourceUnencryptedByteCount = record.sourceUnencryptedByteCount
         self.sourceMediaSizePixels = Self.buildSourceMediaSizePixels(
             sourceMediaWidthPixels: record.sourceMediaWidthPixels,
-            sourceMediaHeightPixels: record.sourceMediaHeightPixels
+            sourceMediaHeightPixels: record.sourceMediaHeightPixels,
         )
     }
 
-    internal init(record: StoryMessageAttachmentReferenceRecord) throws {
+    init(record: StoryMessageAttachmentReferenceRecord) throws {
         self.owner = try Owner.validateAndBuild(record: record)
         self.attachmentRowId = record.attachmentRowId
         self.sourceFilename = record.sourceFilename
         self.sourceUnencryptedByteCount = record.sourceUnencryptedByteCount
         self.sourceMediaSizePixels = Self.buildSourceMediaSizePixels(
             sourceMediaWidthPixels: record.sourceMediaWidthPixels,
-            sourceMediaHeightPixels: record.sourceMediaHeightPixels
+            sourceMediaHeightPixels: record.sourceMediaHeightPixels,
         )
     }
 
-    internal init(record: ThreadAttachmentReferenceRecord) throws {
+    init(record: ThreadAttachmentReferenceRecord) throws {
         self.owner = try Owner.validateAndBuild(record: record)
         self.attachmentRowId = record.attachmentRowId
         self.sourceFilename = nil
@@ -67,7 +67,7 @@ public class AttachmentReference {
 
     private static func buildSourceMediaSizePixels(
         sourceMediaWidthPixels: UInt32?,
-        sourceMediaHeightPixels: UInt32?
+        sourceMediaHeightPixels: UInt32?,
     ) -> CGSize? {
         guard
             let sourceMediaWidthPixels,
@@ -75,8 +75,8 @@ public class AttachmentReference {
         else {
             owsAssertDebug(
                 sourceMediaWidthPixels == nil
-                && sourceMediaHeightPixels == nil,
-                "Got partial source media size"
+                    && sourceMediaHeightPixels == nil,
+                "Got partial source media size",
             )
             return nil
         }

@@ -22,26 +22,26 @@ public struct PinnedMessageRecord: Codable, FetchableRecord, MutablePersistableR
         expiresAt: UInt64? = nil,
         sentTimestamp: UInt64,
         receivedTimestamp: UInt64,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws(GRDB.DatabaseError) -> Self {
         do {
             return try PinnedMessageRecord.fetchOne(
                 tx.database,
                 sql: """
-                    INSERT INTO \(PinnedMessageRecord.databaseTableName) (
-                        \(CodingKeys.interactionId.rawValue),
-                        \(CodingKeys.threadId.rawValue),
-                        \(CodingKeys.expiresAt.rawValue),
-                        \(CodingKeys.sentTimestamp.rawValue),
-                        \(CodingKeys.receivedTimestamp.rawValue)
-                    ) VALUES (?, ?, ?, ?, ?) RETURNING *
-                    """,
+                INSERT INTO \(PinnedMessageRecord.databaseTableName) (
+                    \(CodingKeys.interactionId.rawValue),
+                    \(CodingKeys.threadId.rawValue),
+                    \(CodingKeys.expiresAt.rawValue),
+                    \(CodingKeys.sentTimestamp.rawValue),
+                    \(CodingKeys.receivedTimestamp.rawValue)
+                ) VALUES (?, ?, ?, ?, ?) RETURNING *
+                """,
                 arguments: [
                     interactionId,
                     threadId,
                     expiresAt,
                     sentTimestamp,
-                    receivedTimestamp
+                    receivedTimestamp,
                 ],
             )!
         } catch {

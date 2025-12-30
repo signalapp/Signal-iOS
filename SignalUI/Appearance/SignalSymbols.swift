@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalServiceKit
 import NaturalLanguage
+import SignalServiceKit
 public import SwiftUI
 
 public enum SignalSymbol: Character {
@@ -109,6 +109,7 @@ public enum SignalSymbol: Character {
     public static var leave: SignalSymbol {
         localizedSymbol(ltr: .leaveLTR, rtl: .leaveRTL)
     }
+
     /// Use this when adding a trailing chevron to the end of strings we are
     /// localizing ourselves. For names or other user-input text, you might want
     /// to try ``chevronTrailing(for:)`` instead.
@@ -175,34 +176,34 @@ public enum SignalSymbol: Character {
                 descriptor: UIFontDescriptor(fontAttributes: [
                     .name: self.fontName,
                 ]),
-                size: size
+                size: size,
             )
         }
 
         fileprivate func dynamicTypeFont(
             for textStyle: UIFont.TextStyle,
-            clamped: Bool
+            clamped: Bool,
         ) -> UIFont {
             self.dynamicTypeFont(
                 ofStandardSize: UIFont.preferredFont(
                     forTextStyle: textStyle,
                     compatibleWith: UITraitCollection(
-                        preferredContentSizeCategory: .large
-                    )
+                        preferredContentSizeCategory: .large,
+                    ),
                 ).pointSize,
-                clamped: clamped
+                clamped: clamped,
             )
         }
 
         fileprivate func dynamicTypeFont(
             ofStandardSize standardSize: CGFloat,
-            clamped: Bool
+            clamped: Bool,
         ) -> UIFont {
             let unscaledFont = UIFont(
                 descriptor: UIFontDescriptor(fontAttributes: [
                     .name: self.fontName,
                 ]),
-                size: standardSize
+                size: standardSize,
             )
 
             if clamped {
@@ -212,7 +213,7 @@ public enum SignalSymbol: Character {
             }
 
             return UIFontMetrics.default.scaledFont(
-                for: unscaledFont
+                for: unscaledFont,
             )
         }
     }
@@ -229,16 +230,16 @@ public enum SignalSymbol: Character {
         clamped: Bool = false,
         weight: Weight = .regular,
         leadingCharacter: LeadingCharacter? = nil,
-        attributes: [NSAttributedString.Key: Any] = [:]
+        attributes: [NSAttributedString.Key: Any] = [:],
     ) -> NSAttributedString {
-            self.attributedString(
-                font: weight.dynamicTypeFont(
-                    for: textStyle,
-                    clamped: clamped
-                ),
-                leadingCharacter: leadingCharacter,
-                attributes: attributes
-            )
+        self.attributedString(
+            font: weight.dynamicTypeFont(
+                for: textStyle,
+                clamped: clamped,
+            ),
+            leadingCharacter: leadingCharacter,
+            attributes: attributes,
+        )
     }
 
     public func attributedString(
@@ -246,15 +247,15 @@ public enum SignalSymbol: Character {
         clamped: Bool = false,
         weight: Weight = .regular,
         leadingCharacter: LeadingCharacter? = nil,
-        attributes: [NSAttributedString.Key: Any] = [:]
+        attributes: [NSAttributedString.Key: Any] = [:],
     ) -> NSAttributedString {
         self.attributedString(
             font: weight.dynamicTypeFont(
                 ofStandardSize: dynamicTypeBaseSize,
-                clamped: clamped
+                clamped: clamped,
             ),
             leadingCharacter: leadingCharacter,
-            attributes: attributes
+            attributes: attributes,
         )
     }
 
@@ -262,26 +263,26 @@ public enum SignalSymbol: Character {
         staticFontSize: CGFloat,
         weight: Weight = .regular,
         leadingCharacter: LeadingCharacter? = nil,
-        attributes: [NSAttributedString.Key: Any] = [:]
+        attributes: [NSAttributedString.Key: Any] = [:],
     ) -> NSAttributedString {
         self.attributedString(
             font: weight.staticFont(ofSize: staticFontSize),
             leadingCharacter: leadingCharacter,
-            attributes: attributes
+            attributes: attributes,
         )
     }
 
     private func attributedString(
         font: UIFont,
         leadingCharacter: LeadingCharacter?,
-        attributes: [NSAttributedString.Key: Any]
+        attributes: [NSAttributedString.Key: Any],
     ) -> NSAttributedString {
         var attributes = attributes
         attributes[.font] = font
 
         return NSAttributedString(
             string: "\(leadingCharacter?.rawValue ?? "")\(self.rawValue)",
-            attributes: attributes
+            attributes: attributes,
         )
     }
 
@@ -303,7 +304,7 @@ public enum SignalSymbol: Character {
     /// - Returns: A SwiftUI `Text` view with this symbol and the given font.
     public func text(
         dynamicTypeBaseSize: CGFloat,
-        weight: Weight = .regular
+        weight: Weight = .regular,
     ) -> Text {
         Text(verbatim: "\(self.rawValue)")
             .font(Font.custom(weight.fontName, size: dynamicTypeBaseSize))

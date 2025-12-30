@@ -36,7 +36,7 @@ public enum AuthedDevice {
                 pni: pni,
                 e164: phoneNumber,
                 deviceId: deviceId,
-                authPassword: authPassword
+                authPassword: authPassword,
             )
         }
     }
@@ -60,7 +60,7 @@ public enum AuthedDevice {
                 pni: explicit.pni,
                 e164: explicit.phoneNumber,
                 deviceId: explicit.deviceId,
-                authPassword: explicit.authPassword
+                authPassword: explicit.authPassword,
             )
         }
     }

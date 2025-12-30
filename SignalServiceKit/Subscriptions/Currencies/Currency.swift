@@ -34,7 +34,7 @@ public enum Currency {
     public static func infos(
         for codes: any Sequence<Code>,
         ignoreMissingNames: Bool,
-        shouldSort: Bool
+        shouldSort: Bool,
     ) -> [Info] {
 #if TESTABLE_BUILD
         owsPrecondition(Array(codes).count == Set(codes).count)
@@ -64,7 +64,7 @@ public enum Currency {
             "JPY": .before("¥"),
             "KRW": .before("₩"),
             "PLN": .after("zł"),
-            "SEK": .after("kr")
+            "SEK": .after("kr"),
         ]
 
         public static func `for`(currencyCode: Currency.Code) -> Symbol {

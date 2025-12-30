@@ -31,7 +31,7 @@ public enum Retry {
         minAverageBackoff: TimeInterval = 2,
         maxAverageBackoff: TimeInterval = .infinity,
         isRetryable: (E) -> Bool = { !$0.isFatalError && $0.isRetryable },
-        block: () async throws(E) -> T
+        block: () async throws(E) -> T,
     ) async throws -> T {
         return try await performRepeatedly(
             block: block,
@@ -45,7 +45,7 @@ public enum Retry {
                     maxAverageBackoff: maxAverageBackoff,
                 )
                 try await Task.sleep(nanoseconds: retryDelay.clampedNanoseconds)
-            }
+            },
         )
     }
 }

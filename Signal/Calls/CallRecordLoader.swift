@@ -39,7 +39,7 @@ protocol CallRecordLoader {
     /// ordered by ``CallRecordCursorOrdering/ascending``.
     func loadCallRecords(
         loadDirection: LoadDirection,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> CallRecordCursor
 }
 
@@ -54,7 +54,7 @@ class CallRecordLoaderImpl: CallRecordLoader {
 
         init(
             onlyLoadMissedCalls: Bool,
-            onlyMatchThreadRowIds: [Int64]?
+            onlyMatchThreadRowIds: [Int64]?,
         ) {
             self.onlyLoadMissedCalls = onlyLoadMissedCalls
             self.onlyMatchThreadRowIds = onlyMatchThreadRowIds
@@ -66,7 +66,7 @@ class CallRecordLoaderImpl: CallRecordLoader {
 
     init(
         callRecordQuerier: CallRecordQuerier,
-        configuration: Configuration
+        configuration: Configuration,
     ) {
         self.callRecordQuerier = callRecordQuerier
         self.configuration = configuration
@@ -79,7 +79,7 @@ class CallRecordLoaderImpl: CallRecordLoader {
     /// i.e., the first record is the newest and the last record is the oldest.
     func loadCallRecords(
         loadDirection: LoadDirection,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> CallRecordCursor {
         let fetchOrdering: CallRecordQuerier.FetchOrdering = {
             switch loadDirection {
@@ -94,7 +94,7 @@ class CallRecordLoaderImpl: CallRecordLoader {
 
         let callRecordCursors = callRecordCursors(
             ordering: fetchOrdering,
-            tx: tx
+            tx: tx,
         )
 
         if callRecordCursors.isEmpty {
@@ -106,7 +106,7 @@ class CallRecordLoaderImpl: CallRecordLoader {
                 callRecordCursors: callRecordCursors.map {
                     InterleavableCallRecordCursor(callRecordCursor: $0)
                 },
-                nextElementComparator: { (lhs, rhs) in
+                nextElementComparator: { lhs, rhs in
                     switch fetchOrdering {
                     case .descending, .descendingBefore:
                         // When descending, we want the newest record next.
@@ -115,7 +115,7 @@ class CallRecordLoaderImpl: CallRecordLoader {
                         // When ascending, we want the oldest record next.
                         return lhs.callBeganTimestamp < rhs.callBeganTimestamp
                     }
-                }
+                },
             )
         } catch let error {
             CallRecordLogger.shared.error("Failed to drain cursors! \(error)")
@@ -125,7 +125,7 @@ class CallRecordLoaderImpl: CallRecordLoader {
 
     private func callRecordCursors(
         ordering: CallRecordQuerierFetchOrdering,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> [CallRecordCursor] {
         if
             let onlyMatchThreadRowIds = configuration.onlyMatchThreadRowIds,
@@ -137,7 +137,7 @@ class CallRecordLoaderImpl: CallRecordLoader {
                         threadRowId: threadRowId,
                         callStatus: callStatus,
                         ordering: ordering,
-                        tx: tx
+                        tx: tx,
                     )
                 }
             }
@@ -146,7 +146,7 @@ class CallRecordLoaderImpl: CallRecordLoader {
                 return callRecordQuerier.fetchCursor(
                     threadRowId: threadRowId,
                     ordering: ordering,
-                    tx: tx
+                    tx: tx,
                 )
             }
         } else if configuration.onlyLoadMissedCalls {
@@ -154,13 +154,15 @@ class CallRecordLoaderImpl: CallRecordLoader {
                 return callRecordQuerier.fetchCursor(
                     callStatus: callStatus,
                     ordering: ordering,
-                    tx: tx
+                    tx: tx,
                 )
             }
-        } else if let fetchCursor = callRecordQuerier.fetchCursor(
-            ordering: ordering,
-            tx: tx
-        ) {
+        } else if
+            let fetchCursor = callRecordQuerier.fetchCursor(
+                ordering: ordering,
+                tx: tx,
+            )
+        {
             return [fetchCursor]
         } else {
             return []
@@ -189,11 +191,11 @@ private struct InterleavableCallRecordCursor: InterleavableCursor {
 private class InterleavingCallRecordCursor: InterleavingCompositeCursor<InterleavableCallRecordCursor>, CallRecordCursor {
     init(
         callRecordCursors: [InterleavableCallRecordCursor],
-        nextElementComparator: @escaping ElementSortComparator
+        nextElementComparator: @escaping ElementSortComparator,
     ) throws {
         try super.init(
             interleaving: callRecordCursors,
-            nextElementComparator: nextElementComparator
+            nextElementComparator: nextElementComparator,
         )
     }
 }

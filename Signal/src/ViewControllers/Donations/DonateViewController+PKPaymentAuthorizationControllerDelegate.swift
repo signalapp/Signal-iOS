@@ -14,20 +14,20 @@ extension DonateViewController: PKPaymentAuthorizationControllerDelegate {
     func paymentAuthorizationController(
         _ controller: PKPaymentAuthorizationController,
         didAuthorizePayment payment: PKPayment,
-        handler: @escaping (PKPaymentAuthorizationResult) -> Void
+        handler: @escaping (PKPaymentAuthorizationResult) -> Void,
     ) {
         switch state.donateMode {
         case .oneTime:
             paymentAuthorizationControllerForOneTime(
                 controller,
                 didAuthorizePayment: payment,
-                handler: handler
+                handler: handler,
             )
         case .monthly:
             paymentAuthorizationControllerForMonthly(
                 controller,
                 didAuthorizePayment: payment,
-                handler: handler
+                handler: handler,
             )
         }
     }

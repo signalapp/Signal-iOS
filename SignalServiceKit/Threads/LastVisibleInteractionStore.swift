@@ -49,9 +49,9 @@ public class LastVisibleInteractionStore {
     public func setLastVisibleInteraction(
         _ lastVisibleInteraction: LastVisibleInteraction?,
         for thread: TSThread,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
-        guard let lastVisibleInteraction = lastVisibleInteraction else {
+        guard let lastVisibleInteraction else {
             kvStore.removeValue(forKey: thread.uniqueId, transaction: tx)
             return
         }
@@ -72,14 +72,14 @@ extension TSThread {
     func hasLastVisibleInteraction(transaction: DBReadTransaction) -> Bool {
         return DependenciesBridge.shared.lastVisibleInteractionStore.hasLastVisibleInteraction(
             for: self,
-            tx: transaction
+            tx: transaction,
         )
     }
 
     func clearLastVisibleInteraction(transaction: DBWriteTransaction) {
         return DependenciesBridge.shared.lastVisibleInteractionStore.clearLastVisibleInteraction(
             for: self,
-            tx: transaction
+            tx: transaction,
         )
     }
 
@@ -96,13 +96,13 @@ extension TSThread {
     func setLastVisibleInteraction(
         sortId: UInt64,
         onScreenPercentage: CGFloat,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) {
         let lastVisibleInteraction = LastVisibleInteraction(sortId: sortId, onScreenPercentage: onScreenPercentage)
         DependenciesBridge.shared.lastVisibleInteractionStore.setLastVisibleInteraction(
             lastVisibleInteraction,
             for: self,
-            tx: transaction
+            tx: transaction,
         )
     }
 }

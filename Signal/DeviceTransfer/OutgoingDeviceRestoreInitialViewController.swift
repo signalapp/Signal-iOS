@@ -18,7 +18,7 @@ class OutgoingDeviceRestoreIntialViewController: HostingController<OutgoingDevic
         self.modalPresentationStyle = .overFullScreen
         self.title = OWSLocalizedString(
             "OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_TITLE",
-            comment: "Title text describing the outgoing transfer."
+            comment: "Title text describing the outgoing transfer.",
         )
         self.navigationItem.leftBarButtonItem = .cancelButton(dismissingFrom: self)
         view.backgroundColor = UIColor.Signal.secondaryBackground
@@ -40,7 +40,7 @@ struct OutgoingDeviceRestoreInitialView: View {
 
                     Text(OWSLocalizedString(
                         "OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_BODY",
-                        comment: "Body text describing the outgoing transfer."
+                        comment: "Body text describing the outgoing transfer.",
                     ))
                     .appendLink(CommonStrings.learnMore) {
                         UIApplication.shared.open(URL(string: "TODO: link to documentation")!)
@@ -51,7 +51,7 @@ struct OutgoingDeviceRestoreInitialView: View {
 
                     Button(OWSLocalizedString(
                         "OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_CONFIRM_ACTION",
-                        comment: "Action button to begin account transfer."
+                        comment: "Action button to begin account transfer.",
                     )) {
                         Task {
                             await self.presenter.didTapTransfer()
@@ -63,7 +63,7 @@ struct OutgoingDeviceRestoreInitialView: View {
             footer: {
                 let footerString = OWSLocalizedString(
                     "OUTGOING_DEVICE_RESTORE_INITIAL_VIEW_FOOTER",
-                    comment: "Body text describing the outgoing transfer."
+                    comment: "Body text describing the outgoing transfer.",
                 )
                 Text("\(SignalSymbol.lock.text(dynamicTypeBaseSize: 14)) \(footerString)")
                     .font(.footnote)
@@ -89,8 +89,8 @@ struct PreviewOutgoingDeviceRestoreIntialPresenter: OutgoingDeviceRestoreInitial
 #Preview {
     OWSNavigationController(
         rootViewController: OutgoingDeviceRestoreIntialViewController(
-            presenter: PreviewOutgoingDeviceRestoreIntialPresenter()
-        )
+            presenter: PreviewOutgoingDeviceRestoreIntialPresenter(),
+        ),
     )
 }
 #endif

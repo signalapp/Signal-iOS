@@ -10,8 +10,10 @@ import UIKit
 
 protocol AttachmentPrepViewControllerDelegate: AnyObject {
 
-    func attachmentPrepViewControllerDidRequestUpdateControlsVisibility(_ viewController: AttachmentPrepViewController,
-                                                                        completion: ((Bool) -> Void)?)
+    func attachmentPrepViewControllerDidRequestUpdateControlsVisibility(
+        _ viewController: AttachmentPrepViewController,
+        completion: ((Bool) -> Void)?,
+    )
 }
 
 // MARK: -
@@ -33,7 +35,7 @@ public class AttachmentPrepViewController: OWSViewController {
 
     class func viewController(
         for attachmentApprovalItem: AttachmentApprovalItem,
-        stickerSheetDelegate: StickerPickerSheetDelegate?
+        stickerSheetDelegate: StickerPickerSheetDelegate?,
     ) -> AttachmentPrepViewController? {
         switch attachmentApprovalItem.type {
         case .image:
@@ -90,7 +92,7 @@ public class AttachmentPrepViewController: OWSViewController {
         // Zoomable scroll view.
         view.addSubview(scrollView)
         scrollView.translatesAutoresizingMaskIntoConstraints = false
-        view.addConstraints([ scrollViewLeading, scrollViewTop, scrollViewTrailing, scrollViewBottom ])
+        view.addConstraints([scrollViewLeading, scrollViewTop, scrollViewTrailing, scrollViewBottom])
 
         // Create full screen container view so the scrollView
         // can compute an appropriate content size in which to center
@@ -102,7 +104,7 @@ public class AttachmentPrepViewController: OWSViewController {
             containerView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
             containerView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
             containerView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
-            containerView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor)
+            containerView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
         ])
         containerView.autoMatch(.height, to: .height, of: scrollView)
         containerView.autoMatch(.width, to: .width, of: scrollView)
@@ -131,7 +133,7 @@ public class AttachmentPrepViewController: OWSViewController {
         prepDelegate?.attachmentPrepViewControllerDidRequestUpdateControlsVisibility(self, completion: nil)
     }
 
-    public override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+    override public func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
         coordinator.animate { _ in
             self.updateMinZoomScaleForSize(size)
@@ -155,19 +157,19 @@ public class AttachmentPrepViewController: OWSViewController {
 
     private lazy var scrollViewLeading = scrollView.leadingAnchor.constraint(
         equalTo: view.leadingAnchor,
-        constant: contentLayoutMargins.leading
+        constant: contentLayoutMargins.leading,
     )
     private lazy var scrollViewTop = scrollView.topAnchor.constraint(
         equalTo: view.topAnchor,
-        constant: contentLayoutMargins.top
+        constant: contentLayoutMargins.top,
     )
     private lazy var scrollViewTrailing = scrollView.trailingAnchor.constraint(
         equalTo: view.trailingAnchor,
-        constant: -contentLayoutMargins.trailing
+        constant: -contentLayoutMargins.trailing,
     )
     private lazy var scrollViewBottom = scrollView.bottomAnchor.constraint(
         equalTo: view.bottomAnchor,
-        constant: -contentLayoutMargins.bottom
+        constant: -contentLayoutMargins.bottom,
     )
     var contentLayoutMargins: UIEdgeInsets = .zero {
         didSet {
@@ -207,8 +209,10 @@ public class AttachmentPrepViewController: OWSViewController {
 
         let contentViewSize = contentView.bounds.size
         let scaledContentViewSize = contentView.bounds.inset(by: .init(margin: 20)).size
-        let scale = min(scaledContentViewSize.width / contentViewSize.width,
-                        scaledContentViewSize.height / contentViewSize.height)
+        let scale = min(
+            scaledContentViewSize.width / contentViewSize.width,
+            scaledContentViewSize.height / contentViewSize.height,
+        )
 
         let offsetY = 0.5 * max(0, keyboardHeight - contentLayoutMargins.bottom)
 
@@ -216,7 +220,7 @@ public class AttachmentPrepViewController: OWSViewController {
     }
 
     private func _presentMediaTool(viewController: UIViewController) {
-        if let presentedViewController = presentedViewController {
+        if let presentedViewController {
             owsAssertDebug(false, "Already has presented view controller. [\(presentedViewController)]")
             presentedViewController.dismiss(animated: false) { [weak self] in
                 self?._presentMediaTool(viewController: viewController)
@@ -233,7 +237,7 @@ public class AttachmentPrepViewController: OWSViewController {
     }
 
     final func presentMediaTool(viewController: UIViewController) {
-        if let prepDelegate = prepDelegate {
+        if let prepDelegate {
             isMediaToolViewControllerPresented = true
             prepDelegate.attachmentPrepViewControllerDidRequestUpdateControlsVisibility(self) { _ in
                 self._presentMediaTool(viewController: viewController)
@@ -280,7 +284,7 @@ extension AttachmentPrepViewController: UIScrollViewDelegate {
 
         // First assume that mediaMessageView center coincides with the contents center
         // This is correct when the mediaMessageView is bigger than scrollView due to zoom
-        var contentCenter = CGPoint(x: (scrollView.contentSize.width / 2), y: (scrollView.contentSize.height / 2))
+        var contentCenter = CGPoint(x: scrollView.contentSize.width / 2, y: scrollView.contentSize.height / 2)
 
         // if mediaMessageView is smaller than the scrollView visible size - fix the content center accordingly
         if scrollView.contentSize.width < scrollViewSize.width {

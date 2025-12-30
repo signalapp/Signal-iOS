@@ -11,7 +11,7 @@ public func owsFailBeta(
     _ logMessage: String,
     file: String = #fileID,
     function: String = #function,
-    line: Int = #line
+    line: Int = #line,
 ) {
     if BuildFlags.isPrerelease {
         owsFail(logMessage, file: file, function: function, line: line)
@@ -28,7 +28,7 @@ public func owsAssertBeta(
     _ message: @autoclosure () -> String = String(),
     file: String = #fileID,
     function: String = #function,
-    line: Int = #line
+    line: Int = #line,
 ) {
     if !condition {
         let message: String = message()
@@ -36,7 +36,7 @@ public func owsAssertBeta(
             message.isEmpty ? "Assertion failed." : message,
             file: file,
             function: function,
-            line: line
+            line: line,
         )
     }
 }

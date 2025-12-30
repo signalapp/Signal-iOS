@@ -23,14 +23,14 @@ public struct EditRecord: Codable, FetchableRecord, PersistableRecord {
     public let pastRevisionId: Int64
     public var read: Bool
 
-    mutating public func didInsert(with rowID: Int64, for column: String?) {
+    public mutating func didInsert(with rowID: Int64, for column: String?) {
         id = rowID
     }
 
     public init(
         latestRevisionId: Int64,
         pastRevisionId: Int64,
-        read: Bool = false
+        read: Bool = false,
     ) {
         self.latestRevisionId = latestRevisionId
         self.pastRevisionId = pastRevisionId

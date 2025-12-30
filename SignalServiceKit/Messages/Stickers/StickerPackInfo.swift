@@ -21,14 +21,14 @@ public final class StickerPackInfo: NSObject, NSCoding, NSCopying {
         }
     }
 
-    public override var hash: Int {
+    override public var hash: Int {
         var hasher = Hasher()
         hasher.combine(packId)
         hasher.combine(packKey)
         return hasher.finalize()
     }
 
-    public override func isEqual(_ object: Any?) -> Bool {
+    override public func isEqual(_ object: Any?) -> Bool {
         guard let object = object as? Self else { return false }
         guard type(of: self) == type(of: object) else { return false }
         guard self.packId == object.packId else { return false }
@@ -91,11 +91,11 @@ public final class StickerPackInfo: NSObject, NSCoding, NSCopying {
     @objc(isStickerPackShareUrl:)
     public class func isStickerPackShare(_ url: URL) -> Bool {
         url.scheme == "https" &&
-        url.user == nil &&
-        url.password == nil &&
-        url.host == "signal.art" &&
-        url.port == nil &&
-        url.path == "/addstickers"
+            url.user == nil &&
+            url.password == nil &&
+            url.host == "signal.art" &&
+            url.port == nil &&
+            url.path == "/addstickers"
     }
 
     @objc(parseStickerPackShareUrl:)
@@ -144,5 +144,5 @@ public final class StickerPackInfo: NSObject, NSCoding, NSCopying {
         return URLComponents(string: fakeUrl.absoluteString)?.queryItems
     }
 
-    public override var description: String { packId.hexadecimalString }
+    override public var description: String { packId.hexadecimalString }
 }

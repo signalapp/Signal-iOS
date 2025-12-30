@@ -9,18 +9,18 @@ public protocol AttachmentDownloadStore {
 
     func fetchRecord(
         id: QueuedAttachmentDownloadRecord.IDType,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> QueuedAttachmentDownloadRecord?
 
     func enqueuedDownload(
         for id: Attachment.IDType,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> QueuedAttachmentDownloadRecord?
 
     /// Fetch the next N highest priority downloads off the queue in FIFO order.
     func peek(
         count: UInt,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> [QueuedAttachmentDownloadRecord]
 
     /// Return the lowest non-nil `minRetryTimestamp`.
@@ -40,20 +40,20 @@ public protocol AttachmentDownloadStore {
         withId attachmentId: Attachment.IDType,
         source: QueuedAttachmentDownloadRecord.SourceType,
         priority: AttachmentDownloadPriority,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws
 
     func removeAttachmentFromQueue(
         withId attachmentId: Attachment.IDType,
         source: QueuedAttachmentDownloadRecord.SourceType,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws
 
     /// If the failure is permanent (no retry), use `removeAttachmentFromQueue` instead.
     func markQueuedDownloadFailed(
         withId id: QueuedAttachmentDownloadRecord.IDType,
         minRetryTimestamp: UInt64,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws
 
     /// Update all downloads with`minRetryTimestamp` past the current timestamp,

@@ -4,8 +4,8 @@
 //
 
 import Foundation
-import SwiftUI
 import SignalServiceKit
+import SwiftUI
 
 extension Registration {
 

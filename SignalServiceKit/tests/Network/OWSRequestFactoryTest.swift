@@ -30,7 +30,7 @@ class OWSRequestFactoryTest: XCTestCase {
     func testDeviceProvisioning() {
         let request = OWSRequestFactory.provisionDevice(
             withMessageBody: .init([1, 2, 3]),
-            ephemeralDeviceId: "foo bar"
+            ephemeralDeviceId: "foo bar",
         )
 
         XCTAssertEqual(request.url.relativeString, "v1/provisioning/foo%20bar")
@@ -51,7 +51,7 @@ class OWSRequestFactoryTest: XCTestCase {
             timestamp: 1234,
             isOnline: true,
             isUrgent: false,
-            auth: .accessKey(udAccessKey)
+            auth: .accessKey(udAccessKey),
         )
 
         XCTAssertEqual(request.method, "PUT")
@@ -77,7 +77,7 @@ class OWSRequestFactoryTest: XCTestCase {
                 integerMoneyValue: 123,
                 inCurrencyCode: "CHF",
                 level: 456,
-                paymentMethod: paymentMethod
+                paymentMethod: paymentMethod,
             )
 
             XCTAssertEqual(request.url.path, "v1/subscription/boost/create")
@@ -96,14 +96,17 @@ class OWSRequestFactoryTest: XCTestCase {
             inCurrencyCode: "CHF",
             level: 456,
             returnUrl: URL(string: "https://example.com/approved")!,
-            cancelUrl: URL(string: "https://example.com/canceled")!
+            cancelUrl: URL(string: "https://example.com/canceled")!,
         )
 
         XCTAssertEqual(request.url.path, "v1/subscription/boost/paypal/create")
         XCTAssertEqual(request.method, "POST")
         XCTAssertEqual(Set(request.parameters.keys), Set([
-            "currency", "amount", "level",
-            "returnUrl", "cancelUrl"
+            "currency",
+            "amount",
+            "level",
+            "returnUrl",
+            "cancelUrl",
         ]))
         XCTAssertEqual(request.parameters["currency"] as? String, "chf")
         XCTAssertEqual(request.parameters["amount"] as? UInt, 123)
@@ -130,7 +133,7 @@ class OWSRequestFactoryTest: XCTestCase {
         let request = OWSRequestFactory.subscriptionSetDefaultPaymentMethod(
             subscriberId: Data([255, 128]),
             processor: "STRIPE",
-            paymentMethodId: "xyz"
+            paymentMethodId: "xyz",
         )
 
         XCTAssertEqual(request.url.path, "v1/subscription/_4A/default_payment_method/STRIPE/xyz")
@@ -139,7 +142,7 @@ class OWSRequestFactoryTest: XCTestCase {
 
     func testSubscriptionCreateStripePaymentMethodRequest() {
         let request = OWSRequestFactory.subscriptionCreateStripePaymentMethodRequest(
-            subscriberID: .init([255, 128])
+            subscriberID: .init([255, 128]),
         )
 
         XCTAssertEqual(request.url.path, "v1/subscription/_4A/create_payment_method")
@@ -150,13 +153,14 @@ class OWSRequestFactoryTest: XCTestCase {
         let request = OWSRequestFactory.subscriptionCreatePaypalPaymentMethodRequest(
             subscriberID: .init([255, 128]),
             returnURL: URL(string: "https://example.com/approved")!,
-            cancelURL: URL(string: "https://example.com/canceled")!
+            cancelURL: URL(string: "https://example.com/canceled")!,
         )
 
         XCTAssertEqual(request.url.path, "v1/subscription/_4A/create_payment_method/paypal")
         XCTAssertEqual(request.method, "POST")
         XCTAssertEqual(Set(request.parameters.keys), Set([
-            "returnUrl", "cancelUrl"
+            "returnUrl",
+            "cancelUrl",
         ]))
         XCTAssertEqual(request.parameters["returnUrl"] as? String, "https://example.com/approved")
         XCTAssertEqual(request.parameters["cancelUrl"] as? String, "https://example.com/canceled")
@@ -167,7 +171,7 @@ class OWSRequestFactoryTest: XCTestCase {
             subscriberID: .init([255, 128]),
             level: 123,
             currency: "CHF",
-            idempotencyKey: "t3DUeQcC0laEdwMJ"
+            idempotencyKey: "t3DUeQcC0laEdwMJ",
         )
 
         XCTAssertEqual(request.url.path, "v1/subscription/_4A/level/123/CHF/t3DUeQcC0laEdwMJ")
@@ -184,7 +188,8 @@ class OWSRequestFactoryTest: XCTestCase {
         XCTAssertEqual(request.method, "POST")
         XCTAssertEqual(Set(request.parameters.keys), Set([
             "receiptCredentialPresentation",
-            "visible", "primary",
+            "visible",
+            "primary",
         ]))
         XCTAssertEqual(request.parameters["receiptCredentialPresentation"] as? String, "/4A=")
         XCTAssertEqual(request.parameters["visible"] as? Bool, false)
@@ -197,12 +202,12 @@ class OWSRequestFactoryTest: XCTestCase {
         let request = OWSRequestFactory.reportSpam(
             from: Aci.constantForTesting("37EBAFB5-91D6-4C63-BFF7-82F540856386"),
             withServerGuid: "abc 123",
-            reportingToken: nil
+            reportingToken: nil,
         )
 
         XCTAssertEqual(
             request.url.relativeString,
-            "v1/messages/report/37ebafb5-91d6-4c63-bff7-82f540856386/abc%20123"
+            "v1/messages/report/37ebafb5-91d6-4c63-bff7-82f540856386/abc%20123",
         )
         XCTAssertEqual(request.method, "POST")
         XCTAssertEqual(request.parameters as! [String: String], [:])
@@ -213,12 +218,12 @@ class OWSRequestFactoryTest: XCTestCase {
         let request = OWSRequestFactory.reportSpam(
             from: Aci.constantForTesting("EB7B0432-BE7F-4A62-9859-4D7835D0D724"),
             withServerGuid: "",
-            reportingToken: nil
+            reportingToken: nil,
         )
 
         XCTAssertEqual(
             request.url.relativeString,
-            "v1/messages/report/eb7b0432-be7f-4a62-9859-4d7835d0d724/"
+            "v1/messages/report/eb7b0432-be7f-4a62-9859-4d7835d0d724/",
         )
     }
 
@@ -226,7 +231,7 @@ class OWSRequestFactoryTest: XCTestCase {
         let request = OWSRequestFactory.reportSpam(
             from: Aci.randomForTesting(),
             withServerGuid: "abc123",
-            reportingToken: .init(data: .init([97, 98, 99]))
+            reportingToken: .init(data: .init([97, 98, 99])),
         )
 
         XCTAssertEqual(request.parameters as! [String: String], ["token": "YWJj"])
@@ -246,7 +251,7 @@ class OWSRequestFactoryTest: XCTestCase {
         let request = OWSRequestFactory.confirmReservedUsernameRequest(
             reservedUsernameHash: "jango",
             reservedUsernameZKProof: "fett",
-            encryptedUsernameForLink: "aa?".data(using: .utf8)! // Force a character that's special in base64Url
+            encryptedUsernameForLink: "aa?".data(using: .utf8)!, // Force a character that's special in base64Url
         )
 
         XCTAssertEqual(request.url.path, "v1/accounts/username_hash/confirm")
@@ -254,7 +259,7 @@ class OWSRequestFactoryTest: XCTestCase {
         XCTAssertEqual(request.parameters as! [String: String], [
             "usernameHash": "jango",
             "zkProof": "fett",
-            "encryptedUsername": "YWE_" // base64Url
+            "encryptedUsername": "YWE_", // base64Url
         ])
     }
 
@@ -277,7 +282,7 @@ class OWSRequestFactoryTest: XCTestCase {
     func testSetUsernameLink() {
         let request = OWSRequestFactory.setUsernameLinkRequest(
             encryptedUsername: "aa?".data(using: .utf8)!, // Force a character that's special in base64Url
-            keepLinkHandle: true
+            keepLinkHandle: true,
         )
 
         XCTAssertEqual(request.url.path, "v1/accounts/username_link")

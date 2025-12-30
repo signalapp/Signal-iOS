@@ -18,7 +18,7 @@ extension BackupArchive {
             startTimestampMs: UInt64,
             attachmentByteCounter: BackupArchiveAttachmentByteCounter,
             isPrimaryDevice: Bool,
-            tx: DBWriteTransaction
+            tx: DBWriteTransaction,
         ) {
             self.recipientContext = recipientContext
             self.chatContext = chatContext
@@ -26,7 +26,7 @@ extension BackupArchive {
                 startTimestampMs: startTimestampMs,
                 attachmentByteCounter: attachmentByteCounter,
                 isPrimaryDevice: isPrimaryDevice,
-                tx: tx
+                tx: tx,
             )
         }
     }

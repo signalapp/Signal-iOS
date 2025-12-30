@@ -34,6 +34,7 @@ class LongTextViewController: OWSViewController {
         textView.isUserInteractionEnabled = true
         return textView
     }()
+
     private lazy var toolbar: UIToolbar = {
         let toolbar = UIToolbar()
         toolbar.items = [
@@ -41,7 +42,7 @@ class LongTextViewController: OWSViewController {
                 image: Theme.iconImage(.buttonShare),
                 primaryAction: UIAction { [weak self] _ in
                     self?.shareButtonPressed()
-                }
+                },
             ),
 
             .flexibleSpace(),
@@ -50,7 +51,7 @@ class LongTextViewController: OWSViewController {
                 image: Theme.iconImage(.buttonForward),
                 primaryAction: UIAction { [weak self] _ in
                     self?.forwardButtonPressed()
-                }
+                },
             ),
         ]
         if #unavailable(iOS 26) {
@@ -69,7 +70,7 @@ class LongTextViewController: OWSViewController {
     init(
         itemViewModel: CVItemViewModelImpl,
         threadViewModel: ThreadViewModel,
-        spoilerState: SpoilerRenderState
+        spoilerState: SpoilerRenderState,
     ) {
         self.itemViewModel = itemViewModel
         self.threadViewModel = threadViewModel
@@ -80,8 +81,10 @@ class LongTextViewController: OWSViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        navigationItem.title = OWSLocalizedString("LONG_TEXT_VIEW_TITLE",
-                                                 comment: "Title for the 'long text message' view.")
+        navigationItem.title = OWSLocalizedString(
+            "LONG_TEXT_VIEW_TITLE",
+            comment: "Title for the 'long text message' view.",
+        )
         view.backgroundColor = .Signal.background
 
         view.addSubview(textView)
@@ -110,8 +113,7 @@ class LongTextViewController: OWSViewController {
 
         if #available(iOS 17, *) {
             // Modern alternative to `themeDidChange`.
-            textView.registerForTraitChanges([ UITraitUserInterfaceStyle.self, UITraitPreferredContentSizeCategory.self ])
-            { [weak self] (view: UIView, _) in
+            textView.registerForTraitChanges([UITraitUserInterfaceStyle.self, UITraitPreferredContentSizeCategory.self]) { [weak self] (view: UIView, _) in
                 self?.loadContent()
             }
         }
@@ -170,8 +172,8 @@ class LongTextViewController: OWSViewController {
     private func loadContent() {
         let displayConfig = HydratedMessageBody.DisplayConfiguration.longMessageView(
             revealedSpoilerIds: spoilerState.revealState.revealedSpoilerIds(
-                interactionIdentifier: .fromInteraction(itemViewModel.interaction)
-            )
+                interactionIdentifier: .fromInteraction(itemViewModel.interaction),
+            ),
         )
 
         messageTextViewSpoilerConfig.animationManager = spoilerState.animationManager
@@ -193,7 +195,7 @@ class LongTextViewController: OWSViewController {
 
         let baseAttrs: [NSAttributedString.Key: Any] = [
             .font: UIFont.dynamicTypeBody,
-            .foregroundColor: textColor
+            .foregroundColor: textColor,
         ]
 
         let mutableText: NSMutableAttributedString
@@ -206,7 +208,7 @@ class LongTextViewController: OWSViewController {
         case .messageBody(let messageBody):
             let attrString = messageBody.asAttributedStringForDisplay(
                 config: displayConfig,
-                isDarkThemeEnabled: Theme.isDarkThemeEnabled
+                isDarkThemeEnabled: Theme.isDarkThemeEnabled,
             )
             mutableText = (attrString as? NSMutableAttributedString) ?? NSMutableAttributedString(attributedString: attrString)
         }
@@ -217,7 +219,7 @@ class LongTextViewController: OWSViewController {
         CVComponentBodyText.configureTextView(
             textView,
             interaction: itemViewModel.interaction,
-            displayableText: displayableText
+            displayableText: displayableText,
         )
 
         let items = CVComponentBodyText.detectItems(
@@ -227,13 +229,13 @@ class LongTextViewController: OWSViewController {
             textWasTruncated: false,
             revealedSpoilerIds: displayConfig.style.revealedIds,
             interactionUniqueId: itemViewModel.interaction.uniqueId,
-            interactionIdentifier: .fromInteraction(itemViewModel.interaction)
+            interactionIdentifier: .fromInteraction(itemViewModel.interaction),
         )
 
         CVTextLabel.linkifyData(
             attributedText: mutableText,
             linkifyStyle: .linkAttribute,
-            items: items
+            items: items,
         )
         textView.attributedText = mutableText
         textView.textAlignment = displayableText.fullTextNaturalAlignment
@@ -242,14 +244,14 @@ class LongTextViewController: OWSViewController {
         if items.isEmpty.negated {
             textView.addGestureRecognizer(UITapGestureRecognizer(
                 target: self,
-                action: #selector(didTapMessageTextView)
+                action: #selector(didTapMessageTextView),
             ))
         }
 
         textView.linkTextAttributes = [
             .foregroundColor: textColor,
             .underlineColor: textColor,
-            .underlineStyle: NSUnderlineStyle.single.rawValue
+            .underlineStyle: NSUnderlineStyle.single.rawValue,
         ]
     }
 
@@ -302,15 +304,19 @@ class LongTextViewController: OWSViewController {
     private func forwardButtonPressed() {
         // Only forward text.
         let selectionType: CVSelectionType = (itemViewModel.componentState.hasPrimaryAndSecondaryContentForSelection
-                                                ? .secondaryContent
-                                                : .allContent)
-        let selectionItem = CVSelectionItem(interactionId: itemViewModel.interaction.uniqueId,
-                                            interactionType: itemViewModel.interaction.interactionType,
-                                            isForwardable: true,
-                                            selectionType: selectionType)
-        ForwardMessageViewController.present(forSelectionItems: [selectionItem],
-                                             from: self,
-                                             delegate: self)
+            ? .secondaryContent
+            : .allContent)
+        let selectionItem = CVSelectionItem(
+            interactionId: itemViewModel.interaction.uniqueId,
+            interactionType: itemViewModel.interaction.interactionType,
+            isForwardable: true,
+            selectionType: selectionType,
+        )
+        ForwardMessageViewController.present(
+            forSelectionItems: [selectionItem],
+            from: self,
+            delegate: self,
+        )
     }
 
     @objc
@@ -346,14 +352,14 @@ class LongTextViewController: OWSViewController {
                     ProfileSheetSheetCoordinator(
                         address: address,
                         groupViewHelper: groupViewHelper,
-                        spoilerState: spoilerState
+                        spoilerState: spoilerState,
                     )
                     .presentAppropriateSheet(from: self)
                     return
                 case .unrevealedSpoiler(let unrevealedSpoiler):
                     self.spoilerState.revealState.setSpoilerRevealed(
                         withID: unrevealedSpoiler.spoilerId,
-                        interactionIdentifier: unrevealedSpoiler.interactionIdentifier
+                        interactionIdentifier: unrevealedSpoiler.interactionIdentifier,
                     )
                     self.loadContent()
                     return
@@ -393,9 +399,11 @@ extension LongTextViewController: ForwardMessageDelegate {
         recipientThreads: [TSThread],
     ) {
         dismiss(animated: true) {
-            ForwardMessageViewController.finalizeForward(items: items,
-                                                         recipientThreads: recipientThreads,
-                                                         fromViewController: self)
+            ForwardMessageViewController.finalizeForward(
+                items: items,
+                recipientThreads: recipientThreads,
+                fromViewController: self,
+            )
         }
     }
 

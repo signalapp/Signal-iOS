@@ -112,13 +112,13 @@ class AttachmentTextToolbar: UIView {
     // an intrinsicContentSize. Specifying CGSize.zero causes the height to be determined by autolayout.
     override var intrinsicContentSize: CGSize { .zero }
 
-    public override var bounds: CGRect {
+    override var bounds: CGRect {
         didSet {
             guard oldValue.size.height != bounds.size.height else { return }
 
             // Compensate for autolayout frame/bounds changes when animating height change.
             // This logic ensures the input toolbar stays pinned to the keyboard visually.
-            if isAnimatingHeightChange && textView.isFirstResponder {
+            if isAnimatingHeightChange, textView.isFirstResponder {
                 var frame = frame
                 frame.origin.y = 0
                 // In this conditional, bounds change is captured in an animation block, which we don't want here.
@@ -138,9 +138,11 @@ class AttachmentTextToolbar: UIView {
         // Otherwise we risk obscuring too much of the content.
         return UIDevice.current.orientation.isPortrait ? 160 : 100
     }
+
     private lazy var textViewMinimumHeightConstraint: NSLayoutConstraint = {
         textView.heightAnchor.constraint(greaterThanOrEqualToConstant: kMinTextViewHeight)
     }()
+
     private lazy var textViewHeightConstraint: NSLayoutConstraint = {
         textView.heightAnchor.constraint(equalToConstant: kMinTextViewHeight)
     }()
@@ -182,7 +184,7 @@ class AttachmentTextToolbar: UIView {
             let animator = UIViewPropertyAnimator(
                 duration: 0.25,
                 springDamping: 1,
-                springResponse: 0.25
+                springResponse: 0.25,
             )
             animator.addAnimations {
                 self.textViewHeightConstraint.constant = textViewHeight
@@ -206,7 +208,7 @@ class AttachmentTextToolbar: UIView {
 
     // MARK: - Subviews
 
-    lazy private(set) var textView: BodyRangesTextView = {
+    private(set) lazy var textView: BodyRangesTextView = {
         let textView = buildTextView()
         textView.returnKeyType = .done
         textView.scrollIndicatorInsets = UIEdgeInsets(top: 5, left: 0, bottom: 5, right: 3)
@@ -250,7 +252,7 @@ class AttachmentTextToolbar: UIView {
     }()
 
     private lazy var textViewContainer: UIView = {
-        let hStackView = UIStackView(arrangedSubviews: [ textViewWrapperView, doneButton ])
+        let hStackView = UIStackView(arrangedSubviews: [textViewWrapperView, doneButton])
         hStackView.axis = .horizontal
         hStackView.alignment = .bottom
         hStackView.spacing = 4
@@ -259,7 +261,7 @@ class AttachmentTextToolbar: UIView {
 
     private lazy var doneButton: UIButton = {
         let doneButton = OWSButton(imageName: Theme.iconName(.checkmark), tintColor: .white) { [weak self] in
-            guard let self = self else { return }
+            guard let self else { return }
             self.didTapFinishEditing()
         }
         let visibleButtonSize = kMinTextViewHeight
@@ -346,27 +348,27 @@ extension AttachmentTextToolbar: BodyRangesTextViewDelegate {
         return mentionTextViewDelegate?.textViewMentionPickerPossibleAcis(textView, tx: tx) ?? []
     }
 
-    public func textViewDisplayConfiguration(_ textView: BodyRangesTextView) -> HydratedMessageBody.DisplayConfiguration {
+    func textViewDisplayConfiguration(_ textView: BodyRangesTextView) -> HydratedMessageBody.DisplayConfiguration {
         return .composingAttachment()
     }
 
-    public func mentionPickerStyle(_ textView: BodyRangesTextView) -> MentionPickerStyle {
+    func mentionPickerStyle(_ textView: BodyRangesTextView) -> MentionPickerStyle {
         return .composingAttachment
     }
 
-    public func textViewMentionCacheInvalidationKey(_ textView: BodyRangesTextView) -> String {
+    func textViewMentionCacheInvalidationKey(_ textView: BodyRangesTextView) -> String {
         return mentionTextViewDelegate?.textViewMentionCacheInvalidationKey(textView) ?? UUID().uuidString
     }
 }
 
 extension AttachmentTextToolbar: UITextViewDelegate {
 
-    public func textViewDidChange(_ textView: UITextView) {
+    func textViewDidChange(_ textView: UITextView) {
         updateContent(animated: true)
         delegate?.attachmentTextToolbarDidChange(self)
     }
 
-    public func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         // Though we can wrap the text, we don't want to encourage multline captions, plus a "done" button
         // allows the user to get the keyboard out of the way while in the attachment approval view.
         if text == "\n" {
@@ -377,7 +379,7 @@ extension AttachmentTextToolbar: UITextViewDelegate {
         }
     }
 
-    public func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
+    func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
         delegate?.attachmentTextToolbarWillBeginEditing(self)
 
         // Putting these lines in `textViewDidBeginEditing` doesn't work.
@@ -386,19 +388,21 @@ extension AttachmentTextToolbar: UITextViewDelegate {
         return true
     }
 
-    public func textViewDidBeginEditing(_ textView: UITextView) {
+    func textViewDidBeginEditing(_ textView: UITextView) {
         // Making textView think its content has changed is necessary
         // in order to get correct textView size and expand it to multiple lines if necessary.
-        textView.layoutManager.processEditing(for: textView.textStorage,
-                                              edited: .editedCharacters,
-                                              range: NSRange(location: 0, length: 0),
-                                              changeInLength: 0,
-                                              invalidatedRange: NSRange(location: 0, length: 0))
+        textView.layoutManager.processEditing(
+            for: textView.textStorage,
+            edited: .editedCharacters,
+            range: NSRange(location: 0, length: 0),
+            changeInLength: 0,
+            invalidatedRange: NSRange(location: 0, length: 0),
+        )
         delegate?.attachmentTextToolbarDidBeginEditing(self)
         updateContent(animated: true)
     }
 
-    public func textViewDidEndEditing(_ textView: UITextView) {
+    func textViewDidEndEditing(_ textView: UITextView) {
         textView.textContainer.lineBreakMode = .byTruncatingTail
         textView.textContainer.maximumNumberOfLines = 1
         delegate?.attachmentTextToolbarDidEndEditing(self)

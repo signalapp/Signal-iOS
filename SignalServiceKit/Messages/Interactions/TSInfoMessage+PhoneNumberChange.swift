@@ -11,10 +11,10 @@ extension TSInfoMessage {
         timestamp: UInt64 = MessageTimestampGenerator.sharedInstance.generateTimestamp(),
         aci: Aci,
         oldNumber: String?,
-        newNumber: E164?
+        newNumber: E164?,
     ) -> TSInfoMessage {
         var infoMessageUserInfo: [InfoMessageUserInfoKey: Any] = [
-            .changePhoneNumberAciString: aci.serviceIdUppercaseString
+            .changePhoneNumberAciString: aci.serviceIdUppercaseString,
         ]
         if let oldNumber {
             infoMessageUserInfo[.changePhoneNumberOld] = oldNumber
@@ -27,7 +27,7 @@ extension TSInfoMessage {
             thread: thread,
             messageType: .phoneNumberChange,
             timestamp: timestamp,
-            infoMessageUserInfo: infoMessageUserInfo
+            infoMessageUserInfo: infoMessageUserInfo,
         )
         infoMessage.wasRead = true
 
@@ -60,7 +60,7 @@ public extension TSInfoMessage {
         return PhoneNumberChangeInfo(
             aci: aci,
             oldNumber: infoMessageUserInfo[.changePhoneNumberOld] as? String,
-            newNumber: infoMessageUserInfo[.changePhoneNumberNew] as? String
+            newNumber: infoMessageUserInfo[.changePhoneNumberNew] as? String,
         )
     }
 

@@ -61,10 +61,10 @@ class GroupCall: SignalRingRTC.GroupCallDelegate {
     init(
         audioDescription: String,
         ringRtcCall: SignalRingRTC.GroupCall,
-        videoCaptureController: VideoCaptureController
+        videoCaptureController: VideoCaptureController,
     ) {
         self.commonState = CommonCallState(
-            audioActivity: AudioActivity(audioDescription: audioDescription, behavior: .call)
+            audioActivity: AudioActivity(audioDescription: audioDescription, behavior: .call),
         )
         self.ringRtcCall = ringRtcCall
         self.videoCaptureController = videoCaptureController
@@ -85,13 +85,13 @@ class GroupCall: SignalRingRTC.GroupCallDelegate {
     }
 
     func shouldMuteAutomatically() -> Bool {
-        return (
+        return
             ringRtcCall.localDeviceState.joinState == .notJoined
-            && (ringRtcCall.peekInfo?.deviceCountExcludingPendingDevices ?? 0) >= Constants.autoMuteThreshold
-        )
+                && (ringRtcCall.peekInfo?.deviceCountExcludingPendingDevices ?? 0) >= Constants.autoMuteThreshold
+
     }
 
-    public var isJustMe: Bool {
+    var isJustMe: Bool {
         switch ringRtcCall.localDeviceState.joinState {
         case .notJoined, .joining, .pending:
             return true

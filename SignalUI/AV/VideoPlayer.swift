@@ -23,7 +23,7 @@ public class VideoPlayer {
         }
     }
 
-    weak public var delegate: VideoPlayerDelegate?
+    public weak var delegate: VideoPlayerDelegate?
 
     public convenience init(decryptedFileUrl: URL) {
         self.init(decryptedFileUrl: decryptedFileUrl, shouldLoop: false)
@@ -35,32 +35,32 @@ public class VideoPlayer {
             avPlayer: avPlayer,
             shouldLoop: shouldLoop,
             shouldMixAudioWithOthers: shouldMixAudioWithOthers,
-            audioDescription: "[VideoPlayer] url:\(decryptedFileUrl)"
+            audioDescription: "[VideoPlayer] url:\(decryptedFileUrl)",
         )
     }
 
     public convenience init(
         attachment: ReferencedAttachmentStream,
-        shouldMixAudioWithOthers: Bool = false
+        shouldMixAudioWithOthers: Bool = false,
     ) throws {
         try self.init(
             attachment: attachment.attachmentStream,
             shouldLoop: attachment.reference.renderingFlag == .shouldLoop,
             shouldMixAudioWithOthers: shouldMixAudioWithOthers,
-            audioDescription: attachment.reference.sourceFilename.map { "[VideoPlayer] \($0)" }
+            audioDescription: attachment.reference.sourceFilename.map { "[VideoPlayer] \($0)" },
         )
     }
 
     public convenience init(
         attachment: AttachmentStream,
         shouldLoop: Bool,
-        shouldMixAudioWithOthers: Bool = false
+        shouldMixAudioWithOthers: Bool = false,
     ) throws {
         try self.init(
             attachment: attachment,
             shouldLoop: shouldLoop,
             shouldMixAudioWithOthers: shouldMixAudioWithOthers,
-            audioDescription: nil
+            audioDescription: nil,
         )
     }
 
@@ -68,7 +68,7 @@ public class VideoPlayer {
         attachment: AttachmentStream,
         shouldLoop: Bool,
         shouldMixAudioWithOthers: Bool,
-        audioDescription: String?
+        audioDescription: String?,
     ) throws {
         let asset = try attachment.decryptedAVAsset()
         let playerItem = AVPlayerItem(asset: asset)
@@ -77,7 +77,7 @@ public class VideoPlayer {
             avPlayer: avPlayer,
             shouldLoop: shouldLoop,
             shouldMixAudioWithOthers: shouldMixAudioWithOthers,
-            audioDescription: "[VideoPlayer]"
+            audioDescription: "[VideoPlayer]",
         )
     }
 
@@ -85,12 +85,12 @@ public class VideoPlayer {
         avPlayer: AVPlayer,
         shouldLoop: Bool,
         shouldMixAudioWithOthers: Bool = false,
-        audioDescription: String = "[VideoPlayer]"
+        audioDescription: String = "[VideoPlayer]",
     ) {
         self.avPlayer = avPlayer
         audioActivity = AudioActivity(
             audioDescription: audioDescription,
-            behavior: shouldMixAudioWithOthers ? .playbackMixWithOthers : .playback
+            behavior: shouldMixAudioWithOthers ? .playbackMixWithOthers : .playback,
         )
         self.shouldLoop = shouldLoop
 
@@ -98,7 +98,7 @@ public class VideoPlayer {
             self,
             selector: #selector(playerItemDidPlayToCompletion(_:)),
             name: .AVPlayerItemDidPlayToEndTime,
-            object: avPlayer.currentItem
+            object: avPlayer.currentItem,
         )
     }
 

@@ -110,29 +110,42 @@ public class PaymentsConstants {
 
         // https://en.wikipedia.org/wiki/Decimal_separator
         let validDecimalSeparators = [",", ".", "'", "·"]
-        let validGroupingSeparators = [",", ".", " ", "'",
-                                       // NOTE: NumberFormatter sometimes uses a 'NARROW NO-BREAK SPACE' (U+202F) as a grouping separator.
-                                       " "]
+        let validGroupingSeparators = [
+            ",",
+            ".",
+            " ",
+            "'",
+            // NOTE: NumberFormatter sometimes uses a 'NARROW NO-BREAK SPACE' (U+202F) as a grouping separator.
+            " ",
+        ]
         let validGroupingSizes = [2, 3, 4]
 
         let decimalSeparator: String = {
-            if let decimalSeparator = numberFormatterCurrency.decimalSeparator.nilIfEmpty,
-               validDecimalSeparators.contains(decimalSeparator) {
+            if
+                let decimalSeparator = numberFormatterCurrency.decimalSeparator.nilIfEmpty,
+                validDecimalSeparators.contains(decimalSeparator)
+            {
                 return decimalSeparator
             }
-            if let decimalSeparator = numberFormatterDecimal.decimalSeparator.nilIfEmpty,
-               validDecimalSeparators.contains(decimalSeparator) {
+            if
+                let decimalSeparator = numberFormatterDecimal.decimalSeparator.nilIfEmpty,
+                validDecimalSeparators.contains(decimalSeparator)
+            {
                 return decimalSeparator
             }
             return ""
         }()
         let groupingSeparator: String = {
-            if let groupingSeparator = numberFormatterCurrency.groupingSeparator.nilIfEmpty,
-               validGroupingSeparators.contains(groupingSeparator) {
+            if
+                let groupingSeparator = numberFormatterCurrency.groupingSeparator.nilIfEmpty,
+                validGroupingSeparators.contains(groupingSeparator)
+            {
                 return groupingSeparator
             }
-            if let groupingSeparator = numberFormatterDecimal.groupingSeparator.nilIfEmpty,
-               validGroupingSeparators.contains(groupingSeparator) {
+            if
+                let groupingSeparator = numberFormatterDecimal.groupingSeparator.nilIfEmpty,
+                validGroupingSeparators.contains(groupingSeparator)
+            {
                 return groupingSeparator
             }
             return ""
@@ -169,8 +182,10 @@ public class PaymentsConstants {
                 return defaultValue
             }
             let components = formatted.components(separatedBy: formatter.decimalSeparator)
-            guard components.count == 2,
-                  let decimalComponent = components[safe: 1] else {
+            guard
+                components.count == 2,
+                let decimalComponent = components[safe: 1]
+            else {
                 owsFailDebug("Could not parse exemplary value.")
                 return defaultValue
             }
@@ -178,21 +193,27 @@ public class PaymentsConstants {
             return shouldUseGroupingSeparatorsAfterDecimal
         }()
 
-        guard validDecimalSeparators.contains(decimalSeparator),
-              validGroupingSeparators.contains(groupingSeparator),
-              validGroupingSizes.contains(groupingSize),
-              decimalSeparator != groupingSeparator else {
+        guard
+            validDecimalSeparators.contains(decimalSeparator),
+            validGroupingSeparators.contains(groupingSeparator),
+            validGroupingSizes.contains(groupingSize),
+            decimalSeparator != groupingSeparator
+        else {
 
             // Fall back to the most common international style formatting.
-            return DecimalFormattingInfo(decimalSeparator: ",",
-                                         groupingSeparator: ".",
-                                         groupingSize: 3,
-                                         shouldUseGroupingSeparatorsAfterDecimal: shouldUseGroupingSeparatorsAfterDecimal)
+            return DecimalFormattingInfo(
+                decimalSeparator: ",",
+                groupingSeparator: ".",
+                groupingSize: 3,
+                shouldUseGroupingSeparatorsAfterDecimal: shouldUseGroupingSeparatorsAfterDecimal,
+            )
         }
-        return DecimalFormattingInfo(decimalSeparator: decimalSeparator,
-                                     groupingSeparator: groupingSeparator,
-                                     groupingSize: groupingSize,
-                                     shouldUseGroupingSeparatorsAfterDecimal: shouldUseGroupingSeparatorsAfterDecimal)
+        return DecimalFormattingInfo(
+            decimalSeparator: decimalSeparator,
+            groupingSeparator: groupingSeparator,
+            groupingSize: groupingSize,
+            shouldUseGroupingSeparatorsAfterDecimal: shouldUseGroupingSeparatorsAfterDecimal,
+        )
     }()
 
     public static var decimalSeparator: String {

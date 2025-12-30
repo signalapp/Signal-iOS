@@ -29,7 +29,7 @@ private class RegistrationVerificationCodeTextField: UITextField {
 
     override func deleteBackward() {
         var isDeletePrevious = false
-        if let selectedTextRange = selectedTextRange {
+        if let selectedTextRange {
             let cursorPosition = offset(from: beginningOfDocument, to: selectedTextRange.start)
             if cursorPosition == 0 {
                 isDeletePrevious = true
@@ -61,7 +61,7 @@ protocol RegistrationVerificationCodeViewDelegate: AnyObject {
 class RegistrationVerificationCodeView: UIView {
     weak var delegate: RegistrationVerificationCodeViewDelegate?
 
-    public init() {
+    init() {
         super.init(frame: .zero)
 
         createSubviews()
@@ -107,11 +107,12 @@ class RegistrationVerificationCodeView: UIView {
     var isComplete: Bool {
         return digitText.count == digitCount
     }
+
     var verificationCode: String {
         return digitText
     }
 
-    public func clear() {
+    func clear() {
         guard isComplete else {
             return
         }
@@ -130,7 +131,7 @@ class RegistrationVerificationCodeView: UIView {
         textfield.textContentType = .oneTimeCode
 
         var digitViews = [UIView]()
-        (0..<digitCount).forEach { (_) in
+        (0..<digitCount).forEach { _ in
             let (digitView, digitLabel, digitStroke) = makeCellView(text: "")
 
             digitLabels.append(digitLabel)
@@ -155,7 +156,7 @@ class RegistrationVerificationCodeView: UIView {
         addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapView)))
     }
 
-    public func updateColors() {
+    func updateColors() {
         let strokeColor = (hasError ? UIColor.Signal.red : UIColor.Signal.secondaryLabel)
         for digitStroke in digitStrokes {
             digitStroke.backgroundColor = strokeColor
@@ -173,7 +174,7 @@ class RegistrationVerificationCodeView: UIView {
         digitView.addSubview(digitLabel)
         digitLabel.autoCenterInSuperview()
 
-        let strokeColor =  Theme.secondaryTextAndIconColor
+        let strokeColor = Theme.secondaryTextAndIconColor
         let strokeView = digitView.addBottomStroke(color: strokeColor, strokeWidth: strokeWidth)
         strokeView.layer.cornerRadius = strokeWidth / 2
 
@@ -189,10 +190,12 @@ class RegistrationVerificationCodeView: UIView {
     // digit (if any) and that the UITextField has replaced
     // the "current" digit.
     private func updateViewState() {
-        currentDigitIndex = min(digitCount - 1,
-                                digitText.count)
+        currentDigitIndex = min(
+            digitCount - 1,
+            digitText.count,
+        )
 
-        (0..<digitCount).forEach { (index) in
+        (0..<digitCount).forEach { index in
             let digitLabel = digitLabels[index]
             digitLabel.text = digit(at: index)
             digitLabel.isHidden = index == currentDigitIndex
@@ -217,12 +220,12 @@ class RegistrationVerificationCodeView: UIView {
     }
 
     @discardableResult
-    public override func becomeFirstResponder() -> Bool {
+    override func becomeFirstResponder() -> Bool {
         return textfield.becomeFirstResponder()
     }
 
     @discardableResult
-    public override func resignFirstResponder() -> Bool {
+    override func resignFirstResponder() -> Bool {
         return textfield.resignFirstResponder()
     }
 
@@ -245,7 +248,7 @@ class RegistrationVerificationCodeView: UIView {
 // MARK: -
 
 extension RegistrationVerificationCodeView: UITextFieldDelegate {
-    public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString newString: String) -> Bool {
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString newString: String) -> Bool {
         var oldText = ""
         if let textFieldText = textField.text {
             oldText = textFieldText
@@ -268,7 +271,7 @@ extension RegistrationVerificationCodeView: UITextFieldDelegate {
         return false
     }
 
-    public func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         self.delegate?.codeViewDidChange()
 
         return false
@@ -278,7 +281,7 @@ extension RegistrationVerificationCodeView: UITextFieldDelegate {
 // MARK: - RegistrationVerificationCodeTextFieldDelegate
 
 extension RegistrationVerificationCodeView: RegistrationVerificationCodeTextFieldDelegate {
-    public func textFieldDidDeletePrevious() {
+    func textFieldDidDeletePrevious() {
         if digitText.isEmpty { return }
         digitText = String(digitText.prefix(currentDigitIndex - 1))
 

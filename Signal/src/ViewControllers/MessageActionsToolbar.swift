@@ -55,12 +55,14 @@ public class MessageAction: NSObject {
 
     let actionType: MessageActionType
 
-    public init(_ actionType: MessageActionType,
-                accessibilityLabel: String,
-                accessibilityIdentifier: String,
-                contextMenuTitle: String,
-                contextMenuAttributes: ContextMenuAction.Attributes,
-                block: @escaping (_ sender: Any?) -> Void) {
+    public init(
+        _ actionType: MessageActionType,
+        accessibilityLabel: String,
+        accessibilityIdentifier: String,
+        contextMenuTitle: String,
+        contextMenuAttributes: ContextMenuAction.Attributes,
+        block: @escaping (_ sender: Any?) -> Void,
+    ) {
         self.actionType = actionType
         self.accessibilityIdentifier = accessibilityIdentifier
         self.contextMenuTitle = contextMenuTitle
@@ -134,9 +136,12 @@ public class MessageActionsToolbar: UIView {
 
     enum Mode {
         case normal(messagesActions: [MessageAction])
-        case selection(deleteMessagesAction: MessageAction,
-                       forwardMessagesAction: MessageAction)
+        case selection(
+            deleteMessagesAction: MessageAction,
+            forwardMessagesAction: MessageAction,
+        )
     }
+
     private let mode: Mode
 
     private let toolbar = UIToolbar()
@@ -162,7 +167,7 @@ public class MessageActionsToolbar: UIView {
                 self,
                 selector: #selector(themeDidChange),
                 name: .themeDidChange,
-                object: nil
+                object: nil,
             )
         }
 
@@ -194,8 +199,10 @@ public class MessageActionsToolbar: UIView {
         case .normal(let messagesActions):
             buildNormalItems(messagesActions: messagesActions)
         case .selection(let deleteMessagesAction, let forwardMessagesAction):
-            buildSelectionItems(deleteMessagesAction: deleteMessagesAction,
-                                forwardMessagesAction: forwardMessagesAction)
+            buildSelectionItems(
+                deleteMessagesAction: deleteMessagesAction,
+                forwardMessagesAction: forwardMessagesAction,
+            )
         }
     }
 
@@ -207,7 +214,7 @@ public class MessageActionsToolbar: UIView {
             primaryAction: UIAction { [weak self] _ in
                 guard let self else { return }
                 self.actionDelegate?.messageActionsToolbar(self, executedAction: messageAction)
-            }
+            },
         )
         if #unavailable(iOS 26) {
             barButtonItem.tintColor = Theme.primaryIconColor
@@ -238,8 +245,10 @@ public class MessageActionsToolbar: UIView {
         toolbar.items = newItems
     }
 
-    private func buildSelectionItems(deleteMessagesAction: MessageAction,
-                                     forwardMessagesAction: MessageAction) {
+    private func buildSelectionItems(
+        deleteMessagesAction: MessageAction,
+        forwardMessagesAction: MessageAction,
+    ) {
 
         let deleteItem = barButtonItem(for: deleteMessagesAction)
         actionItems[deleteMessagesAction.actionType] = deleteItem
@@ -248,8 +257,11 @@ public class MessageActionsToolbar: UIView {
         actionItems[forwardMessagesAction.actionType] = forwardItem
 
         let selectedCount: Int = actionDelegate?.messageActionsToolbarSelectedInteractionCount ?? 0
-        let labelFormat = OWSLocalizedString("MESSAGE_ACTIONS_TOOLBAR_CAPTION_%d", tableName: "PluralAware",
-                                             comment: "Label for the toolbar used in the multi-select mode. The number of selected items (1 or more) is passed.")
+        let labelFormat = OWSLocalizedString(
+            "MESSAGE_ACTIONS_TOOLBAR_CAPTION_%d",
+            tableName: "PluralAware",
+            comment: "Label for the toolbar used in the multi-select mode. The number of selected items (1 or more) is passed.",
+        )
         let labelTitle = String.localizedStringWithFormat(labelFormat, selectedCount)
         let label = UILabel()
         label.text = labelTitle

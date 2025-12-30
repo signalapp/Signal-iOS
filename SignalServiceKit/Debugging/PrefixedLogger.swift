@@ -26,7 +26,7 @@ open class PrefixedLogger {
     public func suffixed(with extraSuffix: String) -> PrefixedLogger {
         return PrefixedLogger(
             prefix: prefix,
-            suffix: suffix + " \(extraSuffix)"
+            suffix: suffix + " \(extraSuffix)",
         )
     }
 
@@ -34,13 +34,13 @@ open class PrefixedLogger {
         _ logString: @autoclosure () -> String,
         file: String = #fileID,
         function: String = #function,
-        line: Int = #line
+        line: Int = #line,
     ) {
         Logger.verbose(
             buildLogString(logString()),
             file: file,
             function: function,
-            line: line
+            line: line,
         )
     }
 
@@ -48,13 +48,13 @@ open class PrefixedLogger {
         _ logString: @autoclosure () -> String,
         file: String = #fileID,
         function: String = #function,
-        line: Int = #line
+        line: Int = #line,
     ) {
         Logger.debug(
             buildLogString(logString()),
             file: file,
             function: function,
-            line: line
+            line: line,
         )
     }
 
@@ -62,13 +62,13 @@ open class PrefixedLogger {
         _ logString: @autoclosure () -> String,
         file: String = #fileID,
         function: String = #function,
-        line: Int = #line
+        line: Int = #line,
     ) {
         Logger.info(
             buildLogString(logString()),
             file: file,
             function: function,
-            line: line
+            line: line,
         )
     }
 
@@ -76,13 +76,13 @@ open class PrefixedLogger {
         _ logString: @autoclosure () -> String,
         file: String = #fileID,
         function: String = #function,
-        line: Int = #line
+        line: Int = #line,
     ) {
         Logger.warn(
             buildLogString(logString()),
             file: file,
             function: function,
-            line: line
+            line: line,
         )
     }
 
@@ -90,13 +90,13 @@ open class PrefixedLogger {
         _ logString: @autoclosure () -> String,
         file: String = #fileID,
         function: String = #function,
-        line: Int = #line
+        line: Int = #line,
     ) {
         Logger.error(
             buildLogString(logString()),
             file: file,
             function: function,
-            line: line
+            line: line,
         )
     }
 

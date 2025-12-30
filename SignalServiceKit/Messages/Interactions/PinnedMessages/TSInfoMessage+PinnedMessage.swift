@@ -64,7 +64,7 @@ extension TSInfoMessage {
             return try DependenciesBridge.shared.interactionStore.fetchMessage(
                 timestamp: UInt64(pinnedMessageItem.timestamp),
                 incomingMessageAuthor: localAci == pinnedMessageItem.originalMessageAuthorAci ? nil : pinnedMessageItem.originalMessageAuthorAci,
-                transaction: transaction
+                transaction: transaction,
             )?.uniqueId
         } catch {
             Logger.info("Unable to get target pinned message \(error)")
@@ -86,18 +86,18 @@ extension TSInfoMessage {
         if localAci == pinnedMessageItem.pinnedMessageAuthorAci {
             return OWSLocalizedString(
                 "PINNED_MESSAGE_CHAT_EVENT_SELF",
-                comment: "Shown when the local user pins a message."
+                comment: "Shown when the local user pins a message.",
             )
         }
 
         let displayName = SSKEnvironment.shared.contactManagerRef.displayName(
             for: SignalServiceAddress(pinnedMessageItem.pinnedMessageAuthorAci),
-            tx: transaction
+            tx: transaction,
         )
 
         let formatString = OWSLocalizedString(
             "PINNED_MESSAGE_CHAT_EVENT_OTHER",
-            comment: "Shown when another user pins a message. Embeds {{ another user }}."
+            comment: "Shown when another user pins a message. Embeds {{ another user }}.",
         )
 
         return String(format: formatString, displayName.resolvedValue())

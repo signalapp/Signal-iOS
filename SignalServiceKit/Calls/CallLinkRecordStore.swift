@@ -18,7 +18,7 @@ public protocol CallLinkRecordStore {
         revoked: Bool?,
         expiration: Int64?,
         isUpcoming: Bool?,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws -> CallLinkRecord
     func fetchOrInsert(rootKey: CallLinkRootKey, tx: DBWriteTransaction) throws -> (record: CallLinkRecord, inserted: Bool)
 
@@ -61,7 +61,7 @@ public class CallLinkRecordStoreImpl: CallLinkRecordStore {
         revoked: Bool?,
         expiration: Int64?,
         isUpcoming: Bool?,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws -> CallLinkRecord {
         return try CallLinkRecord.insertFromBackup(
             rootKey: rootKey,
@@ -71,7 +71,7 @@ public class CallLinkRecordStoreImpl: CallLinkRecordStore {
             revoked: revoked,
             expiration: expiration,
             isUpcoming: isUpcoming,
-            tx: tx
+            tx: tx,
         )
     }
 

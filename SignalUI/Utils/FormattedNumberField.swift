@@ -4,8 +4,8 @@
 //
 
 import Foundation
-import UIKit
 import SignalServiceKit
+import UIKit
 
 /// Attach this to a ``UITextField`` to auto-format it and restrict input to
 /// ASCII digits.
@@ -80,7 +80,7 @@ public enum FormattedNumberField {
         replacementString: String,
         allowedCharacters: AllowedCharacters,
         maxCharacters: Int,
-        format: (String) -> String
+        format: (String) -> String,
     ) -> Bool {
         let operationResult: OperationResult? = {
             let oldFormattedString = textField.safeText
@@ -88,14 +88,14 @@ public enum FormattedNumberField {
             if isSingleDeletion {
                 let cursorPosition = textField.offset(
                     from: textField.beginningOfDocument,
-                    to: textField.selectedTextRange?.start ?? textField.beginningOfDocument
+                    to: textField.selectedTextRange?.start ?? textField.beginningOfDocument,
                 )
                 return singleDelete(
                     formattedString: oldFormattedString,
                     allowedCharacters: allowedCharacters,
                     cursorPosition: cursorPosition,
                     direction: cursorPosition == range.location ? .forward : .backward,
-                    format: format
+                    format: format,
                 )
             } else {
                 return insertOrReplace(
@@ -105,7 +105,7 @@ public enum FormattedNumberField {
                     selectionEnd: range.upperBound,
                     rawInsertion: replacementString,
                     maxCharacters: maxCharacters,
-                    format: format
+                    format: format,
                 )
             }
         }()
@@ -114,7 +114,7 @@ public enum FormattedNumberField {
             textField.safeText = operationResult.formattedString
             let newCursorPosition = textField.position(
                 from: textField.beginningOfDocument,
-                offset: operationResult.cursorPosition
+                offset: operationResult.cursorPosition,
             )
             guard let newCursorPosition else {
                 owsFail("Could not get cursor position after formatting")
@@ -152,7 +152,7 @@ public enum FormattedNumberField {
     /// The position in the unformatted string (`6` in the example above).
     private static func unformattedPosition(
         formattedString: String,
-        positionInFormattedString: Int
+        positionInFormattedString: Int,
     ) -> Int {
         formattedString
             .prefix(positionInFormattedString)
@@ -191,15 +191,15 @@ public enum FormattedNumberField {
     private static func formattedPosition(
         unformattedString: String,
         positionInUnformattedString: Int,
-        formattedString: String
+        formattedString: String,
     ) -> (lower: Int, upper: Int) {
         var lower: Int?
         var upper: Int?
 
-        for i in (0...formattedString.count) {
+        for i in 0...formattedString.count {
             let unformattedCursorPosition = unformattedPosition(
                 formattedString: formattedString,
-                positionInFormattedString: i
+                positionInFormattedString: i,
             )
             if unformattedCursorPosition == positionInUnformattedString {
                 lower = lower ?? i
@@ -239,7 +239,7 @@ public enum FormattedNumberField {
         allowedCharacters: AllowedCharacters,
         cursorPosition: Int,
         direction: SingleDeletionDirection,
-        format: (String) -> String
+        format: (String) -> String,
     ) -> OperationResult? {
         let oldUnformattedString = formattedString[keyPath: allowedCharacters.stringFilter]
         if oldUnformattedString.isEmpty {
@@ -248,7 +248,7 @@ public enum FormattedNumberField {
 
         let cursorPositionInOldUnformattedString = Self.unformattedPosition(
             formattedString: formattedString,
-            positionInFormattedString: cursorPosition
+            positionInFormattedString: cursorPosition,
         )
 
         let cursorOffset: Int
@@ -265,7 +265,7 @@ public enum FormattedNumberField {
         var newUnformattedString = oldUnformattedString
         let indexToRemove = newUnformattedString.index(
             newUnformattedString.startIndex,
-            offsetBy: offsetToRemove
+            offsetBy: offsetToRemove,
         )
         newUnformattedString.remove(at: indexToRemove)
 
@@ -274,12 +274,12 @@ public enum FormattedNumberField {
         let cursorPositionInNewFormattedString = Self.formattedPosition(
             unformattedString: newUnformattedString,
             positionInUnformattedString: cursorPositionInOldUnformattedString + cursorOffset,
-            formattedString: newFormattedString
+            formattedString: newFormattedString,
         ).lower
 
         return .init(
             formattedString: newFormattedString,
-            cursorPosition: cursorPositionInNewFormattedString
+            cursorPosition: cursorPositionInNewFormattedString,
         )
     }
 
@@ -311,17 +311,17 @@ public enum FormattedNumberField {
         selectionEnd: Int,
         rawInsertion: String,
         maxCharacters: Int,
-        format: (String) -> String
+        format: (String) -> String,
     ) -> OperationResult? {
         let insertion = rawInsertion[keyPath: allowedCharacters.stringFilter].uppercased()
 
         let selectionStartInOldUnformattedString = Self.unformattedPosition(
             formattedString: formattedString,
-            positionInFormattedString: selectionStart
+            positionInFormattedString: selectionStart,
         )
         let selectionEndInOldUnformattedString = Self.unformattedPosition(
             formattedString: formattedString,
-            positionInFormattedString: selectionEnd
+            positionInFormattedString: selectionEnd,
         )
         let oldUnformattedString = formattedString[keyPath: allowedCharacters.stringFilter]
 
@@ -330,7 +330,7 @@ public enum FormattedNumberField {
 
             let selectionEndIndex = oldUnformattedString.index(
                 oldUnformattedString.startIndex,
-                offsetBy: selectionEndInOldUnformattedString
+                offsetBy: selectionEndInOldUnformattedString,
             )
             let suffix = oldUnformattedString[selectionEndIndex...]
 
@@ -353,12 +353,12 @@ public enum FormattedNumberField {
         let cursorPositionInNewFormattedString = Self.formattedPosition(
             unformattedString: newUnformattedString,
             positionInUnformattedString: selectionStartInOldUnformattedString + insertion.count,
-            formattedString: newFormattedString
+            formattedString: newFormattedString,
         ).upper
 
         return .init(
             formattedString: newFormattedString,
-            cursorPosition: cursorPositionInNewFormattedString
+            cursorPosition: cursorPositionInNewFormattedString,
         )
     }
 
@@ -373,6 +373,7 @@ extension UITextField: FormattedNumberField.TextInput {
         set { self.text = newValue }
     }
 }
+
 extension UITextView: FormattedNumberField.TextInput {
     public var safeText: String {
         get { self.text ?? "" }

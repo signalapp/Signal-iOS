@@ -42,7 +42,7 @@ public enum FullTextSearchIndexer {
         // 2. Simplify whitespace.
         let simplified = filtered.replaceCharacters(
             characterSet: .whitespacesAndNewlines,
-            replacement: " "
+            replacement: " ",
         )
 
         // 3. Strip leading & trailing whitespace last, since we may replace
@@ -174,7 +174,7 @@ extension FullTextSearchIndexer {
             (?, ?, ?)
             """,
             arguments: [legacyCollectionName, message.uniqueId, ftsContent],
-            tx: tx
+            tx: tx,
         )
     }
 
@@ -197,7 +197,7 @@ extension FullTextSearchIndexer {
             AND \(collectionColumn) == ?
             """,
             arguments: [message.uniqueId, legacyCollectionName],
-            tx: tx
+            tx: tx,
         )
     }
 
@@ -230,7 +230,7 @@ extension FullTextSearchIndexer {
         for searchText: String,
         maxResults: Int,
         tx: DBReadTransaction,
-        block: (_ message: TSMessage, _ snippet: String, _ stop: inout Bool) -> Void
+        block: (_ message: TSMessage, _ snippet: String, _ stop: inout Bool) -> Void,
     ) {
         let query = buildQuery(for: searchText)
 

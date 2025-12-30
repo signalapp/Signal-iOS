@@ -16,7 +16,7 @@ public struct CallLinkAuthCredential {
         localAci: Aci,
         redemptionTime: UInt64,
         serverParams: GenericServerPublicParams,
-        authCredential: LibSignalClient.CallLinkAuthCredential
+        authCredential: LibSignalClient.CallLinkAuthCredential,
     ) {
         self.localAci = localAci
         self.redemptionTime = redemptionTime
@@ -29,7 +29,7 @@ public struct CallLinkAuthCredential {
             userId: self.localAci,
             redemptionTime: Date(timeIntervalSince1970: TimeInterval(self.redemptionTime)),
             serverParams: self.serverParams,
-            callLinkParams: callLinkParams
+            callLinkParams: callLinkParams,
         )
     }
 }

@@ -7,12 +7,12 @@ protocol DeleteForMeAddressableMessageFinder {
     func findLocalMessage(
         threadUniqueId: String,
         addressableMessage: DeleteForMeSyncMessage.Incoming.AddressableMessage,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> TSMessage?
 
     func threadContainsAnyAddressableMessages(
         threadUniqueId: String,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> Bool
 }
 
@@ -28,7 +28,7 @@ final class DeleteForMeAddressableMessageFinderImpl: DeleteForMeAddressableMessa
     func findLocalMessage(
         threadUniqueId: String,
         addressableMessage: DeleteForMeSyncMessage.Incoming.AddressableMessage,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> TSMessage? {
         let authorAddress: SignalServiceAddress
         switch addressableMessage.author {
@@ -45,24 +45,24 @@ final class DeleteForMeAddressableMessageFinderImpl: DeleteForMeAddressableMessa
             withTimestamp: addressableMessage.sentTimestamp,
             threadId: threadUniqueId,
             author: authorAddress,
-            transaction: tx
+            transaction: tx,
         )
     }
 
     func threadContainsAnyAddressableMessages(
         threadUniqueId: String,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> Bool {
         var foundAddressableMessage = false
 
         do {
             try DeleteForMeMostRecentAddressableMessageCursor(
                 threadUniqueId: threadUniqueId,
-                sdsTx: tx
+                sdsTx: tx,
             ).iterate { interaction in
                 owsPrecondition(
                     interaction is TSIncomingMessage || interaction is TSOutgoingMessage,
-                    "Unexpected interaction type! \(type(of: interaction))"
+                    "Unexpected interaction type! \(type(of: interaction))",
                 )
 
                 foundAddressableMessage = true

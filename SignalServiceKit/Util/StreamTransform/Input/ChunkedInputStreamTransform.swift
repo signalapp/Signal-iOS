@@ -12,7 +12,7 @@ public class ChunkedInputStreamTransform: StreamTransform, BufferedStreamTransfo
     private let initialBufferSize: Int
     private var needMoreData: Bool = true
 
-    public var hasPendingBytes: Bool { return !needMoreData && (buffer.count > consumedBytes)}
+    public var hasPendingBytes: Bool { return !needMoreData && (buffer.count > consumedBytes) }
     public func readBufferedData() throws -> Data { try getNextChunk() }
 
     init(initialBufferSize: Int = 65_536) {

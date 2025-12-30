@@ -15,11 +15,11 @@ public class DonationUtilities {
         forDonationMode donationMode: DonationMode,
         usingCurrency currencyCode: Currency.Code,
         withConfiguration configuration: DonationSubscriptionConfiguration.PaymentMethodsConfiguration,
-        localNumber: String?
+        localNumber: String?,
     ) -> Set<DonationPaymentMethod> {
         let generallySupportedMethods = supportedDonationPaymentMethods(
             forDonationMode: donationMode,
-            localNumber: localNumber
+            localNumber: localNumber,
         )
 
         let currencySupportedMethods = configuration
@@ -33,7 +33,7 @@ public class DonationUtilities {
     /// they will be donating in.
     public static func supportedDonationPaymentMethods(
         forDonationMode donationMode: DonationMode,
-        localNumber: String?
+        localNumber: String?,
     ) -> Set<DonationPaymentMethod> {
         guard let localNumber else { return [] }
 
@@ -182,7 +182,7 @@ public class DonationUtilities {
             .masterCard,
             .amex,
             .discover,
-            .maestro
+            .maestro,
         ]
     }
 
@@ -216,10 +216,10 @@ public class DonationUtilities {
     /// - Returns: The first supported currency code, or `nil` if none are found.
     public static func chooseDefaultCurrency(
         preferred: [Currency.Code?],
-        supported: any Collection<Currency.Code>
+        supported: any Collection<Currency.Code>,
     ) -> Currency.Code? {
         for currency in preferred {
-            if let currency = currency, supported.contains(currency) {
+            if let currency, supported.contains(currency) {
                 return currency
             }
         }
@@ -229,14 +229,14 @@ public class DonationUtilities {
     private static func donationToSignal() -> String {
         OWSLocalizedString(
             "DONATION_VIEW_DONATION_TO_SIGNAL",
-            comment: "Text describing to the user that they're going to pay a donation to Signal"
+            comment: "Text describing to the user that they're going to pay a donation to Signal",
         )
     }
 
     private static func monthlyDonationToSignal() -> String {
         OWSLocalizedString(
             "DONATION_VIEW_MONTHLY_DONATION_TO_SIGNAL",
-            comment: "Text describing to the user that they're going to pay a monthly donation to Signal"
+            comment: "Text describing to the user that they're going to pay a monthly donation to Signal",
         )
     }
 
@@ -248,10 +248,10 @@ public class DonationUtilities {
         if isRecurring {
             let recurringSummaryItem = PKRecurringPaymentSummaryItem(
                 label: donationToSignal(),
-                amount: nsValue
+                amount: nsValue,
             )
             recurringSummaryItem.intervalUnit = .month
-            recurringSummaryItem.intervalCount = 1  // once per month
+            recurringSummaryItem.intervalCount = 1 // once per month
             paymentSummaryItem = recurringSummaryItem
         } else {
             paymentSummaryItem = PKPaymentSummaryItem(label: donationToSignal(), amount: nsValue)
@@ -293,7 +293,7 @@ public extension DonationUtilities {
         "VUV",
         "XAF",
         "XOF",
-        "XPF"
+        "XPF",
     ]
 
     /// Is an amount of money too small, given a minimum?

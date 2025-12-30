@@ -21,7 +21,7 @@ class DisplayableTextTest: XCTestCase {
         XCTAssertEqual(diacriticalText, diacriticalText.filterStringForDisplay())
 
         // filter excessive diacritics
-        XCTAssertEqual("�ab��👩🏿‍❤️‍💋‍👩🏻c�", "x̸̢̧̛̙̝͈͈̖̳̗̰̆̈́̆̿̈́̅̽͆̈́̿̔͌̚͝abx̸̢̧̛̙̝͈͈̖̳̗̰̆̈́̆̿̈́̅̽͆̈́̿̔͌̚͝x̸̢̧̛̙̝͈͈̖̳̗̰̆̈́̆̿̈́̅̽͆̈́̿̔͌̚͝👩🏿‍❤️‍💋‍👩🏻cx̸̢̧̛̙̝͈͈̖̳̗̰̆̈́̆̿̈́̅̽͆̈́̿̔͌̚͝".filterStringForDisplay() )
+        XCTAssertEqual("�ab��👩🏿‍❤️‍💋‍👩🏻c�", "x̸̢̧̛̙̝͈͈̖̳̗̰̆̈́̆̿̈́̅̽͆̈́̿̔͌̚͝abx̸̢̧̛̙̝͈͈̖̳̗̰̆̈́̆̿̈́̅̽͆̈́̿̔͌̚͝x̸̢̧̛̙̝͈͈̖̳̗̰̆̈́̆̿̈́̅̽͆̈́̿̔͌̚͝👩🏿‍❤️‍💋‍👩🏻cx̸̢̧̛̙̝͈͈̖̳̗̰̆̈́̆̿̈́̅̽͆̈́̿̔͌̚͝".filterStringForDisplay())
     }
 
     func testGlyphCount() {
@@ -120,7 +120,7 @@ class DisplayableTextTest: XCTestCase {
             ("❤️\n💜", 2),
             ("Signal", 0),
             ("Signal Messenger", 0),
-            ("Noise", 0)
+            ("Noise", 0),
         ]
         for (textValue, expectedCount) in testCases {
             let displayableText: DisplayableText = .testOnlyInit(fullContent: .text(textValue), truncatedContent: nil)

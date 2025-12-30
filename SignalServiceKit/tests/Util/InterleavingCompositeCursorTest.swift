@@ -19,7 +19,7 @@ final class InterleavingCompositeCursorTest: XCTestCase {
 
         XCTAssertEqual(
             interleavingCursor.drain(),
-            [1, 2, 3, 4, 5, 6, 7, 8, 9]
+            [1, 2, 3, 4, 5, 6, 7, 8, 9],
         )
     }
 
@@ -34,7 +34,7 @@ final class InterleavingCompositeCursorTest: XCTestCase {
 
         XCTAssertEqual(
             interleavingCursor.drain(),
-            [2, 7, 1, 4, 8, 5, 9, 6, 3]
+            [2, 7, 1, 4, 8, 5, 9, 6, 3],
         )
     }
 
@@ -51,7 +51,7 @@ final class InterleavingCompositeCursorTest: XCTestCase {
 
         XCTAssertEqual(
             interleavingCursor.drain(),
-            [1, 3, 6, 9]
+            [1, 3, 6, 9],
         )
     }
 }
@@ -60,7 +60,7 @@ private extension InterleavingCompositeCursor<ArrayCursor<Int>> {
     convenience init(_ elements: [ArrayCursor<Int>]) {
         try! self.init(
             interleaving: elements,
-            nextElementComparator: { $0 < $1 }
+            nextElementComparator: { $0 < $1 },
         )
     }
 }

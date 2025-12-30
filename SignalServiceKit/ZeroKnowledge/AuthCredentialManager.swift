@@ -17,6 +17,7 @@ class MockAuthCrededentialManager: AuthCredentialManager {
     func fetchGroupAuthCredential(localIdentifiers: LocalIdentifiers) async throws -> AuthCredentialWithPni {
         throw OWSGenericError("Not implemented.")
     }
+
     func fetchCallLinkAuthCredential(localIdentifiers: LocalIdentifiers) async throws -> CallLinkAuthCredential {
         throw OWSGenericError("Not implemented.")
     }
@@ -34,7 +35,7 @@ class AuthCredentialManagerImpl: AuthCredentialManager {
         authCredentialStore: AuthCredentialStore,
         callLinkPublicParams: GenericServerPublicParams,
         dateProvider: @escaping DateProvider,
-        db: any DB
+        db: any DB,
     ) {
         self.authCredentialStore = authCredentialStore
         self.callLinkPublicParams = callLinkPublicParams
@@ -54,7 +55,7 @@ class AuthCredentialManagerImpl: AuthCredentialManager {
             for: redemptionTime,
             localIdentifiers: localIdentifiers,
             fetchCachedAuthCredential: self.authCredentialStore.groupAuthCredential(for:tx:),
-            authCredentialsKeyPath: \.groupAuthCredentials
+            authCredentialsKeyPath: \.groupAuthCredentials,
         )
     }
 
@@ -64,13 +65,13 @@ class AuthCredentialManagerImpl: AuthCredentialManager {
             for: redemptionTime,
             localIdentifiers: localIdentifiers,
             fetchCachedAuthCredential: self.authCredentialStore.callLinkAuthCredential(for:tx:),
-            authCredentialsKeyPath: \.callLinkAuthCredentials
+            authCredentialsKeyPath: \.callLinkAuthCredentials,
         )
         return CallLinkAuthCredential(
             localAci: localIdentifiers.aci,
             redemptionTime: redemptionTime,
             serverParams: self.callLinkPublicParams,
-            authCredential: authCredential
+            authCredential: authCredential,
         )
     }
 
@@ -78,10 +79,10 @@ class AuthCredentialManagerImpl: AuthCredentialManager {
         for redemptionTime: UInt64,
         localIdentifiers: LocalIdentifiers,
         fetchCachedAuthCredential: (UInt64, DBReadTransaction) throws -> T?,
-        authCredentialsKeyPath: KeyPath<ReceivedAuthCredentials, [(redemptionTime: UInt64, authCredential: T)]>
+        authCredentialsKeyPath: KeyPath<ReceivedAuthCredentials, [(redemptionTime: UInt64, authCredential: T)]>,
     ) async throws -> T {
         do {
-            let authCredential = try self.db.read { (tx) throws -> T? in
+            let authCredential = try self.db.read { tx throws -> T? in
                 return try fetchCachedAuthCredential(redemptionTime, tx)
             }
             if let authCredential {
@@ -94,7 +95,7 @@ class AuthCredentialManagerImpl: AuthCredentialManager {
 
         let authCredentials = try await fetchNewAuthCredentials(
             startTimestamp: redemptionTime,
-            localIdentifiers: localIdentifiers
+            localIdentifiers: localIdentifiers,
         )
 
         await db.awaitableWrite { tx in
@@ -103,7 +104,7 @@ class AuthCredentialManagerImpl: AuthCredentialManager {
                 self.authCredentialStore.setGroupAuthCredential(
                     authCredential,
                     for: redemptionTime,
-                    tx: tx
+                    tx: tx,
                 )
             }
 
@@ -112,13 +113,13 @@ class AuthCredentialManagerImpl: AuthCredentialManager {
                 self.authCredentialStore.setCallLinkAuthCredential(
                     authCredential,
                     for: redemptionTime,
-                    tx: tx
+                    tx: tx,
                 )
             }
         }
 
         let authCredential = authCredentials[keyPath: authCredentialsKeyPath].first(
-            where: { $0.redemptionTime == redemptionTime }
+            where: { $0.redemptionTime == redemptionTime },
         )?.authCredential
         guard let authCredential else {
             throw OWSAssertionError("The server didn't give us the credential we requested")
@@ -134,7 +135,7 @@ class AuthCredentialManagerImpl: AuthCredentialManager {
 
     private func fetchNewAuthCredentials(
         startTimestamp: UInt64,
-        localIdentifiers: LocalIdentifiers
+        localIdentifiers: LocalIdentifiers,
     ) async throws -> ReceivedAuthCredentials {
         let endTimestamp = startTimestamp + Constants.numberOfDaysToFetch * UInt64(TimeInterval.day)
         let timestampRange = startTimestamp...endTimestamp
@@ -165,7 +166,7 @@ class AuthCredentialManagerImpl: AuthCredentialManager {
                 aci: localIdentifiers.aci,
                 pni: authCredentialResponse.pni,
                 redemptionTime: fetchedValue.redemptionTime,
-                authCredentialResponse: AuthCredentialWithPniResponse(contents: fetchedValue.credential)
+                authCredentialResponse: AuthCredentialWithPniResponse(contents: fetchedValue.credential),
             )
             result.groupAuthCredentials.append((fetchedValue.redemptionTime, receivedValue))
         }
@@ -175,11 +176,11 @@ class AuthCredentialManagerImpl: AuthCredentialManager {
                 continue
             }
             let receivedValue = try CallLinkAuthCredentialResponse(
-                contents: fetchedValue.credential
+                contents: fetchedValue.credential,
             ).receive(
                 userId: localIdentifiers.aci,
                 redemptionTime: Date(timeIntervalSince1970: TimeInterval(fetchedValue.redemptionTime)),
-                params: callLinkPublicParams
+                params: callLinkPublicParams,
             )
             result.callLinkAuthCredentials.append((fetchedValue.redemptionTime, receivedValue))
         }

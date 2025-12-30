@@ -34,7 +34,7 @@ public final class InMemoryDB: DB {
 
     public func add(
         transactionObserver: TransactionObserver,
-        extent: Database.TransactionObservationExtent
+        extent: Database.TransactionObservationExtent,
     ) {
         databaseQueue.add(transactionObserver: transactionObserver, extent: extent)
     }
@@ -45,7 +45,7 @@ public final class InMemoryDB: DB {
         line: Int,
         block: @escaping (DBReadTransaction) -> T,
         completionQueue: DispatchQueue,
-        completion: ((T) -> Void)?
+        completion: ((T) -> Void)?,
     ) {
         DispatchQueue.global().async {
             let result: T = self.read(file: file, function: function, line: line, block: block)
@@ -59,7 +59,7 @@ public final class InMemoryDB: DB {
         line: Int,
         block: @escaping (DBWriteTransaction) -> T,
         completionQueue: DispatchQueue,
-        completion: ((T) -> Void)?
+        completion: ((T) -> Void)?,
     ) {
         DispatchQueue.global().async {
             let result = self.write(file: file, function: function, line: line, block: block)
@@ -71,7 +71,7 @@ public final class InMemoryDB: DB {
         file: String,
         function: String,
         line: Int,
-        block: (DBWriteTransaction) throws(E) -> T
+        block: (DBWriteTransaction) throws(E) -> T,
     ) async throws(E) -> T {
         await Task.yield()
         return try write(file: file, function: function, line: line, block: block)
@@ -81,7 +81,7 @@ public final class InMemoryDB: DB {
         file: String,
         function: String,
         line: Int,
-        block: (DBWriteTransaction) throws(E) -> T
+        block: (DBWriteTransaction) throws(E) -> T,
     ) async throws(E) -> T {
         await Task.yield()
         return try writeWithRollbackIfThrows(file: file, function: function, line: line, block: block)
@@ -93,7 +93,7 @@ public final class InMemoryDB: DB {
         file: String,
         function: String,
         line: Int,
-        block: (DBReadTransaction) throws(E) -> T
+        block: (DBReadTransaction) throws(E) -> T,
     ) throws(E) -> T {
         return try _read(block: block, rescue: { err throws(E) in throw err })
     }
@@ -118,12 +118,12 @@ public final class InMemoryDB: DB {
         file: String,
         function: String,
         line: Int,
-        block: (DBWriteTransaction) throws(E) -> T
+        block: (DBWriteTransaction) throws(E) -> T,
     ) throws(E) -> T {
         return try _writeWithTxCompletionIfThrows(
             block: block,
             completionIfThrows: .commit,
-            rescue: { err throws(E) in throw err }
+            rescue: { err throws(E) in throw err },
         )
     }
 
@@ -131,12 +131,12 @@ public final class InMemoryDB: DB {
         file: String,
         function: String,
         line: Int,
-        block: (DBWriteTransaction) throws(E) -> T
+        block: (DBWriteTransaction) throws(E) -> T,
     ) throws(E) -> T {
         return try _writeWithTxCompletionIfThrows(
             block: block,
             completionIfThrows: .rollback,
-            rescue: { err throws(E) in throw err }
+            rescue: { err throws(E) in throw err },
         )
     }
 

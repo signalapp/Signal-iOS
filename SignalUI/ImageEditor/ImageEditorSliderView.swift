@@ -26,7 +26,7 @@ class ImageEditorSlider: UISlider {
     override func layoutSubviews() {
         super.layoutSubviews()
         let backgroundWidth: CGFloat = 16
-        let backgroundViewFrame = bounds.insetBy(dx: 6, dy: 0.5*(bounds.height - backgroundWidth))
+        let backgroundViewFrame = bounds.insetBy(dx: 6, dy: 0.5 * (bounds.height - backgroundWidth))
         backgroundView.frame = backgroundViewFrame.offsetBy(dx: 0, dy: -.hairlineWidth)
         sendSubviewToBack(backgroundView)
     }
@@ -73,7 +73,7 @@ class ImageEditorSlider: UISlider {
         }
 
         private func updatePath() {
-            guard let shapeLayer = shapeLayer else {
+            guard let shapeLayer else {
                 return
             }
 

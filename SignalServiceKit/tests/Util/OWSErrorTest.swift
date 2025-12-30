@@ -148,9 +148,11 @@ class OWSErrorTest: XCTestCase {
         let errorCode1: Int = 999
         let errorDescription1: String = "abc"
         let isRetryable1: Bool = false
-        let error1: Error = OWSError(errorCode: errorCode1,
-                                     description: errorDescription1,
-                                     isRetryable: isRetryable1)
+        let error1: Error = OWSError(
+            errorCode: errorCode1,
+            description: errorDescription1,
+            isRetryable: isRetryable1,
+        )
 
         XCTAssertEqual((error1 as NSError).code, errorCode1)
         XCTAssertEqual((error1 as NSError).domain, OWSError.errorDomain)
@@ -195,11 +197,13 @@ class OWSErrorTest: XCTestCase {
     func testOWSError4() {
         let errorCode1: Int = 999
         let errorDescription1: String = "abc"
-        let nsError1: NSError = NSError(domain: OWSError.errorDomain,
-                                        code: errorCode1,
-                                        userInfo: [
-                                            NSLocalizedDescriptionKey: errorDescription1
-                                        ])
+        let nsError1: NSError = NSError(
+            domain: OWSError.errorDomain,
+            code: errorCode1,
+            userInfo: [
+                NSLocalizedDescriptionKey: errorDescription1,
+            ],
+        )
         let error1: Error = nsError1 as Error
 
         XCTAssertEqual((error1 as NSError).code, errorCode1)

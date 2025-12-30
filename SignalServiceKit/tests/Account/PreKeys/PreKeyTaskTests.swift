@@ -37,7 +37,7 @@ final class PreKeyTaskTests: SSKBaseTest {
         )
         let recipientIdFinder = RecipientIdFinder(
             recipientDatabaseTable: recipientDbTable,
-            recipientFetcher: recipientFetcher
+            recipientFetcher: recipientFetcher,
         )
         mockIdentityManager = .init(recipientIdFinder: recipientIdFinder)
         mockTSAccountManager = .init()
@@ -78,7 +78,7 @@ final class PreKeyTaskTests: SSKBaseTest {
             messageProcessor: SSKEnvironment.shared.messageProcessorRef,
             protocolStoreManager: mockProtocolStoreManager,
             remoteConfigProvider: MockRemoteConfigProvider(),
-            tsAccountManager: mockTSAccountManager
+            tsAccountManager: mockTSAccountManager,
         )
     }
 
@@ -114,6 +114,7 @@ final class PreKeyTaskTests: SSKBaseTest {
     //
     //
     // MARK: - Create PreKey Tests
+
     //
     //
 
@@ -217,7 +218,7 @@ final class PreKeyTaskTests: SSKBaseTest {
             identity: .aci,
             targets: [.lastResortPqPreKey, .oneTimePqPreKey],
             force: true,
-            auth: .implicit()
+            auth: .implicit(),
         )
 
         // Validate
@@ -233,6 +234,7 @@ final class PreKeyTaskTests: SSKBaseTest {
     //
     //
     // MARK: - Refresh Tests
+
     //
     //
 
@@ -321,6 +323,7 @@ final class PreKeyTaskTests: SSKBaseTest {
     //
     //
     // MARK: - Force Refresh Tests
+
     //
     //
 
@@ -333,7 +336,7 @@ final class PreKeyTaskTests: SSKBaseTest {
         mockDb.write { tx in
             mockAciProtocolStore.signedPreKeyStore.setLastSuccessfulRotationDate(
                 mockDateProvider.currentDate,
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -356,7 +359,7 @@ final class PreKeyTaskTests: SSKBaseTest {
         mockDb.write { tx in
             mockAciProtocolStore.signedPreKeyStore.setLastSuccessfulRotationDate(
                 mockDateProvider.currentDate,
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -398,7 +401,7 @@ final class PreKeyTaskTests: SSKBaseTest {
             requestUrl: URL(string: "https://example.com")!,
             responseStatus: 422,
             responseHeaders: HttpHeaders(),
-            responseData: nil
+            responseData: nil,
         )))
         var didValidateIdentityKey = false
         mockIdentityKeyMismatchManager.validateIdentityKeyMock = { _ in

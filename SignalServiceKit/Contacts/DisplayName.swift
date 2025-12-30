@@ -29,7 +29,7 @@ public enum DisplayName {
                 nameComponents,
                 multipleAccountLabel: multipleAccountLabel,
                 config: config,
-                formatBlock: useShortNameIfAvailable ? OWSFormat.formatNameComponentsShort(_:) : OWSFormat.formatNameComponents(_:)
+                formatBlock: useShortNameIfAvailable ? OWSFormat.formatNameComponentsShort(_:) : OWSFormat.formatNameComponents(_:),
             ).filterForDisplay
         }
     }
@@ -59,7 +59,7 @@ public enum DisplayName {
                 nickname.nameComponents,
                 multipleAccountLabel: nil,
                 config: config,
-                formatBlock: useShortNameIfAvailable ? OWSFormat.formatNameComponentsShort(_:) : OWSFormat.formatNameComponents(_:)
+                formatBlock: useShortNameIfAvailable ? OWSFormat.formatNameComponentsShort(_:) : OWSFormat.formatNameComponents(_:),
             )
         case .systemContactName(let systemContactName):
             return systemContactName.resolvedValue(config: config, useShortNameIfAvailable: useShortNameIfAvailable)
@@ -68,7 +68,7 @@ public enum DisplayName {
                 nameComponents,
                 multipleAccountLabel: nil,
                 config: config,
-                formatBlock: useShortNameIfAvailable ? OWSFormat.formatNameComponentsShort(_:) : OWSFormat.formatNameComponents(_:)
+                formatBlock: useShortNameIfAvailable ? OWSFormat.formatNameComponentsShort(_:) : OWSFormat.formatNameComponents(_:),
             ).filterForDisplay
         case .phoneNumber(let phoneNumber):
             return PhoneNumber.bestEffortLocalizedPhoneNumber(e164: phoneNumber.stringValue)
@@ -93,7 +93,7 @@ public enum DisplayName {
         _ nameComponents: PersonNameComponents,
         multipleAccountLabel: String?,
         config: Config,
-        formatBlock: (PersonNameComponents) -> String
+        formatBlock: (PersonNameComponents) -> String,
     ) -> String {
         let formattedName: String = {
             if config.shouldUseSystemContactNicknames, let nickname = nameComponents.nickname {
@@ -127,21 +127,21 @@ public enum DisplayName {
                 nickname.nameComponents,
                 multipleAccountLabel: nil,
                 config: config.displayNameConfig,
-                formatBlock: formatForSorting(_:)
+                formatBlock: formatForSorting(_:),
             ))
         case .systemContactName(let systemContactName):
             return .nameValue(Self.formatNameComponents(
                 systemContactName.nameComponents,
                 multipleAccountLabel: systemContactName.multipleAccountLabel,
                 config: config.displayNameConfig,
-                formatBlock: formatForSorting(_:)
+                formatBlock: formatForSorting(_:),
             ))
         case .profileName(let nameComponents):
             return .nameValue(Self.formatNameComponents(
                 nameComponents,
                 multipleAccountLabel: nil,
                 config: config.displayNameConfig,
-                formatBlock: formatForSorting(_:)
+                formatBlock: formatForSorting(_:),
             ))
         case .phoneNumber(let phoneNumber):
             return .phoneNumber(phoneNumber.stringValue)
@@ -172,14 +172,12 @@ public enum DisplayName {
                 return true
             case (_, .nameValue):
                 return false
-
             case (.phoneNumber(let lhs), .phoneNumber(let rhs)):
                 return (lhs == rhs) ? nil : (lhs < rhs)
             case (.phoneNumber, _):
                 return true
             case (_, .phoneNumber):
                 return false
-
             case (.other, .other):
                 return nil
             }
@@ -192,7 +190,7 @@ public enum DisplayName {
             public static func current() -> Self {
                 return Config(
                     displayNameConfig: .current(),
-                    shouldSortByGivenName: CNContactsUserDefaults.shared().sortOrder == .givenName
+                    shouldSortByGivenName: CNContactsUserDefaults.shared().sortOrder == .givenName,
                 )
             }
         }
@@ -209,7 +207,7 @@ public struct ComparableDisplayName {
     public init(
         address: SignalServiceAddress,
         displayName: DisplayName,
-        config: DisplayName.ComparableValue.Config
+        config: DisplayName.ComparableValue.Config,
     ) {
         self.address = address
         self.displayName = displayName
@@ -218,17 +216,17 @@ public struct ComparableDisplayName {
         self.config = config
     }
 
-    public static func < (lhs: Self, rhs: Self) -> Bool {
-        return (
+    public static func <(lhs: Self, rhs: Self) -> Bool {
+        return
             lhs.comparableValue.isLessThanOrNilIfEqual(rhs.comparableValue)
-            ?? (lhs.comparableIdentifier < rhs.comparableIdentifier)
-        )
+                ?? (lhs.comparableIdentifier < rhs.comparableIdentifier)
+
     }
 
     public func resolvedValue(useShortNameIfAvailable: Bool = false) -> String {
         return displayName.resolvedValue(
             config: config.displayNameConfig,
-            useShortNameIfAvailable: useShortNameIfAvailable
+            useShortNameIfAvailable: useShortNameIfAvailable,
         )
     }
 }

@@ -50,25 +50,26 @@ extension TSInfoMessage.PersistableGroupUpdateItem: ValidatableModel {
                 .sequenceOfInviteLinkRequestAndCancels(
                     requester: Aci.constantForTesting("56EE0EF4-A7DF-4B52-BFAF-C637F15B4FEC").codableUuid,
                     count: 12,
-                    isTail: true
+                    isTail: true,
                 ),
-                Data(#"{"sequenceOfInviteLinkRequestAndCancels":{"count":12,"isTail":true,"requester":"56EE0EF4-A7DF-4B52-BFAF-C637F15B4FEC"}}"#.utf8)
+                Data(#"{"sequenceOfInviteLinkRequestAndCancels":{"count":12,"isTail":true,"requester":"56EE0EF4-A7DF-4B52-BFAF-C637F15B4FEC"}}"#.utf8),
             ),
             (
                 .sequenceOfInviteLinkRequestAndCancels(
                     requester: Aci.constantForTesting("56EE0EF4-A7DF-4B52-BFAF-C637F15B4FEC").codableUuid,
                     count: 0,
-                    isTail: false),
-                Data(#"{"sequenceOfInviteLinkRequestAndCancels":{"isTail":false,"count":0,"requester":"56EE0EF4-A7DF-4B52-BFAF-C637F15B4FEC"}}"#.utf8)
+                    isTail: false,
+                ),
+                Data(#"{"sequenceOfInviteLinkRequestAndCancels":{"isTail":false,"count":0,"requester":"56EE0EF4-A7DF-4B52-BFAF-C637F15B4FEC"}}"#.utf8),
             ),
             (
                 .invitedPniPromotedToFullMemberAci(
                     newMember: Aci.constantForTesting("56EE0EF4-A7DF-4B52-BFAF-C637F15B4FEC").codableUuid,
-                    inviter: Aci.constantForTesting("56EE0EF4-A7DF-4B52-BFAF-C637F15B5FEE").codableUuid
+                    inviter: Aci.constantForTesting("56EE0EF4-A7DF-4B52-BFAF-C637F15B5FEE").codableUuid,
 
                 ),
-                Data(#"{"invitedPniPromotedToFullMemberAci":{"newMember":"56EE0EF4-A7DF-4B52-BFAF-C637F15B4FEC","inviter":"56EE0EF4-A7DF-4B52-BFAF-C637F15B5FEE"}}"#.utf8)
-            )
+                Data(#"{"invitedPniPromotedToFullMemberAci":{"newMember":"56EE0EF4-A7DF-4B52-BFAF-C637F15B4FEC","inviter":"56EE0EF4-A7DF-4B52-BFAF-C637F15B5FEE"}}"#.utf8),
+            ),
         ]
     }
 
@@ -78,7 +79,7 @@ extension TSInfoMessage.PersistableGroupUpdateItem: ValidatableModel {
         switch (self, against) {
         case let (
             .sequenceOfInviteLinkRequestAndCancels(selfRequester, selfCount, selfIsTail),
-            .sequenceOfInviteLinkRequestAndCancels(againstRequester, againstCount, againstIsTail)
+            .sequenceOfInviteLinkRequestAndCancels(againstRequester, againstCount, againstIsTail),
         ):
             if
                 selfRequester == againstRequester,
@@ -89,7 +90,7 @@ extension TSInfoMessage.PersistableGroupUpdateItem: ValidatableModel {
             }
         case let (
             .invitedPniPromotedToFullMemberAci(selfNewMemberAci, selfInviter),
-            .invitedPniPromotedToFullMemberAci(againstNewMemberAci, againstInviter)
+            .invitedPniPromotedToFullMemberAci(againstNewMemberAci, againstInviter),
         ):
             if
                 selfNewMemberAci == againstNewMemberAci,
@@ -99,14 +100,14 @@ extension TSInfoMessage.PersistableGroupUpdateItem: ValidatableModel {
             }
         case let (
             .localUserInviteRevoked(selfRevokerAci),
-            .localUserInviteRevoked(againstRevokerAci)
+            .localUserInviteRevoked(againstRevokerAci),
         ):
             if selfRevokerAci == againstRevokerAci {
                 validated = true
             }
         case let (
             .unnamedUserInvitesWereRevokedByOtherUser(selfUpdaterAci, selfCount),
-            .unnamedUserInvitesWereRevokedByOtherUser(againstUpdaterAci, againstCount)
+            .unnamedUserInvitesWereRevokedByOtherUser(againstUpdaterAci, againstCount),
         ):
             if
                 selfUpdaterAci == againstUpdaterAci,

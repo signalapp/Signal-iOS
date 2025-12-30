@@ -24,15 +24,15 @@ final class MessageBodyTests: XCTestCase {
                 text: "Hello",
                 ranges: .init(
                     mentions: [:],
-                    styles: []
-                )
+                    styles: [],
+                ),
             ),
             names: [:],
             output: .init(
                 hydratedText: "Hello",
                 mentionAttributes: [],
-                styleAttributes: []
-            )
+                styleAttributes: [],
+            ),
         )
     }
 
@@ -42,10 +42,10 @@ final class MessageBodyTests: XCTestCase {
                 text: "Hello @",
                 ranges: .init(
                     mentions: [
-                        NSRange(location: 6, length: 1): acis[0]
+                        NSRange(location: 6, length: 1): acis[0],
                     ],
-                    styles: []
-                )
+                    styles: [],
+                ),
             ),
             names: [acis[0]: "Luke"],
             output: .init(
@@ -55,13 +55,13 @@ final class MessageBodyTests: XCTestCase {
                         .fromOriginalRange(
                             NSRange(location: 6, length: 1),
                             mentionAci: acis[0],
-                            displayName: "Luke"
+                            displayName: "Luke",
                         ),
-                        range: NSRange(location: 6, length: 5)
-                    )
+                        range: NSRange(location: 6, length: 5),
+                    ),
                 ],
-                styleAttributes: []
-            )
+                styleAttributes: [],
+            ),
         )
     }
 
@@ -73,15 +73,15 @@ final class MessageBodyTests: XCTestCase {
                     mentions: [
                         NSRange(location: 6, length: 1): acis[0],
                         NSRange(location: 12, length: 1): acis[1],
-                        NSRange(location: 22, length: 1): acis[2]
+                        NSRange(location: 22, length: 1): acis[2],
                     ],
-                    styles: []
-                )
+                    styles: [],
+                ),
             ),
             names: [
                 acis[0]: "Luke",
                 acis[1]: "Leia",
-                acis[2]: "Han"
+                acis[2]: "Han",
             ],
             output: .init(
                 hydratedText: "Hello @Luke and @Leia, how is @Han?",
@@ -90,29 +90,29 @@ final class MessageBodyTests: XCTestCase {
                         .fromOriginalRange(
                             NSRange(location: 6, length: 1),
                             mentionAci: acis[0],
-                            displayName: "Luke"
+                            displayName: "Luke",
                         ),
-                        range: NSRange(location: 6, length: 5)
+                        range: NSRange(location: 6, length: 5),
                     ),
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 12, length: 1),
                             mentionAci: acis[1],
-                            displayName: "Leia"
+                            displayName: "Leia",
                         ),
-                        range: NSRange(location: 16, length: 5)
+                        range: NSRange(location: 16, length: 5),
                     ),
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 22, length: 1),
                             mentionAci: acis[2],
-                            displayName: "Han"
+                            displayName: "Han",
                         ),
-                        range: NSRange(location: 30, length: 4)
-                    )
+                        range: NSRange(location: 30, length: 4),
+                    ),
                 ],
-                styleAttributes: []
-            )
+                styleAttributes: [],
+            ),
         )
     }
 
@@ -126,15 +126,15 @@ final class MessageBodyTests: XCTestCase {
                     mentions: [
                         NSRange(location: 6, length: 5): acis[0],
                         NSRange(location: 16, length: 2): acis[1],
-                        NSRange(location: 27, length: 0): acis[2]
+                        NSRange(location: 27, length: 0): acis[2],
                     ],
-                    styles: []
-                )
+                    styles: [],
+                ),
             ),
             names: [
                 acis[0]: "Luke",
                 acis[1]: "Leia",
-                acis[2]: "Han"
+                acis[2]: "Han",
             ],
             output: .init(
                 hydratedText: "Hello @Luke and @Leia, how is @Han?",
@@ -143,29 +143,29 @@ final class MessageBodyTests: XCTestCase {
                         .fromOriginalRange(
                             NSRange(location: 6, length: 5),
                             mentionAci: acis[0],
-                            displayName: "Luke"
+                            displayName: "Luke",
                         ),
-                        range: NSRange(location: 6, length: 5)
+                        range: NSRange(location: 6, length: 5),
                     ),
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 16, length: 2),
                             mentionAci: acis[1],
-                            displayName: "Leia"
+                            displayName: "Leia",
                         ),
-                        range: NSRange(location: 16, length: 5)
+                        range: NSRange(location: 16, length: 5),
                     ),
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 27, length: 0),
                             mentionAci: acis[2],
-                            displayName: "Han"
+                            displayName: "Han",
                         ),
-                        range: NSRange(location: 30, length: 4)
-                    )
+                        range: NSRange(location: 30, length: 4),
+                    ),
                 ],
-                styleAttributes: []
-            )
+                styleAttributes: [],
+            ),
         )
     }
 
@@ -177,43 +177,43 @@ final class MessageBodyTests: XCTestCase {
                     mentions: [
                         NSRange(location: 6, length: 1): acis[0],
                         NSRange(location: 12, length: 1): acis[1],
-                        NSRange(location: 22, length: 1): acis[2]
+                        NSRange(location: 22, length: 1): acis[2],
                     ],
-                    styles: []
-                )
+                    styles: [],
+                ),
             ),
             names: [
                 acis[0]: "Luke",
-                acis[2]: "Han"
+                acis[2]: "Han",
             ],
             output: .init(
                 hydratedText: "Hello @Luke and @, how is @Han?",
                 unhydratedMentions: [
                     .init(
                         .fromOriginalRange(NSRange(location: 12, length: 1), mentionAci: acis[1]),
-                        range: NSRange(location: 16, length: 1)
-                    )
+                        range: NSRange(location: 16, length: 1),
+                    ),
                 ],
                 mentionAttributes: [
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 6, length: 1),
                             mentionAci: acis[0],
-                            displayName: "Luke"
+                            displayName: "Luke",
                         ),
-                        range: NSRange(location: 6, length: 5)
+                        range: NSRange(location: 6, length: 5),
                     ),
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 22, length: 1),
                             mentionAci: acis[2],
-                            displayName: "Han"
+                            displayName: "Han",
                         ),
-                        range: NSRange(location: 26, length: 4)
-                    )
+                        range: NSRange(location: 26, length: 4),
+                    ),
                 ],
-                styleAttributes: []
-            )
+                styleAttributes: [],
+            ),
         )
     }
 
@@ -226,9 +226,9 @@ final class MessageBodyTests: XCTestCase {
                     styles: [
                         .init(.bold, range: NSRange(location: 8, length: 4)),
                         .init(.italic, range: NSRange(location: 14, length: 6)),
-                        .init(.monospace, range: NSRange(location: 26, length: 4))
-                    ]
-                )
+                        .init(.monospace, range: NSRange(location: 26, length: 4)),
+                    ],
+                ),
             ),
             names: [:],
             output: .init(
@@ -237,24 +237,24 @@ final class MessageBodyTests: XCTestCase {
                 styleAttributes: [
                     .init(
                         .fromCollapsedStyle(
-                            .init(.bold, mergedRange: NSRange(location: 8, length: 4))
+                            .init(.bold, mergedRange: NSRange(location: 8, length: 4)),
                         ),
-                        range: NSRange(location: 8, length: 4)
+                        range: NSRange(location: 8, length: 4),
                     ),
                     .init(
                         .fromCollapsedStyle(
-                            .init(.italic, mergedRange: NSRange(location: 14, length: 6))
+                            .init(.italic, mergedRange: NSRange(location: 14, length: 6)),
                         ),
-                        range: NSRange(location: 14, length: 6)
+                        range: NSRange(location: 14, length: 6),
                     ),
                     .init(
                         .fromCollapsedStyle(
-                            .init(.monospace, mergedRange: NSRange(location: 26, length: 4))
+                            .init(.monospace, mergedRange: NSRange(location: 26, length: 4)),
                         ),
-                        range: NSRange(location: 26, length: 4)
-                    )
-                ]
-            )
+                        range: NSRange(location: 26, length: 4),
+                    ),
+                ],
+            ),
         )
     }
 
@@ -264,14 +264,14 @@ final class MessageBodyTests: XCTestCase {
                 text: "This is bold, italic, and mono, @.",
                 ranges: .init(
                     mentions: [
-                        NSRange(location: 32, length: 1): acis[0]
+                        NSRange(location: 32, length: 1): acis[0],
                     ],
                     styles: [
                         .init(.bold, range: NSRange(location: 8, length: 4)),
                         .init(.italic, range: NSRange(location: 14, length: 6)),
-                        .init(.monospace, range: NSRange(location: 26, length: 4))
-                    ]
-                )
+                        .init(.monospace, range: NSRange(location: 26, length: 4)),
+                    ],
+                ),
             ),
             names: [acis[0]: "Luke"],
             output: .init(
@@ -281,32 +281,32 @@ final class MessageBodyTests: XCTestCase {
                         .fromOriginalRange(
                             NSRange(location: 32, length: 1),
                             mentionAci: acis[0],
-                            displayName: "Luke"
+                            displayName: "Luke",
                         ),
-                        range: NSRange(location: 32, length: 5)
-                    )
+                        range: NSRange(location: 32, length: 5),
+                    ),
                 ],
                 styleAttributes: [
                     .init(
                         .fromCollapsedStyle(
-                            .init(.bold, mergedRange: NSRange(location: 8, length: 4))
+                            .init(.bold, mergedRange: NSRange(location: 8, length: 4)),
                         ),
-                        range: NSRange(location: 8, length: 4)
+                        range: NSRange(location: 8, length: 4),
                     ),
                     .init(
                         .fromCollapsedStyle(
-                            .init(.italic, mergedRange: NSRange(location: 14, length: 6))
+                            .init(.italic, mergedRange: NSRange(location: 14, length: 6)),
                         ),
-                        range: NSRange(location: 14, length: 6)
+                        range: NSRange(location: 14, length: 6),
                     ),
                     .init(
                         .fromCollapsedStyle(
-                            .init(.monospace, mergedRange: NSRange(location: 26, length: 4))
+                            .init(.monospace, mergedRange: NSRange(location: 26, length: 4)),
                         ),
-                        range: NSRange(location: 26, length: 4)
-                    )
-                ]
-            )
+                        range: NSRange(location: 26, length: 4),
+                    ),
+                ],
+            ),
         )
     }
 
@@ -316,14 +316,14 @@ final class MessageBodyTests: XCTestCase {
                 text: "@, this is bold, italic, and mono",
                 ranges: .init(
                     mentions: [
-                        NSRange(location: 0, length: 1): acis[0]
+                        NSRange(location: 0, length: 1): acis[0],
                     ],
                     styles: [
                         .init(.bold, range: NSRange(location: 11, length: 4)),
                         .init(.italic, range: NSRange(location: 17, length: 6)),
-                        .init(.monospace, range: NSRange(location: 29, length: 4))
-                    ]
-                )
+                        .init(.monospace, range: NSRange(location: 29, length: 4)),
+                    ],
+                ),
             ),
             names: [acis[0]: "Luke"],
             output: .init(
@@ -333,32 +333,32 @@ final class MessageBodyTests: XCTestCase {
                         .fromOriginalRange(
                             NSRange(location: 0, length: 1),
                             mentionAci: acis[0],
-                            displayName: "Luke"
+                            displayName: "Luke",
                         ),
-                        range: NSRange(location: 0, length: 5)
-                    )
+                        range: NSRange(location: 0, length: 5),
+                    ),
                 ],
                 styleAttributes: [
                     .init(
                         .fromCollapsedStyle(
-                            .init(.bold, mergedRange: NSRange(location: 11, length: 4))
+                            .init(.bold, mergedRange: NSRange(location: 11, length: 4)),
                         ),
-                        range: NSRange(location: 15, length: 4)
+                        range: NSRange(location: 15, length: 4),
                     ),
                     .init(
                         .fromCollapsedStyle(
-                            .init(.italic, mergedRange: NSRange(location: 17, length: 6))
+                            .init(.italic, mergedRange: NSRange(location: 17, length: 6)),
                         ),
-                        range: NSRange(location: 21, length: 6)
+                        range: NSRange(location: 21, length: 6),
                     ),
                     .init(
                         .fromCollapsedStyle(
-                            .init(.monospace, mergedRange: NSRange(location: 29, length: 4))
+                            .init(.monospace, mergedRange: NSRange(location: 29, length: 4)),
                         ),
-                        range: NSRange(location: 33, length: 4)
-                    )
-                ]
-            )
+                        range: NSRange(location: 33, length: 4),
+                    ),
+                ],
+            ),
         )
     }
 
@@ -368,12 +368,12 @@ final class MessageBodyTests: XCTestCase {
                 text: "Use the force, @",
                 ranges: .init(
                     mentions: [
-                        NSRange(location: 15, length: 1): acis[0]
+                        NSRange(location: 15, length: 1): acis[0],
                     ],
                     styles: [
-                        .init(.italic, range: NSRange(location: 0, length: 16))
-                    ]
-                )
+                        .init(.italic, range: NSRange(location: 0, length: 16)),
+                    ],
+                ),
             ),
             names: [acis[0]: "Luke"],
             output: .init(
@@ -383,20 +383,20 @@ final class MessageBodyTests: XCTestCase {
                         .fromOriginalRange(
                             NSRange(location: 15, length: 1),
                             mentionAci: acis[0],
-                            displayName: "Luke"
+                            displayName: "Luke",
                         ),
-                        range: NSRange(location: 15, length: 5)
-                    )
+                        range: NSRange(location: 15, length: 5),
+                    ),
                 ],
                 styleAttributes: [
                     .init(
                         .fromCollapsedStyle(
-                            .init(.italic, mergedRange: NSRange(location: 0, length: 16))
+                            .init(.italic, mergedRange: NSRange(location: 0, length: 16)),
                         ),
-                        range: NSRange(location: 0, length: 20)
-                    )
-                ]
-            )
+                        range: NSRange(location: 0, length: 20),
+                    ),
+                ],
+            ),
         )
     }
 
@@ -417,21 +417,21 @@ final class MessageBodyTests: XCTestCase {
                         NSRange(location: 0, length: 1): acis[0],
                         NSRange(location: 3, length: 3): acis[1],
                         NSRange(location: 8, length: 15): acis[2],
-                        NSRange(location: 28, length: 3): acis[3]
+                        NSRange(location: 28, length: 3): acis[3],
                     ],
                     styles: [
                         .init(.bold, range: NSRange(location: 0, length: 51)),
                         .init(.italic, range: NSRange(location: 4, length: 1)),
                         .init(.monospace, range: NSRange(location: 12, length: 15)),
-                        .init(.spoiler, range: NSRange(location: 24, length: 5))
-                    ]
-                )
+                        .init(.spoiler, range: NSRange(location: 24, length: 5)),
+                    ],
+                ),
             ),
             names: [
                 acis[0]: "BoldGuy",
                 acis[1]: "BoldItalicGuy",
                 acis[2]: "BoldMonoGuy",
-                acis[3]: "BoldSpoilerGuy"
+                acis[3]: "BoldSpoilerGuy",
             ],
             output: .init(
                 hydratedText: "@BoldGuy, @BoldItalicGuy, @BoldMonoGuy and @BoldSpoilerGuy are stylish people.",
@@ -440,93 +440,93 @@ final class MessageBodyTests: XCTestCase {
                         .fromOriginalRange(
                             NSRange(location: 0, length: 1),
                             mentionAci: acis[0],
-                            displayName: "BoldGuy"
+                            displayName: "BoldGuy",
                         ),
-                        range: NSRange(location: 0, length: 8)
+                        range: NSRange(location: 0, length: 8),
                     ),
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 3, length: 3),
                             mentionAci: acis[1],
-                            displayName: "BoldItalicGuy"
+                            displayName: "BoldItalicGuy",
                         ),
-                        range: NSRange(location: 10, length: 14)
+                        range: NSRange(location: 10, length: 14),
                     ),
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 8, length: 15),
                             mentionAci: acis[2],
-                            displayName: "BoldMonoGuy"
+                            displayName: "BoldMonoGuy",
                         ),
-                        range: NSRange(location: 26, length: 12)
+                        range: NSRange(location: 26, length: 12),
                     ),
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 28, length: 3),
                             mentionAci: acis[3],
-                            displayName: "BoldSpoilerGuy"
+                            displayName: "BoldSpoilerGuy",
                         ),
-                        range: NSRange(location: 43, length: 15)
-                    )
+                        range: NSRange(location: 43, length: 15),
+                    ),
                 ],
                 styleAttributes: [
                     .init(
                         .fromCollapsedStyle(
-                            .init(.bold, mergedRange: NSRange(location: 0, length: 51))
+                            .init(.bold, mergedRange: NSRange(location: 0, length: 51)),
                         ),
-                        range: NSRange(location: 0, length: 10)
+                        range: NSRange(location: 0, length: 10),
                     ),
                     .init(
                         .fromCollapsedStyle(
                             .init([
                                 .bold: NSRange(location: 0, length: 51),
-                                .italic: NSRange(location: 3, length: 3)
-                            ])
+                                .italic: NSRange(location: 3, length: 3),
+                            ]),
                         ),
-                        range: NSRange(location: 10, length: 14)
+                        range: NSRange(location: 10, length: 14),
                     ),
                     .init(
                         .fromCollapsedStyle(
-                            .init(.bold, mergedRange: NSRange(location: 0, length: 51))
+                            .init(.bold, mergedRange: NSRange(location: 0, length: 51)),
                         ),
-                        range: NSRange(location: 24, length: 2)
-                    ),
-                    .init(
-                        .fromCollapsedStyle(
-                            .init([
-                                .bold: NSRange(location: 0, length: 51),
-                                .monospace: NSRange(location: 8, length: 19)
-                            ])
-                        ),
-                        range: NSRange(location: 26, length: 13)
+                        range: NSRange(location: 24, length: 2),
                     ),
                     .init(
                         .fromCollapsedStyle(
                             .init([
                                 .bold: NSRange(location: 0, length: 51),
                                 .monospace: NSRange(location: 8, length: 19),
-                                .spoiler: NSRange(location: 24, length: 7)
-                            ])
+                            ]),
                         ),
-                        range: NSRange(location: 39, length: 3)
+                        range: NSRange(location: 26, length: 13),
                     ),
                     .init(
                         .fromCollapsedStyle(
                             .init([
                                 .bold: NSRange(location: 0, length: 51),
-                                .spoiler: NSRange(location: 24, length: 7)
-                            ])
+                                .monospace: NSRange(location: 8, length: 19),
+                                .spoiler: NSRange(location: 24, length: 7),
+                            ]),
                         ),
-                        range: NSRange(location: 42, length: 16)
+                        range: NSRange(location: 39, length: 3),
                     ),
                     .init(
                         .fromCollapsedStyle(
-                            .init(.bold, mergedRange: NSRange(location: 0, length: 51))
+                            .init([
+                                .bold: NSRange(location: 0, length: 51),
+                                .spoiler: NSRange(location: 24, length: 7),
+                            ]),
                         ),
-                        range: NSRange(location: 58, length: 20)
-                    )
-                ]
-            )
+                        range: NSRange(location: 42, length: 16),
+                    ),
+                    .init(
+                        .fromCollapsedStyle(
+                            .init(.bold, mergedRange: NSRange(location: 0, length: 51)),
+                        ),
+                        range: NSRange(location: 58, length: 20),
+                    ),
+                ],
+            ),
         )
     }
 
@@ -547,102 +547,102 @@ final class MessageBodyTests: XCTestCase {
                         NSRange(location: 0, length: 1): acis[0],
                         NSRange(location: 3, length: 3): acis[1],
                         NSRange(location: 8, length: 15): acis[2],
-                        NSRange(location: 28, length: 3): acis[3]
+                        NSRange(location: 28, length: 3): acis[3],
                     ],
                     styles: [
                         .init(.bold, range: NSRange(location: 0, length: 51)),
                         .init(.italic, range: NSRange(location: 4, length: 1)),
                         .init(.monospace, range: NSRange(location: 12, length: 15)),
-                        .init(.spoiler, range: NSRange(location: 24, length: 5))
-                    ]
-                )
+                        .init(.spoiler, range: NSRange(location: 24, length: 5)),
+                    ],
+                ),
             ),
             names: [
                 acis[0]: "BoldGuy",
-                acis[3]: "BoldSpoilerGuy"
+                acis[3]: "BoldSpoilerGuy",
             ],
             output: .init(
                 hydratedText: "@BoldGuy, @@@, @@@@@@@@@@@@@@@ and @BoldSpoilerGuy are stylish people.",
                 unhydratedMentions: [
                     .init(.fromOriginalRange(NSRange(location: 3, length: 3), mentionAci: acis[1]), range: NSRange(location: 10, length: 3)),
-                    .init(.fromOriginalRange(NSRange(location: 8, length: 15), mentionAci: acis[2]), range: NSRange(location: 15, length: 15))
+                    .init(.fromOriginalRange(NSRange(location: 8, length: 15), mentionAci: acis[2]), range: NSRange(location: 15, length: 15)),
                 ],
                 mentionAttributes: [
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 0, length: 1),
                             mentionAci: acis[0],
-                            displayName: "BoldGuy"
+                            displayName: "BoldGuy",
                         ),
-                        range: NSRange(location: 0, length: 8)
+                        range: NSRange(location: 0, length: 8),
                     ),
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 28, length: 3),
                             mentionAci: acis[3],
-                            displayName: "BoldSpoilerGuy"
+                            displayName: "BoldSpoilerGuy",
                         ),
-                        range: NSRange(location: 35, length: 15)
-                    )
+                        range: NSRange(location: 35, length: 15),
+                    ),
                 ],
                 styleAttributes: [
                     .init(
                         .fromCollapsedStyle(
-                            .init(.bold, mergedRange: NSRange(location: 0, length: 51))
+                            .init(.bold, mergedRange: NSRange(location: 0, length: 51)),
                         ),
-                        range: NSRange(location: 0, length: 10)
+                        range: NSRange(location: 0, length: 10),
                     ),
                     .init(
                         .fromCollapsedStyle(
                             .init([
                                 .bold: NSRange(location: 0, length: 51),
-                                .italic: NSRange(location: 3, length: 3)
-                            ])
+                                .italic: NSRange(location: 3, length: 3),
+                            ]),
                         ),
-                        range: NSRange(location: 10, length: 3)
+                        range: NSRange(location: 10, length: 3),
                     ),
                     .init(
                         .fromCollapsedStyle(
-                            .init(.bold, mergedRange: NSRange(location: 0, length: 51))
+                            .init(.bold, mergedRange: NSRange(location: 0, length: 51)),
                         ),
-                        range: NSRange(location: 13, length: 2)
-                    ),
-                    .init(
-                        .fromCollapsedStyle(
-                            .init([
-                                .bold: NSRange(location: 0, length: 51),
-                                .monospace: NSRange(location: 8, length: 19)
-                            ])
-                        ),
-                        range: NSRange(location: 15, length: 16)
+                        range: NSRange(location: 13, length: 2),
                     ),
                     .init(
                         .fromCollapsedStyle(
                             .init([
                                 .bold: NSRange(location: 0, length: 51),
                                 .monospace: NSRange(location: 8, length: 19),
-                                .spoiler: NSRange(location: 24, length: 7)
-                            ])
+                            ]),
                         ),
-                        range: NSRange(location: 31, length: 3)
+                        range: NSRange(location: 15, length: 16),
                     ),
                     .init(
                         .fromCollapsedStyle(
                             .init([
                                 .bold: NSRange(location: 0, length: 51),
-                                .spoiler: NSRange(location: 24, length: 7)
-                            ])
+                                .monospace: NSRange(location: 8, length: 19),
+                                .spoiler: NSRange(location: 24, length: 7),
+                            ]),
                         ),
-                        range: NSRange(location: 34, length: 16)
+                        range: NSRange(location: 31, length: 3),
                     ),
                     .init(
                         .fromCollapsedStyle(
-                            .init(.bold, mergedRange: NSRange(location: 0, length: 51))
+                            .init([
+                                .bold: NSRange(location: 0, length: 51),
+                                .spoiler: NSRange(location: 24, length: 7),
+                            ]),
                         ),
-                        range: NSRange(location: 50, length: 20)
-                    )
-                ]
-            )
+                        range: NSRange(location: 34, length: 16),
+                    ),
+                    .init(
+                        .fromCollapsedStyle(
+                            .init(.bold, mergedRange: NSRange(location: 0, length: 51)),
+                        ),
+                        range: NSRange(location: 50, length: 20),
+                    ),
+                ],
+            ),
         )
     }
 
@@ -653,14 +653,14 @@ final class MessageBodyTests: XCTestCase {
                 ranges: .init(
                     mentions: [
                         NSRange(location: 5, length: 1): acis[0],
-                        NSRange(location: 13, length: 1): acis[1]
+                        NSRange(location: 13, length: 1): acis[1],
                     ],
-                    styles: []
-                )
+                    styles: [],
+                ),
             ),
             names: [
                 acis[0]: "לוק",
-                acis[1]: "ליאה"
+                acis[1]: "ליאה",
             ],
             output: .init(
                 hydratedText: "שלום לוק@. שלום ליאה@.",
@@ -669,22 +669,22 @@ final class MessageBodyTests: XCTestCase {
                         .fromOriginalRange(
                             NSRange(location: 5, length: 1),
                             mentionAci: acis[0],
-                            displayName: "לוק"
+                            displayName: "לוק",
                         ),
-                        range: NSRange(location: 5, length: 4)
+                        range: NSRange(location: 5, length: 4),
                     ),
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 13, length: 1),
                             mentionAci: acis[1],
-                            displayName: "ליאה"
+                            displayName: "ליאה",
                         ),
-                        range: NSRange(location: 16, length: 5)
-                    )
+                        range: NSRange(location: 16, length: 5),
+                    ),
                 ],
-                styleAttributes: []
+                styleAttributes: [],
             ),
-            isRTL: true
+            isRTL: true,
         )
     }
 
@@ -694,12 +694,12 @@ final class MessageBodyTests: XCTestCase {
                 text: "השתמש בכוח, @",
                 ranges: .init(
                     mentions: [
-                        NSRange(location: 12, length: 1): acis[0]
+                        NSRange(location: 12, length: 1): acis[0],
                     ],
                     styles: [
-                        .init(.italic, range: NSRange(location: 5, length: 3))
-                    ]
-                )
+                        .init(.italic, range: NSRange(location: 5, length: 3)),
+                    ],
+                ),
             ),
             names: [acis[0]: "לוק"],
             output: .init(
@@ -709,21 +709,21 @@ final class MessageBodyTests: XCTestCase {
                         .fromOriginalRange(
                             NSRange(location: 12, length: 1),
                             mentionAci: acis[0],
-                            displayName: "לוק"
+                            displayName: "לוק",
                         ),
-                        range: NSRange(location: 12, length: 4)
-                    )
+                        range: NSRange(location: 12, length: 4),
+                    ),
                 ],
                 styleAttributes: [
                     .init(
                         .fromCollapsedStyle(
-                            .init(.italic, mergedRange: NSRange(location: 5, length: 3))
+                            .init(.italic, mergedRange: NSRange(location: 5, length: 3)),
                         ),
-                        range: NSRange(location: 5, length: 3)
-                    )
-                ]
+                        range: NSRange(location: 5, length: 3),
+                    ),
+                ],
             ),
-            isRTL: true
+            isRTL: true,
         )
 
         runHydrationTest(
@@ -731,12 +731,12 @@ final class MessageBodyTests: XCTestCase {
                 text: "@, השתמש בכוח",
                 ranges: .init(
                     mentions: [
-                        NSRange(location: 0, length: 1): acis[0]
+                        NSRange(location: 0, length: 1): acis[0],
                     ],
                     styles: [
-                        .init(.italic, range: NSRange(location: 5, length: 3))
-                    ]
-                )
+                        .init(.italic, range: NSRange(location: 5, length: 3)),
+                    ],
+                ),
             ),
             names: [acis[0]: "לוק"],
             output: .init(
@@ -746,21 +746,21 @@ final class MessageBodyTests: XCTestCase {
                         .fromOriginalRange(
                             NSRange(location: 0, length: 1),
                             mentionAci: acis[0],
-                            displayName: "לוק"
+                            displayName: "לוק",
                         ),
-                        range: NSRange(location: 0, length: 4)
-                    )
+                        range: NSRange(location: 0, length: 4),
+                    ),
                 ],
                 styleAttributes: [
                     .init(
                         .fromCollapsedStyle(
-                            .init(.italic, mergedRange: NSRange(location: 5, length: 3))
+                            .init(.italic, mergedRange: NSRange(location: 5, length: 3)),
                         ),
-                        range: NSRange(location: 8, length: 3)
-                    )
-                ]
+                        range: NSRange(location: 8, length: 3),
+                    ),
+                ],
             ),
-            isRTL: true
+            isRTL: true,
         )
     }
 
@@ -770,12 +770,12 @@ final class MessageBodyTests: XCTestCase {
                 text: "השתמש בכוח, @",
                 ranges: .init(
                     mentions: [
-                        NSRange(location: 12, length: 1): acis[0]
+                        NSRange(location: 12, length: 1): acis[0],
                     ],
                     styles: [
-                        .init(.italic, range: NSRange(location: 0, length: 13))
-                    ]
-                )
+                        .init(.italic, range: NSRange(location: 0, length: 13)),
+                    ],
+                ),
             ),
             names: [acis[0]: "לוק"],
             output: .init(
@@ -785,21 +785,21 @@ final class MessageBodyTests: XCTestCase {
                         .fromOriginalRange(
                             NSRange(location: 12, length: 1),
                             mentionAci: acis[0],
-                            displayName: "לוק"
+                            displayName: "לוק",
                         ),
-                        range: NSRange(location: 12, length: 4)
-                    )
+                        range: NSRange(location: 12, length: 4),
+                    ),
                 ],
                 styleAttributes: [
                     .init(
                         .fromCollapsedStyle(
-                            .init(.italic, mergedRange: NSRange(location: 0, length: 13))
+                            .init(.italic, mergedRange: NSRange(location: 0, length: 13)),
                         ),
-                        range: NSRange(location: 0, length: 16)
-                    )
-                ]
+                        range: NSRange(location: 0, length: 16),
+                    ),
+                ],
             ),
-            isRTL: true
+            isRTL: true,
         )
 
         runHydrationTest(
@@ -807,12 +807,12 @@ final class MessageBodyTests: XCTestCase {
                 text: "@, השתמש בכוח",
                 ranges: .init(
                     mentions: [
-                        NSRange(location: 0, length: 1): acis[0]
+                        NSRange(location: 0, length: 1): acis[0],
                     ],
                     styles: [
-                        .init(.italic, range: NSRange(location: 0, length: 13))
-                    ]
-                )
+                        .init(.italic, range: NSRange(location: 0, length: 13)),
+                    ],
+                ),
             ),
             names: [acis[0]: "לוק"],
             output: .init(
@@ -822,21 +822,21 @@ final class MessageBodyTests: XCTestCase {
                         .fromOriginalRange(
                             NSRange(location: 0, length: 1),
                             mentionAci: acis[0],
-                            displayName: "לוק"
+                            displayName: "לוק",
                         ),
-                        range: NSRange(location: 0, length: 4)
-                    )
+                        range: NSRange(location: 0, length: 4),
+                    ),
                 ],
                 styleAttributes: [
                     .init(
                         .fromCollapsedStyle(
-                            .init(.italic, mergedRange: NSRange(location: 0, length: 13))
+                            .init(.italic, mergedRange: NSRange(location: 0, length: 13)),
                         ),
-                        range: NSRange(location: 0, length: 16)
-                    )
-                ]
+                        range: NSRange(location: 0, length: 16),
+                    ),
+                ],
             ),
-            isRTL: true
+            isRTL: true,
         )
     }
 
@@ -846,12 +846,12 @@ final class MessageBodyTests: XCTestCase {
                 text: "השתמש בכוח, @@@",
                 ranges: .init(
                     mentions: [
-                        NSRange(location: 12, length: 3): acis[0]
+                        NSRange(location: 12, length: 3): acis[0],
                     ],
                     styles: [
-                        .init(.italic, range: NSRange(location: 5, length: 8))
-                    ]
-                )
+                        .init(.italic, range: NSRange(location: 5, length: 8)),
+                    ],
+                ),
             ),
             names: [acis[0]: "לוק"],
             output: .init(
@@ -861,33 +861,33 @@ final class MessageBodyTests: XCTestCase {
                         .fromOriginalRange(
                             NSRange(location: 12, length: 3),
                             mentionAci: acis[0],
-                            displayName: "לוק"
+                            displayName: "לוק",
                         ),
-                        range: NSRange(location: 12, length: 4)
-                    )
+                        range: NSRange(location: 12, length: 4),
+                    ),
                 ],
                 styleAttributes: [
                     .init(
                         .fromCollapsedStyle(
-                            .init(.italic, mergedRange: NSRange(location: 5, length: 10))
+                            .init(.italic, mergedRange: NSRange(location: 5, length: 10)),
                         ),
-                        range: NSRange(location: 5, length: 11)
-                    )
-                ]
+                        range: NSRange(location: 5, length: 11),
+                    ),
+                ],
             ),
-            isRTL: true
+            isRTL: true,
         )
         runHydrationTest(
             input: .init(
                 text: "@@@, השתמש בכוח",
                 ranges: .init(
                     mentions: [
-                        NSRange(location: 0, length: 3): acis[0]
+                        NSRange(location: 0, length: 3): acis[0],
                     ],
                     styles: [
-                        .init(.italic, range: NSRange(location: 1, length: 8))
-                    ]
-                )
+                        .init(.italic, range: NSRange(location: 1, length: 8)),
+                    ],
+                ),
             ),
             names: [acis[0]: "לוק"],
             output: .init(
@@ -897,21 +897,21 @@ final class MessageBodyTests: XCTestCase {
                         .fromOriginalRange(
                             NSRange(location: 0, length: 3),
                             mentionAci: acis[0],
-                            displayName: "לוק"
+                            displayName: "לוק",
                         ),
-                        range: NSRange(location: 0, length: 4)
-                    )
+                        range: NSRange(location: 0, length: 4),
+                    ),
                 ],
                 styleAttributes: [
                     .init(
                         .fromCollapsedStyle(
-                            .init(.italic, mergedRange: NSRange(location: 0, length: 9))
+                            .init(.italic, mergedRange: NSRange(location: 0, length: 9)),
                         ),
-                        range: NSRange(location: 0, length: 10)
-                    )
-                ]
+                        range: NSRange(location: 0, length: 10),
+                    ),
+                ],
             ),
-            isRTL: true
+            isRTL: true,
         )
     }
 
@@ -922,18 +922,18 @@ final class MessageBodyTests: XCTestCase {
                 ranges: .init(
                     mentions: [
                         NSRange(location: 0, length: 3): acis[0],
-                        NSRange(location: 13, length: 3): acis[1]
+                        NSRange(location: 13, length: 3): acis[1],
                     ],
                     styles: [
                         .init(.bold, range: NSRange(location: 1, length: 9)),
                         .init(.italic, range: NSRange(location: 4, length: 6)),
-                        .init(.monospace, range: NSRange(location: 11, length: 3))
-                    ]
-                )
+                        .init(.monospace, range: NSRange(location: 11, length: 3)),
+                    ],
+                ),
             ),
             names: [
                 acis[0]: "José",
-                acis[1]: "María"
+                acis[1]: "María",
             ],
             output: .init(
                 hydratedText: "@José engaña a @María",
@@ -942,43 +942,43 @@ final class MessageBodyTests: XCTestCase {
                         .fromOriginalRange(
                             NSRange(location: 0, length: 3),
                             mentionAci: acis[0],
-                            displayName: "José"
+                            displayName: "José",
                         ),
-                        range: NSRange(location: 0, length: 5)
+                        range: NSRange(location: 0, length: 5),
                     ),
                     .init(
                         .fromOriginalRange(
                             NSRange(location: 13, length: 3),
                             mentionAci: acis[1],
-                            displayName: "María"
+                            displayName: "María",
                         ),
-                        range: NSRange(location: 15, length: 6)
-                    )
+                        range: NSRange(location: 15, length: 6),
+                    ),
                 ],
                 styleAttributes: [
                     .init(
                         .fromCollapsedStyle(
-                            .init(.bold, mergedRange: NSRange(location: 0, length: 10))
+                            .init(.bold, mergedRange: NSRange(location: 0, length: 10)),
                         ),
-                        range: NSRange(location: 0, length: 6)
+                        range: NSRange(location: 0, length: 6),
                     ),
                     .init(
                         .fromCollapsedStyle(
                             .init([
                                 .bold: NSRange(location: 0, length: 10),
-                                .italic: NSRange(location: 4, length: 6)
-                            ])
+                                .italic: NSRange(location: 4, length: 6),
+                            ]),
                         ),
-                        range: NSRange(location: 6, length: 6)
+                        range: NSRange(location: 6, length: 6),
                     ),
                     .init(
                         .fromCollapsedStyle(
-                            .init(.monospace, mergedRange: NSRange(location: 11, length: 5))
+                            .init(.monospace, mergedRange: NSRange(location: 11, length: 5)),
                         ),
-                        range: NSRange(location: 13, length: 8)
-                    )
-                ]
-            )
+                        range: NSRange(location: 13, length: 8),
+                    ),
+                ],
+            ),
         )
     }
 
@@ -1010,18 +1010,18 @@ final class MessageBodyTests: XCTestCase {
                 ranges: .init(
                     mentions: [
                         NSRange(location: 0, length: 3): acis[0],
-                        NSRange(location: secondMentionLocation + 1, length: 3): acis[1]
+                        NSRange(location: secondMentionLocation + 1, length: 3): acis[1],
                     ],
                     styles: [
                         .init(.bold, range: NSRange(location: 1, length: 3 + firstEmojiLength + 5)),
                         .init(.italic, range: NSRange(location: firstEmojiLocation, length: firstEmojiLength + 5 + secondEmojiLength)),
-                        .init(.monospace, range: NSRange(location: middleWordLocation, length: 5 + secondEmojiLength + 2))
-                    ]
-                )
+                        .init(.monospace, range: NSRange(location: middleWordLocation, length: 5 + secondEmojiLength + 2)),
+                    ],
+                ),
             ),
             names: [
                 acis[0]: "Luke",
-                acis[1]: "Leia"
+                acis[1]: "Leia",
             ],
             output: .init(
                 hydratedText: "@Luke 🤗👨‍👨‍👧‍👦hello👩‍❤️‍👨🌗 @Leia",
@@ -1030,62 +1030,62 @@ final class MessageBodyTests: XCTestCase {
                         .fromOriginalRange(
                             NSRange(location: 0, length: 3),
                             mentionAci: acis[0],
-                            displayName: "Luke"
+                            displayName: "Luke",
                         ),
-                        range: NSRange(location: 0, length: 5)
+                        range: NSRange(location: 0, length: 5),
                     ),
                     .init(
                         .fromOriginalRange(
                             NSRange(location: secondMentionLocation + 1, length: 3),
                             mentionAci: acis[1],
-                            displayName: "Leia"
+                            displayName: "Leia",
                         ),
-                        range: NSRange(location: secondMentionLocation + 3, length: 5)
-                    )
+                        range: NSRange(location: secondMentionLocation + 3, length: 5),
+                    ),
                 ],
                 styleAttributes: [
                     .init(
                         .fromCollapsedStyle(
-                            .init(.bold, mergedRange: NSRange(location: 0, length: 4 + firstEmojiLength + 5))
+                            .init(.bold, mergedRange: NSRange(location: 0, length: 4 + firstEmojiLength + 5)),
                         ),
-                        range: NSRange(location: 0, length: 6)
-                    ),
-                    .init(
-                        .fromCollapsedStyle(
-                            .init([
-                                .bold: NSRange(location: 0, length: 4 + firstEmojiLength + 5),
-                                .italic: NSRange(location: firstEmojiLocation, length: firstEmojiLength + 5 + secondEmojiLength)
-                            ])
-                        ),
-                        range: NSRange(location: firstEmojiLocationHydrated, length: firstEmojiLength)
+                        range: NSRange(location: 0, length: 6),
                     ),
                     .init(
                         .fromCollapsedStyle(
                             .init([
                                 .bold: NSRange(location: 0, length: 4 + firstEmojiLength + 5),
                                 .italic: NSRange(location: firstEmojiLocation, length: firstEmojiLength + 5 + secondEmojiLength),
-                                .monospace: NSRange(location: middleWordLocation, length: 5 + secondEmojiLength + 4)
-                            ])
+                            ]),
                         ),
-                        range: NSRange(location: middleWordLocationHydrated, length: 5)
+                        range: NSRange(location: firstEmojiLocationHydrated, length: firstEmojiLength),
+                    ),
+                    .init(
+                        .fromCollapsedStyle(
+                            .init([
+                                .bold: NSRange(location: 0, length: 4 + firstEmojiLength + 5),
+                                .italic: NSRange(location: firstEmojiLocation, length: firstEmojiLength + 5 + secondEmojiLength),
+                                .monospace: NSRange(location: middleWordLocation, length: 5 + secondEmojiLength + 4),
+                            ]),
+                        ),
+                        range: NSRange(location: middleWordLocationHydrated, length: 5),
                     ),
                     .init(
                         .fromCollapsedStyle(
                             .init([
                                 .italic: NSRange(location: firstEmojiLocation, length: firstEmojiLength + 5 + secondEmojiLength),
-                                .monospace: NSRange(location: middleWordLocation, length: 5 + secondEmojiLength + 4)
-                            ])
+                                .monospace: NSRange(location: middleWordLocation, length: 5 + secondEmojiLength + 4),
+                            ]),
                         ),
-                        range: NSRange(location: secondEmojiLocationHydrated, length: secondEmojiLength)
+                        range: NSRange(location: secondEmojiLocationHydrated, length: secondEmojiLength),
                     ),
                     .init(
                         .fromCollapsedStyle(
-                            .init(.monospace, mergedRange: NSRange(location: middleWordLocation, length: 5 + secondEmojiLength + 4))
+                            .init(.monospace, mergedRange: NSRange(location: middleWordLocation, length: 5 + secondEmojiLength + 4)),
                         ),
-                        range: NSRange(location: secondMentionLocationHydrated, length: 6)
-                    )
-                ]
-            )
+                        range: NSRange(location: secondMentionLocationHydrated, length: 6),
+                    ),
+                ],
+            ),
         )
     }
 
@@ -1097,7 +1097,7 @@ final class MessageBodyTests: XCTestCase {
         output: HydratedMessageBody,
         isRTL: Bool = false,
         file: StaticString = #filePath,
-        line: UInt = #line
+        line: UInt = #line,
     ) {
         let hydrated = input.hydrating(
             mentionHydrator: { aci in
@@ -1107,13 +1107,13 @@ final class MessageBodyTests: XCTestCase {
                     return .preserveMention
                 }
             },
-            isRTL: isRTL
+            isRTL: isRTL,
         )
         XCTAssertEqual(
             output,
             hydrated,
             file: file,
-            line: line
+            line: line,
         )
     }
 }

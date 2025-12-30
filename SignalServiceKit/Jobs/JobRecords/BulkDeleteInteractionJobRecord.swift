@@ -26,7 +26,7 @@ final class BulkDeleteInteractionJobRecord: JobRecord, FactoryInitializableFromR
         fullThreadDeletionAnchorMessageRowId: Int64?,
         threadUniqueId: String,
         failureCount: UInt = 0,
-        status: Status = .ready
+        status: Status = .ready,
     ) {
         self.threadUniqueId = threadUniqueId
         self.fullThreadDeletionAnchorMessageRowId = fullThreadDeletionAnchorMessageRowId
@@ -34,7 +34,7 @@ final class BulkDeleteInteractionJobRecord: JobRecord, FactoryInitializableFromR
 
         super.init(
             failureCount: failureCount,
-            status: status
+            status: status,
         )
     }
 
@@ -48,7 +48,7 @@ final class BulkDeleteInteractionJobRecord: JobRecord, FactoryInitializableFromR
         try super.init(baseClassDuringFactoryInitializationFrom: container.superDecoder())
     }
 
-    override public func encode(to encoder: any Encoder) throws {
+    override func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
 
         try super.encode(to: container.superEncoder())

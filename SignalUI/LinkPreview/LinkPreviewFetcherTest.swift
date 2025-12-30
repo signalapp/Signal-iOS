@@ -4,9 +4,9 @@
 //
 
 import Foundation
+import XCTest
 @testable import SignalServiceKit
 @testable import SignalUI
-import XCTest
 
 func XCTAssertMatch(expectedPattern: String, actualText: String, file: StaticString = #filePath, line: UInt = #line) {
     let regex = try! NSRegularExpression(pattern: expectedPattern, options: [])
@@ -26,7 +26,7 @@ class LinkPreviewFetcherTest: XCTestCase {
             db: InMemoryDB(),
             groupsV2: MockGroupsV2(),
             linkPreviewSettingStore: LinkPreviewSettingStore.mock(),
-            tsAccountManager: MockTSAccountManager()
+            tsAccountManager: MockTSAccountManager(),
         )
     }
 
@@ -161,8 +161,10 @@ class LinkPreviewFetcherTest: XCTestCase {
         //
         // It seems like some parts of the URL are stable, so we can pattern match, but if this continues to be brittle we may choose
         // to remove it or stub the network response
-        XCTAssertMatch(expectedPattern: "^https://.*.cdninstagram.com/.*/50654775_634096837020403_4737154112061769375_n.jpg\\?.*$",
-                       actualText: content.ogImageUrlString!)
+        XCTAssertMatch(
+            expectedPattern: "^https://.*.cdninstagram.com/.*/50654775_634096837020403_4737154112061769375_n.jpg\\?.*$",
+            actualText: content.ogImageUrlString!,
+        )
         //                XCTAssertEqual(content.imageUrl, "https://scontent-iad3-1.cdninstagram.com/vp/88656d9c10074b97b503d3b7b86eba84/5D774562/t51.2885-15/e35/50654775_634096837020403_4737154112061769375_n.jpg?_nc_ht=scontent-iad3-1.cdninstagram.com")
     }
 
@@ -182,8 +184,10 @@ class LinkPreviewFetcherTest: XCTestCase {
         //
         // It seems like some parts of the URL are stable, so we can pattern match, but if this continues to be brittle we may choose
         // to remove it or stub the network response
-        XCTAssertMatch(expectedPattern: "^https://.*.cdninstagram.com/.*/50654775_634096837020403_4737154112061769375_n.jpg\\?.*$",
-                       actualText: content.ogImageUrlString!)
+        XCTAssertMatch(
+            expectedPattern: "^https://.*.cdninstagram.com/.*/50654775_634096837020403_4737154112061769375_n.jpg\\?.*$",
+            actualText: content.ogImageUrlString!,
+        )
         //                XCTAssertEqual(content.imageUrl, "https://scontent-iad3-1.cdninstagram.com/vp/88656d9c10074b97b503d3b7b86eba84/5D774562/t51.2885-15/e35/50654775_634096837020403_4737154112061769375_n.jpg?_nc_ht=scontent-iad3-1.cdninstagram.com")
     }
 

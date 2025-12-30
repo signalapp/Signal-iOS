@@ -104,7 +104,7 @@ class BackupArchiveInlinedOversizeTextArchiver {
     /// Populate the BackupOversizeTextCache table with any oversize text attachment streams that weren't
     /// already present. After calling this method, BackupOversizeTextCache can be read for backup export.
     /// Message processing (and sending) should be suspended while this runs, so that new attachments are not created,
-    public func populateTableIncrementally(progress: OWSProgressSink?) async throws {
+    func populateTableIncrementally(progress: OWSProgressSink?) async throws {
         // We can get away with fetching attachment ids in one read then processing in separate
         // writes because no new attachments should be created while backups is running.
         // Worst case, we miss an attachment and the oversized text ends up truncated
@@ -118,7 +118,7 @@ class BackupArchiveInlinedOversizeTextArchiver {
         if let progress {
             progressSource = await progress.addSource(
                 withLabel: "BackupOversizeTextCache",
-                unitCount: UInt64(attachmentIds.count)
+                unitCount: UInt64(attachmentIds.count),
             )
         } else {
             progressSource = nil
@@ -134,7 +134,7 @@ class BackupArchiveInlinedOversizeTextArchiver {
             try self.populateTableIncrementallyBatch(
                 attachmentIds: batchIds,
                 progress: progressSource,
-                tx: tx
+                tx: tx,
             )
             return batchIds.isEmpty ? .done(()) : .more
         }
@@ -158,7 +158,7 @@ class BackupArchiveInlinedOversizeTextArchiver {
 
         let oversizedTextReference = attachmentStore.fetchFirstReference(
             owner: .messageOversizeText(messageRowId: messageRowId),
-            tx: context.tx
+            tx: context.tx,
         )
         guard
             let oversizedTextReference
@@ -166,7 +166,7 @@ class BackupArchiveInlinedOversizeTextArchiver {
             // No oversized text if there's no corresponding attachment!
             return .success(ArchivedMessageBody(
                 inlinedText: text,
-                oversizedTextPointer: nil
+                oversizedTextPointer: nil,
             ))
         }
 
@@ -174,7 +174,7 @@ class BackupArchiveInlinedOversizeTextArchiver {
         do {
             oversizedText = try self.fetchInlineableOversizedText(
                 attachmentId: oversizedTextReference.attachmentRowId,
-                tx: context.tx
+                tx: context.tx,
             )
         } catch {
             return .completeFailure(.fatalArchiveError(.oversizedTextCacheFetchError(error)))
@@ -185,20 +185,20 @@ class BackupArchiveInlinedOversizeTextArchiver {
             // If we inline, no need to include a pointer (in fact, doing so is disallowed).
             return .success(ArchivedMessageBody(
                 inlinedText: oversizedText,
-                oversizedTextPointer: nil
+                oversizedTextPointer: nil,
             ))
         } else {
             // Otherwise the best we can do is return a pointer.
             guard let attachment = attachmentStore.fetch(id: oversizedTextReference.attachmentRowId, tx: context.tx) else {
                 return .success(ArchivedMessageBody(
                     inlinedText: text,
-                    oversizedTextPointer: nil
+                    oversizedTextPointer: nil,
                 ))
             }
             var partialErrors = [BackupArchive.ArchiveFrameError<BackupArchive.InteractionUniqueId>]()
             let pointerResult = attachmentsArchiver.archiveOversizeTextAttachment(
                 ReferencedAttachment(reference: oversizedTextReference, attachment: attachment),
-                context: context
+                context: context,
             )
             switch pointerResult.bubbleUp(ArchivedMessageBody.self, partialErrors: &partialErrors) {
             case .bubbleUpError(let error):
@@ -206,7 +206,7 @@ class BackupArchiveInlinedOversizeTextArchiver {
             case .continue(let oversizedTextPointer):
                 let body = ArchivedMessageBody(
                     inlinedText: text.trimToUtf8ByteCount(OWSMediaUtils.kOversizeTextMessageSizeThresholdBytes),
-                    oversizedTextPointer: oversizedTextPointer
+                    oversizedTextPointer: oversizedTextPointer,
                 )
                 if partialErrors.isEmpty {
                     return .success(body)
@@ -225,18 +225,18 @@ class BackupArchiveInlinedOversizeTextArchiver {
         _ text: String,
         bodyRanges: MessageBodyRanges,
         oversizeTextAttachment: BackupProto_FilePointer?,
-        chatItemId: BackupArchive.ChatItemId
+        chatItemId: BackupArchive.ChatItemId,
     ) -> BackupArchive.RestoreInteractionResult<RestoredMessageBody?> {
         var partialErrors = [BackupArchive.RestoreFrameError<BackupArchive.ChatItemId>]()
 
         var text = text
-        let inlinedTextLength =  text.lengthOfBytes(using: .utf8)
+        let inlinedTextLength = text.lengthOfBytes(using: .utf8)
         if inlinedTextLength > BackupOversizeTextCache.maxTextLengthBytes {
             // It is never allowed to have text beyond this limit inlined,
             // truncate and drop any excess.
             partialErrors.append(.restoreFrameError(
                 .invalidProtoData(.standardMessageWayTooOversizedBody),
-                chatItemId
+                chatItemId,
             ))
             text = text.trimToUtf8ByteCount(BackupOversizeTextCache.maxTextLengthBytes)
         }
@@ -244,7 +244,7 @@ class BackupArchiveInlinedOversizeTextArchiver {
         if inlinedTextLength > OWSMediaUtils.kOversizeTextMessageSizeThresholdBytes {
             inlinedBody = MessageBody(
                 text: text.trimToUtf8ByteCount(OWSMediaUtils.kOversizeTextMessageSizeThresholdBytes),
-                ranges: bodyRanges
+                ranges: bodyRanges,
             )
         } else {
             inlinedBody = MessageBody(text: text, ranges: bodyRanges)
@@ -255,14 +255,14 @@ class BackupArchiveInlinedOversizeTextArchiver {
             if text.isEmpty {
                 return .messageFailure([.restoreFrameError(
                     .invalidProtoData(.longTextStandardMessageMissingBody),
-                    chatItemId
+                    chatItemId,
                 )])
             } else if inlinedTextLength > OWSMediaUtils.kOversizeTextMessageSizeThresholdBytes {
                 // If we have an oversize text attachment, we are not allowed to _also_
                 // have inlined oversize text (that exceeds the standard body length limit).
                 partialErrors.append(.restoreFrameError(
                     .invalidProtoData(.longTextStandardMessageWithOversizeBody),
-                    chatItemId
+                    chatItemId,
                 ))
                 // Drop the pointer; treat the text as inlined.
                 oversizeText = .inlined(text)
@@ -277,7 +277,7 @@ class BackupArchiveInlinedOversizeTextArchiver {
 
         let restoredBody = RestoredMessageBody(
             inlinedBody: inlinedBody,
-            oversizeText: oversizeText
+            oversizeText: oversizeText,
         )
 
         if partialErrors.isEmpty {
@@ -309,7 +309,7 @@ class BackupArchiveInlinedOversizeTextArchiver {
                 messageRowId: messageRowId,
                 message: message,
                 thread: thread,
-                context: context
+                context: context,
             )
         case .inlined(let _text):
             text = _text
@@ -330,8 +330,8 @@ class BackupArchiveInlinedOversizeTextArchiver {
                 messageRowId: messageRowId,
                 receivedAtTimestamp: message.receivedAtTimestamp,
                 threadRowId: thread.threadRowId,
-                isPastEditRevision: message.isPastEditRevision()
-            ))
+                isPastEditRevision: message.isPastEditRevision(),
+            )),
         )
 
         // Whether we're free or paid this should be set when we restored the account data frame.
@@ -343,25 +343,25 @@ class BackupArchiveInlinedOversizeTextArchiver {
             from: ownedAttachment,
             uploadEra: uploadEra,
             attachmentByteCounter: context.attachmentByteCounter,
-            tx: context.tx
+            tx: context.tx,
         )
         if error != nil {
             return .messageFailure([.restoreFrameError(
                 .failedToCreateAttachment,
-                chatItemId
+                chatItemId,
             )])
         }
 
         // Fetch the attachment reference we just created.
         let reference = attachmentStore.fetchFirstReference(
             owner: .messageOversizeText(messageRowId: messageRowId),
-            tx: context.tx
+            tx: context.tx,
         )
 
         guard let reference else {
             return .messageFailure([.restoreFrameError(
                 .failedToCreateAttachment,
-                chatItemId
+                chatItemId,
             )])
         }
 
@@ -370,7 +370,7 @@ class BackupArchiveInlinedOversizeTextArchiver {
         } catch {
             return .messageFailure([.restoreFrameError(
                 .failedToCreateAttachment,
-                chatItemId
+                chatItemId,
             )])
         }
 
@@ -378,7 +378,7 @@ class BackupArchiveInlinedOversizeTextArchiver {
     }
 
     func finishRestoringOversizedTextAttachments(
-        progress: OWSProgressSink?
+        progress: OWSProgressSink?,
     ) async throws {
         let progressSource: OWSProgressSource?
         if let progress {
@@ -441,7 +441,7 @@ class BackupArchiveInlinedOversizeTextArchiver {
                     .filter(
                         SQL(stringLiteral: "\(Attachment.Record.databaseTableName).\(Attachment.Record.CodingKeys.sqliteId.rawValue)")
                             == Column(BackupOversizeTextCache.CodingKeys.attachmentRowId))
-                    .exists()
+                    .exists(),
             )
             .select(Column(Attachment.Record.CodingKeys.sqliteId))
             .fetchAll(tx.database)
@@ -451,7 +451,7 @@ class BackupArchiveInlinedOversizeTextArchiver {
     private func populateTableIncrementallyBatch(
         attachmentIds: ArraySlice<Attachment.IDType>,
         progress: OWSProgressSource?,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         var maxRecordId: BackupOversizeTextCache.IDType = 0
         for attachmentId in attachmentIds {
@@ -530,7 +530,7 @@ class BackupArchiveInlinedOversizeTextArchiver {
                     try attachmentManager.updateAttachmentWithOversizeTextFromBackup(
                         attachmentId: attachmentId,
                         pendingAttachment: pendingAttachment,
-                        tx: tx
+                        tx: tx,
                     )
                 }
             }

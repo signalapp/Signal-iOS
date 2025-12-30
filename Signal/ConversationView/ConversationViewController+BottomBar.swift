@@ -112,8 +112,10 @@ public extension ConversationViewController {
             requestView = messageRequestView
             bottomView = messageRequestView
         case .memberRequestView:
-            let memberRequestView = MemberRequestView(threadViewModel: threadViewModel,
-                                                      fromViewController: self)
+            let memberRequestView = MemberRequestView(
+                threadViewModel: threadViewModel,
+                fromViewController: self,
+            )
             memberRequestView.delegate = self
             requestView = memberRequestView
             bottomView = memberRequestView
@@ -129,8 +131,10 @@ public extension ConversationViewController {
             requestView = legacyGroupView
             bottomView = legacyGroupView
         case .announcementOnlyGroup:
-            let announcementOnlyView = BlockingAnnouncementOnlyView(threadViewModel: threadViewModel,
-                                                                    fromViewController: self)
+            let announcementOnlyView = BlockingAnnouncementOnlyView(
+                threadViewModel: threadViewModel,
+                fromViewController: self,
+            )
             requestView = announcementOnlyView
             bottomView = announcementOnlyView
         }
@@ -146,8 +150,9 @@ public extension ConversationViewController {
                 bottomView.trailingAnchor.constraint(equalTo: bottomBarContainer.trailingAnchor),
             ])
 
-            if let conversationBottomBar = bottomView as? ConversationBottomBar,
-               conversationBottomBar.shouldAttachToKeyboardLayoutGuide
+            if
+                let conversationBottomBar = bottomView as? ConversationBottomBar,
+                conversationBottomBar.shouldAttachToKeyboardLayoutGuide
             {
                 NSLayoutConstraint.activate([
                     bottomView.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor),
@@ -186,7 +191,7 @@ public extension ConversationViewController {
             messageDraft: messageDraft,
             draftReply: replyDraft,
             voiceMemoDraft: voiceMemoDraft,
-            editTarget: editTarget
+            editTarget: editTarget,
         )
 
         // Obscures content underneath bottom bar to improve legibility.
@@ -203,9 +208,11 @@ public extension ConversationViewController {
     func reloadDraft() {
         AssertIsOnMainThread()
 
-        guard let messageDraft = (SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            self.thread.currentDraft(transaction: transaction)
-        }) else {
+        guard
+            let messageDraft = (SSKEnvironment.shared.databaseStorageRef.read { transaction in
+                self.thread.currentDraft(transaction: transaction)
+            })
+        else {
             return
         }
         guard let inputToolbar = self.inputToolbar else {
@@ -237,7 +244,7 @@ public extension ConversationViewController {
             owsFailDebug("InputToolbar not yet ready.")
             return
         }
-        guard let inputToolbar = inputToolbar else {
+        guard let inputToolbar else {
             return
         }
 
@@ -256,7 +263,7 @@ public extension ConversationViewController {
             return
         }
 
-        guard let inputToolbar = inputToolbar else {
+        guard let inputToolbar else {
             return
         }
 
@@ -286,7 +293,7 @@ public extension ConversationViewController {
 
         UIView.animate(withDuration: 0.2, delay: 0, options: []) {
             requestView.bounds = endFrame
-        } completion: { (_) in
+        } completion: { _ in
             requestView.removeFromSuperview()
         }
     }

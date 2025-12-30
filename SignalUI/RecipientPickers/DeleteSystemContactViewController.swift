@@ -42,7 +42,7 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
         contactsManager: any ContactManager,
         databaseStorage: SDSDatabaseStorage,
         recipientHidingManager: RecipientHidingManager,
-        tsAccountManager: TSAccountManager
+        tsAccountManager: TSAccountManager,
     ) {
         self.e164 = e164
         self.serviceId = serviceId
@@ -51,7 +51,7 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
             contactsManager: contactsManager,
             databaseStorage: databaseStorage,
             recipientHidingManager: recipientHidingManager,
-            tsAccountManager: tsAccountManager
+            tsAccountManager: tsAccountManager,
         )
         super.init()
     }
@@ -108,7 +108,7 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
             imageView.widthAnchor.constraint(equalToConstant: Constants.avatarDiameter),
             cell.contentView.topAnchor.constraint(equalTo: imageView.topAnchor),
             cell.contentView.bottomAnchor.constraint(equalTo: imageView.bottomAnchor),
-            cell.contentView.centerXAnchor.constraint(equalTo: imageView.centerXAnchor)
+            cell.contentView.centerXAnchor.constraint(equalTo: imageView.centerXAnchor),
         ])
         return cell
     }
@@ -147,17 +147,17 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
         let addressForProfileLookup = SignalServiceAddress(serviceId: serviceId, e164: e164)
         let (
             image,
-            systemContactName
+            systemContactName,
         ) = dependencies.databaseStorage.read { tx in
             let image = SSKEnvironment.shared.avatarBuilderRef.avatarImage(
                 forAddress: addressForProfileLookup,
                 diameterPixels: Constants.avatarDiameter * UIScreen.main.scale,
                 localUserDisplayMode: .asUser,
-                transaction: tx
+                transaction: tx,
             )
             let systemContactName = dependencies.contactsManager.systemContactName(
                 for: e164.stringValue,
-                tx: tx
+                tx: tx,
             )
             return (image, systemContactName)
         }
@@ -167,7 +167,7 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
         avatarSection.hasBackground = false
         let avatarItem = OWSTableItem(customCellBlock: { [weak self] in
             if
-                let image = image,
+                let image,
                 let avatarCell = self?.avatarCell(image: image)
             {
                 return avatarCell
@@ -185,8 +185,8 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
                 nameSection.add(
                     OWSTableItem.label(
                         withText: name.filterForDisplay,
-                        accessoryType: .none
-                    )
+                        accessoryType: .none,
+                    ),
                 )
             }
             contents.add(nameSection)
@@ -198,8 +198,8 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
         phoneNumberSection.add(
             OWSTableItem.label(
                 withText: formattedPhoneNum,
-                accessoryType: .none
-            )
+                accessoryType: .none,
+            ),
         )
         contents.add(phoneNumberSection)
 
@@ -211,10 +211,10 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
                     return OWSTableItem.buildCell(
                         itemName: OWSLocalizedString(
                             "DELETE_CONTACT_BUTTON",
-                            comment: "Title of button for deleting system contact."
+                            comment: "Title of button for deleting system contact.",
                         ),
                         textColor: .ows_accentRed,
-                        accessoryType: .none
+                        accessoryType: .none,
                     )
                 },
                 actionBlock: { [weak self] in
@@ -222,10 +222,10 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
                     let displayName: DisplayName = systemContactName.map { .systemContactName($0) } ?? .unknown
                     self.displayDeleteContactActionSheet(
                         phoneNumber: self.e164.stringValue,
-                        displayNameForToast: displayName.resolvedValue().formattedForActionSheetTitle()
+                        displayNameForToast: displayName.resolvedValue().formattedForActionSheetTitle(),
                     )
-                }
-            )
+                },
+            ),
         )
         contents.add(deleteContactSection)
 
@@ -238,27 +238,27 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
         let actionSheet = ActionSheetController(
             title: OWSLocalizedString(
                 "DELETE_CONTACT_ACTION_SHEET_TITLE",
-                comment: "Title of action sheet confirming the user wants to delete a system contact."
+                comment: "Title of action sheet confirming the user wants to delete a system contact.",
             ),
             message: OWSLocalizedString(
                 "DELETE_CONTACT_ACTION_SHEET_EXPLANATION",
-                comment: "An explanation of what happens in Signal when you remove a system contact."
-            )
+                comment: "An explanation of what happens in Signal when you remove a system contact.",
+            ),
         )
 
         actionSheet.addAction(ActionSheetAction(
             title: OWSLocalizedString(
                 "DELETE_CONTACT_ACTION_SHEET_BUTTON",
-                comment: "'Delete' button label on the delete contact confirmation action sheet"
+                comment: "'Delete' button label on the delete contact confirmation action sheet",
             ),
             style: .destructive,
             handler: { [weak self] _ in
                 self?.handleContactDelete(displayNameForToast: displayNameForToast)
-            }
+            },
         ))
         actionSheet.addAction(ActionSheetAction(
             title: CommonStrings.cancelButton,
-            style: .cancel
+            style: .cancel,
         ))
         self.presentActionSheet(actionSheet)
     }
@@ -274,6 +274,7 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
 
         case .notDetermined, .denied, .restricted:
             fallthrough
+
         @unknown default:
             Logger.info("No contact permissions")
             showGenericErrorToastAndDismiss()
@@ -282,7 +283,7 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
         let signalAccount = self.dependencies.databaseStorage.read { tx in
             return SignalAccountFinder().signalAccount(
                 for: self.e164,
-                tx: tx
+                tx: tx,
             )
         }
         // In the case where we have more than one contact with the e164,
@@ -294,9 +295,9 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
         let phoneNumPredicate = CNContact.predicateForContacts(matching: CNPhoneNumber(stringValue: e164.stringValue))
         guard
             let contacts = try? contactStore.unifiedContacts(
-                    matching: phoneNumPredicate,
-                    keysToFetch: [CNContactIdentifierKey as CNKeyDescriptor]
-                )
+                matching: phoneNumPredicate,
+                keysToFetch: [CNContactIdentifierKey as CNKeyDescriptor],
+            )
         else {
             Logger.error("Failed to fetch CNContacts!")
             showGenericErrorToastAndDismiss()
@@ -352,7 +353,7 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
                         SignalServiceAddress(serviceId: self.serviceId, e164: self.e164),
                         inKnownMessageRequestState: false,
                         wasLocallyInitiated: true,
-                        tx: tx
+                        tx: tx,
                     )
                     self.displayDeletedContactToast(displayNameForToast: displayNameForToast)
                 } catch {
@@ -381,7 +382,7 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
         ToastController(text: CommonStrings.somethingWentWrongError).presentToastView(
             from: .bottom,
             of: self.viewControllerPresentingToast.view,
-            inset: self.view.safeAreaInsets.bottom + Constants.toastInset
+            inset: self.view.safeAreaInsets.bottom + Constants.toastInset,
         )
         self.dismiss(animated: true)
     }
@@ -392,20 +393,20 @@ class DeleteSystemContactViewController: OWSTableViewController2 {
         let toastMessage = String(
             format: OWSLocalizedString(
                 "DELETE_CONTACT_CONFIRMATION_TOAST",
-                comment: "Toast message confirming the system contact was deleted. Embeds {{The name of the user who was deleted.}}."
+                comment: "Toast message confirming the system contact was deleted. Embeds {{The name of the user who was deleted.}}.",
             ),
-            displayNameForToast
+            displayNameForToast,
         )
         ToastController(text: toastMessage).presentToastView(
             from: .bottom,
             of: self.viewControllerPresentingToast.view,
-            inset: self.view.safeAreaInsets.bottom + Constants.toastInset
+            inset: self.view.safeAreaInsets.bottom + Constants.toastInset,
         )
     }
 }
 
 private class ContactDeletionAvatarImageView: UIImageView {
-    override public func layoutSubviews() {
+    override func layoutSubviews() {
         super.layoutSubviews()
         self.clipsToBounds = true
         layer.cornerRadius = self.frame.size.width / 2

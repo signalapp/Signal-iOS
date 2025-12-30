@@ -9,8 +9,10 @@ import Foundation
 public extension OutgoingPaymentSyncMessage {
 
     @objc(syncMessageBuilderWithMobileCoin:transaction:)
-    func syncMessageBuilder(mobileCoin: OutgoingPaymentMobileCoin,
-                            transaction: DBReadTransaction) -> SSKProtoSyncMessageBuilder? {
+    func syncMessageBuilder(
+        mobileCoin: OutgoingPaymentMobileCoin,
+        transaction: DBReadTransaction,
+    ) -> SSKProtoSyncMessageBuilder? {
         do {
             let amountPicoMob = mobileCoin.amountPicoMob
             let feePicoMob = mobileCoin.feePicoMob
@@ -18,9 +20,11 @@ public extension OutgoingPaymentSyncMessage {
             let spentKeyImages = mobileCoin.spentKeyImages
             let outputPublicKeys = mobileCoin.outputPublicKeys
             let receiptData = mobileCoin.receiptData
-            let mobileCoinBuilder = SSKProtoSyncMessageOutgoingPaymentMobileCoin.builder(amountPicoMob: amountPicoMob,
-                                                                                         feePicoMob: feePicoMob,
-                                                                                         ledgerBlockIndex: ledgerBlockIndex)
+            let mobileCoinBuilder = SSKProtoSyncMessageOutgoingPaymentMobileCoin.builder(
+                amountPicoMob: amountPicoMob,
+                feePicoMob: feePicoMob,
+                ledgerBlockIndex: ledgerBlockIndex,
+            )
             mobileCoinBuilder.setSpentKeyImages(spentKeyImages)
             mobileCoinBuilder.setOutputPublicKeys(outputPublicKeys)
             if let recipientAddress = mobileCoin.recipientAddress {

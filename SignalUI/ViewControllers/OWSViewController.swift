@@ -109,7 +109,7 @@ open class OWSViewController: UIViewController {
         // Do nothing; just a hook for subclasses
     }
 
-    open override func viewDidLoad() {
+    override open func viewDidLoad() {
         super.viewDidLoad()
 
         self.lifecycle = .notAppeared
@@ -135,11 +135,11 @@ open class OWSViewController: UIViewController {
             self,
             selector: #selector(themeDidChange),
             name: .themeDidChange,
-            object: nil
+            object: nil,
         )
     }
 
-    open override func viewWillAppear(_ animated: Bool) {
+    override open func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
         self.lifecycle = .willAppear
@@ -147,29 +147,29 @@ open class OWSViewController: UIViewController {
         observeKeyboardNotificationsIfNeeded()
     }
 
-    open override func viewDidAppear(_ animated: Bool) {
+    override open func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
         self.lifecycle = .appeared
 
-        #if DEBUG
+#if DEBUG
         ensureNavbarAccessibilityIds()
-        #endif
+#endif
     }
 
-    open override func viewWillDisappear(_ animated: Bool) {
+    override open func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
         self.lifecycle = .willDisappear
     }
 
-    open override func viewDidDisappear(_ animated: Bool) {
+    override open func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
 
         self.lifecycle = .notAppeared
     }
 
-    open override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+    override open func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
 
         // Whatever keyboard frame we knew about is now invalidated.
@@ -177,13 +177,13 @@ open class OWSViewController: UIViewController {
         lastKnownKeyboardFrame = nil
     }
 
-    open override func viewSafeAreaInsetsDidChange() {
+    override open func viewSafeAreaInsetsDidChange() {
         super.viewSafeAreaInsetsDidChange()
 
         updateiOS15KeyboardLayoutGuide()
     }
 
-    #if DEBUG
+#if DEBUG
     func ensureNavbarAccessibilityIds() {
         guard let navigationBar = navigationController?.navigationBar else {
             return
@@ -207,7 +207,7 @@ open class OWSViewController: UIViewController {
             }
         }
     }
-    #endif
+#endif
 
     // MARK: - Activation
 
@@ -216,31 +216,31 @@ open class OWSViewController: UIViewController {
             self,
             selector: #selector(appWillEnterForeground),
             name: UIApplication.willEnterForegroundNotification,
-            object: nil
+            object: nil,
         )
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(appDidBecomeActive),
             name: UIApplication.didBecomeActiveNotification,
-            object: nil
+            object: nil,
         )
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(appWillResignActive),
             name: UIApplication.willResignActiveNotification,
-            object: nil
+            object: nil,
         )
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(appDidEnterBackground),
             name: UIApplication.didEnterBackgroundNotification,
-            object: nil
+            object: nil,
         )
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(contentSizeCategoryDidChange),
             name: UIContentSizeCategory.didChangeNotification,
-            object: nil
+            object: nil,
         )
     }
 
@@ -282,7 +282,7 @@ open class OWSViewController: UIViewController {
     /// * iPad
     ///   * Usable margins (20 or 10 pt) on all sides.
     ///
-    final public var contentLayoutGuide = UILayoutGuide()
+    public final var contentLayoutGuide = UILayoutGuide()
 
     private var currentContentLayoutGuideConstraints: [NSLayoutConstraint] = []
 
@@ -358,10 +358,11 @@ open class OWSViewController: UIViewController {
         NSLayoutConstraint.activate(currentContentLayoutGuideConstraints)
     }
 
-    open override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+    override open func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
 
-        if  previousTraitCollection?.verticalSizeClass != traitCollection.verticalSizeClass ||
+        if
+            previousTraitCollection?.verticalSizeClass != traitCollection.verticalSizeClass ||
             previousTraitCollection?.horizontalSizeClass != traitCollection.horizontalSizeClass
         {
             updateContentLayoutGuideConstraints()
@@ -370,7 +371,7 @@ open class OWSViewController: UIViewController {
 
     // MARK: - Orientation
 
-    open override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+    override open var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         return UIDevice.current.defaultSupportedOrientations
     }
 
@@ -379,7 +380,7 @@ open class OWSViewController: UIViewController {
     // On iOS 15 provides access to last known keyboard frame.
     // On newer iOS versions this is a proxy for `view.keyboardLayoutGuide`.
     @available(iOS, deprecated: 16.0)
-    final public var keyboardLayoutGuide: UILayoutGuide {
+    public final var keyboardLayoutGuide: UILayoutGuide {
         return iOS15KeyboardLayoutGuide ?? view.keyboardLayoutGuide
     }
 
@@ -402,7 +403,7 @@ open class OWSViewController: UIViewController {
         UIResponder.keyboardWillHideNotification,
         UIResponder.keyboardDidHideNotification,
         UIResponder.keyboardWillChangeFrameNotification,
-        UIResponder.keyboardDidChangeFrameNotification
+        UIResponder.keyboardDidChangeFrameNotification,
     ]
 
     @available(iOS, deprecated: 16.0)
@@ -417,7 +418,7 @@ open class OWSViewController: UIViewController {
                 self,
                 selector: #selector(handleKeyboardNotificationBase(_:)),
                 name: $0,
-                object: nil
+                object: nil,
             )
         }
     }
@@ -489,7 +490,7 @@ public extension OWSViewController {
     func addStaticContentStackView(
         arrangedSubviews: [UIView],
         isScrollable: Bool = false,
-        shouldAvoidKeyboard: Bool = false
+        shouldAvoidKeyboard: Bool = false,
     ) -> UIStackView {
 
         let stackView = UIStackView(arrangedSubviews: arrangedSubviews)

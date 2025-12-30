@@ -34,21 +34,21 @@ public protocol AppReadiness {
         _ block: @escaping @MainActor () -> Void,
         file: String,
         function: String,
-        line: Int
+        line: Int,
     )
 
     func runNowOrWhenUIDidBecomeReadySync(
         _ block: @escaping @MainActor () -> Void,
         file: String,
         function: String,
-        line: Int
+        line: Int,
     )
 
     func runNowOrWhenAppDidBecomeReadySync(
         _ block: @escaping @MainActor () -> Void,
         file: String,
         function: String,
-        line: Int
+        line: Int,
     )
 
     // We now have many (36+ in best case; many more in worst case)
@@ -71,14 +71,14 @@ public protocol AppReadiness {
         _ block: @escaping @MainActor () -> Void,
         file: String,
         function: String,
-        line: Int
+        line: Int,
     )
 
     func runNowOrWhenMainAppDidBecomeReadyAsync(
         _ block: @escaping @MainActor () -> Void,
         file: String,
         function: String,
-        line: Int
+        line: Int,
     )
 }
 
@@ -87,13 +87,13 @@ extension AppReadiness {
         _ block: @escaping @MainActor () -> Void,
         _file: String = #file,
         _function: String = #function,
-        _line: Int = #line
+        _line: Int = #line,
     ) {
         self.runNowOrWhenAppWillBecomeReady(
             block,
             file: _file,
             function: _function,
-            line: _line
+            line: _line,
         )
     }
 
@@ -101,13 +101,13 @@ extension AppReadiness {
         _ block: @escaping @MainActor () -> Void,
         _file: String = #file,
         _function: String = #function,
-        _line: Int = #line
+        _line: Int = #line,
     ) {
         self.runNowOrWhenUIDidBecomeReadySync(
             block,
             file: _file,
             function: _function,
-            line: _line
+            line: _line,
         )
     }
 
@@ -115,13 +115,13 @@ extension AppReadiness {
         _ block: @escaping @MainActor () -> Void,
         _file: String = #file,
         _function: String = #function,
-        _line: Int = #line
+        _line: Int = #line,
     ) {
         self.runNowOrWhenAppDidBecomeReadySync(
             block,
             file: _file,
             function: _function,
-            line: _line
+            line: _line,
         )
     }
 
@@ -129,14 +129,14 @@ extension AppReadiness {
     public func waitForAppReady(
         _file: String = #file,
         _function: String = #function,
-        _line: Int = #line
+        _line: Int = #line,
     ) async throws(CancellationError) {
         let continuation = CancellableContinuation<Void>()
         self.runNowOrWhenAppDidBecomeReadySync(
             { continuation.resume(with: .success(())) },
             file: _file,
             function: _function,
-            line: _line
+            line: _line,
         )
         do {
             try await continuation.wait()
@@ -151,13 +151,13 @@ extension AppReadiness {
         _ block: @escaping @MainActor () -> Void,
         _file: String = #file,
         _function: String = #function,
-        _line: Int = #line
+        _line: Int = #line,
     ) {
         self.runNowOrWhenAppDidBecomeReadyAsync(
             block,
             file: _file,
             function: _function,
-            line: _line
+            line: _line,
         )
     }
 
@@ -165,13 +165,13 @@ extension AppReadiness {
         _ block: @escaping @MainActor () -> Void,
         _file: String = #file,
         _function: String = #function,
-        _line: Int = #line
+        _line: Int = #line,
     ) {
         self.runNowOrWhenMainAppDidBecomeReadyAsync(
             block,
             file: _file,
             function: _function,
-            line: _line
+            line: _line,
         )
     }
 }
@@ -232,7 +232,7 @@ public class AppReadinessImpl: AppReadinessSetter {
         _ block: @escaping @MainActor () -> Void,
         file: String = #file,
         function: String = #function,
-        line: Int = #line
+        line: Int = #line,
     ) {
         guard !CurrentAppContext().isRunningTests else {
             // We don't need to do any "on app ready" work in the tests.
@@ -243,7 +243,7 @@ public class AppReadinessImpl: AppReadinessSetter {
         DispatchMainThreadSafe {
             self.readyFlag.runNowOrWhenWillBecomeReady(
                 block,
-                label: label
+                label: label,
             )
         }
     }
@@ -254,7 +254,7 @@ public class AppReadinessImpl: AppReadinessSetter {
         _ block: @escaping @MainActor () -> Void,
         file: String = #file,
         function: String = #function,
-        line: Int = #line
+        line: Int = #line,
     ) {
         guard !CurrentAppContext().isRunningTests else {
             // We don't need to do any "on app ready" work in the tests.
@@ -271,7 +271,7 @@ public class AppReadinessImpl: AppReadinessSetter {
         _ block: @escaping @MainActor () -> Void,
         file: String = #file,
         function: String = #function,
-        line: Int = #line
+        line: Int = #line,
     ) {
         guard !CurrentAppContext().isRunningTests else {
             // We don't need to do any "on app ready" work in the tests.
@@ -290,7 +290,7 @@ public class AppReadinessImpl: AppReadinessSetter {
         _ block: @escaping @MainActor () -> Void,
         file: String = #file,
         function: String = #function,
-        line: Int = #line
+        line: Int = #line,
     ) {
         guard !CurrentAppContext().isRunningTests else {
             // We don't need to do any "on app ready" work in the tests.
@@ -307,7 +307,7 @@ public class AppReadinessImpl: AppReadinessSetter {
         _ block: @escaping @MainActor () -> Void,
         file: String = #file,
         function: String = #function,
-        line: Int = #line
+        line: Int = #line,
     ) {
         runNowOrWhenAppDidBecomeReadyAsync(
             {
@@ -316,7 +316,7 @@ public class AppReadinessImpl: AppReadinessSetter {
             },
             file: file,
             function: function,
-            line: line
+            line: line,
         )
     }
 
@@ -354,7 +354,7 @@ open class AppReadinessMock: AppReadinessSetter {
         _ block: @escaping @MainActor () -> Void,
         file: String,
         function: String,
-        line: Int
+        line: Int,
     ) {
         // Do nothing
     }
@@ -363,7 +363,7 @@ open class AppReadinessMock: AppReadinessSetter {
         _ block: @escaping @MainActor () -> Void,
         file: String,
         function: String,
-        line: Int
+        line: Int,
     ) {
         // Do nothing
     }
@@ -372,7 +372,7 @@ open class AppReadinessMock: AppReadinessSetter {
         _ block: @escaping @MainActor () -> Void,
         file: String,
         function: String,
-        line: Int
+        line: Int,
     ) {
         // Do nothing
     }
@@ -381,7 +381,7 @@ open class AppReadinessMock: AppReadinessSetter {
         _ block: @escaping @MainActor () -> Void,
         file: String,
         function: String,
-        line: Int
+        line: Int,
     ) {
         // Do nothing
     }
@@ -390,7 +390,7 @@ open class AppReadinessMock: AppReadinessSetter {
         _ block: @escaping @MainActor () -> Void,
         file: String,
         function: String,
-        line: Int
+        line: Int,
     ) {
         // Do nothing
     }

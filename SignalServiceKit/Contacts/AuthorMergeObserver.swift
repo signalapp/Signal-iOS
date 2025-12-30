@@ -79,23 +79,23 @@ public struct AuthorDatabaseTable {
             AuthorDatabaseTable(
                 name: OWSReaction.databaseTableName,
                 aciColumn: OWSReaction.columnName(.reactorUUID),
-                phoneNumberColumn: OWSReaction.columnName(.reactorE164)
+                phoneNumberColumn: OWSReaction.columnName(.reactorE164),
             ),
             AuthorDatabaseTable(
                 name: InteractionRecord.databaseTableName,
                 aciColumn: InteractionRecord.columnName(.authorUUID),
-                phoneNumberColumn: InteractionRecord.columnName(.authorPhoneNumber)
+                phoneNumberColumn: InteractionRecord.columnName(.authorPhoneNumber),
             ),
             AuthorDatabaseTable(
                 name: "pending_read_receipts",
                 aciColumn: "authorUuid",
-                phoneNumberColumn: "authorPhoneNumber"
+                phoneNumberColumn: "authorPhoneNumber",
             ),
             AuthorDatabaseTable(
                 name: "pending_viewed_receipts",
                 aciColumn: "authorUuid",
-                phoneNumberColumn: "authorPhoneNumber"
-            )
+                phoneNumberColumn: "authorPhoneNumber",
+            ),
         ]
     }
 }

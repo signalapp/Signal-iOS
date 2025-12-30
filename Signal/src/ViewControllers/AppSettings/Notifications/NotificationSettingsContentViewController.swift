@@ -36,7 +36,7 @@ class NotificationSettingsContentViewController: OWSTableViewController2 {
 
                     self?.updateTableContents()
                 },
-                accessoryType: type == selectedType ? .checkmark : .none
+                accessoryType: type == selectedType ? .checkmark : .none,
             ))
         }
 

@@ -20,10 +20,10 @@ private extension TSOutgoingMessage {
     var isSyncMessage: Bool { self is OWSOutgoingSyncMessage }
 
     var canSendToLocalAddress: Bool {
-        return (isSyncMessage ||
-                self is OWSOutgoingCallMessage ||
-                self is OWSOutgoingResendRequest ||
-                self is OWSOutgoingResendResponse)
+        return isSyncMessage ||
+            self is OWSOutgoingCallMessage ||
+            self is OWSOutgoingResendRequest ||
+            self is OWSOutgoingResendResponse
     }
 }
 
@@ -38,7 +38,7 @@ public class MessageSender {
 
     init(
         accountChecker: AccountChecker,
-        groupSendEndorsementStore: any GroupSendEndorsementStore
+        groupSendEndorsementStore: any GroupSendEndorsementStore,
     ) {
         self.accountChecker = accountChecker
         self.groupSendEndorsementStore = groupSendEndorsementStore
@@ -72,12 +72,12 @@ public class MessageSender {
     private func createSession(
         serviceId: ServiceId,
         deviceId: PreKeyDevice,
-        sealedSenderParameters: SealedSenderParameters?
+        sealedSenderParameters: SealedSenderParameters?,
     ) async throws {
         var preKeyBundle = try await makePreKeyRequest(
             serviceId: serviceId,
             deviceId: deviceId,
-            sealedSenderParameters: sealedSenderParameters
+            sealedSenderParameters: sealedSenderParameters,
         )
 
         try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
@@ -86,7 +86,7 @@ public class MessageSender {
                 self.updateDevices(
                     serviceId: serviceId,
                     deviceIds: preKeyBundle.devices.map(\.deviceId),
-                    tx: tx
+                    tx: tx,
                 )
             case .specific(let deviceId):
                 owsAssertDebug(preKeyBundle.devices.map(\.deviceId) == [deviceId], "Server returned unexpected device bundles.")
@@ -107,7 +107,7 @@ public class MessageSender {
     private func makePreKeyRequest(
         serviceId: ServiceId,
         deviceId: PreKeyDevice,
-        sealedSenderParameters: SealedSenderParameters?
+        sealedSenderParameters: SealedSenderParameters?,
     ) async throws -> SignalServiceKit.PreKeyBundle {
         // As an optimization, skip the request if an error is guaranteed.
         if willDefinitelyHaveUntrustedIdentityError(for: serviceId) {
@@ -140,7 +140,7 @@ public class MessageSender {
             accessKey: sealedSenderParameters?.accessKey,
             endorsement: sealedSenderParameters?.endorsement,
             authedAccount: .implicit(),
-            options: requestOptions
+            options: requestOptions,
         )
 
         let deviceIdParam: String
@@ -165,7 +165,7 @@ public class MessageSender {
     private func _createSessions(
         for preKeyBundle: SignalServiceKit.PreKeyBundle,
         serviceId: ServiceId,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         assert(!Thread.isMainThread)
 
@@ -178,7 +178,7 @@ public class MessageSender {
         for deviceBundle: SignalServiceKit.PreKeyBundle.PreKeyDeviceBundle,
         serviceId: ServiceId,
         identityKey: IdentityKey,
-        tx transaction: DBWriteTransaction
+        tx transaction: DBWriteTransaction,
     ) throws {
         let deviceId = deviceBundle.deviceId
 
@@ -202,7 +202,7 @@ public class MessageSender {
                 identity: identityKey,
                 kyberPrekeyId: deviceBundle.pqPreKey.keyId,
                 kyberPrekey: deviceBundle.pqPreKey.publicKey,
-                kyberPrekeySignature: deviceBundle.pqPreKey.signature
+                kyberPrekeySignature: deviceBundle.pqPreKey.signature,
             )
         } else {
             bundle = try LibSignalClient.PreKeyBundle(
@@ -214,7 +214,7 @@ public class MessageSender {
                 identity: identityKey,
                 kyberPrekeyId: deviceBundle.pqPreKey.keyId,
                 kyberPrekey: deviceBundle.pqPreKey.publicKey,
-                kyberPrekeySignature: deviceBundle.pqPreKey.signature
+                kyberPrekeySignature: deviceBundle.pqPreKey.signature,
             )
         }
 
@@ -233,7 +233,7 @@ public class MessageSender {
             handleUntrustedIdentityKeyError(
                 serviceId: serviceId,
                 identityKey: identityKey,
-                transaction: transaction
+                transaction: transaction,
             )
             throw UntrustedIdentityError(serviceId: serviceId)
         } catch SignalError.invalidSignature(_) {
@@ -257,7 +257,7 @@ public class MessageSender {
     private func handleUntrustedIdentityKeyError(
         serviceId: ServiceId,
         identityKey: IdentityKey,
-        transaction tx: DBWriteTransaction
+        transaction tx: DBWriteTransaction,
     ) {
         let identityManager = DependenciesBridge.shared.identityManager
         identityManager.saveIdentityKey(identityKey, for: serviceId, tx: tx)
@@ -288,7 +288,7 @@ public class MessageSender {
             return identityManager.untrustedIdentityForSending(
                 to: SignalServiceAddress(serviceId),
                 untrustedThreshold: nil,
-                tx: tx
+                tx: tx,
             ) != nil
         }
     }
@@ -300,6 +300,7 @@ public class MessageSender {
         let lastErrorDate: Date
         let errorCount: UInt32
     }
+
     private let invalidKeySignatureCache = AtomicValue(InvalidSignatureCache(), lock: .init())
 
     private func hadInvalidKeySignatureError(for serviceId: ServiceId) {
@@ -311,7 +312,7 @@ public class MessageSender {
 
             cache[serviceId] = InvalidSignatureCacheItem(
                 lastErrorDate: Date(),
-                errorCount: errorCount
+                errorCount: errorCount,
             )
         }
     }
@@ -457,7 +458,7 @@ public class MessageSender {
     private func markSkippedRecipients(
         of message: TSOutgoingMessage,
         sendingRecipients: [ServiceId],
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         let skippedRecipients = Set(message.sendingRecipientAddresses())
             .subtracting(sendingRecipients.lazy.map { SignalServiceAddress($0) })
@@ -468,7 +469,7 @@ public class MessageSender {
         of message: TSOutgoingMessage,
         in thread: TSThread,
         localIdentifiers: LocalIdentifiers,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> [SignalServiceAddress] {
         if message.isSyncMessage {
             return [localIdentifiers.aciAddress]
@@ -573,7 +574,7 @@ public class MessageSender {
     private func lookUpPhoneNumbers(_ phoneNumbers: [E164]) async throws {
         _ = try await SSKEnvironment.shared.contactDiscoveryManagerRef.lookUp(
             phoneNumbers: Set(phoneNumbers.lazy.map { $0.stringValue }),
-            mode: .outgoingMessage
+            mode: .outgoingMessage,
         )
     }
 
@@ -624,7 +625,7 @@ public class MessageSender {
             return try await sendPreparedMessage(
                 message,
                 recoveryState: OuterRecoveryState(),
-                senderCertificates: senderCertificates
+                senderCertificates: senderCertificates,
             )
         })
         // Send the sync message if it succeeded overall or for any recipient.
@@ -688,7 +689,7 @@ public class MessageSender {
     private func sendPreparedMessage(
         _ message: TSOutgoingMessage,
         recoveryState: OuterRecoveryState,
-        senderCertificates: SenderCertificates
+        senderCertificates: SenderCertificates,
     ) async throws -> SendMessageFailure? {
         let nextAction = try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx -> SendMessageNextAction? in
             guard let thread = message.thread(tx: tx) else {
@@ -702,10 +703,10 @@ public class MessageSender {
                 let isChatMessage = (
                     (
                         message.shouldBeSaved
-                        && message.insertedMessageHasRenderableContent(rowId: message.sqliteRowId!, tx: tx)
+                            && message.insertedMessageHasRenderableContent(rowId: message.sqliteRowId!, tx: tx)
                     )
-                    || message is OutgoingGroupCallUpdateMessage
-                    || message is OWSOutgoingCallMessage
+                        || message is OutgoingGroupCallUpdateMessage
+                        || message is OWSOutgoingCallMessage,
                 )
                 return isChatMessage ? thread.canSendChatMessagesToThread() : thread.canSendNonChatMessagesToThread
             }()
@@ -772,7 +773,7 @@ public class MessageSender {
                 message: message,
                 senderCertificate: senderCertificate,
                 localIdentifiers: localIdentifiers,
-                tx: tx
+                tx: tx,
             )
 
             let endorsements: GroupSendEndorsements?
@@ -811,7 +812,7 @@ public class MessageSender {
                         udAccessMap: udAccessMap,
                         senderCertificate: senderCertificate,
                         localIdentifiers: localIdentifiers,
-                        tx: tx
+                        tx: tx,
                     )
                 } catch {
                     senderKeyRecipients = []
@@ -833,7 +834,7 @@ public class MessageSender {
                 senderCertificate: senderCertificate,
                 udAccess: udAccessMap,
                 endorsements: endorsements,
-                localIdentifiers: localIdentifiers
+                localIdentifiers: localIdentifiers,
             ))
         }
 
@@ -870,7 +871,7 @@ public class MessageSender {
                 senderCertificate: state.senderCertificate,
                 udAccess: state.udAccess,
                 endorsements: state.endorsements,
-                localIdentifiers: state.localIdentifiers
+                localIdentifiers: state.localIdentifiers,
             )
             let sendMessageFailure: SendMessageFailure?
             if perRecipientErrors.isEmpty {
@@ -902,7 +903,7 @@ public class MessageSender {
         return try await sendPreparedMessage(
             message,
             recoveryState: retryRecoveryState,
-            senderCertificates: senderCertificates
+            senderCertificates: senderCertificates,
         )
     }
 
@@ -915,14 +916,14 @@ public class MessageSender {
         senderCertificate: SenderCertificate,
         udAccess sendingAccessMap: [ServiceId: OWSUDAccess],
         endorsements: GroupSendEndorsements?,
-        localIdentifiers: LocalIdentifiers
+        localIdentifiers: LocalIdentifiers,
     ) async -> [(ServiceId, any Error)] {
         // Both types are Arrays because Sender Key Tasks may return N errors when
         // sending to N participants. (Fanout Tasks always send to one recipient
         // and will therefore return either no error or exactly one error.)
         return await withTaskGroup(
             of: [(ServiceId, any Error)].self,
-            returning: [(ServiceId, any Error)].self
+            returning: [(ServiceId, any Error)].self,
         ) { taskGroup in
             if let sendViaSenderKey {
                 taskGroup.addTask(operation: sendViaSenderKey)
@@ -936,13 +937,13 @@ public class MessageSender {
                     plaintextPayloadId: serializedMessage.payloadId,
                     thread: thread,
                     serviceId: serviceId,
-                    localIdentifiers: localIdentifiers
+                    localIdentifiers: localIdentifiers,
                 )
                 var sealedSenderParameters = SealedSenderParameters(
                     message: message,
                     senderCertificate: senderCertificate,
                     accessKey: sendingAccessMap[serviceId],
-                    endorsement: endorsements?.tokenBuilder(forServiceId: serviceId)
+                    endorsement: endorsements?.tokenBuilder(forServiceId: serviceId),
                 )
                 if localIdentifiers.contains(serviceId: serviceId) {
                     owsAssertDebug(sealedSenderParameters == nil, "Can't use Sealed Sender for ourselves.")
@@ -967,7 +968,7 @@ public class MessageSender {
         message: TSOutgoingMessage,
         senderCertificate: SenderCertificate,
         localIdentifiers: LocalIdentifiers,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> [Aci: OWSUDAccess] {
         var result = [Aci: OWSUDAccess]()
         for aci in acis {
@@ -1002,14 +1003,14 @@ public class MessageSender {
             secretParams: secretParams,
             expiration: combinedRecord.expiration,
             combined: combinedEndorsement,
-            individual: individualEndorsements
+            individual: individualEndorsements,
         )
     }
 
     private func handleSendFailure(
         message: TSOutgoingMessage,
         thread: TSThread,
-        perRecipientErrors allErrors: [(serviceId: ServiceId, error: any Error)]
+        perRecipientErrors allErrors: [(serviceId: ServiceId, error: any Error)],
     ) async throws -> SendMessageFailure? {
         var skippedRecipients = [ServiceId]()
         var filteredErrors = [(serviceId: ServiceId, error: any Error)]()
@@ -1061,21 +1062,23 @@ public class MessageSender {
     private func normalizeRecipientStatesIfNeeded(
         message: TSOutgoingMessage,
         recipientErrors: some Sequence<(serviceId: ServiceId, error: Error)>,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
-        guard recipientErrors.contains(where: {
-            switch $0.error {
-            case RecipientIdError.mustNotUsePniBecauseAciExists:
-                return true
-            default:
-                return false
-            }
-        }) else {
+        guard
+            recipientErrors.contains(where: {
+                switch $0.error {
+                case RecipientIdError.mustNotUsePniBecauseAciExists:
+                    return true
+                default:
+                    return false
+                }
+            })
+        else {
             return
         }
         let recipientStateMerger = RecipientStateMerger(
             recipientDatabaseTable: DependenciesBridge.shared.recipientDatabaseTable,
-            signalServiceAddressCache: SSKEnvironment.shared.signalServiceAddressCacheRef
+            signalServiceAddressCache: SSKEnvironment.shared.signalServiceAddressCacheRef,
         )
         message.anyUpdateOutgoingMessage(transaction: tx) { message in
             recipientStateMerger.normalize(&message.recipientAddressStates, tx: tx)
@@ -1127,7 +1130,7 @@ public class MessageSender {
                 try DependenciesBridge.shared.recipientHidingManager.removeHiddenRecipient(
                     thread.contactAddress,
                     wasLocallyInitiated: true,
-                    tx: tx
+                    tx: tx,
                 )
             }
             if message.shouldBeSaved {
@@ -1164,14 +1167,14 @@ public class MessageSender {
                     withReadRecipient: sendingAddress,
                     deviceId: deviceId,
                     readTimestamp: message.timestamp,
-                    tx: tx
+                    tx: tx,
                 )
                 if message.isVoiceMessage || message.isViewOnceMessage {
                     message.update(
                         withViewedRecipient: sendingAddress,
                         deviceId: deviceId,
                         viewedTimestamp: message.timestamp,
-                        tx: tx
+                        tx: tx,
                     )
                 }
             }
@@ -1198,7 +1201,7 @@ public class MessageSender {
     func buildAndRecordMessage(
         _ message: TSOutgoingMessage,
         in thread: TSThread,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) -> SerializedMessage? {
         guard let plaintextData = message.buildPlainTextData(thread, transaction: tx) else {
             return nil
@@ -1225,7 +1228,7 @@ public class MessageSender {
     @discardableResult
     func performMessageSend(
         _ messageSend: OWSMessageSend,
-        sealedSenderParameters: SealedSenderParameters?
+        sealedSenderParameters: SealedSenderParameters?,
     ) async throws -> [SentDeviceMessage] {
         return try await sendQueues.run(forKey: messageSend.serviceId) {
             return try await performMessageSendAttempt(
@@ -1239,7 +1242,7 @@ public class MessageSender {
     private func performMessageSendAttempt(
         _ messageSend: OWSMessageSend,
         recoveryState: InnerRecoveryState,
-        sealedSenderParameters: SealedSenderParameters?
+        sealedSenderParameters: SealedSenderParameters?,
     ) async throws -> [SentDeviceMessage] {
         let message = messageSend.message
         let serviceId = messageSend.serviceId
@@ -1254,7 +1257,7 @@ public class MessageSender {
 
             var deviceMessages = try await buildDeviceMessages(
                 messageSend: messageSend,
-                sealedSenderParameters: sealedSenderParameters
+                sealedSenderParameters: sealedSenderParameters,
             )
             if deviceMessages.isEmpty {
                 if messageSend.isSelfSend {
@@ -1270,7 +1273,7 @@ public class MessageSender {
                 try await checkIfAccountExists(serviceId: messageSend.serviceId)
                 deviceMessages = try await buildDeviceMessages(
                     messageSend: messageSend,
-                    sealedSenderParameters: sealedSenderParameters
+                    sealedSenderParameters: sealedSenderParameters,
                 )
             }
 
@@ -1294,7 +1297,7 @@ public class MessageSender {
             return try await sendDeviceMessages(
                 deviceMessages,
                 messageSend: messageSend,
-                sealedSenderParameters: sealedSenderParameters
+                sealedSenderParameters: sealedSenderParameters,
             )
         } catch RequestMakerUDAuthError.udAuthFailure {
             owsPrecondition(sealedSenderParameters != nil)
@@ -1302,7 +1305,7 @@ public class MessageSender {
             return try await performMessageSendAttempt(
                 messageSend,
                 recoveryState: recoveryState,
-                sealedSenderParameters: nil  // Retry as an unsealed send.
+                sealedSenderParameters: nil, // Retry as an unsealed send.
             )
         } catch DeviceMessagesError.mismatchedDevices where recoveryState.canHandleMismatchedDevices {
             retryRecoveryState = recoveryState.mutated({ $0.canHandleMismatchedDevices = false })
@@ -1314,7 +1317,7 @@ public class MessageSender {
         return try await performMessageSendAttempt(
             messageSend,
             recoveryState: retryRecoveryState,
-            sealedSenderParameters: sealedSenderParameters
+            sealedSenderParameters: sealedSenderParameters,
         )
     }
 
@@ -1342,7 +1345,7 @@ public class MessageSender {
 
     private func buildDeviceMessages(
         messageSend: OWSMessageSend,
-        sealedSenderParameters: SealedSenderParameters?
+        sealedSenderParameters: SealedSenderParameters?,
     ) async throws -> [DeviceMessage] {
         guard messageSend.message.encryptionStyle == .whisper || messageSend.message.isResendRequest else {
             throw OWSAssertionError("Unexpected message type")
@@ -1353,7 +1356,7 @@ public class MessageSender {
             encryptionStyle: messageSend.message.encryptionStyle,
             buildPlaintextContent: { _, _ in messageSend.plaintextContent },
             isTransient: messageSend.message.isOnline || messageSend.message.isTransientSKDM,
-            sealedSenderParameters: sealedSenderParameters
+            sealedSenderParameters: sealedSenderParameters,
         )
     }
 
@@ -1390,7 +1393,7 @@ public class MessageSender {
         encryptionStyle: EncryptionStyle,
         buildPlaintextContent: (DeviceId, DBWriteTransaction) throws -> Data,
         isTransient: Bool,
-        sealedSenderParameters: SealedSenderParameters?
+        sealedSenderParameters: SealedSenderParameters?,
     ) async throws -> [DeviceMessage] {
         let databaseStorage = SSKEnvironment.shared.databaseStorageRef
         let recipientDatabaseTable = DependenciesBridge.shared.recipientDatabaseTable
@@ -1423,7 +1426,7 @@ public class MessageSender {
                         encryptionStyle: encryptionStyle,
                         plaintextContent: plaintextContent,
                         sealedSenderParameters: sealedSenderParameters,
-                        tx: tx
+                        tx: tx,
                     ))
                 } catch SignalError.sessionNotFound(_) {
                     missingSessionPlaintextContent[deviceId] = plaintextContent
@@ -1450,7 +1453,7 @@ public class MessageSender {
                     try await createSession(
                         serviceId: serviceId,
                         deviceId: .all,
-                        sealedSenderParameters: sealedSenderParameters
+                        sealedSenderParameters: sealedSenderParameters,
                     )
                 } catch where error.httpStatusCode == 404 {
                     try await handle404(serviceId: serviceId, isSelfSend: isSelfSend)
@@ -1463,7 +1466,7 @@ public class MessageSender {
                                 try await self.createSession(
                                     serviceId: serviceId,
                                     deviceId: .specific(deviceId),
-                                    sealedSenderParameters: sealedSenderParameters
+                                    sealedSenderParameters: sealedSenderParameters,
                                 )
                             } catch where error.httpStatusCode == 404 {
                                 // If we have an invalid device exception, remove this device from the
@@ -1473,7 +1476,7 @@ public class MessageSender {
                                         serviceId: serviceId,
                                         devicesToAdd: [],
                                         devicesToRemove: [deviceId],
-                                        transaction: tx
+                                        transaction: tx,
                                     )
                                 }
                             }
@@ -1504,7 +1507,7 @@ public class MessageSender {
                             encryptionStyle: encryptionStyle,
                             plaintextContent: missingSessionPlaintextContent[$0] ?? buildPlaintextContent($0, tx),
                             sealedSenderParameters: sealedSenderParameters,
-                            tx: tx
+                            tx: tx,
                         )
                     } catch SignalError.sessionNotFound(_) {
                         // It's possible that we'll archive or delete a session we just created
@@ -1528,7 +1531,7 @@ public class MessageSender {
         encryptionStyle: EncryptionStyle,
         plaintextContent: Data,
         sealedSenderParameters: SealedSenderParameters?,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws -> DeviceMessage {
         do {
             switch encryptionStyle {
@@ -1538,7 +1541,7 @@ public class MessageSender {
                     serviceId: serviceId,
                     deviceId: deviceId,
                     sealedSenderParameters: sealedSenderParameters,
-                    transaction: tx
+                    transaction: tx,
                 )
             case .plaintext:
                 return try self.wrapPlaintextMessage(
@@ -1546,7 +1549,7 @@ public class MessageSender {
                     serviceId: serviceId,
                     deviceId: deviceId,
                     sealedSenderParameters: sealedSenderParameters,
-                    transaction: tx
+                    transaction: tx,
                 )
             @unknown default:
                 throw OWSAssertionError("Unrecognized encryption style")
@@ -1562,7 +1565,7 @@ public class MessageSender {
             throw UntrustedIdentityError(serviceId: serviceId)
         } catch {
             switch error {
-            case SignalError.sessionNotFound(_):
+            case SignalError.sessionNotFound:
                 // Callers expect this error & handle it. They will report any anomalous failures.
                 break
             default:
@@ -1582,7 +1585,7 @@ public class MessageSender {
     private func sendDeviceMessages(
         _ deviceMessages: [DeviceMessage],
         messageSend: OWSMessageSend,
-        sealedSenderParameters: SealedSenderParameters?
+        sealedSenderParameters: SealedSenderParameters?,
     ) async throws -> [SentDeviceMessage] {
         let message: TSOutgoingMessage = messageSend.message
 
@@ -1593,7 +1596,7 @@ public class MessageSender {
             accessKey: sealedSenderParameters?.accessKey,
             endorsement: sealedSenderParameters?.endorsement,
             authedAccount: .implicit(),
-            options: []
+            options: [],
         )
 
         owsAssertDebug(!message.isStorySend || sealedSenderParameters != nil, "Story messages must use Sealed Sender.")
@@ -1606,19 +1609,19 @@ public class MessageSender {
                     timestamp: message.timestamp,
                     isOnline: message.isOnline,
                     isUrgent: message.isUrgent,
-                    auth: $0
+                    auth: $0,
                 )
             }
             return await messageSendDidSucceed(
                 messageSend,
                 deviceMessages: deviceMessages,
-                wasSentByUD: result.wasSentByUD
+                wasSentByUD: result.wasSentByUD,
             )
         } catch {
             return try await messageSendDidFail(
                 messageSend,
                 responseError: error,
-                sealedSenderParameters: sealedSenderParameters
+                sealedSenderParameters: sealedSenderParameters,
             )
         }
     }
@@ -1626,7 +1629,7 @@ public class MessageSender {
     private func messageSendDidSucceed(
         _ messageSend: OWSMessageSend,
         deviceMessages: [DeviceMessage],
-        wasSentByUD: Bool
+        wasSentByUD: Bool,
     ) async -> [SentDeviceMessage] {
         let message: TSOutgoingMessage = messageSend.message
 
@@ -1635,7 +1638,7 @@ public class MessageSender {
         let sentDeviceMessages = deviceMessages.map {
             return SentDeviceMessage(
                 destinationDeviceId: $0.destinationDeviceId,
-                destinationRegistrationId: $0.destinationRegistrationId
+                destinationRegistrationId: $0.destinationRegistrationId,
             )
         }
 
@@ -1648,7 +1651,7 @@ public class MessageSender {
                         recipientAci: recipientAci,
                         recipientDeviceId: deviceMessage.destinationDeviceId,
                         message: message,
-                        tx: transaction
+                        tx: transaction,
                     )
                 }
             }
@@ -1662,7 +1665,7 @@ public class MessageSender {
             SSKEnvironment.shared.profileManagerRef.didSendOrReceiveMessage(
                 serviceId: messageSend.serviceId,
                 localIdentifiers: messageSend.localIdentifiers,
-                tx: transaction
+                tx: transaction,
             )
         }
 
@@ -1689,7 +1692,7 @@ public class MessageSender {
     private func messageSendDidFail(
         _ messageSend: OWSMessageSend,
         responseError: Error,
-        sealedSenderParameters: SealedSenderParameters?
+        sealedSenderParameters: SealedSenderParameters?,
     ) async throws -> [SentDeviceMessage] {
         let message: TSOutgoingMessage = messageSend.message
 
@@ -1705,7 +1708,7 @@ public class MessageSender {
                     serviceId: messageSend.serviceId,
                     missingDevices: response.missingDevices,
                     extraDevices: response.extraDevices,
-                    tx: tx
+                    tx: tx,
                 )
             }
             throw DeviceMessagesError.mismatchedDevices
@@ -1720,7 +1723,7 @@ public class MessageSender {
             Logger.warn("Server requested user complete spam challenge.")
             try await SSKEnvironment.shared.spamChallengeResolverRef.tryToHandleSilently(
                 bodyData: responseError.httpResponseData,
-                retryAfter: responseError.httpRetryAfterDate
+                retryAfter: responseError.httpRetryAfterDate,
             )
             // The resolver has 10s to asynchronously resolve a challenge If it
             // resolves, great! We'll let MessageSender auto-retry. Otherwise, it'll be
@@ -1747,7 +1750,7 @@ public class MessageSender {
             serviceId: serviceId,
             devicesToAdd: missingDevices,
             devicesToRemove: extraDevices,
-            transaction: tx
+            transaction: tx,
         )
     }
 
@@ -1762,7 +1765,7 @@ public class MessageSender {
     private func updateDevices(
         serviceId: ServiceId,
         deviceIds: [DeviceId],
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         let recipientFetcher = DependenciesBridge.shared.recipientFetcher
         var recipient = recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: tx)
@@ -1771,7 +1774,7 @@ public class MessageSender {
             recipient: &recipient,
             devicesToAdd: Array(Set(deviceIds).subtracting(recipient.deviceIds)),
             devicesToRemove: Array(Set(recipient.deviceIds).subtracting(deviceIds)),
-            tx: tx
+            tx: tx,
         )
     }
 
@@ -1779,7 +1782,7 @@ public class MessageSender {
         serviceId: ServiceId,
         devicesToAdd: [DeviceId],
         devicesToRemove: [DeviceId],
-        transaction tx: DBWriteTransaction
+        transaction tx: DBWriteTransaction,
     ) {
         let recipientFetcher = DependenciesBridge.shared.recipientFetcher
         var recipient = recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: tx)
@@ -1791,7 +1794,7 @@ public class MessageSender {
         recipient: inout SignalRecipient,
         devicesToAdd: [DeviceId],
         devicesToRemove: [DeviceId],
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         AssertNotOnMainThread()
         owsAssertDebug(Set(devicesToAdd).isDisjoint(with: devicesToRemove))
@@ -1802,7 +1805,7 @@ public class MessageSender {
             deviceIdsToAdd: devicesToAdd,
             deviceIdsToRemove: devicesToRemove,
             shouldUpdateStorageService: true,
-            tx: tx
+            tx: tx,
         )
 
         if !devicesToRemove.isEmpty {
@@ -1821,7 +1824,7 @@ public class MessageSender {
         serviceId: ServiceId,
         deviceId: DeviceId,
         sealedSenderParameters: SealedSenderParameters?,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) throws -> DeviceMessage {
         owsAssertDebug(!Thread.isMainThread)
 
@@ -1843,7 +1846,7 @@ public class MessageSender {
                 signedPreKeyStore: preKeyStore,
                 kyberPreKeyStore: preKeyStore,
                 identityStore: try identityManager.libSignalStore(for: .aci, tx: transaction),
-                senderKeyStore: SSKEnvironment.shared.senderKeyStoreRef
+                senderKeyStore: SSKEnvironment.shared.senderKeyStoreRef,
             )
 
             serializedMessage = try secretCipher.encryptMessage(
@@ -1853,7 +1856,7 @@ public class MessageSender {
                 contentHint: sealedSenderParameters.contentHint.signalClientHint,
                 groupId: sealedSenderParameters.envelopeGroupId(tx: transaction),
                 senderCertificate: sealedSenderParameters.senderCertificate,
-                protocolContext: transaction
+                protocolContext: transaction,
             )
 
             messageType = .unidentifiedSender
@@ -1864,7 +1867,7 @@ public class MessageSender {
                 for: protocolAddress,
                 sessionStore: signalProtocolStore.sessionStore,
                 identityStore: identityManager.libSignalStore(for: .aci, tx: transaction),
-                context: transaction
+                context: transaction,
             )
 
             switch result.messageType {
@@ -1885,14 +1888,14 @@ public class MessageSender {
         // We had better have a session after encrypting for this recipient!
         let session = try signalProtocolStore.sessionStore.loadSession(
             for: protocolAddress,
-            context: transaction
+            context: transaction,
         )!
 
         return DeviceMessage(
             type: messageType,
             destinationDeviceId: deviceId,
             destinationRegistrationId: try session.remoteRegistrationId(),
-            content: serializedMessage
+            content: serializedMessage,
         )
     }
 
@@ -1901,7 +1904,7 @@ public class MessageSender {
         serviceId: ServiceId,
         deviceId: DeviceId,
         sealedSenderParameters: SealedSenderParameters?,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) throws -> DeviceMessage {
         owsAssertDebug(!Thread.isMainThread)
 
@@ -1918,13 +1921,13 @@ public class MessageSender {
                 CiphertextMessage(plaintext),
                 from: sealedSenderParameters.senderCertificate,
                 contentHint: sealedSenderParameters.contentHint.signalClientHint,
-                groupId: sealedSenderParameters.envelopeGroupId(tx: transaction) ?? Data()
+                groupId: sealedSenderParameters.envelopeGroupId(tx: transaction) ?? Data(),
             )
             let outerBytes = try sealedSenderEncrypt(
                 usmc,
                 for: protocolAddress,
                 identityStore: identityManager.libSignalStore(for: .aci, tx: transaction),
-                context: transaction
+                context: transaction,
             )
 
             serializedMessage = outerBytes
@@ -1942,7 +1945,7 @@ public class MessageSender {
             type: messageType,
             destinationDeviceId: deviceId,
             destinationRegistrationId: try session.remoteRegistrationId(),
-            content: serializedMessage
+            content: serializedMessage,
         )
     }
 }

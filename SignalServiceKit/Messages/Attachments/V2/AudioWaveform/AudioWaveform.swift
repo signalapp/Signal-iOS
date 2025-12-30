@@ -15,7 +15,7 @@ public class AudioWaveform: Equatable {
         self.decibelSamples = decibelSamples
     }
 
-    public static func == (lhs: AudioWaveform, rhs: AudioWaveform) -> Bool {
+    public static func ==(lhs: AudioWaveform, rhs: AudioWaveform) -> Bool {
         lhs.decibelSamples == rhs.decibelSamples
     }
 
@@ -50,7 +50,7 @@ public class AudioWaveform: Equatable {
             float.inverseLerp(
                 AudioWaveform.silenceThreshold,
                 AudioWaveform.clippingThreshold,
-                shouldClamp: true
+                shouldClamp: true,
             )
         }
 
@@ -85,7 +85,7 @@ public class AudioWaveform: Equatable {
             filter,
             &downSampledData,
             vDSP_Length(sampleCount),
-            vDSP_Length(strideLength)
+            vDSP_Length(strideLength),
         )
 
         return downSampledData

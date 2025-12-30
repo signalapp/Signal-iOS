@@ -33,7 +33,7 @@ class LocalVideoView: UIView {
             self,
             selector: #selector(updateLocalVideoOrientation),
             name: UIDevice.orientationDidChangeNotification,
-            object: nil
+            object: nil,
         )
     }
 
@@ -86,9 +86,9 @@ extension RTCCameraPreviewView {
         return layer as? AVCaptureVideoPreviewLayer
     }
 
-    open override var contentMode: UIView.ContentMode {
+    override open var contentMode: UIView.ContentMode {
         get {
-            guard let previewLayer = previewLayer else {
+            guard let previewLayer else {
                 owsFailDebug("missing preview layer")
                 return .scaleToFill
             }
@@ -106,7 +106,7 @@ extension RTCCameraPreviewView {
             }
         }
         set {
-            guard let previewLayer = previewLayer else {
+            guard let previewLayer else {
                 return owsFailDebug("missing preview layer")
             }
 

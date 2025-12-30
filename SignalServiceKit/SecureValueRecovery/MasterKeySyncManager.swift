@@ -37,7 +37,7 @@ class MasterKeySyncManagerImpl: MasterKeySyncManager {
         dateProvider: @escaping DateProvider,
         svr: SecureValueRecovery,
         syncManager: SyncManagerProtocolSwift,
-        tsAccountManager: TSAccountManager
+        tsAccountManager: TSAccountManager,
     ) {
         self.dateProvider = dateProvider
         self.keyValueStore = KeyValueStore(collection: StoreConstants.collectionName)
@@ -59,11 +59,13 @@ class MasterKeySyncManagerImpl: MasterKeySyncManager {
 
     private func runStartupJobsForPrimaryDevice(tx: DBWriteTransaction) {
         let key = StoreConstants.hasDistributedAEP
-        guard !keyValueStore.getBool(
-            key,
-            defaultValue: false,
-            transaction: tx
-        ) else {
+        guard
+            !keyValueStore.getBool(
+                key,
+                defaultValue: false,
+                transaction: tx,
+            )
+        else {
             return
         }
 
@@ -73,7 +75,7 @@ class MasterKeySyncManagerImpl: MasterKeySyncManager {
         self.keyValueStore.setBool(
             true,
             key: key,
-            transaction: tx
+            transaction: tx,
         )
     }
 
@@ -85,7 +87,7 @@ class MasterKeySyncManagerImpl: MasterKeySyncManager {
 
         let lastRequestDate = keyValueStore.getDate(
             StoreConstants.lastKeysSyncRequestMessageDateKey,
-            transaction: tx
+            transaction: tx,
         ) ?? .distantPast
 
         guard dateProvider().timeIntervalSince(lastRequestDate) >= 60 * 60 * 24 else {
@@ -99,7 +101,7 @@ class MasterKeySyncManagerImpl: MasterKeySyncManager {
         keyValueStore.setDate(
             dateProvider(),
             key: StoreConstants.lastKeysSyncRequestMessageDateKey,
-            transaction: tx
+            transaction: tx,
         )
     }
 }

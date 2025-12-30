@@ -15,7 +15,7 @@ public struct PreloadedTextAttachment: Equatable {
     private init(
         textAttachment: TextAttachment,
         linkPreviewAttachment: ReferencedAttachment?,
-        isFailedImageAttachmentDownload: Bool
+        isFailedImageAttachmentDownload: Bool,
     ) {
         self.textAttachment = textAttachment
         self.linkPreviewAttachment = linkPreviewAttachment
@@ -25,13 +25,13 @@ public struct PreloadedTextAttachment: Equatable {
     public static func from(
         _ textAttachment: TextAttachment,
         storyMessage: StoryMessage,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> Self {
         let linkPreviewAttachment: ReferencedAttachment? = storyMessage.id.map { rowId in
             DependenciesBridge.shared.attachmentStore
                 .fetchFirstReferencedAttachment(
                     for: .storyMessageLinkPreview(storyMessageRowId: rowId),
-                    tx: tx
+                    tx: tx,
                 )
         } ?? nil
         let isFailedImageAttachmentDownload: Bool
@@ -48,11 +48,11 @@ public struct PreloadedTextAttachment: Equatable {
         return .init(
             textAttachment: textAttachment,
             linkPreviewAttachment: linkPreviewAttachment,
-            isFailedImageAttachmentDownload: isFailedImageAttachmentDownload
+            isFailedImageAttachmentDownload: isFailedImageAttachmentDownload,
         )
     }
 
-    public static func == (lhs: PreloadedTextAttachment, rhs: PreloadedTextAttachment) -> Bool {
+    public static func ==(lhs: PreloadedTextAttachment, rhs: PreloadedTextAttachment) -> Bool {
         var linkPreviewAttachmentsMatch = (lhs.linkPreviewAttachment == nil) == (rhs.linkPreviewAttachment == nil)
         if
             let lhsAttachment = lhs.linkPreviewAttachment,
@@ -60,7 +60,7 @@ public struct PreloadedTextAttachment: Equatable {
         {
             linkPreviewAttachmentsMatch =
                 lhsAttachment.attachment.id == rhsAttachment.attachment.id
-                && lhsAttachment.reference.hasSameOwner(as: rhsAttachment.reference)
+                    && lhsAttachment.reference.hasSameOwner(as: rhsAttachment.reference)
         }
         return lhs.textAttachment == rhs.textAttachment && linkPreviewAttachmentsMatch
     }

@@ -45,7 +45,7 @@ public extension CGFloat {
     // Inverse linear interpolation
     func inverseLerp(_ minValue: CGFloat, _ maxValue: CGFloat, shouldClamp: Bool = false) -> CGFloat {
         let value = CGFloat.inverseLerp(self, min: minValue, max: maxValue)
-        return (shouldClamp ? CGFloat.clamp01(value) : value)
+        return shouldClamp ? CGFloat.clamp01(value) : value
     }
 
     static let halfPi: CGFloat = CGFloat.pi * 0.5
@@ -82,7 +82,7 @@ public extension Double {
     // Inverse linear interpolation
     func inverseLerp(_ minValue: Double, _ maxValue: Double, shouldClamp: Bool = false) -> Double {
         let value = (self - minValue) / (maxValue - minValue)
-        return (shouldClamp ? value.clamp01() : value)
+        return shouldClamp ? value.clamp01() : value
     }
 }
 
@@ -105,7 +105,7 @@ public extension Float {
     // Inverse linear interpolation
     func inverseLerp(_ minValue: Float, _ maxValue: Float, shouldClamp: Bool = false) -> Float {
         let value = (self - minValue) / (maxValue - minValue)
-        return (shouldClamp ? value.clamp01() : value)
+        return shouldClamp ? value.clamp01() : value
     }
 }
 
@@ -140,7 +140,7 @@ public extension UInt64 {
 // MARK: -
 
 public extension Bool {
-    static func ^ (left: Bool, right: Bool) -> Bool {
+    static func ^(left: Bool, right: Bool) -> Bool {
         return left != right
     }
 }

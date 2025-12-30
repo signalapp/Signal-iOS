@@ -6,7 +6,7 @@
 import Foundation
 import LibSignalClient
 
-internal class BackupArchivePollArchiver: BackupArchiveProtoStreamWriter {
+class BackupArchivePollArchiver: BackupArchiveProtoStreamWriter {
     private typealias ArchiveFrameError = BackupArchive.ArchiveFrameError<BackupArchive.InteractionUniqueId>
 
     private let pollManager: PollMessageManager
@@ -18,7 +18,7 @@ internal class BackupArchivePollArchiver: BackupArchiveProtoStreamWriter {
         pollManager: PollMessageManager,
         db: DB,
         recipientDatabaseTable: RecipientDatabaseTable,
-        reactionArchiver: BackupArchiveReactionArchiver
+        reactionArchiver: BackupArchiveReactionArchiver,
     ) {
         self.pollManager = pollManager
         self.db = db
@@ -32,12 +32,12 @@ internal class BackupArchivePollArchiver: BackupArchiveProtoStreamWriter {
         _ message: TSMessage,
         messageRowId: Int64,
         interactionUniqueId: BackupArchive.InteractionUniqueId,
-        context: BackupArchive.ChatArchivingContext
+        context: BackupArchive.ChatArchivingContext,
     ) -> BackupArchive.ArchiveInteractionResult<BackupArchive.InteractionArchiveDetails.ChatItemType> {
         let pollResult = pollManager.buildPollForBackup(message: message, messageRowId: messageRowId, tx: context.tx)
 
         let poll: BackupsPollData
-        switch (pollResult) {
+        switch pollResult {
         case .success(let backupsPollData):
             poll = backupsPollData
         case .failure(let error):
@@ -71,7 +71,7 @@ internal class BackupArchivePollArchiver: BackupArchiveProtoStreamWriter {
         var reactions: [BackupProto_Reaction] = []
         let reactionsResult = reactionArchiver.archiveReactions(
             message,
-            context: context.recipientContext
+            context: context.recipientContext,
         )
 
         switch reactionsResult {
@@ -103,13 +103,13 @@ internal class BackupArchivePollArchiver: BackupArchiveProtoStreamWriter {
         _ poll: RestoredMessageBody.Poll,
         chatItemId: BackupArchive.ChatItemId,
         message: TSMessage,
-        context: BackupArchive.RecipientRestoringContext
+        context: BackupArchive.RecipientRestoringContext,
     ) -> BackupArchive.RestoreInteractionResult<Void> {
         let restorePollResult = pollManager.restorePollFromBackup(
             pollBackupData: poll.poll,
             message: message,
             chatItemId: chatItemId,
-            tx: context.tx
+            tx: context.tx,
         )
 
         switch restorePollResult {

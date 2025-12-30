@@ -19,7 +19,7 @@ extension DeviceTransferService {
     }
 
     func urlForTransfer(mode: TransferMode) throws -> URL {
-        guard let identity = identity else {
+        guard let identity else {
             throw OWSAssertionError("unexpectedly missing identity")
         }
 
@@ -39,7 +39,7 @@ extension DeviceTransferService {
             DeviceTransferService.versionKey: String(DeviceTransferService.currentTransferVersion),
             DeviceTransferService.transferModeKey: mode.rawValue,
             DeviceTransferService.certificateHashKey: base64CertificateHash,
-            DeviceTransferService.peerIdKey: base64PeerId
+            DeviceTransferService.peerIdKey: base64PeerId,
         ]
 
         components.queryItems = queryItems.map { URLQueryItem(name: $0.key, value: $0.value) }
@@ -57,30 +57,38 @@ extension DeviceTransferService {
             return (item.name, value)
         })
 
-        guard let version = queryItemsDictionary[DeviceTransferService.versionKey],
-            Int(version) == DeviceTransferService.currentTransferVersion else {
+        guard
+            let version = queryItemsDictionary[DeviceTransferService.versionKey],
+            Int(version) == DeviceTransferService.currentTransferVersion
+        else {
             throw Error.unsupportedVersion
         }
 
         let currentMode: TransferMode = DependenciesBridge.shared.tsAccountManager
             .registrationStateWithMaybeSneakyTransaction.isPrimaryDevice == true ? .primary : .linked
 
-        guard let rawMode = queryItemsDictionary[DeviceTransferService.transferModeKey],
-            rawMode == currentMode.rawValue else {
+        guard
+            let rawMode = queryItemsDictionary[DeviceTransferService.transferModeKey],
+            rawMode == currentMode.rawValue
+        else {
             throw Error.modeMismatch
         }
 
-        guard let base64CertificateHash = queryItemsDictionary[DeviceTransferService.certificateHashKey],
+        guard
+            let base64CertificateHash = queryItemsDictionary[DeviceTransferService.certificateHashKey],
             let uriDecodedHash = base64CertificateHash.removingPercentEncoding,
-            let certificateHash = Data(base64Encoded: uriDecodedHash) else {
-                throw OWSAssertionError("failed to decode certificate hash")
+            let certificateHash = Data(base64Encoded: uriDecodedHash)
+        else {
+            throw OWSAssertionError("failed to decode certificate hash")
         }
 
-        guard let base64PeerId = queryItemsDictionary[DeviceTransferService.peerIdKey],
+        guard
+            let base64PeerId = queryItemsDictionary[DeviceTransferService.peerIdKey],
             let uriDecodedPeerId = base64PeerId.removingPercentEncoding,
             let peerIdData = Data(base64Encoded: uriDecodedPeerId),
-            let peerId = try NSKeyedUnarchiver.unarchivedObject(ofClass: MCPeerID.self, from: peerIdData) else {
-                throw OWSAssertionError("failed to decode MCPeerId")
+            let peerId = try NSKeyedUnarchiver.unarchivedObject(ofClass: MCPeerID.self, from: peerIdData)
+        else {
+            throw OWSAssertionError("failed to decode MCPeerId")
         }
 
         return (peerId, certificateHash)

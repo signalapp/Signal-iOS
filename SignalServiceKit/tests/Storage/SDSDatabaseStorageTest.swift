@@ -43,7 +43,7 @@ class SDSDatabaseStorageTest: SSKBaseTest {
         SSKEnvironment.shared.databaseStorageRef.write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
                 localIdentifiers: .forUnitTests,
-                tx: tx
+                tx: tx,
             )
         }
     }
@@ -86,7 +86,7 @@ class SDSDatabaseStorageTest: SSKBaseTest {
                 draftMessageBody: MessageBody(text: "Some draft", ranges: .empty),
                 replyInfo: nil,
                 editTargetTimestamp: nil,
-                transaction: transaction
+                transaction: transaction,
             )
         }
         storage.read { transaction in
@@ -172,7 +172,7 @@ private extension TSOutgoingMessage {
     convenience init(in thread: TSThread, messageBody: String) {
         let builder: TSOutgoingMessageBuilder = .withDefaultValues(
             thread: thread,
-            messageBody: AttachmentContentValidatorMock.mockValidatedBody(messageBody)
+            messageBody: AttachmentContentValidatorMock.mockValidatedBody(messageBody),
         )
         self.init(outgoingMessageWith: builder, recipientAddressStates: [:])
     }

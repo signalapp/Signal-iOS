@@ -31,7 +31,7 @@ class MediaTileDateFormatter {
     }()
 
     static func formattedDateString(for date: Date?) -> String? {
-        guard let date = date else { return nil }
+        guard let date else { return nil }
 
         let dateIsThisYear = DateUtil.dateIsThisYear(date)
         let dateIsToday = DateUtil.dateIsToday(date)

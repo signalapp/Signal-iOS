@@ -85,7 +85,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         editTarget: TSOutgoingMessage?,
         inputToolbarDelegate: ConversationInputToolbarDelegate,
         inputTextViewDelegate: ConversationInputTextViewDelegate,
-        bodyRangesTextViewDelegate: BodyRangesTextViewDelegate
+        bodyRangesTextViewDelegate: BodyRangesTextViewDelegate,
     ) {
         self.conversationStyle = conversationStyle
         self.spoilerState = spoilerState
@@ -95,7 +95,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         self.linkPreviewFetchState = LinkPreviewFetchState(
             db: DependenciesBridge.shared.db,
             linkPreviewFetcher: SUIEnvironment.shared.linkPreviewFetcher,
-            linkPreviewSettingStore: DependenciesBridge.shared.linkPreviewSettingStore
+            linkPreviewSettingStore: DependenciesBridge.shared.linkPreviewSettingStore,
         )
 
         super.init(frame: .zero)
@@ -108,25 +108,25 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
             messageDraft,
             quotedReplyDraft: quotedReplyDraft,
             inputTextViewDelegate: inputTextViewDelegate,
-            bodyRangesTextViewDelegate: bodyRangesTextViewDelegate
+            bodyRangesTextViewDelegate: bodyRangesTextViewDelegate,
         )
 
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(applicationDidBecomeActive(notification:)),
             name: .OWSApplicationDidBecomeActive,
-            object: nil
+            object: nil,
         )
 
         if #available(iOS 17, *) {
             inputTextView.registerForTraitChanges(
-                [ UITraitPreferredContentSizeCategory.self ]
+                [UITraitPreferredContentSizeCategory.self],
             ) { [weak self] (textView: UITextView, _) in
                 self?.updateTextViewFontSize()
             }
         } else {
             contentSizeChangeNotificationObserver = NotificationCenter.default.addObserver(
-                name: UIContentSizeCategory.didChangeNotification
+                name: UIContentSizeCategory.didChangeNotification,
             ) { [weak self] _ in
                 self?.updateTextViewFontSize()
             }
@@ -145,7 +145,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
 
     // MARK: Layout Configuration.
 
-    public override var frame: CGRect {
+    override public var frame: CGRect {
         didSet {
             guard oldValue.size.height != frame.size.height else { return }
 
@@ -153,7 +153,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         }
     }
 
-    public override var bounds: CGRect {
+    override public var bounds: CGRect {
         didSet {
             guard abs(oldValue.size.height - bounds.size.height) > 1 else { return }
 
@@ -161,7 +161,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         }
     }
 
-    public override func willMove(toSuperview newSuperview: UIView?) {
+    override public func willMove(toSuperview newSuperview: UIView?) {
         super.willMove(toSuperview: newSuperview)
 
         // Suggested sticker panel is placed outside of ConversationInputToolbar
@@ -171,7 +171,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         }
     }
 
-    public override func didMoveToSuperview() {
+    override public func didMoveToSuperview() {
         super.didMoveToSuperview()
 
         guard superview != nil else { return }
@@ -239,8 +239,8 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
             }
             return UIColor { traitCollection in
                 traitCollection.userInterfaceStyle == .dark
-                ? Theme.darkThemeLegacyPrimaryIconColor
-                : Theme.lightThemeLegacyPrimaryIconColor
+                    ? Theme.darkThemeLegacyPrimaryIconColor
+                    : Theme.lightThemeLegacyPrimaryIconColor
             }
         }
     }
@@ -252,11 +252,11 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
             buttonImage: UIImage,
             primaryAction: UIAction?,
             accessibilityLabel: String?,
-            accessibilityIdentifier: String?
+            accessibilityIdentifier: String?,
         ) -> UIButton {
             let button = UIButton(
                 configuration: .plain(),
-                primaryAction: primaryAction
+                primaryAction: primaryAction,
             )
             button.configuration?.image = buttonImage
             button.configuration?.baseForegroundColor = Style.buttonTintColor
@@ -272,70 +272,70 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
 
         static func stickerButton(
             primaryAction: UIAction,
-            accessibilityIdentifier: String?
+            accessibilityIdentifier: String?,
         ) -> UIButton {
             return compactButton(
                 buttonImage: UIImage(imageLiteralResourceName: "sticker"),
                 primaryAction: primaryAction,
                 accessibilityLabel: OWSLocalizedString(
                     "INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL",
-                    comment: "accessibility label for the button which shows the sticker picker"
+                    comment: "accessibility label for the button which shows the sticker picker",
                 ),
-                accessibilityIdentifier: accessibilityIdentifier
+                accessibilityIdentifier: accessibilityIdentifier,
             )
         }
 
         static func keyboardButton(
             primaryAction: UIAction,
-            accessibilityIdentifier: String?
+            accessibilityIdentifier: String?,
         ) -> UIButton {
             return compactButton(
                 buttonImage: UIImage(imageLiteralResourceName: "keyboard"),
                 primaryAction: primaryAction,
                 accessibilityLabel: OWSLocalizedString(
                     "INPUT_TOOLBAR_KEYBOARD_BUTTON_ACCESSIBILITY_LABEL",
-                    comment: "accessibility label for the button which shows the regular keyboard instead of sticker picker"
+                    comment: "accessibility label for the button which shows the regular keyboard instead of sticker picker",
                 ),
-                accessibilityIdentifier: accessibilityIdentifier
+                accessibilityIdentifier: accessibilityIdentifier,
             )
         }
 
         static func cameraButton(
             primaryAction: UIAction?,
-            accessibilityIdentifier: String?
+            accessibilityIdentifier: String?,
         ) -> UIButton {
             let button = compactButton(
                 buttonImage: Theme.iconImage(.buttonCamera),
                 primaryAction: primaryAction,
                 accessibilityLabel: OWSLocalizedString(
                     "CAMERA_BUTTON_LABEL",
-                    comment: "Accessibility label for camera button."
+                    comment: "Accessibility label for camera button.",
                 ),
-                accessibilityIdentifier: accessibilityIdentifier
+                accessibilityIdentifier: accessibilityIdentifier,
             )
             button.accessibilityHint = OWSLocalizedString(
                 "CAMERA_BUTTON_HINT",
-                comment: "Accessibility hint describing what you can do with the camera button"
+                comment: "Accessibility hint describing what you can do with the camera button",
             )
             return button
         }
 
         static func voiceNoteButton(
             primaryAction: UIAction?,
-            accessibilityIdentifier: String?
+            accessibilityIdentifier: String?,
         ) -> UIButton {
             let button = compactButton(
                 buttonImage: Theme.iconImage(.buttonMicrophone),
                 primaryAction: primaryAction,
                 accessibilityLabel: OWSLocalizedString(
                     "INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_LABEL",
-                    comment: "accessibility label for the button which records voice memos"
+                    comment: "accessibility label for the button which records voice memos",
                 ),
-                accessibilityIdentifier: accessibilityIdentifier
+                accessibilityIdentifier: accessibilityIdentifier,
             )
             button.accessibilityHint = OWSLocalizedString(
                 "INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_HINT",
-                comment: "accessibility hint for the button which records voice memos"
+                comment: "accessibility hint for the button which records voice memos",
             )
             return button
         }
@@ -343,14 +343,14 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         @available(iOS 26.0, *)
         static func sendButton(
             primaryAction: UIAction?,
-            accessibilityIdentifier: String?
+            accessibilityIdentifier: String?,
         ) -> UIButton {
 
             let buttonSize = LayoutMetrics.initialTextBoxHeight
 
             let button = UIButton(
                 configuration: .prominentGlass(),
-                primaryAction: primaryAction
+                primaryAction: primaryAction,
             )
             // Button's tint color is set externalley (from `conversationStyle`).
             button.configuration?.image = Theme.iconImage(.arrowUp)
@@ -369,14 +369,14 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         @available(iOS 26.0, *)
         static func addAttachmentButton(
             primaryAction: UIAction?,
-            accessibilityIdentifier: String?
+            accessibilityIdentifier: String?,
         ) -> UIButton {
 
             let buttonSize = LayoutMetrics.initialTextBoxHeight
 
             let button = AttachmentButton(
                 configuration: .glass(),
-                primaryAction: primaryAction
+                primaryAction: primaryAction,
             )
             button.tintColor = Style.glassTintColor
             button.configuration?.image = UIImage(imageLiteralResourceName: "plus")
@@ -384,11 +384,11 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
             button.configuration?.cornerStyle = .capsule
             button.accessibilityLabel = OWSLocalizedString(
                 "ATTACHMENT_LABEL",
-                comment: "Accessibility label for attaching photos"
+                comment: "Accessibility label for attaching photos",
             )
             button.accessibilityHint = OWSLocalizedString(
                 "ATTACHMENT_HINT",
-                comment: "Accessibility hint describing what you can do with the attachment button"
+                comment: "Accessibility hint describing what you can do with the attachment button",
             )
             button.accessibilityIdentifier = accessibilityIdentifier
             button.translatesAutoresizingMaskIntoConstraints = false
@@ -402,14 +402,14 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         @available(iOS 26.0, *)
         static func deleteVoiceMemoDraftButton(
             primaryAction: UIAction?,
-            accessibilityIdentifier: String?
+            accessibilityIdentifier: String?,
         ) -> UIButton {
 
             let buttonSize = LayoutMetrics.initialTextBoxHeight
 
             let button = UIButton(
                 configuration: .prominentGlass(),
-                primaryAction: primaryAction
+                primaryAction: primaryAction,
             )
             button.tintColor = .Signal.red
             button.configuration?.image = UIImage(imageLiteralResourceName: "trash-fill")
@@ -445,7 +445,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
                 primaryAction: UIAction { [weak self] _ in
                     self?.addOrCancelButtonPressed()
                 },
-                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "attachmentButton")
+                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "attachmentButton"),
             )
         }
 #endif
@@ -453,11 +453,11 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         let button = AttachmentButtonLegacy()
         button.accessibilityLabel = OWSLocalizedString(
             "ATTACHMENT_LABEL",
-            comment: "Accessibility label for attaching photos"
+            comment: "Accessibility label for attaching photos",
         )
         button.accessibilityHint = OWSLocalizedString(
             "ATTACHMENT_HINT",
-            comment: "Accessibility hint describing what you can do with the attachment button"
+            comment: "Accessibility hint describing what you can do with the attachment button",
         )
         button.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "attachmentButton")
         button.addTarget(self, action: #selector(addOrCancelButtonPressed), for: .touchUpInside)
@@ -468,27 +468,27 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         primaryAction: UIAction { [weak self] _ in
             self?.stickerButtonPressed()
         },
-        accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "stickerButton")
+        accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "stickerButton"),
     )
 
     private lazy var keyboardButton = Buttons.keyboardButton(
         primaryAction: UIAction { [weak self] _ in
             self?.keyboardButtonPressed()
         },
-        accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "keyboardButton")
+        accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "keyboardButton"),
     )
 
     private lazy var cameraButton = Buttons.cameraButton(
         primaryAction: UIAction { [weak self] _ in
             self?.cameraButtonPressed()
         },
-        accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "cameraButton")
+        accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "cameraButton"),
     )
 
     private lazy var voiceNoteButton: UIButton = {
         let button = Buttons.voiceNoteButton(
             primaryAction: nil,
-            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "voiceNoteButton")
+            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "voiceNoteButton"),
         )
         let longPressGestureRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(handleVoiceMemoLongPress(gesture:)))
         longPressGestureRecognizer.minimumPressDuration = 0
@@ -503,7 +503,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
                 primaryAction: UIAction { [weak self] _ in
                     self?.sendButtonPressed()
                 },
-                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "sendButton")
+                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "sendButton"),
             )
             button.tintColor = conversationStyle.bubbleChatColorOutgoing.asSendButtonTintColor()
             return button
@@ -516,7 +516,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
             },
             cameraButtonAction: UIAction { [weak self] _ in
                 self?.cameraButtonPressed()
-            }
+            },
         )
 
         let longPressGestureRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(handleVoiceMemoLongPress(gesture:)))
@@ -588,7 +588,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         } else {
             // Background needed on pre-iOS 26 devices.
             // The background is stretched to all edges to cover any safe area gaps.
-           let backgroundView = UIView()
+            let backgroundView = UIView()
             if UIAccessibility.isReduceTransparencyEnabled {
                 backgroundView.backgroundColor = .Signal.background
             } else {
@@ -625,7 +625,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         // Set up content view.
         contentView.directionalLayoutMargins = NSDirectionalEdgeInsets(
             hMargin: OWSTableViewController2.defaultHOuterMargin - 16,
-            vMargin: iOS26Layout ? 0.5 * (LayoutMetrics.initialToolbarHeight - LayoutMetrics.initialTextBoxHeight) : 0
+            vMargin: iOS26Layout ? 0.5 * (LayoutMetrics.initialToolbarHeight - LayoutMetrics.initialTextBoxHeight) : 0,
         )
         contentViewSuperview.addSubview(contentView)
         contentView.translatesAutoresizingMaskIntoConstraints = false
@@ -641,7 +641,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         _ messageDraft: MessageBody?,
         quotedReplyDraft: DraftQuotedReplyModel?,
         inputTextViewDelegate: ConversationInputTextViewDelegate,
-        bodyRangesTextViewDelegate: BodyRangesTextViewDelegate
+        bodyRangesTextViewDelegate: BodyRangesTextViewDelegate,
     ) {
 
         // 1. Set initial parameters.
@@ -657,7 +657,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
 
         // Initial state for the quoted message snippet.
         quotedReplyViewConstraints = [
-            quotedReplyWrapper.heightAnchor.constraint(equalToConstant: 0)
+            quotedReplyWrapper.heightAnchor.constraint(equalToConstant: 0),
         ]
         NSLayoutConstraint.activate(quotedReplyViewConstraints)
         self.quotedReplyDraft = quotedReplyDraft
@@ -820,7 +820,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
             // + Attachment button: pinned to the bottom left corner.
             leadingEdgeControl.leadingAnchor.constraint(
                 equalTo: contentView.layoutMarginsGuide.leadingAnchor,
-                constant: outerHMargin
+                constant: outerHMargin,
             ),
             leadingEdgeControl.bottomAnchor.constraint(equalTo: contentView.layoutMarginsGuide.bottomAnchor),
 
@@ -832,7 +832,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
             // Camera | Voice Message | Send: pinned to the bottom right corner.
             trailingEdgeControl.trailingAnchor.constraint(
                 equalTo: contentView.layoutMarginsGuide.trailingAnchor,
-                constant: -outerHMargin
+                constant: -outerHMargin,
             ),
             trailingEdgeControl.bottomAnchor.constraint(equalTo: contentView.layoutMarginsGuide.bottomAnchor),
         ])
@@ -897,7 +897,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         // * (+) attachment button: when there is no voice note UI visible.
         // * Delete Voice Note button: when there's a voice note draft.
         // * No control: when there's voice note recording in progress.
-        let leadingEdgeControlState: LeadingEdgeControlState =  {
+        let leadingEdgeControlState: LeadingEdgeControlState = {
             if isShowingVoiceMemoUI {
                 return voiceMemoRecordingState == .draft ? .deleteVoiceMemoDraft : .none
             }
@@ -993,8 +993,10 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         //
 
         // iOS 15-18: update trailing edge controls view.
-        if let rightEdgeControlsView = trailingEdgeControl as? RightEdgeControlsView,
-           rightEdgeControlsView.state != rightEdgeControlsState {
+        if
+            let rightEdgeControlsView = trailingEdgeControl as? RightEdgeControlsView,
+            rightEdgeControlsView.state != rightEdgeControlsState
+        {
             hasLayoutChanged = true
 
             if let animator {
@@ -1050,7 +1052,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         //
 
         if let animator {
-            if doLayout && hasLayoutChanged {
+            if doLayout, hasLayoutChanged {
                 animator.addAnimations {
                     self.contentView.setNeedsLayout()
                     self.contentView.layoutIfNeeded()
@@ -1059,7 +1061,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
 
             animator.startAnimation()
         } else {
-            if doLayout && hasLayoutChanged {
+            if doLayout, hasLayoutChanged {
                 self.contentView.setNeedsLayout()
                 self.contentView.layoutIfNeeded()
             }
@@ -1077,7 +1079,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         if isLeadingEdgeControlHidden {
             constraint = messageContentView.leadingAnchor.constraint(
                 equalTo: contentView.layoutMarginsGuide.leadingAnchor,
-                constant: iOS26Layout ? 4 : 16
+                constant: iOS26Layout ? 4 : 16,
             )
         } else {
             constraint = messageContentView.leadingAnchor.constraint(equalTo: leadingEdgeControl.trailingAnchor)
@@ -1097,7 +1099,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         if isTrailingEdgeControlHidden {
             constraint = messageContentView.trailingAnchor.constraint(
                 equalTo: contentView.layoutMarginsGuide.trailingAnchor,
-                constant: -4
+                constant: -4,
             )
         } else {
             constraint = messageContentView.trailingAnchor.constraint(equalTo: trailingEdgeControl.leadingAnchor)
@@ -1134,7 +1136,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
     @discardableResult
     private func setLeadingEdgeControlState(
         _ controlState: LeadingEdgeControlState,
-        usingAnimator animator: UIViewPropertyAnimator?
+        usingAnimator animator: UIViewPropertyAnimator?,
     ) -> Bool {
         var voiceMemoButtonUpdated = false
         if controlState == .deleteVoiceMemoDraft, voiceMemoDeleteButton.superview == nil {
@@ -1188,17 +1190,19 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
 
         // Match Theme.barBlurEffect.
         backgroundBlurView.effect =
-        traitCollection.userInterfaceStyle == .dark
-        ? UIBlurEffect(style: .dark)
-        : UIBlurEffect(style: .light)
+            traitCollection.userInterfaceStyle == .dark
+                ? UIBlurEffect(style: .dark)
+                : UIBlurEffect(style: .light)
 
         // Alter the visual effect view's tint to match our background color
         // so the input bar, when over a solid color background matching `toolbarBackgroundColor`,
         // exactly matches the background color. This is brittle, but there is no way to get
         // this behavior from UIVisualEffectView otherwise.
-        if let tintingView = backgroundBlurView.subviews.first(where: {
-            String(describing: type(of: $0)) == "_UIVisualEffectSubview"
-        }) {
+        if
+            let tintingView = backgroundBlurView.subviews.first(where: {
+                String(describing: type(of: $0)) == "_UIVisualEffectSubview"
+            })
+        {
             tintingView.backgroundColor = backgroundColor
         }
     }
@@ -1239,11 +1243,11 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
             button.tintColor = Style.buttonTintColor
             button.accessibilityLabel = OWSLocalizedString(
                 "CAMERA_BUTTON_LABEL",
-                comment: "Accessibility label for camera button."
+                comment: "Accessibility label for camera button.",
             )
             button.accessibilityHint = OWSLocalizedString(
                 "CAMERA_BUTTON_HINT",
-                comment: "Accessibility hint describing what you can do with the camera button"
+                comment: "Accessibility hint describing what you can do with the camera button",
             )
             button.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "cameraButton")
             button.setImage(Theme.iconImage(.buttonCamera), for: .normal)
@@ -1256,11 +1260,11 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
             button.tintColor = Style.buttonTintColor
             button.accessibilityLabel = OWSLocalizedString(
                 "INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_LABEL",
-                comment: "accessibility label for the button which records voice memos"
+                comment: "accessibility label for the button which records voice memos",
             )
             button.accessibilityHint = OWSLocalizedString(
                 "INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_HINT",
-                comment: "accessibility hint for the button which records voice memos"
+                comment: "accessibility hint for the button which records voice memos",
             )
             button.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "voiceMemoButton")
             button.setImage(Theme.iconImage(.buttonMicrophone), for: .normal)
@@ -1270,14 +1274,14 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
 
         init(
             sendButtonAction: UIAction,
-            cameraButtonAction: UIAction
+            cameraButtonAction: UIAction,
         ) {
             super.init(frame: .zero)
 
             sendButton.addAction(sendButtonAction, for: .primaryActionTriggered)
             cameraButton.addAction(cameraButtonAction, for: .primaryActionTriggered)
 
-            for button in [ cameraButton, voiceMemoButton, sendButton ] {
+            for button in [cameraButton, voiceMemoButton, sendButton] {
                 button.setContentHuggingHorizontalHigh()
                 button.setCompressionResistanceHorizontalHigh()
                 addSubview(button)
@@ -1297,14 +1301,14 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
 
             sendButton.center = CGPoint(
                 x: bounds.maxX - Self.sendButtonHMargin - 0.5 * sendButton.bounds.width,
-                y: bounds.midY
+                y: bounds.midY,
             )
 
             switch state {
             case .default:
                 cameraButton.center = CGPoint(
                     x: bounds.minX + Self.cameraButtonHMargin + 0.5 * cameraButton.bounds.width,
-                    y: bounds.midY
+                    y: bounds.midY,
                 )
                 voiceMemoButton.center = sendButton.center
 
@@ -1376,7 +1380,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
 
         private let iconImageView = UIImageView(image: UIImage(imageLiteralResourceName: "plus"))
 
-        private override init(frame: CGRect) {
+        override private init(frame: CGRect) {
             super.init(frame: frame)
 
             addSubview(roundedCornersBackground)
@@ -1438,10 +1442,11 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
             }
 
             isAnimatingStateChange = true
-            animator.addAnimations({
+            animator.addAnimations(
+                {
                     self.updateImageColorAndBackground()
                 },
-                delayFactor: buttonState == .add ? 0 : 0.2
+                delayFactor: buttonState == .add ? 0 : 0.2,
             )
             animator.addAnimations {
                 self.updateImageTransform()
@@ -1530,7 +1535,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         if let editTarget {
             let editTargetMessage = MessageBody(
                 text: editTarget.body ?? "",
-                ranges: editTarget.bodyRanges ?? .empty
+                ranges: editTarget.bodyRanges ?? .empty,
             )
 
             return currentDraft != editTargetMessage
@@ -1603,14 +1608,15 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
             let animateChanges = window != nil
 
             // Show the 'editing' tag
-            if let editTarget = editTarget {
+            if let editTarget {
 
                 // Fetch the original text (including any oversized text attachments)
                 let componentState = SSKEnvironment.shared.databaseStorageRef.read { tx in
                     CVLoader.buildStandaloneComponentState(
                         interaction: editTarget,
                         spoilerState: SpoilerRenderState(),
-                        transaction: tx)
+                        transaction: tx,
+                    )
                 }
 
                 let messageBody: MessageBody
@@ -1657,7 +1663,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         let editLabel = UILabel()
         editLabel.text = OWSLocalizedString(
             "INPUT_TOOLBAR_EDIT_MESSAGE_LABEL",
-            comment: "Label at the top of the input text when editing a message"
+            comment: "Label at the top of the input text when editing a message",
         )
         editLabel.font = UIFont.dynamicTypeSubheadlineClamped.semibold()
         editLabel.textColor = Style.primaryTextColor
@@ -1666,10 +1672,10 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         // and UILabel has to be updated when content size changes.
         if #available(iOS 17, *) {
             editLabel.registerForTraitChanges(
-                [ UITraitPreferredContentSizeCategory.self ],
+                [UITraitPreferredContentSizeCategory.self],
                 handler: { (label: UILabel, _) in
                     label.font = UIFont.dynamicTypeSubheadlineClamped.semibold()
-                }
+                },
             )
         }
 
@@ -1706,11 +1712,11 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
     }()
 
     private lazy var editMessageViewVisibleConstraint = editMessageLabelView.bottomAnchor.constraint(
-        equalTo: editMessageLabelWrapper.bottomAnchor
+        equalTo: editMessageLabelWrapper.bottomAnchor,
     )
 
     private lazy var editMessageViewHiddenConstraint = editMessageLabelView.bottomAnchor.constraint(
-        equalTo: editMessageLabelWrapper.topAnchor
+        equalTo: editMessageLabelWrapper.topAnchor,
     )
 
     private func loadEditMessageViewIfNecessary() {
@@ -1742,7 +1748,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         let animator = UIViewPropertyAnimator(
             duration: ConversationInputToolbar.heightChangeAnimationDuration,
             springDamping: 0.9,
-            springResponse: 0.3
+            springResponse: 0.3,
         )
         animator.addAnimations {
             self.editMessageLabelView.alpha = 1
@@ -1768,7 +1774,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         let animator = UIViewPropertyAnimator(
             duration: ConversationInputToolbar.heightChangeAnimationDuration,
             springDamping: 0.9,
-            springResponse: 0.3
+            springResponse: 0.3,
         )
         animator.addAnimations {
             self.editMessageLabelView.alpha = 0
@@ -1843,7 +1849,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         // New quoted message snippet.
         let quotedMessagePreview = QuotedReplyPreview(
             quotedReplyDraft: quotedReplyDraft,
-            spoilerState: spoilerState
+            spoilerState: spoilerState,
         )
         quotedMessagePreview.delegate = self
         quotedMessagePreview.setContentHuggingHorizontalLow()
@@ -1888,7 +1894,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         let animator = UIViewPropertyAnimator(
             duration: ConversationInputToolbar.heightChangeAnimationDuration,
             springDamping: 0.9,
-            springResponse: 0.3
+            springResponse: 0.3,
         )
         animator.addAnimations {
             oldMessagePreviewView?.alpha = 0
@@ -1910,7 +1916,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         let oldConstraints = quotedReplyViewConstraints
 
         let newConstraints = [
-            quotedReplyWrapper.heightAnchor.constraint(equalToConstant: 0)
+            quotedReplyWrapper.heightAnchor.constraint(equalToConstant: 0),
         ]
 
         defer {
@@ -1927,7 +1933,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         let animator = UIViewPropertyAnimator(
             duration: ConversationInputToolbar.heightChangeAnimationDuration,
             springDamping: 0.9,
-            springResponse: 0.3
+            springResponse: 0.3,
         )
         animator.addAnimations {
             oldMessagePreviewView?.alpha = 0
@@ -2018,7 +2024,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
                 UIAction { [weak self] _ in
                     self?.didTapDeleteLinkPreview()
                 },
-                for: .primaryActionTriggered
+                for: .primaryActionTriggered,
             )
             linkPreviewWrapper.addSubview(linkPreviewView)
             // See comment in `updateLinkPreviewConstraint` why vertical constraints aren't here.
@@ -2052,7 +2058,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         let animator = UIViewPropertyAnimator(
             duration: ConversationInputToolbar.heightChangeAnimationDuration,
             springDamping: 0.9,
-            springResponse: 0.3
+            springResponse: 0.3,
         )
         animator.addAnimations {
             self.updateLinkPreviewConstraint()
@@ -2077,7 +2083,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         let animator = UIViewPropertyAnimator(
             duration: ConversationInputToolbar.heightChangeAnimationDuration,
             springDamping: 0.9,
-            springResponse: 0.3
+            springResponse: 0.3,
         )
         animator.addAnimations {
             self.updateLinkPreviewConstraint()
@@ -2137,7 +2143,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
             return UIViewPropertyAnimator(
                 duration: 0.35,
                 springDamping: 1,
-                springResponse: 0.35
+                springResponse: 0.35,
             )
         }
 
@@ -2181,7 +2187,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
             stickersListView.bottomAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor),
 
             stickersListView.heightAnchor.constraint(
-                equalToConstant: StickerLayout.listItemSize + StickerLayout.listViewPadding.totalHeight
+                equalToConstant: StickerLayout.listItemSize + StickerLayout.listViewPadding.totalHeight,
             ),
         ])
 
@@ -2192,7 +2198,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         let view = StickerHorizontalListView(
             cellSize: StickerLayout.listItemSize,
             cellContentInset: 0,
-            spacing: StickerLayout.listItemSpacing
+            spacing: StickerLayout.listItemSpacing,
         )
         view.backgroundColor = .clear
         view.contentInset = StickerLayout.listViewPadding
@@ -2206,19 +2212,19 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         stickerListViewWrapper.translatesAutoresizingMaskIntoConstraints = false
         stickerPanel.addConstraints([
             stickerListViewWrapper.topAnchor.constraint(
-                equalTo: stickerPanel.topAnchor
+                equalTo: stickerPanel.topAnchor,
             ),
             stickerListViewWrapper.leadingAnchor.constraint(
                 equalTo: stickerPanel.safeAreaLayoutGuide.leadingAnchor,
-                constant: StickerLayout.outerPanelHMargin
+                constant: StickerLayout.outerPanelHMargin,
             ),
             stickerListViewWrapper.trailingAnchor.constraint(
                 equalTo: stickerPanel.layoutMarginsGuide.trailingAnchor,
-                constant: -StickerLayout.outerPanelHMargin
+                constant: -StickerLayout.outerPanelHMargin,
             ),
             stickerListViewWrapper.bottomAnchor.constraint(
-                equalTo: stickerPanel.bottomAnchor
-            )
+                equalTo: stickerPanel.bottomAnchor,
+            ),
         ])
 
         UIView.performWithoutAnimation {
@@ -2270,7 +2276,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
                 didSelectBlock: { [weak self] in
                     self?.didSelectSuggestedSticker(stickerInfo)
                 },
-                cache: suggestedStickerViewCache
+                cache: suggestedStickerViewCache,
             )
         }
 
@@ -2281,8 +2287,9 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         UIView.performWithoutAnimation {
             // Find a subview of `stickerPanelSuperview` that we would put `stickerPanel` behind.
             var stickerPanelSiblingView: UIView = self
-            while let siblingSuperView = stickerPanelSiblingView.superview,
-                  siblingSuperView != stickerPanelSuperview
+            while
+                let siblingSuperView = stickerPanelSiblingView.superview,
+                siblingSuperView != stickerPanelSuperview
             {
                 stickerPanelSiblingView = siblingSuperView
             }
@@ -2293,7 +2300,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
             NSLayoutConstraint.activate([
                 stickerPanel.leadingAnchor.constraint(equalTo: stickerPanelSuperview.leadingAnchor),
                 stickerPanel.trailingAnchor.constraint(equalTo: stickerPanelSuperview.trailingAnchor),
-                stickerPanel.bottomAnchor.constraint(equalTo: self.topAnchor)
+                stickerPanel.bottomAnchor.constraint(equalTo: self.topAnchor),
             ])
 
             // Manually calculate final size and position of the `stickerPanel`
@@ -2303,17 +2310,17 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
             let stickerPanelSize = stickerPanel.systemLayoutSizeFitting(
                 CGSize(width: stickerPanelSuperview.bounds.width, height: 300),
                 withHorizontalFittingPriority: .required,
-                verticalFittingPriority: .fittingSizeLevel
+                verticalFittingPriority: .fittingSizeLevel,
             )
             stickerPanel.frame = CGRect(
                 origin: CGPoint(
                     x: stickerPanelSuperview.bounds.minX,
-                    y: stickerPanelMaxY - stickerPanelSize.height
+                    y: stickerPanelMaxY - stickerPanelSize.height,
                 ),
                 size: CGSize(
                     width: stickerPanelSuperview.bounds.width,
-                    height: stickerPanelSize.height
-                )
+                    height: stickerPanelSize.height,
+                ),
             )
             // Ensure final layout within the panel.
             stickerPanel.layoutIfNeeded()
@@ -2321,9 +2328,9 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
             // Set initial scroll position in the list.
             stickersListView.contentOffset = CGPoint(
                 x: -(CurrentAppContext().isRTL
-                     ? stickersListView.frame.width - stickersListView.contentSize.width - StickerLayout.listViewPadding.right
-                     : StickerLayout.listViewPadding.left),
-                y: -StickerLayout.listViewPadding.top
+                    ? stickersListView.frame.width - stickersListView.contentSize.width - StickerLayout.listViewPadding.right
+                    : StickerLayout.listViewPadding.left),
+                y: -StickerLayout.listViewPadding.top,
             )
         }
 
@@ -2399,6 +2406,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
             ensureButtonVisibility(withAnimation: true, doLayout: true)
         }
     }
+
     private var voiceMemoGestureStartLocation: CGPoint?
 
     private var isShowingVoiceMemoUI: Bool = false {
@@ -2430,20 +2438,20 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
             string: "\u{F104}",
             attributes: [
                 .font: UIFont.awesomeFont(ofSize: cancelArrowFontSize),
-                .baselineOffset: -2
-            ]
+                .baselineOffset: -2,
+            ],
         )
         cancelString.append(
             NSAttributedString(
                 string: "  ",
-                attributes: [ .font: cancelLabelFont ]
-            )
+                attributes: [.font: cancelLabelFont],
+            ),
         )
         cancelString.append(
             NSAttributedString(
                 string: OWSLocalizedString("VOICE_MESSAGE_CANCEL_INSTRUCTIONS", comment: "Indicates how to cancel a voice message."),
-                attributes: [ .font: cancelLabelFont ]
-            )
+                attributes: [.font: cancelLabelFont],
+            ),
         )
         cancelString.addAttributeToEntireString(.foregroundColor, value: Style.secondaryTextColor)
         let label = UILabel()
@@ -2492,7 +2500,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
                 primaryAction: UIAction { [weak self] _ in
                     self?.deleteVoiceMemoDraft()
                 },
-                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "stickerButton")
+                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "stickerButton"),
             )
         }
 #endif
@@ -2501,7 +2509,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
             configuration: .plain(),
             primaryAction: UIAction { [weak self] _ in
                 self?.deleteVoiceMemoDraft()
-            }
+            },
         )
         button.configuration?.image = UIImage(imageLiteralResourceName: "trash-fill")
         button.configuration?.baseForegroundColor = .Signal.red
@@ -2597,7 +2605,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
             options: [.repeat, .autoreverse, .curveEaseIn],
             animations: {
                 redMicIconImageView.alpha = 0
-            }
+            },
         )
 
         // Start recording timer.
@@ -2630,7 +2638,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
 
         let draftView = VoiceMessageDraftView(
             voiceMessageInterruptedDraft: voiceMemoDraft,
-            mediaCache: mediaCache
+            mediaCache: mediaCache,
         )
         voiceMemoContentView.addSubview(draftView)
         draftView.translatesAutoresizingMaskIntoConstraints = false
@@ -2688,7 +2696,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
                 completion: { _ in
                     self.voiceMemoRedRecordingCircle.removeFromSuperview()
                     self.voiceMemoLockView.removeFromSuperview()
-                }
+                },
             )
         } else {
             voiceMemoRedRecordingCircle.removeFromSuperview()
@@ -2703,7 +2711,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
             configuration: .borderless(),
             primaryAction: UIAction { [weak self] _ in
                 self?.inputToolbarDelegate?.voiceMemoGestureDidCancel()
-            }
+            },
         )
         cancelButton.alpha = 0
         cancelButton.configuration?.baseForegroundColor = .Signal.red
@@ -2739,7 +2747,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
                 self.voiceMemoLockView.removeFromSuperview()
 
                 UIAccessibility.post(notification: .layoutChanged, argument: nil)
-            }
+            },
         )
     }
 
@@ -2774,9 +2782,10 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         let tooltipView = VoiceMessageTooltip(
             fromView: self,
             widthReferenceView: self,
-            tailReferenceView: rightEdgeControlsView.voiceMemoButton) { [weak self] in
-                self?.removeVoiceMemoTooltip()
-            }
+            tailReferenceView: rightEdgeControlsView.voiceMemoButton,
+        ) { [weak self] in
+            self?.removeVoiceMemoTooltip()
+        }
         voiceMemoTooltipView = tooltipView
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 3) { [weak self] in
@@ -2785,7 +2794,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
     }
 
     private func removeVoiceMemoTooltip() {
-        guard let voiceMemoTooltipView = voiceMemoTooltipView else { return }
+        guard let voiceMemoTooltipView else { return }
 
         self.voiceMemoTooltipView = nil
 
@@ -2796,7 +2805,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
             },
             completion: { _ in
                 voiceMemoTooltipView.removeFromSuperview()
-            }
+            },
         )
     }
 
@@ -2830,7 +2839,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
 
         case .changed:
             guard isShowingVoiceMemoUI else { return }
-            guard let voiceMemoGestureStartLocation = voiceMemoGestureStartLocation else {
+            guard let voiceMemoGestureStartLocation else {
                 owsFailDebug("voiceMemoGestureStartLocation is nil")
                 return
             }
@@ -2972,7 +2981,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
             // make sure this conversation isn't blocked before presenting it.
             if inputToolbarDelegate.isBlockedConversation() {
                 inputToolbarDelegate.showUnblockConversationUI { [weak self] isBlocked in
-                    guard let self = self, !isBlocked else { return }
+                    guard let self, !isBlocked else { return }
                     self.toggleKeyboardType(keyboardType, animated: animated)
                 }
                 return
@@ -2989,7 +2998,8 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
 
         // Measure system keyboard size when switching away from it,
         // but only if we don't know the height for this orientation yet.
-        if  desiredKeyboardType == .system,
+        if
+            desiredKeyboardType == .system,
             inputTextView.isFirstResponder,
             !CustomKeyboard.hasCachedHeight(forTraitCollection: traitCollection)
         {
@@ -3037,7 +3047,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
 
     private func restoreDesiredKeyboardIfNecessary() {
         AssertIsOnMainThread()
-        if desiredKeyboardType != .system && !inputTextView.isFirstResponder {
+        if desiredKeyboardType != .system, !inputTextView.isFirstResponder {
             beginEditingMessage()
         }
     }
@@ -3066,7 +3076,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         ensureButtonVisibility(withAnimation: false, doLayout: false)
     }
 
-    public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+    override public func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
 
         if #unavailable(iOS 26), let legacyBackgroundView, let legacyBackgroundBlurView {
@@ -3110,7 +3120,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
 extension ConversationInputToolbar {
 
     private func cameraButtonPressed() {
-        guard let inputToolbarDelegate = inputToolbarDelegate else {
+        guard let inputToolbarDelegate else {
             owsFailDebug("inputToolbarDelegate == nil")
             return
         }
@@ -3131,7 +3141,7 @@ extension ConversationInputToolbar {
     }
 
     private func sendButtonPressed() {
-        guard let inputToolbarDelegate = inputToolbarDelegate else {
+        guard let inputToolbarDelegate else {
             owsFailDebug("inputToolbarDelegate == nil")
             return
         }
@@ -3139,7 +3149,7 @@ extension ConversationInputToolbar {
         guard !isShowingVoiceMemoUI else {
             voiceMemoRecordingState = .idle
 
-            guard let voiceMemoDraft = voiceMemoDraft else {
+            guard let voiceMemoDraft else {
                 inputToolbarDelegate.voiceMemoGestureDidComplete()
                 return
             }
@@ -3188,7 +3198,7 @@ extension ConversationInputToolbar: ConversationTextViewToolbarDelegate {
         let newHeight = CGFloat.clamp(
             contentSize.height.rounded(),
             min: LayoutMetrics.minTextViewHeight,
-            max: UIDevice.current.isIPad ? LayoutMetrics.maxTextViewHeightIpad : LayoutMetrics.maxTextViewHeight
+            max: UIDevice.current.isIPad ? LayoutMetrics.maxTextViewHeightIpad : LayoutMetrics.maxTextViewHeight,
         )
 
         guard newHeight != textViewHeight else { return }
@@ -3205,7 +3215,7 @@ extension ConversationInputToolbar: ConversationTextViewToolbarDelegate {
             let animator = UIViewPropertyAnimator(
                 duration: ConversationInputToolbar.heightChangeAnimationDuration,
                 springDamping: 1,
-                springResponse: 0.25
+                springResponse: 0.25,
             )
             animator.addAnimations {
                 self.invalidateIntrinsicContentSize()

@@ -13,7 +13,7 @@ class BlockListViewController: OWSTableViewController2 {
 
         title = NSLocalizedString(
             "SETTINGS_BLOCK_LIST_TITLE",
-            comment: "Label for the block list section of the settings view"
+            comment: "Label for the block list section of the settings view",
         )
     }
 
@@ -36,18 +36,18 @@ class BlockListViewController: OWSTableViewController2 {
             OWSTableItem.disclosureItem(
                 withText: NSLocalizedString(
                     "SETTINGS_BLOCK_LIST_ADD_BUTTON",
-                    comment: "A label for the 'add phone number' button in the block list table."
+                    comment: "A label for the 'add phone number' button in the block list table.",
                 ),
                 actionBlock: { [weak self] in
                     let viewController = AddToBlockListViewController()
                     viewController.delegate = self
                     self?.navigationController?.pushViewController(viewController, animated: true)
-                }
-            )
+                },
+            ),
         ])
         sectionAddContact.footerTitle = NSLocalizedString(
             "BLOCK_USER_BEHAVIOR_EXPLANATION",
-            comment: "An explanation of the consequences of blocking another user."
+            comment: "An explanation of the consequences of blocking another user.",
         )
         contents.add(sectionAddContact)
 
@@ -59,7 +59,7 @@ class BlockListViewController: OWSTableViewController2 {
             let contactManager = SSKEnvironment.shared.contactManagerRef
             let addresses = contactManager.sortSignalServiceAddresses(
                 blockingManager.blockedAddresses(transaction: transaction),
-                transaction: transaction
+                transaction: transaction,
             )
             let groups: [(groupId: Data, groupName: String, groupModel: TSGroupModel?, groupAvatarImage: UIImage?)]
             groups = ((try? blockingManager.blockedGroupIds(transaction: transaction)) ?? []).map { groupId in
@@ -73,7 +73,7 @@ class BlockListViewController: OWSTableViewController2 {
                     return avatarBuilder.defaultAvatarImage(
                         forGroupId: groupId,
                         diameterPoints: AvatarBuilder.standardAvatarSizePoints,
-                        transaction: transaction
+                        transaction: transaction,
                     )
                 }()
                 return (groupId, groupName, groupModel, groupAvatarImage)
@@ -97,7 +97,7 @@ class BlockListViewController: OWSTableViewController2 {
                     let cell = tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.reuseIdentifier) as! ContactTableViewCell
                     let config = ContactCellConfiguration(
                         address: address,
-                        localUserDisplayMode: .asUser
+                        localUserDisplayMode: .asUser,
                     )
                     if self != nil {
                         SSKEnvironment.shared.databaseStorageRef.read { transaction in
@@ -115,21 +115,21 @@ class BlockListViewController: OWSTableViewController2 {
                             self.updateContactList(reloadTableView: true)
                         }
                     }
-                }
+                },
             )
         }
         if !contactsSectionItems.isEmpty {
             contents.add(OWSTableSection(
                 title: NSLocalizedString(
                     "BLOCK_LIST_BLOCKED_USERS_SECTION",
-                    comment: "Section header for users that have been blocked"
+                    comment: "Section header for users that have been blocked",
                 ),
-                items: contactsSectionItems
+                items: contactsSectionItems,
             ))
         }
 
         // Groups
-        let groupsSectionItems = groups.map { (groupId, groupName, groupModel, groupAvatarImage) in
+        let groupsSectionItems = groups.map { groupId, groupName, groupModel, groupAvatarImage in
             return OWSTableItem(
                 customCellBlock: {
                     let cell = AvatarTableViewCell()
@@ -143,16 +143,16 @@ class BlockListViewController: OWSTableViewController2 {
                             self.updateContactList(reloadTableView: true)
                         }
                     }
-                }
+                },
             )
         }
         if !groupsSectionItems.isEmpty {
             contents.add(OWSTableSection(
                 title: NSLocalizedString(
                     "BLOCK_LIST_BLOCKED_GROUPS_SECTION",
-                    comment: "Section header for groups that have been blocked"
+                    comment: "Section header for groups that have been blocked",
                 ),
-                items: groupsSectionItems
+                items: groupsSectionItems,
             ))
         }
 

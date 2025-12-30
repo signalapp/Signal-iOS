@@ -10,14 +10,16 @@ import SignalServiceKit
 import SignalUI
 
 enum CallMemberVisualContext: Equatable {
-    case videoGrid, videoOverflow, speaker
+    case videoGrid
+    case videoOverflow
+    case speaker
 }
 
 protocol CallMemberComposableView: UIView {
     func configure(
         call: SignalCall,
         isFullScreen: Bool,
-        remoteGroupMemberDeviceState: RemoteDeviceState?
+        remoteGroupMemberDeviceState: RemoteDeviceState?,
     )
     func rotateForPhoneOrientation(_ rotationAngle: CGFloat)
     func updateDimensions()
@@ -35,7 +37,7 @@ class CallMemberView: UIView {
     /// this view's layer to animate (see `animatePip` method) properly with this setup.
     /// So instead, the view that instantiates a `CallMemberView` also instantiates
     /// `CallMemberVideoView` and arranges the two as siblings in the view hierarchy. In
-    /// somewhat of an architectural hack, `CallMemberView` still manages updates an 
+    /// somewhat of an architectural hack, `CallMemberView` still manages updates an
     /// animations of `_associatedCallMemberVideoView`.
     private let _associatedCallMemberVideoView: CallMemberVideoView
     private var composableViews = [CallMemberComposableView]()
@@ -65,19 +67,19 @@ class CallMemberView: UIView {
         case .local, .remoteInIndividual:
             orderedComposableViews = [
                 callMemberCameraOffView,
-                callMemberChromeOverlayView
+                callMemberChromeOverlayView,
             ]
         case .remoteInGroup:
             orderedComposableViews = [
                 callMemberCameraOffView,
                 callMemberWaitingAndErrorView,
-                callMemberChromeOverlayView
+                callMemberChromeOverlayView,
             ]
         }
 
         let tapGestureRecognizer = UITapGestureRecognizer(
             target: self,
-            action: #selector(callMemberViewWasTapped)
+            action: #selector(callMemberViewWasTapped),
         )
         self.addGestureRecognizer(tapGestureRecognizer)
 
@@ -94,7 +96,7 @@ class CallMemberView: UIView {
             self,
             selector: #selector(updateOrientationForPhone),
             name: CallService.phoneOrientationDidChange,
-            object: nil
+            object: nil,
         )
     }
 
@@ -102,7 +104,7 @@ class CallMemberView: UIView {
         let view = super.hitTest(point, with: event)
         if view == self {
             switch self.type {
-            case .remoteInGroup(_), .remoteInIndividual(_):
+            case .remoteInGroup(_), .remoteInIndividual:
                 return nil
             case .local:
                 if self.shouldAllowTapHandling == true {
@@ -145,7 +147,7 @@ class CallMemberView: UIView {
     func configure(
         call: SignalCall,
         isFullScreen: Bool = false,
-        remoteGroupMemberDeviceState: RemoteDeviceState? = nil
+        remoteGroupMemberDeviceState: RemoteDeviceState? = nil,
     ) {
         self.call = call
         self.shouldAllowTapHandling = !isFullScreen
@@ -166,7 +168,7 @@ class CallMemberView: UIView {
             view.configure(
                 call: call,
                 isFullScreen: isFullScreen,
-                remoteGroupMemberDeviceState: remoteGroupMemberDeviceState
+                remoteGroupMemberDeviceState: remoteGroupMemberDeviceState,
             )
         }
     }
@@ -198,7 +200,7 @@ class CallMemberView: UIView {
     func configureRemoteVideo(device: RemoteDeviceState, context: CallMemberVisualContext) {
         self._associatedCallMemberVideoView.configureRemoteVideo(
             device: device,
-            context: context
+            context: context,
         )
     }
 
@@ -328,12 +330,12 @@ extension CallMemberView: UIGestureRecognizerDelegate {
             }
             toFrame = self.enlargedFrame(
                 startingFrame: fromFrame,
-                anchorCorner: nearestCorner
+                anchorCorner: nearestCorner,
             )
         } else {
             toFrame = self.shrunkenFrame(
                 currentFrame: fromFrame,
-                anchorCorner: nearestCorner
+                anchorCorner: nearestCorner,
             )
         }
 
@@ -347,16 +349,16 @@ extension CallMemberView: UIGestureRecognizerDelegate {
         let animator = UIViewPropertyAnimator(
             duration: 0.3,
             springDamping: 1,
-            springResponse: 0.3
+            springResponse: 0.3,
         )
 
-        let scaleX = toFrame.width/fromFrame.width
-        let scaleY = toFrame.height/fromFrame.height
+        let scaleX = toFrame.width / fromFrame.width
+        let scaleY = toFrame.height / fromFrame.height
         animator.addAnimations {
             self.frame = toFrame
             self._associatedCallMemberVideoView.transform = CGAffineTransform(
                 scaleX: scaleX,
-                y: scaleY
+                y: scaleY,
             )
         }
 
@@ -389,7 +391,7 @@ extension CallMemberView: UIGestureRecognizerDelegate {
 
         animator.startAnimation()
 
-        let toCornerRadius = Constants.defaultPipCornerRadius/scaleX
+        let toCornerRadius = Constants.defaultPipCornerRadius / scaleX
         let cornerAnimation = CABasicAnimation(keyPath: #keyPath(CALayer.cornerRadius))
         cornerAnimation.fromValue = Constants.defaultPipCornerRadius
         cornerAnimation.toValue = toCornerRadius
@@ -427,94 +429,94 @@ extension CallMemberView: UIGestureRecognizerDelegate {
             if self.frame.width > self.frame.height {
                 return CGSize(
                     width: Constants.enlargedPipWidthIpadLandscape,
-                    height: Constants.enlargedPipHeightIpadLandscape
+                    height: Constants.enlargedPipHeightIpadLandscape,
                 )
             } else {
                 return CGSize(
                     width: Constants.enlargedPipWidthIpadPortrait,
-                    height: Constants.enlargedPipHeightIpadPortrait
+                    height: Constants.enlargedPipHeightIpadPortrait,
                 )
             }
         } else {
             return CGSize(
                 width: Constants.enlargedPipWidth,
-                height: Constants.enlargedPipHeight
+                height: Constants.enlargedPipHeight,
             )
         }
     }
 
     private func enlargedFrame(
         startingFrame: CGRect,
-        anchorCorner: Corner
+        anchorCorner: Corner,
     ) -> CGRect {
         let enlargedPipSize = enlargedPipSize
         switch anchorCorner {
         case .upperLeft:
             return CGRect(
                 origin: startingFrame.origin,
-                size: CGSize(width: enlargedPipSize.width, height: enlargedPipSize.height)
+                size: CGSize(width: enlargedPipSize.width, height: enlargedPipSize.height),
             )
         case .upperRight:
             return CGRect(
                 x: startingFrame.x - (enlargedPipSize.width - startingFrame.width),
                 y: startingFrame.y,
                 width: enlargedPipSize.width,
-                height: enlargedPipSize.height
+                height: enlargedPipSize.height,
             )
         case .lowerLeft:
             return CGRect(
                 x: startingFrame.x,
                 y: startingFrame.y - (enlargedPipSize.height - startingFrame.height),
                 width: enlargedPipSize.width,
-                height: enlargedPipSize.height
+                height: enlargedPipSize.height,
             )
         case .lowerRight:
             return CGRect(
                 x: startingFrame.x - (enlargedPipSize.width - startingFrame.width),
                 y: startingFrame.y - (enlargedPipSize.height - startingFrame.height),
                 width: enlargedPipSize.width,
-                height: enlargedPipSize.height
+                height: enlargedPipSize.height,
             )
         }
     }
 
     private func shrunkenFrame(
         currentFrame: CGRect,
-        anchorCorner: Corner
+        anchorCorner: Corner,
     ) -> CGRect {
         let newSize = Self.pipSize(
             expandedPipFrame: nil,
-            remoteDeviceCount: animatableLocalMemberViewDelegate?.remoteDeviceCount ?? 1
+            remoteDeviceCount: animatableLocalMemberViewDelegate?.remoteDeviceCount ?? 1,
         )
         switch anchorCorner {
         case .upperLeft:
             return CGRect(
                 origin: currentFrame.origin,
-                size: newSize
+                size: newSize,
             )
         case .upperRight:
             return CGRect(
                 origin: CGPoint(
                     x: currentFrame.x + (currentFrame.width - newSize.width),
-                    y: currentFrame.y
+                    y: currentFrame.y,
                 ),
-                size: newSize
+                size: newSize,
             )
         case .lowerLeft:
             return CGRect(
                 origin: CGPoint(
                     x: currentFrame.x,
-                    y: currentFrame.y + (currentFrame.height - newSize.height)
+                    y: currentFrame.y + (currentFrame.height - newSize.height),
                 ),
-                size: newSize
+                size: newSize,
             )
         case .lowerRight:
             return CGRect(
                 origin: CGPoint(
                     x: currentFrame.x + (currentFrame.width - newSize.width),
-                    y: currentFrame.y + (currentFrame.height - newSize.height)
+                    y: currentFrame.y + (currentFrame.height - newSize.height),
                 ),
-                size: newSize
+                size: newSize,
             )
         }
     }
@@ -528,45 +530,45 @@ extension CallMemberView: UIGestureRecognizerDelegate {
 
     private func nearestCorner(
         innerFrame: CGRect,
-        memberType: MemberType
+        memberType: MemberType,
     ) -> Corner {
         switch memberType {
         case .local:
             guard let outerBounds = self.animatableLocalMemberViewDelegate?.enclosingBounds else { return .upperRight }
             let innerFrameCenter = CGPoint(
-                x: innerFrame.x + innerFrame.width/2.0,
-                y: innerFrame.y + innerFrame.height/2.0
+                x: innerFrame.x + innerFrame.width / 2.0,
+                y: innerFrame.y + innerFrame.height / 2.0,
             )
             let distanceSquaredFromUpperLeft = distanceSquared(
                 x1: innerFrameCenter.x,
                 x2: outerBounds.x,
                 y1: innerFrameCenter.y,
-                y2: outerBounds.y
+                y2: outerBounds.y,
             )
             let distanceSquaredFromUpperRight = distanceSquared(
                 x1: innerFrameCenter.x,
                 x2: outerBounds.width,
                 y1: innerFrameCenter.y,
-                y2: outerBounds.y
+                y2: outerBounds.y,
             )
             let distanceSquaredFromLowerLeft = distanceSquared(
                 x1: innerFrameCenter.x,
                 x2: outerBounds.x,
                 y1: innerFrameCenter.y,
-                y2: outerBounds.height
+                y2: outerBounds.height,
             )
             let distanceSquaredFromLowerRight = distanceSquared(
                 x1: innerFrameCenter.x,
                 x2: outerBounds.width,
                 y1: innerFrameCenter.y,
-                y2: outerBounds.height
+                y2: outerBounds.height,
             )
 
             let choices = [
                 (Corner.upperLeft, distanceSquaredFromUpperLeft),
                 (Corner.upperRight, distanceSquaredFromUpperRight),
                 (Corner.lowerLeft, distanceSquaredFromLowerLeft),
-                (Corner.lowerRight, distanceSquaredFromLowerRight)
+                (Corner.lowerRight, distanceSquaredFromLowerRight),
             ]
 
             var min = CGFloat.infinity
@@ -588,14 +590,14 @@ extension CallMemberView: UIGestureRecognizerDelegate {
         x1: CGFloat,
         x2: CGFloat,
         y1: CGFloat,
-        y2: CGFloat
+        y2: CGFloat,
     ) -> CGFloat {
-        pow((x1 - x2), 2) + pow((y1 - y2), 2)
+        pow(x1 - x2, 2) + pow(y1 - y2, 2)
     }
 
     static func pipSize(
         expandedPipFrame: CGRect?,
-        remoteDeviceCount: Int
+        remoteDeviceCount: Int,
     ) -> CGSize {
         if let expandedPipFrame {
             if UIDevice.current.isIPad {

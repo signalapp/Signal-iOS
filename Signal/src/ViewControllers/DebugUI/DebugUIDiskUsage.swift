@@ -10,7 +10,7 @@ import SignalUI
 
 class DebugUIDiskUsage: DebugUIPage {
 
-    let name =  "Orphans & Disk Usage"
+    let name = "Orphans & Disk Usage"
 
     func section(thread: TSThread?) -> OWSTableSection? {
         return OWSTableSection(title: name, items: [
@@ -31,15 +31,17 @@ class DebugUIDiskUsage: DebugUIPage {
 
     private static func clearAllAttachmentThumbnails() {
         let fileManager = FileManager.default
-        guard let cacheContents = fileManager.enumerator(
-            at: URL(fileURLWithPath: OWSFileSystem.cachesDirectoryPath()),
-            includingPropertiesForKeys: nil,
-            options: [ .skipsSubdirectoryDescendants ],
-            errorHandler: { url, error in
-                Logger.warn("could not visit \(url): \(error)")
-                return true
-            }
-        ) else {
+        guard
+            let cacheContents = fileManager.enumerator(
+                at: URL(fileURLWithPath: OWSFileSystem.cachesDirectoryPath()),
+                includingPropertiesForKeys: nil,
+                options: [.skipsSubdirectoryDescendants],
+                errorHandler: { url, error in
+                    Logger.warn("could not visit \(url): \(error)")
+                    return true
+                },
+            )
+        else {
             Logger.error("Failed to enumerate caches.")
             return
         }

@@ -54,7 +54,7 @@ public struct FileHandleImageSource: OWSImageSource {
             getBytesAtPosition: { info, buffer, offset, byteCount in
                 guard
                     let unmanagedFileHandle = info?.assumingMemoryBound(
-                        to: Unmanaged<FileHandleWrapper>.self
+                        to: Unmanaged<FileHandleWrapper>.self,
                     ).pointee
                 else {
                     return 0
@@ -76,22 +76,24 @@ public struct FileHandleImageSource: OWSImageSource {
             releaseInfo: { info in
                 guard
                     let unmanagedFileHandle = info?.assumingMemoryBound(
-                        to: Unmanaged<FileHandleWrapper>.self
+                        to: Unmanaged<FileHandleWrapper>.self,
                     ).pointee
                 else {
                     return
                 }
                 unmanagedFileHandle.release()
-            }
+            },
         )
 
         var unmanagedFileHandle = Unmanaged.passRetained(fileHandle)
 
-        guard let dataProvider = CGDataProvider(
-            directInfo: &unmanagedFileHandle,
-            size: Int64(byteLength),
-            callbacks: &callbacks
-        ) else {
+        guard
+            let dataProvider = CGDataProvider(
+                directInfo: &unmanagedFileHandle,
+                size: Int64(byteLength),
+                callbacks: &callbacks,
+            )
+        else {
             throw OWSAssertionError("Failed to create data provider")
         }
         return CGImageSourceCreateWithDataProvider(dataProvider, nil)

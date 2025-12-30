@@ -49,7 +49,7 @@ public class ApprovalFooterView: UIView {
     }
 
     private var approvalMode: ApprovalMode {
-        guard let delegate = delegate else {
+        guard let delegate else {
             return .send
         }
         return delegate.approvalMode(self)
@@ -59,6 +59,7 @@ public class ApprovalFooterView: UIView {
         case none
         case active(placeholderText: String)
     }
+
     public var approvalTextMode: ApprovalTextMode = .none {
         didSet {
             if oldValue != approvalTextMode {
@@ -119,7 +120,7 @@ public class ApprovalFooterView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    public override var intrinsicContentSize: CGSize {
+    override public var intrinsicContentSize: CGSize {
         return CGSize.zero
     }
 
@@ -180,19 +181,19 @@ public class ApprovalFooterView: UIView {
         var containerView: UIView = UIView()
         var contentView: UIView = UIView()
 
-        // When we stop using Xcode 16, change var to let and move this
-        // block to the `else` of the iOS 26 availability if statement.
-        ;{
-            let view = UIView()
-            view.backgroundColor = textfieldBackgroundColor
-            view.layer.cornerRadius = 10
-            view.layoutMargins = UIEdgeInsets(hMargin: 8, vMargin: 7)
+            // When we stop using Xcode 16, change var to let and move this
+            // block to the `else` of the iOS 26 availability if statement.
+            ; {
+                let view = UIView()
+                view.backgroundColor = textfieldBackgroundColor
+                view.layer.cornerRadius = 10
+                view.layoutMargins = UIEdgeInsets(hMargin: 8, vMargin: 7)
 
-            self.textFieldBackgroundView = view
+                self.textFieldBackgroundView = view
 
-            containerView = view
-            contentView = view
-        }()
+                containerView = view
+                contentView = view
+            }()
 
 #if compiler(>=6.2)
         if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
@@ -225,10 +226,10 @@ public class ApprovalFooterView: UIView {
 
     var proceedLoadingIndicator = UIActivityIndicatorView(style: .medium)
     lazy var proceedButton: OWSButton = {
-		let button = OWSButton.sendButton(
-            imageName: self.approvalMode.proceedButtonImageName ?? Theme.iconName(.arrowRight)
-		) { [weak self] in
-            guard let self = self else { return }
+        let button = OWSButton.sendButton(
+            imageName: self.approvalMode.proceedButtonImageName ?? Theme.iconName(.arrowRight),
+        ) { [weak self] in
+            guard let self else { return }
             self.delegate?.approvalFooterDelegateDidRequestProceed(self)
         }
 
@@ -265,7 +266,7 @@ public class ApprovalFooterView: UIView {
 
 // MARK: -
 
-fileprivate extension ApprovalMode {
+private extension ApprovalMode {
     var proceedButtonAccessibilityLabel: String? {
         switch self {
         case .next: return CommonStrings.nextButton

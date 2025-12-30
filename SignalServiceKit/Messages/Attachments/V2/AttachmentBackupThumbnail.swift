@@ -21,7 +21,7 @@ public class AttachmentBackupThumbnail {
 
     private init(
         attachment: Attachment,
-        localRelativeFilePathThumbnail: String
+        localRelativeFilePathThumbnail: String,
     ) {
         self.attachment = attachment
         self.localRelativeFilePathThumbnail = localRelativeFilePathThumbnail
@@ -35,7 +35,7 @@ public class AttachmentBackupThumbnail {
         }
         self.init(
             attachment: attachment,
-            localRelativeFilePathThumbnail: thumbnailPath
+            localRelativeFilePathThumbnail: thumbnailPath,
         )
     }
 
@@ -47,7 +47,7 @@ public class AttachmentBackupThumbnail {
         // hmac and digest are validated at download time; no need to revalidate every read.
         return try Cryptography.decryptFileWithoutValidating(
             at: fileURL,
-            metadata: DecryptionMetadata(key: AttachmentKey(combinedKey: attachment.encryptionKey))
+            metadata: DecryptionMetadata(key: AttachmentKey(combinedKey: attachment.encryptionKey)),
         )
     }
 

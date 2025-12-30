@@ -5,8 +5,8 @@
 
 import Foundation
 import SignalServiceKit
-import UIKit
 import SignalUI
+import UIKit
 
 // MARK: - RegistrationChangePhoneNumberConfirmationPresenter
 
@@ -20,11 +20,11 @@ protocol RegistrationChangePhoneNumberConfirmationPresenter: AnyObject {
 
 class RegistrationChangePhoneNumberConfirmationViewController: OWSViewController, OWSNavigationChildController {
 
-    public var preferredNavigationBarStyle: OWSNavigationBarStyle {
+    var preferredNavigationBarStyle: OWSNavigationBarStyle {
         return .solid
     }
 
-    public var navbarBackgroundColorOverride: UIColor? {
+    var navbarBackgroundColorOverride: UIColor? {
         return view.backgroundColor
     }
 
@@ -50,33 +50,33 @@ class RegistrationChangePhoneNumberConfirmationViewController: OWSViewController
     private func reloadTextLabels() {
         let descriptionFormat = OWSLocalizedString(
             "SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_DESCRIPTION_FORMAT",
-            comment: "Format for the description text in the 'change phone number splash' view. Embeds: {{ %1$@ the old phone number, %2$@ the new phone number }}."
+            comment: "Format for the description text in the 'change phone number splash' view. Embeds: {{ %1$@ the old phone number, %2$@ the new phone number }}.",
         )
         let oldPhoneNumberFormatted = PhoneNumber.bestEffortLocalizedPhoneNumber(e164: state.oldE164.stringValue)
         let newPhoneNumberFormatted = PhoneNumber.bestEffortLocalizedPhoneNumber(e164: state.newE164.stringValue)
         let descriptionText = String(
             format: descriptionFormat,
             oldPhoneNumberFormatted,
-            newPhoneNumberFormatted
+            newPhoneNumberFormatted,
         )
         let descriptionAttributedText = NSMutableAttributedString(
             string: descriptionText,
             attributes: [
                 .foregroundColor: UIColor.Signal.secondaryLabel,
-                .font: UIFont.dynamicTypeBody
-            ]
+                .font: UIFont.dynamicTypeBody,
+            ],
         )
         descriptionAttributedText.setAttributes(
-            [ .foregroundColor: UIColor.Signal.label ],
-            forSubstring: oldPhoneNumberFormatted
+            [.foregroundColor: UIColor.Signal.label],
+            forSubstring: oldPhoneNumberFormatted,
         )
         descriptionAttributedText.setAttributes(
-            [ .foregroundColor: UIColor.Signal.label ],
-            forSubstring: newPhoneNumberFormatted
+            [.foregroundColor: UIColor.Signal.label],
+            forSubstring: newPhoneNumberFormatted,
         )
         descriptionLabel.attributedText = descriptionAttributedText
         phoneNumberLabel.text = newPhoneNumberFormatted
-   }
+    }
 
     private lazy var warningLabel: UILabel = {
         let label = UILabel()
@@ -87,16 +87,16 @@ class RegistrationChangePhoneNumberConfirmationViewController: OWSViewController
         return label
     }()
 
-    public init(
+    init(
         state: RegistrationPhoneNumberViewState.ChangeNumberConfirmation,
-        presenter: RegistrationChangePhoneNumberConfirmationPresenter
+        presenter: RegistrationChangePhoneNumberConfirmationPresenter,
     ) {
         self.state = state
         self.presenter = presenter
         super.init()
     }
 
-    public func updateState(_ state: RegistrationPhoneNumberViewState.ChangeNumberConfirmation) {
+    func updateState(_ state: RegistrationPhoneNumberViewState.ChangeNumberConfirmation) {
         self.state = state
         updateContents()
     }
@@ -105,8 +105,10 @@ class RegistrationChangePhoneNumberConfirmationViewController: OWSViewController
         super.viewDidLoad()
 
         view.backgroundColor = .Signal.groupedBackground
-        title = OWSLocalizedString("SETTINGS_CHANGE_PHONE_NUMBER_VIEW_TITLE",
-                                  comment: "Title for the 'change phone number' views in settings.")
+        title = OWSLocalizedString(
+            "SETTINGS_CHANGE_PHONE_NUMBER_VIEW_TITLE",
+            comment: "Title for the 'change phone number' views in settings.",
+        )
 
         // Text
         reloadTextLabels()
@@ -131,21 +133,21 @@ class RegistrationChangePhoneNumberConfirmationViewController: OWSViewController
         let continueButton = UIButton(
             configuration: .largePrimary(title: OWSLocalizedString(
                 "SETTINGS_CHANGE_PHONE_NUMBER_CONFIRM_BUTTON",
-                comment: "Label for the 'confirm change phone number' button in the 'change phone number' views."
+                comment: "Label for the 'confirm change phone number' button in the 'change phone number' views.",
             )),
             primaryAction: UIAction { [weak self] _ in
                 self?.didTapContinue()
-            }
+            },
         )
         continueButton.isEnabled = state.rateLimitedError?.canSubmit(e164: self.state.newE164, dateProvider: Date.provider) ?? true
         let editButton = UIButton(
             configuration: .largeSecondary(title: OWSLocalizedString(
                 "SETTINGS_CHANGE_PHONE_NUMBER_BACK_TO_EDIT_BUTTON",
-                comment: "Label for the 'edit phone number' button in the 'change phone number' views."
+                comment: "Label for the 'edit phone number' button in the 'change phone number' views.",
             )),
             primaryAction: UIAction { [weak self] _ in
                 self?.didTapEdit()
-            }
+            },
         )
 
         let stackView = addStaticContentStackView(arrangedSubviews: [
@@ -153,7 +155,7 @@ class RegistrationChangePhoneNumberConfirmationViewController: OWSViewController
             phoneNumberContainerView,
             warningLabel,
             .vStretchingSpacer(),
-            [ continueButton, editButton ].enclosedInVerticalStackView(isFullWidthButtons: true),
+            [continueButton, editButton].enclosedInVerticalStackView(isFullWidthButtons: true),
         ])
         stackView.spacing = 20
         stackView.setCustomSpacing(12, after: phoneNumberContainerView)
@@ -182,7 +184,7 @@ class RegistrationChangePhoneNumberConfirmationViewController: OWSViewController
         rateLimitErrorTimer = nil
     }
 
-    public override func themeDidChange() {
+    override func themeDidChange() {
         super.themeDidChange()
         updateContents()
     }
@@ -193,7 +195,7 @@ class RegistrationChangePhoneNumberConfirmationViewController: OWSViewController
         let now = Date()
         if
             let rateLimitedError = state.rateLimitedError,
-                !rateLimitedError.canSubmit(e164: self.state.newE164, dateProvider: { now })
+            !rateLimitedError.canSubmit(e164: self.state.newE164, dateProvider: { now })
         {
             warningLabel.text = rateLimitedError.warningLabelText(dateProvider: { now })
             warningLabel.isHiddenInStackView = false
@@ -247,10 +249,10 @@ private class PreviewRegistrationChangePhoneNumberConfirmationPresenter: Registr
             state: RegistrationPhoneNumberViewState.ChangeNumberConfirmation(
                 oldE164: E164("+12395550180")!,
                 newE164: E164("+12395550185")!,
-                rateLimitedError: nil
+                rateLimitedError: nil,
             ),
-            presenter: presenter
-        )
+            presenter: presenter,
+        ),
     )
 }
 

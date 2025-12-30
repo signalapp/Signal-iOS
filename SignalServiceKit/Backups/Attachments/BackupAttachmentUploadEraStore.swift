@@ -36,7 +36,7 @@ public struct BackupAttachmentUploadEraStore {
         kvStore.setString(
             Randomness.generateRandomBytes(32).base64EncodedString(),
             key: StoreKeys.currentUploadEra,
-            transaction: tx
+            transaction: tx,
         )
     }
 }

@@ -33,7 +33,7 @@ class ImageEditorViewController: OWSViewController {
 
     var mode: Mode = .draw {
         didSet {
-            if oldValue != mode && isViewLoaded {
+            if oldValue != mode, isViewLoaded {
                 updateUIForCurrentMode()
             }
         }
@@ -52,7 +52,7 @@ class ImageEditorViewController: OWSViewController {
         } else {
             let screenWidth = min(UIScreen.main.bounds.width, UIScreen.main.bounds.height)
             let inset: CGFloat = UIDevice.current.isPlusSizePhone ? 20 : 16
-            return screenWidth - 2*inset
+            return screenWidth - 2 * inset
         }
     }()
 
@@ -65,6 +65,7 @@ class ImageEditorViewController: OWSViewController {
         toolbar.strokeTypeButton.addTarget(self, action: #selector(strokeTypeButtonTapped(sender:)), for: .touchUpInside)
         return toolbar
     }()
+
     lazy var drawToolGestureRecognizer: ImageEditorPanGestureRecognizer = {
         let gestureRecognizer = ImageEditorPanGestureRecognizer(target: self, action: #selector(handleDrawToolGesture(_:)))
         gestureRecognizer.maximumNumberOfTouches = 1
@@ -82,8 +83,10 @@ class ImageEditorViewController: OWSViewController {
         drawAnywhereHint.textAlignment = .center
         drawAnywhereHint.numberOfLines = 0
         drawAnywhereHint.lineBreakMode = .byWordWrapping
-        drawAnywhereHint.text = OWSLocalizedString("IMAGE_EDITOR_BLUR_HINT",
-                                                   comment: "The image editor hint that you can draw blur")
+        drawAnywhereHint.text = OWSLocalizedString(
+            "IMAGE_EDITOR_BLUR_HINT",
+            comment: "The image editor hint that you can draw blur",
+        )
         drawAnywhereHint.layer.shadowColor = UIColor.black.cgColor
         drawAnywhereHint.layer.shadowRadius = 2
         drawAnywhereHint.layer.shadowOpacity = 0.66
@@ -93,9 +96,10 @@ class ImageEditorViewController: OWSViewController {
         stackView.alignment = .center
         stackView.axis = .vertical
         stackView.spacing = 14
-        stackView.addArrangedSubviews([ faceBlurContainer, drawAnywhereHint ])
+        stackView.addArrangedSubviews([faceBlurContainer, drawAnywhereHint])
         return stackView
     }()
+
     lazy var faceBlurContainer: UIView = {
         let containerView = PillView()
         containerView.layoutMargins = UIEdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 8)
@@ -105,12 +109,14 @@ class ImageEditorViewController: OWSViewController {
         blurBackgroundView.autoPinEdgesToSuperviewEdges()
 
         let autoBlurLabel = UILabel()
-        autoBlurLabel.text = OWSLocalizedString("IMAGE_EDITOR_BLUR_SETTING",
-                                                comment: "The image editor setting to blur faces")
+        autoBlurLabel.text = OWSLocalizedString(
+            "IMAGE_EDITOR_BLUR_SETTING",
+            comment: "The image editor setting to blur faces",
+        )
         autoBlurLabel.font = .dynamicTypeSubheadlineClamped
         autoBlurLabel.textColor = Theme.darkThemePrimaryColor
 
-        let stackView = UIStackView(arrangedSubviews: [ autoBlurLabel, faceBlurSwitch ])
+        let stackView = UIStackView(arrangedSubviews: [autoBlurLabel, faceBlurSwitch])
         stackView.spacing = 12
         stackView.alignment = .center
         stackView.axis = .horizontal
@@ -119,12 +125,14 @@ class ImageEditorViewController: OWSViewController {
 
         return containerView
     }()
+
     lazy var faceBlurSwitch: UISwitch = {
         let faceBlurSwitch = UISwitch()
         faceBlurSwitch.addTarget(self, action: #selector(didToggleAutoBlur), for: .valueChanged)
         faceBlurSwitch.isOn = currentAutoBlurItem != nil
         return faceBlurSwitch
     }()
+
     lazy var blurToolGestureRecognizer: ImageEditorPanGestureRecognizer = {
         let gestureRecognizer = ImageEditorPanGestureRecognizer(target: self, action: #selector(handleBlurToolGesture(_:)))
         gestureRecognizer.maximumNumberOfTouches = 1
@@ -132,6 +140,7 @@ class ImageEditorViewController: OWSViewController {
         gestureRecognizer.delegate = self
         return gestureRecognizer
     }()
+
     // We persist an auto blur identifier for this session so
     // we can keep the toggle switch in sync with undo/redo behavior
     static let autoBlurItemIdentifier = "autoBlur"
@@ -149,6 +158,7 @@ class ImageEditorViewController: OWSViewController {
         slider.addTarget(self, action: #selector(handleSliderValueChanged(slider:)), for: .valueChanged)
         return slider
     }()
+
     lazy var strokeWidthSliderContainer = UIView()
     lazy var strokeWidthPreviewDot: UIView = {
         let view = CircleView()
@@ -158,6 +168,7 @@ class ImageEditorViewController: OWSViewController {
         view.autoPinToSquareAspectRatio()
         return view
     }()
+
     var strokeWidthPreviewDotSize: NSLayoutConstraint?
     var strokeWidthSliderIsTrackingObservation: NSKeyValueObservation?
     var strokeWidthSliderRevealed = false
@@ -171,16 +182,20 @@ class ImageEditorViewController: OWSViewController {
             updateStrokeWidthPreviewColor()
         }
     }
+
     var currentStroke: ImageEditorStrokeItem? {
         didSet {
             updateControlsVisibility()
             updateTopBar()
         }
     }
+
     var currentStrokeSamples = [ImageEditorStrokeItem.StrokeSample]()
     func currentStrokeUnitWidth() -> CGFloat {
-        let unitStrokeWidth = ImageEditorStrokeItem.unitStrokeWidth(forStrokeType: currentStrokeType,
-                                                                    widthAdjustmentFactor: CGFloat(strokeWidthSlider.value))
+        let unitStrokeWidth = ImageEditorStrokeItem.unitStrokeWidth(
+            forStrokeType: currentStrokeType,
+            widthAdjustmentFactor: CGFloat(strokeWidthSlider.value),
+        )
         return unitStrokeWidth / model.currentTransform().scaling
     }
 
@@ -196,11 +211,13 @@ class ImageEditorViewController: OWSViewController {
         view.alpha = 0
         return view
     }()
+
     lazy var textView: MediaTextView = {
         let textView = MediaTextView()
         textView.delegate = self
         return textView
     }()
+
     lazy var textViewWrapperView = UIView()
     lazy var textViewBackgroundView = UIView()
     lazy var textViewAccessoryToolbar: TextStylingToolbar = {
@@ -275,7 +292,7 @@ class ImageEditorViewController: OWSViewController {
 
         transitionUI(toState: .final, animated: true) { finished in
             guard finished else { return }
-            if self.startEditingTextOnViewAppear && self.canBeginTextEditingOnViewAppear {
+            if self.startEditingTextOnViewAppear, self.canBeginTextEditingOnViewAppear {
                 self.beginTextEditing()
             }
             self.startEditingTextOnViewAppear = false
@@ -338,17 +355,19 @@ class ImageEditorViewController: OWSViewController {
 
     private func setControls(hidden: Bool, animated: Bool, slideButtonsInOut: Bool, completion: ((Bool) -> Void)? = nil) {
         if animated {
-            UIView.animate(withDuration: 0.15,
-                           animations: {
-                self.setControls(hidden: hidden, slideButtonsInOut: slideButtonsInOut)
+            UIView.animate(
+                withDuration: 0.15,
+                animations: {
+                    self.setControls(hidden: hidden, slideButtonsInOut: slideButtonsInOut)
 
-                // Animate layout changes made within bottomBar.setControls(hidden:).
-                if slideButtonsInOut {
-                    self.bottomBar.setNeedsDisplay()
-                    self.bottomBar.layoutIfNeeded()
-                }
-            },
-                           completion: completion)
+                    // Animate layout changes made within bottomBar.setControls(hidden:).
+                    if slideButtonsInOut {
+                        self.bottomBar.setNeedsDisplay()
+                        self.bottomBar.layoutIfNeeded()
+                    }
+                },
+                completion: completion,
+            )
         } else {
             setControls(hidden: hidden, slideButtonsInOut: slideButtonsInOut)
             completion?(true)
@@ -445,17 +464,23 @@ extension ImageEditorViewController {
     }
 
     private func askToDiscardAllChanges(_ completionHandler: (() -> Void)?) {
-        let actionSheetTitle = OWSLocalizedString("MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_TITLE",
-                                                  comment: "Media Editor: Title for the 'Discard Changes' confirmation prompt.")
-        let actionSheetMessage = OWSLocalizedString("MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_MESSAGE",
-                                                    comment: "Media Editor: Message for the 'Discard Changes' confirmation prompt.")
-        let discardChangesButton = OWSLocalizedString("MEDIA_EDITOR_DISCARD_ALL_BUTTON",
-                                                      comment: "Media Editor: Title for the button in 'Discard Changes' confirmation prompt.")
+        let actionSheetTitle = OWSLocalizedString(
+            "MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_TITLE",
+            comment: "Media Editor: Title for the 'Discard Changes' confirmation prompt.",
+        )
+        let actionSheetMessage = OWSLocalizedString(
+            "MEDIA_EDITOR_DISCARD_ALL_CONFIRMATION_MESSAGE",
+            comment: "Media Editor: Message for the 'Discard Changes' confirmation prompt.",
+        )
+        let discardChangesButton = OWSLocalizedString(
+            "MEDIA_EDITOR_DISCARD_ALL_BUTTON",
+            comment: "Media Editor: Title for the button in 'Discard Changes' confirmation prompt.",
+        )
         let actionSheet = ActionSheetController(title: actionSheetTitle, message: actionSheetMessage)
         actionSheet.overrideUserInterfaceStyle = .dark
         actionSheet.addAction(ActionSheetAction(title: discardChangesButton, style: .destructive, handler: { _ in
             self.clearAll()
-            if let completionHandler = completionHandler {
+            if let completionHandler {
                 completionHandler()
             }
         }))
@@ -542,31 +567,31 @@ extension ImageEditorViewController: ImageEditorBottomBarButtonProvider {
     var middleButtons: [UIButton] {
         let penButton = RoundMediaButton(
             image: UIImage(imageLiteralResourceName: "edit-28"),
-            backgroundStyle: .solid(.clear)
+            backgroundStyle: .solid(.clear),
         )
         penButton.tag = Mode.draw.rawValue
         penButton.addTarget(self, action: #selector(didTapPen(sender:)), for: .touchUpInside)
 
         let textButton = RoundMediaButton(
             image: UIImage(imageLiteralResourceName: "text-28"),
-            backgroundStyle: .solid(.clear)
+            backgroundStyle: .solid(.clear),
         )
         textButton.addTarget(self, action: #selector(didTapAddText(sender:)), for: .touchUpInside)
 
         let stickerButton = RoundMediaButton(
             image: UIImage(imageLiteralResourceName: "sticker-smiley-28"),
-            backgroundStyle: .solid(.clear)
+            backgroundStyle: .solid(.clear),
         )
         stickerButton.addTarget(self, action: #selector(didTapAddSticker(sender:)), for: .touchUpInside)
 
         let blurButton = RoundMediaButton(
             image: UIImage(imageLiteralResourceName: "blur-28"),
-            backgroundStyle: .solid(.clear)
+            backgroundStyle: .solid(.clear),
         )
         blurButton.tag = Mode.blur.rawValue
         blurButton.addTarget(self, action: #selector(didTapBlur(sender:)), for: .touchUpInside)
 
-        let buttons = [ penButton, textButton, stickerButton, blurButton ]
+        let buttons = [penButton, textButton, stickerButton, blurButton]
         for button in buttons {
             button.setBackgroundColor(.ows_white, for: .highlighted)
             button.setBackgroundColor(.ows_white, for: .selected)

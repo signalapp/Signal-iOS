@@ -61,7 +61,7 @@ public class GroupCallManager {
 
     public init(
         currentCallProvider: any CurrentCallProvider,
-        groupCallPeekClient: GroupCallPeekClient
+        groupCallPeekClient: GroupCallPeekClient,
     ) {
         self.currentCallProvider = currentCallProvider
         self.groupCallPeekClient = groupCallPeekClient
@@ -69,7 +69,7 @@ public class GroupCallManager {
 
     public func peekGroupCallAndUpdateThread(
         forGroupId groupId: GroupIdentifier,
-        peekTrigger: PeekTrigger
+        peekTrigger: PeekTrigger,
     ) async {
         logger.info("Peek requested for group \(groupId) with trigger: \(peekTrigger)")
 
@@ -114,7 +114,7 @@ public class GroupCallManager {
                 await self.upsertPlaceholderGroupCallModelsIfNecessary(
                     eraId: eraId,
                     triggerEventTimestamp: messageTimestamp,
-                    groupId: groupId
+                    groupId: groupId,
                 )
             }
 
@@ -149,7 +149,7 @@ public class GroupCallManager {
                         peekInfo: info,
                         groupId: groupId,
                         triggerEventTimestamp: peekTrigger.timestamp,
-                        tx: tx
+                        tx: tx,
                     )
                 }
             } else {
@@ -174,7 +174,7 @@ public class GroupCallManager {
         peekInfo: PeekInfo,
         groupId: GroupIdentifier,
         triggerEventTimestamp: UInt64,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         let currentCallId: CallId? = peekInfo.callId
 
@@ -188,7 +188,7 @@ public class GroupCallManager {
         let interactionForCurrentCall = self.cleanUpUnendedCallMessagesAsNecessary(
             currentCallId: currentCallId,
             groupThread: groupThread,
-            tx: tx
+            tx: tx,
         )
 
         guard
@@ -219,18 +219,19 @@ public class GroupCallManager {
             switch self.callRecordStore.fetch(
                 callId: currentCallId.rawValue,
                 conversationId: .thread(threadRowId: groupThreadRowId),
-                tx: tx
+                tx: tx,
             ) {
             case .matchNotFound:
                 return .notFound
             case .matchDeleted:
                 return .deleted
             case .matchFound(let existingCallRecordForCallId):
-                if let associatedInteraction: OWSGroupCallMessage = self.interactionStore
-                    .fetchAssociatedInteraction(
-                        callRecord: existingCallRecordForCallId,
-                        tx: tx
-                    )
+                if
+                    let associatedInteraction: OWSGroupCallMessage = self.interactionStore
+                        .fetchAssociatedInteraction(
+                            callRecord: existingCallRecordForCallId,
+                            tx: tx,
+                        )
                 {
                     return .found(associatedInteraction)
                 }
@@ -251,7 +252,7 @@ public class GroupCallManager {
                 creatorAci: creatorAci,
                 callId: currentCallId.rawValue,
                 groupThreadRowId: groupThreadRowId,
-                tx: tx
+                tx: tx,
             )
 
             if wasOldMessageEmpty {
@@ -260,7 +261,7 @@ public class GroupCallManager {
                     joinedMemberAcis: joinedMemberAcis,
                     creatorAci: creatorAci,
                     groupThread: groupThread,
-                    tx: tx
+                    tx: tx,
                 )
             }
         case .notFound where joinedMemberAcis.isEmpty:
@@ -273,7 +274,7 @@ public class GroupCallManager {
                 triggerEventTimestamp: triggerEventTimestamp,
                 groupThread: groupThread,
                 groupThreadRowId: groupThreadRowId,
-                tx: tx
+                tx: tx,
             )
 
             postUserNotificationIfNecessary(
@@ -281,7 +282,7 @@ public class GroupCallManager {
                 joinedMemberAcis: joinedMemberAcis,
                 creatorAci: creatorAci,
                 groupThread: groupThread,
-                tx: tx
+                tx: tx,
             )
         case .deleted:
             logger.warn("Not updating group call models for peek – interaction was deleted!")
@@ -295,14 +296,14 @@ public class GroupCallManager {
         triggerEventTimestamp: UInt64,
         groupThread: TSGroupThread,
         groupThreadRowId: Int64,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) -> OWSGroupCallMessage {
         let (newGroupCallInteraction, interactionRowId) = interactionStore.insertGroupCallInteraction(
             joinedMemberAcis: joinedMemberAcis,
             creatorAci: creatorAci,
             groupThread: groupThread,
             callEventTimestamp: triggerEventTimestamp,
-            tx: tx
+            tx: tx,
         )
 
         logger.info("Creating record for group call discovered via peek.")
@@ -312,7 +313,7 @@ public class GroupCallManager {
                 groupCallInteraction: newGroupCallInteraction,
                 groupCallInteractionRowId: interactionRowId,
                 groupThreadRowId: groupThreadRowId,
-                tx: tx
+                tx: tx,
             )
         } catch let error {
             owsFailBeta("Failed to insert call record: \(error)")
@@ -333,7 +334,7 @@ public class GroupCallManager {
     private func cleanUpUnendedCallMessagesAsNecessary(
         currentCallId: CallId?,
         groupThread: TSGroupThread,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) -> OWSGroupCallMessage? {
         enum CallIdProvider {
             case legacyEraId(eraId: String)
@@ -358,18 +359,18 @@ public class GroupCallManager {
                 if let legacyCallInteractionEraId = groupCallInteraction.eraId {
                     return (
                         groupCallInteraction,
-                        .legacyEraId(eraId: legacyCallInteractionEraId)
+                        .legacyEraId(eraId: legacyCallInteractionEraId),
                     )
                 } else if
                     let callRowId = groupCallInteraction.sqliteRowId,
                     let recordForCall = callRecordStore.fetch(
                         interactionRowId: callRowId,
-                        tx: tx
+                        tx: tx,
                     )
                 {
                     return (
                         groupCallInteraction,
-                        .callRecord(callRecord: recordForCall)
+                        .callRecord(callRecord: recordForCall),
                     )
                 }
 
@@ -393,7 +394,7 @@ public class GroupCallManager {
                 groupCallInteraction: unendedCallInteraction,
                 callId: callIdProvider.callId.rawValue,
                 groupThreadRowId: groupThreadRowId,
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -401,7 +402,7 @@ public class GroupCallManager {
             return nil
         }
 
-        let currentCallIdInteractions: [OWSGroupCallMessage] = unendedCalls.compactMap { (message, callIdProvider) in
+        let currentCallIdInteractions: [OWSGroupCallMessage] = unendedCalls.compactMap { message, callIdProvider in
             guard callIdProvider.callId == currentCallId else {
                 return nil
             }
@@ -416,16 +417,20 @@ public class GroupCallManager {
     private func upsertPlaceholderGroupCallModelsIfNecessary(
         eraId: String,
         triggerEventTimestamp: UInt64,
-        groupId: GroupIdentifier
+        groupId: GroupIdentifier,
     ) async {
         await databaseStorage.awaitableWrite { tx in
             guard let groupThread = TSGroupThread.fetch(forGroupId: groupId, tx: tx) else {
                 owsFailDebug("Can't find TSGroupThread that must exist.")
                 return
             }
-            guard !GroupCallInteractionFinder().existsGroupCallMessageForEraId(
-                eraId, thread: groupThread, transaction: tx
-            ) else {
+            guard
+                !GroupCallInteractionFinder().existsGroupCallMessageForEraId(
+                    eraId,
+                    thread: groupThread,
+                    transaction: tx,
+                )
+            else {
                 // It's possible this user had an interaction created for this
                 // call before the introduction of call records here. If so, we
                 // don't want to create a new placeholder.
@@ -442,7 +447,7 @@ public class GroupCallManager {
             switch self.callRecordStore.fetch(
                 callId: callId.rawValue,
                 conversationId: .thread(threadRowId: groupThreadRowId),
-                tx: tx
+                tx: tx,
             ) {
             case .matchDeleted:
                 self.logger.warn("Ignoring: call record was deleted!")
@@ -454,7 +459,7 @@ public class GroupCallManager {
                 self.groupCallRecordManager.updateCallBeganTimestampIfEarlier(
                     existingCallRecord: existingCallRecord,
                     callEventTimestamp: triggerEventTimestamp,
-                    tx: tx
+                    tx: tx,
                 )
             case .matchNotFound:
                 self.logger.info("Inserting placeholder group call message with callId: \(callId)")
@@ -466,7 +471,7 @@ public class GroupCallManager {
                     triggerEventTimestamp: triggerEventTimestamp,
                     groupThread: groupThread,
                     groupThreadRowId: groupThreadRowId,
-                    tx: tx
+                    tx: tx,
                 )
             }
         }
@@ -477,7 +482,7 @@ public class GroupCallManager {
         joinedMemberAcis: [Aci],
         creatorAci: Aci,
         groupThread: TSGroupThread,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         AssertNotOnMainThread()
 
@@ -500,7 +505,7 @@ public class GroupCallManager {
             forPreviewableInteraction: groupCallMessage,
             thread: groupThread,
             wantsSound: true,
-            transaction: tx
+            transaction: tx,
         )
     }
 }

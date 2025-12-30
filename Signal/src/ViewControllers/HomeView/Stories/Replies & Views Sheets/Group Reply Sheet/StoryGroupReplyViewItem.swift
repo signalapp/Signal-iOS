@@ -30,7 +30,7 @@ class StoryGroupReplyViewItem {
         authorDisplayName: String?,
         authorColor: UIColor,
         recipientStatus: MessageReceiptStatus?,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) {
         self.interactionIdentifier = .fromInteraction(message)
         self.interactionUniqueId = message.uniqueId
@@ -38,7 +38,7 @@ class StoryGroupReplyViewItem {
         if !message.wasRemotelyDeleted {
             self.displayableText = DisplayableText.displayableText(
                 withMessageBody: .init(text: message.body ?? "", ranges: message.bodyRanges ?? .empty),
-                transaction: transaction
+                transaction: transaction,
             )
         } else {
             self.displayableText = nil

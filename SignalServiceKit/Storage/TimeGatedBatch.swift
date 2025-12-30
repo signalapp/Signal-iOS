@@ -40,7 +40,7 @@ public enum TimeGatedBatch {
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        block: (T, DBWriteTransaction) throws(E) -> Void
+        block: (T, DBWriteTransaction) throws(E) -> Void,
     ) async throws(E) {
         var isDone = false
         var objectEnumerator = objects.makeIterator()
@@ -131,7 +131,7 @@ public enum TimeGatedBatch {
             errorTxCompletion: errorTxCompletion,
             buildTxContext: { _ throws(E) in DummyTxContext() },
             processBatch: { tx, _ throws(E) in try processBatch(tx) },
-            concludeTx: { _, _ throws(E) in }
+            concludeTx: { _, _ throws(E) in },
         )
     }
 
@@ -182,7 +182,7 @@ public enum TimeGatedBatch {
         buildTxContext: (DBWriteTransaction) throws(E) -> TxContext,
         processBatch: (DBWriteTransaction, inout TxContext) throws(E) -> ProcessBatchResult<DoneResult>,
         concludeTx: (DBWriteTransaction, TxContext) throws(E) -> Void,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws(E) -> ProcessBatchResult<DoneResult> {
         let yieldDeadline = CACurrentMediaTime() + maximumDuration
         var txContext = try buildTxContext(tx)

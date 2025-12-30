@@ -51,8 +51,8 @@ extension DeleteForMeOutgoingSyncMessage.Contents: ValidatableModel {
                 messageDeletes: [
                     Outgoing.MessageDeletes(
                         conversationIdentifier: .threadE164(e164: "+17735550199"),
-                        addressableMessages: [.forTests(author: .aci(aci: ServiceIdUppercaseString(wrappedValue: Aci.constantForTesting("4C3B579D-C6E0-42C3-AEF3-E9B9801D9271"))), sentTimestamp: 1234)]
-                    )
+                        addressableMessages: [.forTests(author: .aci(aci: ServiceIdUppercaseString(wrappedValue: Aci.constantForTesting("4C3B579D-C6E0-42C3-AEF3-E9B9801D9271"))), sentTimestamp: 1234)],
+                    ),
                 ],
                 nilAttachmentDeletes: (),
                 conversationDeletes: [
@@ -60,24 +60,24 @@ extension DeleteForMeOutgoingSyncMessage.Contents: ValidatableModel {
                         conversationIdentifier: .threadServiceId(serviceId: ServiceIdUppercaseString(wrappedValue: Aci.constantForTesting("7A8709AA-B1CA-40B8-89C2-35330E88F2A9"))),
                         mostRecentAddressableMessages: [.forTests(author: .e164(e164: "+17735550198"), sentTimestamp: 5678)],
                         nilNonExpiringAddressableMessages: (),
-                        isFullDelete: true
-                    )
+                        isFullDelete: true,
+                    ),
                 ],
                 localOnlyConversationDelete: [
                     Outgoing.LocalOnlyConversationDelete(
-                        conversationIdentifier: .threadGroupId(groupId: Data(repeating: 4, count: 32))
-                    )
-                ]
+                        conversationIdentifier: .threadGroupId(groupId: Data(repeating: 4, count: 32)),
+                    ),
+                ],
             ),
-            Data(#"{"messageDeletes":[{"addressableMessages":[{"author":{"aci":{"aci":"4C3B579D-C6E0-42C3-AEF3-E9B9801D9271"}},"sentTimestamp":1234}],"conversationIdentifier":{"threadE164":{"e164":"+17735550199"}}}],"localOnlyConversationDelete":[{"conversationIdentifier":{"threadGroupId":{"groupId":"BAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQ="}}}],"conversationDeletes":[{"conversationIdentifier":{"threadServiceId":{"serviceId":"7A8709AA-B1CA-40B8-89C2-35330E88F2A9"}},"mostRecentAddressableMessages":[{"author":{"e164":{"e164":"+17735550198"}},"sentTimestamp":5678}],"isFullDelete":true}]}"#.utf8)
+            Data(#"{"messageDeletes":[{"addressableMessages":[{"author":{"aci":{"aci":"4C3B579D-C6E0-42C3-AEF3-E9B9801D9271"}},"sentTimestamp":1234}],"conversationIdentifier":{"threadE164":{"e164":"+17735550199"}}}],"localOnlyConversationDelete":[{"conversationIdentifier":{"threadGroupId":{"groupId":"BAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQ="}}}],"conversationDeletes":[{"conversationIdentifier":{"threadServiceId":{"serviceId":"7A8709AA-B1CA-40B8-89C2-35330E88F2A9"}},"mostRecentAddressableMessages":[{"author":{"e164":{"e164":"+17735550198"}},"sentTimestamp":5678}],"isFullDelete":true}]}"#.utf8),
         ),
         (
             DeleteForMeOutgoingSyncMessage.Contents(
                 messageDeletes: [
                     Outgoing.MessageDeletes(
                         conversationIdentifier: .threadE164(e164: "+17735550199"),
-                        addressableMessages: [.forTests(author: .aci(aci: ServiceIdUppercaseString(wrappedValue: Aci.constantForTesting("4C3B579D-C6E0-42C3-AEF3-E9B9801D9271"))), sentTimestamp: 1234)]
-                    )
+                        addressableMessages: [.forTests(author: .aci(aci: ServiceIdUppercaseString(wrappedValue: Aci.constantForTesting("4C3B579D-C6E0-42C3-AEF3-E9B9801D9271"))), sentTimestamp: 1234)],
+                    ),
                 ],
                 attachmentDeletes: [
                     Outgoing.AttachmentDelete(
@@ -85,32 +85,32 @@ extension DeleteForMeOutgoingSyncMessage.Contents: ValidatableModel {
                         targetMessage: .forTests(author: .aci(aci: ServiceIdUppercaseString(wrappedValue: Aci.constantForTesting("BF1C5C1B-15DA-4A49-92C7-EFBA8BFFDF4B"))), sentTimestamp: 9001),
                         clientUuid: UUID(uuidString: "C374CDB9-2440-4E39-8FE5-29CD4CB5C812")!,
                         encryptedDigest: Data(repeating: 24, count: 95),
-                        plaintextHash: Data(repeating: 21, count: 92)
-                    )
+                        plaintextHash: Data(repeating: 21, count: 92),
+                    ),
                 ],
                 conversationDeletes: [
                     Outgoing.ConversationDelete(
                         conversationIdentifier: .threadServiceId(serviceId: ServiceIdUppercaseString(wrappedValue: Aci.constantForTesting("7A8709AA-B1CA-40B8-89C2-35330E88F2A9"))),
                         mostRecentAddressableMessages: [.forTests(author: .e164(e164: "+17735550198"), sentTimestamp: 5678)],
                         nilNonExpiringAddressableMessages: (),
-                        isFullDelete: true
-                    )
+                        isFullDelete: true,
+                    ),
                 ],
                 localOnlyConversationDelete: [
                     Outgoing.LocalOnlyConversationDelete(
-                        conversationIdentifier: .threadGroupId(groupId: Data(repeating: 4, count: 32))
-                    )
-                ]
+                        conversationIdentifier: .threadGroupId(groupId: Data(repeating: 4, count: 32)),
+                    ),
+                ],
             ),
-            Data(#"{"messageDeletes":[{"addressableMessages":[{"author":{"aci":{"aci":"4C3B579D-C6E0-42C3-AEF3-E9B9801D9271"}},"sentTimestamp":1234}],"conversationIdentifier":{"threadE164":{"e164":"+17735550199"}}}],"conversationDeletes":[{"conversationIdentifier":{"threadServiceId":{"serviceId":"7A8709AA-B1CA-40B8-89C2-35330E88F2A9"}},"mostRecentAddressableMessages":[{"author":{"e164":{"e164":"+17735550198"}},"sentTimestamp":5678}],"isFullDelete":true}],"localOnlyConversationDelete":[{"conversationIdentifier":{"threadGroupId":{"groupId":"BAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQ="}}}],"attachmentDeletes":[{"clientUuid":"C374CDB9-2440-4E39-8FE5-29CD4CB5C812","plaintextHash":"FRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRU=","encryptedDigest":"GBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBg=","conversationIdentifier":{"threadServiceId":{"serviceId":"D8626C3E-79BB-4665-B7D6-66884F543164"}},"targetMessage":{"author":{"aci":{"aci":"BF1C5C1B-15DA-4A49-92C7-EFBA8BFFDF4B"}},"sentTimestamp":9001}}]}"#.utf8)
+            Data(#"{"messageDeletes":[{"addressableMessages":[{"author":{"aci":{"aci":"4C3B579D-C6E0-42C3-AEF3-E9B9801D9271"}},"sentTimestamp":1234}],"conversationIdentifier":{"threadE164":{"e164":"+17735550199"}}}],"conversationDeletes":[{"conversationIdentifier":{"threadServiceId":{"serviceId":"7A8709AA-B1CA-40B8-89C2-35330E88F2A9"}},"mostRecentAddressableMessages":[{"author":{"e164":{"e164":"+17735550198"}},"sentTimestamp":5678}],"isFullDelete":true}],"localOnlyConversationDelete":[{"conversationIdentifier":{"threadGroupId":{"groupId":"BAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQ="}}}],"attachmentDeletes":[{"clientUuid":"C374CDB9-2440-4E39-8FE5-29CD4CB5C812","plaintextHash":"FRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRU=","encryptedDigest":"GBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBg=","conversationIdentifier":{"threadServiceId":{"serviceId":"D8626C3E-79BB-4665-B7D6-66884F543164"}},"targetMessage":{"author":{"aci":{"aci":"BF1C5C1B-15DA-4A49-92C7-EFBA8BFFDF4B"}},"sentTimestamp":9001}}]}"#.utf8),
         ),
         (
             DeleteForMeOutgoingSyncMessage.Contents(
                 messageDeletes: [
                     Outgoing.MessageDeletes(
                         conversationIdentifier: .threadE164(e164: "+17735550199"),
-                        addressableMessages: [.forTests(author: .aci(aci: ServiceIdUppercaseString(wrappedValue: Aci.constantForTesting("4C3B579D-C6E0-42C3-AEF3-E9B9801D9271"))), sentTimestamp: 1234)]
-                    )
+                        addressableMessages: [.forTests(author: .aci(aci: ServiceIdUppercaseString(wrappedValue: Aci.constantForTesting("4C3B579D-C6E0-42C3-AEF3-E9B9801D9271"))), sentTimestamp: 1234)],
+                    ),
                 ],
                 attachmentDeletes: [
                     Outgoing.AttachmentDelete(
@@ -118,24 +118,24 @@ extension DeleteForMeOutgoingSyncMessage.Contents: ValidatableModel {
                         targetMessage: .forTests(author: .aci(aci: ServiceIdUppercaseString(wrappedValue: Aci.constantForTesting("BF1C5C1B-15DA-4A49-92C7-EFBA8BFFDF4B"))), sentTimestamp: 9001),
                         clientUuid: UUID(uuidString: "C374CDB9-2440-4E39-8FE5-29CD4CB5C812")!,
                         encryptedDigest: Data(repeating: 24, count: 95),
-                        plaintextHash: Data(repeating: 21, count: 92)
-                    )
+                        plaintextHash: Data(repeating: 21, count: 92),
+                    ),
                 ],
                 conversationDeletes: [
                     Outgoing.ConversationDelete(
                         conversationIdentifier: .threadServiceId(serviceId: ServiceIdUppercaseString(wrappedValue: Aci.constantForTesting("7A8709AA-B1CA-40B8-89C2-35330E88F2A9"))),
                         mostRecentAddressableMessages: [.forTests(author: .e164(e164: "+17735550198"), sentTimestamp: 5678)],
                         mostRecentNonExpiringAddressableMessages: [.forTests(author: .e164(e164: "+17735550197"), sentTimestamp: 1337)],
-                        isFullDelete: true
-                    )
+                        isFullDelete: true,
+                    ),
                 ],
                 localOnlyConversationDelete: [
                     Outgoing.LocalOnlyConversationDelete(
-                        conversationIdentifier: .threadGroupId(groupId: Data(repeating: 4, count: 32))
-                    )
-                ]
+                        conversationIdentifier: .threadGroupId(groupId: Data(repeating: 4, count: 32)),
+                    ),
+                ],
             ),
-            Data(#"{"messageDeletes":[{"addressableMessages":[{"author":{"aci":{"aci":"4C3B579D-C6E0-42C3-AEF3-E9B9801D9271"}},"sentTimestamp":1234}],"conversationIdentifier":{"threadE164":{"e164":"+17735550199"}}}],"localOnlyConversationDelete":[{"conversationIdentifier":{"threadGroupId":{"groupId":"BAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQ="}}}],"attachmentDeletes":[{"plaintextHash":"FRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRU=","targetMessage":{"author":{"aci":{"aci":"BF1C5C1B-15DA-4A49-92C7-EFBA8BFFDF4B"}},"sentTimestamp":9001},"encryptedDigest":"GBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBg=","conversationIdentifier":{"threadServiceId":{"serviceId":"D8626C3E-79BB-4665-B7D6-66884F543164"}},"clientUuid":"C374CDB9-2440-4E39-8FE5-29CD4CB5C812"}],"conversationDeletes":[{"mostRecentNonExpiringAddressableMessages":[{"author":{"e164":{"e164":"+17735550197"}},"sentTimestamp":1337}],"conversationIdentifier":{"threadServiceId":{"serviceId":"7A8709AA-B1CA-40B8-89C2-35330E88F2A9"}},"mostRecentAddressableMessages":[{"sentTimestamp":5678,"author":{"e164":{"e164":"+17735550198"}}}],"isFullDelete":true}]}"#.utf8)
+            Data(#"{"messageDeletes":[{"addressableMessages":[{"author":{"aci":{"aci":"4C3B579D-C6E0-42C3-AEF3-E9B9801D9271"}},"sentTimestamp":1234}],"conversationIdentifier":{"threadE164":{"e164":"+17735550199"}}}],"localOnlyConversationDelete":[{"conversationIdentifier":{"threadGroupId":{"groupId":"BAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQ="}}}],"attachmentDeletes":[{"plaintextHash":"FRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRU=","targetMessage":{"author":{"aci":{"aci":"BF1C5C1B-15DA-4A49-92C7-EFBA8BFFDF4B"}},"sentTimestamp":9001},"encryptedDigest":"GBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBgYGBg=","conversationIdentifier":{"threadServiceId":{"serviceId":"D8626C3E-79BB-4665-B7D6-66884F543164"}},"clientUuid":"C374CDB9-2440-4E39-8FE5-29CD4CB5C812"}],"conversationDeletes":[{"mostRecentNonExpiringAddressableMessages":[{"author":{"e164":{"e164":"+17735550197"}},"sentTimestamp":1337}],"conversationIdentifier":{"threadServiceId":{"serviceId":"7A8709AA-B1CA-40B8-89C2-35330E88F2A9"}},"mostRecentAddressableMessages":[{"sentTimestamp":5678,"author":{"e164":{"e164":"+17735550198"}}}],"isFullDelete":true}]}"#.utf8),
         ),
     ]
 

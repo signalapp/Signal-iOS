@@ -70,7 +70,7 @@ enum OWSOrphanDataCleaner {
             let grdbPrimaryDirectoryPath = GRDBDatabaseStorageAdapter.databaseDirUrl(directoryMode: .primary).path
             let grdbHotswapDirectoryPath = GRDBDatabaseStorageAdapter.databaseDirUrl(directoryMode: .hotswapLegacy).path
             let grdbTransferDirectoryPath: String?
-            if GRDBDatabaseStorageAdapter.hasAssignedTransferDirectory && TSAccountManagerObjcBridge.isTransferInProgressWithMaybeTransaction {
+            if GRDBDatabaseStorageAdapter.hasAssignedTransferDirectory, TSAccountManagerObjcBridge.isTransferInProgressWithMaybeTransaction {
                 grdbTransferDirectoryPath = GRDBDatabaseStorageAdapter.databaseDirUrl(directoryMode: .transfer).path
             } else {
                 grdbTransferDirectoryPath = nil
@@ -191,14 +191,14 @@ enum OWSOrphanDataCleaner {
             reactionIds: orphanReactionIds,
             mentionIds: orphanMentionIds,
             fileAndDirectoryPaths: orphanFileAndDirectoryPaths,
-            hasOrphanedPacksOrStickers: hasOrphanedPacksOrStickers
+            hasOrphanedPacksOrStickers: hasOrphanedPacksOrStickers,
         )
     }
 
     /// Finds paths in `baseUrl` not present in `fetchExpectedRelativePaths()`.
     private static func findOrphanedPaths(
         baseUrl: URL,
-        fetchExpectedRelativePaths: (DBReadTransaction) -> Set<String>
+        fetchExpectedRelativePaths: (DBReadTransaction) -> Set<String>,
     ) async -> Set<String> {
         let basePath = baseUrl.path
 
@@ -251,7 +251,7 @@ enum OWSOrphanDataCleaner {
             baseUrl: VoiceMessageInterruptedDraftStore.draftVoiceMessageDirectory,
             fetchExpectedRelativePaths: {
                 VoiceMessageInterruptedDraftStore.allDraftFilePaths(transaction: $0)
-            }
+            },
         )
     }
 

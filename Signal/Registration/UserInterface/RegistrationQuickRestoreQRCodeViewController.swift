@@ -15,8 +15,7 @@ protocol RegistrationQuickRestoreQRCodePresenter: RegistrationMethodPresenter {
     func didReceiveRegistrationMessage(_ message: RegistrationProvisioningMessage)
 }
 
-class RegistrationQuickRestoreQRCodeViewController: BaseQuickRestoreQRCodeViewController
-{
+class RegistrationQuickRestoreQRCodeViewController: BaseQuickRestoreQRCodeViewController {
     private weak var presenter: RegistrationQuickRestoreQRCodePresenter?
 
     init(presenter: RegistrationQuickRestoreQRCodePresenter) {
@@ -39,25 +38,25 @@ class RegistrationQuickRestoreQRCodeViewController: BaseQuickRestoreQRCodeViewCo
             } catch {
                 let title = OWSLocalizedString(
                     "REGISTRATION_SCAN_QR_CODE_FAILED_TITLE",
-                    comment: "Title of error notifying restore failed."
+                    comment: "Title of error notifying restore failed.",
                 )
                 let body = OWSLocalizedString(
                     "REGISTRATION_SCAN_QR_CODE_FAILED_BODY",
-                    comment: "Body of error notifying restore failed."
+                    comment: "Body of error notifying restore failed.",
                 )
                 let sheet = HeroSheetViewController(
                     hero: .circleIcon(
                         icon: .alert,
                         iconSize: 36,
                         tintColor: UIColor.Signal.label,
-                        backgroundColor: UIColor.Signal.background
+                        backgroundColor: UIColor.Signal.background,
                     ),
                     title: title,
                     body: body,
                     primaryButton: .init(title: CommonStrings.okayButton, action: { [weak self] _ in
                         self?.reset()
                         self?.presentedViewController?.dismiss(animated: true)
-                    })
+                    }),
                 )
                 present(sheet, animated: true)
             }

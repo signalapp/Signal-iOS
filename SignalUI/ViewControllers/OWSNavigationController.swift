@@ -61,7 +61,7 @@ open class OWSNavigationController: UINavigationController {
 
     private weak var externalDelegate: UINavigationControllerDelegate?
 
-    public override var delegate: UINavigationControllerDelegate? {
+    override public var delegate: UINavigationControllerDelegate? {
         get {
             return externalDelegate
         }
@@ -87,11 +87,11 @@ open class OWSNavigationController: UINavigationController {
             self,
             selector: #selector(themeDidChange),
             name: .themeDidChange,
-            object: nil
+            object: nil,
         )
     }
 
-    public override convenience init(rootViewController: UIViewController) {
+    override public convenience init(rootViewController: UIViewController) {
         self.init()
         self.pushViewController(rootViewController, animated: false)
     }
@@ -101,7 +101,7 @@ open class OWSNavigationController: UINavigationController {
         fatalError("init(coder:) has not been implemented")
     }
 
-    open override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+    override open var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         if let delegateOrientations = self.delegate?.navigationControllerSupportedInterfaceOrientations?(self) {
             return delegateOrientations
         } else if let visibleViewController = self.visibleViewController {
@@ -111,7 +111,7 @@ open class OWSNavigationController: UINavigationController {
         }
     }
 
-    open override func viewDidLoad() {
+    override open func viewDidLoad() {
         super.viewDidLoad()
 
         interactivePopGestureRecognizer?.delegate = self
@@ -122,7 +122,7 @@ open class OWSNavigationController: UINavigationController {
 #endif
     }
 
-    open override func viewWillAppear(_ animated: Bool) {
+    override open func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
         updateNavbarAppearance(animated: animated)
@@ -135,7 +135,7 @@ open class OWSNavigationController: UINavigationController {
         updateNavbarAppearance()
     }
 
-    public override var preferredStatusBarStyle: UIStatusBarStyle {
+    override public var preferredStatusBarStyle: UIStatusBarStyle {
         if let forcedStyle = owsNavigationBar?.forcedStatusBarStyle {
             return forcedStyle
         }
@@ -152,7 +152,7 @@ open class OWSNavigationController: UINavigationController {
     /// Changes will be automatically applied when a view controller is pushed or popped;
     /// this method is just for use if state changes while the view is on screen.
     public func updateNavbarAppearance(animated: Bool = UIView.areAnimationsEnabled) {
-        if let topViewController = topViewController {
+        if let topViewController {
             updateNavbarAppearance(for: topViewController, fromViewControllerTransition: false, animated: animated)
         }
     }
@@ -160,7 +160,7 @@ open class OWSNavigationController: UINavigationController {
     private func updateNavbarAppearance(
         for viewController: UIViewController,
         fromViewControllerTransition: Bool,
-        animated: Bool
+        animated: Bool,
     ) {
         // If currently presenting or dismissing, animating these changes looks off.
         // In these cases, force the changes to apply un-animated.
@@ -213,7 +213,7 @@ open class OWSNavigationController: UINavigationController {
             options: .transitionCrossDissolve,
             animations: {
                 super.setNavigationBarHidden(hidden, animated: false)
-            }
+            },
         )
     }
 }
@@ -281,7 +281,7 @@ extension OWSNavigationController: UINavigationControllerDelegate {
     public func navigationController(
         _ navigationController: UINavigationController,
         willShow viewController: UIViewController,
-        animated: Bool
+        animated: Bool,
     ) {
         // The `viewController` parameter is non-Optional. It is annotated as such
         // in Apple's header. However, on iOS 16, they pass `nil`, and that causes
@@ -296,7 +296,7 @@ extension OWSNavigationController: UINavigationControllerDelegate {
     public func navigationController(
         _ navigationController: UINavigationController,
         didShow viewController: UIViewController,
-        animated: Bool
+        animated: Bool,
     ) {
         externalDelegate?.navigationController?(navigationController, didShow: viewController, animated: animated)
     }
@@ -305,39 +305,39 @@ extension OWSNavigationController: UINavigationControllerDelegate {
         _ navigationController: UINavigationController,
         animationControllerFor operation: UINavigationController.Operation,
         from fromVC: UIViewController,
-        to toVC: UIViewController
+        to toVC: UIViewController,
     ) -> UIViewControllerAnimatedTransitioning? {
         return externalDelegate?.navigationController?(
             navigationController,
             animationControllerFor: operation,
             from: fromVC,
-            to: toVC
+            to: toVC,
         )
     }
 
     public func navigationController(
         _ navigationController: UINavigationController,
-        interactionControllerFor animationController: UIViewControllerAnimatedTransitioning
+        interactionControllerFor animationController: UIViewControllerAnimatedTransitioning,
     ) -> UIViewControllerInteractiveTransitioning? {
         return externalDelegate?.navigationController?(
             navigationController,
-            interactionControllerFor: animationController
+            interactionControllerFor: animationController,
         )
     }
 
     public func navigationControllerPreferredInterfaceOrientationForPresentation(
-        _ navigationController: UINavigationController
+        _ navigationController: UINavigationController,
     ) -> UIInterfaceOrientation {
         return externalDelegate?.navigationControllerPreferredInterfaceOrientationForPresentation?(
-            navigationController
+            navigationController,
         ) ?? .portrait
     }
 
     public func navigationControllerSupportedInterfaceOrientations(
-        _ navigationController: UINavigationController
+        _ navigationController: UINavigationController,
     ) -> UIInterfaceOrientationMask {
         return externalDelegate?.navigationControllerSupportedInterfaceOrientations?(
-            navigationController
+            navigationController,
         ) ?? supportedInterfaceOrientations
     }
 }

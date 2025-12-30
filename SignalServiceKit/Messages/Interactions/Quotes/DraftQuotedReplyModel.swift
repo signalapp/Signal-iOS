@@ -42,7 +42,7 @@ public class DraftQuotedReplyModel {
         /// be thumbnail-ed
         case attachmentStub(
             MessageBody?,
-            QuotedMessageAttachmentReference.Stub
+            QuotedMessageAttachmentReference.Stub,
         )
         /// The original message had an attachment that can be thumbnail-ed,
         /// though it may not actually be thumbnail-ed *yet*.
@@ -53,7 +53,7 @@ public class DraftQuotedReplyModel {
             MessageBody?,
             attachmentRef: AttachmentReference,
             attachment: Attachment,
-            thumbnailImage: UIImage?
+            thumbnailImage: UIImage?,
         )
 
         // MARK: - Edit
@@ -63,7 +63,7 @@ public class DraftQuotedReplyModel {
         case edit(
             TSMessage,
             TSQuotedMessage,
-            content: Content
+            content: Content,
         )
 
         // MARK: - Convenience
@@ -121,12 +121,12 @@ public class DraftQuotedReplyModel {
 
     public let content: Content
 
-    internal init(
+    init(
         originalMessageTimestamp: UInt64?,
         originalMessageAuthorAddress: SignalServiceAddress,
         isOriginalMessageAuthorLocalUser: Bool,
         threadUniqueId: String,
-        content: Content
+        content: Content,
     ) {
         self.originalMessageTimestamp = originalMessageTimestamp
         self.originalMessageAuthorAddress = originalMessageAuthorAddress
@@ -138,7 +138,7 @@ public class DraftQuotedReplyModel {
     public static func fromOriginalPaymentMessage(
         _ originalMessage: TSMessage,
         amountString: String,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> DraftQuotedReplyModel? {
         let authorAddress: SignalServiceAddress? = {
             if originalMessage.isOutgoing {
@@ -159,7 +159,7 @@ public class DraftQuotedReplyModel {
             originalMessageAuthorAddress: authorAddress,
             isOriginalMessageAuthorLocalUser: originalMessage.isOutgoing,
             threadUniqueId: originalMessage.uniqueThreadId,
-            content: .payment(amountString)
+            content: .payment(amountString),
         )
     }
 
@@ -168,7 +168,7 @@ public class DraftQuotedReplyModel {
         replyMessage: TSMessage,
         quotedReply: TSQuotedMessage,
         amountString: String,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> DraftQuotedReplyModel? {
         let authorAddress: SignalServiceAddress? = {
             if originalMessage.isOutgoing {
@@ -189,7 +189,7 @@ public class DraftQuotedReplyModel {
             originalMessageAuthorAddress: authorAddress,
             isOriginalMessageAuthorLocalUser: originalMessage.isOutgoing,
             threadUniqueId: originalMessage.uniqueThreadId,
-            content: .edit(replyMessage, quotedReply, content: .payment(amountString))
+            content: .edit(replyMessage, quotedReply, content: .payment(amountString)),
         )
     }
 
@@ -208,15 +208,15 @@ public class DraftQuotedReplyModel {
         case .contactShare(let contact):
             return MessageBody(
                 text: "👤 " + contact.name.displayName,
-                ranges: .empty
+                ranges: .empty,
             )
         case .viewOnce:
             return MessageBody(
                 text: OWSLocalizedString(
                     "PER_MESSAGE_EXPIRATION_NOT_VIEWABLE",
-                    comment: "inbox cell and notification text for an already viewed view-once media message."
+                    comment: "inbox cell and notification text for an already viewed view-once media message.",
                 ),
-                ranges: .empty
+                ranges: .empty,
             )
         case .payment(let text):
             return MessageBody(text: text, ranges: .empty)
@@ -229,17 +229,17 @@ public class DraftQuotedReplyModel {
             if isOriginalMessageAuthorLocalUser {
                 formatString = OWSLocalizedString(
                     "STORY_REACTION_QUOTE_FORMAT_SECOND_PERSON",
-                    comment: "quote text for a reaction to a story by the user (the header on the bubble says \"You\"). Embeds {{reaction emoji}}"
+                    comment: "quote text for a reaction to a story by the user (the header on the bubble says \"You\"). Embeds {{reaction emoji}}",
                 )
             } else {
                 formatString = OWSLocalizedString(
                     "STORY_REACTION_QUOTE_FORMAT_THIRD_PERSON",
-                    comment: "quote text for a reaction to a story by some other user (the header on the bubble says their name, e.g. \"Bob\"). Embeds {{reaction emoji}}"
+                    comment: "quote text for a reaction to a story by some other user (the header on the bubble says their name, e.g. \"Bob\"). Embeds {{reaction emoji}}",
                 )
             }
             let text = String(
                 format: formatString,
-                emoji
+                emoji,
             )
             return MessageBody(text: text, ranges: .empty)
         case .poll(let pollQuestion):
@@ -252,7 +252,7 @@ public class DraftQuotedReplyModel {
 // MARK: - Equatable
 
 extension DraftQuotedReplyModel: Equatable {
-    public static func == (lhs: DraftQuotedReplyModel, rhs: DraftQuotedReplyModel) -> Bool {
+    public static func ==(lhs: DraftQuotedReplyModel, rhs: DraftQuotedReplyModel) -> Bool {
         return lhs.originalMessageTimestamp == rhs.originalMessageTimestamp
             && lhs.originalMessageAuthorAddress.isEqualToAddress(rhs.originalMessageAuthorAddress)
             && lhs.content == rhs.content
@@ -260,7 +260,7 @@ extension DraftQuotedReplyModel: Equatable {
 }
 
 extension DraftQuotedReplyModel.Content: Equatable {
-    public static func == (lhs: DraftQuotedReplyModel.Content, rhs: DraftQuotedReplyModel.Content) -> Bool {
+    public static func ==(lhs: DraftQuotedReplyModel.Content, rhs: DraftQuotedReplyModel.Content) -> Bool {
         switch (lhs, rhs) {
         case (.giftBadge, .giftBadge), (.viewOnce, .viewOnce), (.poll, .poll):
             return true
@@ -280,7 +280,7 @@ extension DraftQuotedReplyModel.Content: Equatable {
             return lhsBody == rhsBody && lhsStub == rhsStub
         case let (
             .attachment(lhsBody, _, lhsAttachment, lhsThumbnailImage),
-            .attachment(rhsBody, _, rhsAttachment, rhsThumbnailImage)
+            .attachment(rhsBody, _, rhsAttachment, rhsThumbnailImage),
         ):
             return lhsBody == rhsBody
                 && lhsAttachment.id == rhsAttachment.id

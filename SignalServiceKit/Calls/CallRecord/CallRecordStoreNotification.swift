@@ -36,7 +36,7 @@ public struct CallRecordStoreNotification {
     var asNotification: Notification {
         Notification(
             name: Self.name,
-            userInfo: [UserInfoKeys.updateType: updateType]
+            userInfo: [UserInfoKeys.updateType: updateType],
         )
     }
 }

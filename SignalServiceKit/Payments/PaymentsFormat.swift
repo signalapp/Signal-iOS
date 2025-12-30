@@ -7,8 +7,10 @@ import Foundation
 
 public enum PaymentsFormat {
 
-    private static func buildMobFormatter(isShortForm: Bool,
-                                          locale: Locale? = nil) -> NumberFormatter {
+    private static func buildMobFormatter(
+        isShortForm: Bool,
+        locale: Locale? = nil,
+    ) -> NumberFormatter {
 
         let numberFormatter = NumberFormatter()
         numberFormatter.locale = locale ?? Locale.current
@@ -18,8 +20,8 @@ public enum PaymentsFormat {
         numberFormatter.minimumIntegerDigits = 1
         numberFormatter.minimumFractionDigits = 1
         numberFormatter.maximumFractionDigits = (isShortForm
-                                                 ? 4
-                                                 : Int(PaymentsConstants.maxMobDecimalDigits))
+            ? 4
+            : Int(PaymentsConstants.maxMobDecimalDigits))
         numberFormatter.usesSignificantDigits = false
         if isShortForm {
             numberFormatter.roundingMode = .halfEven
@@ -49,7 +51,7 @@ public enum PaymentsFormat {
 
     public static func formatInChat(
         paymentAmount: TSPaymentAmount,
-        amountBuilder: (String) -> NSAttributedString
+        amountBuilder: (String) -> NSAttributedString,
     ) -> NSAttributedString {
         let mob = PaymentsConstants.convertPicoMobToMob(paymentAmount.picoMob)
         let mobFormat = buildMobFormatter(isShortForm: true)
@@ -58,36 +60,46 @@ public enum PaymentsFormat {
             return NSAttributedString(
                 string: OWSLocalizedString(
                     "PAYMENTS_CURRENCY_UNKNOWN",
-                    comment: "Indicator for unknown currency."
-                )
+                    comment: "Indicator for unknown currency.",
+                ),
             )
         }
 
         return amountBuilder(amount)
     }
 
-    public static func format(paymentAmount: TSPaymentAmount,
-                              isShortForm: Bool,
-                              withCurrencyCode: Bool = false,
-                              withSpace: Bool = false,
-                              withPaymentType paymentType: TSPaymentType? = nil) -> String {
+    public static func format(
+        paymentAmount: TSPaymentAmount,
+        isShortForm: Bool,
+        withCurrencyCode: Bool = false,
+        withSpace: Bool = false,
+        withPaymentType paymentType: TSPaymentType? = nil,
+    ) -> String {
         guard paymentAmount.currency == .mobileCoin else {
             owsFailDebug("Unknown currency.")
-            return OWSLocalizedString("PAYMENTS_CURRENCY_UNKNOWN",
-                                      comment: "Indicator for unknown currency.")
+            return OWSLocalizedString(
+                "PAYMENTS_CURRENCY_UNKNOWN",
+                comment: "Indicator for unknown currency.",
+            )
         }
-        guard let amountString = format(picoMob: paymentAmount.picoMob,
-                                        isShortForm: isShortForm) else {
+        guard
+            let amountString = format(
+                picoMob: paymentAmount.picoMob,
+                isShortForm: isShortForm,
+            )
+        else {
             owsFailDebug("Couldn't format currency.")
-            return OWSLocalizedString("PAYMENTS_CURRENCY_UNKNOWN",
-                                      comment: "Indicator for unknown currency.")
+            return OWSLocalizedString(
+                "PAYMENTS_CURRENCY_UNKNOWN",
+                comment: "Indicator for unknown currency.",
+            )
         }
 
         return format(
             amountString: amountString,
             withCurrencyCode: withCurrencyCode,
             withSpace: withSpace,
-            isIncoming: paymentType?.isIncoming
+            isIncoming: paymentType?.isIncoming,
         )
     }
 
@@ -95,11 +107,11 @@ public enum PaymentsFormat {
         amountString: String,
         withCurrencyCode: Bool = false,
         withSpace: Bool = false,
-        isIncoming: Bool? = nil
+        isIncoming: Bool? = nil,
     ) -> String {
         var result = ""
 
-        if let isIncoming = isIncoming {
+        if let isIncoming {
             result += isIncoming ? "+" : "-"
         }
 
@@ -115,8 +127,10 @@ public enum PaymentsFormat {
     }
 
     public static func format(mob: Double, isShortForm: Bool) -> String? {
-        format(picoMob: PaymentsConstants.convertMobToPicoMob(mob),
-               isShortForm: isShortForm)
+        format(
+            picoMob: PaymentsConstants.convertMobToPicoMob(mob),
+            isShortForm: isShortForm,
+        )
     }
 
     public static func format(picoMob: UInt64, isShortForm: Bool, locale: Locale? = nil) -> String? {
@@ -141,21 +155,27 @@ public enum PaymentsFormat {
         return result
     }
 
-    public static func formatAsFiatCurrency(paymentAmount: TSPaymentAmount,
-                                            currencyConversionInfo: CurrencyConversionInfo,
-                                            locale: Locale? = nil) -> String? {
+    public static func formatAsFiatCurrency(
+        paymentAmount: TSPaymentAmount,
+        currencyConversionInfo: CurrencyConversionInfo,
+        locale: Locale? = nil,
+    ) -> String? {
         guard let fiatCurrencyAmount = currencyConversionInfo.convertToFiatCurrency(paymentAmount: paymentAmount) else {
             return nil
         }
-        return format(fiatCurrencyAmount: fiatCurrencyAmount,
-                      locale: locale)
+        return format(
+            fiatCurrencyAmount: fiatCurrencyAmount,
+            locale: locale,
+        )
     }
 
     // Used to format fiat currency values for display.
-    public static func format(fiatCurrencyAmount: Double,
-                              minimumFractionDigits: Int = 2,
-                              maximumFractionDigits: Int = 2,
-                              locale: Locale? = nil) -> String? {
+    public static func format(
+        fiatCurrencyAmount: Double,
+        minimumFractionDigits: Int = 2,
+        maximumFractionDigits: Int = 2,
+        locale: Locale? = nil,
+    ) -> String? {
         let numberFormatter = NumberFormatter()
         numberFormatter.locale = locale ?? Locale.current
         // We use .decimal and not .currency because we don't
@@ -172,7 +192,7 @@ public enum PaymentsFormat {
         return PaymentsFormat.format(
             picoMob: picoMob,
             isShortForm: false,
-            locale: paymentFormatLocale
+            locale: paymentFormatLocale,
         )
     }
 

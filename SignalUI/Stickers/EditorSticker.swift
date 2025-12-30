@@ -98,7 +98,7 @@ extension EditorSticker.StorySticker {
 
         func attributedString(
             date: Date,
-            scaleFactor: CGFloat = 1.0
+            scaleFactor: CGFloat = 1.0,
         ) -> NSAttributedString {
             let is12HourTime = DateFormatter.dateFormat(fromTemplate: "j", options: 0, locale: .current)?.contains("a") ?? true
             let timeFormat = is12HourTime ? "h:mm" : "HH:mm"
@@ -113,7 +113,7 @@ extension EditorSticker.StorySticker {
                 attributes: [
                     .font: timeFont,
                     .foregroundColor: self.foregroundColor,
-                ]
+                ],
             )
 
             if let amPMFormat {
@@ -126,7 +126,7 @@ extension EditorSticker.StorySticker {
                     attributes: [
                         .font: amPMFont,
                         .foregroundColor: self.foregroundColor,
-                    ]
+                    ],
                 )
                 return timeAttributedString + amPMAttributedString
             }
@@ -198,13 +198,13 @@ extension EditorSticker.StorySticker {
         var hourHandHeight: CGFloat {
             switch self {
             case .arabic:
-                return 1/3
+                return 1 / 3
             case .baton:
                 return 0.35
             case .explorer:
-                return 149/600
+                return 149 / 600
             case .diver:
-                return 139/600
+                return 139 / 600
             }
         }
 
@@ -213,11 +213,11 @@ extension EditorSticker.StorySticker {
             case .arabic:
                 return 0.72
             case .baton:
-                return 16/21
+                return 16 / 21
             case .explorer:
                 return 1
             case .diver:
-                return 141/139
+                return 141 / 139
             }
         }
 
@@ -237,22 +237,22 @@ extension EditorSticker.StorySticker {
         var minuteHandHeight: CGFloat {
             switch self {
             case .arabic:
-                return 280/600
+                return 280 / 600
             case .baton:
-                return 308/600
+                return 308 / 600
             case .explorer:
-                return 229/600
+                return 229 / 600
             case .diver:
-                return 268/600
+                return 268 / 600
             }
         }
 
         var minuteHandOffset: CGFloat {
             switch self {
             case .arabic:
-                return 4/5
+                return 4 / 5
             case .baton:
-                return 129/154
+                return 129 / 154
             case .explorer:
                 return 1
             case .diver:
@@ -339,31 +339,31 @@ private class AnalogClockLayer: CALayer {
     private func updateSublayerFrames() {
         let dateComponents = Calendar.current.dateComponents([.hour, .minute], from: date)
         let minutes = CGFloat(dateComponents.minute ?? 0)
-        let hours = CGFloat(dateComponents.hour ?? 0) + minutes/60
+        let hours = CGFloat(dateComponents.hour ?? 0) + minutes / 60
 //        let minutes = CGFloat.random(in: 0..<60)
 //        let hours = CGFloat.random(in: 0..<12)
 
         background.frame.size = self.frame.size
         transfrom(
             clockHandLayer: hourHand,
-            time: hours/12,
+            time: hours / 12,
             height: clockStyle.hourHandHeight,
-            offset: clockStyle.hourHandOffset
+            offset: clockStyle.hourHandOffset,
         )
         transfrom(
             clockHandLayer: minuteHand,
-            time: minutes/60,
+            time: minutes / 60,
             height: clockStyle.minuteHandHeight,
-            offset: clockStyle.minuteHandOffset
+            offset: clockStyle.minuteHandOffset,
         )
         if let center {
-            let size: CGFloat = 42/600 * self.frame.height
+            let size: CGFloat = 42 / 600 * self.frame.height
             center.frame = CGRect(
                 origin: .init(
-                    x: self.frame.width/2 - size/2,
-                    y: self.frame.height/2 - size/2
+                    x: self.frame.width / 2 - size / 2,
+                    y: self.frame.height / 2 - size / 2,
                 ),
-                size: .square(size)
+                size: .square(size),
             )
         }
     }
@@ -372,19 +372,19 @@ private class AnalogClockLayer: CALayer {
         clockHandLayer hand: CALayer,
         time: CGFloat,
         height: CGFloat,
-        offset: CGFloat
+        offset: CGFloat,
     ) {
         hand.setAffineTransform(.identity)
         hand.frame.size.height = self.frame.height * height
         hand.frame.origin = .init(
-            x: self.frame.width/2 - hand.frame.size.width/2,
-            y: self.frame.height/2 - hand.frame.size.height/2
+            x: self.frame.width / 2 - hand.frame.size.width / 2,
+            y: self.frame.height / 2 - hand.frame.size.height / 2,
         )
 
         hand.anchorPoint = .init(x: 0.5, y: offset)
         hand.setAffineTransform(
             .init(translationX: 0, y: -hand.frame.height * (offset - 0.5))
-            .rotated(by: time * 2 * .pi)
+                .rotated(by: time * 2 * .pi),
         )
     }
 

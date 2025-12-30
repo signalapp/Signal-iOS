@@ -6,16 +6,22 @@
 import SignalServiceKit
 public import SignalUI
 
-public final class GroupInviteLinksUI {
+public enum GroupInviteLinksUI {
 
     public static func openGroupInviteLink(_ url: URL, fromViewController: UIViewController) {
         AssertIsOnMainThread()
 
         let showInvalidInviteLinkAlert = {
-            OWSActionSheets.showActionSheet(title: OWSLocalizedString("GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE",
-                                                                     comment: "Title for the 'invalid group invite link' alert."),
-                                            message: OWSLocalizedString("GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE",
-                                                                      comment: "Message for the 'invalid group invite link' alert."))
+            OWSActionSheets.showActionSheet(
+                title: OWSLocalizedString(
+                    "GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE",
+                    comment: "Title for the 'invalid group invite link' alert.",
+                ),
+                message: OWSLocalizedString(
+                    "GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_MESSAGE",
+                    comment: "Message for the 'invalid group invite link' alert.",
+                ),
+            )
         }
 
         guard let groupInviteLinkInfo = GroupInviteLinkInfo.parseFrom(url) else {
@@ -42,13 +48,15 @@ public final class GroupInviteLinksUI {
         {
             SignalApp.shared.presentConversationForThread(
                 threadUniqueId: existingGroupThread.uniqueId,
-                animated: true
+                animated: true,
             )
             return
         }
 
-        let actionSheet = GroupInviteLinksActionSheet(groupInviteLinkInfo: groupInviteLinkInfo,
-                                                      groupV2ContextInfo: groupV2ContextInfo)
+        let actionSheet = GroupInviteLinksActionSheet(
+            groupInviteLinkInfo: groupInviteLinkInfo,
+            groupV2ContextInfo: groupV2ContextInfo,
+        )
         fromViewController.presentActionSheet(actionSheet)
     }
 }
@@ -65,12 +73,13 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
     private let avatarView = AvatarImageView()
     private let groupNameLabel: UILabel = {
         let label = UILabel()
-        label.font = UIFont.semiboldFont(ofSize: UIFont.dynamicTypeTitle1Clamped.pointSize * (13/14))
+        label.font = UIFont.semiboldFont(ofSize: UIFont.dynamicTypeTitle1Clamped.pointSize * (13 / 14))
         label.textColor = .Signal.label
         // Reserve vertical space for group name.
         label.text = " "
         return label
     }()
+
     private let groupSubtitleLabel: UILabel = {
         let label = UILabel()
         label.font = .dynamicTypeSubheadline
@@ -78,6 +87,7 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
         label.text = " "
         return label
     }()
+
     private let groupDescriptionPreview: GroupDescriptionPreviewView = {
         let view = GroupDescriptionPreviewView()
         view.font = .dynamicTypeSubheadline
@@ -87,6 +97,7 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
         view.isHidden = true
         return view
     }()
+
     private let messageLabel: UILabel = {
         let label = UILabel()
         label.font = .dynamicTypeBodyClamped
@@ -96,18 +107,19 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
         label.textAlignment = .center
         label.text = OWSLocalizedString(
             "GROUP_LINK_ACTION_SHEET_JOIN_MESSAGE",
-            comment: "Message text for the 'group invite link' action sheet."
+            comment: "Message text for the 'group invite link' action sheet.",
         )
         return label
     }()
+
     private lazy var joinButton = UIButton(
         configuration: .largePrimary(title: OWSLocalizedString(
             "GROUP_LINK_ACTION_SHEET_VIEW_JOIN_BUTTON",
-            comment: "Label for the 'join' button in the 'group invite link' action sheet."
+            comment: "Label for the 'join' button in the 'group invite link' action sheet.",
         )),
         primaryAction: UIAction { [weak self] _ in
             self?.didTapJoin()
-        }
+        },
     )
     private lazy var groupPreviewView: UIView = {
         let textContentHMargin: CGFloat = 12
@@ -153,7 +165,7 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
             avatarViewContainer,
             textStack,
             messageLabelContainer,
-            joinButton
+            joinButton,
         ])
         view.axis = .vertical
         view.spacing = 20
@@ -171,7 +183,7 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
         let label = UILabel()
         label.text = OWSLocalizedString(
             "GROUP_LINK_ACTION_SHEET_VIEW_LOADING_TITLE",
-            comment: "Label indicating that the group info is being loaded in the 'group invite link' action sheet."
+            comment: "Label indicating that the group info is being loaded in the 'group invite link' action sheet.",
         )
         label.textColor = .Signal.secondaryLabel
         label.font = .dynamicTypeSubheadline
@@ -197,7 +209,7 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
         style: .cancel,
         handler: { [weak self] _ in
             self?.didTapCancel()
-        }
+        },
     )
 
     init(groupInviteLinkInfo: GroupInviteLinkInfo, groupV2ContextInfo: GroupV2ContextInfo) {
@@ -219,7 +231,7 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
             avatarBuilder.defaultAvatarImage(
                 forGroupId: groupV2ContextInfo.groupId.serialize(),
                 diameterPoints: Self.avatarSize,
-                transaction: tx
+                transaction: tx,
             )
         }
         avatarView.autoSetDimension(.width, toSize: CGFloat(Self.avatarSize))
@@ -267,7 +279,7 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
             do {
                 let groupInviteLinkPreview = try await SSKEnvironment.shared.groupsV2Ref.fetchGroupInviteLinkPreviewAndRefreshGroup(
                     inviteLinkPassword: groupInviteLinkInfo.inviteLinkPassword,
-                    groupSecretParams: groupV2ContextInfo.groupSecretParams
+                    groupSecretParams: groupV2ContextInfo.groupSecretParams,
                 )
                 self?.applyLinkPreviewLoadResult(.success(groupInviteLinkPreview))
 
@@ -279,7 +291,7 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
                     do {
                         let avatarData = try await SSKEnvironment.shared.groupsV2Ref.fetchGroupInviteLinkAvatar(
                             avatarUrlPath: avatarUrlPath,
-                            groupSecretParams: groupV2ContextInfo.groupSecretParams
+                            groupSecretParams: groupV2ContextInfo.groupSecretParams,
                         )
                         guard DataImageSource(avatarData).ows_isValidImage else {
                             throw OWSAssertionError("Invalid group avatar.")
@@ -302,12 +314,12 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
                     OWSActionSheets.showActionSheet(
                         title: OWSLocalizedString(
                             "GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE",
-                            comment: "Title indicating that you cannot join a group in the 'group invite link' action sheet."
+                            comment: "Title indicating that you cannot join a group in the 'group invite link' action sheet.",
                         ),
                         message: OWSLocalizedString(
                             "GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE",
-                            comment: "Subtitle indicating that the local user has been blocked from joining the group"
-                        )
+                            comment: "Subtitle indicating that the local user has been blocked from joining the group",
+                        ),
                     )
                 })
             } catch {
@@ -327,11 +339,11 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
             case .administrator:
                 messageLabel.text = OWSLocalizedString(
                     "GROUP_LINK_ACTION_SHEET_JOIN_MESSAGE_W_REQUEST",
-                    comment: "Message text for the 'group invite link' action sheet, if the user will be requesting to join."
+                    comment: "Message text for the 'group invite link' action sheet, if the user will be requesting to join.",
                 )
                 joinButton.configuration?.title = OWSLocalizedString(
                     "GROUP_LINK_ACTION_SHEET_VIEW_REQUEST_TO_JOIN_BUTTON",
-                    comment: "Label for the 'request to join' button in the 'group invite link' action sheet."
+                    comment: "Label for the 'request to join' button in the 'group invite link' action sheet.",
                 )
 
             case .member, .unsatisfiable, .unknown:
@@ -341,7 +353,7 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
             let groupName = groupInviteLinkPreview.title.filterForDisplay.nilIfEmpty ?? TSGroupThread.defaultGroupName
             groupNameLabel.text = groupName
             groupSubtitleLabel.text = GroupViewUtils.formatGroupMembersLabel(
-                memberCount: Int(groupInviteLinkPreview.memberCount)
+                memberCount: Int(groupInviteLinkPreview.memberCount),
             )
             if let descriptionText = groupInviteLinkPreview.descriptionText?.filterForDisplay.nilIfEmpty {
                 groupDescriptionPreview.descriptionText = descriptionText
@@ -356,12 +368,12 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
             setTitle(
                 OWSLocalizedString(
                     "GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE",
-                    comment: "Title indicating that you cannot join a group in the 'group invite link' action sheet."
+                    comment: "Title indicating that you cannot join a group in the 'group invite link' action sheet.",
                 ),
                 message: OWSLocalizedString(
                     "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE",
-                    comment: "Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet."
-                )
+                    comment: "Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet.",
+                ),
             )
             customHeader = nil
 
@@ -394,14 +406,14 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
         title: String?,
         message: String? = nil,
         buttonTitle: String? = nil,
-        buttonAction: ActionSheetAction.Handler? = nil
+        buttonAction: ActionSheetAction.Handler? = nil,
     ) {
         OWSActionSheets.showActionSheet(
             title: title,
             message: message,
             buttonTitle: buttonTitle,
             buttonAction: buttonAction,
-            fromViewController: self
+            fromViewController: self,
         )
     }
 
@@ -421,7 +433,7 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
                     try await GroupManager.joinGroupViaInviteLink(
                         secretParams: groupV2ContextInfo.groupSecretParams,
                         inviteLinkPassword: groupInviteLinkInfo.inviteLinkPassword,
-                        downloadedAvatar: downloadedAvatar
+                        downloadedAvatar: downloadedAvatar,
                     )
 
                     modal.dismiss {
@@ -434,7 +446,7 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
                             }
                             SignalApp.shared.presentConversationForThread(
                                 threadUniqueId: groupThread.uniqueId,
-                                animated: true
+                                animated: true,
                             )
                         }
                     }
@@ -447,36 +459,36 @@ private class GroupInviteLinksActionSheet: ActionSheetController {
                         self?.showActionSheet(
                             title: OWSLocalizedString(
                                 "GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE",
-                                comment: "Title indicating that you cannot join a group in the 'group invite link' action sheet."
+                                comment: "Title indicating that you cannot join a group in the 'group invite link' action sheet.",
                             ),
                             message: {
                                 switch error {
                                 case GroupsV2Error.expiredGroupInviteLink:
                                     return OWSLocalizedString(
                                         "GROUP_LINK_ACTION_SHEET_VIEW_EXPIRED_LINK_SUBTITLE",
-                                        comment: "Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet."
+                                        comment: "Subtitle indicating that the group invite link has expired in the 'group invite link' action sheet.",
                                     )
                                 case GroupsV2Error.localUserBlockedFromJoining:
                                     return OWSLocalizedString(
                                         "GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE",
-                                        comment: "Subtitle indicating that the local user has been blocked from joining the group"
+                                        comment: "Subtitle indicating that the local user has been blocked from joining the group",
                                     )
                                 case _ where error.isNetworkFailureOrTimeout:
                                     return OWSLocalizedString(
                                         "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_DUE_TO_NETWORK_ERROR_MESSAGE",
-                                        comment: "Error message the attempt to request to join the group failed due to network connectivity."
+                                        comment: "Error message the attempt to request to join the group failed due to network connectivity.",
                                     )
                                 default:
                                     return OWSLocalizedString(
                                         "GROUP_LINK_COULD_NOT_REQUEST_TO_JOIN_GROUP_ERROR_MESSAGE",
-                                        comment: "Error message the attempt to request to join the group failed."
+                                        comment: "Error message the attempt to request to join the group failed.",
                                     )
                                 }
-                            }()
+                            }(),
                         )
                     }
                 }
-            }
+            },
         )
     }
 }

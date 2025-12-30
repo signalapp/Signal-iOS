@@ -33,7 +33,7 @@ public class ProvisioningCoordinatorTest: XCTestCase {
     private var tsAccountManagerMock: MockTSAccountManager!
     private var udManagerMock: OWSMockUDManager!
 
-    public override func setUp() async throws {
+    override public func setUp() async throws {
 
         let mockDb = InMemoryDB()
 
@@ -44,7 +44,7 @@ public class ProvisioningCoordinatorTest: XCTestCase {
         )
         let recipientIdFinder = RecipientIdFinder(
             recipientDatabaseTable: recipientDbTable,
-            recipientFetcher: recipientFetcher
+            recipientFetcher: recipientFetcher,
         )
         self.identityManagerMock = .init(recipientIdFinder: recipientIdFinder)
 
@@ -93,7 +93,7 @@ public class ProvisioningCoordinatorTest: XCTestCase {
             syncManager: syncManagerMock,
             threadStore: threadStoreMock,
             tsAccountManager: tsAccountManagerMock,
-            udManager: udManagerMock
+            udManager: udManagerMock,
         )
 
         tsAccountManagerMock.registrationStateMock = { .unregistered }
@@ -112,7 +112,7 @@ public class ProvisioningCoordinatorTest: XCTestCase {
             mrbk: MediaRootBackupKey(backupKey: .generateRandom()),
             ephemeralBackupKey: nil,
             areReadReceiptsEnabled: true,
-            provisioningCode: "1234"
+            provisioningCode: "1234",
         )
         let deviceName = "test device"
         let deviceId = DeviceId(validating: UInt32.random(in: 2...3))!
@@ -121,7 +121,7 @@ public class ProvisioningCoordinatorTest: XCTestCase {
 
         let verificationResponse = ProvisioningServiceResponses.VerifySecondaryDeviceResponse(
             pni: provisioningMessage.pni,
-            deviceId: deviceId
+            deviceId: deviceId,
         )
 
         mockSession.responder = { request in
@@ -133,10 +133,10 @@ public class ProvisioningCoordinatorTest: XCTestCase {
             }
         }
 
-        signalServiceMock.mockUrlSessionBuilder = { (signalServiceInfo, _, _) in
+        signalServiceMock.mockUrlSessionBuilder = { signalServiceInfo, _, _ in
             XCTAssertEqual(
                 signalServiceInfo.baseUrl,
-                SignalServiceType.mainSignalService.signalServiceInfo().baseUrl
+                SignalServiceType.mainSignalService.signalServiceInfo().baseUrl,
             )
             return mockSession
         }
@@ -162,22 +162,22 @@ public class ProvisioningCoordinatorTest: XCTestCase {
         try await provisioningCoordinator.completeProvisioning(
             provisionMessage: provisioningMessage,
             deviceName: deviceName,
-            progressViewModel: LinkAndSyncSecondaryProgressViewModel()
+            progressViewModel: LinkAndSyncSecondaryProgressViewModel(),
         )
 
         XCTAssert(didSetLocalIdentifiers)
         XCTAssert(prekeyManagerMock.didFinalizeRegistrationPrekeys)
         XCTAssertEqual(
             profileManagerMock.localProfileKey,
-            provisioningMessage.profileKey
+            provisioningMessage.profileKey,
         )
         XCTAssertEqual(
             identityManagerMock.identityKeyPairs[.aci]?.publicKey,
-            provisioningMessage.aciIdentityKeyPair.asECKeyPair.publicKey
+            provisioningMessage.aciIdentityKeyPair.asECKeyPair.publicKey,
         )
         XCTAssertEqual(
             identityManagerMock.identityKeyPairs[.pni]?.publicKey,
-            provisioningMessage.pniIdentityKeyPair.asECKeyPair.publicKey
+            provisioningMessage.pniIdentityKeyPair.asECKeyPair.publicKey,
         )
         let masterKey = switch provisioningMessage.rootKey {
         case .accountEntropyPool(let accountEntropyPool):
@@ -206,7 +206,7 @@ extension ProvisioningCoordinatorTest {
                 requestUrl: rawRequest.url,
                 status: 200,
                 headers: HttpHeaders(),
-                bodyData: responseBody
+                bodyData: responseBody,
             )
         }
     }
@@ -227,7 +227,7 @@ private class MockLinkAndSyncManager: LinkAndSyncManager {
     func waitForLinkingAndUploadBackup(
         ephemeralBackupKey: MessageRootBackupKey,
         tokenId: DeviceProvisioningTokenId,
-        progress: OWSSequentialProgressRootSink<PrimaryLinkNSyncProgressPhase>
+        progress: OWSSequentialProgressRootSink<PrimaryLinkNSyncProgressPhase>,
     ) async throws(PrimaryLinkNSyncError) {
         return
     }
@@ -236,7 +236,7 @@ private class MockLinkAndSyncManager: LinkAndSyncManager {
         localIdentifiers: LocalIdentifiers,
         auth: ChatServiceAuth,
         ephemeralBackupKey: MessageRootBackupKey,
-        progress: OWSSequentialProgressRootSink<SecondaryLinkNSyncProgressPhase>
+        progress: OWSSequentialProgressRootSink<SecondaryLinkNSyncProgressPhase>,
     ) async throws(SecondaryLinkNSyncError) {
         return
     }

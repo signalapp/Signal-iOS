@@ -20,12 +20,16 @@ extension Error {
         if (self as NSError) is UserErrorDescriptionProvider {
             return true
         }
-        if let error = self as? LocalizedError,
-           nil != error.errorDescription {
+        if
+            let error = self as? LocalizedError,
+            nil != error.errorDescription
+        {
             return true
         }
-        if let error = (self as NSError) as? LocalizedError,
-           nil != error.errorDescription {
+        if
+            let error = (self as NSError) as? LocalizedError,
+            nil != error.errorDescription
+        {
             return true
         }
         return false
@@ -53,12 +57,16 @@ extension Error {
         if let error = (self as NSError) as? UserErrorDescriptionProvider {
             return error.localizedDescription
         }
-        if let error = self as? LocalizedError,
-           let errorDescription = error.errorDescription {
+        if
+            let error = self as? LocalizedError,
+            let errorDescription = error.errorDescription
+        {
             return errorDescription
         }
-        if let error = (self as NSError) as? LocalizedError,
-           let errorDescription = error.errorDescription {
+        if
+            let error = (self as NSError) as? LocalizedError,
+            let errorDescription = error.errorDescription
+        {
             return errorDescription
         }
         if CurrentAppContext().isRunningTests {

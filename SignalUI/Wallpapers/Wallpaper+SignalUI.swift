@@ -13,10 +13,12 @@ extension Wallpaper {
         AssertIsOnMainThread()
 
         let wallpaperStore = DependenciesBridge.shared.wallpaperStore
-        guard let resolvedWallpaper = wallpaperStore.fetchWallpaperForRendering(
-            for: thread?.uniqueId,
-            tx: tx
-        ) else {
+        guard
+            let resolvedWallpaper = wallpaperStore.fetchWallpaperForRendering(
+                for: thread?.uniqueId,
+                tx: tx,
+            )
+        else {
             return nil
         }
 
@@ -31,7 +33,8 @@ extension Wallpaper {
                         } else {
                             DependenciesBridge.shared.wallpaperImageStore.loadGlobalThreadWallpaper(tx: tx)
                         }
-                    })
+                    },
+                )
             },
             shouldDimInDarkTheme: wallpaperStore.fetchDimInDarkModeForRendering(for: thread?.uniqueId, tx: tx),
         )
@@ -40,7 +43,7 @@ extension Wallpaper {
     public static func viewBuilder(
         for wallpaper: Wallpaper,
         customPhoto: () -> UIImage?,
-        shouldDimInDarkTheme: Bool
+        shouldDimInDarkTheme: Bool,
     ) -> WallpaperViewBuilder? {
         AssertIsOnMainThread()
 
@@ -70,9 +73,9 @@ public enum WallpaperViewBuilder {
                 mode: .colorView(ColorOrGradientSwatchView(
                     setting: colorOrGradientSetting,
                     shapeMode: .rectangle,
-                    themeMode: shouldDimInDarkMode ? .auto : .alwaysLight
+                    themeMode: shouldDimInDarkMode ? .auto : .alwaysLight,
                 )),
-                shouldDimInDarkTheme: shouldDimInDarkMode
+                shouldDimInDarkTheme: shouldDimInDarkMode,
             )
         }
     }
@@ -161,9 +164,11 @@ public class WallpaperBlurState: NSObject {
     private static let idCounter = AtomicUInt(0, lock: .sharedGlobal)
     public let id: UInt = WallpaperBlurState.idCounter.increment()
 
-    fileprivate init(image: UIImage,
-                     referenceView: UIView,
-                     token: WallpaperBlurToken) {
+    fileprivate init(
+        image: UIImage,
+        referenceView: UIView,
+        token: WallpaperBlurToken,
+    ) {
         self.image = image
         self.referenceView = referenceView
         self.token = token
@@ -200,10 +205,14 @@ public class WallpaperBlurProviderImpl: NSObject, WallpaperBlurProvider {
         // De-bounce.
         let bounds = contentView.bounds
         let isDarkThemeEnabled = Theme.isDarkThemeEnabled
-        let newToken = WallpaperBlurToken(contentSize: bounds.size,
-                                          isDarkThemeEnabled: isDarkThemeEnabled)
-        if let cachedState = self.cachedState,
-           cachedState.token == newToken {
+        let newToken = WallpaperBlurToken(
+            contentSize: bounds.size,
+            isDarkThemeEnabled: isDarkThemeEnabled,
+        )
+        if
+            let cachedState = self.cachedState,
+            cachedState.token == newToken
+        {
             return cachedState
         }
 
@@ -216,8 +225,8 @@ public class WallpaperBlurProviderImpl: NSObject, WallpaperBlurProvider {
             let contentImage = contentView.renderAsImage()
             // We approximate the behavior of UIVisualEffectView(effect: UIBlurEffect(style: .regular)).
             let tintColor: UIColor = (isDarkThemeEnabled
-                                        ? UIColor.ows_black.withAlphaComponent(0.9)
-                                        : UIColor.white.withAlphaComponent(0.6))
+                ? UIColor.ows_black.withAlphaComponent(0.9)
+                : UIColor.white.withAlphaComponent(0.6))
             let resizeDimension = contentImage.size.largerAxis / Self.contentDownscalingFactor
             guard let scaledImage = contentImage.resized(maxDimensionPoints: resizeDimension) else {
                 owsFailDebug("Could not resize contentImage.")
@@ -225,9 +234,11 @@ public class WallpaperBlurProviderImpl: NSObject, WallpaperBlurProvider {
             }
             let blurRadius: CGFloat = 32 / Self.contentDownscalingFactor
             let blurredImage = try scaledImage.withGaussianBlur(radius: blurRadius, tintColor: tintColor)
-            let state = WallpaperBlurState(image: blurredImage,
-                                           referenceView: contentView,
-                                           token: newToken)
+            let state = WallpaperBlurState(
+                image: blurredImage,
+                referenceView: contentView,
+                token: newToken,
+            )
             self.cachedState = state
             return state
         } catch {

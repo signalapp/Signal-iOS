@@ -28,16 +28,16 @@ public class RegistrationTransferProgressViewController: OWSViewController {
         let titleLabel = UILabel.titleLabelForRegistration(
             text: OWSLocalizedString(
                 "DEVICE_TRANSFER_RECEIVING_TITLE",
-                comment: "The title on the view that shows receiving progress"
-            )
+                comment: "The title on the view that shows receiving progress",
+            ),
         )
         titleLabel.accessibilityIdentifier = "onboarding.transferProgress.titleLabel"
 
         let explanationLabel = UILabel.explanationLabelForRegistration(
             text: OWSLocalizedString(
                 "DEVICE_TRANSFER_RECEIVING_EXPLANATION",
-                comment: "The explanation on the view that shows receiving progress"
-            )
+                comment: "The explanation on the view that shows receiving progress",
+            ),
         )
         explanationLabel.accessibilityIdentifier = "onboarding.transferProgress.bodyLabel"
 
@@ -45,7 +45,7 @@ public class RegistrationTransferProgressViewController: OWSViewController {
             configuration: .mediumSecondary(title: CommonStrings.cancelButton),
             primaryAction: UIAction { [weak self] _ in
                 self?.didTapCancel()
-            }
+            },
         )
 
         let topSpacer = UIView.vStretchingSpacer()
@@ -57,7 +57,7 @@ public class RegistrationTransferProgressViewController: OWSViewController {
             topSpacer,
             progressView,
             bottomSpacer,
-            cancelButton.enclosedInVerticalStackView(isFullWidthButton: false)
+            cancelButton.enclosedInVerticalStackView(isFullWidthButton: false),
         ])
         topSpacer.translatesAutoresizingMaskIntoConstraints = false
         bottomSpacer.translatesAutoresizingMaskIntoConstraints = false
@@ -72,7 +72,7 @@ public class RegistrationTransferProgressViewController: OWSViewController {
         AppEnvironment.shared.deviceTransferServiceRef.addObserver(self)
     }
 
-    public override func viewWillDisappear(_ animated: Bool) {
+    override public func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
         progressView.stopUpdatingProgress()
@@ -87,17 +87,23 @@ public class RegistrationTransferProgressViewController: OWSViewController {
         Logger.info("")
 
         let actionSheet = ActionSheetController(
-            title: OWSLocalizedString("DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE",
-                                     comment: "The title of the dialog asking the user if they want to cancel a device transfer"),
-            message: OWSLocalizedString("DEVICE_TRANSFER_CANCEL_CONFIRMATION_MESSAGE",
-                                       comment: "The message of the dialog asking the user if they want to cancel a device transfer")
+            title: OWSLocalizedString(
+                "DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE",
+                comment: "The title of the dialog asking the user if they want to cancel a device transfer",
+            ),
+            message: OWSLocalizedString(
+                "DEVICE_TRANSFER_CANCEL_CONFIRMATION_MESSAGE",
+                comment: "The message of the dialog asking the user if they want to cancel a device transfer",
+            ),
         )
         actionSheet.addAction(OWSActionSheets.cancelAction)
 
         let okAction = ActionSheetAction(
-            title: OWSLocalizedString("DEVICE_TRANSFER_CANCEL_CONFIRMATION_ACTION",
-                                     comment: "The stop action of the dialog asking the user if they want to cancel a device transfer"),
-            style: .destructive
+            title: OWSLocalizedString(
+                "DEVICE_TRANSFER_CANCEL_CONFIRMATION_ACTION",
+                comment: "The stop action of the dialog asking the user if they want to cancel a device transfer",
+            ),
+            style: .destructive,
         ) { [weak self] _ in
             // viewWillDissapear will cancel the transfer
             self?.navigationController?.popViewController(animated: true)
@@ -114,20 +120,22 @@ extension RegistrationTransferProgressViewController: DeviceTransferServiceObser
     func deviceTransferServiceDidStartTransfer(progress: Progress) {}
 
     func deviceTransferServiceDidEndTransfer(error: DeviceTransferService.Error?) {
-        guard let error = error else { return }
+        guard let error else { return }
 
         switch error {
         case .assertion:
             progressView.renderError(
-                text: OWSLocalizedString("DEVICE_TRANSFER_ERROR_GENERIC",
-                                        comment: "An error indicating that something went wrong with the transfer and it could not complete")
+                text: OWSLocalizedString(
+                    "DEVICE_TRANSFER_ERROR_GENERIC",
+                    comment: "An error indicating that something went wrong with the transfer and it could not complete",
+                ),
             )
         case .backgroundedDevice:
             progressView.renderError(
                 text: OWSLocalizedString(
                     "DEVICE_TRANSFER_ERROR_BACKGROUNDED",
-                    comment: "An error indicating that the other device closed signal mid-transfer and it could not complete"
-                )
+                    comment: "An error indicating that the other device closed signal mid-transfer and it could not complete",
+                ),
             )
         case .cancel:
             // User initiated, nothing to do
@@ -136,13 +144,17 @@ extension RegistrationTransferProgressViewController: DeviceTransferServiceObser
             owsFailDebug("This should never happen on the new device")
         case .notEnoughSpace:
             progressView.renderError(
-                text: OWSLocalizedString("DEVICE_TRANSFER_ERROR_NOT_ENOUGH_SPACE",
-                                        comment: "An error indicating that the user does not have enough free space on their device to complete the transfer")
+                text: OWSLocalizedString(
+                    "DEVICE_TRANSFER_ERROR_NOT_ENOUGH_SPACE",
+                    comment: "An error indicating that the user does not have enough free space on their device to complete the transfer",
+                ),
             )
         case .unsupportedVersion:
             progressView.renderError(
-                text: OWSLocalizedString("DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION",
-                                        comment: "An error indicating the user must update their device before trying to transfer.")
+                text: OWSLocalizedString(
+                    "DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION",
+                    comment: "An error indicating the user must update their device before trying to transfer.",
+                ),
             )
         case .modeMismatch:
             owsFailDebug("This should never happen on the new device")
@@ -162,18 +174,18 @@ private class TransferRelaunchSheet: HeroSheetViewController {
             hero: .image(UIImage(named: "transfer_complete")!),
             title: OWSLocalizedString(
                 "TRANSFER_COMPLETE_SHEET_TITLE",
-                comment: "Title for bottom sheet shown when device transfer completes on the receiving device."
+                comment: "Title for bottom sheet shown when device transfer completes on the receiving device.",
             ),
             body: OWSLocalizedString(
                 "TRANSFER_COMPLETE_SHEET_SUBTITLE",
-                comment: "Subtitle for bottom sheet shown when device transfer completes on the receiving device."
+                comment: "Subtitle for bottom sheet shown when device transfer completes on the receiving device.",
             ),
             primaryButton: .init(title: OWSLocalizedString(
                 "TRANSFER_COMPLETE_SHEET_BUTTON",
-                comment: "Button for bottom sheet shown when device transfer completes on the receiving device. Tapping will terminate the Signal app and trigger a notification to relaunch."
+                comment: "Button for bottom sheet shown when device transfer completes on the receiving device. Tapping will terminate the Signal app and trigger a notification to relaunch.",
             )) { _ in
                 Self.didTapExitButton()
-            }
+            },
         )
     }
 
@@ -194,14 +206,14 @@ private class TransferRelaunchSheet: HeroSheetViewController {
 #Preview("Transfer Progress") {
     return UINavigationController(
         rootViewController: RegistrationTransferProgressViewController(
-            progress: .discreteProgress(totalUnitCount: 1024)
-        )
+            progress: .discreteProgress(totalUnitCount: 1024),
+        ),
     )
 }
 
 @available(iOS 17, *)
 #Preview("Relaunch Sheet") {
-    return TransferRelaunchSheet( )
+    return TransferRelaunchSheet()
 }
 
 #endif

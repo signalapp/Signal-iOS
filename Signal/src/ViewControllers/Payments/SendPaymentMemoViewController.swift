@@ -27,11 +27,13 @@ public class SendPaymentMemoViewController: OWSViewController {
         memoTextField.text = memoMessage
     }
 
-    open override func viewDidLoad() {
+    override open func viewDidLoad() {
         super.viewDidLoad()
 
-        navigationItem.title = OWSLocalizedString("PAYMENTS_NEW_PAYMENT_ADD_MEMO",
-                                                 comment: "Label for the 'add memo' ui in the 'send payment' UI.")
+        navigationItem.title = OWSLocalizedString(
+            "PAYMENTS_NEW_PAYMENT_ADD_MEMO",
+            comment: "Label for the 'add memo' ui in the 'send payment' UI.",
+        )
         navigationItem.leftBarButtonItem = .cancelButton(poppingFrom: navigationController)
         navigationItem.rightBarButtonItem = .doneButton { [weak self] in
             self?.didTapDoneMemo()
@@ -51,19 +53,19 @@ public class SendPaymentMemoViewController: OWSViewController {
         updateContents()
     }
 
-    public override func viewWillAppear(_ animated: Bool) {
+    override public func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
         memoTextField.becomeFirstResponder()
     }
 
-    public override func viewDidAppear(_ animated: Bool) {
+    override public func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
         memoTextField.becomeFirstResponder()
     }
 
-    public override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+    override public var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         return UIDevice.current.isIPad ? .all : .portrait
     }
 
@@ -77,11 +79,15 @@ public class SendPaymentMemoViewController: OWSViewController {
         memoTextField.backgroundColor = .clear
         memoTextField.font = .dynamicTypeBodyClamped
         memoTextField.textColor = Theme.primaryTextColor
-        let placeholder = NSAttributedString(string: OWSLocalizedString("PAYMENTS_NEW_PAYMENT_MESSAGE_PLACEHOLDER",
-                                                                       comment: "Placeholder for the new payment or payment request message."),
-                                             attributes: [
-                                                .foregroundColor: Theme.secondaryTextAndIconColor
-                                             ])
+        let placeholder = NSAttributedString(
+            string: OWSLocalizedString(
+                "PAYMENTS_NEW_PAYMENT_MESSAGE_PLACEHOLDER",
+                comment: "Placeholder for the new payment or payment request message.",
+            ),
+            attributes: [
+                .foregroundColor: Theme.secondaryTextAndIconColor,
+            ],
+        )
         memoTextField.attributedPlaceholder = placeholder
         memoTextField.delegate = self
         memoTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
@@ -94,7 +100,7 @@ public class SendPaymentMemoViewController: OWSViewController {
 
         let memoRow = UIStackView(arrangedSubviews: [
             memoTextField,
-            memoCharacterCountLabel
+            memoCharacterCountLabel,
         ])
         memoRow.axis = .horizontal
         memoRow.spacing = 8
@@ -110,11 +116,11 @@ public class SendPaymentMemoViewController: OWSViewController {
         rootStack.addArrangedSubviews([
             UIView.spacer(withHeight: SendPaymentHelper.minTopVSpacing),
             memoRow,
-            UIView.vStretchingSpacer()
+            UIView.vStretchingSpacer(),
         ])
     }
 
-    public override func themeDidChange() {
+    override public func themeDidChange() {
         super.themeDidChange()
 
         updateContents()
@@ -133,11 +139,15 @@ public class SendPaymentMemoViewController: OWSViewController {
             return
         }
 
-        let format = OWSLocalizedString("PAYMENTS_NEW_PAYMENT_MESSAGE_COUNT_FORMAT",
-                                       comment: "Format for the 'message character count indicator' for the 'new payment or payment request' view. Embeds {{ %1$@ the number of characters in the message, %2$@ the maximum number of characters in the message }}.")
-        memoCharacterCountLabel.text = String(format: format,
-                                              OWSFormat.formatInt(strippedMemoMessage.count),
-                                              OWSFormat.formatInt(PaymentsImpl.maxPaymentMemoMessageLength))
+        let format = OWSLocalizedString(
+            "PAYMENTS_NEW_PAYMENT_MESSAGE_COUNT_FORMAT",
+            comment: "Format for the 'message character count indicator' for the 'new payment or payment request' view. Embeds {{ %1$@ the number of characters in the message, %2$@ the maximum number of characters in the message }}.",
+        )
+        memoCharacterCountLabel.text = String(
+            format: format,
+            OWSFormat.formatInt(strippedMemoMessage.count),
+            OWSFormat.formatInt(PaymentsImpl.maxPaymentMemoMessageLength),
+        )
     }
 
     // MARK: - Events

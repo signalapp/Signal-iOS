@@ -11,7 +11,7 @@ private class StickerPackActionButton: UIView {
     private let block: () -> Void
 
     @available(*, unavailable, message: "use other constructor instead.")
-    required public init?(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
@@ -71,7 +71,7 @@ public class ManageStickersViewController: OWSTableViewController2 {
             self,
             selector: #selector(packsDidChange),
             name: StickerManager.packsDidChange,
-            object: nil
+            object: nil,
         )
 
         defaultSeparatorInsetLeading = Self.cellHInnerMargin + iconSize + iconSpacing
@@ -105,13 +105,13 @@ public class ManageStickersViewController: OWSTableViewController2 {
             maxFrequencySeconds: 0.75,
             onQueue: .main,
             notifyBlock: { [weak self] in
-                guard let self = self else { return }
+                guard let self else { return }
                 if self.needsStateUpdate {
                     self.updateState()
                 } else if self.needsTableUpdate {
                     self.buildTable()
                 }
-            }
+            },
         )
     }()
 
@@ -143,7 +143,7 @@ public class ManageStickersViewController: OWSTableViewController2 {
         var installedStickerPacks = [StickerPack]()
         var availableBuiltInStickerPacks = [StickerPack]()
         var availableKnownStickerPacksFromMessages = [DatedStickerPackInfo]()
-        SSKEnvironment.shared.databaseStorageRef.read { (transaction) in
+        SSKEnvironment.shared.databaseStorageRef.read { transaction in
             let allPacks = StickerManager.allStickerPacks(transaction: transaction)
             let allPackInfos = allPacks.map { $0.info }
 
@@ -176,7 +176,7 @@ public class ManageStickersViewController: OWSTableViewController2 {
             // Don't download all stickers; we only need covers for this view.
             let source = TransientStickerPackDataSource(
                 stickerPackInfo: info,
-                shouldDownloadAllStickers: false
+                shouldDownloadAllStickers: false,
             )
             source.add(delegate: self)
             return source
@@ -214,7 +214,7 @@ public class ManageStickersViewController: OWSTableViewController2 {
         for dataSource in installedStickerPackSources {
             installedSection.add(OWSTableItem(
                 customCellBlock: { [weak self] in
-                    guard let self = self else {
+                    guard let self else {
                         return UITableViewCell()
                     }
                     return self.buildTableCell(installedStickerPack: dataSource)
@@ -225,7 +225,7 @@ public class ManageStickersViewController: OWSTableViewController2 {
                         return
                     }
                     self?.show(packInfo: packInfo)
-                }
+                },
             ))
         }
         contents.add(installedSection)
@@ -233,7 +233,7 @@ public class ManageStickersViewController: OWSTableViewController2 {
         let itemForAvailablePack = { (dataSource: StickerPackDataSource) -> OWSTableItem in
             OWSTableItem(
                 customCellBlock: { [weak self] in
-                    guard let self = self else {
+                    guard let self else {
                         return UITableViewCell()
                     }
                     return self.buildTableCell(availableStickerPack: dataSource)
@@ -244,7 +244,7 @@ public class ManageStickersViewController: OWSTableViewController2 {
                         return
                     }
                     self?.show(packInfo: packInfo)
-                }
+                },
             )
         }
         if !availableBuiltInStickerPackSources.isEmpty {
@@ -292,13 +292,13 @@ public class ManageStickersViewController: OWSTableViewController2 {
         if !loadingKnownStickerPackSources.isEmpty {
             let text = OWSLocalizedString(
                 "STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS",
-                comment: "Label indicating that one or more known sticker packs is loading."
+                comment: "Label indicating that one or more known sticker packs is loading.",
             )
             knownSection.add(buildEmptySectionItem(labelText: text))
         } else if !failedKnownStickerPackSources.isEmpty {
             let text = OWSLocalizedString(
                 "STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS",
-                comment: "Label indicating that one or more known sticker packs failed to load."
+                comment: "Label indicating that one or more known sticker packs failed to load.",
             )
             knownSection.add(buildEmptySectionItem(labelText: text))
         }
@@ -346,8 +346,10 @@ public class ManageStickersViewController: OWSTableViewController2 {
 
         guard !view.hasStickerView else { return view }
 
-        guard let stickerInfo = dataSource.installedCoverInfo,
-              let imageView = imageView(forStickerInfo: stickerInfo, dataSource: dataSource) else {
+        guard
+            let stickerInfo = dataSource.installedCoverInfo,
+            let imageView = imageView(forStickerInfo: stickerInfo, dataSource: dataSource)
+        else {
             view.showPlaceholder()
             return view
         }
@@ -362,7 +364,7 @@ public class ManageStickersViewController: OWSTableViewController2 {
     private func buildTableCell(
         dataSource: StickerPackDataSource,
         actionIconName: String?,
-        block: @escaping () -> Void
+        block: @escaping () -> Void,
     ) -> UITableViewCell {
 
         let cell = OWSTableItem.newCell()
@@ -391,8 +393,8 @@ public class ManageStickersViewController: OWSTableViewController2 {
         titleLabel.lineBreakMode = .byTruncatingTail
 
         let textStack = UIStackView(arrangedSubviews: [
-            titleLabel
-            ])
+            titleLabel,
+        ])
         textStack.axis = .vertical
         textStack.alignment = .leading
         textStack.spacing = 4
@@ -431,10 +433,10 @@ public class ManageStickersViewController: OWSTableViewController2 {
 
         var subviews: [UIView] = [
             iconView,
-            textStack
+            textStack,
         ]
 
-        if let actionIconName = actionIconName {
+        if let actionIconName {
             let actionButton = StickerPackActionButton(actionIconName: actionIconName, block: block)
             subviews.append(actionButton)
         }
@@ -450,14 +452,16 @@ public class ManageStickersViewController: OWSTableViewController2 {
         return cell
     }
 
-    private func imageView(forStickerInfo stickerInfo: StickerInfo,
-                           dataSource: StickerPackDataSource) -> UIView? {
+    private func imageView(
+        forStickerInfo stickerInfo: StickerInfo,
+        dataSource: StickerPackDataSource,
+    ) -> UIView? {
         StickerView.stickerView(forStickerInfo: stickerInfo, dataSource: dataSource)
     }
 
     private func buildEmptySectionItem(labelText: String) -> OWSTableItem {
         return OWSTableItem(customCellBlock: { [weak self] in
-            guard let self = self else {
+            guard let self else {
                 return UITableViewCell()
             }
             return self.buildEmptySectionCell(labelText: labelText)
@@ -511,7 +515,7 @@ public class ManageStickersViewController: OWSTableViewController2 {
         let sendMessageFlow = SendMessageFlow(
             unapprovedContent: unapprovedContent,
             presentationStyle: .pushOnto(navigationController),
-            delegate: self
+            delegate: self,
         )
         // Retain the flow until it is complete.
         self.sendMessageFlow = sendMessageFlow
@@ -530,7 +534,7 @@ public class ManageStickersViewController: OWSTableViewController2 {
             StickerManager.installStickerPack(
                 stickerPack: stickerPack,
                 wasLocallyInitiated: true,
-                transaction: transaction
+                transaction: transaction,
             )
         }
 
@@ -539,7 +543,7 @@ public class ManageStickersViewController: OWSTableViewController2 {
             // If the current modal isn't the one we created, we can ignore it
             guard modalVC == self?.pendingModalVC else { return }
 
-            if self != nil && SSKEnvironment.shared.reachabilityManagerRef.isReachable {
+            if self != nil, SSKEnvironment.shared.reachabilityManagerRef.isReachable {
                 owsFailDebug("Expected to hear back from StickerManager about a newly installed sticker pack")
             }
             self?.updateState()

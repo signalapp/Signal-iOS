@@ -12,9 +12,11 @@ protocol CVLoadCoordinatorDelegate: UIScrollViewDelegate {
 
     func willUpdateWithNewRenderState(_ renderState: CVRenderState) -> CVUpdateToken
 
-    func updateWithNewRenderState(update: CVUpdate,
-                                  scrollAction: CVScrollAction,
-                                  updateToken: CVUpdateToken)
+    func updateWithNewRenderState(
+        update: CVUpdate,
+        scrollAction: CVScrollAction,
+        updateToken: CVUpdateToken,
+    )
 
     func updateScrollingContent()
 
@@ -84,7 +86,7 @@ public class CVLoadCoordinator: NSObject {
         viewState: CVViewState,
         threadViewModel: ThreadViewModel,
         conversationViewModel: ConversationViewModel,
-        oldestUnreadMessageSortId: UInt64?
+        oldestUnreadMessageSortId: UInt64?,
     ) {
         self.viewState = viewState
         self.threadUniqueId = threadViewModel.threadRecord.uniqueId
@@ -96,16 +98,16 @@ public class CVLoadCoordinator: NSObject {
             viewState: viewState,
             typingIndicatorsSender: nil,
             oldestUnreadMessageSortId: oldestUnreadMessageSortId,
-            previousViewStateSnapshot: nil
+            previousViewStateSnapshot: nil,
         )
         self.renderState = CVRenderState.defaultRenderState(
             threadViewModel: threadViewModel,
             conversationViewModel: conversationViewModel,
-            viewStateSnapshot: viewStateSnapshot
+            viewStateSnapshot: viewStateSnapshot,
         )
         self.messageLoader = MessageLoader(
             batchFetcher: ConversationViewBatchFetcher(interactionFinder: InteractionFinder(threadUniqueId: thread.uniqueId)),
-            interactionFetchers: [SSKEnvironment.shared.modelReadCachesRef.interactionReadCache, SDSInteractionFetcherImpl()]
+            interactionFetchers: [SSKEnvironment.shared.modelReadCachesRef.interactionReadCache, SDSInteractionFetcherImpl()],
         )
         super.init()
     }
@@ -132,46 +134,66 @@ public class CVLoadCoordinator: NSObject {
 
     @MainActor
     private func addNotificationListeners() {
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(applicationDidEnterBackground),
-                                               name: .OWSApplicationDidEnterBackground,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(typingIndicatorStateDidChange),
-                                               name: TypingIndicatorsImpl.typingIndicatorStateDidChange,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(profileWhitelistDidChange),
-                                               name: UserProfileNotifications.profileWhitelistDidChange,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(blockListDidChange),
-                                               name: BlockingManager.blockListDidChange,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(localProfileDidChange),
-                                               name: UserProfileNotifications.localProfileDidChange,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(otherUsersProfileDidChange(notification:)),
-                                               name: UserProfileNotifications.otherUsersProfileDidChange,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(skipContactAvatarBlurDidChange(notification:)),
-                                               name: OWSContactsManager.skipContactAvatarBlurDidChange,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(skipGroupAvatarBlurDidChange(notification:)),
-                                               name: OWSContactsManager.skipGroupAvatarBlurDidChange,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(chatColorsDidChange),
-                                               name: ChatColorSettingStore.chatColorsDidChangeNotification,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(didLearnRecipientAssociation(notification:)),
-                                               name: .didLearnRecipientAssociation,
-                                               object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(applicationDidEnterBackground),
+            name: .OWSApplicationDidEnterBackground,
+            object: nil,
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(typingIndicatorStateDidChange),
+            name: TypingIndicatorsImpl.typingIndicatorStateDidChange,
+            object: nil,
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(profileWhitelistDidChange),
+            name: UserProfileNotifications.profileWhitelistDidChange,
+            object: nil,
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(blockListDidChange),
+            name: BlockingManager.blockListDidChange,
+            object: nil,
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(localProfileDidChange),
+            name: UserProfileNotifications.localProfileDidChange,
+            object: nil,
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(otherUsersProfileDidChange(notification:)),
+            name: UserProfileNotifications.otherUsersProfileDidChange,
+            object: nil,
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(skipContactAvatarBlurDidChange(notification:)),
+            name: OWSContactsManager.skipContactAvatarBlurDidChange,
+            object: nil,
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(skipGroupAvatarBlurDidChange(notification:)),
+            name: OWSContactsManager.skipGroupAvatarBlurDidChange,
+            object: nil,
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(chatColorsDidChange),
+            name: ChatColorSettingStore.chatColorsDidChangeNotification,
+            object: nil,
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(didLearnRecipientAssociation(notification:)),
+            name: .didLearnRecipientAssociation,
+            object: nil,
+        )
         callService.callServiceState.addObserver(self, syncStateImmediately: false)
     }
 
@@ -198,24 +220,30 @@ public class CVLoadCoordinator: NSObject {
     private func profileWhitelistDidChange() {
         AssertIsOnMainThread()
 
-        enqueueReload(canReuseInteractionModels: true,
-                      canReuseComponentStates: false)
+        enqueueReload(
+            canReuseInteractionModels: true,
+            canReuseComponentStates: false,
+        )
     }
 
     @objc
     private func blockListDidChange() {
         AssertIsOnMainThread()
 
-        enqueueReload(canReuseInteractionModels: true,
-                      canReuseComponentStates: false)
+        enqueueReload(
+            canReuseInteractionModels: true,
+            canReuseComponentStates: false,
+        )
     }
 
     @objc
     private func localProfileDidChange() {
         AssertIsOnMainThread()
 
-        enqueueReload(canReuseInteractionModels: true,
-                      canReuseComponentStates: false)
+        enqueueReload(
+            canReuseInteractionModels: true,
+            canReuseComponentStates: false,
+        )
     }
 
     @objc
@@ -223,8 +251,10 @@ public class CVLoadCoordinator: NSObject {
         AssertIsOnMainThread()
 
         if let contactThread = thread as? TSContactThread {
-            guard let address = notification.userInfo?[UserProfileNotifications.profileAddressKey] as? SignalServiceAddress,
-                  address.isValid else {
+            guard
+                let address = notification.userInfo?[UserProfileNotifications.profileAddressKey] as? SignalServiceAddress,
+                address.isValid
+            else {
                 owsFailDebug("Missing or invalid address.")
                 return
             }
@@ -268,8 +298,10 @@ public class CVLoadCoordinator: NSObject {
             owsFailDebug("Missing groupId.")
             return
         }
-        guard let groupThread = thread as? TSGroupThread,
-              groupThread.uniqueId == groupUniqueId else {
+        guard
+            let groupThread = thread as? TSGroupThread,
+            groupThread.uniqueId == groupUniqueId
+        else {
             return
         }
         enqueueReloadWithoutCaches()
@@ -304,7 +336,7 @@ public class CVLoadCoordinator: NSObject {
     public var didLoadOlderRecently: Bool {
         AssertIsOnMainThread()
 
-        guard let lastLoadOlderDate = lastLoadOlderDate else {
+        guard let lastLoadOlderDate else {
             return false
         }
         return abs(lastLoadOlderDate.timeIntervalSinceNow) < autoLoadMoreThreshold
@@ -314,11 +346,12 @@ public class CVLoadCoordinator: NSObject {
     public var didLoadNewerRecently: Bool {
         AssertIsOnMainThread()
 
-        guard let lastLoadNewerDate = lastLoadNewerDate else {
+        guard let lastLoadNewerDate else {
             return false
         }
         return abs(lastLoadNewerDate.timeIntervalSinceNow) < autoLoadMoreThreshold
     }
+
     private func loadInitialMapping(focusMessageIdOnOpen: String?) {
         owsAssertDebug(renderState.isEmptyInitialState)
         loadRequestBuilder.loadInitialMapping(focusMessageIdOnOpen: focusMessageIdOnOpen)
@@ -356,25 +389,33 @@ public class CVLoadCoordinator: NSObject {
         loadIfNecessary()
     }
 
-    public func enqueueReload(updatedInteractionIds: Set<String>,
-                              deletedInteractionIds: Set<String>) {
+    public func enqueueReload(
+        updatedInteractionIds: Set<String>,
+        deletedInteractionIds: Set<String>,
+    ) {
         AssertIsOnMainThread()
 
-        loadRequestBuilder.reload(updatedInteractionIds: updatedInteractionIds,
-                                  deletedInteractionIds: deletedInteractionIds)
+        loadRequestBuilder.reload(
+            updatedInteractionIds: updatedInteractionIds,
+            deletedInteractionIds: deletedInteractionIds,
+        )
         loadIfNecessary()
     }
 
-    public func enqueueLoadAndScrollToInteraction(interactionId: String,
-                                                  onScreenPercentage: CGFloat,
-                                                  alignment: ScrollAlignment,
-                                                  isAnimated: Bool) {
+    public func enqueueLoadAndScrollToInteraction(
+        interactionId: String,
+        onScreenPercentage: CGFloat,
+        alignment: ScrollAlignment,
+        isAnimated: Bool,
+    ) {
         AssertIsOnMainThread()
 
-        loadRequestBuilder.loadAndScrollToInteraction(interactionId: interactionId,
-                                                      onScreenPercentage: onScreenPercentage,
-                                                      alignment: alignment,
-                                                      isAnimated: isAnimated)
+        loadRequestBuilder.loadAndScrollToInteraction(
+            interactionId: interactionId,
+            onScreenPercentage: onScreenPercentage,
+            alignment: alignment,
+            isAnimated: isAnimated,
+        )
         loadIfNecessary()
     }
 
@@ -385,12 +426,16 @@ public class CVLoadCoordinator: NSObject {
         loadIfNecessary()
     }
 
-    public func enqueueReload(canReuseInteractionModels: Bool,
-                              canReuseComponentStates: Bool) {
+    public func enqueueReload(
+        canReuseInteractionModels: Bool,
+        canReuseComponentStates: Bool,
+    ) {
         AssertIsOnMainThread()
 
-        loadRequestBuilder.reload(canReuseInteractionModels: canReuseInteractionModels,
-                                  canReuseComponentStates: canReuseComponentStates)
+        loadRequestBuilder.reload(
+            canReuseInteractionModels: canReuseInteractionModels,
+            canReuseComponentStates: canReuseComponentStates,
+        )
         loadIfNecessary()
     }
 
@@ -402,8 +447,10 @@ public class CVLoadCoordinator: NSObject {
         self.conversationStyle = conversationStyle
 
         // We need to kick off a reload cycle if conversationStyle changes.
-        enqueueReload(canReuseInteractionModels: true,
-                      canReuseComponentStates: false)
+        enqueueReload(
+            canReuseInteractionModels: true,
+            canReuseComponentStates: false,
+        )
     }
 
     // MARK: - Unread Indicator
@@ -437,9 +484,11 @@ public class CVLoadCoordinator: NSObject {
     }
 
     private lazy var loadIfNecessaryEvent: DebouncedEvent = {
-        DebouncedEvents.build(mode: .lastOnly,
-                              maxFrequencySeconds: DebouncedEvents.thetaInterval,
-                              onQueue: .main) { [weak self] in
+        DebouncedEvents.build(
+            mode: .lastOnly,
+            maxFrequencySeconds: DebouncedEvents.thetaInterval,
+            onQueue: .main,
+        ) { [weak self] in
             AssertIsOnMainThread()
             self?.loadIfNecessaryDebounced()
         }
@@ -476,7 +525,7 @@ public class CVLoadCoordinator: NSObject {
             viewState: viewState,
             typingIndicatorsSender: typingIndicatorsSender,
             oldestUnreadMessageSortId: oldestUnreadMessageSortId,
-            previousViewStateSnapshot: prevRenderState.viewStateSnapshot
+            previousViewStateSnapshot: prevRenderState.viewStateSnapshot,
         )
         let loader = CVLoader(
             threadUniqueId: threadUniqueId,
@@ -484,7 +533,7 @@ public class CVLoadCoordinator: NSObject {
             viewStateSnapshot: viewStateSnapshot,
             spoilerState: spoilerState,
             prevRenderState: prevRenderState,
-            messageLoader: messageLoader
+            messageLoader: messageLoader,
         )
 
         firstly {
@@ -528,12 +577,14 @@ public class CVLoadCoordinator: NSObject {
             AssertIsOnMainThread()
 
             // Allow multi selection animation load to land, even if keyboard is animating.
-            if let lastKeyboardAnimationDate = viewState.lastKeyboardAnimationDate,
-               lastKeyboardAnimationDate.isAfterNow,
-               viewState.selectionAnimationState != .willAnimate {
+            if
+                let lastKeyboardAnimationDate = viewState.lastKeyboardAnimationDate,
+                lastKeyboardAnimationDate.isAfterNow,
+                viewState.selectionAnimationState != .willAnimate
+            {
                 return false
             }
-            guard viewState.selectionAnimationState != .animating  else {
+            guard viewState.selectionAnimationState != .animating else {
                 return false
             }
             if let interaction = viewState.collectionViewActiveContextMenuInteraction, interaction.contextMenuVisible {
@@ -568,9 +619,11 @@ public class CVLoadCoordinator: NSObject {
 
         self.renderState = renderState
 
-        delegate.updateWithNewRenderState(update: update,
-                                          scrollAction: loadRequest.scrollAction,
-                                          updateToken: updateToken)
+        delegate.updateWithNewRenderState(
+            update: update,
+            scrollAction: loadRequest.scrollAction,
+            updateToken: updateToken,
+        )
 
         loadFuture.resolve()
     }
@@ -584,8 +637,10 @@ extension CVLoadCoordinator: DatabaseChangeDelegate {
         guard databaseChanges.threadUniqueIds.contains(threadUniqueId) else {
             return
         }
-        enqueueReload(updatedInteractionIds: databaseChanges.interactionUniqueIds,
-                      deletedInteractionIds: databaseChanges.interactionDeletedUniqueIds)
+        enqueueReload(
+            updatedInteractionIds: databaseChanges.interactionUniqueIds,
+            deletedInteractionIds: databaseChanges.interactionDeletedUniqueIds,
+        )
     }
 
     public func databaseChangesDidUpdateExternally() {
@@ -625,8 +680,10 @@ extension CVLoadCoordinator: UICollectionViewDataSource {
         return renderItems.count
     }
 
-    public func collectionView(_ collectionView: UICollectionView,
-                               cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    public func collectionView(
+        _ collectionView: UICollectionView,
+        cellForItemAt indexPath: IndexPath,
+    ) -> UICollectionViewCell {
         owsAssertDebug(indexPath.section == Self.messageSection)
 
         guard let componentDelegate = self.componentDelegate else {
@@ -638,19 +695,25 @@ extension CVLoadCoordinator: UICollectionViewDataSource {
             return UICollectionViewCell()
         }
         let cellReuseIdentifier = renderItem.cellReuseIdentifier
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellReuseIdentifier,
-                                                            for: indexPath) as? CVCell else {
+        guard
+            let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: cellReuseIdentifier,
+                for: indexPath,
+            ) as? CVCell
+        else {
             owsFailDebug("Missing cell.")
             return UICollectionViewCell()
         }
-        guard let delegate = delegate else {
+        guard let delegate else {
             owsFailDebug("Missing delegate.")
             return UICollectionViewCell()
         }
         let messageSwipeActionState = delegate.viewState.messageSwipeActionState
-        cell.configure(renderItem: renderItem,
-                       componentDelegate: componentDelegate,
-                       messageSwipeActionState: messageSwipeActionState)
+        cell.configure(
+            renderItem: renderItem,
+            componentDelegate: componentDelegate,
+            messageSwipeActionState: messageSwipeActionState,
+        )
         return cell
 
         //        // This must happen after load for display, since the tap
@@ -681,18 +744,26 @@ extension CVLoadCoordinator: UICollectionViewDataSource {
         // return cell;
     }
 
-    public func collectionView(_ collectionView: UICollectionView,
-                               viewForSupplementaryElementOfKind kind: String,
-                               at indexPath: IndexPath) -> UICollectionReusableView {
-        guard kind == UICollectionView.elementKindSectionHeader ||
-                kind == UICollectionView.elementKindSectionFooter else {
+    public func collectionView(
+        _ collectionView: UICollectionView,
+        viewForSupplementaryElementOfKind kind: String,
+        at indexPath: IndexPath,
+    ) -> UICollectionReusableView {
+        guard
+            kind == UICollectionView.elementKindSectionHeader ||
+            kind == UICollectionView.elementKindSectionFooter
+        else {
             owsFailDebug("unexpected supplementaryElement: \(kind)")
             return UICollectionReusableView()
         }
-        guard let loadMoreView =
-                collectionView.dequeueReusableSupplementaryView(ofKind: kind,
-                                                                withReuseIdentifier: LoadMoreMessagesView.reuseIdentifier,
-                                                                for: indexPath) as? LoadMoreMessagesView else {
+        guard
+            let loadMoreView =
+            collectionView.dequeueReusableSupplementaryView(
+                ofKind: kind,
+                withReuseIdentifier: LoadMoreMessagesView.reuseIdentifier,
+                for: indexPath,
+            ) as? LoadMoreMessagesView
+        else {
             owsFailDebug("Couldn't load supplementary view: \(kind)")
             return UICollectionReusableView()
         }
@@ -821,14 +892,14 @@ extension CVLoadCoordinator: CallServiceStateObserver {
         }
         let matchesThread: Bool = (
             oldValue?.mode.matches(.groupThread(groupId)) == true
-            || newValue?.mode.matches(.groupThread(groupId)) == true
+                || newValue?.mode.matches(.groupThread(groupId)) == true,
         )
         guard matchesThread else {
             return
         }
         enqueueReload(
             canReuseInteractionModels: true,
-            canReuseComponentStates: false
+            canReuseComponentStates: false,
         )
     }
 }

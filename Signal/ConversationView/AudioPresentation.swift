@@ -37,7 +37,8 @@ protocol AudioPresenter {
     // Color for dot indicating listened/unlistened status.
     func playedDotAnimationColor(
         conversationStyle: ConversationStyle,
-        isIncoming: Bool) -> ColorValueProvider
+        isIncoming: Bool,
+    ) -> ColorValueProvider
 
     // Color for scrubbing thumb.
     func thumbColor(isIncoming: Bool) -> UIColor
@@ -97,12 +98,12 @@ extension AudioPresenter {
     static func playbackTimeLabelConfig(
         text: String = " ",
         isIncoming: Bool = true,
-        conversationStyle: ConversationStyle? = nil
+        conversationStyle: ConversationStyle? = nil,
     ) -> CVLabelConfig {
         return CVLabelConfig.unstyledText(
             text,
             font: UIFont.dynamicTypeCaption1Clamped,
-            textColor: conversationStyle?.bubbleSecondaryTextColor(isIncoming: isIncoming) ?? .label
+            textColor: conversationStyle?.bubbleSecondaryTextColor(isIncoming: isIncoming) ?? .label,
         )
     }
 }

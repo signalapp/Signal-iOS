@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import XCTest
 import SignalServiceKit
+import XCTest
 
 class DataMessagePaddingTests: XCTestCase {
     func testPadding() {
@@ -38,7 +38,7 @@ class DataMessagePaddingTests: XCTestCase {
             // No separator
             Data([1, 2, 3, 0, 0, 0]),
             // Non-zeroes after separator
-            Data([1, 2, 3, 0x80, 4, 5, 6, 0])
+            Data([1, 2, 3, 0x80, 4, 5, 6, 0]),
         ]
         for testCase in testCases {
             XCTAssertEqual(testCase.withoutPadding(), testCase)

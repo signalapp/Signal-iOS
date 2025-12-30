@@ -18,9 +18,9 @@ enum CallState: String {
     // The local ringing state is a bit more complex since we sometimes kick off
     // a CallKit ring before RingRTC is ready to answer. We can only answer the call
     // once both the user has answered and RingRTC is ready.
-    case localRinging_Anticipatory      // RingRTC not ready. User has not answered
-    case localRinging_ReadyToAnswer     // RingRTC ready. User has not answered
-    case accepting                      // RingRTC not ready. User has answered
+    case localRinging_Anticipatory // RingRTC not ready. User has not answered
+    case localRinging_ReadyToAnswer // RingRTC ready. User has not answered
+    case accepting // RingRTC not ready. User has answered
 
     case connected
     case reconnecting
@@ -35,17 +35,25 @@ enum CallState: String {
 }
 
 enum CallDirection {
-    case outgoing, incoming
+    case outgoing
+    case incoming
 }
 
 protocol IndividualCallObserver: AnyObject {
-    @MainActor func individualCallStateDidChange(_ call: IndividualCall, state: CallState)
-    @MainActor func individualCallLocalVideoMuteDidChange(_ call: IndividualCall, isVideoMuted: Bool)
-    @MainActor func individualCallLocalAudioMuteDidChange(_ call: IndividualCall, isAudioMuted: Bool)
-    @MainActor func individualCallHoldDidChange(_ call: IndividualCall, isOnHold: Bool)
-    @MainActor func individualCallRemoteAudioMuteDidChange(_ call: IndividualCall, isAudioMuted: Bool)
-    @MainActor func individualCallRemoteVideoMuteDidChange(_ call: IndividualCall, isVideoMuted: Bool)
-    @MainActor func individualCallRemoteSharingScreenDidChange(_ call: IndividualCall, isRemoteSharingScreen: Bool)
+    @MainActor
+    func individualCallStateDidChange(_ call: IndividualCall, state: CallState)
+    @MainActor
+    func individualCallLocalVideoMuteDidChange(_ call: IndividualCall, isVideoMuted: Bool)
+    @MainActor
+    func individualCallLocalAudioMuteDidChange(_ call: IndividualCall, isAudioMuted: Bool)
+    @MainActor
+    func individualCallHoldDidChange(_ call: IndividualCall, isOnHold: Bool)
+    @MainActor
+    func individualCallRemoteAudioMuteDidChange(_ call: IndividualCall, isAudioMuted: Bool)
+    @MainActor
+    func individualCallRemoteVideoMuteDidChange(_ call: IndividualCall, isVideoMuted: Bool)
+    @MainActor
+    func individualCallRemoteSharingScreenDidChange(_ call: IndividualCall, isRemoteSharingScreen: Bool)
 }
 
 extension IndividualCallObserver {
@@ -236,11 +244,11 @@ public class IndividualCall: CustomDebugStringConvertible {
     var hasTerminated: Bool {
         switch state {
         case .idle, .dialing, .answering, .remoteRinging, .localRinging_Anticipatory, .localRinging_ReadyToAnswer,
-                .accepting, .connected, .reconnecting:
+             .accepting, .connected, .reconnecting:
             return false
 
         case .localFailure, .localHangup, .remoteHangup, .remoteHangupNeedPermission, .remoteBusy, .answeredElsewhere,
-                .declinedElsewhere, .busyElsewhere:
+             .declinedElsewhere, .busyElsewhere:
             return true
         }
     }
@@ -252,7 +260,7 @@ public class IndividualCall: CustomDebugStringConvertible {
     static func outgoingIndividualCall(
         thread: TSContactThread,
         offerMediaType: TSRecentCallOfferType,
-        localDeviceId: DeviceId
+        localDeviceId: DeviceId,
     ) -> IndividualCall {
         return IndividualCall(
             callId: nil,
@@ -261,7 +269,7 @@ public class IndividualCall: CustomDebugStringConvertible {
             state: .dialing,
             thread: thread,
             sentAtTimestamp: MessageTimestampGenerator.sharedInstance.generateTimestamp(),
-            localDeviceId: localDeviceId
+            localDeviceId: localDeviceId,
         )
     }
 
@@ -270,7 +278,7 @@ public class IndividualCall: CustomDebugStringConvertible {
         thread: TSContactThread,
         sentAtTimestamp: UInt64,
         offerMediaType: TSRecentCallOfferType,
-        localDeviceId: DeviceId
+        localDeviceId: DeviceId,
     ) -> IndividualCall {
         return IndividualCall(
             callId: callId,
@@ -279,7 +287,7 @@ public class IndividualCall: CustomDebugStringConvertible {
             state: .answering,
             thread: thread,
             sentAtTimestamp: sentAtTimestamp,
-            localDeviceId: localDeviceId
+            localDeviceId: localDeviceId,
         )
     }
 
@@ -290,20 +298,20 @@ public class IndividualCall: CustomDebugStringConvertible {
         state: CallState,
         thread: TSContactThread,
         sentAtTimestamp: UInt64,
-        localDeviceId: DeviceId
+        localDeviceId: DeviceId,
     ) {
         self.callId = callId
         self.callEventInserter = CallEventInserter(
             thread: thread,
             callId: callId,
             offerMediaType: offerMediaType,
-            sentAtTimestamp: sentAtTimestamp
+            sentAtTimestamp: sentAtTimestamp,
         )
         self.commonState = CommonCallState(
             audioActivity: AudioActivity(
                 audioDescription: "[SignalCall] with individual \(thread.contactAddress)",
-                behavior: .call
-            )
+                behavior: .call,
+            ),
         )
         self.direction = direction
         self.offerMediaType = offerMediaType
@@ -342,7 +350,7 @@ public class IndividualCall: CustomDebugStringConvertible {
     // MARK: - Fetching and updating db objects
 
     public func createOrUpdateCallInteractionAsync(
-        callType: RPRecentCallType
+        callType: RPRecentCallType,
     ) {
         // Set the call type immediately; additional CallKit callbacks might come in
         // before we get the lock to write, and they may make decisions based on the

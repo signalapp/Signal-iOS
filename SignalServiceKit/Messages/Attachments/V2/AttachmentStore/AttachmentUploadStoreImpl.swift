@@ -10,7 +10,7 @@ public class AttachmentUploadStoreImpl: AttachmentUploadStore {
     private let attachmentStore: AttachmentStore
 
     public init(
-        attachmentStore: AttachmentStore
+        attachmentStore: AttachmentStore,
     ) {
         self.attachmentStore = attachmentStore
     }
@@ -18,7 +18,7 @@ public class AttachmentUploadStoreImpl: AttachmentUploadStore {
     public func markUploadedToTransitTier(
         attachmentStream: AttachmentStream,
         info transitTierInfo: Attachment.TransitTierInfo,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         let latestTransitTierInfo = transitTierInfo
 
@@ -59,7 +59,7 @@ public class AttachmentUploadStoreImpl: AttachmentUploadStore {
     public func markTransitTierUploadExpired(
         attachment: Attachment,
         info: Attachment.TransitTierInfo,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         // Refetch the attachment in case the passed in transit tier
         // info is obsolete.
@@ -92,12 +92,12 @@ public class AttachmentUploadStoreImpl: AttachmentUploadStore {
         attachment: Attachment,
         mediaTierInfo: Attachment.MediaTierInfo,
         mediaName: String,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         let params = Attachment.ConstructionParams.forUpdatingAsUploadedToMediaTier(
             attachment: attachment,
             mediaTierInfo: mediaTierInfo,
-            mediaName: mediaName
+            mediaName: mediaName,
         )
         var record = Attachment.Record(params: params)
         record.sqliteId = attachment.id
@@ -106,7 +106,7 @@ public class AttachmentUploadStoreImpl: AttachmentUploadStore {
 
     public func markMediaTierUploadExpired(
         attachment: Attachment,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         let params = Attachment.ConstructionParams.forRemovingMediaTierInfo(attachment: attachment)
         var record = Attachment.Record(params: params)
@@ -118,12 +118,12 @@ public class AttachmentUploadStoreImpl: AttachmentUploadStore {
         attachment: Attachment,
         thumbnailMediaTierInfo: Attachment.ThumbnailMediaTierInfo,
         mediaName: String,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         let params = Attachment.ConstructionParams.forUpdatingAsUploadedThumbnailToMediaTier(
             attachment: attachment,
             thumbnailMediaTierInfo: thumbnailMediaTierInfo,
-            mediaName: mediaName
+            mediaName: mediaName,
         )
         var record = Attachment.Record(params: params)
         record.sqliteId = attachment.id
@@ -132,7 +132,7 @@ public class AttachmentUploadStoreImpl: AttachmentUploadStore {
 
     public func markThumbnailMediaTierUploadExpired(
         attachment: Attachment,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         let params = Attachment.ConstructionParams.forRemovingThumbnailMediaTierInfo(attachment: attachment)
         var record = Attachment.Record(params: params)
@@ -154,7 +154,7 @@ public class AttachmentUploadStoreImpl: AttachmentUploadStore {
     public func removeRecord(
         for attachmentId: Attachment.IDType,
         sourceType: AttachmentUploadRecord.SourceType,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         try AttachmentUploadRecord
             .filter(Column(AttachmentUploadRecord.CodingKeys.attachmentId) == attachmentId)
@@ -165,7 +165,7 @@ public class AttachmentUploadStoreImpl: AttachmentUploadStore {
     public func fetchAttachmentUploadRecord(
         for attachmentId: Attachment.IDType,
         sourceType: AttachmentUploadRecord.SourceType,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> AttachmentUploadRecord? {
         return try AttachmentUploadRecord
             .filter(Column(AttachmentUploadRecord.CodingKeys.attachmentId) == attachmentId)

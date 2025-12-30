@@ -19,7 +19,7 @@ public class ChunkedOutputStreamTransform: StreamTransform {
         var result = Data()
         var v = value
         while v > 0x7F {
-            result.append(contentsOf: [(UInt8(v & 0x7f | 0x80))])
+            result.append(contentsOf: [UInt8(v & 0x7f | 0x80)])
             v >>= 7
         }
         result.append(contentsOf: [UInt8(v)])

@@ -14,14 +14,18 @@ public extension NSRegularExpression {
     class func parseFirstMatch(
         pattern: String,
         text: String,
-        options: NSRegularExpression.Options = []
+        options: NSRegularExpression.Options = [],
     ) -> String? {
         do {
             let regex = try NSRegularExpression(pattern: pattern, options: options)
-            guard let match = regex.firstMatch(in: text,
-                                               options: [],
-                                               range: text.entireRange) else {
-                                                return nil
+            guard
+                let match = regex.firstMatch(
+                    in: text,
+                    options: [],
+                    range: text.entireRange,
+                )
+            else {
+                return nil
             }
             let matchRange = match.range(at: 1)
             guard let textRange = Range(matchRange, in: text) else {
@@ -37,10 +41,14 @@ public extension NSRegularExpression {
     }
 
     func parseFirstMatch(inText text: String, options: NSRegularExpression.Options = []) -> String? {
-        guard let match = self.firstMatch(in: text,
-                                          options: [],
-                                          range: text.entireRange) else {
-                                            return nil
+        guard
+            let match = self.firstMatch(
+                in: text,
+                options: [],
+                range: text.entireRange,
+            )
+        else {
+            return nil
         }
         let matchRange = match.range(at: 1)
         guard let textRange = Range(matchRange, in: text) else {
@@ -72,7 +80,7 @@ public struct MatchSet {
     }
 }
 
-fileprivate extension String {
+private extension String {
     subscript(_ nsRange: NSRange) -> Substring? {
         guard let swiftRange = Range(nsRange, in: self) else { return nil }
         return self[swiftRange]
@@ -87,7 +95,7 @@ fileprivate extension String {
     }
 }
 
-fileprivate extension NSTextCheckingResult {
+private extension NSTextCheckingResult {
     func createMatchSet(originalSearchString string: String) -> MatchSet? {
         guard numberOfRanges > 0 else { return nil }
         let substrings = (0..<numberOfRanges)

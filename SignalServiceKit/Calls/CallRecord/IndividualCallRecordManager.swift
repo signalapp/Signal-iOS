@@ -12,7 +12,7 @@ public protocol IndividualCallRecordManager {
         individualCallInteractionRowId: Int64,
         contactThread: TSContactThread,
         newCallInteractionType: RPRecentCallType,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     )
 
     /// Update the call record for the given call interaction's current state,
@@ -23,7 +23,7 @@ public protocol IndividualCallRecordManager {
         contactThread: TSContactThread,
         contactThreadRowId: Int64,
         callId: UInt64,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws
 
     /// Create a call record for the given interaction's current state.
@@ -38,7 +38,7 @@ public protocol IndividualCallRecordManager {
         individualCallStatus: CallRecord.CallStatus.IndividualCallStatus,
         callEventTimestamp: UInt64,
         shouldSendSyncMessage: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws -> CallRecord
 
     /// Update the given call record.
@@ -47,7 +47,7 @@ public protocol IndividualCallRecordManager {
         existingCallRecord: CallRecord,
         newIndividualCallStatus: CallRecord.CallStatus.IndividualCallStatus,
         shouldSendSyncMessage: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     )
 }
 
@@ -62,7 +62,7 @@ public class IndividualCallRecordManagerImpl: IndividualCallRecordManager {
     init(
         callRecordStore: CallRecordStore,
         interactionStore: InteractionStore,
-        outgoingSyncMessageManager: OutgoingCallEventSyncMessageManager
+        outgoingSyncMessageManager: OutgoingCallEventSyncMessageManager,
     ) {
         self.callRecordStore = callRecordStore
         self.interactionStore = interactionStore
@@ -75,11 +75,11 @@ public class IndividualCallRecordManagerImpl: IndividualCallRecordManager {
         individualCallInteractionRowId: Int64,
         contactThread: TSContactThread,
         newCallInteractionType: RPRecentCallType,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         guard
             let newIndividualCallStatus = CallRecord.CallStatus.IndividualCallStatus(
-                individualCallInteractionType: newCallInteractionType
+                individualCallInteractionType: newCallInteractionType,
             )
         else {
             logger.error("Cannot update interaction or call record, missing or invalid parameters!")
@@ -89,12 +89,15 @@ public class IndividualCallRecordManagerImpl: IndividualCallRecordManager {
         interactionStore.updateIndividualCallInteractionType(
             individualCallInteraction: individualCallInteraction,
             newCallInteractionType: newCallInteractionType,
-            tx: tx
+            tx: tx,
         )
 
-        guard let existingCallRecord = callRecordStore.fetch(
-            interactionRowId: individualCallInteractionRowId, tx: tx
-        ) else {
+        guard
+            let existingCallRecord = callRecordStore.fetch(
+                interactionRowId: individualCallInteractionRowId,
+                tx: tx,
+            )
+        else {
             return
         }
 
@@ -103,7 +106,7 @@ public class IndividualCallRecordManagerImpl: IndividualCallRecordManager {
             existingCallRecord: existingCallRecord,
             newIndividualCallStatus: newIndividualCallStatus,
             shouldSendSyncMessage: true,
-            tx: tx
+            tx: tx,
         )
     }
 
@@ -117,21 +120,21 @@ public class IndividualCallRecordManagerImpl: IndividualCallRecordManager {
         contactThread: TSContactThread,
         contactThreadRowId: Int64,
         callId: UInt64,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         guard
             let callDirection = CallRecord.CallDirection(
-                individualCallInteractionType: individualCallInteraction.callType
+                individualCallInteractionType: individualCallInteraction.callType,
             ),
             let individualCallStatus = CallRecord.CallStatus.IndividualCallStatus(
-                individualCallInteractionType: individualCallInteraction.callType
+                individualCallInteractionType: individualCallInteraction.callType,
             )
         else { return }
 
         switch callRecordStore.fetch(
             callId: callId,
             conversationId: .thread(threadRowId: contactThreadRowId),
-            tx: tx
+            tx: tx,
         ) {
         case .matchDeleted:
             logger.warn("Ignoring: existing record for call was deleted!")
@@ -141,7 +144,7 @@ public class IndividualCallRecordManagerImpl: IndividualCallRecordManager {
                 existingCallRecord: existingCallRecord,
                 newIndividualCallStatus: individualCallStatus,
                 shouldSendSyncMessage: true,
-                tx: tx
+                tx: tx,
             )
         case .matchNotFound:
             _ = try createRecordForInteraction(
@@ -155,7 +158,7 @@ public class IndividualCallRecordManagerImpl: IndividualCallRecordManager {
                 individualCallStatus: individualCallStatus,
                 callEventTimestamp: individualCallInteraction.timestamp,
                 shouldSendSyncMessage: true,
-                tx: tx
+                tx: tx,
             )
         }
     }
@@ -171,7 +174,7 @@ public class IndividualCallRecordManagerImpl: IndividualCallRecordManager {
         individualCallStatus: CallRecord.CallStatus.IndividualCallStatus,
         callEventTimestamp: UInt64,
         shouldSendSyncMessage: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws -> CallRecord {
         let callRecord = CallRecord(
             callId: callId,
@@ -180,7 +183,7 @@ public class IndividualCallRecordManagerImpl: IndividualCallRecordManager {
             callType: callType,
             callDirection: callDirection,
             callStatus: .individual(individualCallStatus),
-            callBeganTimestamp: callEventTimestamp
+            callBeganTimestamp: callEventTimestamp,
         )
 
         let insertResult = Result(catching: { try callRecordStore.insert(callRecord: callRecord, tx: tx) })
@@ -190,7 +193,7 @@ public class IndividualCallRecordManagerImpl: IndividualCallRecordManager {
                 callRecord: callRecord,
                 callEvent: .callUpdated,
                 callEventTimestamp: callRecord.callBeganTimestamp,
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -204,17 +207,19 @@ public class IndividualCallRecordManagerImpl: IndividualCallRecordManager {
         existingCallRecord: CallRecord,
         newIndividualCallStatus: CallRecord.CallStatus.IndividualCallStatus,
         shouldSendSyncMessage: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         guard case let .individual(individualCallStatus) = existingCallRecord.callStatus else {
             logger.error("Missing individual call status while trying to update record!")
             return
         }
 
-        guard statusTransitionManager.isStatusTransitionAllowed(
-            fromIndividualCallStatus: individualCallStatus,
-            toIndividualCallStatus: newIndividualCallStatus
-        ) else {
+        guard
+            statusTransitionManager.isStatusTransitionAllowed(
+                fromIndividualCallStatus: individualCallStatus,
+                toIndividualCallStatus: newIndividualCallStatus,
+            )
+        else {
             logger.warn("Status transition \(individualCallStatus) -> \(newIndividualCallStatus) not allowed. Skipping record update.")
             return
         }
@@ -222,7 +227,7 @@ public class IndividualCallRecordManagerImpl: IndividualCallRecordManager {
         callRecordStore.updateCallAndUnreadStatus(
             callRecord: existingCallRecord,
             newCallStatus: .individual(newIndividualCallStatus),
-            tx: tx
+            tx: tx,
         )
 
         if shouldSendSyncMessage {
@@ -230,7 +235,7 @@ public class IndividualCallRecordManagerImpl: IndividualCallRecordManager {
                 callRecord: existingCallRecord,
                 callEvent: .callUpdated,
                 callEventTimestamp: existingCallRecord.callBeganTimestamp,
-                tx: tx
+                tx: tx,
             )
         }
     }
@@ -247,25 +252,25 @@ private extension CallRecord.CallType {
 
 private extension CallRecord.CallDirection {
     init?(
-        individualCallInteractionType: RPRecentCallType
+        individualCallInteractionType: RPRecentCallType,
     ) {
         switch individualCallInteractionType {
         case
-                .incoming,
-                .incomingMissed,
-                .incomingDeclined,
-                .incomingIncomplete,
-                .incomingBusyElsewhere,
-                .incomingDeclinedElsewhere,
-                .incomingAnsweredElsewhere,
-                .incomingMissedBecauseOfDoNotDisturb,
-                .incomingMissedBecauseOfChangedIdentity,
-                .incomingMissedBecauseBlockedSystemContact:
+            .incoming,
+            .incomingMissed,
+            .incomingDeclined,
+            .incomingIncomplete,
+            .incomingBusyElsewhere,
+            .incomingDeclinedElsewhere,
+            .incomingAnsweredElsewhere,
+            .incomingMissedBecauseOfDoNotDisturb,
+            .incomingMissedBecauseOfChangedIdentity,
+            .incomingMissedBecauseBlockedSystemContact:
             self = .incoming
         case
-                .outgoing,
-                .outgoingIncomplete,
-                .outgoingMissed:
+            .outgoing,
+            .outgoingIncomplete,
+            .outgoingMissed:
             self = .outgoing
         @unknown default:
             CallRecordLogger.shared.warn("Unknown call type!")
@@ -276,33 +281,33 @@ private extension CallRecord.CallDirection {
 
 extension CallRecord.CallStatus.IndividualCallStatus {
     public init?(
-        individualCallInteractionType: RPRecentCallType
+        individualCallInteractionType: RPRecentCallType,
     ) {
         switch individualCallInteractionType {
         case
-                .incomingIncomplete,
-                .outgoingIncomplete:
+            .incomingIncomplete,
+            .outgoingIncomplete:
             self = .pending
         case
-                .incoming,
-                .outgoing,
-                .incomingAnsweredElsewhere:
+            .incoming,
+            .outgoing,
+            .incomingAnsweredElsewhere:
             // The "elsewhere" is a linked device that should be sending us a
             // sync message.
             self = .accepted
         case
-                .incomingDeclined,
-                .outgoingMissed,
-                .incomingDeclinedElsewhere:
+            .incomingDeclined,
+            .outgoingMissed,
+            .incomingDeclinedElsewhere:
             // The "elsewhere" is a linked device that should be sending us a
             // sync message.
             self = .notAccepted
         case
-                .incomingMissed,
-                .incomingMissedBecauseOfChangedIdentity,
-                .incomingMissedBecauseOfDoNotDisturb,
-                .incomingMissedBecauseBlockedSystemContact,
-                .incomingBusyElsewhere:
+            .incomingMissed,
+            .incomingMissedBecauseOfChangedIdentity,
+            .incomingMissedBecauseOfDoNotDisturb,
+            .incomingMissedBecauseBlockedSystemContact,
+            .incomingBusyElsewhere:
             // Note that "busy elsewhere" means we should display the call
             // as missed, but the busy linked device won't send a sync
             // message.
@@ -321,7 +326,7 @@ public class IndividualCallRecordStatusTransitionManager {
 
     public func isStatusTransitionAllowed(
         fromIndividualCallStatus: CallRecord.CallStatus.IndividualCallStatus,
-        toIndividualCallStatus: CallRecord.CallStatus.IndividualCallStatus
+        toIndividualCallStatus: CallRecord.CallStatus.IndividualCallStatus,
     ) -> Bool {
         switch fromIndividualCallStatus {
         case .pending:

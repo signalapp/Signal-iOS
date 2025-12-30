@@ -41,7 +41,7 @@ public class ViewControllerContext {
         usernameLinkManager: UsernameLinkManager,
         usernameLookupManager: UsernameLookupManager,
         localUsernameManager: LocalUsernameManager,
-        provisioningManager: ProvisioningManager
+        provisioningManager: ProvisioningManager,
     ) {
         self.db = db
         self.editManager = editManager
@@ -74,7 +74,7 @@ public class ViewControllerContext {
             usernameLinkManager: bridge.usernameLinkManager,
             usernameLookupManager: bridge.usernameLookupManager,
             localUsernameManager: bridge.localUsernameManager,
-            provisioningManager: AppEnvironment.shared.provisioningManager
+            provisioningManager: AppEnvironment.shared.provisioningManager,
         )
     }()
 }

@@ -94,7 +94,7 @@ private extension TSRequest {
         var request = TSRequest(
             url: URL(string: "v1/archives")!,
             method: "POST",
-            parameters: [:]
+            parameters: [:],
         )
         request.auth = .backup(auth)
         return request

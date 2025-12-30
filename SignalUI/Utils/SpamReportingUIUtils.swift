@@ -6,14 +6,14 @@
 public import SignalServiceKit
 import LibSignalClient
 
-public struct ReportSpamUIUtils {
+public enum ReportSpamUIUtils {
     public typealias Completion = (Bool) -> Void
 
     public static func showReportSpamActionSheet(
         _ thread: TSThread,
         isBlocked: Bool,
         from viewController: UIViewController,
-        completion: Completion?
+        completion: Completion?,
     ) {
         let actionSheet = createReportSpamActionSheet(for: thread, isBlocked: isBlocked)
         viewController.presentActionSheet(actionSheet)
@@ -22,36 +22,40 @@ public struct ReportSpamUIUtils {
     public static func createReportSpamActionSheet(for thread: TSThread, isBlocked: Bool) -> ActionSheetController {
         let actionSheetTitle = OWSLocalizedString(
             "MESSAGE_REQUEST_REPORT_CONVERSATION_TITLE",
-            comment: "Action sheet title to confirm reporting a conversation as spam via a message request."
+            comment: "Action sheet title to confirm reporting a conversation as spam via a message request.",
         )
         let actionSheetMessage = OWSLocalizedString(
             "MESSAGE_REQUEST_REPORT_CONVERSATION_MESSAGE",
-            comment: "Action sheet message to confirm reporting a conversation as spam via a message request."
+            comment: "Action sheet message to confirm reporting a conversation as spam via a message request.",
         )
 
         let actionSheet = ActionSheetController(title: actionSheetTitle, message: actionSheetMessage)
-        actionSheet.addAction(ActionSheetAction(
-            title: OWSLocalizedString(
-                "MESSAGE_REQUEST_REPORT_SPAM_ACTION",
-                comment: "Action sheet action to confirm reporting a conversation as spam via a message request."
-            ),
-            handler: { _ in
-                SSKEnvironment.shared.databaseStorageRef.write { tx in
-                    Self.reportSpam(in: thread, tx: tx)
-                }
-            })
-        )
-        if !isBlocked {
-            actionSheet.addAction(ActionSheetAction(
+        actionSheet.addAction(
+            ActionSheetAction(
                 title: OWSLocalizedString(
-                    "MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION",
-                    comment: "Action sheet action to confirm blocking and reporting spam for a thread via a message request."
+                    "MESSAGE_REQUEST_REPORT_SPAM_ACTION",
+                    comment: "Action sheet action to confirm reporting a conversation as spam via a message request.",
                 ),
                 handler: { _ in
                     SSKEnvironment.shared.databaseStorageRef.write { tx in
-                        Self.blockAndReport(in: thread, tx: tx)
+                        Self.reportSpam(in: thread, tx: tx)
                     }
-                })
+                },
+            ),
+        )
+        if !isBlocked {
+            actionSheet.addAction(
+                ActionSheetAction(
+                    title: OWSLocalizedString(
+                        "MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION",
+                        comment: "Action sheet action to confirm blocking and reporting spam for a thread via a message request.",
+                    ),
+                    handler: { _ in
+                        SSKEnvironment.shared.databaseStorageRef.write { tx in
+                            Self.blockAndReport(in: thread, tx: tx)
+                        }
+                    },
+                ),
             )
         }
         actionSheet.addAction(ActionSheetAction(title: CommonStrings.cancelButton, style: .cancel))
@@ -62,14 +66,14 @@ public struct ReportSpamUIUtils {
         SSKEnvironment.shared.blockingManagerRef.addBlockedThread(
             thread,
             blockMode: .localShouldNotLeaveGroups,
-            transaction: tx
+            transaction: tx,
         )
 
         Self.reportSpam(in: thread, tx: tx)
 
         SSKEnvironment.shared.syncManagerRef.sendMessageRequestResponseSyncMessage(
             thread: thread,
-            responseType: .blockAndSpam
+            responseType: .blockAndSpam,
         )
     }
 
@@ -78,7 +82,7 @@ public struct ReportSpamUIUtils {
 
         SSKEnvironment.shared.syncManagerRef.sendMessageRequestResponseSyncMessage(
             thread: thread,
-            responseType: .blockAndSpam
+            responseType: .blockAndSpam,
         )
     }
 
@@ -115,15 +119,17 @@ public struct ReportSpamUIUtils {
         var guidsToReport = Set<String>()
         do {
             if isGroup {
-                guard let localIdentifiers: LocalIdentifiers =
-                        DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx) else {
+                guard
+                    let localIdentifiers: LocalIdentifiers =
+                    DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx)
+                else {
                     owsFailDebug("Unable to find local identifiers")
                     return
                 }
                 try InteractionFinder(
-                    threadUniqueId: thread.uniqueId
+                    threadUniqueId: thread.uniqueId,
                 ).enumerateRecentGroupUpdateMessages(
-                    transaction: tx
+                    transaction: tx,
                 ) { infoMessage, stop in
                     guard let groupUpdateItems = infoMessage.computedGroupUpdateItems(localIdentifiers: localIdentifiers, tx: tx) else {
                         return
@@ -146,10 +152,10 @@ public struct ReportSpamUIUtils {
 
             } else {
                 try InteractionFinder(
-                    threadUniqueId: thread.uniqueId
+                    threadUniqueId: thread.uniqueId,
                 ).enumerateInteractionsForConversationView(
                     rowIdFilter: .newest,
-                    tx: tx
+                    tx: tx,
                 ) { interaction -> Bool in
                     guard let incomingMessage = interaction as? TSIncomingMessage else { return true }
                     if let serverGuid = incomingMessage.serverGuid {
@@ -169,7 +175,7 @@ public struct ReportSpamUIUtils {
         do {
             reportingToken = try SpamReportingTokenRecord.reportingToken(
                 for: aci,
-                database: tx.database
+                database: tx.database,
             )
         } catch {
             owsFailBeta("Failed to look up spam reporting token. Continuing on, as the parameter is optional. Error: \(error)")
@@ -181,7 +187,7 @@ public struct ReportSpamUIUtils {
         }
 
         Logger.info(
-            "Reporting \(guidsToReport.count) message(s) from \(aci) as spam. We \(reportingToken == nil ? "do not have" : "have") a reporting token"
+            "Reporting \(guidsToReport.count) message(s) from \(aci) as spam. We \(reportingToken == nil ? "do not have" : "have") a reporting token",
         )
 
         Task {

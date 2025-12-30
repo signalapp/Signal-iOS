@@ -18,11 +18,11 @@ public class ConversationCollectionView: UICollectionView {
 
     weak var layoutDelegate: ConversationCollectionViewDelegate?
 
-    public override var frame: CGRect {
+    override public var frame: CGRect {
         get { super.frame }
         set {
             AssertIsOnMainThread()
-            guard newValue.width > 0 && newValue.height > 0 else {
+            guard newValue.width > 0, newValue.height > 0 else {
                 // Ignore iOS Auto Layout's tendency to temporarily zero out the
                 // frame of this view during the layout process.
                 //
@@ -46,11 +46,11 @@ public class ConversationCollectionView: UICollectionView {
         }
     }
 
-    public override var bounds: CGRect {
+    override public var bounds: CGRect {
         get { super.bounds }
         set {
             AssertIsOnMainThread()
-            guard newValue.width > 0 && newValue.height > 0 else {
+            guard newValue.width > 0, newValue.height > 0 else {
                 // Ignore iOS Auto Layout's tendency to temporarily zero out the
                 // frame of this view during the layout process.
                 //
@@ -74,7 +74,7 @@ public class ConversationCollectionView: UICollectionView {
         }
     }
 
-    public override func setContentOffset(_ contentOffset: CGPoint, animated: Bool) {
+    override public func setContentOffset(_ contentOffset: CGPoint, animated: Bool) {
         AssertIsOnMainThread()
         if animated {
             layoutDelegate?.collectionViewWillAnimate()
@@ -82,11 +82,11 @@ public class ConversationCollectionView: UICollectionView {
         super.setContentOffset(contentOffset, animated: animated)
     }
 
-    public override var contentOffset: CGPoint {
+    override public var contentOffset: CGPoint {
         get { super.contentOffset }
         set {
             AssertIsOnMainThread()
-            if contentSize.height < 1 && newValue.y <= 0 {
+            if contentSize.height < 1, newValue.y <= 0 {
                 // [UIScrollView _adjustContentOffsetIfNecessary] resets the content
                 // offset to zero under a number of undocumented conditions.  We don't
                 // want this behavior; we want fine-grained control over the default
@@ -107,7 +107,7 @@ public class ConversationCollectionView: UICollectionView {
         }
     }
 
-    public override func scrollRectToVisible(_ rect: CGRect, animated: Bool) {
+    override public func scrollRectToVisible(_ rect: CGRect, animated: Bool) {
         if animated {
             layoutDelegate?.collectionViewWillAnimate()
         }
@@ -116,7 +116,7 @@ public class ConversationCollectionView: UICollectionView {
 
     func gestureRecognizer(
         _ gestureRecognizer: UIGestureRecognizer,
-        shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer
+        shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer,
     ) -> Bool {
         guard let layoutDelegate else { return false }
         return layoutDelegate.collectionViewShouldRecognizeSimultaneously(with: otherGestureRecognizer)
@@ -142,18 +142,22 @@ public class ConversationCollectionView: UICollectionView {
         cvc.layout.didReloadData()
     }
 
-    func cvc_performBatchUpdates(_ batchUpdates: @escaping CVCPerformBatchUpdatesBlock,
-                                 completion: @escaping CVCPerformBatchUpdatesCompletion,
-                                 animated: Bool,
-                                 scrollContinuity: ScrollContinuity,
-                                 lastKnownDistanceFromBottom: CGFloat?,
-                                 cvc: ConversationViewController) {
+    func cvc_performBatchUpdates(
+        _ batchUpdates: @escaping CVCPerformBatchUpdatesBlock,
+        completion: @escaping CVCPerformBatchUpdatesCompletion,
+        animated: Bool,
+        scrollContinuity: ScrollContinuity,
+        lastKnownDistanceFromBottom: CGFloat?,
+        cvc: ConversationViewController,
+    ) {
         AssertIsOnMainThread()
 
         let updateBlock = {
             let layout = cvc.layout
-            layout.willPerformBatchUpdates(scrollContinuity: scrollContinuity,
-                                           lastKnownDistanceFromBottom: lastKnownDistanceFromBottom)
+            layout.willPerformBatchUpdates(
+                scrollContinuity: scrollContinuity,
+                lastKnownDistanceFromBottom: lastKnownDistanceFromBottom,
+            )
             super.performBatchUpdates(batchUpdates) { (finished: Bool) in
                 AssertIsOnMainThread()
                 completion(finished)

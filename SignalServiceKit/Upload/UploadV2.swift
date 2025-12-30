@@ -6,7 +6,7 @@
 import Foundation
 
 extension Upload {
-    public struct CDN0 {
+    public enum CDN0 {
         public struct Form: Codable {
             let acl: String
             let key: String
@@ -44,7 +44,7 @@ extension Upload.CDN0.Form {
             date: date,
             signature: signature,
             attachmentId: nil,
-            attachmentIdString: nil
+            attachmentIdString: nil,
         )
     }
 }
@@ -77,7 +77,7 @@ extension Upload.CDN0 {
                 name: "file",
                 fileName: "file",
                 mimeType: MimeType.applicationOctetStream.rawValue,
-                textParts: textParts
+                textParts: textParts,
             )
         } catch {
             Logger.warn("\(error)")
@@ -89,7 +89,7 @@ extension Upload.CDN0 {
 }
 
 // See: https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-UsingHTTPPOST.html
-fileprivate extension Upload.CDN0.Form {
+private extension Upload.CDN0.Form {
     var asOrderedDictionary: OrderedDictionary<String, String> {
         // We have to build up the form manually vs. simply passing in a parameters dict
         // because AWS is sensitive to the order of the form params (at least the "key"

@@ -13,11 +13,11 @@ class ProvisioningModeSwitchConfirmationViewController: ProvisioningBaseViewCont
 
         let titleLabel = UILabel.titleLabelForRegistration(text: OWSLocalizedString(
             "ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING",
-            comment: "header text indicating to the user they're switching from linking to registering flow"
+            comment: "header text indicating to the user they're switching from linking to registering flow",
         ))
         let explanationLabel = UILabel.explanationLabelForRegistration(text: OWSLocalizedString(
             "ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING",
-            comment: "explanation to the user they're switching from linking to registering flow"
+            comment: "explanation to the user they're switching from linking to registering flow",
         ))
 
         let imageView = UIImageView(image: UIImage(named: "ipad-primary"))
@@ -36,11 +36,11 @@ class ProvisioningModeSwitchConfirmationViewController: ProvisioningBaseViewCont
         let nextButton = UIButton(
             configuration: .largePrimary(title: OWSLocalizedString(
                 "ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING",
-                comment: "button indicating that the user will register their ipad"
+                comment: "button indicating that the user will register their ipad",
             )),
             primaryAction: UIAction { [weak self] _ in
                 self?.didPressNext()
-            }
+            },
         )
         nextButton.accessibilityIdentifier = "onboarding.modeSwitch.nextButton"
 
@@ -53,7 +53,7 @@ class ProvisioningModeSwitchConfirmationViewController: ProvisioningBaseViewCont
             explanationLabel,
             imageViewContainer,
             bottomSpacer,
-            nextButton.enclosedInVerticalStackView(isFullWidthButton: true)
+            nextButton.enclosedInVerticalStackView(isFullWidthButton: true),
         ])
         stackView.setCustomSpacing(24, after: explanationLabel)
 
@@ -65,7 +65,7 @@ class ProvisioningModeSwitchConfirmationViewController: ProvisioningBaseViewCont
     private func didPressNext() {
         let actionSheet = ActionSheetController(message: OWSLocalizedString(
             "ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING",
-            comment: "warning to the user that registering an ipad is not recommended"
+            comment: "warning to the user that registering an ipad is not recommended",
         ))
 
         let continueAction = ActionSheetAction(
@@ -73,7 +73,7 @@ class ProvisioningModeSwitchConfirmationViewController: ProvisioningBaseViewCont
             handler: { [weak self] _ in
                 guard let self else { return }
                 self.provisioningController.switchToPrimaryRegistration(viewController: self)
-            }
+            },
         )
         actionSheet.addAction(continueAction)
         actionSheet.addAction(OWSActionSheets.cancelAction)

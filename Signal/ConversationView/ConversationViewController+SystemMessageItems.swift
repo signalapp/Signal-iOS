@@ -20,7 +20,7 @@ extension ConversationViewController {
 
         owsAssertDebug(
             !address.isLocalAddress,
-            "We should never have ourselves as a referenced user in a system message"
+            "We should never have ourselves as a referenced user in a system message",
         )
 
         showMemberActionSheet(forAddress: address, withHapticFeedback: true)

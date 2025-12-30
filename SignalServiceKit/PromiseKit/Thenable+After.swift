@@ -10,7 +10,7 @@ public extension Guarantee where Value == Void {
     /// Uses `mach_absolute_time` (pauses while suspended)
     static func after(
         on scheduler: Scheduler? = nil,
-        seconds: TimeInterval
+        seconds: TimeInterval,
     ) -> Guarantee<Void> {
         let (guarantee, future) = Guarantee<Void>.pending()
 
@@ -18,7 +18,7 @@ public extension Guarantee where Value == Void {
         // ever change and even if it does the consequence of getting it wrong is insignificant.
         let isAppExtension = Bundle.main.bundlePath.hasSuffix("appex")
 
-        if isAppExtension && seconds > 2.0 {
+        if isAppExtension, seconds > 2.0 {
             // App extensions have shorter lifecycles and are under more restrictive memory limits
             // For short-lived extensions (e.g. the NSE), the future make not resolve for a long time effectively
             // leaking any objects captured by the promise resolve block.
@@ -36,7 +36,7 @@ public extension Guarantee where Value == Void {
     /// Uses `gettimeofday` (ticks while suspended)
     static func after(
         on scheduler: Scheduler? = nil,
-        wallInterval: TimeInterval
+        wallInterval: TimeInterval,
     ) -> Guarantee<Void> {
         let (guarantee, future) = Guarantee<Void>.pending()
         (scheduler ?? DispatchQueue.global()).asyncAfter(wallDeadline: .now() + wallInterval) {

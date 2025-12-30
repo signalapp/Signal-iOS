@@ -21,7 +21,7 @@ public extension CallRecord {
 
 public extension Array<CallRecord> {
     func isSortedByTimestamp(_ direction: CallRecord.SortDirection) -> Bool {
-        return sorted(by: direction.compareForSort(lhs:rhs:)).enumerated().allSatisfy { (idx, callRecord) in
+        return sorted(by: direction.compareForSort(lhs:rhs:)).enumerated().allSatisfy { idx, callRecord in
             /// When sorted by timestamp descending the order should not have
             /// changed; i.e., each enumerated sorted call record is exactly the
             /// same as the unsorted call record in the same index.

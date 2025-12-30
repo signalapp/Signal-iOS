@@ -13,7 +13,7 @@ class MockOutgoingCallEventSyncMessageManager: OutgoingCallEventSyncMessageManag
         callRecord: CallRecord,
         callEvent: CallEvent,
         callEventTimestamp: UInt64,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         owsPrecondition(expectedCallEvent == callEvent)
         syncMessageSendCount += 1

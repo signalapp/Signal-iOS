@@ -20,13 +20,13 @@ class MediaPageViewController: UIPageViewController {
         initialMediaAttachment: ReferencedAttachment,
         thread: TSThread,
         spoilerState: SpoilerRenderState,
-        showingSingleMessage: Bool = false
+        showingSingleMessage: Bool = false,
     ) {
         self.init(
             initialMediaAttachment: initialMediaAttachment,
             mediaGallery: MediaGallery(thread: thread, mediaCategory: .photoVideo, spoilerState: spoilerState),
             spoilerState: spoilerState,
-            showingSingleMessage: showingSingleMessage
+            showingSingleMessage: showingSingleMessage,
         )
     }
 
@@ -34,7 +34,7 @@ class MediaPageViewController: UIPageViewController {
         initialMediaAttachment: ReferencedAttachment,
         mediaGallery: MediaGallery,
         spoilerState: SpoilerRenderState,
-        showingSingleMessage: Bool = false
+        showingSingleMessage: Bool = false,
     ) {
         self.mediaGallery = mediaGallery
         self.spoilerState = spoilerState
@@ -52,7 +52,7 @@ class MediaPageViewController: UIPageViewController {
         super.init(
             transitionStyle: .scroll,
             navigationOrientation: .horizontal,
-            options: [.interPageSpacing: 20]
+            options: [.interPageSpacing: 20],
         )
 
         extendedLayoutIncludesOpaqueBars = true
@@ -90,13 +90,14 @@ class MediaPageViewController: UIPageViewController {
         }
         return view
     }()
+
     private var navigationBarVerticalPositionConstraint: NSLayoutConstraint?
 
     // Bottom Bar
     private lazy var bottomMediaPanel = MediaControlPanelView(
         mediaGallery: mediaGallery,
         delegate: self,
-        spoilerState: spoilerState
+        spoilerState: spoilerState,
     )
 
     // MARK: UIViewController
@@ -157,7 +158,7 @@ class MediaPageViewController: UIPageViewController {
         navigationBar.standardAppearance = appearance
         navigationBar.compactAppearance = appearance
         navigationBar.scrollEdgeAppearance = appearance
-        navigationBar.setItems([ UINavigationItem(title: ""), navigationItem ], animated: false)
+        navigationBar.setItems([UINavigationItem(title: ""), navigationItem], animated: false)
         navigationBar.translatesAutoresizingMaskIntoConstraints = false
         topPanel.addSubview(navigationBar)
 
@@ -227,9 +228,10 @@ class MediaPageViewController: UIPageViewController {
             // Since it is not possible to constrain top edge of our manually maintained navigation bar to that position
             // the workaround is to detect when top safe area inset is larger than the status bar height and adjust as needed.
             var topInset = view.safeAreaInsets.top
-            if #unavailable(iOS 26),
-               let statusBarHeight = view.window?.windowScene?.statusBarManager?.statusBarFrame.height,
-               statusBarHeight < topInset
+            if
+                #unavailable(iOS 26),
+                let statusBarHeight = view.window?.windowScene?.statusBarManager?.statusBarFrame.height,
+                statusBarHeight < topInset
             {
                 topInset = statusBarHeight
                 if #available(iOS 18, *) {
@@ -285,7 +287,7 @@ class MediaPageViewController: UIPageViewController {
         _ item: MediaGalleryItem,
         direction: UIPageViewController.NavigationDirection,
         shouldAutoPlayVideo: Bool = false,
-        animated: Bool
+        animated: Bool,
     ) {
         if let previousPage = viewControllers?.first as? MediaItemViewController {
             previousPage.videoPlaybackStatusObserver = nil
@@ -310,7 +312,7 @@ class MediaPageViewController: UIPageViewController {
             currentViewController.galleryItem,
             videoPlayer: currentViewController.videoPlayer,
             transitionDirection: direction,
-            animated: animated
+            animated: animated,
         )
 
         updateScreenTitle(using: currentViewController.galleryItem)
@@ -361,9 +363,9 @@ class MediaPageViewController: UIPageViewController {
 
         if traitCollection.verticalSizeClass == .compact {
             // Order of buttons is reversed: first button in array is the outermost in the navbar.
-            navigationItem.rightBarButtonItems = [ contextMenuBarButton, barButtonForwardMedia, barButtonShareMedia ]
+            navigationItem.rightBarButtonItems = [contextMenuBarButton, barButtonForwardMedia, barButtonShareMedia]
         } else {
-            navigationItem.rightBarButtonItems = [ contextMenuBarButton ]
+            navigationItem.rightBarButtonItems = [contextMenuBarButton]
         }
     }
 
@@ -376,7 +378,7 @@ class MediaPageViewController: UIPageViewController {
             landscapeImagePhone: UIImage(named: buttonImageName + "-20"),
             style: .plain,
             target: nil,
-            action: nil
+            action: nil,
         )
         contextMenuBarButton.menu = UIMenu(
             title: "",
@@ -386,35 +388,36 @@ class MediaPageViewController: UIPageViewController {
                 UIAction(
                     title: OWSLocalizedString(
                         "MEDIA_VIEWER_SAVE_MEDIA_ACTION",
-                        comment: "Context menu item in media viewer. Refers to saving currently displayed photo/video to the Photos app."
+                        comment: "Context menu item in media viewer. Refers to saving currently displayed photo/video to the Photos app.",
                     ),
                     image: Theme.iconImage(.contextMenuSave),
                     handler: { [weak self] _ in
                         self?.saveCurrentMediaToPhotos()
-                    }
+                    },
                 ),
                 UIAction(
                     title: OWSLocalizedString(
                         "MEDIA_VIEWER_GO_TO_MESSAGE_ACTION",
-                        comment: "Context menu item in media viewer. Refers to scrolling the conversation to the currently displayed photo/video."
+                        comment: "Context menu item in media viewer. Refers to scrolling the conversation to the currently displayed photo/video.",
                     ),
                     image: Theme.iconImage(.buttonMessage),
                     handler: { [weak self] _ in
                         self?.presentConversationForCurrentMedia()
-                    }
+                    },
                 ),
                 UIAction(
                     title: OWSLocalizedString(
                         "MEDIA_VIEWER_DELETE_MEDIA_ACTION",
-                        comment: "Context menu item in media viewer. Refers to deleting currently displayed photo/video."
+                        comment: "Context menu item in media viewer. Refers to deleting currently displayed photo/video.",
                     ),
                     image: Theme.iconImage(.contextMenuDelete),
                     attributes: .destructive,
                     handler: { [weak self] _ in
                         self?.deleteCurrentMedia()
-                    }
-                )
-            ])
+                    },
+                ),
+            ],
+        )
         return contextMenuBarButton
     }()
 
@@ -425,7 +428,7 @@ class MediaPageViewController: UIPageViewController {
         landscapeImagePhone: UIImage(imageLiteralResourceName: "share-20"),
         style: .plain,
         target: self,
-        action: #selector(didPressShare)
+        action: #selector(didPressShare),
     )
 
     private lazy var barButtonForwardMedia = UIBarButtonItem(
@@ -433,7 +436,7 @@ class MediaPageViewController: UIPageViewController {
         landscapeImagePhone: UIImage(imageLiteralResourceName: "forward-20"),
         style: .plain,
         target: self,
-        action: #selector(didPressForward)
+        action: #selector(didPressForward),
     )
 
     // MARK: Helpers
@@ -508,7 +511,7 @@ class MediaPageViewController: UIPageViewController {
                 forAttachmentStreams: mediaAttachmentStreams,
                 fromMessage: messageForCurrentItem,
                 from: self,
-                delegate: self
+                delegate: self,
             )
         default:
             // If we are forwarding multiple items, warn the user first.
@@ -516,17 +519,17 @@ class MediaPageViewController: UIPageViewController {
             let titleFormatString = OWSLocalizedString(
                 "MEDIA_PAGE_FORWARD_MEDIA_CONFIRM_TITLE_%d",
                 tableName: "PluralAware",
-                comment: "Text confirming the user wants to forward media. Embeds {{ %1$@ the number of media to be forwarded }}."
+                comment: "Text confirming the user wants to forward media. Embeds {{ %1$@ the number of media to be forwarded }}.",
             )
 
             OWSActionSheets.showConfirmationAlert(
                 message: OWSLocalizedString(
                     "MEDIA_PAGE_FORWARD_MEDIA_CONFIRM_MESSAGE",
-                    comment: "Text explaining that the user will forward all media from a message."
+                    comment: "Text explaining that the user will forward all media from a message.",
                 ),
                 proceedTitle: String.localizedStringWithFormat(
                     titleFormatString,
-                    mediaCount
+                    mediaCount,
                 ),
                 proceedAction: { [weak self] _ in
                     guard let self else { return }
@@ -535,9 +538,9 @@ class MediaPageViewController: UIPageViewController {
                         forAttachmentStreams: mediaAttachmentStreams,
                         fromMessage: messageForCurrentItem,
                         from: self,
-                        delegate: self
+                        delegate: self,
                     )
-                }
+                },
             )
         }
     }
@@ -559,7 +562,7 @@ class MediaPageViewController: UIPageViewController {
         guard let mediaItem = currentItem else { return }
 
         AttachmentSaving.saveToPhotoLibrary(
-            referencedAttachmentStreams: [mediaItem.attachmentStream]
+            referencedAttachmentStreams: [mediaItem.attachmentStream],
         )
     }
 
@@ -570,7 +573,7 @@ class MediaPageViewController: UIPageViewController {
             SignalApp.shared.presentConversationForThread(
                 threadUniqueId: mediaItem.message.uniqueThreadId,
                 focusMessageId: mediaItem.message.uniqueId,
-                animated: true
+                animated: true,
             )
         }
     }
@@ -579,8 +582,10 @@ class MediaPageViewController: UIPageViewController {
         guard let mediaItem = currentItem else { return }
 
         let actionSheet = ActionSheetController(title: nil, message: nil)
-        let deleteAction = ActionSheetAction(title: CommonStrings.deleteButton,
-                                             style: .destructive) { _ in
+        let deleteAction = ActionSheetAction(
+            title: CommonStrings.deleteButton,
+            style: .destructive,
+        ) { _ in
             self.mediaGallery.delete(items: [mediaItem], initiatedBy: self)
         }
         actionSheet.addAction(OWSActionSheets.cancelAction)
@@ -620,7 +625,7 @@ class MediaPageViewController: UIPageViewController {
         if #available(iOS 26, *) {
             label.font = .dynamicTypeSubheadlineClamped.semibold()
             // "semibold" fonts aren't dynamic anymore - have to track changes manually.
-            label.registerForTraitChanges([ UITraitPreferredContentSizeCategory.self ]) { (label: UILabel, _) in
+            label.registerForTraitChanges([UITraitPreferredContentSizeCategory.self]) { (label: UILabel, _) in
                 label.font = .dynamicTypeSubheadlineClamped.semibold()
             }
         } else {
@@ -647,7 +652,7 @@ class MediaPageViewController: UIPageViewController {
     }()
 
     private lazy var headerView: UIView = {
-        let stackView = UIStackView(arrangedSubviews: [ headerNameLabel, headerDateLabel ])
+        let stackView = UIStackView(arrangedSubviews: [headerNameLabel, headerDateLabel])
         stackView.axis = .vertical
         stackView.translatesAutoresizingMaskIntoConstraints = false
 
@@ -707,11 +712,12 @@ extension MediaPageViewController: UIPageViewControllerDelegate {
 
     func pageViewController(
         _ pageViewController: UIPageViewController,
-        willTransitionTo pendingViewControllers: [UIViewController]
+        willTransitionTo pendingViewControllers: [UIViewController],
     ) {
-        guard let currentPage = pageViewController.viewControllers?.first as? MediaItemViewController,
-              let newPage = pendingViewControllers.first as? MediaItemViewController else
-        {
+        guard
+            let currentPage = pageViewController.viewControllers?.first as? MediaItemViewController,
+            let newPage = pendingViewControllers.first as? MediaItemViewController
+        else {
             return
         }
         if currentPage.galleryItem.orderingKey < newPage.galleryItem.orderingKey {
@@ -725,7 +731,7 @@ extension MediaPageViewController: UIPageViewControllerDelegate {
         _ pageViewController: UIPageViewController,
         didFinishAnimating finished: Bool,
         previousViewControllers: [UIViewController],
-        transitionCompleted: Bool
+        transitionCompleted: Bool,
     ) {
         if let previousPage = previousViewControllers.first as? MediaItemViewController {
             previousPage.zoomOut(animated: false)
@@ -911,7 +917,7 @@ extension MediaPageViewController: MediaPresentationContextProvider {
         return MediaPresentationContext(
             mediaView: mediaView,
             presentationFrame: mediaView.frame,
-            backgroundColor: backgroundColor
+            backgroundColor: backgroundColor,
         )
     }
 
@@ -933,10 +939,11 @@ extension MediaPageViewController: MediaPresentationContextProvider {
 }
 
 extension MediaPageViewController: UIViewControllerTransitioningDelegate {
-    public func animationController(
+    func animationController(
         forPresented presented: UIViewController,
         presenting: UIViewController,
-        source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        source: UIViewController,
+    ) -> UIViewControllerAnimatedTransitioning? {
         guard self == presented else {
             owsFailDebug("unexpected presented: \(presented)")
             return nil
@@ -945,7 +952,7 @@ extension MediaPageViewController: UIViewControllerTransitioningDelegate {
         return MediaZoomAnimationController(galleryItem: currentItem)
     }
 
-    public func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+    func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         guard self == dismissed else {
             owsFailDebug("unexpected dismissed: \(dismissed)")
             return nil
@@ -953,16 +960,17 @@ extension MediaPageViewController: UIViewControllerTransitioningDelegate {
 
         let animationController = MediaDismissAnimationController(
             galleryItem: currentItem,
-            interactionController: mediaInteractiveDismiss
+            interactionController: mediaInteractiveDismiss,
         )
         mediaInteractiveDismiss.interactiveDismissDelegate = animationController
 
         return animationController
     }
 
-    public func interactionControllerForDismissal(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
-        guard let animationController = animator as? MediaDismissAnimationController,
-              animationController.interactionController.interactionInProgress
+    func interactionControllerForDismissal(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
+        guard
+            let animationController = animator as? MediaDismissAnimationController,
+            animationController.interactionController.interactionInProgress
         else {
             return nil
         }
@@ -971,17 +979,17 @@ extension MediaPageViewController: UIViewControllerTransitioningDelegate {
 }
 
 extension MediaPageViewController: ForwardMessageDelegate {
-    public func forwardMessageFlowDidComplete(items: [ForwardMessageItem], recipientThreads: [TSThread]) {
+    func forwardMessageFlowDidComplete(items: [ForwardMessageItem], recipientThreads: [TSThread]) {
         dismiss(animated: true) {
             ForwardMessageViewController.finalizeForward(
                 items: items,
                 recipientThreads: recipientThreads,
-                fromViewController: self
+                fromViewController: self,
             )
         }
     }
 
-    public func forwardMessageFlowDidCancel() {
+    func forwardMessageFlowDidCancel() {
         dismiss(animated: true)
     }
 }

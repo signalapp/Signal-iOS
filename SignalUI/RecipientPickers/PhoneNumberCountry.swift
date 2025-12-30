@@ -72,9 +72,9 @@ public struct PhoneNumberCountry: Equatable, Identifiable {
             let countryName = PhoneNumberUtil.countryName(fromCountryCode: countryCode)
             let isMatch = (
                 cleanedSearch.isEmpty ||
-                Self.does(countryName, matchQuery: cleanedSearch) ||
-                Self.does(countryCode, matchQuery: cleanedSearch) ||
-                "+\(callingCode)".contains(cleanedSearch)
+                    Self.does(countryName, matchQuery: cleanedSearch) ||
+                    Self.does(countryCode, matchQuery: cleanedSearch) ||
+                    "+\(callingCode)".contains(cleanedSearch),
             )
             return isMatch ? (countryCode, countryName) : nil
         }
@@ -125,7 +125,7 @@ public struct PhoneNumberCountry: Equatable, Identifiable {
         return PhoneNumberCountry(
             countryName: PhoneNumberUtil.countryName(fromCountryCode: countryCode),
             plusPrefixedCallingCode: plusPrefixedCallingCode,
-            countryCode: countryCode
+            countryCode: countryCode,
         )
     }
 }

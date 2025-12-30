@@ -50,7 +50,7 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
             unreadLabel,
 
             avatarStack,
-            bottomRowWrapper
+            bottomRowWrapper,
         ]
     }
 
@@ -95,6 +95,7 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
         fileprivate var hasOverrideSnippet: Bool {
             overrideSnippet != nil
         }
+
         fileprivate var unreadMode: UnreadMode {
             guard !hasOverrideSnippet else {
                 // If we're using the conversation list cell to render search results,
@@ -116,7 +117,7 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
             threadViewModel: ThreadViewModel,
             lastReloadDate: Date?,
             overrideSnippet: OverrideSnippet? = nil,
-            overrideDate: Date? = nil
+            overrideDate: Date? = nil,
         ) {
             self.threadViewModel = threadViewModel
             self.lastReloadDate = lastReloadDate
@@ -234,7 +235,7 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
             avatarStackConfig: Self.avatarStackConfig,
             snippetLabelConfig: Self.snippetLabelConfig(configuration: configuration),
             nameLabelConfig: Self.nameLabelConfig(configuration: configuration),
-            dateTimeLabelConfig: Self.dateTimeLabelConfig(configuration: configuration)
+            dateTimeLabelConfig: Self.dateTimeLabelConfig(configuration: configuration),
         )
     }
 
@@ -254,7 +255,7 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
         var topRowStackSubviewInfos = [ManualStackSubviewInfo]()
         let nameLabelSize = CVText.measureLabel(config: nameLabelConfig, maxWidth: .greatestFiniteMagnitude)
         topRowStackSubviewInfos.append(
-            nameLabelSize.asManualSubviewInfo(horizontalFlowBehavior: .canCompress, verticalFlowBehavior: .fixed)
+            nameLabelSize.asManualSubviewInfo(horizontalFlowBehavior: .canCompress, verticalFlowBehavior: .fixed),
         )
         if shouldShowVerifiedBadge {
             topRowStackSubviewInfos.append(CGSize(square: muteIconSize).asManualSubviewInfo(hasFixedSize: true))
@@ -264,19 +265,19 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
         }
         let dateLabelSize = CVText.measureLabel(config: dateTimeLabelConfig, maxWidth: CGFloat.greatestFiniteMagnitude)
         topRowStackSubviewInfos.append(
-            dateLabelSize.asManualSubviewInfo(horizontalFlowBehavior: .canExpand, verticalFlowBehavior: .fixed)
+            dateLabelSize.asManualSubviewInfo(horizontalFlowBehavior: .canExpand, verticalFlowBehavior: .fixed),
         )
 
         let avatarSize: CGSize = .square(CGFloat(avatarSize))
         let avatarStackMeasurement = ManualStackView.measure(
             config: avatarStackConfig,
-            subviewInfos: [ avatarSize.asManualSubviewInfo(hasFixedSize: true) ]
+            subviewInfos: [avatarSize.asManualSubviewInfo(hasFixedSize: true)],
         )
         let avatarStackSize = avatarStackMeasurement.measuredSize
 
         let topRowStackMeasurement = ManualStackView.measure(
             config: topRowStackConfig,
-            subviewInfos: topRowStackSubviewInfos
+            subviewInfos: topRowStackSubviewInfos,
         )
         let topRowStackSize = topRowStackMeasurement.measuredSize
 
@@ -287,7 +288,7 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
         // Use a fixed size for the snippet label and its wrapper.
         let bottomRowWrapperSize = CGSize(width: 0, height: snippetLineHeight * 2)
         var bottomRowStackSubviewInfos: [ManualStackSubviewInfo] = [
-            bottomRowWrapperSize.asManualSubviewInfo()
+            bottomRowWrapperSize.asManualSubviewInfo(),
         ]
 
         if let messageStatusToken = configuration.messageStatusToken {
@@ -296,7 +297,7 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
             // first line of the snippet.
             let locationOffset = CGPoint(x: 0, y: snippetLineHeight * -0.5)
             bottomRowStackSubviewInfos.append(
-                statusIndicatorSize.asManualSubviewInfo(hasFixedSize: true, locationOffset: locationOffset)
+                statusIndicatorSize.asManualSubviewInfo(hasFixedSize: true, locationOffset: locationOffset),
             )
         }
 
@@ -307,25 +308,25 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
             // first line of the snippet.
             let locationOffset = CGPoint(x: 0, y: snippetLineHeight * -0.5)
             bottomRowStackSubviewInfos.append(
-                unreadBadgeSize.asManualSubviewInfo(hasFixedSize: true, locationOffset: locationOffset)
+                unreadBadgeSize.asManualSubviewInfo(hasFixedSize: true, locationOffset: locationOffset),
             )
         }
 
         let bottomRowStackMeasurement = ManualStackView.measure(
             config: bottomRowStackConfig,
-            subviewInfos: bottomRowStackSubviewInfos
+            subviewInfos: bottomRowStackSubviewInfos,
         )
         let bottomRowStackSize = bottomRowStackMeasurement.measuredSize
 
         let vStackMeasurement = ManualStackView.measure(
             config: vStackConfig,
-            subviewInfos: [ topRowStackSize.asManualSubviewInfo, bottomRowStackSize.asManualSubviewInfo ]
+            subviewInfos: [topRowStackSize.asManualSubviewInfo, bottomRowStackSize.asManualSubviewInfo],
         )
         let vStackSize = vStackMeasurement.measuredSize
 
         let outerHStackMeasurement = ManualStackView.measure(
             config: outerHStackConfig,
-            subviewInfos: [ avatarStackSize.asManualSubviewInfo(hasFixedWidth: true), vStackSize.asManualSubviewInfo ]
+            subviewInfos: [avatarStackSize.asManualSubviewInfo(hasFixedWidth: true), vStackSize.asManualSubviewInfo],
         )
 
         return CLVCellContentMeasurements(
@@ -335,14 +336,14 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
             vStackMeasurement: vStackMeasurement,
             outerHStackMeasurement: outerHStackMeasurement,
             snippetLineHeight: snippetLineHeight,
-            unreadBadgeMeasurements: unreadBadgeMeasurements
+            unreadBadgeMeasurements: unreadBadgeMeasurements,
         )
     }
 
     func configure(
         cellContentToken: CLVCellContentToken,
         spoilerAnimationManager: SpoilerAnimationManager,
-        asyncAvatarLoadingAllowed: Bool = true
+        asyncAvatarLoadingAllowed: Bool = true,
     ) {
         AssertIsOnMainThread()
 
@@ -375,7 +376,7 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
         avatarView = ConversationAvatarView(sizeClass: .fiftySix, localUserDisplayMode: .noteToSelf, useAutolayout: true)
         avatarView?.updateWithSneakyTransactionIfNecessary({ config in
             config.dataSource = .thread(configuration.thread)
-            if asyncAvatarLoadingAllowed && cellContentToken.shouldLoadAvatarAsync {
+            if asyncAvatarLoadingAllowed, cellContentToken.shouldLoadAvatarAsync {
                 config.usePlaceholderImages()
             } else {
                 config.applyConfigurationSynchronously()
@@ -389,7 +390,7 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
             self,
             selector: #selector(typingIndicatorStateDidChange),
             name: TypingIndicatorsImpl.typingIndicatorStateDidChange,
-            object: nil
+            object: nil,
         )
 
         // The top row contains:
@@ -446,11 +447,13 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
         //
         // The "Wrapper" shows either "snippet label" or "typing indicator".
         bottomRowWrapper.addSubview(snippetLabel) { [weak self] view in
-            guard let self = self else { return }
+            guard let self else { return }
             // Top-align the snippet text.
             let snippetSize = self.snippetLabel.sizeThatFits(view.bounds.size)
-            if DebugFlags.internalLogging,
-               snippetSize.height > snippetLineHeight * 2 {
+            if
+                DebugFlags.internalLogging,
+                snippetSize.height > snippetLineHeight * 2
+            {
                 owsFailDebug("view: \(view.bounds.size), snippetSize: \(snippetSize), snippetLineHeight: \(snippetLineHeight), snippetLabelConfig: \(snippetLabelConfig)")
             }
             let snippetFrame = CGRect(x: 0, y: 0, width: view.width, height: min(view.bounds.height, ceil(snippetSize.height)))
@@ -458,34 +461,38 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
         }
         let typingIndicatorSize = TypingIndicatorView.measurement().measuredSize
         bottomRowWrapper.addSubview(typingIndicatorView) { [weak self] _ in
-            guard let self = self else { return }
+            guard let self else { return }
             // Vertically align the typing indicator with the first line of the snippet label.
             self.typingIndicatorView.frame = CGRect(
                 x: 0,
                 y: (snippetLineHeight - typingIndicatorSize.height) * 0.5,
                 width: typingIndicatorSize.width,
-                height: typingIndicatorSize.height
+                height: typingIndicatorSize.height,
             )
         }
         updateTypingIndicatorState()
 
-        var bottomRowStackSubviews: [UIView] = [ bottomRowWrapper ]
+        var bottomRowStackSubviews: [UIView] = [bottomRowWrapper]
         if let messageStatusToken = configuration.messageStatusToken {
             let statusIndicator = configureStatusIndicatorView(token: messageStatusToken)
             bottomRowStackSubviews.append(statusIndicator)
         }
 
         // If there are unread messages, show the "unread badge."
-        if let unreadIndicatorLabelConfig = configuration.unreadIndicatorLabelConfig,
-           let unreadBadgeMeasurements = measurements.unreadBadgeMeasurements {
-            let unreadBadge = configureUnreadBadge(unreadIndicatorLabelConfig: unreadIndicatorLabelConfig,
-                                                   unreadBadgeMeasurements: unreadBadgeMeasurements)
+        if
+            let unreadIndicatorLabelConfig = configuration.unreadIndicatorLabelConfig,
+            let unreadBadgeMeasurements = measurements.unreadBadgeMeasurements
+        {
+            let unreadBadge = configureUnreadBadge(
+                unreadIndicatorLabelConfig: unreadIndicatorLabelConfig,
+                unreadBadgeMeasurements: unreadBadgeMeasurements,
+            )
             bottomRowStackSubviews.append(unreadBadge)
         }
 
-        let avatarStackSubviews = [ avatarView! ]
-        let vStackSubviews = [ topRowStack, bottomRowStack ]
-        let outerHStackSubviews = [ avatarStack, vStack ]
+        let avatarStackSubviews = [avatarView!]
+        let vStackSubviews = [topRowStack, bottomRowStack]
+        let outerHStackSubviews = [avatarStack, vStack]
 
         // It is only safe to reuse the bottom row wrapper if its subview list
         // hasn't changed.
@@ -493,41 +500,53 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
             hasVerifiedBadge: configuration.shouldShowVerifiedBadge,
             hasMuteIndicator: configuration.shouldShowMuteIndicator,
             hasMessageStatusToken: configuration.messageStatusToken != nil,
-            hasUnreadBadge: measurements.unreadBadgeMeasurements != nil
+            hasUnreadBadge: measurements.unreadBadgeMeasurements != nil,
         )
 
         avatarStack.configure(
             config: avatarStackConfig,
             measurement: avatarStackMeasurement,
-            subviews: avatarStackSubviews
+            subviews: avatarStackSubviews,
         )
 
         // topRowStack can only be configured for reuse if
         // its subview list hasn't changed.
-        if let oldReuseToken = self.reuseToken,
-           oldReuseToken.hasMuteIndicator == newReuseToken.hasMuteIndicator,
-           oldReuseToken.hasVerifiedBadge == newReuseToken.hasVerifiedBadge {
-            topRowStack.configureForReuse(config: topRowStackConfig,
-                                          measurement: topRowStackMeasurement)
+        if
+            let oldReuseToken = self.reuseToken,
+            oldReuseToken.hasMuteIndicator == newReuseToken.hasMuteIndicator,
+            oldReuseToken.hasVerifiedBadge == newReuseToken.hasVerifiedBadge
+        {
+            topRowStack.configureForReuse(
+                config: topRowStackConfig,
+                measurement: topRowStackMeasurement,
+            )
         } else {
             topRowStack.reset()
-            topRowStack.configure(config: topRowStackConfig,
-                                  measurement: topRowStackMeasurement,
-                                  subviews: topRowStackSubviews)
+            topRowStack.configure(
+                config: topRowStackConfig,
+                measurement: topRowStackMeasurement,
+                subviews: topRowStackSubviews,
+            )
         }
 
         // It is only safe to reuse bottomRowStack if the same subset of subviews
         // are in use.
-        if let oldReuseToken = self.reuseToken,
-           oldReuseToken.hasMessageStatusToken == newReuseToken.hasMessageStatusToken,
-           oldReuseToken.hasUnreadBadge == newReuseToken.hasUnreadBadge {
-            bottomRowStack.configureForReuse(config: bottomRowStackConfig,
-                                             measurement: bottomRowStackMeasurement)
+        if
+            let oldReuseToken = self.reuseToken,
+            oldReuseToken.hasMessageStatusToken == newReuseToken.hasMessageStatusToken,
+            oldReuseToken.hasUnreadBadge == newReuseToken.hasUnreadBadge
+        {
+            bottomRowStack.configureForReuse(
+                config: bottomRowStackConfig,
+                measurement: bottomRowStackMeasurement,
+            )
         } else {
             bottomRowStack.reset()
-            bottomRowStack.configure(config: bottomRowStackConfig,
-                                     measurement: bottomRowStackMeasurement,
-                                     subviews: bottomRowStackSubviews)
+            bottomRowStack.configure(
+                config: bottomRowStackConfig,
+                measurement: bottomRowStackMeasurement,
+                subviews: bottomRowStackSubviews,
+            )
         }
 
         // vStack and outerHStack can always be configured for reuse.
@@ -549,7 +568,7 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
             axis: .horizontal,
             alignment: .center,
             spacing: 6,
-            layoutMargins: .zero
+            layoutMargins: .zero,
         )
     }
 
@@ -558,7 +577,7 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
             axis: .horizontal,
             alignment: .center,
             spacing: 6,
-            layoutMargins: .zero
+            layoutMargins: .zero,
         )
     }
 
@@ -567,7 +586,7 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
             axis: .vertical,
             alignment: .fill,
             spacing: 1,
-            layoutMargins: UIEdgeInsets(top: 7, leading: 0, bottom: 9, trailing: 0)
+            layoutMargins: UIEdgeInsets(top: 7, leading: 0, bottom: 9, trailing: 0),
         )
     }
 
@@ -576,7 +595,7 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
             axis: .horizontal,
             alignment: .center,
             spacing: 12,
-            layoutMargins: .zero
+            layoutMargins: .zero,
         )
     }
 
@@ -585,7 +604,7 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
             axis: .horizontal,
             alignment: .center,
             spacing: 0,
-            layoutMargins: UIEdgeInsets(hMargin: 0, vMargin: 12)
+            layoutMargins: UIEdgeInsets(hMargin: 0, vMargin: 12),
         )
     }
 
@@ -646,7 +665,7 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
         return CLVMessageStatusToken(
             image: image.withRenderingMode(.alwaysTemplate),
             tintColor: messageStatusViewTintColor,
-            shouldAnimateStatusIcon: shouldAnimateStatusIcon
+            shouldAnimateStatusIcon: shouldAnimateStatusIcon,
         )
     }
 
@@ -686,13 +705,13 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
             textColor: .ows_white,
             numberOfLines: 1,
             lineBreakMode: .byTruncatingTail,
-            textAlignment: .center
+            textAlignment: .center,
         )
     }
 
     private static func measureUnreadBadge(unreadIndicatorLabelConfig: CVLabelConfig?) -> CLVUnreadBadgeMeasurements? {
 
-        guard let unreadIndicatorLabelConfig = unreadIndicatorLabelConfig else {
+        guard let unreadIndicatorLabelConfig else {
             return nil
         }
 
@@ -705,14 +724,14 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
         // Pill should be at least circular; can be wider.
         let badgeSize = CGSize(
             width: max(unreadBadgeHeight, unreadLabelSize.width + minMargin),
-            height: unreadBadgeHeight
+            height: unreadBadgeHeight,
         )
         return CLVUnreadBadgeMeasurements(badgeSize: badgeSize, unreadLabelSize: unreadLabelSize)
     }
 
     private func configureUnreadBadge(
         unreadIndicatorLabelConfig: CVLabelConfig,
-        unreadBadgeMeasurements: CLVUnreadBadgeMeasurements
+        unreadBadgeMeasurements: CLVUnreadBadgeMeasurements,
     ) -> UIView {
 
         let unreadLabel = self.unreadLabel
@@ -744,56 +763,56 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
                 NSAttributedString(
                     string: OWSLocalizedString(
                         "HOME_VIEW_BLOCKED_CONVERSATION",
-                        comment: "Table cell subtitle label for a conversation the user has blocked."
+                        comment: "Table cell subtitle label for a conversation the user has blocked.",
                     ),
                     attributes: [
                         .font: snippetFont,
-                        .foregroundColor: snippetColor
-                    ]
-                )
+                        .foregroundColor: snippetColor,
+                    ],
+                ),
             )
         case .pendingMessageRequest(let addedToGroupByName):
             // If you haven't accepted the message request for this thread, don't show the latest message
 
             // For group threads, show who we think added you (if we know)
-            if let addedToGroupByName = addedToGroupByName {
+            if let addedToGroupByName {
                 let addedToGroupFormat = OWSLocalizedString(
                     "HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT",
-                    comment: "Table cell subtitle label for a group the user has been added to. {Embeds inviter name}"
+                    comment: "Table cell subtitle label for a group the user has been added to. {Embeds inviter name}",
                 )
                 return .attributedText(
                     NSAttributedString(
                         string: String(format: addedToGroupFormat, addedToGroupByName),
                         attributes: [
                             .font: snippetFont,
-                            .foregroundColor: snippetColor
-                        ]
-                    )
+                            .foregroundColor: snippetColor,
+                        ],
+                    ),
                 )
             } else {
                 // Otherwise just show a generic "message request" message
                 let text = OWSLocalizedString(
                     "HOME_VIEW_MESSAGE_REQUEST_CONVERSATION",
-                    comment: "Table cell subtitle label for a conversation the user has not accepted."
+                    comment: "Table cell subtitle label for a conversation the user has not accepted.",
                 )
                 return .attributedText(
                     NSAttributedString(
                         string: text,
                         attributes: [
                             .font: snippetFont,
-                            .foregroundColor: snippetColor
-                        ]
-                    )
+                            .foregroundColor: snippetColor,
+                        ],
+                    ),
                 )
             }
         case .draft(let draftText):
             let prefixText = OWSLocalizedString(
                 "HOME_VIEW_DRAFT_PREFIX",
-                comment: "A prefix indicating that a message preview is a draft"
+                comment: "A prefix indicating that a message preview is a draft",
             )
             let prefix = StyleOnlyMessageBody(
                 text: prefixText,
-                style: .italic
+                style: .italic,
             )
             return .messageBody(draftText.addingStyledPrefix(prefix))
         case .voiceMemoDraft:
@@ -801,36 +820,36 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
             snippetText.append(
                 OWSLocalizedString(
                     "HOME_VIEW_DRAFT_PREFIX",
-                    comment: "A prefix indicating that a message preview is a draft"
+                    comment: "A prefix indicating that a message preview is a draft",
                 ),
                 attributes: [
                     .font: snippetFont.italic(),
-                    .foregroundColor: snippetColor
-                ]
+                    .foregroundColor: snippetColor,
+                ],
             )
             snippetText.append(
                 "🎤",
                 attributes: [
                     .font: snippetFont,
-                    .foregroundColor: snippetColor
-                ]
+                    .foregroundColor: snippetColor,
+                ],
             )
             snippetText.append(
                 " ",
                 attributes: [
                     .font: snippetFont,
-                    .foregroundColor: snippetColor
-                ]
+                    .foregroundColor: snippetColor,
+                ],
             )
             snippetText.append(
                 OWSLocalizedString(
                     "ATTACHMENT_TYPE_VOICE_MESSAGE",
-                    comment: "Short text label for a voice message attachment, used for thread preview and on the lock screen"
+                    comment: "Short text label for a voice message attachment, used for thread preview and on the lock screen",
                 ),
                 attributes: [
                     .font: snippetFont,
-                    .foregroundColor: snippetColor
-                ]
+                    .foregroundColor: snippetColor,
+                ],
             )
             return .attributedText(snippetText)
         case .contactSnippet(let lastMessageText):
@@ -838,7 +857,7 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
         case .groupSnippet(let lastMessageText, let senderName):
             let prefix = StyleOnlyMessageBody(
                 text: "\(senderName): ",
-                style: .bold
+                style: .bold,
             )
             return .messageBody(lastMessageText.addingStyledPrefix(prefix))
         case .none:
@@ -860,7 +879,7 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
             text,
             font: dateTimeFont,
             textColor: snippetColor,
-            textAlignment: .trailing
+            textAlignment: .trailing,
         )
     }
 
@@ -885,7 +904,7 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
             text,
             font: nameFont,
             textColor: .Signal.label,
-            lineBreakMode: .byTruncatingTail
+            lineBreakMode: .byTruncatingTail,
         )
     }
 
@@ -901,8 +920,8 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
                 font: snippetFont,
                 textColor: ThemedColor(
                     light: Theme.lightThemeSecondaryTextAndIconColor,
-                    dark: Theme.darkThemeSecondaryTextAndIconColor
-                )
+                    dark: Theme.darkThemeSecondaryTextAndIconColor,
+                ),
             )
         }
         return CVLabelConfig(
@@ -911,7 +930,7 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
             font: snippetFont,
             textColor: snippetColor,
             numberOfLines: 2,
-            lineBreakMode: .byTruncatingTail
+            lineBreakMode: .byTruncatingTail,
         )
     }
 

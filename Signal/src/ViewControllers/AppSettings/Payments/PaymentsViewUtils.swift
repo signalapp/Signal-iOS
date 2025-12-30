@@ -43,8 +43,10 @@ public class PaymentsViewUtils {
         circleView.autoSetDimensions(to: .square(CGFloat(avatarSize)))
 
         let iconColor: UIColor = (Theme.isDarkThemeEnabled ? .ows_gray05 : .ows_gray75)
-        let iconView = UIImageView.withTemplateImageName("mobilecoin-24",
-                                                         tintColor: iconColor)
+        let iconView = UIImageView.withTemplateImageName(
+            "mobilecoin-24",
+            tintColor: iconColor,
+        )
         circleView.addSubview(iconView)
         iconView.autoCenterInSuperview()
         iconView.autoSetDimensions(to: .square(CGFloat(avatarSize) * 20.0 / 36.0))
@@ -54,11 +56,15 @@ public class PaymentsViewUtils {
 
     static func buildUnidentifiedTransactionString(paymentModel: TSPaymentModel) -> String {
         owsAssertDebug(paymentModel.isUnidentified)
-        return (paymentModel.isIncoming
-                    ? OWSLocalizedString("PAYMENTS_UNIDENTIFIED_PAYMENT_INCOMING",
-                                        comment: "Indicator for unidentified incoming payments.")
-                    : OWSLocalizedString("PAYMENTS_UNIDENTIFIED_PAYMENT_OUTGOING",
-                                        comment: "Indicator for unidentified outgoing payments."))
+        return paymentModel.isIncoming
+            ? OWSLocalizedString(
+                "PAYMENTS_UNIDENTIFIED_PAYMENT_INCOMING",
+                comment: "Indicator for unidentified incoming payments.",
+            )
+            : OWSLocalizedString(
+                "PAYMENTS_UNIDENTIFIED_PAYMENT_OUTGOING",
+                comment: "Indicator for unidentified outgoing payments.",
+            )
     }
 
     // MARK: -
@@ -77,15 +83,17 @@ public class PaymentsViewUtils {
         }
     }
 
-    static func buildPassphraseGrid(passphrase: PaymentsPassphrase,
-                                    footerButton: UIView? = nil) -> UIView {
+    static func buildPassphraseGrid(
+        passphrase: PaymentsPassphrase,
+        footerButton: UIView? = nil,
+    ) -> UIView {
 
         struct WordAndIndex {
             let word: String
             let index: Int
         }
 
-        let wordsAndIndices = passphrase.words.enumerated().map { (index, word) in
+        let wordsAndIndices = passphrase.words.enumerated().map { index, word in
             WordAndIndex(word: word, index: index)
         }
 
@@ -97,26 +105,34 @@ public class PaymentsViewUtils {
 
             for wordAndIndex in words {
                 let attributedText = NSMutableAttributedString()
-                attributedText.append(OWSFormat.formatInt(wordAndIndex.index + 1),
-                                      attributes: [
-                                        .font: UIFont.dynamicTypeBodyClamped,
-                                        .foregroundColor: Theme.secondaryTextAndIconColor
-                                      ])
-                attributedText.append(":",
-                                      attributes: [
-                                        .font: UIFont.dynamicTypeBodyClamped,
-                                        .foregroundColor: Theme.secondaryTextAndIconColor
-                                      ])
-                attributedText.append(" ",
-                                      attributes: [
-                                        .font: UIFont.dynamicTypeBodyClamped,
-                                        .foregroundColor: Theme.secondaryTextAndIconColor
-                                      ])
-                attributedText.append(wordAndIndex.word,
-                                      attributes: [
-                                        .font: UIFont.dynamicTypeHeadlineClamped,
-                                        .foregroundColor: Theme.primaryTextColor
-                                      ])
+                attributedText.append(
+                    OWSFormat.formatInt(wordAndIndex.index + 1),
+                    attributes: [
+                        .font: UIFont.dynamicTypeBodyClamped,
+                        .foregroundColor: Theme.secondaryTextAndIconColor,
+                    ],
+                )
+                attributedText.append(
+                    ":",
+                    attributes: [
+                        .font: UIFont.dynamicTypeBodyClamped,
+                        .foregroundColor: Theme.secondaryTextAndIconColor,
+                    ],
+                )
+                attributedText.append(
+                    " ",
+                    attributes: [
+                        .font: UIFont.dynamicTypeBodyClamped,
+                        .foregroundColor: Theme.secondaryTextAndIconColor,
+                    ],
+                )
+                attributedText.append(
+                    wordAndIndex.word,
+                    attributes: [
+                        .font: UIFont.dynamicTypeHeadlineClamped,
+                        .foregroundColor: Theme.primaryTextColor,
+                    ],
+                )
                 let wordLabel = UILabel()
                 wordLabel.attributedText = attributedText
                 stack.addArrangedSubview(wordLabel)
@@ -132,24 +148,26 @@ public class PaymentsViewUtils {
         let rightWords = Array(wordsAndIndices.suffix(from: pivotIndex))
         let leftWordsStack = buildVStack(words: leftWords)
         let rightWordsStack = buildVStack(words: rightWords)
-        let allWordStack = UIStackView(arrangedSubviews: [ leftWordsStack, rightWordsStack ])
+        let allWordStack = UIStackView(arrangedSubviews: [leftWordsStack, rightWordsStack])
         allWordStack.axis = .horizontal
         allWordStack.alignment = .center
         allWordStack.distribution = .fillEqually
         allWordStack.spacing = 20
 
-        let stack = UIStackView(arrangedSubviews: [ allWordStack ])
+        let stack = UIStackView(arrangedSubviews: [allWordStack])
         stack.axis = .vertical
         stack.alignment = .fill
         stack.spacing = 24
         stack.isLayoutMarginsRelativeArrangement = true
         stack.layoutMargins = UIEdgeInsets(hMargin: 20, vMargin: 24)
         let backgroundColor = OWSTableViewController2.cellBackgroundColor(isUsingPresentedStyle: true)
-        stack.addBackgroundView(withBackgroundColor: backgroundColor,
-                                cornerRadius: 10)
+        stack.addBackgroundView(
+            withBackgroundColor: backgroundColor,
+            cornerRadius: 10,
+        )
 
-        if let footerButton = footerButton {
-            let footerButtonStack = UIStackView(arrangedSubviews: [ footerButton ])
+        if let footerButton {
+            let footerButtonStack = UIStackView(arrangedSubviews: [footerButton])
             footerButtonStack.axis = .vertical
             footerButtonStack.alignment = .center
             stack.addArrangedSubview(footerButtonStack)
@@ -158,9 +176,11 @@ public class PaymentsViewUtils {
         return stack
     }
 
-    static func buildTextWithLearnMoreLinkTextView(text: String,
-                                                   font: UIFont,
-                                                   learnMoreUrl: URL) -> UITextView {
+    static func buildTextWithLearnMoreLinkTextView(
+        text: String,
+        font: UIFont,
+        learnMoreUrl: URL,
+    ) -> UITextView {
         let textView = LinkingTextView()
         textView.backgroundColor = OWSTableViewController2.tableBackgroundColor(isUsingPresentedStyle: true)
         textView.textColor = .Signal.label
@@ -169,13 +189,13 @@ public class PaymentsViewUtils {
             text,
             " ",
             CommonStrings.learnMore.styled(
-                with: .link(learnMoreUrl)
-            )
+                with: .link(learnMoreUrl),
+            ),
         ]).styled(
             with: .font(font),
-            .color(Theme.secondaryTextAndIconColor)
+            .color(Theme.secondaryTextAndIconColor),
         )
-        textView.linkTextAttributes = [ .foregroundColor: Theme.primaryTextColor ]
+        textView.linkTextAttributes = [.foregroundColor: Theme.primaryTextColor]
         return textView
     }
 }
@@ -205,73 +225,113 @@ public extension TSPaymentModel {
         if !isIdentifiedPayment {
             if isOutgoing {
                 result = (isLongForm
-                            ? OWSLocalizedString("PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_COMPLETE",
-                                                comment: "Status indicator for outgoing payments which are complete.")
-                            : OWSLocalizedString("PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_COMPLETE",
-                                                comment: "Status indicator for outgoing payments which are complete."))
+                    ? OWSLocalizedString(
+                        "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_COMPLETE",
+                        comment: "Status indicator for outgoing payments which are complete.",
+                    )
+                    : OWSLocalizedString(
+                        "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_COMPLETE",
+                        comment: "Status indicator for outgoing payments which are complete.",
+                    ))
             } else {
                 result = (isLongForm
-                            ? OWSLocalizedString("PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_COMPLETE",
-                                                comment: "Status indicator for incoming payments which are complete.")
-                            : OWSLocalizedString("PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_COMPLETE",
-                                                comment: "Status indicator for incoming payments which are complete."))
+                    ? OWSLocalizedString(
+                        "PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_COMPLETE",
+                        comment: "Status indicator for incoming payments which are complete.",
+                    )
+                    : OWSLocalizedString(
+                        "PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_COMPLETE",
+                        comment: "Status indicator for incoming payments which are complete.",
+                    ))
             }
         } else {
             switch paymentState {
             case .outgoingUnsubmitted:
                 result = (isLongForm
-                            ? OWSLocalizedString("PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNSUBMITTED",
-                                                comment: "Status indicator for outgoing payments which have not yet been submitted.")
-                            : OWSLocalizedString("PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNSUBMITTED",
-                                                comment: "Status indicator for outgoing payments which have not yet been submitted."))
+                    ? OWSLocalizedString(
+                        "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNSUBMITTED",
+                        comment: "Status indicator for outgoing payments which have not yet been submitted.",
+                    )
+                    : OWSLocalizedString(
+                        "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNSUBMITTED",
+                        comment: "Status indicator for outgoing payments which have not yet been submitted.",
+                    ))
             case .outgoingUnverified:
                 result = (isLongForm
-                            ? OWSLocalizedString("PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNVERIFIED",
-                                                comment: "Status indicator for outgoing payments which have been submitted but not yet verified.")
-                            : OWSLocalizedString("PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNVERIFIED",
-                                                comment: "Status indicator for outgoing payments which have been submitted but not yet verified."))
+                    ? OWSLocalizedString(
+                        "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_UNVERIFIED",
+                        comment: "Status indicator for outgoing payments which have been submitted but not yet verified.",
+                    )
+                    : OWSLocalizedString(
+                        "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_UNVERIFIED",
+                        comment: "Status indicator for outgoing payments which have been submitted but not yet verified.",
+                    ))
             case .outgoingVerified:
                 result = (isLongForm
-                            ? OWSLocalizedString("PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_VERIFIED",
-                                                comment: "Status indicator for outgoing payments which have been verified but not yet sent.")
-                            : OWSLocalizedString("PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_VERIFIED",
-                                                comment: "Status indicator for outgoing payments which have been verified but not yet sent."))
+                    ? OWSLocalizedString(
+                        "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_VERIFIED",
+                        comment: "Status indicator for outgoing payments which have been verified but not yet sent.",
+                    )
+                    : OWSLocalizedString(
+                        "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_VERIFIED",
+                        comment: "Status indicator for outgoing payments which have been verified but not yet sent.",
+                    ))
             case .outgoingSending:
                 result = (isLongForm
-                            ? OWSLocalizedString("PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENDING",
-                                                comment: "Status indicator for outgoing payments which are being sent.")
-                            : OWSLocalizedString("PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENDING",
-                                                comment: "Status indicator for outgoing payments which are being sent."))
+                    ? OWSLocalizedString(
+                        "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENDING",
+                        comment: "Status indicator for outgoing payments which are being sent.",
+                    )
+                    : OWSLocalizedString(
+                        "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENDING",
+                        comment: "Status indicator for outgoing payments which are being sent.",
+                    ))
             case .outgoingSent,
                  .outgoingComplete:
                 result = (isLongForm
-                            ? OWSLocalizedString("PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENT",
-                                                comment: "Status indicator for outgoing payments which have been sent.")
-                            : OWSLocalizedString("PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENT",
-                                                comment: "Status indicator for outgoing payments which have been sent."))
+                    ? OWSLocalizedString(
+                        "PAYMENTS_PAYMENT_STATUS_LONG_OUTGOING_SENT",
+                        comment: "Status indicator for outgoing payments which have been sent.",
+                    )
+                    : OWSLocalizedString(
+                        "PAYMENTS_PAYMENT_STATUS_SHORT_OUTGOING_SENT",
+                        comment: "Status indicator for outgoing payments which have been sent.",
+                    ))
             case .outgoingFailed:
                 result = Self.description(forFailure: paymentFailure, isIncoming: false, isLongForm: isLongForm)
             case .incomingUnverified:
                 result = (isLongForm
-                            ? OWSLocalizedString("PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_UNVERIFIED",
-                                                comment: "Status indicator for incoming payments which have not yet been verified.")
-                            : OWSLocalizedString("PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_UNVERIFIED",
-                                                comment: "Status indicator for incoming payments which have not yet been verified."))
+                    ? OWSLocalizedString(
+                        "PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_UNVERIFIED",
+                        comment: "Status indicator for incoming payments which have not yet been verified.",
+                    )
+                    : OWSLocalizedString(
+                        "PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_UNVERIFIED",
+                        comment: "Status indicator for incoming payments which have not yet been verified.",
+                    ))
             case .incomingVerified,
                  .incomingComplete:
                 result = (isLongForm
-                            ? OWSLocalizedString("PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_VERIFIED",
-                                                comment: "Status indicator for incoming payments which have been verified.")
-                            : OWSLocalizedString("PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_VERIFIED",
-                                                comment: "Status indicator for incoming payments which have been verified."))
+                    ? OWSLocalizedString(
+                        "PAYMENTS_PAYMENT_STATUS_LONG_INCOMING_VERIFIED",
+                        comment: "Status indicator for incoming payments which have been verified.",
+                    )
+                    : OWSLocalizedString(
+                        "PAYMENTS_PAYMENT_STATUS_SHORT_INCOMING_VERIFIED",
+                        comment: "Status indicator for incoming payments which have been verified.",
+                    ))
             case .incomingFailed:
                 result = Self.description(forFailure: paymentFailure, isIncoming: true, isLongForm: isLongForm)
             @unknown default:
                 result = (isLongForm
-                            ? OWSLocalizedString("PAYMENTS_PAYMENT_STATUS_LONG_UNKNOWN",
-                                                comment: "Status indicator for payments which had an unknown failure.")
-                            : OWSLocalizedString("PAYMENTS_PAYMENT_STATUS_SHORT_UNKNOWN",
-                                                comment: "Status indicator for payments which had an unknown failure."))
+                    ? OWSLocalizedString(
+                        "PAYMENTS_PAYMENT_STATUS_LONG_UNKNOWN",
+                        comment: "Status indicator for payments which had an unknown failure.",
+                    )
+                    : OWSLocalizedString(
+                        "PAYMENTS_PAYMENT_STATUS_SHORT_UNKNOWN",
+                        comment: "Status indicator for payments which had an unknown failure.",
+                    ))
             }
         }
         result.append(" ")
@@ -288,15 +348,21 @@ public extension TSPaymentModel {
         }
     }
 
-    private static func description(forFailure failure: TSPaymentFailure,
-                                    isIncoming: Bool,
-                                    isLongForm: Bool) -> String {
+    private static func description(
+        forFailure failure: TSPaymentFailure,
+        isIncoming: Bool,
+        isLongForm: Bool,
+    ) -> String {
 
         let defaultDescription = (isIncoming
-                                    ? OWSLocalizedString("PAYMENTS_FAILURE_INCOMING_FAILED",
-                                                        comment: "Status indicator for incoming payments which failed.")
-                                    : OWSLocalizedString("PAYMENTS_FAILURE_OUTGOING_FAILED",
-                                                        comment: "Status indicator for outgoing payments which failed."))
+            ? OWSLocalizedString(
+                "PAYMENTS_FAILURE_INCOMING_FAILED",
+                comment: "Status indicator for incoming payments which failed.",
+            )
+            : OWSLocalizedString(
+                "PAYMENTS_FAILURE_OUTGOING_FAILED",
+                comment: "Status indicator for outgoing payments which failed.",
+            ))
 
         switch failure {
         case .none:
@@ -307,21 +373,31 @@ public extension TSPaymentModel {
             return defaultDescription
         case .insufficientFunds:
             owsAssertDebug(!isIncoming)
-            return OWSLocalizedString("PAYMENTS_FAILURE_OUTGOING_INSUFFICIENT_FUNDS",
-                                     comment: "Status indicator for outgoing payments which failed due to insufficient funds.")
+            return OWSLocalizedString(
+                "PAYMENTS_FAILURE_OUTGOING_INSUFFICIENT_FUNDS",
+                comment: "Status indicator for outgoing payments which failed due to insufficient funds.",
+            )
         case .validationFailed:
-            return (isIncoming
-                        ? OWSLocalizedString("PAYMENTS_FAILURE_INCOMING_VALIDATION_FAILED",
-                                            comment: "Status indicator for incoming payments which failed to verify.")
-                        : OWSLocalizedString("PAYMENTS_FAILURE_OUTGOING_VALIDATION_FAILED",
-                                            comment: "Status indicator for outgoing payments which failed to verify."))
+            return isIncoming
+                ? OWSLocalizedString(
+                    "PAYMENTS_FAILURE_INCOMING_VALIDATION_FAILED",
+                    comment: "Status indicator for incoming payments which failed to verify.",
+                )
+                : OWSLocalizedString(
+                    "PAYMENTS_FAILURE_OUTGOING_VALIDATION_FAILED",
+                    comment: "Status indicator for outgoing payments which failed to verify.",
+                )
         case .notificationSendFailed:
             owsAssertDebug(!isIncoming)
-            return OWSLocalizedString("PAYMENTS_FAILURE_OUTGOING_NOTIFICATION_SEND_FAILED",
-                                     comment: "Status indicator for outgoing payments for which the notification could not be sent.")
+            return OWSLocalizedString(
+                "PAYMENTS_FAILURE_OUTGOING_NOTIFICATION_SEND_FAILED",
+                comment: "Status indicator for outgoing payments for which the notification could not be sent.",
+            )
         case .invalid, .expired:
-            return OWSLocalizedString("PAYMENTS_FAILURE_INVALID",
-                                     comment: "Status indicator for invalid payments which could not be processed.")
+            return OWSLocalizedString(
+                "PAYMENTS_FAILURE_INVALID",
+                comment: "Status indicator for invalid payments which could not be processed.",
+            )
         @unknown default:
             owsFailDebug("Unknown failure type: \(failure.rawValue)")
             return defaultDescription
@@ -332,12 +408,18 @@ public extension TSPaymentModel {
 extension OWSActionSheets {
     public static func showPaymentsOutdatedClientSheet(title: OutdatedTitleType) {
 
-        OWSActionSheets.showConfirmationWithNotNowAlert(title: title.localizedTitle,
-                                              message: OWSLocalizedString("SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_MESSAGE",
-                                                                         comment: "Message for payments outdated sheet."),
-                                              proceedTitle: OWSLocalizedString("SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_BUTTON",
-                                                                              comment: "Button for payments outdated sheet."),
-                                              proceedStyle: .default) { _ in
+        OWSActionSheets.showConfirmationWithNotNowAlert(
+            title: title.localizedTitle,
+            message: OWSLocalizedString(
+                "SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_MESSAGE",
+                comment: "Message for payments outdated sheet.",
+            ),
+            proceedTitle: OWSLocalizedString(
+                "SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_BUTTON",
+                comment: "Button for payments outdated sheet.",
+            ),
+            proceedStyle: .default,
+        ) { _ in
             let url = TSConstants.appStoreUrl
             UIApplication.shared.open(url, options: [:], completionHandler: nil)
         }
@@ -353,11 +435,15 @@ extension OutdatedTitleType {
     var localizedTitle: String {
         switch self {
         case .cantSendPayment:
-            return OWSLocalizedString("SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_CANT_SEND",
-                              comment: "Title for payments outdated sheet saying cant send.")
+            return OWSLocalizedString(
+                "SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_CANT_SEND",
+                comment: "Title for payments outdated sheet saying cant send.",
+            )
         case .updateRequired:
-            return OWSLocalizedString("SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_UPDATE",
-                              comment: "Title for payments outdated sheet saying update required.")
+            return OWSLocalizedString(
+                "SETTINGS_PAYMENTS_PAYMENTS_OUTDATED_TITLE_UPDATE",
+                comment: "Title for payments outdated sheet saying update required.",
+            )
         }
     }
 }

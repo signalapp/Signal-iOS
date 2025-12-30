@@ -13,6 +13,7 @@ private enum StringChange: CustomDebugStringConvertible, Equatable {
         case .replace(let value): return "replace(\(value))"
         }
     }
+
     case replace(String)
 }
 
@@ -33,7 +34,8 @@ class JournalingOrderedDictionaryTest: XCTestCase {
         XCTAssertEqual(sut[1].value, "a")
         XCTAssertEqual(sut.journal, [
             .prepend,
-            .prepend])
+            .prepend,
+        ])
 
     }
 
@@ -48,7 +50,8 @@ class JournalingOrderedDictionaryTest: XCTestCase {
         XCTAssertEqual(sut[1].value, "b")
         XCTAssertEqual(sut.journal, [
             .append,
-            .append])
+            .append,
+        ])
     }
 
     func testReplace() {
@@ -56,9 +59,11 @@ class JournalingOrderedDictionaryTest: XCTestCase {
         sut.append(key: .a, value: "a")
         sut.append(key: .b, value: "b")
 
-        sut.replaceValue(at: sut.orderedKeys.firstIndex(of: .a)!,
-                         value: "A",
-                         changes: [.replace("A")])
+        sut.replaceValue(
+            at: sut.orderedKeys.firstIndex(of: .a)!,
+            value: "A",
+            changes: [.replace("A")],
+        )
         XCTAssertEqual(sut.orderedKeys, [.a, .b])
         XCTAssertEqual(sut[.a], "A")
         XCTAssertEqual(sut[.b], "b")
@@ -67,7 +72,8 @@ class JournalingOrderedDictionaryTest: XCTestCase {
         XCTAssertEqual(sut.journal, [
             .append,
             .append,
-            .modify(index: 0, changes: [.replace("A")])])
+            .modify(index: 0, changes: [.replace("A")]),
+        ])
     }
 
     func testRemove() {
@@ -81,7 +87,8 @@ class JournalingOrderedDictionaryTest: XCTestCase {
         XCTAssertEqual(sut.journal, [
             .append,
             .append,
-            .remove(index: 0)])
+            .remove(index: 0),
+        ])
     }
 
     func testRemoveAll() {

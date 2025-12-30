@@ -15,12 +15,12 @@ private enum MySupportErrorState {
 
     case previouslyActiveSubscriptionLapsed(
         chargeFailureCode: String?,
-        paymentMethod: DonationPaymentMethod?
+        paymentMethod: DonationPaymentMethod?,
     )
 
     case paymentFailed(
         chargeFailureCode: String?,
-        paymentMethod: DonationPaymentMethod?
+        paymentMethod: DonationPaymentMethod?,
     )
 
     var tableCellSubtitle: String {
@@ -28,27 +28,27 @@ private enum MySupportErrorState {
         case .paymentProcessing(paymentMethod: .sepa):
             return OWSLocalizedString(
                 "DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_BANK_PAYMENT_PROCESSING",
-                comment: "A label describing a donation payment that was made via bank transfer, which is still processing and has not completed."
+                comment: "A label describing a donation payment that was made via bank transfer, which is still processing and has not completed.",
             )
         case .paymentProcessing:
             return OWSLocalizedString(
                 "DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_NON_BANK_PAYMENT_PROCESSING",
-                comment: "A label describing a donation payment that was made by a method other than bank transfer (such as by credit card), which is still processing and has not completed."
+                comment: "A label describing a donation payment that was made by a method other than bank transfer (such as by credit card), which is still processing and has not completed.",
             )
         case .previouslyActiveSubscriptionLapsed:
             return OWSLocalizedString(
                 "DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_SUBSCRIPTION_LAPSED",
-                comment: "A label describing a recurring monthly donation that used to be active, but has now been canceled because it failed to renew."
+                comment: "A label describing a recurring monthly donation that used to be active, but has now been canceled because it failed to renew.",
             )
         case .paymentFailed:
             return OWSLocalizedString(
                 "DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_PAYMENT_FAILED",
-                comment: "A label describing a donation payment that has failed to process."
+                comment: "A label describing a donation payment that has failed to process.",
             )
         case .awaitingIDEALAuthorization:
             return OWSLocalizedString(
                 "DONATION_SETTINGS_MY_SUPPORT_TABLE_CELL_SUBTITLE_WAITING_FOR_AUTHORIZATION",
-                comment: "A label describing a donation payment that has requires authorization."
+                comment: "A label describing a donation payment that has requires authorization.",
             )
         }
     }
@@ -69,51 +69,57 @@ extension DonationSettingsViewController {
         profileBadgeLookup: ProfileBadgeLookup,
         oneTimeBoostReceiptCredentialRequestError: DonationReceiptCredentialRequestError?,
         pendingOneTimeDonation: PendingOneTimeIDEALDonation?,
-        hasAnyBadges: Bool
+        hasAnyBadges: Bool,
     ) -> OWSTableSection? {
         let section = OWSTableSection(title: OWSLocalizedString(
             "DONATION_VIEW_MY_SUPPORT_TITLE",
-            comment: "Title for the 'my support' section in the donation view"
+            comment: "Title for the 'my support' section in the donation view",
         ))
 
         switch subscriptionStatus {
         case .loadFailed:
             section.add(.label(withText: OWSLocalizedString(
                 "DONATION_VIEW_LOAD_FAILED",
-                comment: "Text that's shown when the donation view fails to load data, probably due to network failure"
+                comment: "Text that's shown when the donation view fails to load data, probably due to network failure",
             )))
         case .noSubscription:
             break
         case let .pendingSubscription(pendingDonation):
-            if let recurringSubscriptionTableItem = mySupportRecurringSubscriptionTableItem(
-                subscriptionType: .pendingAuthorization(pendingDonation),
-                subscriptionBadge: pendingDonation.newSubscriptionLevel.badge,
-                previouslyHadActiveSubscription: pendingDonation.oldSubscriptionLevel != nil,
-                receiptCredentialRequestError: nil
-            ) {
+            if
+                let recurringSubscriptionTableItem = mySupportRecurringSubscriptionTableItem(
+                    subscriptionType: .pendingAuthorization(pendingDonation),
+                    subscriptionBadge: pendingDonation.newSubscriptionLevel.badge,
+                    previouslyHadActiveSubscription: pendingDonation.oldSubscriptionLevel != nil,
+                    receiptCredentialRequestError: nil,
+                )
+            {
                 section.add(recurringSubscriptionTableItem)
             }
         case let .hasSubscription(
             subscription,
             subscriptionLevel,
             previouslyHadActiveSubscription,
-            receiptCredentialRequestError
+            receiptCredentialRequestError,
         ):
-            if let recurringSubscriptionTableItem = mySupportRecurringSubscriptionTableItem(
-                subscriptionType: .subscription(subscription),
-                subscriptionBadge: subscriptionLevel?.badge,
-                previouslyHadActiveSubscription: previouslyHadActiveSubscription,
-                receiptCredentialRequestError: receiptCredentialRequestError
-            ) {
+            if
+                let recurringSubscriptionTableItem = mySupportRecurringSubscriptionTableItem(
+                    subscriptionType: .subscription(subscription),
+                    subscriptionBadge: subscriptionLevel?.badge,
+                    previouslyHadActiveSubscription: previouslyHadActiveSubscription,
+                    receiptCredentialRequestError: receiptCredentialRequestError,
+                )
+            {
                 section.add(recurringSubscriptionTableItem)
             }
         }
 
-        if let oneTimeBoostItem = mySupportOneTimeBoostTableItem(
-            boostBadge: profileBadgeLookup.boostBadge,
-            pendingOneTimeIDEALDonation: pendingOneTimeDonation,
-            receiptCredentialRequestError: oneTimeBoostReceiptCredentialRequestError
-        ) {
+        if
+            let oneTimeBoostItem = mySupportOneTimeBoostTableItem(
+                boostBadge: profileBadgeLookup.boostBadge,
+                pendingOneTimeIDEALDonation: pendingOneTimeDonation,
+                receiptCredentialRequestError: oneTimeBoostReceiptCredentialRequestError,
+            )
+        {
             section.add(oneTimeBoostItem)
         }
 
@@ -122,12 +128,12 @@ extension DonationSettingsViewController {
                 icon: .donateBadges,
                 withText: OWSLocalizedString("DONATION_VIEW_MANAGE_BADGES", comment: "Title for the 'Badges' button on the donation screen"),
                 actionBlock: { [weak self] in
-                    guard let self = self else { return }
+                    guard let self else { return }
                     let vc = SSKEnvironment.shared.databaseStorageRef.read { tx in
                         return BadgeConfigurationViewController.load(delegate: self, tx: tx)
                     }
                     self.navigationController?.pushViewController(vc, animated: true)
-                }
+                },
             ))
         }
 
@@ -147,7 +153,7 @@ extension DonationSettingsViewController {
         subscriptionType: RecurringSubscriptionTableItemType,
         subscriptionBadge: ProfileBadge?,
         previouslyHadActiveSubscription: Bool,
-        receiptCredentialRequestError: DonationReceiptCredentialRequestError?
+        receiptCredentialRequestError: DonationReceiptCredentialRequestError?,
     ) -> OWSTableItem? {
         let errorState: MySupportErrorState? = {
             switch subscriptionType {
@@ -170,13 +176,13 @@ extension DonationSettingsViewController {
                     /// question no longer runs out of retries.
                     return .paymentFailed(
                         chargeFailureCode: nil,
-                        paymentMethod: receiptCredentialRequestError.paymentMethod
+                        paymentMethod: receiptCredentialRequestError.paymentMethod,
                     )
                 } else if let receiptCredentialRequestError {
                     logger.warn("Recurring subscription with receipt credential request error! \(receiptCredentialRequestError)")
 
                     return receiptCredentialRequestError.mySupportErrorState(
-                        previouslyHadActiveSubscription: previouslyHadActiveSubscription
+                        previouslyHadActiveSubscription: previouslyHadActiveSubscription,
                     )
                 } else {
                     if subscription.isPaymentProcessing {
@@ -215,12 +221,12 @@ extension DonationSettingsViewController {
                         {
                             return .previouslyActiveSubscriptionLapsed(
                                 chargeFailureCode: chargeFailure.code,
-                                paymentMethod: subscription.donationPaymentMethod
+                                paymentMethod: subscription.donationPaymentMethod,
                             )
                         } else if let chargeFailure = subscription.chargeFailure {
                             return .paymentFailed(
                                 chargeFailureCode: chargeFailure.code,
-                                paymentMethod: subscription.donationPaymentMethod
+                                paymentMethod: subscription.donationPaymentMethod,
                             )
                         }
 
@@ -238,7 +244,7 @@ extension DonationSettingsViewController {
         let pricingTitle: String = {
             let pricingFormat = OWSLocalizedString(
                 "SUSTAINER_VIEW_PRICING",
-                comment: "Pricing text for sustainer view badges, embeds {{price}}"
+                comment: "Pricing text for sustainer view badges, embeds {{price}}",
             )
 
             let amount = {
@@ -264,7 +270,7 @@ extension DonationSettingsViewController {
             case .subscription(let subscription):
                 let renewalFormat = OWSLocalizedString(
                     "SUSTAINER_VIEW_RENEWAL",
-                    comment: "Renewal date text for sustainer view level, embeds {{renewal date}}"
+                    comment: "Renewal date text for sustainer view level, embeds {{renewal date}}",
                 )
 
                 let dateFormatter = DateFormatter()
@@ -276,7 +282,7 @@ extension DonationSettingsViewController {
                 owsFailDebug("Should not be displaying a subscription message for a donation pending authorization.")
                 return OWSLocalizedString(
                     "SUSTAINER_VIEW_PROCESSING_PAYMENT",
-                    comment: "Loading indicator on the sustainer view"
+                    comment: "Loading indicator on the sustainer view",
                 )
             }
         }()
@@ -296,7 +302,7 @@ extension DonationSettingsViewController {
                     itemName: pricingTitle,
                     subtitle: statusSubtitle,
                     accessoryType: .disclosureIndicator,
-                    accessoryContentView: errorIconView
+                    accessoryContentView: errorIconView,
                 )
             },
             actionBlock: { [weak self] () -> Void in
@@ -311,32 +317,32 @@ extension DonationSettingsViewController {
                 case let .previouslyActiveSubscriptionLapsed(chargeFailureCode, paymentMethod):
                     self.presentRecurringSubscriptionLapsedActionSheet(
                         chargeFailureCode: chargeFailureCode,
-                        paymentMethod: paymentMethod
+                        paymentMethod: paymentMethod,
                     )
                 case let .paymentProcessing(paymentMethod):
                     self.presentPaymentProcessingActionSheet(
                         paymentMethod: paymentMethod,
-                        donateMode: .monthly
+                        donateMode: .monthly,
                     )
                 case .awaitingIDEALAuthorization:
                     self.presentAwaitingIDEALAuthorizationSheet(
-                        donateMode: .monthly
+                        donateMode: .monthly,
                     )
                 case let .paymentFailed(chargeFailureCode, paymentMethod):
                     self.presentDonationFailedActionSheet(
                         chargeFailureCode: chargeFailureCode,
                         paymentMethod: paymentMethod,
-                        preferredDonateMode: .monthly
+                        preferredDonateMode: .monthly,
                     )
                 }
-            }
+            },
         )
     }
 
     private func mySupportOneTimeBoostTableItem(
         boostBadge: ProfileBadge?,
         pendingOneTimeIDEALDonation: PendingOneTimeIDEALDonation?,
-        receiptCredentialRequestError: DonationReceiptCredentialRequestError?
+        receiptCredentialRequestError: DonationReceiptCredentialRequestError?,
     ) -> OWSTableItem? {
 
         var amount: FiatMoney?
@@ -350,7 +356,7 @@ extension DonationSettingsViewController {
             logger.info("Showing boost error. \(receiptCredentialRequestError)")
 
             errorState = receiptCredentialRequestError.mySupportErrorState(
-                previouslyHadActiveSubscription: false
+                previouslyHadActiveSubscription: false,
             )
         } else if let pendingOneTimeIDEALDonation {
             amount = pendingOneTimeIDEALDonation.amount
@@ -366,12 +372,12 @@ extension DonationSettingsViewController {
                 let pricingTitle: String = {
                     let pricingFormat = OWSLocalizedString(
                         "DONATION_SETTINGS_ONE_TIME_AMOUNT_FORMAT",
-                        comment: "A string describing the amount and currency of a one-time payment. Embeds {{ the amount, formatted as a currency }}."
+                        comment: "A string describing the amount and currency of a one-time payment. Embeds {{ the amount, formatted as a currency }}.",
                     )
 
                     return String(
                         format: pricingFormat,
-                        CurrencyFormatter.format(money: amount)
+                        CurrencyFormatter.format(money: amount),
                     )
                 }()
 
@@ -380,7 +386,7 @@ extension DonationSettingsViewController {
                     itemName: pricingTitle,
                     subtitle: errorState.tableCellSubtitle,
                     accessoryType: .disclosureIndicator,
-                    accessoryContentView: errorState.shouldShowErrorIcon ? self.mySupportErrorIconView() : nil
+                    accessoryContentView: errorState.shouldShowErrorIcon ? self.mySupportErrorIconView() : nil,
                 )
             },
             actionBlock: { [weak self] () -> Void in
@@ -392,26 +398,26 @@ extension DonationSettingsViewController {
                 case let .paymentProcessing(paymentMethod):
                     self.presentPaymentProcessingActionSheet(
                         paymentMethod: paymentMethod,
-                        donateMode: .oneTime
+                        donateMode: .oneTime,
                     )
                 case .awaitingIDEALAuthorization:
                     self.presentAwaitingIDEALAuthorizationSheet(
-                        donateMode: .oneTime
+                        donateMode: .oneTime,
                     )
                 case let .paymentFailed(chargeFailureCode, paymentMethod):
                     self.presentDonationFailedActionSheet(
                         chargeFailureCode: chargeFailureCode,
                         paymentMethod: paymentMethod,
-                        preferredDonateMode: .oneTime
+                        preferredDonateMode: .oneTime,
                     )
                 }
-            }
+            },
         )
     }
 
     private func presentPaymentProcessingActionSheet(
         paymentMethod: DonationPaymentMethod?,
-        donateMode: DonateViewController.DonateMode
+        donateMode: DonateViewController.DonateMode,
     ) {
         let actionSheet: ActionSheetController
 
@@ -422,12 +428,12 @@ extension DonationSettingsViewController {
             actionSheet = ActionSheetController(
                 title: OWSLocalizedString(
                     "DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_TITLE",
-                    comment: "Title for an alert explaining that a one-time payment made via bank transfer is being processed."
+                    comment: "Title for an alert explaining that a one-time payment made via bank transfer is being processed.",
                 ),
                 message: OWSLocalizedString(
                     "DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_PROCESSING_MESSAGE",
-                    comment: "Message for an alert explaining that a one-time payment made via bank transfer is being processed."
-                )
+                    comment: "Message for an alert explaining that a one-time payment made via bank transfer is being processed.",
+                ),
             )
 
             actionSheet.addAction(ActionSheetAction(
@@ -437,9 +443,9 @@ extension DonationSettingsViewController {
 
                     self.present(
                         SFSafariViewController(url: URL.Support.Donations.donationPending),
-                        animated: true
+                        animated: true,
                     )
-                }
+                },
             ))
             actionSheet.addAction(OWSActionSheets.okayAction)
         }
@@ -448,28 +454,28 @@ extension DonationSettingsViewController {
     }
 
     private func presentAwaitingIDEALAuthorizationSheet(
-        donateMode: DonateViewController.DonateMode
+        donateMode: DonateViewController.DonateMode,
     ) {
         let actionSheet = ActionSheetController(
             title: OWSLocalizedString(
                 "DONATION_SETTINGS_MY_SUPPORT_DONATION_UNCONFIMRED_ALERT_TITLE",
-                comment: "Title for a sheet explaining that a payment needs confirmation."
+                comment: "Title for a sheet explaining that a payment needs confirmation.",
             ),
             message: OWSLocalizedString(
                 "DONATION_SETTINGS_MY_SUPPORT_BANK_PAYMENT_AWAITING_AUTHORIZATION_MESSAGE",
-                comment: "Prompt the user asking if they want to keep the current in-flight, but unauthorized donation, or try again."
-            )
+                comment: "Prompt the user asking if they want to keep the current in-flight, but unauthorized donation, or try again.",
+            ),
         )
         actionSheet.addAction(OWSActionSheets.okayAction)
         actionSheet.addAction(ActionSheetAction(
             title: OWSLocalizedString(
                 "DONATION_BADGE_ISSUE_SHEET_TRY_AGAIN_BUTTON_TITLE",
-                comment: "Title for a button asking the user to try their donation again, because something went wrong."
+                comment: "Title for a button asking the user to try their donation again, because something went wrong.",
             ),
             handler: { [weak self] _ in
                 guard let self else { return }
                 self.presentAwaitingIDEALAuthorizationActionSheet(donateMode: donateMode)
-            }
+            },
         ))
         self.presentActionSheet(actionSheet, animated: true)
     }
@@ -477,17 +483,17 @@ extension DonationSettingsViewController {
     private func presentDonationFailedActionSheet(
         chargeFailureCode: String?,
         paymentMethod: DonationPaymentMethod?,
-        preferredDonateMode: DonateViewController.DonateMode
+        preferredDonateMode: DonateViewController.DonateMode,
     ) {
         let actionSheetMessage: String = {
             let messageFormat: String = OWSLocalizedString(
                 "DONATION_SETTINGS_MY_SUPPORT_DONATION_FAILED_ALERT_MESSAGE_FORMAT",
-                comment: "Message shown in a sheet explaining that the user's donation has failed because payment failed. Embeds {{ a specific, already-localized string describing the payment failure reason }}."
+                comment: "Message shown in a sheet explaining that the user's donation has failed because payment failed. Embeds {{ a specific, already-localized string describing the payment failure reason }}.",
             )
 
             let (chargeFailureString, _) = DonationViewsUtil.localizedDonationFailure(
                 chargeErrorCode: chargeFailureCode,
-                paymentMethod: paymentMethod
+                paymentMethod: paymentMethod,
             )
 
             return String(format: messageFormat, chargeFailureString)
@@ -496,9 +502,9 @@ extension DonationSettingsViewController {
         let actionSheet = ActionSheetController(
             title: OWSLocalizedString(
                 "DONATION_SETTINGS_MY_SUPPORT_DONATION_FAILED_ALERT_TITLE",
-                comment: "Title for a sheet explaining that a payment failed."
+                comment: "Title for a sheet explaining that a payment failed.",
             ),
-            message: actionSheetMessage
+            message: actionSheetMessage,
         )
 
         switch preferredDonateMode {
@@ -514,17 +520,17 @@ extension DonationSettingsViewController {
 
     private func presentRecurringSubscriptionLapsedActionSheet(
         chargeFailureCode: String?,
-        paymentMethod: DonationPaymentMethod?
+        paymentMethod: DonationPaymentMethod?,
     ) {
         let actionSheetMessage: String = {
             let messageFormat = OWSLocalizedString(
                 "DONATION_SETTINGS_MY_SUPPORT_RECURRING_SUBSCRIPTION_LAPSED_CHARGE_FAILURE_ALERT_MESSAGE_FORMAT",
-                comment: "Message shown in a sheet explaining that the user's recurring subscription has ended because payment failed. Embeds {{ a specific, already-localized string describing the failure reason }}."
+                comment: "Message shown in a sheet explaining that the user's recurring subscription has ended because payment failed. Embeds {{ a specific, already-localized string describing the failure reason }}.",
             )
 
             let (chargeFailureString, _) = DonationViewsUtil.localizedDonationFailure(
                 chargeErrorCode: chargeFailureCode,
-                paymentMethod: paymentMethod
+                paymentMethod: paymentMethod,
             )
 
             return String(format: messageFormat, chargeFailureString)
@@ -533,9 +539,9 @@ extension DonationSettingsViewController {
         let actionSheet = ActionSheetController(
             title: OWSLocalizedString(
                 "DONATION_SETTINGS_MY_SUPPORT_RECURRING_SUBSCRIPTION_LAPSED_TITLE",
-                comment: "Title for a sheet explaining that the user's recurring subscription has ended because payment failed."
+                comment: "Title for a sheet explaining that the user's recurring subscription has ended because payment failed.",
             ),
-            message: actionSheetMessage
+            message: actionSheetMessage,
         )
 
         actionSheet.addAction(showDonateAndCancelSubscriptionAction(title: .renewSubscription))
@@ -553,12 +559,12 @@ extension DonationSettingsViewController {
             case .renewSubscription:
                 return OWSLocalizedString(
                     "DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_RENEW_SUBSCRIPTION",
-                    comment: "Title for an action in an action sheet asking the user to renew a subscription that has failed to renew."
+                    comment: "Title for an action in an action sheet asking the user to renew a subscription that has failed to renew.",
                 )
             case .tryAgain:
                 return OWSLocalizedString(
                     "DONATION_SETTINGS_MY_SUPPORT_ACTION_SHEET_ACTION_TITLE_TRY_AGAIN",
-                    comment: "Title for an action in an action sheet asking the user to try again, in reference to a donation that failed."
+                    comment: "Title for an action in an action sheet asking the user to try again, in reference to a donation that failed.",
                 )
             }
         }
@@ -589,7 +595,7 @@ extension DonationSettingsViewController {
     private func mySupportErrorIconView() -> UIView {
         let imageView = UIImageView.withTemplateImageName(
             "error-circle",
-            tintColor: .ows_accentRed
+            tintColor: .ows_accentRed,
         )
         imageView.autoPinToSquareAspectRatio()
 
@@ -599,35 +605,35 @@ extension DonationSettingsViewController {
 
 private extension DonationReceiptCredentialRequestError {
     func mySupportErrorState(
-        previouslyHadActiveSubscription: Bool
+        previouslyHadActiveSubscription: Bool,
     ) -> MySupportErrorState {
         switch errorCode {
         case .paymentFailed:
             if previouslyHadActiveSubscription {
                 return .previouslyActiveSubscriptionLapsed(
                     chargeFailureCode: chargeFailureCodeIfPaymentFailed,
-                    paymentMethod: paymentMethod
+                    paymentMethod: paymentMethod,
                 )
             }
 
             return .paymentFailed(
                 chargeFailureCode: chargeFailureCodeIfPaymentFailed,
-                paymentMethod: paymentMethod
+                paymentMethod: paymentMethod,
             )
         case .paymentStillProcessing:
             return .paymentProcessing(paymentMethod: paymentMethod)
         case
-                .localValidationFailed,
-                .serverValidationFailed,
-                .paymentNotFound,
-                .paymentIntentRedeemed:
+            .localValidationFailed,
+            .serverValidationFailed,
+            .paymentNotFound,
+            .paymentIntentRedeemed:
             // This isn't quite the right thing to do, since the payment isn't
             // the thing that failed. However, it should be super rare for us to
             // get into this state – we could alternatively add a "generic
             // error" case for us to fall back on.
             return .paymentFailed(
                 chargeFailureCode: nil,
-                paymentMethod: paymentMethod
+                paymentMethod: paymentMethod,
             )
         }
     }

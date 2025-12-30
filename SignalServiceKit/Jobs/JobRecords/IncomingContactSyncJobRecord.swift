@@ -35,17 +35,17 @@ public final class IncomingContactSyncJobRecord: JobRecord, FactoryInitializable
                 source: .transitTier(
                     cdnKey: cdnKey,
                     integrityCheck: .digestSHA256Ciphertext(digest),
-                    plaintextLength: plaintextLength
-                )
+                    plaintextLength: plaintextLength,
+                ),
             ))
         }
         owsAssertDebug(
             cdnKey == nil
-            && cdnNumber == nil
-            && encryptionKey == nil
-            && digest == nil
-            && plaintextLength == nil,
-            "Either all fields should be set or none!"
+                && cdnNumber == nil
+                && encryptionKey == nil
+                && digest == nil
+                && plaintextLength == nil,
+            "Either all fields should be set or none!",
         )
         return .invalid
     }
@@ -60,7 +60,7 @@ public final class IncomingContactSyncJobRecord: JobRecord, FactoryInitializable
         plaintextLength: UInt32?,
         isCompleteContactSync: Bool,
         failureCount: UInt = 0,
-        status: Status = .ready
+        status: Status = .ready,
     ) {
         self.isCompleteContactSync = isCompleteContactSync
 
@@ -72,11 +72,11 @@ public final class IncomingContactSyncJobRecord: JobRecord, FactoryInitializable
 
         super.init(
             failureCount: failureCount,
-            status: status
+            status: status,
         )
     }
 
-    #if TESTABLE_BUILD
+#if TESTABLE_BUILD
     public init(
         cdnNumber: UInt32?,
         cdnKey: String?,
@@ -85,7 +85,7 @@ public final class IncomingContactSyncJobRecord: JobRecord, FactoryInitializable
         plaintextLength: UInt32?,
         isCompleteContactSync: Bool,
         failureCount: UInt = 0,
-        status: Status = .ready
+        status: Status = .ready,
     ) {
         self.isCompleteContactSync = isCompleteContactSync
 
@@ -97,10 +97,10 @@ public final class IncomingContactSyncJobRecord: JobRecord, FactoryInitializable
 
         super.init(
             failureCount: failureCount,
-            status: status
+            status: status,
         )
     }
-    #endif
+#endif
 
     required init(forRecordTypeFactoryInitializationFrom decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
@@ -116,7 +116,7 @@ public final class IncomingContactSyncJobRecord: JobRecord, FactoryInitializable
         try super.init(baseClassDuringFactoryInitializationFrom: container.superDecoder())
     }
 
-    public override func encode(to encoder: Encoder) throws {
+    override public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
 
         try super.encode(to: container.superEncoder())

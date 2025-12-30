@@ -21,7 +21,7 @@ public class UnknownEnumCodableTest: XCTestCase {
             "\"second\"": .second,
             "\"unknown\"": .unknown,
             "\"whatever\"": .unknown,
-            "\"\"": .unknown
+            "\"\"": .unknown,
         ]
         let decoder = JSONDecoder()
         for (raw, expected) in cases {
@@ -42,7 +42,7 @@ public class UnknownEnumCodableTest: XCTestCase {
             "42": .life,
             "-1": .unknown,
             "333": .unknown,
-            "0": .unknown
+            "0": .unknown,
         ]
         let decoder = JSONDecoder()
         for (raw, expected) in cases {

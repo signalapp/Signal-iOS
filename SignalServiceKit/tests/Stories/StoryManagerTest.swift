@@ -17,7 +17,7 @@ class StoryManagerTest: SSKBaseTest {
         SSKEnvironment.shared.databaseStorageRef.write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
                 localIdentifiers: .forUnitTests,
-                tx: tx
+                tx: tx,
             )
         }
     }
@@ -39,7 +39,7 @@ class StoryManagerTest: SSKBaseTest {
             SSKEnvironment.shared.profileManagerRef.addUser(
                 toProfileWhitelist: SignalServiceAddress(author),
                 userProfileWriter: .localUser,
-                transaction: $0
+                transaction: $0,
             )
 
             try StoryManager.processIncomingStoryMessage(
@@ -47,14 +47,14 @@ class StoryManagerTest: SSKBaseTest {
                 timestamp: timestamp,
                 author: author,
                 localIdentifiers: .forUnitTests,
-                transaction: $0
+                transaction: $0,
             )
 
             // Message should have been created.
             let message = StoryFinder.story(
                 timestamp: timestamp,
                 author: author,
-                transaction: $0
+                transaction: $0,
             )
             XCTAssertNotNil(message)
         }
@@ -72,14 +72,14 @@ class StoryManagerTest: SSKBaseTest {
                 timestamp: timestamp,
                 author: author,
                 localIdentifiers: .forUnitTests,
-                transaction: $0
+                transaction: $0,
             )
 
             // Message should not have been created.
             let message = StoryFinder.story(
                 timestamp: timestamp,
                 author: author,
-                transaction: $0
+                transaction: $0,
             )
             XCTAssertNil(message)
         }
@@ -96,13 +96,13 @@ class StoryManagerTest: SSKBaseTest {
             SSKEnvironment.shared.profileManagerRef.addUser(
                 toProfileWhitelist: SignalServiceAddress(author),
                 userProfileWriter: .localUser,
-                transaction: $0
+                transaction: $0,
             )
 
             SSKEnvironment.shared.blockingManagerRef.addBlockedAddress(
                 SignalServiceAddress(author),
                 blockMode: .localShouldNotLeaveGroups,
-                transaction: $0
+                transaction: $0,
             )
 
             try StoryManager.processIncomingStoryMessage(
@@ -110,7 +110,7 @@ class StoryManagerTest: SSKBaseTest {
                 timestamp: timestamp,
                 author: author,
                 localIdentifiers: .forUnitTests,
-                transaction: $0
+                transaction: $0,
             )
 
             try StoryManager.processIncomingStoryMessage(
@@ -118,14 +118,14 @@ class StoryManagerTest: SSKBaseTest {
                 timestamp: timestamp,
                 author: author,
                 localIdentifiers: .forUnitTests,
-                transaction: $0
+                transaction: $0,
             )
 
             // Message should not have been created.
             let message = StoryFinder.story(
                 timestamp: timestamp,
                 author: author,
-                transaction: $0
+                transaction: $0,
             )
             XCTAssertNil(message)
         }
@@ -144,16 +144,16 @@ class StoryManagerTest: SSKBaseTest {
             SSKEnvironment.shared.profileManagerRef.addUser(
                 toProfileWhitelist: SignalServiceAddress(author),
                 userProfileWriter: .localUser,
-                transaction: $0
+                transaction: $0,
             )
 
             TSGroupThread.forUnitTest(
-                masterKey: groupMasterKey
+                masterKey: groupMasterKey,
             ).anyInsert(transaction: $0)
             SSKEnvironment.shared.blockingManagerRef.addBlockedGroupId(
                 groupId,
                 blockMode: .localShouldNotLeaveGroups,
-                transaction: $0
+                transaction: $0,
             )
 
             try StoryManager.processIncomingStoryMessage(
@@ -161,14 +161,14 @@ class StoryManagerTest: SSKBaseTest {
                 timestamp: timestamp,
                 author: author,
                 localIdentifiers: .forUnitTests,
-                transaction: $0
+                transaction: $0,
             )
 
             // Message should not have been created.
             let message = StoryFinder.story(
                 timestamp: timestamp,
                 author: author,
-                transaction: $0
+                transaction: $0,
             )
             XCTAssertNil(message)
         }
@@ -186,7 +186,7 @@ class StoryManagerTest: SSKBaseTest {
             SSKEnvironment.shared.profileManagerRef.addUser(
                 toProfileWhitelist: SignalServiceAddress(author),
                 userProfileWriter: .localUser,
-                transaction: $0
+                transaction: $0,
             )
 
             try Self.makeGroupThread(secretParams: secretParams, transaction: $0)
@@ -196,14 +196,14 @@ class StoryManagerTest: SSKBaseTest {
                 timestamp: timestamp,
                 author: author,
                 localIdentifiers: .forUnitTests,
-                transaction: $0
+                transaction: $0,
             )
 
             // Message should not have been created.
             let message = StoryFinder.story(
                 timestamp: timestamp,
                 author: author,
-                transaction: $0
+                transaction: $0,
             )
             XCTAssertNil(message)
         }
@@ -221,7 +221,7 @@ class StoryManagerTest: SSKBaseTest {
             SSKEnvironment.shared.profileManagerRef.addUser(
                 toProfileWhitelist: SignalServiceAddress(author),
                 userProfileWriter: .localUser,
-                transaction: $0
+                transaction: $0,
             )
 
             try Self.makeGroupThread(secretParams: secretParams, announcementOnly: true, members: [author], transaction: $0)
@@ -231,14 +231,14 @@ class StoryManagerTest: SSKBaseTest {
                 timestamp: timestamp,
                 author: author,
                 localIdentifiers: .forUnitTests,
-                transaction: $0
+                transaction: $0,
             )
 
             // Message should not have been created.
             let message = StoryFinder.story(
                 timestamp: timestamp,
                 author: author,
-                transaction: $0
+                transaction: $0,
             )
             XCTAssertNil(message)
         }
@@ -261,7 +261,7 @@ class StoryManagerTest: SSKBaseTest {
             SSKEnvironment.shared.profileManagerRef.addUser(
                 toProfileWhitelist: SignalServiceAddress(author),
                 userProfileWriter: .localUser,
-                transaction: $0
+                transaction: $0,
             )
 
             try Self.makeGroupThread(secretParams: secretParams, announcementOnly: true, admins: [author], transaction: $0)
@@ -271,14 +271,14 @@ class StoryManagerTest: SSKBaseTest {
                 timestamp: timestamp,
                 author: author,
                 localIdentifiers: .forUnitTests,
-                transaction: $0
+                transaction: $0,
             )
 
             // Message should have been created.
             let message = StoryFinder.story(
                 timestamp: timestamp,
                 author: author,
-                transaction: $0
+                transaction: $0,
             )
             XCTAssertNotNil(message)
         }
@@ -301,7 +301,7 @@ class StoryManagerTest: SSKBaseTest {
             SSKEnvironment.shared.profileManagerRef.addUser(
                 toProfileWhitelist: SignalServiceAddress(author),
                 userProfileWriter: .localUser,
-                transaction: $0
+                transaction: $0,
             )
 
             try Self.makeGroupThread(secretParams: secretParams, members: [author], transaction: $0)
@@ -311,14 +311,14 @@ class StoryManagerTest: SSKBaseTest {
                 timestamp: timestamp,
                 author: author,
                 localIdentifiers: .forUnitTests,
-                transaction: $0
+                transaction: $0,
             )
 
             // Message should have been created.
             let message = StoryFinder.story(
                 timestamp: timestamp,
                 author: author,
-                transaction: $0
+                transaction: $0,
             )
             XCTAssertNotNil(message)
         }
@@ -339,7 +339,7 @@ class StoryManagerTest: SSKBaseTest {
             SSKEnvironment.shared.profileManagerRef.addUser(
                 toProfileWhitelist: SignalServiceAddress(author),
                 userProfileWriter: .localUser,
-                transaction: $0
+                transaction: $0,
             )
 
             try StoryManager.processIncomingStoryMessage(
@@ -347,13 +347,13 @@ class StoryManagerTest: SSKBaseTest {
                 timestamp: timestamp,
                 author: author,
                 localIdentifiers: .forUnitTests,
-                transaction: $0
+                transaction: $0,
             )
 
             let profileManager = SSKEnvironment.shared.profileManagerRef
             let profileKey = profileManager.userProfile(
                 for: SignalServiceAddress(author),
-                tx: $0
+                tx: $0,
             )?.profileKey
             XCTAssertEqual(profileKey?.keyData, storyMessage.profileKey)
         }
@@ -371,13 +371,13 @@ class StoryManagerTest: SSKBaseTest {
                 timestamp: timestamp,
                 receivedTimestamp: timestamp,
                 author: author,
-                transaction: $0
+                transaction: $0,
             )
 
             SSKEnvironment.shared.profileManagerRef.addUser(
                 toProfileWhitelist: SignalServiceAddress(author),
                 userProfileWriter: .localUser,
-                transaction: $0
+                transaction: $0,
             )
 
             try StoryManager.processIncomingStoryMessage(
@@ -385,7 +385,7 @@ class StoryManagerTest: SSKBaseTest {
                 timestamp: timestamp,
                 author: author,
                 localIdentifiers: .forUnitTests,
-                transaction: $0
+                transaction: $0,
             )
 
             let count = try StoryMessage
@@ -433,7 +433,7 @@ class StoryManagerTest: SSKBaseTest {
         announcementOnly: Bool = false,
         members: [Aci] = [],
         admins: [Aci] = [],
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) throws {
         var membershipBuilder = GroupMembership.Builder()
 
@@ -471,7 +471,7 @@ class StoryManagerTest: SSKBaseTest {
 
         override static func enqueueDownloadOfAttachmentsForStoryMessage(
             _ message: StoryMessage,
-            tx: DBWriteTransaction
+            tx: DBWriteTransaction,
         ) {
             // Do nothing
         }

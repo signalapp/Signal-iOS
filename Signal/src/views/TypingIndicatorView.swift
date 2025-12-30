@@ -11,8 +11,8 @@ class TypingIndicatorView: ManualStackView {
     // _at their max size_.
     private static let kDotMaxHSpacing: CGFloat = 3
 
-    public static let kMinRadiusPt: CGFloat = 6
-    public static let kMaxRadiusPt: CGFloat = 8
+    static let kMinRadiusPt: CGFloat = 6
+    static let kMaxRadiusPt: CGFloat = 8
 
     private let dot1 = DotView(dotType: .dotType1)
     private let dot2 = DotView(dotType: .dotType2)
@@ -20,7 +20,7 @@ class TypingIndicatorView: ManualStackView {
 
     private var cachedMeasurement: ManualStackView.Measurement?
 
-    public init() {
+    init() {
         super.init(name: "TypingIndicatorView")
     }
 
@@ -46,39 +46,51 @@ class TypingIndicatorView: ManualStackView {
 
     func configureForChatList() {
         if let measurement = self.cachedMeasurement {
-            self.configureForReuse(config: Self.stackConfig,
-                                   measurement: measurement)
+            self.configureForReuse(
+                config: Self.stackConfig,
+                measurement: measurement,
+            )
         } else {
             let measurement = Self.measurement()
             self.cachedMeasurement = measurement
-            self.configure(config: Self.stackConfig,
-                           measurement: measurement,
-                           subviews: [ dot1, dot2, dot3 ])
+            self.configure(
+                config: Self.stackConfig,
+                measurement: measurement,
+                subviews: [dot1, dot2, dot3],
+            )
         }
 
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(didBecomeActive),
-                                               name: .OWSApplicationDidBecomeActive,
-                                               object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(didBecomeActive),
+            name: .OWSApplicationDidBecomeActive,
+            object: nil,
+        )
     }
 
     func configureForConversationView(cellMeasurement: CVCellMeasurement) {
-        self.configure(config: Self.stackConfig,
-                       cellMeasurement: cellMeasurement,
-                       measurementKey: Self.measurementKey_stack,
-                       subviews: [ dot1, dot2, dot3 ])
+        self.configure(
+            config: Self.stackConfig,
+            cellMeasurement: cellMeasurement,
+            measurementKey: Self.measurementKey_stack,
+            subviews: [dot1, dot2, dot3],
+        )
 
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(didBecomeActive),
-                                               name: .OWSApplicationDidBecomeActive,
-                                               object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(didBecomeActive),
+            name: .OWSApplicationDidBecomeActive,
+            object: nil,
+        )
     }
 
     private static var stackConfig: CVStackViewConfig {
-        CVStackViewConfig(axis: .horizontal,
-                          alignment: .center,
-                          spacing: kDotMaxHSpacing,
-                          layoutMargins: .zero)
+        CVStackViewConfig(
+            axis: .horizontal,
+            alignment: .center,
+            spacing: kDotMaxHSpacing,
+            layoutMargins: .zero,
+        )
     }
 
     private static let measurementKey_stack = "TypingIndicatorView.measurementKey_stack"
@@ -88,7 +100,7 @@ class TypingIndicatorView: ManualStackView {
         let subviewInfos = [
             dotSize.asManualSubviewInfo(hasFixedSize: true),
             dotSize.asManualSubviewInfo(hasFixedSize: true),
-            dotSize.asManualSubviewInfo(hasFixedSize: true)
+            dotSize.asManualSubviewInfo(hasFixedSize: true),
         ]
         return ManualStackView.measure(config: stackConfig, subviewInfos: subviewInfos)
     }
@@ -121,7 +133,7 @@ class TypingIndicatorView: ManualStackView {
 
     private var isAnimating = false
 
-    public func startAnimation() {
+    func startAnimation() {
         isAnimating = true
 
         for dot in dots() {
@@ -129,7 +141,7 @@ class TypingIndicatorView: ManualStackView {
         }
     }
 
-    public func stopAnimation() {
+    func stopAnimation() {
         isAnimating = false
 
         for dot in dots() {
@@ -170,8 +182,8 @@ class TypingIndicatorView: ManualStackView {
             stopAnimation()
 
             let baseColor = (Theme.isDarkThemeEnabled
-                                ? UIColor(rgbHex: 0xBBBDBE)
-                                : UIColor(rgbHex: 0x636467))
+                ? UIColor(rgbHex: 0xBBBDBE)
+                : UIColor(rgbHex: 0x636467))
             let timeIncrement: CFTimeInterval = 0.15
             var colorValues = [CGColor]()
             var pathValues = [CGPath]()
@@ -222,7 +234,7 @@ class TypingIndicatorView: ManualStackView {
                 addDotKeyFrame(10 * timeIncrement, 0.0)
             }
 
-            let makeAnimation: (String, [Any]) -> CAKeyframeAnimation = { (keyPath, values) in
+            let makeAnimation: (String, [Any]) -> CAKeyframeAnimation = { keyPath, values in
                 let animation = CAKeyframeAnimation()
                 animation.keyPath = keyPath
                 animation.values = values
@@ -233,7 +245,7 @@ class TypingIndicatorView: ManualStackView {
             let groupAnimation = CAAnimationGroup()
             groupAnimation.animations = [
                 makeAnimation("fillColor", colorValues),
-                makeAnimation("path", pathValues)
+                makeAnimation("path", pathValues),
             ]
             groupAnimation.duration = animationDuration
             groupAnimation.repeatCount = MAXFLOAT

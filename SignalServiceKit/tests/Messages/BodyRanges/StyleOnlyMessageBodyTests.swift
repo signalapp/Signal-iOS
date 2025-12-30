@@ -25,17 +25,18 @@ public class StyleOnlyMessageBodyTests: XCTestCase {
                             originals: [
                                 .bold: MergedSingleStyle(
                                     style: .bold,
-                                    mergedRange: NSRange(location: 0, length: 5)
-                                )
-                            ]),
-                        range: NSRange(location: 0, length: 5)
-                    )
-                ]
+                                    mergedRange: NSRange(location: 0, length: 5),
+                                ),
+                            ],
+                        ),
+                        range: NSRange(location: 0, length: 5),
+                    ),
+                ],
             ).stripAndDropFirst(6),
             StyleOnlyMessageBody(
                 text: "World",
-                collapsedStyles: []
-            )
+                collapsedStyles: [],
+            ),
         )
     }
 
@@ -50,12 +51,13 @@ public class StyleOnlyMessageBodyTests: XCTestCase {
                             originals: [
                                 .bold: MergedSingleStyle(
                                     style: .bold,
-                                    mergedRange: NSRange(location: 0, length: 11)
-                                )
-                            ]),
-                        range: NSRange(location: 0, length: 11)
-                    )
-                ]
+                                    mergedRange: NSRange(location: 0, length: 11),
+                                ),
+                            ],
+                        ),
+                        range: NSRange(location: 0, length: 11),
+                    ),
+                ],
             ).stripAndDropFirst(6),
             StyleOnlyMessageBody(
                 text: "World",
@@ -66,13 +68,14 @@ public class StyleOnlyMessageBodyTests: XCTestCase {
                             originals: [
                                 .bold: MergedSingleStyle(
                                     style: .bold,
-                                    mergedRange: NSRange(location: 0, length: 11)
-                                )
-                            ]),
-                        range: NSRange(location: 0, length: 5)
-                    )
-                ]
-            )
+                                    mergedRange: NSRange(location: 0, length: 11),
+                                ),
+                            ],
+                        ),
+                        range: NSRange(location: 0, length: 5),
+                    ),
+                ],
+            ),
         )
     }
 
@@ -87,12 +90,13 @@ public class StyleOnlyMessageBodyTests: XCTestCase {
                             originals: [
                                 .bold: MergedSingleStyle(
                                     style: .bold,
-                                    mergedRange: NSRange(location: 6, length: 5)
-                                )
-                            ]),
-                        range: NSRange(location: 6, length: 5)
-                    )
-                ]
+                                    mergedRange: NSRange(location: 6, length: 5),
+                                ),
+                            ],
+                        ),
+                        range: NSRange(location: 6, length: 5),
+                    ),
+                ],
             ).stripAndDropFirst(6),
             StyleOnlyMessageBody(
                 text: "World",
@@ -103,13 +107,14 @@ public class StyleOnlyMessageBodyTests: XCTestCase {
                             originals: [
                                 .bold: MergedSingleStyle(
                                     style: .bold,
-                                    mergedRange: NSRange(location: 6, length: 5)
-                                )
-                            ]),
-                        range: NSRange(location: 0, length: 5)
-                    )
-                ]
-            )
+                                    mergedRange: NSRange(location: 6, length: 5),
+                                ),
+                            ],
+                        ),
+                        range: NSRange(location: 0, length: 5),
+                    ),
+                ],
+            ),
         )
     }
 
@@ -124,12 +129,13 @@ public class StyleOnlyMessageBodyTests: XCTestCase {
                             originals: [
                                 .bold: MergedSingleStyle(
                                     style: .bold,
-                                    mergedRange: NSRange(location: 0, length: 11)
-                                )
-                            ]),
-                        range: NSRange(location: 0, length: 11)
-                    )
-                ]
+                                    mergedRange: NSRange(location: 0, length: 11),
+                                ),
+                            ],
+                        ),
+                        range: NSRange(location: 0, length: 11),
+                    ),
+                ],
             ).stripAndDropFirst(5),
             StyleOnlyMessageBody(
                 text: "World",
@@ -140,13 +146,14 @@ public class StyleOnlyMessageBodyTests: XCTestCase {
                             originals: [
                                 .bold: MergedSingleStyle(
                                     style: .bold,
-                                    mergedRange: NSRange(location: 0, length: 11)
-                                )
-                            ]),
-                        range: NSRange(location: 0, length: 5)
-                    )
-                ]
-            )
+                                    mergedRange: NSRange(location: 0, length: 11),
+                                ),
+                            ],
+                        ),
+                        range: NSRange(location: 0, length: 5),
+                    ),
+                ],
+            ),
         )
     }
 
@@ -161,12 +168,13 @@ public class StyleOnlyMessageBodyTests: XCTestCase {
                             originals: [
                                 .bold: MergedSingleStyle(
                                     style: .bold,
-                                    mergedRange: NSRange(location: 1, length: 11)
-                                )
-                            ]),
-                        range: NSRange(location: 1, length: 11)
-                    )
-                ]
+                                    mergedRange: NSRange(location: 1, length: 11),
+                                ),
+                            ],
+                        ),
+                        range: NSRange(location: 1, length: 11),
+                    ),
+                ],
             ).stripAndDropFirst(5),
             StyleOnlyMessageBody(
                 text: "World",
@@ -177,13 +185,14 @@ public class StyleOnlyMessageBodyTests: XCTestCase {
                             originals: [
                                 .bold: MergedSingleStyle(
                                     style: .bold,
-                                    mergedRange: NSRange(location: 1, length: 11)
-                                )
-                            ]),
-                        range: NSRange(location: 0, length: 5)
-                    )
-                ]
-            )
+                                    mergedRange: NSRange(location: 1, length: 11),
+                                ),
+                            ],
+                        ),
+                        range: NSRange(location: 0, length: 5),
+                    ),
+                ],
+            ),
         )
     }
 
@@ -198,12 +207,13 @@ public class StyleOnlyMessageBodyTests: XCTestCase {
                             originals: [
                                 .bold: MergedSingleStyle(
                                     style: .bold,
-                                    mergedRange: NSRange(location: 1, length: 11)
-                                )
-                            ]),
-                        range: NSRange(location: 1, length: 11)
-                    )
-                ]
+                                    mergedRange: NSRange(location: 1, length: 11),
+                                ),
+                            ],
+                        ),
+                        range: NSRange(location: 1, length: 11),
+                    ),
+                ],
             ).stripAndDropFirst(5),
             StyleOnlyMessageBody(
                 text: "World",
@@ -214,13 +224,14 @@ public class StyleOnlyMessageBodyTests: XCTestCase {
                             originals: [
                                 .bold: MergedSingleStyle(
                                     style: .bold,
-                                    mergedRange: NSRange(location: 1, length: 11)
-                                )
-                            ]),
-                        range: NSRange(location: 0, length: 5)
-                    )
-                ]
-            )
+                                    mergedRange: NSRange(location: 1, length: 11),
+                                ),
+                            ],
+                        ),
+                        range: NSRange(location: 0, length: 5),
+                    ),
+                ],
+            ),
         )
     }
 
@@ -237,17 +248,18 @@ public class StyleOnlyMessageBodyTests: XCTestCase {
                             originals: [
                                 .bold: MergedSingleStyle(
                                     style: .bold,
-                                    mergedRange: NSRange(location: 6, length: 5)
-                                )
-                            ]),
-                        range: NSRange(location: 6, length: 5)
-                    )
-                ]
+                                    mergedRange: NSRange(location: 6, length: 5),
+                                ),
+                            ],
+                        ),
+                        range: NSRange(location: 6, length: 5),
+                    ),
+                ],
             ).stripAndDropLast(6),
             StyleOnlyMessageBody(
                 text: "Hello",
-                collapsedStyles: []
-            )
+                collapsedStyles: [],
+            ),
         )
     }
 
@@ -262,12 +274,13 @@ public class StyleOnlyMessageBodyTests: XCTestCase {
                             originals: [
                                 .bold: MergedSingleStyle(
                                     style: .bold,
-                                    mergedRange: NSRange(location: 0, length: 11)
-                                )
-                            ]),
-                        range: NSRange(location: 0, length: 11)
-                    )
-                ]
+                                    mergedRange: NSRange(location: 0, length: 11),
+                                ),
+                            ],
+                        ),
+                        range: NSRange(location: 0, length: 11),
+                    ),
+                ],
             ).stripAndDropLast(6),
             StyleOnlyMessageBody(
                 text: "Hello",
@@ -278,13 +291,14 @@ public class StyleOnlyMessageBodyTests: XCTestCase {
                             originals: [
                                 .bold: MergedSingleStyle(
                                     style: .bold,
-                                    mergedRange: NSRange(location: 0, length: 11)
-                                )
-                            ]),
-                        range: NSRange(location: 0, length: 5)
-                    )
-                ]
-            )
+                                    mergedRange: NSRange(location: 0, length: 11),
+                                ),
+                            ],
+                        ),
+                        range: NSRange(location: 0, length: 5),
+                    ),
+                ],
+            ),
         )
     }
 
@@ -299,12 +313,13 @@ public class StyleOnlyMessageBodyTests: XCTestCase {
                             originals: [
                                 .bold: MergedSingleStyle(
                                     style: .bold,
-                                    mergedRange: NSRange(location: 0, length: 5)
-                                )
-                            ]),
-                        range: NSRange(location: 0, length: 5)
-                    )
-                ]
+                                    mergedRange: NSRange(location: 0, length: 5),
+                                ),
+                            ],
+                        ),
+                        range: NSRange(location: 0, length: 5),
+                    ),
+                ],
             ).stripAndDropLast(6),
             StyleOnlyMessageBody(
                 text: "Hello",
@@ -315,13 +330,14 @@ public class StyleOnlyMessageBodyTests: XCTestCase {
                             originals: [
                                 .bold: MergedSingleStyle(
                                     style: .bold,
-                                    mergedRange: NSRange(location: 0, length: 5)
-                                )
-                            ]),
-                        range: NSRange(location: 0, length: 5)
-                    )
-                ]
-            )
+                                    mergedRange: NSRange(location: 0, length: 5),
+                                ),
+                            ],
+                        ),
+                        range: NSRange(location: 0, length: 5),
+                    ),
+                ],
+            ),
         )
     }
 
@@ -336,12 +352,13 @@ public class StyleOnlyMessageBodyTests: XCTestCase {
                             originals: [
                                 .bold: MergedSingleStyle(
                                     style: .bold,
-                                    mergedRange: NSRange(location: 0, length: 11)
-                                )
-                            ]),
-                        range: NSRange(location: 0, length: 11)
-                    )
-                ]
+                                    mergedRange: NSRange(location: 0, length: 11),
+                                ),
+                            ],
+                        ),
+                        range: NSRange(location: 0, length: 11),
+                    ),
+                ],
             ).stripAndDropLast(5),
             StyleOnlyMessageBody(
                 text: "Hello",
@@ -352,13 +369,14 @@ public class StyleOnlyMessageBodyTests: XCTestCase {
                             originals: [
                                 .bold: MergedSingleStyle(
                                     style: .bold,
-                                    mergedRange: NSRange(location: 0, length: 11)
-                                )
-                            ]),
-                        range: NSRange(location: 0, length: 5)
-                    )
-                ]
-            )
+                                    mergedRange: NSRange(location: 0, length: 11),
+                                ),
+                            ],
+                        ),
+                        range: NSRange(location: 0, length: 5),
+                    ),
+                ],
+            ),
         )
     }
 
@@ -373,12 +391,13 @@ public class StyleOnlyMessageBodyTests: XCTestCase {
                             originals: [
                                 .bold: MergedSingleStyle(
                                     style: .bold,
-                                    mergedRange: NSRange(location: 1, length: 11)
-                                )
-                            ]),
-                        range: NSRange(location: 1, length: 11)
-                    )
-                ]
+                                    mergedRange: NSRange(location: 1, length: 11),
+                                ),
+                            ],
+                        ),
+                        range: NSRange(location: 1, length: 11),
+                    ),
+                ],
             ).stripAndDropLast(5),
             StyleOnlyMessageBody(
                 text: "Hello",
@@ -389,13 +408,14 @@ public class StyleOnlyMessageBodyTests: XCTestCase {
                             originals: [
                                 .bold: MergedSingleStyle(
                                     style: .bold,
-                                    mergedRange: NSRange(location: 1, length: 11)
-                                )
-                            ]),
-                        range: NSRange(location: 0, length: 5)
-                    )
-                ]
-            )
+                                    mergedRange: NSRange(location: 1, length: 11),
+                                ),
+                            ],
+                        ),
+                        range: NSRange(location: 0, length: 5),
+                    ),
+                ],
+            ),
         )
     }
 
@@ -410,12 +430,13 @@ public class StyleOnlyMessageBodyTests: XCTestCase {
                             originals: [
                                 .bold: MergedSingleStyle(
                                     style: .bold,
-                                    mergedRange: NSRange(location: 1, length: 11)
-                                )
-                            ]),
-                        range: NSRange(location: 1, length: 11)
-                    )
-                ]
+                                    mergedRange: NSRange(location: 1, length: 11),
+                                ),
+                            ],
+                        ),
+                        range: NSRange(location: 1, length: 11),
+                    ),
+                ],
             ).stripAndDropLast(5),
             StyleOnlyMessageBody(
                 text: "Hello",
@@ -426,13 +447,14 @@ public class StyleOnlyMessageBodyTests: XCTestCase {
                             originals: [
                                 .bold: MergedSingleStyle(
                                     style: .bold,
-                                    mergedRange: NSRange(location: 1, length: 11)
-                                )
-                            ]),
-                        range: NSRange(location: 0, length: 5)
-                    )
-                ]
-            )
+                                    mergedRange: NSRange(location: 1, length: 11),
+                                ),
+                            ],
+                        ),
+                        range: NSRange(location: 0, length: 5),
+                    ),
+                ],
+            ),
         )
     }
 }

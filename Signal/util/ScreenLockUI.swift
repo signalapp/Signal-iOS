@@ -35,6 +35,7 @@ class ScreenLockUI {
             ensureUI()
         }
     }
+
     private var appIsInBackground: Bool = false {
         didSet {
             AssertIsOnMainThread()
@@ -77,6 +78,7 @@ class ScreenLockUI {
         window.backgroundColor = Theme.launchScreenBackgroundColor
         return window
     }()
+
     private lazy var screenBlockingViewController: ScreenLockViewController = {
         let viewController = ScreenLockViewController()
         viewController.delegate = self
@@ -85,7 +87,7 @@ class ScreenLockUI {
 
     private let appReadiness: AppReadiness
 
-    public init(appReadiness: AppReadiness) {
+    init(appReadiness: AppReadiness) {
         AssertIsOnMainThread()
         self.appReadiness = appReadiness
     }
@@ -105,27 +107,32 @@ class ScreenLockUI {
             self,
             selector: #selector(applicationDidBecomeActive),
             name: NSNotification.Name.OWSApplicationDidBecomeActive,
-            object: nil)
+            object: nil,
+        )
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(applicationWillResignActive),
             name: NSNotification.Name.OWSApplicationWillResignActive,
-            object: nil)
+            object: nil,
+        )
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(applicationWillEnterForeground),
             name: NSNotification.Name.OWSApplicationWillEnterForeground,
-            object: nil)
+            object: nil,
+        )
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(applicationDidEnterBackground),
             name: NSNotification.Name.OWSApplicationDidEnterBackground,
-            object: nil)
+            object: nil,
+        )
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(screenLockDidChange),
             name: ScreenLock.ScreenLockDidChange,
-            object: nil)
+            object: nil,
+        )
 
         // Hide the screen blocking window until "app is ready" to
         // avoid blocking the loading view.
@@ -183,7 +190,7 @@ class ScreenLockUI {
         updateScreenBlockingWindowWithUIState(desiredUIState)
 
         // Show the "iOS auth UI to unlock" if necessary.
-        if desiredUIState == .screenLock && !didLastUnlockAttemptFail {
+        if desiredUIState == .screenLock, !didLastUnlockAttemptFail {
             tryToPresentAuthUIToUnlockScreenLock()
         }
     }
@@ -268,7 +275,7 @@ class ScreenLockUI {
                 self.didLastUnlockAttemptFail = true
                 // Re-show the unlock UI.
                 self.ensureUI()
-            }
+            },
         )
 
         ensureUI()
@@ -284,7 +291,7 @@ class ScreenLockUI {
                 // After the alert, update the UI.
                 self.ensureUI()
             },
-            fromViewController: screenBlockingWindow.rootViewController
+            fromViewController: screenBlockingWindow.rootViewController,
         )
     }
 
@@ -320,7 +327,7 @@ class ScreenLockUI {
 
         let countdownTimestamp = screenLockCountdownTimestamp
         let currentTimestamp = monotonicTimestamp()
-        guard currentTimestamp >= countdownTimestamp && currentTimestamp != 0 && countdownTimestamp != 0 else {
+        guard currentTimestamp >= countdownTimestamp, currentTimestamp != 0, countdownTimestamp != 0 else {
             // If the clock is going backwards (shouldn't happen) or the
             // initial/current time couldn't be fetched (shouldn't happen), err on the
             // side of caution and lock the screen.

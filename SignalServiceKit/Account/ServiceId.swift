@@ -169,7 +169,7 @@ public struct NormalizedDatabaseRecordAddress {
 public class ServiceIdObjC: NSObject, NSCopying {
     public var wrappedValue: ServiceId { owsFail("Subclasses must implement.") }
 
-    fileprivate override init() { super.init() }
+    override fileprivate init() { super.init() }
 
     public static func wrapValue(_ wrappedValue: ServiceId) -> ServiceIdObjC {
         switch wrappedValue.kind {
@@ -201,23 +201,23 @@ public class ServiceIdObjC: NSObject, NSCopying {
     public var rawUUID: UUID { wrappedValue.rawUUID }
 
     @objc
-    public override var hash: Int { wrappedValue.hashValue }
+    override public var hash: Int { wrappedValue.hashValue }
 
     @objc
-    public override func isEqual(_ object: Any?) -> Bool { wrappedValue == (object as? ServiceIdObjC)?.wrappedValue }
+    override public func isEqual(_ object: Any?) -> Bool { wrappedValue == (object as? ServiceIdObjC)?.wrappedValue }
 
     @objc
     public func copy(with zone: NSZone? = nil) -> Any { self }
 
     @objc
-    public override var description: String { wrappedValue.debugDescription }
+    override public var description: String { wrappedValue.debugDescription }
 }
 
 @objc
 public final class AciObjC: ServiceIdObjC {
     public let wrappedAciValue: Aci
 
-    public override var wrappedValue: ServiceId { wrappedAciValue }
+    override public var wrappedValue: ServiceId { wrappedAciValue }
 
     public init(_ wrappedValue: Aci) {
         self.wrappedAciValue = wrappedValue
@@ -241,7 +241,7 @@ public final class AciObjC: ServiceIdObjC {
 public final class PniObjC: ServiceIdObjC {
     public let wrappedPniValue: Pni
 
-    public override var wrappedValue: ServiceId { wrappedPniValue }
+    override public var wrappedValue: ServiceId { wrappedPniValue }
 
     public init(_ wrappedValue: Pni) {
         self.wrappedPniValue = wrappedValue
@@ -321,7 +321,7 @@ public struct ServiceIdString: Codable, Hashable {
 
     public init(from decoder: Decoder) throws {
         self.wrappedValue = try ServiceId.parseFrom(
-            serviceIdString: try decoder.singleValueContainer().decode(String.self)
+            serviceIdString: try decoder.singleValueContainer().decode(String.self),
         )
     }
 
@@ -341,7 +341,7 @@ public struct ServiceIdUppercaseString<T: ServiceId>: Codable, Hashable {
 
     public init(from decoder: Decoder) throws {
         self.wrappedValue = try T.parseFrom(
-            serviceIdString: try decoder.singleValueContainer().decode(String.self)
+            serviceIdString: try decoder.singleValueContainer().decode(String.self),
         )
     }
 
@@ -366,8 +366,8 @@ extension Aci {
 
     public static func constantForTesting(_ uuidString: String) -> Aci {
         try! ServiceId.parseFrom(serviceIdString: uuidString) as! Aci
-     }
- }
+    }
+}
 
 extension Pni {
     public static func randomForTesting() -> Pni {

@@ -5,7 +5,7 @@
 
 import Foundation
 
-internal struct Deprecated_StoryMessageFileAttachment: Codable {
+struct Deprecated_StoryMessageFileAttachment: Codable {
 
     private init() {}
 }
@@ -15,7 +15,7 @@ internal struct Deprecated_StoryMessageFileAttachment: Codable {
 /// Codable conformance for enums with associated values is messy and error prone;
 /// this allows us to take advantage of automatic synthesis by preserving cases
 /// exactly as they were defined, and only every adding new cases.
-internal enum SerializedStoryMessageAttachment: Codable {
+enum SerializedStoryMessageAttachment: Codable {
     // Original case. NEVER CHANGE THIS.
     case file(attachmentId: String)
     // Original case. NEVER CHANGE THIS.
@@ -44,7 +44,7 @@ public enum StoryMessageAttachment {
     case media
     case text(TextAttachment)
 
-    internal var asSerializable: SerializedStoryMessageAttachment {
+    var asSerializable: SerializedStoryMessageAttachment {
         switch self {
         case .media:
             return .foreignReferenceAttachment

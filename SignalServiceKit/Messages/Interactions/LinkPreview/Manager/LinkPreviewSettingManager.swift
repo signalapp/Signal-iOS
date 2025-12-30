@@ -9,7 +9,7 @@ public protocol LinkPreviewSettingManager {
     func setAreLinkPreviewsEnabled(
         _ newValue: Bool,
         shouldSendSyncMessage: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     )
 }
 
@@ -21,14 +21,14 @@ class LinkPreviewSettingManagerImpl: LinkPreviewSettingManager {
     init(
         linkPreviewSettingStore: LinkPreviewSettingStore,
         storageServiceManager: any StorageServiceManager,
-        syncManager: any SyncManagerProtocol
+        syncManager: any SyncManagerProtocol,
     ) {
         self.linkPreviewSettingStore = linkPreviewSettingStore
         self.storageServiceManager = storageServiceManager
         self.syncManager = syncManager
     }
 
-    public func setAreLinkPreviewsEnabled(_ newValue: Bool, shouldSendSyncMessage: Bool, tx: DBWriteTransaction) {
+    func setAreLinkPreviewsEnabled(_ newValue: Bool, shouldSendSyncMessage: Bool, tx: DBWriteTransaction) {
         self.linkPreviewSettingStore.setAreLinkPreviewsEnabled(newValue, tx: tx)
 
         if shouldSendSyncMessage {

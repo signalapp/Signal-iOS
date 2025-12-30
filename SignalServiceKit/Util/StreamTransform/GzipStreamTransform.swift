@@ -58,14 +58,14 @@ public class GzipStreamTransform: StreamTransform, FinalizableStreamTransform {
                 MAX_MEM_LEVEL,
                 Z_DEFAULT_STRATEGY,
                 ZLIB_VERSION,
-                Int32(MemoryLayout<z_stream>.size)
+                Int32(MemoryLayout<z_stream>.size),
             )
         case .decompress:
             status = inflateInit2_(
                 &stream,
                 Constants.MaxWindowBits + Constants.GzipInflateHeaderWindowBits,
                 ZLIB_VERSION,
-                Int32(MemoryLayout<z_stream>.size)
+                Int32(MemoryLayout<z_stream>.size),
             )
         }
 

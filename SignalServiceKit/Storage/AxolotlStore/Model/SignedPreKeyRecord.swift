@@ -12,7 +12,7 @@ private let kCoderPreKeyReplacedAt = "kCoderReplacedAt"
 // deprecated (see decodeDeprecatedPreKeys)
 @objc(SignedPreKeyRecord)
 public class SignedPreKeyRecord: PreKeyRecord {
-    public class override var supportsSecureCoding: Bool { true }
+    override public class var supportsSecureCoding: Bool { true }
 
     public let signature: Data
     public let generatedAt: Date
@@ -36,7 +36,7 @@ public class SignedPreKeyRecord: PreKeyRecord {
         self.init(id: id, keyPair: keyPair, signature: signature, generatedAt: generatedAt, replacedAt: replacedAt)
     }
 
-    public override func encode(with coder: NSCoder) {
+    override public func encode(with coder: NSCoder) {
         coder.encode(id, forKey: kCoderPreKeyId)
         coder.encode(keyPair, forKey: kCoderPreKeyPair)
         coder.encode(signature, forKey: kCoderPreKeySignature)

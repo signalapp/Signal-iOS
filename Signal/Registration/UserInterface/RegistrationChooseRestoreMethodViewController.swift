@@ -24,9 +24,9 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController {
     private weak var presenter: RegistrationChooseRestoreMethodPresenter?
     private let restorePath: RegistrationStep.RestorePath
 
-    public init(
+    init(
         presenter: RegistrationChooseRestoreMethodPresenter,
-        restorePath: RegistrationStep.RestorePath
+        restorePath: RegistrationStep.RestorePath,
     ) {
         self.presenter = presenter
         self.restorePath = restorePath
@@ -42,16 +42,16 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController {
         return UIButton.registrationChoiceButton(
             title: OWSLocalizedString(
                 "ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_TITLE",
-                comment: "The title for the device transfer 'choice' view 'restore backup' option"
+                comment: "The title for the device transfer 'choice' view 'restore backup' option",
             ),
             subtitle: OWSLocalizedString(
                 "ONBOARDING_CHOOSE_RESTORE_METHOD_BACKUPS_BODY",
-                comment: "The body for the device transfer 'choice' view 'restore backup' option"
+                comment: "The body for the device transfer 'choice' view 'restore backup' option",
             ),
             iconName: "signal-backups-48",
             primaryAction: UIAction { [weak self] _ in
                 self?.didSelectRestoreFromBackup()
-            }
+            },
         )
     }
 
@@ -59,16 +59,16 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController {
         return UIButton.registrationChoiceButton(
             title: OWSLocalizedString(
                 "ONBOARDING_CHOOSE_RESTORE_METHOD_TRANSFER_TITLE",
-                comment: "The title for the device transfer 'choice' view 'transfer' option"
+                comment: "The title for the device transfer 'choice' view 'transfer' option",
             ),
             subtitle: OWSLocalizedString(
                 "ONBOARDING_CHOOSE_RESTORE_METHOD_TRANSFER_BODY",
-                comment: "The body for the device transfer 'choice' view 'transfer' option"
+                comment: "The body for the device transfer 'choice' view 'transfer' option",
             ),
             iconName: "transfer-48",
             primaryAction: UIAction { [weak self] _ in
                 self?.didSelectDeviceTransfer()
-            }
+            },
         )
     }
 
@@ -76,23 +76,23 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController {
         return UIButton.registrationChoiceButton(
             title: OWSLocalizedString(
                 "ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_TITLE",
-                comment: "The title for the skip restore 'choice' option"
+                comment: "The title for the skip restore 'choice' option",
             ),
             subtitle: OWSLocalizedString(
                 "ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_BODY",
-                comment: "The body for the skip restore 'choice' option"
+                comment: "The body for the skip restore 'choice' option",
             ),
             iconName: "continue-48",
             primaryAction: UIAction { [weak self] _ in
                 self?.didSkipRestore()
-            }
+            },
         )
     }
 
     private func skipRestoreButton(isLargeButton: Bool) -> UIButton {
         let buttonTitle = OWSLocalizedString(
             "ONBOARDING_CHOOSE_RESTORE_METHOD_SKIP_RESTORE_SMALL_TITLE",
-            comment: "The title for a less-prominent skip restore 'choice' option"
+            comment: "The title for a less-prominent skip restore 'choice' option",
         )
         let buttonConfiguration: UIButton.Configuration
         if isLargeButton {
@@ -104,11 +104,11 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController {
             configuration: buttonConfiguration,
             primaryAction: UIAction { [weak self] _ in
                 self?.didSkipRestore()
-            }
+            },
         )
     }
 
-    public override func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
 
         view.backgroundColor = .Signal.background
@@ -148,6 +148,7 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController {
                     .vStretchingSpacer(),
                     bottomButton.enclosedInVerticalStackView(isFullWidthButton: false),
                 ])
+
             case .none:
                 stackView.addArrangedSubviews([
                     prominentTransferButton(),
@@ -161,7 +162,7 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController {
                 configuration: .mediumSecondary(title: CommonStrings.cancelButton),
                 primaryAction: UIAction { [weak self] _ in
                     self?.didTapCancel()
-                }
+                },
             )
             stackView.addArrangedSubviews([
                 prominentRestoreButton(),
@@ -184,18 +185,18 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController {
         let titleLabel = UILabel.titleLabelForRegistration(
             text: OWSLocalizedString(
                 "ONBOARDING_CHOOSE_RESTORE_METHOD_TITLE",
-                comment: "If a user is installing Signal on a new phone, they may be asked whether they want to restore their device from a backup."
-            )
+                comment: "If a user is installing Signal on a new phone, they may be asked whether they want to restore their device from a backup.",
+            ),
         )
         let explanationLabel = UILabel.explanationLabelForRegistration(
             text: OWSLocalizedString(
                 "ONBOARDING_CHOOSE_RESTORE_METHOD_DESCRIPTION",
-                comment: "If a user is installing Signal on a new phone, they may be asked whether they want to restore their device from a backup. This is a description of that question."
-            )
+                comment: "If a user is installing Signal on a new phone, they may be asked whether they want to restore their device from a backup. This is a description of that question.",
+            ),
         )
         stackView.addArrangedSubviews([
             titleLabel,
-            explanationLabel
+            explanationLabel,
         ])
         stackView.setCustomSpacing(24, after: explanationLabel)
     }
@@ -204,18 +205,18 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController {
         let title = UILabel.titleLabelForRegistration(
             text: OWSLocalizedString(
                 "ONBOARDING_CHOOSE_RESTORE_METHOD_NONE_AVAILABLE_TITLE",
-                comment: "Title displayed to a user during registration if there are no restore options available."
-            )
+                comment: "Title displayed to a user during registration if there are no restore options available.",
+            ),
         )
         let body = UILabel.explanationLabelForRegistration(
             text: OWSLocalizedString(
                 "ONBOARDING_CHOOSE_RESTORE_METHOD_NONE_AVAILABLE_BODY",
-                comment: "Message body displayed to a user during registration if there are no restore options available."
-            )
+                comment: "Message body displayed to a user during registration if there are no restore options available.",
+            ),
         )
         stackView.addArrangedSubviews([
             title,
-            body
+            body,
         ])
         stackView.setCustomSpacing(32, after: body)
 
@@ -228,8 +229,8 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController {
                 arrangedSubviews: [
                     image,
                     label,
-                    SpacerView()
-                ]
+                    SpacerView(),
+                ],
             )
             stackView.axis = .horizontal
             stackView.alignment = .firstBaseline
@@ -242,16 +243,16 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController {
         stackView.addArrangedSubviews([
             labelWithImage(imageName: "device-phone", text: OWSLocalizedString(
                 "REGISTRATION_RESTORE_METHOD_MAKE_BACKUP_TUTORIAL_OPEN_SIGNAL",
-                comment: "First step in directions for how to make a backup"
+                comment: "First step in directions for how to make a backup",
             )),
             labelWithImage(imageName: "backup", text: OWSLocalizedString(
                 "REGISTRATION_RESTORE_METHOD_MAKE_BACKUP_TUTORIAL_TAP_SETTINGS",
-                comment: "Second step in directions for how to make a backup"
+                comment: "Second step in directions for how to make a backup",
             )),
             labelWithImage(imageName: "check-circle", text: OWSLocalizedString(
                 "REGISTRATION_RESTORE_METHOD_MAKE_BACKUP_TUTORIAL_ENABLE_BACKUPS",
-                comment: "Third step in directions for how to make a backup"
-            ))
+                comment: "Third step in directions for how to make a backup",
+            )),
         ])
 
         // Show large "No backup to restore" and "Skip Restore"
@@ -259,15 +260,15 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController {
             configuration: .largePrimary(title: CommonStrings.okayButton),
             primaryAction: UIAction { [weak self] _ in
                 self?.didTapCancel()
-            }
+            },
         )
         let skipRestoreButton = skipRestoreButton(isLargeButton: true)
 
         stackView.addArrangedSubviews([
             .vStretchingSpacer(),
-            [ continueButton, skipRestoreButton].enclosedInVerticalStackView(isFullWidthButtons: true),
+            [continueButton, skipRestoreButton].enclosedInVerticalStackView(isFullWidthButtons: true),
         ])
-   }
+    }
 
     // MARK: Events
 
@@ -284,15 +285,15 @@ class RegistrationChooseRestoreMethodViewController: OWSViewController {
         var actions = [ActionSheetAction]()
         let title = OWSLocalizedString(
             "ONBOARDING_CHOOSE_RESTORE_METHOD_CONFIRM_SKIP_RESTORE_TITLE",
-            comment: "Title for a sheet warning users about skipping restore."
+            comment: "Title for a sheet warning users about skipping restore.",
         )
         let message = OWSLocalizedString(
             "ONBOARDING_CHOOSE_RESTORE_METHOD_CONFIRM_SKIP_RESTORE_BODY",
-            comment: "Body for a sheet warning users about skipping restore."
+            comment: "Body for a sheet warning users about skipping restore.",
         )
         let actionTitle = OWSLocalizedString(
             "REGISTRATION_BACKUP_RESTORE_ERROR_SKIP_RESTORE_ACTION",
-            comment: "Skip restore action label for backup restore error recovery."
+            comment: "Skip restore action label for backup restore error recovery.",
         )
         actions.append(ActionSheetAction(title: actionTitle) { [weak self] _ in
             self?.presenter?.didChooseRestoreMethod(method: .declined)
@@ -328,7 +329,7 @@ private let presenter = PreviewRegistrationChooseRestoreMethodPresenter()
         rootViewController: RegistrationChooseRestoreMethodViewController(
             presenter: presenter,
             restorePath: .quickRestore(.free, .ios),
-        )
+        ),
     )
 }
 
@@ -338,7 +339,7 @@ private let presenter = PreviewRegistrationChooseRestoreMethodPresenter()
         rootViewController: RegistrationChooseRestoreMethodViewController(
             presenter: presenter,
             restorePath: .quickRestore(.paid, .ios),
-        )
+        ),
     )
 }
 
@@ -348,7 +349,7 @@ private let presenter = PreviewRegistrationChooseRestoreMethodPresenter()
         rootViewController: RegistrationChooseRestoreMethodViewController(
             presenter: presenter,
             restorePath: .quickRestore(nil, .ios),
-        )
+        ),
     )
 }
 
@@ -358,7 +359,7 @@ private let presenter = PreviewRegistrationChooseRestoreMethodPresenter()
         rootViewController: RegistrationChooseRestoreMethodViewController(
             presenter: presenter,
             restorePath: .quickRestore(.free, .android),
-        )
+        ),
     )
 }
 
@@ -368,7 +369,7 @@ private let presenter = PreviewRegistrationChooseRestoreMethodPresenter()
         rootViewController: RegistrationChooseRestoreMethodViewController(
             presenter: presenter,
             restorePath: .quickRestore(.paid, .android),
-        )
+        ),
     )
 }
 
@@ -378,7 +379,7 @@ private let presenter = PreviewRegistrationChooseRestoreMethodPresenter()
         rootViewController: RegistrationChooseRestoreMethodViewController(
             presenter: presenter,
             restorePath: .quickRestore(nil, .android),
-        )
+        ),
     )
 }
 
@@ -388,7 +389,7 @@ private let presenter = PreviewRegistrationChooseRestoreMethodPresenter()
         rootViewController: RegistrationChooseRestoreMethodViewController(
             presenter: presenter,
             restorePath: .manualRestore,
-        )
+        ),
     )
 }
 
@@ -398,7 +399,7 @@ private let presenter = PreviewRegistrationChooseRestoreMethodPresenter()
         rootViewController: RegistrationChooseRestoreMethodViewController(
             presenter: presenter,
             restorePath: .unspecified,
-        )
+        ),
     )
 }
 #endif

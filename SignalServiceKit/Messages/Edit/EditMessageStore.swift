@@ -30,24 +30,24 @@ public struct EditMessageStore {
     public func editTarget(
         timestamp: UInt64,
         authorAci: Aci?,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> EditMessageTarget? {
         guard SDS.fitsInInt64(timestamp) else {
             owsFailDebug("Received invalid timestamp!")
             return nil
         }
         let sql = """
-            SELECT *
-            FROM \(InteractionRecord.databaseTableName)
-            \(DEBUG_INDEXED_BY("Interaction_timestamp", or: "index_interactions_on_timestamp_sourceDeviceId_and_authorPhoneNumber"))
-            WHERE \(interactionColumn: .timestamp) = ?
-            AND \(interactionColumn: .authorUUID) IS ?
-            LIMIT 1
-            """
+        SELECT *
+        FROM \(InteractionRecord.databaseTableName)
+        \(DEBUG_INDEXED_BY("Interaction_timestamp", or: "index_interactions_on_timestamp_sourceDeviceId_and_authorPhoneNumber"))
+        WHERE \(interactionColumn: .timestamp) = ?
+        AND \(interactionColumn: .authorUUID) IS ?
+        LIMIT 1
+        """
         let interaction = TSInteraction.grdbFetchOne(
             sql: sql,
             arguments: [timestamp, authorAci?.serviceIdUppercaseString],
-            transaction: tx
+            transaction: tx,
         )
         switch (interaction, authorAci) {
         case (let outgoingMessage as TSOutgoingMessage, nil):
@@ -57,7 +57,7 @@ public struct EditMessageStore {
             }
             return .outgoingMessage(OutgoingEditMessageWrapper(
                 message: outgoingMessage,
-                thread: thread
+                thread: thread,
             ))
         case (let incomingMessage as TSIncomingMessage, let authorAci?):
             guard let thread = incomingMessage.thread(tx: tx) else {
@@ -67,7 +67,7 @@ public struct EditMessageStore {
             return .incomingMessage(IncomingEditMessageWrapper(
                 message: incomingMessage,
                 thread: thread,
-                authorAci: authorAci
+                authorAci: authorAci,
             ))
         case (.some, _):
             Logger.warn("Unexpected message type found for edit")
@@ -79,35 +79,35 @@ public struct EditMessageStore {
 
     public func findMessage(
         fromEdit edit: TSMessage,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> TSMessage? {
         let transaction = tx
 
         let sql = """
-                SELECT * FROM \(InteractionRecord.databaseTableName) AS interaction
-                INNER JOIN \(EditRecord.databaseTableName) AS editRecord
-                ON interaction.\(interactionColumn: .id) = editRecord.latestRevisionId
-                WHERE editRecord.pastRevisionId = ?
-                LIMIT 1
-            """
+            SELECT * FROM \(InteractionRecord.databaseTableName) AS interaction
+            INNER JOIN \(EditRecord.databaseTableName) AS editRecord
+            ON interaction.\(interactionColumn: .id) = editRecord.latestRevisionId
+            WHERE editRecord.pastRevisionId = ?
+            LIMIT 1
+        """
 
         let arguments: StatementArguments = [edit.grdbId]
         return TSMessage.grdbFetchOne(
             sql: sql,
             arguments: arguments,
-            transaction: transaction
+            transaction: transaction,
         ) as? TSMessage
     }
 
     public func numberOfEdits(
         for message: TSMessage,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> Int {
         let sql = """
-                SELECT COUNT(*)
-                FROM \(EditRecord.databaseTableName)
-                WHERE editRecord.latestRevisionId = ?
-            """
+            SELECT COUNT(*)
+            FROM \(EditRecord.databaseTableName)
+            WHERE editRecord.latestRevisionId = ?
+        """
 
         let arguments: StatementArguments = [message.grdbId]
 
@@ -115,7 +115,7 @@ public struct EditMessageStore {
             return try Int.fetchOne(
                 tx.database,
                 sql: sql,
-                arguments: arguments
+                arguments: arguments,
             ) ?? 0
         }
     }
@@ -127,7 +127,7 @@ public struct EditMessageStore {
     /// revision, from newest to oldest.
     public func findEditHistory<MessageType: TSMessage>(
         forMostRecentRevision message: MessageType,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> [(record: EditRecord, message: MessageType?)] {
         /// By ordering DESC on `pastRevisionId`, we end up ordering edits
         /// newest-to-oldest. That's because the highest `pastRevisionId` refers
@@ -143,13 +143,13 @@ public struct EditMessageStore {
         let records = try EditRecord.fetchAll(
             tx.database,
             sql: recordSQL,
-            arguments: arguments
+            arguments: arguments,
         )
 
         return records.map { record -> (EditRecord, MessageType?) in
             let interaction = InteractionFinder.fetch(
                 rowId: record.pastRevisionId,
-                transaction: tx
+                transaction: tx,
             )
             guard let message = interaction as? MessageType else {
                 owsFailDebug("Interaction has unexpected type: \(type(of: interaction))")
@@ -179,7 +179,7 @@ public struct EditMessageStore {
     /// messages that are about to be deleted.
     public func findEditRecords(
         relatedTo message: TSMessage,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> [EditRecord] {
         // We need to fetch every EditRecord that references message.grdbId or
         // anything that those EditRecords reference, recursively.
@@ -195,7 +195,7 @@ public struct EditMessageStore {
             }
             let records = try EditRecord.filter(
                 Column(EditRecord.CodingKeys.latestRevisionId) == revisionId
-                || Column(EditRecord.CodingKeys.pastRevisionId) == revisionId
+                    || Column(EditRecord.CodingKeys.pastRevisionId) == revisionId,
             ).fetchAll(tx.database)
             revisionIdsToCheck.append(contentsOf: records.map(\.latestRevisionId))
             revisionIdsToCheck.append(contentsOf: records.map(\.pastRevisionId))
@@ -210,14 +210,14 @@ public struct EditMessageStore {
 
     public func insert(
         _ editRecord: EditRecord,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         try editRecord.insert(tx.database)
     }
 
     public func update(
         _ editRecord: EditRecord,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         try editRecord.update(tx.database)
     }

@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import GRDB
 import Foundation
+import GRDB
 
 /// Responsible for cleaning up expired ``DeletedCallRecord``s.
 ///
@@ -54,7 +54,7 @@ public final class DeletedCallRecordExpirationJob: ExpirationJob<DeletedCallReco
     override public func deleteExpiredElement(_ deletedCallRecord: DeletedCallRecord, tx: DBWriteTransaction) {
         deletedCallRecordStore.delete(
             expiredDeletedCallRecord: deletedCallRecord,
-            tx: tx
+            tx: tx,
         )
 
         do {

@@ -10,7 +10,7 @@ import XCTest
 private typealias IndividualCallStatus = CallRecord.CallStatus.IndividualCallStatus
 private typealias GroupCallStatus = CallRecord.CallStatus.GroupCallStatus
 
-private typealias StatusTransitionType = Hashable & CaseIterable
+private typealias StatusTransitionType = CaseIterable & Hashable
 private typealias IndividualStatusTransition = StatusTransition<IndividualCallStatus, IndividualCallStatus>
 private typealias GroupStatusTransition = StatusTransition<GroupCallStatus, GroupCallStatus>
 
@@ -35,9 +35,9 @@ final class IndividualCallRecordStatusTransitionManagerTest: XCTestCase {
             XCTAssertEqual(
                 statusTransitionManager.isStatusTransitionAllowed(
                     fromIndividualCallStatus: transition.from,
-                    toIndividualCallStatus: transition.to
+                    toIndividualCallStatus: transition.to,
                 ),
-                allowedTransitions.contains(transition)
+                allowedTransitions.contains(transition),
             )
         }
     }
@@ -74,7 +74,7 @@ final class GroupCallRecordStatusTransitionManagerTest: XCTestCase {
         for transition in GroupStatusTransition.all {
             switch statusTransitionManager.isStatusTransitionAllowed(
                 fromGroupCallStatus: transition.from,
-                toGroupCallStatus: transition.to
+                toGroupCallStatus: transition.to,
             ) {
             case .allowed:
                 XCTAssertTrue(allowedTransitions.contains(transition), "\(transition) should not have been allowed.")
@@ -83,7 +83,7 @@ final class GroupCallRecordStatusTransitionManagerTest: XCTestCase {
             case .preferAlternateStatus(let alternateGroupCallStatus):
                 switch statusTransitionManager.isStatusTransitionAllowed(
                     fromGroupCallStatus: transition.from,
-                    toGroupCallStatus: alternateGroupCallStatus
+                    toGroupCallStatus: alternateGroupCallStatus,
                 ) {
                 case .allowed:
                     break

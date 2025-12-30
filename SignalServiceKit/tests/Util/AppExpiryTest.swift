@@ -27,7 +27,7 @@ final class AppExpiryTest: XCTestCase {
         buildDate = Date()
         db = InMemoryDB()
         keyValueStore = KeyValueStore(
-            collection: AppExpiry.keyValueCollection
+            collection: AppExpiry.keyValueCollection,
         )
 
         appExpiry = AppExpiry(appVersion: appVersion, buildDate: buildDate)
@@ -83,7 +83,7 @@ final class AppExpiryTest: XCTestCase {
     func testWarmCachesWithPersistedDefault() throws {
         let savedJson = try JSONEncoder().encode([
             "appVersion": appVersion.wrappedValue.rawValue,
-            "mode": "default"
+            "mode": "default",
         ])
         db.write { tx in
             keyValueStore.setData(savedJson, key: AppExpiry.keyValueKey, transaction: tx)
@@ -97,7 +97,7 @@ final class AppExpiryTest: XCTestCase {
     func testWarmCachesWithPersistedImmediateExpiry() throws {
         let savedJson = try JSONEncoder().encode([
             "appVersion": appVersion.wrappedValue.rawValue,
-            "mode": "immediately"
+            "mode": "immediately",
         ])
         db.write { tx in
             keyValueStore.setData(savedJson, key: AppExpiry.keyValueKey, transaction: tx)

@@ -80,7 +80,7 @@ enum Monitor {
                     // Don't cancel because CancellableContinuation does that.
                     // We just clean up the state so that we don't leak memory.
                     updateState { _ = $0[keyPath: condition.waiters].removeValue(forKey: cancellationToken) }
-                }
+                },
             )
         } catch let error as CancellationError {
             throw error

@@ -31,7 +31,7 @@ public class ContactFieldViewHelper {
     public class func contactFieldView(forOrganizationName organizationName: String) -> UIView {
         return simpleFieldView(
             name: OWSLocalizedString("CONTACT_FIELD_ORGANIZATION", comment: "Label for the 'organization' field of a contact."),
-            value: organizationName
+            value: organizationName,
         )
     }
 

@@ -65,7 +65,7 @@ class CallMemberCameraOffView: UIView, CallMemberComposableView {
     func configure(
         call: SignalCall,
         isFullScreen: Bool = false,
-        remoteGroupMemberDeviceState: RemoteDeviceState?
+        remoteGroupMemberDeviceState: RemoteDeviceState?,
     ) {
         if !hasConfiguredOnce {
             self.createOptionalViews(type: type, call: call)
@@ -116,7 +116,7 @@ class CallMemberCameraOffView: UIView, CallMemberComposableView {
         // Update blurred avatar background
         self.blurredAvatarBackgroundView.update(
             type: self.type,
-            remoteGroupMemberDeviceState: remoteGroupMemberDeviceState
+            remoteGroupMemberDeviceState: remoteGroupMemberDeviceState,
         )
 
         // Update circular avatar
@@ -129,7 +129,7 @@ class CallMemberCameraOffView: UIView, CallMemberComposableView {
                 }
                 updateCircularAvatarIfNecessary(
                     address: localAddress,
-                    tx: tx
+                    tx: tx,
                 )
             }
         case .remoteInGroup:
@@ -137,14 +137,14 @@ class CallMemberCameraOffView: UIView, CallMemberComposableView {
             SSKEnvironment.shared.databaseStorageRef.read { tx in
                 updateCircularAvatarIfNecessary(
                     address: remoteGroupMemberDeviceState.address,
-                    tx: tx
+                    tx: tx,
                 )
             }
         case .remoteInIndividual(let individualCall):
             SSKEnvironment.shared.databaseStorageRef.read { tx in
                 updateCircularAvatarIfNecessary(
                     address: individualCall.remoteAddress,
-                    tx: tx
+                    tx: tx,
                 )
             }
         }
@@ -184,7 +184,7 @@ class CallMemberCameraOffView: UIView, CallMemberComposableView {
 
     private func updateCircularAvatarIfNecessary(
         address: SignalServiceAddress,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) {
         guard let avatarView else {
             Logger.info("Skipping refresh of avatar view in call member view.")
@@ -208,7 +208,7 @@ class CallMemberCameraOffView: UIView, CallMemberComposableView {
         label.font = .dynamicTypeCaption1
         label.text = OWSLocalizedString(
             "CALLING_MEMBER_VIEW_YOUR_CAMERA_IS_OFF",
-            comment: "Indicates to the user that their camera is currently off."
+            comment: "Indicates to the user that their camera is currently off.",
         )
         label.textAlignment = .center
         label.textColor = Theme.darkThemePrimaryColor
@@ -279,7 +279,7 @@ class BlurredAvatarBackgroundView: UIView {
 
     func update(
         type: CallMemberView.MemberType,
-        remoteGroupMemberDeviceState: RemoteDeviceState?
+        remoteGroupMemberDeviceState: RemoteDeviceState?,
     ) {
         let address: SignalServiceAddress
         switch type {
@@ -302,7 +302,7 @@ class BlurredAvatarBackgroundView: UIView {
     }
 
     private func avatarImageAndBackgroundColorWithSneakyTransaction(
-        for address: SignalServiceAddress
+        for address: SignalServiceAddress,
     ) -> (UIImage?, UIColor) {
         let avatarDefaultColorManager = DependenciesBridge.shared.avatarDefaultColorManager
         let contactManagerImpl = SSKEnvironment.shared.contactManagerImplRef
@@ -311,19 +311,19 @@ class BlurredAvatarBackgroundView: UIView {
 
         let (
             profileImage,
-            defaultAvatarColor
+            defaultAvatarColor,
         ): (UIImage?, AvatarTheme) = databaseStorage.read { tx in
             let avatarImage = contactManagerImpl.avatarImage(forAddress: address, transaction: tx)
 
             if let recipient = recipientDatabaseTable.fetchRecipient(address: address, tx: tx) {
                 return (
                     avatarImage,
-                    avatarDefaultColorManager.defaultColor(useCase: .contact(recipient: recipient), tx: tx)
+                    avatarDefaultColorManager.defaultColor(useCase: .contact(recipient: recipient), tx: tx),
                 )
             } else {
                 return (
                     avatarImage,
-                    avatarDefaultColorManager.defaultColor(useCase: .contactWithoutRecipient(address: address), tx: tx)
+                    avatarDefaultColorManager.defaultColor(useCase: .contactWithoutRecipient(address: address), tx: tx),
                 )
             }
         }

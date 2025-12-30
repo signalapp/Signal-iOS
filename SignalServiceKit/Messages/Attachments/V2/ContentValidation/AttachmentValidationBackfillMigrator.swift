@@ -27,11 +27,12 @@ public protocol AttachmentValidationBackfillMigrator {
     func runNextBatch() async throws -> Bool
 }
 
-internal enum ValidationBackfill: Int, CaseIterable {
+enum ValidationBackfill: Int, CaseIterable {
 
     case recomputeAudioDurations = 1
 
     // MARK: - Migration insertion point
+
     // Insert new backfills here, incrementing the last raw value by 1.
 
     // MARK: - Properties
@@ -85,8 +86,8 @@ internal enum ValidationBackfill: Int, CaseIterable {
                 .init(
                     column: .cachedAudioDurationSeconds,
                     operator: ==,
-                    value: 0
-                )
+                    value: 0,
+                ),
             ]
         }
     }
@@ -107,7 +108,7 @@ public class AttachmentValidationBackfillMigratorImpl: AttachmentValidationBackf
         databaseStorage: SDSDatabaseStorage,
         orphanedAttachmentCleaner: OrphanedAttachmentCleaner,
         orphanedAttachmentStore: OrphanedAttachmentStore,
-        validator: AttachmentContentValidator
+        validator: AttachmentContentValidator,
     ) {
         self.attachmentStore = attachmentStore
         self.databaseStorage = databaseStorage
@@ -123,7 +124,7 @@ public class AttachmentValidationBackfillMigratorImpl: AttachmentValidationBackf
         let didEnqueue = try await enqueueForBackfillIfNeeded()
         if didEnqueue {
             return false
-         }
+        }
         return try await runNextValidationBatch()
     }
 
@@ -138,7 +139,7 @@ public class AttachmentValidationBackfillMigratorImpl: AttachmentValidationBackf
 
             let attachments = try Attachment.Record.fetchAll(
                 tx.database,
-                keys: attachmentIds
+                keys: attachmentIds,
             )
             return attachmentIds.dictionaryMappingToValues { id in
                 return attachments.first(where: { $0.sqliteId == id })
@@ -166,7 +167,7 @@ public class AttachmentValidationBackfillMigratorImpl: AttachmentValidationBackf
                     ofEncryptedFileAt: fileUrl,
                     attachmentKey: AttachmentKey(combinedKey: attachment.encryptionKey),
                     plaintextLength: plaintextLength,
-                    mimeType: attachment.mimeType
+                    mimeType: attachment.mimeType,
                 )
                 revalidatedAttachmentIds.append((attachmentId, revalidationResult))
             } catch let error {
@@ -186,12 +187,12 @@ public class AttachmentValidationBackfillMigratorImpl: AttachmentValidationBackf
         // 2. Update the content type everywhere needed to the newly validated type.
         try await databaseStorage.awaitableWrite { tx in
             try skippedAttachmentIds.forEach { try self.store.dequeue(attachmentId: $0, tx: tx) }
-            try revalidatedAttachmentIds.forEach { (attachmentId, revalidatedAttachment) in
+            try revalidatedAttachmentIds.forEach { attachmentId, revalidatedAttachment in
                 try self.store.dequeue(attachmentId: attachmentId, tx: tx)
                 try self.updateRevalidatedAttachment(
                     revalidatedAttachment,
                     id: attachmentId,
-                    tx: tx
+                    tx: tx,
                 )
             }
         }
@@ -203,24 +204,24 @@ public class AttachmentValidationBackfillMigratorImpl: AttachmentValidationBackf
         ofEncryptedFileAt fileUrl: URL,
         attachmentKey: AttachmentKey,
         plaintextLength: UInt32,
-        mimeType: String
+        mimeType: String,
     ) async throws -> RevalidatedAttachment {
         try await self.validator.reValidateContents(
             ofEncryptedFileAt: fileUrl,
             attachmentKey: attachmentKey,
             plaintextLength: plaintextLength,
-            mimeType: mimeType
+            mimeType: mimeType,
         )
     }
 
     private func updateRevalidatedAttachment(
         _ revalidatedAttachment: RevalidatedAttachment,
         id: Attachment.IDType,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         let hasOrphanRecord = orphanedAttachmentStore.orphanAttachmentExists(
             with: revalidatedAttachment.orphanRecordId,
-            tx: tx
+            tx: tx,
         )
         guard hasOrphanRecord else {
             throw OWSAssertionError("Orphan record deleted before creation")
@@ -242,14 +243,14 @@ public class AttachmentValidationBackfillMigratorImpl: AttachmentValidationBackf
                     localRelativeFilePath: nil,
                     localRelativeFilePathThumbnail: nil,
                     localRelativeFilePathAudioWaveform: nil,
-                    localRelativeFilePathVideoStillFrame: stillFrameRelativeFilePath
+                    localRelativeFilePathVideoStillFrame: stillFrameRelativeFilePath,
                 )
             case .audio(_, let waveformRelativeFilePath):
                 return .init(
                     localRelativeFilePath: nil,
                     localRelativeFilePathThumbnail: nil,
                     localRelativeFilePathAudioWaveform: waveformRelativeFilePath,
-                    localRelativeFilePathVideoStillFrame: nil
+                    localRelativeFilePathVideoStillFrame: nil,
                 )
             }
         }()
@@ -260,12 +261,12 @@ public class AttachmentValidationBackfillMigratorImpl: AttachmentValidationBackf
             revalidatedContentType: revalidatedAttachment.validatedContentType,
             mimeType: revalidatedAttachment.mimeType,
             blurHash: revalidatedAttachment.blurHash,
-            tx: tx
+            tx: tx,
         )
         // Clear out the orphan record for the _new_ ancillary files.
         orphanedAttachmentCleaner.releasePendingAttachment(
             withId: revalidatedAttachment.orphanRecordId,
-            tx: tx
+            tx: tx,
         )
         // Insert the orphan record for the _old_ ancillary files.
         if var oldAncillaryFilesOrphanRecord {
@@ -293,7 +294,7 @@ public class AttachmentValidationBackfillMigratorImpl: AttachmentValidationBackf
             try self.enqueueForBackfill(backfillsToEnqueue, tx: tx)
             self.store.setLastEnqueuedBackfill(
                 backfillsToEnqueue.max(by: { $0.rawValue < $1.rawValue })!,
-                tx: tx
+                tx: tx,
             )
             return true
         }

@@ -13,18 +13,18 @@ public class BackupListMediaStore {
 
     public func setLastFailingIntegrityCheckResult(
         _ newValue: ListMediaIntegrityCheckResult?,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         if let newValue {
             try kvStore.setCodable(
                 newValue,
                 key: Constants.lastNonEmptyIntegrityCheckResultKey,
-                transaction: tx
+                transaction: tx,
             )
         } else {
             kvStore.removeValue(
                 forKey: Constants.lastNonEmptyIntegrityCheckResultKey,
-                transaction: tx
+                transaction: tx,
             )
         }
     }
@@ -35,18 +35,18 @@ public class BackupListMediaStore {
 
     public func setMostRecentIntegrityCheckResult(
         _ newValue: ListMediaIntegrityCheckResult?,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         if let newValue {
             try kvStore.setCodable(
                 newValue,
                 key: Constants.lastIntegrityCheckResultKey,
-                transaction: tx
+                transaction: tx,
             )
         } else {
             kvStore.removeValue(
                 forKey: Constants.lastIntegrityCheckResultKey,
-                transaction: tx
+                transaction: tx,
             )
         }
     }

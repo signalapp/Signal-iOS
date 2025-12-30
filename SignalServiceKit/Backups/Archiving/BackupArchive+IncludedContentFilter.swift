@@ -68,10 +68,10 @@ extension BackupArchive {
         func shouldSkipMessageBasedOnExpiration(
             expireStartDate: UInt64?,
             expiresInMs: UInt64?,
-            currentTimestamp: UInt64
+            currentTimestamp: UInt64,
         ) -> Bool {
             guard
-                let expiresInMs = expiresInMs,
+                let expiresInMs,
                 expiresInMs > 0
             else {
                 // If the message isn't expiring, no reason to skip.
@@ -82,7 +82,7 @@ extension BackupArchive {
                 // If the expire timer was less than our minimum, we can always
                 // skip.
                 return true
-            } else if let expireStartDate = expireStartDate, expireStartDate > 0 {
+            } else if let expireStartDate, expireStartDate > 0 {
                 // If the expiration timer has started, check whether the
                 // remaining time before it expires is sufficient.
                 let expirationDate = expireStartDate + expiresInMs
@@ -99,13 +99,13 @@ extension BackupArchive {
         /// other owners (e.g. if deduplicated by content hash), it may still be uploaded.
         func shouldSkipAttachment(
             owningMessage: TSMessage,
-            currentTimestamp: UInt64
+            currentTimestamp: UInt64,
         ) -> Bool {
             if
                 shouldSkipMessageBasedOnExpiration(
                     expireStartDate: owningMessage.expireStartedAt,
                     expiresInMs: UInt64(owningMessage.expiresInSeconds) * 1000,
-                    currentTimestamp: currentTimestamp
+                    currentTimestamp: currentTimestamp,
                 )
             {
                 return true

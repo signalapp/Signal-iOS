@@ -11,8 +11,8 @@ import UIKit
 @MainActor
 struct DoubleTapToEditOnboardingController {
     private enum Keys {
-        public static let collectionIdentifier = "DoubleTapToEdit"
-        public static let hasSeenOnboarding = "hasSeenOnboarding"
+        static let collectionIdentifier = "DoubleTapToEdit"
+        static let hasSeenOnboarding = "hasSeenOnboarding"
     }
 
     private var completionHandler: @MainActor () -> Void

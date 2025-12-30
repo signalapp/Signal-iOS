@@ -80,7 +80,7 @@ extension Bitmaps.Image {
     /// A region that should be left clear, defined by the circle inscribed in
     /// the given rect.
     func gridDrawingByMergingAdjacentPixels(
-        deadzone: Bitmaps.Rect?
+        deadzone: Bitmaps.Rect?,
     ) -> Bitmaps.GridDrawing {
         var segments: [Segment] = []
 
@@ -89,7 +89,7 @@ extension Bitmaps.Image {
                 dimension: .horizontal,
                 dimensionIteration: 0...width,
                 currentPointBlock: { i in Point(x: i, y: row) },
-                pointInDeadzoneBlock: { p in deadzone?.inscribedCircleContains(p) ?? false }
+                pointInDeadzoneBlock: { p in deadzone?.inscribedCircleContains(p) ?? false },
             ))
         }
 
@@ -98,14 +98,14 @@ extension Bitmaps.Image {
                 dimension: .vertical,
                 dimensionIteration: 0...height,
                 currentPointBlock: { i in Point(x: column, y: i) },
-                pointInDeadzoneBlock: { p in deadzone?.inscribedCircleContains(p) ?? false }
+                pointInDeadzoneBlock: { p in deadzone?.inscribedCircleContains(p) ?? false },
             ))
         }
 
         return Bitmaps.GridDrawing(
             width: width,
             height: height,
-            segments: Set(segments)
+            segments: Set(segments),
         )
     }
 
@@ -113,7 +113,7 @@ extension Bitmaps.Image {
         dimension: Segment.Dimension,
         dimensionIteration: ClosedRange<Int>,
         currentPointBlock: (_ iterationPoint: Int) -> Point,
-        pointInDeadzoneBlock: (_ point: Point) -> Bool
+        pointInDeadzoneBlock: (_ point: Point) -> Bool,
     ) -> [Segment] {
         var newSegments: [Segment] = []
         var currentSegmentStart: Point?
@@ -139,7 +139,7 @@ extension Bitmaps.Image {
                 newSegments.append(Segment(
                     dimension: dimension,
                     start: finishedSegmentStart,
-                    length: currentSegmentLength!
+                    length: currentSegmentLength!,
                 ))
 
                 currentSegmentStart = nil

@@ -13,9 +13,9 @@ class BitmapsImageCenteredDeadzoneTest: XCTestCase {
             XCTAssertEqual(
                 testCase.image.centeredDeadzone(
                     dimensionPercentage: testCase.percentage,
-                    paddingPoints: testCase.paddingPoints
+                    paddingPoints: testCase.paddingPoints,
                 ),
-                testCase.expectedRect
+                testCase.expectedRect,
             )
         }
     }
@@ -30,34 +30,34 @@ private struct TestCase {
     static let all: [TestCase] = [
         .usernameLinkQRCodeSize,
         .evenRemainder,
-        .oddRemainder
+        .oddRemainder,
     ]
 
     static let usernameLinkQRCodeSize = TestCase(
         image: Bitmaps.Image(width: 39, height: 39, rawBytes: []),
-        percentage: 1/3,
+        percentage: 1 / 3,
         paddingPoints: 0,
-        expectedRect: Bitmaps.Rect(x: 13, y: 13, width: 13, height: 13)
+        expectedRect: Bitmaps.Rect(x: 13, y: 13, width: 13, height: 13),
     )
 
     static let evenRemainder = TestCase(
         image: Bitmaps.Image(width: 30, height: 30, rawBytes: []),
-        percentage: 1/3,
+        percentage: 1 / 3,
         paddingPoints: 0,
-        expectedRect: Bitmaps.Rect(x: 10, y: 10, width: 10, height: 10)
+        expectedRect: Bitmaps.Rect(x: 10, y: 10, width: 10, height: 10),
     )
 
     static let evenRemainderWithPadding = TestCase(
         image: Bitmaps.Image(width: 30, height: 30, rawBytes: []),
-        percentage: 1/3,
+        percentage: 1 / 3,
         paddingPoints: 1,
-        expectedRect: Bitmaps.Rect(x: 9, y: 9, width: 11, height: 11)
+        expectedRect: Bitmaps.Rect(x: 9, y: 9, width: 11, height: 11),
     )
 
     static let oddRemainder = TestCase(
         image: Bitmaps.Image(width: 30, height: 41, rawBytes: []),
         percentage: 0.25,
         paddingPoints: 0,
-        expectedRect: Bitmaps.Rect(x: 11, y: 15, width: 8, height: 11)
+        expectedRect: Bitmaps.Rect(x: 11, y: 15, width: 8, height: 11),
     )
 }

@@ -193,7 +193,7 @@ enum PasteboardAttachment {
         return try PreviewableAttachment.genericAttachment(dataSource: dataSource, dataUTI: dataUTI)
     }
 
-    public static func loadPreviewableStickerAttachment() throws -> PreviewableAttachment? {
+    static func loadPreviewableStickerAttachment() throws -> PreviewableAttachment? {
         guard
             UIPasteboard.general.numberOfItems >= 1,
             let pasteboardUTITypes = UIPasteboard.general.types(forItemSet: IndexSet(integer: 0))
@@ -229,7 +229,7 @@ enum PasteboardAttachment {
     }
 
     /// Returns an attachment from the memoji.
-    public static func loadPreviewableMemojiAttachment(fromMemojiGlyph memojiGlyph: OWSAdaptiveImageGlyph) throws -> PreviewableAttachment {
+    static func loadPreviewableMemojiAttachment(fromMemojiGlyph memojiGlyph: OWSAdaptiveImageGlyph) throws -> PreviewableAttachment {
         let dataUTI = filterDynamicUTITypes([memojiGlyph.contentType.identifier]).first
         guard let dataUTI else {
             throw SignalAttachmentError.invalidFileFormat

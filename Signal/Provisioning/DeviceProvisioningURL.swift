@@ -40,7 +40,7 @@ public class DeviceProvisioningURL {
         type: LinkType,
         ephemeralDeviceId: String,
         publicKey: PublicKey,
-        capabilities: [Capability] = []
+        capabilities: [Capability] = [],
     ) {
         self.linkType = type
         self.ephemeralDeviceId = ephemeralDeviceId
@@ -93,7 +93,7 @@ public class DeviceProvisioningURL {
                         }
                         return capability
                     })
-                ?? []
+                    ?? []
             default:
                 Logger.warn("unknown query item in provisioning string: \(queryItem.name)")
             }

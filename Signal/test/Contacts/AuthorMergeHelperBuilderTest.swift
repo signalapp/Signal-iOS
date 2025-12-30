@@ -44,7 +44,7 @@ final class AuthorMergeHelperBuilderTest: XCTestCase {
             authorMergeHelper: authorMergeHelper,
             db: inMemoryDb,
             modelReadCaches: AuthorMergeHelperBuilder_MockModelReadCaches(),
-            recipientDatabaseTable: recipientDatabaseTable
+            recipientDatabaseTable: recipientDatabaseTable,
         ).buildTableIfNeeded()
 
         inMemoryDb.read { tx in

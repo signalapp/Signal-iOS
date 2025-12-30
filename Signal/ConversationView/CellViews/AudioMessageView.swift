@@ -14,7 +14,9 @@ class AudioMessageView: ManualStackView {
         static let vSpacing: CGFloat = 2
         static let innerLayoutMargins = UIEdgeInsets(hMargin: 0, vMargin: 4)
     }
+
     // MARK: - State
+
     private var attachment: Attachment { presentation.audioAttachment.attachment }
     private var attachmentStream: AttachmentStream? { presentation.audioAttachment.attachmentStream?.attachmentStream }
     private var durationSeconds: TimeInterval { presentation.audioAttachment.durationSeconds }
@@ -22,6 +24,7 @@ class AudioMessageView: ManualStackView {
     private var isIncoming: Bool {
         presentation.isIncoming
     }
+
     private weak var audioMessageViewDelegate: AudioMessageViewDelegate?
     private let mediaCache: CVMediaCache
 
@@ -37,7 +40,7 @@ class AudioMessageView: ManualStackView {
     }
 
     private var isViewed = false
-    public func setViewed(_ isViewed: Bool, animated: Bool) {
+    func setViewed(_ isViewed: Bool, animated: Bool) {
         guard isViewed != self.isViewed else { return }
         self.isViewed = isViewed
         updateContents(animated: animated)
@@ -58,7 +61,7 @@ class AudioMessageView: ManualStackView {
     init(
         presentation: AudioPresenter,
         audioMessageViewDelegate: AudioMessageViewDelegate,
-        mediaCache: CVMediaCache
+        mediaCache: CVMediaCache,
     ) {
         self.audioMessageViewDelegate = audioMessageViewDelegate
         self.mediaCache = mediaCache
@@ -73,14 +76,16 @@ class AudioMessageView: ManualStackView {
 
     // MARK: - Rendering
 
-    public func configureForRendering(cellMeasurement: CVCellMeasurement, conversationStyle: ConversationStyle) {
+    func configureForRendering(cellMeasurement: CVCellMeasurement, conversationStyle: ConversationStyle) {
         var outerSubviews = [UIView]()
 
-        if let topLabelConfig = presentation.topLabelConfig(
-            audioAttachment: presentation.audioAttachment,
-            isIncoming: isIncoming,
-            conversationStyle: conversationStyle
-        ) {
+        if
+            let topLabelConfig = presentation.topLabelConfig(
+                audioAttachment: presentation.audioAttachment,
+                isIncoming: isIncoming,
+                conversationStyle: conversationStyle,
+            )
+        {
             let topLabel = CVLabel()
             topLabelConfig.applyForRendering(label: topLabel)
             outerSubviews.append(topLabel)
@@ -130,11 +135,11 @@ class AudioMessageView: ManualStackView {
             let fillColorKeypath = AnimationKeypath(keypath: "**.Fill 1.Color")
             playPauseAnimation.setValueProvider(
                 presentation.playPauseAnimationColor(isIncoming: isIncoming),
-                keypath: fillColorKeypath
+                keypath: fillColorKeypath,
             )
             playedDotAnimation.setValueProvider(
                 presentation.playedDotAnimationColor(conversationStyle: conversationStyle, isIncoming: isIncoming),
-                keypath: fillColorKeypath
+                keypath: fillColorKeypath,
             )
 
             playPauseContainer.backgroundColor = presentation.playPauseContainerBackgroundColor(isIncoming: isIncoming)
@@ -147,11 +152,11 @@ class AudioMessageView: ManualStackView {
             leftView = CVAttachmentProgressView(
                 direction: .download(
                     attachmentPointer: attachmentPointer.attachmentPointer,
-                    downloadState: downloadState
+                    downloadState: downloadState,
                 ),
                 diameter: Constants.animationSize,
                 isDarkThemeEnabled: conversationStyle.isDarkThemeEnabled,
-                mediaCache: mediaCache
+                mediaCache: mediaCache,
             )
         }
 
@@ -165,8 +170,8 @@ class AudioMessageView: ManualStackView {
                 leftView,
                 .transparentSpacer(),
                 waveformContainer,
-                .transparentSpacer()
-            ]
+                .transparentSpacer(),
+            ],
         )
         outerSubviews.append(topInnerStack)
 
@@ -177,7 +182,7 @@ class AudioMessageView: ManualStackView {
             config: Self.bottomInnerStackConfig(presentation: presentation),
             cellMeasurement: cellMeasurement,
             measurementKey: Self.measurementKey_bottomInnerStack,
-            subviews: generators.map { $0.viewGenerator() }
+            subviews: generators.map { $0.viewGenerator() },
         )
         outerSubviews.append(bottomInnerStack)
 
@@ -185,7 +190,7 @@ class AudioMessageView: ManualStackView {
             config: Self.outerStackConfig,
             cellMeasurement: cellMeasurement,
             measurementKey: Self.measurementKey_outerStack,
-            subviews: outerSubviews
+            subviews: outerSubviews,
         )
 
         updateContents(animated: false)
@@ -199,19 +204,21 @@ class AudioMessageView: ManualStackView {
     private static let measurementKey_bottomInnerStack = "CVComponentAudioAttachment.measurementKey_bottomInnerStack"
     private static let measurementKey_outerStack = "CVComponentAudioAttachment.measurementKey_outerStack"
 
-    public static func measure(
+    static func measure(
         maxWidth: CGFloat,
         measurementBuilder: CVCellMeasurement.Builder,
-        presentation: AudioPresenter
+        presentation: AudioPresenter,
     ) -> CGSize {
         owsAssertDebug(maxWidth > 0)
 
         var outerSubviewInfos = [ManualStackSubviewInfo]()
-        if let topLabelConfig = presentation.topLabelConfig(
-            audioAttachment: presentation.audioAttachment,
-            isIncoming: presentation.isIncoming,
-            conversationStyle: nil
-        ) {
+        if
+            let topLabelConfig = presentation.topLabelConfig(
+                audioAttachment: presentation.audioAttachment,
+                isIncoming: presentation.isIncoming,
+                conversationStyle: nil,
+            )
+        {
             let topLabelSize = CGSize(width: 0, height: topLabelConfig.font.lineHeight)
             outerSubviewInfos.append(topLabelSize.asManualSubviewInfo)
         }
@@ -231,7 +238,7 @@ class AudioMessageView: ManualStackView {
             config: topInnerStackConfig,
             measurementBuilder: measurementBuilder,
             measurementKey: Self.measurementKey_topInnerStack,
-            subviewInfos: topInnerSubviewInfos
+            subviewInfos: topInnerSubviewInfos,
         )
         let topInnerStackSize = topInnerStackMeasurement.measuredSize
         outerSubviewInfos.append(topInnerStackSize.ceil.asManualSubviewInfo)
@@ -240,7 +247,7 @@ class AudioMessageView: ManualStackView {
             config: bottomInnerStackConfig(presentation: presentation),
             measurementBuilder: measurementBuilder,
             measurementKey: Self.measurementKey_bottomInnerStack,
-            subviewInfos: presentation.bottomSubviewGenerators(conversationStyle: nil).map { $0.measurementInfo(maxWidth) }
+            subviewInfos: presentation.bottomSubviewGenerators(conversationStyle: nil).map { $0.measurementInfo(maxWidth) },
         )
         let bottomInnerStackSize = bottomInnerStackMeasurement.measuredSize
         outerSubviewInfos.append(bottomInnerStackSize.ceil.asManualSubviewInfo)
@@ -250,7 +257,7 @@ class AudioMessageView: ManualStackView {
             measurementBuilder: measurementBuilder,
             measurementKey: Self.measurementKey_outerStack,
             subviewInfos: outerSubviewInfos,
-            maxWidth: maxWidth
+            maxWidth: maxWidth,
         )
         return outerStackMeasurement.measuredSize
     }
@@ -258,33 +265,39 @@ class AudioMessageView: ManualStackView {
     // MARK: - View Configs
 
     private static var outerStackConfig: CVStackViewConfig {
-        CVStackViewConfig(axis: .vertical,
-                          alignment: .fill,
-                          spacing: Constants.vSpacing,
-                          layoutMargins: .zero)
+        CVStackViewConfig(
+            axis: .vertical,
+            alignment: .fill,
+            spacing: Constants.vSpacing,
+            layoutMargins: .zero,
+        )
     }
 
     private static var topInnerStackConfig: CVStackViewConfig {
-        CVStackViewConfig(axis: .horizontal,
-                          alignment: .center,
-                          spacing: 0,
-                          layoutMargins: Constants.innerLayoutMargins)
+        CVStackViewConfig(
+            axis: .horizontal,
+            alignment: .center,
+            spacing: 0,
+            layoutMargins: Constants.innerLayoutMargins,
+        )
     }
 
     private static func bottomInnerStackConfig(presentation: AudioPresenter) -> CVStackViewConfig {
-        CVStackViewConfig(axis: .horizontal,
-                          alignment: .center,
-                          spacing: presentation.bottomInnerStackSpacing,
-                          layoutMargins: .zero)
+        CVStackViewConfig(
+            axis: .horizontal,
+            alignment: .center,
+            spacing: presentation.bottomInnerStackSpacing,
+            layoutMargins: .zero,
+        )
     }
 
     // MARK: - Tapping
 
-    public func handleTap(sender: UIGestureRecognizer, itemModel: CVItemModel) -> Bool {
+    func handleTap(sender: UIGestureRecognizer, itemModel: CVItemModel) -> Bool {
         presentation.playbackRateView.handleTap(
             sender: sender,
             itemModel: itemModel,
-            audioMessageViewDelegate: audioMessageViewDelegate
+            audioMessageViewDelegate: audioMessageViewDelegate,
         )
     }
 
@@ -415,12 +428,12 @@ class AudioMessageView: ManualStackView {
         }()
     }
 
-    public func setOverrideProgress(_ value: CGFloat, animated: Bool) {
+    func setOverrideProgress(_ value: CGFloat, animated: Bool) {
         overrideProgress = value
         updateContents(animated: animated)
     }
 
-    public func clearOverrideProgress(animated: Bool) {
+    func clearOverrideProgress(animated: Bool) {
         overrideProgress = nil
         updateContents(animated: animated)
     }
@@ -471,7 +484,7 @@ class AudioMessageView: ManualStackView {
 
     private func updatePlaybackRate(animated: Bool) {
         let isPlaying: Bool = {
-            guard let attachmentStream = attachmentStream else {
+            guard let attachmentStream else {
                 return false
             }
             return AppEnvironment.shared.cvAudioPlayerRef.audioPlaybackState(forAttachmentId: attachmentStream.id) == .playing
@@ -518,9 +531,10 @@ extension AudioAttachment {
             return ""
         }
     }
+
     var dateString: String {
         switch state {
-        case .attachmentStream(_, _):
+        case .attachmentStream:
             let dateFormatter = DateFormatter()
             dateFormatter.setLocalizedDateFormatFromTemplate("Mdyy")
             return dateFormatter.string(from: receivedAtDate)

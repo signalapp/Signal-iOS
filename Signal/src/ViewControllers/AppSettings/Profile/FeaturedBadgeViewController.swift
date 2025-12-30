@@ -24,7 +24,8 @@ class FeaturedBadgeViewController: OWSTableViewController2, BadgeCollectionDataS
         if avatarImage == nil {
             avatarImage = SSKEnvironment.shared.avatarBuilderRef.avatarImageForLocalUserWithSneakyTransaction(
                 diameterPoints: sizeClass.diameter,
-                localUserDisplayMode: .asUser)
+                localUserDisplayMode: .asUser,
+            )
         }
         updateAvatarView()
         updateTableContents()
@@ -60,7 +61,7 @@ class FeaturedBadgeViewController: OWSTableViewController2, BadgeCollectionDataS
                     items: [
                         OWSTableItem(customCellBlock: { [weak self] in
                             let cellContent: UIView
-                            if let self = self {
+                            if let self {
                                 let badgeCollectionView = BadgeCollectionView(dataSource: self)
                                 badgeCollectionView.badgeSelectionMode = .feature
                                 cellContent = badgeCollectionView
@@ -77,9 +78,11 @@ class FeaturedBadgeViewController: OWSTableViewController2, BadgeCollectionDataS
                             cellContent.layoutIfNeeded()
 
                             return cell
-                        }, actionBlock: nil)
-                    ])
-            ])
+                        }, actionBlock: nil),
+                    ],
+                ),
+            ],
+        )
     }
 
     func updateAvatarView() {

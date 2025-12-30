@@ -4,11 +4,6 @@
 --exclude **/*.pb.swift
 --exclude **/*+SDS.swift
 
-# Temporary excludes.
---exclude Signal
---exclude SignalServiceKit
---exclude SignalUI
-
 --swift-version 6.2
 --language-mode 5
 

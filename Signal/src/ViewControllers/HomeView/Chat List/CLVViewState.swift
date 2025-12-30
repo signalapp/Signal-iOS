@@ -50,10 +50,11 @@ class CLVViewState {
     var unreadPaymentNotificationsCount: UInt = 0 {
         didSet { settingsButtonCreator.updateState(hasUnreadPaymentNotification: unreadPaymentNotificationsCount > 0) }
     }
+
     var firstUnreadPaymentModel: TSPaymentModel?
     var lastKnownTableViewContentOffset: CGPoint?
 
-    public enum BackupFailureAlertType: CaseIterable {
+    enum BackupFailureAlertType: CaseIterable {
         case avatarBadge
         case menuItemBadge
         case menuItem
@@ -66,6 +67,7 @@ class CLVViewState {
             }
         }
     }
+
     var backupFailureAlerts: Set<BackupFailureAlertType> = [] {
         didSet {
             settingsButtonCreator.updateState(
@@ -76,10 +78,11 @@ class CLVViewState {
         }
     }
 
-    public enum BackupSubscriptionFailedToRedeemAlertType: CaseIterable {
+    enum BackupSubscriptionFailedToRedeemAlertType: CaseIterable {
         case avatarBadge
         case menuItem
     }
+
     var backupSubscriptionFailedToRedeemAlerts: Set<BackupSubscriptionFailedToRedeemAlertType> = [] {
         didSet {
             settingsButtonCreator.updateState(
@@ -89,10 +92,11 @@ class CLVViewState {
         }
     }
 
-    public enum BackupIAPNotFoundLocallyAlertType: CaseIterable {
+    enum BackupIAPNotFoundLocallyAlertType: CaseIterable {
         case avatarBadge
         case menuItem
     }
+
     var backupIAPNotFoundLocallyAlerts: Set<BackupIAPNotFoundLocallyAlertType> = [] {
         didSet {
             settingsButtonCreator.updateState(
@@ -141,7 +145,7 @@ class CLVViewState {
         inboxFilter = viewInfo.inboxFilter
         settingsButtonCreator.updateState(
             hasInboxChats: viewInfo.inboxCount > 0,
-            hasArchivedChats: viewInfo.archiveCount > 0
+            hasArchivedChats: viewInfo.archiveCount > 0,
         )
     }
 }

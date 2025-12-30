@@ -53,7 +53,7 @@ class RotationControl: UIControl {
 
             let angleRounded = angle.rounded(roundingRule)
             let previousAngleRounded = previousAngle.rounded(roundingRule)
-            if previousAngleRounded != angleRounded && angleRounded.truncatingRemainder(dividingBy: Constants.stepValue) == 0 {
+            if previousAngleRounded != angleRounded, angleRounded.truncatingRemainder(dividingBy: Constants.stepValue) == 0 {
                 hapticFeedbackGenerator.selectionChanged()
             }
         }
@@ -160,10 +160,10 @@ class RotationControl: UIControl {
     private let rulerView = UIView()
     private let currentValueMark = UIView()
 
-    private struct Constants {
-        static let stepRange = -45...45         // 45 degrees each direction
-        static let stepValue: CGFloat = 3       // 1 mark = 3 degrees
-        static let stepWidth: CGFloat = 12      // distance between markings
+    private enum Constants {
+        static let stepRange = -45...45 // 45 degrees each direction
+        static let stepValue: CGFloat = 3 // 1 mark = 3 degrees
+        static let stepWidth: CGFloat = 12 // distance between markings
         static let markingWidth: CGFloat = .hairlineWidthFraction(2)
         static let bandHeight: CGFloat = 32
         static let markingHeight: CGFloat = 12
@@ -179,7 +179,7 @@ class RotationControl: UIControl {
 
     private func updateAppearance() {
         var roundedAngle = normalizedAngle.rounded()
-        if roundedAngle == 0 && roundedAngle.sign == .minus {
+        if roundedAngle == 0, roundedAngle.sign == .minus {
             roundedAngle = 0
         }
         textLabel.text = numberFormatter.string(for: roundedAngle)
@@ -212,10 +212,12 @@ extension RotationControl: UIScrollViewDelegate {
         for i in 0...numberOfSteps {
             let marking = UIView(frame: CGRect(origin: .zero, size: markingSize))
             marking.backgroundColor = .ows_white
-            marking.alpha = i%5 == 0 ? 1 : 0.5
+            marking.alpha = i % 5 == 0 ? 1 : 0.5
             rulerView.addSubview(marking)
-            marking.frame.origin = CGPoint(x: CGFloat(i) * (Constants.stepWidth + Constants.markingWidth) - 0.5*Constants.markingWidth,
-                                           y: markingOriginY)
+            marking.frame.origin = CGPoint(
+                x: CGFloat(i) * (Constants.stepWidth + Constants.markingWidth) - 0.5 * Constants.markingWidth,
+                y: markingOriginY,
+            )
             if i == numberOfSteps / 2 {
                 marking.frame.origin.y = 0
                 marking.frame.size.height = Constants.bandHeight
@@ -226,8 +228,10 @@ extension RotationControl: UIScrollViewDelegate {
     }
 
     private func updateScrollViewLayout() {
-        scrollView.contentSize = CGSize(width: rulerView.bounds.width + scrollView.frame.width,
-                                        height: rulerView.height)
+        scrollView.contentSize = CGSize(
+            width: rulerView.bounds.width + scrollView.frame.width,
+            height: rulerView.height,
+        )
         rulerView.frame.origin = CGPoint(x: 0.5 * scrollView.frame.width, y: 0)
         updateScrollViewContentOffset()
     }

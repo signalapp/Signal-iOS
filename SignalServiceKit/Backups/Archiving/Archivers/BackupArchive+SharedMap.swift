@@ -24,7 +24,7 @@ extension BackupArchive {
      * really do want a single in-memory (or on-disk) map shared throughout a single
      * backup pass, and we want to modify it as we go.
      */
-    internal class SharedMap<K: Hashable, V>: Sequence {
+    class SharedMap<K: Hashable, V>: Sequence {
 
         private var map = [K: V]()
 
@@ -33,11 +33,11 @@ extension BackupArchive {
             set(value) { map[key] = value }
         }
 
-        public var keys: Dictionary<K, V>.Keys {
+        var keys: Dictionary<K, V>.Keys {
             return map.keys
         }
 
-        public func makeIterator() -> Dictionary<K, V>.Iterator {
+        func makeIterator() -> Dictionary<K, V>.Iterator {
             return map.makeIterator()
         }
     }

@@ -19,21 +19,21 @@ class StoryPlaybackProgressView: UIView {
         }
     }
 
-    public override var bounds: CGRect {
+    override var bounds: CGRect {
         didSet {
             guard bounds != oldValue else { return }
             setNeedsDisplay()
         }
     }
 
-    public override var frame: CGRect {
+    override var frame: CGRect {
         didSet {
             guard frame != oldValue else { return }
             setNeedsDisplay()
         }
     }
 
-    public override var center: CGPoint {
+    override var center: CGPoint {
         didSet {
             guard center != oldValue else { return }
             setNeedsDisplay()
@@ -44,12 +44,14 @@ class StoryPlaybackProgressView: UIView {
         let index: Int
         let value: CGFloat
     }
+
     var itemState: ItemState = .init(index: 0, value: 0) {
         didSet {
             guard itemState != oldValue else { return }
             setNeedsDisplay()
         }
     }
+
     var numberOfItems: Int = 0 {
         didSet {
             guard numberOfItems != oldValue else { return }
@@ -126,23 +128,25 @@ class StoryPlaybackProgressView: UIView {
                     x: playedXPosition,
                     y: 0,
                     width: playedWidth,
-                    height: itemHeight
+                    height: itemHeight,
                 )
                 playedBezierPath.append(UIBezierPath(
                     roundedRect: playedItemFrame,
                     byRoundingCorners: playedRoundedCorners,
-                    cornerRadii: CGSize(square: itemHeight / 2)))
+                    cornerRadii: CGSize(square: itemHeight / 2),
+                ))
 
                 let unplayedItemFrame = CGRect(
                     x: unplayedXPosition,
                     y: 0,
                     width: itemWidth * (1 - itemState.value),
-                    height: itemHeight
+                    height: itemHeight,
                 )
                 unplayedBezierPath.append(UIBezierPath(
                     roundedRect: unplayedItemFrame,
                     byRoundingCorners: unplayedRoundedCorners,
-                    cornerRadii: CGSize(square: itemHeight / 2)))
+                    cornerRadii: CGSize(square: itemHeight / 2),
+                ))
             } else {
                 let path: UIBezierPath
                 if itemState.index < idx || (itemState.index == idx && itemState.value <= 0) {
@@ -159,7 +163,7 @@ class StoryPlaybackProgressView: UIView {
                     x: xPosition,
                     y: 0,
                     width: itemWidth,
-                    height: itemHeight
+                    height: itemHeight,
                 )
                 path.append(UIBezierPath(roundedRect: itemFrame, cornerRadius: itemHeight / 2))
             }

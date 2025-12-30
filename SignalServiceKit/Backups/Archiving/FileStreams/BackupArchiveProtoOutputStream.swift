@@ -30,7 +30,7 @@ class BackupArchiveProtoOutputStream {
 
     init(
         outputStream: OutputStreamable,
-        exportProgress: BackupArchiveExportProgress?
+        exportProgress: BackupArchiveExportProgress?,
     ) {
         self.outputStream = outputStream
         self.exportProgress = exportProgress

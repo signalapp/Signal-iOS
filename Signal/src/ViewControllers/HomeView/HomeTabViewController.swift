@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalUI
 import SignalServiceKit
+import SignalUI
 
 protocol HomeTabViewController: UIViewController { }
 
@@ -23,7 +23,7 @@ extension HomeTabViewController {
         badgeColor: UIColor? = nil,
         onDidDismissContextMenu: @escaping () -> Void = {},
         buildActions: (_ settingsAction: UIMenuElement) -> [UIMenuElement],
-        showAppSettings: @escaping () -> Void
+        showAppSettings: @escaping () -> Void,
     ) -> UIBarButtonItem {
         let isInFloatingSidebar = if #available(iOS 26, *) {
             splitViewController?.isCollapsed == false
@@ -35,7 +35,7 @@ extension HomeTabViewController {
         let settingsAction = UIAction(
             title: CommonStrings.openAppSettingsButton,
             image: Theme.iconImage(.contextMenuSettings),
-            handler: { _ in showAppSettings() }
+            handler: { _ in showAppSettings() },
         )
 
         let contextButton = ContextMenuButton(
@@ -53,7 +53,7 @@ extension HomeTabViewController {
 
         let avatarView = ConversationAvatarView(
             sizeClass: sizeClass,
-            localUserDisplayMode: .asUser
+            localUserDisplayMode: .asUser,
         )
         databaseStorage.read { transaction in
             avatarView.update(transaction) { config in
@@ -68,7 +68,7 @@ extension HomeTabViewController {
             top: 0,
             leading: isInFloatingSidebar ? 2 : 0,
             bottom: 0,
-            trailing: 0
+            trailing: 0,
         ))
 
         let barButtonView: UIView

@@ -30,7 +30,7 @@ open class TooltipView: UIView {
 
             let outlinePath = self.buildOutlinePath(
                 bounds: view.bounds,
-                tailReferenceView: tailReferenceView
+                tailReferenceView: tailReferenceView,
             )
 
             let maskingLayer = CAShapeLayer()
@@ -65,7 +65,7 @@ open class TooltipView: UIView {
         fromView: UIView,
         widthReferenceView: UIView,
         tailReferenceView: UIView,
-        wasTappedBlock: (() -> Void)?
+        wasTappedBlock: (() -> Void)?,
     ) {
         self.tailReferenceView = tailReferenceView
         self.wasTappedBlock = wasTappedBlock
@@ -75,11 +75,11 @@ open class TooltipView: UIView {
         setupContents(
             fromView: fromView,
             widthReferenceView: widthReferenceView,
-            tailReferenceView: tailReferenceView
+            tailReferenceView: tailReferenceView,
         )
     }
 
-    required public init?(coder aDecoder: NSCoder) { owsFail("Not implemented!") }
+    public required init?(coder aDecoder: NSCoder) { owsFail("Not implemented!") }
 
     // MARK: - Overrides
 
@@ -133,7 +133,7 @@ open class TooltipView: UIView {
     private func setupContents(
         fromView: UIView,
         widthReferenceView: UIView,
-        tailReferenceView: UIView
+        tailReferenceView: UIView,
     ) {
         layoutMargins = .zero
 
@@ -145,13 +145,13 @@ open class TooltipView: UIView {
         isUserInteractionEnabled = true
         addGestureRecognizer(UITapGestureRecognizer(
             target: self,
-            action: #selector(handleTap)
+            action: #selector(handleTap),
         ))
 
         setupRelationshipWithSuperview(
             superview: fromView,
             tailReferenceView: tailReferenceView,
-            widthReferenceView: widthReferenceView
+            widthReferenceView: widthReferenceView,
         )
         setupContentView()
     }
@@ -181,7 +181,7 @@ open class TooltipView: UIView {
     open func setupRelationshipWithSuperview(
         superview: UIView,
         tailReferenceView: UIView,
-        widthReferenceView: UIView
+        widthReferenceView: UIView,
     ) {
         superview.addSubview(self)
 
@@ -243,7 +243,7 @@ open class TooltipView: UIView {
     /// given bounds.
     private func buildOutlinePath(
         bounds originalBubbleBounds: CGRect,
-        tailReferenceView: UIView
+        tailReferenceView: UIView,
     ) -> CGPath {
         let bezierPath = UIBezierPath()
 
@@ -258,7 +258,7 @@ open class TooltipView: UIView {
 
         bezierPath.append(UIBezierPath(
             roundedRect: bubbleBounds,
-            cornerRadius: bubbleRounding
+            cornerRadius: bubbleRounding,
         ))
 
         // Tail, which tries to point to the tail reference view.

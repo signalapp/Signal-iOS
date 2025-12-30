@@ -71,7 +71,7 @@ struct ExpirationJobTest {
                 },
                 onDidStop: { job in
                     testIsRunning.set(false)
-                }
+                },
             ),
         )
 
@@ -113,7 +113,7 @@ struct ExpirationJobTest {
                     } else {
                         testIsRunning.set(false)
                     }
-                }
+                },
             ),
         )
 

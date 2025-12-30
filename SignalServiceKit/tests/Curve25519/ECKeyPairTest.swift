@@ -35,10 +35,10 @@ final class ECKeyPairTest: XCTestCase {
         let keyPair = ECKeyPair(IdentityKeyPair(publicKey: privateKey.publicKey, privateKey: privateKey))
 
         let encodedData = try XCTUnwrap(Data(
-            base64Encoded: "YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGjCwwTVSRudWxs0w0ODxAREl8QFVRTRUNLZXlQYWlyUHJpdmF0ZUtleV8QFFRTRUNLZXlQYWlyUHVibGljS2V5ViRjbGFzc08QIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABBTxAg/TOE4TKtAqVsePRVR+5AA43HkAK5DSntkOCO7nYq5xWAAtIUFRYXWiRjbGFzc25hbWVYJGNsYXNzZXNZRUNLZXlQYWlyohYYWE5TT2JqZWN0AAgAEQAaACQAKQAyADcASQBMAFEAUwBXAF0AZAB8AJMAmgC9AOAA4gDnAPIA+wEFAQgAAAAAAAACAQAAAAAAAAAZAAAAAAAAAAAAAAAAAAABEQ=="
+            base64Encoded: "YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGjCwwTVSRudWxs0w0ODxAREl8QFVRTRUNLZXlQYWlyUHJpdmF0ZUtleV8QFFRTRUNLZXlQYWlyUHVibGljS2V5ViRjbGFzc08QIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABBTxAg/TOE4TKtAqVsePRVR+5AA43HkAK5DSntkOCO7nYq5xWAAtIUFRYXWiRjbGFzc25hbWVYJGNsYXNzZXNZRUNLZXlQYWlyohYYWE5TT2JqZWN0AAgAEQAaACQAKQAyADcASQBMAFEAUwBXAF0AZAB8AJMAmgC9AOAA4gDnAPIA+wEFAQgAAAAAAAACAQAAAAAAAAAZAAAAAAAAAAAAAAAAAAABEQ==",
         ))
         let decodedKeyPair = try XCTUnwrap(
-            NSKeyedUnarchiver.unarchivedObject(ofClass: ECKeyPair.self, from: encodedData, requiringSecureCoding: true)
+            NSKeyedUnarchiver.unarchivedObject(ofClass: ECKeyPair.self, from: encodedData, requiringSecureCoding: true),
         )
 
         XCTAssertEqual(decodedKeyPair.identityKeyPair.privateKey.serialize(), keyPair.identityKeyPair.privateKey.serialize())
@@ -55,7 +55,7 @@ final class ECKeyPairTest: XCTestCase {
         for encodedValue in encodedValues {
             let encodedData = try XCTUnwrap(Data(base64Encoded: encodedValue))
             XCTAssertNil(
-                try NSKeyedUnarchiver.unarchivedObject(ofClass: ECKeyPair.self, from: encodedData, requiringSecureCoding: true)
+                try NSKeyedUnarchiver.unarchivedObject(ofClass: ECKeyPair.self, from: encodedData, requiringSecureCoding: true),
             )
         }
     }

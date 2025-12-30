@@ -70,7 +70,7 @@ public protocol AttachmentContentValidator {
         dataSource: DataSourcePath,
         mimeType: String,
         renderingFlag: AttachmentReference.RenderingFlag,
-        sourceFilename: String?
+        sourceFilename: String?,
     ) async throws -> PendingAttachment
 
     /// Validate and prepare a Data's contents, based on the provided mimetype.
@@ -81,7 +81,7 @@ public protocol AttachmentContentValidator {
         data: Data,
         mimeType: String,
         renderingFlag: AttachmentReference.RenderingFlag,
-        sourceFilename: String?
+        sourceFilename: String?,
     ) async throws -> PendingAttachment
 
     /// Validate and prepare an encrypted attachment file's contents, based on the provided mimetype.
@@ -99,7 +99,7 @@ public protocol AttachmentContentValidator {
         integrityCheck: AttachmentIntegrityCheck,
         mimeType: String,
         renderingFlag: AttachmentReference.RenderingFlag,
-        sourceFilename: String?
+        sourceFilename: String?,
     ) async throws -> PendingAttachment
 
     /// Just validate an encrypted attachment file's contents, based on the provided mimetype.
@@ -109,7 +109,7 @@ public protocol AttachmentContentValidator {
         ofEncryptedFileAt fileUrl: URL,
         attachmentKey: AttachmentKey,
         plaintextLength: UInt32,
-        mimeType: String
+        mimeType: String,
     ) async throws -> RevalidatedAttachment
 
     /// Validate and prepare a backup media file's contents, based on the provided mimetype.
@@ -119,7 +119,7 @@ public protocol AttachmentContentValidator {
     ///
     /// Unlike attachments from the live service, integrityCheck is not required; we can guarantee
     /// correctness for backup media files since they come from the local user.
-    /// 
+    ///
     /// Unlike transit tier attachments, backup attachments are encrypted twice: once when uploaded
     /// to the transit tier, and again when copied to the media tier.  This means validating media tier
     /// attachments required decrypting the file twice to allow validating the actual contents of the attachment.
@@ -138,7 +138,7 @@ public protocol AttachmentContentValidator {
         finalAttachmentKey: AttachmentKey,
         mimeType: String,
         renderingFlag: AttachmentReference.RenderingFlag,
-        sourceFilename: String?
+        sourceFilename: String?,
     ) async throws -> PendingAttachment
 
     /// Truncates the provided message body if necessary for inlining in a message,
@@ -152,7 +152,7 @@ public protocol AttachmentContentValidator {
     /// If you're not already in a write tx, you should use prepareOversizeTextsIfNeeded).
     func truncatedMessageBodyForInlining(
         _ body: MessageBody,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) -> ValidatedInlineMessageBody
 
     /// If the provided message body is large enough to require an oversize text
@@ -177,7 +177,7 @@ public protocol AttachmentContentValidator {
     /// Build a `PendingAttachment` for a reply to a message with the provided attachment stream.
     /// Throws an error if the provided attachment is non-visual, or if data reading/writing fails.
     func prepareQuotedReplyThumbnail(
-        fromOriginalAttachmentStream: AttachmentStream
+        fromOriginalAttachmentStream: AttachmentStream,
     ) async throws -> PendingAttachment
 }
 
@@ -188,7 +188,7 @@ extension AttachmentContentValidator {
     ) async throws -> ValidatedMessageBody {
         return try await prepareOversizeTextsIfNeeded(
             from: ["": body],
-            attachmentKeys: [:]
+            attachmentKeys: [:],
         ).values.first!
     }
 }

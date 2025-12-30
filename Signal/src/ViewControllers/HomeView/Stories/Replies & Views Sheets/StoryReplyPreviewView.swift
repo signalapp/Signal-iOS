@@ -53,7 +53,8 @@ class StoryReplyPreviewView: UIView {
         if quotedReplyModel.originalContent.isStory {
             let format = OWSLocalizedString(
                 "QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT",
-                comment: "Message header when you are quoting a story. Embeds {{ story author name }}")
+                comment: "Message header when you are quoting a story. Embeds {{ story author name }}",
+            )
             authorText = String.localizedStringWithFormat(format, authorName)
         } else {
             authorText = authorName
@@ -117,28 +118,33 @@ class StoryReplyPreviewView: UIView {
     }
 
     func description(forMimeType mimeType: String?) -> String {
-        if let mimeType = mimeType, MimeTypeUtil.isSupportedVideoMimeType(mimeType) {
+        if let mimeType, MimeTypeUtil.isSupportedVideoMimeType(mimeType) {
             return OWSLocalizedString(
                 "QUOTED_REPLY_TYPE_VIDEO",
-                comment: "Indicates this message is a quoted reply to a video file.")
-        } else if let mimeType = mimeType, MimeTypeUtil.isSupportedDefinitelyAnimatedMimeType(mimeType) {
+                comment: "Indicates this message is a quoted reply to a video file.",
+            )
+        } else if let mimeType, MimeTypeUtil.isSupportedDefinitelyAnimatedMimeType(mimeType) {
             if mimeType.caseInsensitiveCompare(MimeType.imageGif.rawValue) == .orderedSame {
                 return OWSLocalizedString(
                     "QUOTED_REPLY_TYPE_GIF",
-                    comment: "Indicates this message is a quoted reply to animated GIF file.")
+                    comment: "Indicates this message is a quoted reply to animated GIF file.",
+                )
             } else {
                 return OWSLocalizedString(
                     "QUOTED_REPLY_TYPE_IMAGE",
-                    comment: "Indicates this message is a quoted reply to an image file.")
+                    comment: "Indicates this message is a quoted reply to an image file.",
+                )
             }
-        } else if let mimeType = mimeType, MimeTypeUtil.isSupportedImageMimeType(mimeType) {
+        } else if let mimeType, MimeTypeUtil.isSupportedImageMimeType(mimeType) {
             return OWSLocalizedString(
                 "QUOTED_REPLY_TYPE_PHOTO",
-                comment: "Indicates this message is a quoted reply to a photo file.")
+                comment: "Indicates this message is a quoted reply to a photo file.",
+            )
         } else {
             return OWSLocalizedString(
                 "QUOTED_REPLY_TYPE_ATTACHMENT",
-                comment: "Indicates this message is a quoted reply to an attachment of unknown type.")
+                comment: "Indicates this message is a quoted reply to an attachment of unknown type.",
+            )
         }
     }
 }

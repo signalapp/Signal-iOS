@@ -33,10 +33,13 @@ class VideoEditorView: UIView {
         playerView.delegate = self
         return playerView
     }()
+
     private lazy var playButton: UIButton = {
         let playButton = RoundMediaButton(image: UIImage(imageLiteralResourceName: "play-fill-32"), backgroundStyle: .blur)
-        playButton.accessibilityLabel = OWSLocalizedString("PLAY_BUTTON_ACCESSABILITY_LABEL",
-                                                           comment: "Accessibility label for button to start media playback")
+        playButton.accessibilityLabel = OWSLocalizedString(
+            "PLAY_BUTTON_ACCESSABILITY_LABEL",
+            comment: "Accessibility label for button to start media playback",
+        )
         // this makes the blur circle 72 pts in diameter
         playButton.ows_contentEdgeInsets = UIEdgeInsets(margin: 26)
         // play button must be slightly off-center to appear centered
@@ -45,10 +48,12 @@ class VideoEditorView: UIView {
         return playButton
     }()
 
-    init(model: VideoEditorModel,
-         delegate: VideoEditorViewDelegate,
-         dataSource: VideoEditorDataSource,
-         viewControllerProvider: VideoEditorViewControllerProviding) {
+    init(
+        model: VideoEditorModel,
+        delegate: VideoEditorViewDelegate,
+        dataSource: VideoEditorDataSource,
+        viewControllerProvider: VideoEditorViewControllerProviding,
+    ) {
 
         self.model = model
         self.delegate = delegate
@@ -85,8 +90,10 @@ class VideoEditorView: UIView {
         addSubview(view)
         // This emulates the behavior of contentMode = .scaleAspectFit using iOS auto layout constraints.
         addConstraints({
-            let constraints = [ view.centerXAnchor.constraint(equalTo: centerXAnchor),
-                                view.centerYAnchor.constraint(equalTo: centerYAnchor) ]
+            let constraints = [
+                view.centerXAnchor.constraint(equalTo: centerXAnchor),
+                view.centerYAnchor.constraint(equalTo: centerYAnchor),
+            ]
             constraints.forEach { $0.priority = .defaultHigh - 100 }
             return constraints
         }())

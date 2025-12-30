@@ -58,7 +58,7 @@ public class TSMessageBuilder: NSObject {
         linkPreview: OWSLinkPreview?,
         messageSticker: MessageSticker?,
         giftBadge: OWSGiftBadge?,
-        isPoll: Bool
+        isPoll: Bool,
     ) {
         let nowMs = NSDate.ows_millisecondTimeStamp()
 
@@ -111,7 +111,7 @@ public class TSMessageBuilder: NSObject {
         linkPreview: OWSLinkPreview? = nil,
         messageSticker: MessageSticker? = nil,
         giftBadge: OWSGiftBadge? = nil,
-        isPoll: Bool = false
+        isPoll: Bool = false,
     ) -> TSMessageBuilder {
         return TSMessageBuilder(
             thread: thread,
@@ -134,7 +134,7 @@ public class TSMessageBuilder: NSObject {
             linkPreview: linkPreview,
             messageSticker: messageSticker,
             giftBadge: giftBadge,
-            isPoll: isPoll
+            isPoll: isPoll,
         )
     }
 

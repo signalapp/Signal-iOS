@@ -18,8 +18,8 @@ class ProvisioningPermissionsViewController: ProvisioningBaseViewController {
                 requestingContactsAuthorization: false,
                 permissionTask: { [weak self] in
                     await self?.requestPermissions()
-                }
-            )
+                },
+            ),
         )
         addChild(hostingController)
         view.addSubview(hostingController.view)

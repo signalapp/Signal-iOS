@@ -10,11 +10,11 @@ public class CircleButton: OWSButton {
     // MARK: - Init
 
     @available(*, unavailable, message: "Use other constructor")
-    required public init?(coder aDecoder: NSCoder) {
+    public required init?(coder aDecoder: NSCoder) {
         fatalError("Use other constructor")
     }
 
-    public override init(block: @escaping () -> Void) {
+    override public init(block: @escaping () -> Void) {
         super.init(block: block)
 
         configureConstraints()

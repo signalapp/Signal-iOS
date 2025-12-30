@@ -14,7 +14,7 @@ public class AttachmentViewOnceManagerImpl: AttachmentViewOnceManager {
     public init(
         attachmentStore: AttachmentStore,
         db: any DB,
-        interactionStore: InteractionStore
+        interactionStore: InteractionStore,
     ) {
         self.attachmentStore = attachmentStore
         self.db = db
@@ -49,7 +49,7 @@ public class AttachmentViewOnceManagerImpl: AttachmentViewOnceManager {
                 ViewOnceMessages.markAsComplete(
                     message: message,
                     sendSyncMessages: true,
-                    transaction: tx
+                    transaction: tx,
                 )
             }
         }
@@ -57,7 +57,7 @@ public class AttachmentViewOnceManagerImpl: AttachmentViewOnceManager {
         let attachment = db.read { tx in
             return attachmentStore.fetchFirstReferencedAttachment(
                 for: .messageBodyAttachment(messageRowId: messageRowId),
-                tx: tx
+                tx: tx,
             )
         }
         guard let attachmentStream = attachment?.asReferencedStream else {
@@ -131,7 +131,7 @@ public class AttachmentViewOnceManagerImpl: AttachmentViewOnceManager {
             fileUrl: tempFileUrl,
             encryptionKey: attachmentStream.attachmentStream.attachment.encryptionKey,
             plaintextLength: attachmentStream.attachmentStream.info.unencryptedByteCount,
-            mimeType: attachmentStream.attachmentStream.mimeType
+            mimeType: attachmentStream.attachmentStream.mimeType,
         )
     }
 }

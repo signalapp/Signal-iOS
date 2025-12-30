@@ -17,7 +17,7 @@ final class BackupArchiveIndividualCallArchiver {
     init(
         callRecordStore: CallRecordStore,
         individualCallRecordManager: IndividualCallRecordManager,
-        interactionStore: BackupArchiveInteractionStore
+        interactionStore: BackupArchiveInteractionStore,
     ) {
         self.callRecordStore = callRecordStore
         self.individualCallRecordManager = individualCallRecordManager
@@ -27,11 +27,11 @@ final class BackupArchiveIndividualCallArchiver {
     func archiveIndividualCall(
         _ individualCallInteraction: TSCall,
         threadInfo: BackupArchive.ChatArchivingContext.CachedThreadInfo,
-        context: BackupArchive.ChatArchivingContext
+        context: BackupArchive.ChatArchivingContext,
     ) -> ArchiveChatUpdateMessageResult {
         let associatedCallRecord: CallRecord? = callRecordStore.fetch(
             interactionRowId: individualCallInteraction.sqliteRowId!,
-            tx: context.tx
+            tx: context.tx,
         )
 
         var individualCallUpdate = BackupProto_IndividualCall()
@@ -44,16 +44,16 @@ final class BackupArchiveIndividualCallArchiver {
         individualCallUpdate.direction = { () -> BackupProto_IndividualCall.Direction in
             switch individualCallInteraction.callType {
             case
-                    .incoming,
-                    .incomingIncomplete,
-                    .incomingMissed,
-                    .incomingMissedBecauseOfChangedIdentity,
-                    .incomingMissedBecauseOfDoNotDisturb,
-                    .incomingMissedBecauseBlockedSystemContact,
-                    .incomingDeclined,
-                    .incomingDeclinedElsewhere,
-                    .incomingAnsweredElsewhere,
-                    .incomingBusyElsewhere:
+                .incoming,
+                .incomingIncomplete,
+                .incomingMissed,
+                .incomingMissedBecauseOfChangedIdentity,
+                .incomingMissedBecauseOfDoNotDisturb,
+                .incomingMissedBecauseBlockedSystemContact,
+                .incomingDeclined,
+                .incomingDeclinedElsewhere,
+                .incomingAnsweredElsewhere,
+                .incomingBusyElsewhere:
                 return .incoming
             case .outgoing, .outgoingIncomplete, .outgoingMissed:
                 return .outgoing
@@ -64,22 +64,22 @@ final class BackupArchiveIndividualCallArchiver {
         individualCallUpdate.state = { () -> BackupProto_IndividualCall.State in
             switch individualCallInteraction.callType {
             case
-                    .incoming,
-                    .incomingAnsweredElsewhere,
-                    .outgoing:
+                .incoming,
+                .incomingAnsweredElsewhere,
+                .outgoing:
                 return .accepted
             case
-                    .outgoingIncomplete,
-                    .incomingIncomplete,
-                    .incomingDeclined,
-                    .incomingDeclinedElsewhere,
-                    .incomingBusyElsewhere:
+                .outgoingIncomplete,
+                .incomingIncomplete,
+                .incomingDeclined,
+                .incomingDeclinedElsewhere,
+                .incomingBusyElsewhere:
                 return .notAccepted
             case
-                    .incomingMissed,
-                    .incomingMissedBecauseOfChangedIdentity,
-                    .incomingMissedBecauseBlockedSystemContact,
-                    .outgoingMissed:
+                .incomingMissed,
+                .incomingMissedBecauseOfChangedIdentity,
+                .incomingMissedBecauseBlockedSystemContact,
+                .outgoingMissed:
                 return .missed
             case .incomingMissedBecauseOfDoNotDisturb:
                 return .missedNotificationProfile
@@ -136,7 +136,7 @@ final class BackupArchiveIndividualCallArchiver {
             isSmsPreviouslyRestoredFromBackup: false,
             threadInfo: threadInfo,
             pinMessageDetails: nil,
-            context: context.recipientContext
+            context: context.recipientContext,
         ).bubbleUp(Details.self, partialErrors: &partialErrors) {
         case .continue(let details):
             if partialErrors.isEmpty {
@@ -153,7 +153,7 @@ final class BackupArchiveIndividualCallArchiver {
         _ individualCall: BackupProto_IndividualCall,
         chatItem: BackupProto_ChatItem,
         chatThread: BackupArchive.ChatThread,
-        context: BackupArchive.ChatItemRestoringContext
+        context: BackupArchive.ChatItemRestoringContext,
     ) -> RestoreChatUpdateMessageResult {
         let contactThread: TSContactThread
         switch chatThread.threadType {
@@ -162,7 +162,7 @@ final class BackupArchiveIndividualCallArchiver {
         case .groupV2:
             return .messageFailure([.restoreFrameError(
                 .invalidProtoData(.individualCallNotInContactThread),
-                chatItem.id
+                chatItem.id,
             )])
         }
 
@@ -232,7 +232,7 @@ final class BackupArchiveIndividualCallArchiver {
             callType: callInteractionType,
             offerType: callInteractionOfferType,
             thread: contactThread,
-            sentAtTimestamp: chatItem.dateSent
+            sentAtTimestamp: chatItem.dateSent,
         )
         individualCallInteraction.wasRead = individualCall.read
 
@@ -243,7 +243,7 @@ final class BackupArchiveIndividualCallArchiver {
                 chatId: chatItem.typedChatId,
                 callerAci: callerAci,
                 wasRead: individualCall.read,
-                context: context
+                context: context,
             )
         } catch let error {
             return .messageFailure([.restoreFrameError(.databaseInsertionFailed(error), chatItem.id)])
@@ -263,7 +263,7 @@ final class BackupArchiveIndividualCallArchiver {
                     individualCallStatus: callRecordStatus,
                     callEventTimestamp: individualCall.startedCallTimestamp,
                     shouldSendSyncMessage: false,
-                    tx: context.tx
+                    tx: context.tx,
                 )
                 if individualCall.read {
                     try callRecordStore.markAsRead(callRecord: callRecord, tx: context.tx)

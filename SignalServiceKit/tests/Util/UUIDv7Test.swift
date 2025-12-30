@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-@testable import SignalServiceKit
 import Testing
+@testable import SignalServiceKit
 
 struct UUIDv7Test {
     @Test
@@ -13,7 +13,7 @@ struct UUIDv7Test {
         let timestamps = [
             MessageTimestampGenerator.sharedInstance.generateTimestamp(),
             MessageTimestampGenerator.sharedInstance.generateTimestamp(),
-            MessageTimestampGenerator.sharedInstance.generateTimestamp()
+            MessageTimestampGenerator.sharedInstance.generateTimestamp(),
         ]
 
         let uuids: [UUID] = timestamps.map { .v7(timestamp: $0) }

@@ -25,7 +25,7 @@ public extension Stripe {
                 cardNumber: String,
                 expirationMonth: UInt8,
                 expirationTwoDigitYear: UInt8,
-                cvv: String
+                cvv: String,
             ) {
                 self.cardNumber = cardNumber
                 self.expirationMonth = expirationMonth

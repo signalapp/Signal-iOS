@@ -22,11 +22,11 @@ public class ExperienceUpgradeFinder {
 
     public class func markAsComplete(
         experienceUpgradeManifest manifest: ExperienceUpgradeManifest,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) {
         markAsComplete(
             experienceUpgrade: ExperienceUpgrade.makeNew(withManifest: manifest),
-            transaction: transaction
+            transaction: transaction,
         )
     }
 
@@ -51,7 +51,7 @@ public class ExperienceUpgradeFinder {
     /// persisted record if one exists and is applicable, and an in-memory
     /// model otherwise.
     public class func allKnownExperienceUpgrades(
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> [ExperienceUpgrade] {
         var experienceUpgrades = [ExperienceUpgrade]()
         var localManifestsWithoutRecords = ExperienceUpgradeManifest.wellKnownLocalUpgradeManifests

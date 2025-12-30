@@ -26,7 +26,7 @@ extension XCTestCase {
     public func expect<T>(
         _ promise: Promise<T>,
         description: String,
-        timeout: TimeInterval
+        timeout: TimeInterval,
     ) -> Result<T, Error> {
         let expectation = self.expectation(description: description)
         var result: Result<T, Error>!
@@ -42,7 +42,7 @@ extension XCTestCase {
     public func expectSuccess<T>(
         _ promise: Promise<T>,
         description: String,
-        timeout: TimeInterval
+        timeout: TimeInterval,
     ) -> T {
         let expectation = self.expectation(description: description)
         var result: T!
@@ -63,7 +63,7 @@ extension XCTestCase {
     public func expectFailure<T>(
         _ promise: Promise<T>,
         description: String,
-        timeout: TimeInterval
+        timeout: TimeInterval,
     ) -> Error {
         let expectation = self.expectation(description: description)
         var result: Error!

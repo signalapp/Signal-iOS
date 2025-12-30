@@ -6,7 +6,7 @@
 import SignalServiceKit
 
 public class TappableView: UIView {
-    let actionBlock: (() -> Void)
+    let actionBlock: () -> Void
 
     // MARK: - Initializers
 

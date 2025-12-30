@@ -16,7 +16,7 @@ class TSOutgoingMessageTest: SSKBaseTest {
         SSKEnvironment.shared.databaseStorageRef.write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
                 localIdentifiers: .forUnitTests,
-                tx: tx
+                tx: tx,
             )
         }
         identityManager.generateAndPersistNewIdentityKey(for: .aci)
@@ -120,7 +120,8 @@ class TSOutgoingMessageTest: SSKBaseTest {
             let pniKeyPair = identityManager.identityKeyPair(for: .pni, tx: transaction)!.identityKeyPair
             XCTAssert(try! pniKeyPair.identityKey.verifyAlternateIdentity(
                 aciKeyPair.identityKey,
-                signature: content.pniSignatureMessage!.signature!))
+                signature: content.pniSignatureMessage!.signature!,
+            ))
         }
     }
 
@@ -146,7 +147,7 @@ class TSOutgoingMessageTest: SSKBaseTest {
                 recipientAci: otherAci,
                 recipientDeviceId: DeviceId(validating: 1)!,
                 message: message,
-                tx: transaction
+                tx: transaction,
             )
 
             // Nothing changed yet...
@@ -157,7 +158,7 @@ class TSOutgoingMessageTest: SSKBaseTest {
                 deviceId: DeviceId(validating: 1)!,
                 deliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
                 context: PassthroughDeliveryReceiptContext(),
-                tx: transaction
+                tx: transaction,
             )
 
             XCTAssertFalse(identityManager.shouldSharePhoneNumber(with: otherAci, tx: transaction))
@@ -186,14 +187,14 @@ class TSOutgoingMessageTest: SSKBaseTest {
                 recipientAci: otherAci,
                 recipientDeviceId: DeviceId(validating: 1)!,
                 message: message,
-                tx: transaction
+                tx: transaction,
             )
             messageSendLog.recordPendingDelivery(
                 payloadId: payloadId,
                 recipientAci: otherAci,
                 recipientDeviceId: DeviceId(validating: 2)!,
                 message: message,
-                tx: transaction
+                tx: transaction,
             )
 
             // Nothing changed yet...
@@ -204,7 +205,7 @@ class TSOutgoingMessageTest: SSKBaseTest {
                 deviceId: DeviceId(validating: 1)!,
                 deliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
                 context: PassthroughDeliveryReceiptContext(),
-                tx: transaction
+                tx: transaction,
             )
 
             // Still waiting on device #2!
@@ -215,7 +216,7 @@ class TSOutgoingMessageTest: SSKBaseTest {
                 deviceId: DeviceId(validating: 2)!,
                 deliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
                 context: PassthroughDeliveryReceiptContext(),
-                tx: transaction
+                tx: transaction,
             )
 
             // There we go.
@@ -245,7 +246,7 @@ class TSOutgoingMessageTest: SSKBaseTest {
                 recipientAci: otherAci,
                 recipientDeviceId: DeviceId(validating: 1)!,
                 message: message,
-                tx: transaction
+                tx: transaction,
             )
 
             // Nothing changed yet...
@@ -256,7 +257,7 @@ class TSOutgoingMessageTest: SSKBaseTest {
                 deviceId: DeviceId(validating: 1)!,
                 deliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
                 context: PassthroughDeliveryReceiptContext(),
-                tx: transaction
+                tx: transaction,
             )
 
             // Still not changed!
@@ -285,7 +286,7 @@ class TSOutgoingMessageTest: SSKBaseTest {
                 recipientAci: otherAci,
                 recipientDeviceId: DeviceId(validating: 1)!,
                 message: message,
-                tx: transaction
+                tx: transaction,
             )
 
             // If we set it now...
@@ -297,7 +298,7 @@ class TSOutgoingMessageTest: SSKBaseTest {
                 deviceId: DeviceId(validating: 1)!,
                 deliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
                 context: PassthroughDeliveryReceiptContext(),
-                tx: transaction
+                tx: transaction,
             )
 
             // ...it should stay active.
@@ -329,7 +330,7 @@ class TSOutgoingMessageTest: SSKBaseTest {
                 recipientAci: otherAci,
                 recipientDeviceId: DeviceId(validating: 1)!,
                 message: message,
-                tx: transaction
+                tx: transaction,
             )
         }
 
@@ -341,9 +342,9 @@ class TSOutgoingMessageTest: SSKBaseTest {
                 localIdentifiers: .init(
                     aci: aci,
                     pni: Pni.randomForTesting(),
-                    e164: .init("+17775550199")!
+                    e164: .init("+17775550199")!,
                 ),
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -357,7 +358,7 @@ class TSOutgoingMessageTest: SSKBaseTest {
                 deviceId: DeviceId(validating: 1)!,
                 deliveryTimestamp: NSDate.ows_millisecondTimeStamp(),
                 context: PassthroughDeliveryReceiptContext(),
-                tx: transaction
+                tx: transaction,
             )
 
             // Still on, because our PNI changed!

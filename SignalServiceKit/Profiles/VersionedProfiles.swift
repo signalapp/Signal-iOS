@@ -31,7 +31,7 @@ public protocol VersionedProfiles: AnyObject {
         profileAvatarMutation: VersionedProfileAvatarMutation,
         visibleBadgeIds: [String],
         profileKey: Aes256Key,
-        authedAccount: AuthedAccount
+        authedAccount: AuthedAccount,
     ) async throws -> VersionedProfileUpdate
 
     func versionedProfileRequest(
@@ -39,17 +39,17 @@ public protocol VersionedProfiles: AnyObject {
         profileKey: ProfileKey,
         shouldRequestCredential: Bool,
         udAccessKey: SMKUDAccessKey?,
-        auth: ChatServiceAuth
+        auth: ChatServiceAuth,
     ) throws -> VersionedProfileRequest
 
     func validProfileKeyCredential(
         for aci: Aci,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) throws -> ExpiringProfileKeyCredential?
 
     func didFetchProfile(
         profile: SignalServiceProfile,
-        profileRequest: VersionedProfileRequest
+        profileRequest: VersionedProfileRequest,
     ) async
 
     func clearProfileKeyCredentials(tx: DBWriteTransaction)
@@ -85,7 +85,7 @@ public class MockVersionedProfiles: VersionedProfiles {
         profileKey: ProfileKey,
         shouldRequestCredential: Bool,
         udAccessKey: SMKUDAccessKey?,
-        auth: ChatServiceAuth
+        auth: ChatServiceAuth,
     ) throws -> VersionedProfileRequest {
         owsFail("Not implemented.")
     }
@@ -100,13 +100,15 @@ public class MockVersionedProfiles: VersionedProfiles {
         profileAvatarMutation: VersionedProfileAvatarMutation,
         visibleBadgeIds: [String],
         profileKey: Aes256Key,
-        authedAccount: AuthedAccount
+        authedAccount: AuthedAccount,
     ) async throws -> VersionedProfileUpdate {
         owsFail("Not implemented.")
     }
 
-    public func validProfileKeyCredential(for aci: Aci,
-                                          transaction: DBReadTransaction) throws -> ExpiringProfileKeyCredential? {
+    public func validProfileKeyCredential(
+        for aci: Aci,
+        transaction: DBReadTransaction,
+    ) throws -> ExpiringProfileKeyCredential? {
         owsFail("Not implemented")
     }
 }

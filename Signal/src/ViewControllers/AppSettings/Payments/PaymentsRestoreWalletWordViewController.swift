@@ -19,12 +19,16 @@ public class PaymentsRestoreWalletWordViewController: OWSViewController {
     private var wordText: String? {
         textfield.text?.strippedOrNil?.lowercased()
     }
+
     private var hasValidWord: Bool {
         isValidWord(wordText)
     }
+
     private func isValidWord(_ wordText: String?) -> Bool {
-        guard let wordText = wordText,
-              !wordText.isEmpty else {
+        guard
+            let wordText,
+            !wordText.isEmpty
+        else {
             return false
         }
         return SUIEnvironment.shared.paymentsSwiftRef.isValidPassphraseWord(wordText)
@@ -32,9 +36,11 @@ public class PaymentsRestoreWalletWordViewController: OWSViewController {
 
     private let warningLabel = UILabel()
 
-    public init(restoreWalletDelegate: PaymentsRestoreWalletDelegate,
-                partialPassphrase: PartialPaymentsPassphrase,
-                wordIndex: Int) {
+    public init(
+        restoreWalletDelegate: PaymentsRestoreWalletDelegate,
+        partialPassphrase: PartialPaymentsPassphrase,
+        wordIndex: Int,
+    ) {
         self.restoreWalletDelegate = restoreWalletDelegate
         self.partialPassphrase = partialPassphrase
         self.wordIndex = wordIndex
@@ -49,11 +55,13 @@ public class PaymentsRestoreWalletWordViewController: OWSViewController {
         textfield.text = nil
     }
 
-    public override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
 
-        title = OWSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_TITLE",
-                                  comment: "Title for the 'restore payments wallet' view of the app settings.")
+        title = OWSLocalizedString(
+            "SETTINGS_PAYMENTS_RESTORE_WALLET_TITLE",
+            comment: "Title for the 'restore payments wallet' view of the app settings.",
+        )
 
         OWSTableViewController2.removeBackButtonText(viewController: self)
 
@@ -71,19 +79,19 @@ public class PaymentsRestoreWalletWordViewController: OWSViewController {
         updateContents()
     }
 
-    public override func viewWillAppear(_ animated: Bool) {
+    override public func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
         textfield.becomeFirstResponder()
     }
 
-    public override func viewDidAppear(_ animated: Bool) {
+    override public func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
         textfield.becomeFirstResponder()
     }
 
-    public override func themeDidChange() {
+    override public func themeDidChange() {
         super.themeDidChange()
 
         updateContents()
@@ -96,14 +104,18 @@ public class PaymentsRestoreWalletWordViewController: OWSViewController {
         view.backgroundColor = OWSTableViewController2.tableBackgroundColor(isUsingPresentedStyle: true)
 
         let titleLabel = UILabel()
-        titleLabel.text = OWSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_TITLE",
-                                            comment: "Title for the 'enter word' step of the 'restore payments wallet' views.")
+        titleLabel.text = OWSLocalizedString(
+            "SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_TITLE",
+            comment: "Title for the 'enter word' step of the 'restore payments wallet' views.",
+        )
         titleLabel.font = UIFont.dynamicTypeTitle2Clamped.semibold()
         titleLabel.textColor = Theme.primaryTextColor
         titleLabel.textAlignment = .center
 
-        let instructionsFormat = OWSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INSTRUCTIONS_FORMAT",
-                                                   comment: "Format for the instructions for the 'enter word' step of the 'restore payments wallet' views. Embeds {{ the index of the current word }}.")
+        let instructionsFormat = OWSLocalizedString(
+            "SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INSTRUCTIONS_FORMAT",
+            comment: "Format for the instructions for the 'enter word' step of the 'restore payments wallet' views. Embeds {{ the index of the current word }}.",
+        )
         let instructions = String(format: instructionsFormat, OWSFormat.formatInt(wordIndex + 1))
 
         let instructionsLabel = UILabel()
@@ -115,7 +127,7 @@ public class PaymentsRestoreWalletWordViewController: OWSViewController {
         let topStack = UIStackView(arrangedSubviews: [
             titleLabel,
             UIView.spacer(withHeight: 10),
-            instructionsLabel
+            instructionsLabel,
         ])
         topStack.axis = .vertical
         topStack.alignment = .center
@@ -135,42 +147,56 @@ public class PaymentsRestoreWalletWordViewController: OWSViewController {
         textfield.addTarget(self, action: #selector(textfieldDidChange), for: .editingChanged)
         textfield.delegate = self
 
-        let placeholderFormat = OWSLocalizedString("SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_PLACEHOLDER_FORMAT",
-                                                  comment: "Format for the placeholder text in the 'confirm payments passphrase' view of the app settings. Embeds: {{ the index of the word }}.")
-        let placeholder = NSAttributedString(string: String(format: placeholderFormat,
-                                                            OWSFormat.formatInt(wordIndex + 1)),
-                                             attributes: [
-                                                .foregroundColor: Theme.secondaryTextAndIconColor
-                                             ])
+        let placeholderFormat = OWSLocalizedString(
+            "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_CONFIRM_PLACEHOLDER_FORMAT",
+            comment: "Format for the placeholder text in the 'confirm payments passphrase' view of the app settings. Embeds: {{ the index of the word }}.",
+        )
+        let placeholder = NSAttributedString(
+            string: String(
+                format: placeholderFormat,
+                OWSFormat.formatInt(wordIndex + 1),
+            ),
+            attributes: [
+                .foregroundColor: Theme.secondaryTextAndIconColor,
+            ],
+        )
         textfield.attributedPlaceholder = placeholder
 
-        let textfieldStack = UIStackView(arrangedSubviews: [ textfield ])
+        let textfieldStack = UIStackView(arrangedSubviews: [textfield])
         textfieldStack.axis = .vertical
         textfieldStack.alignment = .fill
         textfieldStack.isLayoutMarginsRelativeArrangement = true
-        textfieldStack.layoutMargins = UIEdgeInsets(hMargin: OWSTableViewController2.cellHInnerMargin,
-                                                    vMargin: OWSTableViewController2.cellVInnerMargin)
+        textfieldStack.layoutMargins = UIEdgeInsets(
+            hMargin: OWSTableViewController2.cellHInnerMargin,
+            vMargin: OWSTableViewController2.cellVInnerMargin,
+        )
         let backgroundColor = OWSTableViewController2.cellBackgroundColor(isUsingPresentedStyle: true)
-        textfieldStack.addBackgroundView(withBackgroundColor: backgroundColor,
-                                         cornerRadius: 10)
+        textfieldStack.addBackgroundView(
+            withBackgroundColor: backgroundColor,
+            cornerRadius: 10,
+        )
 
         warningLabel.text = " "
         warningLabel.font = .dynamicTypeCaption1
         warningLabel.textColor = .ows_accentRed
 
-        let warningStack = UIStackView(arrangedSubviews: [ warningLabel ])
+        let warningStack = UIStackView(arrangedSubviews: [warningLabel])
         warningStack.axis = .vertical
         warningStack.alignment = .fill
         warningStack.isLayoutMarginsRelativeArrangement = true
-        warningStack.layoutMargins = UIEdgeInsets(hMargin: OWSTableViewController2.cellHInnerMargin,
-                                                  vMargin: 0)
+        warningStack.layoutMargins = UIEdgeInsets(
+            hMargin: OWSTableViewController2.cellHInnerMargin,
+            vMargin: 0,
+        )
 
-        let nextButton = OWSFlatButton.button(title: CommonStrings.nextButton,
-                                              font: UIFont.dynamicTypeHeadline,
-                                              titleColor: .white,
-                                              backgroundColor: .ows_accentBlue,
-                                              target: self,
-                                              selector: #selector(didTapNextButton))
+        let nextButton = OWSFlatButton.button(
+            title: CommonStrings.nextButton,
+            font: UIFont.dynamicTypeHeadline,
+            titleColor: .white,
+            backgroundColor: .ows_accentBlue,
+            target: self,
+            selector: #selector(didTapNextButton),
+        )
         nextButton.autoSetHeightUsingFont()
 
         rootView.removeAllSubviews()
@@ -183,39 +209,49 @@ public class PaymentsRestoreWalletWordViewController: OWSViewController {
             warningStack,
             UIView.vStretchingSpacer(),
             nextButton,
-            UIView.spacer(withHeight: 8)
+            UIView.spacer(withHeight: 8),
         ])
-   }
+    }
 
     // MARK: - Events
 
     @objc
     private func didTapNextButton() {
-        guard let restoreWalletDelegate = restoreWalletDelegate else {
+        guard let restoreWalletDelegate else {
             owsFailDebug("Missing restoreWalletDelegate.")
             dismiss(animated: true, completion: nil)
             return
         }
-        guard let wordText = self.wordText,
-              isValidWord(wordText) else {
-            warningLabel.text = OWSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_WORD",
-                                                  comment: "Error indicating that the user has entered an invalid word in the 'enter word' step of the 'restore payments wallet' views.")
+        guard
+            let wordText = self.wordText,
+            isValidWord(wordText)
+        else {
+            warningLabel.text = OWSLocalizedString(
+                "SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_WORD",
+                comment: "Error indicating that the user has entered an invalid word in the 'enter word' step of the 'restore payments wallet' views.",
+            )
             return
         }
         partialPassphrase.set(word: wordText, index: wordIndex)
         if partialPassphrase.isComplete {
             guard let paymentsPassphrase = partialPassphrase.asPaymentsPassphrase() else {
-                OWSActionSheets.showErrorAlert(message: OWSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_PASSPHRASE",
-                                                                          comment: "Error indicating that the user has entered an invalid payments passphrase in the 'restore payments wallet' views."))
+                OWSActionSheets.showErrorAlert(message: OWSLocalizedString(
+                    "SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_PASSPHRASE",
+                    comment: "Error indicating that the user has entered an invalid payments passphrase in the 'restore payments wallet' views.",
+                ))
                 return
             }
-            let view = PaymentsRestoreWalletCompleteViewController(restoreWalletDelegate: restoreWalletDelegate,
-                                                                   passphrase: paymentsPassphrase)
+            let view = PaymentsRestoreWalletCompleteViewController(
+                restoreWalletDelegate: restoreWalletDelegate,
+                passphrase: paymentsPassphrase,
+            )
             navigationController?.pushViewController(view, animated: true)
         } else {
-            let view = PaymentsRestoreWalletWordViewController(restoreWalletDelegate: restoreWalletDelegate,
-                                                               partialPassphrase: partialPassphrase,
-                                                               wordIndex: wordIndex + 1)
+            let view = PaymentsRestoreWalletWordViewController(
+                restoreWalletDelegate: restoreWalletDelegate,
+                partialPassphrase: partialPassphrase,
+                wordIndex: wordIndex + 1,
+            )
             navigationController?.pushViewController(view, animated: true)
         }
     }

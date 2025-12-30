@@ -16,7 +16,7 @@ public struct FetchedSystemContacts {
 
     private init(
         phoneNumberToContactRef: [CanonicalPhoneNumber: SystemContactRef],
-        cnContactIdToContact: [String: SystemContact]
+        cnContactIdToContact: [String: SystemContact],
     ) {
         self.phoneNumberToContactRef = phoneNumberToContactRef
         self.cnContactIdToContact = cnContactIdToContact
@@ -25,7 +25,7 @@ public struct FetchedSystemContacts {
     static func parseContacts(
         _ orderedContacts: [SystemContact],
         phoneNumberUtil: PhoneNumberUtil,
-        localPhoneNumber: String?
+        localPhoneNumber: String?,
     ) -> FetchedSystemContacts {
         // A given Contact may have multiple phone numbers.
         var phoneNumberToContactRef = [CanonicalPhoneNumber: SystemContactRef]()
@@ -35,7 +35,7 @@ public struct FetchedSystemContacts {
             var parsedPhoneNumbers = Self._parsePhoneNumbers(
                 for: systemContact,
                 phoneNumberUtil: phoneNumberUtil,
-                localPhoneNumber: localPhoneNumber
+                localPhoneNumber: localPhoneNumber,
             )
             // Ignore any system contact records for the local contact. For the local
             // user we never want to show the avatar / name that you have entered for
@@ -54,25 +54,25 @@ public struct FetchedSystemContacts {
                 }
                 phoneNumberToContactRef[phoneNumber] = SystemContactRef(
                     cnContactId: systemContact.cnContactId,
-                    userProvidedLabel: parsedPhoneNumber.userProvidedLabel
+                    userProvidedLabel: parsedPhoneNumber.userProvidedLabel,
                 )
             }
         }
         return FetchedSystemContacts(
             phoneNumberToContactRef: phoneNumberToContactRef,
-            cnContactIdToContact: cnContactIdToContact
+            cnContactIdToContact: cnContactIdToContact,
         )
     }
 
     public static func parsePhoneNumbers(
         for systemContact: SystemContact,
         phoneNumberUtil: PhoneNumberUtil,
-        localPhoneNumber: CanonicalPhoneNumber?
+        localPhoneNumber: CanonicalPhoneNumber?,
     ) -> [CanonicalPhoneNumber] {
         return _parsePhoneNumbers(
             for: systemContact,
             phoneNumberUtil: phoneNumberUtil,
-            localPhoneNumber: localPhoneNumber
+            localPhoneNumber: localPhoneNumber,
         ).map { $0.canonicalValue }
     }
 
@@ -84,19 +84,19 @@ public struct FetchedSystemContacts {
     private static func _parsePhoneNumbers(
         for systemContact: SystemContact,
         phoneNumberUtil: PhoneNumberUtil,
-        localPhoneNumber: CanonicalPhoneNumber?
+        localPhoneNumber: CanonicalPhoneNumber?,
     ) -> [ParsedPhoneNumber] {
         var results = [ParsedPhoneNumber]()
         for (phoneNumber, phoneNumberLabel) in systemContact.phoneNumbers {
             let parsedPhoneNumbers = parsePhoneNumber(
                 phoneNumber,
                 phoneNumberUtil: phoneNumberUtil,
-                localPhoneNumber: localPhoneNumber
+                localPhoneNumber: localPhoneNumber,
             )
             for parsedPhoneNumber in parsedPhoneNumbers {
                 results.append(ParsedPhoneNumber(
                     canonicalValue: parsedPhoneNumber,
-                    userProvidedLabel: phoneNumberLabel ?? ""
+                    userProvidedLabel: phoneNumberLabel ?? "",
                 ))
             }
         }
@@ -106,11 +106,11 @@ public struct FetchedSystemContacts {
     public static func parsePhoneNumber(
         _ userTextPhoneNumber: String,
         phoneNumberUtil: PhoneNumberUtil,
-        localPhoneNumber: CanonicalPhoneNumber?
+        localPhoneNumber: CanonicalPhoneNumber?,
     ) -> [CanonicalPhoneNumber] {
         let phoneNumbers = phoneNumberUtil.parsePhoneNumbers(
             userSpecifiedText: userTextPhoneNumber,
-            localPhoneNumber: localPhoneNumber?.rawValue.stringValue
+            localPhoneNumber: localPhoneNumber?.rawValue.stringValue,
         )
         var results = [CanonicalPhoneNumber]()
         for phoneNumberObj in phoneNumbers {

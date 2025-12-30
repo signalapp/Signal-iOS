@@ -13,10 +13,12 @@ open class OWSStackView: UIStackView {
         public let spacing: CGFloat
         public let layoutMargins: UIEdgeInsets
 
-        public init(axis: NSLayoutConstraint.Axis,
-                    alignment: UIStackView.Alignment,
-                    spacing: CGFloat,
-                    layoutMargins: UIEdgeInsets) {
+        public init(
+            axis: NSLayoutConstraint.Axis,
+            alignment: UIStackView.Alignment,
+            spacing: CGFloat,
+            layoutMargins: UIEdgeInsets,
+        ) {
             self.axis = axis
             self.alignment = alignment
             self.spacing = spacing
@@ -24,10 +26,12 @@ open class OWSStackView: UIStackView {
         }
 
         public func withSpacing(_ spacing: CGFloat) -> Config {
-            Config(axis: self.axis,
-                   alignment: self.alignment,
-                   spacing: spacing,
-                   layoutMargins: self.layoutMargins)
+            Config(
+                axis: self.axis,
+                alignment: self.alignment,
+                spacing: spacing,
+                layoutMargins: self.layoutMargins,
+            )
         }
 
         public var debugDescription: String {
@@ -35,7 +39,7 @@ open class OWSStackView: UIStackView {
                 "axis: \(axis)",
                 "alignment: \(alignment)",
                 "spacing: \(spacing)",
-                "layoutMargins: \(layoutMargins)"
+                "layoutMargins: \(layoutMargins)",
             ]
             return "[" + components.joined(separator: ", ") + "]"
         }
@@ -54,9 +58,9 @@ open class OWSStackView: UIStackView {
             addArrangedSubview(subview)
         }
 
-        #if TESTABLE_BUILD
+#if TESTABLE_BUILD
         self.accessibilityLabel = name
-        #endif
+#endif
     }
 
     @available(*, unavailable, message: "use other constructor instead.")
@@ -64,7 +68,7 @@ open class OWSStackView: UIStackView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    public override func layoutSubviews() {
+    override public func layoutSubviews() {
         AssertIsOnMainThread()
 
         super.layoutSubviews()
@@ -106,10 +110,12 @@ open class OWSStackView: UIStackView {
     }
 
     public var asConfig: Config {
-        Config(axis: self.axis,
-               alignment: self.alignment,
-               spacing: self.spacing,
-               layoutMargins: self.layoutMargins)
+        Config(
+            axis: self.axis,
+            alignment: self.alignment,
+            spacing: self.spacing,
+            layoutMargins: self.layoutMargins,
+        )
     }
 
     public typealias TapBlock = () -> Void

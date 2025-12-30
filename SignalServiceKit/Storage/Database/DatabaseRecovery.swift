@@ -48,7 +48,7 @@ public enum DatabaseRecovery {
             try databaseStorage.performWriteWithTxCompletion(
                 file: #file,
                 function: #function,
-                line: #line
+                line: #line,
             ) { tx in
                 do {
                     try SqliteUtil.reindex(db: tx.database)
@@ -90,12 +90,12 @@ public enum DatabaseRecovery {
             self.keychainStorage = keychainStorage
             let totalUnitCount = Int64(
                 unitCountForCheckpoint +
-                unitCountForOldDatabaseMigration +
-                unitCountForNewDatabaseCreation +
-                unitCountForBestEffortCopy +
-                unitCountForFlawlessCopy +
-                unitCountForMigrationIds +
-                unitCountForNewDatabasePromotion
+                    unitCountForOldDatabaseMigration +
+                    unitCountForNewDatabaseCreation +
+                    unitCountForBestEffortCopy +
+                    unitCountForFlawlessCopy +
+                    unitCountForMigrationIds +
+                    unitCountForNewDatabasePromotion,
             )
             self.progress = Progress(totalUnitCount: totalUnitCount)
         }
@@ -141,14 +141,14 @@ public enum DatabaseRecovery {
             }
 
             let newDatabaseStorage = try progress.performAsCurrent(
-                withPendingUnitCount: unitCountForNewDatabaseCreation
+                withPendingUnitCount: unitCountForNewDatabaseCreation,
             ) {
                 let newDatabaseStorage: SDSDatabaseStorage
                 do {
                     newDatabaseStorage = try SDSDatabaseStorage(
                         appReadiness: self.appReadiness,
                         databaseFileUrl: newTemporaryDatabaseFileUrl,
-                        keychainStorage: self.keychainStorage
+                        keychainStorage: self.keychainStorage,
                     )
                     logger.info("Running migrations on new database...")
                     try Self.runMigrationsOn(databaseStorage: newDatabaseStorage)
@@ -161,21 +161,21 @@ public enum DatabaseRecovery {
 
             let copyTablesWithBestEffort = Self.prepareToCopyTablesWithBestEffort(
                 oldDatabaseStorage: oldDatabaseStorage,
-                newDatabaseStorage: newDatabaseStorage
+                newDatabaseStorage: newDatabaseStorage,
             )
             progress.addChild(
                 copyTablesWithBestEffort.progress,
-                withPendingUnitCount: unitCountForBestEffortCopy
+                withPendingUnitCount: unitCountForBestEffortCopy,
             )
             try copyTablesWithBestEffort.run()
 
             let copyTablesThatMustBeCopiedFlawlessly = Self.prepareToCopyTablesThatMustBeCopiedFlawlessly(
                 oldDatabaseStorage: oldDatabaseStorage,
-                newDatabaseStorage: newDatabaseStorage
+                newDatabaseStorage: newDatabaseStorage,
             )
             progress.addChild(
                 copyTablesThatMustBeCopiedFlawlessly.progress,
-                withPendingUnitCount: unitCountForFlawlessCopy
+                withPendingUnitCount: unitCountForFlawlessCopy,
             )
             try copyTablesThatMustBeCopiedFlawlessly.run()
 
@@ -190,7 +190,7 @@ public enum DatabaseRecovery {
             try progress.performAsCurrent(withPendingUnitCount: unitCountForNewDatabasePromotion) {
                 try Self.promoteNewDatabase(
                     oldDatabaseStorage: oldDatabaseStorage,
-                    newDatabaseStorage: newDatabaseStorage
+                    newDatabaseStorage: newDatabaseStorage,
                 )
             }
 
@@ -223,7 +223,7 @@ public enum DatabaseRecovery {
             let urls: [URL] = [
                 databaseFileUrl,
                 GRDBDatabaseStorageAdapter.walFileUrl(for: databaseFileUrl),
-                GRDBDatabaseStorageAdapter.shmFileUrl(for: databaseFileUrl)
+                GRDBDatabaseStorageAdapter.shmFileUrl(for: databaseFileUrl),
             ]
             for url in urls {
                 do {
@@ -259,7 +259,7 @@ public enum DatabaseRecovery {
                 for tableName in tableNames {
                     let shouldSkip = (
                         Database.isSQLiteInternalTable(tableName)
-                        || Database.isGRDBInternalTable(tableName)
+                            || Database.isGRDBInternalTable(tableName),
                     )
                     if shouldSkip {
                         continue
@@ -337,12 +337,12 @@ public enum DatabaseRecovery {
             "Poll",
             "PollOption",
             "PollVote",
-            "PinnedMessage"
+            "PinnedMessage",
         ]
 
         private static func prepareToCopyTablesWithBestEffort(
             oldDatabaseStorage: SDSDatabaseStorage,
-            newDatabaseStorage: SDSDatabaseStorage
+            newDatabaseStorage: SDSDatabaseStorage,
         ) -> PreparedOperation {
             .init(totalUnitCount: Int64(tablesToCopyWithBestEffort.count)) { progress in
                 for tableName in self.tablesToCopyWithBestEffort {
@@ -350,7 +350,7 @@ public enum DatabaseRecovery {
                         try self.copyWithBestEffort(
                             tableName: tableName,
                             oldDatabaseStorage: oldDatabaseStorage,
-                            newDatabaseStorage: newDatabaseStorage
+                            newDatabaseStorage: newDatabaseStorage,
                         )
                     }
                 }
@@ -360,13 +360,13 @@ public enum DatabaseRecovery {
         private static func copyWithBestEffort(
             tableName: String,
             oldDatabaseStorage: SDSDatabaseStorage,
-            newDatabaseStorage: SDSDatabaseStorage
+            newDatabaseStorage: SDSDatabaseStorage,
         ) throws {
             logger.info("Attempting to copy \(tableName) (best effort)...")
             let result = copyTable(
                 tableName: tableName,
                 from: oldDatabaseStorage,
-                to: newDatabaseStorage
+                to: newDatabaseStorage,
             )
             switch result {
             case let .totalFailure(error):
@@ -406,7 +406,7 @@ public enum DatabaseRecovery {
         /// Copy tables that must be copied flawlessly. Operation throws if any tables fail.
         private static func prepareToCopyTablesThatMustBeCopiedFlawlessly(
             oldDatabaseStorage: SDSDatabaseStorage,
-            newDatabaseStorage: SDSDatabaseStorage
+            newDatabaseStorage: SDSDatabaseStorage,
         ) -> PreparedOperation {
             .init(totalUnitCount: Int64(tablesThatMustBeCopiedFlawlessly.count)) { progress in
                 for tableName in self.tablesThatMustBeCopiedFlawlessly {
@@ -414,7 +414,7 @@ public enum DatabaseRecovery {
                         self.copyTableThatMustBeCopiedFlawlessly(
                             tableName: tableName,
                             oldDatabaseStorage: oldDatabaseStorage,
-                            newDatabaseStorage: newDatabaseStorage
+                            newDatabaseStorage: newDatabaseStorage,
                         )
                     }
                     switch result {
@@ -432,13 +432,13 @@ public enum DatabaseRecovery {
         private static func copyTableThatMustBeCopiedFlawlessly(
             tableName: String,
             oldDatabaseStorage: SDSDatabaseStorage,
-            newDatabaseStorage: SDSDatabaseStorage
+            newDatabaseStorage: SDSDatabaseStorage,
         ) -> TableCopyResult {
             logger.info("Attempting to copy \(tableName) (with no mistakes)...")
             let result = copyTable(
                 tableName: tableName,
                 from: oldDatabaseStorage,
-                to: newDatabaseStorage
+                to: newDatabaseStorage,
             )
             switch result {
             case .totalFailure:
@@ -481,7 +481,7 @@ public enum DatabaseRecovery {
         /// Neither database instance should be used after this.
         private static func promoteNewDatabase(
             oldDatabaseStorage: SDSDatabaseStorage,
-            newDatabaseStorage: SDSDatabaseStorage
+            newDatabaseStorage: SDSDatabaseStorage,
         ) throws {
             try checkpointAndClose(databaseStorage: oldDatabaseStorage, logLabel: "old")
             try checkpointAndClose(databaseStorage: newDatabaseStorage, logLabel: "new")
@@ -490,7 +490,7 @@ public enum DatabaseRecovery {
 
             _ = try FileManager.default.replaceItemAt(
                 oldDatabaseStorage.databaseFileUrl,
-                withItemAt: newDatabaseStorage.databaseFileUrl
+                withItemAt: newDatabaseStorage.databaseFileUrl,
             )
 
             logger.info("Out with the old database, in with the new!")
@@ -498,7 +498,7 @@ public enum DatabaseRecovery {
 
         private static func checkpointAndClose(
             databaseStorage: SDSDatabaseStorage,
-            logLabel: String
+            logLabel: String,
         ) throws {
             logger.info("Checkpointing \(logLabel) database...")
             try checkpoint(databaseStorage: databaseStorage)
@@ -568,7 +568,7 @@ public enum DatabaseRecovery {
         private static func copyTable(
             tableName: String,
             from: SDSDatabaseStorage,
-            to: SDSDatabaseStorage
+            to: SDSDatabaseStorage,
         ) -> TableCopyResult {
             owsPrecondition(SqliteUtil.isSafe(sqlName: tableName))
 
@@ -576,7 +576,7 @@ public enum DatabaseRecovery {
                 return try from.readThrows(
                     file: #file,
                     function: #function,
-                    line: #line
+                    line: #line,
                 ) { fromTransaction -> TableCopyResult in
                     let fromDb = fromTransaction.database
 
@@ -621,7 +621,7 @@ public enum DatabaseRecovery {
                             latestError = error
                         }
 
-                        if let latestError = latestError {
+                        if let latestError {
                             return .copiedSomeButHadTrouble(error: latestError, rowsCopied: rowsCopied)
                         } else {
                             return .wentFlawlessly(rowsCopied: rowsCopied)
@@ -666,7 +666,7 @@ public enum DatabaseRecovery {
                 owsPrecondition(SqliteUtil.isSafe(sqlName: columnName))
             }
 
-            let columnNamesSql = columnNames.map({"'\($0)'"}).joined(separator: ", ")
+            let columnNamesSql = columnNames.map({ "'\($0)'" }).joined(separator: ", ")
             let valuesSql = columnNames.map({ ":\($0)" }).joined(separator: ", ")
             return "INSERT INTO \(tableName) (\(columnNamesSql)) VALUES (\(valuesSql))"
         }
@@ -721,15 +721,15 @@ public enum DatabaseRecovery {
     // MARK: - Utilities
 
     private struct PreparedOperation {
-        public let progress: Progress
+        let progress: Progress
         private let fn: (Progress) throws -> Void
 
-        public init(totalUnitCount: Int64, fn: @escaping (Progress) throws -> Void) {
+        init(totalUnitCount: Int64, fn: @escaping (Progress) throws -> Void) {
             self.progress = Progress(totalUnitCount: totalUnitCount)
             self.fn = fn
         }
 
-        public func run() throws {
+        func run() throws {
             try fn(progress)
         }
     }

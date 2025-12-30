@@ -116,7 +116,8 @@ public class SSKPreferences: NSObject {
     public static func setPreferContactAvatars(
         _ value: Bool,
         updateStorageService: Bool = true,
-        transaction: DBWriteTransaction) {
+        transaction: DBWriteTransaction,
+    ) {
 
         let oldValue = store.getBool(preferContactAvatarsKey, transaction: transaction)
         store.setBool(value, key: preferContactAvatarsKey, transaction: transaction)
@@ -135,6 +136,7 @@ public class SSKPreferences: NSObject {
     public class var grdbSchemaVersionDefault: UInt {
         return GRDBSchemaMigrator.grdbSchemaVersionDefault
     }
+
     public class var grdbSchemaVersionLatest: UInt {
         return GRDBSchemaMigrator.grdbSchemaVersionLatest
     }

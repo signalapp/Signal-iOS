@@ -4,8 +4,8 @@
 //
 
 import Foundation
-import SignalServiceKit
 import Lottie
+import SignalServiceKit
 
 open class HeroSheetViewController: StackSheetViewController {
     public enum Hero {
@@ -17,7 +17,7 @@ open class HeroSheetViewController: StackSheetViewController {
             icon: UIImage,
             iconSize: CGFloat,
             tintColor: UIColor,
-            backgroundColor: UIColor
+            backgroundColor: UIColor,
         )
     }
 
@@ -91,7 +91,7 @@ open class HeroSheetViewController: StackSheetViewController {
         title: String,
         body: String,
         primaryButton: Button,
-        secondaryButton: Button? = nil
+        secondaryButton: Button? = nil,
     ) {
         self.hero = hero
         self.titleText = title
@@ -106,7 +106,7 @@ open class HeroSheetViewController: StackSheetViewController {
         title: String,
         body: String,
         primary: Element,
-        secondary: Element? = nil
+        secondary: Element? = nil,
     ) {
         self.hero = hero
         self.titleText = title
@@ -117,7 +117,7 @@ open class HeroSheetViewController: StackSheetViewController {
     }
 
     // .formSheet makes a blank sheet appear behind it
-    public override var modalPresentationStyle: UIModalPresentationStyle {
+    override public var modalPresentationStyle: UIModalPresentationStyle {
         willSet {
             if newValue == .formSheet {
                 owsFailDebug("Can't use formSheet for interactive sheets")
@@ -125,11 +125,11 @@ open class HeroSheetViewController: StackSheetViewController {
         }
     }
 
-    public override var stackViewInsets: UIEdgeInsets {
+    override public var stackViewInsets: UIEdgeInsets {
         .init(top: 8, leading: 24, bottom: 32, trailing: 24)
     }
 
-    public override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
 
         let heroView = viewForHero(hero)
@@ -218,7 +218,7 @@ open class HeroSheetViewController: StackSheetViewController {
                 case .custom(let closure):
                     closure(self)
                 }
-            }
+            },
         )
     }
 }
@@ -230,7 +230,7 @@ open class HeroSheetViewController: StackSheetViewController {
         hero: .image(UIImage(named: "linked-devices")!),
         title: LocalizationNotNeeded("Finish linking on your other device"),
         body: LocalizationNotNeeded("Finish linking Signal on your other device."),
-        primaryButton: .dismissing(title: CommonStrings.continueButton)
+        primaryButton: .dismissing(title: CommonStrings.continueButton),
     ))
 }
 
@@ -240,7 +240,7 @@ open class HeroSheetViewController: StackSheetViewController {
         hero: .animation(named: "linking-device-light", height: 192),
         title: LocalizationNotNeeded("Scan QR Code"),
         body: LocalizationNotNeeded("Use this device to scan the QR code displayed on the device you want to link"),
-        primaryButton: .dismissing(title: CommonStrings.okayButton)
+        primaryButton: .dismissing(title: CommonStrings.okayButton),
     ))
 }
 
@@ -251,12 +251,12 @@ open class HeroSheetViewController: StackSheetViewController {
             icon: UIImage(named: "key")!,
             iconSize: 35,
             tintColor: UIColor.Signal.label,
-            backgroundColor: UIColor.Signal.background
+            backgroundColor: UIColor.Signal.background,
         ),
         title: LocalizationNotNeeded("No Recovery Key?"),
         body: LocalizationNotNeeded("Backups can’t be recovered without their 64-digit recovery code. If you’ve lost your recovery key Signal can’t help restore your backup.\n\nIf you have your old device you can view your recovery key in Settings > Chats > Signal Backups. Then tap View recovery key."),
         primaryButton: .dismissing(title: LocalizationNotNeeded("Skip & Don’t Restore")),
-        secondaryButton: .dismissing(title: CommonStrings.learnMore)
+        secondaryButton: .dismissing(title: CommonStrings.learnMore),
     ))
 }
 
@@ -266,7 +266,7 @@ open class HeroSheetViewController: StackSheetViewController {
         hero: .image(UIImage(named: "transfer_complete")!),
         title: LocalizationNotNeeded("Continue on your other device"),
         body: LocalizationNotNeeded("Continue transferring your account on your other device."),
-        primary: .hero(.animation(named: "circular_indeterminate", height: 60))
+        primary: .hero(.animation(named: "circular_indeterminate", height: 60)),
     ))
 }
 #endif

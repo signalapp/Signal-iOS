@@ -27,38 +27,38 @@ class NotificationSettingsViewController: OWSTableViewController2 {
         let soundsSection = OWSTableSection()
         soundsSection.headerTitle = OWSLocalizedString(
             "SETTINGS_SECTION_SOUNDS",
-            comment: "Header Label for the sounds section of settings views."
+            comment: "Header Label for the sounds section of settings views.",
         )
         soundsSection.add(.item(
             name: OWSLocalizedString(
                 "SETTINGS_ITEM_NOTIFICATION_SOUND",
-                comment: "Label for settings view that allows user to change the notification sound."
+                comment: "Label for settings view that allows user to change the notification sound.",
             ),
             accessoryText: Sounds.globalNotificationSound.displayName,
             actionBlock: { [weak self] in
                 let vc = NotificationSettingsSoundViewController { self?.updateTableContents() }
                 self?.present(OWSNavigationController(rootViewController: vc), animated: true)
-            }
+            },
         ))
         soundsSection.add(.switch(
             withText: OWSLocalizedString(
                 "NOTIFICATIONS_SECTION_INAPP",
-                comment: "Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground."
+                comment: "Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground.",
             ),
             isOn: { SSKEnvironment.shared.preferencesRef.soundInForeground },
             target: self,
-            selector: #selector(didToggleSoundNotificationsSwitch)
+            selector: #selector(didToggleSoundNotificationsSwitch),
         ))
         contents.add(soundsSection)
 
         let notificationContentSection = OWSTableSection()
         notificationContentSection.headerTitle = OWSLocalizedString(
             "SETTINGS_NOTIFICATION_CONTENT_TITLE",
-            comment: "table section header"
+            comment: "table section header",
         )
         notificationContentSection.footerTitle = OWSLocalizedString(
             "SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION",
-            comment: "table section footer"
+            comment: "table section footer",
         )
         notificationContentSection.add(.disclosureItem(
             withText: OWSLocalizedString("NOTIFICATIONS_SHOW", comment: ""),
@@ -68,43 +68,43 @@ class NotificationSettingsViewController: OWSTableViewController2 {
             actionBlock: { [weak self] in
                 let vc = NotificationSettingsContentViewController()
                 self?.navigationController?.pushViewController(vc, animated: true)
-            }
+            },
         ))
         contents.add(notificationContentSection)
 
         let badgeCountSection = OWSTableSection()
         badgeCountSection.headerTitle = OWSLocalizedString(
             "SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE",
-            comment: "table section header"
+            comment: "table section header",
         )
         badgeCountSection.add(.switch(
             withText: OWSLocalizedString(
                 "SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS",
-                comment: "A setting controlling whether muted conversations are shown in the badge count"
+                comment: "A setting controlling whether muted conversations are shown in the badge count",
             ),
             isOn: {
                 SSKEnvironment.shared.databaseStorageRef.read { SSKPreferences.includeMutedThreadsInBadgeCount(transaction: $0) }
             },
             target: self,
-            selector: #selector(didToggleIncludesMutedConversationsInBadgeCountSwitch)
+            selector: #selector(didToggleIncludesMutedConversationsInBadgeCountSwitch),
         ))
         contents.add(badgeCountSection)
 
         let notifyWhenSection = OWSTableSection()
         notifyWhenSection.headerTitle = OWSLocalizedString(
             "SETTINGS_NOTIFICATION_NOTIFY_WHEN_TITLE",
-            comment: "table section header"
+            comment: "table section header",
         )
         notifyWhenSection.add(.switch(
             withText: OWSLocalizedString(
                 "SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL",
-                comment: "When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature."
+                comment: "When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature.",
             ),
             isOn: {
                 SSKEnvironment.shared.databaseStorageRef.read { SSKEnvironment.shared.preferencesRef.shouldNotifyOfNewAccounts(transaction: $0) }
             },
             target: self,
-            selector: #selector(didToggleshouldNotifyOfNewAccountsSwitch)
+            selector: #selector(didToggleshouldNotifyOfNewAccountsSwitch),
         ))
         contents.add(notifyWhenSection)
 
@@ -113,7 +113,7 @@ class NotificationSettingsViewController: OWSTableViewController2 {
             name: OWSLocalizedString("REREGISTER_FOR_PUSH", comment: ""),
             actionBlock: { [weak self] in
                 self?.syncPushTokens()
-            }
+            },
         ))
         contents.add(reregisterPushSection)
 
@@ -145,12 +145,12 @@ class NotificationSettingsViewController: OWSTableViewController2 {
                 try await job.run()
                 OWSActionSheets.showActionSheet(title: OWSLocalizedString(
                     "PUSH_REGISTER_SUCCESS",
-                    comment: "Title of alert shown when push tokens sync job succeeds."
+                    comment: "Title of alert shown when push tokens sync job succeeds.",
                 ))
             } catch {
                 OWSActionSheets.showActionSheet(title: OWSLocalizedString(
                     "REGISTRATION_BODY",
-                    comment: "Title of alert shown when push tokens sync job fails."
+                    comment: "Title of alert shown when push tokens sync job fails.",
                 ))
             }
         }

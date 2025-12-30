@@ -93,7 +93,7 @@ extension BGProcessingTaskRunner where Self: Sendable {
                     // is called; use it to cleanly cancel the task.
                     task.cancel()
                 }
-            }
+            },
         )
     }
 
@@ -149,7 +149,7 @@ extension BGProcessingTaskRunner where Self: Sendable {
     /// true if the entire migration is completed.
     func runInBatches(
         willBegin: () -> Void,
-        runNextBatch: () async throws -> Bool
+        runNextBatch: () async throws -> Bool,
     ) async throws {
         logger.info("Starting.")
 

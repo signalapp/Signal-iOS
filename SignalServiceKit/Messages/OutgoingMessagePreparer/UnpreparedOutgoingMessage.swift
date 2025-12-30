@@ -22,7 +22,7 @@ public class UnpreparedOutgoingMessage {
         quotedReplyDraft: DraftQuotedReplyModel.ForSending? = nil,
         messageStickerDraft: MessageStickerDataSource? = nil,
         contactShareDraft: ContactShareDraft.ForSending? = nil,
-        poll: CreatePollMessage? = nil
+        poll: CreatePollMessage? = nil,
     ) -> UnpreparedOutgoingMessage {
         let oversizeTextDataSource = (body?.oversizeText).map {
             AttachmentDataSource.pendingAttachment($0)
@@ -30,11 +30,11 @@ public class UnpreparedOutgoingMessage {
         if !message.shouldBeSaved {
             owsAssertDebug(
                 unsavedBodyMediaAttachments.isEmpty
-                && oversizeTextDataSource == nil
-                && linkPreviewDraft != nil
-                && quotedReplyDraft != nil
-                && messageStickerDraft != nil,
-                "Unknown unsaved message sent through saved path with attachments!"
+                    && oversizeTextDataSource == nil
+                    && linkPreviewDraft != nil
+                    && quotedReplyDraft != nil
+                    && messageStickerDraft != nil,
+                "Unknown unsaved message sent through saved path with attachments!",
             )
             Self.assertIsAllowedTransientMessage(message)
             return .init(messageType: .transient(message))
@@ -47,7 +47,7 @@ public class UnpreparedOutgoingMessage {
                 quotedReplyDraft: quotedReplyDraft,
                 messageStickerDraft: messageStickerDraft,
                 contactShareDraft: contactShareDraft,
-                poll: poll
+                poll: poll,
             )))
         }
     }
@@ -57,24 +57,24 @@ public class UnpreparedOutgoingMessage {
         edits: MessageEdits,
         oversizeTextDataSource: AttachmentDataSource?,
         linkPreviewDraft: LinkPreviewDataSource?,
-        quotedReplyEdit: MessageEdits.Edit<Void>
+        quotedReplyEdit: MessageEdits.Edit<Void>,
     ) -> UnpreparedOutgoingMessage {
         return .init(messageType: .editMessage(.init(
             targetMessage: targetMessage,
             edits: edits,
             oversizeTextDataSource: oversizeTextDataSource,
             linkPreviewDraft: linkPreviewDraft,
-            quotedReplyEdit: quotedReplyEdit
+            quotedReplyEdit: quotedReplyEdit,
         )))
     }
 
     public static func forOutgoingStoryMessage(
         _ message: OutgoingStoryMessage,
-        storyMessageRowId: Int64
+        storyMessageRowId: Int64,
     ) -> UnpreparedOutgoingMessage {
         return .init(messageType: .story(.init(
             message: message,
-            storyMessageRowId: storyMessageRowId
+            storyMessageRowId: storyMessageRowId,
         )))
     }
 
@@ -83,7 +83,7 @@ public class UnpreparedOutgoingMessage {
     /// "Prepares" the outgoing message, inserting it into the database if needed and
     /// returning a ``PreparedOutgoingMessage`` ready to be sent.
     public func prepare(
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws -> PreparedOutgoingMessage {
         return try self._prepare(tx: tx)
     }
@@ -94,7 +94,7 @@ public class UnpreparedOutgoingMessage {
             return message.message.timestamp
         case .editMessage(let message):
             return message.edits.timestamp.unwrapChange(
-                orKeepValue: message.targetMessage.timestamp
+                orKeepValue: message.targetMessage.timestamp,
             )
         case .story(let story):
             return story.message.timestamp
@@ -155,7 +155,7 @@ public class UnpreparedOutgoingMessage {
     }
 
     public func _prepare(
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws -> PreparedOutgoingMessage {
         let preparedMessageType: PreparedOutgoingMessage.MessageType
         switch messageType {
@@ -180,8 +180,8 @@ public class UnpreparedOutgoingMessage {
         return PreparedOutgoingMessage(builder)
     }
 
-    internal struct PreparedMessageBuilder {
-        internal let messageType: PreparedOutgoingMessage.MessageType
+    struct PreparedMessageBuilder {
+        let messageType: PreparedOutgoingMessage.MessageType
 
         // Only this class can have access to this initializer, which in
         // turns means only this class can create a PreparedOutgoingMessage
@@ -192,7 +192,7 @@ public class UnpreparedOutgoingMessage {
 
     private func preparePersistableMessage(
         _ message: MessageType.Persistable,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws -> PreparedOutgoingMessage.MessageType {
         let attachmentManager = DependenciesBridge.shared.attachmentManager
         let contactShareManager = DependenciesBridge.shared.contactShareManager
@@ -250,7 +250,7 @@ public class UnpreparedOutgoingMessage {
                 interactionId: messageRowId,
                 pollOptions: poll.options,
                 allowsMultiSelect: poll.allowMultiple,
-                transaction: tx
+                transaction: tx,
             )
         }
 
@@ -262,10 +262,10 @@ public class UnpreparedOutgoingMessage {
                         messageRowId: messageRowId,
                         receivedAtTimestamp: message.message.receivedAtTimestamp,
                         threadRowId: threadRowId,
-                        isPastEditRevision: message.message.isPastEditRevision()
-                    ))
+                        isPastEditRevision: message.message.isPastEditRevision(),
+                    )),
                 ),
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -286,7 +286,7 @@ public class UnpreparedOutgoingMessage {
                         isViewOnce: message.message.isViewOnceMessage,
                         isPastEditRevision: message.message.isPastEditRevision(),
                         orderInMessage: UInt32(idx),
-                    ))
+                    )),
                 ),
                 tx: tx,
             )
@@ -300,7 +300,7 @@ public class UnpreparedOutgoingMessage {
                         messageRowId: messageRowId,
                         receivedAtTimestamp: message.message.receivedAtTimestamp,
                         threadRowId: threadRowId,
-                        isPastEditRevision: message.message.isPastEditRevision()
+                        isPastEditRevision: message.message.isPastEditRevision(),
                     )),
                 ),
                 tx: tx,
@@ -314,7 +314,7 @@ public class UnpreparedOutgoingMessage {
                     messageRowId: messageRowId,
                     receivedAtTimestamp: message.message.receivedAtTimestamp,
                     threadRowId: threadRowId,
-                    isPastEditRevision: message.message.isPastEditRevision()
+                    isPastEditRevision: message.message.isPastEditRevision(),
                 ),
                 tx: tx,
             )
@@ -330,8 +330,8 @@ public class UnpreparedOutgoingMessage {
                         threadRowId: threadRowId,
                         isPastEditRevision: message.message.isPastEditRevision(),
                         stickerPackId: validatedMessageSticker.sticker.packId,
-                        stickerId: validatedMessageSticker.sticker.stickerId
-                    ))
+                        stickerId: validatedMessageSticker.sticker.stickerId,
+                    )),
                 ),
                 tx: tx,
             )
@@ -350,7 +350,7 @@ public class UnpreparedOutgoingMessage {
                         messageRowId: messageRowId,
                         receivedAtTimestamp: message.message.receivedAtTimestamp,
                         threadRowId: threadRowId,
-                        isPastEditRevision: message.message.isPastEditRevision()
+                        isPastEditRevision: message.message.isPastEditRevision(),
                     )),
                 ),
                 tx: tx,
@@ -359,13 +359,13 @@ public class UnpreparedOutgoingMessage {
 
         return .persisted(PreparedOutgoingMessage.MessageType.Persisted(
             rowId: messageRowId,
-            message: message.message
+            message: message.message,
         ))
     }
 
     private func prepareEditMessage(
         _ message: MessageType.EditMessage,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws -> PreparedOutgoingMessage.MessageType {
         guard let thread = message.targetMessage.thread(tx: tx) else {
             throw OWSAssertionError("Outgoing message missing thread.")
@@ -378,7 +378,7 @@ public class UnpreparedOutgoingMessage {
             oversizeText: message.oversizeTextDataSource,
             quotedReplyEdit: message.quotedReplyEdit,
             linkPreview: message.linkPreviewDraft,
-            tx: tx
+            tx: tx,
         )
 
         // All editable messages, by definition, should have been inserted.
@@ -394,33 +394,33 @@ public class UnpreparedOutgoingMessage {
         return .editMessage(.init(
             editedMessageRowId: editedMessageRowId,
             editedMessage: editedMessage,
-            messageForSending: outgoingEditMessage
+            messageForSending: outgoingEditMessage,
         ))
     }
 
     private func prepareStoryMessage(
-        _ story: MessageType.Story
+        _ story: MessageType.Story,
     ) -> PreparedOutgoingMessage.MessageType {
         return .story(PreparedOutgoingMessage.MessageType.Story(
-            message: story.message
+            message: story.message,
         ))
     }
 
     private func prepareTransientMessage(
-        _ message: TSOutgoingMessage
+        _ message: TSOutgoingMessage,
     ) -> PreparedOutgoingMessage.MessageType {
         return .transient(message)
     }
 
     // MARK: - Helpers
 
-    internal static func assertIsAllowedTransientMessage(_ message: TSOutgoingMessage) {
+    static func assertIsAllowedTransientMessage(_ message: TSOutgoingMessage) {
         owsAssertDebug(
             !message.shouldBeSaved
-            && !(message is OWSSyncContactsMessage)
-            && !(message is OutgoingStoryMessage)
-            && !(message is OutgoingEditMessage),
-            "Disallowed transient message; use type-specific initializers instead"
+                && !(message is OWSSyncContactsMessage)
+                && !(message is OutgoingStoryMessage)
+                && !(message is OutgoingEditMessage),
+            "Disallowed transient message; use type-specific initializers instead",
         )
     }
 }

@@ -92,7 +92,7 @@ public struct CVLabelConfig {
         textColor: UIColor,
         numberOfLines: Int = 1,
         lineBreakMode: NSLineBreakMode = .byWordWrapping,
-        textAlignment: NSTextAlignment? = nil
+        textAlignment: NSTextAlignment? = nil,
     ) {
         self.text = text
         self.displayConfig = displayConfig
@@ -109,7 +109,7 @@ public struct CVLabelConfig {
         textColor: UIColor,
         numberOfLines: Int = 1,
         lineBreakMode: NSLineBreakMode = .byWordWrapping,
-        textAlignment: NSTextAlignment? = nil
+        textAlignment: NSTextAlignment? = nil,
     ) -> Self {
         return .init(
             text: .text(text),
@@ -118,7 +118,7 @@ public struct CVLabelConfig {
             textColor: textColor,
             numberOfLines: numberOfLines,
             lineBreakMode: lineBreakMode,
-            textAlignment: textAlignment
+            textAlignment: textAlignment,
         )
     }
 
@@ -139,7 +139,7 @@ public struct CVLabelConfig {
         case .messageBody(let hydratedMessageBody):
             label.attributedText = hydratedMessageBody.asAttributedStringForDisplay(
                 config: displayConfig,
-                isDarkThemeEnabled: false /* irrelevant, measuring */
+                isDarkThemeEnabled: false, /* irrelevant, measuring */
             )
         }
     }
@@ -149,7 +149,7 @@ public struct CVLabelConfig {
         label.numberOfLines = self.numberOfLines
         label.lineBreakMode = self.lineBreakMode
         label.textColor = self.textColor
-        if let textAlignment = textAlignment {
+        if let textAlignment {
             label.textAlignment = textAlignment
         } else {
             label.textAlignment = .natural
@@ -165,7 +165,7 @@ public struct CVLabelConfig {
         case .messageBody(let hydratedMessageBody):
             label.attributedText = hydratedMessageBody.asAttributedStringForDisplay(
                 config: self.displayConfig,
-                isDarkThemeEnabled: Theme.isDarkThemeEnabled
+                isDarkThemeEnabled: Theme.isDarkThemeEnabled,
             )
         }
     }
@@ -175,7 +175,7 @@ public struct CVLabelConfig {
         button.titleLabel?.numberOfLines = self.numberOfLines
         button.titleLabel?.lineBreakMode = self.lineBreakMode
         button.setTitleColor(self.textColor, for: .normal)
-        if let textAlignment = textAlignment {
+        if let textAlignment {
             button.titleLabel?.textAlignment = textAlignment
         } else {
             button.titleLabel?.textAlignment = .natural
@@ -189,7 +189,7 @@ public struct CVLabelConfig {
         case .messageBody(let hydratedMessageBody):
             let attributedText = hydratedMessageBody.asAttributedStringForDisplay(
                 config: self.displayConfig,
-                isDarkThemeEnabled: Theme.isDarkThemeEnabled
+                isDarkThemeEnabled: Theme.isDarkThemeEnabled,
             )
             button.setAttributedTitle(attributedText, for: .normal)
         }
@@ -240,7 +240,7 @@ public struct CVTextViewConfig {
         linkifyStyle: CVTextLabel.LinkifyStyle,
         linkItems: [CVTextLabel.Item],
         matchedSearchRanges: [NSRange],
-        extraCacheKeyFactors: [String]? = nil
+        extraCacheKeyFactors: [String]? = nil,
     ) {
 
         self.text = text
@@ -286,12 +286,15 @@ public class CVText {
     private static func buildCacheKey(configKey: String, maxWidth: CGFloat) -> CacheKey {
         "\(configKey),\(maxWidth)"
     }
+
     private static let labelCache = LRUCache<CacheKey, CGSize>(maxSize: cacheSize)
 
     public static func measureLabel(config: CVLabelConfig, maxWidth: CGFloat) -> CGSize {
         let cacheKey = buildCacheKey(configKey: config.cacheKey, maxWidth: maxWidth)
-        if cacheMeasurements,
-           let result = labelCache.get(key: cacheKey) {
+        if
+            cacheMeasurements,
+            let result = labelCache.get(key: cacheKey)
+        {
             return result
         }
 
@@ -305,7 +308,7 @@ public class CVText {
         return result.ceil
     }
 
-    #if TESTABLE_BUILD
+#if TESTABLE_BUILD
     public static func measureLabelUsingView(config: CVLabelConfig, maxWidth: CGFloat) -> CGSize {
         guard !config.text.isEmpty else {
             return .zero
@@ -317,7 +320,7 @@ public class CVText {
         size.width = min(size.width, maxWidth)
         return size
     }
-    #endif
+#endif
 
     static func measureLabelUsingLayoutManager(config: CVLabelConfig, maxWidth: CGFloat) -> CGSize {
         guard !config.text.isEmpty else {
@@ -336,8 +339,10 @@ public class CVText {
 
     public static func measureBodyTextLabel(config: CVTextLabel.Config, maxWidth: CGFloat) -> CVTextLabel.Measurement {
         let cacheKey = buildCacheKey(configKey: config.cacheKey, maxWidth: maxWidth)
-        if cacheMeasurements,
-           let result = bodyTextLabelCache.get(key: cacheKey) {
+        if
+            cacheMeasurements,
+            let result = bodyTextLabelCache.get(key: cacheKey)
+        {
             return result
         }
 
@@ -357,22 +362,22 @@ public class CVText {
         config: CVTextLabel.Config,
         footerSize: CGSize,
         maxWidth: CGFloat,
-        measurementBuilder: CVCellMeasurement.Builder
+        measurementBuilder: CVCellMeasurement.Builder,
     ) -> [ManualStackSubviewInfo] {
         let footerWidthWithSpacing = footerSize.width + 6
         let maxTextWidthForAdjacentFooter = maxWidth - footerWidthWithSpacing
 
         let measurementWithSpaceForAdjacentFooter = CVText.measureBodyTextLabel(
             config: config,
-            maxWidth: maxTextWidthForAdjacentFooter
+            maxWidth: maxTextWidthForAdjacentFooter,
         )
 
         let canFitOnOneLineWithAdjacentFooter =
-        if let lastLineRect = measurementWithSpaceForAdjacentFooter.lastLineRect {
-            lastLineRect.height == measurementWithSpaceForAdjacentFooter.size.height
-        } else {
-            true
-        }
+            if let lastLineRect = measurementWithSpaceForAdjacentFooter.lastLineRect {
+                lastLineRect.height == measurementWithSpaceForAdjacentFooter.size.height
+            } else {
+                true
+            }
 
         let info: [ManualStackSubviewInfo]
         if canFitOnOneLineWithAdjacentFooter {
@@ -381,7 +386,7 @@ public class CVText {
         } else {
             let measurementForFullWidth = CVText.measureBodyTextLabel(
                 config: config,
-                maxWidth: maxWidth
+                maxWidth: maxWidth,
             )
             let textInfo = measurementForFullWidth.size.ceil.asManualSubviewInfo
 
@@ -395,7 +400,7 @@ public class CVText {
             } else {
                 let footerSpacerInfo = CGSize(
                     width: footerSize.width,
-                    height: footerSize.height + 3
+                    height: footerSize.height + 3,
                 ).ceil.asManualSubviewInfo
                 info = [textInfo, footerSpacerInfo]
             }
@@ -417,7 +422,7 @@ private extension NSTextContainer {
         case .messageBody(let messageBody):
             attributedString = messageBody.asAttributedStringForDisplay(
                 config: .forMeasurement(font: font),
-                isDarkThemeEnabled: false /* doesn't matter */
+                isDarkThemeEnabled: false, /* doesn't matter */
             )
         case .attributedText(let text):
             let mutableText = NSMutableAttributedString(attributedString: text)

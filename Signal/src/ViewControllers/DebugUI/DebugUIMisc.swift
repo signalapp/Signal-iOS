@@ -58,14 +58,14 @@ class DebugUIMisc: DebugUIPage {
             proceedStyle: .destructive,
             proceedAction: { _ in
                 debugOnly_savePlaintextDbKey()
-            }
+            },
         )
     }
 
     static func debugOnly_savePlaintextDbKey() {
 #if TESTABLE_BUILD && targetEnvironment(simulator)
         // Note: These static strings go hand-in-hand with Scripts/sqlclient.py
-        let payload = [ "key": SSKEnvironment.shared.databaseStorageRef.keyFetcher.debugOnly_keyData()?.hexadecimalString ]
+        let payload = ["key": SSKEnvironment.shared.databaseStorageRef.keyFetcher.debugOnly_keyData()?.hexadecimalString]
         let payloadData = try! JSONSerialization.data(withJSONObject: payload, options: .prettyPrinted)
 
         let groupDir = URL(fileURLWithPath: OWSFileSystem.appSharedDataDirectoryPath(), isDirectory: true)
@@ -82,10 +82,10 @@ class DebugUIMisc: DebugUIPage {
             title: "Are you sure?",
             message: "This will flag your database as corrupted, which may mean all your data is lost. Are you sure you want to continue?",
             proceedTitle: "Corrupt my database",
-            proceedStyle: .destructive
+            proceedStyle: .destructive,
         ) { _ in
             DatabaseCorruptionState.flagDatabaseAsCorrupted(
-                userDefaults: CurrentAppContext().appUserDefaults()
+                userDefaults: CurrentAppContext().appUserDefaults(),
             )
             owsFail("Crashing due to (intentional) database corruption")
         }

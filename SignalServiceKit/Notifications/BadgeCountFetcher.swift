@@ -17,13 +17,13 @@ public protocol BadgeCountFetcher {
 }
 
 class BadgeCountFetcherImpl: BadgeCountFetcher {
-    public func fetchBadgeCount(tx: DBReadTransaction) -> BadgeCount {
+    func fetchBadgeCount(tx: DBReadTransaction) -> BadgeCount {
         let unreadInteractionCount = InteractionFinder.unreadCountInAllThreads(transaction: tx)
         let unreadMissedCallCount = DependenciesBridge.shared.callRecordMissedCallManager.countUnreadMissedCalls(tx: tx)
 
         return BadgeCount(
             unreadChatCount: unreadInteractionCount,
-            unreadCallsCount: unreadMissedCallCount
+            unreadCallsCount: unreadMissedCallCount,
         )
     }
 }

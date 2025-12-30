@@ -31,14 +31,16 @@ public class GiphyImageInfo {
     private let assets: [GiphyAsset]
 
     init?(parsing dictionary: [String: Any]) {
-        guard let idString = dictionary["id"] as? String,
-              let renditionDict = (dictionary["images"] as? [String: [String: Any]]) else {
+        guard
+            let idString = dictionary["id"] as? String,
+            let renditionDict = (dictionary["images"] as? [String: [String: Any]])
+        else {
             Logger.warn("Missing required parameters")
             return nil
         }
 
         giphyId = idString
-        assets = renditionDict.flatMap { (rendition, dict) in
+        assets = renditionDict.flatMap { rendition, dict in
             GiphyAsset.parsing(renditionString: rendition, definition: dict)
         }
 
@@ -115,7 +117,7 @@ private extension Sequence where Element == GiphyAsset {
             }
         }
 
-        let budgetWindow = (targetSize+1..<Int(OWSMediaUtils.kMaxFileSizeImage))
+        let budgetWindow = (targetSize + 1..<Int(OWSMediaUtils.kMaxFileSizeImage))
         let findSmallestOverBudget = {
             filter { budgetWindow.contains($0.size) }.min {
                 // Order by increasing file size. If equal, order by decreasing dimension.

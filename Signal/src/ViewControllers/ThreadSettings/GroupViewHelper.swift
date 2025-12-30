@@ -77,7 +77,7 @@ class GroupViewHelper {
         case .member:
             return groupModelV2.groupMembership.isFullMember(localAddress)
         case .administrator:
-            return (groupModelV2.groupMembership.isFullMemberAndAdministrator(localAddress))
+            return groupModelV2.groupMembership.isFullMemberAndAdministrator(localAddress)
         }
     }
 
@@ -108,37 +108,37 @@ class GroupViewHelper {
         guard let groupThread = thread as? TSGroupThread else {
             return false
         }
-        return (
+        return
             !threadViewModel.hasPendingMessageRequest
-            && groupThread.isGroupV2Thread
-            && groupThread.groupModel.groupMembership.isLocalUserFullMemberAndAdministrator
-        )
+                && groupThread.isGroupV2Thread
+                && groupThread.groupModel.groupMembership.isLocalUserFullMemberAndAdministrator
+
     }
 
     var canRevokePendingInvites: Bool {
         guard let groupThread = thread as? TSGroupThread else {
             return false
         }
-        return (
+        return
             !threadViewModel.hasPendingMessageRequest
-            && groupThread.isGroupV2Thread
-            && groupThread.groupModel.groupMembership.isLocalUserFullMemberAndAdministrator
-        )
+                && groupThread.isGroupV2Thread
+                && groupThread.groupModel.groupMembership.isLocalUserFullMemberAndAdministrator
+
     }
 
     var canResendInvites: Bool {
-        return (!threadViewModel.hasPendingMessageRequest && isLocalUserFullMember)
+        return !threadViewModel.hasPendingMessageRequest && isLocalUserFullMember
     }
 
     var canApproveMemberRequests: Bool {
         guard let groupThread = thread as? TSGroupThread else {
             return false
         }
-        return (
+        return
             !threadViewModel.hasPendingMessageRequest
-            && groupThread.isGroupV2Thread
-            && groupThread.groupModel.groupMembership.isLocalUserFullMemberAndAdministrator
-        )
+                && groupThread.isGroupV2Thread
+                && groupThread.groupModel.groupMembership.isLocalUserFullMemberAndAdministrator
+
     }
 
     var isLocalUserFullMember: Bool {

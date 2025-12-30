@@ -4,9 +4,9 @@
 //
 
 import Foundation
-import SignalUI
-import SignalServiceKit
 import SafariServices
+import SignalServiceKit
+import SignalUI
 
 class UsernameEducationViewController: OWSTableViewController2 {
 
@@ -22,7 +22,7 @@ class UsernameEducationViewController: OWSTableViewController2 {
     /// Completion called once the user taps 'Continue' in the education prompt
     var continueCompletion: (() -> Void)?
 
-    public var prefersNavigationBarHidden: Bool { true }
+    var prefersNavigationBarHidden: Bool { true }
 
     // MARK: Lifecycle
 
@@ -33,7 +33,7 @@ class UsernameEducationViewController: OWSTableViewController2 {
         bottomFooter = footerView
     }
 
-    public override func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = Theme.tableView2BackgroundColor
         rebuildTableContents()
@@ -41,7 +41,7 @@ class UsernameEducationViewController: OWSTableViewController2 {
         tableView.alwaysBounceVertical = false
     }
 
-    public override func themeDidChange() {
+    override func themeDidChange() {
         super.themeDidChange()
         setColorsForCurrentTheme()
         rebuildTableContents()
@@ -71,23 +71,23 @@ class UsernameEducationViewController: OWSTableViewController2 {
         let continueButton = UIButton(
             configuration: .largePrimary(title: OWSLocalizedString(
                 "USERNAME_EDUCATION_SET_UP_BUTTON",
-                comment: "Label for the 'set up' button on the username education sheet"
+                comment: "Label for the 'set up' button on the username education sheet",
             )),
             primaryAction: UIAction { [weak self] _ in
                 self?.didTapContinue()
-            }
+            },
         )
 
         let dismissButton = UIButton(
             configuration: .largeSecondary(title: CommonStrings.notNowButton),
             primaryAction: UIAction { [weak self] _ in
                 self?.didTapDismiss()
-            }
+            },
         )
 
         let stackView = UIStackView.verticalButtonStack(
-            buttons: [ continueButton, dismissButton ],
-            isFullWidthButtons: true
+            buttons: [continueButton, dismissButton],
+            isFullWidthButtons: true,
         )
 
         let container = UIView()
@@ -119,42 +119,42 @@ class UsernameEducationViewController: OWSTableViewController2 {
             iconName: "phone-48-color",
             title: OWSLocalizedString(
                 "USERNAME_EDUCATION_PRIVACY_TITLE",
-                comment: "Title for phone number privacy section of the username education sheet"
+                comment: "Title for phone number privacy section of the username education sheet",
             ),
             description: OWSLocalizedString(
                 "USERNAME_EDUCATION_PRIVACY_DESCRIPTION",
-                comment: "Description of phone number privacy on the username education sheet"
-            )
+                comment: "Description of phone number privacy on the username education sheet",
+            ),
         ))
 
         section.add(createTableItem(
             iconName: "usernames-48-color",
             title: OWSLocalizedString(
                 "USERNAME_EDUCATION_USERNAME_TITLE",
-                comment: "Title for usernames section on the username education sheet"
+                comment: "Title for usernames section on the username education sheet",
             ),
             description: OWSLocalizedString(
                 "USERNAME_EDUCATION_USERNAME_DESCRIPTION",
-                comment: "Description of usernames on the username education sheet"
-            )
+                comment: "Description of usernames on the username education sheet",
+            ),
         ))
 
         section.add(createTableItem(
             iconName: "qr-codes-48-color",
             title: OWSLocalizedString(
                 "USERNAME_EDUCATION_LINK_TITLE",
-                comment: "Title for the username links and QR codes section on the username education sheet"
+                comment: "Title for the username links and QR codes section on the username education sheet",
             ),
             description: OWSLocalizedString(
                 "USERNAME_EDUCATION_LINK_DESCRIPTION",
-                comment: "Description of username links and QR codes on the username education sheet"
+                comment: "Description of username links and QR codes on the username education sheet",
             ),
-            isLastItem: true
+            isLastItem: true,
         ))
 
         contents.add(sections: [
             headerSection,
-            section
+            section,
         ])
 
         self.contents = contents
@@ -176,7 +176,7 @@ class UsernameEducationViewController: OWSTableViewController2 {
         iconName: String,
         title: String,
         description: String,
-        isLastItem: Bool = false
+        isLastItem: Bool = false,
     ) -> OWSTableItem {
         return OWSTableItem {
             let cell = OWSTableItem.newCell()
@@ -192,7 +192,7 @@ class UsernameEducationViewController: OWSTableViewController2 {
             stackView.autoPinEdge(toSuperviewEdge: .top, withInset: 0)
             stackView.autoPinEdge(
                 toSuperviewEdge: .bottom,
-                withInset: isLastItem ? 0 : Constants.itemMargin * 2
+                withInset: isLastItem ? 0 : Constants.itemMargin * 2,
             )
             stackView.alignment = .top
 
@@ -223,7 +223,7 @@ class UsernameEducationViewController: OWSTableViewController2 {
                 arrangedSubviews: [
                     titleLabel,
                     bodyLabel,
-                ]
+                ],
             )
             textStack.axis = .vertical
             textStack.spacing = 4
@@ -279,7 +279,8 @@ extension UsernameEducationViewController {
             let label = UILabel()
             label.text = OWSLocalizedString(
                 "USERNAME_EDUCATION_TITLE",
-                comment: "Title to set up signal username")
+                comment: "Title to set up signal username",
+            )
             label.numberOfLines = 0
             label.textAlignment = .center
             return label

@@ -135,7 +135,7 @@ extension MediaDismissAnimationController: UIViewControllerAnimatedTransitioning
 
         let backgroundView = UIView(frame: containerView.bounds)
         backgroundView.backgroundColor = fromMediaContext.backgroundColor
-        backgroundView.autoresizingMask = [ .flexibleWidth, .flexibleHeight ]
+        backgroundView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         containerView.addSubview(backgroundView)
 
         // Sometimes the initial (from) or the final (to) media view is partially obscured
@@ -162,7 +162,7 @@ extension MediaDismissAnimationController: UIViewControllerAnimatedTransitioning
 
         let imageView = MediaTransitionImageView(image: presentationImage)
         imageView.contentMode = .scaleAspectFill
-        imageView.autoresizingMask = [ .flexibleWidth, .flexibleHeight ]
+        imageView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         imageView.layer.masksToBounds = true
         imageView.shape = fromMediaContext.mediaViewShape
         imageView.frame = transitionView.bounds
@@ -196,7 +196,7 @@ extension MediaDismissAnimationController: UIViewControllerAnimatedTransitioning
                 duration: duration,
                 springDamping: 1,
                 springResponse: 0.25,
-                initialVelocity: velocity ?? .zero
+                initialVelocity: velocity ?? .zero,
             )
             animator.addAnimations {
                 if transitionContext.transitionWasCancelled == false {
@@ -270,7 +270,7 @@ extension MediaDismissAnimationController: UIViewControllerAnimatedTransitioning
 
                     self.pendingCompletion = nil
                     pendingCompletion(nil)
-                }
+                },
             )
         } else {
             completion(nil)
@@ -284,7 +284,7 @@ extension MediaDismissAnimationController: InteractiveDismissDelegate {
     func interactiveDismiss(
         _ interactiveDismiss: UIPercentDrivenInteractiveTransition,
         didChangeProgress progress: CGFloat,
-        touchOffset offset: CGPoint
+        touchOffset offset: CGPoint,
     ) {
         guard let transitionView else {
             // transition hasn't started yet.
@@ -301,7 +301,7 @@ extension MediaDismissAnimationController: InteractiveDismissDelegate {
 
     func interactiveDismiss(
         _ interactiveDismiss: UIPercentDrivenInteractiveTransition,
-        didFinishWithVelocity velocity: CGVector?
+        didFinishWithVelocity velocity: CGVector?,
     ) {
         if let pendingCompletion {
             self.pendingCompletion = nil

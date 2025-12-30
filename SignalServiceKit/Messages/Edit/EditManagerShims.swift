@@ -23,7 +23,7 @@ public protocol _EditManagerImpl_ReceiptManagerShim {
         _ message: TSIncomingMessage,
         thread: TSThread,
         circumstance: OWSReceiptCircumstance,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     )
 }
 
@@ -38,13 +38,13 @@ public struct _EditManagerImpl_ReceiptManagerWrapper: EditManagerImpl.Shims.Rece
         _ message: TSIncomingMessage,
         thread: TSThread,
         circumstance: OWSReceiptCircumstance,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         receiptManager.messageWasRead(
             message,
             thread: thread,
             circumstance: circumstance,
-            transaction: tx
+            transaction: tx,
         )
     }
 }

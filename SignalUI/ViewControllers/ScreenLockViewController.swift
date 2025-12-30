@@ -38,16 +38,16 @@ open class ScreenLockViewController: UIViewController {
     private lazy var buttonUnlockUI = OWSFlatButton.button(
         title: OWSLocalizedString(
             "SCREEN_LOCK_UNLOCK_SIGNAL",
-            comment: "Label for button on lock screen that lets users unlock Signal."
+            comment: "Label for button on lock screen that lets users unlock Signal.",
         ),
         font: OWSFlatButton.fontForHeight(ScreenLockViewController.buttonHeight),
         titleColor: UIColor.Signal.label,
         backgroundColor: UIColor.Signal.tertiaryFill,
         target: self,
-        selector: #selector(unlockUIButtonTapped)
+        selector: #selector(unlockUIButtonTapped),
     )
 
-    open override func loadView() {
+    override open func loadView() {
         super.loadView()
 
         view.backgroundColor = UIColor.Signal.background
@@ -85,7 +85,7 @@ open class ScreenLockViewController: UIViewController {
         buttonUnlockUI.isHidden = !shouldHaveScreenLock
     }
 
-    open override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+    override open var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         UIDevice.current.defaultSupportedOrientations
     }
 

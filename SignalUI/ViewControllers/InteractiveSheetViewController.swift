@@ -10,7 +10,7 @@ open class InteractiveSheetViewController: OWSViewController {
     public enum Constants {
         public static let handleSize = CGSize(width: 52, height: 5)
         public static let handleInsideMargin: CGFloat = 12
-        public static let handleHeight = 2*handleInsideMargin + handleSize.height
+        public static let handleHeight = 2 * handleInsideMargin + handleSize.height
 
         /// Max height of the sheet has its top this far from the safe area top of the screen.
         fileprivate static let extraTopPadding: CGFloat = 32
@@ -114,14 +114,14 @@ open class InteractiveSheetViewController: OWSViewController {
 
         init(
             canInteractWithParent: Bool,
-            interactiveSheetViewController: InteractiveSheetViewController
+            interactiveSheetViewController: InteractiveSheetViewController,
         ) {
             self.canInteractWithParent = canInteractWithParent
             self.interactiveSheetViewController = interactiveSheetViewController
             super.init(frame: .zero)
         }
 
-        public override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+        override public func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
             guard self.canInteractWithParent else {
                 return super.hitTest(point, with: event)
             }
@@ -151,7 +151,7 @@ open class InteractiveSheetViewController: OWSViewController {
     }
 
     private var maxWidthConstraint: NSLayoutConstraint?
-    open override func viewWillTransition(to size: CGSize, with coordinator: any UIViewControllerTransitionCoordinator) {
+    override open func viewWillTransition(to size: CGSize, with coordinator: any UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
 
         maxWidthConstraint?.autoRemove()
@@ -161,10 +161,10 @@ open class InteractiveSheetViewController: OWSViewController {
         }
     }
 
-    public override func loadView() {
+    override public func loadView() {
         let sheetView = SheetView(
             canInteractWithParent: self.canInteractWithParent,
-            interactiveSheetViewController: self
+            interactiveSheetViewController: self,
         )
         view = sheetView
         view.backgroundColor = .clear
@@ -188,7 +188,7 @@ open class InteractiveSheetViewController: OWSViewController {
             top: 0,
             left: margin,
             bottom: margin,
-            right: margin
+            right: margin,
         ))
 
         contentView.preservesSuperviewLayoutMargins = true
@@ -225,7 +225,7 @@ open class InteractiveSheetViewController: OWSViewController {
             }
             glassBackground.cornerConfiguration = .uniformEdges(
                 topRadius: .fixed(topRadius),
-                bottomRadius: .containerConcentric(minimum: 20)
+                bottomRadius: .containerConcentric(minimum: 20),
             )
 #endif
         } else {
@@ -233,12 +233,12 @@ open class InteractiveSheetViewController: OWSViewController {
         }
     }
 
-    open override func viewDidDisappear(_ animated: Bool) {
+    override open func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         dismissalDelegate?.didDismissPresentedSheet()
     }
 
-    open override func themeDidChange() {
+    override open func themeDidChange() {
         super.themeDidChange()
 
         handle.backgroundColor = handleBackgroundColor
@@ -297,7 +297,7 @@ open class InteractiveSheetViewController: OWSViewController {
                 !isInInteractiveTransition,
                 !isDismissingFromPanGesture,
                 sheetCurrentHeightConstraint.constant == oldValue
-                    || sheetCurrentHeightConstraint.constant < minHeight
+                || sheetCurrentHeightConstraint.constant < minHeight
             {
                 sheetCurrentHeightConstraint.constant = minHeight
             }
@@ -316,18 +316,18 @@ open class InteractiveSheetViewController: OWSViewController {
         }
     }
 
-    public private(set) lazy final var maxHeight = maximumPreferredHeight()
+    public private(set) final lazy var maxHeight = maximumPreferredHeight()
 
     private lazy var sheetHeightMinConstraint = sheetContainerView.autoSetDimension(
         .height,
         toSize: minHeight,
-        relation: .greaterThanOrEqual
+        relation: .greaterThanOrEqual,
     )
 
     private lazy var sheetHeightMaxConstraint = sheetContainerView.autoSetDimension(
         .height,
         toSize: maxHeight,
-        relation: .lessThanOrEqual
+        relation: .lessThanOrEqual,
     )
 
     private lazy var sheetCurrentHeightConstraint = sheetContainerView.autoSetDimension(.height, toSize: minHeight)
@@ -372,7 +372,7 @@ open class InteractiveSheetViewController: OWSViewController {
                 self.view.layoutIfNeeded()
                 self.heightDidChange(to: .max)
             },
-            completion: completion
+            completion: completion,
         )
     }
 
@@ -386,13 +386,13 @@ open class InteractiveSheetViewController: OWSViewController {
 
     public func animate(
         animations: @escaping () -> Void,
-        completion: (() -> Void)? = nil
+        completion: (() -> Void)? = nil,
     ) {
         if animationsShouldBeInterruptible {
             let animator = UIViewPropertyAnimator(
                 duration: 0.5,
                 controlPoint1: .init(x: 0.25, y: 1),
-                controlPoint2: .init(x: 0.25, y: 1)
+                controlPoint2: .init(x: 0.25, y: 1),
             )
             animator.addAnimations(animations)
             animator.addCompletion { [weak self] _ in
@@ -408,7 +408,7 @@ open class InteractiveSheetViewController: OWSViewController {
                 usingSpringWithDamping: 4 * .pi / 0.3,
                 initialSpringVelocity: 0,
                 animations: animations,
-                completion: completion.map { closure in { _ in closure() } }
+                completion: completion.map { closure in { _ in closure() } },
             )
         }
     }
@@ -450,7 +450,7 @@ open class InteractiveSheetViewController: OWSViewController {
         return CurrentAppContext().frame.height - (view.safeAreaInsets.top + Constants.extraTopPadding)
     }
 
-    open override func viewSafeAreaInsetsDidChange() {
+    override open func viewSafeAreaInsetsDidChange() {
         super.viewSafeAreaInsetsDidChange()
         let oldMaxHeight = maxHeight
         let newMaxHeight = maximumPreferredHeight()
@@ -459,7 +459,7 @@ open class InteractiveSheetViewController: OWSViewController {
         }
         if minHeight > maxHeight {
             minHeight = maxHeight
-        } else if minHeight == oldMaxHeight, let externalMinHeight = externalMinHeight {
+        } else if minHeight == oldMaxHeight, let externalMinHeight {
             minimizedHeight = externalMinHeight
         }
 
@@ -472,9 +472,9 @@ open class InteractiveSheetViewController: OWSViewController {
             !isDismissingFromPanGesture,
             (
                 sheetCurrentHeightConstraint.constant == oldMaxHeight
-                && sheetCurrentHeightConstraint.constant != minHeight
+                    && sheetCurrentHeightConstraint.constant != minHeight
             )
-                || sheetCurrentHeightConstraint.constant > maxHeight
+            || sheetCurrentHeightConstraint.constant > maxHeight
         {
             sheetCurrentHeightConstraint.constant = maxHeight
         }
@@ -500,7 +500,7 @@ open class InteractiveSheetViewController: OWSViewController {
             }
 
             // We're in an interactive transition, so don't let the scrollView scroll.
-            if let panningScrollView = panningScrollView {
+            if let panningScrollView {
                 panningScrollView.contentOffset.y = -panningScrollView.contentInset.top
                 panningScrollView.showsVerticalScrollIndicator = false
             }
@@ -521,7 +521,7 @@ open class InteractiveSheetViewController: OWSViewController {
 
             if startingHeight > self.maxHeight {
                 adjustStartingHeightForBeingOutOfBounds(bound: self.maxHeight)
-            } else if !canBeDismissed && startingHeight < self.minHeight {
+            } else if !canBeDismissed, startingHeight < self.minHeight {
                 adjustStartingHeightForBeingOutOfBounds(bound: self.minHeight)
             }
 
@@ -588,7 +588,7 @@ open class InteractiveSheetViewController: OWSViewController {
             } else if
                 canBeDismissed,
                 currentVelocity >= Constants.dismissVelocityThreshold,
-                (dismissesWithHighVelocitySwipe || isInInteractiveTransition)
+                dismissesWithHighVelocitySwipe || isInInteractiveTransition
             {
                 completionState = .dismissing
             } else if currentVisibleHeight >= minHeight {
@@ -603,7 +603,7 @@ open class InteractiveSheetViewController: OWSViewController {
                 } else {
                     completionState =
                         currentVisibleHeight < (maxHeight + minHeight) / 2
-                        ? .shrinking : .growing
+                            ? .shrinking : .growing
                 }
             } else {
                 if abs(currentVelocity) > Constants.baseVelocityThreshold {
@@ -611,7 +611,7 @@ open class InteractiveSheetViewController: OWSViewController {
                 } else {
                     completionState =
                         currentVisibleHeight < minHeight / 2 && canBeDismissed
-                        ? .dismissing : .shrinking
+                            ? .dismissing : .shrinking
                 }
             }
 
@@ -650,7 +650,7 @@ open class InteractiveSheetViewController: OWSViewController {
             } completion: {
                 self.sheetPanDelegate?.sheetPanDecelerationDidEnd()
                 self.heightDidChange(to: .height(finalHeight))
-                if completionState == .dismissing && self.canBeDismissed {
+                if completionState == .dismissing, self.canBeDismissed {
                     self.willDismissInteractively()
                     self.dismiss(animated: true, completion: { [weak self] in
                         self?.isDismissingFromPanGesture = false
@@ -664,7 +664,7 @@ open class InteractiveSheetViewController: OWSViewController {
 
             backdropView?.alpha = 1
 
-            guard let startingHeight = startingHeight else { break }
+            guard let startingHeight else { break }
             sheetCurrentOffsetConstraint?.constant = 0
             sheetCurrentHeightConstraint.constant = startingHeight
             heightDidChange(to: .height(startingHeight))
@@ -770,6 +770,7 @@ open class InteractiveSheetViewController: OWSViewController {
 }
 
 // MARK: -
+
 extension InteractiveSheetViewController: UIGestureRecognizerDelegate {
     public func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         switch gestureRecognizer {
@@ -811,7 +812,7 @@ private class InteractiveSheetAnimationController: UIPresentationController {
     }
 
     override func presentationTransitionWillBegin() {
-        if !isUsingExternalBackdropView, let containerView = containerView, let backdropView = backdropView {
+        if !isUsingExternalBackdropView, let containerView, let backdropView {
             backdropView.alpha = 0
             containerView.addSubview(backdropView)
             backdropView.autoPinEdgesToSuperviewEdges()
@@ -833,7 +834,7 @@ private class InteractiveSheetAnimationController: UIPresentationController {
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
-        guard let presentedView = presentedView else { return }
+        guard let presentedView else { return }
         coordinator.animate(alongsideTransition: { _ in
             presentedView.frame = self.frameOfPresentedViewInContainerView
             presentedView.layoutIfNeeded()

@@ -31,13 +31,15 @@ public class StoryManager {
         timestamp: UInt64,
         author: Aci,
         localIdentifiers: LocalIdentifiers,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) throws {
-        guard StoryFinder.story(
-            timestamp: timestamp,
-            author: author,
-            transaction: transaction
-        ) == nil else {
+        guard
+            StoryFinder.story(
+                timestamp: timestamp,
+                author: author,
+                transaction: transaction,
+            ) == nil
+        else {
             Logger.warn("Dropping story message with duplicate timestamp \(timestamp) from author \(author)")
             return
         }
@@ -93,17 +95,18 @@ public class StoryManager {
                 userProfileWriter: .localUser,
                 localIdentifiers: localIdentifiers,
                 authedAccount: .implicit(),
-                tx: transaction
+                tx: transaction,
             )
         }
 
-        guard let message = try StoryMessage.create(
-            withIncomingStoryMessage: storyMessage,
-            timestamp: timestamp,
-            receivedTimestamp: Date().ows_millisecondsSince1970,
-            author: author,
-            transaction: transaction
-        ) else { return }
+        guard
+            let message = try StoryMessage.create(
+                withIncomingStoryMessage: storyMessage,
+                timestamp: timestamp,
+                receivedTimestamp: Date().ows_millisecondsSince1970,
+                author: author,
+                transaction: transaction,
+            ) else { return }
 
         switch message.context {
         case .authorAci(let authorAci):
@@ -124,22 +127,24 @@ public class StoryManager {
 
     public class func processStoryMessageTranscript(
         _ proto: SSKProtoSyncMessageSent,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) throws {
         let existingStory = StoryFinder.story(
             timestamp: proto.timestamp,
             author: DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction)!.aci,
-            transaction: transaction
+            transaction: transaction,
         )
 
         if proto.isRecipientUpdate {
-            if let existingStory = existingStory {
+            if let existingStory {
                 existingStory.updateRecipients(proto.storyMessageRecipients, transaction: transaction)
 
                 // If there are no recipients remaining for a private story, delete the story model
-                if existingStory.groupId == nil,
-                   case .outgoing(let recipientStates) = existingStory.manifest,
-                   recipientStates.values.flatMap({ $0.contexts }).isEmpty {
+                if
+                    existingStory.groupId == nil,
+                    case .outgoing(let recipientStates) = existingStory.manifest,
+                    recipientStates.values.flatMap({ $0.contexts }).isEmpty
+                {
                     Logger.info("Deleting story with timestamp \(existingStory.timestamp) with no remaining contexts")
                     existingStory.anyRemove(transaction: transaction)
                 }
@@ -182,7 +187,7 @@ public class StoryManager {
     public class func setHasSetMyStoriesPrivacy(
         _ hasSet: Bool,
         shouldUpdateStorageService: Bool,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) {
         guard hasSet != hasSetMyStoriesPrivacy(transaction: transaction) else {
             // Don't trigger account record updates unneccesarily!
@@ -209,7 +214,7 @@ public class StoryManager {
                 return DependenciesBridge.shared.attachmentStore
                     .fetchFirstReferencedAttachment(
                         for: .storyMessageMedia(storyMessageRowId: rowId),
-                        tx: transaction
+                        tx: transaction,
                     )?.attachment
             } ?? nil
             if attachment?.asStream() != nil {
@@ -270,7 +275,7 @@ public class StoryManager {
         let recentlyInteractedThreads = ThreadFinder().threadsWithRecentInteractions(limit: recentContextAutomaticDownloadLimit, transaction: transaction)
         let recentlyViewedContexts = StoryFinder.associatedDatasWithRecentlyViewedStories(
             limit: Int(recentContextAutomaticDownloadLimit),
-            transaction: transaction
+            transaction: transaction,
         ).map(\.sourceContext.asStoryContext)
         let autoDownloadContexts = (pinnedThreads + recentlyInteractedThreads).map { $0.storyContext } + recentlyViewedContexts
 
@@ -284,13 +289,13 @@ public class StoryManager {
     }
 
     // Exposed for testing
-    internal class func enqueueDownloadOfAttachmentsForStoryMessage(
+    class func enqueueDownloadOfAttachmentsForStoryMessage(
         _ message: StoryMessage,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         DependenciesBridge.shared.attachmentDownloadManager.enqueueDownloadOfAttachmentsForStoryMessage(
             message,
-            tx: tx
+            tx: tx,
         )
     }
 }
@@ -430,12 +435,12 @@ public extension StoryContext {
         case .groupId(let data):
             return TSGroupThread.threadId(
                 forGroupId: data,
-                transaction: transaction
+                transaction: transaction,
             )
         case .authorAci(let authorAci):
             return TSContactThread.getWithContactAddress(
                 SignalServiceAddress(authorAci),
-                transaction: transaction
+                transaction: transaction,
             )?.uniqueId
         case .privateStory(let uniqueId):
             return uniqueId
@@ -451,7 +456,7 @@ public extension StoryContext {
         case .authorAci(let authorAci):
             return TSContactThread.getWithContactAddress(
                 SignalServiceAddress(authorAci),
-                transaction: transaction
+                transaction: transaction,
             )
         case .privateStory(let uniqueId):
             return TSPrivateStoryThread.anyFetchPrivateStoryThread(uniqueId: uniqueId, transaction: transaction)
@@ -470,7 +475,7 @@ public extension StoryContext {
     }
 
     func isHidden(
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> Bool {
         if self == .authorAci(StoryMessage.systemStoryAuthor) {
             return SSKEnvironment.shared.systemStoryManagerRef.areSystemStoriesHidden(transaction: transaction)

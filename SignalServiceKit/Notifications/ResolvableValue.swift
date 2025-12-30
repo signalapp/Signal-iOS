@@ -53,7 +53,7 @@ public struct ResolvableDisplayNameBuilder<Element> {
     public init(
         displayNameForAddress address: SignalServiceAddress,
         transformedBy transform: @escaping (DisplayName, DBReadTransaction) -> Element,
-        contactManager: any ContactManager
+        contactManager: any ContactManager,
     ) {
         self.address = address
         self.transform = transform

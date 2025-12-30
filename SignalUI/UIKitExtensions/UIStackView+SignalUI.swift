@@ -67,7 +67,7 @@ public extension UIStackView {
     func addBackgroundBlurView(
         blur: UIBlurEffect.Style,
         accessibilityFallbackColor: UIColor? = nil,
-        cornerRadius: CGFloat = 0
+        cornerRadius: CGFloat = 0,
     ) -> UIView {
         if
             UIAccessibility.isReduceTransparencyEnabled,
@@ -75,7 +75,7 @@ public extension UIStackView {
         {
             return self.addBackgroundView(
                 withBackgroundColor: accessibilityFallbackColor,
-                cornerRadius: cornerRadius
+                cornerRadius: cornerRadius,
             )
         } else {
             let blurEffectView = UIVisualEffectView(effect: UIBlurEffect(style: blur))

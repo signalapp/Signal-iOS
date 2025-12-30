@@ -35,14 +35,14 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
     var threeDSecureAuthenticationSession: ASWebAuthenticationSession?
     var threeDSecureAuthenticationFuture: Future<String>?
 
-    public override var preferredNavigationBarStyle: OWSNavigationBarStyle { .solid }
-    public override var navbarBackgroundColorOverride: UIColor? { tableBackgroundColor }
+    override var preferredNavigationBarStyle: OWSNavigationBarStyle { .solid }
+    override var navbarBackgroundColorOverride: UIColor? { tableBackgroundColor }
 
     init(
         donationAmount: FiatMoney,
         donationMode: DonationMode,
         paymentMethod: PaymentMethod,
-        onFinished: @escaping (Error?) -> Void
+        onFinished: @escaping (Error?) -> Void,
     ) {
         self.donationAmount = donationAmount
         self.donationMode = donationMode
@@ -55,11 +55,13 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
         case .card:
             title = OWSLocalizedString(
                 "PAYMENT_DETAILS_CARD_TITLE",
-                comment: "Header title for card payment details screen")
+                comment: "Header title for card payment details screen",
+            )
         case .sepa, .ideal:
             title = OWSLocalizedString(
                 "PAYMENT_DETAILS_BANK_TITLE",
-                comment: "Header title for bank payment details screen")
+                comment: "Header title for bank payment details screen",
+            )
         }
     }
 
@@ -69,7 +71,7 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
 
     // MARK: - View callbacks
 
-    public override func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
 
         shouldAvoidKeyboard = true
@@ -79,7 +81,7 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
         contents = OWSTableContents(sections: sections)
     }
 
-    public override func viewDidAppear(_ animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
         switch paymentMethod {
@@ -108,13 +110,13 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
                 subscriptionLevel,
                 subscriberID,
                 _,
-                currentSubscriptionLevel
+                currentSubscriptionLevel,
             ):
                 monthlyDonation(
                     with: validForm,
                     newSubscriptionLevel: subscriptionLevel,
                     priorSubscriptionLevel: currentSubscriptionLevel,
-                    subscriberID: subscriberID
+                    subscriberID: subscriberID,
                 )
             case let .gift(thread, messageText):
                 switch validForm {
@@ -153,12 +155,12 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
         case .card:
             subheaderText = OWSLocalizedString(
                 "CARD_DONATION_SUBHEADER_TEXT",
-                comment: "On the credit/debit card donation screen, a small amount of information text is shown. This is that text. It should (1) instruct users to enter their credit/debit card information (2) tell them that Signal does not collect or store their personal information."
+                comment: "On the credit/debit card donation screen, a small amount of information text is shown. This is that text. It should (1) instruct users to enter their credit/debit card information (2) tell them that Signal does not collect or store their personal information.",
             )
         case .sepa, .ideal:
             subheaderText = OWSLocalizedString(
                 "BANK_DONATION_SUBHEADER_TEXT",
-                comment: "On the bank transfer donation screen, a small amount of information text is shown. This is that text. It should (1) instruct users to enter their bank information (2) tell them that Signal does not collect or store their personal information."
+                comment: "On the bank transfer donation screen, a small amount of information text is shown. This is that text. It should (1) instruct users to enter their bank information (2) tell them that Signal does not collect or store their personal information.",
             )
         }
 
@@ -167,10 +169,10 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
             " ",
             OWSLocalizedString(
                 "CARD_DONATION_SUBHEADER_LEARN_MORE",
-                comment: "On the credit/debit card donation screen, a small amount of information text is shown. Users can click this link to learn more information."
-            ).styled(with: linkPart)
+                comment: "On the credit/debit card donation screen, a small amount of information text is shown. Users can click this link to learn more information.",
+            ).styled(with: linkPart),
         ]).styled(with: .color(.Signal.secondaryLabel), .font(.dynamicTypeFootnoteClamped))
-        subheaderTextView.linkTextAttributes = [ .foregroundColor: UIColor.Signal.label ]
+        subheaderTextView.linkTextAttributes = [.foregroundColor: UIColor.Signal.label]
 
         // Only change the placeholder when enough digits are entered.
         // Helps avoid a jittery UI as you type/delete.
@@ -198,14 +200,14 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
             guard invalidFields.contains(.cardNumber) else { return nil }
             return OWSLocalizedString(
                 "CARD_DONATION_CARD_NUMBER_GENERIC_ERROR",
-                comment: "Users can donate to Signal with a credit or debit card. If their card number is invalid, this generic error message will be shown. Try to use a short string to make space in the UI."
+                comment: "Users can donate to Signal with a credit or debit card. If their card number is invalid, this generic error message will be shown. Try to use a short string to make space in the UI.",
             )
         }())
         expirationView.render(errorMessage: {
             guard invalidFields.contains(.expirationDate) else { return nil }
             return OWSLocalizedString(
                 "CARD_DONATION_EXPIRATION_DATE_GENERIC_ERROR",
-                comment: "Users can donate to Signal with a credit or debit card. If their expiration date is invalid, this generic error message will be shown. Try to use a short string to make space in the UI."
+                comment: "Users can donate to Signal with a credit or debit card. If their expiration date is invalid, this generic error message will be shown. Try to use a short string to make space in the UI.",
             )
         }())
         cvvView.render(errorMessage: {
@@ -213,12 +215,12 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
             if cvvView.text.count > cardType.cvvCount {
                 return OWSLocalizedString(
                     "CARD_DONATION_CVV_TOO_LONG_ERROR",
-                    comment: "Users can donate to Signal with a credit or debit card. If their card verification code (CVV) is too long, this error will be shown. Try to use a short string to make space in the UI."
+                    comment: "Users can donate to Signal with a credit or debit card. If their card verification code (CVV) is too long, this error will be shown. Try to use a short string to make space in the UI.",
                 )
             } else {
                 return OWSLocalizedString(
                     "CARD_DONATION_CVV_GENERIC_ERROR",
-                    comment: "Users can donate to Signal with a credit or debit card. If their card verification code (CVV) is invalid for reasons we cannot determine, this generic error message will be shown. Try to use a short string to make space in the UI."
+                    comment: "Users can donate to Signal with a credit or debit card. If their card verification code (CVV) is invalid for reasons we cannot determine, this generic error message will be shown. Try to use a short string to make space in the UI.",
                 )
             }
         }())
@@ -240,27 +242,27 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
                 case .invalidCharacters:
                     return OWSLocalizedString(
                         "SEPA_DONATION_IBAN_INVALID_CHARACTERS_ERROR",
-                        comment: "Users can donate to Signal with a bank account. If their internation bank account number (IBAN) contains characters other than letters and numbers, this error will be shown. Try to use a short string to make space in the UI."
+                        comment: "Users can donate to Signal with a bank account. If their internation bank account number (IBAN) contains characters other than letters and numbers, this error will be shown. Try to use a short string to make space in the UI.",
                     )
                 case .invalidCheck:
                     return OWSLocalizedString(
                         "SEPA_DONATION_IBAN_INVALID_CHECK_ERROR",
-                        comment: "Users can donate to Signal with a bank account. If their internation bank account number (IBAN) does not pass validation, this error will be shown. Try to use a short string to make space in the UI."
+                        comment: "Users can donate to Signal with a bank account. If their internation bank account number (IBAN) does not pass validation, this error will be shown. Try to use a short string to make space in the UI.",
                     )
                 case .invalidCountry:
                     return OWSLocalizedString(
                         "SEPA_DONATION_IBAN_INVALID_COUNTRY_ERROR",
-                        comment: "Users can donate to Signal with a bank account. If their internation bank account number (IBAN) has an unsupported country code, this error will be shown. Try to use a short string to make space in the UI."
+                        comment: "Users can donate to Signal with a bank account. If their internation bank account number (IBAN) has an unsupported country code, this error will be shown. Try to use a short string to make space in the UI.",
                     )
                 case .tooLong:
                     return OWSLocalizedString(
                         "SEPA_DONATION_IBAN_TOO_LONG_ERROR",
-                        comment: "Users can donate to Signal with a bank account. If their internation bank account number (IBAN) is too long, this error will be shown. Try to use a short string to make space in the UI."
+                        comment: "Users can donate to Signal with a bank account. If their internation bank account number (IBAN) is too long, this error will be shown. Try to use a short string to make space in the UI.",
                     )
                 case .tooShort:
                     return OWSLocalizedString(
                         "SEPA_DONATION_IBAN_TOO_SHORT_ERROR",
-                        comment: "Users can donate to Signal with a bank account. If their internation bank account number (IBAN) is too long, this error will be shown. Try to use a short string to make space in the UI."
+                        comment: "Users can donate to Signal with a bank account. If their internation bank account number (IBAN) is too long, this error will be shown. Try to use a short string to make space in the UI.",
                     )
                 }
             }
@@ -284,8 +286,8 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
                     cell.contentView.addSubview(self.subheaderTextView)
                     self.subheaderTextView.autoPinEdgesToSuperviewMargins()
                     return cell
-                }
-            )]
+                },
+            )],
         )
         result.hasBackground = false
         return result
@@ -300,7 +302,7 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
                 cardNumber: cardNumberView.text,
                 isCardNumberFieldFocused: cardNumberView.isFirstResponder,
                 expirationDate: expirationView.text,
-                cvv: cvvView.text
+                cvv: cvvView.text,
             )
         case let .sepa(mandate: mandate):
             return Self.formState(
@@ -309,14 +311,14 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
                 isIBANFieldFocused: ibanView.isFirstResponder,
                 name: nameView.text,
                 email: emailView.text,
-                isEmailFieldFocused: emailView.isFirstResponder
+                isEmailFieldFocused: emailView.isFirstResponder,
             )
         case let .ideal(paymentType):
             return Self.formState(
                 IDEALPaymentType: paymentType,
                 name: nameView.text,
                 email: emailView.text,
-                isEmailFieldFocused: emailView.isFirstResponder
+                isEmailFieldFocused: emailView.isFirstResponder,
             )
         }
     }
@@ -347,36 +349,36 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
 
     private static let cardNumberTitle = OWSLocalizedString(
         "CARD_DONATION_CARD_NUMBER_LABEL",
-        comment: "Users can donate to Signal with a credit or debit card. This is the label for the card number field on that screen."
+        comment: "Users can donate to Signal with a credit or debit card. This is the label for the card number field on that screen.",
     )
 
     private static let cardNumberPlaceholder = "0000000000000000"
 
     private static let expirationTitle = OWSLocalizedString(
         "CARD_DONATION_EXPIRATION_DATE_LABEL",
-        comment: "Users can donate to Signal with a credit or debit card. This is the label for the expiration date field on that screen. Try to use a short string to make space in the UI. (For example, the English text uses \"Exp. Date\" instead of \"Expiration Date\")."
+        comment: "Users can donate to Signal with a credit or debit card. This is the label for the expiration date field on that screen. Try to use a short string to make space in the UI. (For example, the English text uses \"Exp. Date\" instead of \"Expiration Date\").",
     )
 
     private static let cvvTitle = OWSLocalizedString(
         "CARD_DONATION_CVV_LABEL",
-        comment: "Users can donate to Signal with a credit or debit card. This is the label for the card verification code (CVV) field on that screen."
+        comment: "Users can donate to Signal with a credit or debit card. This is the label for the card verification code (CVV) field on that screen.",
     )
 
     private static let ibanTitle = OWSLocalizedString(
         "SEPA_DONATION_IBAN_LABEL",
-        comment: "Users can donate to Signal with a bank account. This is the label for IBAN (internation bank account number) field on that screen."
+        comment: "Users can donate to Signal with a bank account. This is the label for IBAN (internation bank account number) field on that screen.",
     )
 
     private static let ibanPlaceholder = "DE00000000000000000000"
 
     private static let nameTitle = OWSLocalizedString(
         "SEPA_DONATION_NAME_LABEL",
-        comment: "Users can donate to Signal with a bank account. This is the label for name field on that screen."
+        comment: "Users can donate to Signal with a bank account. This is the label for name field on that screen.",
     )
 
     private static let emailTitle = OWSLocalizedString(
         "SEPA_DONATION_EMAIL_LABEL",
-        comment: "Users can donate to Signal with a bank account. This is the label for email field on that screen."
+        comment: "Users can donate to Signal with a bank account. This is the label for email field on that screen.",
     )
 
     // MARK: Form field title styles
@@ -388,7 +390,7 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
             Self.cvvTitle,
         ],
         titleWidth: 120,
-        placeholder: Self.formatCardNumber(unformatted: Self.cardNumberPlaceholder)
+        placeholder: Self.formatCardNumber(unformatted: Self.cardNumberPlaceholder),
     )
 
     private lazy var sepaFormTitleLayout: FormFieldView.TitleLayout = titleLayout(
@@ -398,7 +400,7 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
             Self.emailTitle,
         ],
         titleWidth: 60,
-        placeholder: Self.formatIBAN(unformatted: Self.ibanPlaceholder)
+        placeholder: Self.formatIBAN(unformatted: Self.ibanPlaceholder),
     )
 
     private func titleLayout(for titles: [String], titleWidth: CGFloat, placeholder: String) -> FormFieldView.TitleLayout {
@@ -406,7 +408,7 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
             Self.canTitlesFitInWidth(titles: titles, width: titleWidth),
             self.canPlaceholderFitInAvailableWidth(
                 placeholder: placeholder,
-                headerWidth: titleWidth
+                headerWidth: titleWidth,
             )
         else { return .compact }
 
@@ -463,10 +465,10 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
         style: .formatted(
             format: Self.formatCardNumber(unformatted:),
             allowedCharacters: .numbers,
-            maxDigits: 19
+            maxDigits: 19,
         ),
         textContentType: .creditCardNumber,
-        delegate: self
+        delegate: self,
     )
 
     // MARK: Expiration date
@@ -499,7 +501,7 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
 
     private lazy var expirationView = {
         let textContentType: UITextContentType?
-        if #available (iOS 17.0, *) {
+        if #available(iOS 17.0, *) {
             textContentType = .creditCardExpiration
         } else {
             textContentType = nil
@@ -509,15 +511,15 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
             titleLayout: self.cardFormTitleLayout,
             placeholder: OWSLocalizedString(
                 "CARD_DONATION_EXPIRATION_DATE_PLACEHOLDER",
-                comment: "Users can donate to Signal with a credit or debit card. This is the label for the card expiration date field on that screen."
+                comment: "Users can donate to Signal with a credit or debit card. This is the label for the card expiration date field on that screen.",
             ),
             style: .formatted(
                 format: Self.formatExpirationDate(unformatted:),
                 allowedCharacters: .numbers,
-                maxDigits: 4
+                maxDigits: 4,
             ),
             textContentType: textContentType,
-            delegate: self
+            delegate: self,
         )
     }()
 
@@ -537,10 +539,10 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
             style: .formatted(
                 format: { $0 },
                 allowedCharacters: .numbers,
-                maxDigits: 4
+                maxDigits: 4,
             ),
             textContentType: textContentType,
-            delegate: self
+            delegate: self,
         )
     }()
 
@@ -556,11 +558,11 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
         let findAccountInfoButton = UIButton(
             configuration: .mediumBorderless(title: OWSLocalizedString(
                 "BANK_DONATION_FOOTER_FIND_ACCOUNT_INFO",
-                comment: "On the bank donation screen, show a link below the input form to show help about finding account info."
+                comment: "On the bank donation screen, show a link below the input form to show help about finding account info.",
             )),
             primaryAction: UIAction { [weak self] _ in
                 self?.present(DonationPaymentDetailsFindAccountInfoSheetViewController(), animated: true)
-            }
+            },
         )
         let stackView = UIStackView.verticalButtonStack(buttons: [findAccountInfoButton])
         stackView.directionalLayoutMargins.top = 16
@@ -572,10 +574,10 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
 
     // MARK: IBAN
 
-    nonisolated private static func formatIBAN(unformatted: String) -> String {
+    private nonisolated static func formatIBAN(unformatted: String) -> String {
         let gaps: Set<Int> = [4, 8, 12, 16, 20, 24, 28, 32]
 
-        var result = unformatted.enumerated().reduce(into: [Character]()) { (partialResult, item) in
+        var result = unformatted.enumerated().reduce(into: [Character]()) { partialResult, item in
             let (i, character) = item
             if gaps.contains(i) {
                 partialResult.append(" ")
@@ -595,10 +597,10 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
         style: .formatted(
             format: Self.formatIBAN(unformatted:),
             allowedCharacters: .alphanumeric,
-            maxDigits: 34
+            maxDigits: 34,
         ),
         textContentType: nil,
-        delegate: self
+        delegate: self,
     )
 
     // MARK: iDEAL
@@ -607,9 +609,9 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
         let textViewItems: [OWSTableItem]
         switch self.donationMode {
         case .oneTime, .gift:
-            textViewItems = [ Self.cell(for: self.nameView) ]
+            textViewItems = [Self.cell(for: self.nameView)]
         case .monthly:
-            textViewItems = [ Self.cell(for: self.nameView), Self.cell(for: self.emailView)]
+            textViewItems = [Self.cell(for: self.nameView), Self.cell(for: self.emailView)]
         }
         return [OWSTableSection(items: textViewItems)]
     }
@@ -621,11 +623,11 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
         titleLayout: self.sepaFormTitleLayout,
         placeholder: OWSLocalizedString(
             "SEPA_DONATION_NAME_PLACEHOLDER",
-            comment: "Users can donate to Signal with a bank account. This is placeholder text for the name field before the user starts typing."
+            comment: "Users can donate to Signal with a bank account. This is placeholder text for the name field before the user starts typing.",
         ),
         style: .plain(keyboardType: .default),
         textContentType: .name,
-        delegate: self
+        delegate: self,
     )
 
     private lazy var emailView = FormFieldView(
@@ -633,11 +635,11 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
         titleLayout: self.sepaFormTitleLayout,
         placeholder: OWSLocalizedString(
             "SEPA_DONATION_EMAIL_PLACEHOLDER",
-            comment: "Users can donate to Signal with a bank account. This is placeholder text for the email field before the user starts typing."
+            comment: "Users can donate to Signal with a bank account. This is placeholder text for the email field before the user starts typing.",
         ),
         style: .plain(keyboardType: .emailAddress),
         textContentType: .emailAddress,
-        delegate: self
+        delegate: self,
     )
 
     // MARK: - Submit button, footer
@@ -650,12 +652,12 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
             case .oneTime, .gift:
                 format = OWSLocalizedString(
                     "DONATE_BUTTON",
-                    comment: "Users can donate to Signal with a credit or debit card. This is the heading on that screen, telling them how much they'll donate. Embeds {{formatted amount of money}}, such as \"$20\"."
+                    comment: "Users can donate to Signal with a credit or debit card. This is the heading on that screen, telling them how much they'll donate. Embeds {{formatted amount of money}}, such as \"$20\".",
                 )
             case .monthly:
                 format = OWSLocalizedString(
                     "DONATE_BUTTON_MONTHLY",
-                    comment: "Users can donate to Signal with a credit or debit card. This is the heading on that screen, telling them how much they'll donate every month. Embeds {{formatted amount of money}}, such as \"$20\"."
+                    comment: "Users can donate to Signal with a credit or debit card. This is the heading on that screen, telling them how much they'll donate every month. Embeds {{formatted amount of money}}, such as \"$20\".",
                 )
             }
             return String(format: format, amountString)
@@ -678,15 +680,15 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
                     case .monthly:
                         let title = OWSLocalizedString(
                             "IDEAL_DONATION_CONFIRM_DONATION_TITLE",
-                            comment: "Fallback title confirming recurring donation with bank."
+                            comment: "Fallback title confirming recurring donation with bank.",
                         )
 
                         let messageFormat = OWSLocalizedString(
                             "IDEAL_DONATION_CONFIRM_DONATION_WITH_BANK_MESSAGE",
-                            comment: "Message confirming recurring donation with bank. This message confirms with the user that they will see a small confirmation charge with their bank before the donation. Embeds 1:{{ 0.01 euro, as a localized string }}, 2:{{ the amount of their donation, as a localized string }}."
+                            comment: "Message confirming recurring donation with bank. This message confirms with the user that they will see a small confirmation charge with their bank before the donation. Embeds 1:{{ 0.01 euro, as a localized string }}, 2:{{ the amount of their donation, as a localized string }}.",
                         )
                         let oneEuroCentString = CurrencyFormatter.format(
-                            money: FiatMoney(currencyCode: "EUR", value: 0.01)
+                            money: FiatMoney(currencyCode: "EUR", value: 0.01),
                         )
                         let message = String(format: messageFormat, oneEuroCentString, amountString)
 
@@ -696,17 +698,17 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
                             style: .default,
                             handler: { _ in
                                 submitAction()
-                            }
+                            },
                         ))
                         actionSheet.addAction(.init(
                             title: CommonStrings.cancelButton,
                             style: .cancel,
-                            handler: nil
+                            handler: nil,
                         ))
                         self.presentActionSheet(actionSheet)
                     }
                 }
-            }
+            },
         )
     }()
 
@@ -725,7 +727,7 @@ class DonationPaymentDetailsViewController: OWSTableViewController2 {
         return view
     }()
 
-    open override var bottomFooter: UIView? {
+    override open var bottomFooter: UIView? {
         get { bottomFooterContainer }
         set {}
     }
@@ -738,7 +740,7 @@ extension DonationPaymentDetailsViewController: UITextViewDelegate {
         _ textView: UITextView,
         shouldInteractWith URL: URL,
         in characterRange: NSRange,
-        interaction: UITextItemInteraction
+        interaction: UITextItemInteraction,
     ) -> Bool {
         present(DonationPaymentDetailsReadMoreSheetViewController(), animated: true)
         return false
@@ -753,7 +755,7 @@ extension DonationPaymentDetailsViewController: CreditOrDebitCardDonationFormVie
 
 // MARK: - Utilities
 
-fileprivate extension UInt8 {
+private extension UInt8 {
     var isValidAsMonth: Bool { self >= 1 && self <= 12 }
 }
 
@@ -766,7 +768,7 @@ fileprivate extension UInt8 {
         donationAmount: .init(currencyCode: "USD", value: 10),
         donationMode: .oneTime,
         paymentMethod: .card,
-        onFinished: { _ in }
+        onFinished: { _ in },
     )
 }
 #endif

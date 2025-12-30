@@ -20,9 +20,9 @@ class RegistrationPhoneNumberDiscoverabilityViewController: OWSViewController {
     private let state: RegistrationPhoneNumberDiscoverabilityState
     private weak var presenter: RegistrationPhoneNumberDiscoverabilityPresenter?
 
-    public init(
+    init(
         state: RegistrationPhoneNumberDiscoverabilityState,
-        presenter: RegistrationPhoneNumberDiscoverabilityPresenter
+        presenter: RegistrationPhoneNumberDiscoverabilityPresenter,
     ) {
         self.state = state
         self.presenter = presenter
@@ -34,7 +34,7 @@ class RegistrationPhoneNumberDiscoverabilityViewController: OWSViewController {
     }
 
     @available(*, unavailable)
-    public override init() {
+    override init() {
         owsFail("This should not be called")
     }
 
@@ -55,7 +55,7 @@ class RegistrationPhoneNumberDiscoverabilityViewController: OWSViewController {
             UIAction { [weak self] _ in
                 self?.phoneNumberDiscoverability = phoneNumberDiscoverability
             },
-            for: .primaryActionTriggered
+            for: .primaryActionTriggered,
         )
         return button
     }
@@ -66,7 +66,7 @@ class RegistrationPhoneNumberDiscoverabilityViewController: OWSViewController {
         return label
     }()
 
-    public override func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
 
         view.backgroundColor = .Signal.background
@@ -78,23 +78,23 @@ class RegistrationPhoneNumberDiscoverabilityViewController: OWSViewController {
                 style: .done,
                 target: self,
                 action: #selector(didTapSave),
-                accessibilityIdentifier: "registration.phoneNumberDiscoverability.nextButton"
+                accessibilityIdentifier: "registration.phoneNumberDiscoverability.nextButton",
             )
         }
 
         let titleLabel = UILabel.titleLabelForRegistration(text: OWSLocalizedString(
             "ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_TITLE",
-            comment: "Title of the 'onboarding phone number discoverability' view."
+            comment: "Title of the 'onboarding phone number discoverability' view.",
         ))
         titleLabel.accessibilityIdentifier = "registration.phoneNumberDiscoverability.titleLabel"
 
         let formattedPhoneNumber = state.e164.stringValue
         let explanationTextFormat = OWSLocalizedString(
             "ONBOARDING_PHONE_NUMBER_DISCOVERABILITY_EXPLANATION_FORMAT",
-            comment: "Explanation of the 'onboarding phone number discoverability' view. Embeds {user phone number}"
+            comment: "Explanation of the 'onboarding phone number discoverability' view. Embeds {user phone number}",
         )
         let subtitleLabel = UILabel.explanationLabelForRegistration(
-            text: String(format: explanationTextFormat, formattedPhoneNumber)
+            text: String(format: explanationTextFormat, formattedPhoneNumber),
         )
         subtitleLabel.accessibilityIdentifier = "registration.phoneNumberDiscoverability.explanationLabel"
 
@@ -111,7 +111,7 @@ class RegistrationPhoneNumberDiscoverabilityViewController: OWSViewController {
                 configuration: .largePrimary(title: CommonStrings.continueButton),
                 primaryAction: UIAction { [weak self] _ in
                     self?.didTapSave()
-                }
+                },
             )
             continueButton.accessibilityIdentifier = "registration.phoneNumberDiscoverability.saveButton"
 
@@ -143,13 +143,13 @@ private extension RegistrationPhoneNumberDiscoverabilityViewController {
 
     private class PrivacySettingButton: UIButton {
         private lazy var contentView = PrivacySettingButtonContentView(
-            configuration: .init(phoneNumberDiscoverability: phoneNumberDiscoverability)
+            configuration: .init(phoneNumberDiscoverability: phoneNumberDiscoverability),
         )
 
         var phoneNumberDiscoverability: PhoneNumberDiscoverability {
             didSet {
                 contentView.configuration = PrivacySettingButtonContentConfiguration(
-                    phoneNumberDiscoverability: phoneNumberDiscoverability
+                    phoneNumberDiscoverability: phoneNumberDiscoverability,
                 )
             }
         }
@@ -158,7 +158,7 @@ private extension RegistrationPhoneNumberDiscoverabilityViewController {
             didSet {
                 contentView.configuration = PrivacySettingButtonContentConfiguration(
                     phoneNumberDiscoverability: phoneNumberDiscoverability,
-                    isSelected: isSelected
+                    isSelected: isSelected,
                 )
             }
         }
@@ -177,7 +177,7 @@ private extension RegistrationPhoneNumberDiscoverabilityViewController {
                 contentView.leadingAnchor.constraint(equalTo: leadingAnchor),
                 contentView.topAnchor.constraint(equalTo: topAnchor),
                 contentView.trailingAnchor.constraint(equalTo: trailingAnchor),
-                contentView.bottomAnchor.constraint(equalTo: bottomAnchor)
+                contentView.bottomAnchor.constraint(equalTo: bottomAnchor),
             ])
         }
 
@@ -232,7 +232,7 @@ private extension RegistrationPhoneNumberDiscoverabilityViewController {
             isUserInteractionEnabled = false
             layoutMargins = .init(hMargin: 8, vMargin: 8)
 
-            let hStack = UIStackView(arrangedSubviews: [ titleLabel, checkmark ])
+            let hStack = UIStackView(arrangedSubviews: [titleLabel, checkmark])
             hStack.axis = .horizontal
             hStack.alignment = .center
             hStack.spacing = 12
@@ -252,7 +252,7 @@ private extension RegistrationPhoneNumberDiscoverabilityViewController {
             addBottomStroke(color: .Signal.opaqueSeparator, strokeWidth: .hairlineWidth)
 
             apply(configuration)
-       }
+        }
 
         @available(*, unavailable, message: "Use other constructor")
         required init?(coder: NSCoder) {
@@ -276,7 +276,7 @@ private extension RegistrationPhoneNumberDiscoverabilityViewController {
             titleLabel.lineBreakMode = .byWordWrapping
             titleLabel.text = OWSLocalizedString(
                 "REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE",
-                comment: "During registration, users can choose who can see their phone number."
+                comment: "During registration, users can choose who can see their phone number.",
             )
             return titleLabel
         }()

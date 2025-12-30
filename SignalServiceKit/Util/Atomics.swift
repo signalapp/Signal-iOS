@@ -101,7 +101,7 @@ public final class AtomicUInt: Sendable {
 
 public final class AtomicValue<T>: Sendable {
     private let lock: UnfairLock
-    nonisolated(unsafe) private var value: T
+    private nonisolated(unsafe) var value: T
 
     public init(_ value: T, lock: UnfairLock) {
         self.value = value
@@ -226,7 +226,7 @@ extension AtomicOptional where T: Equatable {
 
 public final class AtomicArray<T>: Sendable {
     private let lock: UnfairLock
-    nonisolated(unsafe) private var values: [T]
+    private nonisolated(unsafe) var values: [T]
 
     public init(_ values: [T] = [], lock: UnfairLock) {
         self.values = values
@@ -319,7 +319,7 @@ extension AtomicArray where T: Equatable {
 
 public final class AtomicDictionary<Key: Hashable, Value>: Sendable {
     private let lock: UnfairLock
-    nonisolated(unsafe) private var values: [Key: Value]
+    private nonisolated(unsafe) var values: [Key: Value]
 
     public init(_ values: [Key: Value] = [:], lock: UnfairLock) {
         self.values = values
@@ -380,7 +380,7 @@ public final class AtomicDictionary<Key: Hashable, Value>: Sendable {
 
 public final class AtomicSet<T: Hashable>: Sendable {
     private let lock: UnfairLock
-    nonisolated(unsafe) private var values = Set<T>()
+    private nonisolated(unsafe) var values = Set<T>()
 
     public init(lock: UnfairLock) {
         self.lock = lock

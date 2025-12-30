@@ -29,36 +29,36 @@ class TransferStatusViewModel: ObservableObject {
                     if isNewDevice {
                         OWSLocalizedString(
                             "DEVICE_TRANSFER_STATUS_NEW_DEVICE_STARTING",
-                            comment: "Status message on new device when transfer is starting."
+                            comment: "Status message on new device when transfer is starting.",
                         )
                     } else {
                         OWSLocalizedString(
                             "DEVICE_TRANSFER_STATUS_OLD_DEVICE_STARTING",
-                            comment: "Status message on old device when transfer is starting."
+                            comment: "Status message on old device when transfer is starting.",
                         )
                     }
                 case .connecting:
                     if isNewDevice {
                         OWSLocalizedString(
                             "DEVICE_TRANSFER_STATUS_NEW_DEVICE_CONNECTING",
-                            comment: "Status message on new device when connecting to old device."
+                            comment: "Status message on new device when connecting to old device.",
                         )
                     } else {
                         OWSLocalizedString(
                             "DEVICE_TRANSFER_STATUS_OLD_DEVICE_CONNECTING",
-                            comment: "Status message on new device when connecting to new device."
+                            comment: "Status message on new device when connecting to new device.",
                         )
                     }
                 case .cancelling:
                     if isNewDevice {
                         OWSLocalizedString(
                             "DEVICE_TRANSFER_STATUS_NEW_DEVICE_CANCELLING",
-                            comment: "Status message on new device when cancelling transfer."
+                            comment: "Status message on new device when cancelling transfer.",
                         )
                     } else {
                         OWSLocalizedString(
                             "DEVICE_TRANSFER_STATUS_OLD_DEVICE_CANCELLING",
-                            comment: "Status message on old device when cancelling transfer."
+                            comment: "Status message on old device when cancelling transfer.",
                         )
                     }
                 }
@@ -68,16 +68,17 @@ class TransferStatusViewModel: ObservableObject {
                 if isNewDevice {
                     OWSLocalizedString(
                         "DEVICE_TRANSFER_STATUS_NEW_DEVICE_CONNECTING_MESSAGE",
-                        comment: "Description message on new device displayed during device transfer."
+                        comment: "Description message on new device displayed during device transfer.",
                     )
                 } else {
                     OWSLocalizedString(
                         "DEVICE_TRANSFER_STATUS_OLD_DEVICE_CONNECTING_MESSAGE",
-                        comment: "Description message on old device displayed during device transfer."
+                        comment: "Description message on old device displayed during device transfer.",
                     )
                 }
             }
         }
+
         case indefinite(Indefinite)
         case transferring(Double)
         case error(Error)
@@ -125,7 +126,7 @@ class TransferStatusViewModel: ObservableObject {
         var previouslyCompletedPortion = currentProgress
         throughputTimer = Timer.scheduledTimer(
             withTimeInterval: 1,
-            repeats: true
+            repeats: true,
         ) { [weak self] timer in
             guard let self, case let .transferring(progress) = self.state else {
                 self?.throughput = nil

@@ -128,7 +128,7 @@ public class GRDBDatabaseStorageAdapter {
     init(
         databaseChangeObserver: DatabaseChangeObserver,
         databaseFileUrl: URL,
-        keyFetcher: GRDBKeyFetcher
+        keyFetcher: GRDBKeyFetcher,
     ) throws {
         self.databaseChangeObserver = databaseChangeObserver
         self.databaseFileUrl = databaseFileUrl
@@ -154,7 +154,7 @@ public class GRDBDatabaseStorageAdapter {
             queue: .main,
             block: { [weak self] token in
                 self?.primaryDBFolderNameDidChange(darwinNotificationToken: token)
-            }
+            },
         )
     }
 
@@ -306,7 +306,7 @@ extension GRDBDatabaseStorageAdapter {
 
 extension GRDBDatabaseStorageAdapter {
 
-    #if TESTABLE_BUILD
+#if TESTABLE_BUILD
     // TODO: We could eventually eliminate all nested transactions.
     private static let detectNestedTransactions = false
 
@@ -314,12 +314,12 @@ extension GRDBDatabaseStorageAdapter {
     // These checks can also be used to detect unexpected "sneaky" transactions.
     @ThreadBacked(key: "canOpenTransaction", defaultValue: true)
     public static var canOpenTransaction: Bool
-    #endif
+#endif
 
     @discardableResult
     public func read<T>(block: (DBReadTransaction) throws -> T) throws -> T {
 
-        #if TESTABLE_BUILD
+#if TESTABLE_BUILD
         owsAssertDebug(Self.canOpenTransaction)
         // Check for nested tractions.
         if Self.detectNestedTransactions {
@@ -331,7 +331,7 @@ extension GRDBDatabaseStorageAdapter {
                 Self.canOpenTransaction = true
             }
         }
-        #endif
+#endif
 
         return try pool.read { database in
             try autoreleasepool {
@@ -342,7 +342,7 @@ extension GRDBDatabaseStorageAdapter {
 
     public func read(block: (DBReadTransaction) -> Void) throws {
 
-        #if TESTABLE_BUILD
+#if TESTABLE_BUILD
         owsAssertDebug(Self.canOpenTransaction)
         if Self.detectNestedTransactions {
             // Check for nested tractions.
@@ -353,7 +353,7 @@ extension GRDBDatabaseStorageAdapter {
                 Self.canOpenTransaction = true
             }
         }
-        #endif
+#endif
 
         try pool.read { database in
             autoreleasepool {
@@ -363,7 +363,7 @@ extension GRDBDatabaseStorageAdapter {
     }
 
     public func writeWithTxCompletion(block: (DBWriteTransaction) -> Database.TransactionCompletion) throws {
-        #if TESTABLE_BUILD
+#if TESTABLE_BUILD
         owsAssertDebug(Self.canOpenTransaction)
         // Check for nested tractions.
         if Self.detectNestedTransactions {
@@ -375,7 +375,7 @@ extension GRDBDatabaseStorageAdapter {
                 Self.canOpenTransaction = true
             }
         }
-        #endif
+#endif
 
         var txCompletionBlocks: [DBWriteTransaction.CompletionBlock]!
 
@@ -615,7 +615,8 @@ private func dbQueryLog(_ value: String) {
     let finalValue = re.stringByReplacingMatches(
         in: filteredValue,
         range: filteredValue.entireRange,
-        withTemplate: " ")
+        withTemplate: " ",
+    )
 
     Logger.debug(finalValue)
 }
@@ -646,16 +647,18 @@ private struct GRDBStorage {
         var coordinatorError: NSError?
         var newPool: DatabasePool?
         var dbError: Error?
-        coordinator.coordinate(writingItemAt: dbURL,
-                               options: .forMerging,
-                               error: &coordinatorError,
-                               byAccessor: { url in
-            do {
-                newPool = try DatabasePool(path: url.path, configuration: poolConfiguration)
-            } catch {
-                dbError = error
-            }
-        })
+        coordinator.coordinate(
+            writingItemAt: dbURL,
+            options: .forMerging,
+            error: &coordinatorError,
+            byAccessor: { url in
+                do {
+                    newPool = try DatabasePool(path: url.path, configuration: poolConfiguration)
+                } catch {
+                    dbError = error
+                }
+            },
+        )
         if let error = dbError ?? coordinatorError {
             throw error
         }
@@ -685,9 +688,9 @@ private struct GRDBStorage {
         configuration.readonly = false
         configuration.foreignKeysEnabled = true // Default is already true
 
-        #if DEBUG
+#if DEBUG
         configuration.publicStatementArguments = true
-        #endif
+#endif
 
         // TODO: We should set this to `false` (or simply remove this line, as `false` is the default).
         // Historically, we took advantage of SQLite's old permissive behavior, but the SQLite
@@ -722,11 +725,11 @@ private struct GRDBStorage {
         configuration.prepareDatabase { db in
             try GRDBDatabaseStorageAdapter.prepareDatabase(db: db, keyFetcher: keyFetcher)
 
-            #if DEBUG
-            #if false
-                db.trace { dbQueryLog("\($0)") }
-            #endif
-            #endif
+#if DEBUG
+#if false
+            db.trace { dbQueryLog("\($0)") }
+#endif
+#endif
         }
         configuration.defaultTransactionKind = .immediate
         configuration.allowsUnsafeTransactions = true
@@ -799,7 +802,7 @@ public struct GRDBKeyFetcher {
 
 // MARK: -
 
-fileprivate extension URL {
+private extension URL {
     func appendingPathString(_ string: String) -> URL? {
         guard var components = URLComponents(url: self, resolvingAgainstBaseURL: false) else {
             return nil
@@ -928,7 +931,7 @@ extension GRDBDatabaseStorageAdapter {
             // Set checkpointTimeout flag.
             // If we hit the timeout, we get back SQLITE_BUSY, which is ignored below.
             owsAssertDebug(GRDBStorage.checkpointTimeout == nil)
-            GRDBStorage.checkpointTimeout = 3000  // 3s
+            GRDBStorage.checkpointTimeout = 3000 // 3s
             owsAssertDebug(GRDBStorage.checkpointTimeout != nil)
             defer {
                 // Clear checkpointTimeout flag.
@@ -937,11 +940,11 @@ extension GRDBDatabaseStorageAdapter {
                 owsAssertDebug(GRDBStorage.checkpointTimeout == nil)
             }
 
-            #if TESTABLE_BUILD
+#if TESTABLE_BUILD
             let startTime = CACurrentMediaTime()
-            #endif
+#endif
             try pool.writeWithoutTransaction { db in
-                #if TESTABLE_BUILD
+#if TESTABLE_BUILD
                 let startElapsedSeconds: TimeInterval = CACurrentMediaTime() - startTime
                 let slowStartSeconds: TimeInterval = TimeInterval(GRDBStorage.maxBusyTimeoutMs) / 1000
                 if startElapsedSeconds > slowStartSeconds * 2 {
@@ -949,7 +952,7 @@ extension GRDBDatabaseStorageAdapter {
                     let formattedTime = String(format: "%0.2fms", startElapsedSeconds * 1000)
                     owsFailDebug("Slow checkpoint start: \(formattedTime)")
                 }
-                #endif
+#endif
 
                 do {
                     try db.checkpoint(.truncate)

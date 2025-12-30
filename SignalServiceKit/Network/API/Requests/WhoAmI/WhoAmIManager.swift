@@ -21,7 +21,7 @@ struct WhoAmIManagerImpl: WhoAmIManager {
 
     func makeWhoAmIRequest() async throws -> WhoAmIResponse {
         let response = try await networkManager.asyncRequest(
-            WhoAmIRequestFactory.whoAmIRequest(auth: .implicit())
+            WhoAmIRequestFactory.whoAmIRequest(auth: .implicit()),
         )
 
         guard response.responseStatusCode == 200 else {
@@ -100,7 +100,7 @@ public enum WhoAmIRequestFactory {
             public let usernameHash: String?
             public let entitlements: Entitlements
 
-            #if TESTABLE_BUILD
+#if TESTABLE_BUILD
 
             static func forUnitTest(aci: Aci, pni: Pni, e164: E164) -> Self {
                 return Self(
@@ -108,7 +108,7 @@ public enum WhoAmIRequestFactory {
                     pni: pni,
                     e164: e164,
                     usernameHash: nil,
-                    entitlements: Entitlements(backup: nil, badges: [])
+                    entitlements: Entitlements(backup: nil, badges: []),
                 )
             }
 
@@ -116,18 +116,18 @@ public enum WhoAmIRequestFactory {
                 return forUnitTest(aci: localIdentifiers.aci, pni: localIdentifiers.pni!, e164: E164(localIdentifiers.phoneNumber)!)
             }
 
-            #endif
+#endif
         }
     }
 
     /// Response body should be a `Responses.WhoAmI` json.
     public static func whoAmIRequest(
-        auth: ChatServiceAuth
+        auth: ChatServiceAuth,
     ) -> TSRequest {
         var result = TSRequest(
             url: URL(string: "v1/accounts/whoami")!,
             method: "GET",
-            parameters: [:]
+            parameters: [:],
         )
         result.auth = .identified(auth)
         return result

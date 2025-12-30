@@ -7,11 +7,11 @@ public import SignalServiceKit
 
 public class DateHeaderInteraction: TSInteraction {
 
-    public override var isDynamicInteraction: Bool {
+    override public var isDynamicInteraction: Bool {
         true
     }
 
-    public override var interactionType: OWSInteractionType {
+    override public var interactionType: OWSInteractionType {
         .dateHeader
     }
 
@@ -27,15 +27,15 @@ public class DateHeaderInteraction: TSInteraction {
             customUniqueId: "DateHeader_\(timestamp)",
             timestamp: timestamp,
             receivedAtTimestamp: 0,
-            thread: thread
+            thread: thread,
         )
     }
 
-    public override var shouldBeSaved: Bool {
+    override public var shouldBeSaved: Bool {
         return false
     }
 
-    public override func anyWillInsert(with transaction: DBWriteTransaction) {
+    override public func anyWillInsert(with transaction: DBWriteTransaction) {
         owsFailDebug("The transient interaction should not be saved in the database.")
     }
 }

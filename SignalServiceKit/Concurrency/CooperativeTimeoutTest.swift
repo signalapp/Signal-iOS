@@ -12,7 +12,7 @@ final class CooperativeTimeoutTest: XCTestCase {
     func testResolved() async throws {
         try await withCooperativeTimeout(
             seconds: .day,
-            operation: {}
+            operation: {},
         )
     }
 
@@ -20,7 +20,7 @@ final class CooperativeTimeoutTest: XCTestCase {
         do {
             try await withCooperativeTimeout(
                 seconds: 0,
-                operation: { try await Task.sleep(nanoseconds: 1_000_000 * NSEC_PER_SEC) }
+                operation: { try await Task.sleep(nanoseconds: 1_000_000 * NSEC_PER_SEC) },
             )
             throw OWSGenericError("")
         } catch is CooperativeTimeoutError {
@@ -33,7 +33,7 @@ final class CooperativeTimeoutTest: XCTestCase {
             while !Task.isCancelled { await Task.yield() }
             try await withCooperativeTimeout(
                 seconds: .day,
-                operation: { try await Task.sleep(nanoseconds: 1_000_000 * NSEC_PER_SEC) }
+                operation: { try await Task.sleep(nanoseconds: 1_000_000 * NSEC_PER_SEC) },
             )
         }
         cancellableTask.cancel()

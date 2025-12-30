@@ -22,14 +22,14 @@ class DeviceSleepManagerImpl: DeviceSleepManager {
     }
 
     @MainActor
-    public func addBlock(blockObject: DeviceSleepBlockObject) {
+    func addBlock(blockObject: DeviceSleepBlockObject) {
         Logger.info("Adding sleep block: \(blockObject.blockReason)")
         blockObjects.append(Weak(value: blockObject))
         ensureSleepBlocking()
     }
 
     @MainActor
-    public func removeBlock(blockObject: DeviceSleepBlockObject) {
+    func removeBlock(blockObject: DeviceSleepBlockObject) {
         Logger.info("Removing sleep block: \(blockObject.blockReason)")
         blockObjects.removeAll(where: { $0.value === blockObject })
         ensureSleepBlocking()

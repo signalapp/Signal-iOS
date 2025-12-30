@@ -41,13 +41,13 @@ class LottieToggleButton: UIButton {
 
     func setSelected(_ isSelected: Bool, animated: Bool) {
         AssertIsOnMainThread()
-        guard let animationView = animationView else { return owsFailDebug("missing animation view") }
+        guard let animationView else { return owsFailDebug("missing animation view") }
 
         if animated {
             animationView.play(
                 fromProgress: animationView.currentProgress,
                 toProgress: isSelected ? 1 : 0,
-                loopMode: .playOnce
+                loopMode: .playOnce,
             ) { [weak self] complete in
                 guard complete else { return }
                 self?.isSelected = isSelected
@@ -60,7 +60,7 @@ class LottieToggleButton: UIButton {
     private weak var animationView: LottieAnimationView?
     private func updateAnimationView() {
         animationView?.removeFromSuperview()
-        guard let animationName = animationName else { return }
+        guard let animationName else { return }
 
         let animationView = LottieAnimationView(name: animationName)
         self.animationView = animationView

@@ -16,7 +16,7 @@ class ProfileNameViewController: OWSTableViewController2 {
     private lazy var givenNameTextField = OWSTextField(
         placeholder: OWSLocalizedString(
             "PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT",
-            comment: "Default text for the given name field of the profile view."
+            comment: "Default text for the given name field of the profile view.",
         ),
         returnKeyType: .next,
         spellCheckingType: .no,
@@ -24,12 +24,12 @@ class ProfileNameViewController: OWSTableViewController2 {
         delegate: self,
         editingChanged: { [weak self] in
             self?.textFieldDidChange()
-        }
+        },
     )
     private lazy var familyNameTextField = OWSTextField(
         placeholder: OWSLocalizedString(
             "PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT",
-            comment: "Default text for the family name field of the profile view."
+            comment: "Default text for the family name field of the profile view.",
         ),
         returnKeyType: .done,
         spellCheckingType: .no,
@@ -37,7 +37,7 @@ class ProfileNameViewController: OWSTableViewController2 {
         delegate: self,
         editingChanged: { [weak self] in
             self?.textFieldDidChange()
-        }
+        },
     )
 
     private let originalGivenName: String?
@@ -48,7 +48,7 @@ class ProfileNameViewController: OWSTableViewController2 {
     init(
         givenName: String?,
         familyName: String?,
-        profileDelegate: ProfileNameViewControllerDelegate
+        profileDelegate: ProfileNameViewControllerDelegate,
     ) {
         self.originalGivenName = givenName
         self.originalFamilyName = familyName
@@ -72,7 +72,7 @@ class ProfileNameViewController: OWSTableViewController2 {
 
         navigationItem.leftBarButtonItem = .cancelButton(
             dismissingFrom: self,
-            hasUnsavedChanges: { [weak self] in self?.hasUnsavedChanges }
+            hasUnsavedChanges: { [weak self] in self?.hasUnsavedChanges },
         )
 
         navigationItem.rightBarButtonItem = .setButton { [weak self] in
@@ -93,7 +93,7 @@ class ProfileNameViewController: OWSTableViewController2 {
 
     private var hasUnsavedChanges: Bool {
         givenNameComponent()?.stringValue.rawValue != originalGivenName
-        || familyNameComponent()?.stringValue.rawValue != originalFamilyName
+            || familyNameComponent()?.stringValue.rawValue != originalFamilyName
     }
 
     // Don't allow interactive dismiss when there are unsaved changes.
@@ -106,7 +106,7 @@ class ProfileNameViewController: OWSTableViewController2 {
         navigationItem.rightBarButtonItem?.isEnabled = hasUnsavedChanges
     }
 
-    public override func viewWillAppear(_ animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
         updateNavigation()
@@ -114,7 +114,7 @@ class ProfileNameViewController: OWSTableViewController2 {
         firstTextField.becomeFirstResponder()
     }
 
-    public override func viewDidAppear(_ animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
         updateNavigation()
@@ -140,7 +140,7 @@ class ProfileNameViewController: OWSTableViewController2 {
             addTextField(familyNameTextField)
             addTextField(givenNameTextField)
 
-        // Otherwise, display given name field first.
+            // Otherwise, display given name field first.
         } else {
             addTextField(givenNameTextField)
             addTextField(familyNameTextField)
@@ -154,29 +154,29 @@ class ProfileNameViewController: OWSTableViewController2 {
     private func didTapDone() {
         switch ProfileName.createNameFrom(
             givenName: givenNameTextField.text,
-            familyName: familyNameTextField.text
+            familyName: familyNameTextField.text,
         ) {
         case .failure(.givenNameTooLong):
             OWSActionSheets.showErrorAlert(message: OWSLocalizedString(
                 "PROFILE_VIEW_ERROR_GIVEN_NAME_TOO_LONG",
-                comment: "Error message shown when user tries to update profile with a given name that is too long."
+                comment: "Error message shown when user tries to update profile with a given name that is too long.",
             ))
         case .failure(.familyNameTooLong):
             OWSActionSheets.showErrorAlert(message: OWSLocalizedString(
                 "PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG",
-                comment: "Error message shown when user tries to update profile with a family name that is too long."
+                comment: "Error message shown when user tries to update profile with a family name that is too long.",
             ))
         case let .success(profileName):
             guard let givenName = profileName.givenNameComponent else { fallthrough }
             profileDelegate?.profileNameViewDidComplete(
                 givenName: givenName,
-                familyName: profileName.familyNameComponent
+                familyName: profileName.familyNameComponent,
             )
             dismiss(animated: true)
         case .failure(.nameEmpty):
             OWSActionSheets.showErrorAlert(message: OWSLocalizedString(
                 "PROFILE_VIEW_ERROR_GIVEN_NAME_REQUIRED",
-                comment: "Error message shown when user tries to update profile without a given name"
+                comment: "Error message shown when user tries to update profile without a given name",
             ))
         }
     }
@@ -194,7 +194,7 @@ extension ProfileNameViewController: UITextFieldDelegate {
         NSLocale.current.isCJKV ? givenNameTextField : familyNameTextField
     }
 
-    public func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         if textField === firstTextField {
             secondTextField.becomeFirstResponder()
         } else {
@@ -213,7 +213,7 @@ extension ProfileNameViewController: UITextFieldDelegate {
             shouldChangeCharactersInRange: range,
             replacementString: string,
             maxByteCount: OWSUserProfile.Constants.maxNameLengthBytes,
-            maxGlyphCount: OWSUserProfile.Constants.maxNameLengthGlyphs
+            maxGlyphCount: OWSUserProfile.Constants.maxNameLengthGlyphs,
         )
     }
 }

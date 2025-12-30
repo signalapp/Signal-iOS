@@ -35,7 +35,7 @@ public class ContactThreadFinder: NSObject {
             let threads = try TSContactThread.grdbFetchCursor(
                 sql: sql,
                 arguments: arguments,
-                transaction: tx
+                transaction: tx,
             ).all()
             return threads.compactMap { $0 as? TSContactThread }
         } catch {

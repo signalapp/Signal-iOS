@@ -48,14 +48,14 @@ public struct MasterKey: Codable {
             return withStorageServiceKey {
                 return SVR.DerivedKeyData(
                     keyType: .storageServiceManifest(version: version),
-                    dataToDeriveFrom: $0.rawData
+                    dataToDeriveFrom: $0.rawData,
                 )
             }
         case .legacy_storageServiceRecord(let identifier):
             return withStorageServiceKey {
                 return SVR.DerivedKeyData(
                     keyType: .legacy_storageServiceRecord(identifier: identifier),
-                    dataToDeriveFrom: $0.rawData
+                    dataToDeriveFrom: $0.rawData,
                 )
             }
         }
@@ -65,7 +65,7 @@ public struct MasterKey: Codable {
 
     public func encrypt(
         keyType: SVR.DerivedKey,
-        data: Data
+        data: Data,
     ) throws -> Data {
         let keyData = self.data(for: keyType)
         return try Aes256GcmEncryptedData.encrypt(data, key: keyData.rawData).concatenate()
@@ -73,7 +73,7 @@ public struct MasterKey: Codable {
 
     public func decrypt(
         keyType: SVR.DerivedKey,
-        encryptedData: Data
+        encryptedData: Data,
     ) throws -> Data {
         let keyData = self.data(for: keyType)
         return try Aes256GcmEncryptedData(concatenated: encryptedData).decrypt(key: keyData.rawData)
@@ -84,7 +84,7 @@ private extension SVR.DerivedKeyData {
     init(keyType: SVR.DerivedKey, dataToDeriveFrom: Data) {
         self.init(
             rawData: keyType.derivedData(from: dataToDeriveFrom),
-            type: keyType
+            type: keyType,
         )
     }
 }
@@ -111,14 +111,14 @@ private extension SVR.DerivedKey {
         let infoData = Data(infoString.utf8)
         switch self {
         case
-                .registrationLock,
-                .registrationRecoveryPassword,
-                .storageService,
-                .storageServiceManifest,
-                .legacy_storageServiceRecord:
+            .registrationLock,
+            .registrationRecoveryPassword,
+            .storageService,
+            .storageServiceManifest,
+            .legacy_storageServiceRecord:
             return Data(HMAC<SHA256>.authenticationCode(
                 for: infoData,
-                using: SymmetricKey(data: dataToDeriveFrom)
+                using: SymmetricKey(data: dataToDeriveFrom),
             ))
         }
     }

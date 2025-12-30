@@ -33,10 +33,10 @@ class IntroducingPinsMegaphone: MegaphoneView {
                     fromViewController.dismiss(animated: true) {
                         self.presentToast(
                             text: OWSLocalizedString("PINS_MEGAPHONE_TOAST", comment: "Toast indicating that a PIN has been created."),
-                            fromViewController: fromViewController
+                            fromViewController: fromViewController,
                         )
                     }
-                }
+                },
             )
             fromViewController.present(OWSNavigationController(rootViewController: viewController), animated: true)
         }

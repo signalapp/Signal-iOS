@@ -23,7 +23,7 @@ class BadgeManagerTest: XCTestCase {
             fetchIntBadgeValue: {
                 fetchCount += 1
                 return fetchCount
-            }
+            },
         )
 
         let observer1 = MockBadgeObserver()
@@ -51,7 +51,7 @@ class BadgeManagerTest: XCTestCase {
             fetchIntBadgeValue: {
                 fetchCount += 1
                 return fetchCount
-            }
+            },
         )
 
         let observer = MockBadgeObserver()
@@ -75,10 +75,10 @@ class BadgeManagerTest: XCTestCase {
 
 private extension BadgeManager {
     convenience init(
-        fetchIntBadgeValue: @escaping () -> UInt
+        fetchIntBadgeValue: @escaping () -> UInt,
     ) {
         self.init(
-            fetchBadgeCountBlock: { BadgeCount(unreadChatCount: fetchIntBadgeValue(), unreadCallsCount: 0) }
+            fetchBadgeCountBlock: { BadgeCount(unreadChatCount: fetchIntBadgeValue(), unreadCallsCount: 0) },
         )
     }
 

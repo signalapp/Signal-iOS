@@ -4,11 +4,11 @@
 //
 
 import Combine
-import SwiftUI
 import LibSignalClient
 import SignalRingRTC
 import SignalServiceKit
 import SignalUI
+import SwiftUI
 
 // MARK: - GroupCallViewController
 
@@ -22,7 +22,7 @@ final class GroupCallViewController: UIViewController {
     private let groupCall: GroupCall
     private let ringRtcCall: SignalRingRTC.GroupCall
     private lazy var callControlsConfirmationToastManager = CallControlsConfirmationToastManager(
-        presentingContainerView: callControlsConfirmationToastContainerView
+        presentingContainerView: callControlsConfirmationToastContainerView,
     )
     private lazy var bottomSheet: CallDrawerSheet = {
         let dataSource: any CallDrawerSheetDataSource = switch groupCall.concreteType {
@@ -38,13 +38,14 @@ final class GroupCallViewController: UIViewController {
             confirmationToastManager: callControlsConfirmationToastManager,
             callControlsDelegate: self,
             sheetPanDelegate: self,
-            callDrawerDelegate: self
+            callDrawerDelegate: self,
         )
     }()
+
     private lazy var fullscreenLocalMemberAddOnsView = SupplementalCallControlsForFullscreenLocalMember(
         call: call,
         groupCall: groupCall,
-        callService: callService
+        callService: callService,
     )
     private lazy var callControlsConfirmationToastContainerView = UIView()
     private var callService: CallService { AppEnvironment.shared.callService }
@@ -91,7 +92,7 @@ final class GroupCallViewController: UIViewController {
         let viewModel = CallLinkApprovalViewModel()
 
         approvalRequestActionsSubscription = viewModel.performRequestAction
-            .sink { [weak self] (action, request) in
+            .sink { [weak self] action, request in
                 guard let self else { return }
                 switch action {
                 case .approve:
@@ -120,7 +121,7 @@ final class GroupCallViewController: UIViewController {
                 self?.approvalStackHeightConstraint?.constant = height
                 self?.approvalStackContainer.stackHeight = height
                 self?.updateCallUI(shouldAnimateViewFrames: true)
-            }
+            },
         )
     })
     /// A view used in `bottomVStack` that takes the height of the approval stack. Does not actually hold any content.
@@ -176,7 +177,8 @@ final class GroupCallViewController: UIViewController {
     private let scrollView = UIScrollView()
 
     private enum Page {
-        case grid, speaker
+        case grid
+        case speaker
     }
 
     private var page: Page = .grid {
@@ -245,12 +247,14 @@ final class GroupCallViewController: UIViewController {
     private lazy var reactionsBurstView: ReactionsBurstView = {
         ReactionsBurstView(burstAligner: self.incomingReactionsView)
     }()
+
     private lazy var reactionsSink: ReactionsSink = {
         ReactionsSink(reactionReceivers: [
             self.incomingReactionsView,
-            self.reactionsBurstView
+            self.reactionsBurstView,
         ])
     }()
+
     private lazy var callControlsOverflowView: CallControlsOverflowView = {
         return CallControlsOverflowView(
             call: self.call,
@@ -258,7 +262,7 @@ final class GroupCallViewController: UIViewController {
             reactionsSink: self.reactionsSink,
             raiseHandSender: self.ringRtcCall,
             emojiPickerSheetPresenter: self.bottomSheet,
-            callControlsOverflowPresenter: self
+            callControlsOverflowPresenter: self,
         )
     }()
 
@@ -269,12 +273,12 @@ final class GroupCallViewController: UIViewController {
         let didUserEverSwipeToSpeakerView = keyValueStore.getBool(
             didUserSwipeToSpeakerViewKey,
             defaultValue: false,
-            transaction: tx
+            transaction: tx,
         )
         let didUserEverSwipeToScreenShare = keyValueStore.getBool(
             didUserSwipeToScreenShareKey,
             defaultValue: false,
-            transaction: tx
+            transaction: tx,
         )
 
         let phoneNumberSharingMode = SSKEnvironment.shared.udManagerRef.phoneNumberSharingMode(tx: tx).orDefault
@@ -284,7 +288,7 @@ final class GroupCallViewController: UIViewController {
             groupCall: groupCall,
             didUserEverSwipeToSpeakerView: didUserEverSwipeToSpeakerView,
             didUserEverSwipeToScreenShare: didUserEverSwipeToScreenShare,
-            phoneNumberSharingMode: phoneNumberSharingMode
+            phoneNumberSharingMode: phoneNumberSharingMode,
         )
     }
 
@@ -293,7 +297,7 @@ final class GroupCallViewController: UIViewController {
         groupCall: GroupCall,
         didUserEverSwipeToSpeakerView: Bool,
         didUserEverSwipeToScreenShare: Bool,
-        phoneNumberSharingMode: PhoneNumberSharingMode
+        phoneNumberSharingMode: PhoneNumberSharingMode,
     ) {
         // TODO: Eventually unify UI for group and individual calls
 
@@ -312,26 +316,26 @@ final class GroupCallViewController: UIViewController {
             self,
             selector: #selector(didBecomeActive),
             name: UIApplication.didBecomeActiveNotification,
-            object: nil
+            object: nil,
         )
 
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(didCompleteAnySpamChallenge),
             name: SpamChallengeResolver.didCompleteAnyChallenge,
-            object: nil
+            object: nil,
         )
 
         self.callLinkLobbyToastLabel.text = switch phoneNumberSharingMode {
         case .everybody:
             OWSLocalizedString(
                 "CALL_LINK_LOBBY_SHARING_INFO_PHONE_NUMBER_SHARING_ON",
-                comment: "Text that appears on a toast in a call lobby before joining a call link informing the user what information will be shared with other call members when they have phone number sharing turned on."
+                comment: "Text that appears on a toast in a call lobby before joining a call link informing the user what information will be shared with other call members when they have phone number sharing turned on.",
             )
         case .nobody:
             OWSLocalizedString(
                 "CALL_LINK_LOBBY_SHARING_INFO_PHONE_NUMBER_SHARING_OFF",
-                comment: "Text that appears on a toast in a call lobby before joining a call link informing the user what information will be shared with other call members when they have phone number sharing turned off."
+                comment: "Text that appears on a toast in a call lobby before joining a call link informing the user what information will be shared with other call members when they have phone number sharing turned off.",
             )
         }
     }
@@ -345,14 +349,14 @@ final class GroupCallViewController: UIViewController {
                 buildAndStartConnecting: {
                     let callService = AppEnvironment.shared.callService!
                     return callService.buildAndConnectGroupCall(for: groupId, isVideoMuted: videoMuted)
-                }
+                },
             )
         }
     }
 
     static func presentLobby(
         for callLink: CallLink,
-        callLinkStateRetrievalStrategy: CallService.CallLinkStateRetrievalStrategy = .fetch
+        callLinkStateRetrievalStrategy: CallService.CallLinkStateRetrievalStrategy = .fetch,
     ) {
         self._presentLobby { viewController, modalViewController in
             do {
@@ -364,9 +368,9 @@ final class GroupCallViewController: UIViewController {
                         let callService = AppEnvironment.shared.callService!
                         return try await callService.buildAndConnectCallLinkCall(
                             callLink: callLink,
-                            callLinkStateRetrievalStrategy: callLinkStateRetrievalStrategy
+                            callLinkStateRetrievalStrategy: callLinkStateRetrievalStrategy,
                         )
-                    }
+                    },
                 )
             } catch {
                 Logger.warn("Call link lobby presentation failed with error \(error)")
@@ -375,8 +379,8 @@ final class GroupCallViewController: UIViewController {
                         title: CallStrings.callLinkErrorSheetTitle,
                         message: OWSLocalizedString(
                             "CALL_LINK_JOIN_CALL_FAILURE_SHEET_DESCRIPTION",
-                            comment: "Description of sheet presented when joining call from call link sheet fails."
-                        )
+                            comment: "Description of sheet presented when joining call from call link sheet fails.",
+                        ),
                     )
                 }
             }
@@ -384,7 +388,7 @@ final class GroupCallViewController: UIViewController {
     }
 
     private static func _presentLobby(
-        prepareLobby: @escaping @MainActor (_ viewController: UIViewController, _ modalViewController: UIViewController) async -> (() -> Void)?
+        prepareLobby: @escaping @MainActor (_ viewController: UIViewController, _ modalViewController: UIViewController) async -> (() -> Void)?,
     ) {
         guard let frontmostViewController = UIApplication.shared.frontmostViewController else {
             owsFail("Can't start a call if there's no view controller")
@@ -397,7 +401,7 @@ final class GroupCallViewController: UIViewController {
             asyncBlock: { modal in
                 let presentLobbyOrError = await prepareLobby(frontmostViewController, modal)
                 modal.dismissIfNotCanceled(completionIfNotCanceled: presentLobbyOrError ?? {})
-            }
+            },
         )
     }
 
@@ -405,7 +409,7 @@ final class GroupCallViewController: UIViewController {
         from viewController: UIViewController,
         modalViewController: UIViewController,
         shouldAskForCameraPermission: Bool,
-        buildAndStartConnecting: () async throws -> (SignalCall, GroupCall)?
+        buildAndStartConnecting: () async throws -> (SignalCall, GroupCall)?,
     ) async rethrows -> (() -> Void)? {
         do throws(CallStarter.PrepareToStartCallError) {
             _ = try await CallStarter.prepareToStartCall(
@@ -546,7 +550,7 @@ final class GroupCallViewController: UIViewController {
                 .trailing,
                 to: .trailing,
                 of: view,
-                withOffset: -12
+                withOffset: -12,
             )
         }
 
@@ -554,13 +558,13 @@ final class GroupCallViewController: UIViewController {
             .bottom,
             to: .bottom,
             of: self.view,
-            withOffset: callControlsConfirmationToastContainerViewBottomConstraintConstant
+            withOffset: callControlsConfirmationToastContainerViewBottomConstraintConstant,
         )
         self.callControlsOverflowBottomConstraint = self.callControlsOverflowView.autoPinEdge(
             .bottom,
             to: .bottom,
             of: self.view,
-            withOffset: callControlsOverflowBottomConstraintConstant
+            withOffset: callControlsOverflowBottomConstraintConstant,
         )
 
         view.addSubview(reactionsBurstView)
@@ -576,7 +580,7 @@ final class GroupCallViewController: UIViewController {
             self,
             selector: #selector(otherUsersProfileChanged(notification:)),
             name: UserProfileNotifications.otherUsersProfileDidChange,
-            object: nil
+            object: nil,
         )
     }
 
@@ -630,7 +634,7 @@ final class GroupCallViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        if hasUnresolvedSafetyNumberMismatch && CurrentAppContext().isAppForegroundAndActive() {
+        if hasUnresolvedSafetyNumberMismatch, CurrentAppContext().isAppForegroundAndActive() {
             // If we're not active yet, this will be handled by the `didBecomeActive` callback.
             resolveSafetyNumberMismatch()
         }
@@ -683,7 +687,7 @@ final class GroupCallViewController: UIViewController {
                 x: 0,
                 y: 0,
                 width: size.width,
-                height: size.height
+                height: size.height,
             )
             scrollView.contentSize = size
             scrollView.contentOffset = .zero
@@ -708,13 +712,13 @@ final class GroupCallViewController: UIViewController {
                 x: 0,
                 y: view.safeAreaInsets.top,
                 width: size.width,
-                height: height
+                height: height,
             )
             speakerPage.frame = CGRect(
                 x: 0,
                 y: size.height,
                 width: size.width,
-                height: size.height
+                height: size.height,
             )
             scrollView.contentSize = CGSize(width: size.width, height: size.height * 2)
 
@@ -738,7 +742,7 @@ final class GroupCallViewController: UIViewController {
         let maxWidthConstraint = view.autoSetDimension(
             .width,
             toSize: bottomSheet.maxWidth,
-            relation: .lessThanOrEqual
+            relation: .lessThanOrEqual,
         )
         let edgesConstraints = view.autoPinWidthToSuperviewMargins(relation: .lessThanOrEqual)
         let edgesConstraints2 = view.autoPinWidthToSuperviewMargins(relation: .equal)
@@ -755,10 +759,12 @@ final class GroupCallViewController: UIViewController {
             fullscreenLocalMemberAddOnsView.autoPinEdge(toSuperviewSafeArea: .bottom, withInset: Constants.flipCamButtonTrailingToSuperviewEdgePadding),
         ]
     }
+
     private func constrainAddOnsInsideBottomVStack() {
         addOnsConstraints.map(fullscreenLocalMemberAddOnsView.removeConstraints(_:))
         addOnsConstraints = pinWidthWithBottomSheetMaxWidth(fullscreenLocalMemberAddOnsView)
     }
+
     private func updateAddOnsViewPosition() {
         let canFitNextToDrawer = view.width >= bottomSheet.maxWidth + view.layoutMargins.totalWidth + view.layoutMargins.trailing + 48
 
@@ -774,7 +780,8 @@ final class GroupCallViewController: UIViewController {
             fullscreenLocalMemberAddOnsView.removeFromSuperview()
             if
                 case .callLink = groupCall.concreteType,
-                let toastIndex = bottomVStack.arrangedSubviews.firstIndex(of: callLinkLobbyToast) {
+                let toastIndex = bottomVStack.arrangedSubviews.firstIndex(of: callLinkLobbyToast)
+            {
                 bottomVStack.insertArrangedSubview(fullscreenLocalMemberAddOnsView, at: toastIndex)
             } else {
                 bottomVStack.addArrangedSubview(fullscreenLocalMemberAddOnsView)
@@ -855,7 +862,7 @@ final class GroupCallViewController: UIViewController {
 
     private func updateMemberViewFrames(
         size: CGSize? = nil,
-        shouldRepositionBottomVStack: Bool = true
+        shouldRepositionBottomVStack: Bool = true,
     ) {
         guard !isPipAnimationInProgress else {
             // Wait for the pip to reach its new size before re-laying out.
@@ -910,7 +917,7 @@ final class GroupCallViewController: UIViewController {
 
             let pipSize = CallMemberView.pipSize(
                 expandedPipFrame: self.expandedPipFrame,
-                remoteDeviceCount: ringRtcCall.remoteDeviceStates.count
+                remoteDeviceCount: ringRtcCall.remoteDeviceStates.count,
             )
 
             let y: CGFloat
@@ -935,7 +942,7 @@ final class GroupCallViewController: UIViewController {
                     x: size.width - pipSize.width - 16,
                     y: y,
                     width: pipSize.width,
-                    height: pipSize.height
+                    height: pipSize.height,
                 )
             }
             flipCameraTooltipManager.presentTooltipIfNecessary(
@@ -943,7 +950,7 @@ final class GroupCallViewController: UIViewController {
                 widthReferenceView: self.view,
                 tailReferenceView: localMemberView,
                 tailDirection: .down,
-                isVideoMuted: call.isOutgoingVideoMuted
+                isVideoMuted: call.isOutgoingVideoMuted,
             )
         }
     }
@@ -971,11 +978,11 @@ final class GroupCallViewController: UIViewController {
         swipeToastView.text = isAnyRemoteDeviceScreenSharing
             ? OWSLocalizedString(
                 "GROUP_CALL_SCREEN_SHARE_TOAST",
-                comment: "Toast view text informing user about swiping to screen share"
+                comment: "Toast view text informing user about swiping to screen share",
             )
             : OWSLocalizedString(
                 "GROUP_CALL_SPEAKER_VIEW_TOAST",
-                comment: "Toast view text informing user about swiping to speaker view"
+                comment: "Toast view text informing user about swiping to speaker view",
             )
 
         if scrollView.contentOffset.y >= view.height {
@@ -1011,12 +1018,12 @@ final class GroupCallViewController: UIViewController {
     private func updateCallUI(
         size: CGSize? = nil,
         shouldAnimateViewFrames: Bool = false,
-        bottomSheetChangedStateFrom oldBottomSheetState: BottomSheetState? = nil
+        bottomSheetChangedStateFrom oldBottomSheetState: BottomSheetState? = nil,
     ) {
         let isFullScreen = groupCall.isJustMe
         localMemberView.configure(
             call: call,
-            isFullScreen: isFullScreen
+            isFullScreen: isFullScreen,
         )
 
         localMemberView.applyChangesToCallMemberViewAndVideoView { view in
@@ -1030,7 +1037,7 @@ final class GroupCallViewController: UIViewController {
         if let speakerState = ringRtcCall.remoteDeviceStates.sortedBySpeakerTime.first {
             speakerView.configure(
                 call: call,
-                remoteGroupMemberDeviceState: speakerState
+                remoteGroupMemberDeviceState: speakerState,
             )
         } else {
             speakerView.clearConfiguration()
@@ -1065,7 +1072,7 @@ final class GroupCallViewController: UIViewController {
             oldState: oldBottomSheetState ?? self.bottomSheetStateManager.bottomSheetState,
             newState: self.bottomSheetStateManager.bottomSheetState,
             size: size,
-            shouldAnimateViewFrames: shouldAnimateViewFrames
+            shouldAnimateViewFrames: shouldAnimateViewFrames,
         )
 
         // Update constraints that hug call controls sheet
@@ -1091,7 +1098,7 @@ final class GroupCallViewController: UIViewController {
         oldState: BottomSheetState,
         newState: BottomSheetState,
         size: CGSize?,
-        shouldAnimateViewFrames: Bool
+        shouldAnimateViewFrames: Bool,
     ) {
         func updateFrames(controlsAreHidden: Bool, shouldRepositionBottomVStack: Bool = true) {
             let raisedHandsToastWasAlreadyHidden = self.raisedHandsToastContainer.isHidden
@@ -1100,7 +1107,7 @@ final class GroupCallViewController: UIViewController {
                 self.updateBottomVStackItems()
                 self.updateMemberViewFrames(
                     size: size,
-                    shouldRepositionBottomVStack: shouldRepositionBottomVStack
+                    shouldRepositionBottomVStack: shouldRepositionBottomVStack,
                 )
                 self.updateScrollViewFrames(size: size)
             }
@@ -1138,7 +1145,7 @@ final class GroupCallViewController: UIViewController {
                 // This can happen if you tap the root view fast enough in succession.
                 animateCallControls(
                     hideCallControls: true,
-                    size: size
+                    size: size,
                 )
                 self.callControlsOverflowView.animateOut()
             case .callInfo, .transitioning:
@@ -1154,7 +1161,7 @@ final class GroupCallViewController: UIViewController {
             case .hidden:
                 animateCallControls(
                     hideCallControls: true,
-                    size: size
+                    size: size,
                 )
             case .callInfo, .transitioning:
                 break
@@ -1166,13 +1173,13 @@ final class GroupCallViewController: UIViewController {
                 // But if you must...
                 animateCallControls(
                     hideCallControls: false,
-                    size: size
+                    size: size,
                 )
                 self.callControlsOverflowView.animateIn()
             case .callControls, .callInfo, .transitioning:
                 animateCallControls(
                     hideCallControls: false,
-                    size: size
+                    size: size,
                 )
             case .hidden:
                 updateFrames(controlsAreHidden: true)
@@ -1193,7 +1200,7 @@ final class GroupCallViewController: UIViewController {
 
     private func animateCallControls(
         hideCallControls: Bool,
-        size: CGSize?
+        size: CGSize?,
     ) {
         if hideCallControls {
             dismissBottomSheet()
@@ -1300,7 +1307,7 @@ final class GroupCallViewController: UIViewController {
         let presentingViewController = presenter.presentedViewController ?? presenter
         CallLinkApprovalRequestDetailsSheet(
             approvalRequest: approvalRequest,
-            approvalViewModel: self.callLinkApprovalViewModel
+            approvalViewModel: self.callLinkApprovalViewModel,
         )
         .present(from: presentingViewController, dismissalDelegate: self)
     }
@@ -1410,7 +1417,7 @@ final class GroupCallViewController: UIViewController {
         let incomingCallControls = IncomingCallControls(
             isVideoCall: true,
             didDeclineCall: { [unowned self] in self.dismissCall() },
-            didAcceptCall: { [unowned self] hasVideo in self.acceptRingingIncomingCall(hasVideo: hasVideo) }
+            didAcceptCall: { [unowned self] hasVideo in self.acceptRingingIncomingCall(hasVideo: hasVideo) },
         )
         self.view.addSubview(incomingCallControls)
         incomingCallControls.autoPinWidthToSuperview()
@@ -1438,8 +1445,10 @@ final class GroupCallViewController: UIViewController {
     private func otherUsersProfileChanged(notification: Notification) {
         AssertIsOnMainThread()
 
-        guard let changedAddress = notification.userInfo?[UserProfileNotifications.profileAddressKey] as? SignalServiceAddress,
-              changedAddress.isValid else {
+        guard
+            let changedAddress = notification.userInfo?[UserProfileNotifications.profileAddressKey] as? SignalServiceAddress,
+            changedAddress.isValid
+        else {
             owsFailDebug("changedAddress was unexpectedly nil")
             return
         }
@@ -1447,9 +1456,11 @@ final class GroupCallViewController: UIViewController {
         if let peekInfo = self.ringRtcCall.peekInfo {
             let joinedAndPendingMembers = peekInfo.joinedMembers + peekInfo.pendingUsers
 
-            if joinedAndPendingMembers.contains(where: { uuid in
-                changedAddress == SignalServiceAddress(Aci(fromUUID: uuid))
-            }) {
+            if
+                joinedAndPendingMembers.contains(where: { uuid in
+                    changedAddress == SignalServiceAddress(Aci(fromUUID: uuid))
+                })
+            {
                 self.bottomSheet.updateMembers()
 
                 switch self.ringRtcCall.kind {
@@ -1487,11 +1498,11 @@ extension GroupCallViewController: CallViewControllerWindowReference {
         }
     }
 
-    public func returnFromPip(pipWindow: UIWindow) {
+    func returnFromPip(pipWindow: UIWindow) {
         // The call "pip" uses our remote and local video views since only
         // one `AVCaptureVideoPreviewLayer` per capture session is supported.
         // We need to re-add them when we return to this view.
-        guard speakerView.superview != speakerPage && localMemberView.superview != view else {
+        guard speakerView.superview != speakerPage, localMemberView.superview != view else {
             return owsFailDebug("unexpectedly returned to call while we own the video views")
         }
 
@@ -1571,7 +1582,7 @@ extension GroupCallViewController: CallViewControllerWindowReference {
                 identityManager.untrustedIdentityForSending(
                     to: memberAddress,
                     untrustedThreshold: untrustedThreshold,
-                    tx: transaction
+                    tx: transaction,
                 ) != nil
             }
         }
@@ -1585,7 +1596,7 @@ extension GroupCallViewController: CallViewControllerWindowReference {
 
         if !isCallMinimized, CurrentAppContext().isAppForegroundAndActive() {
             presentSafetyNumberChangeSheetIfNecessary { [weak self] success in
-                guard let self = self else { return }
+                guard let self else { return }
                 if success {
                     resendMediaKeysAndResetMismatch()
                 } else {
@@ -1617,14 +1628,14 @@ extension GroupCallViewController: CallViewControllerWindowReference {
                     callTitle: groupThread.groupNameOrDefault,
                     threadUniqueId: groupThread.uniqueId,
                     roomId: nil,
-                    presentAtJoin: atLeastOneUnresolvedPresentAtJoin
+                    presentAtJoin: atLeastOneUnresolvedPresentAtJoin,
                 )
             case .callLink(let call):
                 SSKEnvironment.shared.notificationPresenterRef.notifyForGroupCallSafetyNumberChange(
                     callTitle: call.callLinkState.localizedName,
                     threadUniqueId: nil,
                     roomId: call.callLink.rootKey.deriveRoomId(),
-                    presentAtJoin: atLeastOneUnresolvedPresentAtJoin
+                    presentAtJoin: atLeastOneUnresolvedPresentAtJoin,
                 )
             }
         }
@@ -1767,14 +1778,14 @@ extension GroupCallViewController: GroupCallObserver {
                 let formatString = OWSLocalizedString(
                     "GROUP_CALL_HAS_MAX_DEVICES_%d",
                     tableName: "PluralAware",
-                    comment: "An error displayed to the user when the group call ends because it has exceeded the max devices. Embeds {{max device count}}."
+                    comment: "An error displayed to the user when the group call ends because it has exceeded the max devices. Embeds {{max device count}}.",
                 )
                 title = String.localizedStringWithFormat(formatString, maxDevices)
                 message = nil
             } else {
                 title = OWSLocalizedString(
                     "GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT",
-                    comment: "An error displayed to the user when the group call ends because it has exceeded the max devices."
+                    comment: "An error displayed to the user when the group call ends because it has exceeded the max devices.",
                 )
                 message = nil
             }
@@ -1783,61 +1794,61 @@ extension GroupCallViewController: GroupCallObserver {
         case .removedFromCall:
             title = OWSLocalizedString(
                 "GROUP_CALL_REMOVED",
-                comment: "The title of an alert when you've been removed from a group call."
+                comment: "The title of an alert when you've been removed from a group call.",
             )
             message = OWSLocalizedString(
                 "GROUP_CALL_REMOVED_MESSAGE",
-                comment: "The message of an alert when you've been removed from a group call."
+                comment: "The message of an alert when you've been removed from a group call.",
             )
             shouldDismissCallAfterDismissingActionSheet = true
 
         case .deniedRequestToJoinCall:
             title = OWSLocalizedString(
                 "GROUP_CALL_REQUEST_DENIED",
-                comment: "The title of an alert when tried to join a call using a link but the admin rejected your request."
+                comment: "The title of an alert when tried to join a call using a link but the admin rejected your request.",
             )
             message = OWSLocalizedString(
                 "GROUP_CALL_REQUEST_DENIED_MESSAGE",
-                comment: "The message of an alert when tried to join a call using a link but the admin rejected your request."
+                comment: "The message of an alert when tried to join a call using a link but the admin rejected your request.",
             )
             shouldDismissCallAfterDismissingActionSheet = true
 
         case
-                .serverExplicitlyDisconnected,
-                .callManagerIsBusy,
-                .sfuClientFailedToJoin,
-                .failedToCreatePeerConnectionFactory,
-                .failedToNegotiateSrtpKeys,
-                .failedToCreatePeerConnection,
-                .failedToStartPeerConnection,
-                .failedToUpdatePeerConnection,
-                .failedToSetMaxSendBitrate,
-                .iceFailedWhileConnecting,
-                .iceFailedAfterConnected,
-                .serverChangedDemuxId:
+            .serverExplicitlyDisconnected,
+            .callManagerIsBusy,
+            .sfuClientFailedToJoin,
+            .failedToCreatePeerConnectionFactory,
+            .failedToNegotiateSrtpKeys,
+            .failedToCreatePeerConnection,
+            .failedToStartPeerConnection,
+            .failedToUpdatePeerConnection,
+            .failedToSetMaxSendBitrate,
+            .iceFailedWhileConnecting,
+            .iceFailedAfterConnected,
+            .serverChangedDemuxId:
             Logger.warn("Group call ended with reason \(reason)")
             title = OWSLocalizedString(
                 "GROUP_CALL_UNEXPECTEDLY_ENDED",
-                comment: "An error displayed to the user when the group call unexpectedly ends."
+                comment: "An error displayed to the user when the group call unexpectedly ends.",
             )
             message = nil
             shouldDismissCallAfterDismissingActionSheet = false
 
         case
-                .localHangup,
-                .remoteHangup,
-                .remoteHangupNeedPermission,
-                .remoteHangupAccepted,
-                .remoteHangupDeclined,
-                .remoteHangupBusy,
-                .remoteBusy,
-                .remoteGlare,
-                .remoteReCall,
-                .timeout,
-                .internalFailure,
-                .signalingFailure,
-                .connectionFailure,
-                .appDroppedCall:
+            .localHangup,
+            .remoteHangup,
+            .remoteHangupNeedPermission,
+            .remoteHangupAccepted,
+            .remoteHangupDeclined,
+            .remoteHangupBusy,
+            .remoteBusy,
+            .remoteGlare,
+            .remoteReCall,
+            .timeout,
+            .internalFailure,
+            .signalingFailure,
+            .connectionFailure,
+            .appDroppedCall:
             Logger.error("Received Direct Call reason in a Group Call context")
             return
         }
@@ -1855,7 +1866,7 @@ extension GroupCallViewController: GroupCallObserver {
                 if shouldDismissCallAfterDismissingActionSheet {
                     self?.dismissCall()
                 }
-            }
+            },
         ))
         presenter.presentActionSheet(actionSheet)
     }
@@ -1891,7 +1902,7 @@ extension GroupCallViewController: GroupCallObserver {
                     emoji: reaction.value,
                     name: name,
                     aci: aci,
-                    timestamp: Date.timeIntervalSinceReferenceDate
+                    timestamp: Date.timeIntervalSinceReferenceDate,
                 )
             }
         }
@@ -2015,13 +2026,13 @@ extension GroupCallViewController: CallControlsDelegate {
                 let formatString = OWSLocalizedString(
                     "GROUP_CALL_HAS_MAX_DEVICES_%d",
                     tableName: "PluralAware",
-                    comment: "An error displayed to the user when the group call ends because it has exceeded the max devices. Embeds {{max device count}}."
+                    comment: "An error displayed to the user when the group call ends because it has exceeded the max devices. Embeds {{max device count}}.",
                 )
                 text = String.localizedStringWithFormat(formatString, maxDevices)
             } else {
                 text = OWSLocalizedString(
                     "GROUP_CALL_HAS_MAX_DEVICES_UNKNOWN_COUNT",
-                    comment: "An error displayed to the user when the group call ends because it has exceeded the max devices."
+                    comment: "An error displayed to the user when the group call ends because it has exceeded the max devices.",
                 )
             }
 
@@ -2031,13 +2042,13 @@ extension GroupCallViewController: CallControlsDelegate {
                 from: .top,
                 of: view,
                 inset: view.safeAreaInsets.top + 8,
-                dismissAfter: .seconds(8)
+                dismissAfter: .seconds(8),
             )
             return
         }
 
         presentSafetyNumberChangeSheetIfNecessary { [weak self] success in
-            guard let self = self else { return }
+            guard let self else { return }
             guard success else { return }
             self.callService.joinGroupCallIfNecessary(self.call, groupCall: self.groupCall)
         }

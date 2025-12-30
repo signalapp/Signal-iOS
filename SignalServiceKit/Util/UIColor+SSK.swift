@@ -13,16 +13,16 @@ public extension UIColor {
     }
 
     convenience init(rgbHex value: UInt32) {
-        let red = CGFloat(((value >> 16) & 0xff)) / 255.0
-        let green = CGFloat(((value >> 8) & 0xff)) / 255.0
-        let blue = CGFloat(((value >> 0) & 0xff)) / 255.0
+        let red = CGFloat((value >> 16) & 0xff) / 255.0
+        let green = CGFloat((value >> 8) & 0xff) / 255.0
+        let blue = CGFloat((value >> 0) & 0xff) / 255.0
         self.init(red: red, green: green, blue: blue, alpha: 1)
     }
 
     convenience init(rgbHex value: UInt32, alpha: CGFloat) {
-        let red = CGFloat(((value >> 16) & 0xff)) / 255.0
-        let green = CGFloat(((value >> 8) & 0xff)) / 255.0
-        let blue = CGFloat(((value >> 0) & 0xff)) / 255.0
+        let red = CGFloat((value >> 16) & 0xff) / 255.0
+        let green = CGFloat((value >> 8) & 0xff) / 255.0
+        let blue = CGFloat((value >> 0) & 0xff) / 255.0
         self.init(red: red, green: green, blue: blue, alpha: alpha)
     }
 
@@ -35,10 +35,10 @@ public extension UIColor {
     }
 
     convenience init(argbHex value: UInt32) {
-        let alpha = CGFloat(((value >> 24) & 0xff)) / 255.0
-        let red = CGFloat(((value >> 16) & 0xff)) / 255.0
-        let green = CGFloat(((value >> 8) & 0xff)) / 255.0
-        let blue = CGFloat(((value >> 0) & 0xff)) / 255.0
+        let alpha = CGFloat((value >> 24) & 0xff) / 255.0
+        let red = CGFloat((value >> 16) & 0xff) / 255.0
+        let green = CGFloat((value >> 8) & 0xff) / 255.0
+        let blue = CGFloat((value >> 0) & 0xff) / 255.0
         self.init(red: red, green: green, blue: blue, alpha: alpha)
     }
 
@@ -65,8 +65,8 @@ public extension UIColor {
         color.getRed(&r2, green: &g2, blue: &b2, alpha: &a2)
 
         return abs(r1 - r2) <= tolerance &&
-        abs(g1 - g2) <= tolerance &&
-        abs(b1 - b2) <= tolerance &&
-        abs(a1 - a2) <= tolerance
+            abs(g1 - g2) <= tolerance &&
+            abs(b1 - b2) <= tolerance &&
+            abs(a1 - a2) <= tolerance
     }
 }

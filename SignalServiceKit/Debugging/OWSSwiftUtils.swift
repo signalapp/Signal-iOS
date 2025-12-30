@@ -18,7 +18,7 @@ public func AssertIsOnMainThread(
     logger: PrefixedLogger = .empty(),
     file: String = #fileID,
     function: String = #function,
-    line: Int = #line
+    line: Int = #line,
 ) {
     if !Thread.isMainThread {
         owsFailDebug("Must be on main thread.", logger: logger, file: file, function: function, line: line)
@@ -30,7 +30,7 @@ public func AssertNotOnMainThread(
     logger: PrefixedLogger = .empty(),
     file: String = #fileID,
     function: String = #function,
-    line: Int = #line
+    line: Int = #line,
 ) {
     if Thread.isMainThread {
         owsFailDebug("Must be off main thread.", logger: logger, file: file, function: function, line: line)
@@ -43,7 +43,7 @@ public func owsFailDebug(
     logger: PrefixedLogger = .empty(),
     file: String = #fileID,
     function: String = #function,
-    line: Int = #line
+    line: Int = #line,
 ) {
     logger.error(logMessage, file: file, function: function, line: line)
     logger.flush()
@@ -63,7 +63,7 @@ public func owsFail(
     logger: PrefixedLogger = .empty(),
     file: String = #fileID,
     function: String = #function,
-    line: Int = #line
+    line: Int = #line,
 ) -> Never {
     logger.error(Thread.callStackSymbols.joined(separator: "\n"))
     owsFailDebug(logMessage, logger: logger, file: file, function: function, line: line)
@@ -84,7 +84,7 @@ public func failIfThrows<T>(
     block: () throws -> T,
     file: String = #fileID,
     function: String = #function,
-    line: Int = #line
+    line: Int = #line,
 ) -> T {
     do {
         return try block()
@@ -105,7 +105,7 @@ public func owsAssertDebug(
     logger: PrefixedLogger = .empty(),
     file: String = #fileID,
     function: String = #function,
-    line: Int = #line
+    line: Int = #line,
 ) {
     if !condition {
         let message: String = message()
@@ -123,7 +123,7 @@ public func owsPrecondition(
     logger: PrefixedLogger = .empty(),
     file: String = #fileID,
     function: String = #function,
-    line: Int = #line
+    line: Int = #line,
 ) {
     if !condition() {
         let message: String = message()
@@ -141,7 +141,7 @@ public class OWSSwiftUtils: NSObject {
         _ logMessage: String,
         file: String = #fileID,
         function: String = #function,
-        line: Int = #line
+        line: Int = #line,
     ) -> Never {
         owsFail(logMessage, file: file, function: function, line: line)
     }

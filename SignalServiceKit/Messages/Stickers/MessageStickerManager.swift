@@ -40,7 +40,7 @@ public protocol MessageStickerManager {
     func buildProtoForSending(
         _ messageSticker: MessageSticker,
         parentMessage: TSMessage,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> SSKProtoDataMessageSticker
 }
 
@@ -100,12 +100,12 @@ class MessageStickerManagerImpl: MessageStickerManager {
             data: draft.stickerData,
             mimeType: draft.stickerType.mimeType,
             renderingFlag: .default,
-            sourceFilename: nil
+            sourceFilename: nil,
         )
         return MessageStickerDataSource(
             info: draft.info,
             emoji: draft.emoji,
-            source: .pendingAttachment(validatedDataSource)
+            source: .pendingAttachment(validatedDataSource),
         )
     }
 
@@ -126,14 +126,14 @@ class MessageStickerManagerImpl: MessageStickerManager {
     func buildProtoForSending(
         _ messageSticker: MessageSticker,
         parentMessage: TSMessage,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> SSKProtoDataMessageSticker {
 
         guard
             let parentMessageRowId = parentMessage.sqliteRowId,
             let attachment = attachmentStore.fetchFirstReferencedAttachment(
                 for: .messageSticker(messageRowId: parentMessageRowId),
-                tx: tx
+                tx: tx,
             )
         else {
             throw OWSAssertionError("Could not find sticker attachment")
@@ -149,14 +149,14 @@ class MessageStickerManagerImpl: MessageStickerManager {
         let attachmentProto = attachmentManager.buildProtoForSending(
             from: attachment.reference,
             pointer: attachmentPointer,
-            digestSHA256Ciphertext: digestSHA256Ciphertext
+            digestSHA256Ciphertext: digestSHA256Ciphertext,
         )
 
         let protoBuilder = SSKProtoDataMessageSticker.builder(
             packID: messageSticker.packId,
             packKey: messageSticker.packKey,
             stickerID: messageSticker.stickerId,
-            data: attachmentProto
+            data: attachmentProto,
         )
 
         if let emoji = messageSticker.emoji?.nilIfEmpty {

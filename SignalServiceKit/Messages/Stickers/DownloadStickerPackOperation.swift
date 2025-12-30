@@ -26,7 +26,7 @@ enum DownloadStickerPackOperation {
         do {
             let encryptedFileUrl: URL = try await CDNDownloadOperation.tryToDownload(
                 urlPath: urlPath,
-                maxDownloadSize: CDNDownloadOperation.kMaxStickerPackDownloadSize
+                maxDownloadSize: CDNDownloadOperation.kMaxStickerPackDownloadSize,
             )
             do {
                 let decryptedFileUrl = try StickerManager.decrypt(at: encryptedFileUrl, packKey: stickerPackInfo.packKey)
@@ -34,7 +34,7 @@ enum DownloadStickerPackOperation {
 
                 return try self.parseStickerPackManifest(
                     stickerPackInfo: stickerPackInfo,
-                    manifestData: manifestData
+                    manifestData: manifestData,
                 )
             } catch {
                 owsFailDebug("Decryption failed: \(error)")

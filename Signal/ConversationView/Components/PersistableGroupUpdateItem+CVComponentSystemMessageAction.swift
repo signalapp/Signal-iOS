@@ -13,7 +13,7 @@ extension TSInfoMessage.PersistableGroupUpdateItem {
         items: [Self],
         groupThread: () -> TSGroupThread?,
         contactsManager: any ContactManager,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> CVComponentSystemMessage.Action? {
         guard !items.isEmpty else {
             return nil
@@ -55,21 +55,23 @@ extension TSInfoMessage.PersistableGroupUpdateItem {
                 let nextItemAction = item.cvComponentAction(
                     groupThread: cachingGroupThread,
                     contactsManager: contactsManager,
-                    tx: tx
+                    tx: tx,
                 )
             {
                 owsAssertDebug(
                     isTail.negated,
-                    "Collapsed item with a following request shouldn't be a tail!"
+                    "Collapsed item with a following request shouldn't be a tail!",
                 )
                 return nextItemAction
             }
 
-            if let action = item.cvComponentAction(
-                groupThread: cachingGroupThread,
-                contactsManager: contactsManager,
-                tx: tx
-            ) {
+            if
+                let action = item.cvComponentAction(
+                    groupThread: cachingGroupThread,
+                    contactsManager: contactsManager,
+                    tx: tx,
+                )
+            {
                 return action
             }
         }
@@ -79,7 +81,7 @@ extension TSInfoMessage.PersistableGroupUpdateItem {
     private func cvComponentAction(
         groupThread: () -> TSGroupThread?,
         contactsManager: any ContactManager,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> CVComponentSystemMessage.Action? {
         typealias Action = CVComponentSystemMessage.Action
 
@@ -94,7 +96,7 @@ extension TSInfoMessage.PersistableGroupUpdateItem {
                 isTail: isTail,
                 groupThread: groupThread,
                 contactsManager: contactsManager,
-                tx: tx
+                tx: tx,
             )
         case .inviteFriendsToNewlyCreatedGroup:
             // We should use the latest group model, not the one from the time
@@ -105,25 +107,25 @@ extension TSInfoMessage.PersistableGroupUpdateItem {
             return Action(
                 title: OWSLocalizedString(
                     "GROUPS_INVITE_FRIENDS_BUTTON",
-                    comment: "Label for 'invite friends to group' button."
+                    comment: "Label for 'invite friends to group' button.",
                 ),
                 accessibilityIdentifier: "group_invite_friends",
-                action: .didTapGroupInviteLinkPromotion(groupModel: thread.groupModel)
+                action: .didTapGroupInviteLinkPromotion(groupModel: thread.groupModel),
             )
         case .wasMigrated:
             return Action(
                 title: CommonStrings.learnMore,
                 accessibilityIdentifier: "group_migration_learn_more",
-                action: .didTapGroupMigrationLearnMore
+                action: .didTapGroupMigrationLearnMore,
             )
         case
-                .descriptionChangedByLocalUser(let newGroupDescription),
-                .descriptionChangedByOtherUser(_, let newGroupDescription),
-                .descriptionChangedByUnknownUser(let newGroupDescription):
+            .descriptionChangedByLocalUser(let newGroupDescription),
+            .descriptionChangedByOtherUser(_, let newGroupDescription),
+            .descriptionChangedByUnknownUser(let newGroupDescription):
             return Action(
                 title: CommonStrings.viewButton,
                 accessibilityIdentifier: "group_description_view",
-                action: .didTapViewGroupDescription(newGroupDescription: newGroupDescription)
+                action: .didTapViewGroupDescription(newGroupDescription: newGroupDescription),
             )
         case
             let .unnamedUserInvitesWereRevokedByLocalUser(count),
@@ -132,21 +134,20 @@ extension TSInfoMessage.PersistableGroupUpdateItem {
             return Action.forNewlyRequestingMembers(count: count)
         case .otherUserRequestedToJoin:
             return Action.forNewlyRequestingMembers(count: 1)
-
         default:
             return nil
         }
     }
 }
 
-fileprivate extension CVComponentSystemMessage.Action {
+private extension CVComponentSystemMessage.Action {
 
     static func sequenceOfInviteLinkRequestAndCancelsAction(
         requester: Aci,
         isTail: Bool,
         groupThread: () -> TSGroupThread?,
         contactsManager: any ContactManager,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> Self? {
         guard isTail else { return nil }
 
@@ -171,17 +172,17 @@ fileprivate extension CVComponentSystemMessage.Action {
         return CVComponentSystemMessage.Action(
             title: OWSLocalizedString(
                 "GROUPS_BLOCK_REQUEST_BUTTON",
-                comment: "Label for button that lets the user block a request to join the group."
+                comment: "Label for button that lets the user block a request to join the group.",
             ),
             accessibilityIdentifier: "block_join_request_button",
             action: .didTapBlockRequest(
                 groupModel: mostRecentGroupModel,
                 requesterName: contactsManager.displayName(
                     for: SignalServiceAddress(requester),
-                    tx: tx
+                    tx: tx,
                 ).resolvedValue(useShortNameIfAvailable: true),
-                requesterAci: requester
-            )
+                requesterAci: requester,
+            ),
         )
     }
 
@@ -190,12 +191,12 @@ fileprivate extension CVComponentSystemMessage.Action {
             if count > 1 {
                 return OWSLocalizedString(
                     "GROUPS_VIEW_REQUESTS_BUTTON",
-                    comment: "Label for button that lets the user view the requests to join the group."
+                    comment: "Label for button that lets the user view the requests to join the group.",
                 )
             } else {
                 return OWSLocalizedString(
                     "GROUPS_VIEW_REQUEST_BUTTON",
-                    comment: "Label for button that lets the user view the request to join the group."
+                    comment: "Label for button that lets the user view the request to join the group.",
                 )
             }
         }()
@@ -203,7 +204,7 @@ fileprivate extension CVComponentSystemMessage.Action {
         return Self(
             title: title,
             accessibilityIdentifier: "show_group_requests_button",
-            action: .didTapShowConversationSettingsAndShowMemberRequests
+            action: .didTapShowConversationSettingsAndShowMemberRequests,
         )
     }
 }

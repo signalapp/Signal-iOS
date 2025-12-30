@@ -35,11 +35,11 @@ public struct HTMLMetadata: Equatable {
             description: Self.parseDescriptionTag(in: rawHTML),
             ogTitle: metaPropertyTags["og:title"],
             ogDescription: metaPropertyTags["og:description"],
-            ogImageUrlString: (metaPropertyTags["og:image"] ?? metaPropertyTags["og:image:url"]),
+            ogImageUrlString: metaPropertyTags["og:image"] ?? metaPropertyTags["og:image:url"],
             ogPublishDateString: metaPropertyTags["og:published_time"],
             articlePublishDateString: metaPropertyTags["article:published_time"],
             ogModifiedDateString: metaPropertyTags["og:modified_time"],
-            articleModifiedDateString: metaPropertyTags["article:modified_time"]
+            articleModifiedDateString: metaPropertyTags["article:modified_time"],
         )
     }
 }
@@ -56,7 +56,8 @@ extension HTMLMetadata {
     }
 
     private static func parseFaviconUrlString(in rawHTML: String) -> String? {
-        guard let matchedTag = faviconRegex
+        guard
+            let matchedTag = faviconRegex
                 .firstMatchSet(in: rawHTML)
                 .map({ String($0.fullString) }) else { return nil }
 
@@ -66,7 +67,8 @@ extension HTMLMetadata {
     }
 
     private static func parseDescriptionTag(in rawHTML: String) -> String? {
-        guard let matchedTag = metaDescriptionRegex
+        guard
+            let matchedTag = metaDescriptionRegex
                 .firstMatchSet(in: rawHTML)
                 .map({ String($0.fullString) }) else { return nil }
 
@@ -78,7 +80,7 @@ extension HTMLMetadata {
     private static func parseMetaProperties(in rawHTML: String) -> [String: String] {
         metaPropertyRegex
             .allMatchSets(in: rawHTML)
-            .reduce(into: [:]) { (builder, matchSet) in
+            .reduce(into: [:]) { builder, matchSet in
                 guard let ogTypeSubstring = matchSet.group(idx: 0) else { return }
                 let ogType = String(ogTypeSubstring)
                 let fullTag = String(matchSet.fullString)
@@ -96,7 +98,7 @@ extension HTMLMetadata {
 
         let options: [NSAttributedString.DocumentReadingOptionKey: Any] = [
             .documentType: NSAttributedString.DocumentType.html,
-            .characterEncoding: String.Encoding.utf8.rawValue
+            .characterEncoding: String.Encoding.utf8.rawValue,
         ]
 
         guard let attributedString = try? NSAttributedString(data: data, options: options, documentAttributes: nil) else {
@@ -106,7 +108,7 @@ extension HTMLMetadata {
     }
 }
 
- // MARK: - Regular Expressions
+// MARK: - Regular Expressions
 
 extension HTMLMetadata {
     static let titleRegex = regex(pattern: "<\\s*title[^>]*>(.*?)<\\s*/title[^>]*>")
@@ -116,9 +118,10 @@ extension HTMLMetadata {
     static let metaPropertyRegex = regex(pattern: "<\\s*meta[^>]*property\\s*=\\s*\"\\s*([^\"]+?)\"[^>]*>")
     static let metaContentRegex = regex(pattern: "content\\s*=\\s*\"([^\"]*?)\"")
 
-    static private func regex(pattern: String) -> NSRegularExpression {
+    private static func regex(pattern: String) -> NSRegularExpression {
         try! NSRegularExpression(
             pattern: pattern,
-            options: [.dotMatchesLineSeparators, .caseInsensitive])
+            options: [.dotMatchesLineSeparators, .caseInsensitive],
+        )
     }
 }

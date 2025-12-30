@@ -30,11 +30,11 @@ public struct BackupServiceAuth {
         self.init(
             authHeaders: [
                 "X-Signal-ZK-Auth": presentation.base64EncodedString(),
-                "X-Signal-ZK-Auth-Signature": signedPresentation.base64EncodedString()
+                "X-Signal-ZK-Auth-Signature": signedPresentation.base64EncodedString(),
             ],
             publicKey: privateKey.publicKey,
             type: type,
-            backupLevel: authCredential.backupLevel
+            backupLevel: authCredential.backupLevel,
         )
     }
 
@@ -56,19 +56,19 @@ public struct BackupServiceAuth {
         }
     }
 
-    #if TESTABLE_BUILD
+#if TESTABLE_BUILD
 
     static func mock(
         type: BackupAuthCredentialType = .messages,
-        backupLevel: BackupLevel = .free
+        backupLevel: BackupLevel = .free,
     ) -> Self {
         return .init(
             authHeaders: [:],
             publicKey: PrivateKey.generate().publicKey,
             type: type,
-            backupLevel: backupLevel
+            backupLevel: backupLevel,
         )
     }
 
-    #endif
+#endif
 }

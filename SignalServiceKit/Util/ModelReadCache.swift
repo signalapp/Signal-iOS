@@ -82,7 +82,7 @@ class ModelReadCache<KeyType: Hashable & Equatable, ValueType> {
 
     init(
         adapter: ModelCacheAdapter<KeyType, ValueType>,
-        appReadiness: AppReadiness
+        appReadiness: AppReadiness,
     ) {
         self.appReadiness = appReadiness
         self.adapter = adapter
@@ -92,13 +92,13 @@ class ModelReadCache<KeyType: Hashable & Equatable, ValueType> {
             self,
             selector: #selector(didReceiveCrossProcessNotification),
             name: SDSDatabaseStorage.didReceiveCrossProcessNotificationAlwaysSync,
-            object: nil
+            object: nil,
         )
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(didReceiveEvacuateCacheNotification),
             name: ModelReadCaches.evacuateAllModelCaches,
-            object: nil
+            object: nil,
         )
     }
 
@@ -159,7 +159,7 @@ class ModelReadCache<KeyType: Hashable & Equatable, ValueType> {
     func getValues(
         for cacheKeys: [ModelCacheKey<KeyType>],
         transaction: DBReadTransaction,
-        returnNilOnCacheMiss: Bool = false
+        returnNilOnCacheMiss: Bool = false,
     ) -> [ValueType?] {
         return performSync {
             return cacheKeys.map { cacheKey in
@@ -482,6 +482,7 @@ public class InstalledStickerCache: NSObject {
             return 64
         }
     }
+
     private let adapter = Adapter(cacheName: "InstalledSticker", cacheCountLimit: InstalledStickerCache.cacheCountLimit)
 
     @objc
@@ -547,7 +548,7 @@ public class ModelReadCacheFactory: NSObject {
     }
 
     func create<KeyType: Hashable & Equatable, ValueType>(
-        adapter: ModelCacheAdapter<KeyType, ValueType>
+        adapter: ModelCacheAdapter<KeyType, ValueType>,
     ) -> ModelReadCache<KeyType, ValueType> {
         return ModelReadCache(adapter: adapter, appReadiness: appReadiness)
     }

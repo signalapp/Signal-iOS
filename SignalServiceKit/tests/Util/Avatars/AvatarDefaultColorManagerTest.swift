@@ -4,8 +4,8 @@
 //
 
 import LibSignalClient
-@testable import SignalServiceKit
 import Testing
+@testable import SignalServiceKit
 
 struct AvatarDefaultColorManagerTest {
     private let avatarDefaultColorManager = AvatarDefaultColorManager()
@@ -21,33 +21,33 @@ struct AvatarDefaultColorManagerTest {
         let testCases = [
             TestCase(
                 defaultAvatarColorUseCase: .contactWithoutRecipient(address: .isolatedForTesting(
-                    serviceId: Aci.constantForTesting("a025bf78-653e-44e0-beb9-deb14ba32487")
+                    serviceId: Aci.constantForTesting("a025bf78-653e-44e0-beb9-deb14ba32487"),
                 )),
-                expectedDefaultColor: .A140
+                expectedDefaultColor: .A140,
             ),
             TestCase(
                 defaultAvatarColorUseCase: .contactWithoutRecipient(address: .isolatedForTesting(
-                    serviceId: Pni.constantForTesting("PNI:11a175e3-fe31-4eda-87da-e0bf2a2e250b")
+                    serviceId: Pni.constantForTesting("PNI:11a175e3-fe31-4eda-87da-e0bf2a2e250b"),
                 )),
-                expectedDefaultColor: .A200
+                expectedDefaultColor: .A200,
             ),
             TestCase(
                 defaultAvatarColorUseCase: .contactWithoutRecipient(address: .isolatedForTesting(
-                    phoneNumber: "+12135550124"
+                    phoneNumber: "+12135550124",
                 )),
-                expectedDefaultColor: .A150
+                expectedDefaultColor: .A150,
             ),
             TestCase(
                 defaultAvatarColorUseCase: .group(groupId: Data(
-                    base64Encoded: "BwJRIdomqOSOckHjnJsknNCibCZKJFt+RxLIpa9CWJ4="
+                    base64Encoded: "BwJRIdomqOSOckHjnJsknNCibCZKJFt+RxLIpa9CWJ4=",
                 )!),
-                expectedDefaultColor: .A130
-            )
+                expectedDefaultColor: .A130,
+            ),
         ]
 
         for testCase in testCases {
             let derivedColor = AvatarDefaultColorManager.deriveDefaultColor(
-                useCase: testCase.defaultAvatarColorUseCase
+                useCase: testCase.defaultAvatarColorUseCase,
             )
 
             #expect(derivedColor == testCase.expectedDefaultColor)
@@ -68,7 +68,7 @@ struct AvatarDefaultColorManagerTest {
         let defaultColor = db.read { tx in
             avatarDefaultColorManager.defaultColor(
                 useCase: .group(groupId: groupId),
-                tx: tx
+                tx: tx,
             )
         }
 

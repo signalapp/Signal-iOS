@@ -19,8 +19,10 @@ class ReplaceAdminViewController: OWSTableViewController2 {
 
     private let candidates: Set<SignalServiceAddress>
 
-    init(candidates: Set<SignalServiceAddress>,
-         replaceAdminViewControllerDelegate: ReplaceAdminViewControllerDelegate) {
+    init(
+        candidates: Set<SignalServiceAddress>,
+        replaceAdminViewControllerDelegate: ReplaceAdminViewControllerDelegate,
+    ) {
         assert(!candidates.isEmpty)
 
         self.candidates = candidates
@@ -31,11 +33,13 @@ class ReplaceAdminViewController: OWSTableViewController2 {
 
     // MARK: - View Lifecycle
 
-    public override func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = OWSLocalizedString("REPLACE_ADMIN_VIEW_TITLE",
-                                  comment: "The title for the 'replace group admin' view.")
+        title = OWSLocalizedString(
+            "REPLACE_ADMIN_VIEW_TITLE",
+            comment: "The title for the 'replace group admin' view.",
+        )
 
         tableView.register(ContactTableViewCell.self, forCellReuseIdentifier: ContactTableViewCell.reuseIdentifier)
 
@@ -71,7 +75,7 @@ class ReplaceAdminViewController: OWSTableViewController2 {
                 },
                 actionBlock: { [weak self] in
                     self?.candidateWasSelected(candidate: address)
-                }
+                },
             ))
         }
 

@@ -16,43 +16,43 @@ class ProvisioningTransferChoiceViewController: ProvisioningBaseViewController {
 
         let titleLabel = UILabel.titleLabelForRegistration(text: OWSLocalizedString(
             "DEVICE_TRANSFER_CHOICE_TITLE",
-            comment: "The title for the device transfer 'choice' view"
+            comment: "The title for the device transfer 'choice' view",
         ))
 
         let explanationLabel = UILabel.explanationLabelForRegistration(text: OWSLocalizedString(
             "DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION",
-            comment: "The explanation for the device transfer 'choice' view when linking a device"
+            comment: "The explanation for the device transfer 'choice' view when linking a device",
         ))
 
         let transferButton = UIButton.registrationChoiceButton(
             title: OWSLocalizedString(
                 "DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE",
-                comment: "The title for the device transfer 'choice' view 'transfer' option when linking a device"
+                comment: "The title for the device transfer 'choice' view 'transfer' option when linking a device",
             ),
             subtitle: OWSLocalizedString(
                 "DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY",
-                comment: "The body for the device transfer 'choice' view 'transfer' option when linking a device"
+                comment: "The body for the device transfer 'choice' view 'transfer' option when linking a device",
             ),
             iconName: Theme.iconName(.transfer),
             primaryAction: UIAction { [weak self] _ in
                 self?.didSelectTransfer()
-            }
+            },
         )
 
         let registerButton = UIButton.registrationChoiceButton(
             title: OWSLocalizedString(
                 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE",
-                comment: "The title for the device transfer 'choice' view 'register' option when linking a device"
+                comment: "The title for the device transfer 'choice' view 'register' option when linking a device",
             ),
             subtitle: OWSLocalizedString(
                 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY_LINK_AND_SYNC",
                 value: "You’ll have the option to transfer messages and recent media from your phone",
-                comment: "The body for the device transfer 'choice' view 'register' option when linking a device when message syncing is available"
+                comment: "The body for the device transfer 'choice' view 'register' option when linking a device when message syncing is available",
             ),
             iconName: Theme.iconName(.register),
             primaryAction: UIAction { [weak self] _ in
                 self?.didSelectRegister()
-            }
+            },
         )
 
         let footerTextView = LinkingTextView()
@@ -62,15 +62,15 @@ class ProvisioningTransferChoiceViewController: ProvisioningBaseViewController {
             "\n".styled(with: .maximumLineHeight(6)),
             OWSLocalizedString(
                 "LINKING_SYNCING_FOOTER",
-                comment: "Footer text when loading messages during linking process."
+                comment: "Footer text when loading messages during linking process.",
             ),
             " ",
-            CommonStrings.learnMore.styled(with: .link(URL.Support.linkedDevices))
+            CommonStrings.learnMore.styled(with: .link(URL.Support.linkedDevices)),
         ])
         .styled(
             with: .font(.dynamicTypeFootnote),
             .color(.Signal.secondaryLabel),
-            .alignment(.center)
+            .alignment(.center),
         )
 
         let topSpacer = UIView.vStretchingSpacer()

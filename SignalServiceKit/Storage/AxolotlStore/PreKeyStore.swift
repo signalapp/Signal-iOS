@@ -108,7 +108,7 @@ class PreKeyStoreForIdentity {
         }
     }
 
-    fileprivate func fetchSerializedRecord(in namespace: PreKey.Namespace, for keyId: UInt32, tx: DBReadTransaction) throws -> Data {
+    private func fetchSerializedRecord(in namespace: PreKey.Namespace, for keyId: UInt32, tx: DBReadTransaction) throws -> Data {
         let preKey = fetchPreKey(in: namespace, for: keyId, tx: tx)
         guard let serializedRecord = preKey?.serializedRecord else {
             throw PreKeyStore.Error.noPreKeyWithId(keyId)
@@ -121,7 +121,7 @@ class PreKeyStoreForIdentity {
         keyId: UInt32,
         in namespace: PreKey.Namespace,
         isOneTime: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         failIfThrows {
             do {
@@ -154,7 +154,7 @@ class PreKeyStoreForIdentity {
         }
     }
 
-    #if TESTABLE_BUILD
+#if TESTABLE_BUILD
 
     func fetchCount(in namespace: PreKey.Namespace, isOneTime: Bool, tx: DBReadTransaction) throws -> Int {
         return try baseQuery(in: namespace)
@@ -162,7 +162,7 @@ class PreKeyStoreForIdentity {
             .fetchCount(tx.database)
     }
 
-    #endif
+#endif
 }
 
 extension PreKeyStoreForIdentity: LibSignalClient.PreKeyStore {

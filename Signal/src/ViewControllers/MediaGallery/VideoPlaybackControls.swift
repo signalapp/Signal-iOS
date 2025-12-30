@@ -27,14 +27,14 @@ class VideoPlaybackControlView: UIView {
     private func titleForRewindAndFFBUttons() -> NSAttributedString {
         let string = NumberFormatter.localizedString(
             from: Int(Self.rewindAndFastForwardSkipDuration) as NSNumber,
-            number: .decimal
+            number: .decimal,
         )
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.alignment = .center
         return NSAttributedString(string: string, attributes: [
             .kern: -1,
             .font: UIFont.monospacedDigitSystemFont(ofSize: 10, weight: .bold),
-            .paragraphStyle: paragraphStyle
+            .paragraphStyle: paragraphStyle,
         ])
     }
 
@@ -121,7 +121,7 @@ class VideoPlaybackControlView: UIView {
             selfOrVisualEffectContentView = self
         }
 
-        let buttons = [ buttonRewind, buttonPlay, buttonPause, buttonFastForward ]
+        let buttons = [buttonRewind, buttonPlay, buttonPause, buttonFastForward]
         buttons.forEach { button in
             button.translatesAutoresizingMaskIntoConstraints = false
             selfOrVisualEffectContentView.addSubview(button)
@@ -150,7 +150,7 @@ class VideoPlaybackControlView: UIView {
 
             buttonFastForward.centerYAnchor.constraint(equalTo: buttonPlay.centerYAnchor),
             buttonFastForward.heightAnchor.constraint(equalTo: buttonPlay.heightAnchor),
-            buttonFastForward.widthAnchor.constraint(equalTo: buttonFastForward.heightAnchor)
+            buttonFastForward.widthAnchor.constraint(equalTo: buttonFastForward.heightAnchor),
         ])
     }
 
@@ -223,7 +223,7 @@ class VideoPlaybackControlView: UIView {
 
         let fromButton: UIButton // button that is currently visible, reflecting opposite to `isPlaying`
         let fromButtonTransform: CGAffineTransform
-        let toButton: UIButton   // button that should reflect `isPlaying` upon animation completion
+        let toButton: UIButton // button that should reflect `isPlaying` upon animation completion
         let toButtonTransform: CGAffineTransform
         if isPlaying {
             fromButton = buttonPlay
@@ -267,7 +267,7 @@ class VideoPlaybackControlView: UIView {
     // MARK: Animations
 
     private var viewsForOpacityAnimation: [UIView] {
-        [ buttonRewind, buttonPlay, buttonPause, buttonFastForward ].filter { $0.isHidden == false }
+        [buttonRewind, buttonPlay, buttonPause, buttonFastForward].filter { $0.isHidden == false }
     }
 
     func prepareToBeAnimatedIn() {
@@ -315,7 +315,7 @@ class VideoPlaybackControlView: UIView {
             // |[Play]|
             return [
                 buttonPlay.leadingAnchor.constraint(equalTo: leadingAnchor),
-                buttonPlay.trailingAnchor.constraint(equalTo: trailingAnchor)
+                buttonPlay.trailingAnchor.constraint(equalTo: trailingAnchor),
             ]
         }
 
@@ -324,7 +324,7 @@ class VideoPlaybackControlView: UIView {
             buttonRewind.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Self.horizontalMargin),
             buttonPlay.leadingAnchor.constraint(equalTo: buttonRewind.trailingAnchor, constant: Self.buttonSpacing),
             buttonFastForward.leadingAnchor.constraint(equalTo: buttonPlay.trailingAnchor, constant: Self.buttonSpacing),
-            buttonFastForward.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Self.horizontalMargin)
+            buttonFastForward.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Self.horizontalMargin),
         ]
     }
 
@@ -488,11 +488,11 @@ class PlayerProgressView: UIView {
             slider.maximumValue = max(0.01, Float(CMTimeGetSeconds(item.asset.duration)))
 
             progressObserver = avPlayer.addPeriodicTimeObserver(
-                forInterval: CMTime(seconds: 1/60, preferredTimescale: Self.preferredTimeScale),
+                forInterval: CMTime(seconds: 1 / 60, preferredTimescale: Self.preferredTimeScale),
                 queue: nil,
-                using: { [weak self] (_) in
+                using: { [weak self] _ in
                     self?.updateState()
-                }
+                },
             ) as AnyObject
 
             updateState()
@@ -518,6 +518,7 @@ class PlayerProgressView: UIView {
         label.setCompressionResistanceHorizontalHigh()
         return label
     }
+
     private lazy var positionLabel = createLabel()
     private lazy var remainingLabel = createLabel()
 
@@ -529,7 +530,7 @@ class PlayerProgressView: UIView {
         slider.minimumTrackTintColor = .Signal.label
         slider.maximumTrackTintColor = .Signal.quaternaryLabel
         slider.addAction(UIAction { [weak self] _ in self?.handleSliderTouchDown() }, for: .touchDown)
-        slider.addAction(UIAction { [weak self] _ in self?.handleSliderTouchUp() }, for: [ .touchUpInside, .touchUpOutside ])
+        slider.addAction(UIAction { [weak self] _ in self?.handleSliderTouchUp() }, for: [.touchUpInside, .touchUpOutside])
         slider.addAction(UIAction { [weak self] _ in self?.handleSliderValueChanged() }, for: .valueChanged)
         return slider
     }()
@@ -631,7 +632,7 @@ class PlayerProgressView: UIView {
     // MARK: Animations
 
     private var viewsForOpacityAnimation: [UIView] {
-        [ positionLabel, slider, remainingLabel ]
+        [positionLabel, slider, remainingLabel]
     }
 
     func prepareToBeAnimatedIn() {

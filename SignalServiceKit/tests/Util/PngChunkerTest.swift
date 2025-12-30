@@ -16,13 +16,13 @@ class PngChunkerTest: XCTestCase {
         let tooSmall: [Data] = [
             Data(),
             Data(count: 8),
-            PngChunker.pngSignature
+            PngChunker.pngSignature,
         ]
         for data in tooSmall {
             XCTAssertThrowsError(try PngChunker(source: DataImageSource(data))) { error in
                 XCTAssertEqual(
                     error as? PngChunker.PngChunkerError,
-                    PngChunker.PngChunkerError.tooSmall
+                    PngChunker.PngChunkerError.tooSmall,
                 )
             }
         }
@@ -33,13 +33,13 @@ class PngChunkerTest: XCTestCase {
             // PNG with invalid signature
             Data([137, 2, 3, 4, 5, 6, 7, 8] + fixture(filename: "test-png").dropFirst(8)),
             // Garbage
-            Randomness.generateRandomBytes(123)
+            Randomness.generateRandomBytes(123),
         ]
         for data in wrongPrefix {
             XCTAssertThrowsError(try PngChunker(source: DataImageSource(data))) { error in
                 XCTAssertEqual(
                     error as? PngChunker.PngChunkerError,
-                    PngChunker.PngChunkerError.fileDoesNotStartWithPngSignature
+                    PngChunker.PngChunkerError.fileDoesNotStartWithPngSignature,
                 )
             }
         }
@@ -112,7 +112,7 @@ class PngChunkerTest: XCTestCase {
         XCTAssertThrowsError(try chunker.next()) { error in
             XCTAssertEqual(
                 error as? PngChunker.PngChunkerError,
-                PngChunker.PngChunkerError.invalidChunkType
+                PngChunker.PngChunkerError.invalidChunkType,
             )
         }
     }
@@ -139,7 +139,7 @@ class PngChunkerTest: XCTestCase {
         XCTAssertThrowsError(try chunker.next()) { error in
             XCTAssertEqual(
                 error as? PngChunker.PngChunkerError,
-                PngChunker.PngChunkerError.invalidChunkChecksum
+                PngChunker.PngChunkerError.invalidChunkChecksum,
             )
         }
     }

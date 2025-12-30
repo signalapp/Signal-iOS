@@ -47,7 +47,7 @@ final class InactiveLinkedDeviceFinderTest: XCTestCase {
             deviceService: mockDevicesService,
             deviceStore: mockDeviceStore,
             remoteConfigProvider: MockRemoteConfigProvider(),
-            tsAccountManager: mockTSAccountManager
+            tsAccountManager: mockTSAccountManager,
         )
     }
 
@@ -85,7 +85,7 @@ final class InactiveLinkedDeviceFinderTest: XCTestCase {
         setMockDevices([
             .primary(),
             .fixture(name: "eye pad", lastSeenAt: inactiveLastSeenAt),
-            .fixture(name: "lap top", lastSeenAt: activeLastSeenAt)
+            .fixture(name: "lap top", lastSeenAt: activeLastSeenAt),
         ])
         XCTAssertEqual(
             findLeastActive()?.displayName,
@@ -157,7 +157,7 @@ private extension OWSDevice {
 
     static func fixture(
         name: String,
-        lastSeenAt: Date
+        lastSeenAt: Date,
     ) -> OWSDevice {
         return OWSDevice(
             deviceId: DeviceId(validating: 24)!,

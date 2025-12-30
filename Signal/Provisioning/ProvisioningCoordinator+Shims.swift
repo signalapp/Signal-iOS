@@ -11,6 +11,7 @@ extension ProvisioningCoordinatorImpl {
         public typealias PushRegistrationManager = _ProvisioningCoordinator_PushRegistrationManagerShim
         public typealias ReceiptManager = _ProvisioningCoordinator_ReceiptManagerShim
     }
+
     public enum Wrappers {
         public typealias PushRegistrationManager = _ProvisioningCoordinator_PushRegistrationManagerWrapper
         public typealias ReceiptManager = _ProvisioningCoordinator_ReceiptManagerWrapper
@@ -24,7 +25,7 @@ public protocol _ProvisioningCoordinator_PushRegistrationManagerShim {
     typealias ApnRegistrationId = PushRegistrationManager.ApnRegistrationId
 
     func requestPushTokens(
-        forceRotation: Bool
+        forceRotation: Bool,
     ) async throws -> ApnRegistrationId
 }
 

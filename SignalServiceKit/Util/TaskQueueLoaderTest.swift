@@ -14,7 +14,7 @@ public class TaskQueueLoaderTest: XCTestCase {
             maxConcurrentTasks: 4,
             dateProvider: { Date() },
             db: InMemoryDB(),
-            runner: runner
+            runner: runner,
         )
         try await loader.loadAndRunTasks()
         // We should have run all tasks
@@ -29,7 +29,7 @@ public class TaskQueueLoaderTest: XCTestCase {
             maxConcurrentTasks: 1,
             dateProvider: { Date() },
             db: InMemoryDB(),
-            runner: runner
+            runner: runner,
         )
         try await loader.loadAndRunTasks()
         // We should have run all tasks
@@ -45,7 +45,7 @@ public class TaskQueueLoaderTest: XCTestCase {
             maxConcurrentTasks: 4,
             dateProvider: { Date() },
             db: InMemoryDB(),
-            runner: runner
+            runner: runner,
         )
         try await loader.loadAndRunTasks()
         XCTAssertEqual(runner.completedTasks.count, 3)
@@ -58,7 +58,7 @@ public class TaskQueueLoaderTest: XCTestCase {
             maxConcurrentTasks: 4,
             dateProvider: { Date() },
             db: InMemoryDB(),
-            runner: runner
+            runner: runner,
         )
         try await loader.loadAndRunTasks()
         XCTAssertEqual(runner.completedTasks.count, 0)
@@ -70,7 +70,7 @@ public class TaskQueueLoaderTest: XCTestCase {
             maxConcurrentTasks: 4,
             dateProvider: { Date() },
             db: InMemoryDB(),
-            runner: runner
+            runner: runner,
         )
 
         // One single task (the first) will be stuck waiting on the continuation
@@ -110,7 +110,7 @@ public class TaskQueueLoaderTest: XCTestCase {
             maxConcurrentTasks: 4,
             dateProvider: { Date() },
             db: InMemoryDB(),
-            runner: runner
+            runner: runner,
         )
 
         var numFailures = 0
@@ -135,7 +135,7 @@ public class TaskQueueLoaderTest: XCTestCase {
             maxConcurrentTasks: 4,
             dateProvider: { Date() },
             db: InMemoryDB(),
-            runner: runner
+            runner: runner,
         )
 
         runner.taskRunner = { id in
@@ -158,7 +158,7 @@ public class TaskQueueLoaderTest: XCTestCase {
             maxConcurrentTasks: 4,
             dateProvider: { Date() },
             db: InMemoryDB(),
-            runner: runner
+            runner: runner,
         )
 
         runner.taskRunner = { id in
@@ -181,7 +181,7 @@ public class TaskQueueLoaderTest: XCTestCase {
             maxConcurrentTasks: 1,
             dateProvider: { Date() },
             db: InMemoryDB(),
-            runner: runner
+            runner: runner,
         )
 
         var mainTask: Task<Void, Error>!
@@ -216,7 +216,7 @@ public class TaskQueueLoaderTest: XCTestCase {
             maxConcurrentTasks: 1,
             dateProvider: { Date() },
             db: InMemoryDB(),
-            runner: runner
+            runner: runner,
         )
 
         // Make two tasks that wait on `loadAndRunTasks`.
@@ -283,7 +283,7 @@ public class TaskQueueLoaderTest: XCTestCase {
             maxConcurrentTasks: 1,
             dateProvider: { Date() },
             db: InMemoryDB(),
-            runner: runner
+            runner: runner,
         )
 
         // Make two tasks that wait on `loadAndRunTasks`.
@@ -358,7 +358,7 @@ public class TaskQueueLoaderTest: XCTestCase {
             maxConcurrentTasks: 1,
             dateProvider: { Date() },
             db: InMemoryDB(),
-            runner: runner
+            runner: runner,
         )
 
         // Make two tasks that wait on `loadAndRunTasks`.
@@ -445,7 +445,7 @@ public class TaskQueueLoaderTest: XCTestCase {
             maxConcurrentTasks: 1,
             dateProvider: { Date() },
             db: db,
-            runner: runner
+            runner: runner,
         )
 
         var beginDidDrainQueueContinuation: AsyncStream<Void>.Continuation!
@@ -506,7 +506,7 @@ public class TaskQueueLoaderTest: XCTestCase {
             maxConcurrentTasks: 1,
             dateProvider: { Date() },
             db: InMemoryDB(),
-            runner: runner
+            runner: runner,
         )
 
         struct MockError: Error {}
@@ -560,7 +560,7 @@ public class TaskQueueLoaderTest: XCTestCase {
             maxConcurrentTasks: 1,
             dateProvider: { Date() },
             db: InMemoryDB(),
-            runner: runner
+            runner: runner,
         )
 
         struct MockError: Error {}
@@ -624,7 +624,7 @@ public class TaskQueueLoaderTest: XCTestCase {
             sleep: { nanoseconds in
                 XCTAssertEqual(nanoseconds, NSEC_PER_SEC)
                 await sleepTask.value
-            }
+            },
         )
 
         runner.taskRunner = { id in
@@ -674,7 +674,7 @@ public class TaskQueueLoaderTest: XCTestCase {
 
         func peek(
             count: UInt,
-            tx: DBReadTransaction
+            tx: DBReadTransaction,
         ) throws -> [MockTaskRecord] {
             return Array(records.get().prefix(Int(count)))
         }

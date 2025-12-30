@@ -27,17 +27,19 @@ public class InteractionFinder: NSObject {
 
     public class func fetch(
         rowId: Int64,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> TSInteraction? {
-        guard let interaction = TSInteraction.grdbFetchOne(
-            sql: """
+        guard
+            let interaction = TSInteraction.grdbFetchOne(
+                sql: """
                 SELECT *
                 FROM \(InteractionRecord.databaseTableName)
                 WHERE \(interactionColumn: .id) = ?
                 """,
-            arguments: [ rowId ],
-            transaction: transaction
-        ) else {
+                arguments: [rowId],
+                transaction: transaction,
+            )
+        else {
             owsFailDebug("Missing interaction with row ID - how did we get this row ID?")
             return nil
         }
@@ -48,32 +50,32 @@ public class InteractionFinder: NSObject {
     public class func existsIncomingMessage(
         timestamp: UInt64,
         sourceAci: Aci,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> Bool {
         let sql = """
-            SELECT 1
-            FROM \(InteractionRecord.databaseTableName)
-            \(DEBUG_INDEXED_BY("Interaction_timestamp", or: "index_interactions_on_timestamp_sourceDeviceId_and_authorPhoneNumber"))
-            WHERE \(interactionColumn: .timestamp) = ?
-            AND (
-                \(interactionColumn: .authorUUID) = ?
-                OR (
-                    \(interactionColumn: .authorUUID) IS NULL
-                    AND \(interactionColumn: .authorPhoneNumber) = ?
-                )
+        SELECT 1
+        FROM \(InteractionRecord.databaseTableName)
+        \(DEBUG_INDEXED_BY("Interaction_timestamp", or: "index_interactions_on_timestamp_sourceDeviceId_and_authorPhoneNumber"))
+        WHERE \(interactionColumn: .timestamp) = ?
+        AND (
+            \(interactionColumn: .authorUUID) = ?
+            OR (
+                \(interactionColumn: .authorUUID) IS NULL
+                AND \(interactionColumn: .authorPhoneNumber) = ?
             )
-            LIMIT 1
-            """
+        )
+        LIMIT 1
+        """
         let arguments: StatementArguments = [
             timestamp,
             sourceAci.serviceIdUppercaseString,
-            SignalServiceAddress(sourceAci).phoneNumber
+            SignalServiceAddress(sourceAci).phoneNumber,
         ]
         return failIfThrows {
             return try Bool.fetchOne(
                 transaction.database,
                 sql: sql,
-                arguments: arguments
+                arguments: arguments,
             ) ?? false
         }
     }
@@ -81,7 +83,7 @@ public class InteractionFinder: NSObject {
     @objc
     public class func fetchInteractions(
         timestamp: UInt64,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) throws -> [TSInteraction] {
         let sql = """
             SELECT *
@@ -93,32 +95,32 @@ public class InteractionFinder: NSObject {
         return try TSInteraction.grdbFetchCursor(
             sql: sql,
             arguments: [timestamp],
-            transaction: transaction
+            transaction: transaction,
         ).all()
     }
 
     public class func incompleteCallIds(transaction: DBReadTransaction) -> [String] {
         let sql: String = """
-            SELECT \(interactionColumn: .uniqueId)
-            FROM \(InteractionRecord.databaseTableName)
-            \(DEBUG_INDEXED_BY("index_interaction_on_recordType_and_callType"))
-            WHERE \(interactionColumn: .recordType) = ?
-            AND (
-                \(interactionColumn: .callType) = ?
-                OR \(interactionColumn: .callType) = ?
-            )
-            """
+        SELECT \(interactionColumn: .uniqueId)
+        FROM \(InteractionRecord.databaseTableName)
+        \(DEBUG_INDEXED_BY("index_interaction_on_recordType_and_callType"))
+        WHERE \(interactionColumn: .recordType) = ?
+        AND (
+            \(interactionColumn: .callType) = ?
+            OR \(interactionColumn: .callType) = ?
+        )
+        """
         let statementArguments: StatementArguments = [
             SDSRecordType.call.rawValue,
             RPRecentCallType.outgoingIncomplete.rawValue,
-            RPRecentCallType.incomingIncomplete.rawValue
+            RPRecentCallType.incomingIncomplete.rawValue,
         ]
         var result = [String]()
         do {
             result = try String.fetchAll(
                 transaction.database,
                 sql: sql,
-                arguments: statementArguments
+                arguments: statementArguments,
             )
         } catch {
             owsFailDebug("error: \(error)")
@@ -127,20 +129,20 @@ public class InteractionFinder: NSObject {
     }
 
     public class func attemptingOutInteractionIds(
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> [String] {
         let sql: String = """
-            SELECT \(interactionColumn: .uniqueId)
-            FROM \(InteractionRecord.databaseTableName)
-            \(DEBUG_INDEXED_BY("index_interaction_on_storedMessageState"))
-            WHERE \(interactionColumn: .storedMessageState) = ?
-            """
+        SELECT \(interactionColumn: .uniqueId)
+        FROM \(InteractionRecord.databaseTableName)
+        \(DEBUG_INDEXED_BY("index_interaction_on_storedMessageState"))
+        WHERE \(interactionColumn: .storedMessageState) = ?
+        """
         var result = [String]()
         do {
             result = try String.fetchAll(
                 transaction.database,
                 sql: sql,
-                arguments: [TSOutgoingMessageState.sending.rawValue]
+                arguments: [TSOutgoingMessageState.sending.rawValue],
             )
         } catch {
             owsFailDebug("error: \(error)")
@@ -149,20 +151,20 @@ public class InteractionFinder: NSObject {
     }
 
     public class func pendingInteractionIds(
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> [String] {
         let sql: String = """
-            SELECT \(interactionColumn: .uniqueId)
-            FROM \(InteractionRecord.databaseTableName)
-            \(DEBUG_INDEXED_BY("index_interaction_on_storedMessageState"))
-            WHERE \(interactionColumn: .storedMessageState) = ?
-            """
+        SELECT \(interactionColumn: .uniqueId)
+        FROM \(InteractionRecord.databaseTableName)
+        \(DEBUG_INDEXED_BY("index_interaction_on_storedMessageState"))
+        WHERE \(interactionColumn: .storedMessageState) = ?
+        """
         var result = [String]()
         do {
             result = try String.fetchAll(
                 transaction.database,
                 sql: sql,
-                arguments: [TSOutgoingMessageState.pending.rawValue]
+                arguments: [TSOutgoingMessageState.pending.rawValue],
             )
         } catch {
             owsFailDebug("error: \(error)")
@@ -175,14 +177,14 @@ public class InteractionFinder: NSObject {
             let includeMutedThreads = SSKPreferences.includeMutedThreadsInBadgeCount(transaction: transaction)
 
             var unreadInteractionQuery = """
-                SELECT COUNT(interaction.\(interactionColumn: .id))
-                FROM \(InteractionRecord.databaseTableName) AS interaction
-                \(DEBUG_INDEXED_BY("index_model_TSInteraction_UnreadMessages"))
-                INNER JOIN \(ThreadAssociatedData.databaseTableName) AS associatedData
-                \(DEBUG_INDEXED_BY("index_thread_associated_data_on_threadUniqueId_and_isArchived"))
-                    ON associatedData.threadUniqueId = \(interactionColumn: .threadUniqueId)
-                WHERE associatedData.isArchived = "0"
-                """
+            SELECT COUNT(interaction.\(interactionColumn: .id))
+            FROM \(InteractionRecord.databaseTableName) AS interaction
+            \(DEBUG_INDEXED_BY("index_model_TSInteraction_UnreadMessages"))
+            INNER JOIN \(ThreadAssociatedData.databaseTableName) AS associatedData
+            \(DEBUG_INDEXED_BY("index_thread_associated_data_on_threadUniqueId_and_isArchived"))
+                ON associatedData.threadUniqueId = \(interactionColumn: .threadUniqueId)
+            WHERE associatedData.isArchived = "0"
+            """
 
             if !includeMutedThreads {
                 unreadInteractionQuery += " \(sqlClauseForIgnoringInteractionsWithMutedThread(threadAssociatedDataAlias: "associatedData")) "
@@ -194,14 +196,14 @@ public class InteractionFinder: NSObject {
             owsAssertDebug(unreadInteractionCount != nil, "unreadInteractionCount was unexpectedly nil")
 
             var markedUnreadThreadQuery = """
-                SELECT COUNT(*)
-                FROM \(ThreadRecord.databaseTableName)
-                INNER JOIN \(ThreadAssociatedData.databaseTableName) AS associatedData
-                    ON associatedData.threadUniqueId = \(threadColumn: .uniqueId)
-                WHERE associatedData.isMarkedUnread = 1
-                AND associatedData.isArchived = "0"
-                AND \(threadColumn: .shouldThreadBeVisible) = 1
-                """
+            SELECT COUNT(*)
+            FROM \(ThreadRecord.databaseTableName)
+            INNER JOIN \(ThreadAssociatedData.databaseTableName) AS associatedData
+                ON associatedData.threadUniqueId = \(threadColumn: .uniqueId)
+            WHERE associatedData.isMarkedUnread = 1
+            AND associatedData.isArchived = "0"
+            AND \(threadColumn: .shouldThreadBeVisible) = 1
+            """
 
             if !includeMutedThreads {
                 markedUnreadThreadQuery += " \(sqlClauseForIgnoringInteractionsWithMutedThread(threadAssociatedDataAlias: "associatedData")) "
@@ -220,18 +222,18 @@ public class InteractionFinder: NSObject {
     // MARK: -
 
     public class func nextExpiringMessage(
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> TSMessage? {
         let sql = """
-            SELECT *
-            FROM \(InteractionRecord.databaseTableName)
-            \(DEBUG_INDEXED_BY("Interaction_disappearingMessages_partial", or: "index_interactions_on_expiresInSeconds_and_expiresAt"))
-            WHERE \(interactionColumn: .expiresAt) > 0
-            ORDER BY \(interactionColumn: .expiresAt)
-            """
+        SELECT *
+        FROM \(InteractionRecord.databaseTableName)
+        \(DEBUG_INDEXED_BY("Interaction_disappearingMessages_partial", or: "index_interactions_on_expiresInSeconds_and_expiresAt"))
+        WHERE \(interactionColumn: .expiresAt) > 0
+        ORDER BY \(interactionColumn: .expiresAt)
+        """
         let cursor = TSInteraction.grdbFetchCursor(
             sql: sql,
-            transaction: transaction
+            transaction: transaction,
         )
 
         return failIfThrows {
@@ -250,21 +252,21 @@ public class InteractionFinder: NSObject {
 
     public class func interactions(
         withInteractionIds interactionIds: Set<String>,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> Set<TSInteraction> {
         guard !interactionIds.isEmpty else {
             return []
         }
 
         let sql = """
-            SELECT * FROM \(InteractionRecord.databaseTableName)
-            WHERE \(interactionColumn: .uniqueId) IN (\(interactionIds.map { "\'\($0)'" }.joined(separator: ",")))
-            """
+        SELECT * FROM \(InteractionRecord.databaseTableName)
+        WHERE \(interactionColumn: .uniqueId) IN (\(interactionIds.map { "\'\($0)'" }.joined(separator: ",")))
+        """
         let arguments: StatementArguments = []
         let cursor = TSInteraction.grdbFetchCursor(
             sql: sql,
             arguments: arguments,
-            transaction: transaction
+            transaction: transaction,
         )
         var interactions = Set<TSInteraction>()
         do {
@@ -280,20 +282,20 @@ public class InteractionFinder: NSObject {
     public static func enumerateGroupReplies(
         for storyMessage: StoryMessage,
         transaction: DBReadTransaction,
-        block: @escaping (TSMessage, inout Bool) -> Void
+        block: @escaping (TSMessage, inout Bool) -> Void,
     ) {
         let sql = """
-            SELECT *
-            FROM \(InteractionRecord.databaseTableName)
-            \(DEBUG_INDEXED_BY("Interaction_storyReply_partial", or: "index_model_TSInteraction_on_StoryContext"))
-            WHERE \(interactionColumn: .storyTimestamp) = ?
-            AND \(interactionColumn: .storyAuthorUuidString) = ?
-            AND \(interactionColumn: .isGroupStoryReply) = 1
-            """
+        SELECT *
+        FROM \(InteractionRecord.databaseTableName)
+        \(DEBUG_INDEXED_BY("Interaction_storyReply_partial", or: "index_model_TSInteraction_on_StoryContext"))
+        WHERE \(interactionColumn: .storyTimestamp) = ?
+        AND \(interactionColumn: .storyAuthorUuidString) = ?
+        AND \(interactionColumn: .isGroupStoryReply) = 1
+        """
         let cursor = TSInteraction.grdbFetchCursor(
             sql: sql,
             arguments: [storyMessage.timestamp, storyMessage.authorAci.serviceIdUppercaseString],
-            transaction: transaction
+            transaction: transaction,
         )
         do {
             while let interaction = try cursor.next() {
@@ -315,26 +317,26 @@ public class InteractionFinder: NSObject {
     public static func hasLocalUserReplied(
         storyTimestamp: UInt64,
         storyAuthorAci: Aci,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> Bool {
         let sql = """
-            SELECT 1
-            FROM \(InteractionRecord.databaseTableName)
-            \(DEBUG_INDEXED_BY("Interaction_storyReply_partial", or: "index_model_TSInteraction_on_StoryContext"))
-            WHERE \(interactionColumn: .storyTimestamp) = ?
-            AND \(interactionColumn: .storyAuthorUuidString) = ?
-            AND \(interactionColumn: .recordType) = \(SDSRecordType.outgoingMessage.rawValue)
-            AND \(interactionColumn: .isGroupStoryReply) = 1
-            LIMIT 1
-            """
+        SELECT 1
+        FROM \(InteractionRecord.databaseTableName)
+        \(DEBUG_INDEXED_BY("Interaction_storyReply_partial", or: "index_model_TSInteraction_on_StoryContext"))
+        WHERE \(interactionColumn: .storyTimestamp) = ?
+        AND \(interactionColumn: .storyAuthorUuidString) = ?
+        AND \(interactionColumn: .recordType) = \(SDSRecordType.outgoingMessage.rawValue)
+        AND \(interactionColumn: .isGroupStoryReply) = 1
+        LIMIT 1
+        """
         do {
             return try Bool.fetchOne(
                 transaction.database,
                 sql: sql,
                 arguments: [
                     storyTimestamp,
-                    storyAuthorAci.serviceIdUppercaseString
-                ]
+                    storyAuthorAci.serviceIdUppercaseString,
+                ],
             ) ?? false
         } catch {
             owsFail("error: \(error)")
@@ -344,7 +346,7 @@ public class InteractionFinder: NSObject {
     public static func groupReplyUniqueIdsAndRowIds(
         storyAuthor: Aci,
         storyTimestamp: UInt64,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> [(String, Int64)] {
         guard storyAuthor != StoryMessage.systemStoryAuthor else {
             // No replies on system stories.
@@ -352,18 +354,18 @@ public class InteractionFinder: NSObject {
         }
         do {
             let sql: String = """
-                SELECT \(interactionColumn: .uniqueId), \(interactionColumn: .id)
-                FROM \(InteractionRecord.databaseTableName)
-                \(DEBUG_INDEXED_BY("Interaction_storyReply_partial", or: "index_model_TSInteraction_on_StoryContext"))
-                WHERE \(interactionColumn: .storyTimestamp) = ?
-                AND \(interactionColumn: .storyAuthorUuidString) = ?
-                AND \(interactionColumn: .isGroupStoryReply) = 1
-                ORDER BY \(interactionColumn: .id) ASC
-                """
+            SELECT \(interactionColumn: .uniqueId), \(interactionColumn: .id)
+            FROM \(InteractionRecord.databaseTableName)
+            \(DEBUG_INDEXED_BY("Interaction_storyReply_partial", or: "index_model_TSInteraction_on_StoryContext"))
+            WHERE \(interactionColumn: .storyTimestamp) = ?
+            AND \(interactionColumn: .storyAuthorUuidString) = ?
+            AND \(interactionColumn: .isGroupStoryReply) = 1
+            ORDER BY \(interactionColumn: .id) ASC
+            """
             return try Row.fetchAll(
                 transaction.database,
                 sql: sql,
-                arguments: [storyTimestamp, storyAuthor.serviceIdUppercaseString]
+                arguments: [storyTimestamp, storyAuthor.serviceIdUppercaseString],
             ).map { ($0[0], $0[1]) }
         } catch {
             owsFail("error: \(error)")
@@ -372,18 +374,18 @@ public class InteractionFinder: NSObject {
 
     static func enumeratePlaceholders(
         transaction: DBReadTransaction,
-        block: (OWSRecoverableDecryptionPlaceholder) -> Void
+        block: (OWSRecoverableDecryptionPlaceholder) -> Void,
     ) {
         let sql = """
-            SELECT *
-            FROM \(InteractionRecord.databaseTableName)
-            \(DEBUG_INDEXED_BY("index_interaction_on_recordType_and_callType"))
-            WHERE \(interactionColumn: .recordType) IS \(SDSRecordType.recoverableDecryptionPlaceholder.rawValue)
-            """
+        SELECT *
+        FROM \(InteractionRecord.databaseTableName)
+        \(DEBUG_INDEXED_BY("index_interaction_on_recordType_and_callType"))
+        WHERE \(interactionColumn: .recordType) IS \(SDSRecordType.recoverableDecryptionPlaceholder.rawValue)
+        """
         do {
             let cursor = TSInteraction.grdbFetchCursor(
                 sql: sql,
-                transaction: transaction
+                transaction: transaction,
             )
             while let result = try cursor.next() {
                 if let placeholder = result as? OWSRecoverableDecryptionPlaceholder {
@@ -402,7 +404,7 @@ public class InteractionFinder: NSObject {
         withTimestamp timestamp: UInt64,
         threadId: String,
         author: SignalServiceAddress,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> TSMessage? {
         guard timestamp > 0 else {
             owsFailDebug("invalid timestamp: \(timestamp)")
@@ -424,7 +426,7 @@ public class InteractionFinder: NSObject {
         do {
             messages = try InteractionFinder.fetchInteractions(
                 timestamp: timestamp,
-                transaction: transaction
+                transaction: transaction,
             ).compactMap { $0 as? TSMessage }
         } catch {
             owsFailDebug("Error loading interactions \(error)")
@@ -434,13 +436,17 @@ public class InteractionFinder: NSObject {
         for message in messages {
             guard message.uniqueThreadId == threadId else { continue }
 
-            if let incomingMessage = message as? TSIncomingMessage,
-                incomingMessage.authorAddress.isEqualToAddress(author) {
+            if
+                let incomingMessage = message as? TSIncomingMessage,
+                incomingMessage.authorAddress.isEqualToAddress(author)
+            {
                 return incomingMessage
             }
 
-            if let outgoingMessage = message as? TSOutgoingMessage,
-                author.isLocalAddress {
+            if
+                let outgoingMessage = message as? TSOutgoingMessage,
+                author.isLocalAddress
+            {
                 return outgoingMessage
             }
         }
@@ -450,24 +456,24 @@ public class InteractionFinder: NSObject {
 
     /// Gets the most recently inserted Interaction of type `incomingMessage`.
     public static func lastInsertedIncomingMessage(
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> TSIncomingMessage? {
         let sql: String = """
-            SELECT *
-            FROM \(InteractionRecord.databaseTableName)
-            \(DEBUG_INDEXED_BY("index_interaction_on_recordType_and_callType"))
-            WHERE \(interactionColumn: .recordType) = ?
-            AND \(interactionColumn: .callType) IS NULL
-            ORDER BY \(interactionColumn: .id) DESC
-            LIMIT 1
-            """
+        SELECT *
+        FROM \(InteractionRecord.databaseTableName)
+        \(DEBUG_INDEXED_BY("index_interaction_on_recordType_and_callType"))
+        WHERE \(interactionColumn: .recordType) = ?
+        AND \(interactionColumn: .callType) IS NULL
+        ORDER BY \(interactionColumn: .id) DESC
+        LIMIT 1
+        """
         let arguments: StatementArguments = [
-            SDSRecordType.incomingMessage.rawValue
+            SDSRecordType.incomingMessage.rawValue,
         ]
         let result = TSInteraction.grdbFetchOne(
             sql: sql,
             arguments: arguments,
-            transaction: transaction
+            transaction: transaction,
         )
         if let result = result as? TSIncomingMessage {
             return result
@@ -483,19 +489,19 @@ public class InteractionFinder: NSObject {
 
     public func profileUpdateInteractions(
         afterSortId sortId: UInt64,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> [TSInfoMessage] {
         let cursor = TSInteraction.grdbFetchCursor(
             sql: """
-                SELECT *
-                FROM \(InteractionRecord.databaseTableName)
-                \(DEBUG_INDEXED_BY("index_interactions_on_threadUniqueId_and_id"))
-                WHERE \(interactionColumn: .threadUniqueId) = ?
-                AND \(interactionColumn: .messageType) = ?
-                AND \(interactionColumn: .id) > ?
-                """,
+            SELECT *
+            FROM \(InteractionRecord.databaseTableName)
+            \(DEBUG_INDEXED_BY("index_interactions_on_threadUniqueId_and_id"))
+            WHERE \(interactionColumn: .threadUniqueId) = ?
+            AND \(interactionColumn: .messageType) = ?
+            AND \(interactionColumn: .id) > ?
+            """,
             arguments: [threadUniqueId, TSInfoMessageType.profileUpdate.rawValue, sortId],
-            transaction: transaction
+            transaction: transaction,
         )
 
         let allResults: [TSInteraction]
@@ -513,66 +519,66 @@ public class InteractionFinder: NSObject {
 
     func latestInteraction(
         from address: SignalServiceAddress,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> TSInteraction? {
         let sql = """
-            SELECT *
-            FROM \(InteractionRecord.databaseTableName)
-            \(DEBUG_INDEXED_BY("index_interactions_on_threadUniqueId_and_id"))
-            WHERE \(interactionColumn: .threadUniqueId) = ?
-            AND (
-                \(interactionColumn: .authorUUID) = ?
-                OR (\(interactionColumn: .authorUUID) IS NULL AND \(interactionColumn: .authorPhoneNumber) = ?)
-            )
-            ORDER BY \(interactionColumn: .id) DESC
-            LIMIT 1
-            """
+        SELECT *
+        FROM \(InteractionRecord.databaseTableName)
+        \(DEBUG_INDEXED_BY("index_interactions_on_threadUniqueId_and_id"))
+        WHERE \(interactionColumn: .threadUniqueId) = ?
+        AND (
+            \(interactionColumn: .authorUUID) = ?
+            OR (\(interactionColumn: .authorUUID) IS NULL AND \(interactionColumn: .authorPhoneNumber) = ?)
+        )
+        ORDER BY \(interactionColumn: .id) DESC
+        LIMIT 1
+        """
         let arguments: StatementArguments = [threadUniqueId, address.serviceIdUppercaseString, address.phoneNumber]
         return TSInteraction.grdbFetchOne(
             sql: sql,
             arguments: arguments,
-            transaction: transaction
+            transaction: transaction,
         )
     }
 
     private var mostRecentInteractionSqlAndArgs: (String, StatementArguments) {
         return (
             """
-                SELECT *
-                FROM \(InteractionRecord.databaseTableName)
-                \(DEBUG_INDEXED_BY("index_interactions_on_threadUniqueId_and_id"))
-                WHERE \(interactionColumn: .threadUniqueId) = ?
-                \(Self.filterGroupStoryRepliesClause())
-                \(Self.filterEditHistoryClause())
-                AND \(interactionColumn: .errorType) IS NOT ?
-                AND \(interactionColumn: .messageType) IS NOT ?
-                AND \(interactionColumn: .messageType) IS NOT ?
-                ORDER BY \(interactionColumn: .id) DESC
-                """,
+            SELECT *
+            FROM \(InteractionRecord.databaseTableName)
+            \(DEBUG_INDEXED_BY("index_interactions_on_threadUniqueId_and_id"))
+            WHERE \(interactionColumn: .threadUniqueId) = ?
+            \(Self.filterGroupStoryRepliesClause())
+            \(Self.filterEditHistoryClause())
+            AND \(interactionColumn: .errorType) IS NOT ?
+            AND \(interactionColumn: .messageType) IS NOT ?
+            AND \(interactionColumn: .messageType) IS NOT ?
+            ORDER BY \(interactionColumn: .id) DESC
+            """,
             [
                 threadUniqueId,
                 TSErrorMessageType.nonBlockingIdentityChange.rawValue,
                 TSInfoMessageType.verificationStateChange.rawValue,
-                TSInfoMessageType.profileUpdate.rawValue
-            ]
+                TSInfoMessageType.profileUpdate.rawValue,
+            ],
         )
     }
 
     func mostRecentInteraction(
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> TSInteraction? {
         let (sql, args) = mostRecentInteractionSqlAndArgs
         let firstInteractionSql = sql + " LIMIT 1"
         return TSInteraction.grdbFetchOne(
             sql: firstInteractionSql,
             arguments: args,
-            transaction: transaction
+            transaction: transaction,
         )
     }
 
     @objc
     public func mostRecentInteractionForInbox(
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> TSInteraction? {
         guard let firstInteraction = mostRecentInteraction(transaction: transaction) else {
             return nil
@@ -590,7 +596,7 @@ public class InteractionFinder: NSObject {
             let cursor = TSInteraction.grdbFetchCursor(
                 sql: sql,
                 arguments: args,
-                transaction: transaction
+                transaction: transaction,
             )
             while let interaction = try cursor.next() {
                 if interaction.shouldAppearInInbox(transaction: transaction) {
@@ -607,19 +613,21 @@ public class InteractionFinder: NSObject {
     public func unreadCount(transaction: DBReadTransaction) -> UInt {
         do {
             let sql = """
-                SELECT COUNT(*)
-                FROM \(InteractionRecord.databaseTableName)
-                \(DEBUG_INDEXED_BY("index_model_TSInteraction_UnreadMessages"))
-                WHERE \(interactionColumn: .threadUniqueId) = ?
-                AND \(InteractionFinder.sqlClauseForUnreadInteractionCounts())
-                """
+            SELECT COUNT(*)
+            FROM \(InteractionRecord.databaseTableName)
+            \(DEBUG_INDEXED_BY("index_model_TSInteraction_UnreadMessages"))
+            WHERE \(interactionColumn: .threadUniqueId) = ?
+            AND \(InteractionFinder.sqlClauseForUnreadInteractionCounts())
+            """
             let arguments: StatementArguments = [threadUniqueId]
 
-            guard let count = try UInt.fetchOne(
-                transaction.database,
-                sql: sql,
-                arguments: arguments
-            ) else {
+            guard
+                let count = try UInt.fetchOne(
+                    transaction.database,
+                    sql: sql,
+                    arguments: arguments,
+                )
+            else {
                 owsFailDebug("count was unexpectedly nil")
                 return 0
             }
@@ -632,21 +640,21 @@ public class InteractionFinder: NSObject {
 
     /// Enumerates all the unread interactions in this thread, sorted by sort id.
     public func fetchAllUnreadMessages(
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> SDSMappedCursor<TSInteractionCursor, OWSReadTracking> {
         let sql = """
-            SELECT *
-            FROM \(InteractionRecord.databaseTableName)
-            \(DEBUG_INDEXED_BY("index_model_TSInteraction_UnreadMessages"))
-            WHERE \(interactionColumn: .threadUniqueId) = ?
-            AND \(Self.sqlClauseForAllUnreadInteractions(excludeReadEdits: true))
-            ORDER BY \(interactionColumn: .id)
-            """
+        SELECT *
+        FROM \(InteractionRecord.databaseTableName)
+        \(DEBUG_INDEXED_BY("index_model_TSInteraction_UnreadMessages"))
+        WHERE \(interactionColumn: .threadUniqueId) = ?
+        AND \(Self.sqlClauseForAllUnreadInteractions(excludeReadEdits: true))
+        ORDER BY \(interactionColumn: .id)
+        """
 
         let cursor = TSInteraction.grdbFetchCursor(
             sql: sql,
             arguments: [threadUniqueId],
-            transaction: transaction
+            transaction: transaction,
         )
         return cursor.compactMap { interaction -> OWSReadTracking? in
             guard let readTracking = interaction as? OWSReadTracking else {
@@ -666,20 +674,20 @@ public class InteractionFinder: NSObject {
     /// See also: ``fetchUnreadMessages`` and ``fetchMessagesWithUnreadReactions``.
     public func hasMessagesToMarkRead(
         beforeSortId: UInt64,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> Bool {
         let hasUnreadMessages = (try? Bool.fetchOne(
             transaction.database,
             sql: """
-                SELECT 1
-                FROM \(InteractionRecord.databaseTableName)
-                \(DEBUG_INDEXED_BY("index_model_TSInteraction_UnreadMessages"))
-                WHERE \(interactionColumn: .threadUniqueId) = ?
-                AND \(interactionColumn: .id) <= ?
-                AND \(Self.sqlClauseForAllUnreadInteractions())
-                LIMIT 1
-                """,
-            arguments: [threadUniqueId, beforeSortId]
+            SELECT 1
+            FROM \(InteractionRecord.databaseTableName)
+            \(DEBUG_INDEXED_BY("index_model_TSInteraction_UnreadMessages"))
+            WHERE \(interactionColumn: .threadUniqueId) = ?
+            AND \(interactionColumn: .id) <= ?
+            AND \(Self.sqlClauseForAllUnreadInteractions())
+            LIMIT 1
+            """,
+            arguments: [threadUniqueId, beforeSortId],
         )) ?? false
 
         if hasUnreadMessages {
@@ -689,18 +697,18 @@ public class InteractionFinder: NSObject {
         let hasOutgoingMessagesWithUnreadReactions = (try? Bool.fetchOne(
             transaction.database,
             sql: """
-                SELECT 1
-                FROM \(InteractionRecord.databaseTableName) AS interaction
-                \(DEBUG_INDEXED_BY("index_interactions_on_threadUniqueId_and_id"))
-                INNER JOIN \(OWSReaction.databaseTableName) AS reaction
-                    ON interaction.\(interactionColumn: .uniqueId) = reaction.\(OWSReaction.columnName(.uniqueMessageId))
-                    AND reaction.\(OWSReaction.columnName(.read)) IS 0
-                WHERE interaction.\(interactionColumn: .recordType) IS \(SDSRecordType.outgoingMessage.rawValue)
-                AND interaction.\(interactionColumn: .threadUniqueId) = ?
-                AND interaction.\(interactionColumn: .id) <= ?
-                LIMIT 1
-                """,
-            arguments: [threadUniqueId, beforeSortId]
+            SELECT 1
+            FROM \(InteractionRecord.databaseTableName) AS interaction
+            \(DEBUG_INDEXED_BY("index_interactions_on_threadUniqueId_and_id"))
+            INNER JOIN \(OWSReaction.databaseTableName) AS reaction
+                ON interaction.\(interactionColumn: .uniqueId) = reaction.\(OWSReaction.columnName(.uniqueMessageId))
+                AND reaction.\(OWSReaction.columnName(.read)) IS 0
+            WHERE interaction.\(interactionColumn: .recordType) IS \(SDSRecordType.outgoingMessage.rawValue)
+            AND interaction.\(interactionColumn: .threadUniqueId) = ?
+            AND interaction.\(interactionColumn: .id) <= ?
+            LIMIT 1
+            """,
+            arguments: [threadUniqueId, beforeSortId],
         )) ?? false
 
         return hasOutgoingMessagesWithUnreadReactions
@@ -712,22 +720,22 @@ public class InteractionFinder: NSObject {
     /// See also: ``hasMessagesToMarkRead``.
     public func fetchUnreadMessages(
         beforeSortId: UInt64,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> SDSMappedCursor<TSInteractionCursor, OWSReadTracking> {
         let sql = """
-            SELECT *
-            FROM \(InteractionRecord.databaseTableName)
-            \(DEBUG_INDEXED_BY("index_model_TSInteraction_UnreadMessages"))
-            WHERE \(interactionColumn: .threadUniqueId) = ?
-            AND \(interactionColumn: .id) <= ?
-            AND \(Self.sqlClauseForAllUnreadInteractions())
-            ORDER BY \(interactionColumn: .id)
-            """
+        SELECT *
+        FROM \(InteractionRecord.databaseTableName)
+        \(DEBUG_INDEXED_BY("index_model_TSInteraction_UnreadMessages"))
+        WHERE \(interactionColumn: .threadUniqueId) = ?
+        AND \(interactionColumn: .id) <= ?
+        AND \(Self.sqlClauseForAllUnreadInteractions())
+        ORDER BY \(interactionColumn: .id)
+        """
 
         let cursor = TSInteraction.grdbFetchCursor(
             sql: sql,
             arguments: [threadUniqueId, beforeSortId],
-            transaction: transaction
+            transaction: transaction,
         )
         return cursor.compactMap { interaction -> OWSReadTracking? in
             guard let readTracking = interaction as? OWSReadTracking else {
@@ -748,43 +756,43 @@ public class InteractionFinder: NSObject {
     /// See also: ``hasMessagesToMarkRead``.
     public func fetchMessagesWithUnreadReactions(
         beforeSortId: UInt64,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> SDSMappedCursor<TSInteractionCursor, TSOutgoingMessage> {
         let sql = """
-            SELECT interaction.*
-            FROM \(InteractionRecord.databaseTableName) AS interaction
-            \(DEBUG_INDEXED_BY("index_interactions_on_threadUniqueId_and_id"))
-            INNER JOIN \(OWSReaction.databaseTableName) AS reaction
-                ON interaction.\(interactionColumn: .uniqueId) = reaction.\(OWSReaction.columnName(.uniqueMessageId))
-                AND reaction.\(OWSReaction.columnName(.read)) IS 0
-            WHERE interaction.\(interactionColumn: .recordType) IS \(SDSRecordType.outgoingMessage.rawValue)
-            AND interaction.\(interactionColumn: .threadUniqueId) = ?
-            AND interaction.\(interactionColumn: .id) <= ?
-            GROUP BY interaction.\(interactionColumn: .id)
-            ORDER BY interaction.\(interactionColumn: .id)
-            """
+        SELECT interaction.*
+        FROM \(InteractionRecord.databaseTableName) AS interaction
+        \(DEBUG_INDEXED_BY("index_interactions_on_threadUniqueId_and_id"))
+        INNER JOIN \(OWSReaction.databaseTableName) AS reaction
+            ON interaction.\(interactionColumn: .uniqueId) = reaction.\(OWSReaction.columnName(.uniqueMessageId))
+            AND reaction.\(OWSReaction.columnName(.read)) IS 0
+        WHERE interaction.\(interactionColumn: .recordType) IS \(SDSRecordType.outgoingMessage.rawValue)
+        AND interaction.\(interactionColumn: .threadUniqueId) = ?
+        AND interaction.\(interactionColumn: .id) <= ?
+        GROUP BY interaction.\(interactionColumn: .id)
+        ORDER BY interaction.\(interactionColumn: .id)
+        """
 
         let cursor = TSOutgoingMessage.grdbFetchCursor(
             sql: sql,
             arguments: [threadUniqueId, beforeSortId],
-            transaction: transaction
+            transaction: transaction,
         )
         return cursor.compactMap { $0 as? TSOutgoingMessage }
     }
 
     public func oldestUnreadInteraction(transaction: DBReadTransaction) throws -> TSInteraction? {
         let sql = """
-            SELECT *
-            FROM \(InteractionRecord.databaseTableName)
-            \(DEBUG_INDEXED_BY("index_model_TSInteraction_UnreadMessages"))
-            WHERE \(interactionColumn: .threadUniqueId) = ?
-            AND \(Self.sqlClauseForAllUnreadInteractions(excludeReadEdits: true))
-            ORDER BY \(interactionColumn: .id)
-            """
+        SELECT *
+        FROM \(InteractionRecord.databaseTableName)
+        \(DEBUG_INDEXED_BY("index_model_TSInteraction_UnreadMessages"))
+        WHERE \(interactionColumn: .threadUniqueId) = ?
+        AND \(Self.sqlClauseForAllUnreadInteractions(excludeReadEdits: true))
+        ORDER BY \(interactionColumn: .id)
+        """
         let cursor = TSInteraction.grdbFetchCursor(
             sql: sql,
             arguments: [threadUniqueId],
-            transaction: transaction
+            transaction: transaction,
         )
         return try cursor.next()
     }
@@ -792,29 +800,31 @@ public class InteractionFinder: NSObject {
     @objc
     public func firstInteraction(
         atOrAroundSortId sortId: UInt64,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> TSInteraction? {
         guard sortId > 0 else { return nil }
 
         // First, see if there's an interaction at or before this sortId.
 
         let atOrBeforeQuery = """
-            SELECT *
-            FROM \(InteractionRecord.databaseTableName)
-            \(DEBUG_INDEXED_BY("index_interactions_on_threadUniqueId_and_id"))
-            WHERE \(interactionColumn: .threadUniqueId) = ?
-            AND \(interactionColumn: .id) <= ?
-            \(Self.filterEditHistoryClause())
-            ORDER BY \(interactionColumn: .id) DESC
-            LIMIT 1
-            """
+        SELECT *
+        FROM \(InteractionRecord.databaseTableName)
+        \(DEBUG_INDEXED_BY("index_interactions_on_threadUniqueId_and_id"))
+        WHERE \(interactionColumn: .threadUniqueId) = ?
+        AND \(interactionColumn: .id) <= ?
+        \(Self.filterEditHistoryClause())
+        ORDER BY \(interactionColumn: .id) DESC
+        LIMIT 1
+        """
         let arguments: StatementArguments = [threadUniqueId, sortId]
 
-        if let interactionAtOrBeforeSortId = TSInteraction.grdbFetchOne(
-            sql: atOrBeforeQuery,
-            arguments: arguments,
-            transaction: transaction
-        ) {
+        if
+            let interactionAtOrBeforeSortId = TSInteraction.grdbFetchOne(
+                sql: atOrBeforeQuery,
+                arguments: arguments,
+                transaction: transaction,
+            )
+        {
             return interactionAtOrBeforeSortId
         }
 
@@ -822,84 +832,84 @@ public class InteractionFinder: NSObject {
         // look for the first interaction *after* this sort id.
 
         let afterQuery = """
-            SELECT *
-            FROM \(InteractionRecord.databaseTableName)
-            \(DEBUG_INDEXED_BY("index_interactions_on_threadUniqueId_and_id"))
-            WHERE \(interactionColumn: .threadUniqueId) = ?
-            AND \(interactionColumn: .id) > ?
-            \(Self.filterEditHistoryClause())
-            ORDER BY \(interactionColumn: .id) ASC
-            LIMIT 1
-            """
+        SELECT *
+        FROM \(InteractionRecord.databaseTableName)
+        \(DEBUG_INDEXED_BY("index_interactions_on_threadUniqueId_and_id"))
+        WHERE \(interactionColumn: .threadUniqueId) = ?
+        AND \(interactionColumn: .id) > ?
+        \(Self.filterEditHistoryClause())
+        ORDER BY \(interactionColumn: .id) ASC
+        LIMIT 1
+        """
 
         return TSInteraction.grdbFetchOne(
             sql: afterQuery,
             arguments: arguments,
-            transaction: transaction
+            transaction: transaction,
         )
     }
 
     public func existsOutgoingMessage(transaction: DBReadTransaction) -> Bool {
         let sql = """
-            SELECT 1
-            FROM \(InteractionRecord.databaseTableName)
-            \(DEBUG_INDEXED_BY("index_model_TSInteraction_on_uniqueThreadId_recordType_messageType"))
-            WHERE \(interactionColumn: .threadUniqueId) = ?
-            AND \(interactionColumn: .recordType) = ?
-            LIMIT 1
-            """
+        SELECT 1
+        FROM \(InteractionRecord.databaseTableName)
+        \(DEBUG_INDEXED_BY("index_model_TSInteraction_on_uniqueThreadId_recordType_messageType"))
+        WHERE \(interactionColumn: .threadUniqueId) = ?
+        AND \(interactionColumn: .recordType) = ?
+        LIMIT 1
+        """
         let arguments: StatementArguments = [
             threadUniqueId,
-            SDSRecordType.outgoingMessage.rawValue
+            SDSRecordType.outgoingMessage.rawValue,
         ]
         return failIfThrows {
             return try Bool.fetchOne(
                 transaction.database,
                 sql: sql,
-                arguments: arguments
+                arguments: arguments,
             ) ?? false
         }
     }
 
     func hasGroupUpdateInfoMessage(transaction: DBReadTransaction) -> Bool {
         let sql = """
-            SELECT 1
-            FROM \(InteractionRecord.databaseTableName)
-            \(DEBUG_INDEXED_BY("index_model_TSInteraction_on_uniqueThreadId_recordType_messageType"))
-            WHERE \(interactionColumn: .threadUniqueId) = ?
-            AND \(interactionColumn: .recordType) = \(SDSRecordType.infoMessage.rawValue)
-            AND \(interactionColumn: .messageType) = \(TSInfoMessageType.typeGroupUpdate.rawValue)
-            LIMIT 1
-            """
+        SELECT 1
+        FROM \(InteractionRecord.databaseTableName)
+        \(DEBUG_INDEXED_BY("index_model_TSInteraction_on_uniqueThreadId_recordType_messageType"))
+        WHERE \(interactionColumn: .threadUniqueId) = ?
+        AND \(interactionColumn: .recordType) = \(SDSRecordType.infoMessage.rawValue)
+        AND \(interactionColumn: .messageType) = \(TSInfoMessageType.typeGroupUpdate.rawValue)
+        LIMIT 1
+        """
 
         let arguments: StatementArguments = [threadUniqueId]
         return failIfThrows {
             return try Bool.fetchOne(
                 transaction.database,
                 sql: sql,
-                arguments: arguments
+                arguments: arguments,
             ) ?? false
         }
     }
 
     public func enumerateRecentGroupUpdateMessages(
         transaction: DBReadTransaction,
-        block: (TSInfoMessage, UnsafeMutablePointer<ObjCBool>) -> Void
+        block: (TSInfoMessage, UnsafeMutablePointer<ObjCBool>) -> Void,
     ) throws {
         let sql = """
-            SELECT *
-            FROM \(InteractionRecord.databaseTableName)
-            \(DEBUG_INDEXED_BY("index_model_TSInteraction_on_uniqueThreadId_recordType_messageType"))
-            WHERE \(interactionColumn: .threadUniqueId) = ?
-            AND \(interactionColumn: .recordType) = \(SDSRecordType.infoMessage.rawValue)
-            AND \(interactionColumn: .messageType) = \(TSInfoMessageType.typeGroupUpdate.rawValue)
-            ORDER BY \(interactionColumn: .id) DESC
-            """
+        SELECT *
+        FROM \(InteractionRecord.databaseTableName)
+        \(DEBUG_INDEXED_BY("index_model_TSInteraction_on_uniqueThreadId_recordType_messageType"))
+        WHERE \(interactionColumn: .threadUniqueId) = ?
+        AND \(interactionColumn: .recordType) = \(SDSRecordType.infoMessage.rawValue)
+        AND \(interactionColumn: .messageType) = \(TSInfoMessageType.typeGroupUpdate.rawValue)
+        ORDER BY \(interactionColumn: .id) DESC
+        """
 
         let cursor = TSInfoMessage.grdbFetchCursor(
             sql: sql,
             arguments: [threadUniqueId],
-            transaction: transaction
+            transaction: transaction,
         )
 
         while let interaction = try cursor.next() {
@@ -914,21 +924,21 @@ public class InteractionFinder: NSObject {
 
     public func hasUserReportedSpam(transaction: DBReadTransaction) -> Bool {
         let sql = """
-            SELECT 1
-            FROM \(InteractionRecord.databaseTableName)
-            \(DEBUG_INDEXED_BY("index_model_TSInteraction_on_uniqueThreadId_recordType_messageType"))
-            WHERE \(interactionColumn: .threadUniqueId) = ?
-            AND \(interactionColumn: .recordType) = \(SDSRecordType.infoMessage.rawValue)
-            AND \(interactionColumn: .messageType) = \(TSInfoMessageType.reportedSpam.rawValue)
-            LIMIT 1
-            """
+        SELECT 1
+        FROM \(InteractionRecord.databaseTableName)
+        \(DEBUG_INDEXED_BY("index_model_TSInteraction_on_uniqueThreadId_recordType_messageType"))
+        WHERE \(interactionColumn: .threadUniqueId) = ?
+        AND \(interactionColumn: .recordType) = \(SDSRecordType.infoMessage.rawValue)
+        AND \(interactionColumn: .messageType) = \(TSInfoMessageType.reportedSpam.rawValue)
+        LIMIT 1
+        """
 
         let arguments: StatementArguments = [threadUniqueId]
         return failIfThrows {
             return try Bool.fetchOne(
                 transaction.database,
                 sql: sql,
-                arguments: arguments
+                arguments: arguments,
             ) ?? false
         }
     }
@@ -940,12 +950,12 @@ public class InteractionFinder: NSObject {
             .typeLocalUserEndedSession,
             .typeRemoteUserEndedSession,
             .typeDisappearingMessagesUpdate,
-            .unknownProtocolVersion
+            .unknownProtocolVersion,
         ]
 
         let errorMessageInteractions: [SDSRecordType] = [
             .errorMessage,
-            .recoverableDecryptionPlaceholder
+            .recoverableDecryptionPlaceholder,
         ]
         let errorMessageTypes: [TSErrorMessageType] = [
             .noSession,
@@ -956,7 +966,7 @@ public class InteractionFinder: NSObject {
             .duplicateMessage,
             .groupCreationFailed,
             .sessionRefresh,
-            .decryptionFailure
+            .decryptionFailure,
         ]
 
         let interactionTypes: [SDSRecordType] = [
@@ -966,34 +976,34 @@ public class InteractionFinder: NSObject {
             .unknownProtocolVersionMessage,
             .call,
             .groupCallMessage,
-            .verificationStateChangeMessage
+            .verificationStateChangeMessage,
         ]
 
         let sql = """
-            SELECT 1
-            FROM \(InteractionRecord.databaseTableName)
-            \(DEBUG_INDEXED_BY("index_model_TSInteraction_on_uniqueThreadId_recordType_messageType", or: "index_model_TSInteraction_on_uniqueThreadId_and_eraId_and_recordType"))
-            WHERE \(interactionColumn: .threadUniqueId) = ?
-            AND (
-                (
-                    \(interactionColumn: .recordType) = \(SDSRecordType.infoMessage.rawValue)
-                    AND \(interactionColumn: .messageType) IN (\(infoMessageTypes.map { "\($0.rawValue)" }.joined(separator: ",")))
-                ) OR (
-                    \(interactionColumn: .recordType) IN (\(errorMessageInteractions.map { "\($0.rawValue)" }.joined(separator: ",")))
-                    AND \(interactionColumn: .errorType) IN (\(errorMessageTypes.map { "\($0.rawValue)" }.joined(separator: ",")))
-                ) OR \(interactionColumn: .recordType) IN (\(interactionTypes.map { "\($0.rawValue)" }.joined(separator: ",")))
-            )
-            \(Self.filterGroupStoryRepliesClause())
-            \(Self.filterEditHistoryClause())
-            LIMIT 1
-            """
+        SELECT 1
+        FROM \(InteractionRecord.databaseTableName)
+        \(DEBUG_INDEXED_BY("index_model_TSInteraction_on_uniqueThreadId_recordType_messageType", or: "index_model_TSInteraction_on_uniqueThreadId_and_eraId_and_recordType"))
+        WHERE \(interactionColumn: .threadUniqueId) = ?
+        AND (
+            (
+                \(interactionColumn: .recordType) = \(SDSRecordType.infoMessage.rawValue)
+                AND \(interactionColumn: .messageType) IN (\(infoMessageTypes.map { "\($0.rawValue)" }.joined(separator: ",")))
+            ) OR (
+                \(interactionColumn: .recordType) IN (\(errorMessageInteractions.map { "\($0.rawValue)" }.joined(separator: ",")))
+                AND \(interactionColumn: .errorType) IN (\(errorMessageTypes.map { "\($0.rawValue)" }.joined(separator: ",")))
+            ) OR \(interactionColumn: .recordType) IN (\(interactionTypes.map { "\($0.rawValue)" }.joined(separator: ",")))
+        )
+        \(Self.filterGroupStoryRepliesClause())
+        \(Self.filterEditHistoryClause())
+        LIMIT 1
+        """
         let arguments: StatementArguments = [threadUniqueId]
 
         return failIfThrows {
             return try Bool.fetchOne(
                 transaction.database,
                 sql: sql,
-                arguments: arguments
+                arguments: arguments,
             ) ?? false
         }
     }
@@ -1015,72 +1025,72 @@ public class InteractionFinder: NSObject {
             .recoverableDecryptionPlaceholder,
             .invalidIdentityKeyErrorMessage,
             .invalidIdentityKeyReceivingErrorMessage,
-            .invalidIdentityKeySendingErrorMessage
+            .invalidIdentityKeySendingErrorMessage,
         ]
 
         let sqlInteractionTypes = interactionTypes.map { "\($0.rawValue)" }.joined(separator: ",")
 
         let sql = """
-            SELECT 1
-            FROM \(InteractionRecord.databaseTableName)
-            \(DEBUG_INDEXED_BY("index_model_TSInteraction_on_uniqueThreadId_recordType_messageType"))
-            WHERE \(interactionColumn: .threadUniqueId) = ?
-            AND \(interactionColumn: .recordType) IN (\(sqlInteractionTypes))
-            LIMIT 1
-            """
+        SELECT 1
+        FROM \(InteractionRecord.databaseTableName)
+        \(DEBUG_INDEXED_BY("index_model_TSInteraction_on_uniqueThreadId_recordType_messageType"))
+        WHERE \(interactionColumn: .threadUniqueId) = ?
+        AND \(interactionColumn: .recordType) IN (\(sqlInteractionTypes))
+        LIMIT 1
+        """
         let arguments: StatementArguments = [threadUniqueId]
 
         return failIfThrows {
             return try Bool.fetchOne(
                 transaction.database,
                 sql: sql,
-                arguments: arguments
+                arguments: arguments,
             ) ?? false
         }
     }
 
     public func outgoingMessageCount(transaction: DBReadTransaction) -> UInt {
         let sql = """
-            SELECT COUNT(*)
-            FROM \(InteractionRecord.databaseTableName)
-            \(DEBUG_INDEXED_BY("index_model_TSInteraction_on_uniqueThreadId_recordType_messageType"))
-            WHERE \(interactionColumn: .threadUniqueId) = ?
-            AND \(interactionColumn: .recordType) = ?
-            """
+        SELECT COUNT(*)
+        FROM \(InteractionRecord.databaseTableName)
+        \(DEBUG_INDEXED_BY("index_model_TSInteraction_on_uniqueThreadId_recordType_messageType"))
+        WHERE \(interactionColumn: .threadUniqueId) = ?
+        AND \(interactionColumn: .recordType) = ?
+        """
         let arguments: StatementArguments = [
             threadUniqueId,
-            SDSRecordType.outgoingMessage.rawValue
+            SDSRecordType.outgoingMessage.rawValue,
         ]
 
         return failIfThrows {
             return try UInt.fetchOne(
                 transaction.database,
                 sql: sql,
-                arguments: arguments
+                arguments: arguments,
             ) ?? 0
         }
     }
 
     public class func outgoingAndIncomingMessageCount(transaction: DBReadTransaction, limit: Int) -> UInt {
         let sql = """
-            SELECT COUNT(*)
-            FROM (
-             SELECT * FROM \(InteractionRecord.databaseTableName)
-            \(DEBUG_INDEXED_BY("index_interaction_on_recordType_and_callType"))
-            WHERE \(interactionColumn: .recordType) IN (?, ?)
-            LIMIT ?)
-            """
+        SELECT COUNT(*)
+        FROM (
+         SELECT * FROM \(InteractionRecord.databaseTableName)
+        \(DEBUG_INDEXED_BY("index_interaction_on_recordType_and_callType"))
+        WHERE \(interactionColumn: .recordType) IN (?, ?)
+        LIMIT ?)
+        """
         let arguments: StatementArguments = [
             SDSRecordType.outgoingMessage.rawValue,
             SDSRecordType.incomingMessage.rawValue,
-            limit
+            limit,
         ]
 
         return failIfThrows {
             return try UInt.fetchOne(
                 transaction.database,
                 sql: sql,
-                arguments: arguments
+                arguments: arguments,
             ) ?? 0
         }
     }
@@ -1100,22 +1110,22 @@ public class InteractionFinder: NSObject {
     public func fetchUniqueIdsForConversationView(
         rowIdFilter: RowIdFilter,
         limit: Int,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> [String] {
         let (rowIdClause, arguments, isAscending) = sqlClauseForInteractionsByRowId(
             rowIdFilter: rowIdFilter,
             additionalFiltering: .filterForConversationView,
-            limit: limit
+            limit: limit,
         )
 
         let uniqueIds = try String.fetchAll(
             tx.database,
             sql: """
-                SELECT "uniqueId" FROM \(InteractionRecord.databaseTableName)
-                INDEXED BY index_interactions_on_threadUniqueId_and_id
-                \(rowIdClause)
-                """,
-            arguments: arguments
+            SELECT "uniqueId" FROM \(InteractionRecord.databaseTableName)
+            INDEXED BY index_interactions_on_threadUniqueId_and_id
+            \(rowIdClause)
+            """,
+            arguments: arguments,
         )
 
         return isAscending ? uniqueIds : Array(uniqueIds.reversed())
@@ -1125,12 +1135,12 @@ public class InteractionFinder: NSObject {
     @available(swift, obsoleted: 1.0)
     public func enumerateRecentInteractionsForConversationView(
         transaction tx: DBReadTransaction,
-        block: (TSInteraction) -> Bool
+        block: (TSInteraction) -> Bool,
     ) throws {
         try enumerateInteractionsForConversationView(
             rowIdFilter: .newest,
             tx: tx,
-            block: block
+            block: block,
         )
     }
 
@@ -1143,13 +1153,13 @@ public class InteractionFinder: NSObject {
     public func enumerateInteractionsForConversationView(
         rowIdFilter: RowIdFilter,
         tx: DBReadTransaction,
-        block: (TSInteraction) -> Bool
+        block: (TSInteraction) -> Bool,
     ) throws {
         try buildInteractionCursor(
             rowIdFilter: rowIdFilter,
             additionalFiltering: .filterForConversationView,
             limit: nil,
-            tx: tx
+            tx: tx,
         ).enumerate(block: block)
     }
 
@@ -1157,7 +1167,7 @@ public class InteractionFinder: NSObject {
     func fetchAllInteractions(
         rowIdFilter: RowIdFilter,
         limit: Int,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> [TSInteraction] {
         var interactions: [TSInteraction] = []
 
@@ -1165,7 +1175,7 @@ public class InteractionFinder: NSObject {
             rowIdFilter: rowIdFilter,
             additionalFiltering: .noFiltering,
             limit: limit,
-            tx: tx
+            tx: tx,
         ).enumerate { interaction -> Bool in
             interactions.append(interaction)
             return true
@@ -1181,13 +1191,13 @@ public class InteractionFinder: NSObject {
     /// This cursor may not outlive the given transaction!
     func buildIncomingMessagesCursor(
         rowIdFilter: RowIdFilter,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> TSInteractionCursor {
         return buildInteractionCursor(
             rowIdFilter: rowIdFilter,
             additionalFiltering: .filterForIncomingMessages,
             limit: nil,
-            tx: tx
+            tx: tx,
         )
     }
 
@@ -1198,13 +1208,13 @@ public class InteractionFinder: NSObject {
     /// This cursor may not outlive the given transaction!
     func buildOutgoingMessagesCursor(
         rowIdFilter: RowIdFilter,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> TSInteractionCursor {
         return buildInteractionCursor(
             rowIdFilter: rowIdFilter,
             additionalFiltering: .filterForOutgoingMessages,
             limit: nil,
-            tx: tx
+            tx: tx,
         )
     }
 
@@ -1247,12 +1257,12 @@ public class InteractionFinder: NSObject {
         rowIdFilter: RowIdFilter,
         additionalFiltering: InteractionsByRowIdAdditionalFiltering,
         limit: Int?,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> TSInteractionCursor {
         let (rowIdClause, arguments, _) = sqlClauseForInteractionsByRowId(
             rowIdFilter: rowIdFilter,
             additionalFiltering: additionalFiltering,
-            limit: limit
+            limit: limit,
         )
 
         let indexedBy: String
@@ -1269,19 +1279,19 @@ public class InteractionFinder: NSObject {
 
         return TSInteraction.grdbFetchCursor(
             sql: """
-                SELECT * FROM \(InteractionRecord.databaseTableName)
-                \(indexedBy)
-                \(rowIdClause)
-                """,
+            SELECT * FROM \(InteractionRecord.databaseTableName)
+            \(indexedBy)
+            \(rowIdClause)
+            """,
             arguments: arguments,
-            transaction: tx
+            transaction: tx,
         )
     }
 
     private func sqlClauseForInteractionsByRowId(
         rowIdFilter: RowIdFilter,
         additionalFiltering: InteractionsByRowIdAdditionalFiltering,
-        limit: Int?
+        limit: Int?,
     ) -> (String, StatementArguments, isAscending: Bool) {
         let rowIdFilterClause: String
         let rowIdArguments: StatementArguments
@@ -1325,12 +1335,12 @@ public class InteractionFinder: NSObject {
         }
 
         var sql = """
-            WHERE
-                \(interactionColumn: .threadUniqueId) = ?
-                \(rowIdFilterClause)
-                \(additionalFilterClause)
-            ORDER BY \(interactionColumn: .id) \(isAscending ? "ASC" : "DESC")
-            """
+        WHERE
+            \(interactionColumn: .threadUniqueId) = ?
+            \(rowIdFilterClause)
+            \(additionalFilterClause)
+        ORDER BY \(interactionColumn: .id) \(isAscending ? "ASC" : "DESC")
+        """
         if let limit {
             sql += " LIMIT \(limit)"
         }
@@ -1351,7 +1361,7 @@ public class InteractionFinder: NSObject {
             rowIdFilter: .newest,
             additionalFiltering: .noFiltering,
             limit: 1,
-            tx: tx
+            tx: tx,
         ).enumerate { mostRecentInteraction -> Bool in
             mostRecentRowId = mostRecentInteraction.sqliteRowId!
             return false
@@ -1374,7 +1384,7 @@ private extension TSInteractionCursor {
 
 extension InteractionFinder {
     private static func sqlClauseForAllUnreadInteractions(
-        excludeReadEdits: Bool = false
+        excludeReadEdits: Bool = false,
     ) -> String {
         let recordTypes: [SDSRecordType] = [
             .disappearingConfigurationUpdateInfoMessage,
@@ -1389,7 +1399,7 @@ extension InteractionFinder {
             .infoMessage,
             .invalidIdentityKeyErrorMessage,
             .invalidIdentityKeyReceivingErrorMessage,
-            .invalidIdentityKeySendingErrorMessage
+            .invalidIdentityKeySendingErrorMessage,
         ]
 
         let recordTypesSql = recordTypes.map { "\($0.rawValue)" }.joined(separator: ",")
@@ -1406,10 +1416,10 @@ extension InteractionFinder {
     }
 
     static func sqlClauseForUnreadInteractionCounts(
-        interactionsAlias: String? = nil
+        interactionsAlias: String? = nil,
     ) -> String {
         let columnPrefix: String
-        if let interactionsAlias = interactionsAlias {
+        if let interactionsAlias {
             columnPrefix = interactionsAlias + "."
         } else {
             columnPrefix = ""
@@ -1431,11 +1441,11 @@ extension InteractionFinder {
 
     private static func sqlClauseForIgnoringInteractionsWithMutedThread(threadAssociatedDataAlias: String) -> String {
         """
-            AND (
-                \(threadAssociatedDataAlias).mutedUntilTimestamp <= strftime('%s','now') * 1000
-                OR \(threadAssociatedDataAlias).mutedUntilTimestamp = 0
-            )
-            """
+        AND (
+            \(threadAssociatedDataAlias).mutedUntilTimestamp <= strftime('%s','now') * 1000
+            OR \(threadAssociatedDataAlias).mutedUntilTimestamp = 0
+        )
+        """
     }
 
     // From: https://www.sqlite.org/optoverview.html
@@ -1445,7 +1455,7 @@ extension InteractionFinder {
 
     static func filterGroupStoryRepliesClause(interactionsAlias: String? = nil) -> String {
         let columnPrefix: String
-        if let interactionsAlias = interactionsAlias {
+        if let interactionsAlias {
             columnPrefix = interactionsAlias + "."
         } else {
             columnPrefix = ""
@@ -1457,10 +1467,10 @@ extension InteractionFinder {
 
     static func filterEditHistoryClause(
         mode: EditMessageQueryMode = .includeAllEdits,
-        interactionsAlias: String? = nil
+        interactionsAlias: String? = nil,
     ) -> String {
         let columnPrefix: String
-        if let interactionsAlias = interactionsAlias {
+        if let interactionsAlias {
             columnPrefix = interactionsAlias + "."
         } else {
             columnPrefix = ""
@@ -1491,13 +1501,13 @@ extension InteractionFinder {
 
     public class func maxInteractionRowId(transaction: DBReadTransaction) -> UInt64 {
         let sql = """
-            SELECT MAX(\(interactionColumn: .id))
-            FROM \(InteractionRecord.databaseTableName)
-            """
+        SELECT MAX(\(interactionColumn: .id))
+        FROM \(InteractionRecord.databaseTableName)
+        """
         do {
             return try UInt64.fetchOne(
                 transaction.database,
-                sql: sql
+                sql: sql,
             ) ?? 0
         } catch {
             owsFailDebug("Failed to find max transaction ID: \(error)")

@@ -20,7 +20,7 @@ class MockUsernameApiClient: UsernameApiClient {
     func confirmReservedUsername(
         reservedUsername: Usernames.HashedUsername,
         encryptedUsernameForLink: Data,
-        chatServiceAuth: ChatServiceAuth
+        chatServiceAuth: ChatServiceAuth,
     ) async throws -> Usernames.ApiClientConfirmationResult {
         return try await confirmReservedUsernameMocks.removeFirst()(reservedUsername, encryptedUsernameForLink, chatServiceAuth)
     }

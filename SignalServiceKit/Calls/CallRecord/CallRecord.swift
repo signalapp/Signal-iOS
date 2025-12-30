@@ -190,7 +190,7 @@ public final class CallRecord: Codable, PersistableRecord, FetchableRecord {
         callStatus: CallStatus,
         groupCallRingerAci: Aci? = nil,
         callBeganTimestamp: UInt64,
-        callEndedTimestamp: UInt64 = 0
+        callEndedTimestamp: UInt64 = 0,
     ) {
         self.callId = callId
         self.conversationId = .thread(threadRowId: threadRowId)
@@ -211,7 +211,7 @@ public final class CallRecord: Codable, PersistableRecord, FetchableRecord {
         callId: UInt64,
         callLinkRowId: Int64,
         callStatus: CallStatus.CallLinkCallStatus,
-        callBeganTimestamp: UInt64
+        callBeganTimestamp: UInt64,
     ) {
         self.callId = callId
         self.conversationId = .callLink(callLinkRowId: callLinkRowId)
@@ -239,7 +239,7 @@ public final class CallRecord: Codable, PersistableRecord, FetchableRecord {
             self.conversationId = .thread(threadRowId: threadRowId)
             self.interactionReference = .thread(
                 threadRowId: threadRowId,
-                interactionRowId: try container.decode(Int64.self, forKey: .interactionRowId)
+                interactionRowId: try container.decode(Int64.self, forKey: .interactionRowId),
             )
         } else {
             self.conversationId = .callLink(callLinkRowId: try container.decode(Int64.self, forKey: .callLinkRowId))
@@ -315,13 +315,13 @@ extension CallRecord {
 extension CallRecord {
     func matches(
         _ other: CallRecord,
-        overridingThreadRowId: Int64? = nil
+        overridingThreadRowId: Int64? = nil,
     ) -> Bool {
         let otherIdToCompare: CallRecord.ID = {
             if let overridingThreadRowId {
                 return CallRecord.ID(
                     conversationId: .thread(threadRowId: overridingThreadRowId),
-                    callId: other.callId
+                    callId: other.callId,
                 )
             }
 

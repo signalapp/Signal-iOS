@@ -21,18 +21,24 @@ public class PaymentsProcessor: NSObject {
             self.process()
         }
 
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(process),
-                                               name: SSKReachability.owsReachabilityDidChange,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(process),
-                                               name: .OWSApplicationDidBecomeActive,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(process),
-                                               name: PaymentsConstants.arePaymentsEnabledDidChange,
-                                               object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(process),
+            name: SSKReachability.owsReachabilityDidChange,
+            object: nil,
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(process),
+            name: .OWSApplicationDidBecomeActive,
+            object: nil,
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(process),
+            name: PaymentsConstants.arePaymentsEnabledDidChange,
+            object: nil,
+        )
     }
 
     private static let unfairLock = UnfairLock()
@@ -106,11 +112,13 @@ public class PaymentsProcessor: NSObject {
 
         // Find all unresolved payment records.
         var paymentModels: [TSPaymentModel] = SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            PaymentFinder.paymentModels(paymentStates: Array(Self.paymentStatesToProcess),
-                                        transaction: transaction)
+            PaymentFinder.paymentModels(
+                paymentStates: Array(Self.paymentStatesToProcess),
+                transaction: transaction,
+            )
         }
 
-        paymentModels.sort { (left, right) -> Bool in
+        paymentModels.sort { left, right -> Bool in
             left.sortDate.compare(right.sortDate) == .orderedAscending
         }
 
@@ -137,7 +145,7 @@ public class PaymentsProcessor: NSObject {
             .outgoingComplete,
             .outgoingFailed,
             .incomingComplete,
-            .incomingFailed
+            .incomingFailed,
         ])
     }
 
@@ -150,7 +158,7 @@ public class PaymentsProcessor: NSObject {
             .outgoingSending,
             .outgoingSent,
             .incomingUnverified,
-            .incomingVerified
+            .incomingVerified,
         ])
     }
 
@@ -168,10 +176,12 @@ public class PaymentsProcessor: NSObject {
 
         var paymentId: String { paymentModel.uniqueId }
 
-        init(paymentModel: TSPaymentModel,
-             retryDelayInteral: TimeInterval,
-             nextRetryDelayInteral: TimeInterval,
-             delegate: PaymentProcessingOperationDelegate) {
+        init(
+            paymentModel: TSPaymentModel,
+            retryDelayInteral: TimeInterval,
+            nextRetryDelayInteral: TimeInterval,
+            delegate: PaymentProcessingOperationDelegate,
+        ) {
 
             self.paymentModel = paymentModel
             self.nextRetryDelayInteral = nextRetryDelayInteral
@@ -182,10 +192,12 @@ public class PaymentsProcessor: NSObject {
             DispatchQueue.global().asyncAfter(deadline: .now() + retryDelayInteral) { [weak self] in
                 self?.tryToSchedule()
             }
-            NotificationCenter.default.addObserver(self,
-                                                   selector: #selector(reachabilityChanged),
-                                                   name: SSKReachability.owsReachabilityDidChange,
-                                                   object: nil)
+            NotificationCenter.default.addObserver(
+                self,
+                selector: #selector(reachabilityChanged),
+                name: SSKReachability.owsReachabilityDidChange,
+                object: nil,
+            )
         }
 
         @objc
@@ -207,8 +219,10 @@ public class PaymentsProcessor: NSObject {
             timer?.invalidate()
             timer = nil
 
-            delegate?.retryProcessing(paymentModel: paymentModel,
-                                      nextRetryDelayInteral: nextRetryDelayInteral)
+            delegate?.retryProcessing(
+                paymentModel: paymentModel,
+                nextRetryDelayInteral: nextRetryDelayInteral,
+            )
         }
     }
 
@@ -259,29 +273,37 @@ extension PaymentsProcessor: DatabaseChangeDelegate {
 extension PaymentsProcessor: PaymentProcessingOperationDelegate {
 
     static func canBeProcessed(paymentModel: TSPaymentModel) -> Bool {
-        guard !paymentModel.isUnidentified,
-              !paymentModel.isComplete,
-              !paymentModel.isFailed else {
+        guard
+            !paymentModel.isUnidentified,
+            !paymentModel.isComplete,
+            !paymentModel.isFailed
+        else {
             return false
         }
         return true
     }
 
     func continueProcessing(paymentModel: TSPaymentModel) {
-        tryToScheduleProcessingOperation(paymentModel: paymentModel,
-                                         label: "Continue processing",
-                                         retryDelayInteral: nil)
+        tryToScheduleProcessingOperation(
+            paymentModel: paymentModel,
+            label: "Continue processing",
+            retryDelayInteral: nil,
+        )
     }
 
     func retryProcessing(paymentModel: TSPaymentModel, nextRetryDelayInteral: TimeInterval) {
-        tryToScheduleProcessingOperation(paymentModel: paymentModel,
-                                         label: "Retry processing",
-                                         retryDelayInteral: nextRetryDelayInteral)
+        tryToScheduleProcessingOperation(
+            paymentModel: paymentModel,
+            label: "Retry processing",
+            retryDelayInteral: nextRetryDelayInteral,
+        )
     }
 
-    private func tryToScheduleProcessingOperation(paymentModel: TSPaymentModel,
-                                                  label: String,
-                                                  retryDelayInteral: TimeInterval?) {
+    private func tryToScheduleProcessingOperation(
+        paymentModel: TSPaymentModel,
+        label: String,
+        retryDelayInteral: TimeInterval?,
+    ) {
         let paymentId = paymentModel.uniqueId
 
         Self.unfairLock.withLock {
@@ -300,13 +322,13 @@ extension PaymentsProcessor: PaymentProcessingOperationDelegate {
     func scheduleRetryProcessing(
         paymentModel: TSPaymentModel,
         retryDelayInteral: TimeInterval,
-        nextRetryDelayInteral: TimeInterval
+        nextRetryDelayInteral: TimeInterval,
     ) {
         add(retryScheduler: RetryScheduler(
             paymentModel: paymentModel,
             retryDelayInteral: retryDelayInteral,
             nextRetryDelayInteral: nextRetryDelayInteral,
-            delegate: self
+            delegate: self,
         ))
     }
 
@@ -326,11 +348,15 @@ extension PaymentsProcessor: PaymentProcessingOperationDelegate {
 
 private protocol PaymentProcessingOperationDelegate: AnyObject {
     func continueProcessing(paymentModel: TSPaymentModel)
-    func retryProcessing(paymentModel: TSPaymentModel,
-                         nextRetryDelayInteral: TimeInterval)
-    func scheduleRetryProcessing(paymentModel: TSPaymentModel,
-                                 retryDelayInteral: TimeInterval,
-                                 nextRetryDelayInteral: TimeInterval)
+    func retryProcessing(
+        paymentModel: TSPaymentModel,
+        nextRetryDelayInteral: TimeInterval,
+    )
+    func scheduleRetryProcessing(
+        paymentModel: TSPaymentModel,
+        retryDelayInteral: TimeInterval,
+        nextRetryDelayInteral: TimeInterval,
+    )
     func endProcessing(paymentModel: TSPaymentModel)
     func endProcessing(paymentId: String)
 }
@@ -345,9 +371,11 @@ private class PaymentProcessingOperation {
 
     private static let defaultRetryDelayInteral: TimeInterval = .second
 
-    init(delegate: PaymentProcessingOperationDelegate,
-         paymentModel: TSPaymentModel,
-         retryDelayInteral: TimeInterval? = nil) {
+    init(
+        delegate: PaymentProcessingOperationDelegate,
+        paymentModel: TSPaymentModel,
+        retryDelayInteral: TimeInterval? = nil,
+    ) {
         self.delegate = delegate
         self.paymentId = paymentModel.uniqueId
         self.retryDelayInteral = retryDelayInteral ?? Self.defaultRetryDelayInteral
@@ -472,18 +500,22 @@ private class PaymentProcessingOperation {
                 // TODO: Revisit when FOG rate limiting behavior is well-defined.
                 let retryDelayInteral = 30 + self.retryDelayInteral
                 let nextRetryDelayInteral = self.retryDelayInteral * 2
-                delegate?.scheduleRetryProcessing(paymentModel: paymentModel,
-                                                  retryDelayInteral: retryDelayInteral,
-                                                  nextRetryDelayInteral: nextRetryDelayInteral)
+                delegate?.scheduleRetryProcessing(
+                    paymentModel: paymentModel,
+                    retryDelayInteral: retryDelayInteral,
+                    nextRetryDelayInteral: nextRetryDelayInteral,
+                )
             case .connectionFailure,
                  .fogOutOfSync,
                  .timeout:
                 // Vanilla exponential backoff.
                 let retryDelayInteral = self.retryDelayInteral
                 let nextRetryDelayInteral = self.retryDelayInteral * 2
-                delegate?.scheduleRetryProcessing(paymentModel: paymentModel,
-                                                  retryDelayInteral: retryDelayInteral,
-                                                  nextRetryDelayInteral: nextRetryDelayInteral)
+                delegate?.scheduleRetryProcessing(
+                    paymentModel: paymentModel,
+                    retryDelayInteral: retryDelayInteral,
+                    nextRetryDelayInteral: nextRetryDelayInteral,
+                )
             case .verificationStatusUnknown,
                  .ledgerBlockTimestampUnknown:
                 // Exponential backoff.
@@ -504,16 +536,20 @@ private class PaymentProcessingOperation {
                     retryDelayInteral += .hour
                 }
                 let nextRetryDelayInteral = self.retryDelayInteral * backoffFactor
-                delegate?.scheduleRetryProcessing(paymentModel: paymentModel,
-                                                  retryDelayInteral: retryDelayInteral,
-                                                  nextRetryDelayInteral: nextRetryDelayInteral)
+                delegate?.scheduleRetryProcessing(
+                    paymentModel: paymentModel,
+                    retryDelayInteral: retryDelayInteral,
+                    nextRetryDelayInteral: nextRetryDelayInteral,
+                )
             case .defragmentationRequired:
                 // Vanilla exponential backoff.
                 let retryDelayInteral = self.retryDelayInteral
                 let nextRetryDelayInteral = self.retryDelayInteral * 2
-                delegate?.scheduleRetryProcessing(paymentModel: paymentModel,
-                                                  retryDelayInteral: retryDelayInteral,
-                                                  nextRetryDelayInteral: nextRetryDelayInteral)
+                delegate?.scheduleRetryProcessing(
+                    paymentModel: paymentModel,
+                    retryDelayInteral: retryDelayInteral,
+                    nextRetryDelayInteral: nextRetryDelayInteral,
+                )
             }
         default:
             // Do not retry assertion errors.
@@ -530,7 +566,7 @@ private class PaymentProcessingOperation {
     private static let timeoutDuration: TimeInterval = 60
 
     private func processStep(paymentModel: TSPaymentModel?) async throws -> TSPaymentModel {
-        guard let paymentModel = paymentModel else {
+        guard let paymentModel else {
             throw OWSAssertionError("Could not reload the payment record.")
         }
 
@@ -657,8 +693,10 @@ private class PaymentProcessingOperation {
                 if !paymentModel.hasMCLedgerBlockIndex {
                     paymentModel.update(mcLedgerBlockIndex: block.index, transaction: transaction)
                 }
-                if let ledgerBlockDate = block.timestamp,
-                   !paymentModel.hasMCLedgerBlockTimestamp {
+                if
+                    let ledgerBlockDate = block.timestamp,
+                    !paymentModel.hasMCLedgerBlockTimestamp
+                {
                     paymentModel.update(mcLedgerBlockTimestamp: ledgerBlockDate.ows_millisecondsSince1970, transaction: transaction)
                 }
                 try paymentModel.updatePaymentModelState(fromState: .outgoingUnverified, toState: .outgoingVerified, transaction: transaction)
@@ -701,7 +739,7 @@ private class PaymentProcessingOperation {
             return PaymentsFormat.paymentPreviewText(
                 amount: picoMob,
                 transaction: tx,
-                type: .incomingMessage
+                type: .incomingMessage,
             )?.nilIfEmpty
         }
         let messageBody: ValidatedMessageBody?
@@ -727,7 +765,7 @@ private class PaymentProcessingOperation {
                         _ = try PaymentsImpl.sendPaymentNotificationMessage(
                             paymentModel: paymentModel,
                             messageBody: messageBody,
-                            transaction: transaction
+                            transaction: transaction,
                         )
                         PaymentsImpl.sendOutgoingPaymentSyncMessage(paymentModel: paymentModel, transaction: transaction)
                     }

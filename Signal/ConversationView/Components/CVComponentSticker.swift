@@ -14,9 +14,11 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
     private var stickerMetadata: (any StickerMetadata)? {
         sticker.stickerMetadata
     }
+
     private var attachmentStream: ReferencedAttachmentStream? {
         sticker.attachmentStream
     }
+
     private var attachmentPointer: ReferencedAttachmentPointer? {
         sticker.attachmentPointer
     }
@@ -33,9 +35,11 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
 
     public static let stickerSize: CGFloat = 175
 
-    public func configureForRendering(componentView componentViewParam: CVComponentView,
-                                      cellMeasurement: CVCellMeasurement,
-                                      componentDelegate: CVComponentDelegate) {
+    public func configureForRendering(
+        componentView componentViewParam: CVComponentView,
+        cellMeasurement: CVCellMeasurement,
+        componentDelegate: CVComponentDelegate,
+    ) {
         guard let componentView = componentViewParam as? CVComponentViewSticker else {
             owsFailDebug("Unexpected componentView.")
             componentViewParam.reset()
@@ -62,14 +66,16 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
             let mediaView = reusableMediaView.mediaView
 
             stackView.reset()
-            stackView.configure(config: stackViewConfig,
-                                cellMeasurement: cellMeasurement,
-                                measurementKey: Self.measurementKey_stackView,
-                                subviews: [ mediaView ])
+            stackView.configure(
+                config: stackViewConfig,
+                cellMeasurement: cellMeasurement,
+                measurementKey: Self.measurementKey_stackView,
+                subviews: [mediaView],
+            )
 
             switch CVAttachmentProgressView.progressType(
                 forAttachment: .stream(attachmentStream),
-                interaction: interaction
+                interaction: interaction,
             ) {
             case .none:
                 break
@@ -77,7 +83,7 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
                 let progressView = CVAttachmentProgressView(
                     direction: .upload(attachmentStream: attachmentStream.attachmentStream),
                     isDarkThemeEnabled: conversationStyle.isDarkThemeEnabled,
-                    mediaCache: mediaCache
+                    mediaCache: mediaCache,
                 )
                 stackView.addSubview(progressView)
                 stackView.centerSubviewOnSuperview(progressView, size: progressView.layoutSize)
@@ -93,14 +99,14 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
                 attachmentPointer: attachmentPointer,
                 downloadState: .enqueuedOrDownloading,
                 stackView: stackView,
-                cellMeasurement: cellMeasurement
+                cellMeasurement: cellMeasurement,
             )
         case .failedOrPending(let attachmentPointer, let downloadState):
             configureForRendering(
                 attachmentPointer: attachmentPointer,
                 downloadState: downloadState,
                 stackView: stackView,
-                cellMeasurement: cellMeasurement
+                cellMeasurement: cellMeasurement,
             )
         }
     }
@@ -109,35 +115,39 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
         attachmentPointer: ReferencedAttachmentPointer,
         downloadState: AttachmentDownloadState,
         stackView: ManualStackView,
-        cellMeasurement: CVCellMeasurement
+        cellMeasurement: CVCellMeasurement,
     ) {
         let placeholderView = UIView()
         placeholderView.backgroundColor = Theme.secondaryBackgroundColor
         placeholderView.layer.cornerRadius = 18
 
         stackView.reset()
-        stackView.configure(config: stackViewConfig,
-                            cellMeasurement: cellMeasurement,
-                            measurementKey: Self.measurementKey_stackView,
-                            subviews: [ placeholderView ])
+        stackView.configure(
+            config: stackViewConfig,
+            cellMeasurement: cellMeasurement,
+            measurementKey: Self.measurementKey_stackView,
+            subviews: [placeholderView],
+        )
 
         let progressView = CVAttachmentProgressView(
             direction: .download(
                 attachmentPointer: attachmentPointer.attachmentPointer,
-                downloadState: downloadState
+                downloadState: downloadState,
             ),
             isDarkThemeEnabled: conversationStyle.isDarkThemeEnabled,
-            mediaCache: mediaCache
+            mediaCache: mediaCache,
         )
         stackView.addSubview(progressView)
         stackView.centerSubviewOnSuperview(progressView, size: progressView.layoutSize)
     }
 
     private var stackViewConfig: CVStackViewConfig {
-        CVStackViewConfig(axis: .vertical,
-                          alignment: isOutgoing ? .trailing : .leading,
-                          spacing: 0,
-                          layoutMargins: .zero)
+        CVStackViewConfig(
+            axis: .vertical,
+            alignment: isOutgoing ? .trailing : .leading,
+            spacing: 0,
+            layoutMargins: .zero,
+        )
     }
 
     private static let measurementKey_stackView = "CVComponentSticker.measurementKey_stackView"
@@ -148,23 +158,29 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
         let size: CGFloat = ceil(min(maxWidth, Self.stickerSize))
         let stickerSize = CGSize.square(size)
         let stickerInfo = stickerSize.asManualSubviewInfo(hasFixedSize: true)
-        let stackMeasurement = ManualStackView.measure(config: stackViewConfig,
-                                                       measurementBuilder: measurementBuilder,
-                                                       measurementKey: Self.measurementKey_stackView,
-                                                       subviewInfos: [ stickerInfo ],
-                                                       maxWidth: maxWidth)
+        let stackMeasurement = ManualStackView.measure(
+            config: stackViewConfig,
+            measurementBuilder: measurementBuilder,
+            measurementKey: Self.measurementKey_stackView,
+            subviewInfos: [stickerInfo],
+            maxWidth: maxWidth,
+        )
         return stackMeasurement.measuredSize
     }
 
     // MARK: - Events
 
-    public override func handleTap(sender: UIGestureRecognizer,
-                                   componentDelegate: CVComponentDelegate,
-                                   componentView: CVComponentView,
-                                   renderItem: CVRenderItem) -> Bool {
+    override public func handleTap(
+        sender: UIGestureRecognizer,
+        componentDelegate: CVComponentDelegate,
+        componentView: CVComponentView,
+        renderItem: CVRenderItem,
+    ) -> Bool {
 
-        guard let stickerMetadata = stickerMetadata,
-              attachmentStream != nil else {
+        guard
+            let stickerMetadata,
+            attachmentStream != nil
+        else {
             // Not yet downloaded.
             return false
         }
@@ -190,13 +206,17 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
 
         public func setIsCellVisible(_ isCellVisible: Bool) {
             if isCellVisible {
-                if let reusableMediaView = reusableMediaView,
-                   reusableMediaView.owner == self {
+                if
+                    let reusableMediaView,
+                    reusableMediaView.owner == self
+                {
                     reusableMediaView.load()
                 }
             } else {
-                if let reusableMediaView = reusableMediaView,
-                   reusableMediaView.owner == self {
+                if
+                    let reusableMediaView,
+                    reusableMediaView.owner == self
+                {
                     reusableMediaView.unload()
                 }
             }
@@ -205,8 +225,10 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
         public func reset() {
             stackView.reset()
 
-            if let reusableMediaView = reusableMediaView,
-               reusableMediaView.owner == self {
+            if
+                let reusableMediaView,
+                reusableMediaView.owner == self
+            {
                 reusableMediaView.unload()
             }
         }
@@ -222,13 +244,14 @@ extension CVComponentSticker: CVAccessibilityComponent {
             return String(
                 format: OWSLocalizedString(
                     "ACCESSIBILITY_LABEL_STICKER_FORMAT",
-                    comment: "Accessibility label for stickers. Embeds {{ name of top emoji the sticker resembles }}"),
-                approximateEmoji
+                    comment: "Accessibility label for stickers. Embeds {{ name of top emoji the sticker resembles }}",
+                ),
+                approximateEmoji,
             )
         } else {
             return OWSLocalizedString(
                 "ACCESSIBILITY_LABEL_STICKER",
-                comment: "Accessibility label for stickers."
+                comment: "Accessibility label for stickers.",
             )
         }
     }

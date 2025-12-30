@@ -14,31 +14,31 @@ public protocol ReactionStore {
     func reaction(
         for aci: Aci,
         messageId: MessageId,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> OWSReaction?
 
     /// Returns a list of all reactions to this message
     func allReactions(
         messageId: MessageId,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> [OWSReaction]
 
     /// Returns a list of reactions to this message that have yet to be read
     func unreadReactions(
         messageId: MessageId,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> [OWSReaction]
 
     /// A list of all the unique reaction IDs linked to this message, ordered by creation from oldest to neweset
     func allUniqueIds(
         messageId: MessageId,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> [String]
 
     /// Delete all reaction records associated with this message
     func deleteAllReactions(
         messageId: MessageId,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     )
 }
 
@@ -46,7 +46,7 @@ public class ReactionStoreImpl: ReactionStore {
     public func reaction(
         for aci: Aci,
         messageId: MessageId,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> OWSReaction? {
         ReactionFinder(uniqueMessageId: messageId)
             .reaction(for: aci, tx: tx)

@@ -15,9 +15,9 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
 
     public class func present(
         for theirAci: Aci?,
-        from viewController: UIViewController
+        from viewController: UIViewController,
     ) {
-        let fingerprintResult = SSKEnvironment.shared.databaseStorageRef.read { (tx) -> OWSFingerprintBuilder.FingerprintResult? in
+        let fingerprintResult = SSKEnvironment.shared.databaseStorageRef.read { tx -> OWSFingerprintBuilder.FingerprintResult? in
             guard let theirAci else {
                 return nil
             }
@@ -29,18 +29,18 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
             return OWSFingerprintBuilder(
                 contactsManager: SSKEnvironment.shared.contactManagerRef,
                 identityManager: identityManager,
-                tsAccountManager: DependenciesBridge.shared.tsAccountManager
+                tsAccountManager: DependenciesBridge.shared.tsAccountManager,
             ).fingerprints(
                 theirAci: theirAci,
                 theirRecipientIdentity: theirRecipientIdentity,
-                tx: tx
+                tx: tx,
             )
         }
 
         guard let fingerprintResult else {
             let actionSheet = ActionSheetController(message: OWSLocalizedString(
                 "CANT_VERIFY_IDENTITY_EXCHANGE_MESSAGES",
-                comment: "Alert shown when the user needs to exchange messages to see the safety number."
+                comment: "Alert shown when the user needs to exchange messages to see the safety number.",
             ))
 
             actionSheet.addAction(.init(title: CommonStrings.learnMore, style: .default, handler: { _ in
@@ -58,7 +58,7 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
         let fingerprintViewController = FingerprintViewController(
             fingerprint: fingerprintResult.fingerprint,
             recipientAci: fingerprintResult.theirAci,
-            recipientIdentity: fingerprintResult.theirRecipientIdentity
+            recipientIdentity: fingerprintResult.theirRecipientIdentity,
         )
         let navigationController = OWSNavigationController(rootViewController: fingerprintViewController)
         viewController.present(navigationController, animated: true)
@@ -72,7 +72,7 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
         return Self.backgroundColor
     }
 
-    public override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+    override public var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         return .portrait
     }
 
@@ -85,7 +85,7 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
     public init(
         fingerprint: OWSFingerprint,
         recipientAci: Aci,
-        recipientIdentity: OWSRecipientIdentity
+        recipientIdentity: OWSRecipientIdentity,
     ) {
         self.recipientAci = recipientAci
         // By capturing the identity key when we enter these views, we prevent the edge case
@@ -102,9 +102,10 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
         identityStateChangeObserver = NotificationCenter.default.addObserver(
             forName: .identityStateDidChange,
             object: nil,
-            queue: .main) { [weak self] _ in
-                self?.identityStateDidChange()
-            }
+            queue: .main,
+        ) { [weak self] _ in
+            self?.identityStateDidChange()
+        }
     }
 
     deinit {
@@ -117,7 +118,7 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
         return Theme.isDarkThemeEnabled ? .ows_gray90 : .ows_gray02
     }
 
-    public override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
 
         view.backgroundColor = Self.backgroundColor
@@ -125,7 +126,7 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
         configureUI()
     }
 
-    public override func themeDidChange() {
+    override public func themeDidChange() {
         super.themeDidChange()
         view.backgroundColor = Self.backgroundColor
 
@@ -147,20 +148,20 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
     private func setInstructionsText() {
         let instructionsFormat = OWSLocalizedString(
             "VERIFY_SAFETY_NUMBER_INSTRUCTIONS",
-            comment: "Instructions for verifying your safety number. Embeds {{contact's name}}"
+            comment: "Instructions for verifying your safety number. Embeds {{contact's name}}",
         )
         // Link doesn't matter, we will override tap behavior.
         let learnMoreString = CommonStrings.learnMore.styled(with: .link(URL(string: Constants.learnMoreUrl)!))
         instructionsTextView.attributedText = NSAttributedString.composed(of: [
             String(format: instructionsFormat, fingerprint.theirName),
             " ",
-            learnMoreString
+            learnMoreString,
         ]).styled(
             with: .font(.dynamicTypeFootnote),
             .color(Theme.secondaryTextAndIconColor),
-            .alignment(.center)
+            .alignment(.center),
         )
-        instructionsTextView.linkTextAttributes = [ .foregroundColor: Theme.primaryTextColor ]
+        instructionsTextView.linkTextAttributes = [.foregroundColor: Theme.primaryTextColor]
     }
 
     private lazy var verifyUnverifyButtonLabel = UILabel()
@@ -228,12 +229,12 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
         if isVerified {
             verifyUnverifyButtonLabel.text = NSLocalizedString(
                 "PRIVACY_UNVERIFY_BUTTON",
-                comment: "Button that lets user mark another user's identity as unverified."
+                comment: "Button that lets user mark another user's identity as unverified.",
             )
         } else {
             verifyUnverifyButtonLabel.text = OWSLocalizedString(
                 "PRIVACY_VERIFY_BUTTON",
-                comment: "Button that lets user mark another user's identity as verified."
+                comment: "Button that lets user mark another user's identity as verified.",
             )
         }
         view.setNeedsLayout()
@@ -290,7 +291,7 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
             let button = UIButton()
             button.setTemplateImage(
                 Theme.iconImage(.buttonShare).withRenderingMode(.alwaysTemplate),
-                tintColor: .white
+                tintColor: .white,
             )
             button.addTarget(self, action: #selector(didTapShare), for: .touchUpInside)
             return button
@@ -397,7 +398,7 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
                 of: identityKey,
                 for: SignalServiceAddress(recipientAci),
                 isUserInitiatedChange: true,
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -409,13 +410,13 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
 
         let shareFormat = NSLocalizedString(
             "SAFETY_NUMBER_SHARE_FORMAT",
-            comment: "Snippet to share {{safety number}} with a friend. sent e.g. via SMS"
+            comment: "Snippet to share {{safety number}} with a friend. sent e.g. via SMS",
         )
         let shareString = String(format: shareFormat, fingerprint.displayableText)
 
         let activityController = UIActivityViewController(
-            activityItems: [ shareString ],
-            applicationActivities: [ compareActivity ]
+            activityItems: [shareString],
+            applicationActivities: [compareActivity],
         )
 
         if let popoverPresentationController = activityController.popoverPresentationController {
@@ -429,7 +430,7 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
             .postToWeibo,
             .airDrop,
             .postToTwitter,
-            .init(rawValue: iCloudActivityType) // This isn't being excluded. RADAR https://openradar.appspot.com/27493621
+            .init(rawValue: iCloudActivityType), // This isn't being excluded. RADAR https://openradar.appspot.com/27493621
         ]
 
         present(activityController, animated: true)
@@ -439,7 +440,7 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
         let viewController = FingerprintScanViewController(
             recipientAci: recipientAci,
             recipientIdentity: recipientIdentity,
-            fingerprint: self.fingerprint
+            fingerprint: self.fingerprint,
         )
         navigationController?.pushViewController(viewController, animated: true)
     }
@@ -469,7 +470,7 @@ extension FingerprintViewController: CompareSafetyNumbersActivityDelegate {
             identityKey: identityKey,
             recipientAci: recipientAci,
             contactName: fingerprint.theirName,
-            tag: "[\(type(of: self))]"
+            tag: "[\(type(of: self))]",
         )
     }
 
@@ -478,7 +479,7 @@ extension FingerprintViewController: CompareSafetyNumbersActivityDelegate {
             from: self,
             isUserError: error == .userError,
             localizedErrorDescription: error.localizedError,
-            tag: "[\(type(of: self))]"
+            tag: "[\(type(of: self))]",
         )
     }
 }

@@ -16,7 +16,7 @@ extension GroupManager {
         groupModel: TSGroupModel,
         disappearingMessageToken: DisappearingMessageToken,
         groupUpdateSource: GroupUpdateSource,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) {
         DependenciesBridge.shared.groupUpdateInfoMessageInserter.insertGroupUpdateInfoMessageForNewGroup(
             localIdentifiers: localIdentifiers,
@@ -25,7 +25,7 @@ extension GroupManager {
             groupModel: groupModel,
             disappearingMessageToken: disappearingMessageToken,
             groupUpdateSource: groupUpdateSource,
-            transaction: transaction
+            transaction: transaction,
         )
     }
 
@@ -45,7 +45,7 @@ extension GroupManager {
         groupUpdateSource: GroupUpdateSource,
         localIdentifiers: LocalIdentifiers,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) {
         DependenciesBridge.shared.groupUpdateInfoMessageInserter.insertGroupUpdateInfoMessage(
             localIdentifiers: localIdentifiers,
@@ -57,7 +57,7 @@ extension GroupManager {
             newDisappearingMessageToken: newDisappearingMessageToken,
             newlyLearnedPniToAciAssociations: newlyLearnedPniToAciAssociations,
             groupUpdateSource: groupUpdateSource,
-            transaction: transaction
+            transaction: transaction,
         )
     }
 }

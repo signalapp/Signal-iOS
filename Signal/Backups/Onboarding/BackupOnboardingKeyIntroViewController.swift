@@ -63,21 +63,21 @@ struct BackupOnboardingKeyIntroView: View {
             image: .number,
             text: OWSLocalizedString(
                 "BACKUP_ONBOARDING_KEY_INTRO_BULLET_1",
-                comment: "Text for a bullet point in a view introducing the 'Recovery Key' during an onboarding flow."
+                comment: "Text for a bullet point in a view introducing the 'Recovery Key' during an onboarding flow.",
             ),
         ),
         BulletPoint(
             image: .lock,
             text: OWSLocalizedString(
                 "BACKUP_ONBOARDING_KEY_INTRO_BULLET_2",
-                comment: "Text for a bullet point in a view introducing the 'Recovery Key' during an onboarding flow."
+                comment: "Text for a bullet point in a view introducing the 'Recovery Key' during an onboarding flow.",
             ),
         ),
         BulletPoint(
             image: .errorCircle,
             text: OWSLocalizedString(
                 "BACKUP_ONBOARDING_KEY_INTRO_BULLET_3",
-                comment: "Text for a bullet point in a view introducing the 'Recovery Key' during an onboarding flow."
+                comment: "Text for a bullet point in a view introducing the 'Recovery Key' during an onboarding flow.",
             ),
         ),
     ]
@@ -94,7 +94,7 @@ struct BackupOnboardingKeyIntroView: View {
 
                 Text(OWSLocalizedString(
                     "BACKUP_ONBOARDING_KEY_INTRO_TITLE",
-                    comment: "Title for a view introducing the 'Recovery Key' during an onboarding flow."
+                    comment: "Title for a view introducing the 'Recovery Key' during an onboarding flow.",
                 ))
                 .font(.title)
                 .fontWeight(.semibold)
@@ -122,7 +122,7 @@ struct BackupOnboardingKeyIntroView: View {
             } label: {
                 Text(OWSLocalizedString(
                     "BACKUP_ONBOARDING_KEY_INTRO_CONTINUE_BUTTON_TITLE",
-                    comment: "Title for a continue button for a view introducing the 'Recovery Key' during an onboarding flow."
+                    comment: "Title for a continue button for a view introducing the 'Recovery Key' during an onboarding flow.",
                 ))
             }
             .buttonStyle(Registration.UI.LargePrimaryButtonStyle())

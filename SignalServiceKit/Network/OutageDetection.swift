@@ -83,7 +83,7 @@ public class OutageDetection {
                 socklen_t(hostname.count),
                 nil,
                 0,
-                NI_NUMERICHOST
+                NI_NUMERICHOST,
             )
             if result == 0 {
                 let addressString = String(cString: hostname)

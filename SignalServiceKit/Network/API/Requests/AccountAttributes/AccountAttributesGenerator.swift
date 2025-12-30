@@ -17,7 +17,7 @@ public struct AccountAttributesGenerator {
         profileManager: ProfileManager,
         svrLocalStorage: SVRLocalStorage,
         tsAccountManager: TSAccountManager,
-        udManager: OWSUDManager
+        udManager: OWSUDManager,
     ) {
         self.accountKeyStore = accountKeyStore
         self.ows2FAManager = ows2FAManager
@@ -29,7 +29,7 @@ public struct AccountAttributesGenerator {
 
     func generateForPrimary(
         capabilities: AccountAttributes.Capabilities,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> AccountAttributes {
         owsAssertDebug(tsAccountManager.registrationState(tx: tx).isPrimaryDevice == true)
 
@@ -60,7 +60,7 @@ public struct AccountAttributesGenerator {
         }
 
         let registrationRecoveryPassword = accountKeyStore.getMasterKey(tx: tx)?.data(
-            for: .registrationRecoveryPassword
+            for: .registrationRecoveryPassword,
         ).canonicalStringRepresentation
 
         let phoneNumberDiscoverability = tsAccountManager.phoneNumberDiscoverability(tx: tx)

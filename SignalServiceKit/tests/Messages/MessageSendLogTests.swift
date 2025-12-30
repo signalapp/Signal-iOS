@@ -27,7 +27,7 @@ class MessageSendLogTests: SSKBaseTest {
                 recipientAci: serviceId,
                 recipientDeviceId: deviceId,
                 message: newMessage,
-                tx: writeTx
+                tx: writeTx,
             )
 
             // Re-fetch the payload
@@ -35,7 +35,7 @@ class MessageSendLogTests: SSKBaseTest {
                 recipientAci: serviceId,
                 recipientDeviceId: deviceId,
                 timestamp: newMessage.timestamp,
-                tx: writeTx
+                tx: writeTx,
             )!
 
             XCTAssertEqual(fetchedPayload.contentHint, .implicit)
@@ -59,15 +59,15 @@ class MessageSendLogTests: SSKBaseTest {
                 recipientAci: serviceId,
                 recipientDeviceId: deviceId,
                 message: newMessage,
-                tx: writeTx
+                tx: writeTx,
             )
 
             // Expect no results when re-fetching the payload with a different deviceId
             XCTAssertNil(messageSendLog.fetchPayload(
                 recipientAci: serviceId,
-                recipientDeviceId: DeviceId(validating: deviceId.uint32Value+1)!,
+                recipientDeviceId: DeviceId(validating: deviceId.uint32Value + 1)!,
                 timestamp: newMessage.timestamp,
-                tx: writeTx
+                tx: writeTx,
             ))
 
             // Expect no results when re-fetching the payload with a different address
@@ -75,7 +75,7 @@ class MessageSendLogTests: SSKBaseTest {
                 recipientAci: Aci.randomForTesting(),
                 recipientDeviceId: deviceId,
                 timestamp: newMessage.timestamp,
-                tx: writeTx
+                tx: writeTx,
             ))
         }
     }
@@ -95,7 +95,7 @@ class MessageSendLogTests: SSKBaseTest {
                     recipientAci: serviceId,
                     recipientDeviceId: deviceId,
                     message: newMessage,
-                    tx: writeTx
+                    tx: writeTx,
                 )
             }
 
@@ -104,7 +104,7 @@ class MessageSendLogTests: SSKBaseTest {
                 message: newMessage,
                 recipientAci: serviceId,
                 recipientDeviceId: DeviceId(validating: 1)!,
-                tx: writeTx
+                tx: writeTx,
             )
 
             // Expect no results when re-fetching the payload for the first device
@@ -112,7 +112,7 @@ class MessageSendLogTests: SSKBaseTest {
                 recipientAci: serviceId,
                 recipientDeviceId: DeviceId(validating: 1)!,
                 timestamp: newMessage.timestamp,
-                tx: writeTx
+                tx: writeTx,
             ))
 
             // Expect some results when re-fetching the payload for the second device
@@ -120,7 +120,7 @@ class MessageSendLogTests: SSKBaseTest {
                 recipientAci: serviceId,
                 recipientDeviceId: DeviceId(validating: 2)!,
                 timestamp: newMessage.timestamp,
-                tx: writeTx
+                tx: writeTx,
             ))
         }
     }
@@ -140,7 +140,7 @@ class MessageSendLogTests: SSKBaseTest {
                 recipientAci: serviceId,
                 recipientDeviceId: deviceId,
                 message: newMessage,
-                tx: writeTx
+                tx: writeTx,
             )
 
             // Expect no results when re-fetching the payload since it's expired
@@ -148,7 +148,7 @@ class MessageSendLogTests: SSKBaseTest {
                 recipientAci: serviceId,
                 recipientDeviceId: deviceId,
                 timestamp: newMessage.timestamp,
-                tx: writeTx
+                tx: writeTx,
             ))
         }
     }
@@ -168,7 +168,7 @@ class MessageSendLogTests: SSKBaseTest {
                     recipientAci: serviceId,
                     recipientDeviceId: deviceId,
                     message: newMessage,
-                    tx: writeTx
+                    tx: writeTx,
                 )
             }
             messageSendLog.sendComplete(message: newMessage, tx: writeTx)
@@ -178,7 +178,7 @@ class MessageSendLogTests: SSKBaseTest {
                 message: newMessage,
                 recipientAci: serviceId,
                 recipientDeviceId: DeviceId(validating: 1)!,
-                tx: writeTx
+                tx: writeTx,
             )
 
             // Verify the payload still exists
@@ -189,7 +189,7 @@ class MessageSendLogTests: SSKBaseTest {
                 message: newMessage,
                 recipientAci: serviceId,
                 recipientDeviceId: DeviceId(validating: 2)!,
-                tx: writeTx
+                tx: writeTx,
             )
 
             // Verify the payload was deleted
@@ -212,13 +212,13 @@ class MessageSendLogTests: SSKBaseTest {
                 recipientAci: serviceId,
                 recipientDeviceId: DeviceId(validating: 1)!,
                 message: newMessage,
-                tx: writeTx
+                tx: writeTx,
             )
             messageSendLog.recordSuccessfulDelivery(
                 message: newMessage,
                 recipientAci: serviceId,
                 recipientDeviceId: DeviceId(validating: 1)!,
-                tx: writeTx
+                tx: writeTx,
             )
 
             // Verify the payload still exists since we haven't finished sending
@@ -231,7 +231,7 @@ class MessageSendLogTests: SSKBaseTest {
                     recipientAci: serviceId,
                     recipientDeviceId: deviceId,
                     message: newMessage,
-                    tx: writeTx
+                    tx: writeTx,
                 )
             }
             messageSendLog.sendComplete(message: newMessage, tx: writeTx)
@@ -241,7 +241,7 @@ class MessageSendLogTests: SSKBaseTest {
                 message: newMessage,
                 recipientAci: serviceId,
                 recipientDeviceId: DeviceId(validating: 2)!,
-                tx: writeTx
+                tx: writeTx,
             )
 
             // Verify the payload still exists
@@ -252,7 +252,7 @@ class MessageSendLogTests: SSKBaseTest {
                 message: newMessage,
                 recipientAci: serviceId,
                 recipientDeviceId: DeviceId(validating: 3)!,
-                tx: writeTx
+                tx: writeTx,
             )
 
             // Verify the payload was deleted
@@ -275,7 +275,7 @@ class MessageSendLogTests: SSKBaseTest {
                 recipientAci: serviceId,
                 recipientDeviceId: DeviceId(validating: 1)!,
                 message: newMessage,
-                tx: writeTx
+                tx: writeTx,
             )
             messageSendLog.sendComplete(message: newMessage, tx: writeTx)
 
@@ -287,7 +287,7 @@ class MessageSendLogTests: SSKBaseTest {
                 recipientAci: serviceId,
                 recipientDeviceId: DeviceId(validating: 2)!,
                 message: newMessage,
-                tx: writeTx
+                tx: writeTx,
             )
             messageSendLog.sendComplete(message: newMessage, tx: writeTx)
 
@@ -300,7 +300,7 @@ class MessageSendLogTests: SSKBaseTest {
                 message: newMessage,
                 recipientAci: serviceId,
                 recipientDeviceId: DeviceId(validating: 1)!,
-                tx: writeTx
+                tx: writeTx,
             )
 
             // Verify the payload still exists
@@ -311,7 +311,7 @@ class MessageSendLogTests: SSKBaseTest {
                 message: newMessage,
                 recipientAci: serviceId,
                 recipientDeviceId: DeviceId(validating: 2)!,
-                tx: writeTx
+                tx: writeTx,
             )
 
             // Verify the payload was deleted
@@ -333,13 +333,13 @@ class MessageSendLogTests: SSKBaseTest {
                 recipientAci: serviceId,
                 recipientDeviceId: DeviceId(validating: 1)!,
                 message: newMessage,
-                tx: writeTx
+                tx: writeTx,
             )
             messageSendLog.recordSuccessfulDelivery(
                 message: newMessage,
                 recipientAci: serviceId,
                 recipientDeviceId: DeviceId(validating: 1)!,
-                tx: writeTx
+                tx: writeTx,
             )
             messageSendLog.sendComplete(message: newMessage, tx: writeTx)
 
@@ -353,14 +353,14 @@ class MessageSendLogTests: SSKBaseTest {
                 recipientAci: serviceId,
                 recipientDeviceId: DeviceId(validating: 2)!,
                 message: newMessage,
-                tx: writeTx
+                tx: writeTx,
             )
             messageSendLog.sendComplete(message: newMessage, tx: writeTx)
             messageSendLog.recordSuccessfulDelivery(
                 message: newMessage,
                 recipientAci: serviceId,
                 recipientDeviceId: DeviceId(validating: 2)!,
-                tx: writeTx
+                tx: writeTx,
             )
 
             // Verify payload is deleted:
@@ -380,7 +380,7 @@ class MessageSendLogTests: SSKBaseTest {
 
             let initialPayloadId = try XCTUnwrap(messageSendLog.recordPayload(payloadData, for: newMessage, tx: writeTx))
 
-            // append a byte so the payload doesn't match 
+            // append a byte so the payload doesn't match
             let secondPayloadId = try XCTUnwrap(messageSendLog.recordPayload(payloadData + Data([1]), for: newMessage, tx: writeTx))
 
             XCTAssertNotNil(initialPayloadId)
@@ -403,7 +403,7 @@ class MessageSendLogTests: SSKBaseTest {
                 recipientAci: serviceId,
                 recipientDeviceId: deviceId,
                 message: newMessage,
-                tx: writeTx
+                tx: writeTx,
             )
 
             // Delete the message
@@ -437,7 +437,7 @@ class MessageSendLogTests: SSKBaseTest {
                     recipientAci: serviceId,
                     recipientDeviceId: deviceId,
                     message: message1,
-                    tx: writeTx
+                    tx: writeTx,
                 )
             }
 
@@ -489,7 +489,7 @@ class MessageSendLogTests: SSKBaseTest {
         try SSKEnvironment.shared.databaseStorageRef.write { writeTx in
             let messageSendLog = MessageSendLog(
                 db: DependenciesBridge.shared.db,
-                dateProvider: { Date(timeIntervalSince1970: 1629270000) }
+                dateProvider: { Date(timeIntervalSince1970: 1629270000) },
             )
 
             let originalTimestamp: UInt64 = 1629210680140
@@ -508,7 +508,7 @@ class MessageSendLogTests: SSKBaseTest {
                 recipientAci: serviceId,
                 recipientDeviceId: DeviceId(validating: 1)!,
                 timestamp: originalTimestamp,
-                tx: writeTx
+                tx: writeTx,
             )
             XCTAssertEqual(fetchedPayload?.sentTimestamp, originalTimestamp)
         }
@@ -523,7 +523,7 @@ class MessageSendLogTests: SSKBaseTest {
                 additionalRecipients: [],
                 explicitRecipients: [],
                 skippedRecipients: [],
-                transaction: transaction
+                transaction: transaction,
             )
         }
 
@@ -546,18 +546,18 @@ class MessageSendLogTests: SSKBaseTest {
         date: Date? = nil,
         contentHint: SealedSenderContentHint = .implicit,
         relatedMessageIds: [String] = [],
-        transaction writeTx: DBWriteTransaction
+        transaction writeTx: DBWriteTransaction,
     ) -> TSOutgoingMessage {
 
         let resolvedDate = date ?? {
             let newDate = Date()
-            usleep(2000)    // If we're taking the timestamp of Now, wait a bit to avoid collisions
+            usleep(2000) // If we're taking the timestamp of Now, wait a bit to avoid collisions
             return newDate
         }()
 
         let builder: TSOutgoingMessageBuilder = .withDefaultValues(
             thread: ContactThreadFactory().create(transaction: writeTx),
-            timestamp: resolvedDate.ows_millisecondsSince1970
+            timestamp: resolvedDate.ows_millisecondsSince1970,
         )
         let testMessage = MSLTestMessage(outgoingMessageWithBuilder: builder, transaction: writeTx)
         testMessage._contentHint = contentHint

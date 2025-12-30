@@ -9,7 +9,7 @@ import GRDB
 public struct ArchivedPaymentStore {
     public func enumerateAll(
         tx: DBReadTransaction,
-        block: @escaping (ArchivedPayment, _ stop: inout Bool) -> Void
+        block: @escaping (ArchivedPayment, _ stop: inout Bool) -> Void,
     ) {
         failIfThrows {
             let cursor = try ArchivedPayment.fetchCursor(tx.database)
@@ -26,7 +26,7 @@ public struct ArchivedPaymentStore {
     public func fetch(
         for archivedPaymentMessage: OWSArchivedPaymentMessage,
         interactionUniqueId: String,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> ArchivedPayment? {
         failIfThrows {
             return try ArchivedPayment

@@ -21,7 +21,7 @@ extension VoiceMessageSendableDraft {
         return String(
             format: "signal-%@.%@",
             dateString,
-            VoiceMessageConstants.fileExtension
+            VoiceMessageConstants.fileExtension,
         )
     }
 

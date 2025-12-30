@@ -15,19 +15,19 @@ protocol SDSCodableModelDatabaseInterface {
     func fetchModel<Model: SDSCodableModel>(
         modelType: Model.Type,
         uniqueId: String,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> Model?
 
     /// Fetch all persisted models of the given type.
     func fetchAllModels<Model: SDSCodableModel>(
         modelType: Model.Type,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> [Model]
 
     /// Count all persisted models of the given type.
     func countAllModels<Model: SDSCodableModel>(
         modelType: Model.Type,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> UInt
 
     // MARK: Remove
@@ -35,7 +35,7 @@ protocol SDSCodableModelDatabaseInterface {
     /// Remove a model from the database.
     func removeModel<Model: SDSCodableModel>(
         _ model: Model,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     )
 
     // MARK: Save
@@ -43,14 +43,14 @@ protocol SDSCodableModelDatabaseInterface {
     /// Insert the given model to the database.
     func insertModel<Model: SDSCodableModel>(
         _ model: Model,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     )
 
     /// If a persisted record exists for this model, do an overwriting update.
     /// Otherwise, do an insertion.
     func upsertModel<Model: SDSCodableModel>(
         _ model: Model,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     )
 
     /// Apply changes produced by the given block to the persisted copy of the
@@ -58,13 +58,13 @@ protocol SDSCodableModelDatabaseInterface {
     func updateModel<Model: SDSCodableModel & AnyObject>(
         _ model: Model,
         transaction: DBWriteTransaction,
-        block: (Model) -> Void
+        block: (Model) -> Void,
     )
 
     /// Immediately persist the given model.
     func overwritingUpdateModel<Model: SDSCodableModel>(
         _ model: Model,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     )
 
     // MARK: Enumerate
@@ -74,7 +74,7 @@ protocol SDSCodableModelDatabaseInterface {
         modelType: Model.Type,
         transaction: DBReadTransaction,
         batchingPreference: BatchingPreference,
-        block: @escaping (Model, UnsafeMutablePointer<ObjCBool>) -> Void
+        block: @escaping (Model, UnsafeMutablePointer<ObjCBool>) -> Void,
     )
 
     /// Traverse all records, in no particular order.
@@ -84,7 +84,7 @@ protocol SDSCodableModelDatabaseInterface {
         sql: String,
         arguments: StatementArguments,
         batchingPreference: BatchingPreference,
-        block: @escaping (Model, UnsafeMutablePointer<ObjCBool>) -> Void
+        block: @escaping (Model, UnsafeMutablePointer<ObjCBool>) -> Void,
     )
 }
 

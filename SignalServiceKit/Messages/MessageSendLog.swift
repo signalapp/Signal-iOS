@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import LibSignalClient
 import GRDB
+import LibSignalClient
 
 class MessageSendLogObjC: NSObject {
     @objc
@@ -21,7 +21,7 @@ public class MessageSendLog {
 
     public init(
         db: any DB,
-        dateProvider: @escaping DateProvider
+        dateProvider: @escaping DateProvider,
     ) {
         self.db = db
         self.dateProvider = dateProvider
@@ -54,7 +54,7 @@ public class MessageSendLog {
             contentHint: SealedSenderContentHint,
             sentTimestamp: UInt64,
             uniqueThreadId: String,
-            sendComplete: Bool
+            sendComplete: Bool,
         ) {
             self.plaintextContent = plaintextContent
             self.contentHint = contentHint
@@ -135,7 +135,7 @@ public class MessageSendLog {
                 contentHint: message.contentHint,
                 sentTimestamp: message.timestamp,
                 uniqueThreadId: message.uniqueThreadId,
-                sendComplete: false
+                sendComplete: false,
             )
             try payload.insert(tx.database)
 
@@ -168,7 +168,7 @@ public class MessageSendLog {
         recipientAci: Aci,
         recipientDeviceId: DeviceId,
         timestamp: UInt64,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> Payload? {
         guard !RemoteConfig.current.messageResendKillSwitch else {
             return nil
@@ -222,7 +222,7 @@ public class MessageSendLog {
 
     private func fetchUniquePayload(
         for message: TSOutgoingMessage,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> (Int64, Payload)? {
         let query = fetchRequest(threadUniqueId: message.uniqueThreadId).filter(Column("sentTimestamp") == message.timestamp)
         return try fetchUniquePayload(query: query, tx: tx)
@@ -230,7 +230,7 @@ public class MessageSendLog {
 
     private func fetchUniquePayload(
         query: QueryInterfaceRequest<Payload>,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> (Int64, Payload)? {
         let payloads = try query.fetchAll(tx.database)
         guard let payload = payloads.first else {
@@ -264,7 +264,7 @@ public class MessageSendLog {
     func deviceIdsPendingDelivery(
         for payloadId: Int64,
         recipientAci: Aci,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> [DeviceId?]? {
         do {
             return try Recipient
@@ -284,7 +284,7 @@ public class MessageSendLog {
         recipientAci: Aci,
         recipientDeviceId: DeviceId,
         message: TSOutgoingMessage,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         guard !RemoteConfig.current.messageResendKillSwitch else {
             return
@@ -293,7 +293,7 @@ public class MessageSendLog {
             try Recipient(
                 payloadId: payloadId,
                 recipientUUID: recipientAci.serviceIdUppercaseString,
-                recipientDeviceId: Int64(recipientDeviceId.uint32Value)
+                recipientDeviceId: Int64(recipientDeviceId.uint32Value),
             ).insert(tx.database)
         } catch let error as DatabaseError where error.extendedResultCode == .SQLITE_CONSTRAINT_FOREIGNKEY {
             // There's a tiny race where a recipient could send a delivery receipt before we record an MSL entry
@@ -318,7 +318,7 @@ public class MessageSendLog {
         message: TSOutgoingMessage,
         recipientAci: Aci,
         recipientDeviceId: DeviceId,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         guard !RemoteConfig.current.messageResendKillSwitch else {
             return
@@ -343,7 +343,7 @@ public class MessageSendLog {
 
     func deleteAllPayloadsForInteraction(
         _ interaction: TSInteraction,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         do {
             let db = tx.database

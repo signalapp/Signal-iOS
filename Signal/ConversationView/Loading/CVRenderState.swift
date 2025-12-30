@@ -12,7 +12,7 @@ import SignalUI
 // loaded state needed to render CVC at a given state of time.
 class CVRenderState {
 
-    public static let renderStateId_unknown: UInt = 0
+    static let renderStateId_unknown: UInt = 0
 
     private static let idCounter = AtomicUInt(1, lock: .sharedGlobal)
 
@@ -27,8 +27,10 @@ class CVRenderState {
     let conversationViewModel: ConversationViewModel
 
     var isFirstLoad: Bool {
-        if let loadType = self.loadType,
-           case CVLoadType.loadInitialMapping = loadType {
+        if
+            let loadType = self.loadType,
+            case CVLoadType.loadInitialMapping = loadType
+        {
             return true
         }
         return false
@@ -57,11 +59,11 @@ class CVRenderState {
         threadViewModel.disappearingMessagesConfiguration
     }
 
-    public let indexPathOfUnreadIndicator: IndexPath?
+    let indexPathOfUnreadIndicator: IndexPath?
 
     private let interactionIdToIndexPathMap: [String: IndexPath]
 
-    public let allIndexPaths: [IndexPath]
+    let allIndexPaths: [IndexPath]
 
     init(
         threadViewModel: ThreadViewModel,
@@ -71,7 +73,7 @@ class CVRenderState {
         canLoadOlderItems: Bool,
         canLoadNewerItems: Bool,
         viewStateSnapshot: CVViewStateSnapshot,
-        loadType: CVLoadType?
+        loadType: CVLoadType?,
     ) {
         self.threadViewModel = threadViewModel
         self.prevThreadViewModel = prevThreadViewModel
@@ -105,7 +107,7 @@ class CVRenderState {
     static func defaultRenderState(
         threadViewModel: ThreadViewModel,
         conversationViewModel: ConversationViewModel,
-        viewStateSnapshot: CVViewStateSnapshot
+        viewStateSnapshot: CVViewStateSnapshot,
     ) -> CVRenderState {
         CVRenderState(
             threadViewModel: threadViewModel,
@@ -115,15 +117,15 @@ class CVRenderState {
             canLoadOlderItems: false,
             canLoadNewerItems: false,
             viewStateSnapshot: viewStateSnapshot,
-            loadType: nil
+            loadType: nil,
         )
     }
 
-    public func indexPath(forInteractionUniqueId interactionUniqueId: String) -> IndexPath? {
+    func indexPath(forInteractionUniqueId interactionUniqueId: String) -> IndexPath? {
         interactionIdToIndexPathMap[interactionUniqueId]
     }
 
-    public var debugDescription: String {
+    var debugDescription: String {
         isEmptyInitialState ? "empty" : "[items: \(items.count)]"
     }
 }

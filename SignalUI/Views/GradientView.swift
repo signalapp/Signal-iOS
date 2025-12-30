@@ -7,7 +7,7 @@ import SignalServiceKit
 
 public class GradientView: UIView {
 
-    public override class var layerClass: AnyClass { CAGradientLayer.self }
+    override public class var layerClass: AnyClass { CAGradientLayer.self }
 
     public var gradientLayer: CAGradientLayer { layer as! CAGradientLayer }
 
@@ -24,7 +24,7 @@ public class GradientView: UIView {
     }
 
     public convenience init(from fromColor: UIColor, to toColor: UIColor) {
-        self.init(colors: [ fromColor, toColor ])
+        self.init(colors: [fromColor, toColor])
     }
 
     public init(colors: [UIColor], locations: [CGFloat]? = nil) {
@@ -46,7 +46,7 @@ public class GradientView: UIView {
 
     private func updateGradientLocations() {
         guard gradientWithinPerformanceLimits() else { return }
-        if let locations = locations, !locations.isEmpty {
+        if let locations, !locations.isEmpty {
             gradientLayer.locations = locations.map { NSNumber(value: $0) }
         } else {
             gradientLayer.locations = nil
@@ -71,7 +71,7 @@ public class GradientView: UIView {
 
         let caAngle =
             (360 - angle) // Invert to counter clockwise direction
-            + 90 // Rotate 90° counter clockwise to shift the start from 3 o'clock to 12 o'clock
+                + 90 // Rotate 90° counter clockwise to shift the start from 3 o'clock to 12 o'clock
 
         let radians = CGFloat(caAngle) * .pi / 180.0
 
@@ -95,7 +95,7 @@ public class GradientView: UIView {
         func convertPointToGradientSpace(_ point: CGPoint) -> CGPoint {
             return CGPoint(
                 x: (point.x + 1) * 0.5,
-                y: 1.0 - (point.y + 1) * 0.5
+                y: 1.0 - (point.y + 1) * 0.5,
             )
         }
 

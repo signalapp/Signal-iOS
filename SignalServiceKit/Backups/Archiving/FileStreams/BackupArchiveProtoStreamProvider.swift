@@ -56,7 +56,7 @@ public class BackupArchivePlaintextProtoStreamProvider {
     /// caller becomes the owner of the stream, and is responsible for closing
     /// it once finished.
     func openPlaintextOutputFileStream(
-        exportProgress: BackupArchiveExportProgress?
+        exportProgress: BackupArchiveExportProgress?,
     ) -> ProtoStream.OpenOutputStreamResult<URL> {
         let transforms: [any StreamTransform] = [
             ChunkedOutputStreamTransform(),
@@ -64,7 +64,7 @@ public class BackupArchivePlaintextProtoStreamProvider {
 
         return genericStreamProvider.openOutputFileStream(
             transforms: transforms,
-            exportProgress: exportProgress
+            exportProgress: exportProgress,
         )
     }
 
@@ -73,7 +73,7 @@ public class BackupArchivePlaintextProtoStreamProvider {
     /// finished.
     func openPlaintextInputFileStream(
         fileUrl: URL,
-        frameRestoreProgress: BackupArchiveImportFramesProgress?
+        frameRestoreProgress: BackupArchiveImportFramesProgress?,
     ) -> ProtoStream.OpenInputStreamResult {
         let transforms: [any StreamTransform] = [
             frameRestoreProgress.map { InputProgressStreamTransform(frameRestoreProgress: $0) },
@@ -82,7 +82,7 @@ public class BackupArchivePlaintextProtoStreamProvider {
 
         return genericStreamProvider.openInputFileStream(
             fileUrl: fileUrl,
-            transforms: transforms
+            transforms: transforms,
         )
     }
 }
@@ -112,7 +112,7 @@ public class BackupArchiveEncryptedProtoStreamProvider {
         encryptionMetadata: BackupExportPurpose.EncryptionMetadata,
         exportProgress: BackupArchiveExportProgress?,
         attachmentByteCounter: BackupArchiveAttachmentByteCounter,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> ProtoStream.OpenOutputStreamResult<Upload.EncryptedBackupUploadMetadata> {
         let backupEncryptionKey = encryptionMetadata.encryptionKey
         do {
@@ -136,7 +136,7 @@ public class BackupArchiveEncryptedProtoStreamProvider {
             let fileUrl: URL
             switch genericStreamProvider.openOutputFileStream(
                 transforms: transforms,
-                exportProgress: exportProgress
+                exportProgress: exportProgress,
             ) {
             case .success(let _outputStream, let _fileUrlProvider):
                 outputStream = _outputStream
@@ -155,9 +155,9 @@ public class BackupArchiveEncryptedProtoStreamProvider {
                         encryptedDataLength: UInt32(clamping: outputTrackingTransform.count),
                         plaintextDataLength: UInt32(clamping: inputTrackingTransform.count),
                         attachmentByteSize: attachmentByteCounter.attachmentByteSize(),
-                        nonceMetadata: encryptionMetadata.nonceMetadata
+                        nonceMetadata: encryptionMetadata.nonceMetadata,
                     )
-                }
+                },
             )
         } catch {
             return .unableToOpenFileStream
@@ -172,7 +172,7 @@ public class BackupArchiveEncryptedProtoStreamProvider {
         source: BackupImportSource,
         backupEncryptionKey: MessageBackupKey,
         frameRestoreProgress: BackupArchiveImportFramesProgress?,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> ProtoStream.OpenInputStreamResult {
         guard validateBackupHMAC(source: source, backupEncryptionKey: backupEncryptionKey, fileUrl: fileUrl, tx: tx) else {
             return .hmacValidationFailedOnEncryptedFile
@@ -190,7 +190,7 @@ public class BackupArchiveEncryptedProtoStreamProvider {
 
             return genericStreamProvider.openInputFileStream(
                 fileUrl: fileUrl,
-                transforms: transforms
+                transforms: transforms,
             )
         } catch {
             return .unableToOpenFileStream
@@ -201,15 +201,15 @@ public class BackupArchiveEncryptedProtoStreamProvider {
         source: BackupImportSource,
         backupEncryptionKey: MessageBackupKey,
         fileUrl: URL,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> Bool {
         do {
             let inputStreamResult = genericStreamProvider.openInputFileStream(
                 fileUrl: fileUrl,
                 transforms: [
                     NonceHeaderInputStreamTransform(source: source),
-                    try HmacStreamTransform(hmacKey: backupEncryptionKey.hmacKey, operation: .validate)
-                ]
+                    try HmacStreamTransform(hmacKey: backupEncryptionKey.hmacKey, operation: .validate),
+                ],
             )
 
             switch inputStreamResult {
@@ -239,7 +239,7 @@ private class GenericStreamProvider {
 
     func openOutputFileStream(
         transforms: [any StreamTransform],
-        exportProgress: BackupArchiveExportProgress?
+        exportProgress: BackupArchiveExportProgress?,
     ) -> ProtoStream.OpenOutputStreamResult<URL> {
         let fileUrl = OWSFileSystem.temporaryFileUrl(isAvailableWhileDeviceLocked: true)
         guard let outputStream = OutputStream(url: fileUrl, append: false) else {
@@ -257,23 +257,23 @@ private class GenericStreamProvider {
         let transformingOutputStream = TransformingOutputStream(
             transforms: transforms,
             outputStream: outputStream,
-            runLoop: streamRunloop
+            runLoop: streamRunloop,
         )
 
         let backupOutputStream = BackupArchiveProtoOutputStream(
             outputStream: transformingOutputStream,
-            exportProgress: exportProgress
+            exportProgress: exportProgress,
         )
 
         return .success(
             backupOutputStream,
-            metadataProvider: { fileUrl }
+            metadataProvider: { fileUrl },
         )
     }
 
     func openInputFileStream(
         fileUrl: URL,
-        transforms: [any StreamTransform]
+        transforms: [any StreamTransform],
     ) -> ProtoStream.OpenInputStreamResult {
         guard OWSFileSystem.fileOrFolderExists(url: fileUrl) else {
             return .fileNotFound
@@ -293,12 +293,12 @@ private class GenericStreamProvider {
         let transformableInputStream = TransformingInputStream(
             transforms: transforms,
             inputStream: inputStream,
-            runLoop: streamRunloop
+            runLoop: streamRunloop,
         )
 
         let backupInputStream = BackupArchiveProtoInputStream(
             inputStream: transformableInputStream,
-            inputStreamDelegate: inputStreamDelegate
+            inputStreamDelegate: inputStreamDelegate,
         )
 
         return .success(backupInputStream, rawStream: transformableInputStream)
@@ -306,10 +306,10 @@ private class GenericStreamProvider {
 
     private class StreamDelegate: NSObject, Foundation.StreamDelegate {
         private let _hadError = AtomicBool(false, lock: .sharedGlobal)
-        public var hadError: Bool { _hadError.get() }
+        var hadError: Bool { _hadError.get() }
 
         @objc
-        public func stream(_ stream: Stream, handle eventCode: Stream.Event) {
+        func stream(_ stream: Stream, handle eventCode: Stream.Event) {
             if eventCode == .errorOccurred {
                 _hadError.set(true)
             }

@@ -92,7 +92,7 @@ public struct AvatarDefaultColorManager {
     /// persisted color if one exists, or one derived for the use case if not.
     public func defaultColor(
         useCase: UseCase,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> AvatarTheme {
         let persistedColorRecord: AvatarDefaultColorRecord?
         switch useCase {
@@ -137,34 +137,34 @@ public struct AvatarDefaultColorManager {
     func persistDefaultColor(
         _ defaultColor: AvatarTheme,
         recipientRowId: SignalRecipient.RowId,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         try persistDefaultColor(
             record: AvatarDefaultColorRecord(
                 recipientRowId: recipientRowId,
-                defaultColor: defaultColor
+                defaultColor: defaultColor,
             ),
-            tx: tx
+            tx: tx,
         )
     }
 
     func persistDefaultColor(
         _ defaultColor: AvatarTheme,
         groupId: Data,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         try persistDefaultColor(
             record: AvatarDefaultColorRecord(
                 groupId: groupId,
-                defaultColor: defaultColor
+                defaultColor: defaultColor,
             ),
-            tx: tx
+            tx: tx,
         )
     }
 
     private func persistDefaultColor(
         record: AvatarDefaultColorRecord,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         // These records treat conflict-on-insert as an update, so this is
         // really an upsert.
@@ -182,7 +182,7 @@ private struct AvatarDefaultColorRecord: Codable, PersistableRecord, FetchableRe
     /// update instead. (In effect, treat `insert` as `upsert`.)
     static let persistenceConflictPolicy = PersistenceConflictPolicy(
         insert: .replace,
-        update: .replace
+        update: .replace,
     )
 
     enum CodingKeys: String, CodingKey {
@@ -205,7 +205,7 @@ private struct AvatarDefaultColorRecord: Codable, PersistableRecord, FetchableRe
         self.init(
             recipientRowId: recipientRowId,
             groupId: nil,
-            defaultColor: defaultColor
+            defaultColor: defaultColor,
         )
     }
 
@@ -213,14 +213,14 @@ private struct AvatarDefaultColorRecord: Codable, PersistableRecord, FetchableRe
         self.init(
             recipientRowId: nil,
             groupId: groupId,
-            defaultColor: defaultColor
+            defaultColor: defaultColor,
         )
     }
 
     private init(
         recipientRowId: Int64?,
         groupId: Data?,
-        defaultColor: AvatarTheme
+        defaultColor: AvatarTheme,
     ) {
         self.recipientRowId = recipientRowId
         self.groupId = groupId

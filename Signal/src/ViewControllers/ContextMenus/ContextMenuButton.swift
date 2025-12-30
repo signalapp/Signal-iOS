@@ -54,7 +54,7 @@ class ContextMenuButton: UIButton {
     override func contextMenuInteraction(
         _ interaction: UIContextMenuInteraction,
         willDisplayMenuFor configuration: UIContextMenuConfiguration,
-        animator: (any UIContextMenuInteractionAnimating)?
+        animator: (any UIContextMenuInteractionAnimating)?,
     ) {
         super.contextMenuInteraction(interaction, willDisplayMenuFor: configuration, animator: animator)
         onWillDisplayContextMenu()
@@ -63,7 +63,7 @@ class ContextMenuButton: UIButton {
     override func contextMenuInteraction(
         _ interaction: UIContextMenuInteraction,
         willEndFor configuration: UIContextMenuConfiguration,
-        animator: (any UIContextMenuInteractionAnimating)?
+        animator: (any UIContextMenuInteractionAnimating)?,
     ) {
         super.contextMenuInteraction(interaction, willEndFor: configuration, animator: animator)
         onDidDismissContextMenu()

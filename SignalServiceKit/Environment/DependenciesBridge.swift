@@ -32,13 +32,14 @@ public class DependenciesBridge {
 
         return _shared
     }
+
     private static var _shared: DependenciesBridge?
 
-    #if TESTABLE_BUILD
+#if TESTABLE_BUILD
     static var hasShared: Bool {
         return _shared != nil
     }
-    #endif
+#endif
 
     static func setShared(_ dependenciesBridge: DependenciesBridge?, isRunningTests: Bool) {
         owsPrecondition((_shared == nil && dependenciesBridge != nil) || isRunningTests)
@@ -322,7 +323,7 @@ public class DependenciesBridge {
         usernameLookupManager: UsernameLookupManager,
         usernameValidationManager: UsernameValidationManager,
         wallpaperImageStore: WallpaperImageStore,
-        wallpaperStore: WallpaperStore
+        wallpaperStore: WallpaperStore,
     ) {
         self.accountAttributesUpdater = accountAttributesUpdater
         self.accountEntropyPoolManager = accountEntropyPoolManager

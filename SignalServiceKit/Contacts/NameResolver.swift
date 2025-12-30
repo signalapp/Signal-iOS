@@ -31,7 +31,7 @@ public class NameResolverImpl: NameResolver {
 
     private func cachedValue(
         for address: SignalServiceAddress,
-        orValue value: @autoclosure () -> DisplayName
+        orValue value: @autoclosure () -> DisplayName,
     ) -> DisplayName {
         if let cachedResult = displayNameCache[address] {
             return cachedResult
@@ -45,7 +45,7 @@ public class NameResolverImpl: NameResolver {
         checkTransaction(transaction: tx)
         return cachedValue(
             for: address,
-            orValue: contactsManager.displayName(for: address, tx: tx)
+            orValue: contactsManager.displayName(for: address, tx: tx),
         )
     }
 

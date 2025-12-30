@@ -59,7 +59,7 @@ extension DonationPaymentDetailsViewController {
         cardNumber rawNumber: String,
         isCardNumberFieldFocused: Bool,
         expirationDate rawExpirationDate: String,
-        cvv rawCvv: String
+        cvv rawCvv: String,
     ) -> FormState {
         var invalidFields = Set<InvalidFormField>()
         var hasPotentiallyValidFields = false
@@ -67,7 +67,7 @@ extension DonationPaymentDetailsViewController {
         let numberForValidation = rawNumber.removeCharacters(characterSet: .whitespaces)
         let numberValidity = CreditAndDebitCards.validity(
             ofNumber: numberForValidation,
-            isNumberFieldFocused: isCardNumberFieldFocused
+            isNumberFieldFocused: isCardNumberFieldFocused,
         )
         switch numberValidity {
         case .invalid: invalidFields.insert(.cardNumber)
@@ -92,7 +92,7 @@ extension DonationPaymentDetailsViewController {
                     ofExpirationMonth: expirationMonth,
                     andYear: expirationTwoDigitYear,
                     currentMonth: currentMonth,
-                    currentYear: currentYear
+                    currentYear: currentYear,
                 )
             } else {
                 expirationMonth = ""
@@ -106,7 +106,7 @@ extension DonationPaymentDetailsViewController {
                 ofExpirationMonth: expirationMonth,
                 andYear: expirationTwoDigitYear,
                 currentMonth: currentMonth,
-                currentYear: currentYear
+                currentYear: currentYear,
             )
         default:
             expirationMonth = ""
@@ -122,7 +122,7 @@ extension DonationPaymentDetailsViewController {
         let cvv = rawCvv.trimmingCharacters(in: .whitespaces)
         let cvvValidity = CreditAndDebitCards.validity(
             ofCvv: cvv,
-            cardType: CreditAndDebitCards.cardType(ofNumber: numberForValidation)
+            cardType: CreditAndDebitCards.cardType(ofNumber: numberForValidation),
         )
         switch cvvValidity {
         case .invalid: invalidFields.insert(.cvv)
@@ -152,7 +152,7 @@ extension DonationPaymentDetailsViewController {
                 }
                 return result
             }(),
-            cvv: cvv
+            cvv: cvv,
         )))
     }
 
@@ -205,14 +205,14 @@ extension DonationPaymentDetailsViewController {
         isIBANFieldFocused: Bool,
         name: String,
         email: String,
-        isEmailFieldFocused: Bool
+        isEmailFieldFocused: Bool,
     ) -> FormState {
         var invalidFields = Set<InvalidFormField>()
         var hasPotentiallyValidFields = false
 
         let ibanValidity = SEPABankAccounts.validity(
             of: iban.removeCharacters(characterSet: .whitespaces),
-            isFieldFocused: isIBANFieldFocused
+            isFieldFocused: isIBANFieldFocused,
         )
         switch ibanValidity {
         case .potentiallyValid:
@@ -246,8 +246,8 @@ extension DonationPaymentDetailsViewController {
             account: .init(
                 name: name,
                 iban: iban,
-                email: email
-            )
+                email: email,
+            ),
         ))
     }
 
@@ -255,7 +255,7 @@ extension DonationPaymentDetailsViewController {
         IDEALPaymentType: IDEALPaymentType,
         name: String,
         email: String,
-        isEmailFieldFocused: Bool
+        isEmailFieldFocused: Bool,
     ) -> FormState {
         if name.count <= 2 {
             return .potentiallyValid
@@ -274,20 +274,20 @@ extension DonationPaymentDetailsViewController {
                 .recurring(
                     mandate: mandate,
                     name: name,
-                    email: email
-                )
+                    email: email,
+                ),
             ))
         case .oneTime:
             return .fullyValid(.ideal(
                 .oneTime(
-                    name: name
-                )
+                    name: name,
+                ),
             ))
         }
     }
 }
 
-fileprivate extension String {
+private extension String {
     /// Is this 2-character string a valid month?
     ///
     /// Not meant for general use.

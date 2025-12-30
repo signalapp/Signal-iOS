@@ -12,9 +12,11 @@ public class StickerView {
     // Never instantiate this class.
     private init() {}
 
-    public static func stickerView(forStickerInfo stickerInfo: StickerInfo,
-                                   dataSource: StickerPackDataSource,
-                                   size: CGFloat? = nil) -> UIView? {
+    public static func stickerView(
+        forStickerInfo stickerInfo: StickerInfo,
+        dataSource: StickerPackDataSource,
+        size: CGFloat? = nil,
+    ) -> UIView? {
         guard let stickerMetadata = dataSource.metadata(forSticker: stickerInfo) else {
             Logger.warn("Missing sticker metadata.")
             return nil
@@ -22,8 +24,10 @@ public class StickerView {
         return stickerView(stickerInfo: stickerInfo, stickerMetadata: stickerMetadata, size: size)
     }
 
-    public static func stickerView(forInstalledStickerInfo stickerInfo: StickerInfo,
-                                   size: CGFloat? = nil) -> UIView? {
+    public static func stickerView(
+        forInstalledStickerInfo stickerInfo: StickerInfo,
+        size: CGFloat? = nil,
+    ) -> UIView? {
         let metadata = StickerManager.installedStickerMetadataWithSneakyTransaction(stickerInfo: stickerInfo)
         guard let stickerMetadata = metadata else {
             Logger.warn("Missing sticker metadata.")
@@ -35,19 +39,19 @@ public class StickerView {
     private static func stickerView(
         stickerInfo: StickerInfo,
         stickerMetadata: any StickerMetadata,
-        size: CGFloat? = nil
+        size: CGFloat? = nil,
     ) -> UIView? {
         guard
             let stickerView = self.stickerView(
                 stickerInfo: stickerInfo,
                 stickerType: stickerMetadata.stickerType,
-                stickerMetadata: stickerMetadata
+                stickerMetadata: stickerMetadata,
             )
         else {
             Logger.warn("Could not load sticker for display.")
             return nil
         }
-        if let size = size {
+        if let size {
             stickerView.autoSetDimensions(to: CGSize(square: size))
         }
         return stickerView
@@ -56,7 +60,7 @@ public class StickerView {
     static func stickerView(
         stickerInfo: StickerInfo,
         stickerType: StickerType,
-        stickerMetadata: any StickerMetadata
+        stickerMetadata: any StickerMetadata,
     ) -> UIView? {
         guard let stickerData = try? stickerMetadata.readStickerData() else {
             Logger.warn("Sticker data does not exist.")
@@ -100,7 +104,7 @@ public class StickerPlaceholderView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    public override func layoutSubviews() {
+    override public func layoutSubviews() {
         super.layoutSubviews()
 
         layoutMargins = UIEdgeInsets(hMargin: width / 8, vMargin: height / 8)
@@ -119,7 +123,7 @@ public class StickerReusableView: UIView {
         addSubview(stickerView)
         stickerView.autoPinEdgesToSuperviewEdges()
 
-        if let placeholderView = placeholderView {
+        if let placeholderView {
             self.placeholderView = nil
             stickerView.alpha = 0
 
@@ -140,7 +144,7 @@ public class StickerReusableView: UIView {
         addSubview(placeholderView)
         placeholderView.autoPinEdgesToSuperviewEdges()
 
-        if let stickerView = stickerView {
+        if let stickerView {
             self.stickerView = nil
             placeholderView.alpha = 0
 

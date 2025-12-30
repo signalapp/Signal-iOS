@@ -32,24 +32,24 @@ public protocol LinkPreviewManager {
     ) throws -> ValidatedLinkPreviewProto
 
     func buildDataSource(
-        from draft: OWSLinkPreviewDraft
+        from draft: OWSLinkPreviewDraft,
     ) async throws -> LinkPreviewDataSource
 
     func validateDataSource(
         dataSource: LinkPreviewDataSource,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws -> ValidatedLinkPreviewDataSource
 
     func buildProtoForSending(
         _ linkPreview: OWSLinkPreview,
         parentMessage: TSMessage,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> SSKProtoPreview
 
     func buildProtoForSending(
         _ linkPreview: OWSLinkPreview,
         parentStoryMessage: StoryMessage,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> SSKProtoPreview
 }
 
@@ -62,12 +62,12 @@ class LinkPreviewManagerImpl: LinkPreviewManager {
     private let db: any DB
     private let linkPreviewSettingStore: LinkPreviewSettingStore
 
-    public init(
+    init(
         attachmentManager: AttachmentManager,
         attachmentStore: AttachmentStore,
         attachmentValidator: AttachmentContentValidator,
         db: any DB,
-        linkPreviewSettingStore: LinkPreviewSettingStore
+        linkPreviewSettingStore: LinkPreviewSettingStore,
     ) {
         self.attachmentManager = attachmentManager
         self.attachmentStore = attachmentStore
@@ -78,7 +78,7 @@ class LinkPreviewManagerImpl: LinkPreviewManager {
 
     // MARK: - Public
 
-    public func validateAndBuildLinkPreview(
+    func validateAndBuildLinkPreview(
         from proto: SSKProtoPreview,
         dataMessage: SSKProtoDataMessage,
     ) throws -> ValidatedLinkPreviewProto {
@@ -105,7 +105,7 @@ class LinkPreviewManagerImpl: LinkPreviewManager {
         return try buildValidatedLinkPreview(proto: proto)
     }
 
-    public func validateAndBuildStoryLinkPreview(
+    func validateAndBuildStoryLinkPreview(
         from proto: SSKProtoPreview,
     ) throws -> ValidatedLinkPreviewProto {
         guard LinkValidator.isValidLink(linkText: proto.url) else {
@@ -115,7 +115,7 @@ class LinkPreviewManagerImpl: LinkPreviewManager {
         return try buildValidatedLinkPreview(proto: proto)
     }
 
-    public func buildDataSource(
+    func buildDataSource(
         from draft: OWSLinkPreviewDraft,
     ) async throws -> LinkPreviewDataSource {
         let areLinkPreviewsEnabled = db.read { linkPreviewSettingStore.areLinkPreviewsEnabled(tx: $0) }
@@ -127,7 +127,7 @@ class LinkPreviewManagerImpl: LinkPreviewManager {
             urlString: draft.urlString,
             title: draft.title,
             previewDescription: draft.previewDescription,
-            date: draft.date
+            date: draft.date,
         )
 
         if
@@ -155,9 +155,9 @@ class LinkPreviewManagerImpl: LinkPreviewManager {
         }
     }
 
-    public func validateDataSource(
+    func validateDataSource(
         dataSource: LinkPreviewDataSource,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws -> ValidatedLinkPreviewDataSource {
         guard dataSource.isForwarded || linkPreviewSettingStore.areLinkPreviewsEnabled(tx: tx) else {
             throw LinkPreviewError.featureDisabled
@@ -168,39 +168,39 @@ class LinkPreviewManagerImpl: LinkPreviewManager {
         )
     }
 
-    public func buildProtoForSending(
+    func buildProtoForSending(
         _ linkPreview: OWSLinkPreview,
         parentMessage: TSMessage,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> SSKProtoPreview {
         let attachmentRef = parentMessage.sqliteRowId.map { rowId in
             return attachmentStore.fetchFirstReference(
                 owner: .messageLinkPreview(messageRowId: rowId),
-                tx: tx
+                tx: tx,
             )
         } ?? nil
         return try buildProtoForSending(
             linkPreview,
             previewAttachmentRef: attachmentRef,
-            tx: tx
+            tx: tx,
         )
     }
 
-    public func buildProtoForSending(
+    func buildProtoForSending(
         _ linkPreview: OWSLinkPreview,
         parentStoryMessage: StoryMessage,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> SSKProtoPreview {
         let attachmentRef = parentStoryMessage.id.map { rowId in
             return attachmentStore.fetchFirstReference(
                 owner: .storyMessageLinkPreview(storyMessageRowId: rowId),
-                tx: tx
+                tx: tx,
             )
         } ?? nil
         return try buildProtoForSending(
             linkPreview,
             previewAttachmentRef: attachmentRef,
-            tx: tx
+            tx: tx,
         )
     }
 
@@ -242,7 +242,7 @@ class LinkPreviewManagerImpl: LinkPreviewManager {
                 urlString: urlString,
                 title: title,
                 previewDescription: previewDescription,
-                date: date
+                date: date,
             )),
             imageProto: proto.image,
         )
@@ -253,7 +253,7 @@ class LinkPreviewManagerImpl: LinkPreviewManager {
     private func buildProtoForSending(
         _ linkPreview: OWSLinkPreview,
         previewAttachmentRef: AttachmentReference?,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> SSKProtoPreview {
         guard let urlString = linkPreview.urlString else {
             Logger.error("Preview does not have url.")
@@ -279,7 +279,7 @@ class LinkPreviewManagerImpl: LinkPreviewManager {
             let attachmentProto = attachmentManager.buildProtoForSending(
                 from: previewAttachmentRef,
                 pointer: pointer,
-                digestSHA256Ciphertext: digestSHA256Ciphertext
+                digestSHA256Ciphertext: digestSHA256Ciphertext,
             )
             builder.setImage(attachmentProto)
         }

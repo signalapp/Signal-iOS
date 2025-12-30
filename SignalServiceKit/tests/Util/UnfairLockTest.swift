@@ -74,7 +74,7 @@ final class UnfairLockTest: XCTestCase {
                 throw toThrow
             }
         } catch {
-            XCTAssertEqual(toThrow, (error as NSError))
+            XCTAssertEqual(toThrow, error as NSError)
             didCatchError = true
         }
 

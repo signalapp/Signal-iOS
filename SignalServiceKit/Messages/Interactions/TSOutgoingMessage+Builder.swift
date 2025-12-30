@@ -38,7 +38,7 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
         linkPreview: OWSLinkPreview?,
         messageSticker: MessageSticker?,
         giftBadge: OWSGiftBadge?,
-        isPoll: Bool
+        isPoll: Bool,
     ) {
         self.isVoiceMessage = isVoiceMessage
         self.groupMetaMessage = groupMetaMessage
@@ -66,7 +66,7 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
             linkPreview: linkPreview,
             messageSticker: messageSticker,
             giftBadge: giftBadge,
-            isPoll: isPoll
+            isPoll: isPoll,
         )
     }
 
@@ -96,7 +96,7 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
         linkPreview: OWSLinkPreview? = nil,
         messageSticker: MessageSticker? = nil,
         giftBadge: OWSGiftBadge? = nil,
-        isPoll: Bool = false
+        isPoll: Bool = false,
     ) -> TSOutgoingMessageBuilder {
         return TSOutgoingMessageBuilder(
             thread: thread,
@@ -123,21 +123,21 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
             linkPreview: linkPreview,
             messageSticker: messageSticker,
             giftBadge: giftBadge,
-            isPoll: isPoll
+            isPoll: isPoll,
         )
     }
 
     // MARK: -
 
     public static func outgoingMessageBuilder(
-        thread: TSThread
+        thread: TSThread,
     ) -> TSOutgoingMessageBuilder {
         return .withDefaultValues(thread: thread)
     }
 
     public static func outgoingMessageBuilder(
         thread: TSThread,
-        messageBody: ValidatedInlineMessageBody?
+        messageBody: ValidatedInlineMessageBody?,
     ) -> TSOutgoingMessageBuilder {
         return .withDefaultValues(thread: thread, messageBody: messageBody)
     }
@@ -158,7 +158,7 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
             additionalRecipients: [],
             explicitRecipients: [],
             skippedRecipients: [],
-            transaction: transaction
+            transaction: transaction,
         )
     }
 }

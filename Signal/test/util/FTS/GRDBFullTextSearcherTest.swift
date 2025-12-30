@@ -35,14 +35,14 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
             appReadiness: AppReadinessMock(),
             nicknameManager: DependenciesBridge.shared.nicknameManager,
             recipientDatabaseTable: DependenciesBridge.shared.recipientDatabaseTable,
-            usernameLookupManager: DependenciesBridge.shared.usernameLookupManager
+            usernameLookupManager: DependenciesBridge.shared.usernameLookupManager,
         ))
 
         // ensure local client has necessary "registered" state
         SSKEnvironment.shared.databaseStorageRef.write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
                 localIdentifiers: localIdentifiers,
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -61,12 +61,12 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
                 phoneNumber: E164(alicePhoneNumber)!,
                 pni: alicePni,
                 aci: aliceAci,
-                tx: transaction
+                tx: transaction,
             )
             recipientManager.markAsRegisteredAndSave(
                 &self.aliceRecipient,
                 shouldUpdateStorageService: false,
-                tx: transaction
+                tx: transaction,
             )
 
             let bobAci = Aci.randomForTesting()
@@ -79,12 +79,12 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
                 phoneNumber: E164(bobPhoneNumber)!,
                 pni: bobPni,
                 aci: bobAci,
-                tx: transaction
+                tx: transaction,
             )
             recipientManager.markAsRegisteredAndSave(
                 &self.bobRecipient,
                 shouldUpdateStorageService: false,
-                tx: transaction
+                tx: transaction,
             )
 
             profileManager.fakeUserProfiles = [
@@ -96,38 +96,38 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
                 members: [self.aliceRecipient.address, self.bobRecipient.address, localIdentifiers.aciAddress],
                 shouldInsertInfoMessage: true,
                 name: "Book Club",
-                transaction: transaction
+                transaction: transaction,
             )
             self.bookClubThreadViewModel = ThreadViewModel(
                 thread: bookClubGroupThread,
                 forChatList: true,
-                transaction: transaction
+                transaction: transaction,
             )
 
             let snackClubGroupThread = try! GroupManager.createGroupForTests(
                 members: [self.aliceRecipient.address, localIdentifiers.aciAddress],
                 shouldInsertInfoMessage: true,
                 name: "Snack Club",
-                transaction: transaction
+                transaction: transaction,
             )
             self.snackClubThreadViewModel = ThreadViewModel(
                 thread: snackClubGroupThread,
                 forChatList: true,
-                transaction: transaction
+                transaction: transaction,
             )
 
             let aliceContactThread = TSContactThread.getOrCreateThread(withContactAddress: self.aliceRecipient.address, transaction: transaction)
             self.aliceThreadViewModel = ThreadViewModel(
                 thread: aliceContactThread,
                 forChatList: true,
-                transaction: transaction
+                transaction: transaction,
             )
 
             let bobContactThread = TSContactThread.getOrCreateThread(withContactAddress: self.bobRecipient.address, transaction: transaction)
             self.bobEmptyThreadViewModel = ThreadViewModel(
                 thread: bobContactThread,
                 forChatList: true,
-                transaction: transaction
+                transaction: transaction,
             )
 
             let helloAlice = TSOutgoingMessage(in: aliceContactThread, messageBody: "Hello Alice")
@@ -166,7 +166,7 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
             badges: [],
             lastFetchDate: nil,
             lastMessagingDate: nil,
-            isPhoneNumberShared: true
+            isPhoneNumberShared: true,
         )
     }
 
@@ -364,7 +364,7 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
                 members: [self.aliceRecipient.address, self.bobRecipient.address, DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction)!.aciAddress],
                 shouldInsertInfoMessage: true,
                 name: "Lifecycle",
-                transaction: transaction
+                transaction: transaction,
             )
         }
 
@@ -423,7 +423,7 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
                 members: [self.aliceRecipient.address, self.bobRecipient.address, DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction)!.aciAddress],
                 shouldInsertInfoMessage: true,
                 name: "Lifecycle",
-                transaction: transaction
+                transaction: transaction,
             )
 
             message1 = TSOutgoingMessage(in: thread, messageBody: "This world contains glory and despair.")
@@ -456,7 +456,7 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
                 members: [self.aliceRecipient.address, self.bobRecipient.address, DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction)!.aciAddress],
                 shouldInsertInfoMessage: true,
                 name: "Lifecycle",
-                transaction: transaction
+                transaction: transaction,
             )
 
             TSOutgoingMessage(in: thread, messageBody: "NOËL and SØRINA and ADRIÁN and FRANÇOIS and NUÑEZ and Björk.").anyInsert(transaction: transaction)
@@ -509,7 +509,7 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
                 members: [self.aliceRecipient.address, self.bobRecipient.address, DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction)!.aciAddress],
                 shouldInsertInfoMessage: true,
                 name: "Lifecycle",
-                transaction: transaction
+                transaction: transaction,
             )
         }
 
@@ -538,7 +538,7 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
         SSKEnvironment.shared.databaseStorageRef.write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
                 localIdentifiers: .forUnitTests,
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -552,7 +552,7 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
                     members: [self.aliceRecipient.address, self.bobRecipient.address, DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction)!.aciAddress],
                     shouldInsertInfoMessage: true,
                     name: "Perf",
-                    transaction: transaction
+                    transaction: transaction,
                 )
 
                 TSOutgoingMessage(in: thread, messageBody: string1).anyInsert(transaction: transaction)
@@ -574,8 +574,8 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
                     FullTextSearchIndexer.search(
                         for: searchText,
                         maxResults: 500,
-                        tx: transaction
-                    ) { (match, snippet, _) in
+                        tx: transaction,
+                    ) { match, snippet, _ in
                         count += 1
                     }
                     return count
@@ -637,7 +637,7 @@ private extension TSOutgoingMessage {
     convenience init(in thread: TSThread, messageBody: String) {
         let builder: TSOutgoingMessageBuilder = .withDefaultValues(
             thread: thread,
-            messageBody: AttachmentContentValidatorMock.mockValidatedBody(messageBody)
+            messageBody: AttachmentContentValidatorMock.mockValidatedBody(messageBody),
         )
         self.init(outgoingMessageWith: builder, recipientAddressStates: [:])
     }

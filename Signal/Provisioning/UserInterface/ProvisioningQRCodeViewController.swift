@@ -13,13 +13,13 @@ class ProvisioningQRCodeViewController: ProvisioningBaseViewController, Provisio
 
     init(
         provisioningController: ProvisioningController,
-        provisioningSocketManager: ProvisioningSocketManager
+        provisioningSocketManager: ProvisioningSocketManager,
     ) {
         provisioningQRCodeViewModel = RotatingQRCodeView.Model(
             urlDisplayMode: .loading,
             onRefreshButtonPressed: { [weak provisioningSocketManager] in
                 provisioningSocketManager?.reset()
-            }
+            },
         )
         self.provisioningSocketManager = provisioningSocketManager
 
@@ -34,7 +34,7 @@ class ProvisioningQRCodeViewController: ProvisioningBaseViewController, Provisio
         navigationItem.hidesBackButton = true
 
         let qrCodeViewHostingContainer = HostingContainer(wrappedView: ProvisioningQRCodeView(
-            model: provisioningQRCodeViewModel
+            model: provisioningQRCodeViewModel,
         ))
 
         addChild(qrCodeViewHostingContainer)
@@ -69,7 +69,7 @@ class ProvisioningQRCodeViewController: ProvisioningBaseViewController, Provisio
         provisioningQRCodeViewModel.updateURLDisplayMode(.loaded(url))
     }
 
-    public func provisioningSocketManagerDidPauseQRRotation(_ provisioningSocketManager: ProvisioningSocketManager) {
+    func provisioningSocketManagerDidPauseQRRotation(_ provisioningSocketManager: ProvisioningSocketManager) {
         provisioningQRCodeViewModel.updateURLDisplayMode(.refreshButton)
     }
 }
@@ -84,7 +84,7 @@ private struct ProvisioningQRCodeView: View {
             VStack(spacing: 12) {
                 Text(OWSLocalizedString(
                     "SECONDARY_ONBOARDING_SCAN_CODE_TITLE",
-                    comment: "header text while displaying a QR code which, when scanned, will link this device."
+                    comment: "header text while displaying a QR code which, when scanned, will link this device.",
                 ))
                 .font(.title)
                 .fontWeight(.semibold)
@@ -92,7 +92,7 @@ private struct ProvisioningQRCodeView: View {
 
                 Text(OWSLocalizedString(
                     "SECONDARY_ONBOARDING_SCAN_CODE_BODY",
-                    comment: "body text while displaying a QR code which, when scanned, will link this device."
+                    comment: "body text while displaying a QR code which, when scanned, will link this device.",
                 ))
                 .font(.body)
                 .foregroundStyle(Color.Signal.secondaryLabel)
@@ -117,7 +117,7 @@ private struct ProvisioningQRCodeView: View {
                     // fail, to handle).
                     ShareLink(item: "\(provisioningUrl) DELETETHIS") {
                         Text(LocalizationNotNeeded(
-                            "Debug only: Share URL"
+                            "Debug only: Share URL",
                         ))
                     }
                     .simultaneousGesture(TapGesture().onEnded {
@@ -135,9 +135,9 @@ private struct ProvisioningQRCodeView: View {
                 Link(
                     OWSLocalizedString(
                         "SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT",
-                        comment: "Link text for page with troubleshooting info shown on the QR scanning screen"
+                        comment: "Link text for page with troubleshooting info shown on the QR scanning screen",
                     ),
-                    destination: URL.Support.troubleshootingMultipleDevices
+                    destination: URL.Support.troubleshootingMultipleDevices,
                 )
                 .buttonStyle(Registration.UI.MediumSecondaryButtonStyle())
                 .padding(.bottom, NSDirectionalEdgeInsets.buttonContainerLayoutMargins.bottom)
@@ -156,8 +156,8 @@ private struct PreviewView: View {
         ProvisioningQRCodeView(
             model: RotatingQRCodeView.Model(
                 urlDisplayMode: urlDisplayMode,
-                onRefreshButtonPressed: {}
-            )
+                onRefreshButtonPressed: {},
+            ),
         )
         .padding(112)
     }

@@ -13,13 +13,13 @@ public protocol AdHocCallRecordManager {
         status: CallRecord.CallStatus.CallLinkCallStatus,
         timestamp: UInt64,
         shouldSendSyncMessge: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws
 
     func handlePeekResult(
         eraId: String?,
         rootKey: CallLinkRootKey,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws
 }
 
@@ -31,7 +31,7 @@ final class AdHocCallRecordManagerImpl: AdHocCallRecordManager {
     init(
         callRecordStore: any CallRecordStore,
         callLinkStore: any CallLinkRecordStore,
-        outgoingSyncMessageManager: any OutgoingCallEventSyncMessageManager
+        outgoingSyncMessageManager: any OutgoingCallEventSyncMessageManager,
     ) {
         self.callRecordStore = callRecordStore
         self.callLinkStore = callLinkStore
@@ -44,7 +44,7 @@ final class AdHocCallRecordManagerImpl: AdHocCallRecordManager {
         status: CallRecord.CallStatus.CallLinkCallStatus,
         timestamp: UInt64,
         shouldSendSyncMessge: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         // This shouldn't happen (we block joining earlier), but race conditions
         // theoretically allow it, and this is the final point at which we can
@@ -57,18 +57,19 @@ final class AdHocCallRecordManagerImpl: AdHocCallRecordManager {
         let callRecordResult = callRecordStore.fetch(
             callId: callId,
             conversationId: .callLink(callLinkRowId: callLink.id),
-            tx: tx
+            tx: tx,
         )
         let callRecord: CallRecord
         switch callRecordResult {
         case .matchDeleted:
             return
+
         case .matchNotFound:
             callRecord = CallRecord(
                 callId: callId,
                 callLinkRowId: callLink.id,
                 callStatus: status,
-                callBeganTimestamp: timestamp
+                callBeganTimestamp: timestamp,
             )
             do {
                 try callRecordStore.insert(callRecord: callRecord, tx: tx)
@@ -87,7 +88,7 @@ final class AdHocCallRecordManagerImpl: AdHocCallRecordManager {
             callRecordStore.updateCallAndUnreadStatus(
                 callRecord: callRecord,
                 newCallStatus: .callLink(status),
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -96,7 +97,7 @@ final class AdHocCallRecordManagerImpl: AdHocCallRecordManager {
                 callRecord: callRecord,
                 callEvent: .callUpdated,
                 callEventTimestamp: timestamp,
-                tx: tx
+                tx: tx,
             )
         }
     }
@@ -104,7 +105,7 @@ final class AdHocCallRecordManagerImpl: AdHocCallRecordManager {
     func handlePeekResult(
         eraId: String?,
         rootKey: CallLinkRootKey,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         guard var callLinkRecord = try self.callLinkStore.fetch(roomId: rootKey.deriveRoomId(), tx: tx) else {
             return
@@ -125,7 +126,7 @@ final class AdHocCallRecordManagerImpl: AdHocCallRecordManager {
                 let callRecords = try self.callRecordStore.fetchExisting(
                     conversationId: .callLink(callLinkRowId: callLinkRecord.id),
                     limit: 1,
-                    tx: tx
+                    tx: tx,
                 )
                 return !callRecords.isEmpty
             }()
@@ -136,7 +137,7 @@ final class AdHocCallRecordManagerImpl: AdHocCallRecordManager {
                     status: .generic,
                     timestamp: Date.ows_millisecondTimestamp(),
                     shouldSendSyncMessge: true,
-                    tx: tx
+                    tx: tx,
                 )
             }
         }

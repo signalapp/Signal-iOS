@@ -14,7 +14,7 @@ public class IncomingContactSyncJobQueue {
 
     private let jobQueueRunner: JobQueueRunner<
         JobRecordFinderImpl<IncomingContactSyncJobRecord>,
-        IncomingContactSyncJobRunnerFactory
+        IncomingContactSyncJobRunnerFactory,
     >
     private var jobSerializer = CompletionSerializer()
 
@@ -23,7 +23,7 @@ public class IncomingContactSyncJobQueue {
             canExecuteJobsConcurrently: false,
             db: db,
             jobFinder: JobRecordFinderImpl(db: db),
-            jobRunnerFactory: IncomingContactSyncJobRunnerFactory(appReadiness: appReadiness)
+            jobRunnerFactory: IncomingContactSyncJobRunnerFactory(appReadiness: appReadiness),
         )
         self.jobQueueRunner.listenForReachabilityChanges(reachabilityManager: reachabilityManager)
     }
@@ -39,7 +39,7 @@ public class IncomingContactSyncJobQueue {
         digest: Data,
         plaintextLength: UInt32?,
         isComplete: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         let jobRecord = IncomingContactSyncJobRecord(
             cdnNumber: cdnNumber,
@@ -47,7 +47,7 @@ public class IncomingContactSyncJobQueue {
             encryptionKey: encryptionKey,
             digest: digest,
             plaintextLength: plaintextLength,
-            isCompleteContactSync: isComplete
+            isCompleteContactSync: isComplete,
         )
         jobRecord.anyInsert(transaction: tx)
         jobSerializer.addOrderedSyncCompletion(tx: tx) {
@@ -85,7 +85,7 @@ private class IncomingContactSyncJobRunner: JobRunner {
             jobRecord: jobRecord,
             retryLimit: Constants.maxRetries,
             db: DependenciesBridge.shared.db,
-            block: { try await _runJob(jobRecord) }
+            block: { try await _runJob(jobRecord) },
         )
     }
 
@@ -102,19 +102,19 @@ private class IncomingContactSyncJobRunner: JobRunner {
             return
         case .transient(let downloadMetadata):
             fileUrl = try await DependenciesBridge.shared.attachmentDownloadManager.downloadTransientAttachment(
-                metadata: downloadMetadata
+                metadata: downloadMetadata,
             ).awaitable()
         }
 
         let insertedThreads = try await processContactSync(
             decryptedFileUrl: fileUrl,
-            isComplete: jobRecord.isCompleteContactSync
+            isComplete: jobRecord.isCompleteContactSync,
         )
         await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
             jobRecord.anyRemove(transaction: tx)
         }
         NotificationCenter.default.post(name: .incomingContactSyncDidComplete, object: self, userInfo: [
-            IncomingContactSyncJobQueue.Constants.insertedThreads: insertedThreads
+            IncomingContactSyncJobQueue.Constants.insertedThreads: insertedThreads,
         ])
     }
 
@@ -122,7 +122,7 @@ private class IncomingContactSyncJobRunner: JobRunner {
 
     private func processContactSync(
         decryptedFileUrl fileUrl: URL,
-        isComplete: Bool
+        isComplete: Bool,
     ) async throws -> [(threadUniqueId: String, sortOrder: UInt32)] {
         var insertedThreads = [(threadUniqueId: String, sortOrder: UInt32)]()
         let fileData = try Data(contentsOf: fileUrl, options: .mappedIfSafe)
@@ -132,11 +132,12 @@ private class IncomingContactSyncJobRunner: JobRunner {
         // We use batching to avoid long-running write transactions
         // and to place an upper bound on memory usage.
         var allPhoneNumbers = [E164]()
-        while try await processBatch(
-            contactStream: contactStream,
-            insertedThreads: &insertedThreads,
-            processedPhoneNumbers: &allPhoneNumbers
-        ) {}
+        while
+            try await processBatch(
+                contactStream: contactStream,
+                insertedThreads: &insertedThreads,
+                processedPhoneNumbers: &allPhoneNumbers,
+            ) {}
 
         if isComplete {
             try await pruneContacts(exceptThoseReceivedFromCompleteSync: allPhoneNumbers)
@@ -157,7 +158,7 @@ private class IncomingContactSyncJobRunner: JobRunner {
     private func processBatch(
         contactStream: ContactsInputStream,
         insertedThreads: inout [(threadUniqueId: String, sortOrder: UInt32)],
-        processedPhoneNumbers: inout [E164]
+        processedPhoneNumbers: inout [E164],
     ) async throws -> Bool {
         // We use batching to avoid long-running write transactions.
         guard let contactBatch = try Self.buildBatch(contactStream: contactStream) else {
@@ -192,7 +193,7 @@ private class IncomingContactSyncJobRunner: JobRunner {
     private func processContactDetails(
         _ contactDetails: ContactDetails,
         insertedThreads: inout [(threadUniqueId: String, sortOrder: UInt32)],
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws -> E164? {
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
         guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx) else {
@@ -209,7 +210,7 @@ private class IncomingContactSyncJobRunner: JobRunner {
                 localIdentifiers: localIdentifiers,
                 aci: aci,
                 phoneNumber: contactDetails.phoneNumber,
-                tx: tx
+                tx: tx,
             )
             // Mark as registered only if we have a UUID (we always do in this branch).
             // If we don't have a UUID, contacts can't be registered.
@@ -243,14 +244,14 @@ private class IncomingContactSyncJobRunner: JobRunner {
 
         let disappearingMessageToken = VersionedDisappearingMessageToken.token(
             forProtoExpireTimerSeconds: contactDetails.expireTimer,
-            version: contactDetails.expireTimerVersion
+            version: contactDetails.expireTimerVersion,
         )
         GroupManager.remoteUpdateDisappearingMessages(
             contactThread: contactThread,
             disappearingMessageToken: disappearingMessageToken,
             changeAuthor: nil,
             localIdentifiers: localIdentifiers,
-            transaction: tx
+            transaction: tx,
         )
 
         return contactDetails.phoneNumber

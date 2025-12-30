@@ -10,6 +10,7 @@ class DonationReadMoreSheetViewController: StackSheetViewController {
     override var stackViewInsets: UIEdgeInsets {
         UIEdgeInsets(hMargin: 24, vMargin: 24)
     }
+
     override var sheetBackgroundColor: UIColor { UIColor.Signal.groupedBackground }
 
     override func viewDidLoad() {
@@ -24,23 +25,23 @@ class DonationReadMoreSheetViewController: StackSheetViewController {
 
         let titleLabel = UILabel.title2Label(text: OWSLocalizedString(
             "DONATION_READ_MORE_SCREEN_TITLE",
-            comment: "There is a screen where users can read more about their donation to Signal. This is the title of that screen."
+            comment: "There is a screen where users can read more about their donation to Signal. This is the title of that screen.",
         ))
         stackView.addArrangedSubview(titleLabel)
 
         let paragraphs: [String] = [
             OWSLocalizedString(
                 "DONATION_READ_MORE_SCREEN_PARAGRAPH_1",
-                comment: "There is a screen where users can read more about their donation to Signal. This is the 1st paragraph of that screen."
+                comment: "There is a screen where users can read more about their donation to Signal. This is the 1st paragraph of that screen.",
             ),
             OWSLocalizedString(
                 "DONATION_READ_MORE_SCREEN_PARAGRAPH_2",
-                comment: "There is a screen where users can read more about their donation to Signal. This is the 2nd paragraph of that screen."
+                comment: "There is a screen where users can read more about their donation to Signal. This is the 2nd paragraph of that screen.",
             ),
             OWSLocalizedString(
                 "DONATION_READ_MORE_SCREEN_PARAGRAPH_3",
-                comment: "There is a screen where users can read more about their donation to Signal. This is the 3rd paragraph of that screen."
-            )
+                comment: "There is a screen where users can read more about their donation to Signal. This is the 3rd paragraph of that screen.",
+            ),
         ]
         for paragraph in paragraphs {
             let paragraphLabel = UILabel()

@@ -6,8 +6,8 @@
 import LibSignalClient
 import XCTest
 
-@testable import SignalServiceKit
 @testable import Signal
+@testable import SignalServiceKit
 
 class GRDBFinderTest: SignalBaseTest {
     override func setUp() {
@@ -16,7 +16,7 @@ class GRDBFinderTest: SignalBaseTest {
         SSKEnvironment.shared.databaseStorageRef.write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
                 localIdentifiers: .forUnitTests,
-                tx: tx
+                tx: tx,
             )
         }
     }
@@ -168,20 +168,20 @@ class GRDBFinderTest: SignalBaseTest {
                 return OWSUserProfile.getOrBuildUserProfile(
                     for: .otherUser(Aci.randomForTesting()),
                     userProfileWriter: .tests,
-                    tx: tx
+                    tx: tx,
                 )
             }
 
             func updateUserProfile(
                 _ userProfile: OWSUserProfile,
                 lastFetchDate: OptionalChange<Date> = .noChange,
-                lastMessagingDate: OptionalChange<Date> = .noChange
+                lastMessagingDate: OptionalChange<Date> = .noChange,
             ) {
                 userProfile.update(
                     lastFetchDate: lastFetchDate,
                     lastMessagingDate: lastMessagingDate,
                     userProfileWriter: .metadataUpdate,
-                    transaction: tx
+                    transaction: tx,
                 )
             }
 
@@ -214,7 +214,7 @@ class GRDBFinderTest: SignalBaseTest {
                 updateUserProfile(
                     userProfile,
                     lastFetchDate: .setTo(dateWithOffsetFromNow(-1 * TimeInterval.month)),
-                    lastMessagingDate: .setTo(dateWithOffsetFromNow(-2 * TimeInterval.month))
+                    lastMessagingDate: .setTo(dateWithOffsetFromNow(-2 * TimeInterval.month)),
                 )
             }
 
@@ -224,7 +224,7 @@ class GRDBFinderTest: SignalBaseTest {
                 updateUserProfile(
                     userProfile,
                     lastFetchDate: .setTo(dateWithOffsetFromNow(-1 * TimeInterval.minute)),
-                    lastMessagingDate: .setTo(dateWithOffsetFromNow(-2 * TimeInterval.month))
+                    lastMessagingDate: .setTo(dateWithOffsetFromNow(-2 * TimeInterval.month)),
                 )
             }
 
@@ -241,7 +241,7 @@ class GRDBFinderTest: SignalBaseTest {
                 updateUserProfile(
                     userProfile,
                     lastFetchDate: .setTo(dateWithOffsetFromNow(-1 * TimeInterval.month)),
-                    lastMessagingDate: .setTo(dateWithOffsetFromNow(-1 * TimeInterval.hour))
+                    lastMessagingDate: .setTo(dateWithOffsetFromNow(-1 * TimeInterval.hour)),
                 )
                 expectedAddresses.insert(userProfile.internalAddress)
             }
@@ -252,7 +252,7 @@ class GRDBFinderTest: SignalBaseTest {
                 updateUserProfile(
                     userProfile,
                     lastFetchDate: .setTo(dateWithOffsetFromNow(-1 * TimeInterval.minute)),
-                    lastMessagingDate: .setTo(dateWithOffsetFromNow(-1 * TimeInterval.hour))
+                    lastMessagingDate: .setTo(dateWithOffsetFromNow(-1 * TimeInterval.hour)),
                 )
             }
         }

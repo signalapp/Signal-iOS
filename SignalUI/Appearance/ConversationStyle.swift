@@ -57,12 +57,12 @@ public struct ConversationStyle {
     public let fullWidthGutterLeading: CGFloat
     public let fullWidthGutterTrailing: CGFloat
 
-    static public let groupMessageAvatarSizeClass = ConversationAvatarView.Configuration.SizeClass.twentyEight
-    static public let selectionViewWidth: CGFloat = 24
-    static public let messageStackSpacing: CGFloat = 8
-    static public let defaultMessageSpacing: CGFloat = 12
-    static public let compactMessageSpacing: CGFloat = 2
-    static public let systemMessageSpacing: CGFloat = 20
+    public static let groupMessageAvatarSizeClass = ConversationAvatarView.Configuration.SizeClass.twentyEight
+    public static let selectionViewWidth: CGFloat = 24
+    public static let messageStackSpacing: CGFloat = 8
+    public static let defaultMessageSpacing: CGFloat = 12
+    public static let compactMessageSpacing: CGFloat = 2
+    public static let systemMessageSpacing: CGFloat = 20
 
     public let contentWidth: CGFloat
 
@@ -78,10 +78,12 @@ public struct ConversationStyle {
     public let textInsetBottom: CGFloat
     public let textInsetHorizontal: CGFloat
     public var textInsets: UIEdgeInsets {
-        UIEdgeInsets(top: textInsetTop,
-                     leading: textInsetHorizontal,
-                     bottom: textInsetBottom,
-                     trailing: textInsetHorizontal)
+        UIEdgeInsets(
+            top: textInsetTop,
+            leading: textInsetHorizontal,
+            bottom: textInsetBottom,
+            trailing: textInsetHorizontal,
+        )
     }
 
     // We want to align "group sender" avatars with the v-center of the
@@ -112,7 +114,7 @@ public struct ConversationStyle {
         hasWallpaper: Bool,
         isWallpaperPhoto: Bool,
         chatColor: ColorOrGradientSetting,
-        isStandaloneRenderItem: Bool = false
+        isStandaloneRenderItem: Bool = false,
     ) {
         self.type = type
         self.viewWidth = viewWidth
@@ -178,17 +180,22 @@ public struct ConversationStyle {
 
     // MARK: Colors
 
-    public static func bubbleColorIncoming(hasWallpaper: Bool,
-                                           isDarkThemeEnabled: Bool) -> UIColor {
+    public static func bubbleColorIncoming(
+        hasWallpaper: Bool,
+        isDarkThemeEnabled: Bool,
+    ) -> UIColor {
         if hasWallpaper {
             return isDarkThemeEnabled ? .ows_gray95 : .white
         } else {
             return isDarkThemeEnabled ? UIColor.ows_gray80 : UIColor.ows_gray05
         }
     }
+
     public var bubbleColorIncoming: UIColor {
-        Self.bubbleColorIncoming(hasWallpaper: hasWallpaper,
-                                 isDarkThemeEnabled: isDarkThemeEnabled)
+        Self.bubbleColorIncoming(
+            hasWallpaper: hasWallpaper,
+            isDarkThemeEnabled: isDarkThemeEnabled,
+        )
     }
 
     public let dateBreakTextColor = UIColor.ows_gray60
@@ -238,7 +245,7 @@ public struct ConversationStyle {
     }
 
     public func bubbleTextColor(message: TSMessage) -> UIColor {
-        if message.wasRemotelyDeleted && !hasWallpaper {
+        if message.wasRemotelyDeleted, !hasWallpaper {
             return primaryTextColor
         } else if message is TSIncomingMessage {
             return bubbleTextColorIncoming
@@ -284,25 +291,25 @@ public struct ConversationStyle {
 }
 
 extension ConversationStyle: Equatable {
-    public static func == (lhs: ConversationStyle, rhs: ConversationStyle) -> Bool {
+    public static func ==(lhs: ConversationStyle, rhs: ConversationStyle) -> Bool {
         // We need to compare any state that could affect
         // how we render view appearance.
-        (lhs.type.isValid == rhs.type.isValid &&
-         lhs.viewWidth == rhs.viewWidth &&
-         lhs.dynamicBodyTypePointSize == rhs.dynamicBodyTypePointSize &&
-         lhs.isDarkThemeEnabled == rhs.isDarkThemeEnabled &&
-         lhs.hasWallpaper == rhs.hasWallpaper &&
-         lhs.isWallpaperPhoto == rhs.isWallpaperPhoto &&
-         lhs.maxMessageWidth == rhs.maxMessageWidth &&
-         lhs.maxMediaMessageWidth == rhs.maxMediaMessageWidth &&
-         lhs.textInsets == rhs.textInsets &&
-         lhs.gutterLeading == rhs.gutterLeading &&
-         lhs.gutterTrailing == rhs.gutterTrailing &&
-         lhs.fullWidthGutterLeading == rhs.fullWidthGutterLeading &&
-         lhs.fullWidthGutterTrailing == rhs.fullWidthGutterTrailing &&
-         lhs.textInsets == rhs.textInsets &&
-         lhs.lastTextLineAxis == rhs.lastTextLineAxis &&
-         lhs.chatColorSetting == rhs.chatColorSetting)
+        lhs.type.isValid == rhs.type.isValid &&
+            lhs.viewWidth == rhs.viewWidth &&
+            lhs.dynamicBodyTypePointSize == rhs.dynamicBodyTypePointSize &&
+            lhs.isDarkThemeEnabled == rhs.isDarkThemeEnabled &&
+            lhs.hasWallpaper == rhs.hasWallpaper &&
+            lhs.isWallpaperPhoto == rhs.isWallpaperPhoto &&
+            lhs.maxMessageWidth == rhs.maxMessageWidth &&
+            lhs.maxMediaMessageWidth == rhs.maxMediaMessageWidth &&
+            lhs.textInsets == rhs.textInsets &&
+            lhs.gutterLeading == rhs.gutterLeading &&
+            lhs.gutterTrailing == rhs.gutterTrailing &&
+            lhs.fullWidthGutterLeading == rhs.fullWidthGutterLeading &&
+            lhs.fullWidthGutterTrailing == rhs.fullWidthGutterTrailing &&
+            lhs.textInsets == rhs.textInsets &&
+            lhs.lastTextLineAxis == rhs.lastTextLineAxis &&
+            lhs.chatColorSetting == rhs.chatColorSetting
     }
 }
 
@@ -331,7 +338,7 @@ extension ConversationStyle: CustomDebugStringConvertible {
 
 extension ConversationStyle {
     public func quotedReplyHighlightColor() -> UIColor {
-        UIColor.init(rgbHex: 0xB5B5B5)
+        UIColor(rgbHex: 0xB5B5B5)
     }
 
     public func quotedReplyAuthorColor() -> UIColor {

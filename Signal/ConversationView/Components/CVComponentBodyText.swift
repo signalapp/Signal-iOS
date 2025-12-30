@@ -19,7 +19,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         let hasPendingMessageRequest: Bool
         fileprivate let items: [CVTextLabel.Item]
 
-        public var canUseDedicatedCell: Bool {
+        var canUseDedicatedCell: Bool {
             if searchText != nil {
                 return false
             }
@@ -39,26 +39,33 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
             bodyText.textValue(isTextExpanded: isTextExpanded)
         }
     }
+
     private let bodyTextState: State
 
     private var bodyText: CVComponentState.BodyText {
         bodyTextState.bodyText
     }
+
     private var textValue: CVTextValue? {
         bodyTextState.textValue
     }
+
     private var isTextExpanded: Bool {
         bodyTextState.isTextExpanded
     }
+
     private var searchText: String? {
         bodyTextState.searchText
     }
+
     private var revealedSpoilerIds: Set<Int> {
         bodyTextState.revealedSpoilerIds
     }
+
     private var hasPendingMessageRequest: Bool {
         bodyTextState.hasPendingMessageRequest
     }
+
     public var shouldUseAttributedText: Bool {
         bodyTextState.shouldUseAttributedText
     }
@@ -81,6 +88,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         // this interferes with "tap to retry".
         return outgoingMessage.messageState == .failed
     }
+
     private var shouldIgnoreEvents: Bool { Self.shouldIgnoreEvents(interaction: interaction) }
 
     // TODO:
@@ -127,7 +135,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         textWasTruncated: Bool,
         revealedSpoilerIds: Set<StyleIdType>,
         interactionUniqueId: String,
-        interactionIdentifier: InteractionSnapshotIdentifier
+        interactionIdentifier: InteractionSnapshotIdentifier,
     ) -> [CVTextLabel.Item] {
 
         // Use a lock to ensure that measurement on and off the main thread
@@ -169,7 +177,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                 items = messageBody
                     .tappableItems(
                         revealedSpoilerIds: revealedSpoilerIds,
-                        dataDetector: dataDetector
+                        dataDetector: dataDetector,
                     )
                     .compactMap {
                         switch $0 {
@@ -178,12 +186,12 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                                 spoilerId: unrevealedSpoilerItem.id,
                                 interactionUniqueId: interactionUniqueId,
                                 interactionIdentifier: interactionIdentifier,
-                                range: unrevealedSpoilerItem.range
+                                range: unrevealedSpoilerItem.range,
                             ))
                         case .mention(let mentionItem):
                             return .mention(mentionItem: CVTextLabel.MentionItem(
                                 mentionAci: mentionItem.mentionAci,
-                                range: mentionItem.range
+                                range: mentionItem.range,
                             ))
                         case .data(let dataItem):
                             // TODO: omit data items ending before elipsis down in tappableItems
@@ -196,10 +204,12 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         }
     }
 
-    static func buildState(interaction: TSInteraction,
-                           bodyText: CVComponentState.BodyText,
-                           viewStateSnapshot: CVViewStateSnapshot,
-                           hasPendingMessageRequest: Bool) -> State {
+    static func buildState(
+        interaction: TSInteraction,
+        bodyText: CVComponentState.BodyText,
+        viewStateSnapshot: CVViewStateSnapshot,
+        hasPendingMessageRequest: Bool,
+    ) -> State {
         let textExpansion = viewStateSnapshot.textExpansion
         let searchText = viewStateSnapshot.searchText
         let isTextExpanded = textExpansion.isTextExpanded(interactionId: interaction.uniqueId)
@@ -219,7 +229,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                 textWasTruncated: textWasTruncated,
                 revealedSpoilerIds: revealedSpoilerIds,
                 interactionUniqueId: interaction.uniqueId,
-                interactionIdentifier: .fromInteraction(interaction)
+                interactionIdentifier: .fromInteraction(interaction),
             )
 
             switch displayableText.textValue(isTextExpanded: isTextExpanded) {
@@ -244,19 +254,21 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
             items = []
         }
 
-        return State(bodyText: bodyText,
-                     isTextExpanded: isTextExpanded,
-                     searchText: searchText,
-                     revealedSpoilerIds: revealedSpoilerIds,
-                     shouldUseAttributedText: shouldUseAttributedText,
-                     hasPendingMessageRequest: hasPendingMessageRequest,
-                     items: items)
+        return State(
+            bodyText: bodyText,
+            isTextExpanded: isTextExpanded,
+            searchText: searchText,
+            revealedSpoilerIds: revealedSpoilerIds,
+            shouldUseAttributedText: shouldUseAttributedText,
+            hasPendingMessageRequest: hasPendingMessageRequest,
+            items: items,
+        )
     }
 
     static func buildComponentState(
         message: TSMessage,
         viewStateSnapshot: CVViewStateSnapshot,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) throws -> CVComponentState.BodyText? {
 
         func build(displayableText: DisplayableText) -> CVComponentState.BodyText? {
@@ -268,7 +280,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                     return false
                 }
                 let isTruncatedTextVisible = viewStateSnapshot.textExpansion.isTextExpanded(
-                    interactionId: message.uniqueId
+                    interactionId: message.uniqueId,
                 )
                 return !isTruncatedTextVisible
             }()
@@ -281,7 +293,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                     text: body,
                     ranges: message.bodyRanges,
                     interaction: message,
-                    transaction: transaction
+                    transaction: transaction,
                 )
             } else {
                 return nil
@@ -296,7 +308,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
                     oversizeTextAttachment: oversizeTextAttachmentStream,
                     ranges: message.bodyRanges,
                     interaction: message,
-                    transaction: transaction
+                    transaction: transaction,
                 )
                 return build(displayableText: displayableText)
             } else if oversizeTextAttachment.asAnyPointer() != nil {
@@ -358,7 +370,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         return [
             .underlineStyle: NSUnderlineStyle.single.rawValue,
             .underlineColor: foregroundColor,
-            .foregroundColor: foregroundColor
+            .foregroundColor: foregroundColor,
         ]
     }
 
@@ -374,7 +386,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
             numberOfLines: 0,
             cacheKey: textViewConfig.cacheKey,
             items: bodyTextState.items,
-            linkifyStyle: textViewConfig.linkifyStyle
+            linkifyStyle: textViewConfig.linkifyStyle,
         )
     }
 
@@ -396,13 +408,15 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
             numberOfLines: 0,
             cacheKey: labelConfig.cacheKey,
             items: bodyTextState.items,
-            linkifyStyle: linkifyStyle
+            linkifyStyle: linkifyStyle,
         )
     }
 
-    public func configureForRendering(componentView: CVComponentView,
-                                      cellMeasurement: CVCellMeasurement,
-                                      componentDelegate: CVComponentDelegate) {
+    public func configureForRendering(
+        componentView: CVComponentView,
+        cellMeasurement: CVCellMeasurement,
+        componentDelegate: CVComponentDelegate,
+    ) {
         AssertIsOnMainThread()
         guard let componentView = componentView as? CVComponentViewBodyText else {
             owsFailDebug("Unexpected componentView.")
@@ -414,7 +428,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
             componentView: componentView,
             bodyTextLabelConfig: bodyTextLabelConfig,
             cellMeasurement: cellMeasurement,
-            spoilerAnimationManager: componentDelegate.spoilerState.animationManager
+            spoilerAnimationManager: componentDelegate.spoilerState.animationManager,
         )
     }
 
@@ -422,7 +436,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         componentView: CVComponentViewBodyText,
         bodyTextLabelConfig: CVTextLabel.Config,
         cellMeasurement: CVCellMeasurement,
-        spoilerAnimationManager: SpoilerAnimationManager
+        spoilerAnimationManager: SpoilerAnimationManager,
     ) {
         AssertIsOnMainThread()
 
@@ -432,10 +446,12 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         if bodyTextLabel.view.superview == nil {
             let stackView = componentView.stackView
             stackView.reset()
-            stackView.configure(config: stackViewConfig,
-                                cellMeasurement: cellMeasurement,
-                                measurementKey: Self.measurementKey_stackView,
-                                subviews: [ bodyTextLabel.view ])
+            stackView.configure(
+                config: stackViewConfig,
+                cellMeasurement: cellMeasurement,
+                measurementKey: Self.measurementKey_stackView,
+                subviews: [bodyTextLabel.view],
+            )
         }
     }
 
@@ -451,16 +467,18 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
     }
 
     private var stackViewConfig: CVStackViewConfig {
-        CVStackViewConfig(axis: .vertical,
-                          alignment: .fill,
-                          spacing: 0,
-                          layoutMargins: .zero)
+        CVStackViewConfig(
+            axis: .vertical,
+            alignment: .fill,
+            spacing: 0,
+            layoutMargins: .zero,
+        )
     }
 
     private var labelConfigForRemotelyDeleted: CVLabelConfig {
         let text = (isIncoming
-                        ? OWSLocalizedString("THIS_MESSAGE_WAS_DELETED", comment: "text indicating the message was remotely deleted")
-                        : OWSLocalizedString("YOU_DELETED_THIS_MESSAGE", comment: "text indicating the message was remotely deleted by you"))
+            ? OWSLocalizedString("THIS_MESSAGE_WAS_DELETED", comment: "text indicating the message was remotely deleted")
+            : OWSLocalizedString("YOU_DELETED_THIS_MESSAGE", comment: "text indicating the message was remotely deleted by you"))
         return CVLabelConfig(
             text: .text(text),
             displayConfig: .forUnstyledText(font: textMessageFont.italic(), textColor: bodyTextColor),
@@ -468,13 +486,15 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
             textColor: bodyTextColor,
             numberOfLines: 0,
             lineBreakMode: .byWordWrapping,
-            textAlignment: .center
+            textAlignment: .center,
         )
     }
 
     private var labelConfigForOversizeTextDownloading: CVLabelConfig {
-        let text = OWSLocalizedString("MESSAGE_STATUS_DOWNLOADING",
-                                     comment: "message status while message is downloading.")
+        let text = OWSLocalizedString(
+            "MESSAGE_STATUS_DOWNLOADING",
+            comment: "message status while message is downloading.",
+        )
         return CVLabelConfig(
             text: .text(text),
             displayConfig: .forUnstyledText(font: textMessageFont.italic(), textColor: bodyTextColor),
@@ -482,7 +502,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
             textColor: bodyTextColor,
             numberOfLines: 0,
             lineBreakMode: .byWordWrapping,
-            textAlignment: .center
+            textAlignment: .center,
         )
     }
 
@@ -492,13 +512,17 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         return self.textViewConfig(displayableText: displayableText)
     }
 
-    public static func configureTextView(_ textView: UITextView,
-                                         interaction: TSInteraction,
-                                         displayableText: DisplayableText) {
+    public static func configureTextView(
+        _ textView: UITextView,
+        interaction: TSInteraction,
+        displayableText: DisplayableText,
+    ) {
         let dataDetectorTypes: UIDataDetectorTypes = {
             // If we're link-ifying with NSDataDetector, UITextView doesn't need to do data detection.
-            guard !shouldIgnoreEvents(interaction: interaction),
-                  displayableText.shouldAllowLinkification else {
+            guard
+                !shouldIgnoreEvents(interaction: interaction),
+                displayableText.shouldAllowLinkification
+            else {
                 return []
             }
             return [.link, .address, .calendarEvent, .phoneNumber]
@@ -513,7 +537,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
     private var linkTextAttributes: [NSAttributedString.Key: Any] {
         return [
             NSAttributedString.Key.foregroundColor: bodyTextColor,
-            NSAttributedString.Key.underlineStyle: NSUnderlineStyle.single.rawValue
+            NSAttributedString.Key.underlineStyle: NSUnderlineStyle.single.rawValue,
         ]
     }
 
@@ -521,15 +545,17 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
 
     private func textViewConfig(displayableText: DisplayableText) -> CVTextViewConfig {
         let textAlignment = (isTextExpanded
-                                ? displayableText.fullTextNaturalAlignment
-                                : displayableText.displayTextNaturalAlignment)
+            ? displayableText.fullTextNaturalAlignment
+            : displayableText.displayTextNaturalAlignment)
 
         let text = displayableText.textValue(isTextExpanded: isTextExpanded)
         let linkItems = bodyTextState.items
 
         var matchedSearchRanges = [NSRange]()
-        if let searchText = searchText,
-           searchText.count >= ConversationSearchController.kMinimumSearchTextLength {
+        if
+            let searchText,
+            searchText.count >= ConversationSearchController.kMinimumSearchTextLength
+        {
             let searchableText = FullTextSearchIndexer.normalizeText(searchText)
             let pattern = NSRegularExpression.escapedPattern(for: searchableText)
             do {
@@ -558,7 +584,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         let displayConfiguration = HydratedMessageBody.DisplayConfiguration.messageBubble(
             isIncoming: isIncoming,
             revealedSpoilerIds: revealedSpoilerIds,
-            searchRanges: .matchedRanges(matchedSearchRanges)
+            searchRanges: .matchedRanges(matchedSearchRanges),
         )
 
         var extraCacheKeyFactors = [String]()
@@ -577,7 +603,7 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
             linkifyStyle: linkifyStyle,
             linkItems: linkItems,
             matchedSearchRanges: matchedSearchRanges,
-            extraCacheKeyFactors: extraCacheKeyFactors
+            extraCacheKeyFactors: extraCacheKeyFactors,
         )
     }
 
@@ -606,20 +632,24 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         measurementBuilder.setValue(key: Self.measurementKey_maxWidth, value: maxWidth)
         let textSize = textMeasurement.size.ceil
         let textInfo = textSize.asManualSubviewInfo
-        let stackMeasurement = ManualStackView.measure(config: stackViewConfig,
-                                                       measurementBuilder: measurementBuilder,
-                                                       measurementKey: Self.measurementKey_stackView,
-                                                       subviewInfos: [ textInfo ],
-                                                       maxWidth: maxWidth)
+        let stackMeasurement = ManualStackView.measure(
+            config: stackViewConfig,
+            measurementBuilder: measurementBuilder,
+            measurementKey: Self.measurementKey_stackView,
+            subviewInfos: [textInfo],
+            maxWidth: maxWidth,
+        )
         return stackMeasurement.measuredSize
     }
 
     // MARK: - Events
 
-    public override func handleTap(sender: UIGestureRecognizer,
-                                   componentDelegate: CVComponentDelegate,
-                                   componentView: CVComponentView,
-                                   renderItem: CVRenderItem) -> Bool {
+    override public func handleTap(
+        sender: UIGestureRecognizer,
+        componentDelegate: CVComponentDelegate,
+        componentView: CVComponentView,
+        renderItem: CVRenderItem,
+    ) -> Bool {
         guard let componentView = componentView as? CVComponentViewBodyText else {
             owsFailDebug("Unexpected componentView.")
             return false
@@ -650,10 +680,12 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         return false
     }
 
-    public override func findLongPressHandler(sender: UIGestureRecognizer,
-                                              componentDelegate: CVComponentDelegate,
-                                              componentView: CVComponentView,
-                                              renderItem: CVRenderItem) -> CVLongPressHandler? {
+    override public func findLongPressHandler(
+        sender: UIGestureRecognizer,
+        componentDelegate: CVComponentDelegate,
+        componentView: CVComponentView,
+        renderItem: CVRenderItem,
+    ) -> CVLongPressHandler? {
 
         guard let componentView = componentView as? CVComponentViewBodyText else {
             owsFailDebug("Unexpected componentView.")
@@ -669,9 +701,11 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
             return nil
         }
         bodyTextLabel.animate(selectedItem: item)
-        return CVLongPressHandler(delegate: componentDelegate,
-                                  renderItem: renderItem,
-                                  gestureLocation: .bodyText(item: item))
+        return CVLongPressHandler(
+            delegate: componentDelegate,
+            renderItem: renderItem,
+            gestureLocation: .bodyText(item: item),
+        )
     }
 
     // MARK: -

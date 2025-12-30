@@ -42,11 +42,11 @@ struct SupportEmailModel {
         emojiMood: EmojiMoodPickerView.Mood?,
         supportFilter: String?,
         debugLogPolicy: LogPolicy?,
-        hasRecentChallenge: Bool
+        hasRecentChallenge: Bool,
     ) {
         self.localizedSubject = OWSLocalizedString(
             "SUPPORT_EMAIL_SUBJECT",
-            comment: "Localized subject for support request emails"
+            comment: "Localized subject for support request emails",
         )
         self.deviceType = UIDevice.current.model
         self.deviceIdentifier = String(sysctlKey: "hw.machine")?.replacingOccurrences(of: UIDevice.current.model, with: "") ?? "Unknown"
@@ -56,7 +56,7 @@ struct SupportEmailModel {
 
         self.userDescription = userDescription ?? OWSLocalizedString(
             "SUPPORT_EMAIL_DEFAULT_DESCRIPTION",
-            comment: "Default prompt for user description in support email requests"
+            comment: "Default prompt for user description in support email requests",
         )
         self.emojiMood = emojiMood
         self.supportFilter = supportFilter ?? "Signal iOS Support Request"
@@ -75,30 +75,38 @@ final class ComposeSupportEmailOperation: NSObject {
         case invalidURL
         case failedToOpenURL
 
-        public var errorDescription: String? {
+        var errorDescription: String? {
             localizedDescription
         }
 
-        public var localizedDescription: String {
+        var localizedDescription: String {
             switch self {
             case .logUploadTimedOut:
-                return OWSLocalizedString("ERROR_DESCRIPTION_REQUEST_TIMED_OUT",
-                                         comment: "Error indicating that a socket request timed out.")
+                return OWSLocalizedString(
+                    "ERROR_DESCRIPTION_REQUEST_TIMED_OUT",
+                    comment: "Error indicating that a socket request timed out.",
+                )
             case let .logUploadFailure(underlyingError):
                 return underlyingError?.errorDescription ??
-                    OWSLocalizedString("ERROR_DESCRIPTION_LOG_UPLOAD_FAILED",
-                                      comment: "Generic error indicating that log upload failed")
+                    OWSLocalizedString(
+                        "ERROR_DESCRIPTION_LOG_UPLOAD_FAILED",
+                        comment: "Generic error indicating that log upload failed",
+                    )
             case .invalidURL:
-                return OWSLocalizedString("ERROR_DESCRIPTION_INVALID_SUPPORT_EMAIL",
-                                         comment: "Error indicating that a support mailto link could not be created.")
+                return OWSLocalizedString(
+                    "ERROR_DESCRIPTION_INVALID_SUPPORT_EMAIL",
+                    comment: "Error indicating that a support mailto link could not be created.",
+                )
             case .failedToOpenURL:
-                return OWSLocalizedString("ERROR_DESCRIPTION_COULD_NOT_LAUNCH_EMAIL",
-                                         comment: "Error indicating that openURL for a mailto: URL failed.")
+                return OWSLocalizedString(
+                    "ERROR_DESCRIPTION_COULD_NOT_LAUNCH_EMAIL",
+                    comment: "Error indicating that openURL for a mailto: URL failed.",
+                )
             }
         }
     }
 
-    public static var canSendEmails: Bool {
+    static var canSendEmails: Bool {
         return UIApplication.shared.canOpenURL(MailtoLink(to: "", subject: "", body: "").url!)
     }
 
@@ -119,7 +127,7 @@ final class ComposeSupportEmailOperation: NSObject {
             emojiMood: nil,
             supportFilter: supportFilter,
             debugLogPolicy: logUrl.map { .link($0) },
-            hasRecentChallenge: hasRecentChallenge
+            hasRecentChallenge: hasRecentChallenge,
         )
         try await sendEmail(model: model)
     }
@@ -198,9 +206,11 @@ final class ComposeSupportEmailOperation: NSObject {
     }
 
     private var emailURL: URL? {
-        let linkBuilder = MailtoLink(to: "support@signal.org",
-                                     subject: model.localizedSubject,
-                                     body: emailBody)
+        let linkBuilder = MailtoLink(
+            to: "support@signal.org",
+            subject: model.localizedSubject,
+            body: emailBody,
+        )
         return linkBuilder.url
     }
 
@@ -213,35 +223,39 @@ final class ComposeSupportEmailOperation: NSObject {
             "",
             OWSLocalizedString(
                 "SUPPORT_EMAIL_INFO_DIVIDER",
-                comment: "Localized divider for support request emails internal information"
+                comment: "Localized divider for support request emails internal information",
             ),
             String(
                 format: OWSLocalizedString(
                     "SUPPORT_EMAIL_FILTER_LABEL_FORMAT",
-                    comment: "Localized label for support request email filter string. Embeds {{filter text}}."
-                ), model.supportFilter
+                    comment: "Localized label for support request email filter string. Embeds {{filter text}}.",
+                ),
+                model.supportFilter,
             ),
             String(
                 format: "Challenge Received: %@",
-                    model.hasRecentChallenge ? "yes" : "no"
+                model.hasRecentChallenge ? "yes" : "no",
             ),
             String(
                 format: OWSLocalizedString(
                     "SUPPORT_EMAIL_HARDWARE_LABEL_FORMAT",
-                    comment: "Localized label for support request email hardware string (e.g. iPhone or iPad). Embeds {{hardware text}}."
-                ), model.deviceType
+                    comment: "Localized label for support request email hardware string (e.g. iPhone or iPad). Embeds {{hardware text}}.",
+                ),
+                model.deviceType,
             ),
             String(
                 format: OWSLocalizedString(
                     "SUPPORT_EMAIL_HID_LABEL_FORMAT",
-                    comment: "Localized label for support request email HID string (e.g. 12,1). Embeds {{hid text}}."
-                ), model.deviceIdentifier
+                    comment: "Localized label for support request email HID string (e.g. 12,1). Embeds {{hid text}}.",
+                ),
+                model.deviceIdentifier,
             ),
             String(
                 format: OWSLocalizedString(
                     "SUPPORT_EMAIL_IOS_VERSION_LABEL_FORMAT",
-                    comment: "Localized label for support request email iOS Version string (e.g. 13.4). Embeds {{ios version}}."
-                ), model.iosVersion
+                    comment: "Localized label for support request email iOS Version string (e.g. 13.4). Embeds {{ios version}}.",
+                ),
+                model.iosVersion,
             ),
             "Signal Version: \(model.signalAppVersion)",
             {
@@ -249,20 +263,22 @@ final class ComposeSupportEmailOperation: NSObject {
                     return String(
                         format: OWSLocalizedString(
                             "SUPPORT_EMAIL_LOG_URL_LABEL_FORMAT",
-                            comment: "Localized label for support request email debug log URL. Embeds {{debug log url}}."
-                        ), debugURLString
+                            comment: "Localized label for support request email debug log URL. Embeds {{debug log url}}.",
+                        ),
+                        debugURLString,
                     )
                 } else { return nil }
             }(),
             String(
                 format: OWSLocalizedString(
                     "SUPPORT_EMAIL_LOCALE_LABEL_FORMAT",
-                    comment: "Localized label for support request email locale string. Embeds {{locale}}."
-                ), model.locale
+                    comment: "Localized label for support request email locale string. Embeds {{locale}}.",
+                ),
+                model.locale,
             ),
             "",
             model.emojiMood?.stringRepresentation,
-            model.emojiMood?.emojiRepresentation
+            model.emojiMood?.emojiRepresentation,
         ]
 
         return bodyComponents

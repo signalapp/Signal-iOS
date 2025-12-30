@@ -29,7 +29,7 @@ class StoryViewsViewController: OWSViewController {
         DependenciesBridge.shared.databaseChangeObserver.appendDatabaseChangeDelegate(self)
     }
 
-    override public func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
 
         tableView.dataSource = self
@@ -81,7 +81,7 @@ class StoryViewsViewController: OWSViewController {
             self.viewers = recipientStates
                 .lazy
                 .filter { $1.isValidForContext(self.context) }
-                .compactMap { (serviceId, recipientState) -> Viewer? in
+                .compactMap { serviceId, recipientState -> Viewer? in
                     guard let viewedTimestamp = recipientState.viewedTimestamp else { return nil }
                     let address = SignalServiceAddress(serviceId)
                     return Viewer(
@@ -89,9 +89,9 @@ class StoryViewsViewController: OWSViewController {
                         comparableName: ComparableDisplayName(
                             address: address,
                             displayName: SSKEnvironment.shared.contactManagerRef.displayName(for: address, tx: transaction),
-                            config: config
+                            config: config,
                         ),
-                        viewedTimestamp: viewedTimestamp
+                        viewedTimestamp: viewedTimestamp,
                     )
                 }.sorted { lhs, rhs in
                     if lhs.viewedTimestamp != rhs.viewedTimestamp {
@@ -114,7 +114,7 @@ class StoryViewsViewController: OWSViewController {
             label.textColor = .ows_gray45
             label.text = OWSLocalizedString(
                 "STORIES_NO_VIEWS_YET",
-                comment: "Indicates that this story has no views yet"
+                comment: "Indicates that this story has no views yet",
             )
 
             emptyStateView.isUserInteractionEnabled = false
@@ -125,7 +125,7 @@ class StoryViewsViewController: OWSViewController {
             label.textColor = .ows_gray25
             label.text = OWSLocalizedString(
                 "STORIES_VIEWS_OFF_DESCRIPTION",
-                comment: "Text explaining that you will not see any views for your story because you have view receipts turned off"
+                comment: "Text explaining that you will not see any views for your story because you have view receipts turned off",
             )
             label.numberOfLines = 0
             label.setContentHuggingVerticalHigh()
@@ -160,7 +160,7 @@ class StoryViewsViewController: OWSViewController {
                 topSpacer,
                 label,
                 settingsButtonPillWrapper,
-                bottomSpacer
+                bottomSpacer,
             ])
             stackView.isLayoutMarginsRelativeArrangement = true
             stackView.layoutMargins = UIEdgeInsets(hMargin: 65, vMargin: 0)

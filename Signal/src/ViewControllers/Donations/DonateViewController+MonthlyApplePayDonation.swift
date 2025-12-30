@@ -15,7 +15,7 @@ extension DonateViewController {
     func paymentAuthorizationControllerForMonthly(
         _ controller: PKPaymentAuthorizationController,
         didAuthorizePayment payment: PKPayment,
-        handler completion: @escaping (PKPaymentAuthorizationResult) -> Void
+        handler completion: @escaping (PKPaymentAuthorizationResult) -> Void,
     ) {
         guard
             let monthly = state.monthly,
@@ -40,7 +40,7 @@ extension DonateViewController {
 
                 Logger.info("[Donations] Preparing new monthly subscription with Apple Pay")
                 subscriberId = try await DonationSubscriptionManager.prepareNewSubscription(
-                    currencyCode: monthly.selectedCurrencyCode
+                    currencyCode: monthly.selectedCurrencyCode,
                 )
 
                 Logger.info("[Donations] Creating Signal payment method for new monthly subscription with Apple Pay")
@@ -49,7 +49,7 @@ extension DonateViewController {
                 Logger.info("[Donations] Authorizing payment for new monthly subscription with Apple Pay")
                 let confirmedIntent = try await Stripe.setupNewSubscription(
                     clientSecret: clientSecret,
-                    paymentMethod: .applePay(payment: payment)
+                    paymentMethod: .applePay(payment: payment),
                 )
                 let paymentMethodId = confirmedIntent.paymentMethodId
 
@@ -58,7 +58,7 @@ extension DonateViewController {
                     forSubscriberId: subscriberId,
                     paymentType: .applePay(paymentMethodId: paymentMethodId),
                     subscription: selectedSubscriptionLevel,
-                    currencyCode: monthly.selectedCurrencyCode
+                    currencyCode: monthly.selectedCurrencyCode,
                 )
 
                 let authResult = PKPaymentAuthorizationResult(status: .success, errors: nil)
@@ -89,7 +89,7 @@ extension DonateViewController {
                 )
                 Logger.info("[Donations] Monthly card donation finished")
                 self.didCompleteDonation(
-                    receiptCredentialSuccessMode: .recurringSubscriptionInitiation
+                    receiptCredentialSuccessMode: .recurringSubscriptionInitiation,
                 )
             } catch {
                 Logger.info("[Donations] Monthly card donation failed")
@@ -97,7 +97,7 @@ extension DonateViewController {
                     error: error,
                     mode: .monthly,
                     badge: selectedSubscriptionLevel.badge,
-                    paymentMethod: .applePay
+                    paymentMethod: .applePay,
                 )
             }
         }

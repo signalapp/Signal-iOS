@@ -22,11 +22,11 @@ public struct ReceiptCredentialRequestError: Error {
 
     init(
         errorCode: ErrorCode,
-        chargeFailureCodeIfPaymentFailed: String? = nil
+        chargeFailureCodeIfPaymentFailed: String? = nil,
     ) {
         owsPrecondition(
             chargeFailureCodeIfPaymentFailed == nil || errorCode == .paymentFailed,
-            "Must only provide a charge failure if payment failed!"
+            "Must only provide a charge failure if payment failed!",
         )
 
         self.errorCode = errorCode

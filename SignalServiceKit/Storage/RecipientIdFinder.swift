@@ -24,7 +24,7 @@ public final class RecipientIdFinder {
 
     public init(
         recipientDatabaseTable: RecipientDatabaseTable,
-        recipientFetcher: RecipientFetcher
+        recipientFetcher: RecipientFetcher,
     ) {
         self.recipientFetcher = recipientFetcher
         self.recipientDatabaseTable = recipientDatabaseTable

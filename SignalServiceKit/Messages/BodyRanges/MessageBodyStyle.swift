@@ -95,15 +95,15 @@ extension MessageBodyRanges {
         public let mergedRange: NSRange
         public let id: StyleIdType
 
-        internal init(style: SingleStyle, mergedRange: NSRange) {
+        init(style: SingleStyle, mergedRange: NSRange) {
             self.style = style
             self.mergedRange = mergedRange
             self.id = mergedRange.hashValue
         }
 
-        internal static func merge(
+        static func merge(
             sortedOriginals: [NSRangedValue<SingleStyle>],
-            mergeAdjacentRangesOfSameStyle: Bool = false
+            mergeAdjacentRangesOfSameStyle: Bool = false,
         ) -> [MergedSingleStyle] {
             var combined = [MergedSingleStyle]()
             var currentAccumulators = [SingleStyle: NSRange]()
@@ -120,19 +120,19 @@ extension MessageBodyRanges {
                     // interval hangs off the back end of accumulator
                     accumulator = NSRange(
                         location: accumulator.location,
-                        length: style.range.upperBound - accumulator.location
+                        length: style.range.upperBound - accumulator.location,
                     )
                 } else if mergeAdjacentRangesOfSameStyle, accumulator.upperBound == style.range.lowerBound {
                     // They are adjacent (but not overlapping)
                     accumulator = NSRange(
                         location: accumulator.location,
-                        length: style.range.upperBound - accumulator.location
+                        length: style.range.upperBound - accumulator.location,
                     )
                 } else if accumulator.upperBound <= style.range.lowerBound {
                     // interval does not overlap, we are now past it.
                     let mergedStyle = MergedSingleStyle(
                         style: style.value,
-                        mergedRange: accumulator
+                        mergedRange: accumulator,
                     )
                     combined.append(mergedStyle)
                     accumulator = style.range
@@ -142,7 +142,7 @@ extension MessageBodyRanges {
             for (style, range) in currentAccumulators {
                 let mergedStyle = MergedSingleStyle(
                     style: style,
-                    mergedRange: range
+                    mergedRange: range,
                 )
                 combined.append(mergedStyle)
             }
@@ -170,12 +170,12 @@ extension MessageBodyRanges {
         public private(set) var style: Style
         public private(set) var originals: [SingleStyle: MergedSingleStyle]
 
-        internal init(style: Style, originals: [SingleStyle: MergedSingleStyle]) {
+        init(style: Style, originals: [SingleStyle: MergedSingleStyle]) {
             self.style = style
             self.originals = originals
         }
 
-        internal static func empty() -> CollapsedStyle {
+        static func empty() -> CollapsedStyle {
             return CollapsedStyle(style: [], originals: [:])
         }
 
@@ -200,7 +200,7 @@ extension MessageBodyRanges {
                 for originalMergedStyle: MergedSingleStyle in collapsedStyle.originals.values {
                     flattenedStyles.insert(NSRangedValue(
                         originalMergedStyle.style,
-                        range: originalMergedStyle.mergedRange
+                        range: originalMergedStyle.mergedRange,
                     ))
                 }
             }

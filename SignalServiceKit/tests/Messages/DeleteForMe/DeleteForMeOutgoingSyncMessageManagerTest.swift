@@ -22,7 +22,7 @@ final class DeleteForMeOutgoingSyncMessageManagerTest: XCTestCase {
         outgoingSyncMessageManager = DeleteForMeOutgoingSyncMessageManagerImpl(
             recipientDatabaseTable: mockRecipientDatabaseTable,
             syncMessageSender: mockSyncMessageSender,
-            threadStore: mockThreadStore
+            threadStore: mockThreadStore,
         )
     }
 
@@ -48,7 +48,7 @@ final class DeleteForMeOutgoingSyncMessageManagerTest: XCTestCase {
                 deletedMessages: messagesToDelete,
                 thread: thread,
                 localIdentifiers: .forUnitTests,
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -82,11 +82,11 @@ final class DeleteForMeOutgoingSyncMessageManagerTest: XCTestCase {
                     uniquingKeysWith: { lhs, rhs in
                         XCTFail("Colliding keys!")
                         return lhs
-                    }
+                    },
                 ),
                 thread: thread,
                 localIdentifiers: .forUnitTests,
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -117,13 +117,13 @@ final class DeleteForMeOutgoingSyncMessageManagerTest: XCTestCase {
                     thread: thread,
                     isFullDelete: true,
                     localIdentifiers: .forUnitTests,
-                    tx: tx
+                    tx: tx,
                 )!
             }
 
             outgoingSyncMessageManager.send(
                 threadDeletionContexts: deletionContexts,
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -150,7 +150,7 @@ private extension TSOutgoingMessage {
 
 private final class MockSyncMessageSender: DeleteForMeOutgoingSyncMessageManagerImpl.Shims.SyncMessageSender {
     var sendSyncMessageMock: ((
-        _ contents: DeleteForMeOutgoingSyncMessage.Contents
+        _ contents: DeleteForMeOutgoingSyncMessage.Contents,
     ) -> Void)!
     func sendSyncMessage(contents: DeleteForMeOutgoingSyncMessage.Contents, localThread: TSContactThread, tx: DBWriteTransaction) {
         sendSyncMessageMock(contents)

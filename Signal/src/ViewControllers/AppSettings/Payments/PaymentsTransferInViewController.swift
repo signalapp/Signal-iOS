@@ -11,15 +11,19 @@ class PaymentsTransferInViewController: OWSTableViewController2 {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = OWSLocalizedString("SETTINGS_PAYMENTS_ADD_MONEY",
-                                  comment: "Label for 'add money' view in the payment settings.")
+        title = OWSLocalizedString(
+            "SETTINGS_PAYMENTS_ADD_MONEY",
+            comment: "Label for 'add money' view in the payment settings.",
+        )
 
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(didTapDone))
 
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: Theme.iconImage(.buttonShare),
-                                                            style: .plain,
-                                                            target: self,
-                                                            action: #selector(didTapShare))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
+            image: Theme.iconImage(.buttonShare),
+            style: .plain,
+            target: self,
+            action: #selector(didTapShare),
+        )
 
         updateTableContents()
     }
@@ -37,7 +41,7 @@ class PaymentsTransferInViewController: OWSTableViewController2 {
         SUIEnvironment.shared.paymentsSwiftRef.updateCurrentPaymentBalance()
     }
 
-    public override func themeDidChange() {
+    override func themeDidChange() {
         super.themeDidChange()
 
         updateTableContents()
@@ -49,32 +53,39 @@ class PaymentsTransferInViewController: OWSTableViewController2 {
         let addressSection = OWSTableSection()
         addressSection.hasBackground = false
         addressSection.shouldDisableCellSelection = true
-        addressSection.add(OWSTableItem(customCellBlock: { [weak self] in
-            let cell = OWSTableItem.newCell()
-            self?.configureAddressCell(cell: cell)
-            return cell
-        },
-        actionBlock: nil))
+        addressSection.add(OWSTableItem(
+            customCellBlock: { [weak self] in
+                let cell = OWSTableItem.newCell()
+                self?.configureAddressCell(cell: cell)
+                return cell
+            },
+            actionBlock: nil,
+        ))
         contents.add(addressSection)
 
         let infoSection = OWSTableSection()
         infoSection.hasBackground = false
         infoSection.shouldDisableCellSelection = true
-        infoSection.add(OWSTableItem(customCellBlock: {
-            let cell = OWSTableItem.newCell()
+        infoSection.add(OWSTableItem(
+            customCellBlock: {
+                let cell = OWSTableItem.newCell()
 
-            let label = PaymentsViewUtils.buildTextWithLearnMoreLinkTextView(
-                text: OWSLocalizedString("SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION",
-                                        comment: "Explanation of the process for adding money in the 'add money' settings view."),
-                font: .dynamicTypeSubheadlineClamped,
-                learnMoreUrl: URL.Support.Payments.transferFromExchange)
-            label.textAlignment = .center
-            cell.contentView.addSubview(label)
-            label.autoPinEdgesToSuperviewMargins()
+                let label = PaymentsViewUtils.buildTextWithLearnMoreLinkTextView(
+                    text: OWSLocalizedString(
+                        "SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION",
+                        comment: "Explanation of the process for adding money in the 'add money' settings view.",
+                    ),
+                    font: .dynamicTypeSubheadlineClamped,
+                    learnMoreUrl: URL.Support.Payments.transferFromExchange,
+                )
+                label.textAlignment = .center
+                cell.contentView.addSubview(label)
+                label.autoPinEdgesToSuperviewMargins()
 
-            return cell
-        },
-        actionBlock: nil))
+                return cell
+            },
+            actionBlock: nil,
+        ))
 
         contents.add(infoSection)
 
@@ -88,11 +99,15 @@ class PaymentsTransferInViewController: OWSTableViewController2 {
             innerStack.alignment = .center
             innerStack.layoutMargins = UIEdgeInsets(top: 44, leading: 44, bottom: 32, trailing: 44)
             innerStack.isLayoutMarginsRelativeArrangement = true
-            innerStack.addBackgroundView(withBackgroundColor: self.cellBackgroundColor,
-                                         cornerRadius: 10)
+            innerStack.addBackgroundView(
+                withBackgroundColor: self.cellBackgroundColor,
+                cornerRadius: 10,
+            )
 
-            let outerStack = OWSStackView(name: "outerStack",
-                                          arrangedSubviews: [innerStack])
+            let outerStack = OWSStackView(
+                name: "outerStack",
+                arrangedSubviews: [innerStack],
+            )
             outerStack.axis = .vertical
             outerStack.alignment = .center
             outerStack.layoutMargins = UIEdgeInsets(top: 40, leading: 40, bottom: 0, trailing: 40)
@@ -108,8 +123,10 @@ class PaymentsTransferInViewController: OWSTableViewController2 {
 
         func configureForError() {
             let label = UILabel()
-            label.text = OWSLocalizedString("SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS",
-                                           comment: "Indicator that the payments wallet address is invalid.")
+            label.text = OWSLocalizedString(
+                "SETTINGS_PAYMENTS_INVALID_WALLET_ADDRESS",
+                comment: "Indicator that the payments wallet address is invalid.",
+            )
             label.textColor = Theme.primaryTextColor
             label.font = UIFont.dynamicTypeSubheadlineClamped.semibold()
 
@@ -122,9 +139,11 @@ class PaymentsTransferInViewController: OWSTableViewController2 {
         }
         let walletAddressBase58Data = Data(walletAddressBase58.utf8)
 
-        guard let qrImage = QRCodeGenerator().generateUnstyledQRCode(
-            data: walletAddressBase58Data
-        ) else {
+        guard
+            let qrImage = QRCodeGenerator().generateUnstyledQRCode(
+                data: walletAddressBase58Data,
+            )
+        else {
             owsFailDebug("Failed to generate QR code image!")
             configureForError()
             return
@@ -141,8 +160,10 @@ class PaymentsTransferInViewController: OWSTableViewController2 {
         qrCodeView.layer.masksToBounds = true
 
         let titleLabel = UILabel()
-        titleLabel.text = OWSLocalizedString("SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL",
-                                            comment: "Label for the payments wallet address.")
+        titleLabel.text = OWSLocalizedString(
+            "SETTINGS_PAYMENTS_WALLET_ADDRESS_LABEL",
+            comment: "Label for the payments wallet address.",
+        )
         titleLabel.textColor = Theme.primaryTextColor
         titleLabel.font = UIFont.dynamicTypeSubheadlineClamped.semibold()
         titleLabel.textAlignment = .center
@@ -172,7 +193,7 @@ class PaymentsTransferInViewController: OWSTableViewController2 {
             UIView.spacer(withHeight: 8),
             walletAddressLabel,
             UIView.spacer(withHeight: 20),
-            copyStack
+            copyStack,
         ])
     }
 
@@ -187,8 +208,10 @@ class PaymentsTransferInViewController: OWSTableViewController2 {
         }
         UIPasteboard.general.string = walletAddressBase58
 
-        presentToast(text: OWSLocalizedString("SETTINGS_PAYMENTS_ADD_MONEY_WALLET_ADDRESS_COPIED",
-                                             comment: "Indicator that the payments wallet address has been copied to the pasteboard."))
+        presentToast(text: OWSLocalizedString(
+            "SETTINGS_PAYMENTS_ADD_MONEY_WALLET_ADDRESS_COPIED",
+            comment: "Indicator that the payments wallet address has been copied to the pasteboard.",
+        ))
     }
 
     @objc

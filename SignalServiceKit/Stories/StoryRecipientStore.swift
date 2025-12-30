@@ -10,7 +10,7 @@ public struct StoryRecipientStore {
     public func insertRecipientId(
         _ recipientId: SignalRecipient.RowId,
         forStoryThreadId storyThreadId: TSPrivateStoryThread.RowId,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         do {
             try StoryRecipient(threadId: storyThreadId, recipientId: recipientId).insert(tx.database)
@@ -24,7 +24,7 @@ public struct StoryRecipientStore {
     public func removeRecipientId(
         _ recipientId: SignalRecipient.RowId,
         forStoryThreadId storyThreadId: TSPrivateStoryThread.RowId,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         do {
             try StoryRecipient(threadId: storyThreadId, recipientId: recipientId).delete(tx.database)
@@ -35,7 +35,7 @@ public struct StoryRecipientStore {
 
     public func removeRecipientIds(
         forStoryThreadId storyThreadId: TSPrivateStoryThread.RowId,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         do {
             try StoryRecipient.filter(Column(StoryRecipient.CodingKeys.threadId) == storyThreadId).deleteAll(tx.database)

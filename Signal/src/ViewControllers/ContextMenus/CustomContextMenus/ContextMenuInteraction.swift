@@ -10,16 +10,24 @@ import UIKit
 public protocol ContextMenuInteractionDelegate: AnyObject {
     func contextMenuInteraction(
         _ interaction: ContextMenuInteraction,
-        configurationForMenuAtLocation location: CGPoint) -> ContextMenuConfiguration?
+        configurationForMenuAtLocation location: CGPoint,
+    ) -> ContextMenuConfiguration?
     func contextMenuInteraction(
         _ interaction: ContextMenuInteraction,
-        previewForHighlightingMenuWithConfiguration configuration: ContextMenuConfiguration) -> ContextMenuTargetedPreview?
-    func contextMenuInteraction(_ interaction: ContextMenuInteraction,
-                                willDisplayMenuForConfiguration: ContextMenuConfiguration)
-    func contextMenuInteraction(_ interaction: ContextMenuInteraction,
-                                willEndForConfiguration: ContextMenuConfiguration)
-    func contextMenuInteraction(_ interaction: ContextMenuInteraction,
-                                didEndForConfiguration: ContextMenuConfiguration)
+        previewForHighlightingMenuWithConfiguration configuration: ContextMenuConfiguration,
+    ) -> ContextMenuTargetedPreview?
+    func contextMenuInteraction(
+        _ interaction: ContextMenuInteraction,
+        willDisplayMenuForConfiguration: ContextMenuConfiguration,
+    )
+    func contextMenuInteraction(
+        _ interaction: ContextMenuInteraction,
+        willEndForConfiguration: ContextMenuConfiguration,
+    )
+    func contextMenuInteraction(
+        _ interaction: ContextMenuInteraction,
+        didEndForConfiguration: ContextMenuConfiguration,
+    )
 
 }
 
@@ -41,11 +49,12 @@ public class ContextMenuInteraction: NSObject, UIInteraction {
                     animations: {
                         self.targetedPreview?.view.transform = CGAffineTransform.identity
                     },
-                    completion: nil
+                    completion: nil,
                 )
             }
         }
     }
+
     fileprivate var locationInView = CGPoint.zero
     fileprivate var configuration: ContextMenuConfiguration?
     fileprivate var targetedPreview: ContextMenuTargetedPreview?
@@ -57,6 +66,7 @@ public class ContextMenuInteraction: NSObject, UIInteraction {
     }()
 
     // MARK: UIInteraction
+
     public var view: UIView?
 
     public func willMove(to view: UIView?) {
@@ -73,7 +83,7 @@ public class ContextMenuInteraction: NSObject, UIInteraction {
     }
 
     public init(
-        delegate: ContextMenuInteractionDelegate
+        delegate: ContextMenuInteractionDelegate,
     ) {
         self.delegate = delegate
         gestureEligibleForMenuPresentation = false
@@ -126,7 +136,7 @@ public class ContextMenuInteraction: NSObject, UIInteraction {
                         // Animate back out
                         self.gestureEligibleForMenuPresentation = false
                     }
-                }
+                },
             )
         }
     }
@@ -193,7 +203,7 @@ public class ContextMenuInteraction: NSObject, UIInteraction {
         return accessory
     }
 
-    public func dismissMenu(animated: Bool, completion: @escaping () -> Void ) {
+    public func dismissMenu(animated: Bool, completion: @escaping () -> Void) {
         guard let configuration = self.configuration else {
             return
         }
@@ -253,7 +263,7 @@ extension ContextMenuInteraction: ContextMenuControllerDelegate, ContextMenuTarg
     func contextMenuTargetedPreviewAccessoryRequestsEmojiPicker(
         for message: TSMessage,
         accessory: ContextMenuTargetedPreviewAccessory,
-        completion: @escaping (String) -> Void
+        completion: @escaping (String) -> Void,
     ) {
         contextMenuController?.showEmojiSheet(message: message, completion: { emojiString in
             self.contextMenuController?.dismissEmojiSheet(animated: true, completion: {
@@ -281,13 +291,13 @@ public class ChatHistoryContextMenuInteraction: ContextMenuInteraction {
     ///   - delegate: ContextMenuInteraction delegate
     ///   - itemViewModel: CVItemViewModelImpl related to context menu item
     ///   - messageActions: Message actions related to context menu item
-    public init (
+    public init(
         delegate: ContextMenuInteractionDelegate,
         itemViewModel: CVItemViewModelImpl,
         thread: TSThread,
         messageActions: [MessageAction],
         initiatingGestureRecognizer: UIGestureRecognizer?,
-        keyboardWasActive: Bool
+        keyboardWasActive: Bool,
     ) {
         self.itemViewModel = itemViewModel
         self.thread = thread
@@ -297,9 +307,9 @@ public class ChatHistoryContextMenuInteraction: ContextMenuInteraction {
         super.init(delegate: delegate)
     }
 
-    public override func willMove(to view: UIView?) { }
+    override public func willMove(to view: UIView?) { }
 
-    public override func didMove(to view: UIView?) {
+    override public func didMove(to view: UIView?) {
         self.view = view
     }
 
@@ -326,11 +336,11 @@ public class ChatHistoryContextMenuInteraction: ContextMenuInteraction {
         }
     }
 
-    public override func initiatingGestureRecognizer() -> UIGestureRecognizer? {
+    override public func initiatingGestureRecognizer() -> UIGestureRecognizer? {
         return chatHistoryLongPressGesture
     }
 
-    public override func menuAccessory(configuration: ContextMenuConfiguration, targetedPreview: ContextMenuTargetedPreview) -> ContextMenuActionsAccessory {
+    override public func menuAccessory(configuration: ContextMenuConfiguration, targetedPreview: ContextMenuTargetedPreview) -> ContextMenuActionsAccessory {
         let isRTL = CurrentAppContext().isRTL
         let menu = configuration.actionProvider?([]) ?? ContextMenu([])
         let isIncomingMessage = itemViewModel.interaction.interactionType == .incomingMessage

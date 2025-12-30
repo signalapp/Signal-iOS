@@ -19,7 +19,7 @@ class PassiveVolumeButtonObservation {
 
     private weak var observer: PassiveVolumeButtonObserver?
 
-    public init(observer: PassiveVolumeButtonObserver) {
+    init(observer: PassiveVolumeButtonObserver) {
         self.observer = observer
         if #available(iOS 17.2, *) {
             beginObservation()
@@ -49,7 +49,7 @@ class PassiveVolumeButtonObservation {
             self,
             selector: #selector(systemVolumeDidChange(_:)),
             name: volumeChangeNotificationName,
-            object: nil
+            object: nil,
         )
         volumeViewForObservation = MPVolumeView()
     }
@@ -76,7 +76,7 @@ class PassiveVolumeButtonObservation {
         didTapSomeVolumeButton()
     }
 
-    fileprivate func didTapSomeVolumeButton() {
+    private func didTapSomeVolumeButton() {
         observer?.didTapSomeVolumeButton()
     }
 }
@@ -84,7 +84,8 @@ class PassiveVolumeButtonObservation {
 // Namespace for types and constants
 enum VolumeButtons {
     enum Identifier {
-        case up, down
+        case up
+        case down
     }
 
     fileprivate static let longPressDuration: TimeInterval = 0.5
@@ -107,14 +108,14 @@ class AVVolumeButtonObservation {
     private weak var observer: AVVolumeButtonObserver?
     private weak var capturePreviewView: CapturePreviewView?
 
-    public var isEnabled = true {
+    var isEnabled = true {
         didSet {
             if #available(iOS 17.2, *) {
                 eventInteraction?.isEnabled = isEnabled
             } else {
-                if isEnabled && !oldValue {
+                if isEnabled, !oldValue {
                     beginLegacyObservation()
-                } else if !isEnabled && oldValue {
+                } else if !isEnabled, oldValue {
                     stopLegacyObservation()
                 }
             }
@@ -124,7 +125,7 @@ class AVVolumeButtonObservation {
     /// On iOS versions greater than 17.2, an AVCaptureVideoPreviewLayer (which CapturePreviewView uses)
     /// must be on screen for volume button observation to work. Its size can be zero and/or alpha 0.01
     /// but it must be present and "visible". If it is not observers won't be updated.
-    public init(observer: AVVolumeButtonObserver, capturePreviewView: CapturePreviewView) {
+    init(observer: AVVolumeButtonObserver, capturePreviewView: CapturePreviewView) {
         self.observer = observer
         self.capturePreviewView = capturePreviewView
 
@@ -179,7 +180,7 @@ class AVVolumeButtonObservation {
                 @unknown default:
                     return
                 }
-            }
+            },
         )
         eventInteraction.isEnabled = isEnabled
         capturePreviewView?.addInteraction(eventInteraction)
@@ -229,7 +230,7 @@ class AVVolumeButtonObservation {
             timeInterval: VolumeButtons.longPressDuration,
             target: self,
             userInfo: nil,
-            repeats: false
+            repeats: false,
         ) { [weak self] _ in
             self?.longPressingButton = identifier
             self?.observer?.didBeginLongPressVolumeButton(with: identifier)
@@ -291,7 +292,7 @@ extension PassiveVolumeButtonObservation: LegacyVolumeButtonObserver {
 private class LegacyGlobalVolumeButtonObserver {
     static let shared = LegacyGlobalVolumeButtonObserver()
 
-    fileprivate init?() {
+    private init?() {
         if #available(iOS 17.2, *) {
             // Should NOT be used after iOS 17.2
             return nil
@@ -311,7 +312,7 @@ private class LegacyGlobalVolumeButtonObserver {
     /// Incremenets the system volume, displaying the system UI when doing so.
     /// NOTE: this method is asynchronous (a limitation of somewhat illicit use of APIs), do not
     /// expect the volume to change immediately
-    public func incrementSystemVolume(for identifier: VolumeButtons.Identifier) {
+    func incrementSystemVolume(for identifier: VolumeButtons.Identifier) {
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.01) {
             var volume = AVAudioSession.sharedInstance().outputVolume
             let increment: Float = 1 / 16 // Number of increments apple uses.
@@ -422,28 +423,28 @@ private class LegacyGlobalVolumeButtonObserver {
             self,
             selector: #selector(didPressVolumeUp),
             name: upDownNotificationName,
-            object: nil
+            object: nil,
         )
 
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(didReleaseVolumeUp),
             name: upUpNotificationName,
-            object: nil
+            object: nil,
         )
 
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(didPressVolumeDown),
             name: downDownNotificationName,
-            object: nil
+            object: nil,
         )
 
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(didReleaseVolumeDown),
             name: downUpNotificationName,
-            object: nil
+            object: nil,
         )
     }
 
@@ -472,7 +473,7 @@ private class LegacyGlobalVolumeButtonObserver {
     }
 }
 
-fileprivate extension MPVolumeView {
+private extension MPVolumeView {
 
     var slider: UISlider? {
         subviews.first(where: { $0 is UISlider }) as? UISlider

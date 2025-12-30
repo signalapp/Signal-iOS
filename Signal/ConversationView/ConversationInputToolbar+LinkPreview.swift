@@ -54,6 +54,7 @@ class OutgoingLinkPreviewView: UIView {
             layer.mask = maskLayer
         }
     }
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -88,8 +89,8 @@ class OutgoingLinkPreviewView: UIView {
         cancelButton.configuration?.image = UIImage(imageLiteralResourceName: "x-compact-bold")
         cancelButton.configuration?.baseBackgroundColor = UIColor { traitCollection in
             traitCollection.userInterfaceStyle == .dark
-            ? UIColor(rgbHex: 0x787880, alpha: 0.4)
-            : UIColor(rgbHex: 0xF5F5F5, alpha: 0.9)
+                ? UIColor(rgbHex: 0x787880, alpha: 0.4)
+                : UIColor(rgbHex: 0xF5F5F5, alpha: 0.9)
         }
         cancelButton.configuration?.background.visualEffect = UIBlurEffect(style: .systemUltraThinMaterial)
         cancelButton.tintColor = ConversationInputToolbar.Style.primaryTextColor
@@ -200,7 +201,7 @@ class OutgoingLinkPreviewView: UIView {
                 let c = textStack.topAnchor.constraint(equalTo: textStackContainer.topAnchor)
                 c.priority = .defaultHigh
                 return c
-            }()
+            }(),
         ])
 
         let horizontalStack = UIStackView(arrangedSubviews: [textStackContainer])
@@ -284,7 +285,7 @@ class OutgoingLinkPreviewView: UIView {
         ])
 
         // Text
-        let textStack = UIStackView(arrangedSubviews: [ ])
+        let textStack = UIStackView(arrangedSubviews: [])
         textStack.axis = .vertical
         textStack.alignment = .leading
         textStack.spacing = 2
@@ -337,7 +338,7 @@ class OutgoingLinkPreviewView: UIView {
             cancelButton.bottomAnchor.constraint(lessThanOrEqualTo: cancelButtonContainer.bottomAnchor),
         ])
 
-        let horizontalStack = UIStackView(arrangedSubviews: [ imageContainer, textStack, cancelButtonContainer ])
+        let horizontalStack = UIStackView(arrangedSubviews: [imageContainer, textStack, cancelButtonContainer])
         horizontalStack.axis = .horizontal
         horizontalStack.setCustomSpacing(12, after: imageContainer)
         horizontalStack.isLayoutMarginsRelativeArrangement = true

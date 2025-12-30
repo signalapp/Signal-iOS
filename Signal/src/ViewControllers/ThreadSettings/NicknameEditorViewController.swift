@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalUI
 import SignalServiceKit
+import SignalUI
 
 class NicknameEditorViewController: OWSTableViewController2 {
 
@@ -31,10 +31,12 @@ class NicknameEditorViewController: OWSTableViewController2 {
     private let initialNicknameRecord: NicknameRecord?
 
     static func create(for address: SignalServiceAddress, context: Context, tx: DBReadTransaction) -> NicknameEditorViewController? {
-        guard let recipient = DependenciesBridge.shared.recipientDatabaseTable.fetchRecipient(
-            address: address,
-            tx: tx
-        ) else {
+        guard
+            let recipient = DependenciesBridge.shared.recipientDatabaseTable.fetchRecipient(
+                address: address,
+                tx: tx,
+            )
+        else {
             owsFailDebug("Could not find recipient for address")
             return nil
         }
@@ -44,14 +46,14 @@ class NicknameEditorViewController: OWSTableViewController2 {
         return NicknameEditorViewController(
             recipient: recipient,
             existingNickname: nickname,
-            context: context
+            context: context,
         )
     }
 
     init(
         recipient: SignalRecipient,
         existingNickname: NicknameRecord?,
-        context: Context
+        context: Context,
     ) {
         self.recipient = recipient
         self.context = context
@@ -72,10 +74,12 @@ class NicknameEditorViewController: OWSTableViewController2 {
     private var givenName: String? {
         self.givenNameTextField.text?.nilIfEmpty
     }
+
     /// The family name entered into the text field.
     private var familyName: String? {
         self.familyNameTextField.text?.nilIfEmpty
     }
+
     /// The note entered into the text view.
     private var note: String? {
         self.noteTextView.text?.nilIfEmpty
@@ -89,9 +93,9 @@ class NicknameEditorViewController: OWSTableViewController2 {
     /// Whether there are unsaved changes to the Nickname or note.
     private var hasUnsavedChanges: Bool {
         self.note != self.initialNote ||
-        // `enteredNickname` only has a value when the nickname is valid, so we can't just check against that.
-        self.givenName != self.initialNickname?.givenName ||
-        self.familyName != self.initialNickname?.familyName
+            // `enteredNickname` only has a value when the nickname is valid, so we can't just check against that.
+            self.givenName != self.initialNickname?.givenName ||
+            self.familyName != self.initialNickname?.familyName
     }
 
     /// Whether the entered nickname is in a state that can be saved, either valid or empty.
@@ -110,7 +114,7 @@ class NicknameEditorViewController: OWSTableViewController2 {
         let avatarView = ConversationAvatarView(
             sizeClass: .eightyEight,
             localUserDisplayMode: .asUser,
-            badged: false
+            badged: false,
         )
         avatarView.updateWithSneakyTransactionIfNecessary { config in
             config.dataSource = .address(self.recipient.address)
@@ -130,21 +134,21 @@ class NicknameEditorViewController: OWSTableViewController2 {
     private lazy var givenNameTextField = self.createNameTextField(
         placeholder: OWSLocalizedString(
             "NICKNAME_EDITOR_GIVEN_NAME_PLACEHOLDER",
-            comment: "Placeholder text it the text field for the given name in the profile nickname editor."
-        )
+            comment: "Placeholder text it the text field for the given name in the profile nickname editor.",
+        ),
     )
     private lazy var familyNameTextField = self.createNameTextField(
         placeholder: OWSLocalizedString(
             "NICKNAME_EDITOR_FAMILY_NAME_PLACEHOLDER",
-            comment: "Placeholder text it the text field for the family name in the profile nickname editor."
-        )
+            comment: "Placeholder text it the text field for the family name in the profile nickname editor.",
+        ),
     )
 
     private lazy var noteTextView: TextViewWithPlaceholder = {
         let textView = TextViewWithPlaceholder()
         textView.placeholderText = OWSLocalizedString(
             "NICKNAME_EDITOR_NOTE_PLACEHOLDER",
-            comment: "Placeholder text it the text box for the note in the profile nickname editor."
+            comment: "Placeholder text it the text box for the note in the profile nickname editor.",
         )
         textView.delegate = self
 
@@ -171,7 +175,7 @@ class NicknameEditorViewController: OWSTableViewController2 {
             delegate: self,
             editingChanged: { [weak self] in
                 self?.editingChanged()
-            }
+            },
         )
     }
 
@@ -198,7 +202,7 @@ class NicknameEditorViewController: OWSTableViewController2 {
         noteCharacterLimitLabel.font = font
         noteTextView.textContainerInset.trailing = NSAttributedString(
             string: noteCharacterLimitLabel.text ?? "",
-            attributes: [.font: font]
+            attributes: [.font: font],
         ).size().width + 8
     }
 
@@ -213,11 +217,11 @@ class NicknameEditorViewController: OWSTableViewController2 {
 
         self.title = OWSLocalizedString(
             "NICKNAME_EDITOR_TITLE",
-            comment: "The title for the profile nickname editor view."
+            comment: "The title for the profile nickname editor view.",
         )
         navigationItem.leftBarButtonItem = .cancelButton(
             dismissingFrom: self,
-            hasUnsavedChanges: { [weak self] in self?.hasUnsavedChanges }
+            hasUnsavedChanges: { [weak self] in self?.hasUnsavedChanges },
         )
         navigationItem.rightBarButtonItem = .doneButton { [weak self] in
             self?.saveChanges()
@@ -238,11 +242,12 @@ class NicknameEditorViewController: OWSTableViewController2 {
         let contents = OWSTableContents()
 
         let titleSection = OWSTableSection(
-            title: nil, items: [],
+            title: nil,
+            items: [],
             footerTitle: OWSLocalizedString(
                 "NICKNAME_EDITOR_DESCRIPTION",
-                comment: "The description below the title on the profile nickname editor view."
-            )
+                comment: "The description below the title on the profile nickname editor view.",
+            ),
         )
         contents.add(titleSection)
 
@@ -250,12 +255,12 @@ class NicknameEditorViewController: OWSTableViewController2 {
 
         let givenNameItem = OWSTableItem.textFieldItem(
             self.givenNameTextField,
-            textColor: Theme.primaryTextColor
+            textColor: Theme.primaryTextColor,
         )
 
         let familyNameItem = OWSTableItem.textFieldItem(
             self.familyNameTextField,
-            textColor: Theme.primaryTextColor
+            textColor: Theme.primaryTextColor,
         )
 
         if NSLocale.current.isCJKV {
@@ -266,7 +271,7 @@ class NicknameEditorViewController: OWSTableViewController2 {
 
         let namesSection = OWSTableSection(
             items: namesSectionItems,
-            headerView: self.avatarViewContainer
+            headerView: self.avatarViewContainer,
         )
         contents.add(namesSection)
 
@@ -281,8 +286,8 @@ class NicknameEditorViewController: OWSTableViewController2 {
                     textColor: .ows_accentRed,
                     actionBlock: { [weak self] in
                         self?.showDeleteNicknameConfirmation()
-                    }
-                )
+                    },
+                ),
             ]))
         }
 
@@ -308,7 +313,7 @@ class NicknameEditorViewController: OWSTableViewController2 {
             recipient: self.recipient,
             givenName: nickname?.givenName,
             familyName: nickname?.familyName,
-            note: self.note
+            note: self.note,
         )
 
         self.context.db.write { tx in
@@ -318,7 +323,7 @@ class NicknameEditorViewController: OWSTableViewController2 {
             context.nicknameManager.createOrUpdate(
                 nicknameRecord: nicknameRecord,
                 updateStorageServiceFor: self.recipient.uniqueId,
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -329,18 +334,18 @@ class NicknameEditorViewController: OWSTableViewController2 {
         OWSActionSheets.showConfirmationAlert(
             title: OWSLocalizedString(
                 "NICKNAME_EDITOR_DELETE_CONFIRMATION_TITLE",
-                comment: "The title for a prompt confirming that the user wants to delete the nickname and note."
+                comment: "The title for a prompt confirming that the user wants to delete the nickname and note.",
             ),
             message: OWSLocalizedString(
                 "NICKNAME_EDITOR_DELETE_CONFIRMATION_MESSAGE",
-                comment: "The message for a prompt confirming that the user wants to delete the nickname and note."
+                comment: "The message for a prompt confirming that the user wants to delete the nickname and note.",
             ),
             proceedTitle: CommonStrings.deleteButton,
             proceedStyle: .destructive,
             proceedAction: { [weak self] _ in
                 self?.deleteNickname()
             },
-            fromViewController: self
+            fromViewController: self,
         )
     }
 
@@ -349,7 +354,7 @@ class NicknameEditorViewController: OWSTableViewController2 {
             self.context.nicknameManager.deleteNickname(
                 recipientRowID: self.recipient.id,
                 updateStorageServiceFor: self.recipient.uniqueId,
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -364,7 +369,7 @@ extension NicknameEditorViewController: UITextFieldDelegate {
             shouldChangeCharactersInRange: range,
             replacementString: string,
             maxByteCount: OWSUserProfile.Constants.maxNameLengthBytes,
-            maxGlyphCount: OWSUserProfile.Constants.maxNameLengthGlyphs
+            maxGlyphCount: OWSUserProfile.Constants.maxNameLengthGlyphs,
         )
     }
 }
@@ -383,7 +388,7 @@ extension NicknameEditorViewController: TextViewWithPlaceholderDelegate {
             shouldChangeTextIn: range,
             replacementText: text,
             maxByteCount: Self.maxNoteLengthBytes,
-            maxGlyphCount: Self.maxNoteLengthGlyphs
+            maxGlyphCount: Self.maxNoteLengthGlyphs,
         )
     }
 }

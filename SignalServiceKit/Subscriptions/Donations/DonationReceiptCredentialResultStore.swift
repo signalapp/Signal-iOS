@@ -51,15 +51,21 @@ public struct DonationReceiptCredentialResultStore {
     // MARK: -
 
     public func getRequestErrorForAnyRecurringSubscription(
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> DonationReceiptCredentialRequestError? {
-        if let initiationError = getRequestError(
-            errorMode: .recurringSubscriptionInitiation, tx: tx
-        ) {
+        if
+            let initiationError = getRequestError(
+                errorMode: .recurringSubscriptionInitiation,
+                tx: tx,
+            )
+        {
             return initiationError
-        } else if let renewalError = getRequestError(
-            errorMode: .recurringSubscriptionRenewal, tx: tx
-        ) {
+        } else if
+            let renewalError = getRequestError(
+                errorMode: .recurringSubscriptionRenewal,
+                tx: tx,
+            )
+        {
             return renewalError
         }
 
@@ -68,7 +74,7 @@ public struct DonationReceiptCredentialResultStore {
 
     public func getRequestError(
         errorMode: Mode,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> DonationReceiptCredentialRequestError? {
         return try? errorKVStore.getCodableValue(
             forKey: key(mode: errorMode),
@@ -81,7 +87,7 @@ public struct DonationReceiptCredentialResultStore {
     public func setRequestError(
         error: DonationReceiptCredentialRequestError,
         errorMode: Mode,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         let modeKey = key(mode: errorMode)
         try? errorKVStore.setCodable(error, key: modeKey, transaction: tx)
@@ -106,15 +112,21 @@ public struct DonationReceiptCredentialResultStore {
     // MARK: -
 
     public func getRedemptionSuccessForAnyRecurringSubscription(
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> DonationReceiptCredentialRedemptionSuccess? {
-        if let initiationSuccess = getRedemptionSuccess(
-            successMode: .recurringSubscriptionInitiation, tx: tx
-        ) {
+        if
+            let initiationSuccess = getRedemptionSuccess(
+                successMode: .recurringSubscriptionInitiation,
+                tx: tx,
+            )
+        {
             return initiationSuccess
-        } else if let renewalSuccess = getRedemptionSuccess(
-            successMode: .recurringSubscriptionRenewal, tx: tx
-        ) {
+        } else if
+            let renewalSuccess = getRedemptionSuccess(
+                successMode: .recurringSubscriptionRenewal,
+                tx: tx,
+            )
+        {
             return renewalSuccess
         }
 
@@ -123,11 +135,11 @@ public struct DonationReceiptCredentialResultStore {
 
     public func getRedemptionSuccess(
         successMode: Mode,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> DonationReceiptCredentialRedemptionSuccess? {
         return try? successKVStore.getCodableValue(
             forKey: key(mode: successMode),
-            transaction: tx
+            transaction: tx,
         )
     }
 
@@ -136,13 +148,13 @@ public struct DonationReceiptCredentialResultStore {
     public func setRedemptionSuccess(
         success: DonationReceiptCredentialRedemptionSuccess,
         successMode: Mode,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         let modeKey = key(mode: successMode)
         try? successKVStore.setCodable(
             success,
             key: modeKey,
-            transaction: tx
+            transaction: tx,
         )
 
         // Setting a new success means we haven't presented it, either.
@@ -156,12 +168,12 @@ public struct DonationReceiptCredentialResultStore {
 
     public func clearRedemptionSuccess(
         successMode: Mode,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         let modeKey = key(mode: successMode)
         successKVStore.removeValue(
             forKey: modeKey,
-            transaction: tx
+            transaction: tx,
         )
 
         // Clearing the success means we haven't presented it, either.
@@ -174,7 +186,7 @@ public struct DonationReceiptCredentialResultStore {
         return errorPresentationKVStore.getBool(
             key(mode: errorMode),
             defaultValue: false,
-            transaction: tx
+            transaction: tx,
         )
     }
 
@@ -182,7 +194,7 @@ public struct DonationReceiptCredentialResultStore {
         errorPresentationKVStore.setBool(
             true,
             key: key(mode: errorMode),
-            transaction: tx
+            transaction: tx,
         )
     }
 
@@ -190,7 +202,7 @@ public struct DonationReceiptCredentialResultStore {
         return successPresentationKVStore.getBool(
             key(mode: successMode),
             defaultValue: false,
-            transaction: tx
+            transaction: tx,
         )
     }
 
@@ -198,7 +210,7 @@ public struct DonationReceiptCredentialResultStore {
         successPresentationKVStore.setBool(
             true,
             key: key(mode: successMode),
-            transaction: tx
+            transaction: tx,
         )
     }
 }

@@ -30,7 +30,7 @@ public class MessageFetchBGRefreshTask {
             backgroundMessageFetcherFactory: DependenciesBridge.shared.backgroundMessageFetcherFactory,
             dateProvider: { Date() },
             ows2FAManager: SSKEnvironment.shared.ows2FAManagerRef,
-            tsAccountManager: DependenciesBridge.shared.tsAccountManager
+            tsAccountManager: DependenciesBridge.shared.tsAccountManager,
         )
         _shared = value
         return value
@@ -48,7 +48,7 @@ public class MessageFetchBGRefreshTask {
         backgroundMessageFetcherFactory: BackgroundMessageFetcherFactory,
         dateProvider: @escaping DateProvider,
         ows2FAManager: OWS2FAManager,
-        tsAccountManager: TSAccountManager
+        tsAccountManager: TSAccountManager,
     ) {
         self.backgroundMessageFetcherFactory = backgroundMessageFetcherFactory
         self.dateProvider = dateProvider
@@ -64,7 +64,7 @@ public class MessageFetchBGRefreshTask {
                 appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
                     Self.getShared(appReadiness: appReadiness)!.performTask(task)
                 }
-            }
+            },
         )
     }
 

@@ -34,7 +34,7 @@ final class AppIconSettingsTableViewController: OWSTableViewController2 {
         super.viewDidLoad()
         title = OWSLocalizedString(
             "SETTINGS_APP_ICON_TITLE",
-            comment: "The title for the app icon selection settings page."
+            comment: "The title for the app icon selection settings page.",
         )
         updateTableContents()
     }
@@ -57,10 +57,10 @@ final class AppIconSettingsTableViewController: OWSTableViewController2 {
         section.footerAttributedTitle = NSAttributedString.composed(of: [
             OWSLocalizedString(
                 "SETTINGS_APP_ICON_FOOTER",
-                comment: "The footer for the app icon selection settings page."
+                comment: "The footer for the app icon selection settings page.",
             ),
             "\n",
-            CommonStrings.learnMore.styled(with: .link(Self.learnMoreURL))
+            CommonStrings.learnMore.styled(with: .link(Self.learnMoreURL)),
         ])
         .styled(with: defaultFooterTextStyle)
         section.footerTextViewDelegate = self
@@ -75,7 +75,7 @@ final class AppIconSettingsTableViewController: OWSTableViewController2 {
         let iconSize: CGFloat = switch (
             UIDevice.current.isNarrowerThanIPhone6,
             UIDevice.current.isPlusSizePhone,
-            isiOS26
+            isiOS26,
         ) {
         case (true, _, false): 56
         case (true, _, true): 61.5
@@ -160,7 +160,7 @@ final class AppIconSettingsTableViewController: OWSTableViewController2 {
 
             self.addSubview(selectedOutlineView)
             selectedOutlineView.autoPinEdgesToSuperviewEdges()
-            selectedOutlineView.layer.cornerRadius = iconSize * 0.24 * (4/3)
+            selectedOutlineView.layer.cornerRadius = iconSize * 0.24 * (4 / 3)
             selectedOutlineView.layer.cornerCurve = .continuous
             let borderColor: UIColor = Theme.isDarkThemeEnabled ? .ows_gray05 : .ows_black
             selectedOutlineView.layer.borderColor = borderColor.cgColor

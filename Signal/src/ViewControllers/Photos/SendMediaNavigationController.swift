@@ -142,7 +142,7 @@ class SendMediaNavigationController: OWSNavigationController {
         attachment: PreviewableAttachment,
         hasQuotedReplyDraft: Bool,
         delegate: SendMediaNavDelegate,
-        dataSource: SendMediaNavDataSource
+        dataSource: SendMediaNavDataSource,
     ) -> SendMediaNavigationController {
         let navController = SendMediaNavigationController(hasQuotedReplyDraft: hasQuotedReplyDraft)
         navController.sendMediaNavDelegate = delegate
@@ -186,7 +186,7 @@ class SendMediaNavigationController: OWSNavigationController {
     }
 
     private func showApprovalViewController() {
-        guard let sendMediaNavDataSource = sendMediaNavDataSource else {
+        guard let sendMediaNavDataSource else {
             owsFailDebug("sendMediaNavDataSource was unexpectedly nil")
             return
         }
@@ -242,7 +242,7 @@ class SendMediaNavigationController: OWSNavigationController {
                 title: confirmAbandonText,
                 style: .destructive,
                 handler: { [weak self] _ in
-                    guard let self = self else { return }
+                    guard let self else { return }
                     self.sendMediaNavDelegate?.sendMediaNavDidCancel(self)
                 },
             )
@@ -263,8 +263,11 @@ extension SendMediaNavigationController {
     // MARK: - Too Many
 
     func showTooManySelectedToast() {
-        let toastFormat = OWSLocalizedString("IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d", tableName: "PluralAware",
-                                            comment: "Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared.")
+        let toastFormat = OWSLocalizedString(
+            "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d",
+            tableName: "PluralAware",
+            comment: "Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared.",
+        )
 
         let toastText = String.localizedStringWithFormat(toastFormat, SignalAttachment.maxAttachmentsAllowed)
         let toastController = ToastController(text: toastText)
@@ -384,14 +387,14 @@ extension SendMediaNavigationController: PHPickerViewControllerDelegate {
         var didAddAttachments = false
 
         let pendingAttachmentByAssetIdentifier: [String: PendingAttachment] = Dictionary(
-            uniqueKeysWithValues: self.pendingAttachments.compactMap { (pendingAttachment) -> (String, PendingAttachment)? in
+            uniqueKeysWithValues: self.pendingAttachments.compactMap { pendingAttachment -> (String, PendingAttachment)? in
                 switch pendingAttachment.source {
                 case .camera:
                     return nil
                 case .systemLibrary(let systemIdentifier):
                     return (systemIdentifier, pendingAttachment)
                 }
-            }
+            },
         )
 
         let resolvablePendingAttachments = results.compactMap { (result) -> (() async throws -> PendingAttachment)? in
@@ -465,9 +468,11 @@ extension SendMediaNavigationController: PHPickerViewControllerDelegate {
     }
 
     func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
-        let loadResult = if self.pendingAttachments.contains(where: {
-            return if case .camera = $0.source { true } else { false }
-        }) {
+        let loadResult = if
+            self.pendingAttachments.contains(where: {
+                return if case .camera = $0.source { true } else { false }
+            })
+        {
             // When there are camera attachments, there isn't a straightforward
             // way to handle re-ordering selection, so we just drop the order
             loadUnorderedPHPickerResults(results)
@@ -535,15 +540,15 @@ private extension SendMediaNavigationController {
                         OWSActionSheets.showActionSheet(
                             title: OWSLocalizedString(
                                 "ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE",
-                                comment: "Attachment error message for attachments whose data exceed file size limits"
-                            )
+                                comment: "Attachment error message for attachments whose data exceed file size limits",
+                            ),
                         )
                     } catch {
                         Logger.warn("failed to prepare attachments. error: \(error)")
                         OWSActionSheets.showActionSheet(title: OWSLocalizedString("IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS", comment: "alert title"))
                     }
                 })
-            }
+            },
         )
     }
 }

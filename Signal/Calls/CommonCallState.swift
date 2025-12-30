@@ -64,8 +64,10 @@ class CommonCallState {
     }
 
     func markReportedToSystem() {
-        owsAssertDebug(systemState == .notReported || systemState == .pending,
-                       "call \(localId) had unexpected system state: \(systemState)")
+        owsAssertDebug(
+            systemState == .notReported || systemState == .pending,
+            "call \(localId) had unexpected system state: \(systemState)",
+        )
         systemState = .reported
     }
 

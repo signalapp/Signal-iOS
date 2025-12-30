@@ -17,12 +17,12 @@ class AllMediaViewController: OWSViewController {
     init(
         thread: TSThread,
         spoilerState: SpoilerRenderState,
-        name: String?
+        name: String?,
     ) {
         tileViewController = MediaTileViewController(
             thread: thread,
             accessoriesHelper: accessoriesHelper,
-            spoilerState: spoilerState
+            spoilerState: spoilerState,
         )
         super.init()
         navigationItem.title = name

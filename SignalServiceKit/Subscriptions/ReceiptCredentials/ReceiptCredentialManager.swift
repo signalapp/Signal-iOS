@@ -23,16 +23,16 @@ public struct ReceiptCredentialManager {
     }
 
     public static func generateReceiptCredentialPresentation(
-        receiptCredential: ReceiptCredential
+        receiptCredential: ReceiptCredential,
     ) throws -> ReceiptCredentialPresentation {
         return try clientZKReceiptOperations().createReceiptCredentialPresentation(
-            receiptCredential: receiptCredential
+            receiptCredential: receiptCredential,
         )
     }
 
     public static func generateReceiptRequest() -> (
         context: ReceiptCredentialRequestContext,
-        request: ReceiptCredentialRequest
+        request: ReceiptCredentialRequest,
     ) {
         do {
             let clientOperations = clientZKReceiptOperations()
@@ -82,12 +82,12 @@ public struct ReceiptCredentialManager {
         case 204:
             logger.info("No receipt yet, payment processing.")
             throw ReceiptCredentialRequestError(
-                errorCode: .paymentStillProcessing
+                errorCode: .paymentStillProcessing,
             )
         default:
             throw OWSAssertionError(
                 "Unexpected success status code: \(httpStatusCode)",
-                logger: logger
+                logger: logger,
             )
         }
 
@@ -99,18 +99,18 @@ public struct ReceiptCredentialManager {
         guard
             let parser = httpResponse.responseBodyParamParser,
             let receiptCredentialResponseData = Data(
-                base64Encoded: (try parser.required(key: "receiptCredentialResponse") as String)
+                base64Encoded: try parser.required(key: "receiptCredentialResponse") as String,
             )
         else {
             throw failValidation("Failed to parse receipt credential response into data!")
         }
 
         let receiptCredentialResponse = try ReceiptCredentialResponse(
-            contents: receiptCredentialResponseData
+            contents: receiptCredentialResponseData,
         )
         let receiptCredential = try clientOperations.receiveReceiptCredential(
             receiptCredentialRequestContext: receiptCredentialRequestContext,
-            receiptCredentialResponse: receiptCredentialResponse
+            receiptCredentialResponse: receiptCredentialResponse,
         )
 
         let receiptLevel = try receiptCredential.getReceiptLevel()
@@ -134,7 +134,7 @@ public struct ReceiptCredentialManager {
     }
 
     private func parseReceiptCredentialPresentationError(
-        error: Error
+        error: Error,
     ) -> Error {
         guard
             let httpStatusCode = error.httpStatusCode,
@@ -150,7 +150,7 @@ public struct ReceiptCredentialManager {
         {
             return ReceiptCredentialRequestError(
                 errorCode: errorCode,
-                chargeFailureCodeIfPaymentFailed: chargeFailureCode
+                chargeFailureCodeIfPaymentFailed: chargeFailureCode,
             )
         }
 

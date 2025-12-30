@@ -19,8 +19,10 @@ public class GiphyAsset: ProxiedContentAssetDescription {
 
     static func parsing(rendition: Rendition, definition: [String: Any]) -> [GiphyAsset] {
         // These keys are always required
-        guard let width = parsePositiveInt(dict: definition, key: "width"),
-              let height = parsePositiveInt(dict: definition, key: "height") else {
+        guard
+            let width = parsePositiveInt(dict: definition, key: "width"),
+            let height = parsePositiveInt(dict: definition, key: "height")
+        else {
             let logDict = ["width": definition["width"], "height": definition["height"]]
             Logger.error("Error parsing \(rendition): \(logDict)")
             return []
@@ -30,17 +32,21 @@ public class GiphyAsset: ProxiedContentAssetDescription {
 
         // A given rendition may have multiple underlying assets.
         // First check for an mp4 specific url (must be of type mp4)
-        if let url = parseUrl(dict: definition, key: "mp4"),
-           let size = parsePositiveInt(dict: definition, key: "mp4_size"),
-           let asset = GiphyAsset(rendition: rendition, dimensions: dimensions, url: url, size: size),
-           asset.type == .mp4 {
+        if
+            let url = parseUrl(dict: definition, key: "mp4"),
+            let size = parsePositiveInt(dict: definition, key: "mp4_size"),
+            let asset = GiphyAsset(rendition: rendition, dimensions: dimensions, url: url, size: size),
+            asset.type == .mp4
+        {
             results.append(asset)
         }
 
         // Then check for anything keyed by "url" (can be any format)
-        if let url = parseUrl(dict: definition, key: "url"),
-           let size = parsePositiveInt(dict: definition, key: "size"),
-           let asset = GiphyAsset(rendition: rendition, dimensions: dimensions, url: url, size: size) {
+        if
+            let url = parseUrl(dict: definition, key: "url"),
+            let size = parsePositiveInt(dict: definition, key: "size"),
+            let asset = GiphyAsset(rendition: rendition, dimensions: dimensions, url: url, size: size)
+        {
             results.append(asset)
         }
 
@@ -93,16 +99,20 @@ extension GiphyAsset {
         case downsizedSmall = "downsized_small"
 
         var isStill: Bool {
-            [.fixedHeightSmallStill,
-             .fixedHeightStill,
-             .fixedWidthSmallStill,
-             .fixedWidthStill,
-             .downsizedStill].contains(self)
+            [
+                .fixedHeightSmallStill,
+                .fixedHeightStill,
+                .fixedWidthSmallStill,
+                .fixedWidthStill,
+                .downsizedStill,
+            ].contains(self)
         }
     }
 
     public enum FileType: Equatable {
-        case jpg, gif, mp4
+        case jpg
+        case gif
+        case mp4
 
         public var `extension`: String {
             switch self {

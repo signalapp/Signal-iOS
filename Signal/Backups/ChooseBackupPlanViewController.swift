@@ -84,7 +84,7 @@ class ChooseBackupPlanViewController: HostingController<ChooseBackupPlanView> {
             } else {
                 do {
                     storeKitAvailability = .available(
-                        paidPlanDisplayPrice: try await backupSubscriptionManager.subscriptionDisplayPrice()
+                        paidPlanDisplayPrice: try await backupSubscriptionManager.subscriptionDisplayPrice(),
                     )
                 } catch StoreKitError.networkError {
                     throw .networkError
@@ -133,23 +133,23 @@ extension ChooseBackupPlanViewController: ChooseBackupPlanViewModel.ActionsDeleg
             OWSActionSheets.showConfirmationAlert(
                 title: OWSLocalizedString(
                     "CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_TITLE",
-                    comment: "Title for an action sheet confirming the user wants to downgrade their Backup plan."
+                    comment: "Title for an action sheet confirming the user wants to downgrade their Backup plan.",
                 ),
                 message: String.localizedStringWithFormat(
                     OWSLocalizedString(
                         "CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_MESSAGE_%d",
                         tableName: "PluralAware",
-                        comment: "Message for an action sheet confirming the user wants to downgrade their Backup plan. Embeds {{ the number of days that files are available, e.g. '45' }}."
+                        comment: "Message for an action sheet confirming the user wants to downgrade their Backup plan. Embeds {{ the number of days that files are available, e.g. '45' }}.",
                     ),
                     freeMediaTierDays,
                 ),
                 proceedTitle: OWSLocalizedString(
                     "CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_PROCEED_BUTTON",
-                    comment: "Button for an action sheet confirming the user wants to downgrade their Backup plan."
+                    comment: "Button for an action sheet confirming the user wants to downgrade their Backup plan.",
                 ),
                 proceedAction: { [self] _ in
                     onConfirmPlanSelectionBlock(self, planSelection)
-                }
+                },
             )
         }
     }
@@ -212,7 +212,7 @@ struct ChooseBackupPlanView: View {
 
                 Text(OWSLocalizedString(
                     "CHOOSE_BACKUP_PLAN_TITLE",
-                    comment: "Title for a view allowing users to choose a Backup plan."
+                    comment: "Title for a view allowing users to choose a Backup plan.",
                 ))
                 .font(.title.weight(.semibold))
                 .foregroundStyle(Color.Signal.label)
@@ -221,12 +221,12 @@ struct ChooseBackupPlanView: View {
 
                 Text(OWSLocalizedString(
                     "CHOOSE_BACKUP_PLAN_SUBTITLE",
-                    comment: "Subtitle for a view allowing users to choose a Backup plan."
+                    comment: "Subtitle for a view allowing users to choose a Backup plan.",
                 ))
                 .appendLink(CommonStrings.learnMore) {
                     CurrentAppContext().open(
                         URL.Support.backups,
-                        completion: nil
+                        completion: nil,
                     )
                 }
                 .foregroundStyle(Color.Signal.secondaryLabel)
@@ -236,26 +236,26 @@ struct ChooseBackupPlanView: View {
                 PlanOptionView(
                     title: OWSLocalizedString(
                         "CHOOSE_BACKUP_PLAN_FREE_PLAN_TITLE",
-                        comment: "Title for the free plan option, when choosing a Backup plan."
+                        comment: "Title for the free plan option, when choosing a Backup plan.",
                     ),
                     subtitle: String.localizedStringWithFormat(
                         OWSLocalizedString(
                             "CHOOSE_BACKUP_PLAN_FREE_PLAN_SUBTITLE_%d",
                             tableName: "PluralAware",
-                            comment: "Subtitle for the free plan option, when choosing a Backup plan. Embeds {{ the number of days that files are available, e.g. '45' }}."
+                            comment: "Subtitle for the free plan option, when choosing a Backup plan. Embeds {{ the number of days that files are available, e.g. '45' }}.",
                         ),
                         viewModel.freeMediaTierDays,
                     ),
                     bullets: [
                         PlanOptionView.BulletPoint(iconKey: "thread", text: OWSLocalizedString(
                             "CHOOSE_BACKUP_PLAN_BULLET_FULL_TEXT_BACKUP",
-                            comment: "Text for a bullet point in a list of Backup features, describing that all text messages are included."
+                            comment: "Text for a bullet point in a list of Backup features, describing that all text messages are included.",
                         )),
                         PlanOptionView.BulletPoint(iconKey: "album-tilt", text: String.localizedStringWithFormat(
                             OWSLocalizedString(
                                 "CHOOSE_BACKUP_PLAN_BULLET_RECENT_MEDIA_BACKUP_%d",
                                 tableName: "PluralAware",
-                                comment: "Text for a bullet point in a list of Backup features, describing that recent media is included. Embeds {{ the number of days that files are available, e.g. '45' }}."
+                                comment: "Text for a bullet point in a list of Backup features, describing that recent media is included. Embeds {{ the number of days that files are available, e.g. '45' }}.",
                             ),
                             viewModel.freeMediaTierDays,
                         )),
@@ -264,7 +264,7 @@ struct ChooseBackupPlanView: View {
                     isSelected: viewModel.planSelection == .free,
                     onTap: {
                         viewModel.planSelection = .free
-                    }
+                    },
                 )
 
                 Spacer().frame(height: 16)
@@ -276,34 +276,34 @@ struct ChooseBackupPlanView: View {
                             String(
                                 format: OWSLocalizedString(
                                     "CHOOSE_BACKUP_PLAN_PAID_PLAN_TITLE",
-                                    comment: "Title for the paid plan option, when choosing a Backup plan. Embeds {{ the formatted monthly cost, as currency, of the paid plan }}."
+                                    comment: "Title for the paid plan option, when choosing a Backup plan. Embeds {{ the formatted monthly cost, as currency, of the paid plan }}.",
                                 ),
-                                paidPlanDisplayPrice
+                                paidPlanDisplayPrice,
                             )
                         case .unavailableForTesters:
                             OWSLocalizedString(
                                 "CHOOSE_BACKUP_PLAN_PAID_PLAN_NO_PURCHASES_TITLE",
-                                comment: "Title for the paid plan option, when choosing a Backup plan as a tester."
+                                comment: "Title for the paid plan option, when choosing a Backup plan as a tester.",
                             )
                         }
                     }(),
                     subtitle: OWSLocalizedString(
                         "CHOOSE_BACKUP_PLAN_PAID_PLAN_SUBTITLE",
-                        comment: "Subtitle for the paid plan option, when choosing a Backup plan."
+                        comment: "Subtitle for the paid plan option, when choosing a Backup plan.",
                     ),
                     bullets: [
                         PlanOptionView.BulletPoint(iconKey: "thread", text: OWSLocalizedString(
                             "CHOOSE_BACKUP_PLAN_BULLET_FULL_TEXT_BACKUP",
-                            comment: "Text for a bullet point in a list of Backup features, describing that all text messages are included."
+                            comment: "Text for a bullet point in a list of Backup features, describing that all text messages are included.",
                         )),
                         PlanOptionView.BulletPoint(iconKey: "album-tilt", text: OWSLocalizedString(
                             "CHOOSE_BACKUP_PLAN_BULLET_FULL_MEDIA_BACKUP",
-                            comment: "Text for a bullet point in a list of Backup features, describing that all media is included."
+                            comment: "Text for a bullet point in a list of Backup features, describing that all media is included.",
                         )),
                         PlanOptionView.BulletPoint(iconKey: "data", text: String(
                             format: OWSLocalizedString(
                                 "CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT",
-                                comment: "Text for a bullet point in a list of Backup features, describing the amount of included storage. Embeds {{ the amount of storage preformatted as a localized byte count, e.g. '100 GB' }}."
+                                comment: "Text for a bullet point in a list of Backup features, describing the amount of included storage. Embeds {{ the amount of storage preformatted as a localized byte count, e.g. '100 GB' }}.",
                             ),
                             viewModel.storageAllowanceBytes.formatted(.owsByteCount(
                                 fudgeBase2ToBase10: true,
@@ -315,7 +315,7 @@ struct ChooseBackupPlanView: View {
                     isSelected: viewModel.planSelection == .paid,
                     onTap: {
                         viewModel.planSelection = .paid
-                    }
+                    },
                 )
             }
             .padding(.horizontal, 16)
@@ -342,9 +342,9 @@ struct ChooseBackupPlanView: View {
                         String(
                             format: OWSLocalizedString(
                                 "CHOOSE_BACKUP_PLAN_SUBSCRIBE_PAID_BUTTON_TEXT",
-                                comment: "Text for a button that will subscribe the user to the paid Backup plan. Embeds {{ the formatted monthly cost, as currency, of the paid plan }}."
+                                comment: "Text for a button that will subscribe the user to the paid Backup plan. Embeds {{ the formatted monthly cost, as currency, of the paid plan }}.",
                             ),
-                            paidPlanDisplayPrice
+                            paidPlanDisplayPrice,
                         )
                     case .unavailableForTesters:
                         CommonStrings.continueButton
@@ -365,19 +365,19 @@ struct ChooseBackupPlanView: View {
     private func termsAndConditionsLink() -> some View {
         let label = OWSLocalizedString(
             "CHOOSE_BACKUP_PLAN_TERM_AND_PRIVACY_POLICY_TEXT",
-            comment: "Title for a label allowing users to view Signal's Terms & Conditions."
+            comment: "Title for a label allowing users to view Signal's Terms & Conditions.",
         )
         return Text(" [\(label)](https://support.signal.org/)")
-        .font(.subheadline.weight(.bold))
-        .environment(\.openURL, OpenURLAction { _ in
-            CurrentAppContext().open(
-                TSConstants.legalTermsUrl,
-                completion: nil
-            )
-            return .handled
-        })
-        .foregroundStyle(Color.Signal.secondaryLabel)
-        .tint(Color.Signal.secondaryLabel)
+            .font(.subheadline.weight(.bold))
+            .environment(\.openURL, OpenURLAction { _ in
+                CurrentAppContext().open(
+                    TSConstants.legalTermsUrl,
+                    completion: nil,
+                )
+                return .handled
+            })
+            .foregroundStyle(Color.Signal.secondaryLabel)
+            .tint(Color.Signal.secondaryLabel)
     }
 }
 
@@ -404,9 +404,9 @@ private struct PlanOptionView: View {
                         Label(
                             OWSLocalizedString(
                                 "CHOOSE_BACKUP_PLAN_CURRENT_PLAN_LABEL",
-                                comment: "A label indicating that a given Backup plan option is what the user has already enabled."
+                                comment: "A label indicating that a given Backup plan option is what the user has already enabled.",
                             ),
-                            systemImage: "checkmark"
+                            systemImage: "checkmark",
                         )
                         .font(.footnote)
                         .foregroundStyle(Color.Signal.secondaryLabel)
@@ -429,8 +429,8 @@ private struct PlanOptionView: View {
                             Image(bullet.iconKey)
                                 .foregroundStyle(
                                     isSelected
-                                    ? Color.Signal.ultramarine
-                                    : Color.Signal.label
+                                        ? Color.Signal.ultramarine
+                                        : Color.Signal.label,
                                 )
                         }
                         .padding(.leading, 20)
@@ -468,13 +468,13 @@ private struct PlanOptionView: View {
                 RoundedRectangle(cornerRadius: 16)
                     .stroke(
                         Color.Signal.ultramarine,
-                        lineWidth: isSelected ? 3 : 0
+                        lineWidth: isSelected ? 3 : 0,
                     )
             }
             .shadow(
                 color: isSelected ? .black.opacity(0.12) : .clear,
                 radius: 8,
-                y: 2
+                y: 2,
             )
         }
         .buttonStyle(.plain)
@@ -499,7 +499,7 @@ private extension ChooseBackupPlanViewModel {
             initialPlanSelection: .free,
             freeMediaTierDays: 45,
             storageAllowanceBytes: 100_000_000_000,
-            storeKitAvailability: storeKitAvailability
+            storeKitAvailability: storeKitAvailability,
         )
         let actionsDelegate = ChoosePlanActionsDelegate()
         ObjectRetainer.retainObject(actionsDelegate, forLifetimeOf: viewModel)
@@ -511,13 +511,13 @@ private extension ChooseBackupPlanViewModel {
 
 #Preview("Purchases") {
     ChooseBackupPlanView(viewModel: .forPreview(
-        storeKitAvailability: .available(paidPlanDisplayPrice: "$1.99")
+        storeKitAvailability: .available(paidPlanDisplayPrice: "$1.99"),
     ))
 }
 
 #Preview("No Purchases") {
     ChooseBackupPlanView(viewModel: .forPreview(
-        storeKitAvailability: .unavailableForTesters
+        storeKitAvailability: .unavailableForTesters,
     ))
 }
 

@@ -35,9 +35,9 @@ public enum SqliteUtil {
     /// - Returns: Whether the name is safe to use in SQL string interpolation.
     public static func isSafe(sqlName: String) -> Bool {
         !sqlName.isEmpty &&
-        sqlName.utf8.count < 1000 &&
-        !sqlName.lowercased().starts(with: "sqlite") &&
-        sqlName.range(of: "^[a-zA-Z][a-zA-Z0-9_]*$", options: .regularExpression) != nil
+            sqlName.utf8.count < 1000 &&
+            !sqlName.lowercased().starts(with: "sqlite") &&
+            sqlName.range(of: "^[a-zA-Z][a-zA-Z0-9_]*$", options: .regularExpression) != nil
     }
 
     /// Enable or disable `F_BARRIERFSYNC`.
@@ -55,9 +55,9 @@ public enum SqliteUtil {
         case ok
         case notOk
 
-        public static func && (
+        public static func &&(
             lhs: IntegrityCheckResult,
-            rhs: IntegrityCheckResult
+            rhs: IntegrityCheckResult,
         ) -> IntegrityCheckResult {
             switch (lhs, rhs) {
             case (.ok, .ok): return .ok
@@ -117,11 +117,11 @@ public enum SqliteUtil {
             Logger.info("PRAGMA quick_check: ok")
             return .ok
         } else {
-            #if DEBUG
+#if DEBUG
             Logger.error("PRAGMA quick_check failed (\(firstQuickCheckLine ?? "<nil>"))")
-            #else
+#else
             Logger.error("PRAGMA quick_check failed (failure redacted)")
-            #endif
+#endif
             return .notOk
         }
     }
@@ -152,7 +152,7 @@ public enum SqliteUtil {
         public static func integrityCheck(
             db: Database,
             ftsTableName: String,
-            compareToExternalContentTable: Bool
+            compareToExternalContentTable: Bool,
         ) throws -> IntegrityCheckResult {
             owsPrecondition(SqliteUtil.isSafe(sqlName: ftsTableName))
 
@@ -190,7 +190,7 @@ public enum SqliteUtil {
             owsPrecondition(SqliteUtil.isSafe(sqlName: ftsTableName))
 
             try db.execute(
-                sql: "INSERT INTO \(ftsTableName) (\(ftsTableName)) VALUES ('rebuild')"
+                sql: "INSERT INTO \(ftsTableName) (\(ftsTableName)) VALUES ('rebuild')",
             )
         }
 
@@ -213,14 +213,14 @@ public enum SqliteUtil {
             db: Database,
             ftsTableName: String,
             numberOfPages: Int,
-            isFirstBatch: Bool
+            isFirstBatch: Bool,
         ) throws -> MergeResult {
             let totalChangesBefore = db.totalChangesCount
 
             owsPrecondition(SqliteUtil.isSafe(sqlName: ftsTableName))
             try db.execute(
                 sql: "INSERT INTO \(ftsTableName) (\(ftsTableName), rank) VALUES ('merge', ?)",
-                arguments: [isFirstBatch ? -numberOfPages : numberOfPages]
+                arguments: [isFirstBatch ? -numberOfPages : numberOfPages],
             )
 
             // From the SQLite docs: "It is possible to tell whether or not the 'merge' command

@@ -22,19 +22,19 @@ extension GroupSendEndorsementStore {
         expiration: Date,
         combinedEndorsement: GroupSendEndorsement,
         individualEndorsements: [(recipientId: Int64, individualEndorsement: GroupSendEndorsement)],
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         deleteEndorsements(groupThreadId: groupThreadId, tx: tx)
         insertCombinedEndorsement(CombinedGroupSendEndorsementRecord(
             threadId: groupThreadId,
             endorsement: combinedEndorsement.serialize(),
-            expiration: expiration
+            expiration: expiration,
         ), tx: tx)
         for (recipientId, individualEndorsement) in individualEndorsements {
             insertIndividualEndorsement(IndividualGroupSendEndorsementRecord(
                 threadId: groupThreadId,
                 recipientId: recipientId,
-                endorsement: individualEndorsement.serialize()
+                endorsement: individualEndorsement.serialize(),
             ), tx: tx)
         }
     }

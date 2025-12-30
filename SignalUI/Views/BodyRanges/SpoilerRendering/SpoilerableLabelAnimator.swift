@@ -53,7 +53,7 @@ public struct SpoilerableTextConfig {
                 text: unwrappedText,
                 displayConfig: displayConfig,
                 animationManager: animationManager,
-                isViewVisible: isViewVisible
+                isViewVisible: isViewVisible,
             )
         }
     }
@@ -62,7 +62,7 @@ public struct SpoilerableTextConfig {
         text: CVTextValue?,
         displayConfig: HydratedMessageBody.DisplayConfiguration,
         animationManager: SpoilerAnimationManager,
-        isViewVisible: Bool
+        isViewVisible: Bool,
     ) {
         self.text = text
         self.displayConfig = displayConfig
@@ -163,7 +163,7 @@ extension SpoilerableLabelAnimator: SpoilerableViewAnimator {
             text: text,
             displayConfig: displayConfig,
             label: label,
-            labelBounds: label.bounds.size
+            labelBounds: label.bounds.size,
         )
     }
 
@@ -183,7 +183,7 @@ extension SpoilerableLabelAnimator: SpoilerableViewAnimator {
         text: CVTextValue,
         displayConfig: HydratedMessageBody.DisplayConfiguration,
         label: UILabel,
-        labelBounds: CGSize
+        labelBounds: CGSize,
     ) -> [SpoilerFrame] {
         switch text {
         case .text, .attributedText:
@@ -197,9 +197,9 @@ extension SpoilerableLabelAnimator: SpoilerableViewAnimator {
                     return .init(
                         frame: rect,
                         color: spoilerRange.color,
-                        style: spoilerRange.isSearchResult ? .highlight : .standard
+                        style: spoilerRange.isSearchResult ? .highlight : .standard,
                     )
-                }
+                },
             )
         }
     }

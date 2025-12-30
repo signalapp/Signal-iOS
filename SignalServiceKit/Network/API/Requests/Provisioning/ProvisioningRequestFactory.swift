@@ -13,14 +13,14 @@ public enum ProvisioningRequestFactory {
         authPassword: String,
         attributes: AccountAttributes,
         apnRegistrationId: RegistrationRequestFactory.ApnRegistrationId?,
-        prekeyBundles: RegistrationPreKeyUploadBundles
+        prekeyBundles: RegistrationPreKeyUploadBundles,
     ) -> TSRequest {
         owsAssertDebug(verificationCode.isEmpty.negated)
         owsAssertDebug(phoneNumber.isEmpty.negated)
         owsAssertDebug((apnRegistrationId != nil) != attributes.isManualMessageFetchEnabled)
 
         let urlPathComponents = URLPathComponents(
-            ["v1", "devices", "link"]
+            ["v1", "devices", "link"],
         )
 
         var urlComponents = URLComponents()
@@ -37,7 +37,7 @@ public enum ProvisioningRequestFactory {
             "aciSignedPreKey": OWSRequestFactory.signedPreKeyRequestParameters(prekeyBundles.aci.signedPreKey),
             "pniSignedPreKey": OWSRequestFactory.signedPreKeyRequestParameters(prekeyBundles.pni.signedPreKey),
             "aciPqLastResortPreKey": OWSRequestFactory.pqPreKeyRequestParameters(prekeyBundles.aci.lastResortPreKey),
-            "pniPqLastResortPreKey": OWSRequestFactory.pqPreKeyRequestParameters(prekeyBundles.pni.lastResortPreKey)
+            "pniPqLastResortPreKey": OWSRequestFactory.pqPreKeyRequestParameters(prekeyBundles.pni.lastResortPreKey),
         ]
 
         if let apnRegistrationId {

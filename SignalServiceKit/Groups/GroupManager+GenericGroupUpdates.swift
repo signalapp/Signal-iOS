@@ -15,7 +15,7 @@ extension GroupManager {
             secretParams: GroupSecretParams,
             updateDescription: String,
             isDeletingAccount: Bool,
-            changesBlock: @escaping (GroupsV2OutgoingChanges) -> Void
+            changesBlock: @escaping (GroupsV2OutgoingChanges) -> Void,
         ) async throws -> [Promise<Void>] {
             do {
                 return try await Promise.wrapAsync {
@@ -36,14 +36,14 @@ extension GroupManager {
         private static func _run(
             secretParams: GroupSecretParams,
             isDeletingAccount: Bool,
-            changesBlock: (GroupsV2OutgoingChanges) -> Void
+            changesBlock: (GroupsV2OutgoingChanges) -> Void,
         ) async throws -> [Promise<Void>] {
             try await GroupManager.ensureLocalProfileHasCommitmentIfNecessary()
 
             return try await SSKEnvironment.shared.groupsV2Ref.updateGroupV2(
                 secretParams: secretParams,
                 isDeletingAccount: isDeletingAccount,
-                changesBlock: changesBlock
+                changesBlock: changesBlock,
             )
         }
     }
@@ -55,7 +55,7 @@ extension GroupManager {
         groupModel: TSGroupModelV2,
         description: String,
         isDeletingAccount: Bool = false,
-        changesBlock: @escaping (GroupsV2OutgoingChanges) -> Void
+        changesBlock: @escaping (GroupsV2OutgoingChanges) -> Void,
     ) async throws -> [Promise<Void>] {
         let secretParams = try groupModel.secretParams()
         let groupId = try secretParams.getPublicParams().getGroupIdentifier()
@@ -64,7 +64,7 @@ extension GroupManager {
                 secretParams: secretParams,
                 updateDescription: description,
                 isDeletingAccount: isDeletingAccount,
-                changesBlock: changesBlock
+                changesBlock: changesBlock,
             )
         }
     }

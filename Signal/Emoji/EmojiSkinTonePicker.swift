@@ -17,7 +17,7 @@ class EmojiSkinTonePicker: UIView {
     class func present(
         referenceView: UIView,
         emoji: EmojiWithSkinTones,
-        completion: @escaping (EmojiWithSkinTones?) -> Void
+        completion: @escaping (EmojiWithSkinTones?) -> Void,
     ) -> EmojiSkinTonePicker? {
         guard emoji.baseEmoji.hasSkinTones else { return nil }
 
@@ -77,7 +77,7 @@ class EmojiSkinTonePicker: UIView {
     }
 
     func didChangeLongPress(_ sender: UILongPressGestureRecognizer) {
-        guard let singleSelectionButtons = singleSelectionButtons else { return }
+        guard let singleSelectionButtons else { return }
 
         if referenceOverlay.frame.contains(sender.location(in: self)) {
             singleSelectionButtons.forEach { $0.isSelected = false }
@@ -87,21 +87,23 @@ class EmojiSkinTonePicker: UIView {
             singleSelectionButtons.forEach { $0.isSelected = $0.frame.insetBy(dx: -3, dy: -80).contains(point) }
             let selectedButton = singleSelectionButtons.first { $0.isSelected }
 
-            if let selectedButton = selectedButton, selectedButton != previouslySelectedButton {
+            if let selectedButton, selectedButton != previouslySelectedButton {
                 SelectionHapticFeedback().selectionChanged()
             }
         }
     }
 
     func didEndLongPress(_ sender: UILongPressGestureRecognizer) {
-        guard let singleSelectionButtons = singleSelectionButtons else { return }
+        guard let singleSelectionButtons else { return }
 
         let point = sender.location(in: containerView)
         if referenceOverlay.frame.contains(sender.location(in: self)) {
             // Do nothing.
-        } else if let selectedButton = singleSelectionButtons.first(where: {
-            $0.frame.insetBy(dx: -3, dy: -80).contains(point)
-        }) {
+        } else if
+            let selectedButton = singleSelectionButtons.first(where: {
+                $0.frame.insetBy(dx: -3, dy: -80).contains(point)
+            })
+        {
             selectedButton.sendActions(for: .touchUpInside)
         } else {
             dismiss()
@@ -191,9 +193,9 @@ class EmojiSkinTonePicker: UIView {
     private var buttonsPerComponentEmojiIndex = [Int: [(Emoji.SkinTone, UIButton)]]()
     private lazy var skinToneButton = button(for: EmojiWithSkinTones(
         baseEmoji: emoji,
-        skinTones: .init(repeating: .medium, count: skinToneComponentEmoji.count)
+        skinTones: .init(repeating: .medium, count: skinToneComponentEmoji.count),
     )) { [weak self] _ in
-        guard let self = self else { return }
+        guard let self else { return }
         guard self.selectedSkinTones.count == self.skinToneComponentEmoji.count else { return }
         self.completion(EmojiWithSkinTones(baseEmoji: self.emoji, skinTones: self.selectedSkinTones))
     }
@@ -204,9 +206,9 @@ class EmojiSkinTonePicker: UIView {
                 skinToneButton.setTitle(
                     EmojiWithSkinTones(
                         baseEmoji: emoji,
-                        skinTones: selectedSkinTones
+                        skinTones: selectedSkinTones,
                     ).rawValue,
-                    for: .normal
+                    for: .normal,
                 )
                 skinToneButton.isEnabled = true
                 skinToneButton.alpha = 1
@@ -214,9 +216,9 @@ class EmojiSkinTonePicker: UIView {
                 skinToneButton.setTitle(
                     EmojiWithSkinTones(
                         baseEmoji: emoji,
-                        skinTones: [.medium]
+                        skinTones: [.medium],
                     ).rawValue,
-                    for: .normal
+                    for: .normal,
                 )
                 skinToneButton.isEnabled = false
                 skinToneButton.alpha = 0.2

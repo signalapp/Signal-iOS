@@ -19,12 +19,12 @@ public class LegacyGroupLearnMoreViewController: InteractiveSheetViewController 
             case .explainUnsupportedLegacyGroups:
                 return OWSLocalizedString(
                     "LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_TITLE",
-                    comment: "Title for a sheet explaining details about 'Legacy Groups'."
+                    comment: "Title for a sheet explaining details about 'Legacy Groups'.",
                 )
             case .explainNewGroups:
                 return OWSLocalizedString(
                     "LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE",
-                    comment: "Title for a sheet explaining details about 'New Groups'."
+                    comment: "Title for a sheet explaining details about 'New Groups'.",
                 )
             }
         }
@@ -34,12 +34,12 @@ public class LegacyGroupLearnMoreViewController: InteractiveSheetViewController 
             case .explainUnsupportedLegacyGroups:
                 return OWSLocalizedString(
                     "LEGACY_GROUP_UNSUPPORTED_LEARN_MORE_BODY",
-                    comment: "Text in a sheet explaining details about 'Legacy Groups'."
+                    comment: "Text in a sheet explaining details about 'Legacy Groups'.",
                 )
             case .explainNewGroups:
                 return OWSLocalizedString(
                     "LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_BODY",
-                    comment: "Text in a sheet explaining details about 'New Groups'."
+                    comment: "Text in a sheet explaining details about 'New Groups'.",
                 )
             }
         }
@@ -60,7 +60,7 @@ public class LegacyGroupLearnMoreViewController: InteractiveSheetViewController 
             func buildLabel(
                 font: UIFont,
                 alignment: NSTextAlignment,
-                text: String
+                text: String,
             ) -> UILabel {
                 let label = UILabel()
 
@@ -78,14 +78,14 @@ public class LegacyGroupLearnMoreViewController: InteractiveSheetViewController 
                 buildLabel(
                     font: .dynamicTypeTitle2Clamped.semibold(),
                     alignment: .center,
-                    text: mode.titleString
+                    text: mode.titleString,
                 ),
                 UIView.spacer(withHeight: 20),
                 buildLabel(
                     font: .dynamicTypeBodyClamped,
                     alignment: .left,
-                    text: mode.bodyString
-                )
+                    text: mode.bodyString,
+                ),
             ])
             stackView.axis = .vertical
             stackView.alignment = .fill
@@ -98,7 +98,7 @@ public class LegacyGroupLearnMoreViewController: InteractiveSheetViewController 
             scrollView.addSubview(textStackView)
             textStackView.autoPinWidth(toWidthOf: scrollView)
             textStackView.heightAnchor.constraint(
-                greaterThanOrEqualTo: scrollView.contentLayoutGuide.heightAnchor
+                greaterThanOrEqualTo: scrollView.contentLayoutGuide.heightAnchor,
             ).isActive = true
 
             return scrollView
@@ -118,7 +118,7 @@ public class LegacyGroupLearnMoreViewController: InteractiveSheetViewController 
                 titleColor: .white,
                 backgroundColor: .ows_accentBlue,
                 target: self,
-                selector: #selector(dismissAlert)
+                selector: #selector(dismissAlert),
             )
             button.autoSetDimension(.height, toSize: buttonHeight)
 

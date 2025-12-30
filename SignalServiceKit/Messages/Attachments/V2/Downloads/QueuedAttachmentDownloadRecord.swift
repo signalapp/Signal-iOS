@@ -56,7 +56,7 @@ public struct QueuedAttachmentDownloadRecord: Codable, FetchableRecord, MutableP
 
     public var partialDownloadFileUrl: URL {
         return AttachmentStream.absoluteAttachmentFileURL(
-            relativeFilePath: partialDownloadRelativeFilePath
+            relativeFilePath: partialDownloadRelativeFilePath,
         )
     }
 
@@ -65,7 +65,7 @@ public struct QueuedAttachmentDownloadRecord: Codable, FetchableRecord, MutableP
     public static func forNewDownload(
         ofAttachmentWithId attachmentId: Attachment.IDType,
         priority: AttachmentDownloadPriority = .default,
-        sourceType: SourceType
+        sourceType: SourceType,
     ) -> QueuedAttachmentDownloadRecord {
         return .init(
             id: nil,
@@ -75,7 +75,7 @@ public struct QueuedAttachmentDownloadRecord: Codable, FetchableRecord, MutableP
             // Initial state always allows downloads.
             minRetryTimestamp: nil,
             retryAttempts: 0,
-            partialDownloadRelativeFilePath: AttachmentStream.newRelativeFilePath()
+            partialDownloadRelativeFilePath: AttachmentStream.newRelativeFilePath(),
         )
     }
 
@@ -88,7 +88,7 @@ public struct QueuedAttachmentDownloadRecord: Codable, FetchableRecord, MutableP
         sourceType: SourceType,
         minRetryTimestamp: UInt64?,
         retryAttempts: UInt32,
-        partialDownloadRelativeFilePath: String
+        partialDownloadRelativeFilePath: String,
     ) {
         self.id = id
         self.attachmentId = attachmentId

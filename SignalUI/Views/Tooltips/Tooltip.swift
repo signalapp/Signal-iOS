@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import UIKit
 import SignalServiceKit
+import UIKit
 
 public struct Tooltip {
 
@@ -38,7 +38,7 @@ public struct Tooltip {
         icon: ThemeIcon? = nil,
         shouldShowCloseButton: Bool,
         passthroughViews: [UIView]? = nil,
-        tapAction: TapAction = .dismiss
+        tapAction: TapAction = .dismiss,
     ) {
         self.title = title
         self.message = message
@@ -71,7 +71,7 @@ public struct Tooltip {
         from viewController: UIViewController,
         sourceView: UIView,
         sourceRect: CGRect? = nil,
-        arrowDirections: UIPopoverArrowDirection
+        arrowDirections: UIPopoverArrowDirection,
     ) {
         let tooltipViewController = TooltipViewController(tooltip: self, presenter: viewController)
         tooltipViewController.overrideUserInterfaceStyle = viewController.overrideUserInterfaceStyle
@@ -152,7 +152,7 @@ public struct Tooltip {
 
         // MARK: Lifecycle
 
-        public override func viewDidLoad() {
+        override public func viewDidLoad() {
             super.viewDidLoad()
             hStack.axis = .horizontal
             hStack.spacing = self.tooltip.hSpacing
@@ -182,7 +182,7 @@ public struct Tooltip {
             }
         }
 
-        public override func viewWillAppear(_ animated: Bool) {
+        override public func viewWillAppear(_ animated: Bool) {
             super.viewWillAppear(animated)
             self.updateContentSize()
         }
@@ -219,12 +219,12 @@ public struct Tooltip {
                 let targetWidth = presenter.view.width - popoverOuterMargin
                 let fittingSize = CGSize(
                     width: targetWidth,
-                    height: UIView.layoutFittingCompressedSize.height
+                    height: UIView.layoutFittingCompressedSize.height,
                 )
                 let targetHeight = self.view.systemLayoutSizeFitting(
                     fittingSize,
                     withHorizontalFittingPriority: .required,
-                    verticalFittingPriority: .defaultLow
+                    verticalFittingPriority: .defaultLow,
                 ).height
                 self.preferredContentSize = .init(width: UIView.layoutFittingCompressedSize.width, height: targetHeight)
             } else {
@@ -232,7 +232,7 @@ public struct Tooltip {
 
                 // Manually size the tooltip
                 var contentHeight = titleSize.height + messageSize.height
-                if tooltip.title != nil && tooltip.message != nil {
+                if tooltip.title != nil, tooltip.message != nil {
                     contentHeight += tooltip.vSpacing
                 }
 

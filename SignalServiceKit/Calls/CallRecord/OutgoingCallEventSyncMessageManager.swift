@@ -21,7 +21,7 @@ protocol OutgoingCallEventSyncMessageManager {
         callRecord: CallRecord,
         callEvent: CallEvent,
         callEventTimestamp: UInt64,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     )
 }
 
@@ -36,7 +36,7 @@ final class OutgoingCallEventSyncMessageManagerImpl: OutgoingCallEventSyncMessag
         appReadiness: AppReadiness,
         databaseStorage: SDSDatabaseStorage,
         messageSenderJobQueue: MessageSenderJobQueue,
-        callRecordConversationIdAdapter: any CallRecordSyncMessageConversationIdAdapter
+        callRecordConversationIdAdapter: any CallRecordSyncMessageConversationIdAdapter,
     ) {
         self.appReadiness = appReadiness
         self.databaseStorage = databaseStorage
@@ -48,7 +48,7 @@ final class OutgoingCallEventSyncMessageManagerImpl: OutgoingCallEventSyncMessag
         callRecord: CallRecord,
         callEvent: CallEvent,
         callEventTimestamp: UInt64,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         let outgoingCallEventType: OutgoingCallEvent.EventType? = {
             switch callEvent {
@@ -76,12 +76,12 @@ final class OutgoingCallEventSyncMessageManagerImpl: OutgoingCallEventSyncMessag
             callId: callRecord.callId,
             callType: OutgoingCallEvent.CallType(callRecord.callType),
             eventDirection: OutgoingCallEvent.EventDirection(callRecord.callDirection),
-            eventType: outgoingCallEventType
+            eventType: outgoingCallEventType,
         )
 
         sendSyncMessage(
             outgoingCallEvent: outgoingCallEvent,
-            tx: tx
+            tx: tx,
         )
     }
 
@@ -100,7 +100,7 @@ final class OutgoingCallEventSyncMessageManagerImpl: OutgoingCallEventSyncMessag
     /// updates.
     private func sendSyncMessage(
         outgoingCallEvent callEvent: OutgoingCallEvent,
-        tx syncTx: DBWriteTransaction
+        tx syncTx: DBWriteTransaction,
     ) {
         if appReadiness.isAppReady {
             logger.info("Enqueuing call event sync message: \(callEvent.callType), \(callEvent.eventDirection), \(callEvent.eventType).")
@@ -119,7 +119,7 @@ final class OutgoingCallEventSyncMessageManagerImpl: OutgoingCallEventSyncMessag
 
     private func _sendSyncMessage(
         outgoingCallEvent: OutgoingCallEvent,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         guard let localThread = TSContactThread.getOrCreateLocalThread(transaction: tx) else {
             owsFailDebug("Missing local thread for sync message!")
@@ -129,13 +129,14 @@ final class OutgoingCallEventSyncMessageManagerImpl: OutgoingCallEventSyncMessag
         let outgoingCallEventMessage = OutgoingCallEventSyncMessage(
             localThread: localThread,
             event: outgoingCallEvent,
-            tx: tx
+            tx: tx,
         )
         let preparedMessage = PreparedOutgoingMessage.preprepared(
-            transientMessageWithoutAttachments: outgoingCallEventMessage
+            transientMessageWithoutAttachments: outgoingCallEventMessage,
         )
         messageSenderJobQueue.add(
-            message: preparedMessage, transaction: tx
+            message: preparedMessage,
+            transaction: tx,
         )
     }
 }
@@ -166,26 +167,26 @@ private extension OutgoingCallEvent.EventType {
     init?(_ callStatus: CallRecord.CallStatus) {
         switch callStatus {
         case
-                .individual(.pending),
-                .individual(.incomingMissed),
-                .group(.generic),
-                .group(.ringing),
-                .group(.ringingMissed),
-                .group(.ringingMissedNotificationProfile):
+            .individual(.pending),
+            .individual(.incomingMissed),
+            .group(.generic),
+            .group(.ringing),
+            .group(.ringingMissed),
+            .group(.ringingMissedNotificationProfile):
             // Local-only statuses
             return nil
         case
-                .individual(.accepted),
-                .group(.joined),
-                .callLink(.joined),
-                .group(.ringingAccepted):
+            .individual(.accepted),
+            .group(.joined),
+            .callLink(.joined),
+            .group(.ringingAccepted):
             self = .accepted
         case
-                .individual(.notAccepted),
-                .group(.ringingDeclined):
+            .individual(.notAccepted),
+            .group(.ringingDeclined):
             self = .notAccepted
         case
-                .callLink(.generic):
+            .callLink(.generic):
             // [CallLink] TODO: Verify the correct message is sent in this case.
             self = .observed
         }

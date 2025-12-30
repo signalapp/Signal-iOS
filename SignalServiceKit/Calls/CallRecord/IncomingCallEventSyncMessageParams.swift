@@ -36,22 +36,8 @@ public struct IncomingCallEventSyncMessageParams {
     let callEvent: CallEvent
     let callDirection: CallRecord.CallDirection
 
-    init(
-        conversation: CallEventConversation,
-        callId: UInt64,
-        callTimestamp: UInt64,
-        callEvent: CallEvent,
-        callDirection: CallRecord.CallDirection
-    ) {
-        self.conversation = conversation
-        self.callId = callId
-        self.callTimestamp = callTimestamp
-        self.callEvent = callEvent
-        self.callDirection = callDirection
-    }
-
     static func parse(
-        callEventProto: SSKProtoSyncMessageCallEvent
+        callEventProto: SSKProtoSyncMessageCallEvent,
     ) throws -> Self {
         enum ParseError: Error {
             case missingOrInvalidParameters
@@ -78,7 +64,7 @@ public struct IncomingCallEventSyncMessageParams {
             callId: callId,
             callTimestamp: callTimestamp,
             callEvent: callEvent,
-            callDirection: callDirection
+            callDirection: callDirection,
         )
     }
 }

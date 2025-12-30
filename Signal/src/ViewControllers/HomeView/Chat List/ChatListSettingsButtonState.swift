@@ -37,7 +37,7 @@ final class ChatListSettingsButtonState {
         showBackupsSubscriptionAlreadyRedeemedAvatarBadge: Bool? = nil,
         showBackupsSubscriptionAlreadyRedeemedMenuItem: Bool? = nil,
         showBackupsIAPNotFoundLocallyAvatarBadge: Bool? = nil,
-        showBackupsIAPNotFoundLocallyMenuItem: Bool? = nil
+        showBackupsIAPNotFoundLocallyMenuItem: Bool? = nil,
     ) {
         var didUpdate = false
         if let hasInboxChats {

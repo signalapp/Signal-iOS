@@ -8,7 +8,7 @@ import Foundation
 /// UploadEndpoint encapsulates the logic required to initiate and/or resume an upload to a particular upload backend.
 protocol UploadEndpoint {
 
-    typealias UploadEndpointProgress = ((URLSessionTask, Progress) -> Void)
+    typealias UploadEndpointProgress = (URLSessionTask, Progress) -> Void
 
     /// Map the data in the retrieved upload form to a backend specific upload location.
     ///
@@ -31,7 +31,7 @@ protocol UploadEndpoint {
     func performUpload<Metadata: UploadMetadata>(
         startPoint: Int,
         attempt: Upload.Attempt<Metadata>,
-        progress: OWSProgressSource?
+        progress: OWSProgressSource?,
     ) async throws(Upload.Error)
 }
 

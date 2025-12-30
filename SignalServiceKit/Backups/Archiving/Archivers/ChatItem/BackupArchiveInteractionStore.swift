@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import LibSignalClient
 import GRDB
+import LibSignalClient
 
 public final class BackupArchiveInteractionStore {
 
@@ -22,7 +22,7 @@ public final class BackupArchiveInteractionStore {
         chatId: BackupArchive.ChatId,
         senderAci: Aci?,
         wasRead: Bool,
-        context: BackupArchive.ChatItemRestoringContext
+        context: BackupArchive.ChatItemRestoringContext,
     ) throws {
         try insert(
             interaction: interaction,
@@ -30,7 +30,7 @@ public final class BackupArchiveInteractionStore {
             chatId: chatId,
             senderAci: senderAci,
             wasRead: wasRead,
-            context: context
+            context: context,
         )
     }
 
@@ -38,7 +38,7 @@ public final class BackupArchiveInteractionStore {
         _ interaction: TSOutgoingMessage,
         in thread: BackupArchive.ChatThread,
         chatId: BackupArchive.ChatId,
-        context: BackupArchive.ChatItemRestoringContext
+        context: BackupArchive.ChatItemRestoringContext,
     ) throws {
         try insert(
             interaction: interaction,
@@ -48,7 +48,7 @@ public final class BackupArchiveInteractionStore {
             senderAci: context.recipientContext.localIdentifiers.aci,
             // Outgoing messages are implicitly read.
             wasRead: true,
-            context: context
+            context: context,
         )
     }
 
@@ -56,7 +56,7 @@ public final class BackupArchiveInteractionStore {
         _ interaction: TSInfoMessage,
         in thread: BackupArchive.ChatThread,
         chatId: BackupArchive.ChatId,
-        context: BackupArchive.ChatItemRestoringContext
+        context: BackupArchive.ChatItemRestoringContext,
     ) throws {
         // Info messages are always "directionless", and consequently their
         // "read" is not backed up. Treat them as read.
@@ -70,7 +70,7 @@ public final class BackupArchiveInteractionStore {
             // No sender for info messages
             senderAci: nil,
             wasRead: wasRead,
-            context: context
+            context: context,
         )
     }
 
@@ -78,7 +78,7 @@ public final class BackupArchiveInteractionStore {
         _ interaction: TSErrorMessage,
         in thread: BackupArchive.ChatThread,
         chatId: BackupArchive.ChatId,
-        context: BackupArchive.ChatItemRestoringContext
+        context: BackupArchive.ChatItemRestoringContext,
     ) throws {
         // Error messages are always "directionless", and consequently their
         // "read" state is not backed up. Treat them as read.
@@ -92,7 +92,7 @@ public final class BackupArchiveInteractionStore {
             // No sender for error messages
             senderAci: nil,
             wasRead: wasRead,
-            context: context
+            context: context,
         )
     }
 
@@ -104,7 +104,7 @@ public final class BackupArchiveInteractionStore {
         chatId: BackupArchive.ChatId,
         callerAci: Aci?,
         wasRead: Bool,
-        context: BackupArchive.ChatItemRestoringContext
+        context: BackupArchive.ChatItemRestoringContext,
     ) throws {
         try insert(
             interaction: interaction,
@@ -112,7 +112,7 @@ public final class BackupArchiveInteractionStore {
             chatId: chatId,
             senderAci: callerAci,
             wasRead: wasRead,
-            context: context
+            context: context,
         )
     }
 
@@ -123,7 +123,7 @@ public final class BackupArchiveInteractionStore {
         chatId: BackupArchive.ChatId,
         startedCallAci: Aci?,
         wasRead: Bool,
-        context: BackupArchive.ChatItemRestoringContext
+        context: BackupArchive.ChatItemRestoringContext,
     ) throws {
         try insert(
             interaction: interaction,
@@ -131,7 +131,7 @@ public final class BackupArchiveInteractionStore {
             chatId: chatId,
             senderAci: startedCallAci,
             wasRead: wasRead,
-            context: context
+            context: context,
         )
     }
 
@@ -143,7 +143,7 @@ public final class BackupArchiveInteractionStore {
         chatId: BackupArchive.ChatId,
         senderAci: Aci?,
         wasRead: Bool,
-        context: BackupArchive.ChatItemRestoringContext
+        context: BackupArchive.ChatItemRestoringContext,
     ) throws {
         guard interaction.shouldBeSaved else {
             owsFailDebug("Unsaveable interaction in a backup?")
@@ -158,14 +158,14 @@ public final class BackupArchiveInteractionStore {
                 // In a backups context, _all_ info message group updates are precomputed.
                 // We can assume this in this builder override.
                 switch infoMessage.groupUpdateMetadata(
-                    localIdentifiers: context.recipientContext.localIdentifiers
+                    localIdentifiers: context.recipientContext.localIdentifiers,
                 ) {
                 case .precomputed(let wrapper):
                     return wrapper.updateItems
                 default:
                     return nil
                 }
-            }
+            },
         )
 
         // Note: We do not insert restored messages into the MessageSendLog.
@@ -184,7 +184,7 @@ public final class BackupArchiveInteractionStore {
             context.chatContext.updateLastVisibleInteractionRowId(
                 interactionRowId: interactionRowId,
                 wasRead: wasRead,
-                chatId: chatId
+                chatId: chatId,
             )
         }
 
@@ -202,7 +202,7 @@ public final class BackupArchiveInteractionStore {
                     groupThread: groupThread,
                     chatId: chatId,
                     senderAci: senderAci,
-                    timestamp: interaction.timestamp
+                    timestamp: interaction.timestamp,
                 )
             }
         }
@@ -234,7 +234,7 @@ public final class BackupArchiveInteractionStore {
     /// over hundreds of thousands of interaction inserts during a restore are.
     private func insertInteractionWithDirectSQLiteCalls(
         _ interaction: TSInteraction,
-        database: GRDB.Database
+        database: GRDB.Database,
     ) throws {
         guard let sqliteConnection = database.sqliteConnection else {
             throw OWSAssertionError("Missing SQLite connection!")
@@ -251,7 +251,7 @@ public final class BackupArchiveInteractionStore {
         /// statement pointer in a package-level cache, from which we can
         /// retrieve it.
         let cachedSqliteStatement: GRDB.SQLiteStatement = try database.cachedStatement(
-            sql: insertInteractionSQL
+            sql: insertInteractionSQL,
         ).sqliteStatement
 
         /// The compiled "insert interaction" SQLite statement contains `?`

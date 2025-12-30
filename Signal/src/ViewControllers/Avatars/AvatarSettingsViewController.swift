@@ -22,6 +22,7 @@ class AvatarSettingsViewController: OWSTableViewController2 {
             return true
         }
     }
+
     private var state: State {
         didSet {
             guard state != oldValue else { return }
@@ -45,12 +46,12 @@ class AvatarSettingsViewController: OWSTableViewController2 {
                 return avatarBuilder.defaultAvatarImage(
                     forGroupId: groupId,
                     diameterPoints: UInt(Self.headerAvatarSize),
-                    transaction: tx
+                    transaction: tx,
                 )
             case .profile:
                 return avatarBuilder.defaultAvatarImageForLocalUser(
                     diameterPoints: UInt(Self.headerAvatarSize),
-                    transaction: tx
+                    transaction: tx,
                 )
             }
         }
@@ -61,7 +62,7 @@ class AvatarSettingsViewController: OWSTableViewController2 {
     init(
         context: AvatarHistoryManager.Context,
         currentAvatarImage: UIImage?,
-        avatarChangeCallback: @escaping (UIImage?) -> Void
+        avatarChangeCallback: @escaping (UIImage?) -> Void,
     ) {
         self.context = context
         self.state = .original(currentAvatarImage)
@@ -85,7 +86,7 @@ class AvatarSettingsViewController: OWSTableViewController2 {
 
         navigationItem.leftBarButtonItem = .cancelButton(
             dismissingFrom: self,
-            hasUnsavedChanges: { [weak self] in self?.state.isNew }
+            hasUnsavedChanges: { [weak self] in self?.state.isNew },
         )
 
         navigationItem.rightBarButtonItem = .setButton { [weak self] in
@@ -111,14 +112,16 @@ class AvatarSettingsViewController: OWSTableViewController2 {
             return owsFailDebug("Tried to tap done in unexpected state")
         }
 
-        if let model = model {
+        if let model {
             DependenciesBridge.shared.db.asyncWrite { [context] tx in
                 AppEnvironment.shared.avatarHistoryManager.touchedModel(model, in: context, tx: tx)
             }
-            guard let newAvatar = SSKEnvironment.shared.avatarBuilderRef.avatarImage(
-                model: model,
-                diameterPixels: OWSProfileManager.maxAvatarDiameterPixels
-            ) else {
+            guard
+                let newAvatar = SSKEnvironment.shared.avatarBuilderRef.avatarImage(
+                    model: model,
+                    diameterPixels: OWSProfileManager.maxAvatarDiameterPixels,
+                )
+            else {
                 owsFailDebug("Failed to generate new avatar.")
                 return
             }
@@ -199,11 +202,11 @@ class AvatarSettingsViewController: OWSTableViewController2 {
         let section = OWSTableSection()
         section.headerTitle = OWSLocalizedString(
             "AVATAR_SETTINGS_VIEW_SELECT_AN_AVATAR",
-            comment: "Title for the previously used and preset avatar section."
+            comment: "Title for the previously used and preset avatar section.",
         )
         section.add(.init { [weak self] in
             let cell = OWSTableItem.newCell()
-            guard let self = self else { return cell }
+            guard let self else { return cell }
             cell.selectionStyle = .none
             self.configureAvatarsCell(cell)
             return cell
@@ -276,10 +279,12 @@ class AvatarSettingsViewController: OWSTableViewController2 {
             })
 
             return allModels.compactMap { model in
-                guard let image = SSKEnvironment.shared.avatarBuilderRef.avatarImage(
-                    model: model,
-                    diameterPoints: UInt(avatarSize)
-                ) else {
+                guard
+                    let image = SSKEnvironment.shared.avatarBuilderRef.avatarImage(
+                        model: model,
+                        diameterPoints: UInt(avatarSize),
+                    )
+                else {
                     owsFailDebug("Failed to prepare avatar for model \(model.identifier).")
                     return nil
                 }
@@ -307,7 +312,7 @@ class AvatarSettingsViewController: OWSTableViewController2 {
     func updateHeaderView() {
         switch state {
         case .new(let model):
-            if let model = model {
+            if let model {
                 clearButton.isHidden = false
                 headerImageView.image = SSKEnvironment.shared.avatarBuilderRef.avatarImage(model: model, diameterPoints: UInt(Self.headerAvatarSize))
             } else {
@@ -315,7 +320,7 @@ class AvatarSettingsViewController: OWSTableViewController2 {
                 headerImageView.image = defaultAvatarImage
             }
         case .original(let image):
-            if let image = image {
+            if let image {
                 clearButton.isHidden = false
                 headerImageView.image = image
             } else {
@@ -345,6 +350,7 @@ class AvatarSettingsViewController: OWSTableViewController2 {
     }
 
     // MARK: - Header Buttons
+
     private let headerButtonStack = UIStackView()
 
     private func buildHeaderButtons() -> [UIView] {
@@ -353,48 +359,48 @@ class AvatarSettingsViewController: OWSTableViewController2 {
                 icon: .buttonCamera,
                 title: OWSLocalizedString(
                     "AVATAR_SETTINGS_VIEW_CAMERA_BUTTON",
-                    comment: "Text indicating the user can select an avatar from their camera"
+                    comment: "Text indicating the user can select an avatar from their camera",
                 ),
                 action: { [weak self] in
-                    guard let self = self else { return }
+                    guard let self else { return }
                     let picker = OWSImagePickerController()
                     picker.delegate = self
                     picker.allowsEditing = false
                     picker.sourceType = .camera
                     picker.mediaTypes = [UTType.image.identifier]
                     self.present(picker, animated: true)
-                }
+                },
             ),
             buildHeaderButton(
                 icon: .buttonPhotoLibrary,
                 title: OWSLocalizedString(
                     "AVATAR_SETTINGS_VIEW_PHOTO_BUTTON",
-                    comment: "Text indicating the user can select an avatar from their photos"
+                    comment: "Text indicating the user can select an avatar from their photos",
                 ),
                 action: { [weak self] in
-                    guard let self = self else { return }
+                    guard let self else { return }
                     let picker = OWSImagePickerController()
                     picker.delegate = self
                     picker.sourceType = .photoLibrary
                     picker.mediaTypes = [UTType.image.identifier]
                     self.present(picker, animated: true)
-                }
+                },
             ),
             buildHeaderButton(
                 icon: .buttonText,
                 title: OWSLocalizedString(
                     "AVATAR_SETTINGS_VIEW_TEXT_BUTTON",
-                    comment: "Text indicating the user can create a new avatar with text"
+                    comment: "Text indicating the user can create a new avatar with text",
                 ),
                 action: { [weak self] in
                     let model = AvatarModel(type: .text(""), theme: .default)
                     let vc = AvatarEditViewController(model: model) { [weak self] editedModel in
                         DependenciesBridge.shared.db.asyncWrite { tx in
-                            guard let self = self else { return }
+                            guard let self else { return }
                             AppEnvironment.shared.avatarHistoryManager.touchedModel(
                                 editedModel,
                                 in: self.context,
-                                tx: tx
+                                tx: tx,
                             )
                         } completion: {
                             self?.state = .new(editedModel)
@@ -402,8 +408,8 @@ class AvatarSettingsViewController: OWSTableViewController2 {
                         }
                     }
                     self?.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
-                }
-            )
+                },
+            ),
         ]
     }
 
@@ -468,12 +474,12 @@ extension AvatarSettingsViewController: UIImagePickerControllerDelegate, UINavig
 
         dismiss(animated: true) { [weak self] in
             let vc = CropScaleImageViewController(srcImage: originalImage) { croppedImage in
-                guard let self = self else { return }
+                guard let self else { return }
                 let imageModel = DependenciesBridge.shared.db.write { tx in
                     AppEnvironment.shared.avatarHistoryManager.recordModelForImage(
                         croppedImage,
                         in: self.context,
-                        tx: tx
+                        tx: tx,
                     )
                 }
                 DispatchQueue.main.async {
@@ -500,7 +506,7 @@ extension AvatarSettingsViewController: OptionViewDelegate {
                 AppEnvironment.shared.avatarHistoryManager.touchedModel(
                     editedModel,
                     in: context,
-                    tx: tx
+                    tx: tx,
                 )
             } completion: {
                 self?.state = .new(editedModel)
@@ -516,7 +522,7 @@ extension AvatarSettingsViewController: OptionViewDelegate {
             AppEnvironment.shared.avatarHistoryManager.deletedModel(
                 model,
                 in: context,
-                tx: tx
+                tx: tx,
             )
         } completion: { [weak self] in
             // If we just deleted the selected avatar, also clear it.
@@ -583,7 +589,7 @@ private class OptionView: UIView {
 
     @objc
     private func handleTap() {
-        guard let model = model else {
+        guard let model else {
             return owsFailDebug("Unexpectedly missing model in OptionView")
         }
 
@@ -597,7 +603,7 @@ private class OptionView: UIView {
 
     @objc
     private func handleLongPress() {
-        guard let model = model else {
+        guard let model else {
             return owsFailDebug("Unexpectedly missing model in OptionView")
         }
 
@@ -605,13 +611,13 @@ private class OptionView: UIView {
         actionSheet.addAction(OWSActionSheets.cancelAction)
         if model.type.isEditable {
             actionSheet.addAction(.init(title: CommonStrings.editButton, handler: { [weak self] _ in
-                guard let self = self else { return }
+                guard let self else { return }
                 self.delegate?.didEditOptionView(self, model: model)
             }))
         }
         if model.type.isDeletable {
             actionSheet.addAction(.init(title: CommonStrings.deleteButton, handler: { [weak self] _ in
-                guard let self = self else { return }
+                guard let self else { return }
                 self.delegate?.didDeleteOptionView(self, model: model)
             }))
         }
@@ -630,7 +636,7 @@ private class OptionView: UIView {
         editOverlayView.isHidden = true
         editOverlayView.layer.borderColor = OWSTableViewController2.cellBackgroundColor(isUsingPresentedStyle: true).cgColor
 
-        guard let model = model else { return }
+        guard let model else { return }
 
         if model.type.isEditable {
             editOverlayView.isHidden = !isSelected

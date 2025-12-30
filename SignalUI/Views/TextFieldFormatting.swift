@@ -18,7 +18,7 @@ public class TextFieldFormatting {
         _ textField: UITextField,
         shouldChangeCharactersIn range: NSRange,
         replacementString insertionText: String,
-        plusPrefixedCallingCode: String
+        plusPrefixedCallingCode: String,
     ) -> Bool {
 
         let isDeletion = insertionText.isEmpty
@@ -50,7 +50,7 @@ public class TextFieldFormatting {
             UInt(originalCursorOffset),
             from: originalText,
             to: updatedText,
-            stickingRightward: false
+            stickingRightward: false,
         )
         textField.text = updatedText
         if let position = textField.position(from: textField.beginningOfDocument, offset: Int(updatedCursorOffset)) {
@@ -68,7 +68,7 @@ public class TextFieldFormatting {
         _ textField: UITextField,
         changeCharactersIn range: NSRange,
         replacementString insertionText: String,
-        plusPrefixedCallingCode: String
+        plusPrefixedCallingCode: String,
     ) {
         // Phone numbers takes many forms.
         //
@@ -104,7 +104,7 @@ public class TextFieldFormatting {
         if isJustDeletion {
             let deletedText = (oldText as NSString).substring(with: range)
             let didDeleteFormatting = deletedText.count == 1 && deletedText.digitsOnly().isEmpty
-            if didDeleteFormatting && !left.isEmpty {
+            if didDeleteFormatting, !left.isEmpty {
                 left = String(left.dropLast())
             }
         }
@@ -122,7 +122,7 @@ public class TextFieldFormatting {
             UInt(cursorPositionAfterChange),
             from: textAfterChange,
             to: formattedText,
-            stickingRightward: isJustDeletion
+            stickingRightward: isJustDeletion,
         )
 
         textField.text = formattedText
@@ -135,7 +135,7 @@ public class TextFieldFormatting {
     public static func ows2FAPINTextField(
         _ textField: UITextField,
         changeCharactersIn range: NSRange,
-        replacementString insertionText: String
+        replacementString insertionText: String,
     ) {
         // * We only want to let the user enter decimal digits.
         // * The user should be able to copy and paste freely.
@@ -189,7 +189,7 @@ public class TextFieldFormatting {
 
         let formatString = OWSLocalizedString(
             "PHONE_NUMBER_EXAMPLE_FORMAT",
-            comment: "A format for a label showing an example phone number. Embeds {{the example phone number}}."
+            comment: "A format for a label showing an example phone number. Embeds {{the example phone number}}.",
         )
         return String(format: formatString, nationalNumber)
     }

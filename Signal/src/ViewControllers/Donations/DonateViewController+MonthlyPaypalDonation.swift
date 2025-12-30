@@ -12,7 +12,7 @@ extension DonateViewController {
     /// Please note related methods/code for subscriptions via Apple Pay and cards.
     func startPaypalSubscription(
         with amount: FiatMoney,
-        badge: ProfileBadge
+        badge: ProfileBadge,
     ) {
         guard
             let monthly = state.monthly,
@@ -26,26 +26,26 @@ extension DonateViewController {
                 Logger.info("[Donations] Starting monthly PayPal donation")
                 let (subscriberId, authorizationParams) = try await self.preparePaypalSubscriptionBehindActivityIndicator(
                     monthlyState: monthly,
-                    selectedSubscriptionLevel: selectedSubscriptionLevel
+                    selectedSubscriptionLevel: selectedSubscriptionLevel,
                 )
                 let paymentMethodId = authorizationParams.paymentMethodId
 
                 Logger.info("[Donations] Authorizing payment for new monthly subscription with PayPal")
                 _ = try await Paypal.presentExpectingApprovalParams(
                     approvalUrl: authorizationParams.approvalUrl,
-                    withPresentationContext: self
+                    withPresentationContext: self,
                 ) as Paypal.MonthlyPaymentWebAuthApprovalParams
 
                 try await self.finalizePaypalSubscriptionBehindProgressView(
                     subscriberId: subscriberId,
                     paymentMethodId: paymentMethodId,
                     monthlyState: monthly,
-                    selectedSubscriptionLevel: selectedSubscriptionLevel
+                    selectedSubscriptionLevel: selectedSubscriptionLevel,
                 )
 
                 Logger.info("[Donations] Monthly PayPal donation finished")
                 self.didCompleteDonation(
-                    receiptCredentialSuccessMode: .recurringSubscriptionInitiation
+                    receiptCredentialSuccessMode: .recurringSubscriptionInitiation,
                 )
             } catch Paypal.AuthError.userCanceled {
                 Logger.info("[Donations] Monthly PayPal donation canceled")
@@ -56,7 +56,7 @@ extension DonateViewController {
                     error: error,
                     mode: .monthly,
                     badge: selectedSubscriptionLevel.badge,
-                    paymentMethod: .paypal
+                    paymentMethod: .paypal,
                 )
             }
         }
@@ -70,7 +70,7 @@ extension DonateViewController {
     /// auth.
     private func preparePaypalSubscriptionBehindActivityIndicator(
         monthlyState monthly: State.MonthlyState,
-        selectedSubscriptionLevel: DonationSubscriptionLevel
+        selectedSubscriptionLevel: DonationSubscriptionLevel,
     ) async throws -> (Data, Paypal.SubscriptionAuthorizationParams) {
         return try await ModalActivityIndicatorViewController.presentAndPropagateResult(
             from: self,
@@ -84,7 +84,7 @@ extension DonateViewController {
 
                 Logger.info("[Donations] Preparing new monthly subscription with PayPal")
                 let subscriberId = try await DonationSubscriptionManager.prepareNewSubscription(
-                    currencyCode: monthly.selectedCurrencyCode
+                    currencyCode: monthly.selectedCurrencyCode,
                 )
 
                 Logger.info("[Donations] Creating Signal payment method for new monthly subscription with PayPal")
@@ -100,7 +100,7 @@ extension DonateViewController {
         subscriberId: Data,
         paymentMethodId: String,
         monthlyState monthly: State.MonthlyState,
-        selectedSubscriptionLevel: DonationSubscriptionLevel
+        selectedSubscriptionLevel: DonationSubscriptionLevel,
     ) async throws {
         return try await DonationViewsUtil.wrapInProgressView(
             from: self,
@@ -110,7 +110,7 @@ extension DonateViewController {
                     forSubscriberId: subscriberId,
                     paymentType: .paypal(paymentMethodId: paymentMethodId),
                     subscription: selectedSubscriptionLevel,
-                    currencyCode: monthly.selectedCurrencyCode
+                    currencyCode: monthly.selectedCurrencyCode,
                 )
 
                 Logger.info("[Donations] Redeeming monthly receipt for PayPal donation")
@@ -121,10 +121,10 @@ extension DonateViewController {
                         priorSubscriptionLevel: monthly.currentSubscriptionLevel?.level,
                         paymentProcessor: .braintree,
                         paymentMethod: .paypal,
-                        isNewSubscription: true
+                        isNewSubscription: true,
                     )
                 }
-            }
+            },
         )
     }
 }

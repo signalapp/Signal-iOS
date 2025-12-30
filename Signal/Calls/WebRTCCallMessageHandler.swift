@@ -11,7 +11,7 @@ class WebRTCCallMessageHandler: CallMessageHandler {
 
     // MARK: Initializers
 
-    public init() {
+    init() {
         SwiftSingletons.register(self)
     }
 
@@ -31,7 +31,7 @@ class WebRTCCallMessageHandler: CallMessageHandler {
         sentAtTimestamp: UInt64,
         serverReceivedTimestamp: UInt64,
         serverDeliveryTimestamp: UInt64,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         switch callEnvelope {
         case .offer(let offer):
@@ -45,7 +45,7 @@ class WebRTCCallMessageHandler: CallMessageHandler {
                 serverReceivedTimestamp: serverReceivedTimestamp,
                 serverDeliveryTimestamp: serverDeliveryTimestamp,
                 callType: offer.type ?? .offerAudioCall,
-                tx: tx
+                tx: tx,
             )
         case .answer(let answer):
             self.callService.individualCallService.handleReceivedAnswer(
@@ -53,14 +53,14 @@ class WebRTCCallMessageHandler: CallMessageHandler {
                 callId: answer.id,
                 sourceDevice: caller.deviceId,
                 opaque: answer.opaque,
-                tx: tx
+                tx: tx,
             )
         case .iceUpdate(let iceUpdate):
             self.callService.individualCallService.handleReceivedIceCandidates(
                 caller: caller.aci,
                 callId: iceUpdate[0].id,
                 sourceDevice: caller.deviceId,
-                candidates: iceUpdate
+                candidates: iceUpdate,
             )
         case .hangup(let hangup):
             // deviceId is optional and defaults to 0.
@@ -83,13 +83,13 @@ class WebRTCCallMessageHandler: CallMessageHandler {
                 callId: hangup.id,
                 sourceDevice: caller.deviceId,
                 type: type,
-                deviceId: deviceId
+                deviceId: deviceId,
             )
         case .busy(let busy):
             self.callService.individualCallService.handleReceivedBusy(
                 caller: caller.aci,
                 callId: busy.id,
-                sourceDevice: caller.deviceId
+                sourceDevice: caller.deviceId,
             )
         case .opaque(let opaque):
             Logger.info("Received opaque call message from \(caller.aci).\(caller.deviceId)")
@@ -100,7 +100,7 @@ class WebRTCCallMessageHandler: CallMessageHandler {
             }
 
             var messageAgeSec: UInt64 = 0
-            if serverReceivedTimestamp > 0 && serverDeliveryTimestamp >= serverReceivedTimestamp {
+            if serverReceivedTimestamp > 0, serverDeliveryTimestamp >= serverReceivedTimestamp {
                 messageAgeSec = (serverDeliveryTimestamp - serverReceivedTimestamp) / 1000
             }
 
@@ -115,7 +115,7 @@ class WebRTCCallMessageHandler: CallMessageHandler {
                     senderDeviceId: caller.deviceId.uint32Value,
                     localDeviceId: localDeviceId.uint32Value,
                     message: message,
-                    messageAgeSec: messageAgeSec
+                    messageAgeSec: messageAgeSec,
                 )
             }
         }
@@ -124,14 +124,14 @@ class WebRTCCallMessageHandler: CallMessageHandler {
     func receivedGroupCallUpdateMessage(
         _ updateMessage: SSKProtoDataMessageGroupCallUpdate,
         forGroupId groupId: GroupIdentifier,
-        serverReceivedTimestamp: UInt64
+        serverReceivedTimestamp: UInt64,
     ) async {
         await groupCallManager.peekGroupCallAndUpdateThread(
             forGroupId: groupId,
             peekTrigger: .receivedGroupUpdateMessage(
                 eraId: updateMessage.eraID,
-                messageTimestamp: serverReceivedTimestamp
-            )
+                messageTimestamp: serverReceivedTimestamp,
+            ),
         )
     }
 }

@@ -7,8 +7,10 @@ public import SignalServiceKit
 
 public protocol ContactShareViewControllerDelegate: AnyObject {
 
-    func contactShareViewController(_ viewController: ContactShareViewController,
-                                    didApproveContactShare contactShare: ContactShareDraft)
+    func contactShareViewController(
+        _ viewController: ContactShareViewController,
+        didApproveContactShare contactShare: ContactShareDraft,
+    )
 
     func contactShareViewControllerDidCancel(_ viewController: ContactShareViewController)
 
@@ -40,7 +42,7 @@ public class ContactShareViewController: OWSTableViewController2 {
         return ContactShareAvatarField(OWSContactAvatar(
             avatarImage: avatarImage,
             avatarData: avatarData,
-            existingAttachment: contactShareDraft.existingAvatarAttachment
+            existingAttachment: contactShareDraft.existingAvatarAttachment,
         ))
     }()
 
@@ -87,8 +89,10 @@ public class ContactShareViewController: OWSTableViewController2 {
         if let title = shareDelegate?.titleForContactShareViewController(self) {
             navigationItem.title = title
         } else {
-            navigationItem.title = OWSLocalizedString("CONTACT_SHARE_APPROVAL_VIEW_TITLE",
-                                                      comment: "Title for the 'Approve contact share' view.")
+            navigationItem.title = OWSLocalizedString(
+                "CONTACT_SHARE_APPROVAL_VIEW_TITLE",
+                comment: "Title for the 'Approve contact share' view.",
+            )
         }
         if let recipientsDescription = shareDelegate?.recipientsDescriptionForContactShareViewController(self) {
             footerView.setNamesText(recipientsDescription, animated: false)
@@ -98,11 +102,11 @@ public class ContactShareViewController: OWSTableViewController2 {
         updateProceedButtonState()
     }
 
-    public override var canBecomeFirstResponder: Bool {
+    override public var canBecomeFirstResponder: Bool {
         return true
     }
 
-    public override var inputAccessoryView: UIView? {
+    override public var inputAccessoryView: UIView? {
         return footerView
     }
 
@@ -136,7 +140,7 @@ public class ContactShareViewController: OWSTableViewController2 {
             },
             actionBlock: { [weak self] in
                 self?.openContactNameEditingView()
-            }
+            },
         ))
 
         // Avatar
@@ -147,7 +151,7 @@ public class ContactShareViewController: OWSTableViewController2 {
                 },
                 actionBlock: { [weak self] in
                     self?.toggleSelection(for: avatarField)
-                }
+                },
             ))
         }
 
@@ -159,7 +163,8 @@ public class ContactShareViewController: OWSTableViewController2 {
                 },
                 actionBlock: { [weak self] in
                     self?.toggleSelection(for: field)
-                })
+                },
+            )
         }
         contents = OWSTableContents(sections: [OWSTableSection(items: tableItems)])
     }
@@ -171,10 +176,11 @@ public class ContactShareViewController: OWSTableViewController2 {
     private func toggleSelection(for contactShareField: ContactShareField) {
         contactShareField.isIncluded = !contactShareField.isIncluded
 
-        guard let cell = tableView.visibleCells.first(where: { visibleCell in
-            guard let contactFieldCell = visibleCell as? ContactShareFieldCell else { return false }
-            return contactFieldCell.field === contactShareField
-        }) as? ContactShareFieldCell else { return }
+        guard
+            let cell = tableView.visibleCells.first(where: { visibleCell in
+                guard let contactFieldCell = visibleCell as? ContactShareFieldCell else { return false }
+                return contactFieldCell.field === contactShareField
+            }) as? ContactShareFieldCell else { return }
 
         cell.updateCheckmarkState()
 
@@ -190,8 +196,10 @@ public class ContactShareViewController: OWSTableViewController2 {
         guard isAtLeastOneFieldSelected() else { return }
 
         guard contactShareDraft.ows_isValid else {
-            OWSActionSheets.showErrorAlert(message: OWSLocalizedString("CONTACT_SHARE_INVALID_CONTACT",
-                                                                       comment: "Error indicating that an invalid contact cannot be shared."))
+            OWSActionSheets.showErrorAlert(message: OWSLocalizedString(
+                "CONTACT_SHARE_INVALID_CONTACT",
+                comment: "Error indicating that an invalid contact cannot be shared.",
+            ))
             return
         }
 
@@ -226,7 +234,7 @@ public class ContactShareViewController: OWSTableViewController2 {
         private lazy var checkmark: UIImageView = {
             let checkmark = UIImageView(
                 image: Theme.iconImage(.circle).withTintColor(.ows_gray25, renderingMode: .automatic),
-                highlightedImage: Theme.iconImage(.checkCircleFill).withTintColor(Theme.accentBlueColor, renderingMode: .automatic)
+                highlightedImage: Theme.iconImage(.checkCircleFill).withTintColor(Theme.accentBlueColor, renderingMode: .automatic),
             )
             checkmark.autoSetDimensions(to: .square(24))
             return checkmark
@@ -259,7 +267,7 @@ public class ContactShareViewController: OWSTableViewController2 {
 
             selectionStyle = .none
 
-            let stackView = UIStackView(arrangedSubviews: [ checkmark ])
+            let stackView = UIStackView(arrangedSubviews: [checkmark])
             if let fieldContentView {
                 stackView.addArrangedSubview(fieldContentView)
             }
@@ -277,7 +285,7 @@ public class ContactShareViewController: OWSTableViewController2 {
             let checkmark = UIImageView(image: Theme.iconImage(.checkCircleFill).withTintColor(.ows_gray25, renderingMode: .automatic))
             let nameField = ContactFieldViewHelper.contactFieldView(forContactName: contactName)
 
-            let stackView = UIStackView(arrangedSubviews: [ checkmark, nameField ])
+            let stackView = UIStackView(arrangedSubviews: [checkmark, nameField])
             stackView.axis = .horizontal
             stackView.spacing = 12
             stackView.alignment = .center
@@ -289,7 +297,7 @@ public class ContactShareViewController: OWSTableViewController2 {
             stackView.autoPinWidthToSuperviewMargins()
 
             return cell
-       }
+        }
 
         required init(coder: NSCoder) {
             fatalError("init(coder:) has not been implemented")
@@ -303,8 +311,10 @@ public class ContactShareViewController: OWSTableViewController2 {
 
 extension ContactShareViewController: EditContactShareNameViewControllerDelegate {
 
-    public func editContactShareNameView(_ editContactShareNameView: EditContactShareNameViewController,
-                                         didFinishWith contactName: OWSContactName) {
+    public func editContactShareNameView(
+        _ editContactShareNameView: EditContactShareNameViewController,
+        didFinishWith contactName: OWSContactName,
+    ) {
         contactShareDraft.name = contactName
         tableView.reloadData()
     }

@@ -20,7 +20,7 @@ final class PhoneNumberRegionsTest: XCTestCase {
 
         XCTAssertEqual(
             PhoneNumberRegions(fromRemoteConfig: "1,2 345, +6 7,, ,89,٦,6️⃣"),
-            ["1", "2345", "67", "89"]
+            ["1", "2345", "67", "89"],
         )
     }
 

@@ -14,15 +14,15 @@ final class OWSOutgoingResendResponseTest: SSKBaseTest {
         let resendResponse = try XCTUnwrap(NSKeyedUnarchiver.unarchivedObject(ofClass: OWSOutgoingResendResponse.self, from: serializedValue, requiringSecureCoding: false))
         XCTAssertEqual(
             resendResponse.originalMessagePlaintext?.base64EncodedString(),
-            "ClYKA0FCQzIgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA4gMyJ44MyYAB6JAogAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAQ=="
+            "ClYKA0FCQzIgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA4gMyJ44MyYAB6JAogAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAQ==",
         )
         XCTAssertEqual(
             resendResponse.originalThreadId,
-            "gd/rq8//fR4RzhvN3G9KcKlQoj7cguQFjTOqLV6JUSbo="
+            "gd/rq8//fR4RzhvN3G9KcKlQoj7cguQFjTOqLV6JUSbo=",
         )
         XCTAssertEqual(
             resendResponse.originalGroupId?.base64EncodedString(),
-            "d/rq8//fR4RzhvN3G9KcKlQoj7cguQFjTOqLV6JUSbo="
+            "d/rq8//fR4RzhvN3G9KcKlQoj7cguQFjTOqLV6JUSbo=",
         )
         XCTAssertEqual(resendResponse.contentHint, .resendable)
         XCTAssertEqual(resendResponse.didAppendSKDM, false)

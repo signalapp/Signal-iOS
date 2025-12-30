@@ -23,7 +23,7 @@ public class AttachmentBackupPointer {
 
     private init(
         attachment: Attachment,
-        info: Attachment.MediaTierInfo
+        info: Attachment.MediaTierInfo,
     ) {
         self.attachment = attachment
         self.info = info
@@ -37,14 +37,14 @@ public class AttachmentBackupPointer {
         }
         self.init(
             attachment: attachment,
-            info: info
+            info: info,
         )
     }
 
     var asAnyPointer: AttachmentPointer {
         return AttachmentPointer(
             attachment: attachment,
-            source: .mediaTier(self)
+            source: .mediaTier(self),
         )
     }
 }

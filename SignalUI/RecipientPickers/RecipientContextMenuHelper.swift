@@ -10,10 +10,12 @@ public protocol RecipientContextMenuHelperDelegate: AnyObject {
     func additionalActions(for address: SignalServiceAddress) -> [UIAction]
     func additionalActions(for groupThread: TSGroupThread) -> [UIAction]
 }
+
 public extension RecipientContextMenuHelperDelegate {
     func additionalActions(for address: SignalServiceAddress) -> [UIAction] {
         []
     }
+
     func additionalActions(for groupThread: TSGroupThread) -> [UIAction] { [] }
 }
 
@@ -41,7 +43,7 @@ class RecipientContextMenuHelper {
         accountManager: TSAccountManager,
         contactsManager: any ContactManager,
         fromViewController: UIViewController,
-        delegate: (any RecipientContextMenuHelperDelegate)? = nil
+        delegate: (any RecipientContextMenuHelperDelegate)? = nil,
     ) {
         self.databaseStorage = databaseStorage
         self.blockingManager = blockingManager
@@ -68,8 +70,8 @@ class RecipientContextMenuHelper {
             }
             guard
                 let localAddress,
-                !localAddress.isEqualToAddress(address) else
-            {
+                !localAddress.isEqualToAddress(address)
+            else {
                 /// There may come a day when the recipient context menu has
                 /// menu items that should be available for Note to Self, at
                 /// which point this should no longer return nil.
@@ -78,7 +80,7 @@ class RecipientContextMenuHelper {
             let additionalActions = self.delegate?.additionalActions(for: address) ?? []
             return UIMenu(children: additionalActions + [
                 self.removeAction(address: address, fromViewController: fromViewController),
-                self.blockAction(address: address, fromViewController: fromViewController)
+                self.blockAction(address: address, fromViewController: fromViewController),
             ])
         }
     }
@@ -103,7 +105,7 @@ class RecipientContextMenuHelper {
     private var blockActionTitle: String {
         OWSLocalizedString(
             "RECIPIENT_CONTEXT_MENU_BLOCK_TITLE",
-            comment: "The title for a context menu item that blocks a recipient from your recipient picker list."
+            comment: "The title for a context menu item that blocks a recipient from your recipient picker list.",
         )
     }
 
@@ -115,34 +117,34 @@ class RecipientContextMenuHelper {
     /// - Returns: A Block UIAction.
     private func blockAction(
         address: SignalServiceAddress,
-        fromViewController: UIViewController
+        fromViewController: UIViewController,
     ) -> UIAction {
         UIAction(
             title: blockActionTitle,
             image: UIImage(named: "block"),
-            attributes: .destructive
+            attributes: .destructive,
         ) { _ in
             BlockListUIUtils.showBlockAddressActionSheet(
                 address,
                 from: fromViewController,
-                completion: nil
+                completion: nil,
             )
         }
     }
 
     private func blockAction(
         thread: TSThread,
-        fromViewController: UIViewController
+        fromViewController: UIViewController,
     ) -> UIAction {
         UIAction(
             title: blockActionTitle,
             image: UIImage(named: "block"),
-            attributes: .destructive
+            attributes: .destructive,
         ) { _ in
             BlockListUIUtils.showBlockThreadActionSheet(
                 thread,
                 from: fromViewController,
-                completion: nil
+                completion: nil,
             )
         }
     }
@@ -157,27 +159,27 @@ class RecipientContextMenuHelper {
     /// - Returns: A Remove UIAction.
     private func removeAction(
         address: SignalServiceAddress,
-        fromViewController: UIViewController
+        fromViewController: UIViewController,
     ) -> UIAction {
         let title = OWSLocalizedString(
             "RECIPIENT_CONTEXT_MENU_REMOVE_TITLE",
-            comment: "The title for a context menu item that removes a recipient from your recipient picker list."
+            comment: "The title for a context menu item that removes a recipient from your recipient picker list.",
         )
         return UIAction(
             title: title,
-            image: UIImage(named: "minus-circle")
+            image: UIImage(named: "minus-circle"),
         ) { [weak self] _ in
             guard let self else { return }
             if let e164 = address.e164, self.isSystemContact(e164: e164) {
                 self.displayViewContactActionSheet(
                     address: address,
                     e164: e164,
-                    fromViewController: fromViewController
+                    fromViewController: fromViewController,
                 )
             } else {
                 self.displayHideRecipientActionSheet(
                     address: address,
-                    fromViewController: fromViewController
+                    fromViewController: fromViewController,
                 )
             }
         }
@@ -201,7 +203,7 @@ class RecipientContextMenuHelper {
     /// - Parameter fromViewController: The view controller from which to present the action sheet.
     private func displayHideRecipientActionSheet(
         address: SignalServiceAddress,
-        fromViewController: UIViewController
+        fromViewController: UIViewController,
     ) {
         guard address.isValid else {
             owsFailDebug("Invalid address: \(address).")
@@ -215,25 +217,25 @@ class RecipientContextMenuHelper {
         }
         guard
             let localAddress,
-            !localAddress.isEqualToAddress(address) else
-        {
+            !localAddress.isEqualToAddress(address)
+        else {
             owsFailDebug("Remove recipient option should not have been shown in context menu for Note to Self, so we shouldn't be able to get here.")
             return
         }
         let actionSheetTitle = String(
             format: OWSLocalizedString(
                 "HIDE_RECIPIENT_ACTION_SHEET_TITLE_FORMAT",
-                comment: "A format for the 'remove user' action sheet title. Embeds {{the removed user's name or phone number}}."
+                comment: "A format for the 'remove user' action sheet title. Embeds {{the removed user's name or phone number}}.",
             ),
-            recipientDisplayName
+            recipientDisplayName,
         )
 
         let actionSheet = ActionSheetController(
             title: actionSheetTitle,
             message: OWSLocalizedString(
                 "HIDE_RECIPIENT_BEHAVIOR_EXPLANATION",
-                comment: "An explanation of the consequences of removing a user."
-            )
+                comment: "An explanation of the consequences of removing a user.",
+            ),
         )
 
         actionSheet.addAction(ActionSheetAction(
@@ -247,7 +249,7 @@ class RecipientContextMenuHelper {
                             address,
                             inKnownMessageRequestState: false,
                             wasLocallyInitiated: true,
-                            tx: tx
+                            tx: tx,
                         )
                         return .success(())
                     } catch {
@@ -259,7 +261,7 @@ class RecipientContextMenuHelper {
                 case .success(()):
                     self.displaySuccessToast(
                         fromViewController: fromViewController,
-                        displayName: recipientDisplayName
+                        displayName: recipientDisplayName,
                     )
                 case .failure(let error):
                     /// This `error` is of the custom type ``RecipientHidingError``.
@@ -270,14 +272,14 @@ class RecipientContextMenuHelper {
                     Logger.warn("[Recipient Hiding] Error: \(error)")
                     self.displayErrorActionSheet(
                         fromViewController: fromViewController,
-                        displayName: recipientDisplayName
+                        displayName: recipientDisplayName,
                     )
                 }
-            }
+            },
         ))
         actionSheet.addAction(ActionSheetAction(
             title: CommonStrings.cancelButton,
-            style: .cancel
+            style: .cancel,
         ))
         fromViewController.presentActionSheet(actionSheet)
     }
@@ -292,12 +294,12 @@ class RecipientContextMenuHelper {
     private func displayViewContactActionSheet(
         address: SignalServiceAddress,
         e164: E164,
-        fromViewController: UIViewController
+        fromViewController: UIViewController,
     ) {
         let (
             isPrimaryDevice,
             localAddress,
-            recipientDisplayName
+            recipientDisplayName,
         ) = databaseStorage.read { tx in
             let localAddress = accountManager.localIdentifiers(tx: tx)?.aciAddress
             let recipientDisplayName = contactsManager.displayName(for: address, tx: tx)
@@ -305,22 +307,22 @@ class RecipientContextMenuHelper {
             return (
                 accountManager.registrationState(tx: tx).isPrimaryDevice ?? true,
                 localAddress,
-                recipientDisplayName
+                recipientDisplayName,
             )
         }
         guard
             let localAddress,
-            !localAddress.isEqualToAddress(address) else
-        {
+            !localAddress.isEqualToAddress(address)
+        else {
             owsFailDebug("Remove recipient option should not have been shown in context menu for Note to Self, so we shouldn't be able to get here.")
             return
         }
         let actionSheetTitle = String(
             format: OWSLocalizedString(
                 "HIDE_RECIPIENT_IMPASS_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_TITLE",
-                comment: "A format for the 'unable to remove user' action sheet title. Embeds {{the removed user's name or phone number}}."
+                comment: "A format for the 'unable to remove user' action sheet title. Embeds {{the removed user's name or phone number}}.",
             ),
-            recipientDisplayName
+            recipientDisplayName,
         )
 
         let actionSheetMessage: String
@@ -328,7 +330,7 @@ class RecipientContextMenuHelper {
         if isPrimaryDevice {
             actionSheetMessage = OWSLocalizedString(
                 "HIDE_RECIPIENT_IMPASS_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_EXPLANATION",
-                comment: "An explanation of why the user cannot be removed."
+                comment: "An explanation of why the user cannot be removed.",
             )
             removeAction = ActionSheetAction(
                 title: OWSLocalizedString("VIEW_CONTACT_BUTTON", comment: "Button label for the 'View Contact' button"),
@@ -337,21 +339,21 @@ class RecipientContextMenuHelper {
                     self.displayDeleteContactViewController(
                         e164: e164,
                         serviceId: address.serviceId,
-                        fromViewController: fromViewController
+                        fromViewController: fromViewController,
                     )
-                }
+                },
             )
         } else {
             actionSheetMessage = OWSLocalizedString(
                 "HIDE_RECIPIENT_IMPOSSIBLE_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_EXPLANATION",
-                comment: "An explanation of why the user cannot be removed on a linked device."
+                comment: "An explanation of why the user cannot be removed on a linked device.",
             )
             removeAction = nil
         }
 
         let actionSheet = ActionSheetController(
             title: actionSheetTitle,
-            message: actionSheetMessage
+            message: actionSheetMessage,
         )
 
         if let removeAction {
@@ -359,7 +361,7 @@ class RecipientContextMenuHelper {
         }
         actionSheet.addAction(ActionSheetAction(
             title: CommonStrings.okayButton,
-            style: .cancel
+            style: .cancel,
         ))
         fromViewController.presentActionSheet(actionSheet)
     }
@@ -375,7 +377,7 @@ class RecipientContextMenuHelper {
     private func displayDeleteContactViewController(
         e164: E164,
         serviceId: ServiceId?,
-        fromViewController: UIViewController
+        fromViewController: UIViewController,
     ) {
         let deleteContactViewController = DeleteSystemContactViewController(
             e164: e164,
@@ -384,7 +386,7 @@ class RecipientContextMenuHelper {
             contactsManager: contactsManager,
             databaseStorage: databaseStorage,
             recipientHidingManager: recipientHidingManager,
-            tsAccountManager: accountManager
+            tsAccountManager: accountManager,
         )
         let navigationController = OWSNavigationController()
         navigationController.setViewControllers([deleteContactViewController], animated: false)
@@ -399,19 +401,19 @@ class RecipientContextMenuHelper {
     ///   been hidden.
     private func displaySuccessToast(
         fromViewController: UIViewController,
-        displayName: String
+        displayName: String,
     ) {
         let toastMessage = String(
             format: OWSLocalizedString(
                 "HIDE_RECIPIENT_CONFIRMATION_TOAST",
-                comment: "Toast message confirming the recipient was removed. Embeds {{The name of the user who was removed.}}.."
+                comment: "Toast message confirming the recipient was removed. Embeds {{The name of the user who was removed.}}..",
             ),
-            displayName
+            displayName,
         )
         ToastController(text: toastMessage).presentToastView(
             from: .bottom,
             of: fromViewController.view,
-            inset: fromViewController.view.safeAreaInsets.bottom + Constants.toastInset
+            inset: fromViewController.view.safeAreaInsets.bottom + Constants.toastInset,
         )
     }
 
@@ -424,24 +426,24 @@ class RecipientContextMenuHelper {
     ///   attempted to hide.
     private func displayErrorActionSheet(
         fromViewController: UIViewController,
-        displayName: String
+        displayName: String,
     ) {
         let errorActionSheetTitle = String(
             format: OWSLocalizedString(
                 "HIDE_RECIPIENT_ERROR_ACTION_SHEET_TITLE_FORMAT",
-                comment: "Title for an action sheet indicating that the user was not successfully removed. Embeds {{name of user we attempted to hide}}."
+                comment: "Title for an action sheet indicating that the user was not successfully removed. Embeds {{name of user we attempted to hide}}.",
             ),
-            displayName
+            displayName,
         )
         let errorActionSheet = ActionSheetController(
             title: errorActionSheetTitle,
             message: OWSLocalizedString(
                 "HIDE_RECIPIENT_ERROR_ACTION_SHEET_EXPLANATION",
-                comment: "An explanation of why a user was not successfully removed and what to do."
-            )
+                comment: "An explanation of why a user was not successfully removed and what to do.",
+            ),
         )
         errorActionSheet.addAction(ActionSheetAction(
-            title: CommonStrings.okayButton
+            title: CommonStrings.okayButton,
         ))
         fromViewController.presentActionSheet(errorActionSheet)
     }

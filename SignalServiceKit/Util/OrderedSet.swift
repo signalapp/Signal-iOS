@@ -7,7 +7,7 @@ import Foundation
 
 public struct OrderedSet<Element> where Element: Hashable {
     public private(set) var orderedMembers: [Element] = []
-    public private(set) var unorderedMembers: Set<Element>  = []
+    public private(set) var unorderedMembers: Set<Element> = []
 
     /// - Complexity: O(n)
     public init(_ members: [Element]) {

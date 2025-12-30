@@ -18,7 +18,7 @@ final class CallLinkCall: Signal.GroupCall {
         adminPasskey: Data?,
         callLinkState: SignalServiceKit.CallLinkState,
         ringRtcCall: SignalRingRTC.GroupCall,
-        videoCaptureController: VideoCaptureController
+        videoCaptureController: VideoCaptureController,
     ) {
         self.callLink = callLink
         self.adminPasskey = adminPasskey
@@ -26,7 +26,7 @@ final class CallLinkCall: Signal.GroupCall {
         super.init(
             audioDescription: "[SignalCall] Call link call",
             ringRtcCall: ringRtcCall,
-            videoCaptureController: videoCaptureController
+            videoCaptureController: videoCaptureController,
         )
     }
 

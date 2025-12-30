@@ -15,7 +15,7 @@ class ViewOnceMessagesTest: SSKBaseTest {
         SSKEnvironment.shared.databaseStorageRef.write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
                 localIdentifiers: .forUnitTests,
-                tx: tx
+                tx: tx,
             )
         }
     }
@@ -73,9 +73,11 @@ class ViewOnceMessagesTest: SSKBaseTest {
         XCTAssertFalse(latestCopy(message).isViewOnceComplete)
 
         self.write { transaction in
-            ViewOnceMessages.markAsComplete(message: message,
-                                            sendSyncMessages: false,
-                                            transaction: transaction)
+            ViewOnceMessages.markAsComplete(
+                message: message,
+                sendSyncMessages: false,
+                transaction: transaction,
+            )
         }
 
         XCTAssertTrue(message.isViewOnceMessage)

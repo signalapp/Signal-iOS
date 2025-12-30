@@ -35,7 +35,7 @@ public class QuickRestoreManager {
         deviceProvisioningService: DeviceProvisioningService,
         identityManager: OWSIdentityManager,
         networkManager: any NetworkManagerProtocol,
-        tsAccountManager: TSAccountManager
+        tsAccountManager: TSAccountManager,
     ) {
         self.accountKeyStore = accountKeyStore
         self.backupNonceStore = backupNonceStore
@@ -99,15 +99,15 @@ public class QuickRestoreManager {
 
             let backupKey = try MessageRootBackupKey(
                 accountEntropyPool: accountEntropyPool,
-                aci: localIdentifiers.aci
+                aci: localIdentifiers.aci,
             )
             let lastBackupForwardSecrecyToken = try backupNonceStore.getLastForwardSecrecyToken(
                 for: backupKey,
-                tx: tx
+                tx: tx,
             )
             let nextBackupSecretData = backupNonceStore.getNextSecretMetadata(
                 for: backupKey,
-                tx: tx
+                tx: tx,
             )
 
             return (
@@ -152,7 +152,7 @@ public class QuickRestoreManager {
         let messageBody = try registrationMessage.buildEncryptedMessageBody(theirPublicKey: theirPublicKey)
         try await deviceProvisioningService.provisionDevice(
             messageBody: messageBody,
-            ephemeralDeviceId: deviceProvisioningUrl.ephemeralDeviceId
+            ephemeralDeviceId: deviceProvisioningUrl.ephemeralDeviceId,
         )
 
         return restoreMethodToken
@@ -181,7 +181,7 @@ public class QuickRestoreManager {
             let response = try await networkManager.asyncRequest(
                 Requests.ChooseRestoreMethod.buildRequest(
                     token: restoreMethodToken,
-                    method: method
+                    method: method,
                 ),
             )
             switch response.responseStatusCode {
@@ -189,7 +189,7 @@ public class QuickRestoreManager {
                 return
             case 429:
                 try await Task.sleep(
-                    nanoseconds: HTTPUtils.retryDelayNanoSeconds(response, defaultRetryTime: Constants.defaultRetryTime)
+                    nanoseconds: HTTPUtils.retryDelayNanoSeconds(response, defaultRetryTime: Constants.defaultRetryTime),
                 )
                 continue whileLoop
             default:
@@ -211,7 +211,7 @@ public class QuickRestoreManager {
                         let data = response.responseBodyData,
                         let response = try? JSONDecoder().decode(
                             Requests.WaitForRestoreMethodChoice.Response.self,
-                            from: data
+                            from: data,
                         )
                     else {
                         throw Error.errorWaitingForNewDevice
@@ -228,7 +228,7 @@ public class QuickRestoreManager {
                     continue whileLoop
                 case 429:
                     try await Task.sleep(
-                        nanoseconds: HTTPUtils.retryDelayNanoSeconds(response, defaultRetryTime: Constants.defaultRetryTime)
+                        nanoseconds: HTTPUtils.retryDelayNanoSeconds(response, defaultRetryTime: Constants.defaultRetryTime),
                     )
                     continue whileLoop
                 default:
@@ -267,12 +267,12 @@ public class QuickRestoreManager {
                 var urlComponents = URLComponents(string: "v1/devices/restore_account/\(token)")!
                 urlComponents.queryItems = [URLQueryItem(
                     name: "timeout",
-                    value: "\(Constants.longPollRequestTimeoutSeconds)"
+                    value: "\(Constants.longPollRequestTimeoutSeconds)",
                 )]
                 var request = TSRequest(
                     url: urlComponents.url!,
                     method: "GET",
-                    parameters: nil
+                    parameters: nil,
                 )
 
                 request.auth = .anonymous
@@ -299,7 +299,7 @@ public class QuickRestoreManager {
                     }
                 }()
 
-                var parameters: [String: Any] = [ "method": method.rawValue ]
+                var parameters: [String: Any] = ["method": method.rawValue]
                 // `deviceTransferBootstrap` contains unpadded base64 encoded data that is used by
                 // the other device to initiate device transfer. Note that server enforces a
                 // 4096 bytes limit on this field.
@@ -309,7 +309,7 @@ public class QuickRestoreManager {
                 var request = TSRequest(
                     url: urlComponents.url!,
                     method: "PUT",
-                    parameters: parameters
+                    parameters: parameters,
                 )
 
                 request.auth = .anonymous

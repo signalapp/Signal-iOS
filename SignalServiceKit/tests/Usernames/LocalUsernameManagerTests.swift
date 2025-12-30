@@ -41,7 +41,7 @@ class LocalUsernameManagerTests: XCTestCase {
             storageServiceManager: mockStorageServiceManager,
             usernameApiClient: mockUsernameApiClient,
             usernameLinkManager: mockUsernameLinkManager,
-            maxNetworkRequestRetries: maxNetworkRequestRetries
+            maxNetworkRequestRetries: maxNetworkRequestRetries,
         )
     }
 
@@ -63,19 +63,19 @@ class LocalUsernameManagerTests: XCTestCase {
             localUsernameManager.setLocalUsername(
                 username: "boba-fett",
                 usernameLink: .mock(handle: linkHandle),
-                tx: tx
+                tx: tx,
             )
         }
 
         XCTAssertEqual(
             usernameState(),
-            .available(username: "boba-fett", usernameLink: .mock(handle: linkHandle))
+            .available(username: "boba-fett", usernameLink: .mock(handle: linkHandle)),
         )
 
         mockDB.write { tx in
             localUsernameManager.setLocalUsernameWithCorruptedLink(
                 username: "boba-fett",
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -100,7 +100,7 @@ class LocalUsernameManagerTests: XCTestCase {
         mockDB.write { tx in
             localUsernameManager.setUsernameLinkQRCodeColor(
                 color: .olive,
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -122,11 +122,11 @@ class LocalUsernameManagerTests: XCTestCase {
 
         XCTAssertEqual(
             value,
-            .success(.success(username: username, usernameLink: .mock(handle: linkHandle)))
+            .success(.success(username: username, usernameLink: .mock(handle: linkHandle))),
         )
         XCTAssertEqual(
             usernameState(),
-            .available(username: username, usernameLink: .mock(handle: linkHandle))
+            .available(username: username, usernameLink: .mock(handle: linkHandle)),
         )
         XCTAssertTrue(mockStorageServiceManager.didRecordPendingLocalAccountUpdates)
     }
@@ -216,7 +216,7 @@ class LocalUsernameManagerTests: XCTestCase {
         mockDB.write { tx in
             localUsernameManager.setLocalUsernameWithCorruptedLink(
                 username: "boba_fett.42",
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -228,11 +228,11 @@ class LocalUsernameManagerTests: XCTestCase {
 
         XCTAssertEqual(
             value,
-            .success(.success(username: "boba_fett.43", usernameLink: expectedNewLink))
+            .success(.success(username: "boba_fett.43", usernameLink: expectedNewLink)),
         )
         XCTAssertEqual(
             usernameState(),
-            .available(username: "boba_fett.43", usernameLink: expectedNewLink)
+            .available(username: "boba_fett.43", usernameLink: expectedNewLink),
         )
         XCTAssertTrue(mockStorageServiceManager.didRecordPendingLocalAccountUpdates)
     }
@@ -255,11 +255,11 @@ class LocalUsernameManagerTests: XCTestCase {
 
         XCTAssertEqual(
             value,
-            .success(.success(username: "boba_fett.43", usernameLink: expectedNewLink))
+            .success(.success(username: "boba_fett.43", usernameLink: expectedNewLink)),
         )
         XCTAssertEqual(
             usernameState(),
-            .available(username: "boba_fett.43", usernameLink: expectedNewLink)
+            .available(username: "boba_fett.43", usernameLink: expectedNewLink),
         )
         XCTAssertTrue(mockStorageServiceManager.didRecordPendingLocalAccountUpdates)
     }
@@ -336,7 +336,7 @@ class LocalUsernameManagerTests: XCTestCase {
         mockDB.write { tx in
             localUsernameManager.setLocalUsernameWithCorruptedLink(
                 username: "boba_fett.42",
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -366,7 +366,7 @@ class LocalUsernameManagerTests: XCTestCase {
         XCTAssertEqual(value, .success(expectedNewLink))
         XCTAssertEqual(
             usernameState(),
-            .available(username: "boba_fett.42", usernameLink: expectedNewLink)
+            .available(username: "boba_fett.42", usernameLink: expectedNewLink),
         )
         XCTAssertTrue(mockStorageServiceManager.didRecordPendingLocalAccountUpdates)
     }
@@ -430,7 +430,7 @@ class LocalUsernameManagerTests: XCTestCase {
         mockDB.write { tx in
             localUsernameManager.setLocalUsernameWithCorruptedLink(
                 username: "boba_fett.42",
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -443,7 +443,7 @@ class LocalUsernameManagerTests: XCTestCase {
         XCTAssertEqual(value, .success(expectedNewLink))
         XCTAssertEqual(
             usernameState(),
-            .available(username: "boba_fett.42", usernameLink: expectedNewLink)
+            .available(username: "boba_fett.42", usernameLink: expectedNewLink),
         )
         XCTAssertTrue(mockStorageServiceManager.didRecordPendingLocalAccountUpdates)
     }
@@ -463,7 +463,7 @@ class LocalUsernameManagerTests: XCTestCase {
         XCTAssertEqual(value.isSuccess, true)
         XCTAssertEqual(
             usernameState(),
-            .available(username: "BoBa_fEtT.42", usernameLink: currentLink)
+            .available(username: "BoBa_fEtT.42", usernameLink: currentLink),
         )
         XCTAssertTrue(mockStorageServiceManager.didRecordPendingLocalAccountUpdates)
     }
@@ -495,7 +495,7 @@ class LocalUsernameManagerTests: XCTestCase {
         XCTAssertEqual(value.isNetworkError, true)
         XCTAssertEqual(
             usernameState(),
-            .linkCorrupted(username: "BoBa_fEtT.42")
+            .linkCorrupted(username: "BoBa_fEtT.42"),
         )
         XCTAssertTrue(mockStorageServiceManager.didRecordPendingLocalAccountUpdates)
     }
@@ -515,7 +515,7 @@ class LocalUsernameManagerTests: XCTestCase {
         XCTAssertEqual(value.isOtherError, true)
         XCTAssertEqual(
             usernameState(),
-            .linkCorrupted(username: "BoBa_fEtT.42")
+            .linkCorrupted(username: "BoBa_fEtT.42"),
         )
         XCTAssertTrue(mockStorageServiceManager.didRecordPendingLocalAccountUpdates)
     }
@@ -545,7 +545,7 @@ class LocalUsernameManagerTests: XCTestCase {
         XCTAssertEqual(value.isSuccess, true)
         XCTAssertEqual(
             usernameState(),
-            .available(username: "BoBa_fEtT.42", usernameLink: currentLink)
+            .available(username: "BoBa_fEtT.42", usernameLink: currentLink),
         )
         XCTAssertTrue(mockStorageServiceManager.didRecordPendingLocalAccountUpdates)
     }
@@ -554,13 +554,13 @@ class LocalUsernameManagerTests: XCTestCase {
 
     private func setUsername(
         username: String,
-        linkHandle: UUID? = nil
+        linkHandle: UUID? = nil,
     ) -> Usernames.LocalUsernameState {
         return mockDB.write { tx in
             localUsernameManager.setLocalUsername(
                 username: username,
                 usernameLink: .mock(handle: linkHandle ?? UUID()),
-                tx: tx
+                tx: tx,
             )
 
             return localUsernameManager.usernameState(tx: tx)
@@ -615,7 +615,7 @@ private extension Usernames.UsernameLink {
     static func mock(handle: UUID) -> Usernames.UsernameLink {
         Usernames.UsernameLink(
             handle: handle,
-            entropy: .mockEntropy
+            entropy: .mockEntropy,
         )!
     }
 }

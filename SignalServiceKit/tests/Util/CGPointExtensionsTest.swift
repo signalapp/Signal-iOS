@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import XCTest
 import SignalServiceKit
+import XCTest
 
 class CGPointExtensionsTest: XCTestCase {
     func testPlusEquals() throws {

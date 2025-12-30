@@ -57,12 +57,12 @@ public struct OWSDevice: Codable, FetchableRecord, PersistableRecord {
         } else if isPrimaryDevice {
             return OWSLocalizedString(
                 "DEVICE_NAME_THIS_DEVICE",
-                comment: "A label for this device in the device list."
+                comment: "A label for this device in the device list.",
             )
         } else {
             return OWSLocalizedString(
                 "DEVICE_NAME_UNNAMED_DEVICE",
-                comment: "A label for an unnamed device in the device list."
+                comment: "A label for an unnamed device in the device list.",
             )
         }
     }

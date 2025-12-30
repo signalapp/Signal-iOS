@@ -8,7 +8,7 @@ import LibSignalClient
 
 #if TESTABLE_BUILD
 
-internal class MockPreKeyManager: PreKeyManager {
+class MockPreKeyManager: PreKeyManager {
     func isAppLockedDueToPreKeyUpdateFailures(tx: SignalServiceKit.DBReadTransaction) -> Bool { false }
     func refreshOneTimePreKeysCheckDidSucceed() { }
     func checkPreKeysIfNecessary(tx: SignalServiceKit.DBReadTransaction) { }
@@ -30,14 +30,14 @@ internal class MockPreKeyManager: PreKeyManager {
                     identityKeyPair: identityKeyPair,
                     signedPreKey: SignedPreKeyStoreImpl.generateSignedPreKey(keyId: PreKeyId.random(), signedBy: identityKeyPair.keyPair.privateKey),
                     lastResortPreKey: generateLastResortKyberPreKey(signedBy: identityKeyPair.keyPair.privateKey),
-                )
+                ),
             )
         }
     }
 
     func createPreKeysForProvisioning(
         aciIdentityKeyPair: ECKeyPair,
-        pniIdentityKeyPair: ECKeyPair
+        pniIdentityKeyPair: ECKeyPair,
     ) -> Task<RegistrationPreKeyUploadBundles, Error> {
         let identityKeyPair = ECKeyPair.generateKeyPair()
         return Task {
@@ -53,16 +53,16 @@ internal class MockPreKeyManager: PreKeyManager {
                     identityKeyPair: identityKeyPair,
                     signedPreKey: SignedPreKeyStoreImpl.generateSignedPreKey(keyId: PreKeyId.random(), signedBy: identityKeyPair.keyPair.privateKey),
                     lastResortPreKey: generateLastResortKyberPreKey(signedBy: identityKeyPair.keyPair.privateKey),
-                )
+                ),
             )
         }
     }
 
-    public var didFinalizeRegistrationPrekeys = false
+    var didFinalizeRegistrationPrekeys = false
 
     func finalizeRegistrationPreKeys(
         _ bundles: RegistrationPreKeyUploadBundles,
-        uploadDidSucceed: Bool
+        uploadDidSucceed: Bool,
     ) -> Task<Void, Error> {
         didFinalizeRegistrationPrekeys = true
         return Task {}

@@ -66,11 +66,13 @@ class ImageEditorTransform: NSObject {
     // Flipping is horizontal.
     let isFlipped: Bool
 
-    init(outputSizePixels: CGSize,
-         unitTranslation: CGPoint,
-         rotationRadians: CGFloat,
-         scaling: CGFloat,
-         isFlipped: Bool) {
+    init(
+        outputSizePixels: CGSize,
+        unitTranslation: CGPoint,
+        rotationRadians: CGFloat,
+        scaling: CGFloat,
+        isFlipped: Bool,
+    ) {
         self.outputSizePixels = outputSizePixels
         self.unitTranslation = unitTranslation
         self.rotationRadians = rotationRadians
@@ -80,11 +82,13 @@ class ImageEditorTransform: NSObject {
 
     class func defaultTransform(srcImageSizePixels: CGSize) -> ImageEditorTransform {
         // It shouldn't be necessary normalize the default transform, but we do so to be safe.
-        return ImageEditorTransform(outputSizePixels: srcImageSizePixels,
-                                    unitTranslation: .zero,
-                                    rotationRadians: 0.0,
-                                    scaling: 1.0,
-                                    isFlipped: false).normalize(srcImageSizePixels: srcImageSizePixels)
+        return ImageEditorTransform(
+            outputSizePixels: srcImageSizePixels,
+            unitTranslation: .zero,
+            rotationRadians: 0.0,
+            scaling: 1.0,
+            isFlipped: false,
+        ).normalize(srcImageSizePixels: srcImageSizePixels)
     }
 
     var isNonDefault: Bool {
@@ -154,11 +158,13 @@ class ImageEditorTransform: NSObject {
         let viewBounds = CGRect(origin: .zero, size: self.outputSizePixels)
         // This "naive" transform represents the proposed transform
         // with no translation.
-        let naiveTransform = ImageEditorTransform(outputSizePixels: outputSizePixels,
-                                                  unitTranslation: .zero,
-                                                  rotationRadians: rotationRadians,
-                                                  scaling: scaling,
-                                                  isFlipped: self.isFlipped)
+        let naiveTransform = ImageEditorTransform(
+            outputSizePixels: outputSizePixels,
+            unitTranslation: .zero,
+            rotationRadians: rotationRadians,
+            scaling: scaling,
+            isFlipped: self.isFlipped,
+        )
         let naiveAffineTransform = naiveTransform.affineTransform(viewSize: viewBounds.size)
         var naiveViewportMinCanvas = CGPoint.zero
         var naiveViewportMaxCanvas = CGPoint.zero
@@ -173,7 +179,7 @@ class ImageEditorTransform: NSObject {
             viewBounds.topLeft,
             viewBounds.topRight,
             viewBounds.bottomLeft,
-            viewBounds.bottomRight
+            viewBounds.bottomRight,
         ] {
             let naiveViewCornerInCanvas = viewCorner.minus(viewBounds.center).applyingInverse(naiveAffineTransform).plus(viewBounds.center)
             if isFirstCorner {
@@ -221,35 +227,37 @@ class ImageEditorTransform: NSObject {
         let clampedTranslationInView = clampedTranslationInCanvas.applying(naiveAffineTransform)
         let unitTranslation = clampedTranslationInView.toUnitCoordinates(viewBounds: viewBounds, shouldClamp: false)
 
-        return ImageEditorTransform(outputSizePixels: outputSizePixels,
-                                    unitTranslation: unitTranslation,
-                                    rotationRadians: rotationRadians,
-                                    scaling: scaling,
-                                    isFlipped: self.isFlipped)
+        return ImageEditorTransform(
+            outputSizePixels: outputSizePixels,
+            unitTranslation: unitTranslation,
+            rotationRadians: rotationRadians,
+            scaling: scaling,
+            isFlipped: self.isFlipped,
+        )
     }
 
     override func isEqual(_ object: Any?) -> Bool {
-        guard let other = object as? ImageEditorTransform  else {
+        guard let other = object as? ImageEditorTransform else {
             return false
         }
-        return (outputSizePixels == other.outputSizePixels &&
-                unitTranslation == other.unitTranslation &&
-                rotationRadians == other.rotationRadians &&
-                scaling == other.scaling &&
-                isFlipped == other.isFlipped)
+        return outputSizePixels == other.outputSizePixels &&
+            unitTranslation == other.unitTranslation &&
+            rotationRadians == other.rotationRadians &&
+            scaling == other.scaling &&
+            isFlipped == other.isFlipped
     }
 
     override var hash: Int {
-        return (outputSizePixels.width.hashValue ^
-                outputSizePixels.height.hashValue ^
-                unitTranslation.x.hashValue ^
-                unitTranslation.y.hashValue ^
-                rotationRadians.hashValue ^
-                scaling.hashValue ^
-                isFlipped.hashValue)
+        return outputSizePixels.width.hashValue ^
+            outputSizePixels.height.hashValue ^
+            unitTranslation.x.hashValue ^
+            unitTranslation.y.hashValue ^
+            rotationRadians.hashValue ^
+            scaling.hashValue ^
+            isFlipped.hashValue
     }
 
-    open override var description: String {
+    override open var description: String {
         return "[outputSizePixels: \(outputSizePixels), unitTranslation: \(unitTranslation), rotationRadians: \(rotationRadians), scaling: \(scaling), isFlipped: \(isFlipped)]"
     }
 }

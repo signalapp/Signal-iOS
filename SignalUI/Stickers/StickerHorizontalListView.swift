@@ -24,7 +24,7 @@ public class StickerHorizontalListViewItemSticker: StickerHorizontalListViewItem
     public convenience init(
         stickerInfo: StickerInfo,
         didSelectBlock: @escaping () -> Void,
-        cache: StickerViewCache? = nil
+        cache: StickerViewCache? = nil,
     ) {
         self.init(stickerInfo: stickerInfo, didSelectBlock: didSelectBlock, isSelectedBlock: { false }, cache: cache)
     }
@@ -33,7 +33,7 @@ public class StickerHorizontalListViewItemSticker: StickerHorizontalListViewItem
         stickerInfo: StickerInfo,
         didSelectBlock: @escaping () -> Void,
         isSelectedBlock: @escaping () -> Bool,
-        cache: StickerViewCache? = nil
+        cache: StickerViewCache? = nil,
     ) {
         self.stickerInfo = stickerInfo
         self.didSelectBlock = didSelectBlock
@@ -83,7 +83,7 @@ public class StickerHorizontalListViewItemRecents: StickerHorizontalListViewItem
 
     public init(
         didSelectBlock: @escaping () -> Void,
-        isSelectedBlock: @escaping () -> Bool
+        isSelectedBlock: @escaping () -> Bool,
     ) {
         self.didSelectBlock = didSelectBlock
         self.isSelectedBlock = isSelectedBlock
@@ -129,19 +129,18 @@ public class StickerHorizontalListView: UICollectionView {
         self.cellContentInset = cellContentInset
 
         let layout = LinearHorizontalLayout(
-            configuration: .init(itemSize: CGSize(square: cellSize), minimumInteritemSpacing: spacing)
+            configuration: .init(itemSize: CGSize(square: cellSize), minimumInteritemSpacing: spacing),
         )
 
         super.init(frame: .zero, collectionViewLayout: layout)
 
         let selectedBackgroundColor = UIColor { traitCollection in
             traitCollection.userInterfaceStyle == .dark
-            ? UIColor(white: 1, alpha: 0.2)
-            : UIColor(white: 0, alpha: 0.12)
+                ? UIColor(white: 1, alpha: 0.2)
+                : UIColor(white: 0, alpha: 0.12)
         }
 
-        cellRegistration = UICollectionView.CellRegistration<UICollectionViewCell, Item>
-        { cell, indexPath, item in
+        cellRegistration = UICollectionView.CellRegistration<UICollectionViewCell, Item> { cell, indexPath, item in
 
             // Remove previous content.
             cell.contentView.removeAllSubviews()
@@ -179,7 +178,7 @@ public class StickerHorizontalListView: UICollectionView {
         setCompressionResistanceHorizontalLow()
     }
 
-    required public init(coder: NSCoder) {
+    public required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
@@ -229,7 +228,7 @@ extension StickerHorizontalListView: UICollectionViewDataSource {
         return collectionView.dequeueConfiguredReusableCell(
             using: cellRegistration,
             for: indexPath,
-            item: item
+            item: item,
         )
     }
 }
@@ -268,7 +267,7 @@ private class LinearHorizontalLayout: UICollectionViewLayout {
 
         return CGSize(
             width: contentWidth,
-            height: collectionView.bounds.height - collectionView.contentInset.totalHeight
+            height: collectionView.bounds.height - collectionView.contentInset.totalHeight,
         )
     }
 
@@ -331,7 +330,7 @@ private class LinearHorizontalLayout: UICollectionViewLayout {
                 x: xPosition,
                 y: yPosition,
                 width: itemSize.width,
-                height: itemSize.height
+                height: itemSize.height,
             )
 
             cachedAttributes.append(attributes)

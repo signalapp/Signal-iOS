@@ -16,6 +16,7 @@ class AvatarEditViewController: OWSViewController, OWSNavigationChildController 
             }
         }
     }
+
     private let completion: (AvatarModel) -> Void
 
     static let headerAvatarSize: CGFloat = UIDevice.current.isIPhone5OrShorter ? 120 : 160
@@ -45,7 +46,7 @@ class AvatarEditViewController: OWSViewController, OWSNavigationChildController 
             dismissingFrom: self,
             hasUnsavedChanges: { [weak self] in
                 self?.model != self?.originalModel
-            }
+            },
         )
 
         navigationItem.rightBarButtonItem = .doneButton { [weak self] in
@@ -137,26 +138,28 @@ class AvatarEditViewController: OWSViewController, OWSNavigationChildController 
     // MARK: - Segmented Control
 
     private enum Segments: Int {
-        case text, color
+        case text
+        case color
     }
+
     private lazy var segmentedControl: UISegmentedControl = {
         let control = UISegmentedControl()
 
         control.insertSegment(
             withTitle: OWSLocalizedString(
                 "AVATAR_EDIT_VIEW_TEXT_SEGMENT",
-                comment: "Segment indicating the user can edit the text of the avatar"
+                comment: "Segment indicating the user can edit the text of the avatar",
             ),
             at: Segments.text.rawValue,
-            animated: false
+            animated: false,
         )
         control.insertSegment(
             withTitle: OWSLocalizedString(
                 "AVATAR_EDIT_VIEW_COLOR_SEGMENT",
-                comment: "Segment indicating the user can edit the color of the avatar"
+                comment: "Segment indicating the user can edit the color of the avatar",
             ),
             at: Segments.color.rawValue,
-            animated: false
+            animated: false,
         )
 
         control.selectedSegmentIndex = Segments.color.rawValue
@@ -164,7 +167,7 @@ class AvatarEditViewController: OWSViewController, OWSNavigationChildController 
         control.addTarget(
             self,
             action: #selector(segmentedControlDidChange),
-            for: .valueChanged
+            for: .valueChanged,
         )
 
         return control
@@ -191,6 +194,7 @@ class AvatarEditViewController: OWSViewController, OWSNavigationChildController 
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
     }()
+
     private lazy var headerTextField: UITextField = {
         let textField = UITextField()
         textField.adjustsFontSizeToFitWidth = true
@@ -204,6 +208,7 @@ class AvatarEditViewController: OWSViewController, OWSNavigationChildController 
         textField.translatesAutoresizingMaskIntoConstraints = false
         return textField
     }()
+
     private lazy var topHeader: UIView = {
         headerImageView.addSubview(headerTextField)
         let insets = AvatarBuilder.avatarTextMargins(diameter: Self.headerAvatarSize)
@@ -214,7 +219,7 @@ class AvatarEditViewController: OWSViewController, OWSNavigationChildController 
             headerTextField.trailingAnchor.constraint(equalTo: headerImageView.trailingAnchor, constant: -insets.right),
             headerTextField.topAnchor.constraint(equalTo: headerImageView.topAnchor, constant: insets.top),
             headerTextField.bottomAnchor.constraint(equalTo: headerImageView.bottomAnchor, constant: -insets.bottom),
-       ])
+        ])
 
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -235,14 +240,14 @@ class AvatarEditViewController: OWSViewController, OWSNavigationChildController 
             headerTextField.isHidden = true
             headerImageView.image = SSKEnvironment.shared.avatarBuilderRef.avatarImage(
                 model: model,
-                diameterPoints: UInt(Self.headerAvatarSize)
+                diameterPoints: UInt(Self.headerAvatarSize),
             )
         case .text(let text):
             headerTextField.isHidden = false
             headerTextField.textColor = model.theme.foregroundColor
             headerTextField.font = AvatarBuilder.avatarMaxFont(
                 diameter: Self.headerAvatarSize,
-                isEmojiOnly: text.containsOnlyEmoji
+                isEmojiOnly: text.containsOnlyEmoji,
             )
             if !headerTextField.isFirstResponder { headerTextField.text = text }
             headerImageView.image = .image(color: model.theme.backgroundColor)
@@ -263,6 +268,7 @@ class AvatarEditViewController: OWSViewController, OWSNavigationChildController 
         stackView.setCustomSpacing(16, after: segmentedControlContainer)
         return stackView
     }()
+
     private lazy var segmentedControlContainer: UIView = {
         let container = UIView()
         container.addSubview(segmentedControl)
@@ -275,12 +281,13 @@ class AvatarEditViewController: OWSViewController, OWSNavigationChildController 
         ])
         return container
     }()
+
     private lazy var themePickerContainer = UIView()
     private lazy var themeHeaderContainer: UIView = {
         let label = UILabel()
         label.text = OWSLocalizedString(
             "AVATAR_EDIT_VIEW_CHOOSE_A_COLOR",
-            comment: "Text prompting the user to choose a color when editing their avatar"
+            comment: "Text prompting the user to choose a color when editing their avatar",
         )
         label.textColor = .Signal.label
         label.font = UIFont.dynamicTypeHeadlineClamped
@@ -288,7 +295,7 @@ class AvatarEditViewController: OWSViewController, OWSNavigationChildController 
         let view = UIView()
         view.layoutMargins = UIEdgeInsets(
             hMargin: OWSTableViewController2.cellHInnerMargin * 0.5,
-            vMargin: 8
+            vMargin: 8,
         )
         view.addSubview(label)
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -350,7 +357,7 @@ class AvatarEditViewController: OWSViewController, OWSNavigationChildController 
         themePickerContainer.removeAllSubviews()
         themePickerContainer.layoutMargins = UIEdgeInsets(
             hMargin: OWSTableViewController2.cellHInnerMargin,
-            vMargin: OWSTableViewController2.cellVInnerMargin
+            vMargin: OWSTableViewController2.cellVInnerMargin,
         )
         themePickerContainer.backgroundColor = Theme.tableCell2PresentedBackgroundColor
         themePickerContainer.layer.cornerRadius = OWSTableViewController2.cellRounding
@@ -390,7 +397,7 @@ extension AvatarEditViewController: UITextFieldDelegate {
             textField,
             shouldChangeCharactersInRange: range,
             replacementString: string,
-            maxGlyphCount: 3
+            maxGlyphCount: 3,
         )
     }
 

@@ -21,10 +21,10 @@ class DateOWSTests: XCTestCase {
 
             // Most whitespace should be handled
             (string: "   Tue,     11      Aug     2020   05:  54:  39     GMT   ", date: NSDate(timeIntervalSince1970: 1597125279)),
-            (string: "\n\tTue, \n\t11 Aug \t\t     2020 \n  \t  05:  \n\t54:39       GMT", date: NSDate(timeIntervalSince1970: 1597125279))
+            (string: "\n\tTue, \n\t11 Aug \t\t     2020 \n  \t  05:  \n\t54:39       GMT", date: NSDate(timeIntervalSince1970: 1597125279)),
         ]
 
-        validTestCases.forEach { (string, date) -> Void in
+        validTestCases.forEach { string, date -> Void in
             let parsedDate = NSDate.ows_parseFromHTTPDateString(string)
             XCTAssertEqual(parsedDate, date)
         }
@@ -44,10 +44,10 @@ class DateOWSTests: XCTestCase {
 
             // Most whitespace should be handled
             (string: "  2020  - 08 - 10T21  :  54  :39   -0800  ", date: NSDate(timeIntervalSince1970: 1597125279)),
-            (string: "  \n\t2020\t -\n08-\t10T21:\n54\n:39\t\t -0800\n\t", date: NSDate(timeIntervalSince1970: 1597125279))
+            (string: "  \n\t2020\t -\n08-\t10T21:\n54\n:39\t\t -0800\n\t", date: NSDate(timeIntervalSince1970: 1597125279)),
         ]
 
-        validTestCases.forEach { (string, date) -> Void in
+        validTestCases.forEach { string, date -> Void in
             let parsedDate = NSDate.ows_parseFromISO8601String(string)
             XCTAssertEqual(parsedDate, date)
         }

@@ -36,13 +36,14 @@ class MediaGalleryAccessoriesHelper {
             case .list:
                 return OWSLocalizedString(
                     "ALL_MEDIA_LIST_MODE",
-                    comment: "Menu option to show All Media items in a single-column list")
+                    comment: "Menu option to show All Media items in a single-column list",
+                )
 
             case .grid:
                 return OWSLocalizedString(
                     "ALL_MEDIA_GRID_MODE",
-                    comment: "Menu option to show All Media items in a grid of square thumbnails")
-
+                    comment: "Menu option to show All Media items in a grid of square thumbnails",
+                )
             }
         }
     }
@@ -81,7 +82,7 @@ class MediaGalleryAccessoriesHelper {
             UIAction { [weak self] action in
                 self?.segmentedControlValueChanged(action.sender as! UISegmentedControl)
             },
-            for: .valueChanged
+            for: .valueChanged,
         )
         return segmentedControl
     }()
@@ -108,7 +109,7 @@ class MediaGalleryAccessoriesHelper {
             footerBar.addInteraction(interaction)
         }
         if #available(iOS 17, *) {
-            footerBar.registerForTraitChanges([ UITraitPreferredContentSizeCategory.self ]) { [weak self] (_: UIView, _) in
+            footerBar.registerForTraitChanges([UITraitPreferredContentSizeCategory.self]) { [weak self] (_: UIView, _) in
                 self?.updateFilterButton()
             }
         }
@@ -150,7 +151,7 @@ class MediaGalleryAccessoriesHelper {
         title: CommonStrings.selectButton,
         style: .plain,
         target: self,
-        action: #selector(didTapSelect)
+        action: #selector(didTapSelect),
     )
 
     var isInBatchSelectMode = false {
@@ -190,12 +191,13 @@ class MediaGalleryAccessoriesHelper {
             viewController.navigationItem.leftBarButtonItem = .button(
                 title: OWSLocalizedString(
                     "SELECT_ALL",
-                    comment: "Button text to select all in any list selection mode"
+                    comment: "Button text to select all in any list selection mode",
                 ),
                 style: .plain,
                 action: { [weak self] in
                     self?.didSelectAll()
-                })
+                },
+            )
         } else {
             viewController.navigationItem.rightBarButtonItem = nil // TODO: Search
             viewController.navigationItem.leftBarButtonItem = previousLeftBarButtonItem
@@ -233,10 +235,10 @@ class MediaGalleryAccessoriesHelper {
 
     private func filterMenuItemsAndCurrentValue() -> (title: String, items: [MenuItem]) {
         guard let items = viewController?.mediaGalleryFilterMenuItems, !items.isEmpty else {
-            return ( "", [] )
+            return ("", [])
         }
         let currentTitle = items.first(where: { $0.isChecked })?.title ?? ""
-        return ( currentTitle, items )
+        return (currentTitle, items)
     }
 
     private lazy var filterButton: UIBarButtonItem = {
@@ -295,7 +297,7 @@ class MediaGalleryAccessoriesHelper {
             isChecked: isChecked,
             handler: { [weak self] in
                 self?.layout = .list
-            }
+            },
         )
     }
 
@@ -306,14 +308,14 @@ class MediaGalleryAccessoriesHelper {
             isChecked: isChecked,
             handler: { [weak self] in
                 self?.layout = .grid
-            }
+            },
         )
     }
 
     private func createLayoutPickerMenu(checkedLayout: Layout) -> UIMenu {
         let menuItems = [
             gridMenuItem(isChecked: checkedLayout == .grid),
-            listMenuItem(isChecked: checkedLayout == .list)
+            listMenuItem(isChecked: checkedLayout == .list),
         ]
         return menuItems.menu(with: .singleSelection)
     }
@@ -322,14 +324,14 @@ class MediaGalleryAccessoriesHelper {
         title: nil,
         image: UIImage(imageLiteralResourceName: "list-bullet"),
         primaryAction: nil,
-        menu: createLayoutPickerMenu(checkedLayout: .list)
+        menu: createLayoutPickerMenu(checkedLayout: .list),
     )
 
     private lazy var gridViewButton: UIBarButtonItem = UIBarButtonItem(
         title: nil,
         image: UIImage(imageLiteralResourceName: "grid-square"),
         primaryAction: nil,
-        menu: createLayoutPickerMenu(checkedLayout: .grid)
+        menu: createLayoutPickerMenu(checkedLayout: .grid),
     )
 
     // MARK: - Footer
@@ -352,9 +354,9 @@ class MediaGalleryAccessoriesHelper {
         willSet {
             let wasHidden = footerBarState == .hidden
             let willBeHidden = newValue == .hidden
-            if wasHidden && !willBeHidden {
+            if wasHidden, !willBeHidden {
                 showToolbar(animated: footerBar.window != nil)
-            } else if !wasHidden && willBeHidden {
+            } else if !wasHidden, willBeHidden {
                 hideToolbar(animated: footerBar.window != nil)
             }
         }
@@ -372,7 +374,7 @@ class MediaGalleryAccessoriesHelper {
             case .hidden:
                 return nil
             case .selection:
-                return [ shareButton, .flexibleSpace(), selectionInfoButton, .flexibleSpace(), deleteButton ]
+                return [shareButton, .flexibleSpace(), selectionInfoButton, .flexibleSpace(), deleteButton]
             case .regular:
                 let firstItem: UIBarButtonItem
                 if mediaCategory.supportsGridView {
@@ -388,7 +390,7 @@ class MediaGalleryAccessoriesHelper {
                     .flexibleSpace(),
                     filterButton,
                     .flexibleSpace(),
-                    selectButton
+                    selectButton,
                 ]
             }
         }()
@@ -431,7 +433,7 @@ class MediaGalleryAccessoriesHelper {
 
         footerBar.translatesAutoresizingMaskIntoConstraints = false
         let constraint = footerBar.bottomAnchor.constraint(
-            equalTo: viewController.view.layoutMarginsGuide.bottomAnchor
+            equalTo: viewController.view.layoutMarginsGuide.bottomAnchor,
         )
         NSLayoutConstraint.activate([constraint])
         footerBarBottomConstraint = constraint
@@ -475,7 +477,7 @@ class MediaGalleryAccessoriesHelper {
         style: .plain,
         action: { [weak self] in
             self?.didPressDelete()
-        }
+        },
     )
 
     private func updateDeleteButton() {
@@ -494,7 +496,7 @@ class MediaGalleryAccessoriesHelper {
         image: Theme.iconImage(.buttonShare),
         primaryAction: UIAction { [weak self] action in
             self?.didPressShare(action.sender!)
-        }
+        },
     )
 
     private func updateShareButton() {
@@ -529,7 +531,7 @@ class MediaGalleryAccessoriesHelper {
     }()
 
     private lazy var selectionInfoButton = UIBarButtonItem(customView: {
-        let stackView = UIStackView(arrangedSubviews: [ selectionCountLabel, selectionSizeLabel ])
+        let stackView = UIStackView(arrangedSubviews: [selectionCountLabel, selectionSizeLabel])
         stackView.axis = .vertical
         stackView.spacing = 0
         let container = UIView()
@@ -554,7 +556,7 @@ class MediaGalleryAccessoriesHelper {
         }
         selectionCountLabel.text = String.localizedStringWithFormat(
             OWSLocalizedString("MESSAGE_ACTIONS_TOOLBAR_CAPTION_%d", tableName: "PluralAware", comment: ""),
-            selectionCount
+            selectionCount,
         )
         selectionSizeLabel.text = OWSFormat.localizedFileSizeString(from: totalSize)
 
@@ -603,15 +605,19 @@ extension AllMediaCategory {
     var titleString: String {
         switch self {
         case .photoVideo:
-            return OWSLocalizedString("ALL_MEDIA_FILE_TYPE_MEDIA",
-                                      comment: "Media (i.e., graphical) file type in All Meda file type picker.")
+            return OWSLocalizedString(
+                "ALL_MEDIA_FILE_TYPE_MEDIA",
+                comment: "Media (i.e., graphical) file type in All Meda file type picker.",
+            )
         case .audio:
-            return OWSLocalizedString("ALL_MEDIA_FILE_TYPE_AUDIO",
-                                      comment: "Audio file type in All Meda file type picker.")
+            return OWSLocalizedString(
+                "ALL_MEDIA_FILE_TYPE_AUDIO",
+                comment: "Audio file type in All Meda file type picker.",
+            )
         case .otherFiles:
             return OWSLocalizedString(
                 "ALL_MEDIA_FILE_TYPE_FILES",
-                comment: "Generic All Media file type for non-audiovisual files used in file type picker"
+                comment: "Generic All Media file type for non-audiovisual files used in file type picker",
             )
         }
     }

@@ -17,7 +17,7 @@ class RecoveryKeyReminderMegaphoneTests: XCTestCase {
         return ExperienceUpgradeManifest.checkPreconditionsForRecoveryKeyReminder(
             backupSettingsStore: backupSettingsStore,
             tsAccountManager: tsAccountManager,
-            transaction: tx
+            transaction: tx,
         )
     }
 

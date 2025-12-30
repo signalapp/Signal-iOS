@@ -26,7 +26,7 @@ public class SplashViewController: OWSViewController, ExperienceUpgradeView {
         return Theme.isDarkThemeEnabled ? .lightContent : .default
     }
 
-    public override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
 
         // Don't allow interactive dismissal.
@@ -42,7 +42,7 @@ public class SplashViewController: OWSViewController, ExperienceUpgradeView {
         dismiss(animated: flag, completion: completion)
     }
 
-    public override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
+    override public func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
         super.dismiss(animated: flag) {
             self.didDismiss()
             completion?()

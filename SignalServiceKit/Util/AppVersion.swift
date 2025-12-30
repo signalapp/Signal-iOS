@@ -48,7 +48,7 @@ public protocol AppVersion {
     func nseLaunchDidComplete()
     func didRestoreFromBackup(
         backupCurrentAppVersion: String?,
-        backupFirstAppVersion: String?
+        backupFirstAppVersion: String?,
     )
 
     func dumpToLog()
@@ -72,7 +72,7 @@ public struct AppVersionNumber: Comparable, CustomDebugStringConvertible, Decoda
         self.init(try decoder.singleValueContainer().decode(String.self))
     }
 
-    public static func < (lhs: Self, rhs: Self) -> Bool {
+    public static func <(lhs: Self, rhs: Self) -> Bool {
         return lhs.rawValue.compare(rhs.rawValue, options: .numeric) == .orderedAscending
     }
 
@@ -95,7 +95,7 @@ public struct AppVersionNumber4: Comparable, CustomDebugStringConvertible, Decod
         try self.init(decoder.singleValueContainer().decode(AppVersionNumber.self))
     }
 
-    public static func < (lhs: Self, rhs: Self) -> Bool {
+    public static func <(lhs: Self, rhs: Self) -> Bool {
         return lhs.wrappedValue < rhs.wrappedValue
     }
 
@@ -185,6 +185,7 @@ public class AppVersionImpl: AppVersion {
     public var lastCompletedLaunchAppVersion: String? {
         return userDefaults.string(forKey: lastCompletedLaunchVersionKey)
     }
+
     public private(set) var lastCompletedLaunchMainAppVersion: String? {
         get { userDefaults.string(forKey: lastCompletedMainAppLaunchVersionKey) }
         set {
@@ -194,6 +195,7 @@ public class AppVersionImpl: AppVersion {
             if didChange { userDefaults.set(Date(), forKey: firstMainAppLaunchDateAfterUpdateKey) }
         }
     }
+
     public private(set) var lastCompletedLaunchSAEAppVersion: String? {
         get { userDefaults.string(forKey: lastCompletedSAELaunchVersionKey) }
         set {
@@ -201,6 +203,7 @@ public class AppVersionImpl: AppVersion {
             userDefaults.setOrRemove(newValue, forKey: lastCompletedSAELaunchVersionKey)
         }
     }
+
     public private(set) var lastCompletedLaunchNSEAppVersion: String? {
         get { userDefaults.string(forKey: lastCompletedNSELaunchVersionKey) }
         set {
@@ -208,6 +211,7 @@ public class AppVersionImpl: AppVersion {
             userDefaults.setOrRemove(newValue, forKey: lastCompletedNSELaunchVersionKey)
         }
     }
+
     public var firstMainAppLaunchDateAfterUpdate: Date? {
         return userDefaults.object(forKey: firstMainAppLaunchDateAfterUpdateKey) as? Date
     }
@@ -229,12 +233,13 @@ public class AppVersionImpl: AppVersion {
         if
             let rawBuildDetails = bundle.app.object(forInfoDictionaryKey: "BuildDetails"),
             let buildDetails = rawBuildDetails as? [String: Any],
-            let buildTimestamp = buildDetails["Timestamp"] as? TimeInterval {
+            let buildTimestamp = buildDetails["Timestamp"] as? TimeInterval
+        {
             self.buildDate = Date(timeIntervalSince1970: buildTimestamp)
         } else {
-            #if !TESTABLE_BUILD
+#if !TESTABLE_BUILD
             Logger.warn("Expected a build date to be defined. Assuming build date is right now")
-            #endif
+#endif
             self.buildDate = Date()
         }
 
@@ -313,7 +318,7 @@ public class AppVersionImpl: AppVersion {
 
     public func didRestoreFromBackup(
         backupCurrentAppVersion: String?,
-        backupFirstAppVersion: String?
+        backupFirstAppVersion: String?,
     ) {
         if let backupCurrentAppVersion {
             userDefaults.set(backupCurrentAppVersion, forKey: backupAppVersionKey)
@@ -326,7 +331,7 @@ public class AppVersionImpl: AppVersion {
 
 // MARK: - Helpers
 
-fileprivate extension Bundle {
+private extension Bundle {
     func string(forInfoDictionaryKey key: String) -> String {
         guard let result = object(forInfoDictionaryKey: key) as? String else {
             owsFail("Couldn't fetch string from \(key)")
@@ -338,7 +343,7 @@ fileprivate extension Bundle {
     }
 }
 
-fileprivate extension UserDefaults {
+private extension UserDefaults {
     func setOrRemove(_ str: String?, forKey key: String) {
         if let str {
             set(str, forKey: key)
@@ -390,7 +395,7 @@ public class MockAppVerion: AppVersion {
 
     public func didRestoreFromBackup(
         backupCurrentAppVersion: String?,
-        backupFirstAppVersion: String?
+        backupFirstAppVersion: String?,
     ) {}
 
     public func dumpToLog() {}

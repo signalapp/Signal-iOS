@@ -24,14 +24,14 @@ extension DeviceTransferService {
             manifest: DeviceTransferProtoManifest,
             receivedFileIds: [String],
             skippedFileIds: [String],
-            progress: Progress
+            progress: Progress,
         )
         case outgoing(
             newDevicePeerId: MCPeerID,
             newDeviceCertificateHash: Data,
             manifest: DeviceTransferProtoManifest,
             transferredFileIds: [String],
-            progress: Progress
+            progress: Progress,
         )
 
         func appendingFileId(_ fileId: String) -> TransferState {
@@ -42,7 +42,7 @@ extension DeviceTransferService {
                     manifest: manifest,
                     receivedFileIds: receivedFileIds + [fileId],
                     skippedFileIds: skippedFileIds,
-                    progress: progress
+                    progress: progress,
                 )
             case .outgoing(let newDevicePeerId, let newDeviceCertificateHash, let manifest, let transferredFileIds, let progress):
                 return .outgoing(
@@ -50,7 +50,7 @@ extension DeviceTransferService {
                     newDeviceCertificateHash: newDeviceCertificateHash,
                     manifest: manifest,
                     transferredFileIds: transferredFileIds + [fileId],
-                    progress: progress
+                    progress: progress,
                 )
             case .idle:
                 owsFailDebug("unexpectedly tried to append file while idle")
@@ -66,7 +66,7 @@ extension DeviceTransferService {
                     manifest: manifest,
                     receivedFileIds: receivedFileIds,
                     skippedFileIds: skippedFileIds + [fileId],
-                    progress: progress
+                    progress: progress,
                 )
             case .outgoing(let newDevicePeerId, let newDeviceCertificateHash, let manifest, let transferredFileIds, let progress):
                 owsFailDebug("unexpectedly tried to append a skipped file on outgoing")
@@ -75,7 +75,7 @@ extension DeviceTransferService {
                     newDeviceCertificateHash: newDeviceCertificateHash,
                     manifest: manifest,
                     transferredFileIds: transferredFileIds,
-                    progress: progress
+                    progress: progress,
                 )
             case .idle:
                 owsFailDebug("unexpectedly tried to append a skipped file while idle")

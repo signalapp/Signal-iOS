@@ -21,7 +21,7 @@ public final class OWSContactPhoneNumber: NSObject, NSCoding, NSCopying, OWSCont
         coder.encode(NSNumber(value: self.type.rawValue), forKey: "phoneType")
     }
 
-    public override var hash: Int {
+    override public var hash: Int {
         var hasher = Hasher()
         hasher.combine(label)
         hasher.combine(phoneNumber)
@@ -29,7 +29,7 @@ public final class OWSContactPhoneNumber: NSObject, NSCoding, NSCopying, OWSCont
         return hasher.finalize()
     }
 
-    public override func isEqual(_ object: Any?) -> Bool {
+    override public func isEqual(_ object: Any?) -> Bool {
         guard let object = object as? Self else { return false }
         guard Swift.type(of: self) == Swift.type(of: object) else { return false }
         guard self.label == object.label else { return false }
@@ -134,7 +134,7 @@ extension OWSContactPhoneNumber {
             type = .custom
             customLabel = SystemContact.localizedString(
                 forCNLabel: cnLabeledValue.label,
-                labeledValueType: CNLabeledValue<CNPhoneNumber>.self
+                labeledValueType: CNLabeledValue<CNPhoneNumber>.self,
             )
         }
 

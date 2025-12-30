@@ -11,6 +11,7 @@ import LibSignalClient
 //
 //
 // MARK: - Mocks
+
 //
 //
 extension PreKeyTaskManager {
@@ -61,7 +62,7 @@ class _PreKeyTaskManager_APIClientMock: PreKeyTaskAPIClient {
         preKeyRecords: [LibSignalClient.PreKeyRecord]?,
         pqLastResortPreKeyRecord: LibSignalClient.KyberPreKeyRecord?,
         pqPreKeyRecords: [LibSignalClient.KyberPreKeyRecord]?,
-        auth: ChatServiceAuth
+        auth: ChatServiceAuth,
     ) async throws {
         try await setPreKeysResult.consumeIntoPromise().awaitable()
 

@@ -46,7 +46,7 @@ public struct OrphanedBackupAttachment: Codable, FetchableRecord, MutablePersist
         cdnNumber: UInt32,
         mediaName: String?,
         mediaId: Data?,
-        type: `Type`?
+        type: `Type`?,
     ) {
         self.id = id
         self.cdnNumber = cdnNumber
@@ -58,27 +58,27 @@ public struct OrphanedBackupAttachment: Codable, FetchableRecord, MutablePersist
     public static func locallyOrphaned(
         cdnNumber: UInt32,
         mediaName: String,
-        type: `Type`
+        type: `Type`,
     ) -> OrphanedBackupAttachment {
         return OrphanedBackupAttachment(
             id: nil,
             cdnNumber: cdnNumber,
             mediaName: mediaName,
             mediaId: nil,
-            type: type
+            type: type,
         )
     }
 
     public static func discoveredOnServer(
         cdnNumber: UInt32,
-        mediaId: Data
+        mediaId: Data,
     ) -> OrphanedBackupAttachment {
         return OrphanedBackupAttachment(
             id: nil,
             cdnNumber: cdnNumber,
             mediaName: nil,
             mediaId: mediaId,
-            type: nil
+            type: nil,
         )
     }
 

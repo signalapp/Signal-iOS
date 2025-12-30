@@ -13,7 +13,7 @@ public class SpoilerAnimationTestController: UIViewController {
 
     private let spoilerAnimationManager = SpoilerAnimationManager()
 
-    public override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
 
         self.view.backgroundColor = .black

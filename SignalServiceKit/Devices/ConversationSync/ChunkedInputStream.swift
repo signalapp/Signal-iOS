@@ -9,7 +9,8 @@
 import Foundation
 
 enum ChunkedInputStreamError: Error {
-    case truncated, malformed
+    case truncated
+    case malformed
 }
 
 struct ChunkedInputStream {

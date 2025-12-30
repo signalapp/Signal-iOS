@@ -16,7 +16,7 @@ class ProxySettingsViewController: OWSTableViewController2 {
 
         title = OWSLocalizedString(
             "PROXY_SETTINGS_TITLE",
-            comment: "Title for the signal proxy settings"
+            comment: "Title for the signal proxy settings",
         )
 
         updateTableContents()
@@ -35,7 +35,7 @@ class ProxySettingsViewController: OWSTableViewController2 {
         if navigationController?.viewControllers.count == 1 {
             navigationItem.leftBarButtonItem = .cancelButton(
                 dismissingFrom: self,
-                hasUnsavedChanges: { [weak self] in self?.hasPendingChanges }
+                hasUnsavedChanges: { [weak self] in self?.hasPendingChanges },
             )
         }
 
@@ -53,7 +53,7 @@ class ProxySettingsViewController: OWSTableViewController2 {
         textField.backgroundColor = .clear
         textField.placeholder = OWSLocalizedString(
             "PROXY_PLACEHOLDER",
-            comment: "Placeholder text for signal proxy host"
+            comment: "Placeholder text for signal proxy host",
         )
         textField.returnKeyType = .done
         textField.autocorrectionType = .no
@@ -82,7 +82,7 @@ class ProxySettingsViewController: OWSTableViewController2 {
         useProxySection.footerAttributedTitle = .composed(of: [
             OWSLocalizedString("USE_PROXY_EXPLANATION", comment: "Explanation of when you should use a signal proxy"),
             " ",
-            CommonStrings.learnMore.styled(with: .link(URL.Support.proxies))
+            CommonStrings.learnMore.styled(with: .link(URL.Support.proxies)),
         ])
         .styled(with: defaultFooterTextStyle)
 
@@ -92,7 +92,7 @@ class ProxySettingsViewController: OWSTableViewController2 {
                 self?.useProxy ?? false
             },
             target: self,
-            selector: #selector(didToggleUseProxy)
+            selector: #selector(didToggleUseProxy),
         ))
         contents.add(useProxySection)
 
@@ -100,13 +100,13 @@ class ProxySettingsViewController: OWSTableViewController2 {
         proxyAddressSection.headerAttributedTitle = OWSLocalizedString("PROXY_ADDRESS", comment: "The title for the address of the signal proxy")
             .styled(
                 with: .color(defaultHeaderTextColor.withAlphaComponent(useProxy ? 1 : 0.25)),
-                .font(Self.defaultHeaderFont)
+                .font(Self.defaultHeaderFont),
             )
         proxyAddressSection.add(.init(
             customCellBlock: { [weak self] in
                 let cell = OWSTableItem.newCell()
                 cell.selectionStyle = .none
-                guard let self = self else { return cell }
+                guard let self else { return cell }
 
                 cell.contentView.addSubview(self.hostTextField)
                 self.hostTextField.autoPinEdgesToSuperviewMargins()
@@ -118,7 +118,7 @@ class ProxySettingsViewController: OWSTableViewController2 {
 
                 return cell
             },
-            actionBlock: {}
+            actionBlock: {},
         ))
         contents.add(proxyAddressSection)
 
@@ -136,10 +136,10 @@ class ProxySettingsViewController: OWSTableViewController2 {
                 return cell
             },
             actionBlock: { [weak self] in
-                guard let self = self else { return }
+                guard let self else { return }
                 guard !self.notifyForInvalidHostIfNecessary() else { return }
                 AttachmentSharing.showShareUI(for: URL(string: "https://signal.tube/#\(self.host ?? "")")!, sender: self.view)
-            }
+            },
         ))
         contents.add(shareSection)
     }
@@ -160,7 +160,7 @@ class ProxySettingsViewController: OWSTableViewController2 {
         guard !SignalProxy.isValidProxyFragment(host) else { return false }
 
         // allow saving an empty host when the proxy is off
-        if !useProxy && host == nil { return false }
+        if !useProxy, host == nil { return false }
 
         presentToast(text: OWSLocalizedString("INVALID_PROXY_HOST_ERROR", comment: "The provided proxy host address is not valid"))
 

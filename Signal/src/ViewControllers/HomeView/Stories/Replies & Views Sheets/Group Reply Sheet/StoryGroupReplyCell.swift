@@ -14,23 +14,27 @@ class StoryGroupReplyCell: UITableViewCell {
         label.numberOfLines = 0
         return label
     }()
+
     lazy var authorNameLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.dynamicTypeFootnoteClamped.semibold()
         return label
     }()
+
     lazy var reactionLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 28)
         label.textAlignment = .trailing
         return label
     }()
+
     lazy var bubbleView: UIView = {
         let view = UIView()
         view.backgroundColor = .ows_gray80
         view.layoutMargins = UIEdgeInsets(hMargin: 12, vMargin: 7)
         return view
     }()
+
     lazy var bubbleCornerMaskLayer = CAShapeLayer()
 
     private lazy var sendingSpinner = SendingSpinner()
@@ -57,12 +61,14 @@ class StoryGroupReplyCell: UITableViewCell {
             case middle
             case bottom
         }
+
         var position: Position
 
         enum Kind: String, CaseIterable {
             case text
             case reaction
         }
+
         let kind: Kind
 
         init(kind: Kind, position: Position = .standalone) {
@@ -172,10 +178,11 @@ class StoryGroupReplyCell: UITableViewCell {
         var cornerRadius: CGFloat { 18 }
         var sharpCornerRadius: CGFloat { 4 }
     }
+
     let cellType: CellType
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        if let reuseIdentifier = reuseIdentifier, let cellType = CellType(rawValue: reuseIdentifier) {
+        if let reuseIdentifier, let cellType = CellType(rawValue: reuseIdentifier) {
             self.cellType = cellType
         } else {
             owsFailDebug("Missing cellType for reuseIdentifier \(String(describing: reuseIdentifier))")
@@ -292,7 +299,7 @@ class StoryGroupReplyCell: UITableViewCell {
             if item.wasRemotelyDeleted {
                 return .attributedText(OWSLocalizedString("THIS_MESSAGE_WAS_DELETED", comment: "text indicating the message was remotely deleted").styled(
                     with: .font(UIFont.dynamicTypeBodyClamped.italic()),
-                    .color(.ows_gray05)
+                    .color(.ows_gray05),
                 ))
             } else if cellType.isReaction {
                 let reactionString: String
@@ -304,7 +311,7 @@ class StoryGroupReplyCell: UITableViewCell {
                 return .attributedText(reactionString.styled(
                     with: .font(.dynamicTypeBodyClamped),
                     .color(.ows_gray05),
-                    .alignment(.natural)
+                    .alignment(.natural),
                 ))
             } else if let displayableText = item.displayableText {
                 return displayableText.displayTextValue
@@ -314,7 +321,7 @@ class StoryGroupReplyCell: UITableViewCell {
         }()
 
         let displayConfig = HydratedMessageBody.DisplayConfiguration.groupStoryReply(
-            revealedSpoilerIds: spoilerState.revealState.revealedSpoilerIds(interactionIdentifier: item.interactionIdentifier)
+            revealedSpoilerIds: spoilerState.revealState.revealedSpoilerIds(interactionIdentifier: item.interactionIdentifier),
         )
         messageSpoilerConfigBuilder.displayConfig = displayConfig
         messageSpoilerConfigBuilder.text = messageText
@@ -364,13 +371,13 @@ class StoryGroupReplyCell: UITableViewCell {
         // Style footer
         footerText.addAttributesToEntireString([
             .font: UIFont.dynamicTypeCaption1Clamped,
-            .foregroundColor: UIColor.ows_gray25
+            .foregroundColor: UIColor.ows_gray25,
         ])
 
         // Render footer inline if possible
         let messageMeasurement = measure(
             messageAttributedText(messageText, displayConfig: displayConfig),
-            maxWidth: maxMessageWidth
+            maxWidth: maxMessageWidth,
         )
         let footerMeasurement = measure(footerText, maxWidth: maxMessageWidth)
 
@@ -395,7 +402,7 @@ class StoryGroupReplyCell: UITableViewCell {
         if shouldRenderFooterOnLastMessageLine {
             var possibleMessageBubbleWidths = [
                 messageMeasurement.rect.width,
-                messageMeasurement.lastLineRect.width + footerSpacer + footerMeasurement.rect.width
+                messageMeasurement.lastLineRect.width + footerSpacer + footerMeasurement.rect.width,
             ]
             if cellType.hasAuthor, let authorDisplayName = item.authorDisplayName {
                 let authorMeasurement = measure(authorDisplayName.styled(with: .font(authorNameLabel.font)), maxWidth: maxMessageWidth)
@@ -411,14 +418,14 @@ class StoryGroupReplyCell: UITableViewCell {
                     "\n",
                     footerText.styled(
                         with: .paragraphSpacingBefore(-footerMeasurement.rect.height),
-                        .firstLineHeadIndent(finalMessageLabelWidth - footerMeasurement.rect.width)
-                    )
-                ]
+                        .firstLineHeadIndent(finalMessageLabelWidth - footerMeasurement.rect.width),
+                    ),
+                ],
             )
         } else {
             var possibleMessageBubbleWidths = [
                 messageMeasurement.rect.width,
-                footerMeasurement.rect.width
+                footerMeasurement.rect.width,
             ]
             if cellType.hasAuthor, let authorDisplayName = item.authorDisplayName {
                 let authorMeasurement = measure(authorDisplayName.styled(with: .font(authorNameLabel.font)), maxWidth: maxMessageWidth)
@@ -434,10 +441,10 @@ class StoryGroupReplyCell: UITableViewCell {
                     "\n",
                     footerText.styled(
                         with: textDirectionMatchesAppDirection
-                        ? .firstLineHeadIndent(finalMessageLabelWidth - footerMeasurement.rect.width)
-                        : .alignment(.trailing)
-                    )
-                ]
+                            ? .firstLineHeadIndent(finalMessageLabelWidth - footerMeasurement.rect.width)
+                            : .alignment(.trailing),
+                    ),
+                ],
             )
         }
     }
@@ -449,7 +456,7 @@ class StoryGroupReplyCell: UITableViewCell {
     private func messageAttributedText(
         _ textValue: CVTextValue,
         displayConfig: HydratedMessageBody.DisplayConfiguration,
-        suffixes: [BonMot.Composable] = []
+        suffixes: [BonMot.Composable] = [],
     ) -> NSAttributedString {
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.alignment = textValue.naturalTextAligment
@@ -458,7 +465,7 @@ class StoryGroupReplyCell: UITableViewCell {
         let baseAttrs: [NSAttributedString.Key: Any] = [
             .font: baseFont,
             .foregroundColor: baseTextColor,
-            .paragraphStyle: paragraphStyle
+            .paragraphStyle: paragraphStyle,
         ]
 
         let attributedText: NSAttributedString = {
@@ -474,7 +481,7 @@ class StoryGroupReplyCell: UITableViewCell {
                     config: displayConfig,
                     baseFont: baseFont,
                     baseTextColor: baseTextColor,
-                    isDarkThemeEnabled: Theme.isDarkThemeEnabled
+                    isDarkThemeEnabled: Theme.isDarkThemeEnabled,
                 )
             }
         }()
@@ -500,14 +507,14 @@ class StoryGroupReplyCell: UITableViewCell {
         let lastGlyphIndex = layoutManager.glyphIndexForCharacter(at: attributedString.length - 1)
         let unroundedLastLineFragmentRect = layoutManager.lineFragmentUsedRect(
             forGlyphAt: lastGlyphIndex,
-            effectiveRange: nil
+            effectiveRange: nil,
         )
         let lastLineFragmentRect = CGRect(
             origin: unroundedLastLineFragmentRect.origin,
             size: CGSize(
                 width: floor(unroundedLastLineFragmentRect.width),
-                height: floor(unroundedLastLineFragmentRect.height)
-            )
+                height: floor(unroundedLastLineFragmentRect.height),
+            ),
         )
 
         let unroundedFullTextRect = layoutManager.usedRect(for: textContainer)
@@ -515,8 +522,8 @@ class StoryGroupReplyCell: UITableViewCell {
             origin: unroundedFullTextRect.origin,
             size: CGSize(
                 width: floor(unroundedFullTextRect.width),
-                height: floor(unroundedFullTextRect.height)
-            )
+                height: floor(unroundedFullTextRect.height),
+            ),
         )
 
         return (fullTextRect, lastLineFragmentRect)
@@ -532,7 +539,7 @@ class StoryGroupReplyCell: UITableViewCell {
             bubbleView.bounds,
             sharpCorners: cellType.sharpCorners,
             sharpCornerRadius: cellType.sharpCornerRadius,
-            wideCornerRadius: cellType.cornerRadius
+            wideCornerRadius: cellType.cornerRadius,
         ).cgPath
     }
 
@@ -564,7 +571,7 @@ class StoryGroupReplyCell: UITableViewCell {
             return
         case .messageBody(let body):
             let revealedSpoilerIds = spoilerState.revealState.revealedSpoilerIds(
-                interactionIdentifier: item.interactionIdentifier
+                interactionIdentifier: item.interactionIdentifier,
             )
             for tappableItem in body.tappableItems(revealedSpoilerIds: revealedSpoilerIds, dataDetector: nil) {
                 switch tappableItem {
@@ -574,7 +581,7 @@ class StoryGroupReplyCell: UITableViewCell {
                     if unrevealedSpoiler.range.contains(tapIndex) {
                         spoilerState.revealState.setSpoilerRevealed(
                             withID: unrevealedSpoiler.id,
-                            interactionIdentifier: item.interactionIdentifier
+                            interactionIdentifier: item.interactionIdentifier,
                         )
                         // Re-configure. This is ok because revealing the spoiler
                         // doesn't change the sizing.
@@ -617,7 +624,7 @@ private class SendingSpinner: UIImageView {
 
         guard layer.animation(forKey: "spin") == nil else { return }
 
-        let animation = CABasicAnimation.init(keyPath: "transform.rotation.z")
+        let animation = CABasicAnimation(keyPath: "transform.rotation.z")
         animation.toValue = CGFloat.pi * 2
         animation.duration = TimeInterval.second
         animation.isCumulative = true

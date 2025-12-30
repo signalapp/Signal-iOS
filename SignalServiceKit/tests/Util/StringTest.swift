@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import XCTest
 import SignalServiceKit
+import XCTest
 
 final class StringTest: XCTestCase {
     func test_digitsOnly() {
@@ -94,12 +94,12 @@ final class StringTest: XCTestCase {
 
             // RTL Tests
             ("اليوم", "اليوم 9:41"), // Arabic
-            ("היום", "היום 9:41") // Hebrew
+            ("היום", "היום 9:41"), // Hebrew
         ]
 
         for (day, expectedConcatentation) in testStrings {
             XCTAssertEqual(day + " " + testTime, expectedConcatentation)
-            XCTAssertEqual((day).appending(" ").appending(testTime), expectedConcatentation)
+            XCTAssertEqual(day.appending(" ").appending(testTime), expectedConcatentation)
             XCTAssertEqual(NSAttributedString(string: day) + " " + testTime, NSAttributedString(string: expectedConcatentation))
         }
     }
@@ -220,7 +220,7 @@ final class StringTest: XCTestCase {
             // E164 must not start with a zero
             ("+0", false),
             ("+0123", false),
-            ("+3210", true)
+            ("+3210", true),
         ]
         for (inputValue, expectedResult) in testCases {
             XCTAssertEqual(inputValue.isStructurallyValidE164, expectedResult, "\(inputValue)")

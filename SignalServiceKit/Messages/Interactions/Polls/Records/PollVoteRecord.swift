@@ -50,7 +50,7 @@ public struct PollVoteRecord: Codable, FetchableRecord, MutablePersistableRecord
     public let voteCount: Int32
     public var voteState: VoteState
 
-    mutating public func didInsert(with rowID: Int64, for column: String?) {
+    public mutating func didInsert(with rowID: Int64, for column: String?) {
         id = rowID
     }
 
@@ -58,7 +58,7 @@ public struct PollVoteRecord: Codable, FetchableRecord, MutablePersistableRecord
         optionId: Int64,
         voteAuthorId: Int64,
         voteCount: Int32,
-        voteState: VoteState
+        voteState: VoteState,
     ) {
         self.optionId = optionId
         self.voteAuthorId = voteAuthorId
@@ -84,6 +84,6 @@ public struct PollVoteRecord: Codable, FetchableRecord, MutablePersistableRecord
 
     public static let persistenceConflictPolicy = PersistenceConflictPolicy(
         insert: .replace,
-        update: .replace
+        update: .replace,
     )
 }

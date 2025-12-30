@@ -39,20 +39,20 @@ enum ContactSupportActionSheet {
         emailFilter: EmailFilter,
         logDumper: DebugLogDumper,
         fromViewController: UIViewController,
-        completion: (() -> Void)? = nil
+        completion: (() -> Void)? = nil,
     ) {
         Logger.warn("Presenting contact-support action sheet! \(emailFilter)")
 
         let submitWithLogTitle = OWSLocalizedString("CONTACT_SUPPORT_SUBMIT_WITH_LOG", comment: "Button text")
         let submitWithLogAction = ActionSheetAction(title: submitWithLogTitle, style: .default) { [weak fromViewController] _ in
-            guard let fromViewController = fromViewController else { return }
+            guard let fromViewController else { return }
 
             let emailRequest = SupportEmailModel(
                 userDescription: nil,
                 emojiMood: nil,
                 supportFilter: emailFilter.asString,
                 debugLogPolicy: .requireUpload(logDumper),
-                hasRecentChallenge: logDumper.challengeReceivedRecently()
+                hasRecentChallenge: logDumper.challengeReceivedRecently(),
             )
 
             ModalActivityIndicatorViewController.present(
@@ -72,23 +72,23 @@ enum ContactSupportActionSheet {
                                 emailFilter: emailFilter,
                                 logDumper: logDumper,
                                 fromViewController: fromViewController,
-                                completion: completion
+                                completion: completion,
                             )
                         }
                     })
-                }
+                },
             )
         }
 
         let submitWithoutLogTitle = OWSLocalizedString("CONTACT_SUPPORT_SUBMIT_WITHOUT_LOG", comment: "Button text")
         let submitWithoutLogAction = ActionSheetAction(title: submitWithoutLogTitle, style: .default) { [weak fromViewController] _ in
-            guard let fromViewController = fromViewController else { return }
+            guard let fromViewController else { return }
             Task {
                 do {
                     try await ComposeSupportEmailOperation.sendEmail(
                         supportFilter: emailFilter.asString,
                         logUrl: nil,
-                        hasRecentChallenge: logDumper.challengeReceivedRecently()
+                        hasRecentChallenge: logDumper.challengeReceivedRecently(),
                     )
                 } catch {
                     showError(error, emailFilter: emailFilter, logDumper: logDumper, fromViewController: fromViewController)
@@ -106,7 +106,7 @@ enum ContactSupportActionSheet {
             style: .cancel,
             handler: { _ in
                 completion?()
-            }
+            },
         ))
 
         fromViewController.present(actionSheet, animated: true)
@@ -117,17 +117,17 @@ enum ContactSupportActionSheet {
         emailFilter: EmailFilter,
         logDumper: DebugLogDumper,
         fromViewController: UIViewController,
-        completion: (() -> Void)? = nil
+        completion: (() -> Void)? = nil,
     ) {
         let retryTitle = OWSLocalizedString("CONTACT_SUPPORT_PROMPT_ERROR_TRY_AGAIN", comment: "button text")
         let retryAction = ActionSheetAction(title: retryTitle, style: .default) { [weak fromViewController] _ in
-            guard let fromViewController = fromViewController else { return }
+            guard let fromViewController else { return }
 
             present(
                 emailFilter: emailFilter,
                 logDumper: logDumper,
                 fromViewController: fromViewController,
-                completion: completion
+                completion: completion,
             )
         }
 
@@ -139,7 +139,7 @@ enum ContactSupportActionSheet {
             style: .cancel,
             handler: { _ in
                 completion?()
-            }
+            },
         ))
 
         fromViewController.present(actionSheet, animated: true)

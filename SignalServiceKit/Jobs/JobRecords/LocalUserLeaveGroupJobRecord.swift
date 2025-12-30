@@ -19,7 +19,7 @@ public final class LocalUserLeaveGroupJobRecord: JobRecord, FactoryInitializable
         replacementAdminAci: Aci?,
         waitForMessageProcessing: Bool,
         failureCount: UInt = 0,
-        status: Status = .ready
+        status: Status = .ready,
     ) {
         self.threadId = threadId
         self.replacementAdminAciString = replacementAdminAci?.serviceIdUppercaseString
@@ -27,7 +27,7 @@ public final class LocalUserLeaveGroupJobRecord: JobRecord, FactoryInitializable
 
         super.init(
             failureCount: failureCount,
-            status: status
+            status: status,
         )
     }
 

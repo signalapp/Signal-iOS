@@ -7,7 +7,7 @@ import Foundation
 
 public func firstly<T: Thenable>(
     on scheduler: Scheduler? = nil,
-    _ block: () throws -> T
+    _ block: () throws -> T,
 ) -> Promise<T.Value> {
     let (promise, future) = Promise<T.Value>.pending()
     do {
@@ -20,7 +20,7 @@ public func firstly<T: Thenable>(
 
 public func firstly<T: Thenable>(
     on scheduler: Scheduler,
-    _ block: @escaping () throws -> T
+    _ block: @escaping () throws -> T,
 ) -> Promise<T.Value> {
     let (promise, future) = Promise<T.Value>.pending()
     scheduler.asyncIfNecessary {
@@ -35,7 +35,7 @@ public func firstly<T: Thenable>(
 
 public func firstly<T>(
     on scheduler: Scheduler,
-    _ block: @escaping () throws -> T
+    _ block: @escaping () throws -> T,
 ) -> Promise<T> {
     let (promise, future) = Promise<T>.pending()
     scheduler.asyncIfNecessary {
@@ -50,7 +50,7 @@ public func firstly<T>(
 
 public func firstly<T>(
     on scheduler: Scheduler,
-    _ block: @escaping () -> T
+    _ block: @escaping () -> T,
 ) -> Guarantee<T> {
     let (guarantee, future) = Guarantee<T>.pending()
     scheduler.asyncIfNecessary {

@@ -30,7 +30,7 @@ extension UIMenuElement {
             handler: { [weak target] action in
                 let sender = action.sender ?? action
                 UIApplication.shared.sendAction(#selector(ChatListFilterActions.enableChatListFilter(_:)), to: target, from: sender, for: nil)
-            }
+            },
         )
     }
 
@@ -41,7 +41,7 @@ extension UIMenuElement {
             handler: { [weak target] action in
                 let sender = action.sender ?? action
                 UIApplication.shared.sendAction(#selector(ChatListFilterActions.disableChatListFilter(_:)), to: target, from: sender, for: nil)
-            }
+            },
         )
     }
 }

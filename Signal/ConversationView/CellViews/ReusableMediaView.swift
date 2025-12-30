@@ -4,8 +4,8 @@
 //
 
 public import SignalServiceKit
-import SignalUI
 import SDWebImage
+import SignalUI
 
 // MARK: -
 
@@ -84,8 +84,10 @@ public class ReusableMediaView {
 
     // MARK: - Initializers
 
-    public init(mediaViewAdapter: MediaViewAdapter,
-                mediaCache: CVMediaCache) {
+    public init(
+        mediaViewAdapter: MediaViewAdapter,
+        mediaCache: CVMediaCache,
+    ) {
         self.mediaViewAdapter = mediaViewAdapter
         self.mediaCache = mediaCache
     }
@@ -135,10 +137,10 @@ public class ReusableMediaView {
 
         // It's critical that we update loadState once
         // our load attempt is complete.
-        let loadCompletion: (AnyObject?) -> Void = { [weak self] (possibleMedia) in
+        let loadCompletion: (AnyObject?) -> Void = { [weak self] possibleMedia in
             AssertIsOnMainThread()
 
-            guard let self = self else {
+            guard let self else {
                 return
             }
             guard loadOwner == self.owner else {
@@ -182,7 +184,7 @@ public class ReusableMediaView {
                 mediaCache.setMedia(
                     media,
                     forKey: cacheKey,
-                    isAnimated: mediaViewAdapter.shouldBeRenderedByYY
+                    isAnimated: mediaViewAdapter.shouldBeRenderedByYY,
                 )
                 await MainActor.run {
                     loadCompletion(media)
@@ -207,7 +209,7 @@ public class ReusableMediaView {
 
 class MediaViewAdapterBlurHash: MediaViewAdapter {
 
-    public let shouldBeRenderedByYY = false
+    let shouldBeRenderedByYY = false
     let blurHash: String
     let imageView = CVImageView()
 
@@ -296,7 +298,7 @@ class MediaViewAdapterLoopingVideo: MediaViewAdapter {
 
 class MediaViewAdapterAnimated: MediaViewAdapter {
 
-    public let shouldBeRenderedByYY = true
+    let shouldBeRenderedByYY = true
     let attachmentStream: AttachmentStream
     let imageView = CVAnimatedImageView()
 
@@ -347,14 +349,14 @@ class MediaViewAdapterAnimated: MediaViewAdapter {
 
 class MediaViewAdapterStill: MediaViewAdapter {
 
-    public let shouldBeRenderedByYY = false
+    let shouldBeRenderedByYY = false
     let attachmentStream: AttachmentStream
     let imageView = CVImageView()
     let thumbnailQuality: AttachmentThumbnailQuality
 
     init(
         attachmentStream: AttachmentStream,
-        thumbnailQuality: AttachmentThumbnailQuality
+        thumbnailQuality: AttachmentThumbnailQuality,
     ) {
         self.attachmentStream = attachmentStream
         self.thumbnailQuality = thumbnailQuality
@@ -402,7 +404,7 @@ class MediaViewAdapterStill: MediaViewAdapter {
 
 class MediaViewAdapterBackupThumbnail: MediaViewAdapter {
 
-    public let shouldBeRenderedByYY = false
+    let shouldBeRenderedByYY = false
     let attachmentBackupThumbnail: AttachmentBackupThumbnail
     let imageView = CVImageView()
 
@@ -450,14 +452,14 @@ class MediaViewAdapterBackupThumbnail: MediaViewAdapter {
 
 class MediaViewAdapterVideo: MediaViewAdapter {
 
-    public let shouldBeRenderedByYY = false
+    let shouldBeRenderedByYY = false
     let attachmentStream: AttachmentStream
     let imageView = CVImageView()
     let thumbnailQuality: AttachmentThumbnailQuality
 
     init(
         attachmentStream: AttachmentStream,
-        thumbnailQuality: AttachmentThumbnailQuality
+        thumbnailQuality: AttachmentThumbnailQuality,
     ) {
         self.attachmentStream = attachmentStream
         self.thumbnailQuality = thumbnailQuality

@@ -3,24 +3,24 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalServiceKit
 import SafariServices
+import SignalServiceKit
 
 final class InactivePrimaryDeviceReminderMegaphone: MegaphoneView {
     init(
         fromViewController: UIViewController,
-        experienceUpgrade: ExperienceUpgrade
+        experienceUpgrade: ExperienceUpgrade,
     ) {
         super.init(experienceUpgrade: experienceUpgrade)
 
         titleText = OWSLocalizedString(
             "INACTIVE_PRIMARY_DEVICE_REMINDER_MEGAPHONE_TITLE",
-            comment: "Title for an in-app megaphone about a user's inactive primary device."
+            comment: "Title for an in-app megaphone about a user's inactive primary device.",
         )
 
         bodyText = OWSLocalizedString(
             "INACTIVE_PRIMARY_DEVICE_REMINDER_MEGAPHONE_BODY",
-            comment: "Body for an in-app megaphone about a user's inactive primary device."
+            comment: "Body for an in-app megaphone about a user's inactive primary device.",
         )
 
         imageName = "phone-warning"
@@ -29,7 +29,7 @@ final class InactivePrimaryDeviceReminderMegaphone: MegaphoneView {
         let viewControllerRef = fromViewController
         let learnMoreButton = Button(title: OWSLocalizedString(
             "INACTIVE_PRIMARY_DEVICE_REMINDER_MEGAPHONE_LEARN_MORE_BUTTON",
-            comment: "Title for a button in an in-app megaphone about a user's inactive linked device, indicating the user wants to learn more."
+            comment: "Title for a button in an in-app megaphone about a user's inactive linked device, indicating the user wants to learn more.",
         )) { [weak viewControllerRef] in
             viewControllerRef?.present(SFSafariViewController(url: URL.Support.inactivePrimaryDevice), animated: true)
         }
@@ -38,8 +38,8 @@ final class InactivePrimaryDeviceReminderMegaphone: MegaphoneView {
             fromViewController: fromViewController,
             snoozeTitle: OWSLocalizedString(
                 "INACTIVE_PRIMARY_DEVICE_REMINDER_MEGAPHONE_GOT_IT_BUTTON",
-                comment: "Title for a button in an in-app megaphone about a user's inactive primary device, temporarily dismissing the megaphone."
-            )
+                comment: "Title for a button in an in-app megaphone about a user's inactive primary device, temporarily dismissing the megaphone.",
+            ),
         )
         setButtons(primary: gotItButton, secondary: learnMoreButton)
     }

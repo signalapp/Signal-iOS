@@ -17,14 +17,14 @@ class BlockingLegacyGroupView: ConversationBottomPanelView {
 
         let format = OWSLocalizedString(
             "LEGACY_GROUP_UNSUPPORTED_MESSAGE",
-            comment: "Message explaining that this group can no longer be used because it is unsupported. Embeds a {{ learn more link }}."
+            comment: "Message explaining that this group can no longer be used because it is unsupported. Embeds a {{ learn more link }}.",
         )
         let learnMoreText = CommonStrings.learnMore
 
         let attributedString = NSMutableAttributedString(string: String(format: format, learnMoreText))
         attributedString.setAttributes(
             [.foregroundColor: UIColor.Signal.link],
-            forSubstring: learnMoreText
+            forSubstring: learnMoreText,
         )
 
         let label = UILabel()
@@ -52,7 +52,7 @@ class BlockingLegacyGroupView: ConversationBottomPanelView {
     }
 
     @objc
-    public func didTapLearnMore() {
+    func didTapLearnMore() {
         guard let fromViewController = self.fromViewController else {
             owsFailDebug("Missing fromViewController.")
             return
@@ -60,7 +60,7 @@ class BlockingLegacyGroupView: ConversationBottomPanelView {
 
         fromViewController.presentFormSheet(
             LegacyGroupLearnMoreViewController(mode: .explainUnsupportedLegacyGroups),
-            animated: true
+            animated: true,
         )
     }
 }

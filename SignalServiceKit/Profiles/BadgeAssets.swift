@@ -20,6 +20,7 @@ public class BadgeAssets {
         case failed
         case unavailable
     }
+
     private var lockedState = TSMutex(initialState: State.initialized)
     public var isFetching: Bool { lockedState.withLock { $0 == .fetching } }
 
@@ -140,16 +141,20 @@ public class BadgeAssets {
             let destinationUrl = fileUrlForVariant(variant)
             guard !OWSFileSystem.fileOrFolderExists(url: destinationUrl) else { return }
 
-            guard let spriteImage = spriteParser.copySprite(variant: variant),
-                  let imageDestination = CGImageDestinationCreateWithURL(destinationUrl as CFURL, UTType.png.identifier as CFString, 1, nil) else {
-                      throw OWSAssertionError("Couldn't load image")
-                  }
+            guard
+                let spriteImage = spriteParser.copySprite(variant: variant),
+                let imageDestination = CGImageDestinationCreateWithURL(destinationUrl as CFURL, UTType.png.identifier as CFString, 1, nil)
+            else {
+                throw OWSAssertionError("Couldn't load image")
+            }
             CGImageDestinationAddImage(imageDestination, spriteImage, nil)
             CGImageDestinationFinalize(imageDestination)
         }
     }
 }
+
 // MARK: - Sprite retrieval
+
 extension BadgeAssets {
 
     // TODO: Badges — Lazy initialization? Double check backing memory is all purgable
@@ -216,7 +221,7 @@ private class DefaultSpriteSheetParser {
         .dark36: [CGPoint(x: 163, y: 57), CGPoint(x: 323, y: 109), CGPoint(x: 483, y: 161)],
         .universal64: [CGPoint(x: 163, y: 97), CGPoint(x: 323, y: 193), CGPoint(x: 483, y: 289)],
         .universal112: [CGPoint(x: 233, y: 1), CGPoint(x: 457, y: 1), CGPoint(x: 681, y: 1)],
-        .universal160: [CGPoint(x: 1, y: 1), CGPoint(x: 1, y: 1), CGPoint(x: 1, y: 1)]
+        .universal160: [CGPoint(x: 1, y: 1), CGPoint(x: 1, y: 1), CGPoint(x: 1, y: 1)],
     ]
 
     func copySprite(variant: BadgeAssets.Variant) -> CGImage? {

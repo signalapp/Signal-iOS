@@ -9,7 +9,7 @@ import SignalServiceKit
 public class AllSignalConnectionsViewController: OWSTableViewController2 {
     let collation = UILocalizedIndexedCollation.current()
 
-    public override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
 
         title = OWSLocalizedString("ALL_SIGNAL_CONNECTIONS_TITLE", comment: "Title for the view of all your signal connections")
@@ -28,14 +28,14 @@ public class AllSignalConnectionsViewController: OWSTableViewController2 {
         let allConnections = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             return SSKEnvironment.shared.contactManagerRef.sortedComparableNames(
                 for: SSKEnvironment.shared.profileManagerRef.allWhitelistedRegisteredAddresses(tx: transaction).filter { !$0.isLocalAddress },
-                tx: transaction
+                tx: transaction,
             )
         }
 
         let collatedConnections = Dictionary(grouping: allConnections) {
             return collation.section(
                 for: CollatableComparableDisplayName($0),
-                collationStringSelector: #selector(CollatableComparableDisplayName.collationString)
+                collationStringSelector: #selector(CollatableComparableDisplayName.collationString),
             )
         }
 

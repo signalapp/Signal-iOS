@@ -17,7 +17,7 @@ class AttachmentValidationBackfillRunner: BGProcessingTaskRunner {
     init(
         db: SDSDatabaseStorage,
         store: AttachmentValidationBackfillStore,
-        migrator: @escaping () -> any AttachmentValidationBackfillMigrator
+        migrator: @escaping () -> any AttachmentValidationBackfillMigrator,
     ) {
         self.db = db
         self.store = store
@@ -34,7 +34,7 @@ class AttachmentValidationBackfillRunner: BGProcessingTaskRunner {
     func run() async throws {
         try await self.runInBatches(
             willBegin: {},
-            runNextBatch: { try await migrator().runNextBatch() }
+            runNextBatch: { try await migrator().runNextBatch() },
         )
     }
 

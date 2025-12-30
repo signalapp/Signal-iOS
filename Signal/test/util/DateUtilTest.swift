@@ -3,12 +3,13 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import XCTest
 import Testing
+import XCTest
 
 import SignalServiceKit
 
-@Test func testDateComparison() {
+@Test
+func testDateComparison() {
     let firstDate = Date()
     let sameDate = Date(timeIntervalSinceReferenceDate: firstDate.timeIntervalSinceReferenceDate)
     let laterDate = Date(timeIntervalSinceReferenceDate: firstDate.timeIntervalSinceReferenceDate + 1)
@@ -27,22 +28,26 @@ import SignalServiceKit
 }
 
 class DateUtilTest: XCTestCase {
-    func buildDate(year: Int = 0,
-                   month: Int = 0,
-                   day: Int = 0,
-                   hour: Int = 0,
-                   minute: Int = 0,
-                   second: Int = 0) -> Date {
+    func buildDate(
+        year: Int = 0,
+        month: Int = 0,
+        day: Int = 0,
+        hour: Int = 0,
+        minute: Int = 0,
+        second: Int = 0,
+    ) -> Date {
         let calendar = Calendar.current
         let timeZone = TimeZone.current
-        let dateComponents = DateComponents(calendar: calendar,
-                                            timeZone: timeZone,
-                                            year: year,
-                                            month: month,
-                                            day: day,
-                                            hour: hour,
-                                            minute: minute,
-                                            second: second)
+        let dateComponents = DateComponents(
+            calendar: calendar,
+            timeZone: timeZone,
+            year: year,
+            month: month,
+            day: day,
+            hour: hour,
+            minute: minute,
+            second: second,
+        )
         return calendar.date(from: dateComponents)!
     }
 
@@ -170,7 +175,7 @@ class DateUtilTest: XCTestCase {
         XCTAssertFalse(DateUtil.dateIsThisYear(twoYearsAhead, now: now))
     }
 
-    func testDateComparators_timezoneVMidnight () {
+    func testDateComparators_timezoneVMidnight() {
         let formatter = DateFormatter()
         formatter.dateStyle = .long
         formatter.timeStyle = .long

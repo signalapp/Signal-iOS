@@ -39,7 +39,7 @@ public class CLVBackupDownloadProgressView {
         return cell
     }()
 
-    fileprivate let backupAttachmentDownloadProgressView: BackupAttachmentDownloadProgressView
+    private let backupAttachmentDownloadProgressView: BackupAttachmentDownloadProgressView
 
     public weak var chatListViewController: ChatListViewController? {
         didSet {
@@ -70,7 +70,7 @@ public class CLVBackupDownloadProgressView {
             backupAttachmentDownloadQueueStatusReporter: backupAttachmentDownloadQueueStatusReporter,
             backupAttachmentDownloadStore: backupAttachmentDownloadStore,
             backupSettingsStore: backupSettingsStore,
-            db: db
+            db: db,
         )
 
         backupDownloadProgressViewCell.contentView.addSubview(backupAttachmentDownloadProgressView)
@@ -83,7 +83,7 @@ public class CLVBackupDownloadProgressView {
             viewState: viewState,
             // Irrelevant for this bool determination
             completeDismissAction: {},
-            backupAttachmentDownloadQueueStatusReporter: backupAttachmentDownloadQueueStatusReporter
+            backupAttachmentDownloadQueueStatusReporter: backupAttachmentDownloadQueueStatusReporter,
         )
         return downloadState != nil
     }
@@ -102,7 +102,7 @@ public class CLVBackupDownloadProgressView {
                 }
                 self?.update(viewState: viewState)
             },
-            backupAttachmentDownloadQueueStatusReporter: backupAttachmentDownloadQueueStatusReporter
+            backupAttachmentDownloadQueueStatusReporter: backupAttachmentDownloadQueueStatusReporter,
         )
 
         let oldState = backupAttachmentDownloadProgressView.state
@@ -153,7 +153,7 @@ public class CLVBackupDownloadProgressView {
 
     static func measureHeight(
         viewState: CLVBackupDownloadProgressView.State,
-        width: CGFloat
+        width: CGFloat,
     ) -> CGFloat {
         BackupAttachmentDownloadProgressView.measureHeight(
             inWidth: width,
@@ -162,15 +162,15 @@ public class CLVBackupDownloadProgressView {
                 // Irrelevant in this context
                 completeDismissAction: {},
                 backupAttachmentDownloadQueueStatusReporter: DependenciesBridge
-                    .shared.backupAttachmentDownloadQueueStatusReporter
-            )
+                    .shared.backupAttachmentDownloadQueueStatusReporter,
+            ),
         )
     }
 
     private static func downloadProgressState(
         viewState: CLVBackupDownloadProgressView.State,
         completeDismissAction: @escaping () -> Void,
-        backupAttachmentDownloadQueueStatusReporter: BackupAttachmentDownloadQueueStatusReporter
+        backupAttachmentDownloadQueueStatusReporter: BackupAttachmentDownloadQueueStatusReporter,
     ) -> BackupAttachmentDownloadProgressView.State? {
         switch viewState.backupPlan {
         case nil, .disabled, .free:
@@ -192,7 +192,7 @@ public class CLVBackupDownloadProgressView {
                 $0.remainingUnitCount
             } ?? minRequiredDiskSpace
             return .outOfDiskSpace(
-                spaceRequired: max(minRequiredDiskSpace, requiredDiskSpace)
+                spaceRequired: max(minRequiredDiskSpace, requiredDiskSpace),
             )
         case .noWifiReachability:
             return .wifiNotReachable
@@ -313,7 +313,7 @@ private class BackupAttachmentDownloadProgressView: UIView {
         case outOfDiskSpace(spaceRequired: UInt64)
         case complete(size: UInt64, dismissAction: () -> Void)
 
-        public enum PauseReason {
+        enum PauseReason {
             case notReachable
             case lowBattery
             case lowPowerMode
@@ -329,7 +329,7 @@ private class BackupAttachmentDownloadProgressView: UIView {
     }
 
     @available(*, unavailable, message: "use other constructor instead.")
-    required public init(coder: NSCoder) {
+    required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
@@ -347,7 +347,7 @@ private class BackupAttachmentDownloadProgressView: UIView {
         backupAttachmentDownloadQueueStatusReporter: BackupAttachmentDownloadQueueStatusReporter,
         backupAttachmentDownloadStore: BackupAttachmentDownloadStore,
         backupSettingsStore: BackupSettingsStore,
-        db: DB
+        db: DB,
     ) {
         self.backupAttachmentDownloadQueueStatusReporter = backupAttachmentDownloadQueueStatusReporter
         self.backupAttachmentDownloadStore = backupAttachmentDownloadStore
@@ -359,7 +359,7 @@ private class BackupAttachmentDownloadProgressView: UIView {
             self,
             selector: #selector(render),
             name: .themeDidChange,
-            object: nil
+            object: nil,
         )
 
         initialRender()
@@ -437,7 +437,7 @@ private class BackupAttachmentDownloadProgressView: UIView {
 
     private lazy var detailsButton: OWSButton = {
         let button = OWSButton(
-            title: Constants.detailsButtonText
+            title: Constants.detailsButtonText,
         ) { [weak self] in
             self?.didTapDetails()
         }
@@ -449,7 +449,7 @@ private class BackupAttachmentDownloadProgressView: UIView {
 
     private lazy var resumeButton: OWSButton = {
         let button = OWSButton(
-            title: Constants.resumeButtonText
+            title: Constants.resumeButtonText,
         ) { [weak self] in
             self?.didTapResume()
         }
@@ -534,7 +534,7 @@ private class BackupAttachmentDownloadProgressView: UIView {
         titleLabel.isHidden = frames.titleLabel == nil
         frames.titleLabel.map { titleLabel.frame = $0 }
         subtitleLabel.isHidden = frames.subtitleLabel == nil
-        frames.subtitleLabel.map { (frame, textAlignment) in
+        frames.subtitleLabel.map { frame, textAlignment in
             subtitleLabel.frame = frame
             subtitleLabel.textAlignment = textAlignment
         }
@@ -550,7 +550,7 @@ private class BackupAttachmentDownloadProgressView: UIView {
 
     static func measureHeight(
         inWidth width: CGFloat,
-        state: State?
+        state: State?,
     ) -> CGFloat {
         let frames = measureFrames(inWidth: width, state: state)
         return frames.backgroundView.height + (Constants.spacing * 2)
@@ -558,7 +558,7 @@ private class BackupAttachmentDownloadProgressView: UIView {
 
     private static func measureFrames(
         inWidth width: CGFloat,
-        state: State?
+        state: State?,
     ) -> Frames {
         var frames = Frames(state: state, width: width)
 
@@ -589,7 +589,7 @@ private class BackupAttachmentDownloadProgressView: UIView {
                 with: .square(.greatestFiniteMagnitude),
                 options: [.usesFontLeading, .usesLineFragmentOrigin],
                 attributes: [.font: Constants.resumeButtonFont],
-                context: nil
+                context: nil,
             )
             frames.resumeButton = .zero
             frames.resumeButton?.x = frames.backgroundView.width - Constants.spacing - resumeButtonSize.width
@@ -640,7 +640,7 @@ private class BackupAttachmentDownloadProgressView: UIView {
             with: CGSize(width: labelsAvailableWidth, height: .greatestFiniteMagnitude),
             options: [.usesFontLeading, .usesLineFragmentOrigin],
             attributes: [.font: Constants.titleLabelFont],
-            context: nil
+            context: nil,
         )
         titleLabelSize.width = min(titleLabelSize.width, labelsAvailableWidth)
 
@@ -648,7 +648,7 @@ private class BackupAttachmentDownloadProgressView: UIView {
             with: CGSize(width: labelsAvailableWidth, height: .greatestFiniteMagnitude),
             options: [.usesFontLeading, .usesLineFragmentOrigin],
             attributes: [.font: Constants.subtitleLabelFont],
-            context: nil
+            context: nil,
         )
         subtitleLabelSize.width = min(subtitleLabelSize.width, labelsAvailableWidth)
 
@@ -664,22 +664,22 @@ private class BackupAttachmentDownloadProgressView: UIView {
                 labelsHeight,
                 frames.iconView.height,
                 frames.dismissButton?.height ?? 0,
-                frames.progressIndicatorView?.height ?? 0
+                frames.progressIndicatorView?.height ?? 0,
             ) + (Constants.spacing * 2)
             frames.titleLabel = CGRect(
                 x: frames.iconView.maxX + Constants.spacing,
                 y: (frames.backgroundView.height / 2) - (labelsHeight / 2),
                 width: titleLabelSize.width,
-                height: titleLabelSize.height
+                height: titleLabelSize.height,
             )
             frames.subtitleLabel = (
                 CGRect(
                     x: frames.titleLabel!.minX,
                     y: frames.titleLabel!.maxY,
                     width: subtitleLabelSize.width,
-                    height: subtitleLabelSize.height
+                    height: subtitleLabelSize.height,
                 ),
-                .left
+                .left,
             )
         } else {
             // Just one line
@@ -688,13 +688,13 @@ private class BackupAttachmentDownloadProgressView: UIView {
                 labelsHeight,
                 frames.iconView.height,
                 frames.dismissButton?.height ?? 0,
-                frames.progressIndicatorView?.height ?? 0
+                frames.progressIndicatorView?.height ?? 0,
             ) + (Constants.spacing * 2)
             frames.titleLabel = CGRect(
                 x: frames.iconView.maxX + Constants.spacing,
                 y: (frames.backgroundView.height / 2) - (titleLabelSize.height / 2),
                 width: titleLabelSize.width,
-                height: titleLabelSize.height
+                height: titleLabelSize.height,
             )
             let subtitleMinX = frames.titleLabel!.maxX + Constants.spacing
             frames.subtitleLabel = (
@@ -702,9 +702,9 @@ private class BackupAttachmentDownloadProgressView: UIView {
                     x: subtitleMinX,
                     y: (frames.backgroundView.height / 2) - (subtitleLabelSize.height / 2),
                     width: labelsMaxXBound - subtitleMinX,
-                    height: subtitleLabelSize.height
+                    height: subtitleLabelSize.height,
                 ),
-                .right
+                .right,
             )
         }
     }
@@ -714,7 +714,7 @@ private class BackupAttachmentDownloadProgressView: UIView {
             with: .square(.greatestFiniteMagnitude),
             options: [.usesFontLeading, .usesLineFragmentOrigin],
             attributes: [.font: Constants.detailsButtonFont],
-            context: nil
+            context: nil,
         )
         frames.detailsButton = .zero
         frames.detailsButton?.x = frames.backgroundView.width - Constants.spacing - detailsButtonSize.width
@@ -723,24 +723,24 @@ private class BackupAttachmentDownloadProgressView: UIView {
 
         let availableLabelWidth =
             (frames.detailsButton!.minX - Constants.spacing)
-            - (frames.iconView.maxX + Constants.spacing)
+                - (frames.iconView.maxX + Constants.spacing)
         let diskSpaceLabelSize = ((diskSpaceLabelText(state: frames.state) ?? "") as NSString).boundingRect(
             with: CGSize(width: availableLabelWidth, height: .greatestFiniteMagnitude),
             options: [.usesFontLeading, .usesLineFragmentOrigin],
             attributes: [.font: Constants.diskSpaceLabelFont],
-            context: nil
+            context: nil,
         )
 
         frames.backgroundView.height = max(
             frames.iconView.height,
             diskSpaceLabelSize.height,
-            detailsButtonSize.height
+            detailsButtonSize.height,
         ) + Constants.spacing * 2
         frames.diskSpaceLabel = CGRect(
             x: frames.iconView.maxX + Constants.spacing,
             y: (frames.backgroundView.height / 2) - (diskSpaceLabelSize.height / 2),
             width: diskSpaceLabelSize.width,
-            height: diskSpaceLabelSize.height
+            height: diskSpaceLabelSize.height,
         )
     }
 
@@ -761,24 +761,24 @@ private class BackupAttachmentDownloadProgressView: UIView {
         case .restoring:
             OWSLocalizedString(
                 "RESTORING_MEDIA_BANNER_TITLE",
-                comment: "Title shown on chat list banner for restoring media from a backup"
+                comment: "Title shown on chat list banner for restoring media from a backup",
             )
         case .wifiNotReachable:
             OWSLocalizedString(
                 "RESTORING_MEDIA_BANNER_WAITING_FOR_WIFI_TITLE",
-                comment: "Title shown on chat list banner for restoring media from a backup when waiting for wifi"
+                comment: "Title shown on chat list banner for restoring media from a backup when waiting for wifi",
             )
         case .paused:
             OWSLocalizedString(
                 "RESTORING_MEDIA_BANNER_PAUSED_TITLE",
-                comment: "Title shown on chat list banner for restoring media from a backup when paused for some reason"
+                comment: "Title shown on chat list banner for restoring media from a backup when paused for some reason",
             )
         case .outOfDiskSpace:
             nil
         case .complete:
             OWSLocalizedString(
                 "RESTORING_MEDIA_BANNER_FINISHED_TITLE",
-                comment: "Title shown on chat list banner for restoring media from a backup is finished"
+                comment: "Title shown on chat list banner for restoring media from a backup is finished",
             )
         case nil:
             nil
@@ -791,10 +791,10 @@ private class BackupAttachmentDownloadProgressView: UIView {
             String(
                 format: OWSLocalizedString(
                     "RESTORING_MEDIA_BANNER_PROGRESS_FORMAT",
-                    comment: "Download progress for media from a backup. Embeds {{ %1$@ formatted number of bytes downloaded, e.g. '100 MB', %2$@ formatted total number of bytes to download, e.g. '3 GB' }}"
+                    comment: "Download progress for media from a backup. Embeds {{ %1$@ formatted number of bytes downloaded, e.g. '100 MB', %2$@ formatted total number of bytes to download, e.g. '3 GB' }}",
                 ),
                 formatByteSize(progress!.completedUnitCount),
-                formatByteSize(progress!.totalUnitCount)
+                formatByteSize(progress!.totalUnitCount),
             )
         case .restoring:
             nil
@@ -805,17 +805,17 @@ private class BackupAttachmentDownloadProgressView: UIView {
             case .lowBattery:
                 OWSLocalizedString(
                     "RESTORING_MEDIA_BANNER_PAUSED_BATTERY_SUBTITLE",
-                    comment: "Subtitle shown on chat list banner for restoring media from a backup when paused because the device has low battery"
+                    comment: "Subtitle shown on chat list banner for restoring media from a backup when paused because the device has low battery",
                 )
             case .lowPowerMode:
                 OWSLocalizedString(
                     "RESTORING_MEDIA_BANNER_PAUSED_LOW_POWER_MODE_SUBTITLE",
-                    comment: "Subtitle shown on chat list banner for restoring media from a backup when paused because the device is in low power mode"
+                    comment: "Subtitle shown on chat list banner for restoring media from a backup when paused because the device is in low power mode",
                 )
             case .notReachable:
                 OWSLocalizedString(
                     "RESTORING_MEDIA_BANNER_PAUSED_NOT_REACHABLE_SUBTITLE",
-                    comment: "Subtitle shown on chat list banner for restoring media from a backup when paused because the device has no internet connection"
+                    comment: "Subtitle shown on chat list banner for restoring media from a backup when paused because the device has no internet connection",
                 )
             }
         case .outOfDiskSpace:
@@ -847,9 +847,9 @@ private class BackupAttachmentDownloadProgressView: UIView {
             String(
                 format: OWSLocalizedString(
                     "RESTORING_MEDIA_BANNER_DISK_SPACE_TITLE_FORMAT",
-                    comment: "Title shown on chat list banner for restoring media from a backup when paused because the device has insufficient disk space. Embeds {{ %@ formatted number of bytes downloaded, e.g. '100 MB' }}"
+                    comment: "Title shown on chat list banner for restoring media from a backup when paused because the device has insufficient disk space. Embeds {{ %@ formatted number of bytes downloaded, e.g. '100 MB' }}",
                 ),
-                formatByteSize(spaceRequired)
+                formatByteSize(spaceRequired),
             )
         case nil, .restoring, .wifiNotReachable, .paused, .complete:
             nil
@@ -906,44 +906,45 @@ private class BackupAttachmentDownloadProgressView: UIView {
                     icon: .backupErrorDisplayBold,
                     iconSize: 40,
                     tintColor: UIColor.Signal.orange,
-                    backgroundColor: UIColor.color(rgbHex: 0xF9E4B6)
+                    backgroundColor: UIColor.color(rgbHex: 0xF9E4B6),
                 ),
                 title: String(
                     format: OWSLocalizedString(
                         "RESTORING_MEDIA_DISK_SPACE_SHEET_TITLE_FORMAT",
-                        comment: "Title shown on a bottom sheet for restoring media from a backup when paused because the device has insufficient disk space. Embeds {{ %@ formatted number of bytes downloaded, e.g. '100 MB' }}"
+                        comment: "Title shown on a bottom sheet for restoring media from a backup when paused because the device has insufficient disk space. Embeds {{ %@ formatted number of bytes downloaded, e.g. '100 MB' }}",
                     ),
-                    spaceRequiredString
+                    spaceRequiredString,
                 ),
                 body: String(
                     format: OWSLocalizedString(
                         "RESTORING_MEDIA_DISK_SPACE_SHEET_SUBTITLE_FORMAT",
-                        comment: "Subtitle shown on a bottom sheet for restoring media from a backup when paused because the device has insufficient disk space. Embeds {{ %@ formatted number of bytes downloaded, e.g. '100 MB' }}"
+                        comment: "Subtitle shown on a bottom sheet for restoring media from a backup when paused because the device has insufficient disk space. Embeds {{ %@ formatted number of bytes downloaded, e.g. '100 MB' }}",
                     ),
-                    spaceRequiredString
+                    spaceRequiredString,
                 ),
                 primaryButton: .init(
                     title: OWSLocalizedString(
                         "ALERT_ACTION_ACKNOWLEDGE",
-                        comment: "generic button text to acknowledge that the corresponding text was read."
+                        comment: "generic button text to acknowledge that the corresponding text was read.",
                     ),
                     action: { sheet in
                         self.backupAttachmentDownloadQueueStatusReporter.reattemptDiskSpaceChecks()
                         sheet.dismiss(animated: true)
-                    }
+                    },
                 ),
                 secondaryButton: .init(
                     title: OWSLocalizedString(
                         "RESTORING_MEDIA_DISK_SPACE_SHEET_SKIP_BUTTON",
-                        comment: "Button to skip restoring media, shown on a bottom sheet for restoring media from a backup when paused because the device has insufficient disk space."
+                        comment: "Button to skip restoring media, shown on a bottom sheet for restoring media from a backup when paused because the device has insufficient disk space.",
                     ),
                     style: .secondary,
                     action: .custom({ [weak self] sheet in
                         sheet.dismiss(animated: true) {
                             self?.presentSkipRestoreSheet()
                         }
-                    })
-                ))
+                    }),
+                ),
+            )
             CurrentAppContext().frontmostViewController()?.present(sheet!, animated: true)
             return
         }
@@ -956,26 +957,26 @@ private class BackupAttachmentDownloadProgressView: UIView {
         case nil, .disabled, .disabling, .free, .paid, .paidAsTester:
             OWSLocalizedString(
                 "RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_MESSAGE",
-                comment: "Message shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space."
+                comment: "Message shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space.",
             )
         case .paidExpiringSoon:
             OWSLocalizedString(
                 "RESTORING_MEDIA_DISK_SPACE_SKIP_PAID_EXPIRING_SOON_SHEET_MESSAGE",
-                comment: "Message shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space, and the user's paid subscription is expiring."
+                comment: "Message shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space, and the user's paid subscription is expiring.",
             )
         }
 
         let actionSheet = ActionSheetController(
             title: OWSLocalizedString(
                 "RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_TITLE",
-                comment: "Title shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space."
+                comment: "Title shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space.",
             ),
-            message: message
+            message: message,
         )
         actionSheet.addAction(.init(
             title: OWSLocalizedString(
                 "RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_SKIP_BUTTON",
-                comment: "Button shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space."
+                comment: "Button shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space.",
             ),
             style: .destructive,
             handler: { [weak self] _ in
@@ -993,7 +994,7 @@ private class BackupAttachmentDownloadProgressView: UIView {
                         chatListViewController.loadCoordinator.loadIfNecessary()
                     }
                 }
-            }
+            },
         ))
         actionSheet.addAction(.init(
             title: CommonStrings.learnMore,
@@ -1001,13 +1002,13 @@ private class BackupAttachmentDownloadProgressView: UIView {
             handler: { _ in
                 CurrentAppContext().open(
                     URL.Support.backups,
-                    completion: nil
+                    completion: nil,
                 )
-            }
+            },
         ))
         actionSheet.addAction(.init(
             title: CommonStrings.cancelButton,
-            style: .cancel
+            style: .cancel,
         ))
         CurrentAppContext().frontmostViewController()?.presentActionSheet(actionSheet)
     }
@@ -1025,13 +1026,13 @@ private class BackupAttachmentDownloadProgressView: UIView {
 
         static let detailsButtonText = OWSLocalizedString(
             "RESTORING_MEDIA_BANNER_DISK_SPACE_BUTTON",
-            comment: "Button title shown on chat list banner for restoring media from a backup when paused because the device has insufficient disk space, to see a bottom sheet with more details about next steps."
+            comment: "Button title shown on chat list banner for restoring media from a backup when paused because the device has insufficient disk space, to see a bottom sheet with more details about next steps.",
         )
         static var detailsButtonFont: UIFont { .dynamicTypeSubheadlineClamped.bold() }
 
         static let resumeButtonText = OWSLocalizedString(
             "RESTORING_MEDIA_BANNER_RESUME_WITHOUT_WIFI_BUTTON",
-            comment: "Button title shown on chat list banner for restoring media from a backup when paused because the device needs WiFi to continue, to resume downloads without WiFi."
+            comment: "Button title shown on chat list banner for restoring media from a backup when paused because the device needs WiFi to continue, to resume downloads without WiFi.",
         )
         static var resumeButtonFont: UIFont { .dynamicTypeSubheadlineClamped.bold() }
     }
@@ -1072,7 +1073,7 @@ private class BackupAttachmentDownloadProgressView: UIView {
                 radius: radius,
                 startAngle: 0,
                 endAngle: 2 * .pi,
-                clockwise: false
+                clockwise: false,
             )
 
             context.strokePath()
@@ -1086,7 +1087,7 @@ private class BackupAttachmentDownloadProgressView: UIView {
                 radius: radius,
                 startAngle: startAngle,
                 endAngle: endAngle + startAngle,
-                clockwise: false
+                clockwise: false,
             )
 
             context.strokePath()
@@ -1118,7 +1119,7 @@ private class BackupDownloadProgressPreviewViewController: UIViewController {
 
         let progressView = BackupAttachmentDownloadProgressView(
             forPreview: (),
-            state: state
+            state: state,
         )
         view.addSubview(progressView)
         progressView.autoPinEdges(toSuperviewMarginsExcludingEdge: .bottom)

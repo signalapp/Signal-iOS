@@ -33,7 +33,7 @@ public struct UsernameQuerier {
             tsAccountManager: DependenciesBridge.shared.tsAccountManager,
             usernameApiClient: DependenciesBridge.shared.usernameApiClient,
             usernameLinkManager: DependenciesBridge.shared.usernameLinkManager,
-            usernameLookupManager: DependenciesBridge.shared.usernameLookupManager
+            usernameLookupManager: DependenciesBridge.shared.usernameLookupManager,
         )
     }
 
@@ -49,7 +49,7 @@ public struct UsernameQuerier {
         tsAccountManager: TSAccountManager,
         usernameApiClient: UsernameApiClient,
         usernameLinkManager: UsernameLinkManager,
-        usernameLookupManager: UsernameLookupManager
+        usernameLookupManager: UsernameLookupManager,
     ) {
         self.contactsManager = contactsManager
         self.db = db
@@ -130,9 +130,11 @@ public struct UsernameQuerier {
                 throw .usernameLinkNoLongerValidError()
             }
 
-            guard let hashedUsername = try? Usernames.HashedUsername(
-                forUsername: username
-            ) else {
+            guard
+                let hashedUsername = try? Usernames.HashedUsername(
+                    forUsername: username,
+                )
+            else {
                 throw .usernameInvalidError(username)
             }
 
@@ -193,9 +195,11 @@ public struct UsernameQuerier {
             from: fromViewController,
             canCancel: true,
         ) { () throws(SheetDisplayableError) -> Aci in
-            guard let hashedUsername = try? Usernames.HashedUsername(
-                forUsername: username
-            ) else {
+            guard
+                let hashedUsername = try? Usernames.HashedUsername(
+                    forUsername: username,
+                )
+            else {
                 throw .usernameInvalidError(username)
             }
 
@@ -229,7 +233,7 @@ public struct UsernameQuerier {
             handleUsernameLookupCompleted(
                 aci: aci,
                 username: hashedUsername.usernameString,
-                tx: tx
+                tx: tx,
             )
         }
         return aci
@@ -238,7 +242,7 @@ public struct UsernameQuerier {
     private func handleUsernameLookupCompleted(
         aci: Aci,
         username: String,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         var recipient = recipientFetcher.fetchOrCreate(serviceId: aci, tx: tx)
         recipientManager.markAsRegisteredAndSave(&recipient, shouldUpdateStorageService: true, tx: tx)
@@ -247,7 +251,7 @@ public struct UsernameQuerier {
             forRecipient: recipient,
             profileManager: profileManager,
             contactManager: contactsManager,
-            transaction: tx
+            transaction: tx,
         ).usernameIsBestIdentifier()
 
         if isUsernameBestIdentifier {
@@ -257,7 +261,7 @@ public struct UsernameQuerier {
             usernameLookupManager.saveUsername(
                 username,
                 forAci: aci,
-                transaction: tx
+                transaction: tx,
             )
 
             storageServiceManager.recordPendingUpdates(updatedRecipientUniqueIds: [recipient.uniqueId])
@@ -268,7 +272,7 @@ public struct UsernameQuerier {
             usernameLookupManager.saveUsername(
                 nil,
                 forAci: aci,
-                transaction: tx
+                transaction: tx,
             )
         }
     }
@@ -281,15 +285,15 @@ private extension SheetDisplayableError {
         return ActionSheetDisplayableError(
             localizedTitle: OWSLocalizedString(
                 "USERNAME_LOOKUP_INVALID_USERNAME_TITLE",
-                comment: "Title for an action sheet indicating that a user-entered username value is not a valid username."
+                comment: "Title for an action sheet indicating that a user-entered username value is not a valid username.",
             ),
             localizedMessage: String(
                 format: OWSLocalizedString(
                     "USERNAME_LOOKUP_INVALID_USERNAME_MESSAGE_FORMAT",
-                    comment: "A message indicating that a user-entered username value is not a valid username. Embeds {{ a username }}."
+                    comment: "A message indicating that a user-entered username value is not a valid username. Embeds {{ a username }}.",
                 ),
                 username,
-            )
+            ),
         )
     }
 
@@ -297,12 +301,12 @@ private extension SheetDisplayableError {
         return ActionSheetDisplayableError(
             localizedTitle: OWSLocalizedString(
                 "USERNAME_LOOKUP_NOT_FOUND_TITLE",
-                comment: "Title for an action sheet indicating that the given username is not associated with a registered Signal account."
+                comment: "Title for an action sheet indicating that the given username is not associated with a registered Signal account.",
             ),
             localizedMessage: String(
                 format: OWSLocalizedString(
                     "USERNAME_LOOKUP_NOT_FOUND_MESSAGE_FORMAT",
-                    comment: "A message indicating that the given username is not associated with a registered Signal account. Embeds {{ a username }}."
+                    comment: "A message indicating that the given username is not associated with a registered Signal account. Embeds {{ a username }}.",
                 ),
                 username,
             ),
@@ -314,7 +318,7 @@ private extension SheetDisplayableError {
             localizedTitle: CommonStrings.errorAlertTitle,
             localizedMessage: OWSLocalizedString(
                 "USERNAME_LOOKUP_LINK_NO_LONGER_VALID_MESSAGE",
-                comment: "A message indicating that a username link the user attempted to query is no longer valid."
+                comment: "A message indicating that a username link the user attempted to query is no longer valid.",
             ),
         )
     }
@@ -322,7 +326,7 @@ private extension SheetDisplayableError {
     static func usernameLookupGenericError() -> SheetDisplayableError {
         return ActionSheetDisplayableError(localizedMessage: OWSLocalizedString(
             "USERNAME_LOOKUP_ERROR_MESSAGE",
-            comment: "A message indicating that username lookup failed."
+            comment: "A message indicating that username lookup failed.",
         ))
     }
 }

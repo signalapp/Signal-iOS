@@ -73,7 +73,7 @@ public class NewMembersBar: UIView {
     }
 
     func updateHeightConstraint() {
-        guard let heightConstraint = heightConstraint else {
+        guard let heightConstraint else {
             owsFailDebug("Missing heightConstraint.")
             return
         }
@@ -99,9 +99,11 @@ public class NewMembersBar: UIView {
             owsFailDebug("Missing member.")
             return
         }
-        collectionView.scrollToItem(at: IndexPath(item: index, section: 0),
-                                    at: .centeredHorizontally,
-                                    animated: true)
+        collectionView.scrollToItem(
+            at: IndexPath(item: index, section: 0),
+            at: .centeredHorizontally,
+            animated: true,
+        )
     }
 }
 
@@ -134,11 +136,11 @@ extension NewMembersBar: UICollectionViewDataSource {
         cell.configure(member: member)
         assert(self.delegate != nil)
         cell.delegate = self.delegate
-        #if DEBUG
+#if DEBUG
         // These accessibilityIdentifiers won't be stable, but they
         // should work for the purposes of our automated testing.
         cell.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "new-group-member-bar-\(indexPath.row)")
-        #endif
+#endif
     }
 }
 
@@ -204,7 +206,7 @@ private class NewMemberCell: UICollectionViewCell {
 
         let stackView = UIStackView(arrangedSubviews: [
             textLabel,
-            removeButton
+            removeButton,
         ])
         stackView.axis = .horizontal
         stackView.spacing = 8
@@ -218,7 +220,7 @@ private class NewMemberCell: UICollectionViewCell {
         stackView.setCompressionResistanceHorizontalLow()
     }
 
-    override public func layoutSubviews() {
+    override func layoutSubviews() {
         super.layoutSubviews()
         contentView.layer.cornerRadius = contentView.height / 2
     }
@@ -284,7 +286,7 @@ private class NewMembersBarLayout: UICollectionViewLayout {
 
     // MARK: Initializers and Factory Methods
 
-    public override init() {
+    override init() {
         super.init()
     }
 
@@ -313,7 +315,7 @@ private class NewMembersBarLayout: UICollectionViewLayout {
     override func prepare() {
         super.prepare()
 
-        guard let collectionView = collectionView else {
+        guard let collectionView else {
             owsFailDebug("Missing collectionView.")
             contentSize = .zero
             return
@@ -425,7 +427,7 @@ private class NewMembersBarLayout: UICollectionViewLayout {
     }
 
     override func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool {
-        guard let collectionView = collectionView else {
+        guard let collectionView else {
             return false
         }
         return collectionView.width != newBounds.size.width

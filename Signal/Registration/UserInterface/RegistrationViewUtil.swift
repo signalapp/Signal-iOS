@@ -20,7 +20,7 @@ extension String {
 
 extension NSDirectionalEdgeInsets {
     static func layoutMarginsForRegistration(
-        _ horizontalSizeClass: UIUserInterfaceSizeClass
+        _ horizontalSizeClass: UIUserInterfaceSizeClass,
     ) -> NSDirectionalEdgeInsets {
         switch horizontalSizeClass {
         case .regular:
@@ -44,7 +44,7 @@ extension UILabel {
         result.numberOfLines = 0
         result.lineBreakMode = .byWordWrapping
         result.textAlignment = .center
-        result.accessibilityTraits = [ .staticText, .header ]
+        result.accessibilityTraits = [.staticText, .header]
         return result
     }
 
@@ -67,7 +67,7 @@ extension UIButton {
         title: String,
         subtitle: String,
         iconName: String,
-        primaryAction: UIAction? = nil
+        primaryAction: UIAction? = nil,
     ) -> Self {
         let button = UIButton(configuration: .gray(), primaryAction: primaryAction)
 
@@ -83,7 +83,7 @@ extension UIButton {
         let contentConfiguration = RegistrationChoiceButtonContentConfiguration(
             title: title,
             subtitle: subtitle,
-            iconName: iconName
+            iconName: iconName,
         )
         let contentView = contentConfiguration.makeContentView()
         button.addSubview(contentView)
@@ -92,7 +92,7 @@ extension UIButton {
             contentView.leadingAnchor.constraint(equalTo: button.leadingAnchor),
             contentView.topAnchor.constraint(equalTo: button.topAnchor),
             contentView.trailingAnchor.constraint(equalTo: button.trailingAnchor),
-            contentView.bottomAnchor.constraint(equalTo: button.bottomAnchor)
+            contentView.bottomAnchor.constraint(equalTo: button.bottomAnchor),
         ])
 
         button.accessibilityLabel = contentConfiguration.title
@@ -232,31 +232,30 @@ extension ActionSheetController {
         mode: RegistrationVerificationConfirmationMode,
         e164: String,
         didConfirm: @escaping () -> Void,
-        didRequestEdit: @escaping () -> Void
+        didRequestEdit: @escaping () -> Void,
     ) -> ActionSheetController {
         let message: String
         switch mode {
         case .sms:
             message = OWSLocalizedString(
                 "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_MESSAGE",
-                comment: "Message for confirmation alert during phone number registration."
+                comment: "Message for confirmation alert during phone number registration.",
             )
         case .voice:
             message = OWSLocalizedString(
                 "REGISTRATION_PHONE_NUMBER_VOICE_CODE_ALERT_MESSAGE",
-                comment: "Message for confirmation alert when requesting a voice code during phone number registration."
+                comment: "Message for confirmation alert when requesting a voice code during phone number registration.",
             )
-
         }
         let result = ActionSheetController(
             title: {
                 let format = OWSLocalizedString(
                     "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_ALERT_TITLE_FORMAT",
-                    comment: "Title for confirmation alert during phone number registration. Embeds {{phone number}}."
+                    comment: "Title for confirmation alert during phone number registration. Embeds {{phone number}}.",
                 )
                 return String(format: format, e164.e164FormattedAsPhoneNumberWithoutBreaks)
             }(),
-            message: message
+            message: message,
         )
 
         let confirmButtonTitle = CommonStrings.yesButton
@@ -264,7 +263,7 @@ extension ActionSheetController {
 
         let editButtonTitle = OWSLocalizedString(
             "REGISTRATION_VIEW_PHONE_NUMBER_CONFIRMATION_EDIT_BUTTON",
-            comment: "A button allowing user to cancel registration and edit a phone number"
+            comment: "A button allowing user to cancel registration and edit a phone number",
         )
         result.addAction(.init(title: editButtonTitle) { _ in didRequestEdit() })
 
@@ -279,21 +278,21 @@ extension UIAlertController {
         let result = UIAlertController(
             title: OWSLocalizedString(
                 "REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_TITLE",
-                comment: "During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the title on that alert."
+                comment: "During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the title on that alert.",
             ),
             message: OWSLocalizedString(
                 "REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_DESCRIPTION",
-                comment: "During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the description text on that alert."
+                comment: "During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the description text on that alert.",
             ),
-            preferredStyle: .alert
+            preferredStyle: .alert,
         )
 
         let updateAction = UIAlertAction(
             title: OWSLocalizedString(
                 "REGISTRATION_CANNOT_CONTINUE_WITHOUT_UPDATING_APP_ACTION",
-                comment: "During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the action button on that alert."
+                comment: "During (re)registration, users may need to update their app to continue. They'll be presented with an alert if this is the case, prompting them to update. This is the action button on that alert.",
             ),
-            style: .default
+            style: .default,
         ) { _ in
             UIApplication.shared.open(TSConstants.appStoreUrl)
         }

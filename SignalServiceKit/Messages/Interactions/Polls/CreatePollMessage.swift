@@ -11,7 +11,7 @@ public struct CreatePollMessage {
     public init(
         question: String,
         options: [String],
-        allowMultiple: Bool
+        allowMultiple: Bool,
     ) {
         self.question = question
         self.options = options

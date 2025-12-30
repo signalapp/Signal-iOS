@@ -38,7 +38,7 @@ final class EmptyForCodableTest: XCTestCase {
             prop1: "whirlyball",
             prop2: true,
             prop3: ["great": "sport", "much": "fun"],
-            prop4: ["kinda": "jarring", "still": "fun"]
+            prop4: ["kinda": "jarring", "still": "fun"],
         )
 
         let encoded = try JSONEncoder().encode(structToEncode)
@@ -56,7 +56,7 @@ final class EmptyForCodableTest: XCTestCase {
             prop1: "whirlyball",
             prop2: true,
             prop3: ["great": "sport", "much": "fun"],
-            prop4: ["kinda": "jarring", "still": "fun"]
+            prop4: ["kinda": "jarring", "still": "fun"],
         )
 
         let encoded = try JSONEncoder().encode(structToEncode)

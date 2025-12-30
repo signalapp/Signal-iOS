@@ -38,7 +38,7 @@ public class CVBackgroundContainer: ManualLayoutViewWithLayer {
         self.wallpaperView?.dimmingView?.removeFromSuperview()
         self.wallpaperView = wallpaperView
 
-        if let wallpaperView = wallpaperView {
+        if let wallpaperView {
             self.backgroundColor = .clear
 
             if let contentView = wallpaperView.contentView {
@@ -56,7 +56,7 @@ public class CVBackgroundContainer: ManualLayoutViewWithLayer {
         }
     }
 
-    public override func layoutSubviews() {
+    override public func layoutSubviews() {
         AssertIsOnMainThread()
 
         super.layoutSubviews()

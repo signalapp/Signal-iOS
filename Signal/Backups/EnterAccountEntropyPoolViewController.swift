@@ -56,7 +56,7 @@ class EnterAccountEntropyPoolViewController: OWSViewController {
             title: CommonStrings.nextButton,
             style: .done,
             target: self,
-            action: #selector(didTapNext)
+            action: #selector(didTapNext),
         )
 
         let scrollView = UIScrollView()
@@ -77,7 +77,7 @@ class EnterAccountEntropyPoolViewController: OWSViewController {
                 configuration: .mediumSecondary(title: footerButtonConfig.title),
                 primaryAction: UIAction { _ in
                     footerButtonConfig.action()
-                }
+                },
             )
         } else {
             footerButton = nil
@@ -93,7 +93,7 @@ class EnterAccountEntropyPoolViewController: OWSViewController {
                 .vStretchingSpacer(),
             ].compacted(),
             isScrollable: true,
-            shouldAvoidKeyboard: true
+            shouldAvoidKeyboard: true,
         )
         stackView.spacing = 24
         stackView.setCustomSpacing(16, after: aepTextView)
@@ -176,14 +176,14 @@ class EnterAccountEntropyPoolViewController: OWSViewController {
             navigationItem.rightBarButtonItem?.isEnabled = false
             aepIssueLabel.text = OWSLocalizedString(
                 "ENTER_ACCOUNT_ENTROPY_POOL_VIEW_MALFORMED_AEP_LABEL",
-                comment: "Label explaining that an entered 'Recovery Key' is malformed."
+                comment: "Label explaining that an entered 'Recovery Key' is malformed.",
             )
             aepIssueLabel.alpha = 1
         case .wellFormedButMismatched:
             navigationItem.rightBarButtonItem?.isEnabled = false
             aepIssueLabel.text = OWSLocalizedString(
                 "ENTER_ACCOUNT_ENTROPY_POOL_VIEW_INCORRECT_AEP_LABEL",
-                comment: "Label explaining that an entered 'Recovery Key' is incorrect."
+                comment: "Label explaining that an entered 'Recovery Key' is incorrect.",
             )
             aepIssueLabel.alpha = 1
         case .success:
@@ -219,13 +219,13 @@ private extension EnterAccountEntropyPoolViewController {
             ),
             headerStrings: HeaderStrings(
                 title: "This is a Title",
-                subtitle: "And this, longer, less important string, is a subtitle!"
+                subtitle: "And this, longer, less important string, is a subtitle!",
             ),
             footerButtonConfig: FooterButtonConfig(
                 title: "Footer Button",
-                action: { print("Footer button!") }
+                action: { print("Footer button!") },
             ),
-            onEntryConfirmed: { print("Confirmed: \($0.displayString)") }
+            onEntryConfirmed: { print("Confirmed: \($0.displayString)") },
         )
         return viewController
     }
@@ -234,7 +234,7 @@ private extension EnterAccountEntropyPoolViewController {
 @available(iOS 17, *)
 #Preview {
     return UINavigationController(
-        rootViewController: EnterAccountEntropyPoolViewController.forPreview()
+        rootViewController: EnterAccountEntropyPoolViewController.forPreview(),
     )
 }
 

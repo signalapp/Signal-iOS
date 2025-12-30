@@ -15,7 +15,7 @@ final class AppearanceSettingsTableViewController: OWSTableViewController2 {
         updateTableContents()
     }
 
-    public override func themeDidChange() {
+    override func themeDidChange() {
         super.themeDidChange()
 
         updateTableContents()
@@ -26,21 +26,23 @@ final class AppearanceSettingsTableViewController: OWSTableViewController2 {
 
         let firstSection = OWSTableSection()
         firstSection.add(OWSTableItem.disclosureItem(
-            withText: OWSLocalizedString("SETTINGS_APPEARANCE_THEME_TITLE",
-                                        comment: "The title for the theme section in the appearance settings."),
-            accessoryText: ThemeSettingsTableViewController.currentThemeName
+            withText: OWSLocalizedString(
+                "SETTINGS_APPEARANCE_THEME_TITLE",
+                comment: "The title for the theme section in the appearance settings.",
+            ),
+            accessoryText: ThemeSettingsTableViewController.currentThemeName,
         ) { [weak self] in
-            guard let self = self else { return }
+            guard let self else { return }
             let vc = ThemeSettingsTableViewController()
             self.navigationController?.pushViewController(vc, animated: true)
         })
         firstSection.add(OWSTableItem.disclosureItem(
             withText: OWSLocalizedString(
                 "SETTINGS_ITEM_COLOR_AND_WALLPAPER",
-                comment: "Label for settings view that allows user to change the chat color and wallpaper."
-            )
+                comment: "Label for settings view that allows user to change the chat color and wallpaper.",
+            ),
         ) { [weak self] in
-            guard let self = self else { return }
+            guard let self else { return }
             let vc = ColorAndWallpaperSettingsViewController()
             self.navigationController?.pushViewController(vc, animated: true)
         })
@@ -50,18 +52,19 @@ final class AppearanceSettingsTableViewController: OWSTableViewController2 {
                     OWSTableItem.buildCell(
                         itemName: OWSLocalizedString(
                             "SETTINGS_APPEARANCE_APP_ICON",
-                            comment: "The title for the app icon section in the appearance settings."
+                            comment: "The title for the app icon section in the appearance settings.",
                         ),
                         accessoryType: .disclosureIndicator,
-                        accessoryContentView: self?.buildCurrentAppIconView())
+                        accessoryContentView: self?.buildCurrentAppIconView(),
+                    )
                 },
                 actionBlock: { [weak self] in
                     guard let self else { return }
                     let vc = AppIconSettingsTableViewController()
                     vc.iconDelegate = self
                     self.navigationController?.pushViewController(vc, animated: true)
-                }
-            )
+                },
+            ),
         )
 
         contents.add(firstSection)

@@ -16,7 +16,7 @@ public struct DonationReceiptCredentialRedemptionSuccess: Codable {
     public init(
         badgesSnapshotBeforeJob: ProfileBadgesSnapshot,
         badge: ProfileBadge,
-        paymentMethod: DonationPaymentMethod?
+        paymentMethod: DonationPaymentMethod?,
     ) {
         self.badgesSnapshotBeforeJob = badgesSnapshotBeforeJob
         self.badge = badge
@@ -40,7 +40,7 @@ public struct DonationReceiptCredentialRedemptionSuccess: Codable {
             guard let paymentMethod = DonationPaymentMethod(rawValue: rawValue) else {
                 throw DecodingError.dataCorrupted(DecodingError.Context(
                     codingPath: [CodingKeys.paymentMethod],
-                    debugDescription: "Unexpected payment method raw value: \(rawValue)"
+                    debugDescription: "Unexpected payment method raw value: \(rawValue)",
                 ))
             }
 

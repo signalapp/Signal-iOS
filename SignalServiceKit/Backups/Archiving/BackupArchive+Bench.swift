@@ -15,7 +15,7 @@ extension BackupArchive {
         func wrapEnumeration<EnumeratedInput, Output>(
             _ enumerationFunc: (DBReadTransaction, (EnumeratedInput) throws -> Output) throws -> Void,
             tx: DBReadTransaction,
-            enumerationBlock: @escaping (EnumeratedInput, FrameBencher) throws -> Output
+            enumerationBlock: @escaping (EnumeratedInput, FrameBencher) throws -> Output,
         ) rethrows {
             var enumerationStepStartDate = dateProvider()
             try enumerationFunc(tx) { enumeratedInput throws in
@@ -28,7 +28,7 @@ extension BackupArchive {
                 let frameBencher = FrameBencher(
                     bencher: self,
                     dateProvider: dateProvider,
-                    enumerationStepStartDate: enumerationStepStartDate
+                    enumerationStepStartDate: enumerationStepStartDate,
                 )
 
                 return try enumerationBlock(enumeratedInput, frameBencher)
@@ -40,7 +40,7 @@ extension BackupArchive {
         func wrapEnumeration<EnumeratedInput, Output>(
             _ enumerationFunc: (DBReadTransaction, (EnumeratedInput) -> Output) throws -> Void,
             tx: DBReadTransaction,
-            enumerationBlock: @escaping (EnumeratedInput, FrameBencher) -> Output
+            enumerationBlock: @escaping (EnumeratedInput, FrameBencher) -> Output,
         ) rethrows {
             var enumerationStepStartDate = dateProvider()
             try enumerationFunc(tx) { enumeratedInput in
@@ -53,7 +53,7 @@ extension BackupArchive {
                 let frameBencher = FrameBencher(
                     bencher: self,
                     dateProvider: dateProvider,
-                    enumerationStepStartDate: enumerationStepStartDate
+                    enumerationStepStartDate: enumerationStepStartDate,
                 )
 
                 return enumerationBlock(enumeratedInput, frameBencher)
@@ -107,7 +107,7 @@ extension BackupArchive {
         private func benchAction<Action: Hashable, T>(
             _ action: Action,
             actionMetricsKeyPath: ReferenceWritableKeyPath<RestoreBencher, [Action: Metrics]>,
-            block: () throws -> T
+            block: () throws -> T,
         ) rethrows -> T {
             let startDate = dateProvider()
             let result = try block()
@@ -138,7 +138,7 @@ extension BackupArchive {
 
         init(
             dateProviderMonotonic: @escaping DateProviderMonotonic,
-            memorySampler: MemorySampler
+            memorySampler: MemorySampler,
         ) {
             self.dateProvider = dateProviderMonotonic
             self.logger = PrefixedLogger(prefix: "[Backups]")
@@ -151,7 +151,7 @@ extension BackupArchive {
             _ frameBencher: FrameBencher,
             frame: BackupProto_Frame,
             frameProcessingDurationNanos: UInt64,
-            enumerationStepDurationNanos: UInt64?
+            enumerationStepDurationNanos: UInt64?,
         ) {
             memorySampler.sample()
 
@@ -179,7 +179,7 @@ extension BackupArchive {
             let frameBencher = FrameBencher(
                 bencher: self,
                 dateProvider: dateProvider,
-                enumerationStepStartDate: nil
+                enumerationStepStartDate: nil,
             )
 
             return try block(frameBencher)
@@ -205,7 +205,7 @@ extension BackupArchive {
             fileprivate init(
                 bencher: Bencher,
                 dateProvider: @escaping DateProviderMonotonic,
-                enumerationStepStartDate: MonotonicDate?
+                enumerationStepStartDate: MonotonicDate?,
             ) {
                 self.bencher = bencher
                 self.dateProvider = dateProvider
@@ -218,7 +218,7 @@ extension BackupArchive {
                     self,
                     frame: frame,
                     frameProcessingDurationNanos: (dateProvider() - startDate).nanoseconds,
-                    enumerationStepDurationNanos: enumerationStepStartDate.map { (startDate - $0).nanoseconds }
+                    enumerationStepDurationNanos: enumerationStepStartDate.map { (startDate - $0).nanoseconds },
                 )
             }
         }
@@ -341,7 +341,6 @@ extension BackupArchive {
                     self = .ChatFolder
                 case nil:
                     return nil
-
                 case .recipient(let recipient):
                     switch recipient.destination {
                     case .contact:
@@ -359,7 +358,6 @@ extension BackupArchive {
                     case nil:
                         return nil
                     }
-
                 case .chatItem(let chatItem):
                     switch chatItem.item {
                     case .contactMessage:
@@ -380,7 +378,6 @@ extension BackupArchive {
                         self = .ChatItem_Poll
                     case nil:
                         return nil
-
                     case .standardMessage(let standardMessage):
                         if standardMessage.hasQuote {
                             self = .ChatItem_StandardMessage_Quote
@@ -393,7 +390,6 @@ extension BackupArchive {
                         } else {
                             self = .ChatItem_StandardMessage
                         }
-
                     case .updateMessage(let updateMessage):
                         switch updateMessage.update {
                         case .simpleUpdate:

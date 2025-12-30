@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-@testable import SignalServiceKit
 import Testing
+@testable import SignalServiceKit
 
 struct CurrencyFormatterTest {
     @Test
@@ -37,7 +37,7 @@ struct CurrencyFormatterTest {
         for testCase in testCases {
             let actual = CurrencyFormatter.format(
                 money: testCase.money,
-                locale: Locale(identifier: testCase.locale)
+                locale: Locale(identifier: testCase.locale),
             )
             let expected = testCase.expected
 
@@ -58,7 +58,7 @@ struct CurrencyFormatterTest {
 
             #expect(
                 sanitizeWhitespace(actual) == sanitizeWhitespace(expected),
-                "\(testCase.money.debugDescription) in \(testCase.locale)"
+                "\(testCase.money.debugDescription) in \(testCase.locale)",
             )
         }
     }

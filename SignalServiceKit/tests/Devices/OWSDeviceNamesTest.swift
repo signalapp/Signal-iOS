@@ -30,7 +30,7 @@ class OWSDeviceNamesTest: XCTestCase {
         let identityKeyPair = IdentityKeyPair(publicKey: identityPrivateKey.publicKey, privateKey: identityPrivateKey)
 
         let encryptedDeviceName = try XCTUnwrap(Data(
-            base64Encoded: "CiEFrYxIwmdlrqetxTYolgXBq+qVBQCT29IYyWq9JIGgNWUSEFNO1AI2/J8BQ+9Re91Y5OcaBsNYrahasg=="
+            base64Encoded: "CiEFrYxIwmdlrqetxTYolgXBq+qVBQCT29IYyWq9JIGgNWUSEFNO1AI2/J8BQ+9Re91Y5OcaBsNYrahasg==",
         ))
 
         let deviceName = try OWSDeviceNames.decryptDeviceName(protoData: encryptedDeviceName, identityKeyPair: identityKeyPair)

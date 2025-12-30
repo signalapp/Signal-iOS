@@ -18,7 +18,7 @@ class BlockingManagerTests: SSKBaseTest {
         super.setUp()
         otherBlockingManager = BlockingManager(
             blockedGroupStore: BlockedGroupStore(),
-            blockedRecipientStore: BlockedRecipientStore()
+            blockedRecipientStore: BlockedRecipientStore(),
         )
     }
 
@@ -115,39 +115,39 @@ class BlockingManagerTests: SSKBaseTest {
             blockingManager.addBlockedAddress(
                 SignalServiceAddress(noLongerBlockedAci),
                 blockMode: .localShouldNotLeaveGroups,
-                transaction: tx
+                transaction: tx,
             )
             blockingManager.addBlockedAddress(
                 SignalServiceAddress(noLongerBlockedPhoneNumber),
                 blockMode: .localShouldNotLeaveGroups,
-                transaction: tx
+                transaction: tx,
             )
             TSGroupThread.forUnitTest(
-                masterKey: try noLongerBlockedGroupParams.getMasterKey()
+                masterKey: try noLongerBlockedGroupParams.getMasterKey(),
             ).anyInsert(transaction: tx)
             blockingManager.addBlockedGroupId(
                 try noLongerBlockedGroupParams.getPublicParams().getGroupIdentifier().serialize(),
                 blockMode: .localShouldNotLeaveGroups,
-                transaction: tx
+                transaction: tx,
             )
 
             blockingManager.addBlockedAddress(
                 SignalServiceAddress(stillBlockedAci),
                 blockMode: .localShouldNotLeaveGroups,
-                transaction: tx
+                transaction: tx,
             )
             blockingManager.addBlockedAddress(
                 SignalServiceAddress(stillBlockedPhoneNumber),
                 blockMode: .localShouldNotLeaveGroups,
-                transaction: tx
+                transaction: tx,
             )
             TSGroupThread.forUnitTest(
-                masterKey: try stillBlockedGroupParams.getMasterKey()
+                masterKey: try stillBlockedGroupParams.getMasterKey(),
             ).anyInsert(transaction: tx)
             blockingManager.addBlockedGroupId(
                 try stillBlockedGroupParams.getPublicParams().getGroupIdentifier().serialize(),
                 blockMode: .localShouldNotLeaveGroups,
-                transaction: tx
+                transaction: tx,
             )
             _ = otherBlockingManager.blockedAddresses(transaction: tx)
         }
@@ -161,7 +161,7 @@ class BlockingManagerTests: SSKBaseTest {
                     try stillBlockedGroupParams.getPublicParams().getGroupIdentifier().serialize(),
                     try newlyBlockedGroupParams.getPublicParams().getGroupIdentifier().serialize(),
                 ],
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -170,7 +170,7 @@ class BlockingManagerTests: SSKBaseTest {
             // First, our incoming sync message should've cleared our "NeedsSync" flag
             XCTAssertEqual(
                 blockingManager.fetchChangeToken(tx: readTx),
-                blockingManager.fetchLastSyncedChangeToken(tx: readTx)
+                blockingManager.fetchLastSyncedChangeToken(tx: readTx),
             )
 
             // Verify our victims aren't blocked anymore
@@ -213,7 +213,7 @@ class BlockingManagerTests: SSKBaseTest {
         SSKEnvironment.shared.databaseStorageRef.write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
                 localIdentifiers: .forUnitTests,
-                tx: tx
+                tx: tx,
             )
         }
 

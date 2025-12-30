@@ -7,8 +7,10 @@ import SignalServiceKit
 import SignalUI
 
 protocol LinkPreviewAttachmentViewControllerDelegate: AnyObject {
-    func linkPreviewAttachmentViewController(_ viewController: LinkPreviewAttachmentViewController,
-                                             didFinishWith linkPreview: OWSLinkPreviewDraft)
+    func linkPreviewAttachmentViewController(
+        _ viewController: LinkPreviewAttachmentViewController,
+        didFinishWith linkPreview: OWSLinkPreviewDraft,
+    )
 }
 
 class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
@@ -23,7 +25,7 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
             linkPreviewFetcher: SUIEnvironment.shared.linkPreviewFetcher,
             linkPreviewSettingStore: DependenciesBridge.shared.linkPreviewSettingStore,
             onlyParseIfEnabled: false,
-            linkPreviewDraft: linkPreview
+            linkPreviewDraft: linkPreview,
         )
         super.init()
         self.linkPreviewFetchState.onStateChange = { [weak self] in self?.updateLinkPreview(animated: true) }
@@ -41,12 +43,16 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
         textField.textColor = .ows_gray05
         textField.textContentType = .URL
         textField.attributedPlaceholder = NSAttributedString(
-            string: OWSLocalizedString("STORY_COMPOSER_URL_FIELD_PLACEHOLDER",
-                                      comment: "Placeholder text for URL input field in Text Story composer UI."),
-            attributes: [ .foregroundColor: UIColor.ows_gray25 ])
+            string: OWSLocalizedString(
+                "STORY_COMPOSER_URL_FIELD_PLACEHOLDER",
+                comment: "Placeholder text for URL input field in Text Story composer UI.",
+            ),
+            attributes: [.foregroundColor: UIColor.ows_gray25],
+        )
         textField.setContentCompressionResistancePriority(.defaultHigh, for: .vertical)
         return textField
     }()
+
     private lazy var textFieldContainer: UIView = {
         let view = PillView()
         view.backgroundColor = .ows_gray80
@@ -54,6 +60,7 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
         textField.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(hMargin: 16, vMargin: 7))
         return view
     }()
+
     private let doneButton: UIButton = {
         let button = RoundMediaButton(image: Theme.iconImage(.checkmark), backgroundStyle: .solid(.ows_accentBlue))
         button.layoutMargins = .zero
@@ -62,13 +69,15 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
         button.setContentHuggingHigh()
         return button
     }()
+
     private lazy var inputFieldContainer: UIView = {
-        let stackView = UIStackView(arrangedSubviews: [ textFieldContainer, doneButton ])
+        let stackView = UIStackView(arrangedSubviews: [textFieldContainer, doneButton])
         stackView.axis = .horizontal
         stackView.alignment = .center
         stackView.spacing = 10
         return stackView
     }()
+
     private var bottomContentMarginConstraint: NSLayoutConstraint?
 
     override func viewDidLoad() {
@@ -79,7 +88,7 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
         contentView.preservesSuperviewLayoutMargins = true
         contentView.superview?.preservesSuperviewLayoutMargins = true
 
-        let stackView = UIStackView(arrangedSubviews: [ linkPreviewPanel, inputFieldContainer ])
+        let stackView = UIStackView(arrangedSubviews: [linkPreviewPanel, inputFieldContainer])
         stackView.axis = .vertical
         stackView.spacing = 24
         stackView.alignment = .fill
@@ -99,7 +108,7 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
         }
 
         updateLinkPreview(animated: false)
-   }
+    }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -125,9 +134,11 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
     private func updateSheetHeight() {
         guard let sheetView = contentView.superview else { return }
 
-        let sheetSize = sheetView.systemLayoutSizeFitting(.init(width: maxWidth, height: view.height),
-                                                          withHorizontalFittingPriority: .required,
-                                                          verticalFittingPriority: .fittingSizeLevel)
+        let sheetSize = sheetView.systemLayoutSizeFitting(
+            .init(width: maxWidth, height: view.height),
+            withHorizontalFittingPriority: .required,
+            verticalFittingPriority: .fittingSizeLevel,
+        )
         if _sheetHeight != sheetSize.height {
             _sheetHeight = sheetSize.height
             if _sheetHeight > 0 {
@@ -143,7 +154,7 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
         let text = textField.text ?? ""
         linkPreviewFetchState.update(
             MessageBody(text: text, ranges: .empty),
-            prependSchemeIfNeeded: true
+            prependSchemeIfNeeded: true,
         )
     }
 
@@ -156,18 +167,24 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
     // MARK: - Keyboard Handling
 
     private func startObservingKeyboardNotifications() {
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(handleKeyboardNotification(_:)),
-                                               name: UIResponder.keyboardWillShowNotification,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(handleKeyboardNotification(_:)),
-                                               name: UIResponder.keyboardWillHideNotification,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(handleKeyboardNotification(_:)),
-                                               name: UIResponder.keyboardWillChangeFrameNotification,
-                                               object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleKeyboardNotification(_:)),
+            name: UIResponder.keyboardWillShowNotification,
+            object: nil,
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleKeyboardNotification(_:)),
+            name: UIResponder.keyboardWillHideNotification,
+            object: nil,
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleKeyboardNotification(_:)),
+            name: UIResponder.keyboardWillChangeFrameNotification,
+            object: nil,
+        )
     }
 
     @objc
@@ -238,11 +255,13 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
             case draft(OWSLinkPreviewDraft)
             case error
         }
+
         private var _internalState: State = .placeholder
         var state: State {
             get { _internalState }
             set { setState(newValue, animated: false) }
         }
+
         func setState(_ state: State, animated: Bool) {
             guard _internalState != state else { return }
             _internalState = state
@@ -274,10 +293,12 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
             label.numberOfLines = 0
             label.textAlignment = .center
             label.textColor = .ows_gray45
-            label.text = OWSLocalizedString("STORY_COMPOSER_LINK_PREVIEW_PLACEHOLDER",
-                                           comment: "Displayed in text story composer when user is about to attach a link with preview")
+            label.text = OWSLocalizedString(
+                "STORY_COMPOSER_LINK_PREVIEW_PLACEHOLDER",
+                comment: "Displayed in text story composer when user is about to attach a link with preview",
+            )
 
-            let stackView = UIStackView(arrangedSubviews: [ icon, label ])
+            let stackView = UIStackView(arrangedSubviews: [icon, label])
             stackView.axis = .vertical
             stackView.alignment = .center
             stackView.spacing = 8
@@ -305,10 +326,12 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
             label.numberOfLines = 0
             label.textAlignment = .center
             label.textColor = .ows_gray05
-            label.text = OWSLocalizedString("STORY_COMPOSER_LINK_PREVIEW_ERROR",
-                                           comment: "Displayed when failed to fetch link preview in Text Story composer.")
+            label.text = OWSLocalizedString(
+                "STORY_COMPOSER_LINK_PREVIEW_ERROR",
+                comment: "Displayed when failed to fetch link preview in Text Story composer.",
+            )
 
-            let stackView = UIStackView(arrangedSubviews: [ exclamationMark, label ])
+            let stackView = UIStackView(arrangedSubviews: [exclamationMark, label])
             stackView.axis = .vertical
             stackView.alignment = .center
             stackView.spacing = 8
@@ -318,7 +341,7 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
         private var contentViews = Set<UIView>()
 
         private func loadContentView(forState state: State) -> UIView {
-            if let linkPreviewView = linkPreviewView {
+            if let linkPreviewView {
                 linkPreviewView.removeFromSuperview()
                 contentViews.remove(linkPreviewView)
                 self.linkPreviewView = nil
@@ -339,7 +362,7 @@ class LinkPreviewAttachmentViewController: InteractiveSheetViewController {
                     }
                     return TextAttachmentView.LinkPreviewView(
                         linkPreview: state,
-                        isDraft: true
+                        isDraft: true,
                     )
                 case .error:
                     return errorView

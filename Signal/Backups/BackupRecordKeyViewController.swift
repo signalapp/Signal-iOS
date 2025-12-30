@@ -54,7 +54,7 @@ class BackupRecordKeyViewController: OWSViewController, OWSNavigationChildContro
         options: [Option],
         onCreateNewKeyPressed: @escaping (BackupRecordKeyViewController) -> Void = { _ in },
         onContinuePressed: @escaping (BackupRecordKeyViewController) -> Void = { _ in },
-        onBackPressed: (() -> Void)? = nil
+        onBackPressed: (() -> Void)? = nil,
     ) {
         self.aep = aepMode.aep
         self.onContinuePressedBlock = onContinuePressed
@@ -84,7 +84,7 @@ class BackupRecordKeyViewController: OWSViewController, OWSNavigationChildContro
                 image: UIImage(named: "chevron-left-bold-28"),
                 primaryAction: UIAction { _ in
                     onBackPressedBlock()
-                }
+                },
             )
 
             isModalInPresentation = true
@@ -96,12 +96,12 @@ class BackupRecordKeyViewController: OWSViewController, OWSNavigationChildContro
 
         let headlineLabel = UILabel.title1Label(text: OWSLocalizedString(
             "BACKUP_RECORD_KEY_TITLE",
-            comment: "Title for a view allowing users to record their 'Recovery Key'."
+            comment: "Title for a view allowing users to record their 'Recovery Key'.",
         ))
 
         let subheadlineLabel = UILabel.explanationTextLabel(text: OWSLocalizedString(
             "BACKUP_RECORD_KEY_SUBTITLE",
-            comment: "Subtitle for a view allowing users to record their 'Recovery Key'."
+            comment: "Subtitle for a view allowing users to record their 'Recovery Key'.",
         ))
 
         let aepTextView = AccountEntropyPoolTextView(mode: .display(aep: aep))
@@ -110,11 +110,11 @@ class BackupRecordKeyViewController: OWSViewController, OWSNavigationChildContro
         let copyToClipboardButton = UIButton(
             configuration: .smallSecondary(title: OWSLocalizedString(
                 "BACKUP_RECORD_KEY_COPY_TO_CLIPBOARD_BUTTON_TITLE",
-                comment: "Title for a button allowing users to copy their 'Recovery Key' to the clipboard."
+                comment: "Title for a button allowing users to copy their 'Recovery Key' to the clipboard.",
             )),
             primaryAction: UIAction { [weak self] _ in
                 self?.copyToClipboard()
-            }
+            },
         )
         copyToClipboardButton.translatesAutoresizingMaskIntoConstraints = false
         let copyButtonContainer = UIView.container()
@@ -129,7 +129,7 @@ class BackupRecordKeyViewController: OWSViewController, OWSNavigationChildContro
         let createNewKeyButton = UIButton(
             configuration: .largeSecondary(title: OWSLocalizedString(
                 "BACKUP_RECORD_KEY_CREATE_NEW_KEY_BUTTON_TITLE",
-                comment: "Title for a button allowing users to create a new 'Recovery Key'."
+                comment: "Title for a button allowing users to create a new 'Recovery Key'.",
             )),
             primaryAction: UIAction { [weak self] _ in
                 guard let self else { return }
@@ -152,9 +152,9 @@ class BackupRecordKeyViewController: OWSViewController, OWSNavigationChildContro
                 subheadlineLabel,
                 aepTextView,
                 copyButtonContainer,
-                .vStretchingSpacer()
+                .vStretchingSpacer(),
             ],
-            isScrollable: true
+            isScrollable: true,
         )
         stackView.spacing = 24
         stackView.setCustomSpacing(32, after: aepTextView)
@@ -174,12 +174,12 @@ class BackupRecordKeyViewController: OWSViewController, OWSNavigationChildContro
     private func copyToClipboard() {
         UIPasteboard.general.setItems(
             [[UIPasteboard.typeAutomatic: aep.displayString]],
-            options: [.expirationDate: Date().addingTimeInterval(60)]
+            options: [.expirationDate: Date().addingTimeInterval(60)],
         )
 
         let toast = ToastController(text: OWSLocalizedString(
             "BACKUP_KEY_COPIED_MESSAGE_TOAST",
-            comment: "Toast indicating that the user has copied their recovery key."
+            comment: "Toast indicating that the user has copied their recovery key.",
         ))
         toast.presentToastView(from: .bottom, of: view, inset: view.safeAreaInsets.bottom + 8)
     }
@@ -207,7 +207,7 @@ private extension BackupRecordKeyViewController {
 #Preview("CreateNewKey") {
     UINavigationController(rootViewController: BackupRecordKeyViewController.forPreview(
         aepMode: .newCandidate(AccountEntropyPool()),
-        options: [.showCreateNewKeyButton]
+        options: [.showCreateNewKeyButton],
     ))
 }
 
@@ -215,7 +215,7 @@ private extension BackupRecordKeyViewController {
 #Preview("ContinueButton") {
     UINavigationController(rootViewController: BackupRecordKeyViewController.forPreview(
         aepMode: .newCandidate(AccountEntropyPool()),
-        options: [.showContinueButton]
+        options: [.showContinueButton],
     ))
 }
 

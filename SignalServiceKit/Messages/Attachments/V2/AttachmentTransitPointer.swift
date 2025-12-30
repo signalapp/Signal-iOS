@@ -23,7 +23,7 @@ public class AttachmentTransitPointer {
 
     private init(
         attachment: Attachment,
-        info: Attachment.TransitTierInfo
+        info: Attachment.TransitTierInfo,
     ) {
         self.attachment = attachment
         self.info = info
@@ -39,14 +39,14 @@ public class AttachmentTransitPointer {
         }
         self.init(
             attachment: attachment,
-            info: info
+            info: info,
         )
     }
 
     var asAnyPointer: AttachmentPointer {
         return AttachmentPointer(
             attachment: attachment,
-            source: .transitTier(self)
+            source: .transitTier(self),
         )
     }
 }

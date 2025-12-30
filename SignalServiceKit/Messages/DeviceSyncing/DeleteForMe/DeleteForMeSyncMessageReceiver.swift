@@ -8,7 +8,7 @@ import LibSignalClient
 protocol DeleteForMeSyncMessageReceiver {
     func handleDeleteForMeProto(
         deleteForMeProto: SSKProtoSyncMessageDeleteForMe,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     )
 }
 
@@ -30,7 +30,7 @@ final class DeleteForMeSyncMessageReceiverImpl: DeleteForMeSyncMessageReceiver {
         deleteForMeIncomingSyncMessageManager: DeleteForMeIncomingSyncMessageManager,
         recipientDatabaseTable: RecipientDatabaseTable,
         threadStore: ThreadStore,
-        tsAccountManager: TSAccountManager
+        tsAccountManager: TSAccountManager,
     ) {
         self.deleteForMeIncomingSyncMessageManager = deleteForMeIncomingSyncMessageManager
         self.recipientDatabaseTable = recipientDatabaseTable
@@ -42,48 +42,54 @@ final class DeleteForMeSyncMessageReceiverImpl: DeleteForMeSyncMessageReceiver {
 
     func handleDeleteForMeProto(
         deleteForMeProto: SSKProtoSyncMessageDeleteForMe,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         for messageDeletes in deleteForMeProto.messageDeletes {
-            guard let conversation = conversation(
-                forProtoIdentifier: messageDeletes.conversation,
-                tx: tx
-            ) else {
+            guard
+                let conversation = conversation(
+                    forProtoIdentifier: messageDeletes.conversation,
+                    tx: tx,
+                )
+            else {
                 owsFailDebug("Missing conversation ID in message delete proto!")
                 continue
             }
 
             let messages: [AddressableMessage] = addressableMessages(
                 forProtoMessages: messageDeletes.messages,
-                tx: tx
+                tx: tx,
             )
             owsAssertDebug(
                 messages.count == messageDeletes.messages.count,
-                "Invalid addressable messages in message delete proto: \(messageDeletes.messages.count - messages.count) / \(messageDeletes.messages.count)!"
+                "Invalid addressable messages in message delete proto: \(messageDeletes.messages.count - messages.count) / \(messageDeletes.messages.count)!",
             )
 
             for message in messages {
                 deleteForMeIncomingSyncMessageManager.handleMessageDelete(
                     conversation: conversation,
                     addressableMessage: message,
-                    tx: tx
+                    tx: tx,
                 )
             }
         }
 
         for attachmentDelete in deleteForMeProto.attachmentDeletes {
-            guard let conversation = conversation(
-                forProtoIdentifier: attachmentDelete.conversation,
-                tx: tx
-            ) else {
+            guard
+                let conversation = conversation(
+                    forProtoIdentifier: attachmentDelete.conversation,
+                    tx: tx,
+                )
+            else {
                 owsFailDebug("Missing conversation ID in attachment delete proto!")
                 continue
             }
 
-            guard let targetMessage: AddressableMessage = addressableMessage(
-                forProtoMessage: attachmentDelete.targetMessage,
-                tx: tx
-            ) else {
+            guard
+                let targetMessage: AddressableMessage = addressableMessage(
+                    forProtoMessage: attachmentDelete.targetMessage,
+                    tx: tx,
+                )
+            else {
                 owsFailDebug("Missing target message in attachment delete proto!")
                 continue
             }
@@ -91,42 +97,44 @@ final class DeleteForMeSyncMessageReceiverImpl: DeleteForMeSyncMessageReceiver {
             let attachmentIdentifier = AttachmentIdentifier(
                 clientUuid: attachmentDelete.clientUuid.flatMap { UUID(data: $0) },
                 encryptedDigest: attachmentDelete.fallbackDigest,
-                plaintextHash: attachmentDelete.fallbackPlaintextHash
+                plaintextHash: attachmentDelete.fallbackPlaintextHash,
             )
 
             deleteForMeIncomingSyncMessageManager.handleAttachmentDelete(
                 conversation: conversation,
                 targetMessage: targetMessage,
                 attachmentIdentifier: attachmentIdentifier,
-                tx: tx
+                tx: tx,
             )
         }
 
         for conversationDelete in deleteForMeProto.conversationDeletes {
-            guard let conversation = conversation(
-                forProtoIdentifier: conversationDelete.conversation,
-                tx: tx
-            ) else {
+            guard
+                let conversation = conversation(
+                    forProtoIdentifier: conversationDelete.conversation,
+                    tx: tx,
+                )
+            else {
                 owsFailDebug("Missing conversation ID in conversation delete proto!")
                 continue
             }
 
             let mostRecentMessages: [AddressableMessage] = addressableMessages(
                 forProtoMessages: conversationDelete.mostRecentMessages,
-                tx: tx
+                tx: tx,
             )
             owsAssertDebug(
                 mostRecentMessages.count == conversationDelete.mostRecentMessages.count,
-                "Invalid addressable messages in conversation delete proto: \(conversationDelete.mostRecentMessages.count - mostRecentMessages.count) / \(conversationDelete.mostRecentMessages.count)!"
+                "Invalid addressable messages in conversation delete proto: \(conversationDelete.mostRecentMessages.count - mostRecentMessages.count) / \(conversationDelete.mostRecentMessages.count)!",
             )
 
             let mostRecentNonExpiringMessages: [AddressableMessage] = addressableMessages(
                 forProtoMessages: conversationDelete.mostRecentNonExpiringMessages,
-                tx: tx
+                tx: tx,
             )
             owsAssertDebug(
                 mostRecentNonExpiringMessages.count == conversationDelete.mostRecentNonExpiringMessages.count,
-                "Invalid addressable messages in conversation delete proto: \(conversationDelete.mostRecentNonExpiringMessages.count - mostRecentNonExpiringMessages.count) / \(conversationDelete.mostRecentNonExpiringMessages.count)!"
+                "Invalid addressable messages in conversation delete proto: \(conversationDelete.mostRecentNonExpiringMessages.count - mostRecentNonExpiringMessages.count) / \(conversationDelete.mostRecentNonExpiringMessages.count)!",
             )
 
             guard conversationDelete.hasIsFullDelete else {
@@ -139,22 +147,24 @@ final class DeleteForMeSyncMessageReceiverImpl: DeleteForMeSyncMessageReceiver {
                 mostRecentAddressableMessages: mostRecentMessages,
                 mostRecentNonExpiringAddressableMessages: mostRecentNonExpiringMessages,
                 isFullDelete: conversationDelete.isFullDelete,
-                tx: tx
+                tx: tx,
             )
         }
 
         for localOnlyConversationDelete in deleteForMeProto.localOnlyConversationDeletes {
-            guard let conversation = conversation(
-                forProtoIdentifier: localOnlyConversationDelete.conversation,
-                tx: tx
-            ) else {
+            guard
+                let conversation = conversation(
+                    forProtoIdentifier: localOnlyConversationDelete.conversation,
+                    tx: tx,
+                )
+            else {
                 owsFailDebug("Missing conversation ID in local-only conversation delete proto!")
                 continue
             }
 
             deleteForMeIncomingSyncMessageManager.handleLocalOnlyConversationDelete(
                 conversation: conversation,
-                tx: tx
+                tx: tx,
             )
         }
     }
@@ -163,14 +173,16 @@ final class DeleteForMeSyncMessageReceiverImpl: DeleteForMeSyncMessageReceiver {
 
     private func conversation(
         forProtoIdentifier proto: SSKProtoSyncMessageDeleteForMeConversationIdentifier?,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> Conversation? {
         guard let proto else { return nil }
 
-        if let threadServiceId = ServiceId.parseFrom(
-            serviceIdBinary: proto.threadServiceIDBinary,
-            serviceIdString: proto.threadServiceID,
-        ) {
+        if
+            let threadServiceId = ServiceId.parseFrom(
+                serviceIdBinary: proto.threadServiceIDBinary,
+                serviceIdString: proto.threadServiceID,
+            )
+        {
             if
                 let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx),
                 localIdentifiers.contains(serviceId: threadServiceId),
@@ -208,7 +220,7 @@ final class DeleteForMeSyncMessageReceiverImpl: DeleteForMeSyncMessageReceiver {
 
     private func addressableMessage(
         forProtoMessage proto: SSKProtoSyncMessageDeleteForMeAddressableMessage?,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> AddressableMessage? {
         guard let proto else { return nil }
 
@@ -217,7 +229,7 @@ final class DeleteForMeSyncMessageReceiverImpl: DeleteForMeSyncMessageReceiver {
 
     private func addressableMessages(
         forProtoMessages protos: [SSKProtoSyncMessageDeleteForMeAddressableMessage],
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> [AddressableMessage] {
         return protos.compactMap { proto -> AddressableMessage? in
             guard proto.hasSentTimestamp, SDS.fitsInInt64(proto.sentTimestamp) else {
@@ -227,10 +239,12 @@ final class DeleteForMeSyncMessageReceiverImpl: DeleteForMeSyncMessageReceiver {
             let sentTimestamp = proto.sentTimestamp
             var author: AddressableMessage.Author?
 
-            if let authorServiceId = ServiceId.parseFrom(
-                serviceIdBinary: proto.authorServiceIDBinary,
-                serviceIdString: proto.authorServiceID,
-            ) {
+            if
+                let authorServiceId = ServiceId.parseFrom(
+                    serviceIdBinary: proto.authorServiceIDBinary,
+                    serviceIdString: proto.authorServiceID,
+                )
+            {
                 if
                     let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx),
                     localIdentifiers.contains(serviceId: authorServiceId)
@@ -250,7 +264,7 @@ final class DeleteForMeSyncMessageReceiverImpl: DeleteForMeSyncMessageReceiver {
 
             return AddressableMessage(
                 author: author,
-                sentTimestamp: sentTimestamp
+                sentTimestamp: sentTimestamp,
             )
         }
     }

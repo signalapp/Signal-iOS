@@ -54,7 +54,7 @@ struct MediaPresentationContext {
         presentationFrame: CGRect,
         backgroundColor: UIColor = .clear,
         mediaViewShape: MediaViewShape = .rectangle(0),
-        clippingAreaInsets: UIEdgeInsets? = nil
+        clippingAreaInsets: UIEdgeInsets? = nil,
     ) {
         self.mediaView = mediaView
         self.presentationFrame = presentationFrame

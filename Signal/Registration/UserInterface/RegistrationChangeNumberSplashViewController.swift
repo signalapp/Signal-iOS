@@ -18,17 +18,17 @@ class RegistrationChangeNumberSplashViewController: OWSViewController, OWSNaviga
 
     private weak var presenter: RegistrationChangeNumberSplashPresenter?
 
-    public init(presenter: RegistrationChangeNumberSplashPresenter) {
+    init(presenter: RegistrationChangeNumberSplashPresenter) {
         self.presenter = presenter
         super.init()
         navigationItem.hidesBackButton = true
     }
 
-    public var preferredNavigationBarStyle: OWSNavigationBarStyle {
+    var preferredNavigationBarStyle: OWSNavigationBarStyle {
         return .solid
     }
 
-    public var navbarBackgroundColorOverride: UIColor? {
+    var navbarBackgroundColorOverride: UIColor? {
         return view.backgroundColor
     }
 
@@ -73,20 +73,20 @@ class RegistrationChangeNumberSplashViewController: OWSViewController, OWSNaviga
         let titleLabel = UILabel.titleLabelForRegistration(
             text: OWSLocalizedString(
                 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_TITLE",
-                comment: "Title text in the 'change phone number splash' view."
-            )
+                comment: "Title text in the 'change phone number splash' view.",
+            ),
         )
         let subtitleLabel = UILabel.explanationLabelForRegistration(
             text: OWSLocalizedString(
                 "SETTINGS_CHANGE_PHONE_NUMBER_SPLASH_DESCRIPTION",
-                comment: "Description text in the 'change phone number splash' view."
-            )
+                comment: "Description text in the 'change phone number splash' view.",
+            ),
         )
         let continueButton = UIButton(
             configuration: .largePrimary(title: CommonStrings.continueButton),
             primaryAction: UIAction { [weak self] _ in
                 self?.didTapContinue()
-            }
+            },
         )
 
         let stackView = addStaticContentStackView(arrangedSubviews: [
@@ -131,8 +131,8 @@ private class PreviewRegistrationChangeNumberSplashPresenter: RegistrationChange
     let presenter = PreviewRegistrationChangeNumberSplashPresenter()
     return UINavigationController(
         rootViewController: RegistrationChangeNumberSplashViewController(
-            presenter: presenter
-        )
+            presenter: presenter,
+        ),
     )
 }
 

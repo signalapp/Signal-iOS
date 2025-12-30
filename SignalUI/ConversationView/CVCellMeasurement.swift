@@ -11,7 +11,7 @@ open class CVMeasurementObject: Equatable {
 
     // MARK: - Equatable
 
-    public static func == (lhs: CVMeasurementObject, rhs: CVMeasurementObject) -> Bool {
+    public static func ==(lhs: CVMeasurementObject, rhs: CVMeasurementObject) -> Bool {
         true
     }
 }
@@ -43,11 +43,13 @@ public struct CVCellMeasurement: Equatable {
         public init() {}
 
         public func build() -> CVCellMeasurement {
-            CVCellMeasurement(cellSize: cellSize,
-                              sizes: sizes,
-                              values: values,
-                              measurements: measurements,
-                              objects: objects)
+            CVCellMeasurement(
+                cellSize: cellSize,
+                sizes: sizes,
+                values: values,
+                measurements: measurements,
+                objects: objects,
+            )
         }
 
         public func setSize(key: String, size: CGSize) {
@@ -126,22 +128,28 @@ public struct CVCellMeasurement: Equatable {
 
 public extension ManualStackView {
 
-    func configure(config: Config,
-                   cellMeasurement: CVCellMeasurement,
-                   measurementKey: String,
-                   subviews: [UIView]) {
+    func configure(
+        config: Config,
+        cellMeasurement: CVCellMeasurement,
+        measurementKey: String,
+        subviews: [UIView],
+    ) {
         guard let measurement = cellMeasurement.measurement(key: measurementKey) else {
             owsFailDebug("Missing measurement.")
             return
         }
-        configure(config: config,
-                  measurement: measurement,
-                  subviews: subviews)
+        configure(
+            config: config,
+            measurement: measurement,
+            subviews: subviews,
+        )
     }
 
-    func configureForReuse(config: Config,
-                           cellMeasurement: CVCellMeasurement,
-                           measurementKey: String) {
+    func configureForReuse(
+        config: Config,
+        cellMeasurement: CVCellMeasurement,
+        measurementKey: String,
+    ) {
         guard let measurement = cellMeasurement.measurement(key: measurementKey) else {
             owsFailDebug("Missing measurement.")
             return
@@ -149,24 +157,30 @@ public extension ManualStackView {
         configureForReuse(config: config, measurement: measurement)
     }
 
-    static func measure(config: Config,
-                        measurementBuilder: CVCellMeasurement.Builder,
-                        measurementKey: String,
-                        subviewInfos: [ManualStackSubviewInfo],
-                        maxWidth: CGFloat? = nil,
-                        verboseLogging: Bool = false) -> Measurement {
-        let measurement = Self.measure(config: config,
-                                       subviewInfos: subviewInfos,
-                                       verboseLogging: verboseLogging)
+    static func measure(
+        config: Config,
+        measurementBuilder: CVCellMeasurement.Builder,
+        measurementKey: String,
+        subviewInfos: [ManualStackSubviewInfo],
+        maxWidth: CGFloat? = nil,
+        verboseLogging: Bool = false,
+    ) -> Measurement {
+        let measurement = Self.measure(
+            config: config,
+            subviewInfos: subviewInfos,
+            verboseLogging: verboseLogging,
+        )
         measurementBuilder.setMeasurement(key: measurementKey, value: measurement)
-        if let maxWidth = maxWidth,
-           measurement.measuredSize.width > maxWidth {
-            #if DEBUG
+        if
+            let maxWidth,
+            measurement.measuredSize.width > maxWidth
+        {
+#if DEBUG
             Logger.verbose("config: \(config)")
             for subviewInfo in subviewInfos {
                 Logger.verbose("subviewInfo: \(subviewInfo.measuredSize)")
             }
-            #endif
+#endif
             owsFailDebug("\(measurementKey): measuredSize \(measurement.measuredSize) > maxWidth: \(maxWidth).")
         }
         return measurement

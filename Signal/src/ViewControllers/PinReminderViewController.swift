@@ -28,7 +28,7 @@ public class PinReminderViewController: OWSViewController {
                 topLeftRadius: .containerConcentric(minimum: 40),
                 topRightRadius: .containerConcentric(minimum: 40),
                 bottomLeftRadius: .none,
-                bottomRightRadius: .none
+                bottomRightRadius: .none,
             )
         }
 #endif
@@ -62,7 +62,7 @@ public class PinReminderViewController: OWSViewController {
         }
         textField.keyboardType = currentPinType == .alphanumeric ? .default : .asciiCapableNumberPad
         return textField
-   }()
+    }()
 
     private lazy var validationWarningLabel: UILabel = {
         let label = UILabel()
@@ -72,7 +72,7 @@ public class PinReminderViewController: OWSViewController {
         label.text = " "
         label.accessibilityIdentifier = "pinReminder.validationWarningLabel"
         return label
-   }()
+    }()
 
     enum ValidationState {
         case valid
@@ -83,6 +83,7 @@ public class PinReminderViewController: OWSViewController {
             return self != .valid
         }
     }
+
     private var validationState: ValidationState = .valid {
         didSet {
             updateValidationWarnings()
@@ -92,6 +93,7 @@ public class PinReminderViewController: OWSViewController {
             }
         }
     }
+
     private var hasGuessedWrong = false
 
     private let context: ViewControllerContext
@@ -123,7 +125,7 @@ public class PinReminderViewController: OWSViewController {
         // and `viewWillDisappear` is guaranteed to be only called once.
         contentViewBottomEdgeConstraint = contentView.bottomAnchor.constraint(
             equalTo: keyboardLayoutGuide.topAnchor,
-            constant: -16
+            constant: -16,
         )
 
         NSLayoutConstraint.activate([
@@ -163,7 +165,7 @@ public class PinReminderViewController: OWSViewController {
         // Pin text field
 
         // Pin text field and warning text
-        let pinStack = UIStackView(arrangedSubviews: [ pinTextField, validationWarningLabel ])
+        let pinStack = UIStackView(arrangedSubviews: [pinTextField, validationWarningLabel])
         pinStack.axis = .vertical
         pinStack.alignment = .fill
         pinStack.spacing = 16
@@ -184,22 +186,22 @@ public class PinReminderViewController: OWSViewController {
         let submitButton = UIButton(
             configuration: .largePrimary(title: OWSLocalizedString(
                 "BUTTON_SUBMIT",
-                comment: "Label for the 'submit' button."
+                comment: "Label for the 'submit' button.",
             )),
             primaryAction: UIAction { [weak self] _ in
                 self?.submitPressed()
-            }
+            },
         )
         submitButton.accessibilityIdentifier = "pinReminder.submitButton"
 
         let forgotPINButton = UIButton(
             configuration: .mediumBorderless(title: OWSLocalizedString(
                 "PIN_REMINDER_FORGOT_PIN",
-                comment: "Text asking if the user forgot their pin for the 'pin reminder' dialog."
+                comment: "Text asking if the user forgot their pin for the 'pin reminder' dialog.",
             )),
             primaryAction: UIAction { [weak self] _ in
                 self?.forgotPressed()
-            }
+            },
         )
         forgotPINButton.accessibilityIdentifier = "pinReminder.forgotButton"
 
@@ -243,7 +245,7 @@ public class PinReminderViewController: OWSViewController {
 
         // Close button at the top.
         let buttonConfiguration: UIButton.Configuration
-        var buttonImageColor =  UIColor(dynamicProvider: { traits in
+        var buttonImageColor = UIColor(dynamicProvider: { traits in
             if traits.userInterfaceStyle == .light {
                 return .ows_gray75
             } else {
@@ -264,7 +266,7 @@ public class PinReminderViewController: OWSViewController {
             configuration: buttonConfiguration,
             primaryAction: UIAction { [weak self] _ in
                 self?.dismissPressed()
-            }
+            },
         )
         dismissButton.configuration?.image = Theme.iconImage(.buttonX)
         dismissButton.configuration?.imageColorTransformer = .init { _ in buttonImageColor }
@@ -288,27 +290,27 @@ public class PinReminderViewController: OWSViewController {
         updateValidationWarnings()
     }
 
-    public override func viewWillAppear(_ animated: Bool) {
+    override public func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         pinTextField.becomeFirstResponder()
     }
 
-    public override func viewDidAppear(_ animated: Bool) {
+    override public func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
         // For now, the design only allows for portrait layout on non-iPads
-        if !UIDevice.current.isIPad && view.window?.windowScene?.interfaceOrientation != .portrait {
+        if !UIDevice.current.isIPad, view.window?.windowScene?.interfaceOrientation != .portrait {
             UIDevice.current.ows_setOrientation(.portrait)
         }
     }
 
-    public override func viewWillDisappear(_ animated: Bool) {
+    override public func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         pinContentView()
         pinTextField.resignFirstResponder()
     }
 
-    public override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+    override public var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         return UIDevice.current.isIPad ? .all : .portrait
     }
 
@@ -318,12 +320,12 @@ public class PinReminderViewController: OWSViewController {
         NSLayoutConstraint.activate([
             contentView.bottomAnchor.constraint(
                 equalTo: view.bottomAnchor,
-                constant: contentView.frame.maxY - view.bounds.maxY
-            )
+                constant: contentView.frame.maxY - view.bounds.maxY,
+            ),
         ])
     }
 
-    public override func viewDidLayoutSubviews() {
+    override public func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
         if #unavailable(iOS 26) {
@@ -337,12 +339,12 @@ public class PinReminderViewController: OWSViewController {
         let path = UIBezierPath(
             roundedRect: backgroundView.bounds,
             byRoundingCorners: [.topLeft, .topRight],
-            cornerRadii: CGSize(square: cornerRadius)
+            cornerRadii: CGSize(square: cornerRadius),
         )
         let shapeLayer = CAShapeLayer()
         shapeLayer.path = path.cgPath
         backgroundView.layer.mask = shapeLayer
-   }
+    }
 
     // MARK: - Events
 
@@ -352,7 +354,7 @@ public class PinReminderViewController: OWSViewController {
         let viewController = PinSetupViewController(
             mode: .creating,
             showCancelButton: true,
-            completionHandler: { [weak self] _, _ in self?.completionHandler?(.changedPin) }
+            completionHandler: { [weak self] _, _ in self?.completionHandler?(.changedPin) },
         )
         present(OWSNavigationController(rootViewController: viewController), animated: true)
     }
@@ -403,11 +405,15 @@ public class PinReminderViewController: OWSViewController {
 
         switch validationState {
         case .tooShort:
-            validationWarningLabel.text = OWSLocalizedString("PIN_REMINDER_TOO_SHORT_ERROR",
-                                                            comment: "Label indicating that the attempted PIN is too short")
+            validationWarningLabel.text = OWSLocalizedString(
+                "PIN_REMINDER_TOO_SHORT_ERROR",
+                comment: "Label indicating that the attempted PIN is too short",
+            )
         case .mismatch:
-            validationWarningLabel.text = OWSLocalizedString("PIN_REMINDER_MISMATCH_ERROR",
-                                                            comment: "Label indicating that the attempted PIN does not match the user's PIN")
+            validationWarningLabel.text = OWSLocalizedString(
+                "PIN_REMINDER_MISMATCH_ERROR",
+                comment: "Label indicating that the attempted PIN does not match the user's PIN",
+            )
         default:
             break
         }
@@ -425,7 +431,7 @@ private class PinReminderPresentationController: UIPresentationController {
     }
 
     override func presentationTransitionWillBegin() {
-        guard let containerView = containerView else { return }
+        guard let containerView else { return }
 
         backdropView.alpha = 0
         containerView.addSubview(backdropView)
@@ -447,7 +453,7 @@ private class PinReminderPresentationController: UIPresentationController {
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
-        guard let presentedView = presentedView else { return }
+        guard let presentedView else { return }
         coordinator.animate(alongsideTransition: { _ in
             presentedView.frame = self.frameOfPresentedViewInContainerView
             presentedView.layoutIfNeeded()

@@ -21,10 +21,12 @@ public class LocalDevice {
 
             let kern: kern_return_t = withUnsafeMutablePointer(to: &vmInfo) {
                 $0.withMemoryRebound(to: integer_t.self, capacity: 1) {
-                    task_info(mach_task_self_,
-                              task_flavor_t(TASK_VM_INFO),
-                              $0,
-                              &vmInfoSize)
+                    task_info(
+                        mach_task_self_,
+                        task_flavor_t(TASK_VM_INFO),
+                        $0,
+                        &vmInfoSize,
+                    )
                 }
             }
 
@@ -44,7 +46,7 @@ public class LocalDevice {
                 peakFootprint: vmInfo.ledger_phys_footprint_peak,
                 bytesRemaining: vmInfo.limit_bytes_remaining,
                 mallocSize: Int64(statistics.size_in_use),
-                mallocAllocations: Int64(statistics.size_allocated)
+                mallocAllocations: Int64(statistics.size_allocated),
             )
 
             return result

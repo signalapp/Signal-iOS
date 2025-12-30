@@ -34,9 +34,9 @@ protocol RegistrationReglockTimeoutPresenter: AnyObject {
 class RegistrationReglockTimeoutViewController: OWSViewController {
     private let oneMinute: TimeInterval = 60
 
-    public init(
+    init(
         state: RegistrationReglockTimeoutState,
-        presenter: RegistrationReglockTimeoutPresenter
+        presenter: RegistrationReglockTimeoutPresenter,
     ) {
         self.state = state
         self.presenter = presenter
@@ -47,7 +47,7 @@ class RegistrationReglockTimeoutViewController: OWSViewController {
     }
 
     @available(*, unavailable)
-    public override init() {
+    override init() {
         owsFail("This should not be called")
     }
 
@@ -64,14 +64,14 @@ class RegistrationReglockTimeoutViewController: OWSViewController {
 
     private var explanationLabelTimer: Timer?
 
-    public override func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
 
         view.backgroundColor = .Signal.background
 
         let titleLabel = UILabel.titleLabelForRegistration(text: OWSLocalizedString(
             "REGISTRATION_LOCK_TIMEOUT_TITLE",
-            comment: "Registration Lock can prevent users from registering in some cases, and they'll have to wait. This is the title of that screen."
+            comment: "Registration Lock can prevent users from registering in some cases, and they'll have to wait. This is the title of that screen.",
         ))
         titleLabel.accessibilityIdentifier = "registration.reglockTimeout.titleLabel"
 
@@ -80,7 +80,7 @@ class RegistrationReglockTimeoutViewController: OWSViewController {
         case .resetPhoneNumber:
             okayButtonTitle = OWSLocalizedString(
                 "REGISTRATION_LOCK_TIMEOUT_RESET_PHONE_NUMBER_BUTTON",
-                comment: "Registration Lock can prevent users from registering in some cases, and they'll have to wait. This button appears on that screen. Tapping it will bump the user back, earlier in registration, so they can register with a different phone number."
+                comment: "Registration Lock can prevent users from registering in some cases, and they'll have to wait. This button appears on that screen. Tapping it will bump the user back, earlier in registration, so they can register with a different phone number.",
             )
         case .close, .none:
             okayButtonTitle = CommonStrings.okayButton
@@ -89,17 +89,17 @@ class RegistrationReglockTimeoutViewController: OWSViewController {
             configuration: .largePrimary(title: okayButtonTitle),
             primaryAction: UIAction { [weak self] _ in
                 self?.presenter?.acknowledgeReglockTimeout()
-            }
+            },
         )
 
         let learnMoreButton = UIButton(
             configuration: .largeSecondary(title: OWSLocalizedString(
                 "REGISTRATION_LOCK_TIMEOUT_LEARN_MORE_BUTTON",
-                comment: "Registration Lock can prevent users from registering in some cases, and they'll have to wait. This button appears on that screen. Tapping it will tell the user more information."
+                comment: "Registration Lock can prevent users from registering in some cases, and they'll have to wait. This button appears on that screen. Tapping it will tell the user more information.",
             )),
             primaryAction: UIAction { [weak self] _ in
                 self?.didTapLearnMoreButton()
-            }
+            },
         )
         learnMoreButton.accessibilityIdentifier = "registration.reglockTimeout.learnMoreButton"
 
@@ -107,14 +107,14 @@ class RegistrationReglockTimeoutViewController: OWSViewController {
             titleLabel,
             explanationLabel,
             .vStretchingSpacer(),
-            [ okayButton, learnMoreButton ].enclosedInVerticalStackView(isFullWidthButtons: true),
+            [okayButton, learnMoreButton].enclosedInVerticalStackView(isFullWidthButtons: true),
         ])
 
         updateExplanationLabelText()
 
         explanationLabelTimer = Timer.scheduledTimer(
             withTimeInterval: oneMinute,
-            repeats: true
+            repeats: true,
         ) { [weak self] _ in
             self?.updateExplanationLabelText()
         }
@@ -125,7 +125,7 @@ class RegistrationReglockTimeoutViewController: OWSViewController {
     private var explanationLabelText: String {
         let format = OWSLocalizedString(
             "REGISTRATION_LOCK_TIMEOUT_DESCRIPTION_FORMAT",
-            comment: "Registration Lock can prevent users from registering in some cases, and they'll have to wait. This is the description on that screen, explaining what's going on. Embeds {{ duration }}, such as \"7 days\"."
+            comment: "Registration Lock can prevent users from registering in some cases, and they'll have to wait. This is the description on that screen, explaining what's going on. Embeds {{ duration }}, such as \"7 days\".",
         )
 
         let remainingSeconds: UInt32 = {
@@ -135,7 +135,7 @@ class RegistrationReglockTimeoutViewController: OWSViewController {
 
         return String(
             format: format,
-            DateUtil.formatDuration(seconds: remainingSeconds, useShortFormat: false)
+            DateUtil.formatDuration(seconds: remainingSeconds, useShortFormat: false),
         )
     }
 
@@ -173,10 +173,10 @@ private class PreviewRegistrationReglockTimeoutPresenter: RegistrationReglockTim
         rootViewController: RegistrationReglockTimeoutViewController(
             state: RegistrationReglockTimeoutState(
                 reglockExpirationDate: Date.now.addingTimeInterval(1000),
-                acknowledgeAction: .resetPhoneNumber
+                acknowledgeAction: .resetPhoneNumber,
             ),
-            presenter: presenter
-        )
+            presenter: presenter,
+        ),
     )
 }
 
@@ -187,10 +187,10 @@ private class PreviewRegistrationReglockTimeoutPresenter: RegistrationReglockTim
         rootViewController: RegistrationReglockTimeoutViewController(
             state: RegistrationReglockTimeoutState(
                 reglockExpirationDate: Date.now.addingTimeInterval(1000),
-                acknowledgeAction: .close
+                acknowledgeAction: .close,
             ),
-            presenter: presenter
-        )
+            presenter: presenter,
+        ),
     )
 }
 
@@ -201,10 +201,10 @@ private class PreviewRegistrationReglockTimeoutPresenter: RegistrationReglockTim
         rootViewController: RegistrationReglockTimeoutViewController(
             state: RegistrationReglockTimeoutState(
                 reglockExpirationDate: Date.now.addingTimeInterval(1000),
-                acknowledgeAction: .none
+                acknowledgeAction: .none,
             ),
-            presenter: presenter
-        )
+            presenter: presenter,
+        ),
     )
 }
 

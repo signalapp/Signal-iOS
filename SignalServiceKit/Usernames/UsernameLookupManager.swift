@@ -14,21 +14,21 @@ public protocol UsernameLookupManager {
     /// Fetch the most recently-known username for the given ACI, if any.
     func fetchUsername(
         forAci aci: Aci,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> String?
 
     /// Fetch usernames for the given addresses, returning an array with a
     /// username corresponding to each passed address, if one is available.
     func fetchUsernames(
         forAddresses addresses: AnySequence<SignalServiceAddress>,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> [String?]
 
     /// Save the given username, or lack thereof, for the given ACI.
     func saveUsername(
         _ username: String?,
         forAci aci: Aci,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     )
 }
 
@@ -40,7 +40,7 @@ class UsernameLookupManagerImpl: UsernameLookupManager {
 
     init(
         searchableNameIndexer: SearchableNameIndexer,
-        usernameLookupRecordStore: UsernameLookupRecordStore
+        usernameLookupRecordStore: UsernameLookupRecordStore,
     ) {
         self.searchableNameIndexer = searchableNameIndexer
         self.usernameLookupRecordStore = usernameLookupRecordStore
@@ -50,14 +50,14 @@ class UsernameLookupManagerImpl: UsernameLookupManager {
 
     func fetchUsername(
         forAci aci: Aci,
-        transaction tx: DBReadTransaction
+        transaction tx: DBReadTransaction,
     ) -> String? {
         return usernameLookupRecordStore.fetchOne(forAci: aci, tx: tx)?.username
     }
 
     func fetchUsernames(
         forAddresses addresses: some Sequence<SignalServiceAddress>,
-        transaction tx: DBReadTransaction
+        transaction tx: DBReadTransaction,
     ) -> [String?] {
         return addresses.map { address -> String? in
             guard let aci = address.aci else { return nil }
@@ -70,7 +70,7 @@ class UsernameLookupManagerImpl: UsernameLookupManager {
     func saveUsername(
         _ username: String?,
         forAci aci: Aci,
-        transaction tx: DBWriteTransaction
+        transaction tx: DBWriteTransaction,
     ) {
         // First, delete any existing records for this ACI. This ensures that we
         // can, if we insert a new record, subsequently index the new username
@@ -84,10 +84,12 @@ class UsernameLookupManagerImpl: UsernameLookupManager {
             //
             // This is semantically appropriate as usernames can only be
             // associated with one ACI at a time.
-            if let conflictingRecord = usernameLookupRecordStore.fetchOne(
-                forUsernameCaseInsensitive: username,
-                tx: tx,
-            ) {
+            if
+                let conflictingRecord = usernameLookupRecordStore.fetchOne(
+                    forUsernameCaseInsensitive: username,
+                    tx: tx,
+                )
+            {
                 let conflictingAci = Aci(fromUUID: conflictingRecord.aci)
                 usernameLookupRecordStore.deleteOne(forAci: conflictingAci, tx: tx)
             }

@@ -16,25 +16,25 @@ class DispatchQueueOWSTests: XCTestCase {
             .utility: [
                 QOS_CLASS_UTILITY.rawValue,
                 QOS_CLASS_UTILITY.rawValue + 1,
-                QOS_CLASS_USER_INITIATED.rawValue - 1
+                QOS_CLASS_USER_INITIATED.rawValue - 1,
             ],
             .userInitiated: [
                 QOS_CLASS_USER_INITIATED.rawValue,
                 QOS_CLASS_USER_INITIATED.rawValue + 1,
-                QOS_CLASS_USER_INTERACTIVE.rawValue - 1
+                QOS_CLASS_USER_INTERACTIVE.rawValue - 1,
             ],
-            .userInteractive: [QOS_CLASS_USER_INTERACTIVE.rawValue]
+            .userInteractive: [QOS_CLASS_USER_INTERACTIVE.rawValue],
         ]
 
         // Test: Map the raw UInt32s to a QoSClass by flooring
-        let resultMap = expectedQoSForRawValues.mapValues { (rawValueArray) in
+        let resultMap = expectedQoSForRawValues.mapValues { rawValueArray in
             rawValueArray
-                .map { qos_class_t(rawValue: $0)}
+                .map { qos_class_t(rawValue: $0) }
                 .map { DispatchQoS.QoSClass(flooring: $0) }
         }
 
         // Verify: Each mapped QoS class in the value array should match its key
-        resultMap.forEach { (key, valueArray) in
+        resultMap.forEach { key, valueArray in
             valueArray.forEach { XCTAssertEqual(key, $0) }
         }
     }
@@ -44,20 +44,20 @@ class DispatchQueueOWSTests: XCTestCase {
         let sharedQueuesAtQoS: [DispatchQoS.QoSClass: [DispatchQueue]] = [
             .utility: [
                 DispatchQueue.sharedUtility,
-                DispatchQueue.sharedQueue(at: .utility)
+                DispatchQueue.sharedQueue(at: .utility),
             ],
             .userInitiated: [
                 DispatchQueue.sharedUserInitiated,
-                DispatchQueue.sharedQueue(at: .userInitiated)
+                DispatchQueue.sharedQueue(at: .userInitiated),
             ],
             .userInteractive: [
                 DispatchQueue.sharedUserInteractive,
-                DispatchQueue.sharedQueue(at: .userInteractive)
-            ]
+                DispatchQueue.sharedQueue(at: .userInteractive),
+            ],
         ]
 
         // Verify: All shared queues should refer to the same serial queue at the correct QoS
-        sharedQueuesAtQoS.forEach { (qos, queueArray) in
+        sharedQueuesAtQoS.forEach { qos, queueArray in
             let firstQueue = queueArray[0]
             queueArray.forEach { queue in
                 XCTAssertEqual(queue.qos.qosClass, qos)

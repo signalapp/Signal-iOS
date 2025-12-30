@@ -17,7 +17,7 @@ final class TurnServerInfoTest: XCTestCase {
 
         for (idx, testCase) in testCases.enumerated() {
             let (parsedIceServers, ttl) = try RTCIceServerFetcher.parse(
-                turnServerInfoJsonData: testCase.jsonData
+                turnServerInfoJsonData: testCase.jsonData,
             )
 
             let parsedIceServerUrls: [String] = try parsedIceServers.map { iceServer throws in
@@ -31,13 +31,13 @@ final class TurnServerInfoTest: XCTestCase {
             XCTAssertEqual(
                 parsedIceServerUrls,
                 testCase.expectedUrls,
-                "URL comparison failed for test case \(idx)"
+                "URL comparison failed for test case \(idx)",
             )
 
             XCTAssertEqual(
                 ttl,
                 testCase.expectedTtl,
-                "Unexpected ttl value \(ttl) for test case \(idx)"
+                "Unexpected ttl value \(ttl) for test case \(idx)",
             )
         }
     }
@@ -96,7 +96,7 @@ private struct TestCase {
             }]
         }
         """,
-        expectedTtl: 0
+        expectedTtl: 0,
     )
 
     static let multipleTurnServerWithTtl = TestCase(
@@ -133,7 +133,7 @@ private struct TestCase {
             }]
         }
         """,
-        expectedTtl: 43200
+        expectedTtl: 43200,
     )
 
     static let nullableHostnameTurnServer = TestCase(
@@ -155,6 +155,6 @@ private struct TestCase {
             }]
         }
         """,
-        expectedTtl: 0
+        expectedTtl: 0,
     )
 }

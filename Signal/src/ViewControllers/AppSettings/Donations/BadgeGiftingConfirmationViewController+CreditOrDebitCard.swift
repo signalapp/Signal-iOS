@@ -15,7 +15,7 @@ extension BadgeGiftingConfirmationViewController {
             donationAmount: price,
             donationMode: .gift(thread: thread, messageText: messageText),
             // Gifting does not support bank transfers
-            paymentMethod: .card
+            paymentMethod: .card,
         ) { [weak self] error in
             guard let self else { return }
 

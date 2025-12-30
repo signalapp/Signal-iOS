@@ -25,7 +25,7 @@ open class OWSFlatButton: UIView {
         }
     }
 
-    public override var accessibilityIdentifier: String? {
+    override public var accessibilityIdentifier: String? {
         didSet {
             guard let accessibilityIdentifier = self.accessibilityIdentifier else {
                 return
@@ -58,7 +58,7 @@ open class OWSFlatButton: UIView {
         }
     }
 
-    public override var tintColor: UIColor! {
+    override public var tintColor: UIColor! {
         get {
             return button.tintColor
         }
@@ -78,7 +78,7 @@ open class OWSFlatButton: UIView {
     }
 
     @available(*, unavailable, message: "use other constructor instead.")
-    required public init?(coder aDecoder: NSCoder) {
+    public required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
@@ -88,18 +88,22 @@ open class OWSFlatButton: UIView {
         button.autoPinEdgesToSuperviewEdges()
     }
 
-    public class func button(title: String,
-                             font: UIFont,
-                             titleColor: UIColor,
-                             backgroundColor: UIColor,
-                             width: CGFloat,
-                             height: CGFloat,
-                             target: Any,
-                             selector: Selector) -> OWSFlatButton {
+    public class func button(
+        title: String,
+        font: UIFont,
+        titleColor: UIColor,
+        backgroundColor: UIColor,
+        width: CGFloat,
+        height: CGFloat,
+        target: Any,
+        selector: Selector,
+    ) -> OWSFlatButton {
         let button = OWSFlatButton()
-        button.setTitle(title: title,
-                        font: font,
-                        titleColor: titleColor )
+        button.setTitle(
+            title: title,
+            font: font,
+            titleColor: titleColor,
+        )
         button.setBackgroundColors(upColor: backgroundColor)
         button.useDefaultCornerRadius()
         button.setSize(width: width, height: height)
@@ -107,21 +111,25 @@ open class OWSFlatButton: UIView {
         return button
     }
 
-    public class func button(title: String,
-                             titleColor: UIColor,
-                             backgroundColor: UIColor,
-                             width: CGFloat,
-                             height: CGFloat,
-                             target: Any,
-                             selector: Selector) -> OWSFlatButton {
-        return OWSFlatButton.button(title: title,
-                                    font: fontForHeight(height),
-                                    titleColor: titleColor,
-                                    backgroundColor: backgroundColor,
-                                    width: width,
-                                    height: height,
-                                    target: target,
-                                    selector: selector)
+    public class func button(
+        title: String,
+        titleColor: UIColor,
+        backgroundColor: UIColor,
+        width: CGFloat,
+        height: CGFloat,
+        target: Any,
+        selector: Selector,
+    ) -> OWSFlatButton {
+        return OWSFlatButton.button(
+            title: title,
+            font: fontForHeight(height),
+            titleColor: titleColor,
+            backgroundColor: backgroundColor,
+            width: width,
+            height: height,
+            target: target,
+            selector: selector,
+        )
     }
 
     public class func insetButton(
@@ -130,7 +138,7 @@ open class OWSFlatButton: UIView {
         titleColor: UIColor,
         backgroundColor: UIColor,
         target: Any,
-        selector: Selector
+        selector: Selector,
     ) -> OWSFlatButton {
         return OWSFlatButton.button(
             title: title,
@@ -139,7 +147,7 @@ open class OWSFlatButton: UIView {
             backgroundColor: backgroundColor,
             target: target,
             selector: selector,
-            cornerRadius: CornerStyle.inset
+            cornerRadius: CornerStyle.inset,
         )
     }
 
@@ -148,12 +156,14 @@ open class OWSFlatButton: UIView {
         font: UIFont,
         titleColor: UIColor,
         backgroundColor: UIColor,
-        cornerRadius: CGFloat
+        cornerRadius: CGFloat,
     ) -> OWSFlatButton {
         let button = OWSFlatButton()
-        button.setTitle(title: title,
-                        font: font,
-                        titleColor: titleColor )
+        button.setTitle(
+            title: title,
+            font: font,
+            titleColor: titleColor,
+        )
         button.setBackgroundColors(upColor: backgroundColor)
         button.layer.cornerRadius = cornerRadius
         button.clipsToBounds = true
@@ -167,7 +177,7 @@ open class OWSFlatButton: UIView {
         backgroundColor: UIColor,
         target: Any,
         selector: Selector,
-        cornerRadius: CGFloat = CornerStyle.default
+        cornerRadius: CGFloat = CornerStyle.default,
     ) -> OWSFlatButton {
         let button = button(title: title, font: font, titleColor: titleColor, backgroundColor: backgroundColor, cornerRadius: cornerRadius)
         button.addTarget(target: target, selector: selector)
@@ -180,7 +190,7 @@ open class OWSFlatButton: UIView {
         titleColor: UIColor,
         backgroundColor: UIColor,
         action: UIAction,
-        cornerRadius: CGFloat = CornerStyle.default
+        cornerRadius: CGFloat = CornerStyle.default,
     ) -> OWSFlatButton {
         let button = button(title: title, font: font, titleColor: titleColor, backgroundColor: backgroundColor, cornerRadius: cornerRadius)
         button.addAction(action)
@@ -218,8 +228,10 @@ open class OWSFlatButton: UIView {
         button.setImage(image, for: .normal)
     }
 
-    public func setBackgroundColors(upColor: UIColor,
-                                    downColor: UIColor ) {
+    public func setBackgroundColors(
+        upColor: UIColor,
+        downColor: UIColor,
+    ) {
         button.setBackgroundImage(UIImage.image(color: upColor), for: .normal)
         button.setBackgroundImage(UIImage.image(color: downColor), for: .highlighted)
     }
@@ -236,7 +248,7 @@ open class OWSFlatButton: UIView {
 
     public func useDefaultCornerRadius() {
         // To my eye, this radius tends to look right regardless of button size
-        // (within reason) or device size. 
+        // (within reason) or device size.
         button.layer.cornerRadius = 5
         button.clipsToBounds = true
     }
@@ -250,8 +262,10 @@ open class OWSFlatButton: UIView {
         button.isEnabled = isEnabled
     }
 
-    public func addTarget(target: Any,
-                          selector: Selector) {
+    public func addTarget(
+        target: Any,
+        selector: Selector,
+    ) {
         button.addTarget(target, action: selector, for: .touchUpInside)
     }
 
@@ -278,7 +292,7 @@ open class OWSFlatButton: UIView {
 
         button.autoPinHeight(
             toHeightOf: titleLabel,
-            relation: .greaterThanOrEqual
+            relation: .greaterThanOrEqual,
         )
     }
 
@@ -287,19 +301,19 @@ open class OWSFlatButton: UIView {
     }
 
     public func autoSetMinimumHeighUsingFont(extraVerticalInsets: CGFloat = 0) {
-        guard let font = font else {
+        guard let font else {
             owsFailDebug("Missing button font.")
             return
         }
         autoSetDimension(
             .height,
             toSize: Self.heightForFont(font) + CGFloat(extraVerticalInsets * 2.0),
-            relation: .greaterThanOrEqual
+            relation: .greaterThanOrEqual,
         )
     }
 
     public func autoSetHeightUsingFont(extraVerticalInsets: CGFloat = 0) {
-        guard let font = font else {
+        guard let font else {
             owsFailDebug("Missing button font.")
             return
         }

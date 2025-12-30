@@ -14,7 +14,7 @@ protocol GroupCallVideoGridLayoutDelegate: AnyObject {
 
 class GroupCallVideoGridLayout: UICollectionViewLayout {
 
-    public weak var delegate: GroupCallVideoGridLayoutDelegate?
+    weak var delegate: GroupCallVideoGridLayoutDelegate?
 
     private var itemAttributesMap = [Int: UICollectionViewLayoutAttributes]()
 
@@ -48,8 +48,8 @@ class GroupCallVideoGridLayout: UICollectionViewLayout {
     override func prepare() {
         super.prepare()
 
-        guard let collectionView = collectionView else { return }
-        guard let delegate = delegate else { return }
+        guard let collectionView else { return }
+        guard let delegate else { return }
 
         let vInset: CGFloat = 6
         let hInset: CGFloat = 6
@@ -68,26 +68,26 @@ class GroupCallVideoGridLayout: UICollectionViewLayout {
         // expand across all columns.
 
         let possibleGrids = (1...maxColumns).reduce(
-            into: [(rows: Int, columns: Int)]()
+            into: [(rows: Int, columns: Int)](),
         ) { result, columns in
             let rows = Int(ceil(CGFloat(numberOfItems) / CGFloat(columns)))
             if let previousRows = result.last?.rows, previousRows == rows { return }
             result.append((rows, columns))
         }.filter { $0.columns <= maxColumns && $0.rows <= maxRows }
-        .sorted { lhs, rhs in
-            // We prefer to render square grids (e.g. 2x2, 3x3, etc.) but it's
-            // not always possible depending on how many items we have available.
-            // If a square aspect ratio is not possible, we'll defer to having more
-            // rows than columns.
-            let lhsDistanceFromSquare = CGFloat(lhs.rows) / CGFloat(lhs.columns) - 1
-            let rhsDistanceFromSquare = CGFloat(rhs.rows) / CGFloat(rhs.columns) - 1
+            .sorted { lhs, rhs in
+                // We prefer to render square grids (e.g. 2x2, 3x3, etc.) but it's
+                // not always possible depending on how many items we have available.
+                // If a square aspect ratio is not possible, we'll defer to having more
+                // rows than columns.
+                let lhsDistanceFromSquare = CGFloat(lhs.rows) / CGFloat(lhs.columns) - 1
+                let rhsDistanceFromSquare = CGFloat(rhs.rows) / CGFloat(rhs.columns) - 1
 
-            if lhsDistanceFromSquare >= 0 && rhsDistanceFromSquare >= 0 {
-                return lhsDistanceFromSquare < rhsDistanceFromSquare
-            } else {
-                return lhsDistanceFromSquare > rhsDistanceFromSquare
+                if lhsDistanceFromSquare >= 0, rhsDistanceFromSquare >= 0 {
+                    return lhsDistanceFromSquare < rhsDistanceFromSquare
+                } else {
+                    return lhsDistanceFromSquare > rhsDistanceFromSquare
+                }
             }
-        }
 
         guard let (numberOfRows, numberOfColumns) = possibleGrids.first else { return owsFailDebug("missing grid") }
 

@@ -19,18 +19,18 @@ public class SupportKeyValueStore {
 
     public func setLastChallengeDate(
         value: Date,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) {
         kvStore.setDate(
             value,
             key: StoreKeys.lastChallengeDateKey,
-            transaction: transaction
+            transaction: transaction,
         )
     }
 
     public func lastChallengeWithinTimeframe(
         transaction: DBReadTransaction,
-        lastChallengeFloor: Date
+        lastChallengeFloor: Date,
     ) -> Bool {
         return kvStore.getDate(StoreKeys.lastChallengeDateKey, transaction: transaction) ?? Date.distantPast > lastChallengeFloor
     }

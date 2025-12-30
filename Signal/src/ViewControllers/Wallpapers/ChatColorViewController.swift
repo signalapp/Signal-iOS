@@ -15,12 +15,12 @@ class ChatColorViewController: OWSTableViewController2 {
     private var chatColorPicker: ChatColorPicker?
     private var mockConversationView: MockConversationView?
 
-    public static func load(thread: TSThread?, tx: DBReadTransaction) -> ChatColorViewController {
+    static func load(thread: TSThread?, tx: DBReadTransaction) -> ChatColorViewController {
         let store = DependenciesBridge.shared.chatColorSettingStore
         return ChatColorViewController(
             thread: thread,
             initialSetting: store.chatColorSetting(for: thread, tx: tx),
-            initialResolvedValue: store.resolvedChatColor(for: thread, tx: tx)
+            initialResolvedValue: store.resolvedChatColor(for: thread, tx: tx),
         )
     }
 
@@ -35,19 +35,19 @@ class ChatColorViewController: OWSTableViewController2 {
             self,
             selector: #selector(wallpaperDidChange(notification:)),
             name: WallpaperStore.wallpaperDidChangeNotification,
-            object: nil
+            object: nil,
         )
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(chatColorsDidChange),
             name: ChatColorSettingStore.chatColorsDidChangeNotification,
-            object: nil
+            object: nil,
         )
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(themeDidChangeNotification),
             name: .themeDidChange,
-            object: nil
+            object: nil,
         )
     }
 
@@ -70,7 +70,7 @@ class ChatColorViewController: OWSTableViewController2 {
         currentResolvedValue = SSKEnvironment.shared.databaseStorageRef.read { tx in
             return DependenciesBridge.shared.chatColorSettingStore.resolvedChatColor(
                 for: thread,
-                tx: tx
+                tx: tx,
             )
         }
         updateTableContents()
@@ -81,7 +81,7 @@ class ChatColorViewController: OWSTableViewController2 {
         updateTableContents()
     }
 
-    public override func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
 
         title = OWSLocalizedString("CHAT_COLOR_SETTINGS_TITLE", comment: "Title for the chat color settings view.")
@@ -109,7 +109,7 @@ class ChatColorViewController: OWSTableViewController2 {
         let mockConversationView = MockConversationView(
             model: buildMockConversationModel(),
             hasWallpaper: hasWallpaper,
-            customChatColor: currentResolvedValue
+            customChatColor: currentResolvedValue,
         )
         mockConversationView.delegate = self
         self.mockConversationView = mockConversationView
@@ -140,7 +140,7 @@ class ChatColorViewController: OWSTableViewController2 {
         colorsSection.customHeaderHeight = 14
         colorsSection.add(OWSTableItem { [weak self] in
             let cell = OWSTableItem.newCell()
-            guard let self = self else { return cell }
+            guard let self else { return cell }
 
             cell.selectionStyle = .none
             let chatColorPicker = ChatColorPicker(chatColorViewController: self)
@@ -159,12 +159,12 @@ class ChatColorViewController: OWSTableViewController2 {
             .date,
             .incoming(text: OWSLocalizedString(
                 "CHAT_COLOR_INCOMING_MESSAGE",
-                comment: "The incoming bubble text when setting a chat color."
+                comment: "The incoming bubble text when setting a chat color.",
             )),
             .outgoing(text: OWSLocalizedString(
                 "CHAT_COLOR_OUTGOING_MESSAGE",
-                comment: "The outgoing bubble text when setting a chat color."
-            ))
+                comment: "The outgoing bubble text when setting a chat color.",
+            )),
         ])
     }
 
@@ -190,7 +190,7 @@ class ChatColorViewController: OWSTableViewController2 {
             thread: thread,
             valueMode: valueMode,
             completion: { [weak self] (newValue: CustomChatColor) in
-                guard let self = self else { return }
+                guard let self else { return }
                 let colorKey: CustomChatColor.Key
                 switch valueMode {
                 case .createNew:
@@ -202,11 +202,11 @@ class ChatColorViewController: OWSTableViewController2 {
                     DependenciesBridge.shared.chatColorSettingStore.upsertCustomValue(
                         newValue,
                         for: colorKey,
-                        tx: tx
+                        tx: tx,
                     )
                 }
                 self.setNewValue(.custom(colorKey, newValue))
-            }
+            },
         )
         self.navigationController?.pushViewController(viewController, animated: true)
     }
@@ -216,7 +216,7 @@ class ChatColorViewController: OWSTableViewController2 {
             SSKEnvironment.shared.databaseStorageRef.write { tx in
                 DependenciesBridge.shared.chatColorSettingStore.deleteCustomValue(
                     for: key,
-                    tx: tx
+                    tx: tx,
                 )
             }
         }
@@ -224,7 +224,7 @@ class ChatColorViewController: OWSTableViewController2 {
         let usageCount = SSKEnvironment.shared.databaseStorageRef.read { tx in
             return DependenciesBridge.shared.chatColorSettingStore.usageCount(
                 of: key,
-                tx: tx
+                tx: tx,
             )
         }
         guard usageCount > 0 else {
@@ -236,20 +236,20 @@ class ChatColorViewController: OWSTableViewController2 {
             OWSLocalizedString(
                 "CHAT_COLOR_SETTINGS_DELETE_ALERT_MESSAGE_%d",
                 tableName: "PluralAware",
-                comment: "Message for the 'delete chat color confirm alert' in the chat color settings view. Embeds: {{ the number of conversations that use this chat color }}."
+                comment: "Message for the 'delete chat color confirm alert' in the chat color settings view. Embeds: {{ the number of conversations that use this chat color }}.",
             ),
-            usageCount
+            usageCount,
         )
         let actionSheet = ActionSheetController(
             title: OWSLocalizedString(
                 "CHAT_COLOR_SETTINGS_DELETE_ALERT_TITLE",
-                comment: "Title for the 'delete chat color confirm alert' in the chat color settings view."
+                comment: "Title for the 'delete chat color confirm alert' in the chat color settings view.",
             ),
-            message: message
+            message: message,
         )
 
         actionSheet.addAction(ActionSheetAction(
-            title: CommonStrings.deleteButton
+            title: CommonStrings.deleteButton,
         ) { [weak self] _ in
             deleteValue()
             self?.updatePickerSelection()
@@ -262,13 +262,13 @@ class ChatColorViewController: OWSTableViewController2 {
     private func duplicateValue(_ oldValue: CustomChatColor) {
         let newValue = CustomChatColor(
             colorSetting: oldValue.colorSetting,
-            creationTimestamp: NSDate.ows_millisecondTimeStamp()
+            creationTimestamp: NSDate.ows_millisecondTimeStamp(),
         )
         SSKEnvironment.shared.databaseStorageRef.write { tx in
             DependenciesBridge.shared.chatColorSettingStore.upsertCustomValue(
                 newValue,
                 for: .generateRandom(),
-                tx: tx
+                tx: tx,
             )
         }
     }
@@ -302,21 +302,21 @@ class ChatColorViewController: OWSTableViewController2 {
             let actionSheet = ActionSheetController()
 
             let editAction = ActionSheetAction(
-                title: CommonStrings.editButton
+                title: CommonStrings.editButton,
             ) { [weak self] _ in
                 self?.showCustomColorView(valueMode: .editExisting(key: key, value: value))
             }
             actionSheet.addAction(editAction)
 
             let duplicateAction = ActionSheetAction(
-                title: OWSLocalizedString("BUTTON_DUPLICATE", comment: "Label for the 'duplicate' button.")
+                title: OWSLocalizedString("BUTTON_DUPLICATE", comment: "Label for the 'duplicate' button."),
             ) { [weak self] _ in
                 self?.duplicateValue(value)
             }
             actionSheet.addAction(duplicateAction)
 
             let deleteAction = ActionSheetAction(
-                title: CommonStrings.deleteButton
+                title: CommonStrings.deleteButton,
             ) { [weak self] _ in
                 self?.deleteCustomColor(key: key)
             }
@@ -332,7 +332,7 @@ class ChatColorViewController: OWSTableViewController2 {
             DependenciesBridge.shared.chatColorSettingStore.setChatColorSetting(
                 newValue,
                 for: thread,
-                tx: tx
+                tx: tx,
             )
         }
         currentSetting = newValue
@@ -377,24 +377,28 @@ private class ChatColorPicker: UIView {
     }
 
     private func configure(chatColorViewController: ChatColorViewController) {
-        let hStackConfig = CVStackViewConfig(axis: .horizontal,
-                                             alignment: .fill,
-                                             spacing: 0,
-                                             layoutMargins: .zero)
-        let vStackConfig = CVStackViewConfig(axis: .vertical,
-                                             alignment: .fill,
-                                             spacing: 28,
-                                             layoutMargins: .zero)
+        let hStackConfig = CVStackViewConfig(
+            axis: .horizontal,
+            alignment: .fill,
+            spacing: 0,
+            layoutMargins: .zero,
+        )
+        let vStackConfig = CVStackViewConfig(
+            axis: .vertical,
+            alignment: .fill,
+            spacing: 28,
+            layoutMargins: .zero,
+        )
 
         let rowWidth: CGFloat = max(
             0,
             chatColorViewController.view.width -
-            chatColorViewController.view.safeAreaInsets.totalWidth -
-            CGFloat(
-                OWSTableViewController2.cellHInnerMargin * 2 +
-                hStackConfig.layoutMargins.totalWidth +
-                vStackConfig.layoutMargins.totalWidth
-            )
+                chatColorViewController.view.safeAreaInsets.totalWidth -
+                CGFloat(
+                    OWSTableViewController2.cellHInnerMargin * 2 +
+                        hStackConfig.layoutMargins.totalWidth +
+                        vStackConfig.layoutMargins.totalWidth,
+                ),
         )
         let optionViewInnerSize: CGFloat = 56
         let optionViewSelectionThickness: CGFloat = 4
@@ -415,7 +419,7 @@ private class ChatColorPicker: UIView {
                         selectionViews: selectionViews,
                         optionViewInnerSize: optionViewInnerSize,
                         optionViewOuterSize: optionViewOuterSize,
-                        optionViewSelectionThickness: optionViewSelectionThickness
+                        optionViewSelectionThickness: optionViewSelectionThickness,
                     )
                     optionViews.append(optionView)
                 }
@@ -424,13 +428,15 @@ private class ChatColorPicker: UIView {
                 case .chatColor(.auto):
                     let value = DependenciesBridge.shared.chatColorSettingStore.autoChatColor(
                         for: chatColorViewController.thread,
-                        tx: transaction
+                        tx: transaction,
                     )
                     let view = ColorOrGradientSwatchView(setting: value, shapeMode: .circle)
 
                     let label = UILabel()
-                    label.text = OWSLocalizedString("CHAT_COLOR_SETTINGS_AUTO",
-                                                   comment: "Label for the 'automatic chat color' option in the chat color settings view.")
+                    label.text = OWSLocalizedString(
+                        "CHAT_COLOR_SETTINGS_AUTO",
+                        comment: "Label for the 'automatic chat color' option in the chat color settings view.",
+                    )
                     label.textColor = .ows_white
                     label.font = UIFont.systemFont(ofSize: 13)
                     label.adjustsFontSizeToFitWidth = true
@@ -449,7 +455,7 @@ private class ChatColorPicker: UIView {
                     view.addSubview(editIconView)
                     editIconView.autoSetDimensions(to: .square(24))
                     editIconView.autoCenterInSuperview()
-                    addOptionView(innerView: view, selectionViews: [ editIconView ])
+                    addOptionView(innerView: view, selectionViews: [editIconView])
                 case .addNewOption:
                     let view = OWSLayerView.circleView()
                     view.backgroundColor = Theme.washColor
@@ -468,8 +474,10 @@ private class ChatColorPicker: UIView {
         var hStacks = [UIView]()
         while !optionViews.isEmpty {
             var hStackViews = [UIView]()
-            while hStackViews.count < optionsPerRow,
-                  !optionViews.isEmpty {
+            while
+                hStackViews.count < optionsPerRow,
+                !optionViews.isEmpty
+            {
                 let optionView = optionViews.removeFirst()
                 hStackViews.append(optionView)
             }
@@ -503,6 +511,7 @@ private class ChatColorPicker: UIView {
                 ensureSelectionViews()
             }
         }
+
         let optionViewInnerSize: CGFloat
         let optionViewOuterSize: CGFloat
         let optionViewSelectionThickness: CGFloat
@@ -515,7 +524,7 @@ private class ChatColorPicker: UIView {
             selectionViews: [UIView],
             optionViewInnerSize: CGFloat,
             optionViewOuterSize: CGFloat,
-            optionViewSelectionThickness: CGFloat
+            optionViewSelectionThickness: CGFloat,
         ) {
             self.option = option
             self.optionViewInnerSize = optionViewInnerSize
@@ -527,7 +536,7 @@ private class ChatColorPicker: UIView {
             configure(
                 chatColorViewController: chatColorViewController,
                 innerView: innerView,
-                selectionViews: selectionViews
+                selectionViews: selectionViews,
             )
         }
 
@@ -538,7 +547,7 @@ private class ChatColorPicker: UIView {
         private func configure(
             chatColorViewController: ChatColorViewController,
             innerView: UIView,
-            selectionViews: [UIView]
+            selectionViews: [UIView],
         ) {
             let option = self.option
 
@@ -605,14 +614,16 @@ private class ChatColorPicker: UIView {
         if self.chatColorTooltip != nil {
             hideTooltip()
         } else {
-            guard let autoOptionView = autoOptionView else {
+            guard let autoOptionView else {
                 owsFailDebug("Missing autoOptionView.")
                 hideTooltip()
                 return
             }
-            self.chatColorTooltip = ChatColorTooltip.present(fromView: self,
-                                                             widthReferenceView: self,
-                                                             tailReferenceView: autoOptionView) { [weak self] in
+            self.chatColorTooltip = ChatColorTooltip.present(
+                fromView: self,
+                widthReferenceView: self,
+                tailReferenceView: autoOptionView,
+            ) { [weak self] in
                 self?.dismissTooltip()
             }
         }
@@ -632,14 +643,18 @@ private class ChatColorPicker: UIView {
 
 private class ChatColorTooltip: TooltipView {
 
-    private override init(fromView: UIView,
-                          widthReferenceView: UIView,
-                          tailReferenceView: UIView,
-                          wasTappedBlock: (() -> Void)?) {
-        super.init(fromView: fromView,
-                   widthReferenceView: widthReferenceView,
-                   tailReferenceView: tailReferenceView,
-                   wasTappedBlock: wasTappedBlock)
+    override private init(
+        fromView: UIView,
+        widthReferenceView: UIView,
+        tailReferenceView: UIView,
+        wasTappedBlock: (() -> Void)?,
+    ) {
+        super.init(
+            fromView: fromView,
+            widthReferenceView: widthReferenceView,
+            tailReferenceView: tailReferenceView,
+            wasTappedBlock: wasTappedBlock,
+        )
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -647,20 +662,26 @@ private class ChatColorTooltip: TooltipView {
     }
 
     @objc
-    public class func present(fromView: UIView,
-                              widthReferenceView: UIView,
-                              tailReferenceView: UIView,
-                              wasTappedBlock: (() -> Void)?) -> ChatColorTooltip {
-        ChatColorTooltip(fromView: fromView,
-                         widthReferenceView: widthReferenceView,
-                         tailReferenceView: tailReferenceView,
-                         wasTappedBlock: wasTappedBlock)
+    class func present(
+        fromView: UIView,
+        widthReferenceView: UIView,
+        tailReferenceView: UIView,
+        wasTappedBlock: (() -> Void)?,
+    ) -> ChatColorTooltip {
+        ChatColorTooltip(
+            fromView: fromView,
+            widthReferenceView: widthReferenceView,
+            tailReferenceView: tailReferenceView,
+            wasTappedBlock: wasTappedBlock,
+        )
     }
 
-    public override func bubbleContentView() -> UIView {
+    override func bubbleContentView() -> UIView {
         let label = UILabel()
-        label.text = OWSLocalizedString("CHAT_COLORS_AUTO_TOOLTIP",
-                                       comment: "Tooltip highlighting the auto chat color option.")
+        label.text = OWSLocalizedString(
+            "CHAT_COLORS_AUTO_TOOLTIP",
+            comment: "Tooltip highlighting the auto chat color option.",
+        )
         label.font = .dynamicTypeSubheadline
         label.textColor = .ows_white
         label.numberOfLines = 0
@@ -668,19 +689,19 @@ private class ChatColorTooltip: TooltipView {
         return horizontalStack(forSubviews: [label])
     }
 
-    public override var bubbleColor: UIColor {
+    override var bubbleColor: UIColor {
         .ows_accentBlue
     }
 
-    public override var tailDirection: TooltipView.TailDirection {
+    override var tailDirection: TooltipView.TailDirection {
         .up
     }
 
-    public override var bubbleInsets: UIEdgeInsets {
+    override var bubbleInsets: UIEdgeInsets {
         UIEdgeInsets(hMargin: 12, vMargin: 7)
     }
 
-    public override var bubbleHSpacing: CGFloat {
+    override var bubbleHSpacing: CGFloat {
         10
     }
 }

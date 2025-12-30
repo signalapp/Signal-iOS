@@ -16,7 +16,7 @@ public class ContextMenuReactionBarAccessory: ContextMenuTargetedPreviewAccessor
 
     public init(
         thread: TSThread,
-        itemViewModel: CVItemViewModelImpl?
+        itemViewModel: CVItemViewModelImpl?,
     ) {
         self.thread = thread
         self.itemViewModel = itemViewModel
@@ -24,7 +24,7 @@ public class ContextMenuReactionBarAccessory: ContextMenuTargetedPreviewAccessor
         reactionPicker = MessageReactionPicker(
             selectedEmoji: itemViewModel?.reactionState?.localUserEmoji,
             delegate: nil,
-            style: .contextMenu(allowGlass: true)
+            style: .contextMenu(allowGlass: true),
         )
         let isRTL = CurrentAppContext().isRTL
         let isIncomingMessage = itemViewModel?.interaction.interactionType == .incomingMessage
@@ -48,7 +48,7 @@ public class ContextMenuReactionBarAccessory: ContextMenuTargetedPreviewAccessor
     override func animateIn(
         duration: TimeInterval,
         previewWillShift: Bool,
-        completion: @escaping () -> Void
+        completion: @escaping () -> Void,
     ) {
         let animateIn = {
             self.reactionPicker.isHidden = false
@@ -67,7 +67,7 @@ public class ContextMenuReactionBarAccessory: ContextMenuTargetedPreviewAccessor
     override func animateOut(
         duration: TimeInterval,
         previewWillShift: Bool,
-        completion: @escaping () -> Void
+        completion: @escaping () -> Void,
     ) {
         reactionPicker.playDismissalAnimation(duration: duration, completion: completion)
     }
@@ -96,7 +96,7 @@ public class ContextMenuReactionBarAccessory: ContextMenuTargetedPreviewAccessor
             case .emoji(let emoji):
                 let isRemoving = emoji == self.itemViewModel?.reactionState?.localUserEmoji
                 if let index = reactionPicker.currentEmojiSet().firstIndex(of: emoji) {
-                    didSelectReaction(reaction: emoji, isRemoving: isRemoving, inPosition: index )
+                    didSelectReaction(reaction: emoji, isRemoving: isRemoving, inPosition: index)
                 }
             }
             return true
@@ -106,10 +106,11 @@ public class ContextMenuReactionBarAccessory: ContextMenuTargetedPreviewAccessor
     }
 
     // MARK: MessageReactionPickerDelegate
+
     func didSelectReaction(
         reaction: String,
         isRemoving: Bool,
-        inPosition position: Int
+        inPosition position: Int,
     ) {
         guard let message = itemViewModel?.interaction as? TSMessage else {
             owsFailDebug("Not sending reaction for unexpected interaction type")

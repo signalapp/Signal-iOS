@@ -16,13 +16,13 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
             self,
             selector: #selector(wallpaperDidChange(notification:)),
             name: WallpaperStore.wallpaperDidChangeNotification,
-            object: nil
+            object: nil,
         )
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(chatColorsDidChange),
             name: ChatColorSettingStore.chatColorsDidChangeNotification,
-            object: nil
+            object: nil,
         )
     }
 
@@ -55,7 +55,7 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
         updateTableContents()
     }
 
-    public override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
 
         title = OWSLocalizedString("COLOR_AND_WALLPAPER_SETTINGS_TITLE", comment: "Title for the color & wallpaper settings view.")
@@ -73,7 +73,7 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
         let previewItem = OWSTableItem { [weak self] in
             let cell = OWSTableItem.newCell()
             cell.selectionStyle = .none
-            guard let self = self else { return cell }
+            guard let self else { return cell }
             let miniPreview = MiniPreviewView(wallpaperViewBuilder: self.wallpaperViewBuilder, chatColor: self.chatColor)
             cell.contentView.addSubview(miniPreview)
             miniPreview.autoPinEdgesToSuperviewEdges()
@@ -92,13 +92,15 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
             defaultColorView.setContentHuggingHigh()
             defaultColorView.setCompressionResistanceHigh()
             chatColorSection.add(.item(
-                name: OWSLocalizedString("WALLPAPER_SETTINGS_SET_CHAT_COLOR",
-                                        comment: "Set chat color action in color and wallpaper settings view."),
+                name: OWSLocalizedString(
+                    "WALLPAPER_SETTINGS_SET_CHAT_COLOR",
+                    comment: "Set chat color action in color and wallpaper settings view.",
+                ),
                 accessoryType: .disclosureIndicator,
                 accessoryContentView: defaultColorView,
-                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "set_chat_color")
+                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "set_chat_color"),
             ) { [weak self] in
-                guard let self = self else { return }
+                guard let self else { return }
                 let viewController = SSKEnvironment.shared.databaseStorageRef.read { tx in
                     ChatColorViewController.load(thread: self.thread, tx: tx)
                 }
@@ -109,10 +111,10 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
                 chatColorSection.add(.item(
                     name: OWSLocalizedString(
                         "WALLPAPER_SETTINGS_RESET_CONVERSATION_CHAT_COLOR",
-                        comment: "Reset conversation chat color action in wallpaper settings view."
+                        comment: "Reset conversation chat color action in wallpaper settings view.",
                     ),
                     textColor: .Signal.red,
-                    accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "reset_chat_color")
+                    accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "reset_chat_color"),
                 ) { [weak self] in
                     self?.didPressResetConversationChatColor()
                 })
@@ -120,10 +122,10 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
                 chatColorSection.add(.item(
                     name: OWSLocalizedString(
                         "WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLORS",
-                        comment: "Reset global chat colors action in wallpaper settings view."
+                        comment: "Reset global chat colors action in wallpaper settings view.",
                     ),
                     textColor: .Signal.red,
-                    accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "reset_chat_colors")
+                    accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "reset_chat_colors"),
                 ) { [weak self] in
                     self?.didPressResetGlobalChatColors()
                 })
@@ -138,10 +140,10 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
         wallpaperSection.add(OWSTableItem.disclosureItem(
             withText: OWSLocalizedString(
                 "WALLPAPER_SETTINGS_SET_WALLPAPER",
-                comment: "Set wallpaper action in wallpaper settings view."
-            )
+                comment: "Set wallpaper action in wallpaper settings view.",
+            ),
         ) { [weak self] in
-            guard let self = self else { return }
+            guard let self else { return }
             let viewController = SSKEnvironment.shared.databaseStorageRef.read { tx in
                 SetWallpaperViewController.load(thread: self.thread, tx: tx)
             }
@@ -149,14 +151,16 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
         })
 
         wallpaperSection.add(OWSTableItem.switch(
-            withText: OWSLocalizedString("WALLPAPER_SETTINGS_DIM_WALLPAPER",
-                                        comment: "Dim wallpaper action in wallpaper settings view."),
+            withText: OWSLocalizedString(
+                "WALLPAPER_SETTINGS_DIM_WALLPAPER",
+                comment: "Dim wallpaper action in wallpaper settings view.",
+            ),
             accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "dim_wallpaper"),
             isOn: { () -> Bool in
                 SSKEnvironment.shared.databaseStorageRef.read {
                     return DependenciesBridge.shared.wallpaperStore.fetchDimInDarkModeForRendering(
                         for: self.thread?.uniqueId,
-                        tx: $0
+                        tx: $0,
                     )
                 }
             },
@@ -164,22 +168,22 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
                 SSKEnvironment.shared.databaseStorageRef.read {
                     DependenciesBridge.shared.wallpaperStore.fetchWallpaperForRendering(
                         for: self.thread?.uniqueId,
-                        tx: $0
+                        tx: $0,
                     ) != nil
                 }
             },
             target: self,
-            selector: #selector(updateWallpaperDimming)
+            selector: #selector(updateWallpaperDimming),
         ))
 
         if nil != thread {
             wallpaperSection.add(.item(
                 name: OWSLocalizedString(
                     "WALLPAPER_SETTINGS_RESET_CONVERSATION_WALLPAPER",
-                    comment: "Reset conversation wallpaper action in wallpaper settings view."
+                    comment: "Reset conversation wallpaper action in wallpaper settings view.",
                 ),
                 textColor: .Signal.red,
-                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "reset_wallpaper")
+                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "reset_wallpaper"),
             ) { [weak self] in
                 self?.didPressResetConversationWallpaper()
             })
@@ -187,10 +191,10 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
             wallpaperSection.add(.item(
                 name: OWSLocalizedString(
                     "WALLPAPER_SETTINGS_RESET_GLOBAL_WALLPAPER",
-                    comment: "Reset wallpapers action in wallpaper settings view."
+                    comment: "Reset wallpapers action in wallpaper settings view.",
                 ),
                 textColor: .Signal.red,
-                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "reset_wallpapers")
+                accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "reset_wallpapers"),
             ) { [weak self] in
                 self?.didPressResetGlobalWallpapers()
             })
@@ -215,13 +219,15 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
         owsAssertDebug(thread != nil)
 
         OWSActionSheets.showConfirmationAlert(
-            title: OWSLocalizedString("WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION",
-                                     comment: "Confirmation dialog when clearing the wallpaper for a specific chat."),
+            title: OWSLocalizedString(
+                "WALLPAPER_SETTINGS_CLEAR_WALLPAPER_CHAT_CONFIRMATION",
+                comment: "Confirmation dialog when clearing the wallpaper for a specific chat.",
+            ),
             proceedTitle: OWSLocalizedString(
                 "WALLPAPER_SETTINGS_CLEAR_WALLPAPER",
-                comment: "Clear wallpaper action in wallpaper settings view."
+                comment: "Clear wallpaper action in wallpaper settings view.",
             ),
-            proceedStyle: .destructive
+            proceedStyle: .destructive,
         ) { _ in
             self.resetWallpaper()
         }
@@ -229,23 +235,31 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
 
     func didPressResetGlobalWallpapers() {
         let actionSheet = ActionSheetController(
-            title: OWSLocalizedString("WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_TITLE",
-                                     comment: "Title of confirmation dialog when resetting the global wallpaper settings."),
-            message: OWSLocalizedString("WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_MESSAGE",
-                                       comment: "Message of confirmation dialog when resetting the global wallpaper settings.")
+            title: OWSLocalizedString(
+                "WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_TITLE",
+                comment: "Title of confirmation dialog when resetting the global wallpaper settings.",
+            ),
+            message: OWSLocalizedString(
+                "WALLPAPER_SETTINGS_RESET_WALLPAPERS_CONFIRMATION_MESSAGE",
+                comment: "Message of confirmation dialog when resetting the global wallpaper settings.",
+            ),
         )
 
         actionSheet.addAction(ActionSheetAction(
-            title: OWSLocalizedString("WALLPAPER_SETTINGS_RESET_DEFAULT_WALLPAPER",
-                                     comment: "Label for 'reset default wallpaper' action in the global wallpaper settings.")) { [weak self] _ in
-            self?.resetWallpaper()
-        })
+            title: OWSLocalizedString(
+                "WALLPAPER_SETTINGS_RESET_DEFAULT_WALLPAPER",
+                comment: "Label for 'reset default wallpaper' action in the global wallpaper settings.",
+            )) { [weak self] _ in
+                self?.resetWallpaper()
+            })
 
         actionSheet.addAction(ActionSheetAction(
-            title: OWSLocalizedString("WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS",
-                                     comment: "Label for 'reset all wallpapers' action in the global wallpaper settings.")) { [weak self] _ in
-            self?.resetAllWallpapers()
-        })
+            title: OWSLocalizedString(
+                "WALLPAPER_SETTINGS_RESET_ALL_WALLPAPERS",
+                comment: "Label for 'reset all wallpapers' action in the global wallpaper settings.",
+            )) { [weak self] _ in
+                self?.resetAllWallpapers()
+            })
 
         actionSheet.addAction(OWSActionSheets.cancelAction)
 
@@ -270,8 +284,10 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
                 owsFailDebug("Failed to clear wallpaper with error: \(error)")
                 await MainActor.run {
                     OWSActionSheets.showErrorAlert(
-                        message: OWSLocalizedString("WALLPAPER_SETTINGS_FAILED_TO_CLEAR",
-                                                   comment: "An error indicating to the user that we failed to clear the wallpaper.")
+                        message: OWSLocalizedString(
+                            "WALLPAPER_SETTINGS_FAILED_TO_CLEAR",
+                            comment: "An error indicating to the user that we failed to clear the wallpaper.",
+                        ),
                     )
                 }
             }
@@ -291,8 +307,10 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
                 owsFailDebug("Failed to reset all wallpapers with error: \(error)")
                 DispatchQueue.main.async {
                     OWSActionSheets.showErrorAlert(
-                        message: OWSLocalizedString("WALLPAPER_SETTINGS_FAILED_TO_RESET",
-                                                   comment: "An error indicating to the user that we failed to reset all wallpapers.")
+                        message: OWSLocalizedString(
+                            "WALLPAPER_SETTINGS_FAILED_TO_RESET",
+                            comment: "An error indicating to the user that we failed to reset all wallpapers.",
+                        ),
                     )
                 }
             }
@@ -310,13 +328,15 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
         owsAssertDebug(thread != nil)
 
         OWSActionSheets.showConfirmationAlert(
-            title: OWSLocalizedString("WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR_CHAT_CONFIRMATION",
-                                     comment: "Confirmation dialog when clearing the chat color for a specific chat."),
+            title: OWSLocalizedString(
+                "WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR_CHAT_CONFIRMATION",
+                comment: "Confirmation dialog when clearing the chat color for a specific chat.",
+            ),
             proceedTitle: OWSLocalizedString(
                 "WALLPAPER_SETTINGS_CLEAR_CHAT_COLOR",
-                comment: "Clear chat color action in wallpaper settings view."
+                comment: "Clear chat color action in wallpaper settings view.",
             ),
-            proceedStyle: .destructive
+            proceedStyle: .destructive,
         ) { _ in
             self.resetChatColor()
         }
@@ -324,23 +344,31 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
 
     func didPressResetGlobalChatColors() {
         let actionSheet = ActionSheetController(
-            title: OWSLocalizedString("WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE",
-                                     comment: "Title of confirmation dialog when resetting the global wallpaper settings."),
-            message: OWSLocalizedString("WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE",
-                                       comment: "Message of confirmation dialog when resetting the global wallpaper settings.")
+            title: OWSLocalizedString(
+                "WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_TITLE",
+                comment: "Title of confirmation dialog when resetting the global wallpaper settings.",
+            ),
+            message: OWSLocalizedString(
+                "WALLPAPER_SETTINGS_RESET_CHAT_COLORS_CONFIRMATION_MESSAGE",
+                comment: "Message of confirmation dialog when resetting the global wallpaper settings.",
+            ),
         )
 
         actionSheet.addAction(ActionSheetAction(
-            title: OWSLocalizedString("WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLOR",
-                                     comment: "Label for 'reset default chat color' action in the global wallpaper settings.")) { [weak self] _ in
-            self?.resetChatColor()
-        })
+            title: OWSLocalizedString(
+                "WALLPAPER_SETTINGS_RESET_DEFAULT_CHAT_COLOR",
+                comment: "Label for 'reset default chat color' action in the global wallpaper settings.",
+            )) { [weak self] _ in
+                self?.resetChatColor()
+            })
 
         actionSheet.addAction(ActionSheetAction(
-            title: OWSLocalizedString("WALLPAPER_SETTINGS_RESET_ALL_CHAT_COLORS",
-                                     comment: "Label for 'reset all chat colors' action in the global wallpaper settings.")) { [weak self] _ in
-            self?.resetAllChatColors()
-        })
+            title: OWSLocalizedString(
+                "WALLPAPER_SETTINGS_RESET_ALL_CHAT_COLORS",
+                comment: "Label for 'reset all chat colors' action in the global wallpaper settings.",
+            )) { [weak self] _ in
+                self?.resetAllChatColors()
+            })
 
         actionSheet.addAction(OWSActionSheets.cancelAction)
 
@@ -352,7 +380,7 @@ public class ColorAndWallpaperSettingsViewController: OWSTableViewController2 {
             DependenciesBridge.shared.chatColorSettingStore.setChatColorSetting(
                 .auto,
                 for: thread,
-                tx: tx
+                tx: tx,
             )
         }
     }
@@ -394,14 +422,14 @@ private class MiniPreviewView: UIView {
 
         let windowAspectRatio = CGSize(
             width: CurrentAppContext().frame.size.smallerAxis,
-            height: CurrentAppContext().frame.size.largerAxis
+            height: CurrentAppContext().frame.size.largerAxis,
         ).aspectRatio
 
         stackViewContainer.autoSetDimensions(
             to: CGSize(
                 width: 156,
-                height: 156 / windowAspectRatio
-            )
+                height: 156 / windowAspectRatio,
+            ),
         )
 
         addSubview(stackViewContainer)
@@ -418,8 +446,8 @@ private class MiniPreviewView: UIView {
                 .spacer(withHeight: 6),
                 buildOutgoingBubble(),
                 .vStretchingSpacer(),
-                buildComposerPreview()
-            ]
+                buildComposerPreview(),
+            ],
         )
         stackView.axis = .vertical
 
@@ -443,8 +471,10 @@ private class MiniPreviewView: UIView {
         let bubbleView = UIView()
         bubbleView.layer.cornerRadius = 10
         bubbleView.autoSetDimensions(to: CGSize(width: 100, height: 30))
-        bubbleView.backgroundColor = ConversationStyle.bubbleColorIncoming(hasWallpaper: hasWallpaper,
-                                                                           isDarkThemeEnabled: Theme.isDarkThemeEnabled)
+        bubbleView.backgroundColor = ConversationStyle.bubbleColorIncoming(
+            hasWallpaper: hasWallpaper,
+            isDarkThemeEnabled: Theme.isDarkThemeEnabled,
+        )
         containerView.addSubview(bubbleView)
         bubbleView.autoPinEdge(toSuperviewEdge: .leading, withInset: 8)
         bubbleView.autoPinHeightToSuperview()
@@ -502,7 +532,7 @@ private class MiniPreviewView: UIView {
         contactNameLabel.textColor = Theme.primaryTextColor
         contactNameLabel.text = OWSLocalizedString(
             "WALLPAPER_MINI_PREVIEW_CONTACT_NAME",
-            comment: "Placeholder text for header of the wallpaper mini preview"
+            comment: "Placeholder text for header of the wallpaper mini preview",
         )
         hStackView.addArrangedSubview(contactNameLabel)
 

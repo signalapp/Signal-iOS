@@ -41,7 +41,7 @@ public class ContactShareDraft {
         profileManager: any ProfileManager,
         recipientManager: any SignalRecipientManager,
         tsAccountManager: any TSAccountManager,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> ContactShareDraft {
         let avatarData = loadAvatarData(
             cnContact: cnContact,
@@ -51,7 +51,7 @@ public class ContactShareDraft {
             profileManager: profileManager,
             recipientManager: recipientManager,
             tsAccountManager: tsAccountManager,
-            tx: tx
+            tx: tx,
         )
         return ContactShareDraft(
             name: OWSContactName(cnContact: cnContact),
@@ -59,7 +59,7 @@ public class ContactShareDraft {
             emails: cnContact.emailAddresses.map(OWSContactEmail.init(cnLabeledValue:)),
             phoneNumbers: cnContact.phoneNumbers.map(OWSContactPhoneNumber.init(cnLabeledValue:)),
             existingAvatarAttachment: nil,
-            avatarImageData: avatarData
+            avatarImageData: avatarData,
         )
     }
 
@@ -71,7 +71,7 @@ public class ContactShareDraft {
         profileManager: any ProfileManager,
         recipientManager: any SignalRecipientManager,
         tsAccountManager: any TSAccountManager,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> Data? {
         if let systemAvatarImageData = contactManager.avatarData(for: cnContact) {
             return systemAvatarImageData
@@ -81,7 +81,7 @@ public class ContactShareDraft {
         let canonicalPhoneNumbers = FetchedSystemContacts.parsePhoneNumbers(
             for: signalContact(),
             phoneNumberUtil: phoneNumberUtil,
-            localPhoneNumber: E164(localPhoneNumber).map(CanonicalPhoneNumber.init(nonCanonicalPhoneNumber:))
+            localPhoneNumber: E164(localPhoneNumber).map(CanonicalPhoneNumber.init(nonCanonicalPhoneNumber:)),
         )
         for canonicalPhoneNumber in canonicalPhoneNumbers {
             for phoneNumber in [canonicalPhoneNumber.rawValue] + canonicalPhoneNumber.alternatePhoneNumbers() {
@@ -104,7 +104,7 @@ public class ContactShareDraft {
         emails: [OWSContactEmail],
         phoneNumbers: [OWSContactPhoneNumber],
         existingAvatarAttachment: ReferencedAttachment?,
-        avatarImageData: Data?
+        avatarImageData: Data?,
     ) {
         self.name = name
         self.addresses = addresses
@@ -122,7 +122,7 @@ public class ContactShareDraft {
             emails: [],
             phoneNumbers: [],
             existingAvatarAttachment: nil,
-            avatarImageData: nil
+            avatarImageData: nil,
         )
     }
 
@@ -137,7 +137,7 @@ public class ContactShareDraft {
             name: name,
             phoneNumbers: phoneNumbers,
             emails: emails,
-            addresses: addresses
+            addresses: addresses,
         )
     }
 

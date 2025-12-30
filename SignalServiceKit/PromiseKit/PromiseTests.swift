@@ -4,8 +4,8 @@
 //
 
 import Foundation
-import XCTest
 import SignalServiceKit
+import XCTest
 
 class PromiseTests: XCTestCase {
     func test_simpleQueueChaining() {
@@ -136,7 +136,7 @@ class PromiseTests: XCTestCase {
 
         Promise.when(fulfilled: [
             firstly(on: DispatchQueue.global()) { "abc" },
-            firstly(on: DispatchQueue.main) { "xyz" }.map { $0 + "abc" }
+            firstly(on: DispatchQueue.main) { "xyz" }.map { $0 + "abc" },
         ]).done {
             when1.fulfill()
         }.catch { _ in
@@ -145,7 +145,7 @@ class PromiseTests: XCTestCase {
 
         Promise.when(fulfilled: [
             firstly(on: DispatchQueue.global()) { "abc" },
-            firstly(on: DispatchQueue.main) { "xyz" }.map { _ in throw OWSGenericError("an error") }
+            firstly(on: DispatchQueue.main) { "xyz" }.map { _ in throw OWSGenericError("an error") },
         ]).done {
             XCTAssert(false, "Done should never be called.")
         }.catch { _ in
@@ -170,7 +170,7 @@ class PromiseTests: XCTestCase {
                 sleep(2)
                 chainOneCounter += 1
                 return "abc"
-            }
+            },
         ]).done { _ in
             XCTAssertEqual(chainOneCounter, 2)
             when1.fulfill()
@@ -187,7 +187,7 @@ class PromiseTests: XCTestCase {
                 sleep(2)
                 chainTwoCounter += 1
                 return "abc"
-            }
+            },
         ]).done {
             XCTAssert(false, "Done should never be called.")
         }.catch { _ in
@@ -218,7 +218,7 @@ class PromiseTests: XCTestCase {
             return "default"
         }.timeout(
             seconds: 1,
-            substituteValue: "substitute"
+            substituteValue: "substitute",
         ).done { result in
             XCTAssertEqual(result, "substitute")
             expectTimeout.fulfill()
@@ -231,7 +231,7 @@ class PromiseTests: XCTestCase {
             return "default"
         }.timeout(
             seconds: 3,
-            substituteValue: "substitute"
+            substituteValue: "substitute",
         ).done { result in
             XCTAssertEqual(result, "default")
             expectNoTimeout.fulfill()
@@ -268,7 +268,7 @@ class PromiseTests: XCTestCase {
             switch promise.result {
             case .success(let resultValue):
                 XCTAssertEqual(resultValue, argValue)
-            case .failure(_):
+            case .failure:
                 XCTFail("unexpected failure")
             case nil:
                 XCTFail("how did done() get called without the promise being sealed?")

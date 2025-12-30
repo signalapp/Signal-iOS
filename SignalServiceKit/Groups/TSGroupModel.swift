@@ -26,7 +26,7 @@ public final class TSGroupModelV2: TSGroupModel {
         super.init(coder: coder)
     }
 
-    public override func encode(with coder: NSCoder) {
+    override public func encode(with coder: NSCoder) {
         super.encode(with: coder)
         coder.encode(self.access, forKey: "access")
         coder.encode(NSNumber(value: self.avatarDataFailedToFetchFromCDN), forKey: "avatarDataFailedToFetchFromCDN")
@@ -49,7 +49,7 @@ public final class TSGroupModelV2: TSGroupModel {
         coder.encode(NSNumber(value: self.wasJustMigrated), forKey: "wasJustMigrated")
     }
 
-    public override var hash: Int {
+    override public var hash: Int {
         var hasher = Hasher()
         hasher.combine(super.hash)
         hasher.combine(access)
@@ -68,7 +68,7 @@ public final class TSGroupModelV2: TSGroupModel {
         return hasher.finalize()
     }
 
-    public override func isEqual(_ object: Any?) -> Bool {
+    override public func isEqual(_ object: Any?) -> Bool {
         guard let object = object as? Self else { return false }
         guard super.isEqual(object) else { return false }
         guard self.access == object.access else { return false }
@@ -87,7 +87,7 @@ public final class TSGroupModelV2: TSGroupModel {
         return true
     }
 
-    public override func copy(with zone: NSZone? = nil) -> Any {
+    override public func copy(with zone: NSZone? = nil) -> Any {
         let result = super.copy(with: zone) as! Self
         result.access = self.access
         result.avatarDataFailedToFetchFromCDN = self.avatarDataFailedToFetchFromCDN
@@ -139,7 +139,7 @@ public final class TSGroupModelV2: TSGroupModel {
         isJoinRequestPlaceholder: Bool,
         wasJustMigrated: Bool,
         didJustAddSelfViaGroupLink: Bool,
-        addedByAddress: SignalServiceAddress?
+        addedByAddress: SignalServiceAddress?,
     ) {
         self.descriptionText = descriptionText
         self.membership = groupMembership
@@ -172,7 +172,7 @@ public final class TSGroupModelV2: TSGroupModel {
             name: name,
             avatarData: avatarData,
             members: [],
-            addedBy: addedByAddress
+            addedBy: addedByAddress,
         )
     }
 
@@ -210,22 +210,22 @@ public final class TSGroupModelV2: TSGroupModel {
     // MARK: -
 
     @objc
-    public override var groupsVersion: GroupsVersion {
+    override public var groupsVersion: GroupsVersion {
         return .V2
     }
 
     @objc
-    public override var groupMembership: GroupMembership {
+    override public var groupMembership: GroupMembership {
         return membership
     }
 
     @objc
-    public override var groupMembers: [SignalServiceAddress] {
+    override public var groupMembers: [SignalServiceAddress] {
         return Array(groupMembership.fullMembers)
     }
 
     public func hasUserFacingChangeCompared(
-        to otherGroupModel: TSGroupModelV2
+        to otherGroupModel: TSGroupModelV2,
     ) -> Bool {
         if self === otherGroupModel {
             return false
@@ -261,7 +261,7 @@ public final class TSGroupModelV2: TSGroupModel {
     }
 
     @objc
-    public override var debugDescription: String {
+    override public var debugDescription: String {
         var result = "["
         result += "groupId: \(groupId.hexadecimalString),\n"
         result += "groupsVersion: \(groupsVersion),\n"
@@ -287,8 +287,10 @@ public final class TSGroupModelV2: TSGroupModel {
 
     @objc
     public var groupInviteLinkMode: GroupsV2LinkMode {
-        guard let inviteLinkPassword = inviteLinkPassword,
-              !inviteLinkPassword.isEmpty else {
+        guard
+            let inviteLinkPassword,
+            !inviteLinkPassword.isEmpty
+        else {
             return .disabled
         }
 
@@ -304,9 +306,11 @@ public final class TSGroupModelV2: TSGroupModel {
 
     @objc
     public var isGroupInviteLinkEnabled: Bool {
-        if let inviteLinkPassword = inviteLinkPassword,
-           !inviteLinkPassword.isEmpty,
-           access.canJoinFromInviteLink {
+        if
+            let inviteLinkPassword,
+            !inviteLinkPassword.isEmpty,
+            access.canJoinFromInviteLink
+        {
             return true
         }
         return false
@@ -387,10 +391,10 @@ extension TSGroupModel {
         guard let metadata = DataImageSource(imageData).imageMetadata() else {
             return false
         }
-        return (
+        return
             metadata.pixelSize.height <= CGFloat(kMaxAvatarDimension)
-            && metadata.pixelSize.width <= CGFloat(kMaxAvatarDimension)
-        )
+                && metadata.pixelSize.width <= CGFloat(kMaxAvatarDimension)
+
     }
 
     public static func dataForGroupAvatar(_ image: UIImage) -> Data? {
@@ -510,7 +514,7 @@ extension TSGroupModel {
     public static let avatarsDirectory = URL(
         fileURLWithPath: "GroupAvatars",
         isDirectory: true,
-        relativeTo: URL(fileURLWithPath: OWSFileSystem.appSharedDataDirectoryPath())
+        relativeTo: URL(fileURLWithPath: OWSFileSystem.appSharedDataDirectoryPath()),
     )
 
     public static func hash(forAvatarData avatarData: Data) throws -> String {
@@ -520,7 +524,7 @@ extension TSGroupModel {
     public static func allGroupAvatarFilePaths(transaction: DBReadTransaction) throws -> Set<String> {
         let cursor = TSThread.grdbFetchCursor(
             sql: "SELECT * FROM \(ThreadRecord.databaseTableName) WHERE \(threadColumn: .recordType) = \(SDSRecordType.groupThread.rawValue)",
-            transaction: transaction
+            transaction: transaction,
         )
 
         var filePaths = Set<String>()

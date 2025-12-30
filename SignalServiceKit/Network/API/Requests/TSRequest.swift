@@ -27,13 +27,13 @@ public struct TSRequest: CustomDebugStringConvertible {
         url: URL,
         method: String = "GET",
         parameters: [String: Any]? = [:],
-        logger: PrefixedLogger? = nil
+        logger: PrefixedLogger? = nil,
     ) {
         self.init(
             url: url,
             method: method,
             body: .parameters(parameters ?? [:]),
-            logger: logger
+            logger: logger,
         )
     }
 
@@ -41,7 +41,7 @@ public struct TSRequest: CustomDebugStringConvertible {
         url: URL,
         method: String,
         body: Body,
-        logger: PrefixedLogger? = nil
+        logger: PrefixedLogger? = nil,
     ) {
         owsAssertDebug(method.isEmpty.negated)
 
@@ -196,14 +196,14 @@ public struct TSRequest: CustomDebugStringConvertible {
         return result
     }
 
-    #if TESTABLE_BUILD
+#if TESTABLE_BUILD
     var parameters: [String: Any] {
         switch body {
-        case .data(_):
+        case .data:
             fatalError()
         case .parameters(let bodyParameters):
             return bodyParameters
         }
     }
-    #endif
+#endif
 }

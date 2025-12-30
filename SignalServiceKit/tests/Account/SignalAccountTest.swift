@@ -93,7 +93,7 @@ class SignalAccountTest: XCTestCase {
             familyName: "Thesealion",
             nickname: "Shabs ",
             fullName: "Shabby Thesealion",
-            contactAvatarHash: nil
+            contactAvatarHash: nil,
         )
 
         let nameComponents = signalAccount.contactNameComponents()!
@@ -103,16 +103,16 @@ class SignalAccountTest: XCTestCase {
 
         let systemContactName = DisplayName.SystemContactName(
             nameComponents: nameComponents,
-            multipleAccountLabel: "Mobile"
+            multipleAccountLabel: "Mobile",
         )
 
         XCTAssertEqual(
             systemContactName.resolvedValue(config: DisplayName.Config(shouldUseSystemContactNicknames: false)),
-            "Shabby Thesealion (Mobile)"
+            "Shabby Thesealion (Mobile)",
         )
         XCTAssertEqual(
             systemContactName.resolvedValue(config: DisplayName.Config(shouldUseSystemContactNicknames: true)),
-            "Shabs (Mobile)"
+            "Shabs (Mobile)",
         )
     }
 
@@ -126,7 +126,7 @@ class SignalAccountTest: XCTestCase {
             familyName: "",
             nickname: "",
             fullName: "Company Name",
-            contactAvatarHash: nil
+            contactAvatarHash: nil,
         )
 
         let nameComponents = signalAccount.contactNameComponents()!
@@ -146,9 +146,9 @@ extension SignalAccount: ValidatableModel {
                 familyName: "what",
                 nickname: "a",
                 fullName: "wonderful",
-                contactAvatarHash: Data(repeating: 12, count: 12)
+                contactAvatarHash: Data(repeating: 12, count: 12),
             ),
-            Data(#"{"recipientPhoneNumber":"+17735550199","contactAvatarHash":"DAwMDAwMDAwMDAwM","recipientUUID":"PNI:2405EEEA-9CFF-4FB4-A9D2-FBB473018D57","contact":"YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGtCwwnKCkqKywyOTw\/QFUkbnVsbN0NDg8QERITFBUWFxgZGhscHR4fICEhIyEdHV8QD01UTE1vZGVsVmVyc2lvbllmaXJzdE5hbWVYbGFzdE5hbWVfEBdjb21wYXJhYmxlTmFtZUxhc3RGaXJzdFh1bmlxdWVJZF8QEnBob25lTnVtYmVyTmFtZU1hcFYkY2xhc3NfEBJwYXJzZWRQaG9uZU51bWJlcnNfEBR1c2VyVGV4dFBob25lTnVtYmVyc1hmdWxsTmFtZVZlbWFpbHNfEBdjb21wYXJhYmxlTmFtZUZpcnN0TGFzdFhuaWNrbmFtZYACgASAA4AFgAaAB4AMgAmACYALgAmABYAFEABUd2hhdFZtYXRhdGFRYV8QJDRCNzUzQzkwLUI2OTQtNDc5Mi04NkFCLTFFMzlDRjgyODkwOdMtLhMvMDFXTlMua2V5c1pOUy5vYmplY3RzoKCACNIzNDU2WiRjbGFzc25hbWVYJGNsYXNzZXNcTlNEaWN0aW9uYXJ5ojc4XE5TRGljdGlvbmFyeVhOU09iamVjdNIuEzo7oIAK0jM0PT5XTlNBcnJheaI9OFl3b25kZXJmdWzSMzRBQldDb250YWN0o0FDOFhNVExNb2RlbAAIABEAGgAkACkAMgA3AEkATABRAFMAYQBnAIIAlACeAKcAwQDKAN8A5gD7ARIBGwEiATwBRQFHAUkBSwFNAU8BUQFTAVUBVwFZAVsBXQFfAWEBZgFtAW8BlgGdAaUBsAGxAbIBtAG5AcQBzQHaAd0B6gHzAfgB+QH7AgACCAILAhUCGgIiAiYAAAAAAAACAQAAAAAAAABEAAAAAAAAAAAAAAAAAAACLw==","recordType":30,"uniqueId":"793CABBC-ACA5-43AC-99A2-BCA18A0E4483","multipleAccountLabelText":"boop"}"#.utf8)
+            Data(#"{"recipientPhoneNumber":"+17735550199","contactAvatarHash":"DAwMDAwMDAwMDAwM","recipientUUID":"PNI:2405EEEA-9CFF-4FB4-A9D2-FBB473018D57","contact":"YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGtCwwnKCkqKywyOTw\/QFUkbnVsbN0NDg8QERITFBUWFxgZGhscHR4fICEhIyEdHV8QD01UTE1vZGVsVmVyc2lvbllmaXJzdE5hbWVYbGFzdE5hbWVfEBdjb21wYXJhYmxlTmFtZUxhc3RGaXJzdFh1bmlxdWVJZF8QEnBob25lTnVtYmVyTmFtZU1hcFYkY2xhc3NfEBJwYXJzZWRQaG9uZU51bWJlcnNfEBR1c2VyVGV4dFBob25lTnVtYmVyc1hmdWxsTmFtZVZlbWFpbHNfEBdjb21wYXJhYmxlTmFtZUZpcnN0TGFzdFhuaWNrbmFtZYACgASAA4AFgAaAB4AMgAmACYALgAmABYAFEABUd2hhdFZtYXRhdGFRYV8QJDRCNzUzQzkwLUI2OTQtNDc5Mi04NkFCLTFFMzlDRjgyODkwOdMtLhMvMDFXTlMua2V5c1pOUy5vYmplY3RzoKCACNIzNDU2WiRjbGFzc25hbWVYJGNsYXNzZXNcTlNEaWN0aW9uYXJ5ojc4XE5TRGljdGlvbmFyeVhOU09iamVjdNIuEzo7oIAK0jM0PT5XTlNBcnJheaI9OFl3b25kZXJmdWzSMzRBQldDb250YWN0o0FDOFhNVExNb2RlbAAIABEAGgAkACkAMgA3AEkATABRAFMAYQBnAIIAlACeAKcAwQDKAN8A5gD7ARIBGwEiATwBRQFHAUkBSwFNAU8BUQFTAVUBVwFZAVsBXQFfAWEBZgFtAW8BlgGdAaUBsAGxAbIBtAG5AcQBzQHaAd0B6gHzAfgB+QH7AgACCAILAhUCGgIiAiYAAAAAAAACAQAAAAAAAABEAAAAAAAAAAAAAAAAAAACLw==","recordType":30,"uniqueId":"793CABBC-ACA5-43AC-99A2-BCA18A0E4483","multipleAccountLabelText":"boop"}"#.utf8),
         ),
         (
             SignalAccount(
@@ -160,9 +160,9 @@ extension SignalAccount: ValidatableModel {
                 familyName: "what",
                 nickname: "a",
                 fullName: "wonderful",
-                contactAvatarHash: Data(base64Encoded: "mary")
+                contactAvatarHash: Data(base64Encoded: "mary"),
             ),
-            Data(#"{"recipientPhoneNumber":"little","contactAvatarHash":"mary","recipientUUID":"lamb","contact":"YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGtCwwnKCkqKywyOTw\/QFUkbnVsbN0NDg8QERITFBUWFxgZGhscHR4fICEhIyEdHV8QD01UTE1vZGVsVmVyc2lvbllmaXJzdE5hbWVYbGFzdE5hbWVfEBdjb21wYXJhYmxlTmFtZUxhc3RGaXJzdFh1bmlxdWVJZF8QEnBob25lTnVtYmVyTmFtZU1hcFYkY2xhc3NfEBJwYXJzZWRQaG9uZU51bWJlcnNfEBR1c2VyVGV4dFBob25lTnVtYmVyc1hmdWxsTmFtZVZlbWFpbHNfEBdjb21wYXJhYmxlTmFtZUZpcnN0TGFzdFhuaWNrbmFtZYACgASAA4AFgAaAB4AMgAmACYALgAmABYAFEABUd2hhdFZtYXRhdGFRYV8QJDkyQTk2ODc2LTQ4QzMtNDlGMi1BOTFGLUNFRDU0ODE5RDIzRNMtLhMvMDFXTlMua2V5c1pOUy5vYmplY3RzoKCACNIzNDU2WiRjbGFzc25hbWVYJGNsYXNzZXNcTlNEaWN0aW9uYXJ5ojc4XE5TRGljdGlvbmFyeVhOU09iamVjdNIuEzo7oIAK0jM0PT5XTlNBcnJheaI9OFl3b25kZXJmdWzSMzRBQldDb250YWN0o0FDOFhNVExNb2RlbAAIABEAGgAkACkAMgA3AEkATABRAFMAYQBnAIIAlACeAKcAwQDKAN8A5gD7ARIBGwEiATwBRQFHAUkBSwFNAU8BUQFTAVUBVwFZAVsBXQFfAWEBZgFtAW8BlgGdAaUBsAGxAbIBtAG5AcQBzQHaAd0B6gHzAfgB+QH7AgACCAILAhUCGgIiAiYAAAAAAAACAQAAAAAAAABEAAAAAAAAAAAAAAAAAAACLw==","recordType":30,"uniqueId":"80BCC511-FA30-4A74-AD09-00E7EA09FE4F","multipleAccountLabelText":"a"}"#.utf8)
+            Data(#"{"recipientPhoneNumber":"little","contactAvatarHash":"mary","recipientUUID":"lamb","contact":"YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGtCwwnKCkqKywyOTw\/QFUkbnVsbN0NDg8QERITFBUWFxgZGhscHR4fICEhIyEdHV8QD01UTE1vZGVsVmVyc2lvbllmaXJzdE5hbWVYbGFzdE5hbWVfEBdjb21wYXJhYmxlTmFtZUxhc3RGaXJzdFh1bmlxdWVJZF8QEnBob25lTnVtYmVyTmFtZU1hcFYkY2xhc3NfEBJwYXJzZWRQaG9uZU51bWJlcnNfEBR1c2VyVGV4dFBob25lTnVtYmVyc1hmdWxsTmFtZVZlbWFpbHNfEBdjb21wYXJhYmxlTmFtZUZpcnN0TGFzdFhuaWNrbmFtZYACgASAA4AFgAaAB4AMgAmACYALgAmABYAFEABUd2hhdFZtYXRhdGFRYV8QJDkyQTk2ODc2LTQ4QzMtNDlGMi1BOTFGLUNFRDU0ODE5RDIzRNMtLhMvMDFXTlMua2V5c1pOUy5vYmplY3RzoKCACNIzNDU2WiRjbGFzc25hbWVYJGNsYXNzZXNcTlNEaWN0aW9uYXJ5ojc4XE5TRGljdGlvbmFyeVhOU09iamVjdNIuEzo7oIAK0jM0PT5XTlNBcnJheaI9OFl3b25kZXJmdWzSMzRBQldDb250YWN0o0FDOFhNVExNb2RlbAAIABEAGgAkACkAMgA3AEkATABRAFMAYQBnAIIAlACeAKcAwQDKAN8A5gD7ARIBGwEiATwBRQFHAUkBSwFNAU8BUQFTAVUBVwFZAVsBXQFfAWEBZgFtAW8BlgGdAaUBsAGxAbIBtAG5AcQBzQHaAd0B6gHzAfgB+QH7AgACCAILAhUCGgIiAiYAAAAAAAACAQAAAAAAAABEAAAAAAAAAAAAAAAAAAACLw==","recordType":30,"uniqueId":"80BCC511-FA30-4A74-AD09-00E7EA09FE4F","multipleAccountLabelText":"a"}"#.utf8),
         ),
         (
             SignalAccount(
@@ -174,10 +174,10 @@ extension SignalAccount: ValidatableModel {
                 familyName: "no",
                 nickname: "passing",
                 fullName: "phrase",
-                contactAvatarHash: nil
+                contactAvatarHash: nil,
             ),
-            Data(#"{"recordType":30,"recipientUUID":"snow","recipientPhoneNumber":"white as","uniqueId":"A7BCB477-240D-40BD-A23E-BC361C9CBBDB","multipleAccountLabelText":"was","contact":"YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGtCwwnKCkqKywyOTw\/QFUkbnVsbN0NDg8QERITFBUWFxgZGhscHR4fICEhIyEdHV8QD01UTE1vZGVsVmVyc2lvbllmaXJzdE5hbWVYbGFzdE5hbWVfEBdjb21wYXJhYmxlTmFtZUxhc3RGaXJzdFh1bmlxdWVJZF8QEnBob25lTnVtYmVyTmFtZU1hcFYkY2xhc3NfEBJwYXJzZWRQaG9uZU51bWJlcnNfEBR1c2VyVGV4dFBob25lTnVtYmVyc1hmdWxsTmFtZVZlbWFpbHNfEBdjb21wYXJhYmxlTmFtZUZpcnN0TGFzdFhuaWNrbmFtZYACgASAA4AFgAaAB4AMgAmACYALgAmABYAFEABSbm9VYWluJ3RXcGFzc2luZ18QJDMwMzc3MTc1LTJGMTAtNERGQi05NjAwLTg5NkQyNjJDM0U5OdMtLhMvMDFXTlMua2V5c1pOUy5vYmplY3RzoKCACNIzNDU2WiRjbGFzc25hbWVYJGNsYXNzZXNcTlNEaWN0aW9uYXJ5ojc4XE5TRGljdGlvbmFyeVhOU09iamVjdNIuEzo7oIAK0jM0PT5XTlNBcnJheaI9OFZwaHJhc2XSMzRBQldDb250YWN0o0FDOFhNVExNb2RlbAAIABEAGgAkACkAMgA3AEkATABRAFMAYQBnAIIAlACeAKcAwQDKAN8A5gD7ARIBGwEiATwBRQFHAUkBSwFNAU8BUQFTAVUBVwFZAVsBXQFfAWEBZAFqAXIBmQGgAagBswG0AbUBtwG8AccB0AHdAeAB7QH2AfsB\/AH+AgMCCwIOAhUCGgIiAiYAAAAAAAACAQAAAAAAAABEAAAAAAAAAAAAAAAAAAACLw=="}"#.utf8)
-        )
+            Data(#"{"recordType":30,"recipientUUID":"snow","recipientPhoneNumber":"white as","uniqueId":"A7BCB477-240D-40BD-A23E-BC361C9CBBDB","multipleAccountLabelText":"was","contact":"YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGtCwwnKCkqKywyOTw\/QFUkbnVsbN0NDg8QERITFBUWFxgZGhscHR4fICEhIyEdHV8QD01UTE1vZGVsVmVyc2lvbllmaXJzdE5hbWVYbGFzdE5hbWVfEBdjb21wYXJhYmxlTmFtZUxhc3RGaXJzdFh1bmlxdWVJZF8QEnBob25lTnVtYmVyTmFtZU1hcFYkY2xhc3NfEBJwYXJzZWRQaG9uZU51bWJlcnNfEBR1c2VyVGV4dFBob25lTnVtYmVyc1hmdWxsTmFtZVZlbWFpbHNfEBdjb21wYXJhYmxlTmFtZUZpcnN0TGFzdFhuaWNrbmFtZYACgASAA4AFgAaAB4AMgAmACYALgAmABYAFEABSbm9VYWluJ3RXcGFzc2luZ18QJDMwMzc3MTc1LTJGMTAtNERGQi05NjAwLTg5NkQyNjJDM0U5OdMtLhMvMDFXTlMua2V5c1pOUy5vYmplY3RzoKCACNIzNDU2WiRjbGFzc25hbWVYJGNsYXNzZXNcTlNEaWN0aW9uYXJ5ojc4XE5TRGljdGlvbmFyeVhOU09iamVjdNIuEzo7oIAK0jM0PT5XTlNBcnJheaI9OFZwaHJhc2XSMzRBQldDb250YWN0o0FDOFhNVExNb2RlbAAIABEAGgAkACkAMgA3AEkATABRAFMAYQBnAIIAlACeAKcAwQDKAN8A5gD7ARIBGwEiATwBRQFHAUkBSwFNAU8BUQFTAVUBVwFZAVsBXQFfAWEBZAFqAXIBmQGgAagBswG0AbUBtwG8AccB0AHdAeAB7QH2AfsB\/AH+AgMCCwIOAhUCGgIiAiYAAAAAAAACAQAAAAAAAABEAAAAAAAAAAAAAAAAAAACLw=="}"#.utf8),
+        ),
     ]
 
     /// Note: These strings were generated before migrating `SignalAccount` from
@@ -194,9 +194,9 @@ extension SignalAccount: ValidatableModel {
                 familyName: "what",
                 nickname: "a",
                 fullName: "wonderful",
-                contactAvatarHash: Data(base64Encoded: "mary")
+                contactAvatarHash: Data(base64Encoded: "mary"),
             ),
-            Data(#"{"recipientPhoneNumber":"little","contactAvatarHash":"mary","recipientUUID":"lamb","contact":"YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGtCwwnKCkqKywyOTw\/QFUkbnVsbN0NDg8QERITFBUWFxgZGhscHR4fICEhIyEdHV8QD01UTE1vZGVsVmVyc2lvbllmaXJzdE5hbWVYbGFzdE5hbWVfEBdjb21wYXJhYmxlTmFtZUxhc3RGaXJzdFh1bmlxdWVJZF8QEnBob25lTnVtYmVyTmFtZU1hcFYkY2xhc3NfEBJwYXJzZWRQaG9uZU51bWJlcnNfEBR1c2VyVGV4dFBob25lTnVtYmVyc1hmdWxsTmFtZVZlbWFpbHNfEBdjb21wYXJhYmxlTmFtZUZpcnN0TGFzdFhuaWNrbmFtZYACgASAA4AFgAaAB4AMgAmACYALgAmABYAFEABUd2hhdFZtYXRhdGFRYV8QJEI0Qjc3RTUxLTk3RjMtNDc2Ri05QTIwLUU1N0JFNTM3RUEyNdMtLhMvMDFXTlMua2V5c1pOUy5vYmplY3RzoKCACNIzNDU2WiRjbGFzc25hbWVYJGNsYXNzZXNcTlNEaWN0aW9uYXJ5ojc4XE5TRGljdGlvbmFyeVhOU09iamVjdNIuEzo7oIAK0jM0PT5XTlNBcnJheaI9OFl3b25kZXJmdWzSMzRBQldDb250YWN0o0FDOFhNVExNb2RlbAAIABEAGgAkACkAMgA3AEkATABRAFMAYQBnAIIAlACeAKcAwQDKAN8A5gD7ARIBGwEiATwBRQFHAUkBSwFNAU8BUQFTAVUBVwFZAVsBXQFfAWEBZgFtAW8BlgGdAaUBsAGxAbIBtAG5AcQBzQHaAd0B6gHzAfgB+QH7AgACCAILAhUCGgIiAiYAAAAAAAACAQAAAAAAAABEAAAAAAAAAAAAAAAAAAACLw==","recordType":30,"uniqueId":"hello","multipleAccountLabelText":"a"}"#.utf8)
+            Data(#"{"recipientPhoneNumber":"little","contactAvatarHash":"mary","recipientUUID":"lamb","contact":"YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGtCwwnKCkqKywyOTw\/QFUkbnVsbN0NDg8QERITFBUWFxgZGhscHR4fICEhIyEdHV8QD01UTE1vZGVsVmVyc2lvbllmaXJzdE5hbWVYbGFzdE5hbWVfEBdjb21wYXJhYmxlTmFtZUxhc3RGaXJzdFh1bmlxdWVJZF8QEnBob25lTnVtYmVyTmFtZU1hcFYkY2xhc3NfEBJwYXJzZWRQaG9uZU51bWJlcnNfEBR1c2VyVGV4dFBob25lTnVtYmVyc1hmdWxsTmFtZVZlbWFpbHNfEBdjb21wYXJhYmxlTmFtZUZpcnN0TGFzdFhuaWNrbmFtZYACgASAA4AFgAaAB4AMgAmACYALgAmABYAFEABUd2hhdFZtYXRhdGFRYV8QJEI0Qjc3RTUxLTk3RjMtNDc2Ri05QTIwLUU1N0JFNTM3RUEyNdMtLhMvMDFXTlMua2V5c1pOUy5vYmplY3RzoKCACNIzNDU2WiRjbGFzc25hbWVYJGNsYXNzZXNcTlNEaWN0aW9uYXJ5ojc4XE5TRGljdGlvbmFyeVhOU09iamVjdNIuEzo7oIAK0jM0PT5XTlNBcnJheaI9OFl3b25kZXJmdWzSMzRBQldDb250YWN0o0FDOFhNVExNb2RlbAAIABEAGgAkACkAMgA3AEkATABRAFMAYQBnAIIAlACeAKcAwQDKAN8A5gD7ARIBGwEiATwBRQFHAUkBSwFNAU8BUQFTAVUBVwFZAVsBXQFfAWEBZgFtAW8BlgGdAaUBsAGxAbIBtAG5AcQBzQHaAd0B6gHzAfgB+QH7AgACCAILAhUCGgIiAiYAAAAAAAACAQAAAAAAAABEAAAAAAAAAAAAAAAAAAACLw==","recordType":30,"uniqueId":"hello","multipleAccountLabelText":"a"}"#.utf8),
         ),
         (
             SignalAccount(
@@ -208,10 +208,10 @@ extension SignalAccount: ValidatableModel {
                 familyName: "no",
                 nickname: "passing",
                 fullName: "phrase",
-                contactAvatarHash: Data(base64Encoded: "whose")
+                contactAvatarHash: Data(base64Encoded: "whose"),
             ),
-            Data(#"{"recordType":30,"recipientUUID":"snow","recipientPhoneNumber":"white as","uniqueId":"hi","multipleAccountLabelText":"was","contact":"YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGtCwwnKCkqKywyOTw\/QFUkbnVsbN0NDg8QERITFBUWFxgZGhscHR4fICEhIyEdHV8QD01UTE1vZGVsVmVyc2lvbllmaXJzdE5hbWVYbGFzdE5hbWVfEBdjb21wYXJhYmxlTmFtZUxhc3RGaXJzdFh1bmlxdWVJZF8QEnBob25lTnVtYmVyTmFtZU1hcFYkY2xhc3NfEBJwYXJzZWRQaG9uZU51bWJlcnNfEBR1c2VyVGV4dFBob25lTnVtYmVyc1hmdWxsTmFtZVZlbWFpbHNfEBdjb21wYXJhYmxlTmFtZUZpcnN0TGFzdFhuaWNrbmFtZYACgASAA4AFgAaAB4AMgAmACYALgAmABYAFEABSbm9VYWluJ3RXcGFzc2luZ18QJDMwQTdCMzZCLUE2MUQtNDAxMi1BMzNCLUI3OTA4NEM1OUM4N9MtLhMvMDFXTlMua2V5c1pOUy5vYmplY3RzoKCACNIzNDU2WiRjbGFzc25hbWVYJGNsYXNzZXNcTlNEaWN0aW9uYXJ5ojc4XE5TRGljdGlvbmFyeVhOU09iamVjdNIuEzo7oIAK0jM0PT5XTlNBcnJheaI9OFZwaHJhc2XSMzRBQldDb250YWN0o0FDOFhNVExNb2RlbAAIABEAGgAkACkAMgA3AEkATABRAFMAYQBnAIIAlACeAKcAwQDKAN8A5gD7ARIBGwEiATwBRQFHAUkBSwFNAU8BUQFTAVUBVwFZAVsBXQFfAWEBZAFqAXIBmQGgAagBswG0AbUBtwG8AccB0AHdAeAB7QH2AfsB\/AH+AgMCCwIOAhUCGgIiAiYAAAAAAAACAQAAAAAAAABEAAAAAAAAAAAAAAAAAAACLw=="}"#.utf8)
-        )
+            Data(#"{"recordType":30,"recipientUUID":"snow","recipientPhoneNumber":"white as","uniqueId":"hi","multipleAccountLabelText":"was","contact":"YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGtCwwnKCkqKywyOTw\/QFUkbnVsbN0NDg8QERITFBUWFxgZGhscHR4fICEhIyEdHV8QD01UTE1vZGVsVmVyc2lvbllmaXJzdE5hbWVYbGFzdE5hbWVfEBdjb21wYXJhYmxlTmFtZUxhc3RGaXJzdFh1bmlxdWVJZF8QEnBob25lTnVtYmVyTmFtZU1hcFYkY2xhc3NfEBJwYXJzZWRQaG9uZU51bWJlcnNfEBR1c2VyVGV4dFBob25lTnVtYmVyc1hmdWxsTmFtZVZlbWFpbHNfEBdjb21wYXJhYmxlTmFtZUZpcnN0TGFzdFhuaWNrbmFtZYACgASAA4AFgAaAB4AMgAmACYALgAmABYAFEABSbm9VYWluJ3RXcGFzc2luZ18QJDMwQTdCMzZCLUE2MUQtNDAxMi1BMzNCLUI3OTA4NEM1OUM4N9MtLhMvMDFXTlMua2V5c1pOUy5vYmplY3RzoKCACNIzNDU2WiRjbGFzc25hbWVYJGNsYXNzZXNcTlNEaWN0aW9uYXJ5ojc4XE5TRGljdGlvbmFyeVhOU09iamVjdNIuEzo7oIAK0jM0PT5XTlNBcnJheaI9OFZwaHJhc2XSMzRBQldDb250YWN0o0FDOFhNVExNb2RlbAAIABEAGgAkACkAMgA3AEkATABRAFMAYQBnAIIAlACeAKcAwQDKAN8A5gD7ARIBGwEiATwBRQFHAUkBSwFNAU8BUQFTAVUBVwFZAVsBXQFfAWEBZAFqAXIBmQGgAagBswG0AbUBtwG8AccB0AHdAeAB7QH2AfsB\/AH+AgMCCwIOAhUCGgIiAiYAAAAAAAACAQAAAAAAAABEAAAAAAAAAAAAAAAAAAACLw=="}"#.utf8),
+        ),
     ]
 
     func validate(against otherAccount: SignalAccount) throws {

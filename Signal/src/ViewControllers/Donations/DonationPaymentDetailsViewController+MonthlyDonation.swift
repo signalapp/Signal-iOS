@@ -14,7 +14,7 @@ extension DonationPaymentDetailsViewController {
         with validForm: FormState.ValidForm,
         newSubscriptionLevel: DonationSubscriptionLevel,
         priorSubscriptionLevel: DonationSubscriptionLevel?,
-        subscriberID existingSubscriberId: Data?
+        subscriberID existingSubscriberId: Data?,
     ) {
         let currencyCode = self.donationAmount.currencyCode
         let donationStore = DependenciesBridge.shared.externalPendingIDEALDonationStore
@@ -42,7 +42,7 @@ extension DonationPaymentDetailsViewController {
                         Logger.info("[Donations] Authorizing payment for new monthly subscription")
                         let confirmedIntent = try await Stripe.setupNewSubscription(
                             clientSecret: clientSecret,
-                            paymentMethod: validForm.stripePaymentMethod
+                            paymentMethod: validForm.stripePaymentMethod,
                         )
 
                         if let redirectToUrl = confirmedIntent.redirectToUrl {
@@ -54,7 +54,7 @@ extension DonationPaymentDetailsViewController {
                                     setupIntentId: confirmedIntent.setupIntentId,
                                     newSubscriptionLevel: newSubscriptionLevel,
                                     oldSubscriptionLevel: priorSubscriptionLevel,
-                                    amount: self.donationAmount
+                                    amount: self.donationAmount,
                                 )
                                 await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
                                     do {
@@ -85,9 +85,9 @@ extension DonationPaymentDetailsViewController {
                             newSubscriptionLevel: newSubscriptionLevel,
                             priorSubscriptionLevel: priorSubscriptionLevel,
                             currencyCode: currencyCode,
-                            databaseStorage: SSKEnvironment.shared.databaseStorageRef
+                            databaseStorage: SSKEnvironment.shared.databaseStorageRef,
                         )
-                    }
+                    },
                 )
                 Logger.info("[Donations] Monthly donation finished")
                 self.onFinished(nil)

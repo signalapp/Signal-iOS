@@ -183,7 +183,7 @@ extension BackupArchive.InteropAddress {
         return .init(
             aci: serviceId as? Aci,
             pni: serviceId as? Pni,
-            e164: e164
+            e164: e164,
         )
     }
 }

@@ -32,7 +32,7 @@ public class InteractionReactionState: NSObject {
         let localUserReaction = allReactions.first(where: { $0.reactor == localAddress })
 
         reactionsByEmoji = allReactions.reduce(
-            into: [Emoji: [OWSReaction]]()
+            into: [Emoji: [OWSReaction]](),
         ) { result, reaction in
             guard let emoji = Emoji(reaction.emoji) else {
                 return owsFailDebug("Skipping reaction with [unknown emoji]")
@@ -53,7 +53,7 @@ public class InteractionReactionState: NSObject {
             // We show your own skintone (if you’ve reacted), or the most
             // recent skintone (if you haven’t reacted).
             let emojiToRender: String
-            if let localUserReaction = localUserReaction, reactions.contains(localUserReaction) {
+            if let localUserReaction, reactions.contains(localUserReaction) {
                 emojiToRender = localUserReaction.emoji
             } else {
                 emojiToRender = mostRecentEmoji
@@ -65,7 +65,7 @@ public class InteractionReactionState: NSObject {
             return EmojiCount(
                 emoji: emojiToRender,
                 count: reactions.count,
-                highestSortOrder: highestSortOrder
+                highestSortOrder: highestSortOrder,
             )
         }.sorted { (lhs: EmojiCount, rhs: EmojiCount) in
             if lhs.count != rhs.count {

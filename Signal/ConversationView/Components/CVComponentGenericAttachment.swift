@@ -40,9 +40,11 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
         return isIncomingOverride ?? (interaction is TSIncomingMessage)
     }
 
-    public func configureForRendering(componentView componentViewParam: CVComponentView,
-                                      cellMeasurement: CVCellMeasurement,
-                                      componentDelegate: CVComponentDelegate) {
+    public func configureForRendering(
+        componentView componentViewParam: CVComponentView,
+        cellMeasurement: CVCellMeasurement,
+        componentDelegate: CVComponentDelegate,
+    ) {
         guard let componentView = componentViewParam as? CVComponentViewGenericAttachment else {
             owsFailDebug("Unexpected componentView.")
             componentViewParam.reset()
@@ -79,11 +81,15 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
                     return
                 }
                 var labelSize = fileTypeLabel.sizeThatFitsMaxSize
-                labelSize.width = min(labelSize.width,
-                                      superview.bounds.width - 15)
+                labelSize.width = min(
+                    labelSize.width,
+                    superview.bounds.width - 15,
+                )
 
-                let labelFrame = CGRect(origin: ((superview.bounds.size - labelSize) * 0.5).asPoint,
-                                        size: labelSize)
+                let labelFrame = CGRect(
+                    origin: ((superview.bounds.size - labelSize) * 0.5).asPoint,
+                    size: labelSize,
+                )
                 fileTypeLabel.frame = labelFrame
             }
         }
@@ -93,49 +99,59 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
 
         Self.topLabelConfig(
             genericAttachment: genericAttachment,
-            textColor: conversationStyle.bubbleTextColor(isIncoming: isIncoming)
+            textColor: conversationStyle.bubbleTextColor(isIncoming: isIncoming),
         ).applyForRendering(label: topLabel)
         Self.bottomLabelConfig(
             genericAttachment: genericAttachment,
-            textColor: conversationStyle.bubbleSecondaryTextColor(isIncoming: isIncoming)
+            textColor: conversationStyle.bubbleSecondaryTextColor(isIncoming: isIncoming),
         ).applyForRendering(label: bottomLabel)
 
         let vSubviews = [
             componentView.topLabel,
-            componentView.bottomLabel
+            componentView.bottomLabel,
         ]
-        vStackView.configure(config: Self.vStackConfig,
-                             cellMeasurement: cellMeasurement,
-                             measurementKey: Self.measurementKey_vStack,
-                             subviews: vSubviews)
+        vStackView.configure(
+            config: Self.vStackConfig,
+            cellMeasurement: cellMeasurement,
+            measurementKey: Self.measurementKey_vStack,
+            subviews: vSubviews,
+        )
         hSubviews.append(vStackView)
-        hStackView.configure(config: Self.hStackConfig,
-                                 cellMeasurement: cellMeasurement,
-                                 measurementKey: Self.measurementKey_hStack,
-                                 subviews: hSubviews)
+        hStackView.configure(
+            config: Self.hStackConfig,
+            cellMeasurement: cellMeasurement,
+            measurementKey: Self.measurementKey_hStack,
+            subviews: hSubviews,
+        )
     }
 
     private static var hStackConfig: CVStackViewConfig {
-        CVStackViewConfig(axis: .horizontal,
-                          alignment: .center,
-                          spacing: hSpacing,
-                          layoutMargins: UIEdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0))
+        CVStackViewConfig(
+            axis: .horizontal,
+            alignment: .center,
+            spacing: hSpacing,
+            layoutMargins: UIEdgeInsets(top: 5, leading: 0, bottom: 5, trailing: 0),
+        )
     }
 
     private static var vStackConfig: CVStackViewConfig {
-        CVStackViewConfig(axis: .vertical,
-                          alignment: .leading,
-                          spacing: labelVSpacing,
-                          layoutMargins: .zero)
+        CVStackViewConfig(
+            axis: .vertical,
+            alignment: .leading,
+            spacing: labelVSpacing,
+            layoutMargins: .zero,
+        )
     }
 
     private static func topLabelConfig(
         genericAttachment: CVComponentState.GenericAttachment,
-        textColor: UIColor
+        textColor: UIColor,
     ) -> CVLabelConfig {
         var text: String = genericAttachment.attachment.attachment.reference.sourceFilename?.ows_stripped() ?? ""
-        if text.isEmpty,
-           let fileExtension = MimeTypeUtil.fileExtensionForMimeType(genericAttachment.attachment.attachment.attachment.mimeType) {
+        if
+            text.isEmpty,
+            let fileExtension = MimeTypeUtil.fileExtensionForMimeType(genericAttachment.attachment.attachment.attachment.mimeType)
+        {
             text = (fileExtension as NSString).localizedUppercase
         }
         if text.isEmpty {
@@ -145,13 +161,13 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
             text,
             font: UIFont.dynamicTypeSubheadline.semibold(),
             textColor: textColor,
-            lineBreakMode: .byTruncatingMiddle
+            lineBreakMode: .byTruncatingMiddle,
         )
     }
 
     private static func bottomLabelConfig(
         genericAttachment: CVComponentState.GenericAttachment,
-        textColor: UIColor
+        textColor: UIColor,
     ) -> CVLabelConfig {
         let font = UIFont.dynamicTypeCaption1
 
@@ -187,13 +203,13 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
             let attributedString = NSAttributedString.composed(of: [
                 NSAttributedString.with(
                     image: UIImage(named: "error-circle-20")!,
-                    font: font
+                    font: font,
                 ),
                 " ",
                 OWSLocalizedString(
                     "FILE_UNAVAILABLE_FOOTER",
-                    comment: "Footer for message cell for documents/files when they are expired and unavailable for download"
-                )
+                    comment: "Footer for message cell for documents/files when they are expired and unavailable for download",
+                ),
             ])
 
             return CVLabelConfig(
@@ -201,7 +217,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
                 displayConfig: .forUnstyledText(font: font, textColor: textColor),
                 font: font,
                 textColor: textColor,
-                lineBreakMode: .byTruncatingMiddle
+                lineBreakMode: .byTruncatingMiddle,
             )
         }
 
@@ -209,7 +225,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
             text,
             font: font,
             textColor: textColor,
-            lineBreakMode: .byTruncatingMiddle
+            lineBreakMode: .byTruncatingMiddle,
         )
     }
 
@@ -225,7 +241,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
             text,
             font: UIFont.dynamicTypeCaption1.semibold(),
             textColor: .ows_gray90,
-            lineBreakMode: .byTruncatingTail
+            lineBreakMode: .byTruncatingTail,
         )
     }
 
@@ -234,7 +250,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
         let direction: CVAttachmentProgressView.Direction
         switch CVAttachmentProgressView.progressType(
             forAttachment: genericAttachment.attachment,
-            interaction: interaction
+            interaction: interaction,
         ) {
         case .none:
             return nil
@@ -244,31 +260,33 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
         case .pendingDownload(let attachmentPointer):
             direction = .download(
                 attachmentPointer: attachmentPointer,
-                downloadState: .none
+                downloadState: .none,
             )
         case .downloading(let attachmentPointer, let downloadState):
             direction = .download(
                 attachmentPointer: attachmentPointer,
-                downloadState: downloadState
+                downloadState: downloadState,
             )
         case .unknown:
             owsFailDebug("Unknown progress type.")
             return nil
         }
 
-        return CVAttachmentProgressView(direction: direction,
-                                        diameter: Self.progressSize,
-                                        isDarkThemeEnabled: conversationStyle.isDarkThemeEnabled,
-                                        mediaCache: mediaCache)
+        return CVAttachmentProgressView(
+            direction: direction,
+            diameter: Self.progressSize,
+            isDarkThemeEnabled: conversationStyle.isDarkThemeEnabled,
+            mediaCache: mediaCache,
+        )
     }
 
     private static func hasProgressView(
         genericAttachment: CVComponentState.GenericAttachment,
-        interaction: TSInteraction
+        interaction: TSInteraction,
     ) -> Bool {
         switch CVAttachmentProgressView.progressType(
             forAttachment: genericAttachment.attachment,
-            interaction: interaction
+            interaction: interaction,
         ) {
         case .none,
              .uploading:
@@ -296,7 +314,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
             maxWidth: maxWidth,
             measurementBuilder: measurementBuilder,
             genericAttachment: genericAttachment,
-            interaction: interaction
+            interaction: interaction,
         )
     }
 
@@ -304,30 +322,30 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
         maxWidth: CGFloat,
         measurementBuilder: CVCellMeasurement.Builder,
         genericAttachment: CVComponentState.GenericAttachment,
-        interaction: TSInteraction
+        interaction: TSInteraction,
     ) -> CGSize {
         owsAssertDebug(maxWidth > 0)
 
         let hasProgressView = Self.hasProgressView(
             genericAttachment: genericAttachment,
-            interaction: interaction
+            interaction: interaction,
         )
         let leftViewSize: CGSize = (hasProgressView
-                                        ? .square(progressSize)
-                                        : iconSize)
+            ? .square(progressSize)
+            : iconSize)
 
         let maxLabelWidth = max(0, maxWidth - (leftViewSize.width +
-                                                hSpacing +
-                                                hStackConfig.layoutMargins.totalWidth +
-                                                vStackConfig.layoutMargins.totalWidth))
+                hSpacing +
+                hStackConfig.layoutMargins.totalWidth +
+                vStackConfig.layoutMargins.totalWidth))
         let topLabelConfig = Self.topLabelConfig(
             genericAttachment: genericAttachment,
-            textColor: .black // Irrelevant for sizing
+            textColor: .black, // Irrelevant for sizing
         )
         let topLabelSize = CVText.measureLabel(config: topLabelConfig, maxWidth: maxLabelWidth)
         let bottomLabelConfig = Self.bottomLabelConfig(
             genericAttachment: genericAttachment,
-            textColor: .black // Irrelevant for sizing
+            textColor: .black, // Irrelevant for sizing
         )
         let bottomLabelSize = CVText.measureLabel(config: bottomLabelConfig, maxWidth: maxLabelWidth)
 
@@ -335,28 +353,34 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
         vSubviewInfos.append(topLabelSize.asManualSubviewInfo())
         vSubviewInfos.append(bottomLabelSize.asManualSubviewInfo())
 
-        let vStackMeasurement = ManualStackView.measure(config: vStackConfig,
-                                                            measurementBuilder: measurementBuilder,
-                                                            measurementKey: Self.measurementKey_vStack,
-                                                            subviewInfos: vSubviewInfos)
+        let vStackMeasurement = ManualStackView.measure(
+            config: vStackConfig,
+            measurementBuilder: measurementBuilder,
+            measurementKey: Self.measurementKey_vStack,
+            subviewInfos: vSubviewInfos,
+        )
 
         var hSubviewInfos = [ManualStackSubviewInfo]()
         hSubviewInfos.append(leftViewSize.asManualSubviewInfo(hasFixedSize: true))
         hSubviewInfos.append(vStackMeasurement.measuredSize.asManualSubviewInfo)
-        let hStackMeasurement = ManualStackView.measure(config: hStackConfig,
-                                                            measurementBuilder: measurementBuilder,
-                                                            measurementKey: Self.measurementKey_hStack,
-                                                            subviewInfos: hSubviewInfos,
-                                                            maxWidth: maxWidth)
+        let hStackMeasurement = ManualStackView.measure(
+            config: hStackConfig,
+            measurementBuilder: measurementBuilder,
+            measurementKey: Self.measurementKey_hStack,
+            subviewInfos: hSubviewInfos,
+            maxWidth: maxWidth,
+        )
         return hStackMeasurement.measuredSize
     }
 
     // MARK: - Events
 
-    public override func handleTap(sender: UIGestureRecognizer,
-                                   componentDelegate: CVComponentDelegate,
-                                   componentView: CVComponentView,
-                                   renderItem: CVRenderItem) -> Bool {
+    override public func handleTap(
+        sender: UIGestureRecognizer,
+        componentDelegate: CVComponentDelegate,
+        componentView: CVComponentView,
+        renderItem: CVRenderItem,
+    ) -> Bool {
 
         switch genericAttachment.attachment {
         case .stream:
@@ -508,7 +532,9 @@ extension CVComponentGenericAttachment: CVAccessibilityComponent {
     public var accessibilityDescription: String {
         // TODO: We could include information about the attachment format,
         //       and/or filename, and download state.
-        OWSLocalizedString("ACCESSIBILITY_LABEL_ATTACHMENT",
-                          comment: "Accessibility label for attachment.")
+        OWSLocalizedString(
+            "ACCESSIBILITY_LABEL_ATTACHMENT",
+            comment: "Accessibility label for attachment.",
+        )
     }
 }

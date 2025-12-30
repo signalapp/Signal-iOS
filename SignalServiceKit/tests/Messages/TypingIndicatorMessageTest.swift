@@ -3,14 +3,14 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import XCTest
 import SignalServiceKit
+import XCTest
 
 class TypingIndicatorMessageTest: SSKBaseTest {
     private func makeThread(transaction: DBWriteTransaction) -> TSThread {
         TSContactThread.getOrCreateThread(
             withContactAddress: SignalServiceAddress(phoneNumber: "+12223334444"),
-            transaction: transaction
+            transaction: transaction,
         )
     }
 
@@ -19,7 +19,7 @@ class TypingIndicatorMessageTest: SSKBaseTest {
             let message = TypingIndicatorMessage(
                 thread: makeThread(transaction: transaction),
                 action: .started,
-                transaction: transaction
+                transaction: transaction,
             )
             XCTAssertTrue(message.isOnline)
         }
@@ -30,7 +30,7 @@ class TypingIndicatorMessageTest: SSKBaseTest {
             let message = TypingIndicatorMessage(
                 thread: makeThread(transaction: transaction),
                 action: .started,
-                transaction: transaction
+                transaction: transaction,
             )
             XCTAssertFalse(message.isUrgent)
         }

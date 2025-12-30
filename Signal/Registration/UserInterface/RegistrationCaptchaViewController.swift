@@ -17,7 +17,7 @@ protocol RegistrationCaptchaPresenter: AnyObject {
 class RegistrationCaptchaViewController: OWSViewController {
     private weak var presenter: RegistrationCaptchaPresenter?
 
-    public init(presenter: RegistrationCaptchaPresenter) {
+    init(presenter: RegistrationCaptchaPresenter) {
         self.presenter = presenter
 
         super.init()
@@ -26,7 +26,7 @@ class RegistrationCaptchaViewController: OWSViewController {
     }
 
     @available(*, unavailable)
-    public override init() {
+    override init() {
         owsFail("This should not be called")
     }
 
@@ -38,14 +38,14 @@ class RegistrationCaptchaViewController: OWSViewController {
         return result
     }()
 
-    public override func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
 
         view.backgroundColor = .Signal.background
 
         let titleLabel = UILabel.titleLabelForRegistration(text: OWSLocalizedString(
             "REGISTRATION_CAPTCHA_TITLE",
-            comment: "During registration, users may be shown a CAPTCHA to verify that they're human. This text is shown above the CAPTCHA."
+            comment: "During registration, users may be shown a CAPTCHA to verify that they're human. This text is shown above the CAPTCHA.",
         ))
         titleLabel.setContentHuggingHigh()
         titleLabel.accessibilityIdentifier = "registration.captcha.titleLabel"
@@ -53,7 +53,7 @@ class RegistrationCaptchaViewController: OWSViewController {
         addStaticContentStackView(arrangedSubviews: [titleLabel, captchaView])
     }
 
-    public override func viewWillAppear(_ animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         captchaView.loadCaptcha()
     }
@@ -62,11 +62,11 @@ class RegistrationCaptchaViewController: OWSViewController {
 // MARK: - CaptchaViewDelegate
 
 extension RegistrationCaptchaViewController: CaptchaViewDelegate {
-    public func captchaView(_: CaptchaView, didCompleteCaptchaWithToken token: String) {
+    func captchaView(_: CaptchaView, didCompleteCaptchaWithToken token: String) {
         presenter?.submitCaptcha(token)
     }
 
-    public func captchaViewDidFailToCompleteCaptcha(_ captchaView: CaptchaView) {
+    func captchaViewDidFailToCompleteCaptcha(_ captchaView: CaptchaView) {
         captchaView.loadCaptcha()
     }
 }
@@ -86,8 +86,8 @@ private class PreviewRegistrationCaptchaPresenter: RegistrationCaptchaPresenter 
     let presenter = PreviewRegistrationCaptchaPresenter()
     return UINavigationController(
         rootViewController: RegistrationCaptchaViewController(
-            presenter: presenter
-        )
+            presenter: presenter,
+        ),
     )
 }
 

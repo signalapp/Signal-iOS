@@ -48,7 +48,7 @@ public final class CallRecordDeleteAllJobRecord: JobRecord, FactoryInitializable
         deleteAllBeforeConversationId: Data?,
         deleteAllBeforeTimestamp: UInt64,
         failureCount: UInt = 0,
-        status: Status = .ready
+        status: Status = .ready,
     ) {
         self.sendDeleteAllSyncMessage = sendDeleteAllSyncMessage
         self._deleteAllBeforeCallIdString = deleteAllBeforeCallId.map { String($0) }
@@ -57,7 +57,7 @@ public final class CallRecordDeleteAllJobRecord: JobRecord, FactoryInitializable
 
         super.init(
             failureCount: failureCount,
-            status: status
+            status: status,
         )
     }
 

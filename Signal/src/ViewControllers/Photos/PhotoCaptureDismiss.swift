@@ -18,10 +18,12 @@ class PhotoCaptureInteractiveDismiss: UIPercentDrivenInteractiveTransition {
         super.init()
     }
 
-    public func addGestureRecognizer(to view: UIView) {
-        let gesture = DirectionalPanGestureRecognizer(direction: .vertical,
-                                                      target: self,
-                                                      action: #selector(handleGesture(_:)))
+    func addGestureRecognizer(to view: UIView) {
+        let gesture = DirectionalPanGestureRecognizer(
+            direction: .vertical,
+            target: self,
+            action: #selector(handleGesture(_:)),
+        )
         view.addGestureRecognizer(gesture)
     }
 
@@ -67,7 +69,7 @@ class PhotoCaptureInteractiveDismiss: UIPercentDrivenInteractiveTransition {
 
             interactiveDismissDelegate?.interactiveDismiss(self, didChangeProgress: progress, touchOffset: offset)
             if handlesAnimation {
-                guard let frame = initialDimissFrame else {return}
+                guard let frame = initialDimissFrame else { return }
                 let delta = self.constainSwipe(offset: offset)
                 viewController?.view.center = frame.offsetBy(dx: delta.x, dy: delta.y).center
             }
@@ -88,7 +90,7 @@ class PhotoCaptureInteractiveDismiss: UIPercentDrivenInteractiveTransition {
                 cancel()
                 interactiveDismissDelegate?.interactiveDismissDidCancel(self)
                 if handlesAnimation {
-                    guard let frame = initialDimissFrame else {return}
+                    guard let frame = initialDimissFrame else { return }
                     UIView.animate(withDuration: 0.1, animations: {
                         self.viewController?.view.frame = frame
                     })

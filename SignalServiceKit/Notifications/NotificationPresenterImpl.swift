@@ -91,17 +91,17 @@ public struct AppNotificationUserInfo {
     }
 
     private enum UserInfoKey {
-        public static let callBackAciString = "Signal.AppNotificationsUserInfoKey.callBackUuid"
-        public static let callBackPhoneNumber = "Signal.AppNotificationsUserInfoKey.callBackPhoneNumber"
-        public static let defaultAction = "Signal.AppNotificationsUserInfoKey.defaultAction"
-        public static let isMissedCall = "Signal.AppNotificationsUserInfoKey.isMissedCall"
-        public static let messageId = "Signal.AppNotificationsUserInfoKey.messageId"
-        public static let reactionId = "Signal.AppNotificationsUserInfoKey.reactionId"
-        public static let roomId = "Signal.AppNotificationsUserInfoKey.roomId"
-        public static let storyMessageId = "Signal.AppNotificationsUserInfoKey.storyMessageId"
-        public static let storyTimestamp = "Signal.AppNotificationsUserInfoKey.storyTimestamp"
-        public static let threadId = "Signal.AppNotificationsUserInfoKey.threadId"
-        public static let voteAuthorServiceIdBinary = "Signal.AppNotificationsUserInfoKey.voteAuthorServiceIdBinary"
+        static let callBackAciString = "Signal.AppNotificationsUserInfoKey.callBackUuid"
+        static let callBackPhoneNumber = "Signal.AppNotificationsUserInfoKey.callBackPhoneNumber"
+        static let defaultAction = "Signal.AppNotificationsUserInfoKey.defaultAction"
+        static let isMissedCall = "Signal.AppNotificationsUserInfoKey.isMissedCall"
+        static let messageId = "Signal.AppNotificationsUserInfoKey.messageId"
+        static let reactionId = "Signal.AppNotificationsUserInfoKey.reactionId"
+        static let roomId = "Signal.AppNotificationsUserInfoKey.roomId"
+        static let storyMessageId = "Signal.AppNotificationsUserInfoKey.storyMessageId"
+        static let storyTimestamp = "Signal.AppNotificationsUserInfoKey.storyTimestamp"
+        static let threadId = "Signal.AppNotificationsUserInfoKey.threadId"
+        static let voteAuthorServiceIdBinary = "Signal.AppNotificationsUserInfoKey.voteAuthorServiceIdBinary"
     }
 
     func build() -> [String: Any] {
@@ -171,29 +171,29 @@ public enum AppNotificationCategory: String, CaseIterable {
     var shouldClearOnAppActivate: Bool {
         switch self {
         case
-                .incomingMessageWithActions_CanReply,
-                .incomingMessageWithActions_CannotReply,
-                .incomingMessageWithoutActions,
-                .incomingMessageFromNoLongerVerifiedIdentity,
-                .incomingReactionWithActions_CanReply,
-                .incomingReactionWithActions_CannotReply,
-                .infoOrErrorMessage,
-                .missedCallWithActions,
-                .missedCallWithoutActions,
-                .missedCallFromNoLongerVerifiedIdentity,
-                .incomingGroupStoryReply,
-                .failedStorySend,
-                .transferRelaunch,
-                .deregistration,
-                .pollEndNotification,
-                .pollVoteNotification:
+            .incomingMessageWithActions_CanReply,
+            .incomingMessageWithActions_CannotReply,
+            .incomingMessageWithoutActions,
+            .incomingMessageFromNoLongerVerifiedIdentity,
+            .incomingReactionWithActions_CanReply,
+            .incomingReactionWithActions_CannotReply,
+            .infoOrErrorMessage,
+            .missedCallWithActions,
+            .missedCallWithoutActions,
+            .missedCallFromNoLongerVerifiedIdentity,
+            .incomingGroupStoryReply,
+            .failedStorySend,
+            .transferRelaunch,
+            .deregistration,
+            .pollEndNotification,
+            .pollVoteNotification:
             return true
         case
-                .newDeviceLinked,
-                .backupsEnabled,
-                .backupsMediaTierQuotaConsumed,
-                .listMediaIntegrityCheckFailure,
-                .internalError:
+            .newDeviceLinked,
+            .backupsEnabled,
+            .backupsMediaTierQuotaConsumed,
+            .listMediaIntegrityCheckFailure,
+            .internalError:
             return false
         }
     }
@@ -300,7 +300,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
             case let storyGroupReply as StoryGroupReplier:
                 return .groupStoryReplies(
                     threadUniqueId: storyGroupReply.threadUniqueId,
-                    storyMessageTimestamp: storyGroupReply.storyMessage.timestamp
+                    storyMessageTimestamp: storyGroupReply.storyMessage.timestamp,
                 )
             case is FailedStorySendDisplayController:
                 return .failedStorySends
@@ -325,12 +325,12 @@ public class NotificationPresenterImpl: NotificationPresenter {
             senderAddress: nil,
             isGroupStoryReply: false,
             previewType: previewType,
-            tx: tx
+            tx: tx,
         ).map {
             return CallPreview(
                 notificationTitle: $0,
                 threadIdentifier: thread.rawValue.uniqueId,
-                shouldShowActions: Self.shouldShowActions(for: previewType)
+                shouldShowActions: Self.shouldShowActions(for: previewType),
             )
         }
     }
@@ -367,7 +367,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
         notificationInfo: CallNotificationInfo,
         offerMediaType: TSRecentCallOfferType,
         sentAt timestamp: Date,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) {
         let thread = notificationInfo.thread
         let callPreview = fetchCallPreview(thread: .individualThread(thread), tx: tx)
@@ -393,35 +393,43 @@ public class NotificationPresenterImpl: NotificationPresenter {
         case (.audio, .lastFewMinutes):
             notificationBodyFormat = OWSLocalizedString(
                 "CALL_AUDIO_MISSED_NOTIFICATION_BODY",
-                comment: "notification body for a call that was just missed")
+                comment: "notification body for a call that was just missed",
+            )
         case (.audio, .last24Hours):
             notificationBodyFormat = OWSLocalizedString(
                 "CALL_AUDIO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT",
-                comment: "notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'.")
+                comment: "notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'.",
+            )
         case (.audio, .lastWeek):
             notificationBodyFormat = OWSLocalizedString(
                 "CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT",
-                comment: "notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'.")
+                comment: "notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'.",
+            )
         case (.audio, .other):
             notificationBodyFormat = OWSLocalizedString(
                 "CALL_AUDIO_MISSED_PAST_NOTIFICATION_BODY_FORMAT",
-                comment: "notification body for a missed call from more than a week ago. Embeds {{short date}}, e.g. '6/28'.")
+                comment: "notification body for a missed call from more than a week ago. Embeds {{short date}}, e.g. '6/28'.",
+            )
         case (.video, .lastFewMinutes):
             notificationBodyFormat = OWSLocalizedString(
                 "CALL_VIDEO_MISSED_NOTIFICATION_BODY",
-                comment: "notification body for a call that was just missed")
+                comment: "notification body for a call that was just missed",
+            )
         case (.video, .last24Hours):
             notificationBodyFormat = OWSLocalizedString(
                 "CALL_VIDEO_MISSED_24_HOURS_NOTIFICATION_BODY_FORMAT",
-                comment: "notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'.")
+                comment: "notification body for a missed call in the last 24 hours. Embeds {{time}}, e.g. '3:30 PM'.",
+            )
         case (.video, .lastWeek):
             notificationBodyFormat = OWSLocalizedString(
                 "CALL_VIDEO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT",
-                comment: "notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'.")
+                comment: "notification body for a missed call from the last week. Embeds {{weekday}}, e.g. 'Monday'.",
+            )
         case (.video, .other):
             notificationBodyFormat = OWSLocalizedString(
                 "CALL_VIDEO_MISSED_PAST_NOTIFICATION_BODY_FORMAT",
-                comment: "notification body for a missed call from more than a week ago. Embeds {{short date}}, e.g. '6/28'.")
+                comment: "notification body for a missed call from more than a week ago. Embeds {{short date}}, e.g. '6/28'.",
+            )
         }
         let notificationBody = String(format: notificationBodyFormat, timestampArgument)
 
@@ -429,8 +437,8 @@ public class NotificationPresenterImpl: NotificationPresenter {
 
         let category: AppNotificationCategory = (
             callPreview?.shouldShowActions == true
-            ? .missedCallWithActions
-            : .missedCallWithoutActions
+                ? .missedCallWithActions
+                : .missedCallWithoutActions,
         )
 
         var intent: ResolvableValue<INIntent>?
@@ -448,14 +456,14 @@ public class NotificationPresenterImpl: NotificationPresenter {
                 userInfo: userInfo,
                 intent: intent.map { ($0, .incoming) },
                 soundQuery: .thread(threadUniqueId),
-                replacingIdentifier: notificationInfo.groupingId.uuidString
+                replacingIdentifier: notificationInfo.groupingId.uuidString,
             )
         }
     }
 
     public func notifyUserOfMissedCallBecauseOfNoLongerVerifiedIdentity(
         notificationInfo: CallNotificationInfo,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         let thread = notificationInfo.thread
         let callPreview = fetchCallPreview(thread: .individualThread(thread), tx: tx)
@@ -473,14 +481,14 @@ public class NotificationPresenterImpl: NotificationPresenter {
                 threadIdentifier: callPreview?.threadIdentifier,
                 userInfo: userInfo,
                 soundQuery: .thread(threadUniqueId),
-                replacingIdentifier: notificationInfo.groupingId.uuidString
+                replacingIdentifier: notificationInfo.groupingId.uuidString,
             )
         }
     }
 
     public func notifyUserOfMissedCallBecauseOfNewIdentity(
         notificationInfo: CallNotificationInfo,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         let thread = notificationInfo.thread
         let callPreview = fetchCallPreview(thread: .individualThread(thread), tx: tx)
@@ -490,8 +498,8 @@ public class NotificationPresenterImpl: NotificationPresenter {
 
         let category: AppNotificationCategory = (
             callPreview?.shouldShowActions == true
-            ? .missedCallWithActions
-            : .missedCallWithoutActions
+                ? .missedCallWithActions
+                : .missedCallWithoutActions,
         )
 
         let threadUniqueId = thread.uniqueId
@@ -503,7 +511,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
                 threadIdentifier: callPreview?.threadIdentifier,
                 userInfo: userInfo,
                 soundQuery: .thread(threadUniqueId),
-                replacingIdentifier: notificationInfo.groupingId.uuidString
+                replacingIdentifier: notificationInfo.groupingId.uuidString,
             )
         }
     }
@@ -525,7 +533,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
     public func canNotify(
         for incomingMessage: TSIncomingMessage,
         thread: TSThread,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> Bool {
         if isThreadMuted(thread, transaction: transaction) {
             guard thread.isGroupThread else { return false }
@@ -563,7 +571,8 @@ public class NotificationPresenterImpl: NotificationPresenter {
             // Always notify if you have been @mentioned
             if
                 let mentionedAcis = incomingMessage.bodyRanges?.mentions.values,
-                mentionedAcis.contains(where: { $0 == localAci }) {
+                mentionedAcis.contains(where: { $0 == localAci })
+            {
                 return true
             }
 
@@ -571,7 +580,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
             return InteractionFinder.hasLocalUserReplied(
                 storyTimestamp: storyTimestamp,
                 storyAuthorAci: storyAuthorAci,
-                transaction: transaction
+                transaction: transaction,
             )
         } else {
             return true
@@ -581,13 +590,13 @@ public class NotificationPresenterImpl: NotificationPresenter {
     public func notifyUser(
         forIncomingMessage incomingMessage: TSIncomingMessage,
         thread: TSThread,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) {
         _notifyUser(
             forIncomingMessage: incomingMessage,
             editTarget: nil,
             thread: thread,
-            transaction: transaction
+            transaction: transaction,
         )
     }
 
@@ -595,20 +604,20 @@ public class NotificationPresenterImpl: NotificationPresenter {
         forIncomingMessage incomingMessage: TSIncomingMessage,
         editTarget: TSIncomingMessage,
         thread: TSThread,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) {
         _notifyUser(
             forIncomingMessage: incomingMessage,
             editTarget: editTarget,
             thread: thread,
-            transaction: transaction
+            transaction: transaction,
         )
     }
 
     public func notifyUserOfPollEnd(
         forMessage message: TSIncomingMessage,
         thread: TSThread,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) {
         guard let notifiableThread = NotifiableThread(thread) else {
             owsFailDebug("Can't notify for \(type(of: thread))")
@@ -629,12 +638,12 @@ public class NotificationPresenterImpl: NotificationPresenter {
             senderAddress: message.authorAddress,
             isGroupStoryReply: false,
             previewType: previewType,
-            tx: transaction
+            tx: transaction,
         )
 
         let pollEndedFormat = OWSLocalizedString(
             "POLL_ENDED_NOTIFICATION",
-            comment: "Notification that {{contact}} ended a poll with question {{poll question}}"
+            comment: "Notification that {{contact}} ended a poll with question {{poll question}}",
         )
         guard let pollQuestion = message.body else {
             return
@@ -644,7 +653,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
             message.authorAddress,
             localUserDisplayMode: .noteToSelf,
             short: false,
-            transaction: transaction
+            transaction: transaction,
         )
 
         let notificationBody: String = "\u{1F4CA}" + String(format: pollEndedFormat, pollAuthorName.string, pollQuestion)
@@ -663,7 +672,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
                 threadIdentifier: threadUniqueId,
                 userInfo: userInfo,
                 intent: intent.map { ($0, .incoming) },
-                soundQuery: .thread(threadUniqueId)
+                soundQuery: .thread(threadUniqueId),
             )
         }
     }
@@ -672,7 +681,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
         forMessage message: TSOutgoingMessage,
         voteAuthor: Aci,
         thread: TSThread,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) {
         guard let notifiableThread = NotifiableThread(thread) else {
             owsFailDebug("Can't notify for \(type(of: thread))")
@@ -693,12 +702,12 @@ public class NotificationPresenterImpl: NotificationPresenter {
             senderAddress: SignalServiceAddress(voteAuthor),
             isGroupStoryReply: false,
             previewType: previewType,
-            tx: transaction
+            tx: transaction,
         )
 
         let pollVotedFormat = OWSLocalizedString(
             "POLL_VOTED_NOTIFICATION",
-            comment: "Notification that {{contact}} voted in a poll with question {{poll question}}"
+            comment: "Notification that {{contact}} voted in a poll with question {{poll question}}",
         )
         guard let pollQuestion = message.body else {
             return
@@ -708,7 +717,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
             SignalServiceAddress(voteAuthor),
             localUserDisplayMode: .noteToSelf,
             short: false,
-            transaction: transaction
+            transaction: transaction,
         )
 
         let notificationBody: String = "\u{1F4CA}" + String(format: pollVotedFormat, voteAuthorName.string, pollQuestion)
@@ -733,7 +742,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
                 threadIdentifier: threadUniqueId,
                 userInfo: userInfo,
                 intent: intent.map { ($0, .incoming) },
-                soundQuery: .thread(threadUniqueId)
+                soundQuery: .thread(threadUniqueId),
             )
         }
     }
@@ -768,7 +777,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
         senderAddress: SignalServiceAddress?,
         isGroupStoryReply: Bool,
         previewType: NotificationType,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> ResolvableValue<String>? {
         switch previewType {
         case .noNameNoPreview:
@@ -780,20 +789,20 @@ public class NotificationPresenterImpl: NotificationPresenter {
                 return resolvableValue(
                     withDisplayNameForAddress: thread.contactAddress,
                     transformedBy: { displayName in displayName.resolvedValue() },
-                    tx: tx
+                    tx: tx,
                 )
             case .groupThread(let thread):
                 let groupName = thread.groupNameOrDefault
                 if let senderAddress {
                     let format = (
                         isGroupStoryReply
-                        ? NotificationStrings.incomingGroupStoryReplyTitleFormat
-                        : NotificationStrings.incomingGroupMessageTitleFormat
+                            ? NotificationStrings.incomingGroupStoryReplyTitleFormat
+                            : NotificationStrings.incomingGroupMessageTitleFormat,
                     )
                     return resolvableValue(
                         withDisplayNameForAddress: senderAddress,
                         transformedBy: { displayName in String(format: format, displayName.resolvedValue(), groupName) },
-                        tx: tx
+                        tx: tx,
                     )
                 } else {
                     return ResolvableValue(resolvedValue: groupName)
@@ -805,17 +814,17 @@ public class NotificationPresenterImpl: NotificationPresenter {
     private func resolvableValue(
         withDisplayNameForAddress address: SignalServiceAddress,
         transformedBy transform: @escaping (DisplayName) -> String,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> ResolvableValue<String> {
         // TODO: Stop using SSKEnvironment.shared once dependencies are injected.
         return ResolvableDisplayNameBuilder(
             displayNameForAddress: address,
             transformedBy: { displayName, _ in return transform(displayName) },
-            contactManager: SSKEnvironment.shared.contactManagerRef
+            contactManager: SSKEnvironment.shared.contactManagerRef,
         ).resolvableValue(
             db: SSKEnvironment.shared.databaseStorageRef,
             profileFetcher: SSKEnvironment.shared.profileFetcherRef,
-            tx: tx
+            tx: tx,
         )
     }
 
@@ -823,7 +832,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
         forIncomingMessage incomingMessage: TSIncomingMessage,
         editTarget: TSIncomingMessage?,
         thread: TSThread,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) {
         guard let notifiableThread = NotifiableThread(thread) else {
             owsFailDebug("Can't notify for \(type(of: thread))")
@@ -854,7 +863,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
             senderAddress: incomingMessage.authorAddress,
             isGroupStoryReply: incomingMessage.isGroupStoryReply,
             previewType: previewType,
-            tx: transaction
+            tx: transaction,
         )
 
         let notificationBody: String = {
@@ -890,8 +899,8 @@ public class NotificationPresenterImpl: NotificationPresenter {
         } else {
             category = (
                 thread.canSendChatMessagesToThread()
-                ? .incomingMessageWithActions_CanReply
-                : .incomingMessageWithActions_CannotReply
+                    ? .incomingMessageWithActions_CanReply
+                    : .incomingMessageWithActions_CannotReply,
             )
         }
         var userInfo = AppNotificationUserInfo()
@@ -918,7 +927,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
                 threadIdentifier: threadIdentifier,
                 userInfo: userInfo,
                 intent: intent.map { ($0, .incoming) },
-                soundQuery: (editTargetUniqueId != nil) ? .none : .thread(threadUniqueId)
+                soundQuery: (editTargetUniqueId != nil) ? .none : .thread(threadUniqueId),
             )
         }
     }
@@ -927,7 +936,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
         forReaction reaction: OWSReaction,
         onOutgoingMessage message: TSOutgoingMessage,
         thread: TSThread,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) {
         guard let notifiableThread = NotifiableThread(thread) else {
             owsFailDebug("Can't notify for \(type(of: thread))")
@@ -949,7 +958,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
             senderAddress: reaction.reactor,
             isGroupStoryReply: false,
             previewType: previewType,
-            tx: transaction
+            tx: transaction,
         )
 
         let notificationBody: String
@@ -972,7 +981,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
             let mediaAttachments = DependenciesBridge.shared.attachmentStore
                 .fetchReferencedAttachments(
                     for: .messageBodyAttachment(messageRowId: messageRowId),
-                    tx: transaction
+                    tx: transaction,
                 )
                 .nilIfEmpty,
             let firstAttachment = mediaAttachments.first
@@ -1022,8 +1031,8 @@ public class NotificationPresenterImpl: NotificationPresenter {
         } else {
             category = (
                 thread.canSendChatMessagesToThread()
-                ? .incomingReactionWithActions_CanReply
-                : .incomingReactionWithActions_CannotReply
+                    ? .incomingReactionWithActions_CanReply
+                    : .incomingReactionWithActions_CannotReply,
             )
         }
         var userInfo = AppNotificationUserInfo()
@@ -1042,7 +1051,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
                 threadIdentifier: threadUniqueId,
                 userInfo: userInfo,
                 intent: intent.map { ($0, .incoming) },
-                soundQuery: .thread(threadUniqueId)
+                soundQuery: .thread(threadUniqueId),
             )
         }
     }
@@ -1059,7 +1068,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
                 senderAddress: nil,
                 isGroupStoryReply: false,
                 previewType: self.previewType(tx: tx),
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -1075,7 +1084,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
                 body: notificationBody,
                 threadIdentifier: nil, // show ungrouped
                 userInfo: userInfo,
-                soundQuery: .thread(threadId)
+                soundQuery: .thread(threadId),
             )
         }
     }
@@ -1089,11 +1098,11 @@ public class NotificationPresenterImpl: NotificationPresenter {
 
         let title = OWSLocalizedString(
             "ERROR_NOTIFICATION_TITLE",
-            comment: "Format string for an error alert notification title."
+            comment: "Format string for an error alert notification title.",
         )
         let messageFormat = OWSLocalizedString(
             "ERROR_NOTIFICATION_MESSAGE_FORMAT",
-            comment: "Format string for an error alert notification message. Embeds {{ error string }}"
+            comment: "Format string for an error alert notification message. Embeds {{ error string }}",
         )
         let message = String(format: messageFormat, errorString)
 
@@ -1117,7 +1126,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
         callTitle: String,
         threadUniqueId: String?,
         roomId: Data?,
-        presentAtJoin: Bool
+        presentAtJoin: Bool,
     ) {
         let notificationTitle = databaseStorage.read { tx -> ResolvableValue<String>? in
             switch previewType(tx: tx) {
@@ -1130,8 +1139,8 @@ public class NotificationPresenterImpl: NotificationPresenter {
 
         let notificationBody = (
             presentAtJoin
-            ? NotificationStrings.groupCallSafetyNumberChangeAtJoinBody
-            : NotificationStrings.groupCallSafetyNumberChangeBody
+                ? NotificationStrings.groupCallSafetyNumberChangeAtJoinBody
+                : NotificationStrings.groupCallSafetyNumberChangeBody,
         )
 
         var userInfo = AppNotificationUserInfo()
@@ -1146,7 +1155,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
                 body: notificationBody,
                 threadIdentifier: nil, // show ungrouped
                 userInfo: userInfo,
-                soundQuery: threadUniqueId.map({ .thread($0) }) ?? .global
+                soundQuery: threadUniqueId.map({ .thread($0) }) ?? .global,
             )
         }
     }
@@ -1159,18 +1168,18 @@ public class NotificationPresenterImpl: NotificationPresenter {
                 category: .newDeviceLinked,
                 title: ResolvableValue(resolvedValue: OWSLocalizedString(
                     "LINKED_DEVICE_NOTIFICATION_TITLE",
-                    comment: "Title for system notification when a new device is linked."
+                    comment: "Title for system notification when a new device is linked.",
                 )),
                 body: String(
                     format: OWSLocalizedString(
                         "LINKED_DEVICE_NOTIFICATION_BODY",
-                        comment: "Body for system notification when a new device is linked. Embeds {{ time the device was linked }}"
+                        comment: "Body for system notification when a new device is linked. Embeds {{ time the device was linked }}",
                     ),
-                    deviceLinkTimestamp.formatted(date: .omitted, time: .shortened)
+                    deviceLinkTimestamp.formatted(date: .omitted, time: .shortened),
                 ),
                 threadIdentifier: nil,
                 userInfo: userInfo,
-                soundQuery: .global
+                soundQuery: .global,
             )
         }
     }
@@ -1185,18 +1194,18 @@ public class NotificationPresenterImpl: NotificationPresenter {
                 category: .backupsEnabled,
                 title: ResolvableValue(resolvedValue: OWSLocalizedString(
                     "BACKUPS_TURNED_ON_TITLE",
-                    comment: "Title for system notification or megaphone when backups is enabled"
+                    comment: "Title for system notification or megaphone when backups is enabled",
                 )),
                 body: String(
                     format: OWSLocalizedString(
                         "BACKUPS_TURNED_ON_NOTIFICATION_BODY_FORMAT",
-                        comment: "Body for system notification or megaphone when backups is enabled. Embeds {{ time backups was enabled }}"
+                        comment: "Body for system notification or megaphone when backups is enabled. Embeds {{ time backups was enabled }}",
                     ),
-                    backupsTimestamp.formatted(date: .omitted, time: .shortened)
+                    backupsTimestamp.formatted(date: .omitted, time: .shortened),
                 ),
                 threadIdentifier: nil,
                 userInfo: userInfo,
-                soundQuery: .global
+                soundQuery: .global,
             )
         }
     }
@@ -1209,15 +1218,15 @@ public class NotificationPresenterImpl: NotificationPresenter {
                 category: .backupsMediaTierQuotaConsumed,
                 title: ResolvableValue(resolvedValue: OWSLocalizedString(
                     "BACKUP_SETTINGS_OUT_OF_STORAGE_SPACE_NOTIFICATION_TITLE",
-                    comment: "Title for a notification telling the user they are out of remote storage space."
+                    comment: "Title for a notification telling the user they are out of remote storage space.",
                 )),
                 body: OWSLocalizedString(
                     "BACKUP_SETTINGS_OUT_OF_STORAGE_SPACE_NOTIFICATION_SUBTITLE",
-                    comment: "Subtitle for a notification telling the user they are out of remote storage space."
+                    comment: "Subtitle for a notification telling the user they are out of remote storage space.",
                 ),
                 threadIdentifier: nil,
                 userInfo: userInfo,
-                soundQuery: .global
+                soundQuery: .global,
             )
         }
     }
@@ -1230,15 +1239,15 @@ public class NotificationPresenterImpl: NotificationPresenter {
                 category: .listMediaIntegrityCheckFailure,
                 title: ResolvableValue(resolvedValue: OWSLocalizedString(
                     "BACKUPS_MEDIA_UPLOAD_FAILURE_NOTIFICATION_TITLE",
-                    comment: "Title for system notification when we detect paid backup media uploads have encountered a problem"
+                    comment: "Title for system notification when we detect paid backup media uploads have encountered a problem",
                 )),
                 body: OWSLocalizedString(
                     "BACKUPS_MEDIA_UPLOAD_FAILURE_NOTIFICATION_BODY",
-                    comment: "Body for system notification when we detect paid backup media uploads have encountered a problem"
+                    comment: "Body for system notification when we detect paid backup media uploads have encountered a problem",
                 ),
                 threadIdentifier: nil,
                 userInfo: userInfo,
-                soundQuery: .global
+                soundQuery: .global,
             )
         }
     }
@@ -1246,7 +1255,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
     public func notifyUser(
         forErrorMessage errorMessage: TSErrorMessage,
         thread: TSThread,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) {
         if errorMessage is OWSRecoverableDecryptionPlaceholder {
             return
@@ -1270,7 +1279,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
                 forTSMessage: errorMessage as TSMessage,
                 thread: thread,
                 wantsSound: true,
-                transaction: transaction
+                transaction: transaction,
             )
         }
     }
@@ -1279,7 +1288,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
         forTSMessage message: TSMessage,
         thread: TSThread,
         wantsSound: Bool,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) {
         notifyUser(
             tsInteraction: message,
@@ -1288,7 +1297,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
             },
             thread: thread,
             wantsSound: wantsSound,
-            transaction: transaction
+            transaction: transaction,
         )
     }
 
@@ -1296,7 +1305,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
         forPreviewableInteraction previewableInteraction: TSInteraction & OWSPreviewText,
         thread: TSThread,
         wantsSound: Bool,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) {
         notifyUser(
             tsInteraction: previewableInteraction,
@@ -1305,7 +1314,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
             },
             thread: thread,
             wantsSound: wantsSound,
-            transaction: transaction
+            transaction: transaction,
         )
     }
 
@@ -1314,7 +1323,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
         previewProvider: (DBWriteTransaction) -> String,
         thread: TSThread,
         wantsSound: Bool,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) {
         guard let notifiableThread = NotifiableThread(thread) else {
             owsFailDebug("Can't notify for \(type(of: thread))")
@@ -1338,7 +1347,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
             senderAddress: nil,
             isGroupStoryReply: false,
             previewType: previewType,
-            tx: transaction
+            tx: transaction,
         )
 
         let notificationBody: String
@@ -1364,9 +1373,11 @@ public class NotificationPresenterImpl: NotificationPresenter {
         var intent: ResolvableValue<INIntent>?
         if previewType != .noNameNoPreview {
             if let infoMessage = tsInteraction as? TSInfoMessage {
-                guard let localIdentifiers = tsAccountManager.localIdentifiers(
-                    tx: transaction
-                ) else {
+                guard
+                    let localIdentifiers = tsAccountManager.localIdentifiers(
+                        tx: transaction,
+                    )
+                else {
                     owsFailDebug("Missing local identifiers!")
                     return
                 }
@@ -1414,7 +1425,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
                 threadIdentifier: threadIdentifier,
                 userInfo: userInfo,
                 intent: intent.map { ($0, .incoming) },
-                soundQuery: wantsSound ? .thread(threadId) : .none
+                soundQuery: wantsSound ? .thread(threadId) : .none,
             )
         }
     }
@@ -1422,7 +1433,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
     public func notifyUser(
         forFailedStorySend storyMessage: StoryMessage,
         to thread: TSThread,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) {
         guard StoryManager.areStoriesEnabled(transaction: transaction) else {
             return
@@ -1441,7 +1452,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
             contactIdentifier: nil,
             customIdentifier: nil,
             isMe: false,
-            suggestionType: .none
+            suggestionType: .none,
         )
 
         let sendMessageIntent = INSendMessageIntent(
@@ -1452,13 +1463,13 @@ public class NotificationPresenterImpl: NotificationPresenter {
             conversationIdentifier: conversationIdentifier,
             serviceName: nil,
             sender: person,
-            attachments: nil
+            attachments: nil,
         )
 
         let notificationTitle = storyName
         let notificationBody = OWSLocalizedString(
             "STORY_SEND_FAILED_NOTIFICATION_BODY",
-            comment: "Body for notification shown when a story fails to send."
+            comment: "Body for notification shown when a story fails to send.",
         )
         let threadIdentifier = thread.uniqueId
         let storyMessageId = storyMessage.uniqueId
@@ -1475,7 +1486,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
                 threadIdentifier: threadIdentifier,
                 userInfo: userInfo,
                 intent: (ResolvableValue(resolvedValue: sendMessageIntent), .outgoing),
-                soundQuery: .global
+                soundQuery: .global,
             )
         }
     }
@@ -1483,7 +1494,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
     public func notifyUserToRelaunchAfterTransfer(completion: @escaping () -> Void) {
         let notificationBody = OWSLocalizedString(
             "TRANSFER_RELAUNCH_NOTIFICATION",
-            comment: "Notification prompting the user to relaunch Signal after a device transfer completed."
+            comment: "Notification prompting the user to relaunch Signal after a device transfer completed.",
         )
         var userInfo = AppNotificationUserInfo()
         userInfo.defaultAction = .showChatList
@@ -1497,7 +1508,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
                 // Use a default sound so we don't read from
                 // the db (which doesn't work until we relaunch)
                 soundQuery: .constant(.standard(.note)),
-                forceBeforeRegistered: true
+                forceBeforeRegistered: true,
             )
             completion()
         }
@@ -1506,7 +1517,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
     public func notifyUserOfDeregistration(tx: DBWriteTransaction) {
         let notificationBody = OWSLocalizedString(
             "DEREGISTRATION_NOTIFICATION",
-            comment: "Notification warning the user that they have been de-registered."
+            comment: "Notification warning the user that they have been de-registered.",
         )
         var userInfo = AppNotificationUserInfo()
         userInfo.defaultAction = .reregister
@@ -1539,7 +1550,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
         intent intentPair: (resolvableIntent: ResolvableValue<INIntent>, direction: INInteractionDirection)? = nil,
         soundQuery: SoundQuery,
         replacingIdentifier: String? = nil,
-        forceBeforeRegistered: Bool = false
+        forceBeforeRegistered: Bool = false,
     ) async {
         let notificationSuppressionRule = await self.notificationSuppressionRuleIfMainAppAndActive()
         let sound: Sound?
@@ -1581,7 +1592,7 @@ public class NotificationPresenterImpl: NotificationPresenter {
             replacingIdentifier: replacingIdentifier,
             forceBeforeRegistered: forceBeforeRegistered,
             isMainAppAndActive: notificationSuppressionRule != nil,
-            notificationSuppressionRule: notificationSuppressionRule ?? .none
+            notificationSuppressionRule: notificationSuppressionRule ?? .none,
         )
     }
 
@@ -1732,7 +1743,7 @@ extension TruncatedList: Collection {
         return contents.endIndex
     }
 
-    subscript (position: Index) -> Element {
+    subscript(position: Index) -> Element {
         return contents[position]
     }
 

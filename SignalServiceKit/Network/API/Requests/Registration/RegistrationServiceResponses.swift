@@ -20,7 +20,7 @@ public enum RegistrationServiceResponses {
         case retry = 429
         case unexpectedError = -1
 
-        static public var unknown: Self { .unexpectedError }
+        public static var unknown: Self { .unexpectedError }
     }
 
     public enum FetchSessionResponseCodes: Int, UnknownEnumCodable {
@@ -30,7 +30,7 @@ public enum RegistrationServiceResponses {
         case missingSession = 404
         case unexpectedError = -1
 
-        static public var unknown: Self { .unexpectedError }
+        public static var unknown: Self { .unexpectedError }
     }
 
     public enum FulfillChallengeResponseCodes: Int, UnknownEnumCodable {
@@ -44,7 +44,7 @@ public enum RegistrationServiceResponses {
         case malformedRequest = 422
         case unexpectedError = -1
 
-        static public var unknown: Self { .unexpectedError }
+        public static var unknown: Self { .unexpectedError }
     }
 
     public enum RequestVerificationCodeResponseCodes: Int, UnknownEnumCodable {
@@ -70,7 +70,7 @@ public enum RegistrationServiceResponses {
         case providerFailure = 440
         case unexpectedError = -1
 
-        static public var unknown: Self { .unexpectedError }
+        public static var unknown: Self { .unexpectedError }
     }
 
     public enum SubmitVerificationCodeResponseCodes: Int, UnknownEnumCodable {
@@ -94,7 +94,7 @@ public enum RegistrationServiceResponses {
         case retry = 429
         case unexpectedError = -1
 
-        static public var unknown: Self { .unexpectedError }
+        public static var unknown: Self { .unexpectedError }
     }
 
     public struct RegistrationSession: Codable {
@@ -176,7 +176,7 @@ public enum RegistrationServiceResponses {
         case invalidJSON = 400
         case unexpectedError = -1
 
-        static public var unknown: Self { .unexpectedError }
+        public static var unknown: Self { .unexpectedError }
     }
 
     public struct SVR2AuthCheckResponse: Codable {
@@ -193,7 +193,7 @@ public enum RegistrationServiceResponses {
             case invalid
 
             // Server API explicitly says clients should treat unrecognized values as invalid.
-            static public var unknown: Self { return .invalid }
+            public static var unknown: Self { return .invalid }
         }
 
         public func result(for credential: SVR2AuthCredential) -> Result? {
@@ -237,7 +237,7 @@ public enum RegistrationServiceResponses {
         case retry = 429
         case unexpectedError = -1
 
-        static public var unknown: Self { .unexpectedError }
+        public static var unknown: Self { .unexpectedError }
     }
 
     public enum ChangeNumberResponseCodes: Int, UnknownEnumCodable {
@@ -271,7 +271,7 @@ public enum RegistrationServiceResponses {
         case retry = 429
         case unexpectedError = -1
 
-        static public var unknown: Self { .unexpectedError }
+        public static var unknown: Self { .unexpectedError }
     }
 
     public struct AccountIdentityResponse: Codable, Equatable {
@@ -319,7 +319,7 @@ public enum RegistrationServiceResponses {
 
         public init(
             timeRemainingMs: Int,
-            svr2AuthCredential: SVR2AuthCredential
+            svr2AuthCredential: SVR2AuthCredential,
         ) {
             self.timeRemainingMs = timeRemainingMs
             self.svr2AuthCredential = svr2AuthCredential

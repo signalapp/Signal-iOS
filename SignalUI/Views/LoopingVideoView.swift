@@ -62,7 +62,8 @@ private class LoopingVideoPlayer: AVPlayer {
                 self,
                 selector: #selector(self.playerItemDidPlayToCompletion(_:)),
                 name: .AVPlayerItemDidPlayToEndTime,
-                object: item)
+                object: item,
+            )
         }
 
         isMuted = true
@@ -77,7 +78,8 @@ private class LoopingVideoPlayer: AVPlayer {
             NotificationCenter.default.removeObserver(
                 self,
                 name: .AVPlayerItemDidPlayToEndTime,
-                object: oldItem)
+                object: oldItem,
+            )
             oldItem.cancelPendingSeeks()
         }
 
@@ -87,7 +89,8 @@ private class LoopingVideoPlayer: AVPlayer {
             self,
             selector: #selector(self.playerItemDidPlayToCompletion(_:)),
             name: .AVPlayerItemDidPlayToEndTime,
-            object: newItem)
+            object: newItem,
+        )
     }
 
     @objc
@@ -99,7 +102,7 @@ private class LoopingVideoPlayer: AVPlayer {
 
     private var readyStatusObserver: NSKeyValueObservation?
 
-    override public func play() {
+    override func play() {
         // Don't bother if we're already playing, or we don't have an item
         guard let item = currentItem, rate == 0 else { return }
 
@@ -108,8 +111,8 @@ private class LoopingVideoPlayer: AVPlayer {
             super.play()
         } else if readyStatusObserver == nil {
             // We're not ready to play, set up an observer to play when ready
-            readyStatusObserver = item.observe(\.status) { [weak self] _, _  in
-                guard let self = self, item === self.currentItem else { return }
+            readyStatusObserver = item.observe(\.status) { [weak self] _, _ in
+                guard let self, item === self.currentItem else { return }
                 if item.status == .readyToPlay {
                     self.play()
                 }

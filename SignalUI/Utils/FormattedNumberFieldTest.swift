@@ -9,11 +9,11 @@ import XCTest
 final class FormattedNumberFieldTest: XCTestCase {
     /// A helper that makes it easy to express test cases with concise strings.
     struct TestState: Equatable, ExpressibleByStringLiteral, CustomDebugStringConvertible {
-        public let formattedString: String
-        public let selectionStart: Int
-        public let selectionEnd: Int
+        let formattedString: String
+        let selectionStart: Int
+        let selectionEnd: Int
 
-        public var debugDescription: String {
+        var debugDescription: String {
             if selectionStart == selectionEnd {
                 return formattedString.inserted("|", at: selectionStart)
             } else {
@@ -21,13 +21,13 @@ final class FormattedNumberFieldTest: XCTestCase {
             }
         }
 
-        public init(formattedString: String, selectionStart: Int, selectionEnd: Int) {
+        init(formattedString: String, selectionStart: Int, selectionEnd: Int) {
             self.formattedString = formattedString
             self.selectionStart = selectionStart
             self.selectionEnd = selectionEnd
         }
 
-        public init(stringLiteral string: String) {
+        init(stringLiteral string: String) {
             self.formattedString = string
                 .replacingOccurrences(of: "|", with: "")
                 .replacingOccurrences(of: "[", with: "")
@@ -68,7 +68,7 @@ final class FormattedNumberFieldTest: XCTestCase {
             ("|", .forward),
             ("123|", .forward),
             ("1234| ", .forward),
-            ("1234 |", .forward)
+            ("1234 |", .forward),
         ]
         for (inputState, deletionDirection) in noopCases {
             let result = FormattedNumberField.singleDelete(
@@ -76,7 +76,7 @@ final class FormattedNumberFieldTest: XCTestCase {
                 allowedCharacters: .numbers,
                 cursorPosition: inputState.selectionStart,
                 direction: deletionDirection,
-                format: testFormat
+                format: testFormat,
             )
             XCTAssertNil(result, "\(inputState) \(deletionDirection)")
         }
@@ -93,7 +93,7 @@ final class FormattedNumberFieldTest: XCTestCase {
             ("12|34 567", .forward, "12|45 67"),
             ("1234| 56", .forward, "1234| 6"),
             ("1234 |56", .forward, "1234| 6"),
-            ("12|39 9999 9999 9999 9999 ", .forward, "12|99 9999 9999 9999 999")
+            ("12|39 9999 9999 9999 9999 ", .forward, "12|99 9999 9999 9999 999"),
         ]
         for (inputState, deletionDirection, expectedOutputState) in deletionCases {
             let result = FormattedNumberField.singleDelete(
@@ -101,7 +101,7 @@ final class FormattedNumberFieldTest: XCTestCase {
                 allowedCharacters: .numbers,
                 cursorPosition: inputState.selectionStart,
                 direction: deletionDirection,
-                format: testFormat
+                format: testFormat,
             )
             XCTAssertEqual(result?.asTestState, expectedOutputState, "\(inputState) \(deletionDirection)")
         }
@@ -109,12 +109,12 @@ final class FormattedNumberFieldTest: XCTestCase {
 
     func testNumericInsert() {
         let noopCases: [(TestState, String)] = [
-          ("|", ""),
-          ("|", "x"),
-          ("123|", "x"),
-          ("1234567890|", "1"),
-          ("1234|567890", "1"),
-          ("123456789|", "123")
+            ("|", ""),
+            ("|", "x"),
+            ("123|", "x"),
+            ("1234567890|", "1"),
+            ("1234|567890", "1"),
+            ("123456789|", "123"),
         ]
         for (inputState, insertion) in noopCases {
             let result = FormattedNumberField.insertOrReplace(
@@ -124,38 +124,38 @@ final class FormattedNumberFieldTest: XCTestCase {
                 selectionEnd: inputState.selectionEnd,
                 rawInsertion: insertion,
                 maxCharacters: 10,
-                format: testFormat
+                format: testFormat,
             )
             XCTAssertNil(result, "\(inputState) \(insertion)")
         }
 
         let testCases: [(TestState, String, TestState)] = [
-          ("|", "1", "1|"),
-          ("|", "123", "123|"),
-          ("|", "123x", "123|"),
+            ("|", "1", "1|"),
+            ("|", "123", "123|"),
+            ("|", "123x", "123|"),
 
-          ("|", "1234", "1234 |"),
-          ("123|", "4", "1234 |"),
+            ("|", "1234", "1234 |"),
+            ("123|", "4", "1234 |"),
 
-          ("12|3", "9", "129|3 "),
-          ("12|34 ", "9", "129|3 4"),
-          ("1234| ", "5", "1234 5|"),
-          ("1234 |", "5", "1234 5|"),
+            ("12|3", "9", "129|3 "),
+            ("12|34 ", "9", "129|3 4"),
+            ("1234| ", "5", "1234 5|"),
+            ("1234 |", "5", "1234 5|"),
 
-          ("[123]", "9", "9|"),
-          ("[1234] ", "9", "9|"),
-          ("[1234] 5678 ", "9", "9|567 8"),
-          ("[1234] 5678 ", "9", "9|567 8"),
-          ("12[34 56]78 ", "9", "129|7 8"),
-          ("12[34 56]78 ", "000", "1200 0|78"),
-          ("12[34 56]78 ", "0000", "1200 00|78 "),
-          ("12[34 56]78 ", "", "12|78 "),
-          ("12[34 56]78 ", "x", "12|78 "),
-          ("12[34 56]78 ", "0x9", "1209 |78"),
+            ("[123]", "9", "9|"),
+            ("[1234] ", "9", "9|"),
+            ("[1234] 5678 ", "9", "9|567 8"),
+            ("[1234] 5678 ", "9", "9|567 8"),
+            ("12[34 56]78 ", "9", "129|7 8"),
+            ("12[34 56]78 ", "000", "1200 0|78"),
+            ("12[34 56]78 ", "0000", "1200 00|78 "),
+            ("12[34 56]78 ", "", "12|78 "),
+            ("12[34 56]78 ", "x", "12|78 "),
+            ("12[34 56]78 ", "0x9", "1209 |78"),
 
-          ("[1234 5678 9012 34]", "", "|"),
-          ("[1234 5678 9012 34]", "987", "987|"),
-          ("1234 5678 9012 3[4]", "", "1234 5678 9012 3|")
+            ("[1234 5678 9012 34]", "", "|"),
+            ("[1234 5678 9012 34]", "987", "987|"),
+            ("1234 5678 9012 3[4]", "", "1234 5678 9012 3|"),
         ]
 
         for (inputState, insertion, expectedOutputState) in testCases {
@@ -166,7 +166,7 @@ final class FormattedNumberFieldTest: XCTestCase {
                 selectionEnd: inputState.selectionEnd,
                 rawInsertion: insertion,
                 maxCharacters: 10,
-                format: testFormat
+                format: testFormat,
             )
             XCTAssertEqual(result?.asTestState, expectedOutputState, "\(inputState) \(insertion)")
         }
@@ -179,7 +179,7 @@ final class FormattedNumberFieldTest: XCTestCase {
             ("AT123|", "."),
             ("BE1234567890|", "1"),
             ("HR1234|567890", "1"),
-            ("EE123456789|", "123")
+            ("EE123456789|", "123"),
         ]
         for (inputState, insertion) in noopCases {
             let result = FormattedNumberField.insertOrReplace(
@@ -189,37 +189,37 @@ final class FormattedNumberFieldTest: XCTestCase {
                 selectionEnd: inputState.selectionEnd,
                 rawInsertion: insertion,
                 maxCharacters: 12,
-                format: testFormat
+                format: testFormat,
             )
             XCTAssertNil(result, "\(inputState) \(insertion)")
         }
 
         let testCases: [(TestState, String, TestState)] = [
-          ("|", "A", "A|"),
-          ("|", "ABC", "ABC|"),
-          ("|", "ABC.", "ABC|"),
+            ("|", "A", "A|"),
+            ("|", "ABC", "ABC|"),
+            ("|", "ABC.", "ABC|"),
 
-          ("|", "ABCD", "ABCD |"),
-          ("FI2|", "1", "FI21 |"),
+            ("|", "ABCD", "ABCD |"),
+            ("FI2|", "1", "FI21 |"),
 
-          ("AB|3", "9", "AB9|3 "),
-          ("AB|34 ", "9", "AB9|3 4"),
-          ("AB34| ", "E", "AB34 E|"),
-          ("AB34 |", "E", "AB34 E|"),
+            ("AB|3", "9", "AB9|3 "),
+            ("AB|34 ", "9", "AB9|3 4"),
+            ("AB34| ", "E", "AB34 E|"),
+            ("AB34 |", "E", "AB34 E|"),
 
-          ("[AB3]", "9", "9|"),
-          ("[AB34] ", "9", "9|"),
-          ("[AB34] E678 ", "9", "9|E67 8"),
-          ("[AB34] E678 ", "9", "9|E67 8"),
-          ("AB[34 E6]78 ", "9", "AB9|7 8"),
-          ("AB[34 E6]78 ", "000", "AB00 0|78"),
-          ("AB[34 E6]78 ", "0000", "AB00 00|78 "),
-          ("AB[34 E6]78 ", "", "AB|78 "),
-          ("AB[34 E6]78 ", ".", "AB|78 "),
+            ("[AB3]", "9", "9|"),
+            ("[AB34] ", "9", "9|"),
+            ("[AB34] E678 ", "9", "9|E67 8"),
+            ("[AB34] E678 ", "9", "9|E67 8"),
+            ("AB[34 E6]78 ", "9", "AB9|7 8"),
+            ("AB[34 E6]78 ", "000", "AB00 0|78"),
+            ("AB[34 E6]78 ", "0000", "AB00 00|78 "),
+            ("AB[34 E6]78 ", "", "AB|78 "),
+            ("AB[34 E6]78 ", ".", "AB|78 "),
 
-          ("[AB34 E678 90AB 34]", "", "|"),
-          ("[AB34 E678 90AB 34]", "987", "987|"),
-          ("AB34 E678 90AB 3[4]", "", "AB34 E678 90AB 3|")
+            ("[AB34 E678 90AB 34]", "", "|"),
+            ("[AB34 E678 90AB 34]", "987", "987|"),
+            ("AB34 E678 90AB 3[4]", "", "AB34 E678 90AB 3|"),
         ]
 
         for (inputState, insertion, expectedOutputState) in testCases {
@@ -230,14 +230,14 @@ final class FormattedNumberFieldTest: XCTestCase {
                 selectionEnd: inputState.selectionEnd,
                 rawInsertion: insertion,
                 maxCharacters: 10,
-                format: testFormat
+                format: testFormat,
             )
             XCTAssertEqual(result?.asTestState, expectedOutputState, "\(inputState) \(insertion)")
         }
     }
 }
 
-fileprivate extension String {
+private extension String {
     func inserted(_ newElement: Character, at offset: Int) -> String {
         var result = self
         result.insert(newElement, at: index(result.startIndex, offsetBy: offset))
@@ -249,12 +249,12 @@ fileprivate extension String {
     }
 }
 
-fileprivate extension FormattedNumberField.OperationResult {
+private extension FormattedNumberField.OperationResult {
     var asTestState: FormattedNumberFieldTest.TestState {
         .init(
             formattedString: formattedString,
             selectionStart: cursorPosition,
-            selectionEnd: cursorPosition
+            selectionEnd: cursorPosition,
         )
     }
 }

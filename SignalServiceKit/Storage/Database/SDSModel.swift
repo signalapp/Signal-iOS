@@ -101,7 +101,7 @@ public extension SDSModel {
         transaction: DBReadTransaction,
         sql: String,
         batchSize: UInt,
-        block: (String, UnsafeMutablePointer<ObjCBool>) -> Void
+        block: (String, UnsafeMutablePointer<ObjCBool>) -> Void,
     ) {
         do {
             let cursor = try String.fetchCursor(transaction.database, sql: sql)

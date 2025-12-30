@@ -22,7 +22,7 @@ class CaptchaChallenge: SpamChallenge {
         super.init(expiry: expiry)
     }
 
-    override public func resolveChallenge() {
+    override func resolveChallenge() {
         super.resolveChallenge()
 
         if captchaToken == nil {
@@ -34,11 +34,13 @@ class CaptchaChallenge: SpamChallenge {
 
     private func requestCaptchaFromUser() {
         NotificationCenter.default.postOnMainThread(
-            name: SpamChallengeResolver.NeedsCaptchaNotification, object: nil)
+            name: SpamChallengeResolver.NeedsCaptchaNotification,
+            object: nil,
+        )
     }
 
     private func notifyServerOfCompletedCaptcha() {
-        guard let captchaToken = captchaToken else {
+        guard let captchaToken else {
             owsFailDebug("Expected valid token")
             state = .actionable
             return
@@ -46,7 +48,7 @@ class CaptchaChallenge: SpamChallenge {
 
         let request = OWSRequestFactory.recaptchChallengeResponse(
             serverToken: token,
-            captchaToken: captchaToken
+            captchaToken: captchaToken,
         )
 
         Task {
@@ -97,7 +99,9 @@ class CaptchaChallenge: SpamChallenge {
     // MARK: - <Codable>
 
     enum CodingKeys: String, CodingKey {
-        case token, captchaToken, failureCount
+        case token
+        case captchaToken
+        case failureCount
     }
 
     required init(from decoder: Decoder) throws {

@@ -38,7 +38,7 @@ public class LinkPreviewFetcherImpl: LinkPreviewFetcher {
         db: any DB,
         groupsV2: any GroupsV2,
         linkPreviewSettingStore: LinkPreviewSettingStore,
-        tsAccountManager: any TSAccountManager
+        tsAccountManager: any TSAccountManager,
     ) {
         self.authCredentialManager = authCredentialManager
         self.db = db
@@ -141,7 +141,7 @@ public class LinkPreviewFetcherImpl: LinkPreviewFetcher {
             securityPolicy: OWSURLSession.defaultSecurityPolicy,
             configuration: sessionConfig,
             extraHeaders: extraHeaders,
-            maxResponseSize: Self.maxFetchedContentSize
+            maxResponseSize: Self.maxFetchedContentSize,
         )
         urlSession.allowRedirects = true
         urlSession.customRedirectHandler = { request in
@@ -174,7 +174,7 @@ public class LinkPreviewFetcherImpl: LinkPreviewFetcher {
             throw LinkPreviewError.fetchFailure
         }
         let statusCode = response.responseStatusCode
-        guard statusCode >= 200 && statusCode < 300 else {
+        guard statusCode >= 200, statusCode < 300 else {
             Logger.warn("Invalid response: \(statusCode).")
             throw LinkPreviewError.fetchFailure
         }
@@ -206,7 +206,7 @@ public class LinkPreviewFetcherImpl: LinkPreviewFetcher {
             throw LinkPreviewError.fetchFailure
         }
         let statusCode = response.responseStatusCode
-        guard statusCode >= 200 && statusCode < 300 else {
+        guard statusCode >= 200, statusCode < 300 else {
             Logger.warn("Invalid response: \(statusCode).")
             throw LinkPreviewError.fetchFailure
         }
@@ -229,7 +229,7 @@ public class LinkPreviewFetcherImpl: LinkPreviewFetcher {
     }
 
     private static func previewThumbnail(srcImageData: Data?) async -> PreviewThumbnail? {
-        guard let srcImageData = srcImageData else {
+        guard let srcImageData else {
             return nil
         }
         let imageSource = DataImageSource(srcImageData)
@@ -269,7 +269,7 @@ public class LinkPreviewFetcherImpl: LinkPreviewFetcher {
 
             let imageSize = imageMetadata.pixelSize
             let shouldResize = imageSize.width > maxImageSize || imageSize.height > maxImageSize
-            if (imageMetadata.imageFormat == .jpeg || imageMetadata.imageFormat == .png), !shouldResize {
+            if imageMetadata.imageFormat == .jpeg || imageMetadata.imageFormat == .png, !shouldResize {
                 // If we don't need to resize or convert the file format,
                 // return the original data.
                 return PreviewThumbnail(imageData: srcImageData, mimetype: mimeType.rawValue)
@@ -323,7 +323,7 @@ public class LinkPreviewFetcherImpl: LinkPreviewFetcher {
             title: title,
             imageData: previewThumbnail?.imageData,
             imageMimeType: previewThumbnail?.mimetype,
-            isForwarded: false
+            isForwarded: false,
         )
     }
 
@@ -337,7 +337,7 @@ public class LinkPreviewFetcherImpl: LinkPreviewFetcher {
         let groupV2ContextInfo = try GroupV2ContextInfo.deriveFrom(masterKeyData: groupInviteLinkInfo.masterKey)
         let groupInviteLinkPreview = try await self.groupsV2.fetchGroupInviteLinkPreview(
             inviteLinkPassword: groupInviteLinkInfo.inviteLinkPassword,
-            groupSecretParams: groupV2ContextInfo.groupSecretParams
+            groupSecretParams: groupV2ContextInfo.groupSecretParams,
         )
         let previewThumbnail: PreviewThumbnail? = await {
             guard let avatarUrlPath = groupInviteLinkPreview.avatarUrlPath else {
@@ -347,7 +347,7 @@ public class LinkPreviewFetcherImpl: LinkPreviewFetcher {
             do {
                 avatarData = try await self.groupsV2.fetchGroupInviteLinkAvatar(
                     avatarUrlPath: avatarUrlPath,
-                    groupSecretParams: groupV2ContextInfo.groupSecretParams
+                    groupSecretParams: groupV2ContextInfo.groupSecretParams,
                 )
             } catch {
                 owsFailDebugUnlessNetworkFailure(error)
@@ -380,10 +380,10 @@ public class LinkPreviewFetcherImpl: LinkPreviewFetcher {
     }
 }
 
-fileprivate extension HTMLMetadata {
+private extension HTMLMetadata {
     var dateForLinkPreview: Date? {
         [ogPublishDateString, articlePublishDateString, ogModifiedDateString, articleModifiedDateString]
-            .first(where: {$0 != nil})?
+            .first(where: { $0 != nil })?
             .flatMap {
                 guard
                     let date = Date.ows_parseFromISO8601String($0),

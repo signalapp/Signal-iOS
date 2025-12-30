@@ -89,7 +89,7 @@ public protocol ProfileManager: ProfileManagerProtocol {
         unsavedRotatedProfileKey: Aes256Key?,
         mustReuploadAvatar: Bool,
         authedAccount: AuthedAccount,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) -> Promise<Void>
 
     func downloadAndDecryptLocalUserAvatarIfNeeded(authedAccount: AuthedAccount) async throws
@@ -104,7 +104,7 @@ public protocol ProfileManager: ProfileManagerProtocol {
     /// this method will download it twice.
     func downloadAndDecryptAvatar(
         avatarUrlPath: String,
-        profileKey: ProfileKey
+        profileKey: ProfileKey,
     ) async throws -> URL
 
     func updateProfile(
@@ -115,7 +115,7 @@ public protocol ProfileManager: ProfileManagerProtocol {
         profileBadges: [OWSUserProfileBadgeInfo],
         lastFetchDate: Date,
         userProfileWriter: UserProfileWriter,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     )
 
     func updateLocalProfile(
@@ -128,13 +128,13 @@ public protocol ProfileManager: ProfileManagerProtocol {
         unsavedRotatedProfileKey: Aes256Key?,
         userProfileWriter: UserProfileWriter,
         authedAccount: AuthedAccount,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) -> Promise<Void>
 
     func didSendOrReceiveMessage(
         serviceId: ServiceId,
         localIdentifiers: LocalIdentifiers,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     )
 
     func setProfileKeyData(
@@ -145,7 +145,7 @@ public protocol ProfileManager: ProfileManagerProtocol {
         userProfileWriter: UserProfileWriter,
         localIdentifiers: LocalIdentifiers,
         authedAccount: AuthedAccount,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     )
 
     func fillInProfileKeys(
@@ -153,7 +153,7 @@ public protocol ProfileManager: ProfileManagerProtocol {
         authoritativeProfileKeys: [Aci: Data],
         userProfileWriter: UserProfileWriter,
         localIdentifiers: LocalIdentifiers,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     )
 
     // MARK: -

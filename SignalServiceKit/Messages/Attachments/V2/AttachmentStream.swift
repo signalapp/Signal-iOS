@@ -32,7 +32,7 @@ public class AttachmentStream {
 
     private init(
         attachment: Attachment,
-        info: Attachment.StreamInfo
+        info: Attachment.StreamInfo,
     ) {
         self.attachment = attachment
         self.info = info
@@ -47,7 +47,7 @@ public class AttachmentStream {
         }
         self.init(
             attachment: attachment,
-            info: info
+            info: info,
         )
     }
 
@@ -124,7 +124,7 @@ public class AttachmentStream {
 
             tmpURL = OWSFileSystem.temporaryFileUrl(
                 fileName: normalizedFilename,
-                fileExtension: pathExtension
+                fileExtension: pathExtension,
             )
             try OWSFileSystem.deleteFileIfExists(url: tmpURL)
         } else {
@@ -137,7 +137,7 @@ public class AttachmentStream {
                 key: AttachmentKey(combinedKey: attachment.encryptionKey),
                 plaintextLength: UInt64(safeCast: info.unencryptedByteCount),
             ),
-            output: tmpURL
+            output: tmpURL,
         )
         return tmpURL
     }
@@ -151,7 +151,7 @@ public class AttachmentStream {
             metadata: DecryptionMetadata(
                 key: AttachmentKey(combinedKey: attachment.encryptionKey),
                 plaintextLength: UInt64(safeCast: info.unencryptedByteCount),
-            )
+            ),
         )
     }
 
@@ -191,7 +191,7 @@ public class AttachmentStream {
                 at: Self.absoluteAttachmentFileURL(relativeFilePath: stillImageRelativeFilePath),
                 attachmentKey: AttachmentKey(combinedKey: attachment.encryptionKey),
                 plaintextLength: nil,
-                mimeType: OWSMediaUtils.videoStillFrameMimeType.rawValue
+                mimeType: OWSMediaUtils.videoStillFrameMimeType.rawValue,
             )
         }
     }

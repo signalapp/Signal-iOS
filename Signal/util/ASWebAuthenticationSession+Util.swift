@@ -15,7 +15,7 @@ extension ASWebAuthenticationSession {
         if let error {
             owsAssertDebug(
                 callbackUrl == nil,
-                "ASWebAuthenticationSession returned an error and a callback URL. Does iOS have a bug?"
+                "ASWebAuthenticationSession returned an error and a callback URL. Does iOS have a bug?",
             )
             return .failure(error)
         }

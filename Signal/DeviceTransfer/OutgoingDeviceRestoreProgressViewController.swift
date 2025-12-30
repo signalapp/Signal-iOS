@@ -5,9 +5,9 @@
 
 import Foundation
 import Lottie
-import SwiftUI
-import SignalUI
 import SignalServiceKit
+import SignalUI
+import SwiftUI
 
 class OutgoingDeviceRestoreProgressViewController: HostingController<TransferStatusView> {
     init(viewModel: TransferStatusViewModel) {
@@ -15,6 +15,7 @@ class OutgoingDeviceRestoreProgressViewController: HostingController<TransferSta
         view.backgroundColor = UIColor.Signal.background
         modalPresentationStyle = .overFullScreen
     }
+
     override var prefersNavigationBarHidden: Bool { true }
 }
 

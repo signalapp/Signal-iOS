@@ -4,8 +4,8 @@
 //
 
 public import SwiftUI
-import SignalServiceKit
 import Combine
+import SignalServiceKit
 
 public protocol CountryCodeViewControllerDelegate: AnyObject {
     func countryCodeViewController(_ vc: CountryCodeViewController, didSelectCountry: PhoneNumberCountry)
@@ -35,7 +35,7 @@ public class CountryCodeViewController: HostingController<CountryCodePicker> {
 
     public var interfaceOrientationMask: UIInterfaceOrientationMask = UIDevice.current.defaultSupportedOrientations
 
-    public override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+    override public var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         interfaceOrientationMask
     }
 
@@ -48,7 +48,7 @@ public class CountryCodeViewController: HostingController<CountryCodePicker> {
         searchController.searchBar.delegate = viewModel
         searchController.searchBar.placeholder = OWSLocalizedString(
             "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT",
-            comment: "Placeholder text indicating the user can search for contacts by name or phone number."
+            comment: "Placeholder text indicating the user can search for contacts by name or phone number.",
         )
         self.navigationItem.searchController = searchController
 

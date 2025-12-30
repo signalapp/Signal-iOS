@@ -40,7 +40,7 @@ class SyncPushTokensJob: NSObject {
         }
     }
 
-    public typealias ApnRegistrationId = RegistrationRequestFactory.ApnRegistrationId
+    typealias ApnRegistrationId = RegistrationRequestFactory.ApnRegistrationId
 
     private func run(shouldRotateAPNSToken: Bool) async throws {
         let regResult = try await AppEnvironment.shared.pushRegistrationManagerRef.requestPushTokens(forceRotation: shouldRotateAPNSToken)
@@ -106,7 +106,7 @@ class SyncPushTokensJob: NSObject {
 }
 
 private func redact(_ string: String?) -> String {
-    guard let string = string else { return "nil" }
+    guard let string else { return "nil" }
 #if DEBUG
     return string
 #else

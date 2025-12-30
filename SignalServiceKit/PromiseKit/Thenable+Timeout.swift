@@ -8,7 +8,7 @@ import Foundation
 public extension Thenable {
     func nilTimeout(
         on scheduler: Scheduler? = nil,
-        seconds: TimeInterval
+        seconds: TimeInterval,
     ) -> Promise<Value?> {
         let timeout: Promise<Value?> = Guarantee.after(on: scheduler, seconds: seconds).asPromise().map(on: scheduler) { nil }
 
@@ -18,7 +18,7 @@ public extension Thenable {
             },
             timeout.map(on: scheduler) { (a: Value?) -> (Value?, Bool) in
                 (a, true)
-            }
+            },
         ]).map(on: scheduler) { result, didTimeout in
             if didTimeout {
                 Logger.info("Timed out, returning nil value.")
@@ -30,7 +30,7 @@ public extension Thenable {
     func timeout(
         on scheduler: Scheduler? = nil,
         seconds: TimeInterval,
-        substituteValue: Value
+        substituteValue: Value,
     ) -> Promise<Value> {
         let timeout: Promise<Value> = Guarantee.after(on: scheduler, seconds: seconds).asPromise().map(on: scheduler) {
             return substituteValue
@@ -38,7 +38,7 @@ public extension Thenable {
 
         return Promise.race([
             map(on: scheduler) { ($0, false) },
-            timeout.map(on: scheduler) { ($0, true) }
+            timeout.map(on: scheduler) { ($0, true) },
         ]).map(on: scheduler) { result, didTimeout in
             if didTimeout {
                 Logger.info("Timed out, returning substitute value.")
@@ -54,7 +54,7 @@ public extension Promise {
         seconds: TimeInterval,
         ticksWhileSuspended: Bool = false,
         description: String? = nil,
-        timeoutErrorBlock: @escaping () -> Error
+        timeoutErrorBlock: @escaping () -> Error,
     ) -> Promise<Value> {
         let timeout: Promise<Value>
         if ticksWhileSuspended {
@@ -72,7 +72,7 @@ public extension Promise {
             case is TimeoutError:
                 let underlyingError = timeoutErrorBlock()
                 let prefix: String
-                if let description = description {
+                if let description {
                     prefix = "\(description) timed out:"
                 } else {
                     prefix = "Timed out:"
@@ -94,7 +94,7 @@ enum TimeoutError: Error {
 public extension Thenable where Value == Void {
     func timeout(
         on scheduler: Scheduler? = nil,
-        seconds: TimeInterval
+        seconds: TimeInterval,
     ) -> Promise<Void> {
         return timeout(on: scheduler, seconds: seconds, substituteValue: ())
     }

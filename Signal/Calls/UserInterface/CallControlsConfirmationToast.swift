@@ -40,36 +40,36 @@ class CallControlsConfirmationToastView: UIView {
                 if isOn {
                     return OWSLocalizedString(
                         "MUTE_CONFIRMATION_TOAST_LABEL",
-                        comment: "Text for a toast confirming that the mic has been muted for a call."
+                        comment: "Text for a toast confirming that the mic has been muted for a call.",
                     )
                 } else {
                     return OWSLocalizedString(
                         "UNMUTE_CONFIRMATION_TOAST_LABEL",
-                        comment: "Text for a toast confirming that the mic has been unmuted for a call."
+                        comment: "Text for a toast confirming that the mic has been unmuted for a call.",
                     )
                 }
             case .speakerphone(let isOn):
                 if isOn {
                     return OWSLocalizedString(
                         "SPEAKERPHONE_ON_CONFIRMATION_TOAST_LABEL",
-                        comment: "Text for a toast confirming that the speakerphone has been turned on for a call."
+                        comment: "Text for a toast confirming that the speakerphone has been turned on for a call.",
                     )
                 } else {
                     return OWSLocalizedString(
                         "SPEAKERPHONE_OFF_CONFIRMATION_TOAST_LABEL",
-                        comment: "Text for a toast confirming that the speakerphone has been turned off for a call."
+                        comment: "Text for a toast confirming that the speakerphone has been turned off for a call.",
                     )
                 }
             case .ring(let isOn):
                 if isOn {
                     return OWSLocalizedString(
                         "RING_ON_CONFIRMATION_TOAST_LABEL",
-                        comment: "Text for a toast confirming that ringing has been turned on for a call."
+                        comment: "Text for a toast confirming that ringing has been turned on for a call.",
                     )
                 } else {
                     return OWSLocalizedString(
                         "RING_OFF_CONFIRMATION_TOAST_LABEL",
-                        comment: "Text for a toast confirming that ringing has been turned off for a call."
+                        comment: "Text for a toast confirming that ringing has been turned off for a call.",
                     )
                 }
             }
@@ -97,7 +97,7 @@ class CallControlsConfirmationToastView: UIView {
         imageView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             imageView.widthAnchor.constraint(equalToConstant: Style.imageDimension),
-            imageView.heightAnchor.constraint(equalToConstant: Style.imageDimension)
+            imageView.heightAnchor.constraint(equalToConstant: Style.imageDimension),
         ])
         // Label
         let label = UILabel()
@@ -173,7 +173,7 @@ class CallControlsConfirmationToastManager {
         let appearAnimator = UIViewPropertyAnimator(
             duration: 0.2,
             springDamping: 0.8,
-            springResponse: 0.2
+            springResponse: 0.2,
         )
         appearAnimator.addAnimations {
             toast.alpha = 1
@@ -190,7 +190,7 @@ class CallControlsConfirmationToastManager {
         let disappearAnimator = UIViewPropertyAnimator(
             duration: 0.2,
             springDamping: 0.8,
-            springResponse: 0.2
+            springResponse: 0.2,
         )
         disappearAnimator.addAnimations {
             toast.alpha = 0
@@ -201,7 +201,7 @@ class CallControlsConfirmationToastManager {
         return disappearAnimator
     }
 
-    public func forceDismissToast() {
+    func forceDismissToast() {
         if let toast {
             self.disappearAnimator(toast: toast).startAnimation()
         }

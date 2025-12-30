@@ -5,13 +5,13 @@
 
 import Testing
 
-@testable import SignalServiceKit
 @testable import Signal
+@testable import SignalServiceKit
 
 @MainActor
 @Suite(.serialized)
 final class BackupSettingsAttachmentDownloadTrackerTest: BackupSettingsAttachmentTrackerTest<
-    BackupSettingsAttachmentDownloadTracker.DownloadUpdate
+    BackupSettingsAttachmentDownloadTracker.DownloadUpdate,
 > {
     typealias DownloadUpdate = BackupSettingsAttachmentDownloadTracker.DownloadUpdate
 
@@ -31,19 +31,19 @@ final class BackupSettingsAttachmentDownloadTrackerTest: BackupSettingsAttachmen
                 update: DownloadUpdate(.running, downloaded: 0, total: 4),
                 nextSteps: {
                     downloadProgress.progressMock = OWSProgress(completedUnitCount: 1, totalUnitCount: 4)
-                }
+                },
             ),
             ExpectedUpdate(
                 update: DownloadUpdate(.running, downloaded: 1, total: 4),
                 nextSteps: {
                     downloadProgress.progressMock = OWSProgress(completedUnitCount: 4, totalUnitCount: 4)
-                }
+                },
             ),
             ExpectedUpdate(
                 update: DownloadUpdate(.running, downloaded: 4, total: 4),
                 nextSteps: {
                     downloadQueueStatusReporter.currentStatusMock = .empty
-                }
+                },
             ),
             ExpectedUpdate(update: nil, nextSteps: {}),
         ]
@@ -60,7 +60,7 @@ final class BackupSettingsAttachmentDownloadTrackerTest: BackupSettingsAttachmen
 
         let downloadTracker = BackupSettingsAttachmentDownloadTracker(
             backupAttachmentDownloadQueueStatusReporter: downloadQueueStatusReporter,
-            backupAttachmentDownloadProgress: downloadProgress
+            backupAttachmentDownloadProgress: downloadProgress,
         )
 
         let expectedUpdates: [ExpectedUpdate] = [
@@ -68,25 +68,25 @@ final class BackupSettingsAttachmentDownloadTrackerTest: BackupSettingsAttachmen
                 update: DownloadUpdate(.suspended, downloaded: 0, total: 4),
                 nextSteps: {
                     downloadQueueStatusReporter.currentStatusMock = .running
-                }
+                },
             ),
             ExpectedUpdate(
                 update: DownloadUpdate(.running, downloaded: 0, total: 4),
                 nextSteps: {
                     downloadProgress.progressMock = OWSProgress(completedUnitCount: 1, totalUnitCount: 4)
-                }
+                },
             ),
             ExpectedUpdate(
                 update: DownloadUpdate(.running, downloaded: 1, total: 4),
                 nextSteps: {
                     downloadProgress.progressMock = OWSProgress(completedUnitCount: 4, totalUnitCount: 4)
-                }
+                },
             ),
             ExpectedUpdate(
                 update: DownloadUpdate(.running, downloaded: 4, total: 4),
                 nextSteps: {
                     downloadQueueStatusReporter.currentStatusMock = .empty
-                }
+                },
             ),
             ExpectedUpdate(update: nil, nextSteps: {}),
         ]
@@ -105,7 +105,7 @@ final class BackupSettingsAttachmentDownloadTrackerTest: BackupSettingsAttachmen
 
         let downloadTracker = BackupSettingsAttachmentDownloadTracker(
             backupAttachmentDownloadQueueStatusReporter: downloadQueueStatusReporter,
-            backupAttachmentDownloadProgress: downloadProgress
+            backupAttachmentDownloadProgress: downloadProgress,
         )
 
         let expectedUpdates: [ExpectedUpdate] = [
@@ -113,11 +113,11 @@ final class BackupSettingsAttachmentDownloadTrackerTest: BackupSettingsAttachmen
                 update: DownloadUpdate(.running, downloaded: 50, total: 100),
                 nextSteps: {
                     downloadQueueStatusReporter.currentStatusMock = .lowDiskSpace
-                }
+                },
             ),
             ExpectedUpdate(
                 update: DownloadUpdate(.outOfDiskSpace(bytesRequired: 50), downloaded: 50, total: 100),
-                nextSteps: {}
+                nextSteps: {},
             ),
         ]
 
@@ -135,7 +135,7 @@ final class BackupSettingsAttachmentDownloadTrackerTest: BackupSettingsAttachmen
 
         let downloadTracker = BackupSettingsAttachmentDownloadTracker(
             backupAttachmentDownloadQueueStatusReporter: downloadQueueStatusReporter,
-            backupAttachmentDownloadProgress: downloadProgress
+            backupAttachmentDownloadProgress: downloadProgress,
         )
 
         let expectedUpdates: [ExpectedUpdate] = [
@@ -143,11 +143,11 @@ final class BackupSettingsAttachmentDownloadTrackerTest: BackupSettingsAttachmen
                 update: DownloadUpdate(.running, downloaded: 4, total: 12),
                 nextSteps: {
                     downloadQueueStatusReporter.currentStatusMock = .lowDiskSpace
-                }
+                },
             ),
             ExpectedUpdate(
                 update: DownloadUpdate(.outOfDiskSpace(bytesRequired: 10), downloaded: 4, total: 12),
-                nextSteps: {}
+                nextSteps: {},
             ),
         ]
 
@@ -163,7 +163,7 @@ final class BackupSettingsAttachmentDownloadTrackerTest: BackupSettingsAttachmen
 
         let downloadTracker = BackupSettingsAttachmentDownloadTracker(
             backupAttachmentDownloadQueueStatusReporter: downloadQueueStatusReporter,
-            backupAttachmentDownloadProgress: downloadProgress
+            backupAttachmentDownloadProgress: downloadProgress,
         )
 
         let firstExpectedUpdates: [ExpectedUpdate] = [
@@ -171,11 +171,11 @@ final class BackupSettingsAttachmentDownloadTrackerTest: BackupSettingsAttachmen
                 update: nil,
                 nextSteps: {
                     downloadQueueStatusReporter.currentStatusMock = .running
-                }
+                },
             ),
             ExpectedUpdate(
                 update: DownloadUpdate(.running, downloaded: 0, total: 4),
-                nextSteps: {}
+                nextSteps: {},
             ),
         ]
         await runTest(updateStream: downloadTracker.updates(), expectedUpdates: firstExpectedUpdates)
@@ -185,17 +185,17 @@ final class BackupSettingsAttachmentDownloadTrackerTest: BackupSettingsAttachmen
                 update: DownloadUpdate(.running, downloaded: 0, total: 1),
                 nextSteps: {
                     downloadProgress.progressMock = OWSProgress(completedUnitCount: 1, totalUnitCount: 1)
-                }
+                },
             ),
             ExpectedUpdate(
                 update: DownloadUpdate(.running, downloaded: 1, total: 1),
                 nextSteps: {
                     downloadQueueStatusReporter.currentStatusMock = .empty
-                }
+                },
             ),
             ExpectedUpdate(
                 update: nil,
-                nextSteps: {}
+                nextSteps: {},
             ),
         ]
         await runTest(updateStream: downloadTracker.updates(), expectedUpdates: secondExpectedUpdates)
@@ -208,7 +208,7 @@ final class BackupSettingsAttachmentDownloadTrackerTest: BackupSettingsAttachmen
 
         let downloadTracker = BackupSettingsAttachmentDownloadTracker(
             backupAttachmentDownloadQueueStatusReporter: downloadQueueStatusReporter,
-            backupAttachmentDownloadProgress: downloadProgress
+            backupAttachmentDownloadProgress: downloadProgress,
         )
 
         let expectedUpdates: [ExpectedUpdate] = [
@@ -216,29 +216,29 @@ final class BackupSettingsAttachmentDownloadTrackerTest: BackupSettingsAttachmen
                 update: nil,
                 nextSteps: {
                     downloadQueueStatusReporter.currentStatusMock = .running
-                }
+                },
             ),
             ExpectedUpdate(
                 update: DownloadUpdate(.running, downloaded: 0, total: 1),
                 nextSteps: {
                     downloadProgress.progressMock = OWSProgress(completedUnitCount: 1, totalUnitCount: 1)
-                }
+                },
             ),
             ExpectedUpdate(
                 update: DownloadUpdate(.running, downloaded: 1, total: 1),
                 nextSteps: {
                     downloadQueueStatusReporter.currentStatusMock = .empty
-                }
+                },
             ),
             ExpectedUpdate(
                 update: nil,
-                nextSteps: {}
+                nextSteps: {},
             ),
         ]
 
         await runTest(
             updateStreams: [downloadTracker.updates(), downloadTracker.updates()],
-            expectedUpdates: expectedUpdates
+            expectedUpdates: expectedUpdates,
         )
     }
 }
@@ -293,6 +293,7 @@ private class MockDownloadQueueStatusReporter: BackupAttachmentDownloadQueueStat
             )
         }
     }
+
     func currentStatus(for mode: BackupAttachmentDownloadQueueMode) -> BackupAttachmentDownloadQueueStatus {
         switch mode {
         case .fullsize:

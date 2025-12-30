@@ -19,7 +19,7 @@ struct UploadEndpointCDN2: UploadEndpoint {
         form: Upload.Form,
         signalService: OWSSignalServiceProtocol,
         fileSystem: Upload.Shims.FileSystem,
-        logger: PrefixedLogger
+        logger: PrefixedLogger,
     ) {
         self.uploadForm = form
         self.signalService = signalService
@@ -31,7 +31,7 @@ struct UploadEndpointCDN2: UploadEndpoint {
     //
     // See: https://cloud.google.com/storage/docs/performing-resumable-uploads#xml-api
     // NOTE: follow the "XML API" instructions.
-    internal func fetchResumableUploadLocation() async throws -> URL {
+    func fetchResumableUploadLocation() async throws -> URL {
         return try await _fetchResumableUploadLocation(attemptCount: 0)
     }
 
@@ -57,7 +57,7 @@ struct UploadEndpointCDN2: UploadEndpoint {
                 urlString,
                 method: .post,
                 headers: headers,
-                body: nil
+                body: nil,
             )
 
             guard response.responseStatusCode == 201 else {
@@ -84,8 +84,8 @@ struct UploadEndpointCDN2: UploadEndpoint {
     }
 
     // Determine how much has already been uploaded.
-    internal func getResumableUploadProgress<Metadata: UploadMetadata>(
-        attempt: Upload.Attempt<Metadata>
+    func getResumableUploadProgress<Metadata: UploadMetadata>(
+        attempt: Upload.Attempt<Metadata>,
     ) async throws -> Upload.ResumeProgress {
         var headers = HttpHeaders()
         headers["Content-Length"] = "0"
@@ -96,7 +96,7 @@ struct UploadEndpointCDN2: UploadEndpoint {
             attempt.uploadLocation.absoluteString,
             method: .put,
             headers: headers,
-            body: nil
+            body: nil,
         )
 
         let statusCode = response.responseStatusCode
@@ -148,7 +148,7 @@ struct UploadEndpointCDN2: UploadEndpoint {
     func performUpload<Metadata: UploadMetadata>(
         startPoint: Int,
         attempt: Upload.Attempt<Metadata>,
-        progress: OWSProgressSource?
+        progress: OWSProgressSource?,
     ) async throws(Upload.Error) {
         let totalDataLength = attempt.encryptedDataLength
         var headers = HttpHeaders()
@@ -156,7 +156,7 @@ struct UploadEndpointCDN2: UploadEndpoint {
         let (uploadData, truncated) = try readUploadFileChunk(
             fileSystem: fileSystem,
             url: attempt.fileUrl,
-            startIndex: startPoint
+            startIndex: startPoint,
         )
 
         guard uploadData.count > 0 else {
@@ -180,7 +180,7 @@ struct UploadEndpointCDN2: UploadEndpoint {
                 method: .put,
                 headers: headers,
                 requestData: uploadData,
-                progress: progress
+                progress: progress,
             )
             switch response.responseStatusCode {
             case 200, 201:

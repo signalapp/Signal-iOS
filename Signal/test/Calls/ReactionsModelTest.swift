@@ -14,7 +14,7 @@ final class ReactionsModelTest: XCTestCase {
         expectedToAdd: [Reaction],
         expectedToMove: [Reaction],
         expectedSlotsToMove: Int,
-        expectedToRemove: [Reaction]
+        expectedToRemove: [Reaction],
     ) -> Bool {
         guard let changes else {
             return false
@@ -44,8 +44,8 @@ final class ReactionsModelTest: XCTestCase {
                 expectedToAdd: [r1],
                 expectedToMove: [],
                 expectedSlotsToMove: 0,
-                expectedToRemove: []
-            )
+                expectedToRemove: [],
+            ),
         )
 
         // Add two together.
@@ -58,8 +58,8 @@ final class ReactionsModelTest: XCTestCase {
                 expectedToAdd: [r2, r3],
                 expectedToMove: [r1],
                 expectedSlotsToMove: 2,
-                expectedToRemove: []
-            )
+                expectedToRemove: [],
+            ),
         )
 
         // Make no changes and make sure we register no changes.
@@ -79,8 +79,8 @@ final class ReactionsModelTest: XCTestCase {
                 expectedToAdd: [r5, r6, r7, r8, r9], // drop all but last 5
                 expectedToMove: [],
                 expectedSlotsToMove: 0,
-                expectedToRemove: [r1, r2, r3]
-            )
+                expectedToRemove: [r1, r2, r3],
+            ),
         )
 
         // Add a couple more to get changes in all categories.
@@ -93,8 +93,8 @@ final class ReactionsModelTest: XCTestCase {
                 expectedToAdd: [r10, r11],
                 expectedToMove: [r7, r8, r9],
                 expectedSlotsToMove: 2,
-                expectedToRemove: [r5, r6]
-            )
+                expectedToRemove: [r5, r6],
+            ),
         )
 
         // Make separate adds/removes and make sure the changeset coalesces all changes.
@@ -109,8 +109,8 @@ final class ReactionsModelTest: XCTestCase {
                 expectedToAdd: [r12],
                 expectedToMove: [r10, r11],
                 expectedSlotsToMove: 1,
-                expectedToRemove: [r7, r8, r9]
-            )
+                expectedToRemove: [r7, r8, r9],
+            ),
         )
     }
 }

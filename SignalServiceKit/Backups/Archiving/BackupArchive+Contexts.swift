@@ -35,7 +35,7 @@ extension BackupArchive {
             currentBackupAttachmentUploadEra: String,
             includedContentFilter: IncludedContentFilter,
             startTimestampMs: UInt64,
-            tx: DBReadTransaction
+            tx: DBReadTransaction,
         ) {
             self.bencher = bencher
             self.attachmentByteCounter = attachmentByteCounter
@@ -59,7 +59,7 @@ extension BackupArchive {
             startTimestampMs: UInt64,
             attachmentByteCounter: BackupArchiveAttachmentByteCounter,
             isPrimaryDevice: Bool,
-            tx: DBWriteTransaction
+            tx: DBWriteTransaction,
         ) {
             self.startTimestampMs = startTimestampMs
             self.attachmentByteCounter = attachmentByteCounter

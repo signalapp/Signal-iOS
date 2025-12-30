@@ -63,14 +63,14 @@ public final class OWSRecipientIdentity: NSObject, SDSCodableModel, Decodable {
     public let createdAt: Date
     public let isFirstKnownKey: Bool
 
-    internal(set) public var verificationState: OWSVerificationState
+    public internal(set) var verificationState: OWSVerificationState
 
     public init(
         uniqueId: String,
         identityKey: Data,
         isFirstKnownKey: Bool,
         createdAt: Date,
-        verificationState: OWSVerificationState
+        verificationState: OWSVerificationState,
     ) {
         self.uniqueId = uniqueId
         self.identityKey = identityKey
@@ -136,21 +136,21 @@ public final class OWSRecipientIdentity: NSObject, SDSCodableModel, Decodable {
 
     public class func groupContainsUnverifiedMember(
         _ threadUniqueId: String,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> Bool {
         let identityKeys = groupMemberIdentityKeys(
             in: threadUniqueId,
             matching: .verified,
             negated: true,
             limit: 1,
-            tx: transaction
+            tx: transaction,
         )
         return !identityKeys.isEmpty
     }
 
     public class func noLongerVerifiedIdentityKeys(
         in threadUniqueId: String,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> [SignalServiceAddress: Data] {
         return groupMemberIdentityKeys(in: threadUniqueId, matching: .noLongerVerified, negated: false, tx: tx)
     }
@@ -158,7 +158,7 @@ public final class OWSRecipientIdentity: NSObject, SDSCodableModel, Decodable {
     private class func sqlQueryToFetchIdentityKeys(
         matching verificationState: OWSVerificationState,
         negated: Bool,
-        limit: Int
+        limit: Int,
     ) -> String {
         let limitClause: String
         if limit < Int.max {
@@ -185,25 +185,25 @@ public final class OWSRecipientIdentity: NSObject, SDSCodableModel, Decodable {
         let recipientIdentity_identityKey = OWSRecipientIdentity.columnName(.identityKey, fullyQualified: true)
         let exceptClause = "\(recipient_aciString) != ?"
         let sql =
-        """
-            SELECT \(recipient_aciString), \(recipient_phoneNumber), \(recipient_pniString), \(recipientIdentity_identityKey)
-            FROM
-                \(SignalRecipient.databaseTableName),
-                \(OWSRecipientIdentity.databaseTableName),
-                \(TSGroupMember.databaseTableName)
-            WHERE
-                \(recipient_uniqueID) = \(recipientIdentity_uniqueID)
-                AND \(groupMember_groupThreadID) = ?
-                AND (
-                    \(groupMember_serviceIdString) = \(recipient_aciString)
-                    OR \(groupMember_serviceIdString) = \(recipient_pniString)
-                    OR \(groupMember_phoneNumber) = \(recipient_phoneNumber)
-                )
-                AND \(exceptClause)
-                AND \(stateClause)
-            ORDER BY \(recipient_id)
-            \(limitClause)
-        """
+            """
+                SELECT \(recipient_aciString), \(recipient_phoneNumber), \(recipient_pniString), \(recipientIdentity_identityKey)
+                FROM
+                    \(SignalRecipient.databaseTableName),
+                    \(OWSRecipientIdentity.databaseTableName),
+                    \(TSGroupMember.databaseTableName)
+                WHERE
+                    \(recipient_uniqueID) = \(recipientIdentity_uniqueID)
+                    AND \(groupMember_groupThreadID) = ?
+                    AND (
+                        \(groupMember_serviceIdString) = \(recipient_aciString)
+                        OR \(groupMember_serviceIdString) = \(recipient_pniString)
+                        OR \(groupMember_phoneNumber) = \(recipient_phoneNumber)
+                    )
+                    AND \(exceptClause)
+                    AND \(stateClause)
+                ORDER BY \(recipient_id)
+                \(limitClause)
+            """
         return sql
     }
 
@@ -212,7 +212,7 @@ public final class OWSRecipientIdentity: NSObject, SDSCodableModel, Decodable {
         matching verificationState: OWSVerificationState,
         negated: Bool,
         limit: Int = Int.max,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> [SignalServiceAddress: Data] {
         // There should always be a recipient UUID, but just in case there isn't provide a fake value that won't
         // affect the results of the query.
@@ -226,11 +226,11 @@ public final class OWSRecipientIdentity: NSObject, SDSCodableModel, Decodable {
                 let normalizedAddress = NormalizedDatabaseRecordAddress(
                     aci: (row[0] as String?).flatMap { try? Aci.parseFrom(serviceIdString: $0) },
                     phoneNumber: row[1],
-                    pni: (row[2] as String?).flatMap { try? Pni.parseFrom(serviceIdString: $0) }
+                    pni: (row[2] as String?).flatMap { try? Pni.parseFrom(serviceIdString: $0) },
                 )
                 let address = SignalServiceAddress(
                     serviceId: normalizedAddress?.serviceId,
-                    phoneNumber: normalizedAddress?.phoneNumber
+                    phoneNumber: normalizedAddress?.phoneNumber,
                 )
                 result[address] = row[3]
             }
@@ -246,7 +246,7 @@ public final class OWSRecipientIdentity: NSObject, SDSCodableModel, Decodable {
         destinationAci: AciObjC,
         identityKey: Data,
         verificationState: OWSVerificationState,
-        paddingBytesLength: UInt
+        paddingBytesLength: UInt,
     ) -> SSKProtoVerified {
         owsAssertDebug(identityKey.count == OWSIdentityManagerImpl.Constants.identityKeyLength)
         // We only sync users marking as verified. Never sync the conflicted state;

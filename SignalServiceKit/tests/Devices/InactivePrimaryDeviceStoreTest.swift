@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-@testable import SignalServiceKit
 import XCTest
+@testable import SignalServiceKit
 
 class InactivePrimaryDeviceStoreTest: XCTestCase {
     private let db: any DB = InMemoryDB()

@@ -9,7 +9,7 @@
 protocol IncomingCallLogEventSyncMessageManager {
     func handleIncomingSyncMessage(
         incomingSyncMessage: IncomingCallLogEventSyncMessageParams,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     )
 }
 
@@ -23,7 +23,7 @@ class IncomingCallLogEventSyncMessageManagerImpl: IncomingCallLogEventSyncMessag
     init(
         callRecordConversationIdAdapter: CallRecordSyncMessageConversationIdAdapter,
         deleteAllCallsJobQueue: Shims.DeleteAllCallsJobQueue,
-        missedCallManager: CallRecordMissedCallManager
+        missedCallManager: CallRecordMissedCallManager,
     ) {
         self.callRecordConversationIdAdapter = callRecordConversationIdAdapter
         self.deleteAllCallsJobQueue = deleteAllCallsJobQueue
@@ -32,7 +32,7 @@ class IncomingCallLogEventSyncMessageManagerImpl: IncomingCallLogEventSyncMessag
 
     func handleIncomingSyncMessage(
         incomingSyncMessage: IncomingCallLogEventSyncMessageParams,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         /// A `CallLogEvent` sync message contains information identifying a
         /// call whose `callBeganTimestamp` serves as a "reference point" for
@@ -45,7 +45,7 @@ class IncomingCallLogEventSyncMessageManagerImpl: IncomingCallLogEventSyncMessag
                     return try callRecordConversationIdAdapter.hydrate(
                         conversationId: callIdentifiers.conversationId,
                         callId: callIdentifiers.callId,
-                        tx: tx
+                        tx: tx,
                     )
                 } catch {
                     owsFailDebug("\(error)")
@@ -59,19 +59,19 @@ class IncomingCallLogEventSyncMessageManagerImpl: IncomingCallLogEventSyncMessag
             case .cleared:
                 deleteAllCallsJobQueue.deleteAllCalls(
                     before: .callRecord(referencedCallRecord),
-                    tx: tx
+                    tx: tx,
                 )
             case .markedAsRead:
                 missedCallManager.markUnreadCallsAsRead(
                     beforeTimestamp: referencedCallRecord.callBeganTimestamp,
                     sendSyncMessage: false,
-                    tx: tx
+                    tx: tx,
                 )
             case .markedAsReadInConversation:
                 missedCallManager.markUnreadCallsInConversationAsRead(
                     beforeCallRecord: referencedCallRecord,
                     sendSyncMessage: false,
-                    tx: tx
+                    tx: tx,
                 )
             }
         } else {
@@ -79,13 +79,13 @@ class IncomingCallLogEventSyncMessageManagerImpl: IncomingCallLogEventSyncMessag
             case .cleared:
                 deleteAllCallsJobQueue.deleteAllCalls(
                     before: .timestamp(incomingSyncMessage.anchorTimestamp),
-                    tx: tx
+                    tx: tx,
                 )
             case .markedAsRead:
                 missedCallManager.markUnreadCallsAsRead(
                     beforeTimestamp: incomingSyncMessage.anchorTimestamp,
                     sendSyncMessage: false,
-                    tx: tx
+                    tx: tx,
                 )
             case .markedAsReadInConversation:
                 /// This case was added concurrently with the introduction of
@@ -114,7 +114,7 @@ extension IncomingCallLogEventSyncMessageManagerImpl {
 protocol _IncomingCallLogEventSyncMessageManagerImpl_DeleteAllCallsJobQueue_Shim {
     func deleteAllCalls(
         before: CallRecordDeleteAllJobQueue.DeleteAllBeforeOptions,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     )
 }
 
@@ -127,12 +127,12 @@ class _IncomingCallLogEventSyncMessageManagerImpl_DeleteAllCallsJobQueue_Wrapper
 
     func deleteAllCalls(
         before deleteAllBefore: CallRecordDeleteAllJobQueue.DeleteAllBeforeOptions,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         deleteAllCallsJobQueue.addJob(
             sendDeleteAllSyncMessage: false,
             deleteAllBefore: deleteAllBefore,
-            tx: tx
+            tx: tx,
         )
     }
 }

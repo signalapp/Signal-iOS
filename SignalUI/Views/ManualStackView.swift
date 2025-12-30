@@ -59,10 +59,12 @@ open class ManualStackView: ManualLayoutView {
     }
 
     public var asConfig: Config {
-        Config(axis: self.axis,
-               alignment: self.alignment,
-               spacing: self.spacing,
-               layoutMargins: self.layoutMargins)
+        Config(
+            axis: self.axis,
+            alignment: self.alignment,
+            spacing: self.spacing,
+            layoutMargins: self.layoutMargins,
+        )
     }
 
     // MARK: - Arrangement
@@ -113,18 +115,18 @@ open class ManualStackView: ManualLayoutView {
         arrangement = nil
     }
 
-    public override func sizeThatFits(_ size: CGSize) -> CGSize {
+    override public func sizeThatFits(_ size: CGSize) -> CGSize {
         guard !isHidden else {
             return .zero
         }
-        guard let measurement = measurement else {
+        guard let measurement else {
             owsFailDebug("Missing measurement: \(self.name).")
             return super.sizeThatFits(size)
         }
         return measurement.measuredSize
     }
 
-    public override func addSubview(_ view: UIView) {
+    override public func addSubview(_ view: UIView) {
         owsAssertDebug(!subviews.contains(view))
         super.addSubview(view)
         invalidateArrangement()
@@ -150,7 +152,7 @@ open class ManualStackView: ManualLayoutView {
         }
     }
 
-    public override func willRemoveSubview(_ view: UIView) {
+    override public func willRemoveSubview(_ view: UIView) {
         arrangedSubviews = self.arrangedSubviews.filter { view != $0 }
         super.willRemoveSubview(view)
         invalidateArrangement()
@@ -162,7 +164,7 @@ open class ManualStackView: ManualLayoutView {
         arrangedSubviews = arrangedSubviews.filter { $0 != view }
     }
 
-    public override func layoutSubviews() {
+    override public func layoutSubviews() {
         AssertIsOnMainThread()
 
         // We apply the layout blocks _after_ the arrangement.
@@ -180,9 +182,11 @@ open class ManualStackView: ManualLayoutView {
         applyLayoutBlocks()
     }
 
-    public func configure(config: Config,
-                          measurement: Measurement,
-                          subviews: [UIView]) {
+    public func configure(
+        config: Config,
+        measurement: Measurement,
+        subviews: [UIView],
+    ) {
         owsAssertDebug(self.measurement == nil)
 
         apply(config: config)
@@ -204,10 +208,10 @@ open class ManualStackView: ManualLayoutView {
     }
 
     private func ensureArrangement() -> Arrangement? {
-        if let arrangement = arrangement {
+        if let arrangement {
             return arrangement
         }
-        guard let measurement = measurement else {
+        guard let measurement else {
             owsFailDebug("\(name): Missing measurement.")
             return nil
         }
@@ -230,9 +234,11 @@ open class ManualStackView: ManualLayoutView {
                 break
             }
             owsAssertDebug(!subview.isHidden)
-            layoutItems.append(LayoutItem(subview: subview,
-                                          subviewInfo: subviewInfo,
-                                          isHorizontal: isHorizontal))
+            layoutItems.append(LayoutItem(
+                subview: subview,
+                subviewInfo: subviewInfo,
+                isHorizontal: isHorizontal,
+            ))
         }
         return buildArrangement(measurement: measurement, layoutItems: layoutItems)
     }
@@ -240,9 +246,12 @@ open class ManualStackView: ManualLayoutView {
     // An alignment enum that can be used whether the layout axis
     // is horizontal or vertical.
     private enum OffAxisAlignment: CustomStringConvertible {
-        case minimum, center, maximum, fill
+        case minimum
+        case center
+        case maximum
+        case fill
 
-        public var description: String {
+        var description: String {
             switch self {
             case .minimum:
                 return ".minimum"
@@ -256,8 +265,10 @@ open class ManualStackView: ManualLayoutView {
         }
     }
 
-    private func buildArrangement(measurement: Measurement,
-                                  layoutItems: [LayoutItem]) -> Arrangement {
+    private func buildArrangement(
+        measurement: Measurement,
+        layoutItems: [LayoutItem],
+    ) -> Arrangement {
 
         guard !layoutItems.isEmpty else {
             return Arrangement(items: [])
@@ -395,8 +406,10 @@ open class ManualStackView: ManualLayoutView {
         // Determine offAxisSize and offAxisLocation.
         for layoutItem in layoutItems {
             var offAxisSize: CGFloat = min(layoutItem.offAxisMeasuredSize, offAxisMaxSize)
-            if offAxisAlignment == .fill,
-               layoutItem.subviewInfo.canExpandOffAxis(isHorizontalLayout: isHorizontal) {
+            if
+                offAxisAlignment == .fill,
+                layoutItem.subviewInfo.canExpandOffAxis(isHorizontalLayout: isHorizontal)
+            {
                 offAxisSize = offAxisMaxSize
             }
             layoutItem.offAxisSize = offAxisSize
@@ -513,9 +526,11 @@ open class ManualStackView: ManualLayoutView {
             }
         }
 
-        init(subview: UIView,
-             subviewInfo: ManualStackSubviewInfo,
-             isHorizontal: Bool) {
+        init(
+            subview: UIView,
+            subviewInfo: ManualStackSubviewInfo,
+            isHorizontal: Bool,
+        ) {
 
             self.subview = subview
             self.subviewInfo = subviewInfo
@@ -527,9 +542,11 @@ open class ManualStackView: ManualLayoutView {
         }
     }
 
-    public static func measure(config: Config,
-                               subviewInfos: [ManualStackSubviewInfo],
-                               verboseLogging: Bool = false) -> Measurement {
+    public static func measure(
+        config: Config,
+        subviewInfos: [ManualStackSubviewInfo],
+        verboseLogging: Bool = false,
+    ) -> Measurement {
 
         let subviewSizes = subviewInfos.map { $0.measuredSize.max(.zero) }
 
@@ -556,7 +573,7 @@ open class ManualStackView: ManualLayoutView {
         return Measurement(measuredSize: size, subviewInfos: subviewInfos)
     }
 
-    open override func reset() {
+    override open func reset() {
         AssertIsOnMainThread()
 
         super.reset()
@@ -572,7 +589,7 @@ open class ManualStackView: ManualLayoutView {
 // MARK: -
 
 //// TODO: Can this be moved to UIView+OWS.swift?
-fileprivate extension CGRect {
+private extension CGRect {
 
     var width: CGFloat {
         get {
@@ -634,29 +651,35 @@ public struct ManualStackSubviewInfo: Equatable {
 
     let locationOffset: CGPoint
 
-    public init(measuredSize: CGSize,
-                horizontalFlowBehavior: ManualFlowBehavior,
-                verticalFlowBehavior: ManualFlowBehavior,
-                locationOffset: CGPoint = .zero) {
+    public init(
+        measuredSize: CGSize,
+        horizontalFlowBehavior: ManualFlowBehavior,
+        verticalFlowBehavior: ManualFlowBehavior,
+        locationOffset: CGPoint = .zero,
+    ) {
         self.measuredSize = measuredSize
         self.horizontalFlowBehavior = horizontalFlowBehavior
         self.verticalFlowBehavior = verticalFlowBehavior
         self.locationOffset = locationOffset
     }
 
-    public init(measuredSize: CGSize,
-                hasFixedWidth: Bool = false,
-                hasFixedHeight: Bool = false,
-                locationOffset: CGPoint = .zero) {
+    public init(
+        measuredSize: CGSize,
+        hasFixedWidth: Bool = false,
+        hasFixedHeight: Bool = false,
+        locationOffset: CGPoint = .zero,
+    ) {
         self.measuredSize = measuredSize
         self.horizontalFlowBehavior = hasFixedWidth ? .fixed : .canExpandAndCompress
         self.verticalFlowBehavior = hasFixedHeight ? .fixed : .canExpandAndCompress
         self.locationOffset = locationOffset
     }
 
-    public init(measuredSize: CGSize,
-                hasFixedSize: Bool,
-                locationOffset: CGPoint = .zero) {
+    public init(
+        measuredSize: CGSize,
+        hasFixedSize: Bool,
+        locationOffset: CGPoint = .zero,
+    ) {
         self.measuredSize = measuredSize
         self.horizontalFlowBehavior = hasFixedSize ? .fixed : .canExpandAndCompress
         self.verticalFlowBehavior = hasFixedSize ? .fixed : .canExpandAndCompress
@@ -709,29 +732,41 @@ public extension CGSize {
         ManualStackSubviewInfo(measuredSize: self)
     }
 
-    func asManualSubviewInfo(hasFixedWidth: Bool = false,
-                             hasFixedHeight: Bool = false,
-                             locationOffset: CGPoint = .zero) -> ManualStackSubviewInfo {
-        ManualStackSubviewInfo(measuredSize: self,
-                               hasFixedWidth: hasFixedWidth,
-                               hasFixedHeight: hasFixedHeight,
-                               locationOffset: locationOffset)
+    func asManualSubviewInfo(
+        hasFixedWidth: Bool = false,
+        hasFixedHeight: Bool = false,
+        locationOffset: CGPoint = .zero,
+    ) -> ManualStackSubviewInfo {
+        ManualStackSubviewInfo(
+            measuredSize: self,
+            hasFixedWidth: hasFixedWidth,
+            hasFixedHeight: hasFixedHeight,
+            locationOffset: locationOffset,
+        )
     }
 
-    func asManualSubviewInfo(hasFixedSize: Bool,
-                             locationOffset: CGPoint = .zero) -> ManualStackSubviewInfo {
-        ManualStackSubviewInfo(measuredSize: self,
-                               hasFixedSize: hasFixedSize,
-                               locationOffset: locationOffset)
+    func asManualSubviewInfo(
+        hasFixedSize: Bool,
+        locationOffset: CGPoint = .zero,
+    ) -> ManualStackSubviewInfo {
+        ManualStackSubviewInfo(
+            measuredSize: self,
+            hasFixedSize: hasFixedSize,
+            locationOffset: locationOffset,
+        )
     }
 
-    func asManualSubviewInfo(horizontalFlowBehavior: ManualFlowBehavior,
-                             verticalFlowBehavior: ManualFlowBehavior,
-                             locationOffset: CGPoint = .zero) -> ManualStackSubviewInfo {
-        ManualStackSubviewInfo(measuredSize: self,
-                               horizontalFlowBehavior: horizontalFlowBehavior,
-                               verticalFlowBehavior: verticalFlowBehavior,
-                               locationOffset: locationOffset)
+    func asManualSubviewInfo(
+        horizontalFlowBehavior: ManualFlowBehavior,
+        verticalFlowBehavior: ManualFlowBehavior,
+        locationOffset: CGPoint = .zero,
+    ) -> ManualStackSubviewInfo {
+        ManualStackSubviewInfo(
+            measuredSize: self,
+            horizontalFlowBehavior: horizontalFlowBehavior,
+            verticalFlowBehavior: verticalFlowBehavior,
+            locationOffset: locationOffset,
+        )
     }
 }
 
@@ -743,9 +778,10 @@ public struct ManualStackMeasurement: Equatable {
     fileprivate let subviewInfos: [ManualStackSubviewInfo]
 
     init(measuredSize: CGSize, subviewInfos: [ManualStackSubviewInfo]) {
-        self.measuredSize =  measuredSize
+        self.measuredSize = measuredSize
         self.subviewInfos = subviewInfos
     }
+
     fileprivate var subviewMeasuredSizes: [CGSize] {
         subviewInfos.map { $0.measuredSize }
     }
@@ -762,7 +798,7 @@ public extension ManualStackView {
     func configure(
         config: Config,
         subviews: [UIView],
-        subviewInfos: [ManualStackSubviewInfo]
+        subviewInfos: [ManualStackSubviewInfo],
     ) -> Measurement {
         let measurement = ManualStackView.measure(config: config, subviewInfos: subviewInfos)
         self.configure(config: config, measurement: measurement, subviews: subviews)

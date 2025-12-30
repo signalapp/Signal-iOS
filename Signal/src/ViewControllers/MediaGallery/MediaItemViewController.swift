@@ -4,9 +4,9 @@
 //
 
 import CoreMedia
+import SDWebImage
 import SignalServiceKit
 import SignalUI
-import SDWebImage
 
 protocol MediaItemViewControllerDelegate: AnyObject {
     func mediaItemViewControllerDidTapMedia(_ viewController: MediaItemViewController)
@@ -81,7 +81,7 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
             configuration: buttonConfiguration,
             primaryAction: UIAction { [weak self] _ in
                 self?.playVideo()
-            }
+            },
         )
         button.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(button)
@@ -215,7 +215,7 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        if isVideo && shouldAutoPlayVideo && !hasAutoPlayedVideo {
+        if isVideo, shouldAutoPlayVideo, !hasAutoPlayedVideo {
             playVideo()
             hasAutoPlayedVideo = true
         }
@@ -230,7 +230,7 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
                 try DependenciesBridge.shared.attachmentStore.markViewedFullscreen(
                     attachment: attachment,
                     timestamp: timestamp,
-                    tx: tx
+                    tx: tx,
                 )
             }
         }
@@ -240,7 +240,7 @@ class MediaItemViewController: OWSViewController, VideoPlaybackStatusProvider {
         super.viewDidLayoutSubviews()
 
         scrollView.updateZoomScaleForLayout()
-   }
+    }
 
     // MARK: - Helpers
 

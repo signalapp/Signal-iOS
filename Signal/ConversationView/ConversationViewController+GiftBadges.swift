@@ -53,7 +53,7 @@ extension ConversationViewController {
                 incomingMessage: incomingMessage,
                 profileBadge: profileBadge,
                 isExpired: isExpired,
-                isRedeemed: isRedeemed
+                isRedeemed: isRedeemed,
             )
 
         case is TSOutgoingMessage:
@@ -76,7 +76,7 @@ extension ConversationViewController {
         incomingMessage: TSIncomingMessage,
         profileBadge: ProfileBadge,
         isExpired: Bool,
-        isRedeemed: Bool
+        isRedeemed: Bool,
     ) -> UIViewController {
         if isExpired {
             let mode: BadgeIssueSheetState.Mode
@@ -114,7 +114,7 @@ extension ConversationViewController {
         let (shortName, oldBadgesSnapshot) = databaseStorage.read { tx in
             return (
                 contactManager.displayName(for: authorAddress, tx: tx).resolvedValue(useShortNameIfAvailable: true),
-                ProfileBadgesSnapshot.forLocalProfile(profileManager: profileManager, tx: tx)
+                ProfileBadgesSnapshot.forLocalProfile(profileManager: profileManager, tx: tx),
             )
         }
         return BadgeThanksSheet(
@@ -122,16 +122,16 @@ extension ConversationViewController {
             thanksType: .giftReceived(
                 shortName: shortName,
                 notNowAction: { [weak self] in self?.showRedeemBadgeLaterText() },
-                incomingMessage: incomingMessage
+                incomingMessage: incomingMessage,
             ),
-            oldBadgesSnapshot: oldBadgesSnapshot
+            oldBadgesSnapshot: oldBadgesSnapshot,
         )
     }
 
     private func showRedeemBadgeLaterText() {
         let text = OWSLocalizedString(
             "DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_LATER",
-            comment: "When you receive a badge as a result of a donation from a friend, a screen is shown. This toast is shown when dismissing that screen if you do not redeem the badge."
+            comment: "When you receive a badge as a result of a donation from a friend, a screen is shown. This toast is shown when dismissing that screen if you do not redeem the badge.",
         )
         self.presentToastCVC(text)
     }
@@ -152,26 +152,26 @@ extension ConversationViewController: BadgeIssueSheetDelegate {
                         guard
                             let self,
                             let badgeThanksSheetPresenter = BadgeThanksSheetPresenter.fromGlobalsWithSneakyTransaction(
-                                successMode: receiptCredentialSuccessMode
+                                successMode: receiptCredentialSuccessMode,
                             )
                         else { return }
 
                         Task {
                             await badgeThanksSheetPresenter.presentAndRecordBadgeThanks(
-                                fromViewController: self
+                                fromViewController: self,
                             )
                         }
                     }
                 case let .monthlySubscriptionCancelled(donateSheet, toastText):
                     donateSheet.dismiss(animated: true) { [weak self] in
-                        guard let self = self else { return }
+                        guard let self else { return }
                         self.view.presentToast(text: toastText, fromViewController: self)
                     }
                 }
             }
             appSettings.viewControllers += [
                 DonationSettingsViewController(),
-                donateViewController
+                donateViewController,
             ]
             self.presentFormSheet(appSettings, animated: true, completion: nil)
         }

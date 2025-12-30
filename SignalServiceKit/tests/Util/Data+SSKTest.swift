@@ -14,7 +14,7 @@ class DataSSKTests: XCTestCase {
         let testCases: [(String, Data)] = [
             ("00010203-0405-0607-0809-0A0B0C0D0E0F", dataValue),
             // Test an unaligned load
-            ("01020304-0506-0708-090A-0B0C0D0E0F10", dataValue.dropFirst())
+            ("01020304-0506-0708-090A-0B0C0D0E0F10", dataValue.dropFirst()),
         ]
         for (expectedValue, uuidData) in testCases {
             XCTAssertEqual(UUID(data: uuidData)?.uuidString, expectedValue)
@@ -30,7 +30,7 @@ class DataSSKTests: XCTestCase {
             // Test byte ordering and considering all bytes
             (0x01_02_03_04_05_06_07_08, dataValue),
             // Test an unaligned load
-            (0x02_03_04_05_06_07_08_09, dataValue.dropFirst())
+            (0x02_03_04_05_06_07_08_09, dataValue.dropFirst()),
         ]
         for (expectedValue, bigEndianData) in testCases {
             XCTAssertEqual(UInt64(bigEndianData: bigEndianData), expectedValue)

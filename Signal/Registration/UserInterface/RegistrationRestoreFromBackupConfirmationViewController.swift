@@ -20,13 +20,13 @@ public class RegistrationRestoreFromBackupConfirmationState: ObservableObject, E
         case quickRestore
     }
 
-    public static func == (
+    public static func ==(
         lhs: RegistrationRestoreFromBackupConfirmationState,
-        rhs: RegistrationRestoreFromBackupConfirmationState
+        rhs: RegistrationRestoreFromBackupConfirmationState,
     ) -> Bool {
         lhs.tier == rhs.tier &&
-        lhs.lastBackupDate == rhs.lastBackupDate &&
-        lhs.lastBackupSizeBytes == rhs.lastBackupSizeBytes
+            lhs.lastBackupDate == rhs.lastBackupDate &&
+            lhs.lastBackupSizeBytes == rhs.lastBackupSizeBytes
     }
 
     let mode: Mode
@@ -48,7 +48,7 @@ class RegistrationRestoreFromBackupConfirmationViewController: OWSViewController
 
     init(
         state: RegistrationRestoreFromBackupConfirmationState,
-        presenter: RegistrationRestoreFromBackupConfirmationPresenter
+        presenter: RegistrationRestoreFromBackupConfirmationPresenter,
     ) {
         self.state = state
         self.presenter = presenter
@@ -64,8 +64,8 @@ class RegistrationRestoreFromBackupConfirmationViewController: OWSViewController
         let hostingController = HostingController(
             wrappedView: RegistrationRestoreFromBackupConfirmationView(
                 state: state,
-                presenter: presenter!
-            )
+                presenter: presenter!,
+            ),
         )
         addChild(hostingController)
         view.addSubview(hostingController.view)
@@ -91,7 +91,7 @@ struct RegistrationRestoreFromBackupConfirmationView: View {
 
     fileprivate init(
         state: RegistrationRestoreFromBackupConfirmationState,
-        presenter: RegistrationRestoreFromBackupConfirmationPresenter
+        presenter: RegistrationRestoreFromBackupConfirmationPresenter,
     ) {
         self.state = state
         self.presenter = presenter
@@ -107,7 +107,7 @@ struct RegistrationRestoreFromBackupConfirmationView: View {
 
             Text(OWSLocalizedString(
                 "ONBOARDING_CONFIRM_BACKUP_RESTORE_TITLE",
-                comment: "Title for form confirming restore from backup."
+                comment: "Title for form confirming restore from backup.",
             ))
             .multilineTextAlignment(.center)
             .font(.title.weight(.semibold))
@@ -121,7 +121,7 @@ struct RegistrationRestoreFromBackupConfirmationView: View {
             if state.mode == .manual {
                 Text(OWSLocalizedString(
                     "ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION_NO_SIZE_DETAIL",
-                    comment: "Details confirming manual restore from backup."
+                    comment: "Details confirming manual restore from backup.",
                 ))
                 .dynamicTypeSize(...DynamicTypeSize.accessibility1)
                 .multilineTextAlignment(.center)
@@ -133,7 +133,7 @@ struct RegistrationRestoreFromBackupConfirmationView: View {
                     VStack(alignment: .leading, spacing: 12) {
                         Text(OWSLocalizedString(
                             "ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_1",
-                            comment: "Header text describing what the backup includes."
+                            comment: "Header text describing what the backup includes.",
                         ))
                         .font(.headline.weight(.semibold))
 
@@ -141,19 +141,19 @@ struct RegistrationRestoreFromBackupConfirmationView: View {
                             image: .thread,
                             text: OWSLocalizedString(
                                 "ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_2",
-                                comment: "Backup content list item describing all messages."
-                            )
+                                comment: "Backup content list item describing all messages.",
+                            ),
                         )
 
                         let backupPeriodString = if state.tier == .free {
                             OWSLocalizedString(
                                 "ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_3_FREE",
-                                comment: "Backup content list item describing paid media."
+                                comment: "Backup content list item describing paid media.",
                             )
                         } else {
                             OWSLocalizedString(
                                 "ONBOARDING_CONFIRM_BACKUP_RESTORE_BODY_3_PAID",
-                                comment: "Backup content list item describing free media."
+                                comment: "Backup content list item describing free media.",
                             )
                         }
                         BulletPoint(image: .albumTilt, text: backupPeriodString)
@@ -171,7 +171,7 @@ struct RegistrationRestoreFromBackupConfirmationView: View {
 
             Button(OWSLocalizedString(
                 "ONBOARDING_CONFIRM_BACKUP_RESTORE_CONFIRM_ACTION",
-                comment: "Text for action button confirming the restore."
+                comment: "Text for action button confirming the restore.",
             )) {
                 presenter?.restoreFromBackupConfirmed()
             }
@@ -199,7 +199,7 @@ struct RegistrationRestoreFromBackupConfirmationView: View {
         case .manual:
             var formattedString = OWSLocalizedString(
                 "ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION_NO_SIZE",
-                comment: "Description for form confirming restore from backup without size detail."
+                comment: "Description for form confirming restore from backup without size detail.",
             )
             if
                 let date = state.lastBackupDate,
@@ -214,7 +214,7 @@ struct RegistrationRestoreFromBackupConfirmationView: View {
         case .quickRestore:
             var formattedString = OWSLocalizedString(
                 "ONBOARDING_CONFIRM_BACKUP_RESTORE_DESCRIPTION",
-                comment: "Description for form confirming restore from backup."
+                comment: "Description for form confirming restore from backup.",
             )
             if
                 let date = state.lastBackupDate,
@@ -235,7 +235,7 @@ struct RegistrationRestoreFromBackupConfirmationView: View {
         case .manual:
             return OWSLocalizedString(
                 "ONBOARDING_CONFIRM_BACKUP_RESTORE_SKIP_ACTION",
-                comment: "Text for action button to skip the restore."
+                comment: "Text for action button to skip the restore.",
             )
         case .quickRestore:
             return CommonStrings.cancelButton
@@ -280,11 +280,11 @@ private let presenter = PreviewRegistrationRestoreFromBackupConfirmationPresente
         mode: .manual,
         tier: .free,
         lastBackupDate: Date(),
-        lastBackupSizeBytes: 1234
+        lastBackupSizeBytes: 1234,
     )
     RegistrationRestoreFromBackupConfirmationViewController(
         state: state,
-        presenter: presenter
+        presenter: presenter,
     )
 }
 
@@ -294,11 +294,11 @@ private let presenter = PreviewRegistrationRestoreFromBackupConfirmationPresente
         mode: .quickRestore,
         tier: .paid,
         lastBackupDate: Date(),
-        lastBackupSizeBytes: 1234
+        lastBackupSizeBytes: 1234,
     )
     RegistrationRestoreFromBackupConfirmationViewController(
         state: state,
-        presenter: presenter
+        presenter: presenter,
     )
 }
 

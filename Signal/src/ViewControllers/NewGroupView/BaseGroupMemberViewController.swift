@@ -23,8 +23,10 @@ protocol GroupMemberViewDelegate: AnyObject {
 
     func groupMemberViewIsGroupFull_RecommendedLimit() -> Bool
 
-    func groupMemberViewIsPreExistingMember(_ recipient: PickedRecipient,
-                                            transaction: DBReadTransaction) -> Bool
+    func groupMemberViewIsPreExistingMember(
+        _ recipient: PickedRecipient,
+        transaction: DBReadTransaction,
+    ) -> Bool
 
     func groupMemberViewDismiss()
 
@@ -46,33 +48,43 @@ public class BaseGroupMemberViewController: BaseMemberViewController {
     // This delegate is the subclass.
     weak var groupMemberViewDelegate: GroupMemberViewDelegate?
 
-    public override init() {
+    override public init() {
         super.init()
 
         memberViewDelegate = self
     }
 
     private func showGroupFullAlert_HardLimit() {
-        let format = OWSLocalizedString("EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_%d", tableName: "PluralAware",
-                                       comment: "Format for the 'group full' error alert when a user can't be added to a group because the group is full. Embeds {{ the maximum number of members in a group }}.")
+        let format = OWSLocalizedString(
+            "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL_%d",
+            tableName: "PluralAware",
+            comment: "Format for the 'group full' error alert when a user can't be added to a group because the group is full. Embeds {{ the maximum number of members in a group }}.",
+        )
         let message = String.localizedStringWithFormat(format, RemoteConfig.current.maxGroupSizeHardLimit)
         OWSActionSheets.showErrorAlert(message: message)
     }
 
     private var ignoreSoftLimit = false
-    private func showGroupFullAlert_SoftLimit(recipient: PickedRecipient,
-                                              groupMemberViewDelegate: GroupMemberViewDelegate) {
-        let title = OWSLocalizedString("GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE",
-                                      comment: "Title for alert warning the user that they've reached the recommended limit on how many members can be in a group.")
-        let messageFormat = OWSLocalizedString("GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d", tableName: "PluralAware",
-                                              comment: "Format for the alert warning the user that they've reached the recommended limit on how many members can be in a group when creating a new group. Embeds {{ the maximum number of recommended members in a group }}.")
+    private func showGroupFullAlert_SoftLimit(
+        recipient: PickedRecipient,
+        groupMemberViewDelegate: GroupMemberViewDelegate,
+    ) {
+        let title = OWSLocalizedString(
+            "GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE",
+            comment: "Title for alert warning the user that they've reached the recommended limit on how many members can be in a group.",
+        )
+        let messageFormat = OWSLocalizedString(
+            "GROUPS_TOO_MANY_MEMBERS_ALERT_MESSAGE_%d",
+            tableName: "PluralAware",
+            comment: "Format for the alert warning the user that they've reached the recommended limit on how many members can be in a group when creating a new group. Embeds {{ the maximum number of recommended members in a group }}.",
+        )
         var message = String.localizedStringWithFormat(messageFormat, RemoteConfig.current.maxGroupSizeRecommended)
 
         if groupMemberViewDelegate.isNewGroup {
             let actionSheet = ActionSheetController(title: title, message: message)
 
             actionSheet.addAction(ActionSheetAction(title: CommonStrings.okayButton) { [weak self] _ in
-                guard let self = self else { return }
+                guard let self else { return }
                 self.ignoreSoftLimit = true
                 self.addRecipient(recipient)
                 self.ignoreSoftLimit = false
@@ -80,12 +92,14 @@ public class BaseGroupMemberViewController: BaseMemberViewController {
             presentActionSheet(actionSheet)
         } else {
             message += ("\n\n"
-                            + OWSLocalizedString("GROUPS_TOO_MANY_MEMBERS_CONFIRM",
-                                                comment: "Message asking the user to confirm that they want to add a member to the group."))
+                + OWSLocalizedString(
+                    "GROUPS_TOO_MANY_MEMBERS_CONFIRM",
+                    comment: "Message asking the user to confirm that they want to add a member to the group.",
+                ))
             let actionSheet = ActionSheetController(title: title, message: message)
 
             actionSheet.addAction(ActionSheetAction(title: CommonStrings.addButton) { [weak self] _ in
-                guard let self = self else { return }
+                guard let self else { return }
                 self.ignoreSoftLimit = true
                 self.addRecipient(recipient)
                 self.ignoreSoftLimit = false
@@ -98,7 +112,7 @@ public class BaseGroupMemberViewController: BaseMemberViewController {
 
 extension BaseGroupMemberViewController: MemberViewDelegate {
     public var memberViewRecipientSet: OrderedSet<PickedRecipient> {
-        guard let groupMemberViewDelegate = groupMemberViewDelegate else {
+        guard let groupMemberViewDelegate else {
             owsFailDebug("Missing groupMemberViewDelegate.")
             return OrderedSet()
         }
@@ -106,7 +120,7 @@ extension BaseGroupMemberViewController: MemberViewDelegate {
     }
 
     public var memberViewHasUnsavedChanges: Bool {
-        guard let groupMemberViewDelegate = groupMemberViewDelegate else {
+        guard let groupMemberViewDelegate else {
             owsFailDebug("Missing groupMemberViewDelegate.")
             return false
         }
@@ -114,7 +128,7 @@ extension BaseGroupMemberViewController: MemberViewDelegate {
     }
 
     public func memberViewRemoveRecipient(_ recipient: PickedRecipient) {
-        guard let groupMemberViewDelegate = groupMemberViewDelegate else {
+        guard let groupMemberViewDelegate else {
             owsFailDebug("Missing groupMemberViewDelegate.")
             return
         }
@@ -122,7 +136,7 @@ extension BaseGroupMemberViewController: MemberViewDelegate {
     }
 
     public func memberViewAddRecipient(_ recipient: PickedRecipient) -> Bool {
-        guard let groupMemberViewDelegate = groupMemberViewDelegate else {
+        guard let groupMemberViewDelegate else {
             owsFailDebug("Missing groupMemberViewDelegate.")
             return false
         }
@@ -148,7 +162,7 @@ extension BaseGroupMemberViewController: MemberViewDelegate {
     }
 
     public func memberViewShouldShowMemberCount() -> Bool {
-        guard let groupMemberViewDelegate = groupMemberViewDelegate else {
+        guard let groupMemberViewDelegate else {
             owsFailDebug("Missing groupMemberViewDelegate.")
             return false
         }
@@ -158,7 +172,7 @@ extension BaseGroupMemberViewController: MemberViewDelegate {
     public func memberViewShouldAllowBlockedSelection() -> Bool { false }
 
     public func memberViewMemberCountForDisplay() -> Int {
-        guard let groupMemberViewDelegate = groupMemberViewDelegate else {
+        guard let groupMemberViewDelegate else {
             owsFailDebug("Missing groupMemberViewDelegate.")
             return 0
         }
@@ -166,7 +180,7 @@ extension BaseGroupMemberViewController: MemberViewDelegate {
     }
 
     public func memberViewIsPreExistingMember(_ recipient: PickedRecipient, transaction: DBReadTransaction) -> Bool {
-        guard let groupMemberViewDelegate = groupMemberViewDelegate else {
+        guard let groupMemberViewDelegate else {
             owsFailDebug("Missing groupMemberViewDelegate.")
             return false
         }
@@ -178,7 +192,7 @@ extension BaseGroupMemberViewController: MemberViewDelegate {
     public func memberViewCustomIconColorForPickedMember(_ recipient: PickedRecipient) -> UIColor? { nil }
 
     public func memberViewDismiss() {
-        guard let groupMemberViewDelegate = groupMemberViewDelegate else {
+        guard let groupMemberViewDelegate else {
             owsFailDebug("Missing groupMemberViewDelegate.")
             return
         }

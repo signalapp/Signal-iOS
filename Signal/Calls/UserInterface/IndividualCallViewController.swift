@@ -40,7 +40,7 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
     private var callDurationTimer: Timer?
 
     private lazy var callControlsConfirmationToastManager = CallControlsConfirmationToastManager(
-        presentingContainerView: callControlsConfirmationToastContainerView
+        presentingContainerView: callControlsConfirmationToastContainerView,
     )
     private lazy var callControlsConfirmationToastContainerView = UIView()
 
@@ -49,13 +49,13 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
         callSheetDataSource: IndividualCallSheetDataSource(
             thread: thread,
             call: call,
-            individualCall: individualCall
+            individualCall: individualCall,
         ),
         callService: callService,
         confirmationToastManager: callControlsConfirmationToastManager,
         callControlsDelegate: self,
         sheetPanDelegate: self,
-        callDrawerDelegate: self
+        callDrawerDelegate: self,
     )
 
     private var callService: CallService { AppEnvironment.shared.callService }
@@ -81,7 +81,7 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
         let gradientLayer = CAGradientLayer()
         gradientLayer.colors = [
             UIColor.ows_blackAlpha60.cgColor,
-            UIColor.black.withAlphaComponent(0).cgColor
+            UIColor.black.withAlphaComponent(0).cgColor,
         ]
         let view = OWSLayerView(frame: .zero) { view in
             gradientLayer.frame = view.bounds
@@ -96,7 +96,7 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
         let gradientLayer = CAGradientLayer()
         gradientLayer.colors = [
             UIColor.black.withAlphaComponent(0).cgColor,
-            UIColor.ows_blackAlpha60.cgColor
+            UIColor.ows_blackAlpha60.cgColor,
         ]
         let view = OWSLayerView(frame: .zero) { view in
             gradientLayer.frame = view.bounds
@@ -121,8 +121,8 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
             audioDeclineIncomingButton,
             UIView.spacer(withWidth: 124),
             audioAnswerIncomingButton,
-            UIView.hStretchingSpacer()
-        ]
+            UIView.hStretchingSpacer(),
+        ],
     )
 
     private lazy var audioAnswerIncomingButton = createButton(iconName: "phone-fill-28", action: #selector(didPressAnswerCall))
@@ -133,8 +133,8 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
     private lazy var incomingVideoCallControls = UIStackView(
         arrangedSubviews: [
             videoAnswerIncomingAudioOnlyButton,
-            incomingVideoCallBottomControls
-        ]
+            incomingVideoCallBottomControls,
+        ],
     )
 
     private lazy var incomingVideoCallBottomControls = UIStackView(
@@ -143,8 +143,8 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
             videoDeclineIncomingButton,
             UIView.spacer(withWidth: 124),
             videoAnswerIncomingButton,
-            UIView.hStretchingSpacer()
-        ]
+            UIView.hStretchingSpacer(),
+        ],
     )
 
     private lazy var videoAnswerIncomingButton = createButton(iconName: "video-fill-28", action: #selector(didPressAnswerCall))
@@ -266,7 +266,7 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
             self,
             selector: #selector(updateAvatarImage),
             name: .OWSContactsManagerSignalAccountsDidChange,
-            object: nil
+            object: nil,
         )
 
         // Subscribe for future call updates
@@ -276,7 +276,7 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
             self,
             selector: #selector(didBecomeActive),
             name: .OWSApplicationDidBecomeActive,
-            object: nil
+            object: nil,
         )
     }
 
@@ -331,7 +331,7 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
             .bottom,
             to: .bottom,
             of: self.view,
-            withOffset: callControlsConfirmationToastContainerViewBottomConstraintConstant
+            withOffset: callControlsConfirmationToastContainerViewBottomConstraintConstant,
         )
         callControlsConfirmationToastContainerView.autoHCenterInSuperview()
 
@@ -418,22 +418,30 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
         let contactManager = SSKEnvironment.shared.contactManagerImplRef
         let databaseStorage = SSKEnvironment.shared.databaseStorageRef
         backgroundAvatarView.image = databaseStorage.read { tx in
-             return contactManager.avatarImage(forAddress: thread.contactAddress, transaction: tx)
+            return contactManager.avatarImage(forAddress: thread.contactAddress, transaction: tx)
         }
     }
 
     private func createIncomingCallControls() {
-        audioAnswerIncomingButton.text = OWSLocalizedString("CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL",
-                                                           comment: "label for accepting incoming calls")
+        audioAnswerIncomingButton.text = OWSLocalizedString(
+            "CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL",
+            comment: "label for accepting incoming calls",
+        )
         audioAnswerIncomingButton.unselectedBackgroundColor = .ows_accentGreen
-        audioAnswerIncomingButton.accessibilityLabel = OWSLocalizedString("CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL",
-                                                                    comment: "label for accepting incoming calls")
+        audioAnswerIncomingButton.accessibilityLabel = OWSLocalizedString(
+            "CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL",
+            comment: "label for accepting incoming calls",
+        )
 
-        audioDeclineIncomingButton.text = OWSLocalizedString("CALL_VIEW_DECLINE_INCOMING_CALL_LABEL",
-                                                            comment: "label for declining incoming calls")
+        audioDeclineIncomingButton.text = OWSLocalizedString(
+            "CALL_VIEW_DECLINE_INCOMING_CALL_LABEL",
+            comment: "label for declining incoming calls",
+        )
         audioDeclineIncomingButton.unselectedBackgroundColor = .ows_accentRed
-        audioDeclineIncomingButton.accessibilityLabel = OWSLocalizedString("CALL_VIEW_DECLINE_INCOMING_CALL_LABEL",
-                                                                     comment: "label for declining incoming calls")
+        audioDeclineIncomingButton.accessibilityLabel = OWSLocalizedString(
+            "CALL_VIEW_DECLINE_INCOMING_CALL_LABEL",
+            comment: "label for declining incoming calls",
+        )
 
         incomingAudioCallControls.axis = .horizontal
         incomingAudioCallControls.alignment = .center
@@ -442,22 +450,34 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
         audioAnswerIncomingButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "audioAnswerIncomingButton")
         audioDeclineIncomingButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "audioDeclineIncomingButton")
 
-        videoAnswerIncomingButton.text = OWSLocalizedString("CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL",
-                                                           comment: "label for accepting incoming calls")
+        videoAnswerIncomingButton.text = OWSLocalizedString(
+            "CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL",
+            comment: "label for accepting incoming calls",
+        )
         videoAnswerIncomingButton.unselectedBackgroundColor = .ows_accentGreen
-        videoAnswerIncomingButton.accessibilityLabel = OWSLocalizedString("CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL",
-                                                                         comment: "label for accepting incoming calls")
+        videoAnswerIncomingButton.accessibilityLabel = OWSLocalizedString(
+            "CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL",
+            comment: "label for accepting incoming calls",
+        )
 
-        videoAnswerIncomingAudioOnlyButton.text = OWSLocalizedString("CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL",
-                                                                    comment: "label for accepting incoming video calls as audio only")
-        videoAnswerIncomingAudioOnlyButton.accessibilityLabel = OWSLocalizedString("CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL",
-                                                                                comment: "label for accepting incoming video calls as audio only")
+        videoAnswerIncomingAudioOnlyButton.text = OWSLocalizedString(
+            "CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL",
+            comment: "label for accepting incoming video calls as audio only",
+        )
+        videoAnswerIncomingAudioOnlyButton.accessibilityLabel = OWSLocalizedString(
+            "CALL_VIEW_ACCEPT_INCOMING_CALL_AUDIO_ONLY_LABEL",
+            comment: "label for accepting incoming video calls as audio only",
+        )
 
-        videoDeclineIncomingButton.text = OWSLocalizedString("CALL_VIEW_DECLINE_INCOMING_CALL_LABEL",
-                                                            comment: "label for declining incoming calls")
+        videoDeclineIncomingButton.text = OWSLocalizedString(
+            "CALL_VIEW_DECLINE_INCOMING_CALL_LABEL",
+            comment: "label for declining incoming calls",
+        )
         videoDeclineIncomingButton.unselectedBackgroundColor = .ows_accentRed
-        videoDeclineIncomingButton.accessibilityLabel = OWSLocalizedString("CALL_VIEW_DECLINE_INCOMING_CALL_LABEL",
-                                                                          comment: "label for declining incoming calls")
+        videoDeclineIncomingButton.accessibilityLabel = OWSLocalizedString(
+            "CALL_VIEW_DECLINE_INCOMING_CALL_LABEL",
+            comment: "label for declining incoming calls",
+        )
 
         incomingVideoCallBottomControls.axis = .horizontal
         incomingVideoCallBottomControls.alignment = .center
@@ -548,8 +568,8 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
             : topGradientView.height - gradientMargin + 14
         let bottomInset = (
             !useTighterBounding
-            ? view.layoutMargins.bottom
-            : bottomSheet.minimizedHeight + 14
+                ? view.layoutMargins.bottom
+                : bottomSheet.minimizedHeight + 14,
         )
         rect.origin.y += topInset
         rect.size.height -= topInset + bottomInset
@@ -577,7 +597,7 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
         localVideoView.configure(
             call: call,
             isFullScreen: isRenderingLocalVanityVideo,
-            remoteGroupMemberDeviceState: nil
+            remoteGroupMemberDeviceState: nil,
         )
 
         guard localVideoView.superview == view else { return }
@@ -609,14 +629,14 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
         if previousOrigin == nil {
             previousOrigin = CGPoint(
                 x: boundingRect.maxX - pipSize.width,
-                y: boundingRect.minY
+                y: boundingRect.minY,
             )
 
-        // If the bounding rect has gotten bigger, and we were at the top or
-        // bottom edge move the pip so it stays at the top or bottom edge.
-        } else if boundingRect.minY < lastBoundingRect.minY && previousOrigin.y == lastBoundingRect.minY {
+            // If the bounding rect has gotten bigger, and we were at the top or
+            // bottom edge move the pip so it stays at the top or bottom edge.
+        } else if boundingRect.minY < lastBoundingRect.minY, previousOrigin.y == lastBoundingRect.minY {
             previousOrigin.y = boundingRect.minY
-        } else if boundingRect.maxY > lastBoundingRect.maxY && previousOrigin.y + pipSize.height == lastBoundingRect.maxY {
+        } else if boundingRect.maxY > lastBoundingRect.maxY, previousOrigin.y + pipSize.height == lastBoundingRect.maxY {
             previousOrigin.y += boundingRect.maxY - lastBoundingRect.maxY
         }
 
@@ -637,9 +657,9 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
                     widthReferenceView: self.view,
                     tailReferenceView: self.localVideoView,
                     tailDirection: .up,
-                    isVideoMuted: self.call.isOutgoingVideoMuted
+                    isVideoMuted: self.call.isOutgoingVideoMuted,
                 )
-            }
+            },
         )
     }
 
@@ -667,13 +687,13 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
             localVideoView.animateDecelerationToVerticalEdge(
                 withDuration: 0.35,
                 velocity: sender.velocity(in: localVideoView),
-                boundingRect: localVideoBoundingRect
+                boundingRect: localVideoBoundingRect,
             ) { _ in self.previousOrigin = self.localVideoView.frame.origin }
             if let videoView = localVideoView.associatedCallMemberVideoView {
                 videoView.animateDecelerationToVerticalEdge(
                     withDuration: 0.35,
                     velocity: sender.velocity(in: videoView),
-                    boundingRect: localVideoBoundingRect
+                    boundingRect: localVideoBoundingRect,
                 ) { _ in }
             }
         default:
@@ -753,10 +773,15 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
         if case .reconnecting = individualCall.state {
             if !isBlinkingReconnectLabel {
                 isBlinkingReconnectLabel = true
-                UIView.animate(withDuration: 0.7, delay: 0, options: [.autoreverse, .repeat],
-                               animations: {
-                                self.callStatusLabel.alpha = 0.2
-                }, completion: nil)
+                UIView.animate(
+                    withDuration: 0.7,
+                    delay: 0,
+                    options: [.autoreverse, .repeat],
+                    animations: {
+                        self.callStatusLabel.alpha = 0.2
+                    },
+                    completion: nil,
+                )
             } else {
                 // already blinking
             }
@@ -791,7 +816,7 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
         }
 
         updateRemoteVideoTrack(
-            remoteVideoTrack: individualCall.isRemoteVideoEnabled ? individualCall.remoteVideoTrack : nil
+            remoteVideoTrack: individualCall.isRemoteVideoEnabled ? individualCall.remoteVideoTrack : nil,
         )
 
         // Show Incoming vs. Ongoing call controls
@@ -857,7 +882,7 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
         remoteMemberView.configure(
             call: call,
             isFullScreen: true,
-            remoteGroupMemberDeviceState: nil
+            remoteGroupMemberDeviceState: nil,
         )
 
         // Dismiss Handling
@@ -880,7 +905,7 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
                     timeInterval: TimeInterval(kDurationUpdateFrequencySeconds),
                     target: self,
                     userInfo: nil,
-                    repeats: true
+                    repeats: true,
                 ) { [weak self] _ in
                     self?.updateCallDuration()
                 }
@@ -916,7 +941,7 @@ class IndividualCallViewController: OWSViewController, IndividualCallObserver {
         let permissionErrorView = PermissionErrorView(
             thread: self.thread,
             contactManager: SSKEnvironment.shared.contactManagerRef,
-            okayButtonWasTapped: { [weak self] in self?.dismissImmediately() }
+            okayButtonWasTapped: { [weak self] in self?.dismissImmediately() },
         )
         view.addSubview(permissionErrorView)
         permissionErrorView.autoPinWidthToSuperview(withMargin: 16)
@@ -1189,7 +1214,7 @@ extension IndividualCallViewController: CallViewControllerWindowReference {
         // The call "pip" uses our remote and local video views since only
         // one `AVCaptureVideoPreviewLayer` per capture session is supported.
         // We need to re-add them when we return to this view.
-        guard remoteMemberView.superview != view && localVideoView.superview != view else {
+        guard remoteMemberView.superview != view, localVideoView.superview != view else {
             return owsFailDebug("unexpectedly returned to call while we own the video views")
         }
 
@@ -1333,7 +1358,7 @@ private class PermissionErrorView: UIView {
         let contactAvatarView = ConversationAvatarView(
             sizeClass: .customDiameter(200),
             localUserDisplayMode: .asUser,
-            badged: false
+            badged: false,
         )
         SSKEnvironment.shared.databaseStorageRef.read { transaction in
             contactAvatarView.update(transaction) { config in
@@ -1347,7 +1372,7 @@ private class PermissionErrorView: UIView {
         let shortName = SSKEnvironment.shared.databaseStorageRef.read {
             return contactManager.displayName(
                 for: thread.contactAddress,
-                tx: $0
+                tx: $0,
             ).resolvedValue(useShortNameIfAvailable: true)
         }
 
@@ -1355,9 +1380,9 @@ private class PermissionErrorView: UIView {
         needPermissionLabel.text = String(
             format: OWSLocalizedString(
                 "CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT",
-                comment: "Error displayed on the 'call' view when the callee needs to grant permission before we can call them. Embeds {callee short name}."
+                comment: "Error displayed on the 'call' view when the callee needs to grant permission before we can call them. Embeds {callee short name}.",
             ),
-            shortName
+            shortName,
         )
         needPermissionLabel.numberOfLines = 0
         needPermissionLabel.lineBreakMode = .byWordWrapping
@@ -1374,7 +1399,7 @@ private class PermissionErrorView: UIView {
     init(
         thread: TSContactThread,
         contactManager: ContactManager,
-        okayButtonWasTapped: @escaping () -> Void
+        okayButtonWasTapped: @escaping () -> Void,
     ) {
         self.thread = thread
         self.contactManager = contactManager
@@ -1398,7 +1423,7 @@ private class PermissionErrorView: UIView {
             needPermissionLabel.bottomAnchor.constraint(equalTo: okayButton.topAnchor, constant: -20),
             okayButton.bottomAnchor.constraint(equalTo: self.bottomAnchor),
             needPermissionLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor),
-            needPermissionLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor)
+            needPermissionLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor),
         ])
         contactAvatarView.autoHCenterInSuperview()
         okayButton.autoHCenterInSuperview()

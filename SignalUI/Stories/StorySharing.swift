@@ -20,7 +20,7 @@ public enum StorySharing {
 
     private static func buildTextAttachment(
         with messageBody: MessageBody,
-        linkPreviewDraft: OWSLinkPreviewDraft?
+        linkPreviewDraft: OWSLinkPreviewDraft?,
     ) -> UnsentTextAttachment {
         // Send the text message to any selected story recipients
         // as a text story with default styling.
@@ -30,16 +30,16 @@ public enum StorySharing {
             textForegroundColor: .white,
             textBackgroundColor: nil,
             background: .color(.init(rgbHex: 0x688BD4)),
-            linkPreviewDraft: linkPreviewDraft
+            linkPreviewDraft: linkPreviewDraft,
         )
     }
 
-    internal static func text(for messageBody: MessageBody, with linkPreview: OWSLinkPreviewDraft?) -> StyleOnlyMessageBody? {
+    static func text(for messageBody: MessageBody, with linkPreview: OWSLinkPreviewDraft?) -> StyleOnlyMessageBody? {
         // Hydrate any mentions in the message body but preserve styles.
         let hydratedBody = SSKEnvironment.shared.databaseStorageRef.read {
             return messageBody
                 .hydrating(
-                    mentionHydrator: ContactsMentionHydrator.mentionHydrator(transaction: $0)
+                    mentionHydrator: ContactsMentionHydrator.mentionHydrator(transaction: $0),
                 )
                 .asStyleOnlyBody()
         }
@@ -54,8 +54,8 @@ public enum StorySharing {
                 CharacterSet.whitespacesAndNewlines.contains(
                     hydratedBody.text[hydratedBody.text.index(
                         hydratedBody.text.startIndex,
-                        offsetBy: linkPreviewUrlString.count
-                    )]
+                        offsetBy: linkPreviewUrlString.count,
+                    )],
                 )
             {
                 // If the URL is at the start of the message, strip it off
@@ -65,8 +65,8 @@ public enum StorySharing {
                 CharacterSet.whitespacesAndNewlines.contains(
                     hydratedBody.text[hydratedBody.text.index(
                         hydratedBody.text.endIndex,
-                        offsetBy: -(linkPreviewUrlString.count + 1)
-                    )]
+                        offsetBy: -(linkPreviewUrlString.count + 1),
+                    )],
                 )
             {
                 // If the URL is at the end of the message, strip it off

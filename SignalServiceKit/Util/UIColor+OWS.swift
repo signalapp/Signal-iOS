@@ -25,10 +25,12 @@ public extension UIColor {
         assert(result1)
 
         let alpha = CGFloat.clamp01(alphaParam)
-        return UIColor(red: CGFloat.lerp(left: r0, right: r1, alpha: alpha),
-                       green: CGFloat.lerp(left: g0, right: g1, alpha: alpha),
-                       blue: CGFloat.lerp(left: b0, right: b1, alpha: alpha),
-                       alpha: CGFloat.lerp(left: a0, right: a1, alpha: alpha))
+        return UIColor(
+            red: CGFloat.lerp(left: r0, right: r1, alpha: alpha),
+            green: CGFloat.lerp(left: g0, right: g1, alpha: alpha),
+            blue: CGFloat.lerp(left: b0, right: b1, alpha: alpha),
+            alpha: CGFloat.lerp(left: a0, right: a1, alpha: alpha),
+        )
 
     }
 
@@ -41,11 +43,17 @@ public extension UIColor {
         let alpha = opacity.clamp01()
 
         // Base
-        var baseR: CGFloat = 0, baseG: CGFloat = 0, baseB: CGFloat = 0, baseA: CGFloat = 0
+        var baseR: CGFloat = 0
+        var baseG: CGFloat = 0
+        var baseB: CGFloat = 0
+        var baseA: CGFloat = 0
         self.getRed(&baseR, green: &baseG, blue: &baseB, alpha: &baseA)
 
         // Overlay
-        var overlayR: CGFloat = 0, overlayG: CGFloat = 0, overlayB: CGFloat = 0, overlayA: CGFloat = 0
+        var overlayR: CGFloat = 0
+        var overlayG: CGFloat = 0
+        var overlayB: CGFloat = 0
+        var overlayA: CGFloat = 0
         overlayColor.getRed(&overlayR, green: &overlayG, blue: &overlayB, alpha: &overlayA)
 
         // Apply overlay blend mode formula for each channel
@@ -71,11 +79,18 @@ public extension UIColor {
     }
 
     func midPoint(with otherColor: UIColor) -> UIColor {
-        var h1: CGFloat = 0, s1: CGFloat = 0, v1: CGFloat = 0, a1: CGFloat = 0
-        var h2: CGFloat = 0, s2: CGFloat = 0, v2: CGFloat = 0, a2: CGFloat = 0
+        var h1: CGFloat = 0
+        var s1: CGFloat = 0
+        var v1: CGFloat = 0
+        var a1: CGFloat = 0
+        var h2: CGFloat = 0
+        var s2: CGFloat = 0
+        var v2: CGFloat = 0
+        var a2: CGFloat = 0
 
-        guard getHue(&h1, saturation: &s1, brightness: &v1, alpha: &a1),
-              otherColor.getHue(&h2, saturation: &s2, brightness: &v2, alpha: &a2)
+        guard
+            getHue(&h1, saturation: &s1, brightness: &v1, alpha: &a1),
+            otherColor.getHue(&h2, saturation: &s2, brightness: &v2, alpha: &a2)
         else {
             return midPointRGB(with: otherColor)
         }
@@ -105,8 +120,14 @@ public extension UIColor {
     }
 
     private func midPointRGB(with otherColor: UIColor) -> UIColor {
-        var r1: CGFloat = 0, g1: CGFloat = 0, b1: CGFloat = 0, a1: CGFloat = 0
-        var r2: CGFloat = 0, g2: CGFloat = 0, b2: CGFloat = 0, a2: CGFloat = 0
+        var r1: CGFloat = 0
+        var g1: CGFloat = 0
+        var b1: CGFloat = 0
+        var a1: CGFloat = 0
+        var r2: CGFloat = 0
+        var g2: CGFloat = 0
+        var b2: CGFloat = 0
+        var a2: CGFloat = 0
 
         self.getRed(&r1, green: &g1, blue: &b1, alpha: &a1)
         otherColor.getRed(&r2, green: &g2, blue: &b2, alpha: &a2)
@@ -115,7 +136,7 @@ public extension UIColor {
             red: (r1 + r2) / 2.0,
             green: (g1 + g2) / 2.0,
             blue: (b1 + b2) / 2.0,
-            alpha: (a1 + a2) / 2.0
+            alpha: (a1 + a2) / 2.0,
         )
     }
 }
@@ -347,9 +368,11 @@ public extension UIColor {
         func randomComponent() -> CGFloat {
             CGFloat.random(in: 0..<1, choices: 256)
         }
-        return UIColor(red: randomComponent(),
-                       green: randomComponent(),
-                       blue: randomComponent(),
-                       alpha: isAlphaRandom ? randomComponent() : 1)
+        return UIColor(
+            red: randomComponent(),
+            green: randomComponent(),
+            blue: randomComponent(),
+            alpha: isAlphaRandom ? randomComponent() : 1,
+        )
     }
 }

@@ -49,7 +49,7 @@ extension TSMutex where State == Void {
 
     @inlinable
     public func withLock<T: ~Copyable, E: Error>(_ body: () throws(E) -> sending T) throws(E) -> sending T {
-        try withLock { (_) throws(E) in
+        try withLock { _ throws(E) in
             try body()
         }
     }

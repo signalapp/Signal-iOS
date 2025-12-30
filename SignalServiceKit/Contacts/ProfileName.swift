@@ -23,13 +23,13 @@ public struct ProfileName {
         guard let nicknameRecord else { return nil }
         self.init(
             givenName: nicknameRecord.givenName,
-            familyName: nicknameRecord.familyName
+            familyName: nicknameRecord.familyName,
         )
     }
 
     public init?(givenName: String?, familyName: String?) {
         switch Self.createNameFrom(givenName: givenName, familyName: familyName) {
-        case .failure(_):
+        case .failure:
             return nil
         case .success(let profileName):
             self = profileName
@@ -49,7 +49,7 @@ public struct ProfileName {
 
     public static func createNameFrom(
         givenName: String?,
-        familyName: String?
+        familyName: String?,
     ) -> Result<ProfileName, Failure> {
         let givenNameComponent = givenName.flatMap(NameComponent.parse(truncating:))
         if let givenNameComponent, givenNameComponent.didTruncate {
@@ -61,13 +61,13 @@ public struct ProfileName {
             return .failure(.familyNameTooLong)
         }
 
-        if givenNameComponent == nil && familyNameComponent == nil {
+        if givenNameComponent == nil, familyNameComponent == nil {
             return .failure(.nameEmpty)
         }
 
         return .success(.init(
             givenName: givenNameComponent?.nameComponent,
-            familyName: familyNameComponent?.nameComponent
+            familyName: familyNameComponent?.nameComponent,
         ))
     }
 

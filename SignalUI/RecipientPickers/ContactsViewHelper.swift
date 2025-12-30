@@ -46,7 +46,7 @@ public class ContactsViewHelper {
                 queue: nil,
                 using: { [weak self] _ in
                     self?.updateContacts()
-                }
+                },
             ),
             NotificationCenter.default.addObserver(
                 forName: UserProfileNotifications.profileWhitelistDidChange,
@@ -54,7 +54,7 @@ public class ContactsViewHelper {
                 queue: nil,
                 using: { [weak self] _ in
                     self?.updateContacts()
-                }
+                },
             ),
             NotificationCenter.default.addObserver(
                 forName: BlockingManager.blockListDidChange,
@@ -62,7 +62,7 @@ public class ContactsViewHelper {
                 queue: nil,
                 using: { [weak self] _ in
                     self?.updateContacts()
-                }
+                },
             ),
             NotificationCenter.default.addObserver(
                 forName: RecipientHidingManagerImpl.hideListDidChange,
@@ -75,8 +75,8 @@ public class ContactsViewHelper {
                     // do not fit into these categories need this other mechanism to
                     // trigger `updateContacts`.
                     self?.updateContacts()
-                }
-            )
+                },
+            ),
         ])
     }
 
@@ -118,7 +118,7 @@ public extension ContactsViewHelper {
 
     func checkEditAuthorization(
         performWhenAllowed: () -> Void,
-        presentErrorFrom viewController: UIViewController
+        presentErrorFrom viewController: UIViewController,
     ) {
         AssertIsOnMainThread()
 
@@ -135,7 +135,7 @@ public extension ContactsViewHelper {
     func checkReadAuthorization(
         purpose: ReadPurpose,
         performWhenAllowed: @escaping () -> Void,
-        presentErrorFrom viewController: UIViewController
+        presentErrorFrom viewController: UIViewController,
     ) {
         let deniedBlock = {
             Self.presentContactAccessDeniedAlert(from: viewController, access: .read(purpose))
@@ -169,11 +169,11 @@ public extension ContactsViewHelper {
         case .edit:
             title = OWSLocalizedString(
                 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE",
-                comment: "Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions"
+                comment: "Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions",
             )
             message = OWSLocalizedString(
                 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY",
-                comment: "Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions"
+                comment: "Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions",
             )
 
         case .read(let readPurpose):
@@ -181,21 +181,21 @@ public extension ContactsViewHelper {
             case .share:
                 title = OWSLocalizedString(
                     "CONTACT_SHARING_NO_ACCESS_TITLE",
-                    comment: "Alert title when contacts disabled while trying to share a contact."
+                    comment: "Alert title when contacts disabled while trying to share a contact.",
                 )
                 message = OWSLocalizedString(
                     "CONTACT_SHARING_NO_ACCESS_BODY",
-                    comment: "Alert body when contacts disabled while trying to share a contact."
+                    comment: "Alert body when contacts disabled while trying to share a contact.",
                 )
 
             case .invite:
                 title = OWSLocalizedString(
                     "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE",
-                    comment: "Alert title when contacts disabled while trying to invite contacts to signal"
+                    comment: "Alert title when contacts disabled while trying to invite contacts to signal",
                 )
                 message = OWSLocalizedString(
                     "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY",
-                    comment: "Alert body when contacts disabled while trying to invite contacts to signal"
+                    comment: "Alert body when contacts disabled while trying to invite contacts to signal",
                 )
             }
         }
@@ -205,9 +205,9 @@ public extension ContactsViewHelper {
         actionSheet.addAction(ActionSheetAction(
             title: OWSLocalizedString(
                 "AB_PERMISSION_MISSING_ACTION_NOT_NOW",
-                comment: "Button text to dismiss missing contacts permission alert"
+                comment: "Button text to dismiss missing contacts permission alert",
             ),
-            style: .cancel
+            style: .cancel,
         ))
 
         if let openSystemSettingsAction = AppContextUtils.openSystemSettingsAction(completion: nil) {
@@ -221,8 +221,8 @@ public extension ContactsViewHelper {
         let actionSheet = ActionSheetController(
             message: OWSLocalizedString(
                 "LINKED_DEVICE_CONTACTS_NOT_ALLOWED",
-                comment: "Shown in an alert when trying to edit a contact."
-            )
+                comment: "Shown in an alert when trying to edit a contact.",
+            ),
         )
 
         actionSheet.addAction(ActionSheetAction(title: CommonStrings.learnMore) { [weak viewController] _ in
@@ -238,7 +238,7 @@ public extension ContactsViewHelper {
     static func presentContactAccessNotAllowedLearnMore(from viewController: UIViewController) {
         viewController.present(
             SFSafariViewController(url: URL.Support.contactAccessNotAllowed),
-            animated: true
+            animated: true,
         )
     }
 }

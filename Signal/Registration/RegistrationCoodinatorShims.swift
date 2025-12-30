@@ -26,6 +26,7 @@ extension RegistrationCoordinatorImpl {
         public typealias UDManager = _RegistrationCoordinator_UDManagerShim
         public typealias UsernameApiClient = _RegistrationCoordinator_UsernameApiClientShim
     }
+
     public enum Wrappers {
         public typealias ContactsManager = _RegistrationCoordinator_ContactsManagerWrapper
         public typealias ContactsStore = _RegistrationCoordinator_CNContactsStoreWrapper
@@ -80,7 +81,7 @@ public class _RegistrationCoordinator_CNContactsStoreWrapper: _RegistrationCoord
 
     public func requestContactsAuthorization() async {
         await withCheckedContinuation { continuation in
-            CNContactStore().requestAccess(for: CNEntityType.contacts) { (granted, error) -> Void in
+            CNContactStore().requestAccess(for: CNEntityType.contacts) { granted, error -> Void in
                 if granted {
                     Logger.info("User granted contacts permission")
                 } else {
@@ -196,7 +197,7 @@ public protocol _RegistrationCoordinator_OWS2FAManagerShim {
 
     func markPinEnabled(pin: String, resetReminderInterval: Bool, tx: DBWriteTransaction)
 
-    func markRegistrationLockEnabled(_  tx: DBWriteTransaction)
+    func markRegistrationLockEnabled(_ tx: DBWriteTransaction)
 }
 
 public class _RegistrationCoordinator_OWS2FAManagerWrapper: _RegistrationCoordinator_OWS2FAManagerShim {
@@ -220,7 +221,7 @@ public class _RegistrationCoordinator_OWS2FAManagerWrapper: _RegistrationCoordin
         manager.markEnabled(
             pin: pin,
             resetReminderInterval: resetReminderInterval,
-            transaction: tx
+            transaction: tx,
         )
     }
 
@@ -243,7 +244,7 @@ public protocol _RegistrationCoordinator_ProfileManagerShim {
         familyName: OWSUserProfile.NameComponent?,
         avatarData: Data?,
         authedAccount: AuthedAccount,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) -> Promise<Void>
 
     func scheduleReuploadLocalProfile(authedAccount: AuthedAccount)
@@ -263,7 +264,7 @@ public class _RegistrationCoordinator_ProfileManagerWrapper: _RegistrationCoordi
         familyName: OWSUserProfile.NameComponent?,
         avatarData: Data?,
         authedAccount: AuthedAccount,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) -> Promise<Void> {
         return manager.updateLocalProfile(
             profileGivenName: .setTo(givenName),
@@ -275,7 +276,7 @@ public class _RegistrationCoordinator_ProfileManagerWrapper: _RegistrationCoordi
             unsavedRotatedProfileKey: nil,
             userProfileWriter: .registration,
             authedAccount: authedAccount,
-            tx: tx
+            tx: tx,
         )
     }
 
@@ -286,7 +287,7 @@ public class _RegistrationCoordinator_ProfileManagerWrapper: _RegistrationCoordi
                     unsavedRotatedProfileKey: nil,
                     mustReuploadAvatar: true,
                     authedAccount: authedAccount,
-                    tx: tx
+                    tx: tx,
                 )
             }
         }
@@ -382,6 +383,7 @@ public class _RegistrationCoordinator_ReceiptManagerWrapper: _RegistrationCoordi
 }
 
 // MARK: - StorageService
+
 public protocol _RegistrationCoordinator_StorageServiceManagerShim {
     func rotateManifest(mode: StorageServiceManagerManifestRotationMode, authedDevice: AuthedDevice) async throws
     func restoreOrCreateManifestIfNecessary(authedDevice: AuthedDevice, masterKeySource: StorageService.MasterKeySource) -> Promise<Void>
@@ -395,14 +397,14 @@ public class _RegistrationCoordinator_StorageServiceManagerWrapper: _Registratio
 
     public func rotateManifest(
         mode: StorageServiceManagerManifestRotationMode,
-        authedDevice: AuthedDevice
+        authedDevice: AuthedDevice,
     ) async throws {
         try await self.manager.rotateManifest(mode: mode, authedDevice: authedDevice)
     }
 
     public func restoreOrCreateManifestIfNecessary(
         authedDevice: AuthedDevice,
-        masterKeySource: StorageService.MasterKeySource
+        masterKeySource: StorageService.MasterKeySource,
     ) -> Promise<Void> {
         manager.restoreOrCreateManifestIfNecessary(authedDevice: authedDevice, masterKeySource: masterKeySource)
     }

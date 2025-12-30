@@ -43,7 +43,7 @@ final class CallRecordQuerierTest: XCTestCase {
     private func insertCallRecordsForThread(
         callStatuses: [CallRecord.CallStatus],
         unreadStatus: CallRecord.CallUnreadStatus? = nil,
-        knownThreadRowId: Int64? = nil
+        knownThreadRowId: Int64? = nil,
     ) -> Int64 {
         return inMemoryDB.write { tx -> Int64 in
             let db = tx.database
@@ -52,7 +52,7 @@ final class CallRecordQuerierTest: XCTestCase {
                 if let knownThreadRowId {
                     return (
                         try! TSThread.fromRecord(ThreadRecord.fetchOne(db, key: knownThreadRowId)!),
-                        knownThreadRowId
+                        knownThreadRowId,
                     )
                 } else {
                     return insertThread(db: db)
@@ -77,7 +77,7 @@ final class CallRecordQuerierTest: XCTestCase {
                     callType: callType,
                     callDirection: .incoming,
                     callStatus: callStatus,
-                    callBeganTimestamp: runningCallBeganTimestampForInsertedCallRecords
+                    callBeganTimestamp: runningCallBeganTimestampForInsertedCallRecords,
                 )
 
                 if let unreadStatus {
@@ -97,7 +97,7 @@ final class CallRecordQuerierTest: XCTestCase {
         func testCase(
             _ callRecords: [CallRecord],
             expectedStatuses: [CallRecord.CallStatus],
-            expectedThreadRowIds: [Int64]
+            expectedThreadRowIds: [Int64],
         ) {
             assertExplanation(contains: "CallRecord_callBeganTimestamp")
             XCTAssertEqual(callRecords.map { $0.callStatus }, expectedStatuses)
@@ -112,36 +112,46 @@ final class CallRecordQuerierTest: XCTestCase {
             testCase(
                 try! callRecordQuerier.fetchCursor(
                     ordering: .descending,
-                    tx: tx
+                    tx: tx,
                 )!.drain(expectingSort: .descending),
                 expectedStatuses: [
-                    .individual(.notAccepted), .individual(.accepted),
-                    .group(.ringingMissed), .group(.joined), .group(.generic),
-                    .group(.ringingAccepted), .group(.ringingMissed), .group(.ringingDeclined),
+                    .individual(.notAccepted),
+                    .individual(.accepted),
+                    .group(.ringingMissed),
+                    .group(.joined),
+                    .group(.generic),
+                    .group(.ringingAccepted),
+                    .group(.ringingMissed),
+                    .group(.ringingDeclined),
                 ],
                 expectedThreadRowIds: [
-                    threadRowId3, threadRowId3,
-                    threadRowId2, threadRowId2, threadRowId2,
-                    threadRowId1, threadRowId1, threadRowId1,
-                ]
+                    threadRowId3,
+                    threadRowId3,
+                    threadRowId2,
+                    threadRowId2,
+                    threadRowId2,
+                    threadRowId1,
+                    threadRowId1,
+                    threadRowId1,
+                ],
             )
 
             testCase(
                 try! callRecordQuerier.fetchCursor(
                     ordering: .descendingBefore(timestamp: 4),
-                    tx: tx
+                    tx: tx,
                 )!.drain(expectingSort: .descending),
                 expectedStatuses: [.group(.generic), .group(.ringingAccepted), .group(.ringingMissed), .group(.ringingDeclined)],
-                expectedThreadRowIds: [threadRowId2, threadRowId1, threadRowId1, threadRowId1]
+                expectedThreadRowIds: [threadRowId2, threadRowId1, threadRowId1, threadRowId1],
             )
 
             testCase(
                 try! callRecordQuerier.fetchCursor(
                     ordering: .ascendingAfter(timestamp: 4),
-                    tx: tx
+                    tx: tx,
                 )!.drain(expectingSort: .ascending),
                 expectedStatuses: [.group(.ringingMissed), .individual(.accepted), .individual(.notAccepted)],
-                expectedThreadRowIds: [threadRowId2, threadRowId3, threadRowId3]
+                expectedThreadRowIds: [threadRowId2, threadRowId3, threadRowId3],
             )
         }
     }
@@ -149,7 +159,7 @@ final class CallRecordQuerierTest: XCTestCase {
     func testFetchByCallStatus() {
         func testCase(
             _ callRecords: [CallRecord],
-            expectedThreadRowIds: [Int64]
+            expectedThreadRowIds: [Int64],
         ) {
             assertExplanation(contains: "CallRecord_status_callBeganTimestamp")
             XCTAssertTrue(callRecords.allSatisfy { $0.callStatus == .group(.ringingMissed) })
@@ -164,27 +174,27 @@ final class CallRecordQuerierTest: XCTestCase {
                 try! callRecordQuerier.fetchCursor(
                     callStatus: .group(.ringingMissed),
                     ordering: .descending,
-                    tx: tx
+                    tx: tx,
                 )!.drain(expectingSort: .descending),
-                expectedThreadRowIds: [threadRowId2, threadRowId2, threadRowId2, threadRowId1, threadRowId1]
+                expectedThreadRowIds: [threadRowId2, threadRowId2, threadRowId2, threadRowId1, threadRowId1],
             )
 
             testCase(
                 try! callRecordQuerier.fetchCursor(
                     callStatus: .group(.ringingMissed),
                     ordering: .descendingBefore(timestamp: 6),
-                    tx: tx
+                    tx: tx,
                 )!.drain(expectingSort: .descending),
-                expectedThreadRowIds: [threadRowId2, threadRowId1, threadRowId1]
+                expectedThreadRowIds: [threadRowId2, threadRowId1, threadRowId1],
             )
 
             testCase(
                 try! callRecordQuerier.fetchCursor(
                     callStatus: .group(.ringingMissed),
                     ordering: .ascendingAfter(timestamp: 6),
-                    tx: tx
+                    tx: tx,
                 )!.drain(expectingSort: .ascending),
-                expectedThreadRowIds: [threadRowId2]
+                expectedThreadRowIds: [threadRowId2],
             )
         }
     }
@@ -196,7 +206,7 @@ final class CallRecordQuerierTest: XCTestCase {
 
         func testCase(
             _ callRecords: [CallRecord],
-            expectedStatuses: [CallRecord.CallStatus]
+            expectedStatuses: [CallRecord.CallStatus],
         ) {
             assertExplanation(contains: "CallRecord_threadRowId_callBeganTimestamp")
             XCTAssertEqual(callRecords.map { $0.callStatus }, expectedStatuses)
@@ -208,30 +218,32 @@ final class CallRecordQuerierTest: XCTestCase {
                 try! callRecordQuerier.fetchCursor(
                     threadRowId: threadRowId,
                     ordering: .descending,
-                    tx: tx
+                    tx: tx,
                 )!.drain(expectingSort: .descending),
                 expectedStatuses: [
-                    .group(.ringingDeclined), .group(.ringingAccepted),
-                    .group(.joined), .group(.generic)
-                ]
+                    .group(.ringingDeclined),
+                    .group(.ringingAccepted),
+                    .group(.joined),
+                    .group(.generic),
+                ],
             )
 
             testCase(
                 try! callRecordQuerier.fetchCursor(
                     threadRowId: threadRowId,
                     ordering: .descendingBefore(timestamp: 5),
-                    tx: tx
+                    tx: tx,
                 )!.drain(expectingSort: .descending),
-                expectedStatuses: [.group(.ringingAccepted), .group(.joined), .group(.generic)]
+                expectedStatuses: [.group(.ringingAccepted), .group(.joined), .group(.generic)],
             )
 
             testCase(
                 try! callRecordQuerier.fetchCursor(
                     threadRowId: threadRowId,
                     ordering: .ascendingAfter(timestamp: 0),
-                    tx: tx
+                    tx: tx,
                 )!.drain(expectingSort: .ascending),
-                expectedStatuses: [.group(.joined), .group(.ringingAccepted), .group(.ringingDeclined)]
+                expectedStatuses: [.group(.joined), .group(.ringingAccepted), .group(.ringingDeclined)],
             )
         }
     }
@@ -243,7 +255,7 @@ final class CallRecordQuerierTest: XCTestCase {
 
         func testCase(
             _ callRecords: [CallRecord],
-            count: Int
+            count: Int,
         ) {
             assertExplanation(contains: "CallRecord_threadRowId_status_callBeganTimestamp")
             XCTAssertEqual(callRecords.count, count)
@@ -257,9 +269,9 @@ final class CallRecordQuerierTest: XCTestCase {
                     threadRowId: threadRowId,
                     callStatus: .group(.ringingMissed),
                     ordering: .descending,
-                    tx: tx
+                    tx: tx,
                 )!.drain(expectingSort: .descending),
-                count: 4
+                count: 4,
             )
 
             testCase(
@@ -267,9 +279,9 @@ final class CallRecordQuerierTest: XCTestCase {
                     threadRowId: threadRowId,
                     callStatus: .group(.ringingMissed),
                     ordering: .descendingBefore(timestamp: 5),
-                    tx: tx
+                    tx: tx,
                 )!.drain(expectingSort: .descending),
-                count: 2
+                count: 2,
             )
 
             testCase(
@@ -277,9 +289,9 @@ final class CallRecordQuerierTest: XCTestCase {
                     threadRowId: threadRowId,
                     callStatus: .group(.ringingMissed),
                     ordering: .ascendingAfter(timestamp: 5),
-                    tx: tx
+                    tx: tx,
                 )!.drain(expectingSort: .ascending),
-                count: 1
+                count: 1,
             )
         }
     }
@@ -294,7 +306,7 @@ final class CallRecordQuerierTest: XCTestCase {
 
         func testCase(
             _ callRecords: [CallRecord],
-            count: Int
+            count: Int,
         ) {
             assertExplanation(contains: "CallRecord_callStatus_unreadStatus_callBeganTimestamp")
             XCTAssertEqual(callRecords.count, count)
@@ -307,9 +319,9 @@ final class CallRecordQuerierTest: XCTestCase {
                 try! callRecordQuerier.fetchCursorForUnread(
                     callStatus: .group(.ringingMissed),
                     ordering: .descending,
-                    tx: tx
+                    tx: tx,
                 )!.drain(expectingSort: .descending),
-                count: 2
+                count: 2,
             )
         }
     }
@@ -325,7 +337,7 @@ final class CallRecordQuerierTest: XCTestCase {
         func testCase(
             _ callRecords: [CallRecord],
             threadRowId: Int64,
-            count: Int
+            count: Int,
         ) {
             assertExplanation(contains: "CallRecord_threadRowId_callStatus_unreadStatus_callBeganTimestamp")
             XCTAssertEqual(callRecords.count, count)
@@ -340,10 +352,10 @@ final class CallRecordQuerierTest: XCTestCase {
                     threadRowId: threadRowId1,
                     callStatus: .group(.ringingMissed),
                     ordering: .descending,
-                    tx: tx
+                    tx: tx,
                 )!.drain(expectingSort: .descending),
                 threadRowId: threadRowId1,
-                count: 1
+                count: 1,
             )
         }
     }
@@ -351,7 +363,7 @@ final class CallRecordQuerierTest: XCTestCase {
     /// Asserts that the latest fetch explanation in the call record querier
     /// contains the given string.
     private func assertExplanation(
-        contains substring: String
+        contains substring: String,
     ) {
         guard let explanation = callRecordQuerier.lastExplanation else {
             XCTFail("Missing explanation!")
@@ -362,7 +374,7 @@ final class CallRecordQuerierTest: XCTestCase {
 
         XCTAssertTrue(
             explanation.contains(substring),
-            "\(explanation) did not contain \(substring)!"
+            "\(explanation) did not contain \(substring)!",
         )
     }
 }
@@ -384,7 +396,7 @@ private extension CallRecord {
         switch conversationId {
         case .thread(let threadRowId):
             return threadRowId
-        case .callLink(_):
+        case .callLink:
             fatalError()
         }
     }

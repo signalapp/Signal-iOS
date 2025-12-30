@@ -29,7 +29,7 @@ public class AccountChecker {
         recipientManager: any SignalRecipientManager,
         recipientMerger: any RecipientMerger,
         recipientStore: RecipientDatabaseTable,
-        tsAccountManager: any TSAccountManager
+        tsAccountManager: any TSAccountManager,
     ) {
         self.db = db
         self.networkManager = networkManager
@@ -68,7 +68,7 @@ public class AccountChecker {
     func markAsUnregisteredAndSplitRecipientIfNeeded(
         serviceId: ServiceId,
         shouldUpdateStorageService: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         AssertNotOnMainThread()
 
@@ -80,7 +80,7 @@ public class AccountChecker {
             &recipient,
             unregisteredAt: .now,
             shouldUpdateStorageService: shouldUpdateStorageService,
-            tx: tx
+            tx: tx,
         )
 
         guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx) else {
@@ -91,7 +91,7 @@ public class AccountChecker {
         recipientMerger.splitUnregisteredRecipientIfNeeded(
             localIdentifiers: localIdentifiers,
             unregisteredRecipient: &recipient,
-            tx: tx
+            tx: tx,
         )
     }
 }

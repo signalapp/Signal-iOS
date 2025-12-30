@@ -39,7 +39,7 @@ public extension GroupsV2Impl {
 
     static func enqueuedGroupRecordForRestore(
         masterKeyData: Data,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> StorageServiceProtoGroupV2Record? {
         let key = restoreGroupKey(forMasterKeyData: masterKeyData)
         guard let recordData = storageServiceGroupsToRestore.getData(key, transaction: transaction) else {
@@ -51,7 +51,7 @@ public extension GroupsV2Impl {
     static func enqueueGroupRestore(
         groupRecord: StorageServiceProtoGroupV2Record,
         account: AuthedAccount,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) {
         guard GroupMasterKey.isValid(groupRecord.masterKey) else {
             owsFailDebug("Invalid master key.")
@@ -92,8 +92,8 @@ public extension GroupsV2Impl {
     private static func canProcessGroupRestore(authedAccount: AuthedAccount) async -> Bool {
         return await (
             self.isMainAppAndActive()
-            && SSKEnvironment.shared.reachabilityManagerRef.isReachable
-            && isRegisteredWithSneakyTransaction(authedAccount: authedAccount)
+                && SSKEnvironment.shared.reachabilityManagerRef.isReachable
+                && isRegisteredWithSneakyTransaction(authedAccount: authedAccount)
         )
     }
 
@@ -207,7 +207,7 @@ public extension GroupsV2Impl {
                     if StorageServiceUnknownFieldMigrator.shouldInterceptRemoteManifestBeforeMerging(tx: tx) {
                         groupRecord = StorageServiceUnknownFieldMigrator.interceptRemoteManifestBeforeMerging(
                             record: groupRecord,
-                            tx: tx
+                            tx: tx,
                         )
                     }
 
@@ -217,7 +217,7 @@ public extension GroupsV2Impl {
                         avatarDefaultColorManager: DependenciesBridge.shared.avatarDefaultColorManager,
                         blockingManager: SSKEnvironment.shared.blockingManagerRef,
                         groupsV2: SSKEnvironment.shared.groupsV2Ref,
-                        profileManager: SSKEnvironment.shared.profileManagerRef
+                        profileManager: SSKEnvironment.shared.profileManagerRef,
                     )
                     _ = recordUpdater.mergeRecord(groupRecord, transaction: tx)
                 }
@@ -250,7 +250,7 @@ public extension GroupsV2Impl {
         do {
             try await SSKEnvironment.shared.groupV2UpdatesRef.refreshGroup(
                 secretParams: groupContextInfo.groupSecretParams,
-                options: [.throttle]
+                options: [.throttle],
             )
             await markAsComplete()
             return true

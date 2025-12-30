@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import XCTest
 import SignalServiceKit
+import XCTest
 
 @testable import Signal
 
@@ -19,7 +19,8 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
     private lazy var callViewModelForCallRecords: ViewModelLoader.CallViewModelForCallRecords! = {
         self.createCallViewModel(callRecords: $0, tx: $1)
     }
-    private lazy var fetchCallRecordBlock: ViewModelLoader.FetchCallRecordBlock! = { (callRecordId, tx) -> CallRecord? in
+
+    private lazy var fetchCallRecordBlock: ViewModelLoader.FetchCallRecordBlock! = { callRecordId, tx -> CallRecord? in
         return self.mockCallRecordLoader.callRecordsById[callRecordId]
     }
 
@@ -29,7 +30,7 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
             case .individual:
                 return .individual(type: .video, contactThread: TSContactThread(
                     contactUUID: UUID().uuidString,
-                    contactPhoneNumber: nil
+                    contactPhoneNumber: nil,
                 ))
             case .group:
                 return .groupThread(groupId: Data(count: 32))
@@ -56,13 +57,13 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
             recipientType: recipientType,
             direction: direction,
             medium: .video,
-            state: .inactive
+            state: .inactive,
         )
     }
 
     private func setUpViewModelLoader(
         viewModelPageSize: Int,
-        maxCoalescedCallsInOneViewModel: Int = 100
+        maxCoalescedCallsInOneViewModel: Int = 100,
     ) {
         viewModelLoader = ViewModelLoader(
             callLinkStore: CallLinkRecordStoreImpl(),
@@ -72,7 +73,7 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
             fetchCallRecordBlock: { self.fetchCallRecordBlock($0, $1) },
             shouldFetchUpcomingCallLinks: false,
             viewModelPageSize: viewModelPageSize,
-            maxCoalescedCallsInOneViewModel: maxCoalescedCallsInOneViewModel
+            maxCoalescedCallsInOneViewModel: maxCoalescedCallsInOneViewModel,
         )
     }
 
@@ -102,7 +103,7 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
         for index in loadedViewModelReferenceIndices {
             XCTAssertNotNil(
                 viewModelLoader.viewModel(at: index, sneakyTransactionDb: mockDB),
-                "Missing cached view model for index \(index)!"
+                "Missing cached view model for index \(index)!",
             )
         }
 
@@ -111,7 +112,7 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
 
     private func assertCachedCallIds(
         _ callIds: [UInt64],
-        atLoadedViewModelReferenceIndex loadedViewModelReferenceIndex: Int
+        atLoadedViewModelReferenceIndex loadedViewModelReferenceIndex: Int,
     ) {
         guard let cachedViewModel = viewModelLoader.viewModel(at: loadedViewModelReferenceIndex, sneakyTransactionDb: mockDB) else {
             XCTFail("Missing cached view model entirely!")
@@ -188,7 +189,17 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
         XCTAssertEqual(loadedCallIds, [
             [99, 98, 97, 96],
             [95, 94, 93, 92],
-            [0], [1], [2], [3], [4], [5], [6], [7], [8], [9], [10],
+            [0],
+            [1],
+            [2],
+            [3],
+            [4],
+            [5],
+            [6],
+            [7],
+            [8],
+            [9],
+            [10],
         ])
     }
 
@@ -202,12 +213,12 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
                 /// Add a coalescable pair of calls.
                 return [
                     .fixture(callId: UInt64(idx), timestamp: timestamp.uncoalescable(), threadRowId: Int64(idx)),
-                    .fixture(callId: UInt64(idx * 1000), timestamp: timestamp.coalescable(), threadRowId: Int64(idx))
+                    .fixture(callId: UInt64(idx * 1000), timestamp: timestamp.coalescable(), threadRowId: Int64(idx)),
                 ]
             } else {
                 /// Add a single uncoalescable call.
                 return [
-                    .fixture(callId: UInt64(idx), timestamp: timestamp.uncoalescable(), threadRowId: Int64(idx))
+                    .fixture(callId: UInt64(idx), timestamp: timestamp.uncoalescable(), threadRowId: Int64(idx)),
                 ]
             }
         }
@@ -297,7 +308,7 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
             } else {
                 /// Add a single uncoalescable call.
                 return [
-                    .fixture(callId: UInt64(idx), timestamp: timestamp.uncoalescable(), threadRowId: Int64(idx))
+                    .fixture(callId: UInt64(idx), timestamp: timestamp.uncoalescable(), threadRowId: Int64(idx)),
                 ]
             }
         }
@@ -327,7 +338,7 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
             .fixture(callId: 3, timestamp: timestamp.coalescable()),
             .fixture(callId: 4, timestamp: timestamp.coalescable()),
             .fixture(callId: 5, timestamp: timestamp.coalescable()),
-            .fixture(callId: 6, timestamp: timestamp.uncoalescable())
+            .fixture(callId: 6, timestamp: timestamp.uncoalescable()),
         ]
 
         XCTAssertTrue(loadMore(direction: .newer))
@@ -408,7 +419,7 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
             /// view model should re-fetch all the calls in the view model.
             XCTAssertEqual(
                 viewModelLoader.invalidate(callLinkRowIds: [], callRecordIds: [callRecordId]),
-                [.callRecords(oldestId: .fixture(callId: 1))]
+                [.callRecords(oldestId: .fixture(callId: 1))],
             )
             assertCachedCallIds([0, 1], atLoadedViewModelReferenceIndex: 0)
             XCTAssertEqual(fetchedCallIds, [0, 1])
@@ -417,7 +428,7 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
 
         XCTAssertEqual(
             viewModelLoader.invalidate(callLinkRowIds: [], callRecordIds: [.fixture(callId: 2)]),
-            [.callRecords(oldestId: .fixture(callId: 2))]
+            [.callRecords(oldestId: .fixture(callId: 2))],
         )
         assertCachedCallIds([2], atLoadedViewModelReferenceIndex: 1)
         XCTAssertEqual(fetchedCallIds, [2])
@@ -429,10 +440,10 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
 
         /// If we ask to recreate for a call record ID that's not part of
         /// any cached view models, it should be marked for reloading.
-        fetchCallRecordBlock = { (_, _) in XCTFail("Unexpectedly tried to fetch!"); return nil }
+        fetchCallRecordBlock = { _, _ in XCTFail("Unexpectedly tried to fetch!"); return nil }
         XCTAssertEqual(
             viewModelLoader.invalidate(callLinkRowIds: [], callRecordIds: [.fixture(callId: 3)]),
-            [.callRecords(oldestId: .fixture(callId: 3))]
+            [.callRecords(oldestId: .fixture(callId: 3))],
         )
         XCTAssertEqual(fetchedCallIds, [])
     }
@@ -498,7 +509,7 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
                     .fixture(callId: 8),
                     .fixture(callId: 9),
                 ],
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -507,7 +518,7 @@ final class CallsListViewControllerViewModelLoaderTest: XCTestCase {
             [0],
             [2, 3],
             [4, 6],
-            [10, 11]
+            [10, 11],
         )
         assertCached(loadedViewModelReferenceIndices: 0..<2)
         assertCached(loadedViewModelReferenceIndices: 4..<5)
@@ -562,7 +573,7 @@ private extension CallRecord.ID {
     static func fixture(callId: UInt64, threadRowId: Int64 = 0) -> CallRecord.ID {
         return CallRecord.ID(
             conversationId: .thread(threadRowId: threadRowId),
-            callId: callId
+            callId: callId,
         )
     }
 }
@@ -574,7 +585,7 @@ private extension CallRecord {
         callType: CallRecord.CallType? = nil,
         threadRowId: Int64 = 0,
         direction: CallRecord.CallDirection = .incoming,
-        status: CallRecord.CallStatus = .group(.joined)
+        status: CallRecord.CallStatus = .group(.joined),
     ) -> CallRecord {
         return CallRecord(
             callId: callId,
@@ -589,7 +600,7 @@ private extension CallRecord {
             }(),
             callDirection: direction,
             callStatus: status,
-            callBeganTimestamp: timestamp
+            callBeganTimestamp: timestamp,
         )
     }
 }
@@ -612,7 +623,7 @@ private class MockCallRecordLoader: CallRecordLoader {
             callRecordsAscending = newValue.sorted { $0.callBeganTimestamp < $1.callBeganTimestamp }
             callRecordsById = Dictionary(
                 newValue.map { ($0.id, $0) },
-                uniquingKeysWith: { new, _ in return new}
+                uniquingKeysWith: { new, _ in return new },
             )
         }
     }

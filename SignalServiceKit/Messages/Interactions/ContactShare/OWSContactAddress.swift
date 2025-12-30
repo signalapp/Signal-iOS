@@ -47,7 +47,7 @@ public final class OWSContactAddress: NSObject, NSCoding, NSCopying, OWSContactF
         }
     }
 
-    public override var hash: Int {
+    override public var hash: Int {
         var hasher = Hasher()
         hasher.combine(type)
         hasher.combine(city)
@@ -61,7 +61,7 @@ public final class OWSContactAddress: NSObject, NSCoding, NSCopying, OWSContactF
         return hasher.finalize()
     }
 
-    public override func isEqual(_ object: Any?) -> Bool {
+    override public func isEqual(_ object: Any?) -> Bool {
         guard let object = object as? Self else { return false }
         guard Swift.type(of: self) == Swift.type(of: object) else { return false }
         guard self.type == object.type else { return false }
@@ -116,7 +116,7 @@ public final class OWSContactAddress: NSObject, NSCoding, NSCopying, OWSContactF
         city: String? = nil,
         region: String? = nil,
         postcode: String? = nil,
-        country: String? = nil
+        country: String? = nil,
     ) {
         self.type = type
         self.label = label
@@ -133,7 +133,7 @@ public final class OWSContactAddress: NSObject, NSCoding, NSCopying, OWSContactF
     // MARK: OWSContactField
 
     public var isValid: Bool {
-        let fields: [String?] = [ street, pobox, neighborhood, city, region, postcode, country ]
+        let fields: [String?] = [street, pobox, neighborhood, city, region, postcode, country]
         for field in fields {
             if field?.strippedOrNil != nil {
                 return true
@@ -180,7 +180,7 @@ extension OWSContactAddress {
             type = .custom
             customLabel = SystemContact.localizedString(
                 forCNLabel: cnLabeledValue.label,
-                labeledValueType: CNLabeledValue<CNPostalAddress>.self
+                labeledValueType: CNLabeledValue<CNPostalAddress>.self,
             )
         }
         let cnPostalAddress = cnLabeledValue.value
@@ -193,7 +193,7 @@ extension OWSContactAddress {
             city: cnPostalAddress.city,
             region: cnPostalAddress.state,
             postcode: cnPostalAddress.postalCode,
-            country: cnPostalAddress.isoCountryCode
+            country: cnPostalAddress.isoCountryCode,
         )
     }
 
@@ -236,16 +236,16 @@ extension OWSContactAddress {
     public convenience init?(proto: SSKProtoDataMessageContactPostalAddress) {
         let type: `Type`
         if proto.hasType {
-             switch proto.unwrappedType {
-             case .home:
-                 type = .home
+            switch proto.unwrappedType {
+            case .home:
+                type = .home
 
-             case .work:
-                 type = .work
+            case .work:
+                type = .work
 
-             default:
-                 type = .custom
-             }
+            default:
+                type = .custom
+            }
         } else {
             type = .custom
         }

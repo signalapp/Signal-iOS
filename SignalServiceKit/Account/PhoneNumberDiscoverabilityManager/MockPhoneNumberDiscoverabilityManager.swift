@@ -19,7 +19,7 @@ open class MockPhoneNumberDiscoverabilityManager: PhoneNumberDiscoverabilityMana
         _ phoneNumberDiscoverability: PhoneNumberDiscoverability,
         _ updateAccountAttributes: Bool,
         _ updateStorageService: Bool,
-        _ authedAccount: AuthedAccount
+        _ authedAccount: AuthedAccount,
     ) -> Void = { [weak self] phoneNumberDiscoverability, _, _, _ in
         self?.phoneNumberDiscoverabilityMock = { return phoneNumberDiscoverability }
     }
@@ -29,7 +29,7 @@ open class MockPhoneNumberDiscoverabilityManager: PhoneNumberDiscoverabilityMana
         updateAccountAttributes: Bool,
         updateStorageService: Bool,
         authedAccount: AuthedAccount,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         setPhoneNumberDiscoverabilityMock(phoneNumberDiscoverability, updateAccountAttributes, updateStorageService, authedAccount)
     }

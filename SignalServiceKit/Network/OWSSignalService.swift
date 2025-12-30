@@ -26,7 +26,7 @@ public class OWSSignalService: OWSSignalServiceProtocol {
             NotificationCenter.default.postOnMainThread(
                 name: .isCensorshipCircumventionActiveDidChange,
                 object: nil,
-                userInfo: nil
+                userInfo: nil,
             )
         }
     }
@@ -134,7 +134,7 @@ public class OWSSignalService: OWSSignalServiceProtocol {
     public func buildUrlEndpoint(for signalServiceInfo: SignalServiceInfo) -> OWSURLSessionEndpoint {
         return buildUrlEndpoint(
             censorshipConfigurationParams: self.censorshipConfigurationParamsWithMaybeSneakyTransaction(
-                censorshipCircumventionSupportedForService: signalServiceInfo.censorshipCircumventionSupported
+                censorshipCircumventionSupportedForService: signalServiceInfo.censorshipCircumventionSupported,
             ),
             baseUrl: signalServiceInfo.baseUrl,
             censorshipCircumventionPathPrefix: signalServiceInfo.censorshipCircumventionPathPrefix,
@@ -171,7 +171,7 @@ public class OWSSignalService: OWSSignalServiceProtocol {
                 baseUrl: baseUrl,
                 frontingInfo: frontingInfo,
                 securityPolicy: securityPolicy,
-                extraHeaders: extraHeaders
+                extraHeaders: extraHeaders,
             )
         } else {
             let baseUrl = baseUrl
@@ -185,7 +185,7 @@ public class OWSSignalService: OWSSignalServiceProtocol {
                 baseUrl: baseUrl,
                 frontingInfo: nil,
                 securityPolicy: securityPolicy,
-                extraHeaders: [:]
+                extraHeaders: [:],
             )
         }
     }
@@ -194,7 +194,7 @@ public class OWSSignalService: OWSSignalServiceProtocol {
         for signalServiceInfo: SignalServiceInfo,
         endpoint: OWSURLSessionEndpoint,
         configuration: URLSessionConfiguration?,
-        maxResponseSize: Int?
+        maxResponseSize: Int?,
     ) -> OWSURLSessionProtocol {
         return buildUrlSession(
             endpoint: endpoint,
@@ -236,7 +236,7 @@ public class OWSSignalService: OWSSignalServiceProtocol {
 
         func getOrBuildSession(
             key: Key,
-            buildFn: () -> OWSURLSessionProtocol
+            buildFn: () -> OWSURLSessionProtocol,
         ) -> OWSURLSessionProtocol {
             if let cached = cache[key] {
                 return cached
@@ -259,10 +259,10 @@ public class OWSSignalService: OWSSignalServiceProtocol {
 
     public func sharedUrlSessionForCdn(
         cdnNumber: UInt32,
-        maxResponseSize: UInt?
+        maxResponseSize: UInt?,
     ) async -> OWSURLSessionProtocol {
         let ccParams = self.censorshipConfigurationParamsWithMaybeSneakyTransaction(
-            censorshipCircumventionSupportedForService: true
+            censorshipCircumventionSupportedForService: true,
         )
         let cacheKey = CDNSessionCache.Key(
             cdnNumber: cdnNumber,
@@ -299,7 +299,7 @@ public class OWSSignalService: OWSSignalServiceProtocol {
                         censorshipConfigurationParams: ccParams,
                         baseUrl: baseUrl,
                         censorshipCircumventionPathPrefix: censorshipCircumventionPathPrefix,
-                        shouldUseSignalCertificate: true
+                        shouldUseSignalCertificate: true,
                     ),
                     configuration: urlSessionConfiguration,
                     maxResponseSize: maxResponseSize.map(Int.init(clamping:)),
@@ -313,9 +313,9 @@ public class OWSSignalService: OWSSignalServiceProtocol {
                                 await self?.cdnSessionCache.invalidate(key: cacheKey)
                             }
                         }
-                    }
+                    },
                 )
-            }
+            },
         )
     }
 
@@ -337,19 +337,19 @@ public class OWSSignalService: OWSSignalServiceProtocol {
             self,
             selector: #selector(registrationStateDidChange(_:)),
             name: .registrationStateDidChange,
-            object: nil
+            object: nil,
         )
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(localNumberDidChange(_:)),
             name: .localNumberDidChange,
-            object: nil
+            object: nil,
         )
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(isSignalProxyReadyDidChange),
             name: .isSignalProxyReadyDidChange,
-            object: nil
+            object: nil,
         )
     }
 
@@ -397,7 +397,7 @@ public class OWSSignalService: OWSSignalServiceProtocol {
             return self.keyValueStore.getBool(
                 Constants.isCensorshipCircumventionManuallyActivatedKey,
                 defaultValue: false,
-                transaction: transaction
+                transaction: transaction,
             )
         }
     }
@@ -407,7 +407,7 @@ public class OWSSignalService: OWSSignalServiceProtocol {
             self.keyValueStore.setBool(
                 value,
                 key: Constants.isCensorshipCircumventionManuallyActivatedKey,
-                transaction: transaction
+                transaction: transaction,
             )
         }
     }
@@ -417,7 +417,7 @@ public class OWSSignalService: OWSSignalServiceProtocol {
             return self.keyValueStore.getBool(
                 Constants.isCensorshipCircumventionManuallyDisabledKey,
                 defaultValue: false,
-                transaction: transaction
+                transaction: transaction,
             )
         }
     }
@@ -427,7 +427,7 @@ public class OWSSignalService: OWSSignalServiceProtocol {
             self.keyValueStore.setBool(
                 value,
                 key: Constants.isCensorshipCircumventionManuallyDisabledKey,
-                transaction: transaction
+                transaction: transaction,
             )
         }
     }
@@ -436,7 +436,7 @@ public class OWSSignalService: OWSSignalServiceProtocol {
         return SSKEnvironment.shared.databaseStorageRef.read { transaction in
             return self.keyValueStore.getString(
                 Constants.manualCensorshipCircumventionCountryCodeKey,
-                transaction: transaction
+                transaction: transaction,
             )
         }
     }
@@ -446,7 +446,7 @@ public class OWSSignalService: OWSSignalServiceProtocol {
             self.keyValueStore.setString(
                 value,
                 key: Constants.manualCensorshipCircumventionCountryCodeKey,
-                transaction: transaction
+                transaction: transaction,
             )
         }
     }

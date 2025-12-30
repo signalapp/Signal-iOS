@@ -49,6 +49,7 @@ class ConversationHeaderView: UIView {
         titleIconView.setCompressionResistanceHigh()
         return titleIconView
     }()
+
     private var titleIconSizeConstraint: NSLayoutConstraint!
 
     private var avatarSizeClass: ConversationAvatarView.Configuration.SizeClass {
@@ -56,12 +57,14 @@ class ConversationHeaderView: UIView {
         guard #unavailable(iOS 26) else { return .forty }
 
         return traitCollection.verticalSizeClass == .compact && !UIDevice.current.isPlusSizePhone
-        ? .twentyFour
-        : .thirtySix
+            ? .twentyFour
+            : .thirtySix
     }
+
     private(set) lazy var avatarView = ConversationAvatarView(
         sizeClass: avatarSizeClass,
-        localUserDisplayMode: .noteToSelf)
+        localUserDisplayMode: .noteToSelf,
+    )
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -80,7 +83,7 @@ class ConversationHeaderView: UIView {
         textRows.alignment = .leading
         textRows.distribution = .fillProportionally
 
-        let rootStack = UIStackView(arrangedSubviews: [ avatarView, textRows ])
+        let rootStack = UIStackView(arrangedSubviews: [avatarView, textRows])
         rootStack.directionalLayoutMargins = .init(hMargin: 0, vMargin: 4)
         if #available(iOS 26, *) {
             // Default iOS 26 spacing between round back button and this view's leading edge is 12 pts.
@@ -123,10 +126,10 @@ class ConversationHeaderView: UIView {
             ])
 
             glassTrackingView.contentView.registerForTraitChanges(
-                [ UITraitUserInterfaceStyle.self ],
+                [UITraitUserInterfaceStyle.self],
                 handler: { [weak textRows] (view: UIView, _) in
                     textRows?.overrideUserInterfaceStyle = view.traitCollection.userInterfaceStyle
-                }
+                },
             )
         }
 

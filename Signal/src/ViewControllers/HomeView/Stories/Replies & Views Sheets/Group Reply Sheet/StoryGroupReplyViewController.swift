@@ -26,6 +26,7 @@ class StoryGroupReplyViewController: OWSViewController, StoryReplySheet {
         case nonMember
         case blockedByAnnouncementOnly
     }
+
     private var bottomBarMode: BottomBarMode?
 
     private lazy var emptyStateView: UIView = {
@@ -35,12 +36,12 @@ class StoryGroupReplyViewController: OWSViewController, StoryReplySheet {
         label.numberOfLines = 2
         label.attributedText = NSAttributedString(
             string: OWSLocalizedString("STORIES_NO_REPLIES_YET", comment: "Indicates that this story has no replies yet"),
-            attributes: [NSAttributedString.Key.font: UIFont.dynamicTypeHeadline]
+            attributes: [NSAttributedString.Key.font: UIFont.dynamicTypeHeadline],
         ).stringByAppendingString(
-            "\n"
+            "\n",
         ).stringByAppendingString(
             OWSLocalizedString("STORIES_NO_REPLIES_SUBTITLE", comment: "The subtitle when this story has no replies"),
-            attributes: [NSAttributedString.Key.font: UIFont.dynamicTypeSubheadline]
+            attributes: [NSAttributedString.Key.font: UIFont.dynamicTypeSubheadline],
         )
         label.isHidden = true
         label.isUserInteractionEnabled = false
@@ -156,7 +157,7 @@ class StoryGroupReplyViewController: OWSViewController, StoryReplySheet {
                 label.font = .dynamicTypeSubheadline
                 label.text = OWSLocalizedString(
                     "STORIES_GROUP_REPLY_NOT_A_MEMBER",
-                    comment: "Text indicating you can't reply to a group story because you're not a member of the group"
+                    comment: "Text indicating you can't reply to a group story because you're not a member of the group",
                 )
                 label.textColor = .ows_gray05
                 label.textAlignment = .center
@@ -182,10 +183,11 @@ class StoryGroupReplyViewController: OWSViewController, StoryReplySheet {
 
 extension StoryGroupReplyViewController: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        guard let visibleRows = tableView.indexPathsForVisibleRows?.map({ $0.row }),
-              !visibleRows.isEmpty,
-              let oldestLoadedRow = replyLoader?.oldestLoadedRow,
-              let newestLoadedRow = replyLoader?.newestLoadedRow else { return }
+        guard
+            let visibleRows = tableView.indexPathsForVisibleRows?.map({ $0.row }),
+            !visibleRows.isEmpty,
+            let oldestLoadedRow = replyLoader?.oldestLoadedRow,
+            let newestLoadedRow = replyLoader?.newestLoadedRow else { return }
 
         let rowsFromTop = (visibleRows.min() ?? oldestLoadedRow) - oldestLoadedRow
         let rowsFromBottom = newestLoadedRow - (visibleRows.max() ?? newestLoadedRow)
@@ -220,7 +222,7 @@ extension StoryGroupReplyViewController: UITableViewDelegate {
         }
         let promptBuilder = ResendMessagePromptBuilder(
             databaseStorage: SSKEnvironment.shared.databaseStorageRef,
-            messageSenderJobQueue: SSKEnvironment.shared.messageSenderJobQueueRef
+            messageSenderJobQueue: SSKEnvironment.shared.messageSenderJobQueueRef,
         )
         self.present(promptBuilder.build(for: message), animated: true)
     }
@@ -272,8 +274,9 @@ extension StoryGroupReplyViewController: StoryReplyInputToolbarDelegate {
 
 extension StoryGroupReplyViewController: ContextMenuInteractionDelegate {
     func contextMenuInteraction(_ interaction: ContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> ContextMenuConfiguration? {
-        guard let indexPath = tableView.indexPathForRow(at: location),
-              let item = replyLoader?.replyItem(for: indexPath) else { return nil }
+        guard
+            let indexPath = tableView.indexPathForRow(at: location),
+            let item = replyLoader?.replyItem(for: indexPath) else { return nil }
 
         return .init(identifier: indexPath as NSCopying, forceDarkTheme: true) { _ in
 
@@ -283,27 +286,32 @@ extension StoryGroupReplyViewController: ContextMenuInteractionDelegate {
                 actions.append(.init(
                     title: OWSLocalizedString(
                         "STORIES_COPY_REPLY_ACTION",
-                        comment: "Context menu action to copy the selected story reply"),
+                        comment: "Context menu action to copy the selected story reply",
+                    ),
                     image: Theme.iconImage(.contextMenuCopy, isDarkThemeEnabled: true),
                     handler: { _ in
                         guard let displayableText = item.displayableText else { return }
                         BodyRangesTextView.copyToPasteboard(displayableText.fullTextValue)
-                    }))
+                    },
+                ))
             }
 
             actions.append(.init(
                 title: OWSLocalizedString(
                     "STORIES_DELETE_REPLY_ACTION",
-                    comment: "Context menu action to delete the selected story reply"),
+                    comment: "Context menu action to delete the selected story reply",
+                ),
                 image: Theme.iconImage(.contextMenuDelete, isDarkThemeEnabled: true),
                 attributes: .destructive,
                 handler: { [weak self] _ in
-                    guard let self = self else { return }
-                    guard let message = SSKEnvironment.shared.databaseStorageRef.read(
-                        block: { TSMessage.anyFetchMessage(uniqueId: item.interactionUniqueId, transaction: $0) }
-                    ) else { return }
+                    guard let self else { return }
+                    guard
+                        let message = SSKEnvironment.shared.databaseStorageRef.read(
+                            block: { TSMessage.anyFetchMessage(uniqueId: item.interactionUniqueId, transaction: $0) },
+                        ) else { return }
                     message.presentDeletionActionSheet(from: self, forceDarkTheme: true)
-                }))
+                },
+            ))
 
             return .init(actions)
         }
@@ -317,7 +325,7 @@ extension StoryGroupReplyViewController: ContextMenuInteractionDelegate {
         let targetedPreview = ContextMenuTargetedPreview(
             view: cell,
             alignment: CurrentAppContext().isRTL ? .right : .left,
-            accessoryViews: nil
+            accessoryViews: nil,
         )
         targetedPreview?.alignmentOffset = CGPoint(x: -52, y: 12)
 
@@ -333,7 +341,7 @@ extension StoryGroupReplyViewController: ContextMenuInteractionDelegate {
 
 extension StoryGroupReplyViewController: DatabaseChangeDelegate {
     func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
-        guard let thread = thread, databaseChanges.didUpdate(thread: thread) else { return }
+        guard let thread, databaseChanges.didUpdate(thread: thread) else { return }
         updateBottomBarContents()
     }
 

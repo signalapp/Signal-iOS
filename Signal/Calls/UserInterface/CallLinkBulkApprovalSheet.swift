@@ -3,11 +3,11 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import UIKit
 import Combine
-import SignalUI
 import LibSignalClient
 import SignalServiceKit
+import SignalUI
+import UIKit
 
 class CallLinkBulkApprovalSheet: InteractiveSheetViewController {
     fileprivate enum Constants {
@@ -20,17 +20,18 @@ class CallLinkBulkApprovalSheet: InteractiveSheetViewController {
         static var buttonSize: CGFloat {
             max(UIFont.dynamicTypeTitle1Clamped.pointSize, 28)
         }
+
         static let denyButtonColor = UIColor.Signal.red
         static let approveButtonColor = UIColor.Signal.green
         static let selectedButtonColor = UIColor.Signal.primaryFill
 
         static let denyAllButtonTitle = OWSLocalizedString(
             "CALL_LINK_REQUEST_SHEET_DENY_ALL_BUTTON",
-            comment: "Title for button to deny all requests to join a call."
+            comment: "Title for button to deny all requests to join a call.",
         )
         static let approveAllButtonTitle = OWSLocalizedString(
             "CALL_LINK_REQUEST_SHEET_APPROVE_ALL_BUTTON",
-            comment: "Title for button to approve all requests to join a call."
+            comment: "Title for button to approve all requests to join a call.",
         )
     }
 
@@ -38,6 +39,7 @@ class CallLinkBulkApprovalSheet: InteractiveSheetViewController {
     override var sheetBackgroundColor: UIColor {
         Constants.backgroundColor
     }
+
     override var handleBackgroundColor: UIColor {
         UIColor.Signal.transparentSeparator
     }
@@ -56,7 +58,7 @@ class CallLinkBulkApprovalSheet: InteractiveSheetViewController {
         label.textAlignment = .center
         label.text = OWSLocalizedString(
             "CALL_LINK_REQUEST_SHEET_HEADER",
-            comment: "Header for the sheet displaying a list of requests to join a call."
+            comment: "Header for the sheet displaying a list of requests to join a call.",
         )
         return label
     }()
@@ -69,7 +71,7 @@ class CallLinkBulkApprovalSheet: InteractiveSheetViewController {
             top: 8,
             leading: 16,
             bottom: 16,
-            trailing: 16
+            trailing: 16,
         )
         return stackView
     }()
@@ -104,9 +106,9 @@ class CallLinkBulkApprovalSheet: InteractiveSheetViewController {
                 OWSLocalizedString(
                     "CALL_LINK_REQUEST_HEADER_COUNT_%d",
                     tableName: "PluralAware",
-                    comment: "Header for a table section which lists users requesting to join a call. Embeds {{ number of requests }}"
+                    comment: "Header for a table section which lists users requesting to join a call. Embeds {{ number of requests }}",
                 ),
-                self.requestCount
+                self.requestCount,
             )
         }
     }
@@ -127,14 +129,14 @@ class CallLinkBulkApprovalSheet: InteractiveSheetViewController {
 
         let denyAllButton = bulkActionButton(
             title: Constants.denyAllButtonTitle,
-            color: .clear
+            color: .clear,
         ) { [weak self] in
             self?.didTapDenyAll()
         }
 
         let approveAllButton = bulkActionButton(
             title: Constants.approveAllButtonTitle,
-            color: .Signal.tertiaryFill
+            color: .Signal.tertiaryFill,
         ) { [weak self] in
             self?.didTapApproveAll()
         }
@@ -168,7 +170,7 @@ class CallLinkBulkApprovalSheet: InteractiveSheetViewController {
     private func bulkActionButton(
         title: String,
         color: UIColor,
-        action: @escaping () -> Void
+        action: @escaping () -> Void,
     ) -> UIButton {
         var configuration = UIButton.Configuration.gray()
         configuration.background.cornerRadius = 12
@@ -179,7 +181,7 @@ class CallLinkBulkApprovalSheet: InteractiveSheetViewController {
 
         return UIButton(
             configuration: configuration,
-            primaryAction: .init(title: title) { _  in action() }
+            primaryAction: .init(title: title) { _ in action() },
         )
     }
 
@@ -189,7 +191,7 @@ class CallLinkBulkApprovalSheet: InteractiveSheetViewController {
 
     func present(
         from viewController: UIViewController,
-        dismissalDelegate: (any SheetDismissalDelegate)? = nil
+        dismissalDelegate: (any SheetDismissalDelegate)? = nil,
     ) {
         self.fromViewController = viewController
         self.dismissalDelegate = dismissalDelegate
@@ -208,12 +210,12 @@ class CallLinkBulkApprovalSheet: InteractiveSheetViewController {
 
     private var desiredSheetHeight: CGFloat {
         InteractiveSheetViewController.Constants.handleHeight
-        + contentView.layoutMargins.totalHeight
-        + sheetHeader.height
-        + Constants.sheetHeaderBottomPadding
-        + tableView.contentSize.height
-        + tableView.contentInset.totalHeight
-        + sheetFooter.height
+            + contentView.layoutMargins.totalHeight
+            + sheetHeader.height
+            + Constants.sheetHeaderBottomPadding
+            + tableView.contentSize.height
+            + tableView.contentInset.totalHeight
+            + sheetFooter.height
     }
 
     private func updateSheetSize() {
@@ -241,19 +243,19 @@ class CallLinkBulkApprovalSheet: InteractiveSheetViewController {
                 OWSLocalizedString(
                     "CALL_LINK_DENY_ALL_REQUESTS_CONFIRMATION_TITLE_%ld",
                     tableName: "PluralAware",
-                    comment: "Title for confirmation sheet when denying all requests to join a call."
+                    comment: "Title for confirmation sheet when denying all requests to join a call.",
                 ),
-                requestsAtTimeOfPrompt.count
+                requestsAtTimeOfPrompt.count,
             ),
             message: String.localizedStringWithFormat(
                 OWSLocalizedString(
                     "CALL_LINK_DENY_ALL_REQUESTS_CONFIRMATION_BODY_%ld",
                     tableName: "PluralAware",
-                    comment: "Body for confirmation sheet when denying all requests to join a call."
+                    comment: "Body for confirmation sheet when denying all requests to join a call.",
                 ),
-                requestsAtTimeOfPrompt.count
+                requestsAtTimeOfPrompt.count,
             ),
-            confirmButtonTitle: Constants.denyAllButtonTitle
+            confirmButtonTitle: Constants.denyAllButtonTitle,
         ) { [viewModel] in
             viewModel.bulkDeny(requests: requestsAtTimeOfPrompt)
         }
@@ -270,19 +272,19 @@ class CallLinkBulkApprovalSheet: InteractiveSheetViewController {
                 OWSLocalizedString(
                     "CALL_LINK_APPROVE_ALL_REQUESTS_CONFIRMATION_TITLE_%ld",
                     tableName: "PluralAware",
-                    comment: "Title for confirmation sheet when approving all requests to join a call."
+                    comment: "Title for confirmation sheet when approving all requests to join a call.",
                 ),
-                requestsAtTimeOfPrompt.count
+                requestsAtTimeOfPrompt.count,
             ),
             message: String.localizedStringWithFormat(
                 OWSLocalizedString(
                     "CALL_LINK_APPROVE_ALL_REQUESTS_CONFIRMATION_BODY_%ld",
                     tableName: "PluralAware",
-                    comment: "Body for confirmation sheet when approving all requests to join a call."
+                    comment: "Body for confirmation sheet when approving all requests to join a call.",
                 ),
-                requestsAtTimeOfPrompt.count
+                requestsAtTimeOfPrompt.count,
             ),
-            confirmButtonTitle: Constants.approveAllButtonTitle
+            confirmButtonTitle: Constants.approveAllButtonTitle,
         ) { [viewModel] in
             viewModel.bulkApprove(requests: requestsAtTimeOfPrompt)
         }
@@ -292,7 +294,7 @@ class CallLinkBulkApprovalSheet: InteractiveSheetViewController {
         title: String,
         message: String,
         confirmButtonTitle: String,
-        action: @escaping () -> Void
+        action: @escaping () -> Void,
     ) {
         guard let fromViewController else {
             return owsFailDebug("Missing parent view controller")
@@ -321,7 +323,7 @@ class CallLinkBulkApprovalSheet: InteractiveSheetViewController {
     }
 
     private lazy var dataSource = DiffableDataSource(
-        tableView: self.tableView
+        tableView: self.tableView,
     ) { [weak self] tableView, indexPath, itemIdentifier in
         let cell = tableView.dequeueReusableCell(RequestCell.self)
         cell?.approvalViewModel = self?.viewModel
@@ -339,7 +341,9 @@ class CallLinkBulkApprovalSheet: InteractiveSheetViewController {
         }
 
         enum Status {
-            case pending, approved, denied
+            case pending
+            case approved
+            case denied
         }
     }
 
@@ -350,6 +354,7 @@ class CallLinkBulkApprovalSheet: InteractiveSheetViewController {
             }
         }
     }
+
     private var rowModelsByID: [Aci: RowModel] = [:]
 
     private func updateSnapshot(requests: [Request]) {
@@ -424,7 +429,7 @@ private class RequestCell: UITableViewCell, ReusableTableViewCell {
     private var avatarView = ConversationAvatarView(
         sizeClass: Constants.avatarSizeClass,
         localUserDisplayMode: .asUser,
-        badged: true
+        badged: true,
     )
 
     private lazy var nameLabel: UILabel = {

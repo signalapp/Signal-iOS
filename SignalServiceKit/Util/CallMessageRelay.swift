@@ -72,7 +72,7 @@ public class CallMessageRelay {
                     serverDeliveryTimestamp: adjustedDeliveryTimestamp,
                     shouldDiscardVisibleMessages: false,
                     localIdentifiers: localIdentifiers,
-                    tx: transaction
+                    tx: transaction,
                 )
             }
         }
@@ -83,14 +83,14 @@ public class CallMessageRelay {
         plaintextData: Data,
         wasReceivedByUD: Bool,
         serverDeliveryTimestamp: UInt64,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) throws -> CallMessagePushPayload {
         let payload = Payload(
             envelope: envelope,
             plaintextData: plaintextData,
             wasReceivedByUD: wasReceivedByUD,
             serverDeliveryTimestamp: serverDeliveryTimestamp,
-            enqueueTimestamp: Date()
+            enqueueTimestamp: Date(),
         )
 
         try pendingCallMessageStore.setCodable(payload, key: "\(envelope.timestamp)", transaction: transaction)

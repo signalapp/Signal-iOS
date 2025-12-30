@@ -34,7 +34,7 @@ public class TextApprovalViewController: OWSViewController, BodyRangesTextViewDe
     private let footerView = ApprovalFooterView()
 
     private var approvalMode: ApprovalMode {
-        guard let delegate = delegate else {
+        guard let delegate else {
             return .send
         }
         return delegate.textApprovalMode(self)
@@ -47,7 +47,7 @@ public class TextApprovalViewController: OWSViewController, BodyRangesTextViewDe
         self.linkPreviewFetchState = LinkPreviewFetchState(
             db: DependenciesBridge.shared.db,
             linkPreviewFetcher: SUIEnvironment.shared.linkPreviewFetcher,
-            linkPreviewSettingStore: DependenciesBridge.shared.linkPreviewSettingStore
+            linkPreviewSettingStore: DependenciesBridge.shared.linkPreviewSettingStore,
         )
 
         super.init()
@@ -63,8 +63,10 @@ public class TextApprovalViewController: OWSViewController, BodyRangesTextViewDe
         if let title = delegate?.textApprovalCustomTitle(self) {
             self.navigationItem.title = title
         } else {
-            self.navigationItem.title = OWSLocalizedString("MESSAGE_APPROVAL_DIALOG_TITLE",
-                                                          comment: "Title for the 'message approval' dialog.")
+            self.navigationItem.title = OWSLocalizedString(
+                "MESSAGE_APPROVAL_DIALOG_TITLE",
+                comment: "Title for the 'message approval' dialog.",
+            )
         }
 
         self.navigationItem.leftBarButtonItem = .cancelButton { [weak self] in
@@ -132,7 +134,7 @@ public class TextApprovalViewController: OWSViewController, BodyRangesTextViewDe
 
     // MARK: - Create Views
 
-    public override func loadView() {
+    override public func loadView() {
 
         self.view = UIView.container()
         self.view.backgroundColor = Theme.backgroundColor

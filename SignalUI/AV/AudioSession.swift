@@ -34,8 +34,11 @@ public class AudioActivity: NSObject {
     public var backgroundPlaybackName: String? {
         switch behavior {
         case .audioMessagePlayback:
-            return OWSLocalizedString("AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE",
-                                     comment: "A string indicating that an audio message is playing.")
+            return OWSLocalizedString(
+                "AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE",
+                comment: "A string indicating that an audio message is playing.",
+            )
+
         case .call:
             return nil
 
@@ -65,7 +68,7 @@ public class AudioSession: NSObject {
 
     private let device = UIDevice.current
 
-    public override init() {
+    override public init() {
         super.init()
     }
 
@@ -82,7 +85,8 @@ public class AudioSession: NSObject {
             self,
             selector: #selector(proximitySensorStateDidChange(notification:)),
             name: UIDevice.proximityStateDidChangeNotification,
-            object: nil)
+            object: nil,
+        )
 
         ensureAudioState()
     }
@@ -174,8 +178,8 @@ public class AudioSession: NSObject {
                 options: [
                     .defaultToSpeaker,
                     .allowBluetoothHFP,
-                    .allowBluetoothA2DP
-                ]
+                    .allowBluetoothA2DP,
+                ],
             )
             try avAudioSession.setAllowHapticsAndSystemSoundsDuringRecording(true)
         } else if aggregateBehaviors.contains(.audioMessagePlayback) {
@@ -201,7 +205,7 @@ public class AudioSession: NSObject {
     private func setCategory(
         _ category: AVAudioSession.Category,
         mode: AVAudioSession.Mode? = nil,
-        options: AVAudioSession.CategoryOptions = []
+        options: AVAudioSession.CategoryOptions = [],
     ) throws {
         guard
             avAudioSession.category != category
@@ -210,9 +214,9 @@ public class AudioSession: NSObject {
         else {
             return
         }
-        if let mode = mode, !options.isEmpty {
+        if let mode, !options.isEmpty {
             try avAudioSession.setCategory(category, mode: mode, options: options)
-        } else if let mode = mode {
+        } else if let mode {
             try avAudioSession.setCategory(category, mode: mode)
         } else if !options.isEmpty {
             try avAudioSession.setCategory(category, options: options)
@@ -271,9 +275,9 @@ public class AudioSession: NSObject {
 }
 
 extension AVAudioSession.CategoryOptions {
-    #if !canImport(AVFoundation, _version: 2360.61.4.11)
+#if !canImport(AVFoundation, _version: 2360.61.4.11)
     public static let allowBluetoothHFP = Self.allowBluetooth
-    #endif
+#endif
 }
 
 extension AudioBehavior: CustomStringConvertible {

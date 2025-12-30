@@ -17,25 +17,27 @@ public protocol BackupStickerPackDownloadStore {
     func enqueue(
         packId: Data,
         packKey: Data,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws
 
     /// Read rows off the queue one by one, calling the block for each.
     func iterateAllEnqueued(
         tx: DBReadTransaction,
-        block: (QueuedBackupStickerPackDownload
-    ) throws -> Void) throws
+        block: (
+            QueuedBackupStickerPackDownload,
+        ) throws -> Void,
+    ) throws
 
     /// Return the top `count` rows of the download queue.
     func peek(
         count: UInt,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> [QueuedBackupStickerPackDownload]
 
     /// Remove the record from the download queue.
     func removeRecordFromQueue(
         record: QueuedBackupStickerPackDownload,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws
 }
 
@@ -48,9 +50,10 @@ public class BackupStickerPackDownloadStoreImpl: BackupStickerPackDownloadStore 
         var record = Record(packId: packId, packKey: packKey)
 
         // If this record is already in the queue, don't insert a second copy
-        if let _ = try QueuedAttachmentDownloadRecord
-            .filter(Column(Record.CodingKeys.packId) == packId)
-            .fetchOne(db)
+        if
+            let _ = try QueuedAttachmentDownloadRecord
+                .filter(Column(Record.CodingKeys.packId) == packId)
+                .fetchOne(db)
         {
             return
         }
@@ -60,7 +63,7 @@ public class BackupStickerPackDownloadStoreImpl: BackupStickerPackDownloadStore 
 
     public func iterateAllEnqueued(
         tx: DBReadTransaction,
-        block: (QueuedBackupStickerPackDownload) throws -> Void
+        block: (QueuedBackupStickerPackDownload) throws -> Void,
     ) throws {
         let db = tx.database
         let cursor = try Record
@@ -74,7 +77,7 @@ public class BackupStickerPackDownloadStoreImpl: BackupStickerPackDownloadStore 
 
     public func peek(
         count: UInt,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> [QueuedBackupStickerPackDownload] {
         let db = tx.database
         return try Record
@@ -85,7 +88,7 @@ public class BackupStickerPackDownloadStoreImpl: BackupStickerPackDownloadStore 
 
     public func removeRecordFromQueue(
         record: QueuedBackupStickerPackDownload,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         let db = tx.database
         try Record

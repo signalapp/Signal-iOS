@@ -26,25 +26,25 @@ class MainAppContext: NSObject, AppContext {
             self,
             selector: #selector(applicationWillEnterForeground),
             name: UIApplication.willEnterForegroundNotification,
-            object: nil
+            object: nil,
         )
         notificationCenter.addObserver(
             self,
             selector: #selector(applicationDidEnterBackground),
             name: UIApplication.didEnterBackgroundNotification,
-            object: nil
+            object: nil,
         )
         notificationCenter.addObserver(
             self,
             selector: #selector(applicationWillResignActive),
             name: UIApplication.willResignActiveNotification,
-            object: nil
+            object: nil,
         )
         notificationCenter.addObserver(
             self,
             selector: #selector(applicationDidBecomeActive),
             name: UIApplication.didBecomeActiveNotification,
-            object: nil
+            object: nil,
         )
     }
 
@@ -132,11 +132,11 @@ class MainAppContext: NSObject, AppContext {
     func open(_ url: URL, completion: ((Bool) -> Void)? = nil) { UIApplication.shared.open(url, completionHandler: completion) }
 
     var isRunningTests: Bool {
-        #if TESTABLE_BUILD
+#if TESTABLE_BUILD
         return getenv("runningTests_dontStartApp") != nil
-        #else
+#else
         return false
-        #endif
+#endif
     }
 
     var frame: CGRect { self.mainWindow?.frame ?? .zero }

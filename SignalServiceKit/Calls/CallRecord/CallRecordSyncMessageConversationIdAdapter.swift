@@ -11,14 +11,14 @@ public protocol CallRecordSyncMessageConversationIdAdapter {
     func hydrate(
         conversationId: Data,
         callId: UInt64,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> CallRecord?
 
     /// Generates a conversation ID for use in call-related sync messages, from
     /// a ``CallRecord``.
     func getConversationId(
         callRecord: CallRecord,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> Data
 }
 
@@ -33,7 +33,7 @@ class CallRecordSyncMessageConversationIdAdapterImpl: CallRecordSyncMessageConve
         callLinkStore: any CallLinkRecordStore,
         callRecordStore: CallRecordStore,
         recipientDatabaseTable: RecipientDatabaseTable,
-        threadStore: ThreadStore
+        threadStore: ThreadStore,
     ) {
         self.callLinkStore = callLinkStore
         self.callRecordStore = callRecordStore
@@ -46,7 +46,7 @@ class CallRecordSyncMessageConversationIdAdapterImpl: CallRecordSyncMessageConve
     func hydrate(
         conversationId: Data,
         callId: UInt64,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> CallRecord? {
         return try parse(conversationId: conversationId, tx: tx).flatMap {
             return callRecordStore.fetch(callId: callId, conversationId: $0, tx: tx).unwrapped
@@ -77,7 +77,7 @@ class CallRecordSyncMessageConversationIdAdapterImpl: CallRecordSyncMessageConve
 
     func getConversationId(
         callRecord: CallRecord,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> Data {
         switch callRecord.conversationId {
         case .thread(let threadRowId):

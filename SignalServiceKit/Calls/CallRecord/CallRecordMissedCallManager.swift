@@ -20,7 +20,7 @@ public protocol CallRecordMissedCallManager {
     func markUnreadCallsAsRead(
         beforeTimestamp: UInt64?,
         sendSyncMessage: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     )
 
     /// Marks the given call and all unread calls before it in the same
@@ -37,7 +37,7 @@ public protocol CallRecordMissedCallManager {
     func markUnreadCallsInConversationAsRead(
         beforeCallRecord: CallRecord,
         sendSyncMessage: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     )
 }
 
@@ -53,7 +53,7 @@ class CallRecordMissedCallManagerImpl: CallRecordMissedCallManager {
         callRecordConversationIdAdapter: CallRecordSyncMessageConversationIdAdapter,
         callRecordQuerier: CallRecordQuerier,
         callRecordStore: CallRecordStore,
-        syncMessageSender: Shims.SyncMessageSender
+        syncMessageSender: Shims.SyncMessageSender,
     ) {
         self.callRecordConversationIdAdapter = callRecordConversationIdAdapter
         self.callRecordStore = callRecordStore
@@ -67,11 +67,12 @@ class CallRecordMissedCallManagerImpl: CallRecordMissedCallManager {
         var unreadMissedCallCount: UInt = 0
 
         for missedCallStatus in CallRecord.CallStatus.missedCalls {
-            guard let unreadMissedCallCursor = callRecordQuerier.fetchCursorForUnread(
-                callStatus: missedCallStatus,
-                ordering: .descending,
-                tx: tx
-            ) else { continue }
+            guard
+                let unreadMissedCallCursor = callRecordQuerier.fetchCursorForUnread(
+                    callStatus: missedCallStatus,
+                    ordering: .descending,
+                    tx: tx,
+                ) else { continue }
 
             do {
                 while let _ = try unreadMissedCallCursor.next() {
@@ -89,14 +90,14 @@ class CallRecordMissedCallManagerImpl: CallRecordMissedCallManager {
     func markUnreadCallsAsRead(
         beforeTimestamp: UInt64?,
         sendSyncMessage: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         let fetchOrdering = fetchOrdering(forBeforeTimestamp: beforeTimestamp)
 
         let markedAsReadCount = _markUnreadCallsAsRead(
             fetchOrdering: fetchOrdering,
             threadRowId: nil,
-            tx: tx
+            tx: tx,
         )
 
         guard markedAsReadCount > 0 else { return }
@@ -109,7 +110,8 @@ class CallRecordMissedCallManagerImpl: CallRecordMissedCallManager {
             /// the sync message. So, we'll query for a single call, using the
             /// same fetch ordering we used above.
             let mostRecentCall: CallRecord? = try? callRecordQuerier.fetchCursor(
-                ordering: fetchOrdering, tx: tx
+                ordering: fetchOrdering,
+                tx: tx,
             )?.next()
 
             guard let mostRecentCall else {
@@ -120,7 +122,7 @@ class CallRecordMissedCallManagerImpl: CallRecordMissedCallManager {
             sendMarkedCallsAsReadSyncMessage(
                 callRecord: mostRecentCall,
                 eventType: .markedAsRead,
-                tx: tx
+                tx: tx,
             )
         }
     }
@@ -128,22 +130,22 @@ class CallRecordMissedCallManagerImpl: CallRecordMissedCallManager {
     func markUnreadCallsInConversationAsRead(
         beforeCallRecord: CallRecord,
         sendSyncMessage: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         let threadRowId: Int64
         switch beforeCallRecord.conversationId {
         case .thread(let threadRowId2):
             threadRowId = threadRowId2
-        case .callLink(_):
+        case .callLink:
             owsFailDebug("Can't mark call links as read within a conversation.")
             return
         }
         let markedAsReadCount = _markUnreadCallsAsRead(
             fetchOrdering: fetchOrdering(
-                forBeforeTimestamp: beforeCallRecord.callBeganTimestamp
+                forBeforeTimestamp: beforeCallRecord.callBeganTimestamp,
             ),
             threadRowId: threadRowId,
-            tx: tx
+            tx: tx,
         )
 
         guard markedAsReadCount > 0 else { return }
@@ -154,7 +156,7 @@ class CallRecordMissedCallManagerImpl: CallRecordMissedCallManager {
             sendMarkedCallsAsReadSyncMessage(
                 callRecord: beforeCallRecord,
                 eventType: .markedAsReadInConversation,
-                tx: tx
+                tx: tx,
             )
         }
     }
@@ -164,7 +166,7 @@ class CallRecordMissedCallManagerImpl: CallRecordMissedCallManager {
     private func _markUnreadCallsAsRead(
         fetchOrdering: CallRecordQuerier.FetchOrdering,
         threadRowId: Int64?,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) -> UInt {
         var markedAsReadCount: UInt = 0
 
@@ -175,13 +177,13 @@ class CallRecordMissedCallManagerImpl: CallRecordMissedCallManager {
                         threadRowId: threadRowId,
                         callStatus: callStatus,
                         ordering: fetchOrdering,
-                        tx: tx
+                        tx: tx,
                     )
                 } else {
                     return callRecordQuerier.fetchCursorForUnread(
                         callStatus: callStatus,
                         ordering: fetchOrdering,
-                        tx: tx
+                        tx: tx,
                     )
                 }
             }()
@@ -196,7 +198,8 @@ class CallRecordMissedCallManagerImpl: CallRecordMissedCallManager {
 
                     do {
                         try callRecordStore.markAsRead(
-                            callRecord: unreadCallRecord, tx: tx
+                            callRecord: unreadCallRecord,
+                            tx: tx,
                         )
                     } catch let error {
                         owsFailBeta("Failed to update call record: \(error)")
@@ -205,7 +208,7 @@ class CallRecordMissedCallManagerImpl: CallRecordMissedCallManager {
 
                 owsAssertDebug(
                     markedAsReadCount == markedAsReadCountBefore || callStatus.isMissedCall,
-                    "Unexpectedly had \(markedAsReadCount - markedAsReadCountBefore) unread calls that were not missed!"
+                    "Unexpectedly had \(markedAsReadCount - markedAsReadCountBefore) unread calls that were not missed!",
                 )
             } catch {
                 owsFailDebug("Unexpectedly failed to iterate CallRecord cursor!")
@@ -219,7 +222,7 @@ class CallRecordMissedCallManagerImpl: CallRecordMissedCallManager {
     /// Returns a fetch ordering appropriate for querying calls at or before the
     /// given timestamp. If a `nil` timestamp, all calls will be queried.
     private func fetchOrdering(
-        forBeforeTimestamp beforeTimestamp: UInt64?
+        forBeforeTimestamp beforeTimestamp: UInt64?,
     ) -> CallRecordQuerier.FetchOrdering {
         if let beforeTimestamp {
             /// Adjust the timestamp forward one second to catch calls at
@@ -245,7 +248,7 @@ class CallRecordMissedCallManagerImpl: CallRecordMissedCallManager {
     private func sendMarkedCallsAsReadSyncMessage(
         callRecord: CallRecord,
         eventType: OutgoingCallLogEventSyncMessage.CallLogEvent.EventType,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         let conversationId: Data
         do {
@@ -259,7 +262,7 @@ class CallRecordMissedCallManagerImpl: CallRecordMissedCallManager {
             callId: callRecord.callId,
             conversationId: conversationId,
             timestamp: callRecord.callBeganTimestamp,
-            tx: tx
+            tx: tx,
         )
     }
 }
@@ -282,7 +285,7 @@ protocol _CallRecordMissedCallManagerImpl_SyncMessageSender_Shim {
         callId: UInt64,
         conversationId: Data,
         timestamp: UInt64,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     )
 }
 
@@ -298,7 +301,7 @@ class _CallRecordMissedCallManagerImpl_SyncMessageSender_Wrapper: _CallRecordMis
         callId: UInt64,
         conversationId: Data,
         timestamp: UInt64,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         guard let localThread = TSContactThread.getOrCreateLocalThread(transaction: tx) else {
             return
@@ -309,18 +312,18 @@ class _CallRecordMissedCallManagerImpl_SyncMessageSender_Wrapper: _CallRecordMis
                 eventType: eventType,
                 callId: callId,
                 conversationId: conversationId,
-                timestamp: timestamp
+                timestamp: timestamp,
             ),
             localThread: localThread,
-            tx: tx
+            tx: tx,
         )
 
         let preparedMessage = PreparedOutgoingMessage.preprepared(
-            transientMessageWithoutAttachments: outgoingCallLogEventSyncMessage
+            transientMessageWithoutAttachments: outgoingCallLogEventSyncMessage,
         )
         messageSenderJobQueue.add(
             message: preparedMessage,
-            transaction: tx
+            transaction: tx,
         )
     }
 }

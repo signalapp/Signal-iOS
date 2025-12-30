@@ -4,8 +4,8 @@
 //
 
 import Foundation
-@testable import SignalServiceKit
 import XCTest
+@testable import SignalServiceKit
 
 class OWSLinkPreviewTest: XCTestCase {
     var linkPreviewManager: LinkPreviewManagerImpl!
@@ -18,7 +18,7 @@ class OWSLinkPreviewTest: XCTestCase {
             attachmentStore: AttachmentStoreMock(),
             attachmentValidator: AttachmentContentValidatorMock(),
             db: InMemoryDB(),
-            linkPreviewSettingStore: LinkPreviewSettingStore.mock()
+            linkPreviewSettingStore: LinkPreviewSettingStore.mock(),
         )
     }
 

@@ -40,6 +40,7 @@ public enum OWSChatConnectionState: Int, CustomDebugStringConvertible {
 }
 
 // MARK: -
+
 public class OWSChatConnection {
     enum AlertType: String {
         case idlePrimaryDevice = "idle-primary-device"
@@ -122,7 +123,7 @@ public class OWSChatConnection {
     // We update currentState based on lifecycle events,
     // so this should be accurate (with the usual caveats about races).
     @MainActor
-    private(set) public var currentState: OWSChatConnectionState = .closed {
+    public private(set) var currentState: OWSChatConnectionState = .closed {
         didSet { AssertIsOnMainThread() }
     }
 
@@ -318,7 +319,7 @@ public class OWSChatConnection {
 
         return (
             (canOpenWebSocketError == nil)
-            && connectionTokenState.update { $0.shouldSocketBeOpen() }
+                && connectionTokenState.update { $0.shouldSocketBeOpen() },
         )
     }
 
@@ -369,7 +370,7 @@ public class OWSChatConnection {
     // MARK: - Notifications
 
     @objc
-    fileprivate func isCensorshipCircumventionActiveDidChange(_ notification: NSNotification) {
+    private func isCensorshipCircumventionActiveDidChange(_ notification: NSNotification) {
         AssertIsOnMainThread()
 
         cycleSocket()
@@ -413,14 +414,14 @@ public class OWSChatConnection {
         requestUrl: URL,
         responseStatus: Int,
         responseHeaders: HttpHeaders,
-        responseData: Data?
+        responseData: Data?,
     ) async throws(OWSHTTPError) -> HTTPResponse {
         if (200...299).contains(responseStatus) {
             let response = HTTPResponse(
                 requestUrl: requestUrl,
                 status: responseStatus,
                 headers: responseHeaders,
-                bodyData: responseData
+                bodyData: responseData,
             )
             return response
         } else {
@@ -428,7 +429,7 @@ public class OWSChatConnection {
                 requestUrl: requestUrl,
                 responseStatus: responseStatus,
                 responseHeaders: responseHeaders,
-                responseData: responseData
+                responseData: responseData,
             )
             throw error
         }
@@ -441,7 +442,7 @@ public class OWSChatConnection {
 
 // MARK: -
 
-internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection & Sendable>: OWSChatConnection, ConnectionEventsListener {
+class OWSChatConnectionUsingLibSignal<Connection: ChatConnection & Sendable>: OWSChatConnection, ConnectionEventsListener {
     fileprivate let libsignalNet: Net
 
     fileprivate enum ConnectionState {
@@ -453,7 +454,7 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection & Send
             switch self {
             case .closed: .closed
             case .connecting(token: _, task: _): .connecting
-            case .open(_): .open
+            case .open: .open
             }
         }
 
@@ -522,7 +523,7 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection & Send
         }
     }
 
-    internal init(
+    init(
         libsignalNet: Net,
         type: OWSChatConnectionType,
         appExpiry: AppExpiry,
@@ -533,7 +534,7 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection & Send
         super.init(type: type, appExpiry: appExpiry, appReadiness: appReadiness, db: db)
     }
 
-    fileprivate override func appDidBecomeReady() {
+    override fileprivate func appDidBecomeReady() {
         super.appDidBecomeReady()
 
         NotificationCenter.default.addObserver(
@@ -555,14 +556,14 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection & Send
         cycleSocket()
     }
 
-    fileprivate override func ensureWebsocketExists() {
+    override fileprivate func ensureWebsocketExists() {
         assertOnQueue(serialQueue)
 
         let disconnectTask: Task<Void, Never>?
         switch connection {
-        case .open(_):
+        case .open:
             return
-        case .connecting(_, _):
+        case .connecting:
             // The most recent transition was attempting to connect, and we have not yet observed a failure.
             // That's as good as we're going to get.
             return
@@ -633,7 +634,7 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection & Send
         // Overridden by subclass.
     }
 
-    fileprivate override func disconnectIfNeeded() {
+    override fileprivate func disconnectIfNeeded() {
         assertOnQueue(serialQueue)
 
         let previousConnection = connection
@@ -658,20 +659,20 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection & Send
             serialQueue.async { continuation.resume(returning: self.connection) }
         }
         switch connection {
-        case .open(_), .connecting(_, _):
+        case .open(_), .connecting:
             break
         case .closed(let disconnectTask):
             await disconnectTask?.value
         }
     }
 
-    fileprivate override var logPrefix: String {
+    override fileprivate var logPrefix: String {
         "[\(type): libsignal]"
     }
 
     fileprivate let authOverride = AtomicValue<ChatServiceAuth>(.implicit(), lock: .init())
 
-    fileprivate override func makeRequestInternal(_ request: TSRequest, requestId: UInt64) async throws -> HTTPResponse {
+    override fileprivate func makeRequestInternal(_ request: TSRequest, requestId: UInt64) async throws -> HTTPResponse {
         var httpHeaders = request.headers
         try request.applyAuth(to: &httpHeaders, socketAuth: authOverride.get())
 
@@ -717,7 +718,7 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection & Send
             response = try await chatService.send(libsignalRequest)
         } catch {
             switch error {
-            case SignalError.connectionTimeoutError(_), SignalError.requestTimeoutError(_):
+            case SignalError.connectionTimeoutError(_), SignalError.requestTimeoutError:
                 // cycleSocket(), but only if the chatService we just used is the one that's still connected.
                 self.serialQueue.async { [weak chatService] in
                     if let chatService, self.connection.isActive(chatService) {
@@ -726,9 +727,9 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection & Send
                 }
                 applyDesiredSocketState()
                 throw OWSHTTPError.networkFailure(.genericTimeout)
-            case SignalError.webSocketError(_), SignalError.possibleCaptiveNetwork(_), SignalError.connectionFailed(_), SignalError.chatServiceInactive(_):
+            case SignalError.webSocketError(_), SignalError.possibleCaptiveNetwork(_), SignalError.connectionFailed(_), SignalError.chatServiceInactive:
                 throw OWSHTTPError.networkFailure(.genericFailure)
-            case SignalError.connectionInvalidated(_):
+            case SignalError.connectionInvalidated:
                 throw OWSHTTPError.networkFailure(.wrappedFailure(error))
             case is CancellationError:
                 throw error
@@ -743,7 +744,7 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection & Send
         }
 
 #if TESTABLE_BUILD
-        if response.status/100 != 2 {
+        if response.status / 100 != 2 {
             HTTPUtils.logCurl(for: request)
         }
 #endif
@@ -753,7 +754,7 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection & Send
             requestUrl: request.url,
             responseStatus: Int(response.status),
             responseHeaders: headers,
-            responseData: response.body
+            responseData: response.body,
         )
     }
 
@@ -817,8 +818,8 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection & Send
         }
     }
 
-    internal func withLibsignalConnection<Output>(
-        _ callback: (Connection) async throws -> Output
+    func withLibsignalConnection<Output>(
+        _ callback: (Connection) async throws -> Output,
     ) async throws -> Output {
         try await waitUntilReadyAndPerformRequest {
             guard let service = await getOpenConnectionAfterHavingWaited() else {
@@ -827,15 +828,15 @@ internal class OWSChatConnectionUsingLibSignal<Connection: ChatConnection & Send
             try Task.checkCancellation()
             return try await callback(service)
         }
-     }
+    }
 }
 
-internal class OWSUnauthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<UnauthenticatedChatConnection> {
+class OWSUnauthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<UnauthenticatedChatConnection> {
     init(libsignalNet: Net, appExpiry: AppExpiry, appReadiness: AppReadiness, db: any DB) {
         super.init(libsignalNet: libsignalNet, type: .unidentified, appExpiry: appExpiry, appReadiness: appReadiness, db: db)
     }
 
-    fileprivate override var connection: ConnectionState {
+    override fileprivate var connection: ConnectionState {
         didSet {
             if case .open(let service) = connection {
                 service.start(listener: self)
@@ -848,7 +849,7 @@ internal class OWSUnauthConnectionUsingLibSignal: OWSChatConnectionUsingLibSigna
     }
 }
 
-internal class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<AuthenticatedChatConnection>, ChatConnectionListener {
+class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<AuthenticatedChatConnection>, ChatConnectionListener {
     private var _hasEmptiedInitialQueue = false
     override var hasEmptiedInitialQueue: Bool {
         get async {
@@ -907,7 +908,7 @@ internal class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<
         self.connectionLock.close()
     }
 
-    fileprivate override func appDidBecomeReady() {
+    override fileprivate func appDidBecomeReady() {
         super.appDidBecomeReady()
 
         NotificationCenter.default.addObserver(
@@ -986,7 +987,7 @@ internal class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<
         self.authOverride.set(.implicit())
     }
 
-    fileprivate override func connectChatService(token: NSObject) async throws -> AuthenticatedChatConnection {
+    override fileprivate func connectChatService(token: NSObject) async throws -> AuthenticatedChatConnection {
         try await self.acquireConnectionLock()
 
         let username: String?
@@ -1011,7 +1012,7 @@ internal class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<
             )
         } catch {
             switch error {
-            case SignalError.deviceDeregistered(_):
+            case SignalError.deviceDeregistered:
                 serialQueue.async {
                     if self.connection.isCurrentlyConnecting(token) {
                         self._setRegistrationOverride(false)
@@ -1027,7 +1028,7 @@ internal class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<
         }
     }
 
-    fileprivate override var connection: ConnectionState {
+    override fileprivate var connection: ConnectionState {
         get {
             return super.connection
         }
@@ -1109,7 +1110,8 @@ internal class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<
                     _ = try await chat.send(request)
 
                 } catch is CancellationError,
-                        SignalError.chatServiceInactive(_) {
+                    SignalError.chatServiceInactive(_)
+                {
                     // No action necessary, we're done with this service.
                     return
                 } catch SignalError.rateLimitedError(retryAfter: let delay, message: _) {
@@ -1171,7 +1173,7 @@ internal class OWSAuthConnectionUsingLibSignal: OWSChatConnectionUsingLibSignal<
         messageProcessor.enqueueReceivedEnvelopeData(
             envelope,
             serverDeliveryTimestamp: serverDeliveryTimestamp,
-            envelopeSource: .websocketIdentified
+            envelopeSource: .websocketIdentified,
         ) {
             do {
                 // Note that this does not wait for a response.

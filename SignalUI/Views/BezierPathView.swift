@@ -19,7 +19,7 @@ public class BezierPathView: UIView {
         shapeLayerConfigurationBlock = configurationBlock
     }
 
-    public override init(frame: CGRect) {
+    override public init(frame: CGRect) {
         super.init(frame: frame)
 
         isOpaque = false
@@ -31,14 +31,14 @@ public class BezierPathView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    public override var frame: CGRect {
+    override public var frame: CGRect {
         didSet {
             guard oldValue.size != frame.size else { return }
             updateShapeLayer()
         }
     }
 
-    public override var bounds: CGRect {
+    override public var bounds: CGRect {
         didSet {
             guard oldValue.size != bounds.size else { return }
             updateShapeLayer()
@@ -50,7 +50,7 @@ public class BezierPathView: UIView {
     // state which has changed.
     private var shapeLayer: CAShapeLayer?
     private func updateShapeLayer() {
-        guard bounds.width > 0 && bounds.height > 0 else { return }
+        guard bounds.width > 0, bounds.height > 0 else { return }
 
         if let shapeLayer {
             shapeLayer.removeFromSuperlayer()
@@ -67,7 +67,7 @@ public class BezierPathView: UIView {
         setNeedsDisplay()
     }
 
-    public override func action(for layer: CALayer, forKey event: String) -> CAAction? {
+    override public func action(for layer: CALayer, forKey event: String) -> CAAction? {
         return nil
     }
 }

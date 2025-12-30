@@ -25,7 +25,7 @@ public struct AccountDataReport {
 
         self.formattedJsonData = try JSONSerialization.data(
             withJSONObject: jsonObject,
-            options: .prettyPrinted
+            options: .prettyPrinted,
         )
 
         guard let text = jsonObject["text"] as? String else {

@@ -20,7 +20,7 @@ public enum ColorOrGradientValue: CustomStringConvertible {
     case gradient(
         gradientColor1: UIColor,
         gradientColor2: UIColor,
-        angleRadians: CGFloat
+        angleRadians: CGFloat,
     )
 
     public var description: String {
@@ -72,21 +72,21 @@ public extension ColorOrGradientSetting {
             return .gradient(
                 gradientColor1: gradientColor1.asUIColor,
                 gradientColor2: gradientColor2.asUIColor,
-                angleRadians: angleRadians
+                angleRadians: angleRadians,
             )
         case .themedGradient(
             let lightGradientColor1,
             let lightGradientColor2,
             let darkGradientColor1,
             let darkGradientColor2,
-            let angleRadians
+            let angleRadians,
         ):
             let gradientColor1 = shouldUseDarkColors ? darkGradientColor1 : lightGradientColor1
             let gradientColor2 = shouldUseDarkColors ? darkGradientColor2 : lightGradientColor2
             return .gradient(
                 gradientColor1: gradientColor1.asUIColor,
                 gradientColor2: gradientColor2.asUIColor,
-                angleRadians: angleRadians
+                angleRadians: angleRadians,
             )
         }
     }

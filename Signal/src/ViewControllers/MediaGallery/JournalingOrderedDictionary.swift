@@ -21,6 +21,7 @@ public enum JournalingOrderedDictionaryChange<ChangeType: Equatable>: Equatable,
             return "removeAll"
         }
     }
+
     /// Add one key to the beginning
     case prepend
 
@@ -41,8 +42,8 @@ public enum JournalingOrderedDictionaryChange<ChangeType: Equatable>: Equatable,
 /// This is designed for the benefit of MediaGallerySections and is not quite as capable as OrderedDictionary.
 /// `ChangeType` describes a modification to an instance of `ValueType`, which is opaque to this object.
 public struct JournalingOrderedDictionary<KeyType: Hashable, ValueType, ChangeType: Equatable> {
-    private(set) public var orderedDictionary = OrderedDictionary<KeyType, ValueType>()
-    private(set) public var journal = [Change]()
+    public private(set) var orderedDictionary = OrderedDictionary<KeyType, ValueType>()
+    public private(set) var journal = [Change]()
     public typealias Change = JournalingOrderedDictionaryChange<ChangeType>
     public var orderedKeys: [KeyType] { orderedDictionary.orderedKeys }
     public var isEmpty: Bool { orderedDictionary.isEmpty }

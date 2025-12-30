@@ -18,19 +18,19 @@ class GroupsV2ProfileKeyUpdater {
 
     private let appReadiness: AppReadiness
 
-    public init(appReadiness: AppReadiness) {
+    init(appReadiness: AppReadiness) {
         self.appReadiness = appReadiness
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(reachabilityChanged),
             name: SSKReachability.owsReachabilityDidChange,
-            object: nil
+            object: nil,
         )
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(didBecomeActive),
             name: .OWSApplicationDidBecomeActive,
-            object: nil
+            object: nil,
         )
     }
 
@@ -63,7 +63,7 @@ class GroupsV2ProfileKeyUpdater {
         return groupId.hexadecimalString
     }
 
-    public func updateLocalProfileKeyInGroup(groupId: Data, transaction: DBWriteTransaction) {
+    func updateLocalProfileKeyInGroup(groupId: Data, transaction: DBWriteTransaction) {
         guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
             owsFailDebug("Missing groupThread.")
             return
@@ -75,8 +75,8 @@ class GroupsV2ProfileKeyUpdater {
         }
     }
 
-    public func scheduleAllGroupsV2ForProfileKeyUpdate(transaction: DBWriteTransaction) {
-        TSGroupThread.anyEnumerate(transaction: transaction) { (thread, _) in
+    func scheduleAllGroupsV2ForProfileKeyUpdate(transaction: DBWriteTransaction) {
+        TSGroupThread.anyEnumerate(transaction: transaction) { thread, _ in
             guard let groupThread = thread as? TSGroupThread else {
                 return
             }
@@ -110,7 +110,7 @@ class GroupsV2ProfileKeyUpdater {
         self.keyValueStore.setData(groupId, key: key, transaction: transaction)
     }
 
-    public func processProfileKeyUpdates() {
+    func processProfileKeyUpdates() {
         setNeedsUpdate()
     }
 
@@ -118,6 +118,7 @@ class GroupsV2ProfileKeyUpdater {
         var isUpdating = false
         var needsUpdate = false
     }
+
     private let state = AtomicValue<State>(State(), lock: .init())
 
     private func setNeedsUpdate() {
@@ -269,7 +270,7 @@ class GroupsV2ProfileKeyUpdater {
         // where we've already fetched the latest avatar.
         let snapshotResponse = try await SSKEnvironment.shared.groupsV2Ref.fetchLatestSnapshot(
             secretParams: secretParams,
-            justUploadedAvatars: GroupAvatarStateMap.from(groupModel: groupModel)
+            justUploadedAvatars: GroupAvatarStateMap.from(groupModel: groupModel),
         )
         guard snapshotResponse.groupSnapshot.groupMembership.isFullMember(localAci) else {
             // We're not a full member, no need to update profile key.

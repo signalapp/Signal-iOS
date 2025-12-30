@@ -11,7 +11,7 @@ public class SessionResetJobQueue {
             canExecuteJobsConcurrently: true,
             db: db,
             jobFinder: JobRecordFinderImpl(db: db),
-            jobRunnerFactory: SessionResetJobRunnerFactory()
+            jobRunnerFactory: SessionResetJobRunnerFactory(),
         )
         self.jobQueueRunner.listenForReachabilityChanges(reachabilityManager: reachabilityManager)
     }
@@ -46,7 +46,10 @@ private class SessionResetJobRunner: JobRunner {
         } catch {
             return await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
                 let result = JobAttemptResult<Void>.performDefaultErrorHandler(
-                    error: error, jobRecord: jobRecord, retryLimit: Constants.maxRetries, tx: tx
+                    error: error,
+                    jobRecord: jobRecord,
+                    retryLimit: Constants.maxRetries,
+                    tx: tx,
                 )
                 if case .finished(.failure) = result {
                     // Even though this is the failure handler - which means probably the
@@ -74,7 +77,7 @@ private class SessionResetJobRunner: JobRunner {
             }
             let endSessionMessage = EndSessionMessage(thread: contactThread, transaction: tx)
             let preparedMessage = PreparedOutgoingMessage.preprepared(
-                transientMessageWithoutAttachments: endSessionMessage
+                transientMessageWithoutAttachments: endSessionMessage,
             )
             return ThreadUtil.enqueueMessagePromise(message: preparedMessage, isHighPriority: true, transaction: tx)
         }

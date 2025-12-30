@@ -3,13 +3,13 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import SignalServiceKit
 import SignalUI
 import UIKit
-import SignalServiceKit
 
 class JoinGroupCallPill: UIControl {
 
-    public var buttonText: String? {
+    var buttonText: String? {
         get { return callLabel.text }
         set {
             callLabel.text = newValue
@@ -52,7 +52,7 @@ class JoinGroupCallPill: UIControl {
         super.init(frame: .zero)
         let contentStack = UIStackView(arrangedSubviews: [
             callImageView,
-            callLabel
+            callLabel,
         ])
         contentStack.axis = .horizontal
         contentStack.spacing = 4

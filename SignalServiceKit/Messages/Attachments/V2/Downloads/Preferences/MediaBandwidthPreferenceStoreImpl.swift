@@ -19,7 +19,7 @@ public class MediaBandwidthPreferenceStoreImpl: MediaBandwidthPreferenceStore {
 
     public func preference(
         for mediaDownloadType: MediaBandwidthPreferences.MediaType,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> MediaBandwidthPreferences.Preference {
         guard let rawValue = kvStore.getUInt(mediaDownloadType.rawValue, transaction: tx) else {
             return mediaDownloadType.defaultPreference
@@ -53,18 +53,18 @@ public class MediaBandwidthPreferenceStoreImpl: MediaBandwidthPreferenceStore {
     public func set(
         _ mediaBandwidthPreference: MediaBandwidthPreferences.Preference,
         for mediaDownloadType: MediaBandwidthPreferences.MediaType,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         kvStore.setUInt(
             mediaBandwidthPreference.rawValue,
             key: mediaDownloadType.rawValue,
-            transaction: tx
+            transaction: tx,
         )
 
         tx.addSyncCompletion {
             NotificationCenter.default.postOnMainThread(
                 name: MediaBandwidthPreferences.mediaBandwidthPreferencesDidChange,
-                object: nil
+                object: nil,
             )
         }
     }
@@ -76,7 +76,7 @@ public class MediaBandwidthPreferenceStoreImpl: MediaBandwidthPreferenceStore {
         tx.addSyncCompletion {
             NotificationCenter.default.postOnMainThread(
                 name: MediaBandwidthPreferences.mediaBandwidthPreferencesDidChange,
-                object: nil
+                object: nil,
             )
         }
     }

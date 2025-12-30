@@ -10,7 +10,7 @@ class MediaCaptionView: UIView {
 
     private let spoilerState: SpoilerRenderState
 
-    public enum Content: Equatable {
+    enum Content: Equatable {
         case attachmentStreamCaption(String)
         case messageBody(HydratedMessageBody, InteractionSnapshotIdentifier)
 
@@ -73,7 +73,7 @@ class MediaCaptionView: UIView {
 
     init(
         frame: CGRect = .zero,
-        spoilerState: SpoilerRenderState
+        spoilerState: SpoilerRenderState,
     ) {
         self.spoilerState = spoilerState
         super.init(frame: frame)
@@ -137,7 +137,7 @@ class MediaCaptionView: UIView {
 
         for item in messageBody.tappableItems(
             revealedSpoilerIds: spoilerState.revealState.revealedSpoilerIds(interactionIdentifier: interactionIdentifier),
-            dataDetector: nil /* Maybe in the future we should detect links here. We never have, before. */
+            dataDetector: nil, /* Maybe in the future we should detect links here. We never have, before. */
         ) {
             switch item {
             case .data, .mention:
@@ -146,7 +146,7 @@ class MediaCaptionView: UIView {
                 if unrevealedSpoiler.range.contains(characterIndex) {
                     spoilerState.revealState.setSpoilerRevealed(
                         withID: unrevealedSpoiler.id,
-                        interactionIdentifier: interactionIdentifier
+                        interactionIdentifier: interactionIdentifier,
                     )
                     didUpdateRevealedSpoilers(spoilerState.revealState)
                     return true
@@ -234,6 +234,7 @@ class MediaCaptionView: UIView {
         textView.textContainerInset = .zero
         return textView
     }
+
     private lazy var captionTextView = MediaCaptionView.buildCaptionTextView(spoilerState: spoilerState)
 
     private class CaptionTextView: UITextView, NSLayoutManagerDelegate {
@@ -269,14 +270,14 @@ class MediaCaptionView: UIView {
 
         private lazy var spoilerAnimator = SpoilerableTextViewAnimator(textView: self)
 
-        public var content: MediaCaptionView.Content? {
+        var content: MediaCaptionView.Content? {
             didSet {
                 recomputeContents()
                 invalidateCachedSizes()
             }
         }
 
-        public func didUpdateRevealedSpoilers() {
+        func didUpdateRevealedSpoilers() {
             // No need to recompute cached sizes; spoilers have no effect on size.
             recomputeContents()
         }
@@ -303,12 +304,12 @@ class MediaCaptionView: UIView {
                 let displayConfig = HydratedMessageBody.DisplayConfiguration.mediaCaption(
                     textColor: textColor ?? .Signal.label,
                     revealedSpoilerIds: spoilerState.revealState.revealedSpoilerIds(
-                        interactionIdentifier: interactionIdentifier
-                    )
+                        interactionIdentifier: interactionIdentifier,
+                    ),
                 )
                 let attrString = body.asAttributedStringForDisplay(
                     config: displayConfig,
-                    isDarkThemeEnabled: Theme.isDarkThemeEnabled
+                    isDarkThemeEnabled: Theme.isDarkThemeEnabled,
                 )
                 if doUpdate {
                     super.attributedText = attrString
@@ -381,7 +382,7 @@ class MediaCaptionView: UIView {
         private static let collapsedNumberOfLines = 3
 
         private var collapsedSize: CGSize = .zero // 3 lines of text
-        private var expandedSize: CGSize = .zero  // height is limited to `maxHeight`
+        private var expandedSize: CGSize = .zero // height is limited to `maxHeight`
         private var fullSize: CGSize = .zero
 
         override var intrinsicContentSize: CGSize {
@@ -394,7 +395,7 @@ class MediaCaptionView: UIView {
             let textSize = isExpanded ? expandedSize : collapsedSize
             return CGSize(
                 width: textContainerInset.left + textSize.width + textContainerInset.right,
-                height: textContainerInset.top + textSize.height + textContainerInset.bottom
+                height: textContainerInset.top + textSize.height + textContainerInset.bottom,
             )
         }
 
@@ -430,7 +431,7 @@ class MediaCaptionView: UIView {
                 lineBreakMode: .byWordWrapping,
                 numberOfLines: Self.collapsedNumberOfLines,
                 items: [],
-                linkifyStyle: .underlined(bodyTextColor: textColor)
+                linkifyStyle: .underlined(bodyTextColor: textColor),
             )
             collapsedSize = CVTextLabel.measureSize(config: collapsedTextConfig, maxWidth: maxWidth).size
 
@@ -445,7 +446,7 @@ class MediaCaptionView: UIView {
                 lineBreakMode: .byWordWrapping,
                 numberOfLines: 3 * Self.collapsedNumberOfLines,
                 items: [],
-                linkifyStyle: .underlined(bodyTextColor: textColor)
+                linkifyStyle: .underlined(bodyTextColor: textColor),
             )
             let expandedTextSize = CVTextLabel.measureSize(config: expandedTextConfig, maxWidth: maxWidth).size
             expandedSize = CGSize(width: expandedTextSize.width, height: min(expandedTextSize.height, Self.maxHeight))
@@ -461,7 +462,7 @@ class MediaCaptionView: UIView {
                 lineBreakMode: .byWordWrapping,
                 numberOfLines: 0,
                 items: [],
-                linkifyStyle: .underlined(bodyTextColor: textColor)
+                linkifyStyle: .underlined(bodyTextColor: textColor),
             )
             fullSize = CVTextLabel.measureSize(config: fullTextConfig, maxWidth: maxWidth).size
         }

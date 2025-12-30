@@ -48,14 +48,16 @@ private class ContactNameFieldView: UIView {
         delegate?.nameFieldDidChange()
     }
 
-    public func value() -> String {
+    func value() -> String {
         return textField.text?.stripped ?? ""
     }
 }
 
 public protocol EditContactShareNameViewControllerDelegate: AnyObject {
-    func editContactShareNameView(_ editContactShareNameView: EditContactShareNameViewController,
-                                  didFinishWith contactName: OWSContactName)
+    func editContactShareNameView(
+        _ editContactShareNameView: EditContactShareNameViewController,
+        didFinishWith contactName: OWSContactName,
+    )
 }
 
 // MARK: -
@@ -69,32 +71,32 @@ public class EditContactShareNameViewController: OWSTableViewController2, Contac
     private lazy var namePrefixView = ContactNameFieldView(
         name: OWSLocalizedString("CONTACT_FIELD_NAME_PREFIX", comment: "Label for the 'name prefix' field of a contact."),
         value: contactShareDraft.name.namePrefix,
-        delegate: self
+        delegate: self,
     )
     private lazy var givenNameView = ContactNameFieldView(
         name: OWSLocalizedString("CONTACT_FIELD_GIVEN_NAME", comment: "Label for the 'given name' field of a contact."),
         value: contactShareDraft.name.givenName,
-        delegate: self
+        delegate: self,
     )
     private lazy var middleNameView = ContactNameFieldView(
         name: OWSLocalizedString("CONTACT_FIELD_MIDDLE_NAME", comment: "Label for the 'middle name' field of a contact."),
         value: contactShareDraft.name.middleName,
-        delegate: self
+        delegate: self,
     )
     private lazy var familyNameView = ContactNameFieldView(
         name: OWSLocalizedString("CONTACT_FIELD_FAMILY_NAME", comment: "Label for the 'family name' field of a contact."),
         value: contactShareDraft.name.familyName,
-        delegate: self
+        delegate: self,
     )
     private lazy var nameSuffixView = ContactNameFieldView(
         name: OWSLocalizedString("CONTACT_FIELD_NAME_SUFFIX", comment: "Label for the 'name suffix' field of a contact."),
         value: contactShareDraft.name.nameSuffix,
-        delegate: self
+        delegate: self,
     )
     private lazy var organizationNameView = ContactNameFieldView(
         name: OWSLocalizedString("CONTACT_FIELD_ORGANIZATION", comment: "Label for the 'organization' field of a contact."),
         value: contactShareDraft.name.organizationName,
-        delegate: self
+        delegate: self,
     )
 
     private func allNameFieldViews() -> [ContactNameFieldView] {
@@ -104,7 +106,7 @@ public class EditContactShareNameViewController: OWSTableViewController2, Contac
             middleNameView,
             familyNameView,
             nameSuffixView,
-            organizationNameView
+            organizationNameView,
         ]
     }
 
@@ -119,11 +121,13 @@ public class EditContactShareNameViewController: OWSTableViewController2, Contac
 
     // MARK: - View Lifecycle
 
-    public override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
 
-        navigationItem.title = OWSLocalizedString("CONTACT_SHARE_EDIT_NAME_VIEW_TITLE",
-                                                  comment: "Title for the 'edit contact share name' view.")
+        navigationItem.title = OWSLocalizedString(
+            "CONTACT_SHARE_EDIT_NAME_VIEW_TITLE",
+            comment: "Title for the 'edit contact share name' view.",
+        )
         navigationItem.leftBarButtonItem = .cancelButton(poppingFrom: navigationController)
         navigationItem.rightBarButtonItem = .doneButton { [weak self] in
             self?.didPressDone()
@@ -173,7 +177,7 @@ public class EditContactShareNameViewController: OWSTableViewController2, Contac
             namePrefix: namePrefixView.value(),
             nameSuffix: nameSuffixView.value(),
             middleName: middleNameView.value(),
-            organizationName: organizationNameView.value()
+            organizationName: organizationNameView.value(),
         )
         editingDelegate.editContactShareNameView(self, didFinishWith: newName)
 

@@ -36,7 +36,7 @@ public enum ConversationViewAction {
 
 public final class ConversationViewController: OWSViewController {
 
-    internal let context: ViewControllerContext
+    let context: ViewControllerContext
 
     public let appReadiness: AppReadinessSetter
     public let viewState: CVViewState
@@ -57,7 +57,8 @@ public final class ConversationViewController: OWSViewController {
         onQueue: .main,
         notifyBlock: { [weak self] in
             self?.updateContentInsets()
-        })
+        },
+    )
 
     // MARK: -
 
@@ -66,7 +67,7 @@ public final class ConversationViewController: OWSViewController {
         threadViewModel: ThreadViewModel,
         action: ConversationViewAction,
         focusMessageId: String?,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> ConversationViewController {
         let thread = threadViewModel.threadRecord
 
@@ -97,7 +98,9 @@ public final class ConversationViewController: OWSViewController {
         let wallpaperViewBuilder = Self.loadWallpaperViewBuilder(for: thread, tx: tx)
 
         let conversationStyle = Self.buildInitialConversationStyle(
-            for: thread, chatColor: chatColor, wallpaperViewBuilder: wallpaperViewBuilder
+            for: thread,
+            chatColor: chatColor,
+            wallpaperViewBuilder: wallpaperViewBuilder,
         )
         let conversationViewModel = ConversationViewModel.load(for: thread, tx: tx)
 
@@ -111,7 +114,7 @@ public final class ConversationViewController: OWSViewController {
             scrollToMessageId: scrollToMessageId,
             oldestUnreadMessage: oldestUnreadMessage,
             chatColor: chatColor,
-            wallpaperViewBuilder: wallpaperViewBuilder
+            wallpaperViewBuilder: wallpaperViewBuilder,
         )
 
         return cvc
@@ -120,7 +123,7 @@ public final class ConversationViewController: OWSViewController {
     static func loadChatColor(for thread: TSThread, tx: DBReadTransaction) -> ColorOrGradientSetting {
         return DependenciesBridge.shared.chatColorSettingStore.resolvedChatColor(
             for: thread,
-            tx: tx
+            tx: tx,
         )
     }
 
@@ -149,13 +152,13 @@ public final class ConversationViewController: OWSViewController {
             threadUniqueId: threadViewModel.threadRecord.uniqueId,
             conversationStyle: conversationStyle,
             chatColor: chatColor,
-            wallpaperViewBuilder: wallpaperViewBuilder
+            wallpaperViewBuilder: wallpaperViewBuilder,
         )
         self.loadCoordinator = CVLoadCoordinator(
             viewState: viewState,
             threadViewModel: threadViewModel,
             conversationViewModel: conversationViewModel,
-            oldestUnreadMessageSortId: oldestUnreadMessage?.sortId
+            oldestUnreadMessageSortId: oldestUnreadMessage?.sortId,
         )
         self.layout = ConversationViewLayout(conversationStyle: conversationStyle)
         self.collectionView = ConversationCollectionView(frame: .zero, collectionViewLayout: self.layout)
@@ -178,7 +181,7 @@ public final class ConversationViewController: OWSViewController {
         loadCoordinator.configure(
             delegate: self,
             componentDelegate: self,
-            focusMessageIdOnOpen: loadAroundMessageId
+            focusMessageIdOnOpen: loadAroundMessageId,
         )
 
         searchController.delegate = self
@@ -186,7 +189,7 @@ public final class ConversationViewController: OWSViewController {
         self.otherUsersProfileDidChangeEvent = DebouncedEvents.build(
             mode: .firstLast,
             maxFrequencySeconds: 1.0,
-            onQueue: .main
+            onQueue: .main,
         ) { [weak self] in
             // Reload all cells if this is a group conversation,
             // since we may need to update the sender names on the messages.
@@ -201,7 +204,7 @@ public final class ConversationViewController: OWSViewController {
 
     // MARK: - View Lifecycle
 
-    public override func viewDidLoad() {
+    override public func viewDidLoad() {
         AssertIsOnMainThread()
 
         // We won't have a navigation controller if we're presented in a preview
@@ -285,17 +288,17 @@ public final class ConversationViewController: OWSViewController {
         self.updateConversationStyle()
     }
 
-    public override var canBecomeFirstResponder: Bool {
+    override public var canBecomeFirstResponder: Bool {
         return true
     }
 
-    public override func becomeFirstResponder() -> Bool {
+    override public func becomeFirstResponder() -> Bool {
         let result = super.becomeFirstResponder()
 
         guard hasViewWillAppearEverBegun else {
             return result
         }
-        guard let inputToolbar = inputToolbar else {
+        guard let inputToolbar else {
             return result
         }
 
@@ -316,7 +319,7 @@ public final class ConversationViewController: OWSViewController {
         return result
     }
 
-    public override var textInputContextIdentifier: String? {
+    override public var textInputContextIdentifier: String? {
         thread.uniqueId
     }
 
@@ -331,7 +334,7 @@ public final class ConversationViewController: OWSViewController {
         }
     }
 
-    public override func viewWillAppear(_ animated: Bool) {
+    override public func viewWillAppear(_ animated: Bool) {
         self.viewWillAppearDidBegin()
 
         super.viewWillAppear(animated)
@@ -361,7 +364,7 @@ public final class ConversationViewController: OWSViewController {
 
     private var groupAndProfileRefresherTask: Task<Void, any Error>?
 
-    public override func viewDidAppear(_ animated: Bool) {
+    override public func viewDidAppear(_ animated: Bool) {
         self.viewDidAppearDidBegin()
 
         super.viewDidAppear(animated)
@@ -450,7 +453,7 @@ public final class ConversationViewController: OWSViewController {
     // but, as is the case with the "pan left for message details view" gesture,
     // this can be canceled. As such, we shouldn't tear down anything expensive
     // until `viewDidDisappear`.
-    public override func viewWillDisappear(_ animated: Bool) {
+    override public func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
         self.isViewCompletelyAppeared = false
@@ -464,7 +467,7 @@ public final class ConversationViewController: OWSViewController {
         self.groupAndProfileRefresherTask = nil
     }
 
-    public override func viewDidDisappear(_ animated: Bool) {
+    override public func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
 
         self.userHasScrolled = false
@@ -487,7 +490,7 @@ public final class ConversationViewController: OWSViewController {
         self.scrollingAnimationCompletionTimer = nil
     }
 
-    public override func viewDidLayoutSubviews() {
+    override public func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
         // Title view sometimes disappears when orientation changes.
@@ -512,7 +515,7 @@ public final class ConversationViewController: OWSViewController {
         updateContentInsets()
     }
 
-    public override var shouldAutorotate: Bool {
+    override public var shouldAutorotate: Bool {
         // Don't allow orientation changes while recording voice messages.
         if viewState.inProgressVoiceMessage?.isRecording == true {
             return false
@@ -521,7 +524,7 @@ public final class ConversationViewController: OWSViewController {
         return super.shouldAutorotate
     }
 
-    public override func contentSizeCategoryDidChange() {
+    override public func contentSizeCategoryDidChange() {
         super.contentSizeCategoryDidChange()
 
         Logger.info("didChangePreferredContentSize")
@@ -529,7 +532,7 @@ public final class ConversationViewController: OWSViewController {
         resetForSizeOrOrientationChange()
     }
 
-    public override func themeDidChange() {
+    override public func themeDidChange() {
         super.themeDidChange()
 
         applyTheme()
@@ -605,8 +608,10 @@ public final class ConversationViewController: OWSViewController {
 
     // MARK: - Orientation
 
-    public override func viewWillTransition(to size: CGSize,
-                                            with coordinator: UIViewControllerTransitionCoordinator) {
+    override public func viewWillTransition(
+        to size: CGSize,
+        with coordinator: UIViewControllerTransitionCoordinator,
+    ) {
         AssertIsOnMainThread()
 
         super.viewWillTransition(to: size, with: coordinator)
@@ -624,16 +629,17 @@ public final class ConversationViewController: OWSViewController {
             },
             completion: { [weak self] _ in
                 self?.clearScrollActionForSizeTransition()
-            })
+            },
+        )
     }
 
-    public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+    override public func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         AssertIsOnMainThread()
         self.updateBarButtonItems()
         self.updateNavigationBarSubtitleLabel()
     }
 
-    public override func viewSafeAreaInsetsDidChange() {
+    override public func viewSafeAreaInsetsDidChange() {
         AssertIsOnMainThread()
 
         super.viewSafeAreaInsetsDidChange()
@@ -647,9 +653,9 @@ public final class ConversationViewController: OWSViewController {
                 bottomBarContainer.frame = CGRect(
                     origin: CGPoint(
                         x: 0,
-                        y: view.bounds.maxY - bottomBarContainer.frame.height
+                        y: view.bounds.maxY - bottomBarContainer.frame.height,
                     ),
-                    size: bottomBarContainer.bounds.size
+                    size: bottomBarContainer.bounds.size,
                 )
             }
         }

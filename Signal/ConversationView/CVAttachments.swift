@@ -12,25 +12,25 @@ public class AudioAttachment {
     public enum State: Equatable {
         case attachmentStream(
             attachmentStream: ReferencedAttachmentStream,
-            audioDurationSeconds: TimeInterval
+            audioDurationSeconds: TimeInterval,
         )
         case attachmentPointer(
             attachmentPointer: ReferencedAttachmentPointer,
-            downloadState: AttachmentDownloadState
+            downloadState: AttachmentDownloadState,
         )
 
-        public static func == (lhs: AudioAttachment.State, rhs: AudioAttachment.State) -> Bool {
+        public static func ==(lhs: AudioAttachment.State, rhs: AudioAttachment.State) -> Bool {
             switch (lhs, rhs) {
             case let (
                 .attachmentStream(lhsStream, lhsDuration),
-                .attachmentStream(rhsStream, rhsDuration)
+                .attachmentStream(rhsStream, rhsDuration),
             ):
                 return lhsStream.attachmentStream.id == rhsStream.attachmentStream.id
                     && lhsStream.reference.hasSameOwner(as: rhsStream.reference)
                     && lhsDuration == rhsDuration
             case let (
                 .attachmentPointer(lhsPointer, lhsState),
-                .attachmentPointer(rhsPointer, rhsState)
+                .attachmentPointer(rhsPointer, rhsState),
             ):
                 return lhsPointer.attachment.id == rhsPointer.attachment.id
                     && lhsPointer.reference.hasSameOwner(as: rhsPointer.reference)
@@ -42,6 +42,7 @@ public class AudioAttachment {
             }
         }
     }
+
     public let state: State
 
     public var sourceFilename: String? {
@@ -64,7 +65,7 @@ public class AudioAttachment {
         attachmentStream: ReferencedAttachmentStream,
         owningMessage: TSMessage?,
         metadata: MediaMetadata?,
-        receivedAtDate: Date
+        receivedAtDate: Date,
     ) {
         let audioDurationSeconds: TimeInterval
         switch attachmentStream.attachmentStream.contentType {
@@ -78,7 +79,7 @@ public class AudioAttachment {
         }
         self.state = .attachmentStream(
             attachmentStream: attachmentStream,
-            audioDurationSeconds: audioDurationSeconds
+            audioDurationSeconds: audioDurationSeconds,
         )
         self.isDownloading = false
         self.receivedAtDate = receivedAtDate
@@ -90,11 +91,11 @@ public class AudioAttachment {
         owningMessage: TSMessage?,
         metadata: MediaMetadata?,
         receivedAtDate: Date,
-        downloadState: AttachmentDownloadState
+        downloadState: AttachmentDownloadState,
     ) {
         state = .attachmentPointer(
             attachmentPointer: attachmentPointer,
-            downloadState: downloadState
+            downloadState: downloadState,
         )
 
         switch downloadState {
@@ -171,14 +172,14 @@ extension AudioAttachment {
             }
             let circumstance: OWSReceiptCircumstance = (
                 latestThread.hasPendingMessageRequest(transaction: tx)
-                ? .onThisDeviceWhilePendingMessageRequest
-                : .onThisDevice
+                    ? .onThisDeviceWhilePendingMessageRequest
+                    : .onThisDevice,
             )
             latestMessage.markAsViewed(
                 atTimestamp: Date.ows_millisecondTimestamp(),
                 thread: latestThread,
                 circumstance: circumstance,
-                transaction: tx
+                transaction: tx,
             )
         }
         return true
@@ -186,9 +187,9 @@ extension AudioAttachment {
 }
 
 extension AudioAttachment: Equatable {
-    public static func == (lhs: AudioAttachment, rhs: AudioAttachment) -> Bool {
+    public static func ==(lhs: AudioAttachment, rhs: AudioAttachment) -> Bool {
         lhs.state == rhs.state &&
-        lhs.owningMessage == rhs.owningMessage &&
-        lhs.isDownloading == rhs.isDownloading
+            lhs.owningMessage == rhs.owningMessage &&
+            lhs.isDownloading == rhs.isDownloading
     }
 }

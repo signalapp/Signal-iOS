@@ -28,11 +28,13 @@ extension Timer {
     /// This method avoids the classic NSTimer retain cycle bug by using a weak reference to the target.
     @objc
     @available(swift, obsoleted: 1)
-    public static func weakScheduledTimer(withTimeInterval timeInterval: TimeInterval,
-                                          target: AnyObject,
-                                          selector: Selector,
-                                          userInfo: Any?,
-                                          repeats: Bool) -> Timer {
+    public static func weakScheduledTimer(
+        withTimeInterval timeInterval: TimeInterval,
+        target: AnyObject,
+        selector: Selector,
+        userInfo: Any?,
+        repeats: Bool,
+    ) -> Timer {
         let proxy = TimerProxy(target: target, selector: selector)
         return Timer.scheduledTimer(timeInterval: timeInterval, target: proxy, selector: #selector(TimerProxy.timerFired(_:)), userInfo: userInfo, repeats: repeats)
     }
@@ -40,11 +42,13 @@ extension Timer {
     /// This method avoids the classic NSTimer retain cycle bug by using a weak reference to the target.
     @objc
     @available(swift, obsoleted: 1)
-    public static func weakTimer(withTimeInterval timeInterval: TimeInterval,
-                                 target: AnyObject,
-                                 selector: Selector,
-                                 userInfo: Any?,
-                                 repeats: Bool) -> Timer {
+    public static func weakTimer(
+        withTimeInterval timeInterval: TimeInterval,
+        target: AnyObject,
+        selector: Selector,
+        userInfo: Any?,
+        repeats: Bool,
+    ) -> Timer {
         let proxy = TimerProxy(target: target, selector: selector)
         return Timer(timeInterval: timeInterval, target: proxy, selector: #selector(TimerProxy.timerFired(_:)), userInfo: userInfo, repeats: repeats)
     }

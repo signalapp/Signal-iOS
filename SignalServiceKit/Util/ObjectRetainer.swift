@@ -23,7 +23,7 @@ public enum ObjectRetainer {
             retainingObject,
             &Self.retainedObjectKey,
             retainedObject,
-            objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN
+            objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN,
         )
     }
 }

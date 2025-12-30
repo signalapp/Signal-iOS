@@ -71,7 +71,7 @@ public class AttachmentMultisend {
 
     public class func enqueueTextAttachment(
         _ textAttachment: UnsentTextAttachment,
-        to conversations: [ConversationItem]
+        to conversations: [ConversationItem],
     ) async throws -> [EnqueueResult] {
         if conversations.isEmpty {
             return []
@@ -113,7 +113,7 @@ public class AttachmentMultisend {
         databaseStorage: SSKEnvironment.shared.databaseStorageRef,
         linkPreviewManager: DependenciesBridge.shared.linkPreviewManager,
         messageSenderJobQueue: SSKEnvironment.shared.messageSenderJobQueueRef,
-        tsAccountManager: DependenciesBridge.shared.tsAccountManager
+        tsAccountManager: DependenciesBridge.shared.tsAccountManager,
     )
 
     // MARK: - Segmenting Attachments
@@ -126,7 +126,7 @@ public class AttachmentMultisend {
         init(
             original: AttachmentDataSource?,
             segmented: [AttachmentDataSource]?,
-            renderingFlag: AttachmentReference.RenderingFlag
+            renderingFlag: AttachmentReference.RenderingFlag,
         ) throws {
             // We only create data sources for the original or segments if we need to.
             // Stories use segments if available; non stories always need the original.
@@ -152,7 +152,7 @@ public class AttachmentMultisend {
         for conversations: [ConversationItem],
         sendableAttachments: [SendableAttachment],
         hasNonStoryDestination: Bool,
-        hasStoryDestination: Bool
+        hasStoryDestination: Bool,
     ) async throws -> [SegmentAttachmentResult] {
         let maxSegmentDurations = conversations.compactMap(\.videoAttachmentDurationLimit)
         guard hasStoryDestination, !maxSegmentDurations.isEmpty, let requiredSegmentDuration = maxSegmentDurations.min() else {
@@ -166,7 +166,7 @@ public class AttachmentMultisend {
                 try results.append(.init(
                     original: dataSource,
                     segmented: nil,
-                    renderingFlag: attachment.renderingFlag
+                    renderingFlag: attachment.renderingFlag,
                 ))
             }
             return results
@@ -207,7 +207,7 @@ public class AttachmentMultisend {
             segmentedResults.append(try SegmentAttachmentResult(
                 original: originalDataSource,
                 segmented: segmentedDataSources,
-                renderingFlag: attachment.renderingFlag
+                renderingFlag: attachment.renderingFlag,
             ))
         }
         return segmentedResults
@@ -225,13 +225,13 @@ public class AttachmentMultisend {
         let segmentedAttachments = approvedAttachments.reduce([], { arr, segmented in
             return arr + segmented.segmentedOrOriginal
         })
-        let unsegmentedAttachments = approvedAttachments.compactMap { (attachment) -> SendableAttachment.ForSending? in
+        let unsegmentedAttachments = approvedAttachments.compactMap { attachment -> SendableAttachment.ForSending? in
             guard let original = attachment.original else {
                 return nil
             }
             return SendableAttachment.ForSending(
                 dataSource: original,
-                renderingFlag: attachment.renderingFlag
+                renderingFlag: attachment.renderingFlag,
             )
         }
 
@@ -260,7 +260,7 @@ public class AttachmentMultisend {
             threadDestinations: nonStoryThreads,
             unsegmentedAttachments: unsegmentedAttachments,
             isViewOnceMessage: isViewOnce,
-            tx: tx
+            tx: tx,
         )
 
         let storyMessageBuilders = try storyMessageBuilders(
@@ -268,18 +268,18 @@ public class AttachmentMultisend {
             approvedMessageBody: messageBodyForStories,
             groupStoryThreads: groupStoryThreads,
             privateStoryThreads: privateStoryThreads,
-            tx: tx
+            tx: tx,
         )
 
         let groupStoryMessages = try prepareGroupStoryMessages(
             groupStoryThreads: groupStoryThreads,
             builders: storyMessageBuilders,
-            tx: tx
+            tx: tx,
         )
         let privateStoryMessages = try preparePrivateStoryMessages(
             privateStoryThreads: privateStoryThreads,
             builders: storyMessageBuilders,
-            tx: tx
+            tx: tx,
         )
         return nonStoryMessages + groupStoryMessages + privateStoryMessages
     }
@@ -311,18 +311,18 @@ public class AttachmentMultisend {
             textAttachment: textAttachment,
             groupStoryThreads: groupStoryThreads,
             privateStoryThreads: privateStoryThreads,
-            tx: tx
+            tx: tx,
         )
 
         let groupStoryMessages = try prepareGroupStoryMessages(
             groupStoryThreads: groupStoryThreads,
             builders: [storyMessageBuilder],
-            tx: tx
+            tx: tx,
         )
         let privateStoryMessages = try preparePrivateStoryMessages(
             privateStoryThreads: privateStoryThreads,
             builders: [storyMessageBuilder],
-            tx: tx
+            tx: tx,
         )
         return groupStoryMessages + privateStoryMessages
     }
@@ -333,7 +333,7 @@ public class AttachmentMultisend {
         threadDestinations: [Destination],
         unsegmentedAttachments: [SendableAttachment.ForSending],
         isViewOnceMessage: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws -> [PreparedOutgoingMessage] {
         return try threadDestinations.map { destination in
             let thread = destination.thread
@@ -341,7 +341,7 @@ public class AttachmentMultisend {
             ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequest(
                 thread,
                 setDefaultTimerIfNecessary: true,
-                tx: tx
+                tx: tx,
             )
 
             let preparedMessage = try prepareNonStoryMessage(
@@ -349,7 +349,7 @@ public class AttachmentMultisend {
                 attachments: unsegmentedAttachments,
                 isViewOnce: isViewOnceMessage,
                 thread: thread,
-                tx: tx
+                tx: tx,
             )
             if let message = preparedMessage.messageForIntentDonation(tx: tx) {
                 thread.donateSendMessageIntent(for: message, transaction: tx)
@@ -363,7 +363,7 @@ public class AttachmentMultisend {
         attachments: [SendableAttachment.ForSending],
         isViewOnce: Bool,
         thread: TSThread,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws -> PreparedOutgoingMessage {
         let unpreparedMessage = UnpreparedOutgoingMessage.build(
             thread: thread,
@@ -372,7 +372,7 @@ public class AttachmentMultisend {
             isViewOnce: isViewOnce,
             quotedReplyDraft: nil,
             linkPreviewDataSource: nil,
-            transaction: tx
+            transaction: tx,
         )
         return try unpreparedMessage.prepare(tx: tx)
     }
@@ -388,7 +388,7 @@ public class AttachmentMultisend {
     private class func prepareGroupStoryMessages(
         groupStoryThreads: [TSGroupThread],
         builders: [StoryMessageBuilder],
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws -> [PreparedOutgoingMessage] {
         return try groupStoryThreads
             .flatMap { groupThread in
@@ -396,14 +396,14 @@ public class AttachmentMultisend {
                     let storyMessage = try createAndInsertStoryMessage(
                         builder: builder,
                         groupThread: groupThread,
-                        tx: tx
+                        tx: tx,
                     )
                     let outgoingMessage = OutgoingStoryMessage(
                         thread: groupThread,
                         storyMessage: storyMessage,
                         storyMessageRowId: storyMessage.id!,
                         skipSyncTranscript: false,
-                        transaction: tx
+                        transaction: tx,
                     )
                     return outgoingMessage
                 }
@@ -411,7 +411,7 @@ public class AttachmentMultisend {
             .map { outgoingStoryMessage in
                 return try UnpreparedOutgoingMessage.forOutgoingStoryMessage(
                     outgoingStoryMessage,
-                    storyMessageRowId: outgoingStoryMessage.storyMessageRowId
+                    storyMessageRowId: outgoingStoryMessage.storyMessageRowId,
                 ).prepare(tx: tx)
             }
     }
@@ -419,7 +419,7 @@ public class AttachmentMultisend {
     private class func createAndInsertStoryMessage(
         builder: StoryMessageBuilder,
         groupThread: TSGroupThread,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws -> StoryMessage {
         let storyManifest: StoryManifest = .outgoing(
             recipientStates: groupThread.recipientAddresses(with: tx)
@@ -427,12 +427,12 @@ public class AttachmentMultisend {
                 .compactMap { $0.serviceId }
                 .dictionaryMappingToValues { _ in
                     return StoryRecipientState(allowsReplies: true, contexts: [])
-                }
+                },
         )
         return try builder.build(
             groupId: groupThread.groupId,
             manifest: storyManifest,
-            tx: tx
+            tx: tx,
         )
     }
 
@@ -447,7 +447,7 @@ public class AttachmentMultisend {
     private class func preparePrivateStoryMessages(
         privateStoryThreads: [TSPrivateStoryThread],
         builders: [StoryMessageBuilder],
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws -> [PreparedOutgoingMessage] {
         if privateStoryThreads.isEmpty {
             return []
@@ -457,18 +457,18 @@ public class AttachmentMultisend {
                 let storyMessage = try createAndInsertStoryMessage(
                     builder: builder,
                     privateStoryThreads: privateStoryThreads,
-                    tx: tx
+                    tx: tx,
                 )
                 return OutgoingStoryMessage.createDedupedOutgoingMessages(
                     for: storyMessage,
                     sendingTo: privateStoryThreads,
-                    tx: tx
+                    tx: tx,
                 )
             }
             .map { outgoingStoryMessage in
                 return try UnpreparedOutgoingMessage.forOutgoingStoryMessage(
                     outgoingStoryMessage,
-                    storyMessageRowId: outgoingStoryMessage.storyMessageRowId
+                    storyMessageRowId: outgoingStoryMessage.storyMessageRowId,
                 ).prepare(tx: tx)
             }
     }
@@ -476,7 +476,7 @@ public class AttachmentMultisend {
     private class func createAndInsertStoryMessage(
         builder: StoryMessageBuilder,
         privateStoryThreads: [TSPrivateStoryThread],
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws -> StoryMessage {
         var recipientStates = [ServiceId: StoryRecipientState]()
         for thread in privateStoryThreads {
@@ -490,7 +490,7 @@ public class AttachmentMultisend {
                 let existingState = recipientStates[recipient] ?? .init(allowsReplies: false, contexts: [])
                 let newState = StoryRecipientState(
                     allowsReplies: existingState.allowsReplies || thread.allowsReplies,
-                    contexts: existingState.contexts + [threadUuid]
+                    contexts: existingState.contexts + [threadUuid],
                 )
                 recipientStates[recipient] = newState
             }
@@ -501,7 +501,7 @@ public class AttachmentMultisend {
         return try builder.build(
             groupId: nil,
             manifest: storyManifest,
-            tx: tx
+            tx: tx,
         )
     }
 
@@ -524,7 +524,7 @@ public class AttachmentMultisend {
         func build(
             groupId: Data?,
             manifest: StoryManifest,
-            tx: DBWriteTransaction
+            tx: DBWriteTransaction,
         ) throws -> StoryMessage {
             let storyMessage = StoryMessage(
                 timestamp: MessageTimestampGenerator.sharedInstance.generateTimestamp(),
@@ -598,9 +598,9 @@ public class AttachmentMultisend {
         approvedMessageBody: MessageBody?,
         groupStoryThreads: [TSGroupThread],
         privateStoryThreads: [TSPrivateStoryThread],
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> [StoryMessageBuilder] {
-        if groupStoryThreads.isEmpty && privateStoryThreads.isEmpty {
+        if groupStoryThreads.isEmpty, privateStoryThreads.isEmpty {
             // No story destinations, no need to build story messages.
             return []
         }
@@ -630,7 +630,7 @@ public class AttachmentMultisend {
         textAttachment: UnsentTextAttachment.ForSending,
         groupStoryThreads: [TSGroupThread],
         privateStoryThreads: [TSPrivateStoryThread],
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws -> StoryMessageBuilder {
         guard let localAci = deps.tsAccountManager.localIdentifiers(tx: tx)?.aci else {
             throw OWSAssertionError("Sending without a local aci!")
@@ -655,7 +655,7 @@ public class AttachmentMultisend {
 
         if
             validatedLinkPreviewDataSource == nil,
-            (textAttachment.body == nil || textAttachment.body!.isEmpty)
+            textAttachment.body == nil || textAttachment.body!.isEmpty
         {
             throw OWSAssertionError("Not sending text story with empty content!")
         }

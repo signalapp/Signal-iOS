@@ -27,6 +27,7 @@ class GroupCallRemoteVideoManager {
     }
 
     // MARK: - Remote Video Views
+
     private var videoViews = [UInt32: [CallMemberVisualContext: GroupCallRemoteVideoView]]()
 
     func remoteVideoView(for device: RemoteDeviceState, context: CallMemberVisualContext) -> GroupCallRemoteVideoView {
@@ -55,7 +56,7 @@ class GroupCallRemoteVideoManager {
     private func updateVideoRequests() {
         updateVideoRequestsDebounceTimer?.invalidate()
         updateVideoRequestsDebounceTimer = Timer.scheduledTimer(withTimeInterval: 0.2, repeats: false, block: { [weak self] _ in
-            guard let self = self else { return }
+            guard let self else { return }
 
             // scheduledTimer promises to schedule this block on the same run loop that called scheduled timer so we should be main actor here
             MainActor.assumeIsolated {
@@ -83,7 +84,7 @@ class GroupCallRemoteVideoManager {
                         demuxId: demuxId,
                         width: UInt16(size.width),
                         height: UInt16(size.height),
-                        framerate: size.height <= GroupCallVideoOverflow.itemHeight ? 15 : 30
+                        framerate: size.height <= GroupCallVideoOverflow.itemHeight ? 15 : 30,
                     )
                 }
 

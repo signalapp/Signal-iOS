@@ -8,7 +8,7 @@ public import SDWebImage
 extension SDAnimatedImage {
 
     public static func sdImage(
-        from attachment: AttachmentStream
+        from attachment: AttachmentStream,
     ) throws -> SDAnimatedImage {
         // YYImage has an initializer that takes a file path, but that
         // initializer loads the entire file's data into memory.

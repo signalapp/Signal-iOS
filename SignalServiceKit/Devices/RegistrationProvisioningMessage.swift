@@ -24,6 +24,7 @@ public struct RegistrationProvisioningMessage {
         case ios
         case android
     }
+
     public enum BackupTier: Equatable {
         case free
         case paid
@@ -80,12 +81,12 @@ public struct RegistrationProvisioningMessage {
 
         self.aciIdentityKeyPair = try IdentityKeyPair(
             publicKey: PublicKey(proto.aciIdentityKeyPublic),
-            privateKey: PrivateKey(proto.aciIdentityKeyPrivate)
+            privateKey: PrivateKey(proto.aciIdentityKeyPrivate),
         )
 
         self.pniIdentityKeyPair = try IdentityKeyPair(
             publicKey: PublicKey(proto.pniIdentityKeyPublic),
-            privateKey: PrivateKey(proto.pniIdentityKeyPrivate)
+            privateKey: PrivateKey(proto.pniIdentityKeyPrivate),
         )
 
         guard

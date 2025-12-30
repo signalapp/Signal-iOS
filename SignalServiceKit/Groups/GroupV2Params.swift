@@ -33,11 +33,11 @@ public extension TSGroupModelV2 {
 
 public extension GroupV2Params {
 
-    fileprivate func encryptString(_ value: String) throws -> Data {
+    private func encryptString(_ value: String) throws -> Data {
         return try encryptBlob(Data(value.utf8))
     }
 
-    fileprivate func decryptString(_ data: Data) throws -> String {
+    private func decryptString(_ data: Data) throws -> String {
         let plaintext = try decryptBlob(data)
         guard let string = String(bytes: plaintext, encoding: .utf8) else {
             throw OWSAssertionError("Could not decrypt value.")
@@ -45,7 +45,7 @@ public extension GroupV2Params {
         return string
     }
 
-    fileprivate func encryptBlob(_ plaintext: Data) throws -> Data {
+    private func encryptBlob(_ plaintext: Data) throws -> Data {
         let clientZkGroupCipher = ClientZkGroupCipher(groupSecretParams: groupSecretParams)
         let ciphertext = try clientZkGroupCipher.encryptBlob(plaintext: plaintext)
         assert(ciphertext != plaintext)
@@ -59,11 +59,13 @@ public extension GroupV2Params {
         return ciphertext
     }
 
-    private static let decryptedBlobCache = LRUCache<Data, Data>(maxSize: 16,
-                                                                 shouldEvacuateInBackground: true)
+    private static let decryptedBlobCache = LRUCache<Data, Data>(
+        maxSize: 16,
+        shouldEvacuateInBackground: true,
+    )
     private static let decryptedBlobCacheMaxItemSize: UInt = 4 * 1024
 
-    fileprivate func decryptBlob(_ ciphertext: Data) throws -> Data {
+    private func decryptBlob(_ ciphertext: Data) throws -> Data {
         let cacheKey = (ciphertext + groupSecretParamsData)
         if let plaintext = Self.decryptedBlobCache.object(forKey: cacheKey) {
             return plaintext
@@ -151,7 +153,7 @@ public extension GroupV2Params {
 
 public extension GroupV2Params {
     func decryptDisappearingMessagesTimer(_ ciphertext: Data?) -> DisappearingMessageToken {
-        guard let ciphertext = ciphertext else {
+        guard let ciphertext else {
             // Treat a missing value as disabled.
             return DisappearingMessageToken.disabledToken
         }
@@ -175,8 +177,8 @@ public extension GroupV2Params {
     func encryptDisappearingMessagesTimer(_ token: DisappearingMessageToken) throws -> Data {
         do {
             let duration = (token.isEnabled
-                                ? token.durationSeconds
-                                : 0)
+                ? token.durationSeconds
+                : 0)
             var blobBuilder = GroupsProtoGroupAttributeBlob.builder()
             blobBuilder.setContent(GroupsProtoGroupAttributeBlobOneOfContent.disappearingMessagesDuration(duration))
             let blobData = try blobBuilder.buildSerializedData()
@@ -189,7 +191,7 @@ public extension GroupV2Params {
     }
 
     func decryptGroupName(_ ciphertext: Data?) -> String? {
-        guard let ciphertext = ciphertext else {
+        guard let ciphertext else {
             // Treat a missing value as no value.
             return nil
         }
@@ -224,7 +226,7 @@ public extension GroupV2Params {
     }
 
     func decryptGroupDescription(_ ciphertext: Data?) -> String? {
-        guard let ciphertext = ciphertext else {
+        guard let ciphertext else {
             // Treat a missing value as no value.
             return nil
         }

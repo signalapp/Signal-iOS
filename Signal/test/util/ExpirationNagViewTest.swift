@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import SignalServiceKit
 import XCTest
 @testable import Signal
-import SignalServiceKit
 
 final class ExpirationNagViewTest: XCTestCase {
     private var date: Date!
@@ -23,7 +23,7 @@ final class ExpirationNagViewTest: XCTestCase {
             dateProvider: dateProvider,
             appExpiry: appExpiry,
             osExpiry: OsExpiry(minimumIosMajorVersion: 2, enforcedAfter: date),
-            device: MockDevice()
+            device: MockDevice(),
         )
         XCTAssertNil(nag.expirationMessage())
     }
@@ -33,7 +33,7 @@ final class ExpirationNagViewTest: XCTestCase {
             dateProvider: dateProvider,
             appExpiry: appExpiry,
             osExpiry: OsExpiry(minimumIosMajorVersion: 2, enforcedAfter: date),
-            device: MockDevice()
+            device: MockDevice(),
         )
 
         // Hidden with 12 days left.
@@ -43,7 +43,7 @@ final class ExpirationNagViewTest: XCTestCase {
         // Shown with nonempty text if 10 days or sooner.
         for dayCount in [10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, -1, -99] {
             date = appExpiry.expirationDate.subtractingTimeInterval(
-                TimeInterval(dayCount) * .day
+                TimeInterval(dayCount) * .day,
             )
             nag.update()
             XCTAssertNotNil(nag.text.strippedOrNil)
@@ -56,7 +56,7 @@ final class ExpirationNagViewTest: XCTestCase {
         var texts = Set<String>()
         for dayCount in [1, 0, -1] {
             date = appExpiry.expirationDate.subtractingTimeInterval(
-                TimeInterval(dayCount) * .day + 1
+                TimeInterval(dayCount) * .day + 1,
             )
             nag.update()
             texts.insert(nag.text)
@@ -74,7 +74,7 @@ final class ExpirationNagViewTest: XCTestCase {
         let testCases: [(
             appExpiration: Date,
             timeToCheck: Int,
-            expectedMessage: ExpirationNagView.ExpirationMessage?
+            expectedMessage: ExpirationNagView.ExpirationMessage?,
         )] = [
             // The OS expires after the app.
             (appExpiration1, 10, .osWillExpireSoon(osExpiration, canUpgrade: true)),
@@ -98,7 +98,7 @@ final class ExpirationNagViewTest: XCTestCase {
                 dateProvider: dateProvider,
                 appExpiry: appExpiry,
                 osExpiry: OsExpiry(minimumIosMajorVersion: 3, enforcedAfter: osExpiration),
-                device: MockDevice()
+                device: MockDevice(),
             )
             XCTAssertEqual(nag.expirationMessage(), testCase.expectedMessage, "\(testCase.timeToCheck)")
         }
@@ -111,7 +111,7 @@ final class ExpirationNagViewTest: XCTestCase {
             dateProvider: dateProvider,
             appExpiry: appExpiry,
             osExpiry: OsExpiry(minimumIosMajorVersion: 3, enforcedAfter: osExpirationDate),
-            device: MockDevice()
+            device: MockDevice(),
         )
 
         XCTAssertFalse(nag.isHidden)
@@ -125,7 +125,7 @@ final class ExpirationNagViewTest: XCTestCase {
             dateProvider: dateProvider,
             appExpiry: appExpiry,
             osExpiry: OsExpiry(minimumIosMajorVersion: 3, enforcedAfter: osExpirationDate),
-            device: MockDevice()
+            device: MockDevice(),
         )
 
         XCTAssertEqual(nag.expirationMessage(), .osExpired(canUpgrade: true))
@@ -139,7 +139,7 @@ private class MockDevice: UpgradableDevice {
     func canUpgrade(to iosMajorVersion: Int) -> Bool { iosMajorVersion < 4 }
 }
 
-fileprivate extension Date {
+private extension Date {
     func subtractingTimeInterval(_ timeInterval: TimeInterval) -> Date {
         return addingTimeInterval(-timeInterval)
     }

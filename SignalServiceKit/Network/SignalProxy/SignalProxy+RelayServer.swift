@@ -26,7 +26,7 @@ extension SignalProxy {
                 "HTTPSPort": port,
                 "HTTPEnable": true,
                 "HTTPProxy": "localhost",
-                "HTTPPort": port
+                "HTTPPort": port,
             ]
         }
 
@@ -78,7 +78,7 @@ extension SignalProxy {
             }
             clients.removeAll()
 
-            if let error = error {
+            if let error {
                 owsFailDebug("Relay server stopped with error \(error)")
             } else {
                 restartFailureCount = 0
@@ -100,11 +100,11 @@ extension SignalProxy {
             restartBackoffTimer = .scheduledTimer(
                 withTimeInterval: ignoreBackoff ? 0 : OWSOperation.retryIntervalForExponentialBackoff(
                     failureCount: restartFailureCount,
-                    maxAverageBackoff: 15 * .second
+                    maxAverageBackoff: 15 * .second,
                 ),
-                repeats: false
+                repeats: false,
             ) { [weak self] _ in
-                guard let self = self else { return }
+                guard let self else { return }
 
                 Logger.info("Restarting relay server...")
 

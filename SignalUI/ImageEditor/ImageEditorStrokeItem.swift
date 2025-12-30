@@ -31,10 +31,12 @@ class ImageEditorStrokeItem: ImageEditorItem {
         ImageEditorStrokeItem.strokeWidth(forUnitStrokeWidth: unitStrokeWidth, dstSize: dstSize)
     }
 
-    init(color: UIColor? = nil,
-         strokeType: StrokeType,
-         unitSamples: [StrokeSample],
-         unitStrokeWidth: CGFloat) {
+    init(
+        color: UIColor? = nil,
+        strokeType: StrokeType,
+        unitSamples: [StrokeSample],
+        unitStrokeWidth: CGFloat,
+    ) {
         self.color = color
         self.strokeType = strokeType
         self.unitSamples = unitSamples
@@ -43,11 +45,13 @@ class ImageEditorStrokeItem: ImageEditorItem {
         super.init(itemType: .stroke)
     }
 
-    init(itemId: String,
-         color: UIColor? = nil,
-         strokeType: StrokeType,
-         unitSamples: [StrokeSample],
-         unitStrokeWidth: CGFloat) {
+    init(
+        itemId: String,
+        color: UIColor? = nil,
+        strokeType: StrokeType,
+        unitSamples: [StrokeSample],
+        unitStrokeWidth: CGFloat,
+    ) {
         self.color = color
         self.strokeType = strokeType
         self.unitSamples = unitSamples
@@ -69,8 +73,10 @@ class ImageEditorStrokeItem: ImageEditorItem {
         }
     }
 
-    class func unitStrokeWidth(forStrokeType strokeType: StrokeType,
-                               widthAdjustmentFactor adjustmentFactor: CGFloat) -> CGFloat {
+    class func unitStrokeWidth(
+        forStrokeType strokeType: StrokeType,
+        widthAdjustmentFactor adjustmentFactor: CGFloat,
+    ) -> CGFloat {
         let (defaultWidth, power) = metrics(forStrokeType: strokeType)
         let multiplier: CGFloat
         if adjustmentFactor > 1 {

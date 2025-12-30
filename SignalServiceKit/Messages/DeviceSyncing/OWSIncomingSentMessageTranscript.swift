@@ -19,7 +19,7 @@ public class OWSIncomingSentMessageTranscript: SentMessageTranscript {
     public static func from(
         sentProto: SSKProtoSyncMessageSent,
         serverTimestamp: UInt64,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) -> OWSIncomingSentMessageTranscript? {
         let isEdit = sentProto.editMessage?.dataMessage != nil
         guard let dataMessage = sentProto.message ?? sentProto.editMessage?.dataMessage else {
@@ -77,7 +77,7 @@ public class OWSIncomingSentMessageTranscript: SentMessageTranscript {
         }
 
         let type: SentMessageTranscriptType
-        if sentProto.isRecipientUpdate && !isEdit {
+        if sentProto.isRecipientUpdate, !isEdit {
             guard
                 let groupId,
                 let groupThread = TSGroupThread.fetch(forGroupId: groupId, tx: tx)
@@ -87,12 +87,14 @@ public class OWSIncomingSentMessageTranscript: SentMessageTranscript {
             }
             type = .recipientUpdate(groupThread)
         } else if isExpirationTimerUpdate {
-            guard let target = getTarget(
-                recipientAddress: recipientAddress,
-                groupId: groupId,
-                dataMessage: dataMessage,
-                tx: tx
-            ) else {
+            guard
+                let target = getTarget(
+                    recipientAddress: recipientAddress,
+                    groupId: groupId,
+                    dataMessage: dataMessage,
+                    tx: tx,
+                )
+            else {
                 return nil
             }
             type = .expirationTimerUpdate(target)
@@ -103,12 +105,14 @@ public class OWSIncomingSentMessageTranscript: SentMessageTranscript {
             }
             type = .endSessionUpdate(TSContactThread.getOrCreateThread(contactAddress: recipientAddress))
         } else if dataMessage.payment != nil {
-            guard let target = getTarget(
-                recipientAddress: recipientAddress,
-                groupId: groupId,
-                dataMessage: dataMessage,
-                tx: tx
-            ) else {
+            guard
+                let target = getTarget(
+                    recipientAddress: recipientAddress,
+                    groupId: groupId,
+                    dataMessage: dataMessage,
+                    tx: tx,
+                )
+            else {
                 return nil
             }
             guard let paymentModels = TSPaymentModels.parsePaymentProtos(dataMessage: dataMessage, thread: target.thread) else {
@@ -126,25 +130,29 @@ public class OWSIncomingSentMessageTranscript: SentMessageTranscript {
             let paymentNotification = SentMessageTranscriptType.PaymentNotification(
                 target: target,
                 serverTimestamp: paymentServerTimestamp,
-                notification: paymentModels.notification
+                notification: paymentModels.notification,
             )
             type = .paymentNotification(paymentNotification)
         } else {
-            guard let target = getTarget(
-                recipientAddress: recipientAddress,
-                groupId: groupId,
-                dataMessage: dataMessage,
-                tx: tx
-            ) else {
+            guard
+                let target = getTarget(
+                    recipientAddress: recipientAddress,
+                    groupId: groupId,
+                    dataMessage: dataMessage,
+                    tx: tx,
+                )
+            else {
                 return nil
             }
-            guard let messageParams = self.parseMessageParams(
-                sentProto: sentProto,
-                serverTimestamp: serverTimestamp,
-                dataMessage: dataMessage,
-                target: target,
-                tx: tx
-            ) else {
+            guard
+                let messageParams = self.parseMessageParams(
+                    sentProto: sentProto,
+                    serverTimestamp: serverTimestamp,
+                    dataMessage: dataMessage,
+                    target: target,
+                    tx: tx,
+                )
+            else {
                 return nil
             }
             type = .message(messageParams)
@@ -167,7 +175,7 @@ public class OWSIncomingSentMessageTranscript: SentMessageTranscript {
                 status: .sent,
                 statusTimestamp: sentProto.timestamp,
                 wasSentByUD: statusProto.unidentified,
-                errorCode: nil
+                errorCode: nil,
             )
             recipientStates[SignalServiceAddress(serviceId)] = recipientState
         }
@@ -179,14 +187,14 @@ public class OWSIncomingSentMessageTranscript: SentMessageTranscript {
         return .init(
             type: type,
             timestamp: sentProto.timestamp,
-            recipientStates: recipientStates
+            recipientStates: recipientStates,
         )
     }
 
     private static func validateTimestampsMatch(
         type: SentMessageTranscriptType,
         sentProto: SSKProtoSyncMessageSent,
-        dataMessage: SSKProtoDataMessage
+        dataMessage: SSKProtoDataMessage,
     ) -> Bool {
         switch type {
         case .message, .expirationTimerUpdate, .paymentNotification, .archivedPayment:
@@ -209,7 +217,7 @@ public class OWSIncomingSentMessageTranscript: SentMessageTranscript {
         serverTimestamp: UInt64,
         dataMessage: SSKProtoDataMessage,
         target: SentMessageTranscriptTarget,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) -> SentMessageTranscriptType.Message? {
         let isViewOnceMessage = dataMessage.hasIsViewOnce && dataMessage.isViewOnce
 
@@ -217,7 +225,7 @@ public class OWSIncomingSentMessageTranscript: SentMessageTranscript {
         var body = dataMessage.body.map {
             DependenciesBridge.shared.attachmentContentValidator.truncatedMessageBodyForInlining(
                 MessageBody(text: $0, ranges: bodyRanges),
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -344,7 +352,7 @@ public class OWSIncomingSentMessageTranscript: SentMessageTranscript {
         recipientAddress: SignalServiceAddress?,
         groupId: GroupIdentifier?,
         dataMessage: SSKProtoDataMessage,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) -> SentMessageTranscriptTarget? {
         if let groupId {
             guard let groupThread = TSGroupThread.fetch(forGroupId: groupId, tx: tx) else {
@@ -377,14 +385,14 @@ public class OWSIncomingSentMessageTranscript: SentMessageTranscript {
         } else if let recipientAddress {
             let thread = TSContactThread.getOrCreateThread(
                 withContactAddress: recipientAddress,
-                transaction: tx
+                transaction: tx,
             )
             return .contact(
                 thread,
                 .token(
                     forProtoExpireTimerSeconds: dataMessage.expireTimer,
-                    version: dataMessage.expireTimerVersion
-                )
+                    version: dataMessage.expireTimerVersion,
+                ),
             )
         } else {
             return nil
@@ -395,7 +403,7 @@ public class OWSIncomingSentMessageTranscript: SentMessageTranscript {
         type: SentMessageTranscriptType,
         requiredProtocolVersion: UInt32? = nil,
         timestamp: UInt64,
-        recipientStates: [SignalServiceAddress: TSOutgoingMessageRecipientState]
+        recipientStates: [SignalServiceAddress: TSOutgoingMessageRecipientState],
     ) {
         self.type = type
         self.requiredProtocolVersion = requiredProtocolVersion

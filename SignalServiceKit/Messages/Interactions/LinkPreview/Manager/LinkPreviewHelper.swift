@@ -29,7 +29,7 @@ public enum LinkPreviewHelper {
     /// be ASCII.
     public static func isPermittedLinkPreviewUrl(
         _ url: URL,
-        parsedFrom sourceString: String? = nil
+        parsedFrom sourceString: String? = nil,
     ) -> Bool {
         guard let scheme = url.scheme?.lowercased().nilIfEmpty, Self.schemeAllowSet.contains(scheme) else { return false }
         guard url.user == nil else { return false }
@@ -38,7 +38,7 @@ public enum LinkPreviewHelper {
         let rawHostname: String?
         if var sourceString {
             let schemePrefix = "\(scheme)://"
-            if let schemeRange = sourceString.range(of: schemePrefix, options: [ .anchored, .caseInsensitive ]) {
+            if let schemeRange = sourceString.range(of: schemePrefix, options: [.anchored, .caseInsensitive]) {
                 sourceString.removeSubrange(schemeRange)
             }
             let delimiterIndex = sourceString.firstIndex(where: { Self.urlDelimeters.contains($0) })
@@ -74,7 +74,7 @@ public enum LinkPreviewHelper {
         var components = result.components(separatedBy: .newlines)
         if components.count > maxLines {
             components = Array(components[0..<maxLines])
-            result =  components.joined(separator: "\n")
+            result = components.joined(separator: "\n")
         }
         let maxCharacterCount = 2048
         if result.count > maxCharacterCount {
@@ -99,7 +99,7 @@ public enum LinkPreviewHelper {
     private static let domainRejectSet: Set = [
         "example.com",
         "example.org",
-        "example.net"
+        "example.net",
     ]
     private static let tldRejectSet: Set = [
         "example",
@@ -107,38 +107,38 @@ public enum LinkPreviewHelper {
         "invalid",
         "localhost",
         "onion",
-        "test"
+        "test",
     ]
     private static let urlDelimeters: Set<Character> = Set(":/?#[]@")
 
     // See <https://tools.ietf.org/html/rfc3986>.
     private static let validURICharacters = CharacterSet([
-      "%",
-      // "gen-delims"
-      ":",
-      "/",
-      "?",
-      "#",
-      "[",
-      "]",
-      "@",
-      // "sub-delims"
-      "!",
-      "$",
-      "&",
-      "'",
-      "(",
-      ")",
-      "*",
-      "+",
-      ",",
-      ";",
-      "=",
-      // unreserved
-      "-",
-      ".",
-      "_",
-      "~",
+        "%",
+        // "gen-delims"
+        ":",
+        "/",
+        "?",
+        "#",
+        "[",
+        "]",
+        "@",
+        // "sub-delims"
+        "!",
+        "$",
+        "&",
+        "'",
+        "(",
+        ")",
+        "*",
+        "+",
+        ",",
+        ";",
+        "=",
+        // unreserved
+        "-",
+        ".",
+        "_",
+        "~",
     ]).union(.decimalDigits)
         .union(.init(charactersIn: "a"..."z"))
         .union(.init(charactersIn: "A"..."Z"))
@@ -159,7 +159,7 @@ public enum LinkPreviewHelper {
         }
         let isValidTLD = !Self.tldRejectSet.contains(tld)
         let isValidDomain = !Self.domainRejectSet.contains(
-            [domain, tld].joined(separator: ".")
+            [domain, tld].joined(separator: "."),
         )
         let isAllASCII = hostname.allSatisfy { $0.isASCII }
         let isAllNonASCII = hostname.allSatisfy { !$0.isASCII || $0 == "." }

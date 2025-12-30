@@ -19,7 +19,7 @@ public class OWSFingerprintBuilder {
     public init(
         contactsManager: any ContactManager,
         identityManager: OWSIdentityManager,
-        tsAccountManager: TSAccountManager
+        tsAccountManager: TSAccountManager,
     ) {
         self.contactsManager = contactsManager
         self.identityManager = identityManager
@@ -32,7 +32,7 @@ public class OWSFingerprintBuilder {
     public func fingerprints(
         theirAci: Aci,
         theirRecipientIdentity: OWSRecipientIdentity,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> FingerprintResult? {
         guard
             let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx),
@@ -51,13 +51,13 @@ public class OWSFingerprintBuilder {
             theirAci: theirAci,
             myAciIdentityKey: myAciIdentityKey,
             theirAciIdentityKey: theirAciIdentityKey,
-            theirName: theirName
+            theirName: theirName,
         )
 
         return FingerprintResult(
             theirAci: theirAci,
             theirRecipientIdentity: theirRecipientIdentity,
-            fingerprint: aciFingerprint
+            fingerprint: aciFingerprint,
         )
     }
 }

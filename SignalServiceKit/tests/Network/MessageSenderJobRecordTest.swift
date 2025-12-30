@@ -15,10 +15,10 @@ class SSKMessageSenderJobRecordTest: SSKBaseTest {
             let jobRecord = try! MessageSenderJobRecord(
                 persistedMessage: .init(
                     rowId: 0,
-                    message: message
+                    message: message,
                 ),
                 isHighPriority: false,
-                transaction: transaction
+                transaction: transaction,
             )
 
             switch jobRecord.messageType {
@@ -36,7 +36,7 @@ class SSKMessageSenderJobRecordTest: SSKBaseTest {
         self.read { transaction in
             let jobRecord = MessageSenderJobRecord(
                 transientMessage: message,
-                isHighPriority: false
+                isHighPriority: false,
             )
 
             switch jobRecord.messageType {

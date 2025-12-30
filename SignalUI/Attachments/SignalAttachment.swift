@@ -98,7 +98,7 @@ public class SignalAttachment: CustomDebugStringConvertible {
             self,
             selector: #selector(didReceiveMemoryWarningNotification),
             name: UIApplication.didReceiveMemoryWarningNotification,
-            object: nil
+            object: nil,
         )
     }
 
@@ -116,22 +116,23 @@ public class SignalAttachment: CustomDebugStringConvertible {
     }
 
     public func staticThumbnail() -> UIImage? {
-        if let cachedThumbnail = cachedThumbnail {
+        if let cachedThumbnail {
             return cachedThumbnail
         }
 
         return autoreleasepool {
-            guard let image: UIImage = {
-                if isImage {
-                    return image()
-                } else if isVideo {
-                    return videoPreview()
-                } else if isAudio {
-                    return nil
-                } else {
-                    return nil
-                }
-            }() else { return nil }
+            guard
+                let image: UIImage = {
+                    if isImage {
+                        return image()
+                    } else if isVideo {
+                        return videoPreview()
+                    } else if isAudio {
+                        return nil
+                    } else {
+                        return nil
+                    }
+                }() else { return nil }
 
             // We want to limit the *smaller* dimension to 60 points,
             // so figure out what the larger dimension would need to
@@ -160,7 +161,7 @@ public class SignalAttachment: CustomDebugStringConvertible {
     }
 
     public func image() -> UIImage? {
-        if let cachedImage = cachedImage {
+        if let cachedImage {
             return cachedImage
         }
         guard let imageData = try? dataSource.readData(), let image = UIImage(data: imageData) else {
@@ -171,7 +172,7 @@ public class SignalAttachment: CustomDebugStringConvertible {
     }
 
     public func videoPreview() -> UIImage? {
-        if let cachedVideoPreview = cachedVideoPreview {
+        if let cachedVideoPreview {
             return cachedVideoPreview
         }
 
@@ -247,7 +248,7 @@ public class SignalAttachment: CustomDebugStringConvertible {
     // Returns the set of UTIs that correspond to valid _input_ image formats
     // for Signal attachments.
     //
-    // Image attachments may be converted to another image format before 
+    // Image attachments may be converted to another image format before
     // being uploaded.
     public class var inputImageUTISet: Set<String> {
         return MimeTypeUtil.supportedInputImageUtiTypes.union(animatedImageUTISet)
@@ -409,16 +410,18 @@ public class SignalAttachment: CustomDebugStringConvertible {
                     kCGImageSourceCreateThumbnailFromImageAlways: true,
                     kCGImageSourceShouldCacheImmediately: true,
                     kCGImageSourceCreateThumbnailWithTransform: true,
-                    kCGImageSourceThumbnailMaxPixelSize: maxSize
+                    kCGImageSourceThumbnailMaxPixelSize: maxSize,
                 ] as [CFString: Any] as CFDictionary
                 guard let downsampledImage = CGImageSourceCreateThumbnailAtIndex(imageSource, 0, downsampleOptions) else {
                     throw .couldNotResizeImage
                 }
                 cgImage = downsampledImage
             } else {
-                guard let originalImageProperties = CGImageSourceCopyPropertiesAtIndex(imageSource, 0, [
-                    kCGImageSourceShouldCache: false
-                ] as CFDictionary) as? [CFString: Any] else {
+                guard
+                    let originalImageProperties = CGImageSourceCopyPropertiesAtIndex(imageSource, 0, [
+                        kCGImageSourceShouldCache: false,
+                    ] as CFDictionary) as? [CFString: Any]
+                else {
                     throw .couldNotParseImage
                 }
 
@@ -430,9 +433,11 @@ public class SignalAttachment: CustomDebugStringConvertible {
                     imageProperties[kCGImagePropertyIPTCImageOrientation] = iptcOrientation
                 }
 
-                guard let image = CGImageSourceCreateImageAtIndex(imageSource, 0, [
-                    kCGImageSourceShouldCacheImmediately: true
-                ] as CFDictionary) else {
+                guard
+                    let image = CGImageSourceCreateImageAtIndex(imageSource, 0, [
+                        kCGImageSourceShouldCacheImmediately: true,
+                    ] as CFDictionary)
+                else {
                     throw .couldNotParseImage
                 }
 
@@ -525,20 +530,32 @@ public class SignalAttachment: CustomDebugStringConvertible {
 
     private static let preservedMetadata: [CFString] = [
         "\(kCGImageMetadataPrefixTIFF):\(kCGImagePropertyTIFFOrientation)" as CFString,
-        "\(kCGImageMetadataPrefixIPTCCore):\(kCGImagePropertyIPTCImageOrientation)" as CFString
+        "\(kCGImageMetadataPrefixIPTCCore):\(kCGImagePropertyIPTCImageOrientation)" as CFString,
     ]
 
     private static let pngChunkTypesToKeep: Set<Data> = {
         let asAscii: [String] = [
             // [Critical chunks.][0]
             // [0]: https://www.w3.org/TR/PNG/#11Critical-chunks
-            "IHDR", "PLTE", "IDAT", "IEND",
+            "IHDR",
+            "PLTE",
+            "IDAT",
+            "IEND",
             // [Ancillary chunks][1] that might affect rendering.
             // [1]: https://www.w3.org/TR/PNG/#11Ancillary-chunks
-            "tRNS", "cHRM", "gAMA", "iCCP", "sRGB", "bKGD", "pHYs", "sPLT",
+            "tRNS",
+            "cHRM",
+            "gAMA",
+            "iCCP",
+            "sRGB",
+            "bKGD",
+            "pHYs",
+            "sPLT",
             // [Animated PNG chunks.][2]
             // [2]: https://wiki.mozilla.org/APNG_Specification#Structure
-            "acTL", "fcTL", "fdAT"
+            "acTL",
+            "fcTL",
+            "fdAT",
         ]
         let asBytes = asAscii.lazy.compactMap { $0.data(using: .ascii) }
         return Set(asBytes)
@@ -617,7 +634,7 @@ public class SignalAttachment: CustomDebugStringConvertible {
 
         let copyOptions: NSDictionary = [
             kCGImageDestinationMergeMetadata: true,
-            kCGImageDestinationMetadata: metadata
+            kCGImageDestinationMetadata: metadata,
         ]
         guard CGImageDestinationCopyImageSource(destination, source, copyOptions, nil) else {
             throw .couldNotRemoveMetadata

@@ -21,7 +21,7 @@ protocol RegistrationProfilePresenter: AnyObject {
         givenName: OWSUserProfile.NameComponent,
         familyName: OWSUserProfile.NameComponent?,
         avatarData: Data?,
-        phoneNumberDiscoverability: PhoneNumberDiscoverability
+        phoneNumberDiscoverability: PhoneNumberDiscoverability,
     )
 }
 
@@ -30,9 +30,9 @@ protocol RegistrationProfilePresenter: AnyObject {
 class RegistrationProfileViewController: OWSViewController {
     var state: RegistrationProfileState
 
-    public init(
+    init(
         state: RegistrationProfileState,
-        presenter: RegistrationProfilePresenter
+        presenter: RegistrationProfilePresenter,
     ) {
         self.presenter = presenter
         self.state = state
@@ -43,7 +43,7 @@ class RegistrationProfileViewController: OWSViewController {
     }
 
     @available(*, unavailable)
-    public override init() {
+    override init() {
         owsFail("This should not be called")
     }
 
@@ -68,7 +68,7 @@ class RegistrationProfileViewController: OWSViewController {
     private lazy var titleLabel: UILabel = {
         let result = UILabel.titleLabelForRegistration(text: OWSLocalizedString(
             "REGISTRATION_PROFILE_SETUP_TITLE",
-            comment: "During registration, users set up their profile. This is the title on the screen where this is done."
+            comment: "During registration, users set up their profile. This is the title on the screen where this is done.",
         ))
         result.accessibilityIdentifier = "registration.profile.titleLabel"
         return result
@@ -79,14 +79,14 @@ class RegistrationProfileViewController: OWSViewController {
         result.attributedText = .composed(of: [
             OWSLocalizedString(
                 "REGISTRATION_PROFILE_SETUP_SUBTITLE",
-                comment: "During registration, users set up their profile. This is the subtitle on the screen where this is done. It tells users about the privacy of their profile. A \"learn more\" link will be added to the end of this string."
+                comment: "During registration, users set up their profile. This is the subtitle on the screen where this is done. It tells users about the privacy of their profile. A \"learn more\" link will be added to the end of this string.",
             ),
             " ",
             CommonStrings.learnMore.styled(with: {
                 // We'd like a link that doesn't go anywhere, because we'd like to handle the
                 // tapping ourselves. We use a "fake" URL because BonMot needs one.
                 return StringStyle.Part.link(URL.Support.profilesAndMessageRequests)
-            }())
+            }()),
         ])
         result.textColor = .Signal.secondaryLabel
         result.font = .dynamicTypeBody
@@ -106,7 +106,7 @@ class RegistrationProfileViewController: OWSViewController {
         result.accessibilityIdentifier = "registration.profile.avatarView"
         result.addGestureRecognizer(UITapGestureRecognizer(
             target: self,
-            action: #selector(didTapAvatar)
+            action: #selector(didTapAvatar),
         ))
         result.isUserInteractionEnabled = true
         return result
@@ -133,7 +133,7 @@ class RegistrationProfileViewController: OWSViewController {
             configuration: buttonConfiguration!,
             primaryAction: UIAction { [weak self] _ in
                 self?.didTapAvatar()
-            }
+            },
         )
         button.translatesAutoresizingMaskIntoConstraints = false
         button.addConstraints([
@@ -147,7 +147,7 @@ class RegistrationProfileViewController: OWSViewController {
     private func textField(
         placeholder: String,
         textContentType: UITextContentType,
-        accessibilityIdentifierSuffix: String
+        accessibilityIdentifierSuffix: String,
     ) -> UITextField {
         let result = OWSTextField()
         result.font = .dynamicTypeBodyClamped
@@ -171,25 +171,26 @@ class RegistrationProfileViewController: OWSViewController {
     private lazy var givenNameTextField: UITextField = textField(
         placeholder: OWSLocalizedString(
             "REGISTRATION_PROFILE_SETUP_GIVEN_NAME_FIELD_PLACEHOLDER",
-            comment: "During registration, users set up their profile. Users input a given name. This is the placeholder for that field."
+            comment: "During registration, users set up their profile. Users input a given name. This is the placeholder for that field.",
         ),
         textContentType: .givenName,
-        accessibilityIdentifierSuffix: "givenName"
+        accessibilityIdentifierSuffix: "givenName",
     )
 
     private lazy var familyNameTextField: UITextField = textField(
         placeholder: OWSLocalizedString(
             "REGISTRATION_PROFILE_SETUP_FAMILY_NAME_FIELD_PLACEHOLDER",
-            comment: "During registration, users set up their profile. Users input a family name. This is the placeholder for that field."
+            comment: "During registration, users set up their profile. Users input a family name. This is the placeholder for that field.",
         ),
         textContentType: .familyName,
-        accessibilityIdentifierSuffix: "familyName"
+        accessibilityIdentifierSuffix: "familyName",
     )
 
     private enum NameOrder {
         case familyNameFirst
         case givenNameFirst
     }
+
     private var nameOrder: NameOrder { Locale.current.isCJKV ? .familyNameFirst : .givenNameFirst }
 
     private lazy var firstTextField: UITextField = {
@@ -251,18 +252,18 @@ class RegistrationProfileViewController: OWSViewController {
                 let vc = RegistrationPhoneNumberDiscoverabilityViewController(
                     state: RegistrationPhoneNumberDiscoverabilityState(
                         e164: self.state.e164,
-                        phoneNumberDiscoverability: self.state.phoneNumberDiscoverability
+                        phoneNumberDiscoverability: self.state.phoneNumberDiscoverability,
                     ),
-                    presenter: self
+                    presenter: self,
                 )
                 self.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
             },
-            for: .primaryActionTriggered
+            for: .primaryActionTriggered,
         )
         return button
     }()
 
-    public override func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
 
         view.backgroundColor = .Signal.background
@@ -273,7 +274,7 @@ class RegistrationProfileViewController: OWSViewController {
             style: .done,
             target: self,
             action: #selector(didTapNext),
-            accessibilityIdentifier: "registration.profile.nextButton"
+            accessibilityIdentifier: "registration.profile.nextButton",
         )
 
         let avatarContainerView = UIView.container()
@@ -301,7 +302,7 @@ class RegistrationProfileViewController: OWSViewController {
                 .vStretchingSpacer(),
             ],
             isScrollable: true,
-            shouldAvoidKeyboard: true
+            shouldAvoidKeyboard: true,
         )
         stackView.spacing = 24
         stackView.setCustomSpacing(12, after: titleLabel)
@@ -313,7 +314,7 @@ class RegistrationProfileViewController: OWSViewController {
         updateUI()
     }
 
-    public override func viewDidAppear(_ animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
         if !UIDevice.current.isIPhone5OrShorter {
@@ -329,7 +330,7 @@ class RegistrationProfileViewController: OWSViewController {
         avatarView.image = avatarData?.asImage ?? SSKEnvironment.shared.databaseStorageRef.read { transaction in
             SSKEnvironment.shared.avatarBuilderRef.defaultAvatarImageForLocalUser(
                 diameterPoints: UInt(avatarSize),
-                transaction: transaction
+                transaction: transaction,
             )
         }
     }
@@ -347,7 +348,7 @@ class RegistrationProfileViewController: OWSViewController {
 
         let vc = AvatarSettingsViewController(
             context: .profile,
-            currentAvatarImage: avatarData?.asImage
+            currentAvatarImage: avatarData?.asImage,
         ) { [weak self] newAvatarImage in
             guard let self else { return }
             if let newAvatarImage {
@@ -377,7 +378,7 @@ class RegistrationProfileViewController: OWSViewController {
             givenName: givenNameComponent,
             familyName: familyNameComponent,
             avatarData: avatarData,
-            phoneNumberDiscoverability: state.phoneNumberDiscoverability
+            phoneNumberDiscoverability: state.phoneNumberDiscoverability,
         )
     }
 }
@@ -389,7 +390,7 @@ extension RegistrationProfileViewController: UITextViewDelegate {
         _ textView: UITextView,
         shouldInteractWith URL: URL,
         in characterRange: NSRange,
-        interaction: UITextItemInteraction
+        interaction: UITextItemInteraction,
     ) -> Bool {
         if textView == explanationView {
             showLearnMoreUI()
@@ -401,12 +402,12 @@ extension RegistrationProfileViewController: UITextViewDelegate {
         let actionSheet = ActionSheetController(
             title: OWSLocalizedString(
                 "REGISTRATION_PROFILE_SETUP_MORE_INFO_TITLE",
-                comment: "During registration, users set up their profile. They can learn more about the privacy of their profile by clicking a \"learn more\" button. This is the title on a sheet that appears when they do that."
+                comment: "During registration, users set up their profile. They can learn more about the privacy of their profile by clicking a \"learn more\" button. This is the title on a sheet that appears when they do that.",
             ),
             message: OWSLocalizedString(
                 "REGISTRATION_PROFILE_SETUP_MORE_INFO_DETAILS",
-                comment: "During registration, users set up their profile. They can learn more about the privacy of their profile by clicking a \"learn more\" button. This is the message on a sheet that appears when they do that."
-            )
+                comment: "During registration, users set up their profile. They can learn more about the privacy of their profile by clicking a \"learn more\" button. This is the message on a sheet that appears when they do that.",
+            ),
         )
 
         actionSheet.addAction(.init(title: CommonStrings.learnMore) { [weak self] _ in
@@ -423,7 +424,7 @@ extension RegistrationProfileViewController: UITextViewDelegate {
 // MARK: - UITextFieldDelegate
 
 extension RegistrationProfileViewController: UITextFieldDelegate {
-    public func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         switch textField {
         case firstTextField:
             secondTextField.becomeFirstResponder()
@@ -446,7 +447,7 @@ extension RegistrationProfileViewController: RegistrationPhoneNumberDiscoverabil
         phoneNumberPrivacyButton.phoneNumberDiscoverability = phoneNumberDiscoverability
         self.state = RegistrationProfileState(
             e164: self.state.e164,
-            phoneNumberDiscoverability: phoneNumberDiscoverability
+            phoneNumberDiscoverability: phoneNumberDiscoverability,
         )
         self.presentedViewController?.dismiss(animated: true)
     }
@@ -459,13 +460,13 @@ extension RegistrationProfileViewController {
     private class PhoneNumberPrivacyButton: UIButton {
 
         private lazy var contentView = PhoneNumberPrivacyButtonContentView(
-            configuration: .init(phoneNumberDiscoverability: phoneNumberDiscoverability)
+            configuration: .init(phoneNumberDiscoverability: phoneNumberDiscoverability),
         )
 
         var phoneNumberDiscoverability: PhoneNumberDiscoverability {
             didSet {
                 contentView.configuration = PhoneNumberPrivacyButtonContentConfiguration(
-                    phoneNumberDiscoverability: phoneNumberDiscoverability
+                    phoneNumberDiscoverability: phoneNumberDiscoverability,
                 )
             }
         }
@@ -484,7 +485,7 @@ extension RegistrationProfileViewController {
                 contentView.leadingAnchor.constraint(equalTo: leadingAnchor),
                 contentView.topAnchor.constraint(equalTo: topAnchor),
                 contentView.trailingAnchor.constraint(equalTo: trailingAnchor),
-                contentView.bottomAnchor.constraint(equalTo: bottomAnchor)
+                contentView.bottomAnchor.constraint(equalTo: bottomAnchor),
             ])
         }
 
@@ -498,7 +499,7 @@ extension RegistrationProfileViewController {
             get {
                 OWSLocalizedString(
                     "REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE",
-                    comment: "During registration, users can choose who can see their phone number."
+                    comment: "During registration, users can choose who can see their phone number.",
                 )
             }
             set { super.accessibilityLabel = newValue }
@@ -547,7 +548,7 @@ extension RegistrationProfileViewController {
             isUserInteractionEnabled = false
             layoutMargins = .init(hMargin: 0, vMargin: 8)
 
-            let vStack = UIStackView(arrangedSubviews: [ titleLabel, subTitleLabel ])
+            let vStack = UIStackView(arrangedSubviews: [titleLabel, subTitleLabel])
             vStack.axis = .vertical
             vStack.spacing = 4
 
@@ -555,7 +556,7 @@ extension RegistrationProfileViewController {
             disclosureView.contentMode = .scaleAspectFit
             disclosureView.setTemplateImage(
                 UIImage(imageLiteralResourceName: "chevron-right-20"),
-                tintColor: .Signal.tertiaryLabel
+                tintColor: .Signal.tertiaryLabel,
             )
             disclosureView.translatesAutoresizingMaskIntoConstraints = false
             disclosureView.widthAnchor.constraint(equalToConstant: 24).isActive = true
@@ -563,7 +564,7 @@ extension RegistrationProfileViewController {
             let hStack = UIStackView(arrangedSubviews: [
                 iconView,
                 vStack,
-                disclosureView
+                disclosureView,
             ])
             hStack.axis = .horizontal
             hStack.spacing = 12
@@ -579,7 +580,7 @@ extension RegistrationProfileViewController {
             ])
 
             apply(configuration)
-       }
+        }
 
         @available(*, unavailable, message: "Use other constructor")
         required init?(coder: NSCoder) {
@@ -603,7 +604,7 @@ extension RegistrationProfileViewController {
             titleLabel.lineBreakMode = .byWordWrapping
             titleLabel.text = OWSLocalizedString(
                 "REGISTRATION_PROFILE_SETUP_FIND_MY_NUMBER_TITLE",
-                comment: "During registration, users can choose who can see their phone number."
+                comment: "During registration, users can choose who can see their phone number.",
             )
             return titleLabel
         }()

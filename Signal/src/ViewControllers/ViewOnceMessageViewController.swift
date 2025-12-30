@@ -4,9 +4,9 @@
 //
 
 import CoreMedia
+import SDWebImage
 import SignalServiceKit
 import SignalUI
-import SDWebImage
 
 class ViewOnceMessageViewController: OWSViewController {
 
@@ -29,26 +29,30 @@ class ViewOnceMessageViewController: OWSViewController {
 
     // MARK: -
 
-    public class func tryToPresent(interaction: TSInteraction,
-                                   from fromViewController: UIViewController) {
+    class func tryToPresent(
+        interaction: TSInteraction,
+        from fromViewController: UIViewController,
+    ) {
         AssertIsOnMainThread()
 
-        ModalActivityIndicatorViewController.present(fromViewController: fromViewController,
-                                                     canCancel: false) { (modal) in
-                                                        DispatchQueue.main.async {
-                                                            let content: Content? = loadContentForPresentation(interaction: interaction)
+        ModalActivityIndicatorViewController.present(
+            fromViewController: fromViewController,
+            canCancel: false,
+        ) { modal in
+            DispatchQueue.main.async {
+                let content: Content? = loadContentForPresentation(interaction: interaction)
 
-                                                            modal.dismiss(completion: {
-                                                                guard let content = content else {
-                                                                    owsFailDebug("Could not present interaction")
-                                                                    // TODO: Show an alert.
-                                                                    return
-                                                                }
+                modal.dismiss(completion: {
+                    guard let content else {
+                        owsFailDebug("Could not present interaction")
+                        // TODO: Show an alert.
+                        return
+                    }
 
-                                                                let view = ViewOnceMessageViewController(content: content)
-                                                                fromViewController.presentFullScreen(view, animated: true)
-                                                            })
-                                                        }
+                    let view = ViewOnceMessageViewController(content: content)
+                    fromViewController.presentFullScreen(view, animated: true)
+                })
+            }
         }
     }
 
@@ -61,7 +65,7 @@ class ViewOnceMessageViewController: OWSViewController {
 
     // MARK: - View Lifecycle
 
-    override public func loadView() {
+    override func loadView() {
         self.view = UIView()
         view.backgroundColor = UIColor.ows_black
 
@@ -103,13 +107,13 @@ class ViewOnceMessageViewController: OWSViewController {
         setupDatabaseObservation()
     }
 
-    override public func viewWillAppear(_ animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         scrollView.updateZoomScaleForLayout()
         scrollView.zoomScale = scrollView.minimumZoomScale
     }
 
-    override public func viewDidLayoutSubviews() {
+    override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         scrollView.updateZoomScaleForLayout()
     }
@@ -118,7 +122,7 @@ class ViewOnceMessageViewController: OWSViewController {
 
     private func buildMediaView() -> (
         UIView,
-        accessoryView: UIView?
+        accessoryView: UIView?,
     )? {
         switch content.type {
         case .loopingVideo:
@@ -136,10 +140,12 @@ class ViewOnceMessageViewController: OWSViewController {
                 owsFailDebug("Could not load attachment.")
                 return nil
             }
-            guard image.size.width > 0,
-                image.size.height > 0 else {
-                    owsFailDebug("Attachment has invalid size.")
-                    return nil
+            guard
+                image.size.width > 0,
+                image.size.height > 0
+            else {
+                owsFailDebug("Attachment has invalid size.")
+                return nil
             }
             let animatedImageView = SDAnimatedImageView()
             // We need to specify a contentMode since the size of the image
@@ -157,10 +163,12 @@ class ViewOnceMessageViewController: OWSViewController {
                 owsFailDebug("Could not load attachment.")
                 return nil
             }
-            guard image.size.width > 0,
-                image.size.height > 0 else {
-                    owsFailDebug("Attachment has invalid size.")
-                    return nil
+            guard
+                image.size.width > 0,
+                image.size.height > 0
+            else {
+                owsFailDebug("Attachment has invalid size.")
+                return nil
             }
 
             let imageView = UIImageView()
@@ -193,8 +201,8 @@ class ViewOnceMessageViewController: OWSViewController {
 
             let formatter = DateComponentsFormatter()
             formatter.unitsStyle = .positional
-            formatter.allowedUnits = [.minute, .second ]
-            formatter.zeroFormattingBehavior = [ .pad ]
+            formatter.allowedUnits = [.minute, .second]
+            formatter.zeroFormattingBehavior = [.pad]
 
             let avPlayer = player.avPlayer
             self.videoPlayerProgressObserver = avPlayer.addPeriodicTimeObserver(forInterval: CMTime(seconds: 0.1, preferredTimescale: 100), queue: nil) { _ in
@@ -231,19 +239,21 @@ class ViewOnceMessageViewController: OWSViewController {
     func setupDatabaseObservation() {
         DependenciesBridge.shared.databaseChangeObserver.appendDatabaseChangeDelegate(self)
 
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(applicationWillEnterForeground),
-                                               name: .OWSApplicationWillEnterForeground,
-                                               object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(applicationWillEnterForeground),
+            name: .OWSApplicationWillEnterForeground,
+            object: nil,
+        )
     }
 
-    public override func viewDidAppear(_ animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
         self.videoPlayer?.play()
     }
 
-    public override var preferredStatusBarStyle: UIStatusBarStyle {
+    override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
     }
 

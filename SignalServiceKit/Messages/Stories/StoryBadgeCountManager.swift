@@ -28,13 +28,13 @@ public class StoryBadgeCountManager {
             self,
             selector: #selector(computeBadgeCount),
             name: .storiesEnabledStateDidChange,
-            object: nil
+            object: nil,
         )
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(computeBadgeCount),
             name: .onboardingStoryStateDidChange,
-            object: nil
+            object: nil,
         )
 
         // Trigger an update immediately
@@ -58,7 +58,7 @@ public class StoryBadgeCountManager {
                 storyMessage.markAsRead(
                     at: Date.ows_millisecondTimestamp(),
                     circumstance: .onThisDevice,
-                    transaction: transaction
+                    transaction: transaction,
                 )
             }
         }
@@ -104,7 +104,7 @@ extension StoryBadgeCountManager: DatabaseChangeDelegate {
     public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         let didUpdate = (
             databaseChanges.didUpdate(tableName: StoryContextAssociatedData.databaseTableName)
-            || databaseChanges.didUpdate(tableName: StoryMessage.databaseTableName)
+                || databaseChanges.didUpdate(tableName: StoryMessage.databaseTableName),
         )
         if didUpdate {
             computeBadgeCount()

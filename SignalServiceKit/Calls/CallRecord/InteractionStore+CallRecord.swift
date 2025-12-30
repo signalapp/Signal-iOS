@@ -10,7 +10,7 @@ public extension InteractionStore {
     /// call record.
     func fetchAssociatedInteraction<InteractionType: TSInteraction>(
         callRecord: CallRecord,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> InteractionType? {
         let interaction: InteractionType?
         switch callRecord.interactionReference {
@@ -29,7 +29,7 @@ public extension InteractionStore {
     func updateIndividualCallInteractionType(
         individualCallInteraction: TSCall,
         newCallInteractionType: RPRecentCallType,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         updateInteraction(individualCallInteraction, tx: tx) { individualCallInteraction in
             individualCallInteraction.callType = newCallInteractionType
@@ -46,13 +46,13 @@ public extension InteractionStore {
         creatorAci: Aci? = nil,
         groupThread: TSGroupThread,
         callEventTimestamp: UInt64,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) -> (OWSGroupCallMessage, Int64) {
         let groupCallInteraction = OWSGroupCallMessage(
             joinedMemberAcis: joinedMemberAcis.map { AciObjC($0) },
             creatorAci: creatorAci.map { AciObjC($0) },
             thread: groupThread,
-            sentAtTimestamp: callEventTimestamp
+            sentAtTimestamp: callEventTimestamp,
         )
         insertInteraction(groupCallInteraction, tx: tx)
 
@@ -73,7 +73,7 @@ public extension InteractionStore {
         creatorAci: Aci,
         callId: UInt64,
         groupThreadRowId: Int64,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         updateInteraction(groupCallInteraction, tx: tx) { groupCallInteraction in
             groupCallInteraction.hasEnded = joinedMemberAcis.isEmpty
@@ -84,7 +84,7 @@ public extension InteractionStore {
         postUpdatedNotification(
             callId: callId,
             groupThreadRowId: groupThreadRowId,
-            tx: tx
+            tx: tx,
         )
     }
 
@@ -95,7 +95,7 @@ public extension InteractionStore {
         groupCallInteraction: OWSGroupCallMessage,
         callId: UInt64,
         groupThreadRowId: Int64,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         updateInteraction(groupCallInteraction, tx: tx) { groupCallInteraction in
             groupCallInteraction.hasEnded = true
@@ -105,21 +105,21 @@ public extension InteractionStore {
         postUpdatedNotification(
             callId: callId,
             groupThreadRowId: groupThreadRowId,
-            tx: tx
+            tx: tx,
         )
     }
 
     private func postUpdatedNotification(
         callId: UInt64,
         groupThreadRowId: Int64,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         tx.addSyncCompletion {
             NotificationCenter.default.postOnMainThread(
                 GroupCallInteractionUpdatedNotification(
                     callId: callId,
-                    groupThreadRowId: groupThreadRowId
-                ).asNotification
+                    groupThreadRowId: groupThreadRowId,
+                ).asNotification,
             )
         }
     }
@@ -140,7 +140,7 @@ public struct GroupCallInteractionUpdatedNotification {
 
     init(
         callId: UInt64,
-        groupThreadRowId: Int64
+        groupThreadRowId: Int64,
     ) {
         self.callId = callId
         self.groupThreadRowId = groupThreadRowId
@@ -163,8 +163,8 @@ public struct GroupCallInteractionUpdatedNotification {
             name: Self.name,
             userInfo: [
                 UserInfoKeys.callId: callId,
-                UserInfoKeys.groupThreadRowId: groupThreadRowId
-            ]
+                UserInfoKeys.groupThreadRowId: groupThreadRowId,
+            ],
         )
     }
 }

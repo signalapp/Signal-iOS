@@ -14,25 +14,25 @@ public class InactivePrimaryDeviceStore: NSObject {
 
     private let kvStore: KeyValueStore
 
-    public override init() {
+    override public init() {
         self.kvStore = KeyValueStore(collection: "InactivePrimaryDeviceStore")
     }
 
     public func setValueForInactivePrimaryDeviceAlert(
         value: Bool,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) {
         kvStore.setBool(
             value,
             key: StoreKeys.hasInactivePrimaryDeviceAlert,
-            transaction: transaction
+            transaction: transaction,
         )
     }
 
     public func valueForInactivePrimaryDeviceAlert(transaction: DBReadTransaction) -> Bool {
         return kvStore.getBool(
             StoreKeys.hasInactivePrimaryDeviceAlert,
-            transaction: transaction
+            transaction: transaction,
         ) ?? false
     }
 }

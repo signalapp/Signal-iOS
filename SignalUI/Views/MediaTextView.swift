@@ -8,11 +8,11 @@ import SignalServiceKit
 public class MediaTextView: UITextView {
 
     public enum DecorationStyle: String, CaseIterable {
-        case none                   // colored text, no background
-        case whiteBackground        // colored text, white background
-        case coloredBackground      // white text, colored background
-        case underline              // white text, colored underline
-        case outline                // white text, colored outline
+        case none // colored text, no background
+        case whiteBackground // colored text, white background
+        case coloredBackground // white text, colored background
+        case underline // white text, colored underline
+        case outline // white text, colored outline
     }
 
     // Resource names are derived from these values. Do not change without consideration.
@@ -53,7 +53,7 @@ public class MediaTextView: UITextView {
         self.textContainer.lineFragmentPadding = 0
 
         kvoObservation = observe(\.contentSize, options: [.new]) { [weak self] _, _ in
-            guard let self = self else { return }
+            guard let self else { return }
             self.adjustFontSizeIfNecessary()
         }
     }
@@ -66,23 +66,29 @@ public class MediaTextView: UITextView {
         // TODO: Figure out correct way to handle long text and implement it.
     }
 
-    public func update(using textStylingToolbar: TextStylingToolbar,
-                       fontPointSize: CGFloat,
-                       textAlignment: NSTextAlignment = .center) {
+    public func update(
+        using textStylingToolbar: TextStylingToolbar,
+        fontPointSize: CGFloat,
+        textAlignment: NSTextAlignment = .center,
+    ) {
         let font = MediaTextView.font(for: textStylingToolbar.textStyle, withPointSize: fontPointSize)
-        updateWith(textForegroundColor: textStylingToolbar.textForegroundColor,
-                   font: font,
-                   textAlignment: textAlignment,
-                   textDecorationColor: textStylingToolbar.textDecorationColor,
-                   decorationStyle: textStylingToolbar.decorationStyle)
+        updateWith(
+            textForegroundColor: textStylingToolbar.textForegroundColor,
+            font: font,
+            textAlignment: textAlignment,
+            textDecorationColor: textStylingToolbar.textDecorationColor,
+            decorationStyle: textStylingToolbar.decorationStyle,
+        )
     }
 
-    public func updateWith(textForegroundColor: UIColor,
-                           font: UIFont,
-                           textAlignment: NSTextAlignment,
-                           textDecorationColor: UIColor?,
-                           decorationStyle: MediaTextView.DecorationStyle) {
-        var attributes: [NSAttributedString.Key: Any] = [ .font: font]
+    public func updateWith(
+        textForegroundColor: UIColor,
+        font: UIFont,
+        textAlignment: NSTextAlignment,
+        textDecorationColor: UIColor?,
+        decorationStyle: MediaTextView.DecorationStyle,
+    ) {
+        var attributes: [NSAttributedString.Key: Any] = [.font: font]
 
         attributes[.foregroundColor] = textForegroundColor
 
@@ -91,7 +97,7 @@ public class MediaTextView: UITextView {
             attributes[.paragraphStyle] = paragraphStyle
         }
 
-        if let textDecorationColor = textDecorationColor {
+        if let textDecorationColor {
             switch decorationStyle {
             case .underline:
                 attributes[.underlineStyle] = NSUnderlineStyle.single.rawValue
@@ -116,10 +122,10 @@ public class MediaTextView: UITextView {
 
     // MARK: - Key Commands
 
-    public override var keyCommands: [UIKeyCommand]? {
+    override public var keyCommands: [UIKeyCommand]? {
         return [
             UIKeyCommand(action: #selector(modifiedReturnPressed(sender:)), input: "\r", modifierFlags: .command, discoverabilityTitle: "Add Text"),
-            UIKeyCommand(action: #selector(modifiedReturnPressed(sender:)), input: "\r", modifierFlags: .alternate, discoverabilityTitle: "Add Text")
+            UIKeyCommand(action: #selector(modifiedReturnPressed(sender:)), input: "\r", modifierFlags: .alternate, discoverabilityTitle: "Add Text"),
         ]
     }
 
@@ -140,8 +146,10 @@ public class TextStylingToolbar: UIControl {
         set { colorPickerView.selectedValue = newValue }
     }
 
-    public let textStyleButton = RoundMediaButton(image: TextStylingToolbar.buttonImage(forTextStyle: .regular),
-                                                  backgroundStyle: .blur)
+    public let textStyleButton = RoundMediaButton(
+        image: TextStylingToolbar.buttonImage(forTextStyle: .regular),
+        backgroundStyle: .blur,
+    )
     public var textStyle: MediaTextView.TextStyle = .regular {
         didSet {
             textStyleButton.setImage(TextStylingToolbar.buttonImage(forTextStyle: textStyle), for: .normal)
@@ -164,6 +172,7 @@ public class TextStylingToolbar: UIControl {
         case .outline, .underline: return .white
         }
     }
+
     public var textBackgroundColor: UIColor? {
         switch decorationStyle {
         case .none, .underline, .outline: return nil
@@ -176,6 +185,7 @@ public class TextStylingToolbar: UIControl {
         case .coloredBackground: return colorPickerView.color
         }
     }
+
     public var textDecorationColor: UIColor? {
         switch decorationStyle {
         case .none, .whiteBackground, .coloredBackground: return nil
@@ -185,7 +195,7 @@ public class TextStylingToolbar: UIControl {
 
     public let decorationStyleButton = RoundMediaButton(
         image: UIImage(imageLiteralResourceName: "text_effects"),
-        backgroundStyle: .blur
+        backgroundStyle: .blur,
     )
     public var decorationStyle: MediaTextView.DecorationStyle = .none {
         didSet {
@@ -197,7 +207,7 @@ public class TextStylingToolbar: UIControl {
 
     public private(set) var contentWidthConstraint: NSLayoutConstraint?
     private lazy var stackView: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: [ textStyleButton, decorationStyleButton, colorPickerView, doneButton ])
+        let stackView = UIStackView(arrangedSubviews: [textStyleButton, decorationStyleButton, colorPickerView, doneButton])
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.alignment = .center
         stackView.spacing = 8
@@ -210,7 +220,7 @@ public class TextStylingToolbar: UIControl {
 
         super.init(frame: .zero)
 
-        autoresizingMask = [ .flexibleHeight ]
+        autoresizingMask = [.flexibleHeight]
 
         colorPickerView.delegate = self
 
@@ -231,7 +241,7 @@ public class TextStylingToolbar: UIControl {
             stackViewLayoutGuide.leadingAnchor.constraint(greaterThanOrEqualTo: layoutMarginsGuide.leadingAnchor),
             stackViewLayoutGuide.topAnchor.constraint(equalTo: topAnchor),
             stackViewLayoutGuide.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -2),
-            contentWidthConstraint
+            contentWidthConstraint,
         ])
 
         // I had to use a custom layout guide because stack view isn't centered
@@ -252,7 +262,7 @@ public class TextStylingToolbar: UIControl {
             stackView.leadingAnchor.constraint(equalTo: stackViewLayoutGuide.leadingAnchor, constant: -leadingMargin),
             stackView.trailingAnchor.constraint(equalTo: stackViewLayoutGuide.trailingAnchor, constant: trailingMargin),
             stackView.topAnchor.constraint(equalTo: stackViewLayoutGuide.topAnchor),
-            stackView.bottomAnchor.constraint(equalTo: stackViewLayoutGuide.bottomAnchor)
+            stackView.bottomAnchor.constraint(equalTo: stackViewLayoutGuide.bottomAnchor),
         ])
     }
 
@@ -261,11 +271,11 @@ public class TextStylingToolbar: UIControl {
         fatalError("init(coder:) has not been implemented")
     }
 
-    public override var intrinsicContentSize: CGSize {
+    override public var intrinsicContentSize: CGSize {
         // NOTE: Update size calculation if changing margins around UIStackView in init(layout:currentColor:).
         CGSize(
             width: UIScreen.main.bounds.width,
-            height: stackView.frame.height + 2 + safeAreaInsets.bottom
+            height: stackView.frame.height + 2 + safeAreaInsets.bottom,
         )
     }
 }

@@ -19,10 +19,10 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
         case loaded(
             selectedCurrencyCode: Currency.Code,
             giftConfiguration: GiftConfiguration,
-            paymentMethodsConfiguration: PaymentMethodsConfiguration
+            paymentMethodsConfiguration: PaymentMethodsConfiguration,
         )
 
-        public var canContinue: Bool {
+        var canContinue: Bool {
             switch self {
             case .initializing, .loading, .loadFailed:
                 return false
@@ -33,7 +33,7 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
             }
         }
 
-        public func selectCurrencyCode(_ newCurrencyCode: Currency.Code) -> State {
+        func selectCurrencyCode(_ newCurrencyCode: Currency.Code) -> State {
             switch self {
             case .initializing, .loading, .loadFailed:
                 assertionFailure("Invalid state; cannot select currency code")
@@ -46,7 +46,7 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
                 return .loaded(
                     selectedCurrencyCode: newCurrencyCode,
                     giftConfiguration: giftConfiguration,
-                    paymentMethodsConfiguration: paymentMethodsConfiguration
+                    paymentMethodsConfiguration: paymentMethodsConfiguration,
                 )
             }
         }
@@ -82,11 +82,11 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
                 preferred: [
                     Locale.current.currencyCode?.uppercased(),
                     "USD",
-                    donationConfiguration.gift.presetAmount.keys.first
+                    donationConfiguration.gift.presetAmount.keys.first,
                 ],
-                supported: donationConfiguration.gift.presetAmount.keys
+                supported: donationConfiguration.gift.presetAmount.keys,
             )
-            guard let defaultCurrencyCode = defaultCurrencyCode else {
+            guard let defaultCurrencyCode else {
                 // This indicates a bug, either in the iOS app or the server.
                 owsFailBeta("[Gifting] Successfully loaded data, but a preferred currency could not be found")
                 return .loadFailed
@@ -95,7 +95,7 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
             return .loaded(
                 selectedCurrencyCode: defaultCurrencyCode,
                 giftConfiguration: donationConfiguration.gift,
-                paymentMethodsConfiguration: donationConfiguration.paymentMethods
+                paymentMethodsConfiguration: donationConfiguration.paymentMethods,
             )
         } catch {
             Logger.warn("\(error)")
@@ -115,7 +115,7 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
             let vc = BadgeGiftingChooseRecipientViewController(
                 badge: giftConfiguration.badge,
                 price: price,
-                paymentMethodsConfiguration: paymentMethodsConfiguration
+                paymentMethodsConfiguration: paymentMethodsConfiguration,
             )
             self.navigationController?.pushViewController(vc, animated: true)
         }
@@ -123,7 +123,7 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
 
     // MARK: - Callbacks
 
-    public override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
 
         let isPresentedStandalone = navigationController?.viewControllers.first == self
@@ -161,19 +161,19 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
 
                 let titleLabel = UILabel.title2Label(text: OWSLocalizedString(
                     "DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_TITLE",
-                    comment: "Users can donate on behalf of a friend, and the friend will receive a badge. This is the title on the screen where users choose the badge their friend will receive."
+                    comment: "Users can donate on behalf of a friend, and the friend will receive a badge. This is the title on the screen where users choose the badge their friend will receive.",
                 ))
                 titleLabel.setCompressionResistanceVerticalHigh()
                 let subtitleLabel = UILabel.explanationTextLabel(text: OWSLocalizedString(
                     "DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_DESCRIPTION",
-                    comment: "Users can donate on behalf of a friend, and the friend will receive a badge. This is a short paragraph on the screen where users choose the badge their friend will receive."
+                    comment: "Users can donate on behalf of a friend, and the friend will receive a badge. This is a short paragraph on the screen where users choose the badge their friend will receive.",
                 ))
                 subtitleLabel.setCompressionResistanceVerticalHigh()
 
                 let introStack = UIStackView(arrangedSubviews: [
                     imageViewContainer,
                     titleLabel,
-                    subtitleLabel
+                    subtitleLabel,
                 ])
                 introStack.axis = .vertical
                 introStack.spacing = 12
@@ -194,7 +194,7 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
             result += loadedSections(
                 selectedCurrencyCode: selectedCurrencyCode,
                 badge: giftConfiguration.badge,
-                pricesByCurrencyCode: giftConfiguration.presetAmount
+                pricesByCurrencyCode: giftConfiguration.presetAmount,
             )
         }
 
@@ -211,12 +211,14 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
     private func loadFailedSections() -> [OWSTableSection] {
         let section = OWSTableSection()
         section.add(.init(customCellBlock: { [weak self] in
-            guard let self = self else { return UITableViewCell() }
+            guard let self else { return UITableViewCell() }
             let cell = AppSettingsViewsUtil.newCell()
 
             let textLabel = UILabel()
-            textLabel.text = OWSLocalizedString("DONATION_VIEW_LOAD_FAILED",
-                                               comment: "Text that's shown when the donation view fails to load data, probably due to network failure")
+            textLabel.text = OWSLocalizedString(
+                "DONATION_VIEW_LOAD_FAILED",
+                comment: "Text that's shown when the donation view fails to load data, probably due to network failure",
+            )
             textLabel.font = .dynamicTypeSubheadline
             textLabel.textAlignment = .center
             textLabel.textColor = .Signal.label
@@ -226,7 +228,7 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
                 configuration: .mediumSecondary(title: CommonStrings.retryButton),
                 primaryAction: UIAction { [weak self] _ in
                     self?.loadDataIfNecessary()
-                }
+                },
             )
             // Container is needed to center button instead of stretching it horizontally.
             let retryButtonContainer = retryButton.enclosedInVerticalStackView(isFullWidthButton: false)
@@ -249,24 +251,26 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
     private func loadedSections(
         selectedCurrencyCode: Currency.Code,
         badge: ProfileBadge,
-        pricesByCurrencyCode: [Currency.Code: FiatMoney]
+        pricesByCurrencyCode: [Currency.Code: FiatMoney],
     ) -> [OWSTableSection] {
         let currencyButtonSection = OWSTableSection()
         currencyButtonSection.hasBackground = false
         currencyButtonSection.add(.init(customCellBlock: { [weak self] in
-            guard let self = self else { return UITableViewCell() }
+            guard let self else { return UITableViewCell() }
             let cell = AppSettingsViewsUtil.newCell()
 
             let currencyPickerButton = DonationCurrencyPickerButton(
                 currentCurrencyCode: selectedCurrencyCode,
-                hasLabel: true
+                hasLabel: true,
             ) { [weak self] in
-                guard let self = self else { return }
+                guard let self else { return }
                 let vc = CurrencyPickerViewController(
-                    dataSource: StripeCurrencyPickerDataSource(currentCurrencyCode: selectedCurrencyCode,
-                                                               supportedCurrencyCodes: Set(pricesByCurrencyCode.keys))
+                    dataSource: StripeCurrencyPickerDataSource(
+                        currentCurrencyCode: selectedCurrencyCode,
+                        supportedCurrencyCodes: Set(pricesByCurrencyCode.keys),
+                    ),
                 ) { [weak self] currencyCode in
-                    guard let self = self else { return }
+                    guard let self else { return }
                     self.state = self.state.selectCurrencyCode(currencyCode)
                 }
                 self.navigationController?.pushViewController(vc, animated: true)
@@ -305,7 +309,7 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
 
     // MARK: - Footer contents
 
-    open override var bottomFooter: UIView? {
+    override open var bottomFooter: UIView? {
         get { bottomFooterContainer }
         set {}
     }
@@ -314,11 +318,11 @@ public class BadgeGiftingChooseBadgeViewController: OWSTableViewController2 {
         configuration: .largePrimary(title: CommonStrings.nextButton),
         primaryAction: UIAction { [weak self] _ in
             self?.didTapNext()
-        }
+        },
     )
 
     private lazy var bottomFooterContainer: UIView = {
-        let stackView = UIStackView.verticalButtonStack(buttons: [ nextButton ])
+        let stackView = UIStackView.verticalButtonStack(buttons: [nextButton])
         let containerView = UIView()
         containerView.preservesSuperviewLayoutMargins = true
         containerView.addSubview(stackView)

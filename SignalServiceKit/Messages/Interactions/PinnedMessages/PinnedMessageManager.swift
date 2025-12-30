@@ -33,7 +33,7 @@ public class PinnedMessageManager {
         db: DB,
         threadStore: ThreadStore,
         dateProvider: @escaping DateProvider,
-        expirationJob: PinnedMessageExpirationJob
+        expirationJob: PinnedMessageExpirationJob,
     ) {
         self.disappearingMessagesConfigurationStore = disappearingMessagesConfigurationStore
         self.interactionStore = interactionStore
@@ -47,8 +47,8 @@ public class PinnedMessageManager {
 
     public func fetchPinnedMessagesForThread(
         threadId: Int64,
-        tx: DBReadTransaction
-        ) -> [TSMessage] {
+        tx: DBReadTransaction,
+    ) -> [TSMessage] {
         return failIfThrows {
             return try InteractionRecord.fetchAll(
                 tx.database,
@@ -59,7 +59,7 @@ public class PinnedMessageManager {
                     WHERE \(PinnedMessageRecord.CodingKeys.threadId.rawValue) = ?
                     ORDER BY p.\(PinnedMessageRecord.CodingKeys.receivedTimestamp.rawValue) DESC
                 """,
-                arguments: [threadId]
+                arguments: [threadId],
             ).compactMap { try TSInteraction.fromRecord($0) as? TSMessage }
         }
     }
@@ -71,7 +71,7 @@ public class PinnedMessageManager {
         pinSentAtTimestamp: UInt64,
         expireTimer: UInt32?,
         expireTimerVersion: UInt32?,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) throws -> TSInteraction {
         let pinReceivedAtTimestamp = dateProvider().ows_millisecondsSince1970
 
@@ -79,16 +79,19 @@ public class PinnedMessageManager {
             throw OWSAssertionError("User not registered")
         }
 
-        guard let targetAuthorAciBinary = pinMessageProto.targetAuthorAciBinary,
-              let targetAuthorAci = try? Aci.parseFrom(serviceIdBinary: targetAuthorAciBinary) else {
+        guard
+            let targetAuthorAciBinary = pinMessageProto.targetAuthorAciBinary,
+            let targetAuthorAci = try? Aci.parseFrom(serviceIdBinary: targetAuthorAciBinary)
+        else {
             throw OWSAssertionError("Target author ACI not present")
         }
 
-        guard let targetMessage = try interactionStore.fetchMessage(
-            timestamp: pinMessageProto.targetSentTimestamp,
-            incomingMessageAuthor: targetAuthorAci == localAci ? nil : targetAuthorAci,
-            transaction: transaction
-        ), let interactionId = targetMessage.grdbId?.int64Value
+        guard
+            let targetMessage = try interactionStore.fetchMessage(
+                timestamp: pinMessageProto.targetSentTimestamp,
+                incomingMessageAuthor: targetAuthorAci == localAci ? nil : targetAuthorAci,
+                transaction: transaction,
+            ), let interactionId = targetMessage.grdbId?.int64Value
         else {
             throw OWSAssertionError("Can't find target pinned message")
         }
@@ -111,7 +114,7 @@ public class PinnedMessageManager {
 
         pruneOldestPinnedMessagesIfNecessary(
             threadId: threadId,
-            transaction: transaction
+            transaction: transaction,
         )
 
         failIfThrows {
@@ -121,7 +124,7 @@ public class PinnedMessageManager {
                 expiresAt: expiresAt,
                 sentTimestamp: pinSentAtTimestamp,
                 receivedTimestamp: pinReceivedAtTimestamp,
-                tx: transaction
+                tx: transaction,
             )
         }
 
@@ -135,7 +138,7 @@ public class PinnedMessageManager {
             pinAuthor: pinAuthor,
             expireTimer: dmConfig.durationSeconds,
             expireTimerVersion: dmConfig.timerVersion,
-            tx: transaction
+            tx: transaction,
         )
 
         expirationJob.restart()
@@ -145,22 +148,25 @@ public class PinnedMessageManager {
 
     public func unpinMessage(
         unpinMessageProto: SSKProtoDataMessageUnpinMessage,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) throws -> TSInteraction {
         guard let localAci = accountManager.localIdentifiers(tx: transaction)?.aci else {
             throw OWSAssertionError("User not registered")
         }
 
-        guard let targetAuthorAciBinary = unpinMessageProto.targetAuthorAciBinary,
-              let targetAuthorAci = try? Aci.parseFrom(serviceIdBinary: targetAuthorAciBinary) else {
+        guard
+            let targetAuthorAciBinary = unpinMessageProto.targetAuthorAciBinary,
+            let targetAuthorAci = try? Aci.parseFrom(serviceIdBinary: targetAuthorAciBinary)
+        else {
             throw OWSAssertionError("Target author ACI not present")
         }
 
-        guard let targetMessage = try interactionStore.fetchMessage(
-            timestamp: unpinMessageProto.targetSentTimestamp,
-            incomingMessageAuthor: targetAuthorAci == localAci ? nil : targetAuthorAci,
-            transaction: transaction
-        ), let interactionId = targetMessage.grdbId?.int64Value
+        guard
+            let targetMessage = try interactionStore.fetchMessage(
+                timestamp: unpinMessageProto.targetSentTimestamp,
+                incomingMessageAuthor: targetAuthorAci == localAci ? nil : targetAuthorAci,
+                transaction: transaction,
+            ), let interactionId = targetMessage.grdbId?.int64Value
         else {
             throw OWSAssertionError("Can't find target pinned message")
         }
@@ -176,7 +182,7 @@ public class PinnedMessageManager {
 
     public func deleteRepeatPinAttempt(
         interactionId: Int64,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) {
         _ = failIfThrows {
             try PinnedMessageRecord
@@ -187,7 +193,7 @@ public class PinnedMessageManager {
 
     public func pruneOldestPinnedMessagesIfNecessary(
         threadId: Int64,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) {
         let maxNumberOfPinnedMessages = RemoteConfig.current.pinnedMessageLimit
 
@@ -210,7 +216,7 @@ public class PinnedMessageManager {
 
     public func shouldShowDisappearingMessageWarning(
         message: TSMessage,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> Bool {
         if message.expiresInSeconds == 0 {
             return false
@@ -218,7 +224,7 @@ public class PinnedMessageManager {
         let numberOfTimesWarningShown = keyValueStore.fetchValue(
             Int64.self,
             forKey: Self.disappearingMessageWarningShownKey,
-            tx: tx
+            tx: tx,
         ) ?? 0
 
         return numberOfTimesWarningShown < 3
@@ -240,7 +246,7 @@ public class PinnedMessageManager {
         expiresAt: UInt64?,
         isPin: Bool,
         sentTimestamp: UInt64,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         let pinnedAtTimestamp = NSDate.ows_millisecondTimeStamp()
 
@@ -249,15 +255,16 @@ public class PinnedMessageManager {
             return
         }
 
-        guard let targetMessage = try? interactionStore.fetchMessage(
-            timestamp: targetTimestamp,
-            incomingMessageAuthor: targetAuthorAci == localAci ? nil : targetAuthorAci,
-            transaction: tx
-        ), let thread = threadStore.fetchThread(
-            uniqueId: targetMessage.uniqueThreadId,
-            tx: tx
-        ), let threadId = thread.sqliteRowId,
-           let interactionId = targetMessage.sqliteRowId
+        guard
+            let targetMessage = try? interactionStore.fetchMessage(
+                timestamp: targetTimestamp,
+                incomingMessageAuthor: targetAuthorAci == localAci ? nil : targetAuthorAci,
+                transaction: tx,
+            ), let thread = threadStore.fetchThread(
+                uniqueId: targetMessage.uniqueThreadId,
+                tx: tx,
+            ), let threadId = thread.sqliteRowId,
+            let interactionId = targetMessage.sqliteRowId
         else {
             return
         }
@@ -271,7 +278,7 @@ public class PinnedMessageManager {
                 db.touch(
                     interaction: targetMessage,
                     shouldReindex: false,
-                    tx: tx
+                    tx: tx,
                 )
             }
         }
@@ -281,7 +288,7 @@ public class PinnedMessageManager {
 
         pruneOldestPinnedMessagesIfNecessary(
             threadId: threadId,
-            transaction: tx
+            transaction: tx,
         )
 
         failIfThrows {
@@ -291,14 +298,14 @@ public class PinnedMessageManager {
                 expiresAt: expiresAt,
                 sentTimestamp: sentTimestamp,
                 receivedTimestamp: pinnedAtTimestamp,
-                tx: tx
+                tx: tx,
             )
         }
 
         db.touch(
             interaction: targetMessage,
             shouldReindex: false,
-            tx: tx
+            tx: tx,
         )
 
         let dmConfig = disappearingMessagesConfigurationStore.fetchOrBuildDefault(for: .thread(thread), tx: tx)
@@ -311,7 +318,7 @@ public class PinnedMessageManager {
             pinAuthor: localAci,
             expireTimer: dmConfig.durationSeconds,
             expireTimerVersion: dmConfig.timerVersion,
-            tx: tx
+            tx: tx,
         )
 
         expirationJob.restart()
@@ -325,9 +332,11 @@ public class PinnedMessageManager {
 
         if let _ = interaction as? TSOutgoingMessage {
             return localAci
-        } else if let incomingMessage = interaction as? TSIncomingMessage,
-                  let authorUUID = incomingMessage.authorUUID,
-                  let incomingAci = try? Aci.parseFrom(serviceIdString: authorUUID) {
+        } else if
+            let incomingMessage = interaction as? TSIncomingMessage,
+            let authorUUID = incomingMessage.authorUUID,
+            let incomingAci = try? Aci.parseFrom(serviceIdString: authorUUID)
+        {
             return incomingAci
         } else {
             return nil
@@ -338,7 +347,7 @@ public class PinnedMessageManager {
         interaction: TSMessage,
         thread: TSThread,
         expiresAt: TimeInterval?,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) -> OutgoingPinMessage? {
         guard let authorAci = getMessageAuthorAci(interaction: interaction, tx: tx) else {
             owsFailDebug("unable to parse authorAci")
@@ -357,14 +366,15 @@ public class PinnedMessageManager {
             pinDurationSeconds: pinDurationSeconds ?? 0,
             pinDurationForever: expiresAt == nil,
             messageExpiresInSeconds: disappearingMessagesConfigurationStore.durationSeconds(for: thread, tx: tx),
-            tx: tx)
+            tx: tx,
+        )
     }
 
     public func getOutgoingUnpinMessage(
         interaction: TSMessage,
         thread: TSThread,
         expiresAt: Int64?,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) -> OutgoingUnpinMessage? {
 
         guard let authorAci = getMessageAuthorAci(interaction: interaction, tx: tx) else {
@@ -377,7 +387,8 @@ public class PinnedMessageManager {
             targetMessageTimestamp: interaction.timestamp,
             targetMessageAuthorAciBinary: authorAci,
             messageExpiresInSeconds: disappearingMessagesConfigurationStore.durationSeconds(for: thread, tx: tx),
-            tx: tx)
+            tx: tx,
+        )
     }
 
     public func insertInfoMessageForPinnedMessage(
@@ -388,13 +399,13 @@ public class PinnedMessageManager {
         pinAuthor: Aci,
         expireTimer: UInt32?,
         expireTimerVersion: UInt32?,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         var userInfoForNewMessage: [InfoMessageUserInfoKey: Any] = [:]
         userInfoForNewMessage[.pinnedMessage] = PersistablePinnedMessageItem(
             pinnedMessageAuthorAci: pinAuthor,
             originalMessageAuthorAci: targetMessageAuthor,
-            timestamp: Int64(targetMessageTimestamp)
+            timestamp: Int64(targetMessageTimestamp),
         )
 
         var timerVersion: NSNumber?
@@ -409,7 +420,7 @@ public class PinnedMessageManager {
             messageType: .typePinnedMessage,
             expireTimerVersion: timerVersion,
             expiresInSeconds: expireTimer ?? 0,
-            infoMessageUserInfo: userInfoForNewMessage
+            infoMessageUserInfo: userInfoForNewMessage,
         )
 
         infoMessage.anyInsert(transaction: tx)
@@ -448,7 +459,7 @@ public class PinnedMessageManager {
         threadId: Int64,
         pinDetails: PinMessageDetails,
         chatItemId: BackupArchive.ChatItemId,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) -> BackupArchive.RestoreFrameResult<BackupArchive.ChatItemId> {
         guard let interactionId = message.sqliteRowId else {
             return .failure([.restoreFrameError(.databaseModelMissingRowId(modelClass: TSMessage.self), chatItemId)])
@@ -467,7 +478,7 @@ public class PinnedMessageManager {
                 expiresAt: pinDetails.expiresAtTimestamp,
                 sentTimestamp: 0, // Currently not used.
                 receivedTimestamp: pinDetails.pinnedAtTimestamp,
-                tx: tx
+                tx: tx,
             )
         }
 

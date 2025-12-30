@@ -28,7 +28,7 @@ public class ProvisioningManager {
         linkAndSyncManager: LinkAndSyncManager,
         profileManager: ProfileManager,
         receiptManager: Shims.ReceiptManager,
-        tsAccountManager: TSAccountManager
+        tsAccountManager: TSAccountManager,
     ) {
         self.accountKeyStore = accountKeyStore
         self.db = db
@@ -43,7 +43,7 @@ public class ProvisioningManager {
 
     public func provision(
         with deviceProvisioningUrl: DeviceProvisioningURL,
-        shouldLinkNSync: Bool
+        shouldLinkNSync: Bool,
     ) async throws -> (MessageRootBackupKey?, DeviceProvisioningTokenId) {
         struct ProvisioningState {
             var localIdentifiers: LocalIdentifiers
@@ -82,7 +82,7 @@ public class ProvisioningManager {
                 areReadReceiptsEnabled: areReadReceiptsEnabled,
                 rootKey: rootKey,
                 mediaRootBackupKey: mrbk,
-                profileKey: profileKey
+                profileKey: profileKey,
             )
         }
 
@@ -115,14 +115,14 @@ public class ProvisioningManager {
             mrbk: provisioningState.mediaRootBackupKey,
             ephemeralBackupKey: ephemeralBackupKey,
             areReadReceiptsEnabled: provisioningState.areReadReceiptsEnabled,
-            provisioningCode: provisioningCode.verificationCode
+            provisioningCode: provisioningCode.verificationCode,
         )
 
         let theirPublicKey = deviceProvisioningUrl.publicKey
         let messageBody = try provisioningMessage.buildEncryptedMessageBody(theirPublicKey: theirPublicKey)
         try await deviceProvisioningService.provisionDevice(
             messageBody: messageBody,
-            ephemeralDeviceId: deviceProvisioningUrl.ephemeralDeviceId
+            ephemeralDeviceId: deviceProvisioningUrl.ephemeralDeviceId,
         )
         return (ephemeralBackupKey, provisioningCode.tokenId)
     }

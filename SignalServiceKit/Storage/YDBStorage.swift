@@ -7,27 +7,34 @@ public enum YDBStorage {
     private static var legacyDatabaseDirPath: String {
         OWSFileSystem.appDocumentDirectoryPath()
     }
+
     private static var sharedDataDatabaseDirPath: String {
         OWSFileSystem.appSharedDataDirectoryPath().appendingPathComponent("database")
     }
+
     private static let databaseFilename: String = "Signal.sqlite"
     private static let databaseFilename_SHM: String = "\(databaseFilename)-shm"
     private static let databaseFilename_WAL: String = "\(databaseFilename)-wal"
     private static var legacyDatabaseFilePath: String {
         legacyDatabaseDirPath.appendingPathComponent(databaseFilename)
     }
+
     private static var legacyDatabaseFilePath_SHM: String {
         legacyDatabaseDirPath.appendingPathComponent(databaseFilename_SHM)
     }
+
     private static var legacyDatabaseFilePath_WAL: String {
         legacyDatabaseDirPath.appendingPathComponent(databaseFilename_WAL)
     }
+
     private static var sharedDataDatabaseFilePath: String {
         sharedDataDatabaseDirPath.appendingPathComponent(databaseFilename)
     }
+
     private static var sharedDataDatabaseFilePath_SHM: String {
         sharedDataDatabaseDirPath.appendingPathComponent(databaseFilename_SHM)
     }
+
     private static var sharedDataDatabaseFilePath_WAL: String {
         sharedDataDatabaseDirPath.appendingPathComponent(databaseFilename_WAL)
     }

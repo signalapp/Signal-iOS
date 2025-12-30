@@ -13,7 +13,7 @@ public class DonationSubscriptionLevel: Comparable, Equatable, Codable {
     public init(
         level: UInt,
         badge: ProfileBadge,
-        amounts: [Currency.Code: FiatMoney]
+        amounts: [Currency.Code: FiatMoney],
     ) {
         self.level = level
         self.badge = badge
@@ -22,11 +22,11 @@ public class DonationSubscriptionLevel: Comparable, Equatable, Codable {
 
     // MARK: Comparable
 
-    public static func < (lhs: DonationSubscriptionLevel, rhs: DonationSubscriptionLevel) -> Bool {
+    public static func <(lhs: DonationSubscriptionLevel, rhs: DonationSubscriptionLevel) -> Bool {
         return lhs.level < rhs.level
     }
 
-    public static func == (lhs: DonationSubscriptionLevel, rhs: DonationSubscriptionLevel) -> Bool {
+    public static func ==(lhs: DonationSubscriptionLevel, rhs: DonationSubscriptionLevel) -> Bool {
         return lhs.level == rhs.level
     }
 }

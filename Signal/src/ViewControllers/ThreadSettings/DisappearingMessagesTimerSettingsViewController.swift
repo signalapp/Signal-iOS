@@ -37,14 +37,14 @@ class DisappearingMessagesTimerSettingsViewController: HostingController<Disappe
 
         self.viewModel = DisappearingMessagesTimerSettingsViewModel(
             initialDurationSeconds: initialConfiguration.durationSeconds,
-            settingsMode: settingsMode
+            settingsMode: settingsMode,
         )
 
         super.init(wrappedView: DisappearingMessagesTimerSettingsView(viewModel: viewModel))
 
         title = OWSLocalizedString(
             "DISAPPEARING_MESSAGES",
-            comment: "table cell label in conversation settings"
+            comment: "table cell label in conversation settings",
         )
         OWSTableViewController2.removeBackButtonText(viewController: self)
 
@@ -52,7 +52,7 @@ class DisappearingMessagesTimerSettingsViewController: HostingController<Disappe
 
         navigationItem.leftBarButtonItem = .cancelButton(
             dismissingFrom: self,
-            hasUnsavedChanges: { [weak self] in self?.hasUnsavedChanges }
+            hasUnsavedChanges: { [weak self] in self?.hasUnsavedChanges },
         )
 
         navigationItem.rightBarButtonItem = self.setButton
@@ -82,10 +82,11 @@ class DisappearingMessagesTimerSettingsViewController: HostingController<Disappe
         // only need to do the extra "save" logic to apply the timer
         // immediately if we have a thread.
         guard
-            let thread = switch settingsMode {
-            case .chat(let thread): thread
-            case .newGroup, .universal: nil
-            },
+            let thread = switch settingsMode
+        {
+        case .chat(let thread): thread
+        case .newGroup, .universal: nil
+        },
             hasUnsavedChanges
         else {
             completion(configuration)
@@ -103,33 +104,33 @@ class DisappearingMessagesTimerSettingsViewController: HostingController<Disappe
                 }
                 try await self.localUpdateDisappearingMessagesConfiguration(
                     thread: thread,
-                    newToken: configuration.asVersionedToken
+                    newToken: configuration.asVersionedToken,
                 )
             },
             completion: { [weak self] in
                 self?.completion(configuration)
                 self?.dismiss(animated: true)
-            }
+            },
         )
     }
 
     private func localUpdateDisappearingMessagesConfiguration(
         thread: TSThread,
-        newToken: VersionedDisappearingMessageToken
+        newToken: VersionedDisappearingMessageToken,
     ) async throws {
         if let contactThread = thread as? TSContactThread {
             await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
                 GroupManager.localUpdateDisappearingMessageToken(
                     newToken,
                     inContactThread: contactThread,
-                    tx: tx
+                    tx: tx,
                 )
             }
         } else if let groupThread = thread as? TSGroupThread {
             if let groupV2Model = groupThread.groupModel as? TSGroupModelV2 {
                 try await GroupManager.updateGroupV2(
                     groupModel: groupV2Model,
-                    description: "Update disappearing messages"
+                    description: "Update disappearing messages",
                 ) { changeSet in
                     changeSet.setNewDisappearingMessageToken(newToken.unversioned)
                 }
@@ -149,12 +150,12 @@ extension DisappearingMessagesTimerSettingsViewController: DisappearingMessagesT
         if durationSeconds == 0 {
             selectedConfiguration = initialConfiguration.copy(
                 withIsEnabled: false,
-                timerVersion: initialConfiguration.timerVersion + 1
+                timerVersion: initialConfiguration.timerVersion + 1,
             )
         } else {
             selectedConfiguration = initialConfiguration.copyAsEnabled(
                 withDurationSeconds: durationSeconds,
-                timerVersion: initialConfiguration.timerVersion + 1
+                timerVersion: initialConfiguration.timerVersion + 1,
             )
         }
 
@@ -225,7 +226,7 @@ private class DisappearingMessagesTimerSettingsViewModel: ObservableObject {
     ) {
         let disabledPreset = Preset(
             localizedDescription: CommonStrings.switchOff,
-            durationSeconds: 0
+            durationSeconds: 0,
         )
         let enabledPresets = OWSDisappearingMessagesConfiguration
             .presetDurationsSeconds()
@@ -292,7 +293,7 @@ struct DisappearingMessagesTimerSettingsView: View {
                         Label {
                             Text(OWSLocalizedString(
                                 "DISAPPEARING_MESSAGES_CUSTOM_TIME",
-                                comment: "Disappearing message option to define a custom time"
+                                comment: "Disappearing message option to define a custom time",
                             ))
                             .padding(.leading, -8)
                         } icon: {
@@ -314,7 +315,7 @@ struct DisappearingMessagesTimerSettingsView: View {
                         case .custom(let durationSeconds):
                             Text(DateUtil.formatDuration(
                                 seconds: durationSeconds,
-                                useShortFormat: false
+                                useShortFormat: false,
                             ))
                             .foregroundStyle(Color.Signal.secondaryLabel)
                         }
@@ -329,12 +330,12 @@ struct DisappearingMessagesTimerSettingsView: View {
                 case .chat, .newGroup:
                     OWSLocalizedString(
                         "DISAPPEARING_MESSAGES_DESCRIPTION",
-                        comment: "subheading in conversation settings"
+                        comment: "subheading in conversation settings",
                     )
                 case .universal:
                     OWSLocalizedString(
                         "DISAPPEARING_MESSAGES_UNIVERSAL_DESCRIPTION",
-                        comment: "subheading in privacy settings"
+                        comment: "subheading in privacy settings",
                     )
                 }
 
@@ -365,7 +366,7 @@ private extension DisappearingMessagesTimerSettingsViewModel {
 
 #Preview {
     DisappearingMessagesTimerSettingsView(viewModel: .forPreview(
-        settingsMode: .universal
+        settingsMode: .universal,
     ))
 }
 

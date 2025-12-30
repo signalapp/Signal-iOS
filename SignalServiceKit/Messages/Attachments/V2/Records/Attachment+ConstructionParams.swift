@@ -63,7 +63,7 @@ extension Attachment {
             blurHash: String?,
             mimeType: String,
             encryptionKey: Data,
-            latestTransitTierInfo: TransitTierInfo
+            latestTransitTierInfo: TransitTierInfo,
         ) -> ConstructionParams {
             return .init(
                 blurHash: blurHash,
@@ -94,7 +94,7 @@ extension Attachment {
             encryptionKey: Data,
             streamInfo: StreamInfo,
             sha256ContentHash: Data,
-            mediaName: String
+            mediaName: String,
         ) -> ConstructionParams {
             return .init(
                 blurHash: blurHash,
@@ -121,11 +121,11 @@ extension Attachment {
             sha256ContentHash: Data?,
             mediaName: String?,
             mediaTierInfo: MediaTierInfo?,
-            thumbnailMediaTierInfo: ThumbnailMediaTierInfo?
+            thumbnailMediaTierInfo: ThumbnailMediaTierInfo?,
         ) -> ConstructionParams {
             owsPrecondition(
                 (sha256ContentHash == nil) == (mediaName == nil),
-                "Either both hash and mediaName set or neither set"
+                "Either both hash and mediaName set or neither set",
             )
             return .init(
                 blurHash: blurHash,
@@ -152,7 +152,7 @@ extension Attachment {
 
         public static func forInvalidBackupAttachment(
             blurHash: String?,
-            mimeType: String
+            mimeType: String,
         ) -> ConstructionParams {
             return .init(
                 blurHash: blurHash,
@@ -178,7 +178,7 @@ extension Attachment {
             thumbnailBlurHash: String?,
             thumbnailMimeType: String,
             thumbnailEncryptionKey: Data,
-            thumbnailTransitTierInfo: TransitTierInfo?
+            thumbnailTransitTierInfo: TransitTierInfo?,
         ) -> ConstructionParams {
             return .init(
                 blurHash: thumbnailBlurHash,
@@ -232,11 +232,11 @@ extension Attachment {
                     integrityCheck: .digestSHA256Ciphertext(digestSHA256Ciphertext),
                     incrementalMacInfo: existingTransitTierInfo.incrementalMacInfo,
                     // Wipe the last download attempt time; its now succeeded.
-                    lastDownloadAttemptTimestamp: nil
+                    lastDownloadAttemptTimestamp: nil,
                 )
             } else if
                 let existingTransitTierInfo = attachment.latestTransitTierInfo,
-                case .digestSHA256Ciphertext(_) = existingTransitTierInfo.integrityCheck
+                case .digestSHA256Ciphertext = existingTransitTierInfo.integrityCheck
             {
                 latestTransitTierInfo = existingTransitTierInfo
             } else {
@@ -262,7 +262,7 @@ extension Attachment {
 
         public static func forUpdatingAsFailedDownlodFromTransitTier(
             attachment: Attachment,
-            timestamp: UInt64
+            timestamp: UInt64,
         ) -> ConstructionParams {
             let latestTransitTierInfo = attachment.latestTransitTierInfo.map {
                 return Attachment.TransitTierInfo(
@@ -273,7 +273,7 @@ extension Attachment {
                     unencryptedByteCount: $0.unencryptedByteCount,
                     integrityCheck: $0.integrityCheck,
                     incrementalMacInfo: $0.incrementalMacInfo,
-                    lastDownloadAttemptTimestamp: timestamp
+                    lastDownloadAttemptTimestamp: timestamp,
                 )
             }
             return .init(
@@ -342,7 +342,7 @@ extension Attachment {
         public static func forUpdatingAsUploadedToMediaTier(
             attachment: Attachment,
             mediaTierInfo: MediaTierInfo,
-            mediaName: String
+            mediaName: String,
         ) -> ConstructionParams {
             return .init(
                 blurHash: attachment.blurHash,
@@ -362,7 +362,7 @@ extension Attachment {
         }
 
         public static func forRemovingMediaTierInfo(
-            attachment: Attachment
+            attachment: Attachment,
         ) -> ConstructionParams {
             return .init(
                 blurHash: attachment.blurHash,
@@ -384,7 +384,7 @@ extension Attachment {
         public static func forUpdatingAsUploadedThumbnailToMediaTier(
             attachment: Attachment,
             thumbnailMediaTierInfo: ThumbnailMediaTierInfo,
-            mediaName: String
+            mediaName: String,
         ) -> ConstructionParams {
             return .init(
                 blurHash: attachment.blurHash,
@@ -404,7 +404,7 @@ extension Attachment {
         }
 
         public static func forRemovingThumbnailMediaTierInfo(
-            attachment: Attachment
+            attachment: Attachment,
         ) -> ConstructionParams {
             return .init(
                 blurHash: attachment.blurHash,
@@ -439,7 +439,7 @@ extension Attachment {
                     incrementalMacInfo: $0.incrementalMacInfo,
                     uploadEra: $0.uploadEra,
                     // Wipe the last download attempt time; its now succeeded.
-                    lastDownloadAttemptTimestamp: nil
+                    lastDownloadAttemptTimestamp: nil,
                 )
             }
             let latestTransitTierInfo: Attachment.TransitTierInfo?
@@ -462,11 +462,11 @@ extension Attachment {
                     integrityCheck: .digestSHA256Ciphertext(streamInfo.digestSHA256Ciphertext),
                     incrementalMacInfo: existingTransitTierInfo.incrementalMacInfo,
                     // Wipe the last download attempt time; its now succeeded.
-                    lastDownloadAttemptTimestamp: nil
+                    lastDownloadAttemptTimestamp: nil,
                 )
             } else if
                 let existingTransitTierInfo = attachment.latestTransitTierInfo,
-                case .digestSHA256Ciphertext(_) = existingTransitTierInfo.integrityCheck
+                case .digestSHA256Ciphertext = existingTransitTierInfo.integrityCheck
             {
                 latestTransitTierInfo = existingTransitTierInfo
             } else {
@@ -491,7 +491,7 @@ extension Attachment {
 
         public static func forUpdatingAsFailedDownlodFromMediaTier(
             attachment: Attachment,
-            timestamp: UInt64
+            timestamp: UInt64,
         ) -> ConstructionParams {
             let mediaTierInfo = attachment.mediaTierInfo.map {
                 return Attachment.MediaTierInfo(
@@ -500,7 +500,7 @@ extension Attachment {
                     sha256ContentHash: $0.sha256ContentHash,
                     incrementalMacInfo: $0.incrementalMacInfo,
                     uploadEra: $0.uploadEra,
-                    lastDownloadAttemptTimestamp: timestamp
+                    lastDownloadAttemptTimestamp: timestamp,
                 )
             }
             return .init(
@@ -523,14 +523,14 @@ extension Attachment {
         public static func forUpdatingAsDownlodedThumbnailFromMediaTier(
             attachment: Attachment,
             validatedMimeType: String,
-            streamInfo: Attachment.StreamInfo
+            streamInfo: Attachment.StreamInfo,
         ) -> ConstructionParams {
             let thumbnailMediaTierInfo = attachment.thumbnailMediaTierInfo.map {
                 return Attachment.ThumbnailMediaTierInfo(
                     cdnNumber: $0.cdnNumber,
                     uploadEra: $0.uploadEra,
                     // Wipe the last download attempt time; its now succeeded.
-                    lastDownloadAttemptTimestamp: nil
+                    lastDownloadAttemptTimestamp: nil,
                 )
             }
             return .init(
@@ -552,13 +552,13 @@ extension Attachment {
 
         public static func forUpdatingAsFailedThumbnailDownlodFromMediaTier(
             attachment: Attachment,
-            timestamp: UInt64
+            timestamp: UInt64,
         ) -> ConstructionParams {
             let thumbnailMediaTierInfo = attachment.thumbnailMediaTierInfo.map {
                 return Attachment.ThumbnailMediaTierInfo(
                     cdnNumber: $0.cdnNumber,
                     uploadEra: $0.uploadEra,
-                    lastDownloadAttemptTimestamp: timestamp
+                    lastDownloadAttemptTimestamp: timestamp,
                 )
             }
             return .init(
@@ -582,7 +582,7 @@ extension Attachment {
             attachment: Attachment,
             contentType: Attachment.ContentType,
             mimeType: String,
-            blurHash: String?
+            blurHash: String?,
         ) -> ConstructionParams {
             let streamInfo = attachment.streamInfo.map {
                 return Attachment.StreamInfo(
@@ -592,7 +592,7 @@ extension Attachment {
                     unencryptedByteCount: $0.unencryptedByteCount,
                     contentType: contentType,
                     digestSHA256Ciphertext: $0.digestSHA256Ciphertext,
-                    localRelativeFilePath: $0.localRelativeFilePath
+                    localRelativeFilePath: $0.localRelativeFilePath,
                 )
             }
             return .init(
@@ -620,7 +620,7 @@ extension Attachment {
             latestTransitTierInfo: TransitTierInfo?,
             originalTransitTierInfo: TransitTierInfo?,
             mediaTierInfo: MediaTierInfo?,
-            thumbnailMediaTierInfo: ThumbnailMediaTierInfo?
+            thumbnailMediaTierInfo: ThumbnailMediaTierInfo?,
         ) -> ConstructionParams {
             return .init(
                 blurHash: attachment.blurHash,
@@ -641,7 +641,7 @@ extension Attachment {
 
         public static func forMarkingViewedFullscreen(
             attachment: Attachment,
-            viewTimestamp: UInt64
+            viewTimestamp: UInt64,
         ) -> ConstructionParams {
             return .init(
                 blurHash: attachment.blurHash,

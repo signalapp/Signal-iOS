@@ -45,10 +45,12 @@ public struct CurrencyConversionInfo {
     // How fresh is this conversion info?
     public let conversionDate: Date
 
-    public init(currencyCode: Currency.Code,
-                name: String,
-                conversionRate: PaymentsCurrencies.CurrencyConversionRate,
-                conversionDate: Date) {
+    public init(
+        currencyCode: Currency.Code,
+        name: String,
+        conversionRate: PaymentsCurrencies.CurrencyConversionRate,
+        conversionDate: Date,
+    ) {
         self.currencyCode = currencyCode
         self.name = name
         self.conversionRate = conversionRate
@@ -78,10 +80,12 @@ public struct CurrencyConversionInfo {
         Currency.Info(code: currencyCode, name: name)
     }
 
-    public static func areEqual(_ left: CurrencyConversionInfo?,
-                                _ right: CurrencyConversionInfo?) -> Bool {
+    public static func areEqual(
+        _ left: CurrencyConversionInfo?,
+        _ right: CurrencyConversionInfo?,
+    ) -> Bool {
         return (left?.currencyCode == right?.currencyCode &&
-                    left?.conversionRate == right?.conversionRate)
+            left?.conversionRate == right?.conversionRate)
     }
 }
 

@@ -55,7 +55,7 @@ public class OWSTableSection {
 
     public convenience init(
         title: String,
-        footerView: UIView
+        footerView: UIView,
     ) {
         self.init(title: title)
         self.customFooterView = footerView
@@ -63,15 +63,15 @@ public class OWSTableSection {
 
     public convenience init(
         items: [OWSTableItem],
-        headerView: UIView
+        headerView: UIView,
     ) {
         self.init(items: items)
         self.customHeaderView = headerView
     }
 
     public convenience init(
-        header: (() -> UIView?),
-        footer: (() -> UIView?) = {nil}
+        header: () -> UIView?,
+        footer: (() -> UIView?) = { nil },
     ) {
         self.init(title: nil, items: [])
         self.customHeaderView = header()

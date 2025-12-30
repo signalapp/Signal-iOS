@@ -16,6 +16,7 @@ class SelectionButton: UIView {
         imageView.isHidden = true
         return imageView
     }()
+
     private let selectedBadgeView: UIView = {
         let imageView = UIImageView(image: UIImage(imageLiteralResourceName: "check-circle-fill"))
         imageView.contentMode = .center

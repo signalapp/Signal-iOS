@@ -19,7 +19,7 @@ public class ChatColorSettingStore {
     private let wallpaperStore: WallpaperStore
 
     public init(
-        wallpaperStore: WallpaperStore
+        wallpaperStore: WallpaperStore,
     ) {
         self.settingStore = KeyValueStore(collection: "chatColorSettingStore")
         self.customColorsStore = KeyValueStore(collection: "customColorsStore.3")
@@ -105,7 +105,7 @@ public class ChatColorSettingStore {
     public func resolvedChatColor(
         for thread: TSThread?,
         previewWallpaper: Wallpaper? = nil,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> ColorOrGradientSetting {
         if let threadColor = chatColorSetting(for: thread, tx: tx).constantColor {
             return threadColor
@@ -133,7 +133,7 @@ public class ChatColorSettingStore {
     private func autoChatColor(
         for thread: TSThread?,
         previewWallpaper: Wallpaper?,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> ColorOrGradientSetting {
         if let previewColor = previewWallpaper?.defaultChatColor {
             // If editing the local thread
@@ -195,7 +195,7 @@ public class ChatColorSettingStore {
     public func setChatColorSetting(
         _ value: ChatColorSetting,
         for thread: TSThread?,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         self.setRawSetting({ () -> String? in
             switch value {

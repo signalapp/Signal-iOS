@@ -52,34 +52,36 @@ class TSInfoMessageLegacyPersistableGroupUpdateItemTest: XCTestCase {
                 expectedNewValue = .sequenceOfInviteLinkRequestAndCancels(
                     requester: updaterAci.codableUuid,
                     count: count,
-                    isTail: isTail
+                    isTail: isTail,
                 )
             case let .inviteRemoved(_, wasLocalUser):
                 if wasLocalUser {
                     expectedNewValue = .localUserInviteRevoked(
-                        revokerAci: updaterAci.codableUuid
+                        revokerAci: updaterAci.codableUuid,
                     )
                 } else {
                     expectedNewValue = .unnamedUserInvitesWereRevokedByOtherUser(
                         updaterAci: updaterAci.codableUuid,
-                        count: 1
+                        count: 1,
                     )
                 }
             case let .invitedPniPromotedToFullMemberAci(_, aci):
                 expectedNewValue = .invitedPniPromotedToFullMemberAci(
                     newMember: aci,
-                    inviter: nil
+                    inviter: nil,
                 )
             }
-            guard let newValue = constant.toNewItem(
-                updater: .aci(updaterAci),
-                oldGroupModel: nil,
-                localIdentifiers: .init(
-                    aci: .randomForTesting(),
-                    pni: Pni.constantForTesting("PNI:7CE80DE3-6243-4AD5-AE60-0D1F205391DA"),
-                    e164: .init("+15555555555")!
+            guard
+                let newValue = constant.toNewItem(
+                    updater: .aci(updaterAci),
+                    oldGroupModel: nil,
+                    localIdentifiers: .init(
+                        aci: .randomForTesting(),
+                        pni: Pni.constantForTesting("PNI:7CE80DE3-6243-4AD5-AE60-0D1F205391DA"),
+                        e164: .init("+15555555555")!,
+                    ),
                 )
-            ) else {
+            else {
                 XCTFail("Should always be able to convert!")
                 return
             }
@@ -94,32 +96,32 @@ extension TSInfoMessage.LegacyPersistableGroupUpdateItem: ValidatableModel {
         [
             (
                 .sequenceOfInviteLinkRequestAndCancels(count: 12, isTail: true),
-                Data(#"{"sequenceOfInviteLinkRequestAndCancels":{"count":12,"isTail":true}}"#.utf8)
+                Data(#"{"sequenceOfInviteLinkRequestAndCancels":{"count":12,"isTail":true}}"#.utf8),
             ),
             (
                 .sequenceOfInviteLinkRequestAndCancels(count: 0, isTail: false),
-                Data(#"{"sequenceOfInviteLinkRequestAndCancels":{"count":0,"isTail":false}}"#.utf8)
+                Data(#"{"sequenceOfInviteLinkRequestAndCancels":{"count":0,"isTail":false}}"#.utf8),
             ),
             (
                 .invitedPniPromotedToFullMemberAci(
                     pni: Pni.constantForTesting("PNI:7CE80DE3-6243-4AD5-AE60-0D1F205391DA").codableUuid,
-                    aci: Aci.constantForTesting("56EE0EF4-A7DF-4B52-BFAF-C637F15B4FEC").codableUuid
+                    aci: Aci.constantForTesting("56EE0EF4-A7DF-4B52-BFAF-C637F15B4FEC").codableUuid,
                 ),
-                Data(#"{"invitedPniPromotedToFullMemberAci":{"pni":"7CE80DE3-6243-4AD5-AE60-0D1F205391DA","aci":"56EE0EF4-A7DF-4B52-BFAF-C637F15B4FEC"}}"#.utf8)
+                Data(#"{"invitedPniPromotedToFullMemberAci":{"pni":"7CE80DE3-6243-4AD5-AE60-0D1F205391DA","aci":"56EE0EF4-A7DF-4B52-BFAF-C637F15B4FEC"}}"#.utf8),
             ),
             (
                 .inviteRemoved(
                     invitee: Aci.constantForTesting("56EE0EF4-A7DF-4B52-BFAF-C637F15B4FEC").codableUppercaseString,
-                    wasLocalUser: false
+                    wasLocalUser: false,
                 ),
-                Data(#"{"inviteRemoved":{"invitee":"56EE0EF4-A7DF-4B52-BFAF-C637F15B4FEC","wasLocalUser":false}}"#.utf8)
+                Data(#"{"inviteRemoved":{"invitee":"56EE0EF4-A7DF-4B52-BFAF-C637F15B4FEC","wasLocalUser":false}}"#.utf8),
             ),
             (
                 .inviteRemoved(
                     invitee: Pni.constantForTesting("PNI:7CE80DE3-6243-4AD5-AE60-0D1F205391DA").codableUppercaseString,
-                    wasLocalUser: true
+                    wasLocalUser: true,
                 ),
-                Data(#"{"inviteRemoved":{"wasLocalUser":true,"invitee":"PNI:7CE80DE3-6243-4AD5-AE60-0D1F205391DA"}}"#.utf8)
+                Data(#"{"inviteRemoved":{"wasLocalUser":true,"invitee":"PNI:7CE80DE3-6243-4AD5-AE60-0D1F205391DA"}}"#.utf8),
             ),
         ]
     }
@@ -130,7 +132,7 @@ extension TSInfoMessage.LegacyPersistableGroupUpdateItem: ValidatableModel {
         switch (self, against) {
         case let (
             .sequenceOfInviteLinkRequestAndCancels(selfCount, selfIsTail),
-            .sequenceOfInviteLinkRequestAndCancels(againstCount, againstIsTail)
+            .sequenceOfInviteLinkRequestAndCancels(againstCount, againstIsTail),
         ):
             if
                 selfCount == againstCount,
@@ -140,7 +142,7 @@ extension TSInfoMessage.LegacyPersistableGroupUpdateItem: ValidatableModel {
             }
         case let (
             .invitedPniPromotedToFullMemberAci(selfPni, selfAci),
-            .invitedPniPromotedToFullMemberAci(againstPni, againstAci)
+            .invitedPniPromotedToFullMemberAci(againstPni, againstAci),
         ):
             if
                 selfPni == againstPni,
@@ -150,7 +152,7 @@ extension TSInfoMessage.LegacyPersistableGroupUpdateItem: ValidatableModel {
             }
         case let (
             .inviteRemoved(selfInvitee, selfWasLocalUser),
-            .inviteRemoved(againstInvitee, againstWasLocalUser)
+            .inviteRemoved(againstInvitee, againstWasLocalUser),
         ):
             if
                 selfInvitee == againstInvitee,

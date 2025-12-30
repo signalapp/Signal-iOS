@@ -37,7 +37,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         svrLocalStorage: SVRLocalStorageInternal,
         tsAccountManager: TSAccountManager,
         tsConstants: TSConstantsProtocol,
-        twoFAManager: SVR2.Shims.OWS2FAManager
+        twoFAManager: SVR2.Shims.OWS2FAManager,
     ) {
         self.init(
             appContext: appContext,
@@ -53,11 +53,11 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             svrLocalStorage: svrLocalStorage,
             tsAccountManager: tsAccountManager,
             tsConstants: tsConstants,
-            twoFAManager: twoFAManager
+            twoFAManager: twoFAManager,
         )
     }
 
-    internal init(
+    init(
         appContext: SVR2.Shims.AppContext,
         appReadiness: AppReadiness,
         appVersion: AppVersion,
@@ -71,7 +71,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         svrLocalStorage: SVRLocalStorageInternal,
         tsAccountManager: TSAccountManager,
         tsConstants: TSConstantsProtocol,
-        twoFAManager: SVR2.Shims.OWS2FAManager
+        twoFAManager: SVR2.Shims.OWS2FAManager,
     ) {
         self.appContext = appContext
         self.appReadiness = appReadiness
@@ -128,7 +128,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         guard
             let lastAppVersion = self.kvStore.getString(
                 Self.periodicCredentialRefreshAppVersionKey,
-                transaction: tx
+                transaction: tx,
             )
         else {
             return true
@@ -140,7 +140,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         self.kvStore.setString(
             appVersion.currentAppVersion,
             key: Self.periodicCredentialRefreshAppVersionKey,
-            transaction: tx
+            transaction: tx,
         )
     }
 
@@ -169,7 +169,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                 self?.db.write { tx in
                     self?.credentialStorage.storeAuthCredentialForCurrentUsername(
                         SVR2AuthCredential(credential: credential),
-                        tx
+                        tx,
                     )
                     self?.didRefreshCredentialInCurrentVersion(tx: tx)
                 }
@@ -210,7 +210,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             isMasterKeyBackedUp: localStorage.getIsMasterKeyBackedUp(transaction),
             pinType: .alphanumeric,
             mrEnclaveStringValue: nil,
-            transaction: transaction
+            transaction: transaction,
         )
 
         if disablePIN {
@@ -270,7 +270,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                         .doBackupAndExpose(
                             pin: pin,
                             masterKey: masterKey,
-                            authMethod: authMethod
+                            authMethod: authMethod,
                         )
                         .map(on: SyncScheduler()) { [weak self] masterKey in
                             // If the backup succeeds, and the restore was from some old enclave,
@@ -301,7 +301,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         Logger.info("")
         return doDelete(
             mrEnclave: tsConstants.svr2Enclave,
-            authMethod: .implicit
+            authMethod: .implicit,
         ).then(on: scheduler) { [weak self] (result: DeleteResult) -> Promise<Void> in
             // Historically, this has cleared our local keys regardless of whether
             // the remote request succeeded.
@@ -334,7 +334,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     public func storeKeys(
         fromProvisioningMessage provisioningMessage: LinkingProvisioningMessage,
         authedDevice: AuthedDevice,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws(SVR.KeysError) {
         Logger.info("")
         accountKeyStore.setMediaRootBackupKey(provisioningMessage.mrbk, tx: tx)
@@ -353,7 +353,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     public func storeKeys(
         fromKeysSyncMessage syncMessage: SSKProtoSyncMessageKeys,
         authedDevice: AuthedDevice,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws(SVR.KeysError) {
         Logger.info("")
 
@@ -399,7 +399,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         if keyChanged {
             storageServiceManager.restoreOrCreateManifestIfNecessary(
                 authedDevice: authedDevice,
-                masterKeySource: .implicit
+                masterKeySource: .implicit,
             )
         }
     }
@@ -427,7 +427,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
         func matches(
             pin: String,
-            mrEnclave: MrEnclave
+            mrEnclave: MrEnclave,
         ) -> Bool {
             if !SVRUtil.verifyPIN(pin: pin, againstEncodedPINVerificationString: self.encodedPINVerificationString) {
                 return false
@@ -464,7 +464,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     private func doBackupAndExpose(
         pin: String,
         masterKey: Data,
-        authMethod: SVR2.AuthMethod
+        authMethod: SVR2.AuthMethod,
     ) -> Promise<MasterKey> {
         let config = SVR2WebsocketConfigurator(mrenclave: tsConstants.svr2Enclave, authMethod: authMethod)
         return makeHandshakeAndOpenConnection(config)
@@ -484,7 +484,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                         .performExposeRequest(
                             backup: backup,
                             authedAccount: authMethod.authedAccount,
-                            connection: connection
+                            connection: connection,
                         )
                         .then(on: SyncScheduler()) { result -> Promise<MasterKey> in
                             switch result {
@@ -506,7 +506,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                             pin: pin,
                             masterKey: masterKey,
                             mrEnclave: config.mrenclave,
-                            connection: connection
+                            connection: connection,
                         )
                         .then(on: self.scheduler) { (backupResult: BackupResult) -> Promise<MasterKey> in
                             switch backupResult {
@@ -562,7 +562,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         pin: String,
         masterKey: Data,
         mrEnclave: MrEnclave,
-        connection: WebsocketConnection
+        connection: WebsocketConnection,
     ) -> Guarantee<BackupResult> {
         guard
             let encodedPINVerificationString = try? SVRUtil.deriveEncodedPINVerificationString(pin: pin)
@@ -574,7 +574,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         do {
             pinHash = try connection.hashPin(
                 pin: pin,
-                wrapper: clientWrapper
+                wrapper: clientWrapper,
             )
             encryptedMasterKey = try pinHash.encryptMasterKey(masterKey)
         } catch {
@@ -609,7 +609,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                         encryptedMasterKey: encryptedMasterKey,
                         rawPinType: SVR.PinType(forPin: pin).rawValue,
                         encodedPINVerificationString: encodedPINVerificationString,
-                        mrEnclaveStringValue: mrEnclave.stringValue
+                        mrEnclaveStringValue: mrEnclave.stringValue,
                     )
                     do {
                         // Write the in progress state to disk; we want to continue
@@ -649,7 +649,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     private func performExposeRequest(
         backup: InProgressBackup,
         authedAccount: AuthedAccount,
-        connection: WebsocketConnection
+        connection: WebsocketConnection,
     ) -> Guarantee<ExposeResult> {
         var exposeRequest = SVR2Proto_ExposeRequest()
         exposeRequest.data = backup.encryptedMasterKey
@@ -675,7 +675,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                 // is now in charge and this one is done and shouldn't be repeated.
                 return .value(.success)
             }
-            return makeRequest().map(on: self.scheduler) { [weak self] (response) -> ExposeResult in
+            return makeRequest().map(on: self.scheduler) { [weak self] response -> ExposeResult in
                 guard let self else {
                     return .unretainedError
                 }
@@ -701,7 +701,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                                 isMasterKeyBackedUp: true,
                                 pinType: backup.pinType,
                                 mrEnclaveStringValue: backup.mrEnclaveStringValue,
-                                transaction: tx
+                                transaction: tx,
                             )
                         }
                     } catch {
@@ -779,7 +779,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
     private func doRestore(
         pin: String,
-        authMethod: SVR2.AuthMethod
+        authMethod: SVR2.AuthMethod,
     ) -> Guarantee<RestoreResult> {
         var enclavesToTry = [tsConstants.svr2Enclave] + tsConstants.svr2PreviousEnclaves
         let weakSelf = Weak(value: self)
@@ -796,7 +796,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                 .doRestoreForSpecificEnclave(
                     pin: pin,
                     mrEnclave: enclave,
-                    authMethod: authMethod
+                    authMethod: authMethod,
                 )
                 .then(on: self.scheduler) { enclaveResult in
                     switch enclaveResult {
@@ -820,7 +820,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     private func doRestoreForSpecificEnclave(
         pin: String,
         mrEnclave: MrEnclave,
-        authMethod: SVR2.AuthMethod
+        authMethod: SVR2.AuthMethod,
     ) -> Guarantee<RestoreResult> {
         let config = SVR2WebsocketConfigurator(mrenclave: mrEnclave, authMethod: authMethod)
         return makeHandshakeAndOpenConnection(config)
@@ -833,7 +833,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                     mrEnclave: mrEnclave,
                     pin: pin,
                     connection: connection,
-                    authedAccount: authMethod.authedAccount
+                    authedAccount: authMethod.authedAccount,
                 )
             }
             .recover(on: SyncScheduler()) { error in
@@ -848,7 +848,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         mrEnclave: MrEnclave,
         pin: String,
         connection: WebsocketConnection,
-        authedAccount: AuthedAccount
+        authedAccount: AuthedAccount,
     ) -> Guarantee<RestoreResult> {
         let pinHash: SVR2PinHash
         do {
@@ -865,7 +865,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             guard let self else {
                 return .value(.unretainedError)
             }
-            return makeRequest().map(on: self.scheduler) { [weak self] (response) -> RestoreResult in
+            return makeRequest().map(on: self.scheduler) { [weak self] response -> RestoreResult in
                 guard let self else {
                     return .unretainedError
                 }
@@ -893,7 +893,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                                 isMasterKeyBackedUp: true,
                                 pinType: .init(forPin: pin),
                                 mrEnclaveStringValue: mrEnclave.stringValue,
-                                transaction: tx
+                                transaction: tx,
                             )
                         }
                         return .success(masterKey: masterKey, mrEnclave: mrEnclave)
@@ -926,7 +926,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
     private func doDelete(
         mrEnclave: MrEnclave,
-        authMethod: SVR2.AuthMethod
+        authMethod: SVR2.AuthMethod,
     ) -> Guarantee<DeleteResult> {
         let config = SVR2WebsocketConfigurator(mrenclave: mrEnclave, authMethod: authMethod)
         return makeHandshakeAndOpenConnection(config)
@@ -937,7 +937,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                 return self.performDeleteRequest(
                     mrEnclave: mrEnclave,
                     connection: connection,
-                    authedAccount: authMethod.authedAccount
+                    authedAccount: authMethod.authedAccount,
                 )
             }
             .recover(on: SyncScheduler()) { error in
@@ -951,7 +951,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     private func performDeleteRequest(
         mrEnclave: MrEnclave,
         connection: WebsocketConnection,
-        authedAccount: AuthedAccount
+        authedAccount: AuthedAccount,
     ) -> Guarantee<DeleteResult> {
         var request = SVR2Proto_Request()
         request.delete = SVR2Proto_DeleteRequest()
@@ -959,7 +959,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             guard let self else {
                 return .value(.unretainedError)
             }
-            return makeRequest().map(on: self.scheduler) { (response) -> DeleteResult in
+            return makeRequest().map(on: self.scheduler) { response -> DeleteResult in
                 guard response.hasDelete else {
                     Logger.error("Delete missing in server response")
                     return .serverError
@@ -986,7 +986,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         // This is decoding a Set<String>. It won't actually ever fail, so just eat up errors.
         let enclaveStrings: Set<String>? = try? kvStore.getCodableValue(
             forKey: Self.oldEnclavesToDeleteFromKey,
-            transaction: tx
+            transaction: tx,
         )
         guard var enclaveStrings else {
             return []
@@ -1004,7 +1004,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         // This is (en/de)coding a Set<String>. It won't actually ever fail, so just eat up errors.
         var enclaveStrings: Set<String> = (try? kvStore.getCodableValue(
             forKey: Self.oldEnclavesToDeleteFromKey,
-            transaction: tx
+            transaction: tx,
         )) ?? Set()
         enclaveStrings.insert(enclave.stringValue)
         cleanUpForgottenEnclaves(in: &enclaveStrings)
@@ -1015,7 +1015,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         // This is (en/de)coding a Set<String>. It won't actually ever fail, so just eat up errors.
         var enclaveStrings: Set<String> = (try? kvStore.getCodableValue(
             forKey: Self.oldEnclavesToDeleteFromKey,
-            transaction: tx
+            transaction: tx,
         )) ?? Set()
         enclaveStrings.remove(enclave.stringValue)
         cleanUpForgottenEnclaves(in: &enclaveStrings)
@@ -1031,7 +1031,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         var (isRegistered, enclavesToDeleteFrom) = db.read { tx in
             return (
                 self.tsAccountManager.registrationState(tx: tx).isRegistered,
-                self.getOldEnclavesToDeleteFrom(tx)
+                self.getOldEnclavesToDeleteFrom(tx),
             )
         }
         guard isRegistered else {
@@ -1088,25 +1088,25 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             currentPIN,
             backupRequested,
             needsInitialAEPBackup,
-            masterKey
+            masterKey,
         ) = db.read { tx in
             (
                 twoFAManager.pinCode(transaction: tx),
                 localStorage.getNeedsMasterKeyBackup(tx),
                 kvStore.getBool(Self.needsInitialAEPBackup, defaultValue: true, transaction: tx),
-                accountKeyStore.getMasterKey(tx: tx)
+                accountKeyStore.getMasterKey(tx: tx),
             )
         }
         if
             let currentPIN,
             let masterKey,
-            (backupRequested || needsInitialAEPBackup)
+            backupRequested || needsInitialAEPBackup
         {
             return backupMasterKey(pin: currentPIN, masterKey: masterKey, authMethod: .implicit).asVoid()
         } else {
-            if masterKey != nil && currentPIN == nil {
+            if masterKey != nil, currentPIN == nil {
                 Logger.warn("Cannot backup master key without PIN")
-            } else if masterKey == nil && currentPIN != nil {
+            } else if masterKey == nil, currentPIN != nil {
                 Logger.warn("Skipping backup due missing master key")
             }
         }
@@ -1168,7 +1168,8 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                     if
                         let backedUpEnclave = self.tsConstants.svr2PreviousEnclaves.first(where: {
                             $0.stringValue == oldSVR2EnclaveString
-                        }) {
+                        })
+                    {
                         Logger.info("Adding old enclave to be deleted")
                         // Strictly speaking, this happens in a separate transaction from when we mark the
                         // backup/expose complete. But no matter what this is best effort; the client
@@ -1205,7 +1206,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         init(
             connection: SgxWebsocketConnection<SVR2WebsocketConfigurator>,
             scheduler: Scheduler,
-            onDisconnect: @escaping () -> Void
+            onDisconnect: @escaping () -> Void,
         ) {
             self.connection = connection
             self.scheduler = scheduler
@@ -1247,7 +1248,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         func sendRequestAndReadResponse<T>(
             _ request: SVR2Proto_Request,
             unretainedError: T,
-            handler: @escaping (() -> Promise<SVR2Proto_Response>) -> Guarantee<T>
+            handler: @escaping (() -> Promise<SVR2Proto_Response>) -> Guarantee<T>,
         ) -> Guarantee<T> {
             let (returnedGuarantee, returnedFuture) = Guarantee<T>.pending()
             let scheduler = self.scheduler
@@ -1265,12 +1266,12 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                 let guarantee = handler({
                     return Promise.race(on: self.scheduler, [
                         self.connection.sendRequestAndReadResponse(request),
-                        self.deinitFuture.0
+                        self.deinitFuture.0,
                     ])
                     .recover(on: self.scheduler) { [weak self] error in
                         // Treat all errors as terminating the connection.
                         self?.disconnect(error)
-                        return Promise<SVR2Proto_Response>.init(error: error)
+                        return Promise<SVR2Proto_Response>(error: error)
                     }
                 })
                 returnedFuture.resolve(on: self.scheduler, with: guarantee)
@@ -1341,13 +1342,13 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
 
         func hashPin(
             pin: String,
-            wrapper: SVR2ClientWrapper
+            wrapper: SVR2ClientWrapper,
         ) throws -> SVR2PinHash {
             let utf8NormalizedPin = Data(SVRUtil.normalizePin(pin).utf8)
             return try wrapper.hashPin(
                 connection: connection,
                 utf8NormalizedPin: utf8NormalizedPin,
-                username: connection.auth.username
+                username: connection.auth.username,
             )
         }
     }
@@ -1386,7 +1387,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
             return self.connectionFactory
                 .connectAndPerformHandshake(
                     configurator: config,
-                    on: self.scheduler
+                    on: self.scheduler,
                 )
                 .then(on: self.scheduler) { [weak self] connection -> Promise<WebsocketConnection?> in
                     guard let self else {
@@ -1398,7 +1399,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                         scheduler: self.scheduler,
                         onDisconnect: { [weak self] in
                             self?.openConnectionByMrEnclaveString[config.mrenclave.stringValue] = nil
-                        }
+                        },
                     )
                     self.openConnectionByMrEnclaveString[config.mrenclave.stringValue] = connection
 
@@ -1407,7 +1408,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
                     self.db.write { tx in
                         self.credentialStorage.storeAuthCredentialForCurrentUsername(
                             SVR2AuthCredential(credential: knownGoodAuthCredential),
-                            tx
+                            tx,
                         )
                     }
 
@@ -1456,7 +1457,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
         isMasterKeyBackedUp: Bool,
         pinType: SVR.PinType,
         mrEnclaveStringValue: String?,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) {
         localStorage.cleanupDeadKeys(transaction)
         if isMasterKeyBackedUp != localStorage.getIsMasterKeyBackedUp(transaction) {
@@ -1471,7 +1472,7 @@ public class SecureValueRecovery2Impl: SecureValueRecovery {
     }
 }
 
-fileprivate extension SVR2.AuthMethod {
+private extension SVR2.AuthMethod {
 
     var authedAccount: AuthedAccount {
         switch self {

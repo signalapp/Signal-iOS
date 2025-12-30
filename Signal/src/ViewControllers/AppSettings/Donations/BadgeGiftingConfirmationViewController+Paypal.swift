@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import AuthenticationServices
+import Foundation
 import SignalServiceKit
 
 extension BadgeGiftingConfirmationViewController {
@@ -27,7 +27,7 @@ extension BadgeGiftingConfirmationViewController {
                 let (approvalUrl, paymentId) = try await DonationViewsUtil.Paypal.createPaypalPaymentBehindActivityIndicator(
                     amount: self.price,
                     level: .giftBadge(.signalGift),
-                    fromViewController: self
+                    fromViewController: self,
                 )
                 let preparedPayment = try await self.presentPaypal(with: approvalUrl, paymentId: paymentId)
                 guard await DonationViewsUtil.Gifts.showSafetyNumberConfirmationIfNecessary(for: self.thread) else {
@@ -43,9 +43,9 @@ extension BadgeGiftingConfirmationViewController {
                             thread: self.thread,
                             messageText: self.messageText,
                             databaseStorage: SSKEnvironment.shared.databaseStorageRef,
-                            blockingManager: SSKEnvironment.shared.blockingManagerRef
+                            blockingManager: SSKEnvironment.shared.blockingManagerRef,
                         )
-                    }
+                    },
                 )
 
                 Logger.info("[Gifting] Gifting PayPal donation finished")
@@ -64,7 +64,7 @@ extension BadgeGiftingConfirmationViewController {
         do {
             let approvalParams: Paypal.OneTimePaymentWebAuthApprovalParams = try await Paypal.presentExpectingApprovalParams(
                 approvalUrl: approvalUrl,
-                withPresentationContext: self
+                withPresentationContext: self,
             )
             return .forPaypal(approvalParams: approvalParams, paymentId: paymentId)
         } catch let paypalAuthError as Paypal.AuthError {

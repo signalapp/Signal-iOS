@@ -93,7 +93,7 @@ public class CVPollView: ManualStackView {
                 axis: .vertical,
                 alignment: .leading,
                 spacing: 2,
-                layoutMargins: UIEdgeInsets(hMargin: 0, vMargin: state.isIncoming ? 0 : 8)
+                layoutMargins: UIEdgeInsets(hMargin: 0, vMargin: state.isIncoming ? 0 : 8),
             )
             self.colorConfigurator = ColorConfigurator(state: state)
         }
@@ -104,15 +104,17 @@ public class CVPollView: ManualStackView {
                 font: UIFont.dynamicTypeHeadline,
                 textColor: colorConfigurator.textColor,
                 numberOfLines: 0,
-                lineBreakMode: .byWordWrapping
+                lineBreakMode: .byWordWrapping,
             )
         }
 
         var subtitleStackConfig: CVStackViewConfig {
-            CVStackViewConfig(axis: .horizontal,
-                              alignment: .leading,
-                              spacing: 4,
-                              layoutMargins: UIEdgeInsets(hMargin: 0, vMargin: 0))
+            CVStackViewConfig(
+                axis: .horizontal,
+                alignment: .leading,
+                spacing: 4,
+                layoutMargins: UIEdgeInsets(hMargin: 0, vMargin: 0),
+            )
         }
 
         var pollSubtitleTextLabelConfig: CVLabelConfig {
@@ -121,7 +123,7 @@ public class CVPollView: ManualStackView {
                 font: UIFont.dynamicTypeFootnote,
                 textColor: colorConfigurator.textColor.withAlphaComponent(0.8),
                 numberOfLines: 0,
-                lineBreakMode: .byWordWrapping
+                lineBreakMode: .byWordWrapping,
             )
         }
 
@@ -131,10 +133,11 @@ public class CVPollView: ManualStackView {
                 selectLabel = OWSLocalizedString("POLL_FINAL_RESULTS_LABEL", comment: "Label specifying the poll is finished and these are the final results")
             } else {
                 selectLabel = poll.allowsMultiSelect ? OWSLocalizedString(
-                    "POLL_SELECT_LABEL_MULTIPLE", comment: "Label specifying the user can select more than one option"
+                    "POLL_SELECT_LABEL_MULTIPLE",
+                    comment: "Label specifying the user can select more than one option",
                 ) : OWSLocalizedString(
                     "POLL_SELECT_LABEL_SINGULAR",
-                    comment: "Label specifying the user can select one option"
+                    comment: "Label specifying the user can select one option",
                 )
             }
 
@@ -143,22 +146,26 @@ public class CVPollView: ManualStackView {
                 font: UIFont.dynamicTypeFootnote,
                 textColor: colorConfigurator.textColor.withAlphaComponent(0.8),
                 numberOfLines: 0,
-                lineBreakMode: .byWordWrapping
+                lineBreakMode: .byWordWrapping,
             )
         }
 
         var optionStackConfig: CVStackViewConfig {
-            CVStackViewConfig(axis: .vertical,
-                              alignment: .leading,
-                              spacing: 8,
-                              layoutMargins: UIEdgeInsets(hMargin: 0, vMargin: 16))
+            CVStackViewConfig(
+                axis: .vertical,
+                alignment: .leading,
+                spacing: 8,
+                layoutMargins: UIEdgeInsets(hMargin: 0, vMargin: 16),
+            )
         }
 
         var optionRowOuterStackConfig: CVStackViewConfig {
-            CVStackViewConfig(axis: .vertical,
-                              alignment: .leading,
-                              spacing: 4,
-                              layoutMargins: UIEdgeInsets(hMargin: 0, vMargin: 4))
+            CVStackViewConfig(
+                axis: .vertical,
+                alignment: .leading,
+                spacing: 4,
+                layoutMargins: UIEdgeInsets(hMargin: 0, vMargin: 4),
+            )
         }
 
         let checkBoxSize = CGSize(square: 24)
@@ -171,10 +178,12 @@ public class CVPollView: ManualStackView {
         let trailingVoteStateSpacing = CGFloat(4)
 
         func buildOptionRowInnerStackConfig(voteLabelWidth: Double) -> CVStackViewConfig {
-            CVStackViewConfig(axis: .horizontal,
-                              alignment: .leading,
-                              spacing: 8,
-                              layoutMargins: UIEdgeInsets(top: 2, leading: 0, bottom: 2, trailing: voteLabelWidth))
+            CVStackViewConfig(
+                axis: .horizontal,
+                alignment: .leading,
+                spacing: 8,
+                layoutMargins: UIEdgeInsets(top: 2, leading: 0, bottom: 2, trailing: voteLabelWidth),
+            )
         }
     }
 
@@ -182,12 +191,13 @@ public class CVPollView: ManualStackView {
         poll: OWSPoll,
         isIncoming: Bool,
         conversationStyle: ConversationStyle,
-        localAci: Aci
+        localAci: Aci,
     ) -> State {
-        return State(poll: poll,
-                     isIncoming: isIncoming,
-                     conversationStyle: conversationStyle,
-                     localAci: localAci
+        return State(
+            poll: poll,
+            isIncoming: isIncoming,
+            conversationStyle: conversationStyle,
+            localAci: localAci,
         )
     }
 
@@ -210,7 +220,7 @@ public class CVPollView: ManualStackView {
     static func measure(
         maxWidth: CGFloat,
         measurementBuilder: CVCellMeasurement.Builder,
-        state: CVPollView.State
+        state: CVPollView.State,
     ) -> CGSize {
         owsAssertDebug(maxWidth > 0)
 
@@ -222,8 +232,10 @@ public class CVPollView: ManualStackView {
         // MARK: - Question
 
         let questionTextLabelConfig = configurator.questionTextLabelConfig
-        let questionSize = CVText.measureLabel(config: questionTextLabelConfig,
-                                                   maxWidth: maxLabelWidth)
+        let questionSize = CVText.measureLabel(
+            config: questionTextLabelConfig,
+            maxWidth: maxLabelWidth,
+        )
 
         outerStackSubviewInfos.append(questionSize.asManualSubviewInfo)
 
@@ -234,7 +246,7 @@ public class CVPollView: ManualStackView {
         let pollSubtitleLabelConfig = configurator.pollSubtitleTextLabelConfig
         let pollSubtitleSize = CVText.measureLabel(
             config: pollSubtitleLabelConfig,
-            maxWidth: maxLabelWidth
+            maxWidth: maxLabelWidth,
         )
         subtitleStackSubviews.append(pollSubtitleSize.asManualSubviewInfo)
 
@@ -244,7 +256,7 @@ public class CVPollView: ManualStackView {
         let chooseSubtitleLabelConfig = configurator.chooseSubtitleTextLabelConfig
         let chooseSubtitleSize = CVText.measureLabel(
             config: chooseSubtitleLabelConfig,
-            maxWidth: maxLabelWidth
+            maxWidth: maxLabelWidth,
         )
         subtitleStackSubviews.append(chooseSubtitleSize.asManualSubviewInfo)
 
@@ -252,7 +264,7 @@ public class CVPollView: ManualStackView {
             config: configurator.subtitleStackConfig,
             measurementBuilder: measurementBuilder,
             measurementKey: measurementKey_subtitleStack,
-            subviewInfos: subtitleStackSubviews
+            subviewInfos: subtitleStackSubviews,
         )
 
         outerStackSubviewInfos.append(subtitleStackMeasurement.measuredSize.asManualSubviewInfo)
@@ -266,7 +278,7 @@ public class CVPollView: ManualStackView {
                 font: UIFont.dynamicTypeBody,
                 textColor: configurator.colorConfigurator.textColor,
                 numberOfLines: 0,
-                lineBreakMode: .byWordWrapping
+                lineBreakMode: .byWordWrapping,
             )
 
             let hasLocalUserVoted = option.localUserHasVoted(localAci: state.localAci)
@@ -283,19 +295,19 @@ public class CVPollView: ManualStackView {
             let innerStackConfig = configurator.buildOptionRowInnerStackConfig(voteLabelWidth: voteLabelWidth)
 
             let maxOptionLabelWidth = (maxLabelWidth - (innerStackConfig.layoutMargins.trailing +
-                                                        checkboxSize +
-                                                        innerStackConfig.spacing))
+                    checkboxSize +
+                    innerStackConfig.spacing))
 
             let optionLabelTextSize = CVText.measureLabel(
                 config: optionTextConfig,
-                maxWidth: maxOptionLabelWidth
+                maxWidth: maxOptionLabelWidth,
             )
 
             // Even though the text may not take up the whole width, we should use the max
             // row size because the number of votes will be displayed on the far side.
             let optionRowSize = CGSize(
                 width: maxOptionLabelWidth,
-                height: optionLabelTextSize.height
+                height: optionLabelTextSize.height,
             )
 
             var subViewInfos: [ManualStackSubviewInfo] = []
@@ -312,7 +324,7 @@ public class CVPollView: ManualStackView {
                 config: innerStackConfig,
                 measurementBuilder: measurementBuilder,
                 measurementKey: measurementKey_optionRowInnerStack + String(option.optionIndex),
-                subviewInfos: subViewInfos
+                subviewInfos: subViewInfos,
             )
 
             let progressBarSize = CGSize(width: maxLabelWidth, height: configurator.progressBarHeight)
@@ -320,7 +332,7 @@ public class CVPollView: ManualStackView {
                 config: configurator.optionRowOuterStackConfig,
                 measurementBuilder: measurementBuilder,
                 measurementKey: measurementKey_optionRowOuterStack + String(option.optionIndex),
-                subviewInfos: [optionRowInnerMeasurement.measuredSize.asManualSubviewInfo, progressBarSize.asManualSubviewInfo]
+                subviewInfos: [optionRowInnerMeasurement.measuredSize.asManualSubviewInfo, progressBarSize.asManualSubviewInfo],
             )
 
             optionStackRows.append(optionRowOuterMeasurement.measuredSize.asManualSubviewInfo)
@@ -330,7 +342,7 @@ public class CVPollView: ManualStackView {
             config: configurator.optionStackConfig,
             measurementBuilder: measurementBuilder,
             measurementKey: Self.measurementKey_optionStack,
-            subviewInfos: optionStackRows
+            subviewInfos: optionStackRows,
         )
         outerStackSubviewInfos.append(optionStackMeasurement.measuredSize.asManualSubviewInfo)
 
@@ -340,7 +352,7 @@ public class CVPollView: ManualStackView {
             config: configurator.outerStackConfig,
             measurementBuilder: measurementBuilder,
             measurementKey: Self.measurementKey_outerStack,
-            subviewInfos: outerStackSubviewInfos
+            subviewInfos: outerStackSubviewInfos,
         )
 
         return outerStackMeasurement.measuredSize
@@ -359,13 +371,13 @@ public class CVPollView: ManualStackView {
 
         let circleContainer = ManualLayoutView(name: "circleContainer")
         circleContainer.addSubview(circleView, withLayoutBlock: { [weak self] _ in
-            guard let self = self else {
+            guard let self else {
                 return
             }
 
             let subviewFrame = CGRect(
                 origin: CGPoint(x: 0, y: chooseLabel.bounds.midY),
-                size: configurator.circleSize
+                size: configurator.circleSize,
             )
             Self.setSubviewFrame(subview: circleView, frame: subviewFrame)
         })
@@ -374,15 +386,15 @@ public class CVPollView: ManualStackView {
             config: configurator.subtitleStackConfig,
             cellMeasurement: cellMeasurement,
             measurementKey: Self.measurementKey_subtitleStack,
-            subviews: [pollLabel, circleContainer, chooseLabel]
+            subviews: [pollLabel, circleContainer, chooseLabel],
         )
     }
 
     private func localUserVoteState(
         localAci: Aci,
-        option: OWSPoll.OWSPollOption
+        option: OWSPoll.OWSPollOption,
     ) -> VoteState {
-        if option.localUserHasVoted(localAci: localAci) && option.latestPendingState == nil {
+        if option.localUserHasVoted(localAci: localAci), option.latestPendingState == nil {
             return .vote
         } else if let pendingState = option.latestPendingState {
             switch pendingState {
@@ -400,7 +412,7 @@ public class CVPollView: ManualStackView {
         previousPollState: CVPollView.State?,
         cellMeasurement: CVCellMeasurement,
         componentDelegate: CVComponentDelegate,
-        accessibilitySummary: String
+        accessibilitySummary: String,
     ) {
         let poll = state.poll
 
@@ -435,9 +447,9 @@ public class CVPollView: ManualStackView {
                         for: option,
                         on: poll,
                         voteType: voteType,
-                        delegate: componentDelegate
+                        delegate: componentDelegate,
                     )
-                }
+                },
             )
             optionSubviews.append(row)
         }
@@ -447,30 +459,32 @@ public class CVPollView: ManualStackView {
             config: configurator.optionStackConfig,
             cellMeasurement: cellMeasurement,
             measurementKey: Self.measurementKey_optionStack,
-            subviews: optionSubviews
+            subviews: optionSubviews,
         )
         outerStackSubViews.append(optionsStack)
 
-        self.configure(config: configurator.outerStackConfig,
-                              cellMeasurement: cellMeasurement,
-                              measurementKey: Self.measurementKey_outerStack,
-                              subviews: outerStackSubViews)
+        self.configure(
+            config: configurator.outerStackConfig,
+            cellMeasurement: cellMeasurement,
+            measurementKey: Self.measurementKey_outerStack,
+            subviews: outerStackSubViews,
+        )
     }
 
     private func handleVote(
         for option: OWSPoll.OWSPollOption,
         on poll: OWSPoll,
         voteType: VoteType,
-        delegate: CVPollVoteDelegate?
+        delegate: CVPollVoteDelegate?,
     ) {
         delegate?.didTapVoteOnPoll(
             poll: poll,
             optionIndex: option.optionIndex,
-            isUnvote: voteType == .unvote
+            isUnvote: voteType == .unvote,
         )
     }
 
-    public override func reset() {
+    override public func reset() {
         super.reset()
 
         questionTextLabel.text = nil
@@ -481,6 +495,7 @@ public class CVPollView: ManualStackView {
     }
 
     // MARK: - PollOptionView
+
     /// Class representing an option row which displays and updates selected state
 
     enum VoteType {
@@ -531,9 +546,9 @@ public class CVPollView: ManualStackView {
                 OWSLocalizedString(
                     "POLL_VOTE_COUNT",
                     tableName: "PluralAware",
-                    comment: "Count indicating number of votes for this option. Embeds {{number of votes}}"
+                    comment: "Count indicating number of votes for this option. Embeds {{number of votes}}",
                 ),
-                pollOption.acis.count
+                pollOption.acis.count,
             )
 
             isAccessibilityElement = true
@@ -565,7 +580,7 @@ public class CVPollView: ManualStackView {
                 totalVoters: totalVoters,
                 prevTotalVoters: prevTotalVoters,
                 pollIsEnded: pollIsEnded,
-                pendingVotesCount: pendingVotesCount
+                pendingVotesCount: pendingVotesCount,
             )
         }
 
@@ -573,7 +588,8 @@ public class CVPollView: ManualStackView {
             fatalError("init(coder:) has not been implemented")
         }
 
-        @objc private func didTapOption() {
+        @objc
+        private func didTapOption() {
             var attemptedVoteType: VoteType
             switch localUserVoteState {
             case .unvote, .pendingUnvote:
@@ -593,7 +609,7 @@ public class CVPollView: ManualStackView {
             pollIsEnded: Bool,
             foregroundColor: UIColor,
             backgroundColor: UIColor,
-            checkboxWidthWithSpacing: CGFloat
+            checkboxWidthWithSpacing: CGFloat,
         ) {
             let isRTL = CurrentAppContext().isRTL
 
@@ -603,10 +619,10 @@ public class CVPollView: ManualStackView {
             progressBarBackground.layer.cornerRadius = 5
 
             progressBarContainer.addSubview(progressBarBackground, withLayoutBlock: { [weak self] _ in
-                    guard let self = self, let superview = progressBarBackground.superview else {
-                        owsFailDebug("Missing superview.")
-                        return
-                    }
+                guard let self, let superview = progressBarBackground.superview else {
+                    owsFailDebug("Missing superview.")
+                    return
+                }
 
                 // The progress bar should start under the text, not the checkbox, so we need to shift it
                 // over the amount of the checkbox width (plus spacing), and remove that offset from the total size.
@@ -614,7 +630,7 @@ public class CVPollView: ManualStackView {
                 let checkboxOffset = pollIsEnded ? 0 : checkboxWidthWithSpacing
                 let adjustedContainerSize = CGSize(
                     width: superview.bounds.width - checkboxOffset,
-                    height: superview.bounds.height
+                    height: superview.bounds.height,
                 )
 
                 // If RTL, the checkbox is on the right, so we don't want to shift the
@@ -622,13 +638,14 @@ public class CVPollView: ManualStackView {
                 let originX = isRTL ? 0 : superview.bounds.origin.x + checkboxOffset
                 let subviewFrame = CGRect(
                     origin: CGPoint(x: originX, y: superview.bounds.origin.y),
-                    size: adjustedContainerSize)
+                    size: adjustedContainerSize,
+                )
 
                 Self.setSubviewFrame(subview: progressBarBackground, frame: subviewFrame)
             })
 
             progressBarContainer.addSubview(progressFill, withLayoutBlock: { [weak self] _ in
-                guard let self = self, let superview = progressFill.superview else {
+                guard let self, let superview = progressFill.superview else {
                     owsFailDebug("Missing superview.")
                     return
                 }
@@ -661,7 +678,7 @@ public class CVPollView: ManualStackView {
 
                 var subviewFrame = CGRect(
                     origin: CGPoint(x: originX, y: superview.bounds.origin.y),
-                    size: CGSize(width: progressFill.frame.width, height: superview.bounds.height)
+                    size: CGSize(width: progressFill.frame.width, height: superview.bounds.height),
                 )
 
                 // CVPollView is discarded and re-rendered everytime the vote state changes,
@@ -699,7 +716,7 @@ public class CVPollView: ManualStackView {
                                 animations: { [weak self] in
                                     self?.progressFill.frame.width = numVotesBarFill
                                 },
-                                completion: nil
+                                completion: nil,
                             )
                         }
                     }
@@ -733,7 +750,7 @@ public class CVPollView: ManualStackView {
                         x: (spinningEllipse.frame.width - 15) / 2,
                         y: (spinningEllipse.frame.height - 15) / 2,
                         width: 15,
-                        height: 15
+                        height: 15,
                     )
                 })
                 if type == .pendingVote {
@@ -748,18 +765,18 @@ public class CVPollView: ManualStackView {
         private func configureCheckboxContainer(
             configurator: Configurator,
             pollIsEnded: Bool,
-            pendingVotesCount: Int
+            pendingVotesCount: Int,
         ) {
             let circle = UIImageView(image: UIImage(named: Theme.iconName(.circle)))
             let checkBoxSize = pollIsEnded ? configurator.checkBoxEndedSize : configurator.checkBoxSize
 
             checkboxContainer.addSubview(circle, withLayoutBlock: { [weak self] _ in
-                guard let self = self else { return }
+                guard let self else { return }
                 let subviewFrame = CGRect(
                     x: (checkboxContainer.frame.width - checkBoxSize.width) / 2,
                     y: (checkboxContainer.frame.height - checkBoxSize.height) / 2,
                     width: checkBoxSize.width,
-                    height: checkBoxSize.height
+                    height: checkBoxSize.height,
                 )
                 Self.setSubviewFrame(subview: circle, frame: subviewFrame)
             })
@@ -768,12 +785,12 @@ public class CVPollView: ManualStackView {
             case .vote:
                 let checkMarkCircle = UIImageView(image: UIImage(named: Theme.iconName(.checkCircleFill)))
                 checkboxContainer.addSubview(checkMarkCircle, withLayoutBlock: { [weak self] _ in
-                    guard let self = self else { return }
+                    guard let self else { return }
                     let subviewFrame = CGRect(
                         x: (checkboxContainer.frame.width - checkBoxSize.width) / 2,
                         y: (checkboxContainer.frame.height - checkBoxSize.height) / 2,
                         width: checkBoxSize.width,
-                        height: checkBoxSize.height
+                        height: checkBoxSize.height,
                     )
                     Self.setSubviewFrame(subview: checkMarkCircle, frame: subviewFrame)
                 })
@@ -813,7 +830,7 @@ public class CVPollView: ManualStackView {
                 textColor: configurator.colorConfigurator.textColor,
                 numberOfLines: 0,
                 lineBreakMode: .byWordWrapping,
-                textAlignment: .trailing
+                textAlignment: .trailing,
             )
 
             let maxOptionWidth = cellMeasurement.cellSize.width
@@ -821,7 +838,7 @@ public class CVPollView: ManualStackView {
 
             numVotesConfig.applyForRendering(label: numVotesLabel)
             innerStackContainer.addSubview(numVotesLabel, withLayoutBlock: { [weak self] _ in
-                guard let self = self, let superview = numVotesLabel.superview else {
+                guard let self, let superview = numVotesLabel.superview else {
                     owsFailDebug("Missing superview.")
                     return
                 }
@@ -830,14 +847,14 @@ public class CVPollView: ManualStackView {
                 let xPoint = isRTL ? superview.bounds.minX : superview.bounds.maxX - labelSize.width
                 let subviewFrame = CGRect(
                     origin: CGPoint(x: xPoint, y: yPoint),
-                    size: labelSize
+                    size: labelSize,
                 )
                 Self.setSubviewFrame(subview: numVotesLabel, frame: subviewFrame)
             })
 
-            if pollIsEnded && localUserVoteState == .vote {
+            if pollIsEnded, localUserVoteState == .vote {
                 innerStackContainer.addSubview(checkboxContainer, withLayoutBlock: { [weak self] _ in
-                    guard let self = self, let superview = innerStack.superview else {
+                    guard let self, let superview = innerStack.superview else {
                         owsFailDebug("Missing superview.")
                         return
                     }
@@ -846,7 +863,7 @@ public class CVPollView: ManualStackView {
                     let xPoint = isRTL ? superview.bounds.minX + labelSize.width + 4 : superview.bounds.maxX - labelSize.width - configurator.checkBoxSize.width
                     let subviewFrame = CGRect(
                         origin: CGPoint(x: xPoint, y: yPoint),
-                        size: configurator.checkBoxEndedSize
+                        size: configurator.checkBoxEndedSize,
                     )
                     Self.setSubviewFrame(subview: checkboxContainer, frame: subviewFrame)
                 })
@@ -863,12 +880,12 @@ public class CVPollView: ManualStackView {
             totalVoters: Int,
             prevTotalVoters: Int?,
             pollIsEnded: Bool,
-            pendingVotesCount: Int
+            pendingVotesCount: Int,
         ) {
             configureCheckboxContainer(
                 configurator: configurator,
                 pollIsEnded: pollIsEnded,
-                pendingVotesCount: pendingVotesCount
+                pendingVotesCount: pendingVotesCount,
             )
 
             addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapOption)))
@@ -878,7 +895,7 @@ public class CVPollView: ManualStackView {
                 font: UIFont.dynamicTypeBody,
                 textColor: configurator.colorConfigurator.textColor,
                 numberOfLines: 0,
-                lineBreakMode: .byWordWrapping
+                lineBreakMode: .byWordWrapping,
             )
             optionTextConfig.applyForRendering(label: optionText)
 
@@ -898,7 +915,7 @@ public class CVPollView: ManualStackView {
                 config: innerStackConfig,
                 cellMeasurement: cellMeasurement,
                 measurementKey: measurementKey_optionRowInnerStack + String(index),
-                subviews: subviews
+                subviews: subviews,
             )
 
             innerStackContainer.addSubviewToFillSuperviewEdges(innerStack)
@@ -907,7 +924,7 @@ public class CVPollView: ManualStackView {
                 configurator: configurator,
                 cellMeasurement: cellMeasurement,
                 pollIsEnded: pollIsEnded,
-                localizedVotesString: localizedVotesString
+                localizedVotesString: localizedVotesString,
             )
 
             buildProgressBar(
@@ -918,14 +935,14 @@ public class CVPollView: ManualStackView {
                 pollIsEnded: pollIsEnded,
                 foregroundColor: configurator.colorConfigurator.voteProgressForegroundColor,
                 backgroundColor: configurator.colorConfigurator.voteProgressBackgroundColor,
-                checkboxWidthWithSpacing: configurator.checkBoxSize.width + innerStackConfig.spacing
+                checkboxWidthWithSpacing: configurator.checkBoxSize.width + innerStackConfig.spacing,
             )
 
             configure(
                 config: configurator.optionRowOuterStackConfig,
                 cellMeasurement: cellMeasurement,
                 measurementKey: measurementKey_optionRowOuterStack + String(index),
-                subviews: [innerStackContainer, progressBarContainer]
+                subviews: [innerStackContainer, progressBarContainer],
             )
         }
     }

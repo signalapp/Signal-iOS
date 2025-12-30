@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import CommonCrypto
+import Foundation
 
 /// Computes (and un-computes) attachment padding.
 ///
@@ -51,9 +51,9 @@ struct PaddingBucket {
     static func addingEncryptionOverhead(to paddedValue: UInt64) -> UInt64? {
         let result = paddedValue.addingReportingOverflow(
             Constants.ivLength
-            + Constants.blockLength
-            - paddedValue % Constants.blockLength
-            + Constants.hmacLength
+                + Constants.blockLength
+                - paddedValue % Constants.blockLength
+                + Constants.hmacLength,
         )
         if result.overflow {
             return nil
@@ -74,11 +74,11 @@ struct PaddingBucket {
     static func forEncryptedSizeLimit(_ encryptedSize: UInt64) -> PaddingBucket {
         let worstCasePlaintextLimit = encryptedSize.subtractingReportingOverflow(
             Constants.ivLength
-            // When computing the `encryptedSize`, we add 1 to 16 bytes of
-            // `blockLength` padding. We always subtract 16 here (as a worst case) and
-            // then check the next bucket to handle values near the boundary.
-            + Constants.blockLength
-            + Constants.hmacLength
+                // When computing the `encryptedSize`, we add 1 to 16 bytes of
+                // `blockLength` padding. We always subtract 16 here (as a worst case) and
+                // then check the next bucket to handle values near the boundary.
+                + Constants.blockLength
+                + Constants.hmacLength,
         )
         if worstCasePlaintextLimit.overflow || worstCasePlaintextLimit.partialValue == 0 {
             return PaddingBucket(bucketNumber: 0)!

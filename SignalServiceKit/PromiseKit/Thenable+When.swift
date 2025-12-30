@@ -10,7 +10,7 @@ import Foundation
 public extension Thenable {
     static func when<T: Thenable>(
         on scheduler: Scheduler? = nil,
-        fulfilled thenables: [T]
+        fulfilled thenables: [T],
     ) -> Promise<[Value]> where T.Value == Value {
         _when(on: scheduler, fulfilled: thenables).map(on: scheduler) { thenables.compactMap { $0.value } }
     }
@@ -18,10 +18,11 @@ public extension Thenable {
     static func when<T: Thenable, U: Thenable>(
         on scheduler: Scheduler? = nil,
         fulfilled tt: T,
-        _ tu: U
+        _ tu: U,
     ) -> Promise<(T.Value, U.Value)> where T.Value == Value {
         Guarantee<Any>._when(on: scheduler, fulfilled: [
-            tt.asVoid(on: scheduler), tu.asVoid(on: scheduler)
+            tt.asVoid(on: scheduler),
+            tu.asVoid(on: scheduler),
         ]).map(on: scheduler) { (tt.value!, tu.value!) }
     }
 
@@ -29,10 +30,12 @@ public extension Thenable {
         on scheduler: Scheduler? = nil,
         fulfilled tt: T,
         _ tu: U,
-        _ tv: V
+        _ tv: V,
     ) -> Promise<(T.Value, U.Value, V.Value)> where T.Value == Value {
         Guarantee<Any>._when(on: scheduler, fulfilled: [
-            tt.asVoid(on: scheduler), tu.asVoid(on: scheduler), tv.asVoid(on: scheduler)
+            tt.asVoid(on: scheduler),
+            tu.asVoid(on: scheduler),
+            tv.asVoid(on: scheduler),
         ]).map(on: scheduler) { (tt.value!, tu.value!, tv.value!) }
     }
 
@@ -41,10 +44,13 @@ public extension Thenable {
         fulfilled tt: T,
         _ tu: U,
         _ tv: V,
-        _ tw: W
+        _ tw: W,
     ) -> Promise<(T.Value, U.Value, V.Value, W.Value)> where T.Value == Value {
         Guarantee<Any>._when(on: scheduler, fulfilled: [
-            tt.asVoid(on: scheduler), tu.asVoid(on: scheduler), tv.asVoid(on: scheduler), tw.asVoid(on: scheduler)
+            tt.asVoid(on: scheduler),
+            tu.asVoid(on: scheduler),
+            tv.asVoid(on: scheduler),
+            tw.asVoid(on: scheduler),
         ]).map(on: scheduler) { (tt.value!, tu.value!, tv.value!, tw.value!) }
     }
 }
@@ -52,23 +58,23 @@ public extension Thenable {
 public extension Thenable where Value == Void {
     static func when<T: Thenable>(
         on scheduler: Scheduler? = nil,
-        fulfilled thenables: T...
+        fulfilled thenables: T...,
     ) -> Promise<Void> {
         _when(on: scheduler, fulfilled: thenables)
     }
 
     static func when<T: Thenable>(
         on scheduler: Scheduler? = nil,
-        fulfilled thenables: [T]
+        fulfilled thenables: [T],
     ) -> Promise<Void> {
         _when(on: scheduler, fulfilled: thenables)
     }
 }
 
-fileprivate extension Thenable {
+private extension Thenable {
     static func _when<T: Thenable>(
         on scheduler: Scheduler?,
-        fulfilled thenables: [T]
+        fulfilled thenables: [T],
     ) -> Promise<Void> {
         guard !thenables.isEmpty else { return Promise.value(()) }
 
@@ -98,27 +104,23 @@ fileprivate extension Thenable {
 public extension Thenable {
     static func when<T: Thenable>(
         on scheduler: Scheduler? = nil,
-        resolved thenables: T...
+        resolved thenables: T...,
     ) -> Guarantee<[Result<Value, Error>]> where T.Value == Value {
         when(on: scheduler, resolved: thenables)
     }
 
     static func when<T: Thenable>(
         on scheduler: Scheduler? = nil,
-        resolved thenables: [T]
+        resolved thenables: [T],
     ) -> Guarantee<[Result<Value, Error>]> where T.Value == Value {
         _when(on: scheduler, resolved: thenables).map(on: scheduler) { thenables.compactMap { $0.result } }
     }
 }
 
-public extension Thenable where Value == Void {
-
-}
-
-fileprivate extension Thenable {
+private extension Thenable {
     static func _when<T: Thenable>(
         on scheduler: Scheduler?,
-        resolved thenables: [T]
+        resolved thenables: [T],
     ) -> Guarantee<Void> {
         guard !thenables.isEmpty else { return Guarantee.value(()) }
 

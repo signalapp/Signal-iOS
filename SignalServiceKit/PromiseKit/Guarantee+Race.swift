@@ -8,14 +8,14 @@ import Foundation
 public extension Guarantee {
     static func race<T>(
         on scheduler: Scheduler,
-        _ guarantees: Guarantee<T>...
+        _ guarantees: Guarantee<T>...,
     ) -> Guarantee<T> {
         return race(on: scheduler, guarantees)
     }
 
     static func race<T>(
         on scheduler: Scheduler,
-        _ guarantees: [Guarantee<T>]
+        _ guarantees: [Guarantee<T>],
     ) -> Guarantee<T> {
         let (result, future) = Guarantee<T>.pending()
 

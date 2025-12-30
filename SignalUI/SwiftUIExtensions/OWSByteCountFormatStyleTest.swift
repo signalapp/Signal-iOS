@@ -22,7 +22,7 @@ struct OWSByteCountFormatStyleTest {
     ])
     func fudgingBase2ToBase10ByteCount(byteCount: UInt64, expected: UInt64?) {
         #expect(
-            expected == OWSBase2ByteCountFudger.fudgeBase2ToBase10(byteCount)
+            expected == OWSBase2ByteCountFudger.fudgeBase2ToBase10(byteCount),
         )
     }
 }

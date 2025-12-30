@@ -34,7 +34,7 @@ extension DecodableDefault.Wrapper: Decodable {
 extension KeyedDecodingContainer {
     func decode<T>(
         _ type: DecodableDefault.Wrapper<T>.Type,
-        forKey key: Key
+        forKey key: Key,
     ) throws -> DecodableDefault.Wrapper<T> {
         try decodeIfPresent(type, forKey: key) ?? .init()
     }

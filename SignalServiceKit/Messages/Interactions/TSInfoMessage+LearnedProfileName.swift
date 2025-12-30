@@ -15,19 +15,20 @@ extension TSInfoMessage {
     static func insertLearnedProfileNameMessage(
         serviceId: ServiceId,
         displayNameBefore: DisplayNameBeforeLearningProfileName,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         let threadStore = DependenciesBridge.shared.threadStore
         let interactionStore = DependenciesBridge.shared.interactionStore
 
-        guard let contactThread = threadStore.fetchContactThreads(
-            serviceId: serviceId,
-            tx: tx
-        ).first else { return }
+        guard
+            let contactThread = threadStore.fetchContactThreads(
+                serviceId: serviceId,
+                tx: tx,
+            ).first else { return }
 
         let infoMessage: TSInfoMessage = .makeForLearnedProfileName(
             contactThread: contactThread,
-            displayNameBefore: displayNameBefore
+            displayNameBefore: displayNameBefore,
         )
         interactionStore.insertInteraction(infoMessage, tx: tx)
     }
@@ -35,7 +36,7 @@ extension TSInfoMessage {
     static func makeForLearnedProfileName(
         contactThread: TSContactThread,
         timestamp: UInt64 = MessageTimestampGenerator.sharedInstance.generateTimestamp(),
-        displayNameBefore: DisplayNameBeforeLearningProfileName
+        displayNameBefore: DisplayNameBeforeLearningProfileName,
     ) -> TSInfoMessage {
         let infoMessageUserInfo: [InfoMessageUserInfoKey: Any] = switch displayNameBefore {
         case .phoneNumber(let phoneNumber):
@@ -48,7 +49,7 @@ extension TSInfoMessage {
             thread: contactThread,
             messageType: .learnedProfileName,
             timestamp: timestamp,
-            infoMessageUserInfo: infoMessageUserInfo
+            infoMessageUserInfo: infoMessageUserInfo,
         )
     }
 }
@@ -72,7 +73,7 @@ public extension TSInfoMessage {
 
         let format = OWSLocalizedString(
             "INFO_MESSAGE_LEARNED_PROFILE_KEY",
-            comment: "When you start a chat with someone and then later learn their profile name, we insert an in-chat message with this string to record the identifier you originally used to contact them. Embeds {{ the identifier, either a phone number or a username }}."
+            comment: "When you start a chat with someone and then later learn their profile name, we insert an in-chat message with this string to record the identifier you originally used to contact them. Embeds {{ the identifier, either a phone number or a username }}.",
         )
 
         switch displayNameBeforeLearningProfileName {

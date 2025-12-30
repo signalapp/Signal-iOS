@@ -34,7 +34,7 @@ struct StoryViewModel {
     init(
         messages: [StoryMessage],
         isHidden: Bool? = nil,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) throws {
         let sortedFilteredMessages = messages.lazy.sorted { $0.timestamp < $1.timestamp }
         self.messages = sortedFilteredMessages
@@ -51,7 +51,7 @@ struct StoryViewModel {
         latestMessageName = StoryUtil.authorDisplayName(
             for: latestMessage,
             contactsManager: SSKEnvironment.shared.contactManagerRef,
-            transaction: transaction
+            transaction: transaction,
         )
         latestMessageAvatarDataSource = try StoryUtil.contextAvatarDataSource(for: latestMessage, transaction: transaction)
         latestMessageAttachment = .from(latestMessage, transaction: transaction)
@@ -69,7 +69,7 @@ struct StoryViewModel {
         updatedMessages: [StoryMessage],
         deletedMessageRowIds: [Int64],
         isHidden: Bool,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) throws -> Self? {
         var newMessages = updatedMessages
         var messages: [StoryMessage] = self.messages.lazy

@@ -45,7 +45,7 @@ public struct GalleryRailCellConfiguration {
             itemBorderColor: nil,
             focusedItemBorderWidth: 0,
             focusedItemBorderColor: nil,
-            focusedItemOverlayColor: nil
+            focusedItemOverlayColor: nil,
         )
     }
 
@@ -56,7 +56,7 @@ public struct GalleryRailCellConfiguration {
         focusedItemBorderWidth: CGFloat,
         focusedItemBorderColor: UIColor?,
         focusedItemOverlayColor: UIColor?,
-        focusedItemExtraPadding: CGFloat = 0
+        focusedItemExtraPadding: CGFloat = 0,
     ) {
         self.cornerRadius = cornerRadius
         self.itemBorderWidth = itemBorderWidth
@@ -215,7 +215,7 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
         fatalError("init(coder:) has not been implemented")
     }
 
-    public override func layoutSubviews() {
+    override public func layoutSubviews() {
         super.layoutSubviews()
         updateScrollViewContentInsetsIfNecessary()
         scrollToFocusedCell(animated: false)
@@ -225,7 +225,7 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
         itemProvider: GalleryRailItemProvider,
         focusedItem: GalleryRailItem,
         cellViewBuilder: (GalleryRailItem) -> GalleryRailCellView,
-        animated: Bool = true
+        animated: Bool = true,
     ) {
         let areRailItemsIdentical = { (lhs: [GalleryRailItem], rhs: [GalleryRailItem]) -> Bool in
             guard lhs.count == rhs.count else {
@@ -290,6 +290,7 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
         scrollView.showsHorizontalScrollIndicator = false
         return scrollView
     }()
+
     private var lastKnownScrollViewWidth: CGFloat = 0
 
     private var stackView: UIStackView?
@@ -310,11 +311,12 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
 
         return stackView
     }
+
     private var stackViewHeightConstraint: NSLayoutConstraint?
 
     private func buildCellViews(
         items: [GalleryRailItem],
-        cellViewBuilder: (GalleryRailItem) -> GalleryRailCellView
+        cellViewBuilder: (GalleryRailItem) -> GalleryRailCellView,
     ) -> [GalleryRailCellView] {
         return items.map { item in
             let cellView = cellViewBuilder(item)
@@ -324,7 +326,8 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
     }
 
     enum ScrollFocusMode {
-        case keepCentered, keepWithinBounds
+        case keepCentered
+        case keepWithinBounds
     }
 
     var scrollFocusMode: ScrollFocusMode = .keepCentered {
@@ -341,7 +344,7 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
     }
 
     private func updateScrollViewContentInsetsIfNecessary() {
-        guard let stackView, stackView.frame.width > 0, scrollView.frame.width > 0  else { return }
+        guard let stackView, stackView.frame.width > 0, scrollView.frame.width > 0 else { return }
 
         let scrollViewWidth = scrollView.frame.width
         guard scrollViewWidth != lastKnownScrollViewWidth else { return }

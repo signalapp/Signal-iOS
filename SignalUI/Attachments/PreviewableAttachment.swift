@@ -25,10 +25,6 @@ public import SignalServiceKit
 public struct PreviewableAttachment {
     public let rawValue: SignalAttachment
 
-    private init(rawValue: SignalAttachment) {
-        self.rawValue = rawValue
-    }
-
     public var dataSource: DataSourcePath { self.rawValue.dataSource }
 
     public var dataUTI: String { self.rawValue.dataUTI }
@@ -319,7 +315,7 @@ public struct PreviewableAttachment {
 
         let attachment = SignalAttachment(dataSource: dataSource, dataUTI: dataUTI)
 
-        if let validUTISet = validUTISet {
+        if let validUTISet {
             guard validUTISet.contains(dataUTI) else {
                 throw .invalidFileFormat
             }

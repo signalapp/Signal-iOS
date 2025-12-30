@@ -6,10 +6,10 @@
 import CoreMedia
 import Foundation
 import SafariServices
+import SDWebImage
 import SignalServiceKit
 import SignalUI
 import UIKit
-import SDWebImage
 
 protocol StoryItemMediaViewDelegate: AnyObject {
     func storyItemMediaViewWantsToPause(_ storyItemMediaView: StoryItemMediaView)
@@ -23,7 +23,7 @@ protocol StoryItemMediaViewDelegate: AnyObject {
 
 class StoryItemMediaView: UIView {
     weak var delegate: StoryItemMediaViewDelegate?
-    public private(set) var item: StoryItem
+    private(set) var item: StoryItem
 
     private let spoilerState: SpoilerRenderState
 
@@ -37,7 +37,7 @@ class StoryItemMediaView: UIView {
         item: StoryItem,
         contextButton: ContextMenuButton,
         spoilerState: SpoilerRenderState,
-        delegate: StoryItemMediaViewDelegate
+        delegate: StoryItemMediaViewDelegate,
     ) {
         self.item = item
         self.spoilerState = spoilerState
@@ -45,7 +45,7 @@ class StoryItemMediaView: UIView {
 
         super.init(frame: .zero)
 
-        autoPin(toAspectRatio: 9/16)
+        autoPin(toAspectRatio: 9 / 16)
 
         updateMediaView()
 
@@ -191,7 +191,7 @@ class StoryItemMediaView: UIView {
                     try DependenciesBridge.shared.attachmentStore.markViewedFullscreen(
                         attachment: attachment,
                         timestamp: timestamp,
-                        tx: tx
+                        tx: tx,
                     )
                 }
             }
@@ -287,7 +287,7 @@ class StoryItemMediaView: UIView {
         }
 
         // If we have a glyph count, increase the duration to allow it to be readable
-        if let glyphCount = glyphCount {
+        if let glyphCount {
             // For each bucket of glyphs after the first 15,
             // add an additional 1s of playback time.
             let fifteenGlyphBuckets = (max(0, CGFloat(glyphCount) - 15) / 15).rounded(.up)
@@ -298,8 +298,9 @@ class StoryItemMediaView: UIView {
     }
 
     var elapsedTime: CFTimeInterval? {
-        guard let currentTime = videoPlayer?.avPlayer.currentTime(),
-                let asset = videoPlayer?.avPlayer.currentItem?.asset else { return nil }
+        guard
+            let currentTime = videoPlayer?.avPlayer.currentTime(),
+            let asset = videoPlayer?.avPlayer.currentItem?.asset else { return nil }
         let loopedElapsedTime = Double(videoPlayerLoopCount) * CMTimeGetSeconds(asset.duration)
         return CMTimeGetSeconds(currentTime) + loopedElapsedTime
     }
@@ -308,7 +309,7 @@ class StoryItemMediaView: UIView {
         // Only start downloads when the user taps in the center of the view.
         let downloadHitRegion = CGRect(
             origin: CGPoint(x: frame.center.x - 30, y: frame.center.y - 30),
-            size: CGSize(square: 60)
+            size: CGSize(square: 60),
         )
         guard downloadHitRegion.contains(gesture.location(in: self)) else { return false }
         return item.startAttachmentDownloadIfNecessary(priority: .userInitiated)
@@ -321,7 +322,7 @@ class StoryItemMediaView: UIView {
     private func updateAuthorRow(newContextButton contextButton: ContextMenuButton) {
         let (avatarView, nameLabel) = SSKEnvironment.shared.databaseStorageRef.read { (
             buildAvatarView(transaction: $0),
-            buildNameLabel(transaction: $0)
+            buildNameLabel(transaction: $0),
         ) }
 
         let nameTrailingView: UIView
@@ -340,7 +341,7 @@ class StoryItemMediaView: UIView {
 
         let nameHStack = UIStackView(arrangedSubviews: [
             nameLabel,
-            nameTrailingView
+            nameTrailingView,
         ])
         nameHStack.spacing = nameTrailingSpacing
         nameHStack.axis = .horizontal
@@ -349,9 +350,10 @@ class StoryItemMediaView: UIView {
         if
             case .privateStory(let uniqueId) = delegate?.context,
             let privateStoryThread = SSKEnvironment.shared.databaseStorageRef.read(
-                block: { TSPrivateStoryThread.anyFetchPrivateStoryThread(uniqueId: uniqueId, transaction: $0) }
+                block: { TSPrivateStoryThread.anyFetchPrivateStoryThread(uniqueId: uniqueId, transaction: $0) },
             ),
-            !privateStoryThread.isMyStory {
+            !privateStoryThread.isMyStory
+        {
             // For private stories, other than "My Story", render the name of the story
 
             let contextIcon = UIImageView()
@@ -365,7 +367,7 @@ class StoryItemMediaView: UIView {
 
             let contextHStack = UIStackView(arrangedSubviews: [
                 contextIcon,
-                contextNameLabel
+                contextNameLabel,
             ])
             contextHStack.spacing = 4
             contextHStack.axis = .horizontal
@@ -388,7 +390,7 @@ class StoryItemMediaView: UIView {
             .spacer(withWidth: 12),
             metadataStackView,
             .hStretchingSpacer(),
-            .spacer(withWidth: contextButtonSize)
+            .spacer(withWidth: contextButtonSize),
         ])
         authorRow.axis = .horizontal
         authorRow.alignment = .center
@@ -402,7 +404,7 @@ class StoryItemMediaView: UIView {
         contextButton.autoSetDimensions(to: .square(contextButtonSize))
         contextButton.autoPinEdge(toSuperviewEdge: .trailing)
         NSLayoutConstraint.activate([
-            contextButton.centerYAnchor.constraint(equalTo: authorRow.centerYAnchor)
+            contextButton.centerYAnchor.constraint(equalTo: authorRow.centerYAnchor),
         ])
 
         timestampLabel.setCompressionResistanceHorizontalHigh()
@@ -419,13 +421,13 @@ class StoryItemMediaView: UIView {
             localUserDisplayMode: .asLocalUser,
             badged: false,
             shape: .circular,
-            useAutolayout: true
+            useAutolayout: true,
         )
 
         authorAvatarView.update(transaction) { config in
             config.dataSource = try? StoryUtil.authorAvatarDataSource(
                 for: item.message,
-                transaction: transaction
+                transaction: transaction,
             )
         }
 
@@ -434,7 +436,7 @@ class StoryItemMediaView: UIView {
             guard
                 let groupAvatarDataSource = try? StoryUtil.contextAvatarDataSource(
                     for: item.message,
-                    transaction: transaction
+                    transaction: transaction,
                 )
             else {
                 owsFailDebug("Unexpectedly missing group avatar")
@@ -446,7 +448,7 @@ class StoryItemMediaView: UIView {
                 localUserDisplayMode: .asLocalUser,
                 badged: false,
                 shape: .circular,
-                useAutolayout: true
+                useAutolayout: true,
             )
             groupAvatarView.update(transaction) { config in
                 config.dataSource = groupAvatarDataSource
@@ -477,7 +479,7 @@ class StoryItemMediaView: UIView {
             contactsManager: SSKEnvironment.shared.contactManagerRef,
             useFullNameForLocalAddress: false,
             useShortGroupName: false,
-            transaction: transaction
+            transaction: transaction,
         )
         return label
     }
@@ -487,18 +489,18 @@ class StoryItemMediaView: UIView {
     private class CaptionLabel: UILabel {
 
         static let desiredFont = UIFont.systemFont(ofSize: 17)
-        static let minimumScaleFactor: CGFloat = 15/17
+        static let minimumScaleFactor: CGFloat = 15 / 17
 
         static var minimumScaleFont: UIFont { desiredFont.withSize(desiredFont.pointSize * minimumScaleFactor) }
 
         static let maxCollapsedLines = 5
 
-        public var interactionIdentifier: InteractionSnapshotIdentifier
+        var interactionIdentifier: InteractionSnapshotIdentifier
         private let spoilerState: SpoilerRenderState
 
         init(
             interactionIdentifier: InteractionSnapshotIdentifier,
-            spoilerState: SpoilerRenderState
+            spoilerState: SpoilerRenderState,
         ) {
             self.interactionIdentifier = interactionIdentifier
             self.spoilerState = spoilerState
@@ -562,7 +564,7 @@ class StoryItemMediaView: UIView {
 
         var tappableItems = [HydratedMessageBody.TappableItem]()
 
-        public func setBody(_ body: StyleOnlyMessageBody?, isTruncated: Bool) {
+        func setBody(_ body: StyleOnlyMessageBody?, isTruncated: Bool) {
             guard let body else {
                 super.attributedText = nil
                 spoilerConfig.text = nil
@@ -585,15 +587,15 @@ class StoryItemMediaView: UIView {
             spoilerConfig.text = .messageBody(hydratedBody)
 
             let revealedSpoilerIds = self.spoilerState.revealState.revealedSpoilerIds(
-                interactionIdentifier: interactionIdentifier
+                interactionIdentifier: interactionIdentifier,
             )
             let config = HydratedMessageBody.DisplayConfiguration.storyCaption(
                 font: actualFont,
-                revealedSpoilerIds: revealedSpoilerIds
+                revealedSpoilerIds: revealedSpoilerIds,
             )
             self.tappableItems = hydratedBody.tappableItems(
                 revealedSpoilerIds: revealedSpoilerIds,
-                dataDetector: nil
+                dataDetector: nil,
             )
             spoilerConfig.text = .messageBody(hydratedBody)
             spoilerConfig.displayConfig = config
@@ -601,7 +603,7 @@ class StoryItemMediaView: UIView {
                 config: config.style,
                 baseFont: config.baseFont,
                 baseTextColor: config.baseTextColor.forCurrentTheme,
-                isDarkThemeEnabled: Theme.isDarkThemeEnabled
+                isDarkThemeEnabled: Theme.isDarkThemeEnabled,
             )
 
         }
@@ -612,14 +614,14 @@ class StoryItemMediaView: UIView {
             let attributedTextForSizing = body.asAttributedStringForDisplay(
                 config: HydratedMessageBody.DisplayConfiguration.storyCaption(
                     font: Self.desiredFont,
-                    revealedSpoilerIds: Set() // irrelevant for sizing.
+                    revealedSpoilerIds: Set(), // irrelevant for sizing.
                 ).style,
-                isDarkThemeEnabled: false // irrelevant for sizing.
+                isDarkThemeEnabled: false, // irrelevant for sizing.
             )
             attributedTextForSizing.boundingRect(
                 with: bounds.size,
                 options: [.usesLineFragmentOrigin, .usesFontLeading],
-                context: drawingContext
+                context: drawingContext,
             )
             return Self.desiredFont.pointSize * drawingContext.actualScaleFactor
         }
@@ -627,7 +629,7 @@ class StoryItemMediaView: UIView {
 
     private lazy var captionLabel = CaptionLabel(
         interactionIdentifier: .fromStoryMessage(item.message),
-        spoilerState: spoilerState
+        spoilerState: spoilerState,
     )
 
     private var truncatedCaptionText: StyleOnlyMessageBody?
@@ -667,7 +669,7 @@ class StoryItemMediaView: UIView {
         if let spoilerItem {
             spoilerState.revealState.setSpoilerRevealed(
                 withID: spoilerItem.id,
-                interactionIdentifier: .fromStoryMessage(item.message)
+                interactionIdentifier: .fromStoryMessage(item.message),
             )
             updateCaption()
             return true
@@ -682,7 +684,7 @@ class StoryItemMediaView: UIView {
 
         if !isCaptionExpanded {
             guard captionLabel.bounds.contains(gesture.location(in: captionLabel)) else { return false }
-        } else if let captionBackdrop = captionBackdrop {
+        } else if let captionBackdrop {
             guard captionBackdrop.bounds.contains(gesture.location(in: captionBackdrop)) else { return false }
         } else {
             owsFailDebug("Unexpectedly missing caption backdrop")
@@ -739,14 +741,14 @@ class StoryItemMediaView: UIView {
 
         self.truncatedCaptionText = Self.truncatedCaptionText(
             fullCaptionBody: body,
-            labelSize: CGSize(width: captionLabel.bounds.width, height: .infinity)
+            labelSize: CGSize(width: captionLabel.bounds.width, height: .infinity),
         )
     }
 
     /// Nil means no truncation is necessary.
     private static func truncatedCaptionText(
         fullCaptionBody: StyleOnlyMessageBody,
-        labelSize: CGSize
+        labelSize: CGSize,
     ) -> StyleOnlyMessageBody? {
         let labelMinimumScaledFont = CaptionLabel.minimumScaleFont
 
@@ -758,11 +760,11 @@ class StoryItemMediaView: UIView {
         textStorage.addLayoutManager(layoutManager)
         let displayConfigForSizing = HydratedMessageBody.DisplayConfiguration.storyCaption(
             font: labelMinimumScaledFont,
-            revealedSpoilerIds: Set() // irrelevant for sizing
+            revealedSpoilerIds: Set(), // irrelevant for sizing
         )
         let fullCaptionText = fullCaptionBody.asAttributedStringForDisplay(
             config: displayConfigForSizing.style,
-            isDarkThemeEnabled: false // irrelevant for sizing
+            isDarkThemeEnabled: false, // irrelevant for sizing
         )
         textStorage.setAttributedString(fullCaptionText)
 
@@ -783,7 +785,7 @@ class StoryItemMediaView: UIView {
 
         let readMoreString = OWSLocalizedString(
             "STORIES_CAPTION_READ_MORE",
-            comment: "Text indication a story caption can be tapped to read more."
+            comment: "Text indication a story caption can be tapped to read more.",
         )
         let readMoreBody = StyleOnlyMessageBody(text: readMoreString, style: .bold)
         let suffix = StyleOnlyMessageBody(plaintext: "… ").addingSuffix(readMoreBody)
@@ -791,7 +793,7 @@ class StoryItemMediaView: UIView {
         var potentialTruncatedCaptionBody = fullCaptionBody
         func truncatePotentialCaptionText(to index: Int) {
             potentialTruncatedCaptionBody = potentialTruncatedCaptionBody.stripAndDropLast(
-                potentialTruncatedCaptionBody.length - index
+                potentialTruncatedCaptionBody.length - index,
             )
         }
 
@@ -834,13 +836,13 @@ class StoryItemMediaView: UIView {
             gradientProtectionViewHeightConstraint = gradientProtectionView.autoMatch(.height, to: .height, of: self, withMultiplier: 0.4)
             gradientProtectionView.colors = [
                 .clear,
-                .black.withAlphaComponent(0.8)
+                .black.withAlphaComponent(0.8),
             ]
         } else {
             gradientProtectionViewHeightConstraint = gradientProtectionView.autoMatch(.height, to: .height, of: self, withMultiplier: 0.2)
             gradientProtectionView.colors = [
                 .clear,
-                .black.withAlphaComponent(0.6)
+                .black.withAlphaComponent(0.6),
             ]
         }
     }
@@ -908,7 +910,7 @@ class StoryItemMediaView: UIView {
 
             let view = buildDownloadStateView(
                 for: pointer.attachment,
-                downloadState: pointer.downloadState
+                downloadState: pointer.downloadState,
             )
             container.addSubview(view)
             view.autoPinEdgesToSuperviewEdges()
@@ -918,12 +920,12 @@ class StoryItemMediaView: UIView {
             return TextAttachmentView(
                 attachment: text,
                 interactionIdentifier: .fromStoryMessage(item.message),
-                spoilerState: spoilerState
+                spoilerState: spoilerState,
             )
         }
     }
 
-    public func updateMuteState() {
+    func updateMuteState() {
         videoPlayer?.isMuted = delegate?.storyItemMediaViewShouldBeMuted(self) ?? false
     }
 
@@ -956,10 +958,12 @@ class StoryItemMediaView: UIView {
             owsFailDebug("Could not load attachment.")
             return buildContentUnavailableView()
         }
-        guard image.size.width > 0,
-            image.size.height > 0 else {
-                owsFailDebug("Attachment has invalid size.")
-                return buildContentUnavailableView()
+        guard
+            image.size.width > 0,
+            image.size.height > 0
+        else {
+            owsFailDebug("Attachment has invalid size.")
+            return buildContentUnavailableView()
         }
         let animatedImageView = SDAnimatedImageView()
         animatedImageView.contentMode = .scaleAspectFit
@@ -976,10 +980,12 @@ class StoryItemMediaView: UIView {
             owsFailDebug("Could not load attachment.")
             return buildContentUnavailableView()
         }
-        guard image.size.width > 0,
-            image.size.height > 0 else {
-                owsFailDebug("Attachment has invalid size.")
-                return buildContentUnavailableView()
+        guard
+            image.size.width > 0,
+            image.size.height > 0
+        else {
+            owsFailDebug("Attachment has invalid size.")
+            return buildContentUnavailableView()
         }
 
         let imageView = UIImageView()
@@ -1023,16 +1029,16 @@ class StoryItemMediaView: UIView {
     private static let mediaCache = CVMediaCache()
     private func buildDownloadStateView(
         for pointer: AttachmentPointer,
-        downloadState: AttachmentDownloadState
+        downloadState: AttachmentDownloadState,
     ) -> UIView {
         let progressView = CVAttachmentProgressView(
             direction: .download(
                 attachmentPointer: pointer,
-                downloadState: downloadState
+                downloadState: downloadState,
             ),
             diameter: 56,
             isDarkThemeEnabled: true,
-            mediaCache: Self.mediaCache
+            mediaCache: Self.mediaCache,
         )
 
         let manualLayoutView = OWSLayerView(frame: .zero) { layerView in
@@ -1061,7 +1067,7 @@ class StoryItem: NSObject {
             var caption: String? { reference.storyMediaCaption?.text }
             var captionStyles: [NSRangedValue<MessageBodyRanges.CollapsedStyle>] { reference.storyMediaCaption?.collapsedStyles ?? [] }
 
-            static func == (lhs: StoryItem.Attachment.Pointer, rhs: StoryItem.Attachment.Pointer) -> Bool {
+            static func ==(lhs: StoryItem.Attachment.Pointer, rhs: StoryItem.Attachment.Pointer) -> Bool {
                 return lhs.attachment.id == rhs.attachment.id
                     && lhs.reference.hasSameOwner(as: rhs.reference)
                     && lhs.downloadState == rhs.downloadState
@@ -1074,7 +1080,7 @@ class StoryItem: NSObject {
             var caption: String? { attachment.reference.storyMediaCaption?.text }
             var captionStyles: [NSRangedValue<MessageBodyRanges.CollapsedStyle>] { attachment.reference.storyMediaCaption?.collapsedStyles ?? [] }
 
-            static func == (lhs: StoryItem.Attachment.Stream, rhs: StoryItem.Attachment.Stream) -> Bool {
+            static func ==(lhs: StoryItem.Attachment.Stream, rhs: StoryItem.Attachment.Stream) -> Bool {
                 return lhs.attachment.attachmentStream.id == rhs.attachment.attachmentStream.id
                     && lhs.attachment.reference.hasSameOwner(as: rhs.attachment.reference)
             }
@@ -1084,6 +1090,7 @@ class StoryItem: NSObject {
         case stream(Stream)
         case text(PreloadedTextAttachment)
     }
+
     var attachment: Attachment
 
     init(message: StoryMessage, numberOfReplies: UInt64, attachment: Attachment) {
@@ -1125,7 +1132,7 @@ extension StoryItem {
             DependenciesBridge.shared.attachmentDownloadManager.enqueueDownloadOfAttachmentsForStoryMessage(
                 message,
                 priority: priority,
-                tx: tx
+                tx: tx,
             )
             return true
         }

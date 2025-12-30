@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-@testable import SignalServiceKit
 import Testing
+@testable import SignalServiceKit
 
 struct DonationReceiptCredentialRedemptionJobFinderTest {
     let db = InMemoryDB()
@@ -17,12 +17,12 @@ struct DonationReceiptCredentialRedemptionJobFinderTest {
         db.write { tx in
             #expect(!jobFinder.subscriptionJobExists(
                 subscriberID: subscriberID,
-                tx: tx
+                tx: tx,
             ))
 
             let (
                 receiptCredentialRequestContext,
-                receiptCredentialRequest
+                receiptCredentialRequest,
             ) = ReceiptCredentialManager.generateReceiptRequest()
 
             try! DonationReceiptCredentialRedemptionJobRecord(
@@ -37,12 +37,12 @@ struct DonationReceiptCredentialRedemptionJobFinderTest {
                 isBoost: false,
                 amount: nil,
                 currencyCode: nil,
-                boostPaymentIntentID: ""
+                boostPaymentIntentID: "",
             ).insert(tx.database)
 
             #expect(jobFinder.subscriptionJobExists(
                 subscriberID: subscriberID,
-                tx: tx
+                tx: tx,
             ))
         }
     }

@@ -9,7 +9,7 @@ public protocol DeliveryReceiptContext: AnyObject {
     func addUpdate(
         message: TSOutgoingMessage,
         transaction: DBWriteTransaction,
-        update: @escaping (TSOutgoingMessage) -> Void
+        update: @escaping (TSOutgoingMessage) -> Void,
     )
 
     func messages(_ timestamps: UInt64, transaction: DBReadTransaction) -> [TSOutgoingMessage]
@@ -20,12 +20,12 @@ private struct Update {
     let update: (TSOutgoingMessage) -> Void
 }
 
-fileprivate extension TSOutgoingMessage {
+private extension TSOutgoingMessage {
     static func fetch(_ timestamp: UInt64, transaction: DBReadTransaction) -> [TSOutgoingMessage] {
         do {
             return try InteractionFinder.fetchInteractions(
                 timestamp: timestamp,
-                transaction: transaction
+                transaction: transaction,
             ).compactMap { $0 as? TSOutgoingMessage }
         } catch {
             owsFailDebug("Error loading interactions: \(error)")
@@ -40,7 +40,7 @@ public class PassthroughDeliveryReceiptContext: DeliveryReceiptContext {
     public func addUpdate(
         message: TSOutgoingMessage,
         transaction: DBWriteTransaction,
-        update: @escaping (TSOutgoingMessage) -> Void
+        update: @escaping (TSOutgoingMessage) -> Void,
     ) {
         let deferredUpdate = Update(message: message, update: update)
         message.anyUpdateOutgoingMessage(transaction: transaction) { message in
@@ -72,7 +72,7 @@ public class BatchingDeliveryReceiptContext: DeliveryReceiptContext {
     public func addUpdate(
         message: TSOutgoingMessage,
         transaction: DBWriteTransaction,
-        update: @escaping (TSOutgoingMessage) -> Void
+        update: @escaping (TSOutgoingMessage) -> Void,
     ) {
         deferredUpdates.append(Update(message: message, update: update))
     }
@@ -90,8 +90,10 @@ public class BatchingDeliveryReceiptContext: DeliveryReceiptContext {
         private var message: TSOutgoingMessage?
         private var closures = [(TSOutgoingMessage) -> Void]()
 
-        mutating func addOrExecute(update: Update,
-                                   transaction: DBWriteTransaction) {
+        mutating func addOrExecute(
+            update: Update,
+            transaction: DBWriteTransaction,
+        ) {
             if message?.grdbId != update.message.grdbId {
                 execute(transaction: transaction)
                 message = update.message
@@ -101,7 +103,7 @@ public class BatchingDeliveryReceiptContext: DeliveryReceiptContext {
         }
 
         mutating func execute(transaction: DBWriteTransaction) {
-            guard let message = message else {
+            guard let message else {
                 owsAssertDebug(closures.isEmpty)
                 return
             }

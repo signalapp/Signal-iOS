@@ -7,8 +7,8 @@ import GRDB
 import LibSignalClient
 import XCTest
 
-@testable import SignalServiceKit
 @testable import Signal
+@testable import SignalServiceKit
 
 class InfoMessageGroupUpdateMigratorTest: SignalBaseTest {
 
@@ -31,7 +31,7 @@ class InfoMessageGroupUpdateMigratorTest: SignalBaseTest {
             insertInfoMessage(
                 infoMessageUserInfo: [
                     .legacyGroupUpdateItems: TSInfoMessage.LegacyPersistableGroupUpdateItemsWrapper(
-                        [.inviteRemoved(invitee: ServiceIdUppercaseString(wrappedValue: Pni.randomForTesting()), wasLocalUser: true)]
+                        [.inviteRemoved(invitee: ServiceIdUppercaseString(wrappedValue: Pni.randomForTesting()), wasLocalUser: true)],
                     ),
                     .legacyUpdaterKnownToBeLocalUser: false,
                     .groupUpdateSourceLegacyAddress: SignalServiceAddress.isolatedRandomForTesting(),
@@ -91,7 +91,7 @@ class InfoMessageGroupUpdateMigratorTest: SignalBaseTest {
                 (recordType, uniqueId, receivedAtTimestamp, timestamp, uniqueThreadId, infoMessageUserInfo)
                 VALUES (?, ?, 0, 0, ?, ?)
             """,
-            arguments: [SDSRecordType.infoMessage.rawValue, UUID().uuidString, UUID().uuidString, infoMessageUserInfo.map { encode($0) }]
+            arguments: [SDSRecordType.infoMessage.rawValue, UUID().uuidString, UUID().uuidString, infoMessageUserInfo.map { encode($0) }],
         )
     }
 
@@ -106,7 +106,7 @@ class InfoMessageGroupUpdateMigratorTest: SignalBaseTest {
         return try! NSKeyedUnarchiver.unarchivedObject(
             ofClass: NSDictionary.self,
             from: data,
-            requiringSecureCoding: false
+            requiringSecureCoding: false,
         ) as! [InfoMessageUserInfoKey: Any]
     }
 }

@@ -154,7 +154,7 @@ public extension UUID {
             guard bytes.count >= count else { return nil }
             return bytes.load(as: uuid_t.self)
         }
-        guard let uuidT = uuidT else {
+        guard let uuidT else {
             return nil
         }
         return (Self(uuid: uuidT), count)

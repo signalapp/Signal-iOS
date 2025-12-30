@@ -119,7 +119,7 @@ class BadgeThanksSheet: OWSTableSheetViewController {
     private lazy var shouldMakeVisibleAndPrimary = self.initialVisibleBadgeResolver.switchDefault(for: self.badge.id)
 
     convenience init(
-        receiptCredentialRedemptionSuccess: DonationReceiptCredentialRedemptionSuccess
+        receiptCredentialRedemptionSuccess: DonationReceiptCredentialRedemptionSuccess,
     ) {
         let thanksType: ThanksType = {
             switch receiptCredentialRedemptionSuccess.paymentMethod {
@@ -133,7 +133,7 @@ class BadgeThanksSheet: OWSTableSheetViewController {
         self.init(
             newBadge: receiptCredentialRedemptionSuccess.badge,
             thanksType: thanksType,
-            oldBadgesSnapshot: receiptCredentialRedemptionSuccess.badgesSnapshotBeforeJob
+            oldBadgesSnapshot: receiptCredentialRedemptionSuccess.badgesSnapshotBeforeJob,
         )
     }
 
@@ -149,7 +149,7 @@ class BadgeThanksSheet: OWSTableSheetViewController {
     init(
         newBadge badge: ProfileBadge,
         thanksType: ThanksType,
-        oldBadgesSnapshot: ProfileBadgesSnapshot
+        oldBadgesSnapshot: ProfileBadgesSnapshot,
     ) {
         owsAssertDebug(badge.assets != nil)
         self.badge = badge
@@ -198,13 +198,13 @@ class BadgeThanksSheet: OWSTableSheetViewController {
     }
 
     private func saveVisibilityChanges(shouldMakeVisibleAndPrimary: Bool) async throws {
-        try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { (tx) -> Promise<Void> in
+        try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx -> Promise<Void> in
             let visibleBadgeResolver = VisibleBadgeResolver(
-                badgesSnapshot: .forLocalProfile(profileManager: SSKEnvironment.shared.profileManagerRef, tx: tx)
+                badgesSnapshot: .forLocalProfile(profileManager: SSKEnvironment.shared.profileManagerRef, tx: tx),
             )
             let visibleBadgeIds = visibleBadgeResolver.visibleBadgeIds(
                 adding: self.badge.id,
-                isVisibleAndFeatured: shouldMakeVisibleAndPrimary
+                isVisibleAndFeatured: shouldMakeVisibleAndPrimary,
             )
             if visibleBadgeIds == visibleBadgeResolver.currentlyVisibleBadgeIds() {
                 // No change, we can skip the profile update.
@@ -220,7 +220,7 @@ class BadgeThanksSheet: OWSTableSheetViewController {
                 unsavedRotatedProfileKey: nil,
                 userProfileWriter: .localUser,
                 authedAccount: .implicit(),
-                tx: tx
+                tx: tx,
             )
         }.awaitable()
     }
@@ -230,7 +230,7 @@ class BadgeThanksSheet: OWSTableSheetViewController {
             throw OWSAssertionError("trying to redeem message without a badge")
         }
         try await DonationSubscriptionManager.redeemReceiptCredentialPresentation(
-            receiptCredentialPresentation: try giftBadge.getReceiptCredentialPresentation()
+            receiptCredentialPresentation: try giftBadge.getReceiptCredentialPresentation(),
         )
         await Self.updateGiftBadge(incomingMessage: incomingMessage, state: .redeemed)
     }
@@ -252,17 +252,17 @@ class BadgeThanksSheet: OWSTableSheetViewController {
         case .badgeRedeemedViaBankPayment:
             return OWSLocalizedString(
                 "BADGE_THANKS_BANK_DONATION_COMPLETE_TITLE",
-                comment: "Title for a sheet explaining that a bank transfer donation is complete, and that you have received a badge."
+                comment: "Title for a sheet explaining that a bank transfer donation is complete, and that you have received a badge.",
             )
         case .badgeRedeemedViaNonBankPayment:
             return OWSLocalizedString(
                 "BADGE_THANKS_TITLE",
-                comment: "When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the title of that sheet."
+                comment: "When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the title of that sheet.",
             )
         case let .giftReceived(shortName, _, _):
             let formatText = OWSLocalizedString(
                 "DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_TITLE_FORMAT",
-                comment: "A friend has donated on your behalf and you received a badge. A sheet opens for you to redeem this badge. Embeds {{contact's short name, such as a first name}}."
+                comment: "A friend has donated on your behalf and you received a badge. A sheet opens for you to redeem this badge. Embeds {{contact's short name, such as a first name}}.",
             )
             return String(format: formatText, shortName)
         }
@@ -273,18 +273,18 @@ class BadgeThanksSheet: OWSTableSheetViewController {
         case .badgeRedeemedViaBankPayment:
             return OWSLocalizedString(
                 "BADGE_THANKS_BANK_DONATION_COMPLETE_BODY",
-                comment: "Body for a sheet explaining that a bank transfer donation is complete, and that you have received a badge."
+                comment: "Body for a sheet explaining that a bank transfer donation is complete, and that you have received a badge.",
             )
         case .badgeRedeemedViaNonBankPayment:
             let formatText = OWSLocalizedString(
                 "BADGE_THANKS_BODY",
-                comment: "When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet."
+                comment: "When you make a donation to Signal, you will receive a badge. A thank-you sheet appears when this happens. This is the body text on that sheet.",
             )
             return String(format: formatText, self.badge.localizedName)
         case let .giftReceived(shortName, _, _):
             let formatText = OWSLocalizedString(
                 "DONATION_ON_BEHALF_OF_A_FRIEND_YOU_RECEIVED_A_BADGE_FORMAT",
-                comment: "A friend has donated on your behalf and you received a badge. This text says that you received a badge, and from whom. Embeds {{contact's short name, such as a first name}}."
+                comment: "A friend has donated on your behalf and you received a badge. This text says that you received a badge, and from whom. Embeds {{contact's short name, such as a first name}}.",
             )
             return String(format: formatText, shortName)
         }
@@ -292,7 +292,7 @@ class BadgeThanksSheet: OWSTableSheetViewController {
 
     // MARK: -
 
-    public override func tableContents() -> OWSTableContents {
+    override func tableContents() -> OWSTableContents {
         let contents = OWSTableContents()
 
         let headerSection = OWSTableSection()
@@ -302,7 +302,7 @@ class BadgeThanksSheet: OWSTableSheetViewController {
 
         headerSection.add(.init(customCellBlock: { [weak self] in
             let cell = OWSTableItem.newCell()
-            guard let self = self else { return cell }
+            guard let self else { return cell }
             cell.selectionStyle = .none
 
             let stackView = UIStackView()
@@ -357,13 +357,13 @@ class BadgeThanksSheet: OWSTableSheetViewController {
         case .displayOnProfile:
             switchText = OWSLocalizedString(
                 "BADGE_THANKS_DISPLAY_ON_PROFILE_LABEL",
-                comment: "Label prompting the user to display the new badge on their profile on the badge thank you sheet."
+                comment: "Label prompting the user to display the new badge on their profile on the badge thank you sheet.",
             )
             showFooter = false
         case .makeFeaturedBadge:
             switchText = OWSLocalizedString(
                 "BADGE_THANKS_MAKE_FEATURED",
-                comment: "Label prompting the user to feature the new badge on their profile on the badge thank you sheet."
+                comment: "Label prompting the user to feature the new badge on their profile on the badge thank you sheet.",
             )
             showFooter = true
         }
@@ -373,12 +373,12 @@ class BadgeThanksSheet: OWSTableSheetViewController {
             withText: switchText,
             isOn: { self.shouldMakeVisibleAndPrimary },
             target: self,
-            selector: #selector(didToggleDisplayOnProfile)
+            selector: #selector(didToggleDisplayOnProfile),
         ))
         if showFooter {
             section.footerTitle = OWSLocalizedString(
                 "BADGE_THANKS_TOGGLE_FOOTER",
-                comment: "Footer explaining that only one badge can be featured at a time on the thank you sheet."
+                comment: "Footer explaining that only one badge can be featured at a time on the thank you sheet.",
             )
         }
         return section
@@ -395,12 +395,12 @@ class BadgeThanksSheet: OWSTableSheetViewController {
         section.add(.init(customCellBlock: { [weak self] in
             let cell = OWSTableItem.newCell()
             cell.selectionStyle = .none
-            guard let self = self else { return cell }
+            guard let self else { return cell }
 
             let button = UIButton(
                 configuration: .largePrimary(title: CommonStrings.doneButton),
                 primaryAction: UIAction { [weak self] _ in
-                    guard let self = self else { return }
+                    guard let self else { return }
                     // Capture this value on the main thread.
                     let shouldMakeVisibleAndPrimary = self.shouldMakeVisibleAndPrimary
                     Task {
@@ -412,7 +412,7 @@ class BadgeThanksSheet: OWSTableSheetViewController {
                             self.dismiss(animated: true)
                         }
                     }
-                }
+                },
             )
             cell.contentView.addSubview(button)
             button.autoPinEdgesToSuperviewMargins()
@@ -427,12 +427,12 @@ class BadgeThanksSheet: OWSTableSheetViewController {
         section.add(.init(customCellBlock: { [weak self] in
             let cell = OWSTableItem.newCell()
             cell.selectionStyle = .none
-            guard let self = self else { return cell }
+            guard let self else { return cell }
 
             let redeemButton = UIButton(
                 configuration: .largePrimary(title: CommonStrings.redeemGiftButton),
                 primaryAction: UIAction { [weak self] _ in
-                    guard let self = self else { return }
+                    guard let self else { return }
                     // Capture this value on the main thread.
                     let shouldMakeVisibleAndPrimary = self.shouldMakeVisibleAndPrimary
                     Task {
@@ -445,16 +445,16 @@ class BadgeThanksSheet: OWSTableSheetViewController {
                             OWSActionSheets.showActionSheet(
                                 title: OWSLocalizedString(
                                     "FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_TITLE",
-                                    comment: "Shown as the title of an alert when failing to redeem a badge that was received after a friend donated on your behalf."
+                                    comment: "Shown as the title of an alert when failing to redeem a badge that was received after a friend donated on your behalf.",
                                 ),
                                 message: OWSLocalizedString(
                                     "FAILED_TO_REDEEM_BADGE_RECEIVED_AFTER_DONATION_FROM_A_FRIEND_BODY",
-                                    comment: "Shown as the body of an alert when failing to redeem a badge that was received after a friend donated on your behalf."
-                                )
+                                    comment: "Shown as the body of an alert when failing to redeem a badge that was received after a friend donated on your behalf.",
+                                ),
                             )
                         }
                     }
-                }
+                },
             )
 
             let notNowButton = UIButton(
@@ -462,10 +462,10 @@ class BadgeThanksSheet: OWSTableSheetViewController {
                 primaryAction: UIAction { [weak self] _ in
                     notNowAction()
                     self?.dismiss(animated: true)
-                }
+                },
             )
 
-            let stackView = UIStackView.verticalButtonStack(buttons: [ redeemButton, notNowButton ], isFullWidthButtons: true)
+            let stackView = UIStackView.verticalButtonStack(buttons: [redeemButton, notNowButton], isFullWidthButtons: true)
             stackView.directionalLayoutMargins.bottom = 0
             cell.contentView.addSubview(stackView)
             stackView.autoPinEdgesToSuperviewMargins()

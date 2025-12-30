@@ -10,9 +10,11 @@ public enum OWSFormat {
     // We evacuate this cache in the background in case the
     // user changes a system setting that would affect
     // formatting behavior.
-    private static let shortNameComponentsCache = LRUCache<String, String>(maxSize: 512,
-                                                                           nseMaxSize: 64,
-                                                                           shouldEvacuateInBackground: true)
+    private static let shortNameComponentsCache = LRUCache<String, String>(
+        maxSize: 512,
+        nseMaxSize: 64,
+        shouldEvacuateInBackground: true,
+    )
 
     public static func formatNameComponents(_ nameComponents: PersonNameComponents) -> String {
         formatNameComponents(nameComponents, style: .default)
@@ -22,15 +24,19 @@ public enum OWSFormat {
         formatNameComponents(nameComponents, style: .short)
     }
 
-    public static func formatNameComponents(_ nameComponents: PersonNameComponents,
-                                            style: PersonNameComponentsFormatter.Style) -> String {
+    public static func formatNameComponents(
+        _ nameComponents: PersonNameComponents,
+        style: PersonNameComponentsFormatter.Style,
+    ) -> String {
         let cacheKey = String(describing: nameComponents) + ".\(style.rawValue)"
         if let value = shortNameComponentsCache.get(key: cacheKey) {
             return value
         }
-        let value = PersonNameComponentsFormatter.localizedString(from: nameComponents,
-                                                                  style: style,
-                                                                  options: [])
+        let value = PersonNameComponentsFormatter.localizedString(
+            from: nameComponents,
+            style: style,
+            options: [],
+        )
         shortNameComponentsCache.set(key: cacheKey, value: value)
         return value
     }
@@ -142,6 +148,7 @@ public extension OWSFormat {
 }
 
 // MARK: - Time
+
 public extension OWSFormat {
 
     private static let durationFormatterS: DateComponentsFormatter = {
@@ -149,21 +156,21 @@ public extension OWSFormat {
         // `dropTrailing` produces a single leading zero: "0:ss".
         formatter.zeroFormattingBehavior = .dropTrailing
         formatter.formattingContext = .standalone
-        formatter.allowedUnits = [ .minute, .second ]
+        formatter.allowedUnits = [.minute, .second]
         return formatter
     }()
 
     private static let durationFormatterMS: DateComponentsFormatter = {
         let formatter = DateComponentsFormatter()
         formatter.formattingContext = .standalone
-        formatter.allowedUnits = [ .minute, .second ]
+        formatter.allowedUnits = [.minute, .second]
         return formatter
     }()
 
     private static let durationFormatterHMS: DateComponentsFormatter = {
         let formatter = DateComponentsFormatter()
         formatter.formattingContext = .standalone
-        formatter.allowedUnits = [ .hour, .minute, .second ]
+        formatter.allowedUnits = [.hour, .minute, .second]
         return formatter
     }()
 
@@ -176,7 +183,7 @@ public extension OWSFormat {
         let formatter = DateComponentsFormatter()
         formatter.formattingContext = .standalone
         formatter.zeroFormattingBehavior = .pad
-        formatter.allowedUnits = [ .minute, .second ]
+        formatter.allowedUnits = [.minute, .second]
         guard let longString = formatter.string(from: 0) else {
             return nil
         }

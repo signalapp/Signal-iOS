@@ -14,20 +14,20 @@ open class AttachmentDownloadManagerMock: AttachmentDownloadManager {
     public func backupCdnInfo(metadata: BackupReadCredential) async throws -> BackupCdnInfo {
         return BackupCdnInfo(
             fileInfo: AttachmentDownloads.CdnInfo(contentLength: 0, lastModified: Date()),
-            metadataHeader: BackupNonce.MetadataHeader(data: Data())
+            metadataHeader: BackupNonce.MetadataHeader(data: Data()),
         )
     }
 
     public func downloadBackup(
         metadata: BackupReadCredential,
-        progress: OWSProgressSink?
+        progress: OWSProgressSink?,
     ) -> Promise<URL> {
         return .pending().0
     }
 
     public func downloadTransientAttachment(
         metadata: AttachmentDownloads.DownloadMetadata,
-        progress: OWSProgressSink?
+        progress: OWSProgressSink?,
     ) -> Promise<URL> {
         return .pending().0
     }
@@ -35,7 +35,7 @@ open class AttachmentDownloadManagerMock: AttachmentDownloadManager {
     open func enqueueDownloadOfAttachmentsForMessage(
         _ message: TSMessage,
         priority: AttachmentDownloadPriority,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         // Do nothing
     }
@@ -43,7 +43,7 @@ open class AttachmentDownloadManagerMock: AttachmentDownloadManager {
     open func enqueueDownloadOfAttachmentsForStoryMessage(
         _ message: StoryMessage,
         priority: AttachmentDownloadPriority,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         // Do nothing
     }
@@ -52,7 +52,7 @@ open class AttachmentDownloadManagerMock: AttachmentDownloadManager {
         id: Attachment.IDType,
         priority: AttachmentDownloadPriority,
         source: QueuedAttachmentDownloadRecord.SourceType,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         // Do nothing
     }
@@ -61,7 +61,7 @@ open class AttachmentDownloadManagerMock: AttachmentDownloadManager {
         id: Attachment.IDType,
         priority: AttachmentDownloadPriority,
         source: QueuedAttachmentDownloadRecord.SourceType,
-        progress: OWSProgressSink?
+        progress: OWSProgressSink?,
     ) async throws {
         // Do nothing
     }
@@ -72,7 +72,7 @@ open class AttachmentDownloadManagerMock: AttachmentDownloadManager {
 
     open func cancelDownload(
         for attachmentId: Attachment.IDType,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         // Do nothing
     }

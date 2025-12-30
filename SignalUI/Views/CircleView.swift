@@ -8,11 +8,11 @@ import UIKit
 public class CircleView: UIView {
 
     @available(*, unavailable, message: "use other constructor instead.")
-    required public init?(coder aDecoder: NSCoder) {
+    public required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    public override init(frame: CGRect) {
+    override public init(frame: CGRect) {
         super.init(frame: frame)
     }
 
@@ -42,11 +42,11 @@ public class CircleView: UIView {
 public class CircleBlurView: UIVisualEffectView {
 
     @available(*, unavailable, message: "use other constructor instead.")
-    required public init?(coder aDecoder: NSCoder) {
+    public required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    public override init(effect: UIVisualEffect?) {
+    override public init(effect: UIVisualEffect?) {
         super.init(effect: effect)
         frame = .zero
     }
@@ -78,7 +78,7 @@ public class CircleBlurView: UIVisualEffectView {
 
 open class PillView: UIView {
 
-    public override init(frame: CGRect) {
+    override public init(frame: CGRect) {
         super.init(frame: frame)
 
         layer.masksToBounds = true
@@ -93,7 +93,7 @@ open class PillView: UIView {
         }
     }
 
-    required public init?(coder aDecoder: NSCoder) {
+    public required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 

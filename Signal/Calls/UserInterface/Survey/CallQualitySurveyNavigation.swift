@@ -83,7 +83,7 @@ final class CallQualitySurveyNavigationController: UINavigationController {
     private func makeBackButton() -> UIBarButtonItem {
         UIBarButtonItem.button(
             image: UIImage(resource: .chevronLeftBold28),
-            style: .plain
+            style: .plain,
         ) { [weak self] in
             self?.didTapBack()
         }

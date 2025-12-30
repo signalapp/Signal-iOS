@@ -10,284 +10,308 @@ import Foundation
  */
 public enum CommonStrings {
 
-    static public var archiveAction: String {
+    public static var archiveAction: String {
         OWSLocalizedString("ARCHIVE_ACTION", comment: "Label for the archive button for conversations list view")
     }
 
-    static public var acknowledgeButton: String {
-        OWSLocalizedString("ALERT_ACTION_ACKNOWLEDGE", comment:
-                            "generic button text to acknowledge that the corresponding text was read.")
+    public static var acknowledgeButton: String {
+        OWSLocalizedString(
+            "ALERT_ACTION_ACKNOWLEDGE",
+            comment:
+            "generic button text to acknowledge that the corresponding text was read.",
+        )
     }
 
-    static public var backButton: String {
+    public static var backButton: String {
         OWSLocalizedString("BACK_BUTTON", comment: "return to the previous screen")
     }
 
-    static public var cancelButton: String {
+    public static var cancelButton: String {
         OWSLocalizedString("TXT_CANCEL_TITLE", comment: "Label for the cancel button in an alert or action sheet.")
     }
 
-    static public var continueButton: String {
+    public static var continueButton: String {
         OWSLocalizedString("BUTTON_CONTINUE", comment: "Label for 'continue' button.")
     }
 
-    static public var discardButton: String {
+    public static var discardButton: String {
         OWSLocalizedString("ALERT_DISCARD_BUTTON", comment: "The label for the 'discard' button in alerts and action sheets.")
     }
 
-    static public var dismissButton: String {
+    public static var dismissButton: String {
         OWSLocalizedString("DISMISS_BUTTON_TEXT", comment: "Short text to dismiss current modal / actionsheet / screen")
     }
 
-    static public var selectButton: String {
+    public static var selectButton: String {
         OWSLocalizedString("BUTTON_SELECT", comment: "Button text to enable batch selection mode")
     }
 
-    static public var doneButton: String {
+    public static var doneButton: String {
         OWSLocalizedString("BUTTON_DONE", comment: "Label for generic done button.")
     }
 
-    static public var nextButton: String {
+    public static var nextButton: String {
         OWSLocalizedString("BUTTON_NEXT", comment: "Label for the 'next' button.")
     }
 
-    static public var previousButton: String {
+    public static var previousButton: String {
         OWSLocalizedString("BUTTON_PREVIOUS", comment: "Label for the 'previous' button.")
     }
 
-    static public var skipButton: String {
+    public static var skipButton: String {
         OWSLocalizedString("NAVIGATION_ITEM_SKIP_BUTTON", comment: "A button to skip a view.")
     }
 
-    static public var deleteButton: String {
-        OWSLocalizedString("TXT_DELETE_TITLE",
-                          comment: "Label for the delete button in an alert or action sheet.")
+    public static var deleteButton: String {
+        OWSLocalizedString(
+            "TXT_DELETE_TITLE",
+            comment: "Label for the delete button in an alert or action sheet.",
+        )
     }
 
-    static public var deleteForMeButton: String {
+    public static var deleteForMeButton: String {
         OWSLocalizedString(
             "MESSAGE_ACTION_DELETE_FOR_YOU",
-            comment: "The title for the action that deletes a message for the local user only.")
+            comment: "The title for the action that deletes a message for the local user only.",
+        )
     }
 
-    static public var retryButton: String {
-        OWSLocalizedString("RETRY_BUTTON_TEXT",
-                          comment: "Generic text for button that retries whatever the last action was.")
+    public static var retryButton: String {
+        OWSLocalizedString(
+            "RETRY_BUTTON_TEXT",
+            comment: "Generic text for button that retries whatever the last action was.",
+        )
     }
 
-    static public var okayButton: String {
+    public static var okayButton: String {
         OWSLocalizedString("BUTTON_OKAY", comment: "Label for the 'okay' button.")
     }
 
-    static public var okButton: String {
+    public static var okButton: String {
         OWSLocalizedString("OK", comment: "Label for the 'ok' button.")
     }
 
-    static public var copyButton: String {
+    public static var copyButton: String {
         OWSLocalizedString("BUTTON_COPY", comment: "Label for the 'copy' button.")
     }
 
-    static public var setButton: String {
+    public static var setButton: String {
         OWSLocalizedString("BUTTON_SET", comment: "Label for the 'set' button.")
     }
 
-    static public var editButton: String {
+    public static var editButton: String {
         OWSLocalizedString("BUTTON_EDIT", comment: "Label for the 'edit' button.")
     }
 
-    static public var saveButton: String {
-        OWSLocalizedString("ALERT_SAVE",
-                          comment: "The label for the 'save' button in action sheets.")
+    public static var saveButton: String {
+        OWSLocalizedString(
+            "ALERT_SAVE",
+            comment: "The label for the 'save' button in action sheets.",
+        )
     }
 
-    static public var shareButton: String {
+    public static var shareButton: String {
         OWSLocalizedString("BUTTON_SHARE", comment: "Label for the 'share' button.")
     }
 
-    static public var goToSettingsButton: String {
+    public static var goToSettingsButton: String {
         OWSLocalizedString(
             "GO_TO_SETTINGS_BUTTON",
-            comment: "Label for the 'go to settings' button"
+            comment: "Label for the 'go to settings' button",
         )
     }
 
-    static public var help: String {
+    public static var help: String {
         OWSLocalizedString("SETTINGS_HELP", comment: "Title for help button and help pages in app settings.")
     }
 
-    static public var openAppSettingsButton: String {
+    public static var openAppSettingsButton: String {
         OWSLocalizedString(
             "OPEN_APP_SETTINGS_BUTTON",
-            comment: "Title for button which opens the in-app settings"
+            comment: "Title for button which opens the in-app settings",
         )
     }
 
-    static public var openSystemSettingsButton: String {
+    public static var openSystemSettingsButton: String {
         OWSLocalizedString(
             "OPEN_SETTINGS_BUTTON",
-            comment: "Button text which opens the settings app"
+            comment: "Button text which opens the settings app",
         )
     }
 
-    static public var errorAlertTitle: String {
+    public static var errorAlertTitle: String {
         OWSLocalizedString("ALERT_ERROR_TITLE", comment: "")
     }
 
-    static public var searchPlaceholder: String {
-        OWSLocalizedString("SEARCH_FIELD_PLACE_HOLDER_TEXT",
-                          comment: "placeholder text in an empty search field")
+    public static var searchPlaceholder: String {
+        OWSLocalizedString(
+            "SEARCH_FIELD_PLACE_HOLDER_TEXT",
+            comment: "placeholder text in an empty search field",
+        )
     }
 
-    static public var mainPhoneNumberLabel: String {
+    public static var mainPhoneNumberLabel: String {
         OWSLocalizedString("PHONE_NUMBER_TYPE_MAIN", comment: "Label for 'Main' phone numbers.")
     }
 
-    static public var contactSupport: String {
-        OWSLocalizedString("CONTACT_SUPPORT",
-                          comment: "Button text to initiate an email to signal support staff")
+    public static var contactSupport: String {
+        OWSLocalizedString(
+            "CONTACT_SUPPORT",
+            comment: "Button text to initiate an email to signal support staff",
+        )
     }
 
-    static public var learnMore: String {
+    public static var learnMore: String {
         OWSLocalizedString("LEARN_MORE", comment: "Label for the 'learn more' button.")
     }
 
-    static public var copiedToClipboardToast: String {
+    public static var copiedToClipboardToast: String {
         OWSLocalizedString("COPIED_TO_CLIPBOARD", comment: "Indicator that a value has been copied to the clipboard.")
     }
 
-    static public var unarchiveAction: String {
-        OWSLocalizedString("UNARCHIVE_ACTION",
-                          comment: "Label for the unarchive button for conversations list view")
+    public static var unarchiveAction: String {
+        OWSLocalizedString(
+            "UNARCHIVE_ACTION",
+            comment: "Label for the unarchive button for conversations list view",
+        )
     }
 
-    static public var readAction: String {
+    public static var readAction: String {
         OWSLocalizedString("READ_ACTION", comment: "Pressing this button marks a thread as read")
     }
 
-    static public var unreadAction: String {
+    public static var unreadAction: String {
         OWSLocalizedString("UNREAD_ACTION", comment: "Pressing this button marks a thread as unread")
     }
 
-    static public var pinAction: String {
+    public static var pinAction: String {
         OWSLocalizedString("PIN_ACTION", comment: "Pressing this button pins a thread")
     }
 
-    static public var unpinAction: String {
+    public static var unpinAction: String {
         OWSLocalizedString("UNPIN_ACTION", comment: "Pressing this button un-pins a thread")
     }
 
-    static public var switchOn: String {
+    public static var switchOn: String {
         OWSLocalizedString("SWITCH_ON", comment: "Label for 'on' state of a switch control.")
     }
 
-    static public var switchOff: String {
+    public static var switchOff: String {
         OWSLocalizedString("SWITCH_OFF", comment: "Label for 'off' state of a switch control.")
     }
 
-    static public var sendMessage: String {
-        OWSLocalizedString("ACTION_SEND_MESSAGE",
-                          comment: "Label for button that lets you send a message to a contact.")
+    public static var sendMessage: String {
+        OWSLocalizedString(
+            "ACTION_SEND_MESSAGE",
+            comment: "Label for button that lets you send a message to a contact.",
+        )
     }
 
-    static public var yesButton: String {
+    public static var yesButton: String {
         OWSLocalizedString("BUTTON_YES", comment: "Label for the 'yes' button.")
     }
 
-    static public var noButton: String {
+    public static var noButton: String {
         OWSLocalizedString("BUTTON_NO", comment: "Label for the 'no' button.")
     }
 
-    static public var redeemGiftButton: String {
+    public static var redeemGiftButton: String {
         return OWSLocalizedString(
             "DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE",
-            comment: "Label for a button used to redeem a badge that was received as a donation on your behalf."
+            comment: "Label for a button used to redeem a badge that was received as a donation on your behalf.",
         )
     }
 
-    static public var notNowButton: String {
+    public static var notNowButton: String {
         OWSLocalizedString("BUTTON_NOT_NOW", comment: "Label for the 'not now' button.")
     }
 
-    static public var addButton: String {
+    public static var addButton: String {
         OWSLocalizedString("BUTTON_ADD", comment: "Label for the 'add' button.")
     }
 
-    static public var viewButton: String {
+    public static var viewButton: String {
         OWSLocalizedString("BUTTON_VIEW", comment: "Label for the 'view' button.")
     }
 
-    static public var seeAllButton: String {
+    public static var seeAllButton: String {
         OWSLocalizedString("SEE_ALL_BUTTON", comment: "Label for the 'see all' button.")
     }
 
-    static public var muteButton: String {
+    public static var muteButton: String {
         OWSLocalizedString("BUTTON_MUTE", comment: "Label for the 'mute' button.")
     }
 
-    static public var unmuteButton: String {
+    public static var unmuteButton: String {
         OWSLocalizedString("BUTTON_UNMUTE", comment: "Label for the 'unmute' button.")
     }
 
-    static public var genericError: String {
+    public static var genericError: String {
         OWSLocalizedString("ALERT_ERROR_TITLE", comment: "Generic error indicator.")
     }
 
-    static public var attachmentTypePhoto: String {
-        OWSLocalizedString("ATTACHMENT_TYPE_PHOTO",
-                          comment: "Short text label for a photo attachment, used for thread preview and on the lock screen")
+    public static var attachmentTypePhoto: String {
+        OWSLocalizedString(
+            "ATTACHMENT_TYPE_PHOTO",
+            comment: "Short text label for a photo attachment, used for thread preview and on the lock screen",
+        )
     }
 
-    static public var attachmentTypeVideo: String {
-        OWSLocalizedString("ATTACHMENT_TYPE_VIDEO",
-                          comment: "Short text label for a video attachment, used for thread preview and on the lock screen")
+    public static var attachmentTypeVideo: String {
+        OWSLocalizedString(
+            "ATTACHMENT_TYPE_VIDEO",
+            comment: "Short text label for a video attachment, used for thread preview and on the lock screen",
+        )
     }
 
-    static public var attachmentTypeAnimated: String {
-        OWSLocalizedString("ATTACHMENT_TYPE_ANIMATED",
-                          comment: "Short text label for an animated attachment, used for thread preview and on the lock screen")
+    public static var attachmentTypeAnimated: String {
+        OWSLocalizedString(
+            "ATTACHMENT_TYPE_ANIMATED",
+            comment: "Short text label for an animated attachment, used for thread preview and on the lock screen",
+        )
     }
 
-    static public var searchBarPlaceholder: String {
+    public static var searchBarPlaceholder: String {
         OWSLocalizedString("INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER", comment: "Search")
     }
 
-    static public var unknownUser: String {
+    public static var unknownUser: String {
         OWSLocalizedString("UNKNOWN_USER", comment: "Label indicating an unknown user.")
     }
 
-    static public var you: String {
+    public static var you: String {
         OWSLocalizedString("YOU", comment: "Second person pronoun to represent the local user.")
     }
 
-    static public var somethingWentWrongError: String {
+    public static var somethingWentWrongError: String {
         OWSLocalizedString(
             "SOMETHING_WENT_WRONG_ERROR",
-            comment: "An error message generically indicating that something went wrong."
+            comment: "An error message generically indicating that something went wrong.",
         )
     }
 
-    static public var somethingWentWrongTryAgainLaterError: String {
+    public static var somethingWentWrongTryAgainLaterError: String {
         OWSLocalizedString(
             "SOMETHING_WENT_WRONG_TRY_AGAIN_LATER_ERROR",
-            comment: "An error message generically indicating that something went wrong, and that the user should try again later."
+            comment: "An error message generically indicating that something went wrong, and that the user should try again later.",
         )
     }
 
-    static public var scanQRCodeTitle: String {
+    public static var scanQRCodeTitle: String {
         OWSLocalizedString(
             "SCAN_QR_CODE_VIEW_TITLE",
-            comment: "Title for the 'scan QR code' view."
+            comment: "Title for the 'scan QR code' view.",
         )
     }
 
-    static public var betaLabel: String {
+    public static var betaLabel: String {
         OWSLocalizedString("BETA_LABEL", comment: "Beta label")
     }
 
-    static public var dontShowAgainButton: String {
+    public static var dontShowAgainButton: String {
         OWSLocalizedString(
             "DONT_SHOW_AGAIN_BUTTON_TITLE",
-            comment: "Label for a button that says 'Don't show again'."
+            comment: "Label for a button that says 'Don't show again'.",
         )
     }
 }
@@ -300,7 +324,7 @@ public extension Usernames.RemoteMutationError {
         case .networkError:
             return OWSLocalizedString(
                 "USERNAMES_REMOTE_MUTATION_ERROR_DESCRIPTION",
-                comment: "An error message indicating that a usernames-related requeset failed because of a network error."
+                comment: "An error message indicating that a usernames-related requeset failed because of a network error.",
             )
         case .otherError:
             return CommonStrings.somethingWentWrongTryAgainLaterError
@@ -312,50 +336,62 @@ public extension Usernames.RemoteMutationError {
 
 public enum MessageStrings {
 
-    static public var conversationIsBlocked: String {
-        OWSLocalizedString("CONTACT_CELL_IS_BLOCKED",
-                          comment: "An indicator that a contact or group has been blocked.")
+    public static var conversationIsBlocked: String {
+        OWSLocalizedString(
+            "CONTACT_CELL_IS_BLOCKED",
+            comment: "An indicator that a contact or group has been blocked.",
+        )
     }
 
-    static public var newGroupDefaultTitle: String {
-        OWSLocalizedString("NEW_GROUP_DEFAULT_TITLE",
-                          comment: "Used in place of the group name when a group has not yet been named.")
+    public static var newGroupDefaultTitle: String {
+        OWSLocalizedString(
+            "NEW_GROUP_DEFAULT_TITLE",
+            comment: "Used in place of the group name when a group has not yet been named.",
+        )
     }
 
-    static public var replyNotificationAction: String {
+    public static var replyNotificationAction: String {
         OWSLocalizedString("PUSH_MANAGER_REPLY", comment: "Notification action button title")
     }
 
-    static public var markAsReadNotificationAction: String {
+    public static var markAsReadNotificationAction: String {
         OWSLocalizedString("PUSH_MANAGER_MARKREAD", comment: "Notification action button title")
     }
 
-    static public var reactWithThumbsUpNotificationAction: String {
-        OWSLocalizedString("PUSH_MANAGER_REACT_WITH_THUMBS_UP",
-                          comment: "Notification action button title for 'react with thumbs up.'")
+    public static var reactWithThumbsUpNotificationAction: String {
+        OWSLocalizedString(
+            "PUSH_MANAGER_REACT_WITH_THUMBS_UP",
+            comment: "Notification action button title for 'react with thumbs up.'",
+        )
     }
 
-    static public var sendButton: String {
+    public static var sendButton: String {
         OWSLocalizedString("SEND_BUTTON_TITLE", comment: "Label for the button to send a message")
     }
 
-    static public var noteToSelf: String {
+    public static var noteToSelf: String {
         OWSLocalizedString("NOTE_TO_SELF", comment: "Label for 1:1 conversation with yourself.")
     }
 
-    static public var viewOnceViewPhoto: String {
-        OWSLocalizedString("PER_MESSAGE_EXPIRATION_VIEW_PHOTO",
-                          comment: "Label for view-once messages indicating that user can tap to view the message's contents.")
+    public static var viewOnceViewPhoto: String {
+        OWSLocalizedString(
+            "PER_MESSAGE_EXPIRATION_VIEW_PHOTO",
+            comment: "Label for view-once messages indicating that user can tap to view the message's contents.",
+        )
     }
 
-    static public var viewOnceViewVideo: String {
-        OWSLocalizedString("PER_MESSAGE_EXPIRATION_VIEW_VIDEO",
-                          comment: "Label for view-once messages indicating that user can tap to view the message's contents.")
+    public static var viewOnceViewVideo: String {
+        OWSLocalizedString(
+            "PER_MESSAGE_EXPIRATION_VIEW_VIDEO",
+            comment: "Label for view-once messages indicating that user can tap to view the message's contents.",
+        )
     }
 
-    static public var removePreviewButtonLabel: String {
-        OWSLocalizedString("REMOVE_PREVIEW",
-                          comment: "Accessibility label for a button that removes the preview from a drafted message.")
+    public static var removePreviewButtonLabel: String {
+        OWSLocalizedString(
+            "REMOVE_PREVIEW",
+            comment: "Accessibility label for a button that removes the preview from a drafted message.",
+        )
     }
 }
 
@@ -363,20 +399,22 @@ public enum MessageStrings {
 
 public enum NotificationStrings {
 
-    static public var missedCallBecauseOfIdentityChangeBody: String {
-        OWSLocalizedString("CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY",
-                          comment: "notification body")
+    public static var missedCallBecauseOfIdentityChangeBody: String {
+        OWSLocalizedString(
+            "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY",
+            comment: "notification body",
+        )
     }
 
-    static public var genericIncomingMessageNotification: String {
+    public static var genericIncomingMessageNotification: String {
         OWSLocalizedString("GENERIC_INCOMING_MESSAGE_NOTIFICATION", comment: "notification title indicating the user generically has a new message")
     }
 
     /// Body for notification in a thread with a pending message request.
-    static public var incomingMessageRequestNotification: String {
+    public static var incomingMessageRequestNotification: String {
         OWSLocalizedString(
             "NOTIFICATION_BODY_INCOMING_MESSAGE_REQUEST",
-            comment: "Body for a notification representing a message request."
+            comment: "Body for a notification representing a message request.",
         )
     }
 
@@ -384,92 +422,124 @@ public enum NotificationStrings {
     /// when the NSE or main app is unable to process them. We
     /// don't use it directly in the app, but need to maintain
     /// a reference to it for string generation.
-    static public var indeterminateIncomingMessageNotification: String {
+    public static var indeterminateIncomingMessageNotification: String {
         OWSLocalizedString("APN_Message", comment: "notification body")
     }
 
-    static public var incomingGroupMessageTitleFormat: String {
-        OWSLocalizedString("NEW_GROUP_MESSAGE_NOTIFICATION_TITLE",
-                          comment: "notification title. Embeds {{author name}} and {{group name}}")
+    public static var incomingGroupMessageTitleFormat: String {
+        OWSLocalizedString(
+            "NEW_GROUP_MESSAGE_NOTIFICATION_TITLE",
+            comment: "notification title. Embeds {{author name}} and {{group name}}",
+        )
     }
 
-    static public var incomingGroupStoryReplyTitleFormat: String {
-        OWSLocalizedString("NEW_GROUP_STORY_REPLY_NOTIFICATION_TITLE",
-                           comment: "notification title. Embeds {{ %1%@ author name, %2%@ group name}}")
+    public static var incomingGroupStoryReplyTitleFormat: String {
+        OWSLocalizedString(
+            "NEW_GROUP_STORY_REPLY_NOTIFICATION_TITLE",
+            comment: "notification title. Embeds {{ %1%@ author name, %2%@ group name}}",
+        )
     }
 
-    static public var failedToSendBody: String {
+    public static var failedToSendBody: String {
         OWSLocalizedString("SEND_FAILED_NOTIFICATION_BODY", comment: "notification body")
     }
 
-    static public var groupCallSafetyNumberChangeBody: String {
-        OWSLocalizedString("GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY",
-                          comment: "notification body when a group call participant joins with an untrusted safety number")
+    public static var groupCallSafetyNumberChangeBody: String {
+        OWSLocalizedString(
+            "GROUP_CALL_SAFETY_NUMBER_CHANGE_BODY",
+            comment: "notification body when a group call participant joins with an untrusted safety number",
+        )
     }
 
-    static public var groupCallSafetyNumberChangeAtJoinBody: String {
-        OWSLocalizedString("GROUP_CALL_SAFETY_NUMBER_CHANGE_AT_JOIN_BODY",
-                          comment: "notification body when you join a group call and an already-joined participant has an untrusted safety number")
+    public static var groupCallSafetyNumberChangeAtJoinBody: String {
+        OWSLocalizedString(
+            "GROUP_CALL_SAFETY_NUMBER_CHANGE_AT_JOIN_BODY",
+            comment: "notification body when you join a group call and an already-joined participant has an untrusted safety number",
+        )
     }
 
-    static public var incomingReactionFormat: String {
-        OWSLocalizedString("REACTION_INCOMING_NOTIFICATION_BODY_FORMAT",
-                          comment: "notification body. Embeds {{reaction emoji}}")
+    public static var incomingReactionFormat: String {
+        OWSLocalizedString(
+            "REACTION_INCOMING_NOTIFICATION_BODY_FORMAT",
+            comment: "notification body. Embeds {{reaction emoji}}",
+        )
     }
 
-    static public var incomingReactionTextMessageFormat: String {
-        OWSLocalizedString("REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT",
-                          comment: "notification body. Embeds {{reaction emoji}} and {{body text}}")
+    public static var incomingReactionTextMessageFormat: String {
+        OWSLocalizedString(
+            "REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT",
+            comment: "notification body. Embeds {{reaction emoji}} and {{body text}}",
+        )
     }
 
-    static public var incomingReactionViewOnceMessageFormat: String {
-        OWSLocalizedString("REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT",
-                          comment: "notification body. Embeds {{reaction emoji}}")
+    public static var incomingReactionViewOnceMessageFormat: String {
+        OWSLocalizedString(
+            "REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT",
+            comment: "notification body. Embeds {{reaction emoji}}",
+        )
     }
 
-    static public var incomingReactionStickerMessageFormat: String {
-        OWSLocalizedString("REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT",
-                          comment: "notification body. Embeds {{reaction emoji}}")
+    public static var incomingReactionStickerMessageFormat: String {
+        OWSLocalizedString(
+            "REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT",
+            comment: "notification body. Embeds {{reaction emoji}}",
+        )
     }
 
-    static public var incomingReactionContactShareMessageFormat: String {
-        OWSLocalizedString("REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT",
-                          comment: "notification body. Embeds {{reaction emoji}}")
+    public static var incomingReactionContactShareMessageFormat: String {
+        OWSLocalizedString(
+            "REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT",
+            comment: "notification body. Embeds {{reaction emoji}}",
+        )
     }
 
-    static public var incomingReactionAlbumMessageFormat: String {
-        OWSLocalizedString("REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT",
-                          comment: "notification body. Embeds {{reaction emoji}}")
+    public static var incomingReactionAlbumMessageFormat: String {
+        OWSLocalizedString(
+            "REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT",
+            comment: "notification body. Embeds {{reaction emoji}}",
+        )
     }
 
-    static public var incomingReactionPhotoMessageFormat: String {
-        OWSLocalizedString("REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT",
-                          comment: "notification body. Embeds {{reaction emoji}}")
+    public static var incomingReactionPhotoMessageFormat: String {
+        OWSLocalizedString(
+            "REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT",
+            comment: "notification body. Embeds {{reaction emoji}}",
+        )
     }
 
-    static public var incomingReactionVideoMessageFormat: String {
-        OWSLocalizedString("REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT",
-                          comment: "notification body. Embeds {{reaction emoji}}")
+    public static var incomingReactionVideoMessageFormat: String {
+        OWSLocalizedString(
+            "REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT",
+            comment: "notification body. Embeds {{reaction emoji}}",
+        )
     }
 
-    static public var incomingReactionVoiceMessageFormat: String {
-        OWSLocalizedString("REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT",
-                          comment: "notification body. Embeds {{reaction emoji}}")
+    public static var incomingReactionVoiceMessageFormat: String {
+        OWSLocalizedString(
+            "REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT",
+            comment: "notification body. Embeds {{reaction emoji}}",
+        )
     }
 
-    static public var incomingReactionAudioMessageFormat: String {
-        OWSLocalizedString("REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT",
-                          comment: "notification body. Embeds {{reaction emoji}}")
+    public static var incomingReactionAudioMessageFormat: String {
+        OWSLocalizedString(
+            "REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT",
+            comment: "notification body. Embeds {{reaction emoji}}",
+        )
     }
 
-    static public var incomingReactionGifMessageFormat: String {
-        OWSLocalizedString("REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT",
-                          comment: "notification body. Embeds {{reaction emoji}}")
+    public static var incomingReactionGifMessageFormat: String {
+        OWSLocalizedString(
+            "REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT",
+            comment: "notification body. Embeds {{reaction emoji}}",
+        )
     }
 
-    static public var incomingReactionFileMessageFormat: String {
-        OWSLocalizedString("REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT",
-                          comment: "notification body. Embeds {{reaction emoji}}")
+    public static var incomingReactionFileMessageFormat: String {
+        OWSLocalizedString(
+            "REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT",
+            comment: "notification body. Embeds {{reaction emoji}}",
+        )
     }
 }
 
@@ -487,14 +557,14 @@ public enum CallStrings {
     public static var signalCall: String {
         return OWSLocalizedString(
             "SIGNAL_CALL",
-            comment: "Shown in the header when the user hasn't provided a custom name for a call."
+            comment: "Shown in the header when the user hasn't provided a custom name for a call.",
         )
     }
 
     public static var callLinkDescription: String {
         return OWSLocalizedString(
             "CALL_LINK_LINK_PREVIEW_DESCRIPTION",
-            comment: "Shown in a message bubble when you send a call link in a Signal chat"
+            comment: "Shown in a message bubble when you send a call link in a Signal chat",
         )
     }
 }
@@ -503,7 +573,7 @@ public enum CallStrings {
 
 public enum MediaStrings {
 
-    static public var allMedia: String {
+    public static var allMedia: String {
         OWSLocalizedString("MEDIA_DETAIL_VIEW_ALL_MEDIA_BUTTON", comment: "nav bar button item")
     }
 }
@@ -512,17 +582,17 @@ public enum MediaStrings {
 
 public enum SafetyNumberStrings {
 
-    static public var confirmSendButton: String {
+    public static var confirmSendButton: String {
         OWSLocalizedString(
             "SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION",
-            comment: "button title to confirm sending to a recipient whose safety number recently changed"
+            comment: "button title to confirm sending to a recipient whose safety number recently changed",
         )
     }
 
-    static public var verified: String {
+    public static var verified: String {
         OWSLocalizedString(
             "PRIVACY_IDENTITY_IS_VERIFIED_BADGE",
-            comment: "Badge indicating that the user is verified."
+            comment: "Badge indicating that the user is verified.",
         )
     }
 }
@@ -531,13 +601,15 @@ public enum SafetyNumberStrings {
 
 public enum MegaphoneStrings {
 
-    static public var remindMeLater: String {
+    public static var remindMeLater: String {
         OWSLocalizedString("MEGAPHONE_REMIND_LATER", comment: "button title to snooze a megaphone")
     }
 
-    static public var weWillRemindYouLater: String {
-        OWSLocalizedString("MEGAPHONE_WILL_REMIND_LATER",
-                          comment: "toast indicating that we will remind the user later")
+    public static var weWillRemindYouLater: String {
+        OWSLocalizedString(
+            "MEGAPHONE_WILL_REMIND_LATER",
+            comment: "toast indicating that we will remind the user later",
+        )
     }
 }
 
@@ -545,21 +617,24 @@ public enum MegaphoneStrings {
 
 public enum StoryStrings {
 
-    static public var repliesAndReactionsHeader: String {
+    public static var repliesAndReactionsHeader: String {
         OWSLocalizedString(
             "STORIES_REPLIES_AND_REACTIONS_HEADER",
-            comment: "Section header for the 'replies & reactions' section in stories settings")
+            comment: "Section header for the 'replies & reactions' section in stories settings",
+        )
     }
 
-    static public var repliesAndReactionsFooter: String {
+    public static var repliesAndReactionsFooter: String {
         OWSLocalizedString(
             "STORIES_REPLIES_AND_REACTIONS_FOOTER",
-            comment: "Section footer for the 'replies & reactions' section in stories settings")
+            comment: "Section footer for the 'replies & reactions' section in stories settings",
+        )
     }
 
-    static public var repliesAndReactionsToggle: String {
+    public static var repliesAndReactionsToggle: String {
         OWSLocalizedString(
             "STORIES_REPLIES_AND_REACTIONS_TOGGLE",
-            comment: "Toggle text for the 'replies & reactions' switch in stories settings")
+            comment: "Toggle text for the 'replies & reactions' switch in stories settings",
+        )
     }
 }

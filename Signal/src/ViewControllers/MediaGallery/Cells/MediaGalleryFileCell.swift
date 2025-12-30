@@ -59,17 +59,17 @@ class MediaGalleryFileCell: MediaTileListModeCell {
             return defaultCellHeight
         }
         let genericAttachment = CVComponentState.GenericAttachment(
-            attachment: .stream(attachment)
+            attachment: .stream(attachment),
         )
 
         let genericAttachmentViewSize = CVComponentGenericAttachment.measure(
             maxWidth: maxWidth,
             measurementBuilder: CVCellMeasurement.Builder(),
             genericAttachment: genericAttachment,
-            interaction: fileItem.interaction
+            interaction: fileItem.interaction,
         )
 
-        let cellHeight = genericAttachmentViewSize.height + Self.contentInset.totalHeight + 2*Self.contentCardVerticalInset
+        let cellHeight = genericAttachmentViewSize.height + Self.contentInset.totalHeight + 2 * Self.contentCardVerticalInset
         cellHeights[currentContentSizeCategory] = cellHeight
 
         return cellHeight
@@ -113,7 +113,7 @@ class MediaGalleryFileCell: MediaTileListModeCell {
         let threadViewModel = ThreadViewModel(
             thread: fileItem.thread,
             forChatList: false,
-            transaction: transaction
+            transaction: transaction,
         )
         let conversationStyle = ConversationStyle(
             type: .default,
@@ -121,12 +121,12 @@ class MediaGalleryFileCell: MediaTileListModeCell {
             viewWidth: contentView.bounds.width,
             hasWallpaper: false,
             isWallpaperPhoto: false,
-            chatColor: ChatColorSettingStore.Constants.defaultColor.colorSetting
+            chatColor: ChatColorSettingStore.Constants.defaultColor.colorSetting,
         )
         let coreState = CVCoreState(conversationStyle: conversationStyle, mediaCache: fileItem.mediaCache)
         let viewStateSnapshot = CVViewStateSnapshot.mockSnapshotForStandaloneItems(
             coreState: coreState,
-            spoilerReveal: spoilerState.revealState
+            spoilerReveal: spoilerState.revealState,
         )
         let itemBuildingContext = CVItemBuildingContextImpl(
             prevRenderState: nil,
@@ -134,12 +134,14 @@ class MediaGalleryFileCell: MediaTileListModeCell {
             viewStateSnapshot: viewStateSnapshot,
             transaction: transaction,
             avatarBuilder: CVAvatarBuilder(transaction: transaction),
-            localAci: localAci
+            localAci: localAci,
         )
-        guard let componentState = try? CVComponentState.build(
-            interaction: fileItem.interaction,
-            itemBuildingContext: itemBuildingContext
-        ) else {
+        guard
+            let componentState = try? CVComponentState.build(
+                interaction: fileItem.interaction,
+                itemBuildingContext: itemBuildingContext,
+            )
+        else {
             return
         }
         let itemViewState = CVItemViewState.Builder()
@@ -150,12 +152,12 @@ class MediaGalleryFileCell: MediaTileListModeCell {
             threadAssociatedData: threadAssociatedData,
             componentState: componentState,
             itemViewState: itemViewState.build(),
-            coreState: coreState
+            coreState: coreState,
         )
         let genericAttachment = CVComponentState.GenericAttachment(attachment: .stream(fileItem.attachmentStream))
         let component = CVComponentGenericAttachment(
             itemModel: itemModel,
-            genericAttachment: genericAttachment
+            genericAttachment: genericAttachment,
         )
         // Always treat as incoming so we get the right colors.
         component.isIncomingOverride = true
@@ -167,7 +169,7 @@ class MediaGalleryFileCell: MediaTileListModeCell {
             maxWidth: contentView.bounds.width, // actual max width doesn't matter because there's no multiline text
             measurementBuilder: measurementBuilder,
             genericAttachment: genericAttachment,
-            interaction: fileItem.interaction
+            interaction: fileItem.interaction,
         )
         let cellMeasurement = measurementBuilder.build()
         component.configureForRendering(componentView: view, cellMeasurement: cellMeasurement, componentDelegate: self)
@@ -192,22 +194,24 @@ class MediaGalleryFileCell: MediaTileListModeCell {
         NSLayoutConstraint.activate([
             genericAttachmentContainerView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: Self.contentCardVerticalInset),
             genericAttachmentContainerView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -Self.contentCardVerticalInset),
-            genericAttachmentContainerView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -OWSTableViewController2.defaultHOuterMargin)
+            genericAttachmentContainerView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -OWSTableViewController2.defaultHOuterMargin),
         ])
 
         let constraintWithSelectionButton = genericAttachmentContainerView.leadingAnchor.constraint(
             equalTo: selectionButton.trailingAnchor,
-            constant: 12
+            constant: 12,
         )
         let constraintWithoutSelectionButton = genericAttachmentContainerView.leadingAnchor.constraint(
             equalTo: contentView.leadingAnchor,
-            constant: OWSTableViewController2.defaultHOuterMargin
+            constant: OWSTableViewController2.defaultHOuterMargin,
         )
 
         addGestureRecognizer(tapGestureRecognizer)
 
-        super.setupViews(constraintWithSelectionButton: constraintWithSelectionButton,
-                         constraintWithoutSelectionButton: constraintWithoutSelectionButton)
+        super.setupViews(
+            constraintWithSelectionButton: constraintWithSelectionButton,
+            constraintWithoutSelectionButton: constraintWithoutSelectionButton,
+        )
     }
 
     @objc
@@ -217,7 +221,7 @@ class MediaGalleryFileCell: MediaTileListModeCell {
         }
         let genericAttachment = CVComponentGenericAttachment(
             itemModel: itemModel,
-            genericAttachment: .init(attachment: .stream(fileItem.attachmentStream))
+            genericAttachment: .init(attachment: .stream(fileItem.attachmentStream)),
         )
         if
             PKAddPassesViewController.canAddPasses(),
@@ -238,10 +242,10 @@ class MediaGalleryFileCell: MediaTileListModeCell {
         if let fileItem {
             accessibilityLabel = [
                 fileItem.localizedString,
-                MediaTileDateFormatter.formattedDateString(for: fileItem.receivedAtDate)
+                MediaTileDateFormatter.formattedDateString(for: fileItem.receivedAtDate),
             ]
-                .compactMap { $0 }
-                .joined(separator: ", ")
+            .compactMap { $0 }
+            .joined(separator: ", ")
         } else {
             accessibilityLabel = ""
         }
@@ -316,37 +320,42 @@ extension MediaGalleryFileCell: CVComponentDelegate {
     func didLongPressTextViewItem(
         _ cell: CVCell,
         itemViewModel: CVItemViewModelImpl,
-        shouldAllowReply: Bool) {}
+        shouldAllowReply: Bool,
+    ) {}
 
     func didLongPressMediaViewItem(
         _ cell: CVCell,
         itemViewModel: CVItemViewModelImpl,
-        shouldAllowReply: Bool) {}
+        shouldAllowReply: Bool,
+    ) {}
 
     func didLongPressQuote(
         _ cell: CVCell,
         itemViewModel: CVItemViewModelImpl,
-        shouldAllowReply: Bool) {}
+        shouldAllowReply: Bool,
+    ) {}
 
     func didLongPressSystemMessage(
         _ cell: CVCell,
-        itemViewModel: CVItemViewModelImpl) {}
+        itemViewModel: CVItemViewModelImpl,
+    ) {}
 
     func didLongPressSticker(
         _ cell: CVCell,
         itemViewModel: CVItemViewModelImpl,
-        shouldAllowReply: Bool) {}
+        shouldAllowReply: Bool,
+    ) {}
 
     func didLongPressPaymentMessage(
         _ cell: CVCell,
         itemViewModel: CVItemViewModelImpl,
-        shouldAllowReply: Bool
+        shouldAllowReply: Bool,
     ) {}
 
     func didLongPressPoll(
         _ cell: CVCell,
         itemViewModel: CVItemViewModelImpl,
-        shouldAllowReply: Bool
+        shouldAllowReply: Bool,
     ) {}
 
     func didTapPayment(_ payment: PaymentsHistoryItem) {}
@@ -375,7 +384,8 @@ extension MediaGalleryFileCell: CVComponentDelegate {
 
     func didTapReactions(
         reactionState: InteractionReactionState,
-        message: TSMessage) {}
+        message: TSMessage,
+    ) {}
 
     func didTapTruncatedTextMessage(_ itemViewModel: CVItemViewModelImpl) {}
 
@@ -398,11 +408,11 @@ extension MediaGalleryFileCell: CVComponentDelegate {
     func didTapBodyMedia(
         itemViewModel: CVItemViewModelImpl,
         attachmentStream: ReferencedAttachmentStream,
-        imageView: UIView
+        imageView: UIView,
     ) {}
 
     func didTapGenericAttachment(
-        _ attachment: CVComponentGenericAttachment
+        _ attachment: CVComponentGenericAttachment,
     ) -> CVAttachmentTapAction { .default }
 
     func didTapQuotedReply(_ quotedReply: QuotedReplyModel) {}
@@ -435,7 +445,8 @@ extension MediaGalleryFileCell: CVComponentDelegate {
         _ itemViewModel: CVItemViewModelImpl,
         profileBadge: ProfileBadge,
         isExpired: Bool,
-        isRedeemed: Bool) {}
+        isRedeemed: Bool,
+    ) {}
 
     func prepareMessageDetailForInteractivePresentation(_ itemViewModel: CVItemViewModelImpl) {}
 
@@ -447,7 +458,7 @@ extension MediaGalleryFileCell: CVComponentDelegate {
 
     var wallpaperBlurProvider: WallpaperBlurProvider? { nil }
 
-    public var selectionState: CVSelectionState { CVSelectionState() }
+    var selectionState: CVSelectionState { CVSelectionState() }
 
     func didTapPreviouslyVerifiedIdentityChange(_ address: SignalServiceAddress) {}
 
@@ -486,13 +497,15 @@ extension MediaGalleryFileCell: CVComponentDelegate {
     func didTapBlockRequest(
         groupModel: TSGroupModelV2,
         requesterName: String,
-        requesterAci: Aci) {}
+        requesterAci: Aci,
+    ) {}
 
     func didTapShowUpgradeAppUI() {}
 
     func didTapUpdateSystemContact(
         _ address: SignalServiceAddress,
-        newNameComponents: PersonNameComponents) {}
+        newNameComponents: PersonNameComponents,
+    ) {}
 
     func didTapPhoneNumberChange(aci: Aci, phoneNumberOld: String, phoneNumberNew: String) {}
 

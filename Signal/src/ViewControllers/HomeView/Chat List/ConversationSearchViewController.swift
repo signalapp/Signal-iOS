@@ -72,10 +72,12 @@ class ConversationSearchViewController: OWSViewController {
 
         DependenciesBridge.shared.databaseChangeObserver.appendDatabaseChangeDelegate(self)
 
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(blockListDidChange),
-                                               name: BlockingManager.blockListDidChange,
-                                               object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(blockListDidChange),
+            name: BlockingManager.blockListDidChange,
+            object: nil,
+        )
 
         updateSeparators()
     }
@@ -305,7 +307,6 @@ extension ConversationSearchViewController: UITableViewDelegate {
             }
 
             SignalApp.shared.presentConversationForAddress(searchResult.recipientAddress, action: .compose, animated: true)
-
         case .messages:
             let sectionResults = searchResultSet.messageResults
             guard let searchResult = sectionResults[safe: indexPath.row] else {
@@ -317,7 +318,7 @@ extension ConversationSearchViewController: UITableViewDelegate {
             SignalApp.shared.presentConversationForThread(
                 threadUniqueId: threadViewModel.threadUniqueId,
                 focusMessageId: searchResult.messageId,
-                animated: true
+                animated: true,
             )
         }
     }
@@ -449,8 +450,8 @@ extension ConversationSearchViewController: UITableViewDataSource {
         StringStyle(
             .color(.Signal.secondaryLabel),
             .xmlRules([
-                .style(FullTextSearchIndexer.matchTag, StringStyle(.font(UIFont.dynamicTypeSubheadline.semibold())))
-            ])
+                .style(FullTextSearchIndexer.matchTag, StringStyle(.font(UIFont.dynamicTypeSubheadline.semibold()))),
+            ]),
         )
     }
 
@@ -474,7 +475,7 @@ extension ConversationSearchViewController: UITableViewDataSource {
             }
             return ChatListCell.Configuration(
                 threadViewModel: searchResult.threadViewModel,
-                lastReloadDate: lastReloadDate
+                lastReloadDate: lastReloadDate,
             )
 
         case .groupThreads:
@@ -492,7 +493,7 @@ extension ConversationSearchViewController: UITableViewDataSource {
                 threadViewModel: searchResult.threadViewModel,
                 lastReloadDate: lastReloadDate,
                 overrideSnippet: overrideSnippet,
-                overrideDate: nil
+                overrideDate: nil,
             )
 
         case .contacts:
@@ -522,7 +523,7 @@ extension ConversationSearchViewController: UITableViewDataSource {
                 threadViewModel: searchResult.threadViewModel,
                 lastReloadDate: lastReloadDate,
                 overrideSnippet: overrideSnippet,
-                overrideDate: overrideDate
+                overrideDate: overrideDate,
             )
         }
     }
@@ -542,7 +543,7 @@ extension ConversationSearchViewController: UITableViewDataSource {
 
             return OWSLocalizedString(
                 "SEARCH_SECTION_CONVERSATIONS",
-                comment: "section header for search results that match existing 1:1 chats"
+                comment: "section header for search results that match existing 1:1 chats",
             )
 
         case .groupThreads:
@@ -550,7 +551,7 @@ extension ConversationSearchViewController: UITableViewDataSource {
 
             return OWSLocalizedString(
                 "SEARCH_SECTION_GROUPS",
-                comment: "section header for search results that match existing groups"
+                comment: "section header for search results that match existing groups",
             )
 
         case .contacts:
@@ -558,7 +559,7 @@ extension ConversationSearchViewController: UITableViewDataSource {
 
             return OWSLocalizedString(
                 "SEARCH_SECTION_CONTACTS",
-                comment: "section header for search results that match a contact who doesn't have an existing conversation"
+                comment: "section header for search results that match a contact who doesn't have an existing conversation",
             )
 
         case .messages:
@@ -566,7 +567,7 @@ extension ConversationSearchViewController: UITableViewDataSource {
 
             return OWSLocalizedString(
                 "SEARCH_SECTION_MESSAGES",
-                comment: "section header for search results that match a message in a conversation"
+                comment: "section header for search results that match a message in a conversation",
             )
         }
     }
@@ -709,7 +710,7 @@ class EmptySearchResultCell: UITableViewCell {
 
             let format = OWSLocalizedString(
                 "HOME_VIEW_SEARCH_NO_RESULTS_FORMAT",
-                comment: "Format string when search returns no results. Embeds {{search term}}"
+                comment: "Format string when search returns no results. Embeds {{search term}}",
             )
             messageLabel.text = String(format: format, searchText)
 
@@ -723,7 +724,7 @@ class EmptySearchResultCell: UITableViewCell {
 
 extension ConversationSearchViewController: DatabaseChangeDelegate {
 
-    public func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
+    func databaseChangesDidUpdate(databaseChanges: DatabaseChanges) {
         guard databaseChanges.didUpdateThreads || databaseChanges.didUpdateInteractions else {
             return
         }
@@ -731,11 +732,11 @@ extension ConversationSearchViewController: DatabaseChangeDelegate {
         refreshSearchResults()
     }
 
-    public func databaseChangesDidUpdateExternally() {
+    func databaseChangesDidUpdateExternally() {
         refreshSearchResults()
     }
 
-    public func databaseChangesDidReset() {
+    func databaseChangesDidReset() {
         refreshSearchResults()
     }
 }

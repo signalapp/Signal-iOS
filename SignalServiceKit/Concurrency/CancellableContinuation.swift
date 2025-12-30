@@ -17,6 +17,7 @@ public struct CancellableContinuation<T>: Sendable {
         case completed(Result<T, Error>)
         case consumed
     }
+
     private let state = AtomicValue<State>(State.initial, lock: .init())
 
     public init() {
@@ -64,7 +65,7 @@ public struct CancellableContinuation<T>: Sendable {
                             return result
                         case .waiting(_), .consumed:
                             continuation.resume(throwing: OWSAssertionError(
-                                "should not await a CancellableContinuation multiple times"
+                                "should not await a CancellableContinuation multiple times",
                             ))
                             return nil
                         }
@@ -74,7 +75,7 @@ public struct CancellableContinuation<T>: Sendable {
                     }
                 }
             },
-            onCancel: { self.cancel() }
+            onCancel: { self.cancel() },
         )
     }
 }

@@ -9,13 +9,13 @@ import Foundation
 extension AVAsset {
 
     public static func from(
-        _ attachment: AttachmentStream
+        _ attachment: AttachmentStream,
     ) throws -> AVAsset {
         return try .fromEncryptedFile(
             at: attachment.fileURL,
             attachmentKey: AttachmentKey(combinedKey: attachment.attachment.encryptionKey),
             plaintextLength: attachment.info.unencryptedByteCount,
-            mimeType: attachment.mimeType
+            mimeType: attachment.mimeType,
         )
     }
 
@@ -23,14 +23,14 @@ extension AVAsset {
         at fileURL: URL,
         attachmentKey: AttachmentKey,
         plaintextLength: UInt32,
-        mimeType: String
+        mimeType: String,
     ) throws -> AVAsset {
         func createAsset(mimeTypeOverride: String? = nil) throws -> AVAsset {
             return try AVAsset._fromEncryptedFile(
                 at: fileURL,
                 attachmentKey: attachmentKey,
                 plaintextLength: plaintextLength,
-                mimeType: mimeTypeOverride ?? mimeType
+                mimeType: mimeTypeOverride ?? mimeType,
             )
         }
 
@@ -53,7 +53,7 @@ extension AVAsset {
         at fileURL: URL,
         attachmentKey: AttachmentKey,
         plaintextLength: UInt32,
-        mimeType: String
+        mimeType: String,
     ) throws -> AVAsset {
         let fileHandle = try Cryptography.encryptedAttachmentFileHandle(
             at: fileURL,
@@ -67,7 +67,7 @@ extension AVAsset {
 
         let resourceLoader = EncryptedFileResourceLoader(
             utiType: utiType,
-            fileHandle: fileHandle
+            fileHandle: fileHandle,
         )
 
         // AVAsset cares about the file extension. It shouldn't, but it does.
@@ -76,10 +76,11 @@ extension AVAsset {
         let fileURLWithFakeExtension: URL
         if
             let pathExtension =
-                // Prioritize audio extensions; note these mappings differ from the
-                // generic "fileExtensionForMimeType" because reasons.
-                MimeTypeUtil.getSupportedExtensionFromAudioMimeType(mimeType)
-                ?? MimeTypeUtil.fileExtensionForMimeType(mimeType) {
+            // Prioritize audio extensions; note these mappings differ from the
+            // generic "fileExtensionForMimeType" because reasons.
+            MimeTypeUtil.getSupportedExtensionFromAudioMimeType(mimeType)
+            ?? MimeTypeUtil.fileExtensionForMimeType(mimeType)
+        {
             fileURLWithFakeExtension = fileURL.appendingPathExtension(pathExtension)
         } else {
             fileURLWithFakeExtension = fileURL
@@ -116,7 +117,7 @@ extension AVAsset {
 
         func resourceLoader(
             _ resourceLoader: AVAssetResourceLoader,
-            shouldWaitForLoadingOfRequestedResource loadingRequest: AVAssetResourceLoadingRequest
+            shouldWaitForLoadingOfRequestedResource loadingRequest: AVAssetResourceLoadingRequest,
         ) -> Bool {
             if let _ = loadingRequest.contentInformationRequest {
                 return handleContentInfoRequest(for: loadingRequest)
@@ -189,7 +190,7 @@ private extension URL {
         guard
             var components = URLComponents(
                 url: self,
-                resolvingAgainstBaseURL: false
+                resolvingAgainstBaseURL: false,
             ),
             let scheme = components.scheme
         else {

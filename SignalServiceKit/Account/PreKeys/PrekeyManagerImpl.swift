@@ -19,7 +19,7 @@ public class PreKeyManagerImpl: PreKeyManager {
         // Maximum amount of time that can elapse without rotating signed prekeys
         // before the message sending is disabled.
         static let SignedPreKeyMaxRotationDuration: TimeInterval = (
-            BuildFlags.shouldUseTestIntervals ? (4 * .day) : (14 * .day)
+            BuildFlags.shouldUseTestIntervals ? (4 * .day) : (14 * .day),
         )
 
         /// Maximum amount of time a pre key can be used before a new one will be
@@ -58,7 +58,7 @@ public class PreKeyManagerImpl: PreKeyManager {
         protocolStoreManager: SignalProtocolStoreManager,
         remoteConfigProvider: any RemoteConfigProvider,
         chatConnectionManager: any ChatConnectionManager,
-        tsAccountManager: TSAccountManager
+        tsAccountManager: TSAccountManager,
     ) {
         self.db = db
         self.identityManager = identityManager
@@ -76,7 +76,7 @@ public class PreKeyManagerImpl: PreKeyManager {
             messageProcessor: messageProcessor,
             protocolStoreManager: protocolStoreManager,
             remoteConfigProvider: remoteConfigProvider,
-            tsAccountManager: tsAccountManager
+            tsAccountManager: tsAccountManager,
         )
     }
 
@@ -103,12 +103,12 @@ public class PreKeyManagerImpl: PreKeyManager {
     }
 
     public func isAppLockedDueToPreKeyUpdateFailures(tx: DBReadTransaction) -> Bool {
-        return (
+        return
             needsSignedPreKeyRotation(identity: .aci, tx: tx)
-            || needsSignedPreKeyRotation(identity: .pni, tx: tx)
-            || needsLastResortPreKeyRotation(identity: .aci, tx: tx)
-            || needsLastResortPreKeyRotation(identity: .pni, tx: tx)
-        )
+                || needsSignedPreKeyRotation(identity: .pni, tx: tx)
+                || needsLastResortPreKeyRotation(identity: .aci, tx: tx)
+                || needsLastResortPreKeyRotation(identity: .pni, tx: tx)
+
     }
 
     private func refreshOneTimePreKeysCheckDidSucceed() {
@@ -171,7 +171,7 @@ public class PreKeyManagerImpl: PreKeyManager {
                 try await self.waitUntilNotChangingNumberIfNeeded(targets: targets)
                 try await taskManager.refresh(identity: .pni, targets: targets, auth: .implicit())
             }
-            if shouldCheckOneTimePreKeys && shouldCheckPniPreKeys {
+            if shouldCheckOneTimePreKeys, shouldCheckPniPreKeys {
                 self.refreshOneTimePreKeysCheckDidSucceed()
             }
         }
@@ -189,7 +189,7 @@ public class PreKeyManagerImpl: PreKeyManager {
 
     public func createPreKeysForProvisioning(
         aciIdentityKeyPair: ECKeyPair,
-        pniIdentityKeyPair: ECKeyPair
+        pniIdentityKeyPair: ECKeyPair,
     ) -> Task<RegistrationPreKeyUploadBundles, Error> {
         logger.info("Create provisioning prekeys")
         /// Note that we do not report a `refreshOneTimePreKeysCheckDidSucceed`
@@ -198,20 +198,20 @@ public class PreKeyManagerImpl: PreKeyManager {
         return Self.taskQueue.enqueueCancellingPrevious { [taskManager] in
             return try await taskManager.createForProvisioning(
                 aciIdentityKeyPair: aciIdentityKeyPair,
-                pniIdentityKeyPair: pniIdentityKeyPair
+                pniIdentityKeyPair: pniIdentityKeyPair,
             )
         }
     }
 
     public func finalizeRegistrationPreKeys(
         _ bundles: RegistrationPreKeyUploadBundles,
-        uploadDidSucceed: Bool
+        uploadDidSucceed: Bool,
     ) -> Task<Void, Error> {
         logger.info("Finalize registration prekeys")
         return Self.taskQueue.enqueue { [taskManager] in
             try await taskManager.persistAfterRegistration(
                 bundles: bundles,
-                uploadDidSucceed: uploadDidSucceed
+                uploadDidSucceed: uploadDidSucceed,
             )
         }
     }
@@ -240,19 +240,19 @@ public class PreKeyManagerImpl: PreKeyManager {
     /// the signed pre-key.
     public func refreshOneTimePreKeys(
         forIdentity identity: OWSIdentity,
-        alsoRefreshSignedPreKey shouldRefreshSignedPreKey: Bool
+        alsoRefreshSignedPreKey shouldRefreshSignedPreKey: Bool,
     ) {
         Task {
             try? await self._refreshOneTimePreKeys(
                 forIdentity: identity,
-                alsoRefreshSignedPreKey: shouldRefreshSignedPreKey
+                alsoRefreshSignedPreKey: shouldRefreshSignedPreKey,
             )
         }
     }
 
     private func _refreshOneTimePreKeys(
         forIdentity identity: OWSIdentity,
-        alsoRefreshSignedPreKey shouldRefreshSignedPreKey: Bool
+        alsoRefreshSignedPreKey shouldRefreshSignedPreKey: Bool,
     ) async throws {
         logger.info("[\(identity)] Force refresh onetime prekeys (also refresh signed pre key? \(shouldRefreshSignedPreKey))")
         /// Note that we do not report a `refreshOneTimePreKeysCheckDidSucceed`
@@ -272,7 +272,7 @@ public class PreKeyManagerImpl: PreKeyManager {
                 identity: identity,
                 targets: targets,
                 force: true,
-                auth: .implicit()
+                auth: .implicit(),
             )
         }
         try await task.value
@@ -317,7 +317,7 @@ public class PreKeyManagerImpl: PreKeyManager {
             keyValueStore.setInt(
                 Constants.preKeyRotationVersion,
                 key: keyValueStoreKey,
-                transaction: tx
+                transaction: tx,
             )
         }
     }
@@ -328,6 +328,7 @@ public class PreKeyManagerImpl: PreKeyManager {
         var isChangingNumber = false
         var onNotChangingNumber = [NSObject: Monitor.Continuation]()
     }
+
     private let changeNumberState = AtomicValue(ChangeNumberState(), lock: .init())
 
     private let notChangingNumberCondition = Monitor.Condition<ChangeNumberState>(

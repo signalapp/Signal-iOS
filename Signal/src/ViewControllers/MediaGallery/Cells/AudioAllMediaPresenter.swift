@@ -40,15 +40,18 @@ class AudioAllMediaPresenter: AudioPresenter {
     let dot2 = CVLabel()
 
     private static let middleDot = " · "
-    func playedColor(isIncoming: Bool ) -> UIColor {
+    func playedColor(isIncoming: Bool) -> UIColor {
         return Theme.isDarkThemeEnabled ? .ows_gray05 : .ows_gray90
     }
+
     func unplayedColor(isIncoming: Bool) -> UIColor {
         return Theme.isDarkThemeEnabled ? .ows_gray60 : .ows_gray20
     }
+
     func thumbColor(isIncoming: Bool) -> UIColor {
         return playedColor(isIncoming: true)
     }
+
     func playPauseContainerBackgroundColor(isIncoming: Bool) -> UIColor {
         return Theme.isDarkThemeEnabled ? .ows_gray65 : .ows_gray05
     }
@@ -61,6 +64,7 @@ class AudioAllMediaPresenter: AudioPresenter {
     func playedDotAnimationColor(conversationStyle: ConversationStyle, isIncoming: Bool) -> ColorValueProvider {
         return ColorValueProvider(conversationStyle.bubbleSecondaryTextColor(isIncoming: true).lottieColorValue)
     }
+
     var bottomInnerStackSpacing: CGFloat { 0 }
 
     let audioAttachment: AudioAttachment
@@ -71,7 +75,7 @@ class AudioAllMediaPresenter: AudioPresenter {
         sender: String,
         audioAttachment: AudioAttachment,
         threadUniqueId: String,
-        playbackRate: AudioPlaybackRate
+        playbackRate: AudioPlaybackRate,
     ) {
         self.threadUniqueId = threadUniqueId
         self.sender = sender
@@ -83,7 +87,7 @@ class AudioAllMediaPresenter: AudioPresenter {
             threadUniqueId: threadUniqueId,
             audioAttachment: audioAttachment,
             playbackRate: playbackRate,
-            isIncoming: true
+            isIncoming: true,
         )
     }
 
@@ -95,7 +99,8 @@ class AudioAllMediaPresenter: AudioPresenter {
         let senderLabelConfig = Self.labelConfig_render(
             text: sender,
             lineBreakMode: .byTruncatingTail,
-            conversationStyle: conversationStyle)
+            conversationStyle: conversationStyle,
+        )
         let sizeLabelConfig = Self.labelConfig_render(text: size, conversationStyle: conversationStyle)
         let dateLabelConfig = Self.labelConfig_render(text: date, conversationStyle: conversationStyle)
         let dot1Config = Self.labelConfig_render(text: AudioAllMediaPresenter.middleDot, conversationStyle: conversationStyle)
@@ -119,13 +124,13 @@ class AudioAllMediaPresenter: AudioPresenter {
     private static func labelConfig_render(
         text: String,
         lineBreakMode: NSLineBreakMode = .byWordWrapping,
-        conversationStyle: ConversationStyle
+        conversationStyle: ConversationStyle,
     ) -> CVLabelConfig {
         return CVLabelConfig.unstyledText(
             text,
             font: Constants.bottomLineFont,
             textColor: conversationStyle.bubbleSecondaryTextColor(isIncoming: true),
-            lineBreakMode: lineBreakMode
+            lineBreakMode: lineBreakMode,
         )
     }
 
@@ -138,7 +143,7 @@ class AudioAllMediaPresenter: AudioPresenter {
             sizeLabel: sizeLabel,
             dateLabel: dateLabel,
             dot1: dot1,
-            dot2: dot2
+            dot2: dot2,
         )
     }
 
@@ -183,68 +188,80 @@ class AudioAllMediaPresenter: AudioPresenter {
                 id: "senderLabel",
                 view: { $0.senderLabel },
                 subviewInfo: { $0.senderSize.asManualSubviewInfo(hasFixedSize: true) },
-                shouldAddSubview: true),
+                shouldAddSubview: true,
+            ),
             ViewWithSizingInfo(
                 id: "dot1",
                 view: { $0.dot1 },
                 subviewInfo: { $0.dot1Size.asManualSubviewInfo(hasFixedSize: true) },
-                shouldAddSubview: true),
+                shouldAddSubview: true,
+            ),
             ViewWithSizingInfo(
                 id: "sizeLabel",
                 view: { $0.sizeLabel },
                 subviewInfo: { $0.sizeSize.asManualSubviewInfo(hasFixedSize: true) },
-                shouldAddSubview: true),
+                shouldAddSubview: true,
+            ),
             ViewWithSizingInfo(
                 id: "dot2",
                 view: { $0.dot2 },
                 subviewInfo: { $0.dot2Size.asManualSubviewInfo(hasFixedSize: true) },
-                shouldAddSubview: true),
+                shouldAddSubview: true,
+            ),
             ViewWithSizingInfo(
                 id: "dateLabel",
                 view: { $0.dateLabel },
                 subviewInfo: { $0.dateSize.asManualSubviewInfo(hasFixedSize: true) },
-                shouldAddSubview: true),
+                shouldAddSubview: true,
+            ),
             ViewWithSizingInfo(
                 id: "hStretchingSpacer",
                 view: { _ in .hStretchingSpacer() },
                 subviewInfo: { _ in .empty },
-                shouldAddSubview: false),
+                shouldAddSubview: false,
+            ),
             ViewWithSizingInfo(
                 id: "transparentSpacer1",
                 view: { _ in UIView.transparentSpacer() },
                 subviewInfo: { _ in
                     CGSize(width: Constants.bottomInnerStackSpacing, height: 0).asManualSubviewInfo(hasFixedSize: true)
                 },
-                shouldAddSubview: false),
+                shouldAddSubview: false,
+            ),
             ViewWithSizingInfo(
                 id: "playbackRateView",
                 view: { $0.playbackRateView },
                 subviewInfo: { $0.playbackRateSize.asManualSubviewInfo(hasFixedSize: true) },
-                shouldAddSubview: true),
+                shouldAddSubview: true,
+            ),
             ViewWithSizingInfo(
                 id: "transparentSpacer2",
                 view: { _ in UIView.transparentSpacer() },
                 subviewInfo: { _ in
                     CGSize(width: Constants.bottomInnerStackSpacing, height: 0).asManualSubviewInfo(hasFixedSize: true)
                 },
-                shouldAddSubview: false),
+                shouldAddSubview: false,
+            ),
             ViewWithSizingInfo(
                 id: "playbackTimeLabel",
                 view: { $0.playbackTimeLabel },
                 subviewInfo: { $0.playbackTimeLabelSize.asManualSubviewInfo(hasFixedSize: true) },
-                shouldAddSubview: true),
+                shouldAddSubview: true,
+            ),
             ViewWithSizingInfo(
                 id: "transparentSpacer3",
                 view: { _ in UIView.transparentSpacer() },
                 subviewInfo: { _ in
                     CGSize(width: 4, height: 0).asManualSubviewInfo(hasFixedSize: true)
                 },
-                shouldAddSubview: false),
+                shouldAddSubview: false,
+            ),
             ViewWithSizingInfo(
                 id: "playedDotContainer",
                 view: { $0.playedDotContainer },
                 subviewInfo: { $0.dotSize.asManualSubviewInfo(hasFixedSize: true) },
-                shouldAddSubview: true)
+                shouldAddSubview: true,
+            ),
         ]
     }()
 
@@ -252,7 +269,7 @@ class AudioAllMediaPresenter: AudioPresenter {
         let makeSubviewConfig = { [unowned self] (maxWidth: CGFloat) -> SubviewConfig in
             let playbackTimeLabelConfig = Self.playbackTimeLabelConfig_forMeasurement(
                 audioAttachment: audioAttachment,
-                maxWidth: maxWidth
+                maxWidth: maxWidth,
             )
             let playbackTimeLabelSize = CVText.measureLabel(config: playbackTimeLabelConfig, maxWidth: maxWidth)
 
@@ -280,7 +297,8 @@ class AudioAllMediaPresenter: AudioPresenter {
                 sizeSize: sizeSize,
                 dateSize: dateSize,
                 dot1Size: dot1Size,
-                dot2Size: dot2Size)
+                dot2Size: dot2Size,
+            )
             return subviewConfig
         }
 
@@ -297,7 +315,8 @@ class AudioAllMediaPresenter: AudioPresenter {
             return SubviewGenerator(
                 id: vwsi.id,
                 measurementInfo: { vwsi.subviewInfo(lazySubviewConfig($0)) },
-                viewGenerator: { vwsi.view(self.subviews) })
+                viewGenerator: { vwsi.view(self.subviews) },
+            )
         }
     }
 
@@ -330,7 +349,7 @@ class AudioAllMediaPresenter: AudioPresenter {
         return CVLabelConfig.unstyledText(
             text,
             font: Constants.filenameFont,
-            textColor: .label
+            textColor: .label,
         )
     }
 
@@ -343,6 +362,7 @@ class AllMediaAudioMessagePlaybackRateView: AudioMessagePlaybackRateView {
     override func makeBackgroundColor() -> UIColor {
         return (Theme.isDarkThemeEnabled ? UIColor.ows_white : .ows_black).withAlphaComponent(0.08)
     }
+
     override func makeTextColor() -> UIColor {
         return Theme.isDarkThemeEnabled ? .ows_gray15 : .ows_gray60
     }

@@ -21,7 +21,7 @@ public final class OWSContactEmail: NSObject, NSCoding, NSCopying, OWSContactFie
         }
     }
 
-    public override var hash: Int {
+    override public var hash: Int {
         var hasher = Hasher()
         hasher.combine(email)
         hasher.combine(type)
@@ -29,7 +29,7 @@ public final class OWSContactEmail: NSObject, NSCoding, NSCopying, OWSContactFie
         return hasher.finalize()
     }
 
-    public override func isEqual(_ object: Any?) -> Bool {
+    override public func isEqual(_ object: Any?) -> Bool {
         guard let object = object as? Self else { return false }
         guard Swift.type(of: self) == Swift.type(of: object) else { return false }
         guard self.email == object.email else { return false }
@@ -124,7 +124,7 @@ extension OWSContactEmail {
             type = .custom
             customLabel = SystemContact.localizedString(
                 forCNLabel: cnLabeledValue.label,
-                labeledValueType: CNLabeledValue<NSString>.self
+                labeledValueType: CNLabeledValue<NSString>.self,
             )
         }
 
@@ -157,19 +157,19 @@ extension OWSContactEmail {
 
         let type: `Type`
         if proto.hasType {
-             switch proto.unwrappedType {
-             case .home:
-                 type = .home
+            switch proto.unwrappedType {
+            case .home:
+                type = .home
 
-             case .mobile:
-                 type = .mobile
+            case .mobile:
+                type = .mobile
 
-             case .work:
-                 type = .work
+            case .work:
+                type = .work
 
-             default:
-                 type = .custom
-             }
+            default:
+                type = .custom
+            }
         } else {
             type = .custom
         }

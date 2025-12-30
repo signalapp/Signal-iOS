@@ -26,18 +26,18 @@ final class AppIconLearnMoreTableViewController: OWSTableViewController2 {
         topSection.headerAttributedTitle = NSAttributedString(
             string: OWSLocalizedString(
                 "SETTINGS_APP_ICON_EDUCATION_APP_NAME",
-                comment: "Information on sheet about changing the app icon - first line"
-            )
+                comment: "Information on sheet about changing the app icon - first line",
+            ),
         )
         .styled(
             with: .font(.dynamicTypeSubheadlineClamped),
-            .color(defaultFooterTextColor)
+            .color(defaultFooterTextColor),
         )
         topSection.add(.init(customCellBlock: { [weak self] in
             let homescreenImageName = UIDevice.current.isIPad ? "homescreen_ipados" : "homescreen_ios"
             return self?.createCell(
                 with: homescreenImageName,
-                insets: .init(hMargin: 48, vMargin: 24)
+                insets: .init(hMargin: 48, vMargin: 24),
             ) ?? UITableViewCell()
         }))
         topSection.shouldDisableCellSelection = true
@@ -46,18 +46,18 @@ final class AppIconLearnMoreTableViewController: OWSTableViewController2 {
         bottomSection.headerAttributedTitle = NSAttributedString(
             string: OWSLocalizedString(
                 "SETTINGS_APP_ICON_EDUCATION_HOME_SCREEN_DOCK",
-                comment: "Information on sheet about changing the app icon - second line"
-            )
+                comment: "Information on sheet about changing the app icon - second line",
+            ),
         )
         .styled(
             with: .font(.dynamicTypeSubheadlineClamped),
-            .color(defaultFooterTextColor)
+            .color(defaultFooterTextColor),
         )
         bottomSection.add(.init(customCellBlock: { [weak self] in
             let dockImageName = UIDevice.current.isIPad ? "dock_ipados" : "dock_ios"
             return self?.createCell(
                 with: dockImageName,
-                insets: .init(top: 0, leading: 16, bottom: 29, trailing: 16)
+                insets: .init(top: 0, leading: 16, bottom: 29, trailing: 16),
             ) ?? UITableViewCell()
         }))
         bottomSection.shouldDisableCellSelection = true
@@ -68,7 +68,7 @@ final class AppIconLearnMoreTableViewController: OWSTableViewController2 {
 
     private func createCell(
         with image: String,
-        insets: UIEdgeInsets
+        insets: UIEdgeInsets,
     ) -> UITableViewCell {
         let cell = OWSTableItem.newCell()
         let image = UIImage(named: image)

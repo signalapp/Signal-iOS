@@ -17,7 +17,7 @@ public class WallpaperStore {
     private let dimmingStore: KeyValueStore
 
     init(
-        wallpaperImageStore: WallpaperImageStore
+        wallpaperImageStore: WallpaperImageStore,
     ) {
         self.enumStore = KeyValueStore(collection: "Wallpaper+Enum")
         self.dimmingStore = KeyValueStore(collection: "Wallpaper+Dimming")
@@ -83,7 +83,7 @@ public class WallpaperStore {
     /// Return either the per-thread wallpaper setting, or the global setting if none is set on the thread.
     public func fetchWallpaperForRendering(
         for threadUniqueId: String?,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> Wallpaper? {
         return Self.fetchResolvedValue(for: threadUniqueId) {
             return fetchWallpaper(for: $0, tx: tx)

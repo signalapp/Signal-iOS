@@ -62,8 +62,8 @@ public enum OWSErrorCode: Int {
     case senderKeyEphemeralFailure = 777438
     case senderKeyUnavailable = 777439
     case messageSendEncryptionFailure = 777440
-    case noSessionForTransientMessage = 777441  // NOTE: This value does not match the value before conversion to objc due to duplication of the raw value (was 777427 same as untrustedIdentity)
-    case uploadFailed = 777442  // NOTE: This value does not match the value before conversion to objc due to duplication of the raw value (was 777428 same as invalidKeySignature)
+    case noSessionForTransientMessage = 777441 // NOTE: This value does not match the value before conversion to objc due to duplication of the raw value (was 777427 same as untrustedIdentity)
+    case uploadFailed = 777442 // NOTE: This value does not match the value before conversion to objc due to duplication of the raw value (was 777428 same as invalidKeySignature)
 }
 
 public class OWSError: CustomNSError, IsRetryableProvider, UserErrorDescriptionProvider, CustomStringConvertible {
@@ -72,20 +72,24 @@ public class OWSError: CustomNSError, IsRetryableProvider, UserErrorDescriptionP
     private let customIsRetryable: Bool
     private var customUserInfo: [String: Any]?
 
-    public init(errorCode: Int,
-                description customLocalizedDescription: String,
-                isRetryable customIsRetryable: Bool,
-                userInfo customUserInfo: [String: Any]? = nil) {
+    public init(
+        errorCode: Int,
+        description customLocalizedDescription: String,
+        isRetryable customIsRetryable: Bool,
+        userInfo customUserInfo: [String: Any]? = nil,
+    ) {
         self.errorCode = errorCode
         self.customLocalizedDescription = customLocalizedDescription
         self.customIsRetryable = customIsRetryable
         self.customUserInfo = customUserInfo
     }
 
-    public init(error: OWSErrorCode,
-                description customLocalizedDescription: String,
-                isRetryable customIsRetryable: Bool,
-                userInfo customUserInfo: [String: Any]? = nil) {
+    public init(
+        error: OWSErrorCode,
+        description customLocalizedDescription: String,
+        isRetryable customIsRetryable: Bool,
+        userInfo customUserInfo: [String: Any]? = nil,
+    ) {
         self.errorCode = error.rawValue
         self.customLocalizedDescription = customLocalizedDescription
         self.customIsRetryable = customIsRetryable
@@ -94,8 +98,10 @@ public class OWSError: CustomNSError, IsRetryableProvider, UserErrorDescriptionP
 
     public var description: String {
         var result = "[OWSError code: \(errorCode), description: \(customLocalizedDescription)"
-        if let customUserInfo = self.customUserInfo,
-           !customUserInfo.isEmpty {
+        if
+            let customUserInfo = self.customUserInfo,
+            !customUserInfo.isEmpty
+        {
             result += ", userInfo: \(customUserInfo)"
         }
         result += "]"

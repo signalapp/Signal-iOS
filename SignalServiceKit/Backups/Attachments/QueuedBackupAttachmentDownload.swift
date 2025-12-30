@@ -86,7 +86,7 @@ public struct QueuedBackupAttachmentDownload: Codable, FetchableRecord, MutableP
         maxOwnerTimestamp: UInt64?,
         minRetryTimestamp: UInt64,
         state: State,
-        estimatedByteCount: UInt32
+        estimatedByteCount: UInt32,
     ) {
         self.id = id
         self.attachmentRowId = attachmentRowId

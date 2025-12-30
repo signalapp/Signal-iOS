@@ -24,7 +24,7 @@ public class SpoilerRenderer {
                 maxAlpha: 0.9,
                 alphaDropoffRate: 0.2,
                 particleSizePixels: UIScreen.main.scale > 2 ? 2 : 1,
-                color: color
+                color: color,
             )
         }
 
@@ -33,18 +33,20 @@ public class SpoilerRenderer {
                 maxAlpha: 0.9,
                 alphaDropoffRate: 0.05,
                 particleSizePixels: 3,
-                color: color
+                color: color,
             )
         }
 
         // Values from 0 to 255.
         var colorRGB: SIMD3<UInt8> {
-            var (r, g, b): (CGFloat, CGFloat, CGFloat) = (0, 0, 0)
+            var r: CGFloat = 0
+            var g: CGFloat = 0
+            var b: CGFloat = 0
             color.forCurrentTheme.getRed(&r, green: &g, blue: &b, alpha: nil)
             return .init(
                 UInt8(clamping: Int(r * 255)),
                 UInt8(clamping: Int(g * 255)),
-                UInt8(clamping: Int(b * 255))
+                UInt8(clamping: Int(b * 255)),
             )
         }
 
@@ -87,19 +89,21 @@ public class SpoilerRenderer {
             self,
             selector: #selector(didEnterForeground),
             name: .OWSApplicationWillEnterForeground,
-            object: nil
+            object: nil,
         )
         NotificationCenter.default.addObserver(
-            self, selector:
-                #selector(didEnterBackground),
+            self,
+            selector:
+            #selector(didEnterBackground),
             name: .OWSApplicationDidEnterBackground,
-            object: nil
+            object: nil,
         )
         NotificationCenter.default.addObserver(
-            self, selector:
-                #selector(reduceMotionSettingChanged),
+            self,
+            selector:
+            #selector(reduceMotionSettingChanged),
             name: UIAccessibility.reduceTransparencyStatusDidChangeNotification,
-            object: nil
+            object: nil,
         )
     }
 
@@ -116,7 +120,7 @@ public class SpoilerRenderer {
         }
         let particleView = SpoilerParticleView(
             metalConfig: metalConfig,
-            renderer: self
+            renderer: self,
         )
         particleView.isInUse = false
         view.addSubview(particleView)
@@ -137,7 +141,7 @@ public class SpoilerRenderer {
                 } else {
                     let particleView = SpoilerParticleView(
                         metalConfig: metalConfig,
-                        renderer: self
+                        renderer: self,
                     )
                     particleView.isInUse = true
                     self.particleViews.append(Weak(value: particleView))
@@ -157,9 +161,10 @@ public class SpoilerRenderer {
     }
 
     public func removeSpoilerViews(from view: UIView) {
-        removeSpoilerViews(view.subviews.lazy
-            .compactMap { $0 as? SpoilerParticleView }
-       )
+        removeSpoilerViews(
+            view.subviews.lazy
+                .compactMap { $0 as? SpoilerParticleView },
+        )
         recomputeFidelity()
     }
 
@@ -233,8 +238,8 @@ public class SpoilerRenderer {
         self.particleViews.removeAll(where: { $0.value == nil })
         let wantsToAnimate =
             isAppInForeground
-            && !UIAccessibility.isReduceMotionEnabled
-            && !self.particleViews.isEmpty
+                && !UIAccessibility.isReduceMotionEnabled
+                && !self.particleViews.isEmpty
         let wasAnimating = animationStart != nil
 
         guard wantsToAnimate != wasAnimating else {

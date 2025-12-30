@@ -10,7 +10,7 @@ extension SDSCodableModelDatabaseInterfaceImpl {
     func fetchModel<Model: SDSCodableModel>(
         modelType: Model.Type,
         rowId: Model.RowId,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> Model? {
         return fetchModel(
             modelType: modelType,
@@ -18,7 +18,7 @@ extension SDSCodableModelDatabaseInterfaceImpl {
             SELECT * FROM \(modelType.databaseTableName) WHERE "id" = ?
             """,
             arguments: [rowId],
-            transaction: tx
+            transaction: tx,
         )
     }
 
@@ -26,7 +26,7 @@ extension SDSCodableModelDatabaseInterfaceImpl {
     func fetchModel<Model: SDSCodableModel>(
         modelType: Model.Type,
         uniqueId: String,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> Model? {
         owsAssertDebug(!uniqueId.isEmpty)
 
@@ -34,7 +34,7 @@ extension SDSCodableModelDatabaseInterfaceImpl {
             modelType: modelType,
             sql: "SELECT * FROM \(modelType.databaseTableName) WHERE uniqueId = ?",
             arguments: [uniqueId],
-            transaction: transaction
+            transaction: transaction,
         )
     }
 
@@ -42,13 +42,13 @@ extension SDSCodableModelDatabaseInterfaceImpl {
         modelType: Model.Type,
         sql: String,
         arguments: StatementArguments,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> Model? {
         return failIfThrows {
             let model = try modelType.fetchOne(
                 transaction.database,
                 sql: sql,
-                arguments: arguments
+                arguments: arguments,
             )
             model?.anyDidFetchOne(transaction: transaction)
             return model
@@ -58,7 +58,7 @@ extension SDSCodableModelDatabaseInterfaceImpl {
     /// Fetch all persisted models of the given type.
     func fetchAllModels<Model: SDSCodableModel>(
         modelType: Model.Type,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> [Model] {
         return failIfThrows {
             let sql: String = """
@@ -67,7 +67,7 @@ extension SDSCodableModelDatabaseInterfaceImpl {
 
             return try modelType.fetchAll(
                 transaction.database,
-                sql: sql
+                sql: sql,
             )
         }
     }
@@ -75,7 +75,7 @@ extension SDSCodableModelDatabaseInterfaceImpl {
     /// Count all persisted models of the given type.
     func countAllModels<Model: SDSCodableModel>(
         modelType: Model.Type,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> UInt {
         return modelType.ows_fetchCount(transaction.database)
     }

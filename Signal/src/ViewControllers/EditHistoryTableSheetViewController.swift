@@ -13,7 +13,7 @@ protocol MessageEditHistoryViewDelegate: AnyObject {
 
 class EditHistoryTableSheetViewController: OWSTableSheetViewController {
 
-    internal enum Constants {
+    enum Constants {
         static let cellSpacing: CGFloat = 12.0
     }
 
@@ -33,7 +33,7 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
         spoilerState: SpoilerRenderState,
         editManager: EditManager,
         database: SDSDatabaseStorage,
-        databaseChangeObserver: DatabaseChangeObserver
+        databaseChangeObserver: DatabaseChangeObserver,
     ) {
         self.threadViewModel = threadViewModel
         self.spoilerState = spoilerState
@@ -50,15 +50,16 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
         do {
             try self.database.write { tx in
 
-                guard let thread = TSThread.anyFetch(
-                    uniqueId: message.uniqueThreadId,
-                    transaction: tx
-                ) else { return }
+                guard
+                    let thread = TSThread.anyFetch(
+                        uniqueId: message.uniqueThreadId,
+                        transaction: tx,
+                    ) else { return }
 
                 try self.editManager.markEditRevisionsAsRead(
                     for: self.message,
                     thread: thread,
-                    tx: tx
+                    tx: tx,
                 )
             }
         } catch {
@@ -77,20 +78,22 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
 
             let edits: [TSMessage] = try DependenciesBridge.shared.editMessageStore.findEditHistory(
                 forMostRecentRevision: message,
-                tx: tx
+                tx: tx,
             ).compactMap { $0.message }
 
-            guard let thread = TSThread.anyFetch(
-                uniqueId: message.uniqueThreadId,
-                transaction: tx
-            ) else {
+            guard
+                let thread = TSThread.anyFetch(
+                    uniqueId: message.uniqueThreadId,
+                    transaction: tx,
+                )
+            else {
                 owsFailDebug("Missing thread.")
                 return false
             }
 
             let threadAssociatedData = ThreadAssociatedData.fetchOrDefault(
                 for: thread,
-                transaction: tx
+                transaction: tx,
             )
 
             parentRenderItems = buildRenderItem(
@@ -98,7 +101,8 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
                 threadAssociatedData: threadAssociatedData,
                 message: message,
                 forceDateHeader: true,
-                tx: tx)
+                tx: tx,
+            )
 
             var renderItems = [CVRenderItem]()
             for edit in edits {
@@ -106,7 +110,7 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
                     thread: thread,
                     threadAssociatedData: threadAssociatedData,
                     message: edit,
-                    tx: tx
+                    tx: tx,
                 )
                 renderItems.append(contentsOf: items)
             }
@@ -120,7 +124,7 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
         }
     }
 
-    public override func tableContents() -> OWSTableContents {
+    override func tableContents() -> OWSTableContents {
         do {
             try loadEditHistory()
         } catch {
@@ -139,7 +143,7 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
 
         let header = OWSLocalizedString(
             "EDIT_HISTORY_LABEL",
-            comment: "Label for Edit History modal"
+            comment: "Label for Edit History modal",
         )
 
         let section = OWSTableSection()
@@ -156,9 +160,9 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
 
     private func createMessageListTableItem(items: [CVRenderItem]) -> OWSTableItem {
         return OWSTableItem { [weak self] in
-            guard let self = self else { return UITableViewCell() }
+            guard let self else { return UITableViewCell() }
 
-            let views = items.enumerated().map { (index, item) in
+            let views = items.enumerated().map { index, item in
                 let cellView = CVCellView()
                 cellView.configure(renderItem: item, componentDelegate: self)
                 cellView.isCellVisible = true
@@ -200,7 +204,7 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
         let longTextVC = LongTextViewController(
             itemViewModel: itemViewModel,
             threadViewModel: threadViewModel,
-            spoilerState: spoilerState
+            spoilerState: spoilerState,
         )
         longTextVC.delegate = self
         let navVc = OWSNavigationController(rootViewController: longTextVC)
@@ -213,7 +217,7 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
         threadAssociatedData: ThreadAssociatedData,
         message interaction: TSMessage,
         forceDateHeader: Bool = false,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> [CVRenderItem] {
         var results = [CVRenderItem]()
         let cellInsets = tableViewController.cellOuterInsets
@@ -226,8 +230,8 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
             isWallpaperPhoto: false,
             chatColor: DependenciesBridge.shared.chatColorSettingStore.resolvedChatColor(
                 for: thread,
-                tx: tx
-            )
+                tx: tx,
+            ),
         )
 
         let itemDate = Date(millisecondsSince1970: interaction.timestamp)
@@ -236,26 +240,30 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
             currentDaysBefore = daysPrior
 
             let dateInteraction = DateHeaderInteraction(thread: thread, timestamp: interaction.timestamp)
-            if let dateItem = CVLoader.buildStandaloneRenderItem(
-                interaction: dateInteraction,
-                thread: thread,
-                threadAssociatedData: threadAssociatedData,
-                conversationStyle: conversationStyle,
-                spoilerState: self.spoilerState,
-                transaction: tx
-            ) {
+            if
+                let dateItem = CVLoader.buildStandaloneRenderItem(
+                    interaction: dateInteraction,
+                    thread: thread,
+                    threadAssociatedData: threadAssociatedData,
+                    conversationStyle: conversationStyle,
+                    spoilerState: self.spoilerState,
+                    transaction: tx,
+                )
+            {
                 results.append(dateItem)
             }
         }
 
-        if let item =  CVLoader.buildStandaloneRenderItem(
-            interaction: interaction,
-            thread: thread,
-            threadAssociatedData: threadAssociatedData,
-            conversationStyle: conversationStyle,
-            spoilerState: self.spoilerState,
-            transaction: tx
-        ) {
+        if
+            let item = CVLoader.buildStandaloneRenderItem(
+                interaction: interaction,
+                thread: thread,
+                threadAssociatedData: threadAssociatedData,
+                conversationStyle: conversationStyle,
+                spoilerState: self.spoilerState,
+                transaction: tx,
+            )
+        {
             results.append(item)
         }
         return results
@@ -301,37 +309,42 @@ extension EditHistoryTableSheetViewController: CVComponentDelegate {
     func didLongPressTextViewItem(
         _ cell: CVCell,
         itemViewModel: CVItemViewModelImpl,
-        shouldAllowReply: Bool) {}
+        shouldAllowReply: Bool,
+    ) {}
 
     func didLongPressMediaViewItem(
         _ cell: CVCell,
         itemViewModel: CVItemViewModelImpl,
-        shouldAllowReply: Bool) {}
+        shouldAllowReply: Bool,
+    ) {}
 
     func didLongPressQuote(
         _ cell: CVCell,
         itemViewModel: CVItemViewModelImpl,
-        shouldAllowReply: Bool) {}
+        shouldAllowReply: Bool,
+    ) {}
 
     func didLongPressSystemMessage(
         _ cell: CVCell,
-        itemViewModel: CVItemViewModelImpl) {}
+        itemViewModel: CVItemViewModelImpl,
+    ) {}
 
     func didLongPressSticker(
         _ cell: CVCell,
         itemViewModel: CVItemViewModelImpl,
-        shouldAllowReply: Bool) {}
+        shouldAllowReply: Bool,
+    ) {}
 
     func didLongPressPaymentMessage(
         _ cell: CVCell,
         itemViewModel: CVItemViewModelImpl,
-        shouldAllowReply: Bool
+        shouldAllowReply: Bool,
     ) {}
 
     func didLongPressPoll(
         _ cell: CVCell,
         itemViewModel: CVItemViewModelImpl,
-        shouldAllowReply: Bool
+        shouldAllowReply: Bool,
     ) {}
 
     func didTapPayment(_ payment: PaymentsHistoryItem) {}
@@ -360,7 +373,8 @@ extension EditHistoryTableSheetViewController: CVComponentDelegate {
 
     func didTapReactions(
         reactionState: InteractionReactionState,
-        message: TSMessage) {}
+        message: TSMessage,
+    ) {}
 
     func didTapTruncatedTextMessage(_ itemViewModel: CVItemViewModelImpl) {}
 
@@ -383,11 +397,11 @@ extension EditHistoryTableSheetViewController: CVComponentDelegate {
     func didTapBodyMedia(
         itemViewModel: CVItemViewModelImpl,
         attachmentStream: ReferencedAttachmentStream,
-        imageView: UIView
+        imageView: UIView,
     ) {}
 
     func didTapGenericAttachment(
-        _ attachment: CVComponentGenericAttachment
+        _ attachment: CVComponentGenericAttachment,
     ) -> CVAttachmentTapAction { .default }
 
     func didTapQuotedReply(_ quotedReply: QuotedReplyModel) {}
@@ -420,7 +434,8 @@ extension EditHistoryTableSheetViewController: CVComponentDelegate {
         _ itemViewModel: CVItemViewModelImpl,
         profileBadge: ProfileBadge,
         isExpired: Bool,
-        isRedeemed: Bool) {}
+        isRedeemed: Bool,
+    ) {}
 
     func prepareMessageDetailForInteractivePresentation(_ itemViewModel: CVItemViewModelImpl) {}
 
@@ -432,7 +447,7 @@ extension EditHistoryTableSheetViewController: CVComponentDelegate {
 
     var wallpaperBlurProvider: WallpaperBlurProvider? { nil }
 
-    public var selectionState: CVSelectionState { CVSelectionState() }
+    var selectionState: CVSelectionState { CVSelectionState() }
 
     func didTapPreviouslyVerifiedIdentityChange(_ address: SignalServiceAddress) {}
 
@@ -471,13 +486,15 @@ extension EditHistoryTableSheetViewController: CVComponentDelegate {
     func didTapBlockRequest(
         groupModel: TSGroupModelV2,
         requesterName: String,
-        requesterAci: Aci) {}
+        requesterAci: Aci,
+    ) {}
 
     func didTapShowUpgradeAppUI() {}
 
     func didTapUpdateSystemContact(
         _ address: SignalServiceAddress,
-        newNameComponents: PersonNameComponents) {}
+        newNameComponents: PersonNameComponents,
+    ) {}
 
     func didTapPhoneNumberChange(aci: Aci, phoneNumberOld: String, phoneNumberNew: String) {}
 

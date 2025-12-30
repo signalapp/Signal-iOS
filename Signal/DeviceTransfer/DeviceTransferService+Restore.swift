@@ -36,6 +36,7 @@ extension DeviceTransferService {
                 CurrentAppContext().appUserDefaults().set(newValue, forKey: Self.pendingRestoreKey)
             }
         }
+
         static let pendingWasTransferredClearKey = "DeviceTransferPendingWasTransferredClear"
         static var pendingWasTransferredClear: Bool {
             get { CurrentAppContext().appUserDefaults().bool(forKey: Self.pendingWasTransferredClearKey) }
@@ -67,12 +68,14 @@ extension DeviceTransferService {
                 owsFailDebug("did not receive file \(file.identifier)")
                 return false
             }
-            guard OWSFileSystem.fileOrFolderExists(
-                atPath: URL(
-                    fileURLWithPath: file.identifier,
-                    relativeTo: DeviceTransferService.pendingTransferFilesDirectory
-                ).path
-            ) else {
+            guard
+                OWSFileSystem.fileOrFolderExists(
+                    atPath: URL(
+                        fileURLWithPath: file.identifier,
+                        relativeTo: DeviceTransferService.pendingTransferFilesDirectory,
+                    ).path,
+                )
+            else {
                 owsFailDebug("Missing file \(file.identifier)")
                 return false
             }
@@ -94,12 +97,14 @@ extension DeviceTransferService {
             return false
         }
 
-        guard OWSFileSystem.fileOrFolderExists(
-            atPath: URL(
-                fileURLWithPath: DeviceTransferService.databaseIdentifier,
-                relativeTo: DeviceTransferService.pendingTransferFilesDirectory
-            ).path
-        ) else {
+        guard
+            OWSFileSystem.fileOrFolderExists(
+                atPath: URL(
+                    fileURLWithPath: DeviceTransferService.databaseIdentifier,
+                    relativeTo: DeviceTransferService.pendingTransferFilesDirectory,
+                ).path,
+            )
+        else {
             owsFailDebug("missing database file")
             return false
         }
@@ -109,12 +114,14 @@ extension DeviceTransferService {
             return false
         }
 
-        guard OWSFileSystem.fileOrFolderExists(
-            atPath: URL(
-                fileURLWithPath: DeviceTransferService.databaseWALIdentifier,
-                relativeTo: DeviceTransferService.pendingTransferFilesDirectory
-            ).path
-        ) else {
+        guard
+            OWSFileSystem.fileOrFolderExists(
+                atPath: URL(
+                    fileURLWithPath: DeviceTransferService.databaseWALIdentifier,
+                    relativeTo: DeviceTransferService.pendingTransferFilesDirectory,
+                ).path,
+            )
+        else {
             owsFailDebug("missing database wal file")
             return false
         }
@@ -157,7 +164,7 @@ extension DeviceTransferService {
         for file in manifest.files + [database.database, database.wal] {
             let pendingFilePath = URL(
                 fileURLWithPath: file.identifier,
-                relativeTo: DeviceTransferService.pendingTransferFilesDirectory
+                relativeTo: DeviceTransferService.pendingTransferFilesDirectory,
             ).path
 
             // We could be receiving a database in any of the directory modes,
@@ -172,7 +179,7 @@ extension DeviceTransferService {
             } else {
                 newFilePath = URL(
                     fileURLWithPath: file.relativePath,
-                    relativeTo: DeviceTransferService.appSharedDataDirectory
+                    relativeTo: DeviceTransferService.appSharedDataDirectory,
                 ).path
             }
 
@@ -213,10 +220,12 @@ extension DeviceTransferService {
                 }
             } else if OWSFileSystem.fileOrFolderExists(atPath: newFilePath) {
                 Logger.info("Skipping restoration of file that was already restored: \(file.identifier)")
-            } else if [
-                DeviceTransferService.databaseIdentifier,
-                DeviceTransferService.databaseWALIdentifier
-            ].contains(file.identifier) {
+            } else if
+                [
+                    DeviceTransferService.databaseIdentifier,
+                    DeviceTransferService.databaseWALIdentifier,
+                ].contains(file.identifier)
+            {
                 owsFailDebug("unable to restore file that is missing")
                 return false
             } else {
@@ -392,7 +401,7 @@ extension DeviceTransferService {
     }
 
     private func updateUserDefaults(manifest: DeviceTransferProtoManifest?) throws {
-        guard let manifest = manifest else {
+        guard let manifest else {
             throw OWSAssertionError("No manifest available")
         }
 
@@ -417,14 +426,15 @@ extension DeviceTransferService {
 
         // TODO: Do we want to transfer all of our app defaults?
         for userDefault in manifest.appDefaults {
-            guard ![
-                GRDBDatabaseStorageAdapter.DirectoryMode.primaryFolderNameKey,
-                GRDBDatabaseStorageAdapter.DirectoryMode.transferFolderNameKey,
-                DeviceTransferService.hasBeenRestoredKey,
-                LegacyRestorationFlags.pendingRestoreKey,
-                LegacyRestorationFlags.pendingPromotionFromHotSwapToPrimaryDatabaseKey,
-                LegacyRestorationFlags.pendingWasTransferredClearKey
-            ].contains(userDefault.key) else { continue }
+            guard
+                ![
+                    GRDBDatabaseStorageAdapter.DirectoryMode.primaryFolderNameKey,
+                    GRDBDatabaseStorageAdapter.DirectoryMode.transferFolderNameKey,
+                    DeviceTransferService.hasBeenRestoredKey,
+                    LegacyRestorationFlags.pendingRestoreKey,
+                    LegacyRestorationFlags.pendingPromotionFromHotSwapToPrimaryDatabaseKey,
+                    LegacyRestorationFlags.pendingWasTransferredClearKey,
+                ].contains(userDefault.key) else { continue }
 
             guard let unarchivedValue = try? NSKeyedUnarchiver.unarchivedObject(ofClasses: possibleUserDefaultClasses, from: userDefault.encodedValue) else {
                 owsFailDebug("Failed to unarchive value for key \(userDefault.key)")
@@ -435,7 +445,7 @@ extension DeviceTransferService {
     }
 
     private func moveManifestFiles(manifest: DeviceTransferProtoManifest?) throws {
-        guard let manifest = manifest else {
+        guard let manifest else {
             throw OWSAssertionError("No manifest available")
         }
         let sourceDir = DeviceTransferService.pendingTransferFilesDirectory
@@ -514,7 +524,7 @@ extension DeviceTransferService {
             DependenciesBridge.shared.db.write { tx in
                 DependenciesBridge.shared.registrationStateChangeManager.setIsTransferComplete(
                     sendStateUpdateNotification: true,
-                    tx: tx
+                    tx: tx,
                 )
             }
 

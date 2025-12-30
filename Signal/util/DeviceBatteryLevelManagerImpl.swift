@@ -47,7 +47,7 @@ public class DeviceBatteryLevelManagerImpl: DeviceBatteryLevelManager {
             owsFailDebug("Duplicate monitoring reason!")
         }
         return DeviceBatteryLevelMonitorImpl(
-            reason: reason
+            reason: reason,
         )
     }
 

@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import SignalServiceKit
 import XCTest
 @testable import Signal
-import SignalServiceKit
 
 class BadgeIssueSheetStateTest: XCTestCase {
     typealias State = BadgeIssueSheetState
@@ -16,7 +16,7 @@ class BadgeIssueSheetStateTest: XCTestCase {
             "category": "donor",
             "name": "Subscriber X",
             "description": "A subscriber badge!",
-            "sprites6": ["ldpi.png", "mdpi.png", "hdpi.png", "xhdpi.png", "xxhdpi.png", "xxxhdpi.png"]
+            "sprites6": ["ldpi.png", "mdpi.png", "hdpi.png", "xhdpi.png", "xxhdpi.png", "xxxhdpi.png"],
         ])
         if populateAssets {
             result._testingOnly_populateAssets()
@@ -30,7 +30,7 @@ class BadgeIssueSheetStateTest: XCTestCase {
             "category": "donor",
             "name": "A Boost",
             "description": "A boost badge!",
-            "sprites6": ["ldpi.png", "mdpi.png", "hdpi.png", "xhdpi.png", "xxhdpi.png", "xxxhdpi.png"]
+            "sprites6": ["ldpi.png", "mdpi.png", "hdpi.png", "xhdpi.png", "xxhdpi.png", "xxxhdpi.png"],
         ])
         if populateAssets {
             result._testingOnly_populateAssets()
@@ -44,7 +44,7 @@ class BadgeIssueSheetStateTest: XCTestCase {
             "category": "donor",
             "name": "A Gift",
             "description": "A gift badge!",
-            "sprites6": ["ldpi.png", "mdpi.png", "hdpi.png", "xhdpi.png", "xxhdpi.png", "xxxhdpi.png"]
+            "sprites6": ["ldpi.png", "mdpi.png", "hdpi.png", "xhdpi.png", "xxhdpi.png", "xxxhdpi.png"],
         ])
         if populateAssets {
             result._testingOnly_populateAssets()
@@ -57,7 +57,7 @@ class BadgeIssueSheetStateTest: XCTestCase {
         let state = State(
             badge: badge,
             mode: .subscriptionBankPaymentProcessing,
-            canDonate: true
+            canDonate: true,
         )
         XCTAssertIdentical(state.badge, badge)
     }
@@ -67,33 +67,33 @@ class BadgeIssueSheetStateTest: XCTestCase {
             .init(
                 badge: getGiftBadge(),
                 mode: .giftBadgeExpired(hasCurrentSubscription: true),
-                canDonate: true
+                canDonate: true,
             ),
             .init(
                 badge: getGiftBadge(),
                 mode: .giftBadgeExpired(hasCurrentSubscription: true),
-                canDonate: true
+                canDonate: true,
             ),
             .init(
                 badge: getBoostBadge(),
                 mode: .boostExpired(hasCurrentSubscription: true),
-                canDonate: false
+                canDonate: false,
             ),
             .init(
                 badge: getGiftBadge(),
                 mode: .giftNotRedeemed(fullName: ""),
-                canDonate: true
+                canDonate: true,
             ),
             .init(
                 badge: getBoostBadge(),
                 mode: .boostBankPaymentProcessing,
-                canDonate: true
+                canDonate: true,
             ),
             .init(
                 badge: getSubscriptionBadge(),
                 mode: .subscriptionBankPaymentProcessing,
-                canDonate: true
-            )
+                canDonate: true,
+            ),
         ]
         for state in dismissButtonStates {
             XCTAssertEqual(state.actionButton.action, .dismiss)
@@ -104,28 +104,28 @@ class BadgeIssueSheetStateTest: XCTestCase {
             .init(
                 badge: getSubscriptionBadge(),
                 mode: .subscriptionExpiredBecauseOfChargeFailure(chargeFailureCode: nil, paymentMethod: nil),
-                canDonate: true
+                canDonate: true,
             ),
             .init(
                 badge: getBoostBadge(),
                 mode: .boostExpired(hasCurrentSubscription: false),
-                canDonate: true
+                canDonate: true,
             ),
             .init(
                 badge: getBoostBadge(),
                 mode: .boostExpired(hasCurrentSubscription: true),
-                canDonate: true
+                canDonate: true,
             ),
             .init(
                 badge: getGiftBadge(),
                 mode: .giftBadgeExpired(hasCurrentSubscription: false),
-                canDonate: true
+                canDonate: true,
             ),
             .init(
                 badge: getSubscriptionBadge(),
                 mode: .bankPaymentFailed(chargeFailureCode: nil),
-                canDonate: true
-            )
+                canDonate: true,
+            ),
         ]
         for state in donateButtonStates {
             XCTAssertEqual(state.actionButton.action, .openDonationView)

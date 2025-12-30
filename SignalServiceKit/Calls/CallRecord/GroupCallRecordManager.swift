@@ -15,7 +15,7 @@ public protocol GroupCallRecordManager {
         groupCallStatus: CallRecord.CallStatus.GroupCallStatus,
         callEventTimestamp: UInt64,
         shouldSendSyncMessage: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws
 
     /// Create a group call record with the given parameters.
@@ -34,7 +34,7 @@ public protocol GroupCallRecordManager {
         groupCallRingerAci: Aci?,
         callEventTimestamp: UInt64,
         shouldSendSyncMessage: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws -> CallRecord
 
     /// Update an group existing call record with the given parameters.
@@ -51,7 +51,7 @@ public protocol GroupCallRecordManager {
         newGroupCallRingerAci: Aci?,
         callEventTimestamp: UInt64,
         shouldSendSyncMessage: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     )
 
     /// Update the timestamp of the given call record, if the given timestamp is
@@ -66,7 +66,7 @@ public protocol GroupCallRecordManager {
     func updateCallBeganTimestampIfEarlier(
         existingCallRecord: CallRecord,
         callEventTimestamp: UInt64,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     )
 }
 
@@ -80,7 +80,7 @@ public extension GroupCallRecordManager {
         groupCallInteraction: OWSGroupCallMessage,
         groupCallInteractionRowId: Int64,
         groupThreadRowId: Int64,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws -> CallRecord {
         try createGroupCallRecord(
             callId: callId,
@@ -92,7 +92,7 @@ public extension GroupCallRecordManager {
             groupCallRingerAci: nil,
             callEventTimestamp: groupCallInteraction.timestamp,
             shouldSendSyncMessage: false,
-            tx: tx
+            tx: tx,
         )
     }
 }
@@ -108,7 +108,7 @@ public class GroupCallRecordManagerImpl: GroupCallRecordManager {
     init(
         callRecordStore: CallRecordStore,
         interactionStore: InteractionStore,
-        outgoingSyncMessageManager: OutgoingCallEventSyncMessageManager
+        outgoingSyncMessageManager: OutgoingCallEventSyncMessageManager,
     ) {
         self.callRecordStore = callRecordStore
         self.interactionStore = interactionStore
@@ -124,7 +124,7 @@ public class GroupCallRecordManagerImpl: GroupCallRecordManager {
         groupCallStatus: CallRecord.CallStatus.GroupCallStatus,
         callEventTimestamp: UInt64,
         shouldSendSyncMessage: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         // We never have a group call ringer in this flow.
         let groupCallRingerAci: Aci? = nil
@@ -132,7 +132,7 @@ public class GroupCallRecordManagerImpl: GroupCallRecordManager {
         switch callRecordStore.fetch(
             callId: callId,
             conversationId: .thread(threadRowId: groupThreadRowId),
-            tx: tx
+            tx: tx,
         ) {
         case .matchDeleted:
             logger.warn("Ignoring: existing record was deleted!")
@@ -144,13 +144,13 @@ public class GroupCallRecordManagerImpl: GroupCallRecordManager {
                 newGroupCallRingerAci: groupCallRingerAci,
                 callEventTimestamp: callEventTimestamp,
                 shouldSendSyncMessage: shouldSendSyncMessage,
-                tx: tx
+                tx: tx,
             )
         case .matchNotFound:
             let (newGroupCallInteraction, interactionRowId) = interactionStore.insertGroupCallInteraction(
                 groupThread: groupThread,
                 callEventTimestamp: callEventTimestamp,
-                tx: tx
+                tx: tx,
             )
 
             _ = try createGroupCallRecord(
@@ -163,7 +163,7 @@ public class GroupCallRecordManagerImpl: GroupCallRecordManager {
                 groupCallRingerAci: groupCallRingerAci,
                 callEventTimestamp: callEventTimestamp,
                 shouldSendSyncMessage: shouldSendSyncMessage,
-                tx: tx
+                tx: tx,
             )
         }
     }
@@ -178,7 +178,7 @@ public class GroupCallRecordManagerImpl: GroupCallRecordManager {
         groupCallRingerAci: Aci?,
         callEventTimestamp: UInt64,
         shouldSendSyncMessage: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws -> CallRecord {
         let newCallRecord = CallRecord(
             callId: callId,
@@ -188,17 +188,17 @@ public class GroupCallRecordManagerImpl: GroupCallRecordManager {
             callDirection: callDirection,
             callStatus: .group(groupCallStatus),
             groupCallRingerAci: groupCallRingerAci,
-            callBeganTimestamp: callEventTimestamp
+            callBeganTimestamp: callEventTimestamp,
         )
 
-        let insertResult = Result.init(catching: { try callRecordStore.insert(callRecord: newCallRecord, tx: tx) })
+        let insertResult = Result(catching: { try callRecordStore.insert(callRecord: newCallRecord, tx: tx) })
 
         if shouldSendSyncMessage {
             outgoingSyncMessageManager.sendSyncMessage(
                 callRecord: newCallRecord,
                 callEvent: .callUpdated,
                 callEventTimestamp: callEventTimestamp,
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -214,7 +214,7 @@ public class GroupCallRecordManagerImpl: GroupCallRecordManager {
         newGroupCallRingerAci: Aci?,
         callEventTimestamp: UInt64,
         shouldSendSyncMessage: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         guard case let .group(groupCallStatus) = existingCallRecord.callStatus else {
             logger.error("Missing group call status while trying to update record!")
@@ -228,20 +228,20 @@ public class GroupCallRecordManagerImpl: GroupCallRecordManager {
         updateCallBeganTimestampIfEarlier(
             existingCallRecord: existingCallRecord,
             callEventTimestamp: callEventTimestamp,
-            tx: tx
+            tx: tx,
         )
 
         if existingCallRecord.callDirection != newCallDirection {
             callRecordStore.updateDirection(
                 callRecord: existingCallRecord,
                 newCallDirection: newCallDirection,
-                tx: tx
+                tx: tx,
             )
         }
 
         switch statusTransitionManager.isStatusTransitionAllowed(
             fromGroupCallStatus: groupCallStatus,
-            toGroupCallStatus: newGroupCallStatus
+            toGroupCallStatus: newGroupCallStatus,
         ) {
         case .allowed:
             break
@@ -255,7 +255,7 @@ public class GroupCallRecordManagerImpl: GroupCallRecordManager {
         callRecordStore.updateCallAndUnreadStatus(
             callRecord: existingCallRecord,
             newCallStatus: .group(newGroupCallStatus),
-            tx: tx
+            tx: tx,
         )
 
         // Important to do this after we update the record status, since we need
@@ -264,7 +264,7 @@ public class GroupCallRecordManagerImpl: GroupCallRecordManager {
             callRecordStore.updateGroupCallRingerAci(
                 callRecord: existingCallRecord,
                 newGroupCallRingerAci: newGroupCallRingerAci,
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -273,7 +273,7 @@ public class GroupCallRecordManagerImpl: GroupCallRecordManager {
                 callRecord: existingCallRecord,
                 callEvent: .callUpdated,
                 callEventTimestamp: callEventTimestamp,
-                tx: tx
+                tx: tx,
             )
         }
     }
@@ -281,7 +281,7 @@ public class GroupCallRecordManagerImpl: GroupCallRecordManager {
     public func updateCallBeganTimestampIfEarlier(
         existingCallRecord: CallRecord,
         callEventTimestamp: UInt64,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         guard callEventTimestamp < existingCallRecord.callBeganTimestamp else {
             return
@@ -290,7 +290,7 @@ public class GroupCallRecordManagerImpl: GroupCallRecordManager {
         callRecordStore.updateCallBeganTimestamp(
             callRecord: existingCallRecord,
             callBeganTimestamp: callEventTimestamp,
-            tx: tx
+            tx: tx,
         )
     }
 }
@@ -314,7 +314,7 @@ class GroupCallRecordStatusTransitionManager {
     /// caller going forward.
     func isStatusTransitionAllowed(
         fromGroupCallStatus: GroupCallStatus,
-        toGroupCallStatus: GroupCallStatus
+        toGroupCallStatus: GroupCallStatus,
     ) -> TransitionQueryResult {
         switch fromGroupCallStatus {
         case .generic:

@@ -47,7 +47,7 @@ extension DeviceTransferService {
             let databaseBuilder = DeviceTransferProtoDatabase.builder(
                 key: try SSKEnvironment.shared.databaseStorageRef.keyFetcher.fetchData(),
                 database: database,
-                wal: wal
+                wal: wal,
             )
             manifestBuilder.setDatabase(databaseBuilder.buildInfallibly())
         }
@@ -92,7 +92,7 @@ extension DeviceTransferService {
 
                 let defaultBuilder = DeviceTransferProtoDefault.builder(
                     key: key,
-                    encodedValue: encodedValue
+                    encodedValue: encodedValue,
                 )
                 manifestBuilder.addStandardDefaults(defaultBuilder.buildInfallibly())
             }
@@ -109,7 +109,7 @@ extension DeviceTransferService {
 
                 let defaultBuilder = DeviceTransferProtoDefault.builder(
                     key: key,
-                    encodedValue: encodedValue
+                    encodedValue: encodedValue,
                 )
                 manifestBuilder.addAppDefaults(defaultBuilder.buildInfallibly())
             }
@@ -181,8 +181,8 @@ extension DeviceTransferService {
                 localURL.path,
                 toFilePath: URL(
                     fileURLWithPath: DeviceTransferService.manifestIdentifier,
-                    relativeTo: DeviceTransferService.pendingTransferDirectory
-                ).path
+                    relativeTo: DeviceTransferService.pendingTransferDirectory,
+                ).path,
             )
         } catch {
             owsFailDebug("Failed to move manifest into place: \(error.shortDescription)")
@@ -196,7 +196,7 @@ extension DeviceTransferService {
             manifest: manifest,
             receivedFileIds: [DeviceTransferService.manifestIdentifier],
             skippedFileIds: [],
-            progress: progress
+            progress: progress,
         )
 
         DependenciesBridge.shared.db.write { tx in
@@ -215,9 +215,11 @@ extension DeviceTransferService {
 
         // Check if there is enough space on disk to receive the transfer
 
-        guard let freeSpaceInBytes = try? OWSFileSystem.freeSpaceInBytes(
-            forPath: DeviceTransferService.pendingTransferDirectory
-        ) else {
+        guard
+            let freeSpaceInBytes = try? OWSFileSystem.freeSpaceInBytes(
+                forPath: DeviceTransferService.pendingTransferDirectory,
+            )
+        else {
             return self.failTransfer(.assertion, "failed to calculate available disk space")
         }
 
@@ -233,7 +235,7 @@ extension DeviceTransferService {
             throw OWSAssertionError("attempted to send manifest while no active outgoing transfer")
         }
 
-        guard let session = session else {
+        guard let session else {
             throw OWSAssertionError("attempted to send manifest without an available session")
         }
 
@@ -244,14 +246,14 @@ extension DeviceTransferService {
         let manifestData = try manifest.serializedData()
         let manifestFileURL = URL(
             fileURLWithPath: DeviceTransferService.manifestIdentifier,
-            relativeTo: DeviceTransferService.pendingTransferDirectory
+            relativeTo: DeviceTransferService.pendingTransferDirectory,
         )
         try manifestData.write(to: manifestFileURL, options: .atomic)
 
         let (promise, future) = Promise<Void>.pending()
 
         session.sendResource(at: manifestFileURL, withName: DeviceTransferService.manifestIdentifier, toPeer: newDevicePeerId) { error in
-            if let error = error {
+            if let error {
                 future.reject(error)
             } else {
                 future.resolve()
@@ -271,7 +273,7 @@ extension DeviceTransferService {
     func readManifestFromTransferDirectory() -> DeviceTransferProtoManifest? {
         let manifestPath = URL(
             fileURLWithPath: DeviceTransferService.manifestIdentifier,
-            relativeTo: DeviceTransferService.pendingTransferDirectory
+            relativeTo: DeviceTransferService.pendingTransferDirectory,
         ).path
         guard OWSFileSystem.fileOrFolderExists(atPath: manifestPath) else { return nil }
         guard let manifestData = try? Data(contentsOf: URL(fileURLWithPath: manifestPath)) else { return nil }

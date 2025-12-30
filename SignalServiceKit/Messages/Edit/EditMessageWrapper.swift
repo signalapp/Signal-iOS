@@ -27,17 +27,17 @@ public protocol EditMessageWrapper {
         applying: MessageEdits,
         isLatestRevision: Bool,
         attachmentContentValidator: AttachmentContentValidator,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) -> MessageBuilderType
 
     static func build(
         _ builder: MessageBuilderType,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> MessageType
 
     func updateMessageCopy(
         newMessageCopy: MessageType,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     )
 }
 
@@ -91,7 +91,7 @@ public struct IncomingEditMessageWrapper: EditMessageWrapper {
         applying edits: MessageEdits,
         isLatestRevision: Bool,
         attachmentContentValidator: AttachmentContentValidator,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) -> TSIncomingMessageBuilder {
         let editState: TSEditState = {
             if isLatestRevision {
@@ -115,7 +115,7 @@ public struct IncomingEditMessageWrapper: EditMessageWrapper {
             messageBody = message.body.map {
                 attachmentContentValidator.truncatedMessageBodyForInlining(
                     MessageBody(text: $0, ranges: message.bodyRanges ?? .empty),
-                    tx: tx
+                    tx: tx,
                 )
             }
         case .change(let body):
@@ -165,20 +165,20 @@ public struct IncomingEditMessageWrapper: EditMessageWrapper {
             messageSticker: nil,
             giftBadge: message.giftBadge,
             paymentNotification: nil,
-            isPoll: false
+            isPoll: false,
         )
     }
 
     public static func build(
         _ builder: TSIncomingMessageBuilder,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> TSIncomingMessage {
         return builder.build()
     }
 
     public func updateMessageCopy(
         newMessageCopy: TSIncomingMessage,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {}
 }
 
@@ -191,7 +191,7 @@ public struct OutgoingEditMessageWrapper: EditMessageWrapper {
 
     public init(
         message: TSOutgoingMessage,
-        thread: TSThread
+        thread: TSThread,
     ) {
         self.message = message
         self.thread = thread
@@ -204,7 +204,7 @@ public struct OutgoingEditMessageWrapper: EditMessageWrapper {
         applying edits: MessageEdits,
         isLatestRevision: Bool,
         attachmentContentValidator: AttachmentContentValidator,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) -> TSOutgoingMessageBuilder {
         let messageBody: ValidatedInlineMessageBody?
         switch edits.body {
@@ -212,7 +212,7 @@ public struct OutgoingEditMessageWrapper: EditMessageWrapper {
             messageBody = message.body.map {
                 attachmentContentValidator.truncatedMessageBodyForInlining(
                     MessageBody(text: $0, ranges: message.bodyRanges ?? .empty),
-                    tx: tx
+                    tx: tx,
                 )
             }
         case .change(let body):
@@ -256,26 +256,26 @@ public struct OutgoingEditMessageWrapper: EditMessageWrapper {
             linkPreview: nil,
             messageSticker: nil,
             giftBadge: message.giftBadge,
-            isPoll: false
+            isPoll: false,
         )
     }
 
     public static func build(
         _ builder: TSOutgoingMessageBuilder,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> TSOutgoingMessage {
         return builder.build(transaction: tx)
     }
 
     public func updateMessageCopy(
         newMessageCopy: TSOutgoingMessage,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         // Need to copy over the recipient address from the old message
         // This is needed when procesing sync messages.
         newMessageCopy.updateWithRecipientAddressStates(
             message.recipientAddressStates,
-            tx: tx
+            tx: tx,
         )
     }
 }

@@ -183,7 +183,7 @@ public final class BackupDisablingManager {
                 try await Retry.performWithIndefiniteNetworkRetries {
                     try await backupKeyService.deleteBackupKey(
                         localIdentifiers: localIdentifiers,
-                        auth: .implicit()
+                        auth: .implicit(),
                     )
                 }
 
@@ -222,7 +222,7 @@ public final class BackupDisablingManager {
                 accountEntropyPoolManager.setAccountEntropyPool(
                     newAccountEntropyPool: try! AccountEntropyPool(key: aepBeingRotatedString),
                     disablePIN: false,
-                    tx: tx
+                    tx: tx,
                 )
             }
         }

@@ -12,7 +12,7 @@ class OutgoingGroupUpdateMessageTest: SSKBaseTest {
         SSKEnvironment.shared.databaseStorageRef.write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
                 localIdentifiers: .forUnitTests,
-                tx: tx
+                tx: tx,
             )
         }
     }
@@ -25,7 +25,7 @@ class OutgoingGroupUpdateMessageTest: SSKBaseTest {
         try GroupManager.createGroupForTests(
             members: [],
             name: "Test group",
-            transaction: transaction
+            transaction: transaction,
         )
     }
 
@@ -41,7 +41,7 @@ class OutgoingGroupUpdateMessageTest: SSKBaseTest {
                 .update: false,
                 .deliver: true,
                 .quit: false,
-                .requestInfo: false
+                .requestInfo: false,
             ]
             for (groupMetaMessage, expected) in metaMessages {
                 let message = OutgoingGroupUpdateMessage(
@@ -49,7 +49,7 @@ class OutgoingGroupUpdateMessageTest: SSKBaseTest {
                     groupMetaMessage: groupMetaMessage,
                     expiresInSeconds: 60,
                     additionalRecipients: [],
-                    transaction: transaction
+                    transaction: transaction,
                 )
                 let actual = message.shouldBeSaved
                 XCTAssertEqual(actual, expected, "\(groupMetaMessage.rawValue)")
@@ -64,7 +64,7 @@ class OutgoingGroupUpdateMessageTest: SSKBaseTest {
                 groupMetaMessage: .update,
                 expiresInSeconds: 60,
                 additionalRecipients: [],
-                transaction: transaction
+                transaction: transaction,
             )
         }
         XCTAssertFalse(message.isUrgent)
@@ -76,7 +76,7 @@ class OutgoingGroupUpdateMessageTest: SSKBaseTest {
                 expiresInSeconds: 60,
                 additionalRecipients: [],
                 isUrgent: true,
-                transaction: transaction
+                transaction: transaction,
             )
         }
         XCTAssertTrue(urgentMessage.isUrgent)

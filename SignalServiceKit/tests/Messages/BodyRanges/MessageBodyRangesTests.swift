@@ -25,7 +25,7 @@ final class MessageBodyRangesTests: XCTestCase {
             .init(.bold, range: NSRange(location: 120, length: 10)),
             .init(.italic, range: NSRange(location: 120, length: 10)),
             .init(.monospace, range: NSRange(location: 3, length: 3)),
-            .init(.spoiler, range: NSRange(location: 6, length: 4))
+            .init(.spoiler, range: NSRange(location: 6, length: 4)),
         ]
         let expectedOutput: [NSRangedValue<CollapsedStyle>] = [
             .init(.bold, mergedRange: NSRange(location: 0, length: 1)),
@@ -36,10 +36,10 @@ final class MessageBodyRangesTests: XCTestCase {
             .init(
                 .init([
                     .bold: NSRange(location: 120, length: 10),
-                    .italic: NSRange(location: 120, length: 10)
+                    .italic: NSRange(location: 120, length: 10),
                 ]),
-                range: NSRange(location: 120, length: 10)
-            )
+                range: NSRange(location: 120, length: 10),
+            ),
         ]
         let output = MessageBodyRanges(mentions: [:], styles: styles).collapsedStyles
         assertStylesEqual(expectedOutput, output)
@@ -48,36 +48,36 @@ final class MessageBodyRangesTests: XCTestCase {
     func testStyleCollapsing_overlap() {
         var styles: [NSRangedValue<SingleStyle>] = [
             .init(.bold, range: NSRange(location: 0, length: 3)),
-            .init(.italic, range: NSRange(location: 1, length: 3))
+            .init(.italic, range: NSRange(location: 1, length: 3)),
         ]
         var expectedOutput: [NSRangedValue<CollapsedStyle>] = [
             .init(.bold, mergedRange: NSRange(location: 0, length: 3), appliedRange: NSRange(location: 0, length: 1)),
             .init(
                 .init([
                     .bold: NSRange(location: 0, length: 3),
-                    .italic: NSRange(location: 1, length: 3)
+                    .italic: NSRange(location: 1, length: 3),
                 ]),
-                range: NSRange(location: 1, length: 2)
+                range: NSRange(location: 1, length: 2),
             ),
-            .init(.italic, mergedRange: NSRange(location: 1, length: 3), appliedRange: NSRange(location: 3, length: 1))
+            .init(.italic, mergedRange: NSRange(location: 1, length: 3), appliedRange: NSRange(location: 3, length: 1)),
         ]
         var output = MessageBodyRanges(mentions: [:], styles: styles).collapsedStyles
         assertStylesEqual(expectedOutput, output)
 
         styles = [
             .init(.bold, range: NSRange(location: 0, length: 5)),
-            .init(.italic, range: NSRange(location: 1, length: 3))
+            .init(.italic, range: NSRange(location: 1, length: 3)),
         ]
         expectedOutput = [
             .init(.bold, mergedRange: NSRange(location: 0, length: 5), appliedRange: NSRange(location: 0, length: 1)),
             .init(
                 .init([
                     .bold: NSRange(location: 0, length: 5),
-                    .italic: NSRange(location: 1, length: 3)
+                    .italic: NSRange(location: 1, length: 3),
                 ]),
-                range: NSRange(location: 1, length: 3)
+                range: NSRange(location: 1, length: 3),
             ),
-            .init(.bold, mergedRange: NSRange(location: 0, length: 5), appliedRange: NSRange(location: 4, length: 1))
+            .init(.bold, mergedRange: NSRange(location: 0, length: 5), appliedRange: NSRange(location: 4, length: 1)),
         ]
         output = MessageBodyRanges(mentions: [:], styles: styles).collapsedStyles
         assertStylesEqual(expectedOutput, output)
@@ -85,26 +85,26 @@ final class MessageBodyRangesTests: XCTestCase {
         styles = [
             .init(.bold, range: NSRange(location: 0, length: 5)),
             .init(.italic, range: NSRange(location: 4, length: 5)),
-            .init(.spoiler, range: NSRange(location: 8, length: 5))
+            .init(.spoiler, range: NSRange(location: 8, length: 5)),
         ]
         expectedOutput = [
             .init(.bold, mergedRange: NSRange(location: 0, length: 5), appliedRange: NSRange(location: 0, length: 4)),
             .init(
                 .init([
                     .bold: NSRange(location: 0, length: 5),
-                    .italic: NSRange(location: 4, length: 5)
+                    .italic: NSRange(location: 4, length: 5),
                 ]),
-                range: NSRange(location: 4, length: 1)
+                range: NSRange(location: 4, length: 1),
             ),
             .init(.italic, mergedRange: NSRange(location: 4, length: 5), appliedRange: NSRange(location: 5, length: 3)),
             .init(
                 .init([
                     .italic: NSRange(location: 4, length: 5),
-                    .spoiler: NSRange(location: 8, length: 5)
+                    .spoiler: NSRange(location: 8, length: 5),
                 ]),
-                range: NSRange(location: 8, length: 1)
+                range: NSRange(location: 8, length: 1),
             ),
-            .init(.spoiler, mergedRange: NSRange(location: 8, length: 5), appliedRange: NSRange(location: 9, length: 4))
+            .init(.spoiler, mergedRange: NSRange(location: 8, length: 5), appliedRange: NSRange(location: 9, length: 4)),
         ]
         output = MessageBodyRanges(mentions: [:], styles: styles).collapsedStyles
         assertStylesEqual(expectedOutput, output)
@@ -114,33 +114,24 @@ final class MessageBodyRangesTests: XCTestCase {
             .init(.italic, range: NSRange(location: 1, length: 6)),
             .init(.spoiler, range: NSRange(location: 2, length: 6)),
             .init(.strikethrough, range: NSRange(location: 3, length: 6)),
-            .init(.monospace, range: NSRange(location: 4, length: 6))
+            .init(.monospace, range: NSRange(location: 4, length: 6)),
         ]
         expectedOutput = [
             .init(.bold, mergedRange: NSRange(location: 0, length: 6), appliedRange: NSRange(location: 0, length: 1)),
             .init(
                 .init([
                     .bold: NSRange(location: 0, length: 6),
-                    .italic: NSRange(location: 1, length: 6)
-                ]),
-                range: NSRange(location: 1, length: 1)
-            ),
-            .init(
-                .init([
-                    .bold: NSRange(location: 0, length: 6),
                     .italic: NSRange(location: 1, length: 6),
-                    .spoiler: NSRange(location: 2, length: 6)
                 ]),
-                range: NSRange(location: 2, length: 1)
+                range: NSRange(location: 1, length: 1),
             ),
             .init(
                 .init([
                     .bold: NSRange(location: 0, length: 6),
                     .italic: NSRange(location: 1, length: 6),
                     .spoiler: NSRange(location: 2, length: 6),
-                    .strikethrough: NSRange(location: 3, length: 6)
                 ]),
-                range: NSRange(location: 3, length: 1)
+                range: NSRange(location: 2, length: 1),
             ),
             .init(
                 .init([
@@ -148,35 +139,44 @@ final class MessageBodyRangesTests: XCTestCase {
                     .italic: NSRange(location: 1, length: 6),
                     .spoiler: NSRange(location: 2, length: 6),
                     .strikethrough: NSRange(location: 3, length: 6),
-                    .monospace: NSRange(location: 4, length: 6)
                 ]),
-                range: NSRange(location: 4, length: 2)
+                range: NSRange(location: 3, length: 1),
+            ),
+            .init(
+                .init([
+                    .bold: NSRange(location: 0, length: 6),
+                    .italic: NSRange(location: 1, length: 6),
+                    .spoiler: NSRange(location: 2, length: 6),
+                    .strikethrough: NSRange(location: 3, length: 6),
+                    .monospace: NSRange(location: 4, length: 6),
+                ]),
+                range: NSRange(location: 4, length: 2),
             ),
             .init(
                 .init([
                     .italic: NSRange(location: 1, length: 6),
                     .spoiler: NSRange(location: 2, length: 6),
                     .strikethrough: NSRange(location: 3, length: 6),
-                    .monospace: NSRange(location: 4, length: 6)
+                    .monospace: NSRange(location: 4, length: 6),
                 ]),
-                range: NSRange(location: 6, length: 1)
+                range: NSRange(location: 6, length: 1),
             ),
             .init(
                 .init([
                     .spoiler: NSRange(location: 2, length: 6),
                     .strikethrough: NSRange(location: 3, length: 6),
-                    .monospace: NSRange(location: 4, length: 6)
+                    .monospace: NSRange(location: 4, length: 6),
                 ]),
-                range: NSRange(location: 7, length: 1)
+                range: NSRange(location: 7, length: 1),
             ),
             .init(
                 .init([
                     .strikethrough: NSRange(location: 3, length: 6),
-                    .monospace: NSRange(location: 4, length: 6)
+                    .monospace: NSRange(location: 4, length: 6),
                 ]),
-                range: NSRange(location: 8, length: 1)
+                range: NSRange(location: 8, length: 1),
             ),
-            .init(.monospace, mergedRange: NSRange(location: 4, length: 6), appliedRange: NSRange(location: 9, length: 1))
+            .init(.monospace, mergedRange: NSRange(location: 4, length: 6), appliedRange: NSRange(location: 9, length: 1)),
         ]
         output = MessageBodyRanges(mentions: [:], styles: styles).collapsedStyles
         assertStylesEqual(expectedOutput, output)
@@ -186,23 +186,23 @@ final class MessageBodyRangesTests: XCTestCase {
         // The two bolds don't overlap, but they both overlap
         // with a mention, so they do overlap after extending through the whole mention
         let mentions: [NSRange: Aci] = [
-            NSRange(location: 2, length: 5): Aci.randomForTesting()
+            NSRange(location: 2, length: 5): Aci.randomForTesting(),
         ]
         let styles: [NSRangedValue<SingleStyle>] = [
             .init(.bold, range: NSRange(location: 0, length: 3)),
             .init(.bold, range: NSRange(location: 5, length: 3)),
-            .init(.italic, range: NSRange(location: 1, length: 2))
+            .init(.italic, range: NSRange(location: 1, length: 2)),
         ]
         let expectedOutput: [NSRangedValue<CollapsedStyle>] = [
             .init(.bold, mergedRange: NSRange(location: 0, length: 8), appliedRange: NSRange(location: 0, length: 1)),
             .init(
                 .init([
                     .bold: NSRange(location: 0, length: 8),
-                    .italic: NSRange(location: 1, length: 6)
+                    .italic: NSRange(location: 1, length: 6),
                 ]),
-                range: NSRange(location: 1, length: 6)
+                range: NSRange(location: 1, length: 6),
             ),
-            .init(.bold, mergedRange: NSRange(location: 0, length: 8), appliedRange: NSRange(location: 7, length: 1))
+            .init(.bold, mergedRange: NSRange(location: 0, length: 8), appliedRange: NSRange(location: 7, length: 1)),
         ]
         let output = MessageBodyRanges(mentions: mentions, styles: styles).collapsedStyles
         assertStylesEqual(expectedOutput, output)
@@ -214,15 +214,15 @@ final class MessageBodyRangesTests: XCTestCase {
             mentions: [
                 NSRange(location: 0, length: 1): Aci.constantForTesting("346FE9B2-C808-4F61-9203-E19238C58EED"),
                 NSRange(location: 3, length: 1): Aci.constantForTesting("E15977F0-B836-4C02-A473-8D03F89D48C6"),
-                NSRange(location: 5, length: 7): Aci.constantForTesting("842D05CF-A0F5-4928-98E2-B7E86B901794")
+                NSRange(location: 5, length: 7): Aci.constantForTesting("842D05CF-A0F5-4928-98E2-B7E86B901794"),
             ],
-            styles: []
+            styles: [],
         )
 
         let data = Data(base64Encoded: encodedDataBase64)!
         let decoded = try NSKeyedUnarchiver.unarchivedObject(
             ofClass: MessageBodyRanges.self,
-            from: data
+            from: data,
         )
         XCTAssertEqual(expectedResult, decoded)
     }
@@ -233,7 +233,7 @@ final class MessageBodyRangesTests: XCTestCase {
         let mentions: [NSRange: Aci] = [
             NSRange(location: 0, length: 1): Aci.constantForTesting("AF406233-B344-4E40-99ED-AD080B8B1ACF"),
             NSRange(location: 3, length: 1): Aci.constantForTesting("017447E0-C5A4-456C-A4C1-1EC7F91AC070"),
-            NSRange(location: 5, length: 7): Aci.constantForTesting("AE9EFF5A-706F-46BE-BEA1-A4E86256B8C7")
+            NSRange(location: 5, length: 7): Aci.constantForTesting("AE9EFF5A-706F-46BE-BEA1-A4E86256B8C7"),
         ]
         let expectedResult = MessageBodyRanges(
             mentions: mentions,
@@ -247,32 +247,32 @@ final class MessageBodyRangesTests: XCTestCase {
                     .init([
                         .italic: NSRange(location: 2, length: 3),
                         .monospace: NSRange(location: 3, length: 9),
-                        .strikethrough: NSRange(location: 3, length: 1)
+                        .strikethrough: NSRange(location: 3, length: 1),
                     ]),
-                    range: NSRange(location: 3, length: 1)
+                    range: NSRange(location: 3, length: 1),
                 ),
                 .init(
                     .init([
                         .italic: NSRange(location: 2, length: 3),
-                        .monospace: NSRange(location: 3, length: 9)
+                        .monospace: NSRange(location: 3, length: 9),
                     ]),
-                    range: NSRange(location: 4, length: 1)
+                    range: NSRange(location: 4, length: 1),
                 ),
                 .init(
                     .init([
                         .monospace: NSRange(location: 3, length: 9),
-                        .spoiler: NSRange(location: 5, length: 13)
+                        .spoiler: NSRange(location: 5, length: 13),
                     ]),
-                    range: NSRange(location: 5, length: 7)
+                    range: NSRange(location: 5, length: 7),
                 ),
-                .init(.spoiler, mergedRange: NSRange(location: 5, length: 13), appliedRange: NSRange(location: 12, length: 6))
-            ]
+                .init(.spoiler, mergedRange: NSRange(location: 5, length: 13), appliedRange: NSRange(location: 12, length: 6)),
+            ],
         )
 
         let data = Data(base64Encoded: encodedDataBase64)!
         let decoded = try NSKeyedUnarchiver.unarchivedObject(
             ofClass: MessageBodyRanges.self,
-            from: data
+            from: data,
         )
         XCTAssertEqual(expectedResult, decoded)
     }
@@ -283,7 +283,7 @@ final class MessageBodyRangesTests: XCTestCase {
         let mentions: [NSRange: Aci] = [
             NSRange(location: 0, length: 1): Aci.constantForTesting("AF406233-B344-4E40-99ED-AD080B8B1ACF"),
             NSRange(location: 3, length: 1): Aci.constantForTesting("017447E0-C5A4-456C-A4C1-1EC7F91AC070"),
-            NSRange(location: 5, length: 7): Aci.constantForTesting("AE9EFF5A-706F-46BE-BEA1-A4E86256B8C7")
+            NSRange(location: 5, length: 7): Aci.constantForTesting("AE9EFF5A-706F-46BE-BEA1-A4E86256B8C7"),
         ]
         let expectedResult = MessageBodyRanges(
             mentions: mentions,
@@ -297,32 +297,32 @@ final class MessageBodyRangesTests: XCTestCase {
                     .init([
                         .italic: NSRange(location: 2, length: 3),
                         .monospace: NSRange(location: 3, length: 9),
-                        .strikethrough: NSRange(location: 3, length: 1)
+                        .strikethrough: NSRange(location: 3, length: 1),
                     ]),
-                    range: NSRange(location: 3, length: 1)
+                    range: NSRange(location: 3, length: 1),
                 ),
                 .init(
                     .init([
                         .italic: NSRange(location: 2, length: 3),
-                        .monospace: NSRange(location: 3, length: 9)
+                        .monospace: NSRange(location: 3, length: 9),
                     ]),
-                    range: NSRange(location: 4, length: 1)
+                    range: NSRange(location: 4, length: 1),
                 ),
                 .init(
                     .init([
                         .monospace: NSRange(location: 3, length: 9),
-                        .spoiler: NSRange(location: 5, length: 13)
+                        .spoiler: NSRange(location: 5, length: 13),
                     ]),
-                    range: NSRange(location: 5, length: 7)
+                    range: NSRange(location: 5, length: 7),
                 ),
-                .init(.spoiler, mergedRange: NSRange(location: 5, length: 13), appliedRange: NSRange(location: 12, length: 6))
-            ]
+                .init(.spoiler, mergedRange: NSRange(location: 5, length: 13), appliedRange: NSRange(location: 12, length: 6)),
+            ],
         )
 
         let data = Data(base64Encoded: encodedDataBase64)!
         let decoded = try NSKeyedUnarchiver.unarchivedObject(
             ofClass: MessageBodyRanges.self,
-            from: data
+            from: data,
         )
         XCTAssertEqual(expectedResult, decoded)
     }
@@ -333,7 +333,7 @@ final class MessageBodyRangesTests: XCTestCase {
         _ lhs: [NSRangedValue<CollapsedStyle>],
         _ rhs: [NSRangedValue<CollapsedStyle>],
         file: StaticString = #filePath,
-        line: UInt = #line
+        line: UInt = #line,
     ) {
         XCTAssertEqual(lhs.count, rhs.count, file: file, line: line)
         for i in 0..<lhs.count {
@@ -349,8 +349,8 @@ extension MessageBodyRanges.CollapsedStyle {
         self.init(
             style: .init(rawValue: singleStyle.rawValue),
             originals: [
-                singleStyle: MessageBodyRanges.MergedSingleStyle(style: singleStyle, mergedRange: mergedRange)
-            ]
+                singleStyle: MessageBodyRanges.MergedSingleStyle(style: singleStyle, mergedRange: mergedRange),
+            ],
         )
     }
 

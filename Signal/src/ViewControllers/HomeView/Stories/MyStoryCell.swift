@@ -4,9 +4,9 @@
 //
 
 import Foundation
-import UIKit
 import SignalServiceKit
 import SignalUI
+import UIKit
 
 class MyStoryCell: UITableViewCell {
     static let reuseIdentifier = "MyStoryCell"
@@ -17,17 +17,20 @@ class MyStoryCell: UITableViewCell {
         label.textColor = .Signal.label
         return label
     }()
+
     private let titleChevron: UIImageView = {
         let imageView = UIImageView()
         imageView.tintColor = .Signal.label
         return imageView
     }()
+
     private let subtitleLabel: UILabel = {
         let label = UILabel()
         label.font = .dynamicTypeSubheadline
         label.textColor = .Signal.secondaryLabel
         return label
     }()
+
     private let avatarView = ConversationAvatarView(sizeClass: .fiftySix, localUserDisplayMode: .asUser, badged: false, useAutolayout: true)
     private let attachmentThumbnail = UIView()
 
@@ -99,7 +102,7 @@ class MyStoryCell: UITableViewCell {
             }
         } else {
             configuration.backgroundColor = .Signal.background
-       }
+        }
         backgroundConfiguration = configuration
 
         attachmentThumbnailDividerView?.backgroundColor = configuration.backgroundColor
@@ -116,7 +119,7 @@ class MyStoryCell: UITableViewCell {
     func configure(
         with model: MyStoryViewModel,
         spoilerState: SpoilerRenderState,
-        addStoryAction: @escaping () -> Void
+        addStoryAction: @escaping () -> Void,
     ) {
         configureSubtitle(with: model)
 
@@ -132,16 +135,18 @@ class MyStoryCell: UITableViewCell {
         }
 
         let latestMessageRevealedSpoilerIds: Set<StyleIdType> = model.latestMessageIdentifier.map(
-            spoilerState.revealState.revealedSpoilerIds(interactionIdentifier:)
+            spoilerState.revealState.revealedSpoilerIds(interactionIdentifier:),
         ) ?? Set()
         let secondLatestMessageRevealedSpoilerIds: Set<StyleIdType> = model.secondLatestMessageIdentifier.map(
-            spoilerState.revealState.revealedSpoilerIds(interactionIdentifier:)
+            spoilerState.revealState.revealedSpoilerIds(interactionIdentifier:),
         ) ?? Set()
 
-        if self.latestMessageAttachment != model.latestMessageAttachment ||
+        if
+            self.latestMessageAttachment != model.latestMessageAttachment ||
             self.secondLatestMessageAttachment != model.secondLatestMessageAttachment ||
             self.latestMessageRevealedSpoilerIds != latestMessageRevealedSpoilerIds ||
-            self.secondLatestMessageRevealedSpoilerIds != secondLatestMessageRevealedSpoilerIds {
+            self.secondLatestMessageRevealedSpoilerIds != secondLatestMessageRevealedSpoilerIds
+        {
             self.latestMessageAttachment = model.latestMessageAttachment
             self.secondLatestMessageAttachment = model.secondLatestMessageAttachment
             self.latestMessageRevealedSpoilerIds = latestMessageRevealedSpoilerIds
@@ -156,7 +161,7 @@ class MyStoryCell: UITableViewCell {
                 let latestThumbnailView = StoryThumbnailView(
                     attachment: latestMessageAttachment,
                     interactionIdentifier: latestMessageIdentifier,
-                    spoilerState: spoilerState
+                    spoilerState: spoilerState,
                 )
                 attachmentThumbnail.addSubview(latestThumbnailView)
                 latestThumbnailView.autoPinHeightToSuperview()
@@ -170,7 +175,7 @@ class MyStoryCell: UITableViewCell {
                     let secondLatestThumbnailView = StoryThumbnailView(
                         attachment: secondLatestMessageAttachment,
                         interactionIdentifier: secondLatestMessageIdentifier,
-                        spoilerState: spoilerState
+                        spoilerState: spoilerState,
                     )
                     secondLatestThumbnailView.layer.cornerRadius = 6
                     secondLatestThumbnailView.transform = .init(rotationAngle: (CurrentAppContext().isRTL ? 1 : -1) * 0.18168878)

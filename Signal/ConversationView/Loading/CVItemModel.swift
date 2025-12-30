@@ -36,12 +36,14 @@ public class CVItemModel: NSObject {
         self
     }
 
-    init(interaction: TSInteraction,
-         thread: TSThread,
-         threadAssociatedData: ThreadAssociatedData,
-         componentState: CVComponentState,
-         itemViewState: CVItemViewState,
-         coreState: CVCoreState) {
+    init(
+        interaction: TSInteraction,
+        thread: TSThread,
+        threadAssociatedData: ThreadAssociatedData,
+        componentState: CVComponentState,
+        itemViewState: CVItemViewState,
+        coreState: CVCoreState,
+    ) {
 
         self.interaction = interaction
         self.thread = thread

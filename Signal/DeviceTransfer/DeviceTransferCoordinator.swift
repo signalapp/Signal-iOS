@@ -18,14 +18,14 @@ public class DeviceTransferCoordinator: DeviceTransferServiceObserver, Equatable
     private let restoreMethodToken: String
     private let restoreMode: DeviceTransferService.TransferMode
 
-    public var confirmCancellation: (() async -> Bool) {
+    public var confirmCancellation: () async -> Bool {
         get { transferStatusViewModel.confirmCancellation }
         set {
             transferStatusViewModel.confirmCancellation = newValue
         }
     }
 
-    public var cancelTransferBlock: (() -> Void) {
+    public var cancelTransferBlock: () -> Void {
         get { transferStatusViewModel.cancelTransferBlock }
         set {
             transferStatusViewModel.cancelTransferBlock = { [weak self] in
@@ -34,12 +34,13 @@ public class DeviceTransferCoordinator: DeviceTransferServiceObserver, Equatable
             }
         }
     }
+
     private func _onCancelTransfer() {
         stopAcceptingTransfers()
         cancelTransfer()
     }
 
-    public var onSuccess: (() -> Void) {
+    public var onSuccess: () -> Void {
         get { transferStatusViewModel.onSuccess }
         set {
             transferStatusViewModel.onSuccess = { [weak self] in
@@ -48,18 +49,20 @@ public class DeviceTransferCoordinator: DeviceTransferServiceObserver, Equatable
             }
         }
     }
+
     private func _onSuccess() {
         stopAcceptingTransfers()
     }
 
-    public var onFailure: ((Error) -> Void) {
+    public var onFailure: (Error) -> Void {
         get { transferStatusViewModel.onFailure }
         set { transferStatusViewModel.onFailure = { [weak self] error in
-                self?._onFailure(error)
-                newValue(error)
-            }
+            self?._onFailure(error)
+            newValue(error)
+        }
         }
     }
+
     private func _onFailure(_ error: Error) {
         stopAcceptingTransfers()
     }
@@ -68,7 +71,7 @@ public class DeviceTransferCoordinator: DeviceTransferServiceObserver, Equatable
         deviceTransferService: DeviceTransferServiceProtocol,
         quickRestoreManager: QuickRestoreManager,
         restoreMethodToken: String,
-        restoreMode: DeviceTransferService.TransferMode
+        restoreMode: DeviceTransferService.TransferMode,
     ) {
         self.deviceTransferService = deviceTransferService
         self.quickRestoreManager = quickRestoreManager
@@ -88,7 +91,7 @@ public class DeviceTransferCoordinator: DeviceTransferServiceObserver, Equatable
 
         try await quickRestoreManager.reportRestoreMethodChoice(
             method: .deviceTransfer(transferData),
-            restoreMethodToken: restoreMethodToken
+            restoreMethodToken: restoreMethodToken,
         )
     }
 
@@ -127,7 +130,7 @@ public class DeviceTransferCoordinator: DeviceTransferServiceObserver, Equatable
         transferStatusViewModel.onSuccess()
     }
 
-    public static func == (lhs: DeviceTransferCoordinator, rhs: DeviceTransferCoordinator) -> Bool {
+    public static func ==(lhs: DeviceTransferCoordinator, rhs: DeviceTransferCoordinator) -> Bool {
         lhs.restoreMethodToken == rhs.restoreMethodToken
     }
 }

@@ -21,7 +21,7 @@ public enum ChatColorSetting: Equatable {
     case builtIn(PaletteChatColor)
     case custom(CustomChatColor.Key, CustomChatColor)
 
-    public static func == (lhs: ChatColorSetting, rhs: ChatColorSetting) -> Bool {
+    public static func ==(lhs: ChatColorSetting, rhs: ChatColorSetting) -> Bool {
         switch (lhs, rhs) {
         case (.auto, .auto):
             return true

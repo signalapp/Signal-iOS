@@ -22,7 +22,7 @@ public class AttachmentPointer {
 
     init(
         attachment: Attachment,
-        source: Source
+        source: Source,
     ) {
         self.attachment = attachment
         self.source = source
@@ -47,7 +47,7 @@ public class AttachmentPointer {
     public var lastDownloadAttemptTimestamp: UInt64? {
         return [
             AttachmentTransitPointer(attachment: attachment)?.lastDownloadAttemptTimestamp,
-            AttachmentBackupPointer(attachment: attachment)?.lastDownloadAttemptTimestamp
+            AttachmentBackupPointer(attachment: attachment)?.lastDownloadAttemptTimestamp,
         ].compacted().max()
     }
 
@@ -72,7 +72,7 @@ public class AttachmentPointer {
             if
                 let record = try DependenciesBridge.shared.attachmentDownloadStore.enqueuedDownload(
                     for: attachment.id,
-                    tx: tx
+                    tx: tx,
                 ),
                 record.minRetryTimestamp ?? 0 <= Date().ows_millisecondsSince1970
             {

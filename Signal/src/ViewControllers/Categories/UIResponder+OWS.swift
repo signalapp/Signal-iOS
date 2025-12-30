@@ -6,7 +6,7 @@
 import UIKit
 
 extension UIResponder {
-    private static weak var _currentFirstResponder: UIResponder?
+    private weak static var _currentFirstResponder: UIResponder?
     static var currentFirstResponder: UIResponder? {
         _currentFirstResponder = nil
         // Passing `nil` to the to parameter of `sendAction` calls it on the firstResponder.

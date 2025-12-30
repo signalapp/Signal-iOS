@@ -14,13 +14,15 @@ public class PaymentsRestoreWalletCompleteViewController: OWSTableViewController
 
     private let bottomStack = UIStackView()
 
-    open override var bottomFooter: UIView? {
+    override open var bottomFooter: UIView? {
         get { bottomStack }
         set {}
     }
 
-    public init(restoreWalletDelegate: PaymentsRestoreWalletDelegate,
-                passphrase: PaymentsPassphrase) {
+    public init(
+        restoreWalletDelegate: PaymentsRestoreWalletDelegate,
+        passphrase: PaymentsPassphrase,
+    ) {
         self.passphrase = passphrase
         self.restoreWalletDelegate = restoreWalletDelegate
 
@@ -29,43 +31,49 @@ public class PaymentsRestoreWalletCompleteViewController: OWSTableViewController
         self.shouldAvoidKeyboard = true
     }
 
-    public override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
 
-        title = OWSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_TITLE",
-                                  comment: "Title for the 'restore payments wallet' view of the app settings.")
+        title = OWSLocalizedString(
+            "SETTINGS_PAYMENTS_RESTORE_WALLET_TITLE",
+            comment: "Title for the 'restore payments wallet' view of the app settings.",
+        )
 
         buildBottomView()
         updateTableContents()
     }
 
-    public override func viewWillAppear(_ animated: Bool) {
+    override public func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
         updateTableContents()
     }
 
-    public override func themeDidChange() {
+    override public func themeDidChange() {
         super.themeDidChange()
 
         updateTableContents()
     }
 
     private func buildBottomView() {
-        let doneButton = OWSFlatButton.button(title: CommonStrings.doneButton,
-                                              font: UIFont.dynamicTypeHeadline,
-                                              titleColor: .white,
-                                              backgroundColor: .ows_accentBlue,
-                                              target: self,
-                                              selector: #selector(didTapDoneButton))
+        let doneButton = OWSFlatButton.button(
+            title: CommonStrings.doneButton,
+            font: UIFont.dynamicTypeHeadline,
+            titleColor: .white,
+            backgroundColor: .ows_accentBlue,
+            target: self,
+            selector: #selector(didTapDoneButton),
+        )
         doneButton.autoSetHeightUsingFont()
 
-        let editButton = OWSFlatButton.button(title: CommonStrings.editButton,
-                                              font: .dynamicTypeBody,
-                                              titleColor: .ows_accentBlue,
-                                              backgroundColor: self.tableBackgroundColor,
-                                              target: self,
-                                              selector: #selector(didTapEditButton))
+        let editButton = OWSFlatButton.button(
+            title: CommonStrings.editButton,
+            font: .dynamicTypeBody,
+            titleColor: .ows_accentBlue,
+            backgroundColor: self.tableBackgroundColor,
+            target: self,
+            selector: #selector(didTapEditButton),
+        )
         editButton.autoSetHeightUsingFont()
 
         bottomStack.axis = .vertical
@@ -89,14 +97,16 @@ public class PaymentsRestoreWalletCompleteViewController: OWSTableViewController
         section.shouldDisableCellSelection = true
 
         let passphrase = self.passphrase
-        section.add(OWSTableItem(customCellBlock: {
-            let cell = OWSTableItem.newCell()
-            let passphraseGrid = PaymentsViewUtils.buildPassphraseGrid(passphrase: passphrase)
-            cell.contentView.addSubview(passphraseGrid)
-            passphraseGrid.autoPinEdgesToSuperviewMargins()
-            return cell
-        },
-        actionBlock: nil))
+        section.add(OWSTableItem(
+            customCellBlock: {
+                let cell = OWSTableItem.newCell()
+                let passphraseGrid = PaymentsViewUtils.buildPassphraseGrid(passphrase: passphrase)
+                cell.contentView.addSubview(passphraseGrid)
+                passphraseGrid.autoPinEdgesToSuperviewMargins()
+                return cell
+            },
+            actionBlock: nil,
+        ))
         contents.add(section)
 
         self.contents = contents
@@ -104,15 +114,19 @@ public class PaymentsRestoreWalletCompleteViewController: OWSTableViewController
 
     private func buildHeader() -> UIView {
         let titleLabel = UILabel()
-        titleLabel.text = OWSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TITLE",
-                                            comment: "Title for the 'review payments passphrase' step of the 'restore payments wallet' views.")
+        titleLabel.text = OWSLocalizedString(
+            "SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_TITLE",
+            comment: "Title for the 'review payments passphrase' step of the 'restore payments wallet' views.",
+        )
         titleLabel.font = UIFont.dynamicTypeTitle2Clamped.semibold()
         titleLabel.textColor = Theme.primaryTextColor
         titleLabel.textAlignment = .center
 
         let explanationLabel = UILabel()
-        explanationLabel.text = OWSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_EXPLANATION",
-                                                  comment: "Explanation of the 'review payments passphrase' step of the 'restore payments wallet' views.")
+        explanationLabel.text = OWSLocalizedString(
+            "SETTINGS_PAYMENTS_RESTORE_WALLET_COMPLETE_EXPLANATION",
+            comment: "Explanation of the 'review payments passphrase' step of the 'restore payments wallet' views.",
+        )
         explanationLabel.font = .dynamicTypeSubheadlineClamped
         explanationLabel.textColor = Theme.secondaryTextAndIconColor
         explanationLabel.textAlignment = .center
@@ -122,7 +136,7 @@ public class PaymentsRestoreWalletCompleteViewController: OWSTableViewController
         let topStack = UIStackView(arrangedSubviews: [
             titleLabel,
             UIView.spacer(withHeight: 10),
-            explanationLabel
+            explanationLabel,
         ])
         topStack.axis = .vertical
         topStack.alignment = .center
@@ -132,12 +146,20 @@ public class PaymentsRestoreWalletCompleteViewController: OWSTableViewController
     }
 
     private func showInvalidPassphraseAlert() {
-        let actionSheet = ActionSheetController(title: OWSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_TITLE",
-                                                                         comment: "Title for the 'invalid payments wallet passphrase' error alert in the app payments settings."),
-                                                message: OWSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_MESSAGE",
-                                                                           comment: "Message for the 'invalid payments wallet passphrase' error alert in the app payments settings."))
-        actionSheet.addAction(ActionSheetAction(title: CommonStrings.okayButton,
-                                                style: .default) { [weak self] _ in
+        let actionSheet = ActionSheetController(
+            title: OWSLocalizedString(
+                "SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_TITLE",
+                comment: "Title for the 'invalid payments wallet passphrase' error alert in the app payments settings.",
+            ),
+            message: OWSLocalizedString(
+                "SETTINGS_PAYMENTS_RESTORE_WALLET_INVALID_PASSPHRASE_MESSAGE",
+                comment: "Message for the 'invalid payments wallet passphrase' error alert in the app payments settings.",
+            ),
+        )
+        actionSheet.addAction(ActionSheetAction(
+            title: CommonStrings.okayButton,
+            style: .default,
+        ) { [weak self] _ in
             self?.returnToFirstWordView(shouldClearInput: true)
         })
 
@@ -145,8 +167,10 @@ public class PaymentsRestoreWalletCompleteViewController: OWSTableViewController
     }
 
     private func showRestoreFailureAlert() {
-        OWSActionSheets.showErrorAlert(message: OWSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_FAILED",
-                                                                  comment: "Error indicating that 'restore payments wallet failed' in the app payments settings."))
+        OWSActionSheets.showErrorAlert(message: OWSLocalizedString(
+            "SETTINGS_PAYMENTS_RESTORE_WALLET_FAILED",
+            comment: "Error indicating that 'restore payments wallet failed' in the app payments settings.",
+        ))
     }
 
     // MARK: - Events
@@ -164,8 +188,10 @@ public class PaymentsRestoreWalletCompleteViewController: OWSTableViewController
             return
         }
         let didSucceed = SSKEnvironment.shared.databaseStorageRef.write { transaction in
-            SSKEnvironment.shared.paymentsHelperRef.enablePayments(withPaymentsEntropy: paymentsEntropy,
-                                                                   transaction: transaction)
+            SSKEnvironment.shared.paymentsHelperRef.enablePayments(
+                withPaymentsEntropy: paymentsEntropy,
+                transaction: transaction,
+            )
         }
         guard didSucceed else {
             owsFailDebug("Could not restore payments entropy.")
@@ -186,7 +212,7 @@ public class PaymentsRestoreWalletCompleteViewController: OWSTableViewController
     }
 
     private func returnToFirstWordView(shouldClearInput: Bool) {
-        guard let navigationController = navigationController else {
+        guard let navigationController else {
             return
         }
 

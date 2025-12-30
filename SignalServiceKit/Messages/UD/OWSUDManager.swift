@@ -113,7 +113,7 @@ public protocol OWSUDManager {
     func setPhoneNumberSharingMode(
         _ mode: PhoneNumberSharingMode,
         updateStorageServiceAndProfile: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     )
 }
 
@@ -177,7 +177,7 @@ public class OWSUDManagerImpl: OWSUDManager {
     public func setUnidentifiedAccessMode(
         _ mode: UnidentifiedAccessMode,
         for aci: Aci,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         aciAccessStore.setInt(mode.rawValue, key: aci.serviceIdUppercaseString, transaction: tx)
     }
@@ -301,7 +301,7 @@ public class OWSUDManagerImpl: OWSUDManager {
         async let aciOnlyCert = fetchSenderCertificate(aciOnly: true, forceRefresh: forceRefresh)
         return SenderCertificates(
             defaultCert: try await defaultCert,
-            uuidOnlyCert: try await aciOnlyCert
+            uuidOnlyCert: try await aciOnlyCert,
         )
     }
 
@@ -439,7 +439,7 @@ public class OWSUDManagerImpl: OWSUDManager {
     public func setPhoneNumberSharingMode(
         _ mode: PhoneNumberSharingMode,
         updateStorageServiceAndProfile: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         keyValueStore.setInt(mode.rawValue, key: Self.phoneNumberSharingModeKey, transaction: tx)
 
@@ -451,7 +451,7 @@ public class OWSUDManagerImpl: OWSUDManager {
                 unsavedRotatedProfileKey: nil,
                 mustReuploadAvatar: false,
                 authedAccount: .implicit(),
-                tx: tx
+                tx: tx,
             )
         }
     }

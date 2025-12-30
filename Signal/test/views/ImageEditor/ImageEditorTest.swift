@@ -11,7 +11,7 @@ import XCTest
 
 extension ImageEditorModel {
     func itemIds() -> [String] {
-        return items().map { (item) in
+        return items().map { item in
             item.itemId
         }
     }

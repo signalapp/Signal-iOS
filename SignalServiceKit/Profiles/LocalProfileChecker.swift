@@ -19,7 +19,7 @@ final class LocalProfileChecker {
         profileManager: any ProfileManager,
         storageServiceManager: any StorageServiceManager,
         tsAccountManager: any TSAccountManager,
-        udManager: any OWSUDManager
+        udManager: any OWSUDManager,
     ) {
         self.db = db
         self.messageProcessor = messageProcessor
@@ -89,7 +89,7 @@ final class LocalProfileChecker {
             // may temporarily see inconsistencies. Given that this class is about
             // eventual consistency, wait a few seconds after fetching our own profile
             // to give linked devices a chance to finish updating Storage Service.
-            try await Task.sleep(nanoseconds: 3*NSEC_PER_SEC)
+            try await Task.sleep(nanoseconds: 3 * NSEC_PER_SEC)
 
             // At this point, we believe the linked device will have queued a sync
             // message (if necessary) and that the latest information is available on
@@ -173,7 +173,7 @@ final class LocalProfileChecker {
                 unsavedRotatedProfileKey: nil,
                 mustReuploadAvatar: mustReuploadAvatar,
                 authedAccount: .implicit(),
-                tx: tx
+                tx: tx,
             )
         }.awaitable()
     }

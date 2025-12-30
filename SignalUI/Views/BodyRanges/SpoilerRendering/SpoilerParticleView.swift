@@ -69,8 +69,12 @@ public struct SpoilerMetalConfiguration {
 
         var knownGoodFamilies: [MTLGPUFamily] = [
             .common3,
-            .apple4, .apple5, .apple6, .apple7, .apple8,
-            .mac2
+            .apple4,
+            .apple5,
+            .apple6,
+            .apple7,
+            .apple8,
+            .mac2,
         ]
         if #available(iOS 16, *) {
             knownGoodFamilies.append(.metal3)
@@ -101,14 +105,14 @@ public struct SpoilerMetalConfiguration {
     }
 }
 
-internal class SpoilerParticleView: MTKView {
+class SpoilerParticleView: MTKView {
 
     private let metalConfig: SpoilerMetalConfiguration
     private let renderer: SpoilerRenderer
 
     init(
         metalConfig: SpoilerMetalConfiguration,
-        renderer: SpoilerRenderer
+        renderer: SpoilerRenderer,
     ) {
         self.metalConfig = metalConfig
         self.renderer = renderer
@@ -128,7 +132,7 @@ internal class SpoilerParticleView: MTKView {
 
     // MARK: - Public API
 
-    public var spec: SpoilerRenderer.Spec?
+    var spec: SpoilerRenderer.Spec?
 
     /// Must be called after setting specs and view.frame information
     /// to generate metadata and be ready for rendering.
@@ -138,15 +142,15 @@ internal class SpoilerParticleView: MTKView {
         setNeedsDisplay()
     }
 
-    public var isInUse = false
+    var isInUse = false
 
-    public enum Fidelity {
+    enum Fidelity {
         case high
         case low
 
         private static let defaultParticlesPerUnitArea: CGFloat = 0.03
 
-        public static func forTotalSurfaceArea(_ surfaceArea: SurfaceArea) -> Fidelity {
+        static func forTotalSurfaceArea(_ surfaceArea: SurfaceArea) -> Fidelity {
             let defaultNumParticles = surfaceArea * defaultParticlesPerUnitArea
             if defaultNumParticles >= Constants.particleCountEfficiencyThreshold {
                 return .low
@@ -155,7 +159,7 @@ internal class SpoilerParticleView: MTKView {
         }
     }
 
-    public var fidelity: Fidelity = .high {
+    var fidelity: Fidelity = .high {
         didSet {
             self.preferredFramesPerSecond = Int(1 / fidelity.frameDelay)
             updateParticleCount()
@@ -266,16 +270,16 @@ internal class SpoilerParticleView: MTKView {
             let drawRect = DrawRect(
                 origin: .init(
                     UInt16(clamping: UInt(spoilerFrame.frame.x * scale)),
-                    UInt16(clamping: UInt(spoilerFrame.frame.y * scale))
+                    UInt16(clamping: UInt(spoilerFrame.frame.y * scale)),
                 ),
                 size: .init(
                     UInt16(clamping: UInt(spoilerFrame.frame.width * scale)),
-                    UInt16(clamping: UInt(spoilerFrame.frame.height * scale))
+                    UInt16(clamping: UInt(spoilerFrame.frame.height * scale)),
                 ),
                 particleRGB: spoilerFrame.config.colorRGB,
                 particleBaseAlpha: spoilerFrame.config.particleBaseAlpha,
                 particleAlphaDropoff: spoilerFrame.config.particleAlphaDropoff,
-                particleSizePixels: spoilerFrame.config.particleSizePixels
+                particleSizePixels: spoilerFrame.config.particleSizePixels,
             )
             drawRects.append(drawRect)
         }
@@ -292,7 +296,7 @@ internal class SpoilerParticleView: MTKView {
 
         drawableSize = CGSize(
             width: bounds.width * scale,
-            height: bounds.height * scale
+            height: bounds.height * scale,
         )
         self.isPaused = particlesPerPixelPerLayer == 0
     }
@@ -349,7 +353,7 @@ internal class SpoilerParticleView: MTKView {
             let threadGroupsPerGrid = MTLSize(
                 width: Int(ceil(Double(drawable.texture.width) / Double(w))),
                 height: Int(ceil(Double(drawable.texture.height) / Double(h))),
-                depth: 1
+                depth: 1,
             )
             computeCommandEncoder.dispatchThreadgroups(threadGroupsPerGrid, threadsPerThreadgroup: threadsPerThreadGroup)
         }
@@ -369,7 +373,7 @@ internal class SpoilerParticleView: MTKView {
             numDrawRects: numDrawRects,
             particlesPerPixelPerLayer: particlesPerPixelPerLayer,
             numLayers: fidelity.numLayers,
-            particleSpeedDivisor: fidelity.particleSpeedDivisor
+            particleSpeedDivisor: fidelity.particleSpeedDivisor,
         )
         computeCommandEncoder.setBytes(&uniforms, length: Self.uniformsSize, index: 1)
 
@@ -386,18 +390,18 @@ internal class SpoilerParticleView: MTKView {
             let threadGroupsPerGrid = MTLSize(
                 width: Int(ceil(Double(totalNumParticlesPerLayer) / Double(w))),
                 height: 1,
-                depth: 1
+                depth: 1,
             )
             computeCommandEncoder.dispatchThreadgroups(threadGroupsPerGrid, threadsPerThreadgroup: threadsPerThreadGroup)
         }
 
         // Tell the encoder we are done, and have it render the drawable's texture.
         computeCommandEncoder.endEncoding()
-        #if targetEnvironment(simulator)
+#if targetEnvironment(simulator)
         commandbuffer.present(drawable)
-        #else
+#else
         commandbuffer.present(drawable, afterMinimumDuration: fidelity.frameDelay)
-        #endif
+#endif
         commandbuffer.commit()
     }
 
@@ -433,8 +437,8 @@ extension SpoilerParticleView.Fidelity {
 
     fileprivate var frameDelay: TimeInterval {
         switch self {
-        case .high: return 1/(20 /*FPS*/)
-        case .low: return 1/(12 /*FPS*/)
+        case .high: return 1 / 20 /* FPS */
+        case .low: return 1 / 12 /* FPS */
         }
     }
 

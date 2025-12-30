@@ -28,8 +28,10 @@ public protocol MemberViewDelegate: AnyObject {
 
     func memberViewMemberCountForDisplay() -> Int
 
-    func memberViewIsPreExistingMember(_ recipient: PickedRecipient,
-                                       transaction: DBReadTransaction) -> Bool
+    func memberViewIsPreExistingMember(
+        _ recipient: PickedRecipient,
+        transaction: DBReadTransaction,
+    ) -> Bool
 
     func memberViewCustomIconNameForPickedMember(_ recipient: PickedRecipient) -> String?
 
@@ -46,7 +48,7 @@ open class BaseMemberViewController: RecipientPickerContainerViewController {
     public weak var memberViewDelegate: MemberViewDelegate?
 
     private var recipientSet: OrderedSet<PickedRecipient> {
-        guard let memberViewDelegate = memberViewDelegate else {
+        guard let memberViewDelegate else {
             owsFailDebug("Missing memberViewDelegate.")
             return OrderedSet<PickedRecipient>()
         }
@@ -54,7 +56,7 @@ open class BaseMemberViewController: RecipientPickerContainerViewController {
     }
 
     open var hasUnsavedChanges: Bool {
-        guard let memberViewDelegate = memberViewDelegate else {
+        guard let memberViewDelegate else {
             owsFailDebug("Missing memberViewDelegate.")
             return false
         }
@@ -65,7 +67,7 @@ open class BaseMemberViewController: RecipientPickerContainerViewController {
     private let memberCountLabel = UILabel()
     private let memberCountWrapper = UIView()
 
-    public override init() {
+    override public init() {
         super.init()
     }
 
@@ -73,12 +75,12 @@ open class BaseMemberViewController: RecipientPickerContainerViewController {
 
     private var viewHasAppeared = false
 
-    open override func viewDidAppear(_ animated: Bool) {
+    override open func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         viewHasAppeared = true
     }
 
-    open override func viewDidLoad() {
+    override open func viewDidLoad() {
         super.viewDidLoad()
 
         memberBar.delegate = self
@@ -145,7 +147,7 @@ open class BaseMemberViewController: RecipientPickerContainerViewController {
         updateMemberCount()
     }
 
-    open override func viewWillLayoutSubviews() {
+    override open func viewWillLayoutSubviews() {
         updateMemberBarHeightConstraint()
 
         super.viewWillLayoutSubviews()
@@ -160,15 +162,20 @@ open class BaseMemberViewController: RecipientPickerContainerViewController {
             memberCountWrapper.isHidden = true
             return
         }
-        guard let memberViewDelegate = memberViewDelegate,
-              memberViewDelegate.memberViewShouldShowMemberCount() else {
+        guard
+            let memberViewDelegate,
+            memberViewDelegate.memberViewShouldShowMemberCount()
+        else {
             memberCountWrapper.isHidden = true
             return
         }
 
         memberCountWrapper.isHidden = false
-        let format = OWSLocalizedString("GROUP_MEMBER_COUNT_WITHOUT_LIMIT_%d", tableName: "PluralAware",
-                                        comment: "Format string for the group member count indicator. Embeds {{ the number of members in the group }}.")
+        let format = OWSLocalizedString(
+            "GROUP_MEMBER_COUNT_WITHOUT_LIMIT_%d",
+            tableName: "PluralAware",
+            comment: "Format string for the group member count indicator. Embeds {{ the number of members in the group }}.",
+        )
         let memberCount = memberViewDelegate.memberViewMemberCountForDisplay()
 
         memberCountLabel.text = String.localizedStringWithFormat(format, memberCount)
@@ -180,7 +187,7 @@ open class BaseMemberViewController: RecipientPickerContainerViewController {
     }
 
     public func removeRecipient(_ recipient: PickedRecipient) {
-        guard let memberViewDelegate = memberViewDelegate else {
+        guard let memberViewDelegate else {
             owsFailDebug("Missing memberViewDelegate.")
             return
         }
@@ -196,7 +203,7 @@ open class BaseMemberViewController: RecipientPickerContainerViewController {
             return
         }
 
-        guard let memberViewDelegate = memberViewDelegate else {
+        guard let memberViewDelegate else {
             owsFailDebug("Missing memberViewDelegate.")
             return
         }
@@ -212,18 +219,18 @@ open class BaseMemberViewController: RecipientPickerContainerViewController {
 
     private func updateMemberBar() {
         memberBar.setMembers(SSKEnvironment.shared.databaseStorageRef.read { tx in
-            let members = self.recipientSet.orderedMembers.compactMap { (pickedRecipient) -> (PickedRecipient, SignalServiceAddress)? in
+            let members = self.recipientSet.orderedMembers.compactMap { pickedRecipient -> (PickedRecipient, SignalServiceAddress)? in
                 guard let address = pickedRecipient.address else {
                     return nil
                 }
                 return (pickedRecipient, address)
             }
-            let displayNames = SSKEnvironment.shared.contactManagerRef.displayNames(for: members.map { (_, address) in address }, tx: tx)
-            return zip(members, displayNames).map { (member, displayName) in
+            let displayNames = SSKEnvironment.shared.contactManagerRef.displayNames(for: members.map { _, address in address }, tx: tx)
+            return zip(members, displayNames).map { member, displayName in
                 return NewMember(
                     recipient: member.0,
                     address: member.1,
-                    shortName: displayName.resolvedValue(useShortNameIfAvailable: true)
+                    shortName: displayName.resolvedValue(useShortNameIfAvailable: true),
                 )
             }
         })
@@ -231,17 +238,17 @@ open class BaseMemberViewController: RecipientPickerContainerViewController {
 
     public class func sortedMemberAddresses(
         recipientSet: OrderedSet<PickedRecipient>,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> [SignalServiceAddress] {
         return SSKEnvironment.shared.contactManagerRef.sortSignalServiceAddresses(
             recipientSet.orderedMembers.compactMap { $0.address },
-            transaction: tx
+            transaction: tx,
         )
     }
 
     // MARK: -
 
-    open override func viewWillAppear(_ animated: Bool) {
+    override open func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
         recipientPicker.pickedRecipients = recipientSet.orderedMembers
@@ -249,7 +256,7 @@ open class BaseMemberViewController: RecipientPickerContainerViewController {
         updateMemberBar()
         updateMemberCount()
 
-        guard let navigationController = navigationController else {
+        guard let navigationController else {
             owsFailDebug("Missing navigationController.")
             return
         }
@@ -276,7 +283,7 @@ open class BaseMemberViewController: RecipientPickerContainerViewController {
 
     private func backButtonPressed() {
 
-        guard let navigationController = navigationController else {
+        guard let navigationController else {
             owsFailDebug("Missing navigationController.")
             return
         }
@@ -300,9 +307,9 @@ extension BaseMemberViewController: RecipientPickerDelegate {
     public func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
         selectionStyleForRecipient recipient: PickedRecipient,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> UITableViewCell.SelectionStyle {
-        guard let memberViewDelegate = memberViewDelegate else {
+        guard let memberViewDelegate else {
             owsFailDebug("Missing memberViewDelegate.")
             return .default
         }
@@ -314,7 +321,7 @@ extension BaseMemberViewController: RecipientPickerDelegate {
 
     public func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
-        didSelectRecipient recipient: PickedRecipient
+        didSelectRecipient recipient: PickedRecipient,
     ) {
         guard let address = recipient.address else {
             owsFailDebug("Missing address.")
@@ -324,7 +331,7 @@ extension BaseMemberViewController: RecipientPickerDelegate {
             owsFailDebug("Invalid address.")
             return
         }
-        guard let memberViewDelegate = memberViewDelegate else {
+        guard let memberViewDelegate else {
             owsFailDebug("Missing memberViewDelegate.")
             return
         }
@@ -332,7 +339,8 @@ extension BaseMemberViewController: RecipientPickerDelegate {
         let (isPreExistingMember, isBlocked) = SSKEnvironment.shared.databaseStorageRef.read { tx -> (Bool, Bool) in
             let isPreexisting = memberViewDelegate.memberViewIsPreExistingMember(
                 recipient,
-                transaction: tx)
+                transaction: tx,
+            )
             let isBlocked = SSKEnvironment.shared.blockingManagerRef.isAddressBlocked(address, transaction: tx)
             return (isPreexisting, isBlocked)
         }
@@ -340,19 +348,19 @@ extension BaseMemberViewController: RecipientPickerDelegate {
         guard !isPreExistingMember else {
             let errorMessage = OWSLocalizedString(
                 "GROUPS_ERROR_MEMBER_ALREADY_IN_GROUP",
-                comment: "Error message indicating that a member can't be added to a group because they are already in the group."
+                comment: "Error message indicating that a member can't be added to a group because they are already in the group.",
             )
             OWSActionSheets.showErrorAlert(message: errorMessage)
             return
         }
-        guard let navigationController = navigationController else {
+        guard let navigationController else {
             owsFailDebug("Missing navigationController.")
             return
         }
 
         let isCurrentMember = recipientSet.contains(recipient)
         let addRecipientCompletion = { [weak self] in
-            guard let self = self else {
+            guard let self else {
                 return
             }
             self.addRecipient(recipient)
@@ -361,9 +369,11 @@ extension BaseMemberViewController: RecipientPickerDelegate {
 
         if isCurrentMember {
             removeRecipient(recipient)
-        } else if isBlocked && !memberViewDelegate.memberViewShouldAllowBlockedSelection() {
-            BlockListUIUtils.showUnblockAddressActionSheet(address,
-                                                           from: self) { isStillBlocked in
+        } else if isBlocked, !memberViewDelegate.memberViewShouldAllowBlockedSelection() {
+            BlockListUIUtils.showUnblockAddressActionSheet(
+                address,
+                from: self,
+            ) { isStillBlocked in
                 if !isStillBlocked {
                     addRecipientCompletion()
                 }
@@ -376,17 +386,17 @@ extension BaseMemberViewController: RecipientPickerDelegate {
     private func confirmSafetyNumber(
         for address: SignalServiceAddress,
         untrustedThreshold: Date?,
-        thenAddRecipient addRecipient: @escaping () -> Void
+        thenAddRecipient addRecipient: @escaping () -> Void,
     ) {
         let confirmationText = OWSLocalizedString(
             "SAFETY_NUMBER_CHANGED_CONFIRM_ADD_MEMBER_ACTION",
-            comment: "button title to confirm adding a recipient when their safety number has recently changed"
+            comment: "button title to confirm adding a recipient when their safety number has recently changed",
         )
         let newUntrustedThreshold = Date()
         let didShowSNAlert = SafetyNumberConfirmationSheet.presentIfNecessary(
             addresses: [address],
             confirmationText: confirmationText,
-            untrustedThreshold: untrustedThreshold
+            untrustedThreshold: untrustedThreshold,
         ) { [weak self] didConfirmIdentity in
             guard didConfirmIdentity else { return }
             self?.confirmSafetyNumber(for: address, untrustedThreshold: newUntrustedThreshold, thenAddRecipient: addRecipient)
@@ -402,7 +412,7 @@ extension BaseMemberViewController: RecipientPickerDelegate {
     public func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
         accessoryViewForRecipient recipient: PickedRecipient,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> ContactCellAccessoryView? {
         guard let address = recipient.address else {
             owsFailDebug("Missing address.")
@@ -412,14 +422,16 @@ extension BaseMemberViewController: RecipientPickerDelegate {
             owsFailDebug("Invalid address.")
             return nil
         }
-        guard let memberViewDelegate = memberViewDelegate else {
+        guard let memberViewDelegate else {
             owsFailDebug("Missing memberViewDelegate.")
             return nil
         }
 
         let isCurrentMember = recipientSet.contains(recipient)
-        let isPreExistingMember = memberViewDelegate.memberViewIsPreExistingMember(recipient,
-                                                                                   transaction: transaction)
+        let isPreExistingMember = memberViewDelegate.memberViewIsPreExistingMember(
+            recipient,
+            transaction: transaction,
+        )
 
         let pickedIconName = memberViewDelegate.memberViewCustomIconNameForPickedMember(recipient) ?? Theme.iconName(.checkCircleFill)
         let pickedIconColor = memberViewDelegate.memberViewCustomIconColorForPickedMember(recipient) ?? Theme.accentBlueColor
@@ -438,7 +450,7 @@ extension BaseMemberViewController: RecipientPickerDelegate {
     public func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
         attributedSubtitleForRecipient recipient: PickedRecipient,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> NSAttributedString? {
         guard let address = recipient.address else {
             owsFailDebug("Recipient missing address.")

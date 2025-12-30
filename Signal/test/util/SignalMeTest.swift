@@ -12,7 +12,7 @@ class SignalMeTest: XCTestCase {
             "https://signal.me/#p/+14085550123",
             "hTTPs://sigNAL.mE/#P/+14085550123",
             "https://signal.me/#p/+9",
-            "sgnl://signal.me/#p/+14085550123"
+            "sgnl://signal.me/#p/+14085550123",
         ]
         for string in validStrings {
             let url = try XCTUnwrap(URL(string: string))
@@ -44,7 +44,7 @@ class SignalMeTest: XCTestCase {
             "https://signal.me/#p/+",
             "https://signal.me/#p/+one",
             "https://signal.me/#p/+14085550123x",
-            "https://signal.me/#p/+14085550123/"
+            "https://signal.me/#p/+14085550123/",
         ]
         for string in invalidStrings {
             let url = try XCTUnwrap(URL(string: string))

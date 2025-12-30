@@ -32,9 +32,9 @@ public class SUIEnvironment: NSObject {
     public var paymentsSwiftRef: PaymentsSwift { paymentsRef as! PaymentsSwift }
     public var paymentsImplRef: PaymentsImpl { paymentsRef as! PaymentsImpl }
 
-    private(set) public var linkPreviewFetcher: (any LinkPreviewFetcher)!
+    public private(set) var linkPreviewFetcher: (any LinkPreviewFetcher)!
 
-    private override init() {
+    override private init() {
         super.init()
 
         SwiftSingletons.register(self)
@@ -43,7 +43,7 @@ public class SUIEnvironment: NSObject {
     @MainActor
     public func setUp(
         appReadiness: AppReadiness,
-        authCredentialManager: any AuthCredentialManager
+        authCredentialManager: any AuthCredentialManager,
     ) {
         registerCustomFonts()
 
@@ -54,7 +54,7 @@ public class SUIEnvironment: NSObject {
             db: DependenciesBridge.shared.db,
             groupsV2: SSKEnvironment.shared.groupsV2Ref,
             linkPreviewSettingStore: DependenciesBridge.shared.linkPreviewSettingStore,
-            tsAccountManager: DependenciesBridge.shared.tsAccountManager
+            tsAccountManager: DependenciesBridge.shared.tsAccountManager,
         )
         self.paymentsRef = PaymentsImpl(appReadiness: appReadiness)
 

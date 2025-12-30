@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import UIKit
 import SignalServiceKit
+import UIKit
 
 public extension UIViewController {
 
@@ -21,7 +21,7 @@ public extension UIViewController {
 
             if let nextViewController = viewController.presentedViewController {
                 let isNextViewControllerAlert =
-                (nextViewController is ActionSheetController) || (nextViewController is UIAlertController)
+                    (nextViewController is ActionSheetController) || (nextViewController is UIAlertController)
 
                 if !ignoringAlerts || !isNextViewControllerAlert {
                     guard visitedViewControllers.insert(nextViewController).inserted else {
@@ -32,8 +32,9 @@ public extension UIViewController {
                 }
             }
 
-            guard let navigationController = viewController as? UINavigationController,
-                  let nextViewController = navigationController.topViewController else { break }
+            guard
+                let navigationController = viewController as? UINavigationController,
+                let nextViewController = navigationController.topViewController else { break }
 
             guard visitedViewControllers.insert(nextViewController).inserted else {
                 return viewController
@@ -53,7 +54,7 @@ public extension UIViewController {
     func presentActionSheet(
         _ actionSheet: ActionSheetController,
         animated: Bool = true,
-        completion: (() -> Void)? = nil
+        completion: (() -> Void)? = nil,
     ) {
         present(actionSheet, animated: animated, completion: completion)
     }
@@ -83,7 +84,7 @@ public extension UINavigationController {
     func pushViewController(
         _ viewController: UIViewController,
         animated: Bool,
-        completion: @escaping () -> Void
+        completion: @escaping () -> Void,
     ) {
         pushViewController(viewController, animated: animated)
         addCompletion(animated: animated, completion: completion)
@@ -91,7 +92,7 @@ public extension UINavigationController {
 
     func popViewController(
         animated: Bool,
-        completion: @escaping () -> Void
+        completion: @escaping () -> Void,
     ) {
         popViewController(animated: animated)
         addCompletion(animated: animated, completion: completion)
@@ -100,7 +101,7 @@ public extension UINavigationController {
     func popToViewController(
         _ viewController: UIViewController,
         animated: Bool,
-        completion: @escaping () -> Void
+        completion: @escaping () -> Void,
     ) {
         self.popToViewController(viewController, animated: animated)
         addCompletion(animated: animated, completion: completion)

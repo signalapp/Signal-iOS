@@ -58,7 +58,7 @@ public class SgxWebsocketConnectionImpl<Configurator: SgxWebsocketConfigurator>:
         configurator: Configurator,
         client: Configurator.Client,
         auth: RemoteAttestation.Auth,
-        scheduler: Scheduler
+        scheduler: Scheduler,
     ) {
         self.webSocket = webSocket
         self.configurator = configurator
@@ -68,17 +68,17 @@ public class SgxWebsocketConnectionImpl<Configurator: SgxWebsocketConfigurator>:
         super.init()
     }
 
-    internal static func connectAndPerformHandshake(
+    static func connectAndPerformHandshake(
         configurator: Configurator,
         auth: RemoteAttestation.Auth,
         websocketFactory: WebSocketFactory,
-        scheduler: Scheduler
+        scheduler: Scheduler,
     ) throws -> Promise<SgxWebsocketConnection<Configurator>> {
         let webSocket = try buildSocket(
             configurator: configurator,
             auth: auth,
             websocketFactory: websocketFactory,
-            scheduler: scheduler
+            scheduler: scheduler,
         )
         return firstly(on: scheduler) {
             webSocket.waitForResponse()
@@ -86,7 +86,7 @@ public class SgxWebsocketConnectionImpl<Configurator: SgxWebsocketConfigurator>:
             let client = try Configurator.client(
                 mrenclave: configurator.mrenclave,
                 attestationMessage: attestationMessage,
-                currentDate: Date()
+                currentDate: Date(),
             )
             return firstly {
                 webSocket.send(data: client.initialRequest())
@@ -101,7 +101,7 @@ public class SgxWebsocketConnectionImpl<Configurator: SgxWebsocketConfigurator>:
                 configurator: configurator,
                 client: client,
                 auth: auth,
-                scheduler: scheduler
+                scheduler: scheduler,
             )
         }.recover(on: scheduler) { error -> Promise<SgxWebsocketConnection<Configurator>> in
             Logger.warn("\(type(of: configurator).loggingName): Disconnecting socket after failed handshake: \(error)")
@@ -114,14 +114,14 @@ public class SgxWebsocketConnectionImpl<Configurator: SgxWebsocketConfigurator>:
         configurator: Configurator,
         auth: RemoteAttestation.Auth,
         websocketFactory: WebSocketFactory,
-        scheduler: Scheduler
+        scheduler: Scheduler,
     ) throws -> WebSocketPromise {
         let authHeaderValue = HttpHeaders.authHeaderValue(username: auth.username, password: auth.password)
         let request = WebSocketRequest(
             signalService: Configurator.signalServiceType,
             urlPath: Configurator.websocketUrlPath(mrenclaveString: configurator.mrenclave.dataValue.hexadecimalString),
             urlQueryItems: nil,
-            extraHeaders: [HttpHeaders.authHeaderKey: authHeaderValue]
+            extraHeaders: [HttpHeaders.authHeaderKey: authHeaderValue],
         )
         guard let webSocketPromise = websocketFactory.webSocketPromise(request: request, callbackScheduler: scheduler) else {
             throw OWSAssertionError("We should always be able to get a web socket from this API.")
@@ -129,14 +129,14 @@ public class SgxWebsocketConnectionImpl<Configurator: SgxWebsocketConfigurator>:
         return webSocketPromise
     }
 
-    public override var mrEnclave: MrEnclave { return configurator.mrenclave }
+    override public var mrEnclave: MrEnclave { return configurator.mrenclave }
 
-    public override var client: Configurator.Client { return _client }
+    override public var client: Configurator.Client { return _client }
 
-    public override var auth: RemoteAttestation.Auth { return _auth }
+    override public var auth: RemoteAttestation.Auth { return _auth }
 
-    public override func sendRequestAndReadResponse(
-        _ request: Configurator.Request
+    override public func sendRequestAndReadResponse(
+        _ request: Configurator.Request,
     ) -> Promise<Configurator.Response> {
         firstly(on: scheduler) { () -> Promise<Data> in
             try self.encryptAndSendRequest(request.serializedData())
@@ -147,8 +147,8 @@ public class SgxWebsocketConnectionImpl<Configurator: SgxWebsocketConfigurator>:
         }
     }
 
-    public override func sendRequestAndReadAllResponses(
-        _ request: Configurator.Request
+    override public func sendRequestAndReadAllResponses(
+        _ request: Configurator.Request,
     ) -> Promise<[Configurator.Response]> {
         firstly(on: scheduler) { () -> Promise<[Data]> in
             try self.encryptAndSendRequest(request.serializedData())
@@ -170,7 +170,7 @@ public class SgxWebsocketConnectionImpl<Configurator: SgxWebsocketConfigurator>:
         return try client.establishedRecv(encryptedResponse)
     }
 
-    public override func disconnect(code: URLSessionWebSocketTask.CloseCode?) {
+    override public func disconnect(code: URLSessionWebSocketTask.CloseCode?) {
         webSocket.disconnect(code: code)
     }
 }
@@ -179,41 +179,41 @@ public class SgxWebsocketConnectionImpl<Configurator: SgxWebsocketConfigurator>:
 
 public class MockSgxWebsocketConnection<Configurator: SgxWebsocketConfigurator>: SgxWebsocketConnection<Configurator> {
 
-    internal override init() {
+    override init() {
         super.init()
     }
 
     public var mockEnclave: MrEnclave!
 
-    public override var mrEnclave: MrEnclave { return mockEnclave }
+    override public var mrEnclave: MrEnclave { return mockEnclave }
 
     public var mockClient: Configurator.Client!
 
-    public override var client: Configurator.Client { return mockClient }
+    override public var client: Configurator.Client { return mockClient }
 
     public var mockAuth: RemoteAttestation.Auth!
 
-    public override var auth: RemoteAttestation.Auth { return mockAuth }
+    override public var auth: RemoteAttestation.Auth { return mockAuth }
 
     public var onSendRequestAndReadResponse: ((Configurator.Request) -> Promise<Configurator.Response>)?
 
-    public override func sendRequestAndReadResponse(
-        _ request: Configurator.Request
+    override public func sendRequestAndReadResponse(
+        _ request: Configurator.Request,
     ) -> Promise<Configurator.Response> {
         onSendRequestAndReadResponse!(request)
     }
 
     public var onSendRequestAndReadAllResponses: ((Configurator.Request) -> Promise<[Configurator.Response]>)?
 
-    public override func sendRequestAndReadAllResponses(
-        _ request: Configurator.Request
+    override public func sendRequestAndReadAllResponses(
+        _ request: Configurator.Request,
     ) -> Promise<[Configurator.Response]> {
         onSendRequestAndReadAllResponses!(request)
     }
 
     public var onDisconnect: (() -> Void)?
 
-    public override func disconnect(code: URLSessionWebSocketTask.CloseCode?) {
+    override public func disconnect(code: URLSessionWebSocketTask.CloseCode?) {
         onDisconnect?()
     }
 }

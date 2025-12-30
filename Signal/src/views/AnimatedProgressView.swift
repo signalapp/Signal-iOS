@@ -103,7 +103,7 @@ class AnimatedProgressView: UIView {
         AssertIsOnMainThread()
         owsAssertDebug(isAnimating)
 
-        if let animationCompletionHandler = animationCompletionHandler {
+        if let animationCompletionHandler {
             UIView.performWithoutAnimation(animationCompletionHandler)
         } else {
             reset()
@@ -120,7 +120,7 @@ class AnimatedProgressView: UIView {
         completedSuccessfully = success
 
         animationCompletionHandler = { [weak self] in
-            guard let self = self else {
+            guard let self else {
                 animateAlongside?()
                 completion()
                 return
@@ -145,7 +145,7 @@ class AnimatedProgressView: UIView {
     private func startNextLoopOrFinish() {
         // If we haven't yet completed, start another loop of the progress animation.
         // We'll check again when it's done.
-        guard let completedSuccessfully = completedSuccessfully else {
+        guard let completedSuccessfully else {
             return progressAnimation.playAndWhenFinished { [weak self] in
                 self?.startNextLoopOrFinish()
             }

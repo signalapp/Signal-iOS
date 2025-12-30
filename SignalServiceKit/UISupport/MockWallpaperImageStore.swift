@@ -12,14 +12,14 @@ public class MockWallpaperImageStore: WallpaperImageStore {
     public func setWallpaperImage(
         _ photo: UIImage?,
         for thread: TSThread,
-        onInsert: @escaping (DBWriteTransaction) throws -> Void
+        onInsert: @escaping (DBWriteTransaction) throws -> Void,
     ) throws {
         // Do nothing
     }
 
     public func setGlobalThreadWallpaperImage(
         _ photo: UIImage?,
-        onInsert: @escaping (DBWriteTransaction) throws -> Void
+        onInsert: @escaping (DBWriteTransaction) throws -> Void,
     ) throws {
         // Do nothing
     }

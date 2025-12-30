@@ -68,7 +68,7 @@ public extension NSTextContainer {
     func characterIndex(
         of location: CGPoint,
         textStorage: NSTextStorage,
-        layoutManager: NSLayoutManager
+        layoutManager: NSLayoutManager,
     ) -> Int? {
         guard textStorage.length > 0 else {
             return nil
@@ -102,14 +102,14 @@ public extension NSTextContainer {
     func boundingRects(
         ofCharacterRanges ranges: [NSRange],
         textStorage: NSTextStorage,
-        layoutManager: NSLayoutManager
+        layoutManager: NSLayoutManager,
     ) -> [CGRect] {
         return boundingRects(
             ofCharacterRanges: ranges,
             rangeMap: { return $0 },
             textStorage: textStorage,
             layoutManager: layoutManager,
-            transform: { rect, _ in return rect }
+            transform: { rect, _ in return rect },
         )
     }
 
@@ -119,7 +119,7 @@ public extension NSTextContainer {
         textStorage: NSTextStorage,
         layoutManager: NSLayoutManager,
         textContainerInsets: UIEdgeInsets = .zero,
-        transform: @escaping (CGRect, T) -> R
+        transform: @escaping (CGRect, T) -> R,
     ) -> [R] {
         return ranges.flatMap { (value: T) -> [R] in
             let range = rangeMap(value)
@@ -132,7 +132,7 @@ public extension NSTextContainer {
             layoutManager.enumerateEnclosingRects(
                 forGlyphRange: glyphRange,
                 withinSelectedGlyphRange: NSRange(location: NSNotFound, length: 0),
-                in: self
+                in: self,
             ) { rect, stop in
                 if rect.maxY > self.size.height {
                     stop.pointee = true
@@ -140,7 +140,7 @@ public extension NSTextContainer {
                 }
                 perLineResults.append(transform(
                     rect.offsetBy(dx: textContainerInsets.left, dy: textContainerInsets.top),
-                    value
+                    value,
                 ))
             }
             return perLineResults
@@ -169,7 +169,7 @@ extension UILabel {
     func boundingRects<T, R>(
         ofCharacterRanges ranges: [T],
         rangeMap: (T) -> NSRange,
-        transform: @escaping (CGRect, T) -> R
+        transform: @escaping (CGRect, T) -> R,
     ) -> [R] {
         guard let (textContainer, textStorage, layoutManager) = makeMatchingTextContainer() else {
             return []
@@ -179,7 +179,7 @@ extension UILabel {
             rangeMap: rangeMap,
             textStorage: textStorage,
             layoutManager: layoutManager,
-            transform: transform
+            transform: transform,
         )
     }
 

@@ -85,7 +85,7 @@ public protocol TaskRecordRunner {
     /// should stop all future tasks, not just the current one.
     func runTask(
         record: Store.Record,
-        loader: TaskQueueLoader<Self>
+        loader: TaskQueueLoader<Self>,
     ) async -> TaskRecordResult
 
     /// Called by ``TaskQueueLoader`` when the task completes successfully,
@@ -95,7 +95,7 @@ public protocol TaskRecordRunner {
     /// wrong here is a severe error affecting the queue itself.
     func didSucceed(
         record: Store.Record,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws
 
     /// Called by ``TaskQueueLoader`` when the task fails.
@@ -111,7 +111,7 @@ public protocol TaskRecordRunner {
         record: Store.Record,
         error: Error,
         isRetryable: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws
 
     /// Called by ``TaskQueueLoader`` when the task is cancelled,
@@ -121,7 +121,7 @@ public protocol TaskRecordRunner {
     /// wrong here is a severe error affecting the queue itself.
     func didCancel(
         record: Store.Record,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws
 
     /// Called by ``TaskQueueLoader`` when all tasks have finished.
@@ -172,12 +172,12 @@ public actor TaskQueueLoader<Runner: TaskRecordRunner & Sendable> {
 
     /// WARNING: the runner (and therefore any of its strong references) is strongly
     /// captured by this class and will be retained for its lifetime.
-    internal init(
+    init(
         maxConcurrentTasks: UInt,
         dateProvider: @escaping DateProvider,
         db: any DB,
         runner: Runner,
-        sleep: @escaping (_ nanoseconds: UInt64) async throws -> Void
+        sleep: @escaping (_ nanoseconds: UInt64) async throws -> Void,
     ) {
         self.maxConcurrentTasks = maxConcurrentTasks
         self.dateProvider = dateProvider
@@ -192,7 +192,7 @@ public actor TaskQueueLoader<Runner: TaskRecordRunner & Sendable> {
         maxConcurrentTasks: UInt,
         dateProvider: @escaping DateProvider,
         db: any DB,
-        runner: Runner
+        runner: Runner,
     ) {
         self.init(
             maxConcurrentTasks: maxConcurrentTasks,
@@ -201,7 +201,7 @@ public actor TaskQueueLoader<Runner: TaskRecordRunner & Sendable> {
             runner: runner,
             sleep: {
                 try await Task.sleep(nanoseconds: $0)
-            }
+            },
         )
     }
 
@@ -217,17 +217,14 @@ public actor TaskQueueLoader<Runner: TaskRecordRunner & Sendable> {
                 return true
             case (.notRunning, _):
                 return false
-
             case (.running(let oldId, _), .running(let newId, _)):
                 return oldId == newId
             case (.running, _):
                 return false
-
             case (.cleaningUp(let oldId, _), .cleaningUp(let newId, _)):
                 return oldId == newId
             case (.cleaningUp, _):
                 return false
-
             case (.cancelled(let oldId, _), .cancelled(let newId, _)):
                 return oldId == newId
             case (.cancelled, _):
@@ -325,7 +322,7 @@ public actor TaskQueueLoader<Runner: TaskRecordRunner & Sendable> {
                 Task {
                     try await observerDidCancel(observerId)
                 }
-            }
+            },
         )
     }
 

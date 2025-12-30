@@ -12,7 +12,7 @@ open class OWSLayerView: UIView {
     public var layoutCallback: (UIView) -> Void
 
     public init() {
-        self.layoutCallback = { (_) in
+        self.layoutCallback = { _ in
         }
         super.init(frame: .zero)
     }
@@ -36,7 +36,7 @@ open class OWSLayerView: UIView {
         let result = OWSLayerView(frame: .zero) { view in
             view.layer.cornerRadius = min(view.width, view.height) * 0.5
         }
-        if let size = size {
+        if let size {
             result.autoSetDimensions(to: CGSize.square(size))
         }
         return result
@@ -50,13 +50,13 @@ open class OWSLayerView: UIView {
         let result = OWSLayerView(frame: .zero) { view in
             view.layer.cornerRadius = min(view.width, view.height) * 0.5
         }
-        if let height = height {
+        if let height {
             result.autoSetDimension(.height, toSize: height)
         }
         return result
     }
 
-    public override var bounds: CGRect {
+    override public var bounds: CGRect {
         didSet {
             if oldValue != bounds {
                 layoutSubviews()
@@ -64,7 +64,7 @@ open class OWSLayerView: UIView {
         }
     }
 
-    public override var frame: CGRect {
+    override public var frame: CGRect {
         didSet {
             if oldValue != frame {
                 layoutSubviews()
@@ -72,7 +72,7 @@ open class OWSLayerView: UIView {
         }
     }
 
-    public override var center: CGPoint {
+    override public var center: CGPoint {
         didSet {
             if oldValue != center {
                 layoutSubviews()
@@ -80,7 +80,7 @@ open class OWSLayerView: UIView {
         }
     }
 
-    public override func layoutSubviews() {
+    override public func layoutSubviews() {
         super.layoutSubviews()
 
         layoutCallback(self)
@@ -110,7 +110,7 @@ open class OWSLayerView: UIView {
 
     @objc
     private func didTap() {
-        guard let tapBlock = tapBlock else {
+        guard let tapBlock else {
             owsFailDebug("Missing tapBlock.")
             return
         }
@@ -130,14 +130,14 @@ open class OWSLayerView: UIView {
 
     @objc
     private func didLongPress() {
-        guard let longPressBlock = longPressBlock else {
+        guard let longPressBlock else {
             owsFailDebug("Missing longPressBlock.")
             return
         }
         longPressBlock()
     }
 
-    // MARK: - 
+    // MARK: -
 
     public func reset() {
         removeAllSubviews()

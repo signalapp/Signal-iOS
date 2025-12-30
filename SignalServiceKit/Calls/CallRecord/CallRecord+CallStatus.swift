@@ -170,7 +170,7 @@ extension CallRecord {
             guard let selfValue = CallStatus(intValue: intValue) else {
                 throw DecodingError.dataCorruptedError(
                     in: singleValueContainer,
-                    debugDescription: "\(type(of: self)) contained unexpected int value: \(intValue)"
+                    debugDescription: "\(type(of: self)) contained unexpected int value: \(intValue)",
                 )
             }
 

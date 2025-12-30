@@ -54,12 +54,12 @@ struct OWSDeviceServiceImpl: OWSDeviceService {
         recipientFetcher: RecipientFetcher,
         recipientManager: any SignalRecipientManager,
         threadStore: ThreadStore,
-        tsAccountManager: any TSAccountManager
+        tsAccountManager: any TSAccountManager,
     ) {
         self.db = db
         self.deviceNameChangeSyncMessageSender = DeviceNameChangeSyncMessageSender(
             messageSenderJobQueue: messageSenderJobQueue,
-            threadStore: threadStore
+            threadStore: threadStore,
         )
         self.deviceManager = deviceManager
         self.deviceStore = deviceStore
@@ -93,9 +93,11 @@ struct OWSDeviceServiceImpl: OWSDeviceService {
     }
 
     func refreshDevices() async throws -> Bool {
-        guard let identityKeyPair = db.read(block: { tx in
-            identityManager.identityKeyPair(for: .aci, tx: tx)?.keyPair
-        }) else {
+        guard
+            let identityKeyPair = db.read(block: { tx in
+                identityManager.identityKeyPair(for: .aci, tx: tx)?.keyPair
+            })
+        else {
             throw OWSAssertionError("Missing ACI identity key pair: will fail to refresh devices!")
         }
 
@@ -117,7 +119,7 @@ struct OWSDeviceServiceImpl: OWSDeviceService {
                 deviceIdsToAdd: Array(Set(deviceIds).subtracting(localRecipient.deviceIds)),
                 deviceIdsToRemove: Array(Set(localRecipient.deviceIds).subtracting(deviceIds)),
                 shouldUpdateStorageService: false,
-                tx: tx
+                tx: tx,
             )
 
             return deviceStore.replaceAll(with: devices, tx: tx)
@@ -175,7 +177,7 @@ struct OWSDeviceServiceImpl: OWSDeviceService {
             let createdAtData: Data = try identityKeyPair.privateKey.open(
                 fetchedDevice.createdAtCiphertext,
                 info: "deviceCreatedAt",
-                associatedData: associatedData
+                associatedData: associatedData,
             )
 
             let createdAtMsInt = withUnsafeBytes(of: createdAtData) {
@@ -205,19 +207,21 @@ struct OWSDeviceServiceImpl: OWSDeviceService {
         device: OWSDevice,
         newName: String,
     ) async throws {
-        guard let identityKeyPair = db.read(block: { tx in
-            identityManager.identityKeyPair(for: .aci, tx: tx)
-        }) else {
+        guard
+            let identityKeyPair = db.read(block: { tx in
+                identityManager.identityKeyPair(for: .aci, tx: tx)
+            })
+        else {
             throw OWSAssertionError("can't rename device without identity key")
         }
 
         let newNameEncrypted = try OWSDeviceNames.encryptDeviceName(
             plaintext: newName,
-            identityKeyPair: identityKeyPair.keyPair
+            identityKeyPair: identityKeyPair.keyPair,
         ).base64EncodedString()
 
         let response = try await self.networkManager.asyncRequest(
-            .renameDevice(device: device, encryptedName: newNameEncrypted)
+            .renameDevice(device: device, encryptedName: newNameEncrypted),
         )
 
         guard response.responseStatusCode == 204 else {
@@ -234,7 +238,7 @@ struct OWSDeviceServiceImpl: OWSDeviceService {
 
             deviceNameChangeSyncMessageSender.enqueueDeviceNameChangeSyncMessage(
                 forDeviceId: deviceId,
-                tx: tx
+                tx: tx,
             )
         }
     }
@@ -253,7 +257,7 @@ private struct DeviceNameChangeSyncMessageSender {
 
     func enqueueDeviceNameChangeSyncMessage(
         forDeviceId deviceId: UInt32,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         guard let localThread = threadStore.getOrCreateLocalThread(tx: tx) else {
             owsFailDebug("Failed to create local thread!")
@@ -263,12 +267,12 @@ private struct DeviceNameChangeSyncMessageSender {
         let outgoingSyncMessage = OutgoingDeviceNameChangeSyncMessage(
             deviceId: deviceId,
             localThread: localThread,
-            tx: tx
+            tx: tx,
         )
 
         messageSenderJobQueue.add(
             message: .preprepared(transientMessageWithoutAttachments: outgoingSyncMessage),
-            transaction: tx
+            transaction: tx,
         )
     }
 }
@@ -280,35 +284,35 @@ extension TSRequest {
         return TSRequest(
             url: URL(string: "v1/devices")!,
             method: "GET",
-            parameters: [:]
+            parameters: [:],
         )
     }
 
     public static func deleteDevice(
-        deviceId: DeviceId
+        deviceId: DeviceId,
     ) -> TSRequest {
         return TSRequest(
             url: URL(string: "v1/devices/\(deviceId)")!,
             method: "DELETE",
-            parameters: nil
+            parameters: nil,
         )
     }
 
     fileprivate static func renameDevice(
         device: OWSDevice,
-        encryptedName: String
+        encryptedName: String,
     ) -> TSRequest {
         var urlComponents = URLComponents(string: "v1/accounts/name")!
         urlComponents.queryItems = [URLQueryItem(
             name: "deviceId",
-            value: "\(device.deviceId)"
+            value: "\(device.deviceId)",
         )]
         var request = TSRequest(
             url: urlComponents.url!,
             method: "PUT",
             parameters: [
                 "deviceName": encryptedName,
-            ]
+            ],
         )
         request.applyRedactionStrategy(.redactURL())
         return request

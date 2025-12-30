@@ -22,7 +22,7 @@ public class PinnedThreadManagerImpl: PinnedThreadManager {
         db: any DB,
         pinnedThreadStore: PinnedThreadStoreWrite,
         storageServiceManager: StorageServiceManager,
-        threadStore: ThreadStore
+        threadStore: ThreadStore,
     ) {
         self.db = db
         self.pinnedThreadStore = pinnedThreadStore
@@ -60,7 +60,7 @@ public class PinnedThreadManagerImpl: PinnedThreadManager {
     public func updatePinnedThreadIds(
         _ pinnedThreadIds: [String],
         updateStorageService: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         let previousPinnedThreadIds = pinnedThreadStore.pinnedThreadIds(tx: tx)
         pinnedThreadStore.updatePinnedThreadIds(pinnedThreadIds, tx: tx)
@@ -82,13 +82,13 @@ public class PinnedThreadManagerImpl: PinnedThreadManager {
 
                 let associatedData = threadStore.fetchOrDefaultAssociatedData(for: thread, tx: tx)
 
-                if pinnedThreadIds.contains(threadId) && (associatedData.isArchived || !thread.shouldThreadBeVisible) {
+                if pinnedThreadIds.contains(threadId), associatedData.isArchived || !thread.shouldThreadBeVisible {
                     // Pinning a thread should unarchive it and make it visible if it was not already so.
                     threadStore.updateAssociatedData(
                         associatedData,
                         isArchived: false,
                         updateStorageService: updateStorageService,
-                        tx: tx
+                        tx: tx,
                     )
                     threadStore.update(thread, withShouldThreadBeVisible: true, tx: tx)
                 } else {
@@ -101,7 +101,7 @@ public class PinnedThreadManagerImpl: PinnedThreadManager {
     public func pinThread(
         _ thread: TSThread,
         updateStorageService: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         // When pinning a thread, we want to treat the existing list of pinned
         // threads as only those that actually have current threads. Otherwise,
@@ -126,7 +126,7 @@ public class PinnedThreadManagerImpl: PinnedThreadManager {
     public func unpinThread(
         _ thread: TSThread,
         updateStorageService: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         var pinnedThreadIds = pinnedThreadStore.pinnedThreadIds(tx: tx)
 

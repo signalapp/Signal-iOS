@@ -46,16 +46,18 @@ extension UsernameLinkScanDelegate where Self: RecipientPickerDelegate & Recipie
     func usernameLinkScanned(_ usernameLink: Usernames.UsernameLink) {
         dismiss(animated: true) { [self] in
             Task { @MainActor in
-                guard let (_, aci) = await UsernameQuerier().queryForUsernameLink(
-                    link: usernameLink,
-                    fromViewController: self,
-                ) else {
+                guard
+                    let (_, aci) = await UsernameQuerier().queryForUsernameLink(
+                        link: usernameLink,
+                        fromViewController: self,
+                    )
+                else {
                     return
                 }
 
                 recipientPicker(
                     recipientPicker,
-                    didSelectRecipient: .for(address: SignalServiceAddress(aci))
+                    didSelectRecipient: .for(address: SignalServiceAddress(aci)),
                 )
             }
         }

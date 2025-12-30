@@ -10,7 +10,7 @@ public enum Sound: Equatable {
     case standard(StandardSound)
     case custom(CustomSound)
 
-    public static func == (lhs: Sound, rhs: Sound) -> Bool {
+    public static func ==(lhs: Sound, rhs: Sound) -> Bool {
         return lhs.id == rhs.id
     }
 }
@@ -61,7 +61,7 @@ public extension Sound {
         }
         let url = Bundle.main.url(
             forResource: (filename as NSString).deletingPathExtension,
-            withExtension: (filename as NSString).pathExtension
+            withExtension: (filename as NSString).pathExtension,
         )
         owsAssertDebug(url != nil)
         return url
@@ -115,8 +115,7 @@ public extension StandardSound {
         case .`default`:
             owsFailDebug("invalid argument.")
             return ""
-
-            // Notification Sounds
+        // Notification Sounds
         case .aurora: return "Aurora"
         case .bamboo: return "Bamboo"
         case .chord: return "Chord"
@@ -130,27 +129,23 @@ public extension StandardSound {
         case .pulse: return "Pulse"
         case .synth: return "Synth"
         case .signalClassic: return "Signal Classic"
-
-            // Calls
+        // Calls
         case .callConnecting: return "Call Connecting"
         case .callOutboundRinging: return "Call Outbound Ringing"
         case .callBusy: return "Call Busy"
         case .callEnded: return "Call Ended"
-
-            // Group Calls
+        // Group Calls
         case .groupCallJoin: return "Group Call Join"
         case .groupCallLeave: return "Group Call Leave"
         case .raisedHand: return "Raise Hand"
-
-            // Other
+        // Other
         case .messageSent: return "Message Sent"
         case .none: return OWSLocalizedString(
-            "SOUNDS_NONE",
-            comment: "Label for the 'no sound' option that allows users to disable sounds for notifications, etc."
-        )
+                "SOUNDS_NONE",
+                comment: "Label for the 'no sound' option that allows users to disable sounds for notifications, etc.",
+            )
         case .silence: return "Silence"
-
-            // Audio Playback
+        // Audio Playback
         case .beginNextTrack:
             return "Begin Next Track"
         case .endLastTrack:
@@ -163,8 +158,7 @@ public extension StandardSound {
         case .`default`:
             owsFailDebug("invalid argument.")
             return nil
-
-            // Notification Sounds
+        // Notification Sounds
         case .aurora:
             return quiet ? "aurora-quiet.aifc" : "aurora.aifc"
         case .bamboo:
@@ -191,24 +185,20 @@ public extension StandardSound {
             return quiet ? "synth-quiet.aifc" : "synth.aifc"
         case .signalClassic:
             return quiet ? "classic-quiet.aifc" : "classic.aifc"
-
-            // Calls
+        // Calls
         case .callConnecting: return "ringback_tone_ansi.caf"
         case .callOutboundRinging: return "ringback_tone_ansi.caf"
         case .callBusy: return "busy_tone_ansi.caf"
         case .callEnded: return "end_call_tone_cept.caf"
-
-            // Group Calls
+        // Group Calls
         case .groupCallJoin: return "group_call_join.aiff"
         case .groupCallLeave: return "group_call_leave.aiff"
         case .raisedHand: return "notification_simple-01.caf"
-
-            // Other
+        // Other
         case .messageSent: return "message_sent.aiff"
         case .silence: return "silence.aiff"
         case .none: return nil
-
-            // Audio Playback
+        // Audio Playback
         case .beginNextTrack: return "state-change_confirm-down.caf"
         case .endLastTrack: return "state-change_confirm-up.caf"
         }
@@ -329,7 +319,7 @@ public class Sounds {
             .popcorn,
             .pulse,
             .signalClassic,
-            .synth
+            .synth,
         ]
         let customSounds = CustomSound.all
         return standardSounds.map({ Sound.standard($0) }) + customSounds.map({ Sound.custom($0) })
@@ -486,7 +476,7 @@ public class Sounds {
             do {
                 try FileManager.default.moveItem(
                     atPath: legacySoundsDirectory.appendingPathComponent(soundFile),
-                    toPath: soundsDirectory.appendingPathComponent(soundFile)
+                    toPath: soundsDirectory.appendingPathComponent(soundFile),
                 )
             } catch {
                 owsFailDebug("Failed to migrate legacy sound file: \(error)")

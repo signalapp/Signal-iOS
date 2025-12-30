@@ -98,8 +98,10 @@ extension GifPickerNavigationViewController: AttachmentApprovalViewControllerDat
 }
 
 protocol GifPickerViewControllerDelegate: AnyObject {
-    @MainActor func gifPickerDidSelect(attachment: PreviewableAttachment)
-    @MainActor func gifPickerDidCancel()
+    @MainActor
+    func gifPickerDidSelect(attachment: PreviewableAttachment)
+    @MainActor
+    func gifPickerDidCancel()
 }
 
 class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollectionViewDataSource, UICollectionViewDelegate, GifPickerLayoutDelegate, OWSNavigationChildController {
@@ -107,7 +109,11 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     // MARK: Properties
 
     enum ViewMode {
-        case idle, searching, results, noResults, error
+        case idle
+        case searching
+        case results
+        case noResults
+        case error
     }
 
     private var viewMode = ViewMode.idle {
@@ -116,7 +122,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         }
     }
 
-    public weak var delegate: GifPickerViewControllerDelegate?
+    weak var delegate: GifPickerViewControllerDelegate?
 
     let searchBar: UISearchBar
     let layout: GifPickerLayout
@@ -149,6 +155,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     }
 
     // MARK: -
+
     @objc
     private func didBecomeActive() {
         AssertIsOnMainThread()
@@ -183,19 +190,25 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         self.navigationItem.leftBarButtonItem = .cancelButton { [weak self] in
             self?.delegate?.gifPickerDidCancel()
         }
-        self.navigationItem.title = OWSLocalizedString("GIF_PICKER_VIEW_TITLE",
-                                                      comment: "Title for the 'GIF picker' dialog.")
+        self.navigationItem.title = OWSLocalizedString(
+            "GIF_PICKER_VIEW_TITLE",
+            comment: "Title for the 'GIF picker' dialog.",
+        )
 
         createViews()
 
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(reachabilityChanged),
-                                               name: SSKReachability.owsReachabilityDidChange,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(didBecomeActive),
-                                               name: .OWSApplicationDidBecomeActive,
-                                               object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(reachabilityChanged),
+            name: SSKReachability.owsReachabilityDidChange,
+            object: nil,
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(didBecomeActive),
+            name: .OWSApplicationDidBecomeActive,
+            object: nil,
+        )
 
         taskQueue.enqueueCancellingPrevious(operation: { @MainActor in
             await self.tryToSearch(afterDelay: 0)
@@ -221,11 +234,11 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         fileForCellTask = nil
     }
 
-    public var preferredNavigationBarStyle: OWSNavigationBarStyle { .solid }
+    var preferredNavigationBarStyle: OWSNavigationBarStyle { .solid }
 
-    public var navbarBackgroundColorOverride: UIColor? { view.backgroundColor }
+    var navbarBackgroundColorOverride: UIColor? { view.backgroundColor }
 
-    public override func themeDidChange() {
+    override func themeDidChange() {
         super.themeDidChange()
 
         view.backgroundColor = Theme.backgroundColor
@@ -275,8 +288,10 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
         // Search
         searchBar.delegate = self
-        searchBar.placeholder = OWSLocalizedString("GIF_VIEW_SEARCH_PLACEHOLDER_TEXT",
-                                                  comment: "Placeholder text for the search field in GIF view")
+        searchBar.placeholder = OWSLocalizedString(
+            "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT",
+            comment: "Placeholder text for the search field in GIF view",
+        )
         view.addSubview(searchBar)
         searchBar.autoPinWidthToSuperview()
         searchBar.autoPin(toTopLayoutGuideOf: self, withInset: 0)
@@ -307,15 +322,19 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         logoImageView.autoPinHeightToSuperview(withMargin: 3)
         logoImageView.autoHCenterInSuperview()
 
-        let noResultsView = createErrorLabel(text: OWSLocalizedString("GIF_VIEW_SEARCH_NO_RESULTS",
-                                                                    comment: "Indicates that the user's search had no results."))
+        let noResultsView = createErrorLabel(text: OWSLocalizedString(
+            "GIF_VIEW_SEARCH_NO_RESULTS",
+            comment: "Indicates that the user's search had no results.",
+        ))
         self.noResultsView = noResultsView
         self.view.addSubview(noResultsView)
         noResultsView.autoPinWidthToSuperview(withMargin: 20)
         noResultsView.autoAlignAxis(.horizontal, toSameAxisOf: self.collectionView)
 
-        let searchErrorView = createErrorLabel(text: OWSLocalizedString("GIF_VIEW_SEARCH_ERROR",
-                                                                      comment: "Indicates that an error occurred while searching."))
+        let searchErrorView = createErrorLabel(text: OWSLocalizedString(
+            "GIF_VIEW_SEARCH_ERROR",
+            comment: "Indicates that an error occurred while searching.",
+        ))
         self.searchErrorView = searchErrorView
         self.view.addSubview(searchErrorView)
         searchErrorView.autoPinWidthToSuperview(withMargin: 20)
@@ -400,11 +419,11 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
     // MARK: - UICollectionViewDataSource
 
-    public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return imageInfos.count
     }
 
-    public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: kCellReuseIdentifier, for: indexPath)
 
         guard indexPath.row < imageInfos.count else {
@@ -442,11 +461,11 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         return cell
     }
 
-    public func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
+    func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
         return self.selectableCell(at: indexPath) != nil
     }
 
-    public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let cell = self.selectableCell(at: indexPath) else {
             return
         }
@@ -473,7 +492,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
     private var fileForCellTask: Task<Void, Never>?
 
-    public func getFileForCell(_ cell: GifPickerCell) {
+    func getFileForCell(_ cell: GifPickerCell) {
         GiphyDownloader.giphyDownloader.cancelAllRequests()
 
         fileForCellTask?.cancel()
@@ -517,7 +536,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         return attachment
     }
 
-    public func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         guard let cell = cell as? GifPickerCell else {
             owsFailDebug("unexpected cell.")
             return
@@ -526,7 +545,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         cell.isCellVisible = true
     }
 
-    public func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+    func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         guard let cell = cell as? GifPickerCell else {
             owsFailDebug("unexpected cell.")
             return
@@ -536,7 +555,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
     // MARK: - UISearchBarDelegate
 
-    public func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         // Clear error messages immediately.
         if viewMode == .error || viewMode == .noResults {
             viewMode = .idle
@@ -549,7 +568,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         })
     }
 
-    public func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         self.searchBar.resignFirstResponder()
 
         taskQueue.enqueueCancellingPrevious(operation: { @MainActor in
@@ -616,7 +635,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         })
     }
 
-    public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
 
         layout.invalidateLayout()

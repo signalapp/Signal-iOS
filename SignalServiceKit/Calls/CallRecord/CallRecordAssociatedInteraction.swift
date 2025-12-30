@@ -10,7 +10,7 @@ public extension CallRecord {
     static func assertDebugIsCallRecordInteraction(_ interaction: TSInteraction) {
         owsAssertDebug(
             interaction is CallRecordAssociatedInteraction,
-            "Unexpected associated interaction type: \(type(of: interaction))"
+            "Unexpected associated interaction type: \(type(of: interaction))",
         )
     }
 }

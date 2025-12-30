@@ -15,7 +15,7 @@ extension ThreadUtil {
         thread: TSThread,
         quotedReplyDraft: DraftQuotedReplyModel? = nil,
         linkPreviewDraft: OWSLinkPreviewDraft? = nil,
-        persistenceCompletionHandler persistenceCompletion: PersistenceCompletion? = nil
+        persistenceCompletionHandler persistenceCompletion: PersistenceCompletion? = nil,
     ) {
         let messageTimestamp = MessageTimestampGenerator.sharedInstance.generateTimestamp()
 
@@ -47,7 +47,7 @@ extension ThreadUtil {
                         isViewOnce: attachments.isViewOnce,
                         quotedReplyDraft: quotedReplyDraft,
                         linkPreviewDataSource: linkPreviewDataSource,
-                        transaction: readTransaction
+                        transaction: readTransaction,
                     )
                 }
             } catch {
@@ -59,7 +59,7 @@ extension ThreadUtil {
                 unpreparedMessage,
                 benchEventId: benchEventId,
                 thread: thread,
-                persistenceCompletionHandler: persistenceCompletion
+                persistenceCompletionHandler: persistenceCompletion,
             )
         }
     }
@@ -70,7 +70,7 @@ extension ThreadUtil {
         quotedReplyEdit: MessageEdits.Edit<Void>,
         linkPreviewDraft: OWSLinkPreviewDraft?,
         editTarget: TSOutgoingMessage,
-        persistenceCompletionHandler persistenceCompletion: PersistenceCompletion? = nil
+        persistenceCompletionHandler persistenceCompletion: PersistenceCompletion? = nil,
     ) {
         AssertIsOnMainThread()
 
@@ -94,7 +94,7 @@ extension ThreadUtil {
                     messageBody: messageBody,
                     quotedReplyEdit: quotedReplyEdit,
                     linkPreviewDataSource: linkPreviewDataSource,
-                    editTarget: editTarget
+                    editTarget: editTarget,
                 )
             } catch {
                 owsFailDebug("Failed to build message")
@@ -105,7 +105,7 @@ extension ThreadUtil {
                 unpreparedMessage,
                 benchEventId: benchEventId,
                 thread: thread,
-                persistenceCompletionHandler: persistenceCompletion
+                persistenceCompletionHandler: persistenceCompletion,
             )
         }
     }
@@ -115,7 +115,7 @@ extension ThreadUtil {
     class func enqueueMessage(
         _ unpreparedMessage: UnpreparedOutgoingMessage,
         thread: TSThread,
-        persistenceCompletionHandler persistenceCompletion: PersistenceCompletion? = nil
+        persistenceCompletionHandler persistenceCompletion: PersistenceCompletion? = nil,
     ) {
         let benchEventId = sendMessageBenchEventStart(messageTimestamp: unpreparedMessage.messageTimestampForLogging)
         self.enqueueSendQueue.enqueue {
@@ -123,7 +123,7 @@ extension ThreadUtil {
                 unpreparedMessage,
                 benchEventId: benchEventId,
                 thread: thread,
-                persistenceCompletionHandler: persistenceCompletion
+                persistenceCompletionHandler: persistenceCompletion,
             )
         }
     }
@@ -133,7 +133,7 @@ extension ThreadUtil {
         _ unpreparedMessage: UnpreparedOutgoingMessage,
         benchEventId: String,
         thread: TSThread,
-        persistenceCompletionHandler persistenceCompletion: PersistenceCompletion? = nil
+        persistenceCompletionHandler persistenceCompletion: PersistenceCompletion? = nil,
     ) async {
         await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { writeTransaction in
             guard let preparedMessage = try? unpreparedMessage.prepare(tx: writeTransaction) else {
@@ -143,9 +143,9 @@ extension ThreadUtil {
             let promise = SSKEnvironment.shared.messageSenderJobQueueRef.add(
                 .promise,
                 message: preparedMessage,
-                transaction: writeTransaction
+                transaction: writeTransaction,
             )
-            if let persistenceCompletion = persistenceCompletion {
+            if let persistenceCompletion {
                 writeTransaction.addSyncCompletion {
                     Task { @MainActor in
                         persistenceCompletion()
@@ -170,7 +170,7 @@ extension ThreadUtil {
         BenchEventStart(
             title: "Send Message Milestone: Marked as Sent (\(messageTimestamp))",
             eventId: eventId,
-            logInProduction: true
+            logInProduction: true,
         )
         return eventId
     }
@@ -188,7 +188,7 @@ extension UnpreparedOutgoingMessage {
         isViewOnce: Bool = false,
         quotedReplyDraft: DraftQuotedReplyModel.ForSending?,
         linkPreviewDataSource: LinkPreviewDataSource?,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> UnpreparedOutgoingMessage {
         assert(!isViewOnce || mediaAttachments.count == 1)
         assert(!mediaAttachments.contains(where: { $0.renderingFlag == .borderless }) || mediaAttachments.count == 1)
@@ -205,7 +205,7 @@ extension UnpreparedOutgoingMessage {
         messageBuilder.setMessageBody(messageBody)
 
         messageBuilder.expiresInSeconds = dmConfig.durationSeconds
-        messageBuilder.expireTimerVersion = NSNumber.init(value: dmConfig.timerVersion)
+        messageBuilder.expireTimerVersion = NSNumber(value: dmConfig.timerVersion)
         messageBuilder.isVoiceMessage = isVoiceMessage
         messageBuilder.isViewOnceMessage = isViewOnce
 
@@ -218,7 +218,7 @@ extension UnpreparedOutgoingMessage {
             body: messageBody,
             unsavedBodyMediaAttachments: attachmentInfos,
             linkPreviewDraft: linkPreviewDataSource,
-            quotedReplyDraft: quotedReplyDraft
+            quotedReplyDraft: quotedReplyDraft,
         )
         return unpreparedMessage
     }
@@ -229,7 +229,7 @@ extension UnpreparedOutgoingMessage {
         messageBody: ValidatedMessageBody?,
         quotedReplyEdit: MessageEdits.Edit<Void>,
         linkPreviewDataSource: LinkPreviewDataSource?,
-        editTarget: TSOutgoingMessage
+        editTarget: TSOutgoingMessage,
     ) -> UnpreparedOutgoingMessage {
 
         let oversizeTextDataSource: AttachmentDataSource? = messageBody?.oversizeText.map { .pendingAttachment($0) }
@@ -246,7 +246,7 @@ extension UnpreparedOutgoingMessage {
             edits: edits,
             oversizeTextDataSource: oversizeTextDataSource,
             linkPreviewDraft: linkPreviewDataSource,
-            quotedReplyEdit: quotedReplyEdit
+            quotedReplyEdit: quotedReplyEdit,
         )
         return unpreparedMessage
     }

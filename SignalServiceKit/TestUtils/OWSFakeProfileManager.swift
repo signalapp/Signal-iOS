@@ -90,23 +90,23 @@ extension OWSFakeProfileManager: ProfileManager {
     func warmCaches() {
     }
 
-    public func fetchLocalUsersProfile(authedAccount: AuthedAccount) async throws -> FetchedProfile {
+    func fetchLocalUsersProfile(authedAccount: AuthedAccount) async throws -> FetchedProfile {
         throw OWSGenericError("Not supported.")
     }
 
-    public func fetchUserProfiles(for addresses: [SignalServiceAddress], tx: DBReadTransaction) -> [OWSUserProfile?] {
+    func fetchUserProfiles(for addresses: [SignalServiceAddress], tx: DBReadTransaction) -> [OWSUserProfile?] {
         return addresses.map { fakeUserProfiles?[$0] }
     }
 
-    public func downloadAndDecryptLocalUserAvatarIfNeeded(authedAccount: AuthedAccount) async throws {
+    func downloadAndDecryptLocalUserAvatarIfNeeded(authedAccount: AuthedAccount) async throws {
         throw OWSGenericError("Not supported.")
     }
 
-    public func downloadAndDecryptAvatar(avatarUrlPath: String, profileKey: ProfileKey) async throws -> URL {
+    func downloadAndDecryptAvatar(avatarUrlPath: String, profileKey: ProfileKey) async throws -> URL {
         throw OWSGenericError("Not supported.")
     }
 
-    public func updateProfile(
+    func updateProfile(
         address: OWSUserProfile.InsertableAddress,
         decryptedProfile: DecryptedProfile?,
         avatarUrlPath: OptionalChange<String?>,
@@ -114,11 +114,11 @@ extension OWSFakeProfileManager: ProfileManager {
         profileBadges: [OWSUserProfileBadgeInfo],
         lastFetchDate: Date,
         userProfileWriter: UserProfileWriter,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
     }
 
-    public func updateLocalProfile(
+    func updateLocalProfile(
         profileGivenName: OptionalChange<OWSUserProfile.NameComponent>,
         profileFamilyName: OptionalChange<OWSUserProfile.NameComponent?>,
         profileBio: OptionalChange<String?>,
@@ -128,28 +128,28 @@ extension OWSFakeProfileManager: ProfileManager {
         unsavedRotatedProfileKey: Aes256Key?,
         userProfileWriter: UserProfileWriter,
         authedAccount: AuthedAccount,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) -> Promise<Void> {
         return Promise(error: OWSGenericError("Not supported."))
     }
 
-    public func reuploadLocalProfile(
+    func reuploadLocalProfile(
         unsavedRotatedProfileKey: Aes256Key?,
         mustReuploadAvatar: Bool,
         authedAccount: AuthedAccount,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) -> Promise<Void> {
         return Promise(error: OWSGenericError("Not supported."))
     }
 
-    public func didSendOrReceiveMessage(
+    func didSendOrReceiveMessage(
         serviceId: ServiceId,
         localIdentifiers: LocalIdentifiers,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
     }
 
-    public func setProfileKeyData(
+    func setProfileKeyData(
         _ profileKeyData: Data,
         for serviceId: ServiceId,
         onlyFillInIfMissing: Bool,
@@ -157,7 +157,7 @@ extension OWSFakeProfileManager: ProfileManager {
         userProfileWriter: UserProfileWriter,
         localIdentifiers: LocalIdentifiers,
         authedAccount: AuthedAccount,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         let address = SignalServiceAddress(serviceId)
         let userProfile = self.fakeUserProfiles![address]!
@@ -176,21 +176,21 @@ extension OWSFakeProfileManager: ProfileManager {
             badges: userProfile.badges,
             lastFetchDate: userProfile.lastFetchDate,
             lastMessagingDate: userProfile.lastMessagingDate,
-            isPhoneNumberShared: userProfile.isPhoneNumberShared
+            isPhoneNumberShared: userProfile.isPhoneNumberShared,
         )
     }
 
-    public func fillInProfileKeys(
+    func fillInProfileKeys(
         allProfileKeys: [Aci: Data],
         authoritativeProfileKeys: [Aci: Data],
         userProfileWriter: UserProfileWriter,
         localIdentifiers: LocalIdentifiers,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
     }
 
-    public func allWhitelistedAddresses(tx: DBReadTransaction) -> [SignalServiceAddress] { [] }
-    public func allWhitelistedRegisteredAddresses(tx: DBReadTransaction) -> [SignalServiceAddress] { [] }
+    func allWhitelistedAddresses(tx: DBReadTransaction) -> [SignalServiceAddress] { [] }
+    func allWhitelistedRegisteredAddresses(tx: DBReadTransaction) -> [SignalServiceAddress] { [] }
 }
 
 #endif

@@ -36,7 +36,7 @@ public class BackupArchiveStickerPackArchiver: BackupArchiveProtoStreamWriter {
     private let backupStickerPackDownloadStore: BackupStickerPackDownloadStore
 
     init(
-        backupStickerPackDownloadStore: BackupStickerPackDownloadStore
+        backupStickerPackDownloadStore: BackupStickerPackDownloadStore,
     ) {
         self.backupStickerPackDownloadStore = backupStickerPackDownloadStore
     }
@@ -53,7 +53,7 @@ public class BackupArchiveStickerPackArchiver: BackupArchiveProtoStreamWriter {
     /// and should be used if some critical or category-wide failure occurs.
     func archiveStickerPacks(
         stream: BackupArchiveProtoOutputStream,
-        context: BackupArchive.ArchivingContext
+        context: BackupArchive.ArchivingContext,
     ) throws(CancellationError) -> ArchiveMultiFrameResult {
         var errors = [ArchiveFrameError]()
 
@@ -61,14 +61,14 @@ public class BackupArchiveStickerPackArchiver: BackupArchiveProtoStreamWriter {
 
         func archiveInstalledStickerPack(
             _ installedStickerPack: StickerPack,
-            _ frameBencher: BackupArchive.Bencher.FrameBencher
+            _ frameBencher: BackupArchive.Bencher.FrameBencher,
         ) {
             autoreleasepool {
                 guard !handledPacks.contains(installedStickerPack.packId) else { return }
                 let maybeError: ArchiveFrameError? = Self.writeFrameToStream(
                     stream,
                     objectId: StickerPackId(installedStickerPack.packId),
-                    frameBencher: frameBencher
+                    frameBencher: frameBencher,
                 ) {
                     var stickerPack = BackupProto_StickerPack()
                     stickerPack.packID = installedStickerPack.packId
@@ -102,7 +102,7 @@ public class BackupArchiveStickerPackArchiver: BackupArchiveProtoStreamWriter {
         do {
             try context.bencher.wrapEnumeration(
                 enumerateStickerPackRecord(tx:block:),
-                tx: context.tx
+                tx: context.tx,
             ) { stickerPack, frameBencher in
                 try Task.checkCancellation()
                 archiveInstalledStickerPack(stickerPack, frameBencher)
@@ -117,7 +117,7 @@ public class BackupArchiveStickerPackArchiver: BackupArchiveProtoStreamWriter {
         do {
             try context.bencher.wrapEnumeration(
                 backupStickerPackDownloadStore.iterateAllEnqueued(tx:block:),
-                tx: context.tx
+                tx: context.tx,
             ) { record, frameBencher in
                 try Task.checkCancellation()
                 autoreleasepool {
@@ -125,17 +125,17 @@ public class BackupArchiveStickerPackArchiver: BackupArchiveProtoStreamWriter {
                     let maybeError: ArchiveFrameError? = Self.writeFrameToStream(
                         stream,
                         objectId: StickerPackId(record.packId),
-                        frameBencher: frameBencher
+                        frameBencher: frameBencher,
                     ) {
-                            var stickerPack = BackupProto_StickerPack()
-                            stickerPack.packID = record.packId
-                            stickerPack.packKey = record.packKey
+                        var stickerPack = BackupProto_StickerPack()
+                        stickerPack.packID = record.packId
+                        stickerPack.packKey = record.packKey
 
-                            var frame = BackupProto_Frame()
-                            frame.item = .stickerPack(stickerPack)
+                        var frame = BackupProto_Frame()
+                        frame.item = .stickerPack(stickerPack)
 
-                            return frame
-                        }
+                        return frame
+                    }
                     if let maybeError {
                         errors.append(maybeError)
                     } else {
@@ -165,13 +165,13 @@ public class BackupArchiveStickerPackArchiver: BackupArchiveProtoStreamWriter {
     /// but typically an error will be shown to the user, but the restore will be allowed to proceed.
     func restore(
         _ stickerPack: BackupProto_StickerPack,
-        context: BackupArchive.RestoringContext
+        context: BackupArchive.RestoringContext,
     ) -> RestoreFrameResult {
         do {
             try backupStickerPackDownloadStore.enqueue(
                 packId: stickerPack.packID,
                 packKey: stickerPack.packKey,
-                tx: context.tx
+                tx: context.tx,
             )
         } catch {
             return .failure([.restoreFrameError(.databaseInsertionFailed(error), StickerPackId(stickerPack.packID))])

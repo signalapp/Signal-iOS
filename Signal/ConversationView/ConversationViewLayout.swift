@@ -102,13 +102,15 @@ public class ConversationViewLayout: UICollectionViewLayout {
         let itemLayouts: [ItemLayout]
         let renderStateId: UInt
 
-        required init(viewWidth: CGFloat,
-                      contentSize: CGSize,
-                      layoutAttributesMap: [Int: UICollectionViewLayoutAttributes],
-                      headerLayoutAttributes: UICollectionViewLayoutAttributes?,
-                      footerLayoutAttributes: UICollectionViewLayoutAttributes?,
-                      itemLayouts: [ItemLayout],
-                      renderStateId: UInt) {
+        required init(
+            viewWidth: CGFloat,
+            contentSize: CGSize,
+            layoutAttributesMap: [Int: UICollectionViewLayoutAttributes],
+            headerLayoutAttributes: UICollectionViewLayoutAttributes?,
+            footerLayoutAttributes: UICollectionViewLayoutAttributes?,
+            itemLayouts: [ItemLayout],
+            renderStateId: UInt,
+        ) {
             self.viewWidth = viewWidth
             self.contentSize = contentSize
             self.layoutAttributesMap = layoutAttributesMap
@@ -125,17 +127,23 @@ public class ConversationViewLayout: UICollectionViewLayout {
             return layoutAttributesMap[indexPath.row]
         }
 
-        func layoutAttributesForSupplementaryElement(ofKind elementKind: String,
-                                                     at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
+        func layoutAttributesForSupplementaryElement(
+            ofKind elementKind: String,
+            at indexPath: IndexPath,
+        ) -> UICollectionViewLayoutAttributes? {
 
-            if elementKind == UICollectionView.elementKindSectionHeader,
-               let headerLayoutAttributes = headerLayoutAttributes,
-               headerLayoutAttributes.indexPath == indexPath {
+            if
+                elementKind == UICollectionView.elementKindSectionHeader,
+                let headerLayoutAttributes,
+                headerLayoutAttributes.indexPath == indexPath
+            {
                 return headerLayoutAttributes
             }
-            if elementKind == UICollectionView.elementKindSectionFooter,
-               let footerLayoutAttributes = footerLayoutAttributes,
-               footerLayoutAttributes.indexPath == indexPath {
+            if
+                elementKind == UICollectionView.elementKindSectionFooter,
+                let footerLayoutAttributes,
+                footerLayoutAttributes.indexPath == indexPath
+            {
                 return footerLayoutAttributes
             }
             return nil
@@ -150,10 +158,10 @@ public class ConversationViewLayout: UICollectionViewLayout {
                 }
                 result += "item: \(layoutAttributes.indexPath), "
             }
-            if let headerLayoutAttributes = headerLayoutAttributes {
+            if let headerLayoutAttributes {
                 result += "header: \(headerLayoutAttributes.indexPath), "
             }
-            if let footerLayoutAttributes = footerLayoutAttributes {
+            if let footerLayoutAttributes {
                 result += "footer: \(footerLayoutAttributes.indexPath), "
             }
             result += "]"
@@ -196,10 +204,12 @@ public class ConversationViewLayout: UICollectionViewLayout {
         let contentOffset: CGPoint
         let contentInset: UIEdgeInsets
 
-        init(layoutInfo: LayoutInfo,
-             collectionViewSize: CGSize,
-             contentOffset: CGPoint,
-             contentInset: UIEdgeInsets) {
+        init(
+            layoutInfo: LayoutInfo,
+            collectionViewSize: CGSize,
+            contentOffset: CGPoint,
+            contentInset: UIEdgeInsets,
+        ) {
 
             self.layoutInfo = layoutInfo
             self.collectionViewSize = collectionViewSize
@@ -207,22 +217,25 @@ public class ConversationViewLayout: UICollectionViewLayout {
             self.contentInset = contentInset
         }
     }
+
     // * currentLayoutInfo is the "at rest" layout.
     // * translatedLayoutInfo is the same layout, with ephemeral changes
     //   for sticky date headers.
     private var translatedLayoutInfo: TranslatedLayoutInfo?
 
     private func clearTranslatedLayoutInfoIfNecessary() {
-        guard let collectionView = self.collectionView,
-              let translatedLayoutInfo = self.translatedLayoutInfo else {
+        guard
+            let collectionView = self.collectionView,
+            let translatedLayoutInfo = self.translatedLayoutInfo
+        else {
             return
         }
         let collectionViewSize = collectionView.bounds.size
         let contentOffset = collectionView.contentOffset
         let contentInset = collectionView.contentInset
         let didChange = (translatedLayoutInfo.collectionViewSize != collectionViewSize ||
-                            translatedLayoutInfo.contentOffset != contentOffset ||
-                            translatedLayoutInfo.contentInset != contentInset)
+            translatedLayoutInfo.contentOffset != contentOffset ||
+            translatedLayoutInfo.contentInset != contentInset)
         guard didChange else {
             return
         }
@@ -271,7 +284,7 @@ public class ConversationViewLayout: UICollectionViewLayout {
             dateHeaderItemLayouts.append(itemLayout)
         }
         // Sort the date headers.
-        dateHeaderItemLayouts.sort { (left, right) in
+        dateHeaderItemLayouts.sort { left, right in
             left.frame.y < right.frame.y
         }
         // The sticky date header is either:
@@ -306,14 +319,18 @@ public class ConversationViewLayout: UICollectionViewLayout {
         // present).
         while true {
             let lastTwoDateHeaders = dateHeaderItemLayouts.suffix(2)
-            guard lastTwoDateHeaders.count == 2,
-               let lastDateHeader = lastTwoDateHeaders.last,
-               let penultimateDateHeader = lastTwoDateHeaders.first else {
+            guard
+                lastTwoDateHeaders.count == 2,
+                let lastDateHeader = lastTwoDateHeaders.last,
+                let penultimateDateHeader = lastTwoDateHeaders.first
+            else {
                 // Not enough date headers to continue trimming.
                 break
             }
-            if isDateHeaderInOrBelowViewport(itemLayout: lastDateHeader),
-               isDateHeaderInOrBelowViewport(itemLayout: penultimateDateHeader) {
+            if
+                isDateHeaderInOrBelowViewport(itemLayout: lastDateHeader),
+                isDateHeaderInOrBelowViewport(itemLayout: penultimateDateHeader)
+            {
                 _ = dateHeaderItemLayouts.popLast()
                 continue
             } else {
@@ -339,9 +356,11 @@ public class ConversationViewLayout: UICollectionViewLayout {
                 } else {
                     // There's only one date header and it's above the viewport;
                     // it should stick.
-                    return StickyDateHeader(prevDateHeader: nil,
-                                            dateHeaderToStick: lastDateHeader,
-                                            nextDateHeader: nil)
+                    return StickyDateHeader(
+                        prevDateHeader: nil,
+                        dateHeaderToStick: lastDateHeader,
+                        nextDateHeader: nil,
+                    )
                 }
             }
             let prevDateHeader: ItemLayout? = dateHeaderItemLayouts[back: 2]
@@ -349,15 +368,19 @@ public class ConversationViewLayout: UICollectionViewLayout {
                 owsAssertDebug(!isDateHeaderInOrBelowViewport(itemLayout: penultimateDateHeader))
                 // We found the last date header just above the first date header that
                 // is in or below the viewport; it should stick.
-                return StickyDateHeader(prevDateHeader: prevDateHeader,
-                                        dateHeaderToStick: penultimateDateHeader,
-                                        nextDateHeader: lastDateHeader)
+                return StickyDateHeader(
+                    prevDateHeader: prevDateHeader,
+                    dateHeaderToStick: penultimateDateHeader,
+                    nextDateHeader: lastDateHeader,
+                )
             } else {
                 // There's last date header is above the viewport;
                 // it should stick.
-                return StickyDateHeader(prevDateHeader: prevDateHeader,
-                                        dateHeaderToStick: lastDateHeader,
-                                        nextDateHeader: nil)
+                return StickyDateHeader(
+                    prevDateHeader: prevDateHeader,
+                    dateHeaderToStick: lastDateHeader,
+                    nextDateHeader: nil,
+                )
             }
         }
         guard let dateHeaderToStick = findDateHeaderToStick() else {
@@ -404,11 +427,13 @@ public class ConversationViewLayout: UICollectionViewLayout {
                 layoutAttributes.zIndex = Self.zIndexStickyHeader
                 layoutAttributes.isStickyHeader = true
 
-                return ItemLayout(interactionUniqueId: stickyDateHeader.interactionUniqueId,
-                                  indexPath: indexPath,
-                                  layoutAttributes: layoutAttributes,
-                                  canBeUsedForContinuity: stickyDateHeader.canBeUsedForContinuity,
-                                  isStickyHeader: stickyDateHeader.isStickyHeader)
+                return ItemLayout(
+                    interactionUniqueId: stickyDateHeader.interactionUniqueId,
+                    indexPath: indexPath,
+                    layoutAttributes: layoutAttributes,
+                    canBeUsedForContinuity: stickyDateHeader.canBeUsedForContinuity,
+                    isStickyHeader: stickyDateHeader.isStickyHeader,
+                )
             }()
             updateItemLayout(stickyItemLayout)
         }
@@ -427,31 +452,37 @@ public class ConversationViewLayout: UICollectionViewLayout {
                 layoutAttributes.zIndex = Self.zIndexStickyHeader
                 layoutAttributes.isStickyHeader = true
 
-                return ItemLayout(interactionUniqueId: prevDateHeader.interactionUniqueId,
-                                  indexPath: indexPath,
-                                  layoutAttributes: layoutAttributes,
-                                  canBeUsedForContinuity: prevDateHeader.canBeUsedForContinuity,
-                                  isStickyHeader: prevDateHeader.isStickyHeader)
+                return ItemLayout(
+                    interactionUniqueId: prevDateHeader.interactionUniqueId,
+                    indexPath: indexPath,
+                    layoutAttributes: layoutAttributes,
+                    canBeUsedForContinuity: prevDateHeader.canBeUsedForContinuity,
+                    isStickyHeader: prevDateHeader.isStickyHeader,
+                )
             }()
             updateItemLayout(prevItemLayout)
         }
 
-        let adjustedLayoutInfo = LayoutInfo(viewWidth: layoutInfo.viewWidth,
-                                            contentSize: layoutInfo.contentSize,
-                                            layoutAttributesMap: layoutAttributesMap,
-                                            headerLayoutAttributes: layoutInfo.headerLayoutAttributes,
-                                            footerLayoutAttributes: layoutInfo.footerLayoutAttributes,
-                                            itemLayouts: itemLayouts,
-                                            renderStateId: layoutInfo.renderStateId)
+        let adjustedLayoutInfo = LayoutInfo(
+            viewWidth: layoutInfo.viewWidth,
+            contentSize: layoutInfo.contentSize,
+            layoutAttributesMap: layoutAttributesMap,
+            headerLayoutAttributes: layoutInfo.headerLayoutAttributes,
+            footerLayoutAttributes: layoutInfo.footerLayoutAttributes,
+            itemLayouts: itemLayouts,
+            renderStateId: layoutInfo.renderStateId,
+        )
         // Update the cache.
-        self.translatedLayoutInfo = TranslatedLayoutInfo(layoutInfo: adjustedLayoutInfo,
-                                                         collectionViewSize: collectionViewSize,
-                                                         contentOffset: contentOffset,
-                                                         contentInset: contentInset)
+        self.translatedLayoutInfo = TranslatedLayoutInfo(
+            layoutInfo: adjustedLayoutInfo,
+            collectionViewSize: collectionViewSize,
+            contentOffset: contentOffset,
+            contentInset: contentInset,
+        )
         return adjustedLayoutInfo
     }
 
-    public override class var layoutAttributesClass: AnyClass {
+    override public class var layoutAttributesClass: AnyClass {
         CVCollectionViewLayoutAttributes.self
     }
 
@@ -478,7 +509,7 @@ public class ConversationViewLayout: UICollectionViewLayout {
         invalidateLayout()
     }
 
-    public override func invalidateLayout() {
+    override public func invalidateLayout() {
         AssertIsOnMainThread()
 
         super.invalidateLayout()
@@ -488,7 +519,7 @@ public class ConversationViewLayout: UICollectionViewLayout {
         ensureState()
     }
 
-    public override func invalidateLayout(with context: UICollectionViewLayoutInvalidationContext) {
+    override public func invalidateLayout(with context: UICollectionViewLayoutInvalidationContext) {
         AssertIsOnMainThread()
 
         ensureState()
@@ -509,7 +540,7 @@ public class ConversationViewLayout: UICollectionViewLayout {
         currentLayoutInfo = nil
     }
 
-    public override func prepare() {
+    override public func prepare() {
         super.prepare()
 
         _ = ensureCurrentLayoutInfo()
@@ -527,27 +558,31 @@ public class ConversationViewLayout: UICollectionViewLayout {
         let layoutHeaderHeight: CGFloat
         let layoutFooterHeight: CGFloat
 
-        static func build(delegate: ConversationViewLayoutDelegate?,
-                          conversationStyle: ConversationStyle) -> State? {
-            guard let delegate = delegate else {
+        static func build(
+            delegate: ConversationViewLayoutDelegate?,
+            conversationStyle: ConversationStyle,
+        ) -> State? {
+            guard let delegate else {
                 return nil
             }
-            return State(conversationStyle: conversationStyle,
-                         renderStateId: delegate.renderStateId,
-                         layoutItems: delegate.layoutItems,
-                         layoutHeaderHeight: delegate.layoutHeaderHeight,
-                         layoutFooterHeight: delegate.layoutFooterHeight)
+            return State(
+                conversationStyle: conversationStyle,
+                renderStateId: delegate.renderStateId,
+                layoutItems: delegate.layoutItems,
+                layoutHeaderHeight: delegate.layoutHeaderHeight,
+                layoutFooterHeight: delegate.layoutFooterHeight,
+            )
         }
 
         // MARK: Equatable
 
-        static func == (lhs: State, rhs: State) -> Bool {
+        static func ==(lhs: State, rhs: State) -> Bool {
             // Comparing the layoutItems is expensive. We can avoid that by
             // comparing renderStateIds.
-            (lhs.conversationStyle == rhs.conversationStyle &&
-             lhs.renderStateId == rhs.renderStateId &&
-             lhs.layoutHeaderHeight == rhs.layoutHeaderHeight &&
-             lhs.layoutFooterHeight == rhs.layoutFooterHeight)
+            lhs.conversationStyle == rhs.conversationStyle &&
+                lhs.renderStateId == rhs.renderStateId &&
+                lhs.layoutHeaderHeight == rhs.layoutHeaderHeight &&
+                lhs.layoutFooterHeight == rhs.layoutFooterHeight
         }
     }
 
@@ -555,16 +590,18 @@ public class ConversationViewLayout: UICollectionViewLayout {
         AssertIsOnMainThread()
 
         func buildEmptyLayoutInfo() -> LayoutInfo {
-            return LayoutInfo(viewWidth: 0,
-                              contentSize: .zero,
-                              layoutAttributesMap: [:],
-                              headerLayoutAttributes: nil,
-                              footerLayoutAttributes: nil,
-                              itemLayouts: [],
-                              renderStateId: 0)
+            return LayoutInfo(
+                viewWidth: 0,
+                contentSize: .zero,
+                layoutAttributesMap: [:],
+                headerLayoutAttributes: nil,
+                footerLayoutAttributes: nil,
+                itemLayouts: [],
+                renderStateId: 0,
+            )
         }
 
-        guard let state = state else {
+        guard let state else {
             owsFailDebug("Missing state")
             return buildEmptyLayoutInfo()
         }
@@ -589,8 +626,10 @@ public class ConversationViewLayout: UICollectionViewLayout {
             // Do nothing.
         } else {
             let headerIndexPath = IndexPath(row: 0, section: 0)
-            let layoutAttributes = CVCollectionViewLayoutAttributes(forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
-                                                                    with: headerIndexPath)
+            let layoutAttributes = CVCollectionViewLayoutAttributes(
+                forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
+                with: headerIndexPath,
+            )
             layoutAttributes.frame = CGRect(x: 0, y: y, width: viewWidth, height: layoutHeaderHeight)
             headerLayoutAttributes = layoutAttributes
 
@@ -604,7 +643,7 @@ public class ConversationViewLayout: UICollectionViewLayout {
         var previousLayoutItem: ConversationViewLayoutItem?
         var itemLayouts = [ItemLayout]()
         for layoutItem in layoutItems {
-            if let previousLayoutItem = previousLayoutItem {
+            if let previousLayoutItem {
                 y += layoutItem.vSpacing(previousLayoutItem: previousLayoutItem)
             }
 
@@ -635,11 +674,13 @@ public class ConversationViewLayout: UICollectionViewLayout {
             row += 1
             previousLayoutItem = layoutItem
 
-            itemLayouts.append(ItemLayout(interactionUniqueId: layoutItem.interactionUniqueId,
-                                          indexPath: indexPath,
-                                          layoutAttributes: layoutAttributes,
-                                          canBeUsedForContinuity: layoutItem.canBeUsedForContinuity,
-                                          isStickyHeader: layoutItem.isDateHeader))
+            itemLayouts.append(ItemLayout(
+                interactionUniqueId: layoutItem.interactionUniqueId,
+                indexPath: indexPath,
+                layoutAttributes: layoutAttributes,
+                canBeUsedForContinuity: layoutItem.canBeUsedForContinuity,
+                isStickyHeader: layoutItem.isDateHeader,
+            ))
         }
 
         contentBottom += conversationStyle.contentMarginBottom
@@ -649,8 +690,10 @@ public class ConversationViewLayout: UICollectionViewLayout {
             if layoutItems.isEmpty || layoutFooterHeight <= 0 || headerLayoutAttributes?.indexPath == footerIndexPath {
                 // Do nothing.
             } else {
-                let layoutAttributes = CVCollectionViewLayoutAttributes(forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter,
-                                                                        with: footerIndexPath)
+                let layoutAttributes = CVCollectionViewLayoutAttributes(
+                    forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter,
+                    with: footerIndexPath,
+                )
 
                 layoutAttributes.frame = CGRect(x: 0, y: contentBottom, width: viewWidth, height: layoutFooterHeight)
                 footerLayoutAttributes = layoutAttributes
@@ -661,13 +704,15 @@ public class ConversationViewLayout: UICollectionViewLayout {
         let contentSize = CGSize(width: viewWidth, height: contentBottom)
         let renderStateId = state.renderStateId
 
-        return LayoutInfo(viewWidth: viewWidth,
-                          contentSize: contentSize,
-                          layoutAttributesMap: layoutAttributesMap,
-                          headerLayoutAttributes: headerLayoutAttributes,
-                          footerLayoutAttributes: footerLayoutAttributes,
-                          itemLayouts: itemLayouts,
-                          renderStateId: renderStateId)
+        return LayoutInfo(
+            viewWidth: viewWidth,
+            contentSize: contentSize,
+            layoutAttributesMap: layoutAttributesMap,
+            headerLayoutAttributes: headerLayoutAttributes,
+            footerLayoutAttributes: footerLayoutAttributes,
+            itemLayouts: itemLayouts,
+            renderStateId: renderStateId,
+        )
     }
 
     private static let zIndexDefault: Int = 1
@@ -675,7 +720,7 @@ public class ConversationViewLayout: UICollectionViewLayout {
 
     // MARK: - UICollectionViewLayout Impl.
 
-    public override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
+    override public func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
         AssertIsOnMainThread()
 
         // Return values from the "translated" layout info.
@@ -694,7 +739,7 @@ public class ConversationViewLayout: UICollectionViewLayout {
         return result.filter { $0.frame.intersects(rect) }
     }
 
-    public override func layoutAttributesForItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
+    override public func layoutAttributesForItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
         AssertIsOnMainThread()
 
         // Return values from the "translated" layout info.
@@ -702,23 +747,27 @@ public class ConversationViewLayout: UICollectionViewLayout {
         return layoutInfo.layoutAttributesForItem(at: indexPath, assertIfMissing: true)
     }
 
-    public override func layoutAttributesForSupplementaryView(ofKind elementKind: String,
-                                                              at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
+    override public func layoutAttributesForSupplementaryView(
+        ofKind elementKind: String,
+        at indexPath: IndexPath,
+    ) -> UICollectionViewLayoutAttributes? {
         AssertIsOnMainThread()
 
         // Return values from the "translated" layout info.
         let layoutInfo = ensureTranslatedLayoutInfo()
-        return layoutInfo.layoutAttributesForSupplementaryElement(ofKind: elementKind,
-                                                                  at: indexPath)
+        return layoutInfo.layoutAttributesForSupplementaryElement(
+            ofKind: elementKind,
+            at: indexPath,
+        )
     }
 
-    public override var collectionViewContentSize: CGSize {
+    override public var collectionViewContentSize: CGSize {
         AssertIsOnMainThread()
 
         return ensureCurrentLayoutInfo().contentSize
     }
 
-    public override func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool {
+    override public func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool {
         return true
     }
 
@@ -734,6 +783,7 @@ public class ConversationViewLayout: UICollectionViewLayout {
         case disabled
         case enabled(lastKnownDistanceFromBottom: CGFloat?)
     }
+
     private var delegateScrollContinuityMode: DelegateScrollContinuityMode = .disabled
 
     // Returns true during performBatchUpdates() or reloadData(). This returns
@@ -743,8 +793,10 @@ public class ConversationViewLayout: UICollectionViewLayout {
         isPerformingBatchUpdates || isReloadingData
     }
 
-    public func willPerformBatchUpdates(scrollContinuity: ScrollContinuity,
-                                        lastKnownDistanceFromBottom: CGFloat?) {
+    public func willPerformBatchUpdates(
+        scrollContinuity: ScrollContinuity,
+        lastKnownDistanceFromBottom: CGFloat?,
+    ) {
         AssertIsOnMainThread()
         owsAssertDebug(!isReloadingData)
         owsAssertDebug(!isPerformingBatchUpdates)
@@ -757,8 +809,12 @@ public class ConversationViewLayout: UICollectionViewLayout {
         case .none:
             break
         case .contentRelativeToViewport(let token, let isRelativeToTop):
-            if !applyContentOffsetAdjustmentIfNecessary(scrollContinuityToken: token,
-                                                        isRelativeToTop: isRelativeToTop) {
+            if
+                !applyContentOffsetAdjustmentIfNecessary(
+                    scrollContinuityToken: token,
+                    isRelativeToTop: isRelativeToTop,
+                )
+            {
                 delegateScrollContinuityMode = .enabled(lastKnownDistanceFromBottom: lastKnownDistanceFromBottom)
             }
         case .delegateScrollContinuity:
@@ -766,8 +822,10 @@ public class ConversationViewLayout: UICollectionViewLayout {
         }
     }
 
-    private func applyContentOffsetAdjustmentIfNecessary(scrollContinuityToken: CVScrollContinuityToken,
-                                                         isRelativeToTop: Bool) -> Bool {
+    private func applyContentOffsetAdjustmentIfNecessary(
+        scrollContinuityToken: CVScrollContinuityToken,
+        isRelativeToTop: Bool,
+    ) -> Bool {
 
         // When landing some CVC loads, we maintain scroll continuity by setting a
         // `contentOffsetAdjustment` on the UICollectionViewLayoutInvalidationContext
@@ -780,9 +838,13 @@ public class ConversationViewLayout: UICollectionViewLayout {
 
         // TODO: Capture a CVScrollContinuityToken before view transition,
         // orientation changes, etc.
-        guard let contentOffsetAdjustment = Self.invalidationContentOffsetAdjustment(scrollContinuityToken: scrollContinuityToken,
-                                                                                     layoutInfoAfterUpdate: layoutInfoAfterUpdate,
-                                                                                     isRelativeToTop: isRelativeToTop) else {
+        guard
+            let contentOffsetAdjustment = Self.invalidationContentOffsetAdjustment(
+                scrollContinuityToken: scrollContinuityToken,
+                layoutInfoAfterUpdate: layoutInfoAfterUpdate,
+                isRelativeToTop: isRelativeToTop,
+            )
+        else {
             return false
         }
         guard contentOffsetAdjustment != .zero else {
@@ -799,9 +861,11 @@ public class ConversationViewLayout: UICollectionViewLayout {
 
     // Try to determine the correct adjustment to `content offset` that will
     // ensure scroll continuity.
-    private static func invalidationContentOffsetAdjustment(scrollContinuityToken: CVScrollContinuityToken,
-                                                            layoutInfoAfterUpdate: LayoutInfo,
-                                                            isRelativeToTop: Bool) -> CGPoint? {
+    private static func invalidationContentOffsetAdjustment(
+        scrollContinuityToken: CVScrollContinuityToken,
+        layoutInfoAfterUpdate: LayoutInfo,
+        isRelativeToTop: Bool,
+    ) -> CGPoint? {
 
         let layoutInfoBeforeUpdate = scrollContinuityToken.layoutInfo
 
@@ -816,8 +880,10 @@ public class ConversationViewLayout: UICollectionViewLayout {
         let beforeItemLayoutMap = buildItemLayoutMap(layoutInfo: layoutInfoBeforeUpdate)
         let afterItemLayoutMap = buildItemLayoutMap(layoutInfo: layoutInfoAfterUpdate)
 
-        func calculateAdjustment(beforeItemLayout: ItemLayout,
-                                 afterItemLayout: ItemLayout) -> CGPoint {
+        func calculateAdjustment(
+            beforeItemLayout: ItemLayout,
+            afterItemLayout: ItemLayout,
+        ) -> CGPoint {
             let frameBeforeUpdate = beforeItemLayout.frame
             let frameAfterUpdate = afterItemLayout.frame
             let offset = frameAfterUpdate.origin - frameBeforeUpdate.origin
@@ -830,29 +896,35 @@ public class ConversationViewLayout: UICollectionViewLayout {
         // Honor the scroll continuity bias. If we prefer continuity with regard
         // to the bottom of the viewport, start with the last items.
         let visibleUniqueIds = (isRelativeToTop
-                                    ? scrollContinuityToken.visibleUniqueIds
-                                    : scrollContinuityToken.visibleUniqueIds.reversed())
+            ? scrollContinuityToken.visibleUniqueIds
+            : scrollContinuityToken.visibleUniqueIds.reversed())
         for visibleUniqueId in visibleUniqueIds {
-            guard let beforeItemLayout = beforeItemLayoutMap[visibleUniqueId],
-                  let afterItemLayout = afterItemLayoutMap[visibleUniqueId] else {
+            guard
+                let beforeItemLayout = beforeItemLayoutMap[visibleUniqueId],
+                let afterItemLayout = afterItemLayoutMap[visibleUniqueId]
+            else {
                 continue
             }
-            return calculateAdjustment(beforeItemLayout: beforeItemLayout,
-                                       afterItemLayout: afterItemLayout)
+            return calculateAdjustment(
+                beforeItemLayout: beforeItemLayout,
+                afterItemLayout: afterItemLayout,
+            )
         }
 
         // Fail over to trying to use any interaction in the before & after
         // load windows.  Again, honor the scroll continuity bias.
         let afterItemLayouts = (isRelativeToTop
-                                    ? layoutInfoAfterUpdate.itemLayouts
-                                    : layoutInfoAfterUpdate.itemLayouts.reversed())
+            ? layoutInfoAfterUpdate.itemLayouts
+            : layoutInfoAfterUpdate.itemLayouts.reversed())
 
         for afterItemLayout in afterItemLayouts {
             guard let beforeItemLayout = beforeItemLayoutMap[afterItemLayout.interactionUniqueId] else {
                 continue
             }
-            return calculateAdjustment(beforeItemLayout: beforeItemLayout,
-                                       afterItemLayout: afterItemLayout)
+            return calculateAdjustment(
+                beforeItemLayout: beforeItemLayout,
+                afterItemLayout: afterItemLayout,
+            )
         }
 
         return nil
@@ -901,16 +973,20 @@ public class ConversationViewLayout: UICollectionViewLayout {
             }
             let visibleIndexPaths = collectionView.indexPathsForVisibleItems
             return visibleIndexPaths.compactMap { indexPath -> String? in
-                guard let layoutInfo = layoutInfo.itemLayouts[safe: indexPath.row],
-                      layoutInfo.canBeUsedForContinuity else {
+                guard
+                    let layoutInfo = layoutInfo.itemLayouts[safe: indexPath.row],
+                    layoutInfo.canBeUsedForContinuity
+                else {
                     return nil
                 }
                 return layoutInfo.interactionUniqueId
             }
         }()
-        return CVScrollContinuityToken(layoutInfo: layoutInfo,
-                                       contentOffset: contentOffset,
-                                       visibleUniqueIds: visibleUniqueIds)
+        return CVScrollContinuityToken(
+            layoutInfo: layoutInfo,
+            contentOffset: contentOffset,
+            visibleUniqueIds: visibleUniqueIds,
+        )
     }
 
     // Some interactions shift around and cannot be reliably used as
@@ -946,28 +1022,38 @@ public class ConversationViewLayout: UICollectionViewLayout {
     // MARK: -
 
     // A layout can return the content offset to be applied during transition or update animations.
-    public override func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint,
-                                             withScrollingVelocity velocity: CGPoint) -> CGPoint {
+    override public func targetContentOffset(
+        forProposedContentOffset proposedContentOffset: CGPoint,
+        withScrollingVelocity velocity: CGPoint,
+    ) -> CGPoint {
 
-        targetContentOffset(proposedContentOffset: proposedContentOffset,
-                            withScrollingVelocity: velocity)
+        targetContentOffset(
+            proposedContentOffset: proposedContentOffset,
+            withScrollingVelocity: velocity,
+        )
     }
 
     // A layout can return the content offset to be applied during transition or update animations.
-    public override func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint) -> CGPoint {
+    override public func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint) -> CGPoint {
 
-        targetContentOffset(proposedContentOffset: proposedContentOffset,
-                            withScrollingVelocity: nil)
+        targetContentOffset(
+            proposedContentOffset: proposedContentOffset,
+            withScrollingVelocity: nil,
+        )
     }
 
-    private func targetContentOffset(proposedContentOffset: CGPoint,
-                                     withScrollingVelocity velocity: CGPoint?) -> CGPoint {
+    private func targetContentOffset(
+        proposedContentOffset: CGPoint,
+        withScrollingVelocity velocity: CGPoint?,
+    ) -> CGPoint {
 
-        guard let delegate = delegate else {
+        guard let delegate else {
             owsFailDebug("Missing delegate.")
-            if let velocity = velocity {
-                return super.targetContentOffset(forProposedContentOffset: proposedContentOffset,
-                                                 withScrollingVelocity: velocity)
+            if let velocity {
+                return super.targetContentOffset(
+                    forProposedContentOffset: proposedContentOffset,
+                    withScrollingVelocity: velocity,
+                )
             } else {
                 return super.targetContentOffset(forProposedContentOffset: proposedContentOffset)
             }
@@ -984,8 +1070,10 @@ public class ConversationViewLayout: UICollectionViewLayout {
             break
         case .enabled(let lastKnownDistanceFromBottom):
             if let conversationViewController = delegate.conversationViewController {
-                let targetContentOffset = conversationViewController.targetContentOffset(forProposedContentOffset: proposedContentOffset,
-                                                                                         lastKnownDistanceFromBottom: lastKnownDistanceFromBottom)
+                let targetContentOffset = conversationViewController.targetContentOffset(
+                    forProposedContentOffset: proposedContentOffset,
+                    lastKnownDistanceFromBottom: lastKnownDistanceFromBottom,
+                )
                 return targetContentOffset
             }
         }
@@ -993,7 +1081,7 @@ public class ConversationViewLayout: UICollectionViewLayout {
         return proposedContentOffset
     }
 
-    public override var debugDescription: String {
+    override public var debugDescription: String {
         ensureCurrentLayoutInfo().debugDescription
     }
 }
@@ -1006,9 +1094,11 @@ public class CVScrollContinuityToken: NSObject {
     fileprivate let contentOffset: CGPoint
     fileprivate let visibleUniqueIds: [String]
 
-    fileprivate init(layoutInfo: ConversationViewLayout.LayoutInfo,
-                     contentOffset: CGPoint,
-                     visibleUniqueIds: [String]) {
+    fileprivate init(
+        layoutInfo: ConversationViewLayout.LayoutInfo,
+        contentOffset: CGPoint,
+        visibleUniqueIds: [String],
+    ) {
         self.layoutInfo = layoutInfo
         self.contentOffset = contentOffset
         self.visibleUniqueIds = visibleUniqueIds
@@ -1020,13 +1110,13 @@ public class CVScrollContinuityToken: NSObject {
 public class CVCollectionViewLayoutAttributes: UICollectionViewLayoutAttributes {
     public var isStickyHeader: Bool = false
 
-    public override func copy(with zone: NSZone? = nil) -> Any {
+    override public func copy(with zone: NSZone? = nil) -> Any {
         let copy = super.copy(with: zone) as! CVCollectionViewLayoutAttributes
         copy.isStickyHeader = isStickyHeader
         return copy
     }
 
-    public override func isEqual(_ object: Any?) -> Bool {
+    override public func isEqual(_ object: Any?) -> Bool {
         guard let object = object as? CVCollectionViewLayoutAttributes else {
             return false
         }

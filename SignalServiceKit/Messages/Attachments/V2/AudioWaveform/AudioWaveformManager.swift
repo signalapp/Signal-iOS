@@ -15,12 +15,12 @@ public protocol AudioWaveformManager {
 
     func audioWaveform(
         forAttachment attachment: AttachmentStream,
-        highPriority: Bool
+        highPriority: Bool,
     ) -> Task<AudioWaveform, Error>
 
     func audioWaveform(
         forAudioPath audioPath: String,
-        waveformPath: String
+        waveformPath: String,
     ) -> Task<AudioWaveform, Error>
 
     func audioWaveform(
@@ -28,13 +28,13 @@ public protocol AudioWaveformManager {
         attachmentKey: AttachmentKey,
         plaintextDataLength: UInt32,
         mimeType: String,
-        outputWaveformPath: String
+        outputWaveformPath: String,
     ) async throws
 
     /// No caching, no enqueueing.
     /// Generates an audio waveform synchronously, blocking on file I/O operations.
     func audioWaveformSync(
-        forAudioPath audioPath: String
+        forAudioPath audioPath: String,
     ) throws -> AudioWaveform
 
     /// No caching, no enqueueing.
@@ -43,6 +43,6 @@ public protocol AudioWaveformManager {
         forEncryptedAudioFileAtPath filePath: String,
         attachmentKey: AttachmentKey,
         plaintextDataLength: UInt32,
-        mimeType: String
+        mimeType: String,
     ) throws -> AudioWaveform
 }

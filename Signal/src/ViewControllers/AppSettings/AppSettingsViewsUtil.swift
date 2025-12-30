@@ -14,7 +14,7 @@ public class AppSettingsViewsUtil {
     }
 
     public class func loadingTableItem() -> OWSTableItem {
-        OWSTableItem.init(
+        OWSTableItem(
             customCellBlock: {
                 let cell = newCell()
 
@@ -33,7 +33,7 @@ public class AppSettingsViewsUtil {
 
                 return cell
             },
-            actionBlock: {}
+            actionBlock: {},
         )
     }
 }

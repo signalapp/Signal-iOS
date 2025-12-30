@@ -13,7 +13,7 @@ public final class Aes256Key: NSObject, NSSecureCoding {
     public let keyData: Data
 
     /// Generates a new secure random key.
-    public override init() {
+    override public init() {
         self.keyData = Randomness.generateRandomBytes(Self.keyByteLength)
     }
 
@@ -59,7 +59,7 @@ public final class Aes256Key: NSObject, NSSecureCoding {
 
     // MARK: Equatable
 
-    public override func isEqual(_ object: Any?) -> Bool {
+    override public func isEqual(_ object: Any?) -> Bool {
         guard let otherKey = object as? Aes256Key else {
             return false
         }
@@ -69,7 +69,7 @@ public final class Aes256Key: NSObject, NSSecureCoding {
 
     // MARK: Hashable
 
-    public override var hash: Int {
+    override public var hash: Int {
         return (self.keyData as NSData).hash
     }
 }

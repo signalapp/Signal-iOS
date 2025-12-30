@@ -15,7 +15,7 @@ public enum TextFieldHelper {
         replacementString: String,
         maxByteCount: Int? = nil,
         maxUnicodeScalarCount: Int? = nil,
-        maxGlyphCount: Int? = nil
+        maxGlyphCount: Int? = nil,
     ) -> Bool {
         let (shouldChange, changedString) = TextHelper.shouldChangeCharactersInRange(
             with: textField.text,
@@ -23,10 +23,10 @@ public enum TextFieldHelper {
             replacementString: replacementString,
             maxByteCount: maxByteCount,
             maxUnicodeScalarCount: maxUnicodeScalarCount,
-            maxGlyphCount: maxGlyphCount
+            maxGlyphCount: maxGlyphCount,
         )
 
-        if let changedString = changedString {
+        if let changedString {
             owsAssertDebug(!shouldChange)
             textField.text = changedString
         }
@@ -43,17 +43,17 @@ public enum TextViewHelper {
         shouldChangeTextIn range: NSRange,
         replacementText: String,
         maxByteCount: Int? = nil,
-        maxGlyphCount: Int? = nil
+        maxGlyphCount: Int? = nil,
     ) -> Bool {
         let (shouldChange, changedString) = TextHelper.shouldChangeCharactersInRange(
             with: textView.text,
             editingRange: range,
             replacementString: replacementText,
             maxByteCount: maxByteCount,
-            maxGlyphCount: maxGlyphCount
+            maxGlyphCount: maxGlyphCount,
         )
 
-        if let changedString = changedString {
+        if let changedString {
             owsAssertDebug(!shouldChange)
             textView.text = changedString
             textView.delegate?.textViewDidChange?(textView)
@@ -67,17 +67,17 @@ public enum TextViewHelper {
         shouldChangeTextIn range: NSRange,
         replacementText: String,
         maxByteCount: Int? = nil,
-        maxGlyphCount: Int? = nil
+        maxGlyphCount: Int? = nil,
     ) -> Bool {
         let (shouldChange, changedString) = TextHelper.shouldChangeCharactersInRange(
             with: textView.text,
             editingRange: range,
             replacementString: replacementText,
             maxByteCount: maxByteCount,
-            maxGlyphCount: maxGlyphCount
+            maxGlyphCount: maxGlyphCount,
         )
 
-        if let changedString = changedString {
+        if let changedString {
             owsAssertDebug(!shouldChange)
             textView.text = changedString
         }
@@ -93,13 +93,13 @@ public enum TextHelper {
         replacementString: String,
         maxByteCount: Int? = nil,
         maxUnicodeScalarCount: Int? = nil,
-        maxGlyphCount: Int? = nil
+        maxGlyphCount: Int? = nil,
     ) -> (shouldChange: Bool, changedString: String?) {
         // At least one must be set.
         owsAssertDebug(maxByteCount != nil || maxGlyphCount != nil || maxUnicodeScalarCount != nil)
 
         func hasValidLength(_ string: String) -> Bool {
-            if let maxByteCount = maxByteCount {
+            if let maxByteCount {
                 let byteCount = string.utf8.count
                 guard byteCount <= maxByteCount else {
                     return false
@@ -111,7 +111,7 @@ public enum TextHelper {
                     return false
                 }
             }
-            if let maxGlyphCount = maxGlyphCount {
+            if let maxGlyphCount {
                 let glyphCount = string.glyphCount
                 guard glyphCount <= maxGlyphCount else {
                     return false
@@ -130,8 +130,10 @@ public enum TextHelper {
             .replacingCharacters(in: editingRange, with: replacementString)
         let filteredForDisplay = notFilteredForDisplay.filterStringForDisplay()
 
-        if hasValidLength(notFilteredForDisplay),
-           hasValidLength(filteredForDisplay) {
+        if
+            hasValidLength(notFilteredForDisplay),
+            hasValidLength(filteredForDisplay)
+        {
 
             // Only allow the textfield to insert the replacement
             // if _both_ it's filtered and unfiltered length are

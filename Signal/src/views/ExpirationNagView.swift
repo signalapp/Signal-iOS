@@ -19,7 +19,7 @@ class ExpirationNagView: ReminderView {
         dateProvider: @escaping DateProvider,
         appExpiry: AppExpiry,
         osExpiry: OsExpiry,
-        device: UpgradableDevice
+        device: UpgradableDevice,
     ) {
         self.dateProvider = dateProvider
         self.appExpiry = appExpiry
@@ -97,11 +97,11 @@ class ExpirationNagView: ReminderView {
         let now = dateProvider()
         lazy var daysUntilAppExpiry = DateUtil.daysFrom(
             firstDate: now,
-            toSecondDate: appExpiry.expirationDate
+            toSecondDate: appExpiry.expirationDate,
         )
 
         let osExpirationDate: Date = (
-            device.iosMajorVersion < osExpiry.minimumIosMajorVersion ? osExpiry.enforcedAfter : .distantFuture
+            device.iosMajorVersion < osExpiry.minimumIosMajorVersion ? osExpiry.enforcedAfter : .distantFuture,
         )
 
         // If the OS is expired, say that.
@@ -131,18 +131,18 @@ class ExpirationNagView: ReminderView {
 
 // MARK: - Strings
 
-fileprivate extension String {
+private extension String {
     static var appExpired: String {
         return OWSLocalizedString(
             "EXPIRATION_ERROR",
-            comment: "Label notifying the user that the app has expired."
+            comment: "Label notifying the user that the app has expired.",
         )
     }
 
     static var appExpiresToday: String {
         return OWSLocalizedString(
             "EXPIRATION_WARNING_TODAY",
-            comment: "Label warning the user that the app will expire today."
+            comment: "Label warning the user that the app will expire today.",
         )
     }
 
@@ -150,16 +150,16 @@ fileprivate extension String {
         return String(
             format: OWSLocalizedString(
                 "EXPIRATION_WARNING_SOON",
-                comment: "Label warning the user that the app will expire soon. Embeds {{date}}."
+                comment: "Label warning the user that the app will expire soon. Embeds {{date}}.",
             ),
-            formatDate(date)
+            formatDate(date),
         )
     }
 
     static var expiredActionTitle: String {
         return OWSLocalizedString(
             "EXPIRATION_WARNING_ACTION_TITLE",
-            comment: "If the user's app is too old, they'll be shown a warning asking them to upgrade. This is the text on the warning, and tapping it will open the App Store page for Signal."
+            comment: "If the user's app is too old, they'll be shown a warning asking them to upgrade. This is the text on the warning, and tapping it will open the App Store page for Signal.",
         )
     }
 
@@ -167,9 +167,9 @@ fileprivate extension String {
         return String(
             format: OWSLocalizedString(
                 "OS_SOON_TO_EXPIRE_AND_DEVICE_WILL_BE_STUCK_FORMAT",
-                comment: "Signal doesn't support old versions of iOS and shows a warning if you're on an old version that will soon lose support. This is the text on that warning when users can't upgrade iOS without getting a new device. Embeds {{expiration date}}."
+                comment: "Signal doesn't support old versions of iOS and shows a warning if you're on an old version that will soon lose support. This is the text on that warning when users can't upgrade iOS without getting a new device. Embeds {{expiration date}}.",
             ),
-            formatDate(expirationDate)
+            formatDate(expirationDate),
         )
     }
 
@@ -177,16 +177,16 @@ fileprivate extension String {
         return String(
             format: OWSLocalizedString(
                 "OS_SOON_TO_EXPIRE_AND_CAN_UPGRADE_OS_FORMAT",
-                comment: "Signal doesn't support old versions of iOS and shows a warning if you're an old version that will soon lose support. Some users can upgrade their device to a newer version of iOS to continue using Signal. If that's the case, they'll be shown this text. Embeds {{expiration date}}."
+                comment: "Signal doesn't support old versions of iOS and shows a warning if you're an old version that will soon lose support. Some users can upgrade their device to a newer version of iOS to continue using Signal. If that's the case, they'll be shown this text. Embeds {{expiration date}}.",
             ),
-            formatDate(expirationDate)
+            formatDate(expirationDate),
         )
     }
 
     static var upgradeOsActionTitle: String {
         return OWSLocalizedString(
             "OS_SOON_TO_EXPIRE_ACTION_TITLE",
-            comment: "Signal doesn't support old versions of iOS and shows a warning if you're on an old version. Some users can upgrade their device to a newer version of iOS to continue using Signal. If that's the case, they'll be shown this action, and tapping it will open device update instructions."
+            comment: "Signal doesn't support old versions of iOS and shows a warning if you're on an old version. Some users can upgrade their device to a newer version of iOS to continue using Signal. If that's the case, they'll be shown this action, and tapping it will open device update instructions.",
         )
     }
 
@@ -194,14 +194,14 @@ fileprivate extension String {
         return OWSLocalizedString(
             "OS_EXPIRED_AND_DEVICE_IS_STUCK",
             value: "Signal no longer works on this device. To use Signal again, switch to a newer device.",
-            comment: "Signal doesn't support old devices. If that's the case, they'll be shown this action, and tapping it will open information about Signal's minimum supported operating systems."
+            comment: "Signal doesn't support old devices. If that's the case, they'll be shown this action, and tapping it will open information about Signal's minimum supported operating systems.",
         )
     }
 
     static var osExpiredAndCanUpgradeOs: String {
         return OWSLocalizedString(
             "OS_EXPIRED_AND_CAN_UPGRADE_OS",
-            comment: "Signal doesn't support old versions of iOS and shows a warning if you're on unsupported version. Some users can upgrade their device to a newer version of iOS to continue using Signal. If that's the case, they'll be shown this text."
+            comment: "Signal doesn't support old versions of iOS and shows a warning if you're on unsupported version. Some users can upgrade their device to a newer version of iOS to continue using Signal. If that's the case, they'll be shown this text.",
         )
     }
 
@@ -212,7 +212,7 @@ fileprivate extension String {
 
 // MARK: - URLs
 
-fileprivate extension URL {
+private extension URL {
     static var appStoreUrl: URL {
         return TSConstants.appStoreUrl
     }

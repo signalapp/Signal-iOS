@@ -15,22 +15,22 @@ class OWSURLBuilderUtilTest: XCTestCase {
             URL(string: "https://e.f.com")!,
             OWSURLBuilderUtil.joinUrl(
                 urlString: "https://e.f.com",
-                baseUrl: nil
-            )!
+                baseUrl: nil,
+            )!,
         )
         XCTAssertEqual(
             URL(string: "https://e.f.com/")!,
             OWSURLBuilderUtil.joinUrl(
                 urlString: "https://e.f.com/",
-                baseUrl: nil
-            )!
+                baseUrl: nil,
+            )!,
         )
         XCTAssertEqual(
             URL(string: "https://e.f.com/a/b/c")!,
             OWSURLBuilderUtil.joinUrl(
                 urlString: "https://e.f.com/a/b/c",
-                baseUrl: nil
-            )!
+                baseUrl: nil,
+            )!,
         )
 
         // * baseUrl with just host, no trailing /.
@@ -38,29 +38,29 @@ class OWSURLBuilderUtilTest: XCTestCase {
             URL(string: "https://e.f.com/a/b/c")!,
             OWSURLBuilderUtil.joinUrl(
                 urlString: "a/b/c",
-                baseUrl: URL(string: "https://e.f.com")
-            )
+                baseUrl: URL(string: "https://e.f.com"),
+            ),
         )
         XCTAssertEqual(
             URL(string: "https://e.f.com/a/b/c/")!,
             OWSURLBuilderUtil.joinUrl(
                 urlString: "a/b/c/",
-                baseUrl: URL(string: "https://e.f.com")
-            )
+                baseUrl: URL(string: "https://e.f.com"),
+            ),
         )
         XCTAssertEqual(
             URL(string: "https://e.f.com/a/b/c")!,
             OWSURLBuilderUtil.joinUrl(
                 urlString: "/a/b/c",
-                baseUrl: URL(string: "https://e.f.com")
-            )
+                baseUrl: URL(string: "https://e.f.com"),
+            ),
         )
         XCTAssertEqual(
             URL(string: "https://e.f.com/a/b/c")!,
             OWSURLBuilderUtil.joinUrl(
                 urlString: "http://g.h.com/a/b/c",
-                baseUrl: URL(string: "https://e.f.com")
-            )
+                baseUrl: URL(string: "https://e.f.com"),
+            ),
         )
 
         // * baseUrl with host & trailing /.
@@ -68,29 +68,29 @@ class OWSURLBuilderUtilTest: XCTestCase {
             URL(string: "https://e.f.com/a/b/c")!,
             OWSURLBuilderUtil.joinUrl(
                 urlString: "a/b/c",
-                baseUrl: URL(string: "https://e.f.com/")
-            )
+                baseUrl: URL(string: "https://e.f.com/"),
+            ),
         )
         XCTAssertEqual(
             URL(string: "https://e.f.com/a/b/c/")!,
             OWSURLBuilderUtil.joinUrl(
                 urlString: "a/b/c/",
-                baseUrl: URL(string: "https://e.f.com/")
-            )
+                baseUrl: URL(string: "https://e.f.com/"),
+            ),
         )
         XCTAssertEqual(
             URL(string: "https://e.f.com/a/b/c")!,
             OWSURLBuilderUtil.joinUrl(
                 urlString: "/a/b/c",
-                baseUrl: URL(string: "https://e.f.com/")
-            )
+                baseUrl: URL(string: "https://e.f.com/"),
+            ),
         )
         XCTAssertEqual(
             URL(string: "https://e.f.com/a/b/c")!,
             OWSURLBuilderUtil.joinUrl(
                 urlString: "http://g.h.com/a/b/c",
-                baseUrl: URL(string: "https://e.f.com/")
-            )
+                baseUrl: URL(string: "https://e.f.com/"),
+            ),
         )
 
         // * baseUrl with host and path, no trailing /.
@@ -98,29 +98,29 @@ class OWSURLBuilderUtilTest: XCTestCase {
             URL(string: "https://e.f.com/x/a/b/c")!,
             OWSURLBuilderUtil.joinUrl(
                 urlString: "a/b/c",
-                baseUrl: URL(string: "https://e.f.com/x")
-            )
+                baseUrl: URL(string: "https://e.f.com/x"),
+            ),
         )
         XCTAssertEqual(
             URL(string: "https://e.f.com/x/a/b/c/")!,
             OWSURLBuilderUtil.joinUrl(
                 urlString: "a/b/c/",
-                baseUrl: URL(string: "https://e.f.com/x")
-            )
+                baseUrl: URL(string: "https://e.f.com/x"),
+            ),
         )
         XCTAssertEqual(
             URL(string: "https://e.f.com/x/a/b/c")!,
             OWSURLBuilderUtil.joinUrl(
                 urlString: "/a/b/c",
-                baseUrl: URL(string: "https://e.f.com/x")
-            )
+                baseUrl: URL(string: "https://e.f.com/x"),
+            ),
         )
         XCTAssertEqual(
             URL(string: "https://e.f.com/x/a/b/c")!,
             OWSURLBuilderUtil.joinUrl(
                 urlString: "http://g.h.com/a/b/c",
-                baseUrl: URL(string: "https://e.f.com/x")
-            )
+                baseUrl: URL(string: "https://e.f.com/x"),
+            ),
         )
 
         // * baseUrl with host and path & trailing /.
@@ -128,29 +128,29 @@ class OWSURLBuilderUtilTest: XCTestCase {
             URL(string: "https://e.f.com/x/a/b/c")!,
             OWSURLBuilderUtil.joinUrl(
                 urlString: "a/b/c",
-                baseUrl: URL(string: "https://e.f.com/x/")
-            )
+                baseUrl: URL(string: "https://e.f.com/x/"),
+            ),
         )
         XCTAssertEqual(
             URL(string: "https://e.f.com/x/a/b/c/")!,
             OWSURLBuilderUtil.joinUrl(
                 urlString: "a/b/c/",
-                baseUrl: URL(string: "https://e.f.com/x/")
-            )
+                baseUrl: URL(string: "https://e.f.com/x/"),
+            ),
         )
         XCTAssertEqual(
             URL(string: "https://e.f.com/x/a/b/c")!,
             OWSURLBuilderUtil.joinUrl(
                 urlString: "/a/b/c",
-                baseUrl: URL(string: "https://e.f.com/x/")
-            )
+                baseUrl: URL(string: "https://e.f.com/x/"),
+            ),
         )
         XCTAssertEqual(
             URL(string: "https://e.f.com/x/a/b/c")!,
             OWSURLBuilderUtil.joinUrl(
                 urlString: "http://g.h.com/a/b/c",
-                baseUrl: URL(string: "https://e.f.com/x/")
-            )
+                baseUrl: URL(string: "https://e.f.com/x/"),
+            ),
         )
 
         // Querystring
@@ -158,22 +158,22 @@ class OWSURLBuilderUtilTest: XCTestCase {
             URL(string: "https://e.f.com/x/a/b/c?i=j&k=l")!,
             OWSURLBuilderUtil.joinUrl(
                 urlString: "http://g.h.com/a/b/c?i=j&k=l",
-                baseUrl: URL(string: "https://e.f.com/x/")
-            )
+                baseUrl: URL(string: "https://e.f.com/x/"),
+            ),
         )
         XCTAssertEqual(
             URL(string: "https://e.f.com/x/a/b/c?i=j&k=l")!,
             OWSURLBuilderUtil.joinUrl(
                 urlString: "http://g.h.com/a/b/c?i=j&k=l",
-                baseUrl: URL(string: "https://e.f.com/x/?m=m")
-            )
+                baseUrl: URL(string: "https://e.f.com/x/?m=m"),
+            ),
         )
         XCTAssertEqual(
             URL(string: "https://e.f.com/x/a/b/c")!,
             OWSURLBuilderUtil.joinUrl(
                 urlString: "http://g.h.com/a/b/c",
-                baseUrl: URL(string: "https://e.f.com/x/?m=m")
-            )
+                baseUrl: URL(string: "https://e.f.com/x/?m=m"),
+            ),
         )
 
         // Fragment
@@ -181,22 +181,22 @@ class OWSURLBuilderUtilTest: XCTestCase {
             URL(string: "https://e.f.com/x/a/b/c#ooo")!,
             OWSURLBuilderUtil.joinUrl(
                 urlString: "http://g.h.com/a/b/c#ooo",
-                baseUrl: URL(string: "https://e.f.com/x/")
-            )
+                baseUrl: URL(string: "https://e.f.com/x/"),
+            ),
         )
         XCTAssertEqual(
             URL(string: "https://e.f.com/x/a/b/c#ooo")!,
             OWSURLBuilderUtil.joinUrl(
                 urlString: "http://g.h.com/a/b/c#ooo",
-                baseUrl: URL(string: "https://e.f.com/x/#ppp")
-            )
+                baseUrl: URL(string: "https://e.f.com/x/#ppp"),
+            ),
         )
         XCTAssertEqual(
             URL(string: "https://e.f.com/x/a/b/c")!,
             OWSURLBuilderUtil.joinUrl(
                 urlString: "http://g.h.com/a/b/c",
-                baseUrl: URL(string: "https://e.f.com/x/#ppp")
-            )
+                baseUrl: URL(string: "https://e.f.com/x/#ppp"),
+            ),
         )
 
         // Override scheme
@@ -205,16 +205,16 @@ class OWSURLBuilderUtilTest: XCTestCase {
             OWSURLBuilderUtil.joinUrl(
                 urlString: "http://e.f.com/a/b/c?d=e#f",
                 overrideUrlScheme: "wss",
-                baseUrl: nil
-            )
+                baseUrl: nil,
+            ),
         )
         XCTAssertEqual(
             URL(string: "wss://g.h.com/x/a/b/c?d=e#f")!,
             OWSURLBuilderUtil.joinUrl(
                 urlString: "http://e.f.com/a/b/c?d=e#f",
                 overrideUrlScheme: "wss",
-                baseUrl: URL(string: "https://g.h.com/x")!
-            )
+                baseUrl: URL(string: "https://g.h.com/x")!,
+            ),
         )
     }
 }

@@ -12,14 +12,14 @@ public protocol AttachmentUploadStore {
     func markUploadedToTransitTier(
         attachmentStream: AttachmentStream,
         info: Attachment.TransitTierInfo,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws
 
     /// Mark the attachment's transit tier upload as expired (wipe its transit tier info).
     func markTransitTierUploadExpired(
         attachment: Attachment,
         info: Attachment.TransitTierInfo,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws
 
     /// Mark the attachment as having been uploaded to the media tier.
@@ -27,14 +27,14 @@ public protocol AttachmentUploadStore {
         attachment: Attachment,
         mediaTierInfo: Attachment.MediaTierInfo,
         mediaName: String,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws
 
     /// Mark the attachment as deleted and/or not uploaded to media tier,
     /// wiping media tier info if set.
     func markMediaTierUploadExpired(
         attachment: Attachment,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws
 
     /// Mark the attachment thumbnail as having been uploaded to the media tier.
@@ -42,30 +42,30 @@ public protocol AttachmentUploadStore {
         attachment: Attachment,
         thumbnailMediaTierInfo: Attachment.ThumbnailMediaTierInfo,
         mediaName: String,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws
 
     /// Mark the attachment's thumbnail as deleted and/or not uploaded to media tier,
     /// wiping media tier info if set.
     func markThumbnailMediaTierUploadExpired(
         attachment: Attachment,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws
 
     func upsert(
         record: AttachmentUploadRecord,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws
 
     func removeRecord(
         for attachmentId: Attachment.IDType,
         sourceType: AttachmentUploadRecord.SourceType,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws
 
     func fetchAttachmentUploadRecord(
         for attachmentId: Attachment.IDType,
         sourceType: AttachmentUploadRecord.SourceType,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> AttachmentUploadRecord?
 }

@@ -33,7 +33,7 @@ public struct InteractionSnapshotIdentifier: Equatable, Hashable {
 
     // Not strictly an interaction, but can contain spoilers.
     public static func fromStoryMessage(_ storyMessage: StoryMessage) -> Self {
-        return  .init(timestamp: storyMessage.timestamp, authorAci: storyMessage.authorAci)
+        return .init(timestamp: storyMessage.timestamp, authorAci: storyMessage.authorAci)
     }
 }
 
@@ -46,14 +46,14 @@ public class SpoilerRevealState: NSObject {
     /// Returns the set of IDs in the ordered list of spoiler ranges for a given message that
     /// should be revealed.
     public func revealedSpoilerIds(
-        interactionIdentifier: InteractionSnapshotIdentifier
+        interactionIdentifier: InteractionSnapshotIdentifier,
     ) -> Set<StyleIdType> {
         return revealedSpoilerIdsByMessage[interactionIdentifier] ?? []
     }
 
     public func setSpoilerRevealed(
         withID id: StyleIdType,
-        interactionIdentifier: InteractionSnapshotIdentifier
+        interactionIdentifier: InteractionSnapshotIdentifier,
     ) {
         var revealedIds = revealedSpoilerIdsByMessage[interactionIdentifier] ?? Set()
         revealedIds.insert(id)

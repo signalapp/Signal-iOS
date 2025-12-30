@@ -37,7 +37,7 @@ public class DataSourcePath {
     }
 
     deinit {
-        if ownership == .owned && !isConsumed.get() {
+        if ownership == .owned, !isConsumed.get() {
             do {
                 try OWSFileSystem.deleteFileIfExists(url: fileUrl)
             } catch {

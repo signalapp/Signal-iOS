@@ -23,7 +23,7 @@ public class ScreenLock: NSObject {
         15 * .minute,
         30 * .minute,
         1 * .hour,
-        0
+        0,
     ]
 
     public static let ScreenLockDidChange = Notification.Name("ScreenLockDidChange")
@@ -35,7 +35,7 @@ public class ScreenLock: NSObject {
 
     public static let shared = ScreenLock()
 
-    private override init() {
+    override private init() {
         super.init()
 
         SwiftSingletons.register(self)
@@ -59,7 +59,7 @@ public class ScreenLock: NSObject {
         return self.keyValueStore.getBool(
             ScreenLock.OWSScreenLock_Key_IsScreenLockEnabled,
             defaultValue: false,
-            transaction: tx
+            transaction: tx,
         )
     }
 
@@ -77,7 +77,7 @@ public class ScreenLock: NSObject {
         self.keyValueStore.setBool(
             value,
             key: ScreenLock.OWSScreenLock_Key_IsScreenLockEnabled,
-            transaction: tx
+            transaction: tx,
         )
     }
 
@@ -93,7 +93,7 @@ public class ScreenLock: NSObject {
         return self.keyValueStore.getDouble(
             ScreenLock.OWSScreenLock_Key_ScreenLockTimeoutSeconds,
             defaultValue: ScreenLock.screenLockTimeoutDefault,
-            transaction: tx
+            transaction: tx,
         )
     }
 
@@ -111,7 +111,7 @@ public class ScreenLock: NSObject {
         self.keyValueStore.setDouble(
             value,
             key: ScreenLock.OWSScreenLock_Key_ScreenLockTimeoutSeconds,
-            transaction: tx
+            transaction: tx,
         )
     }
 
@@ -125,30 +125,36 @@ public class ScreenLock: NSObject {
     //
     // * Asynchronously.
     // * On the main thread.
-    public func tryToUnlockScreenLock(success: @escaping (() -> Void),
-                                      failure: @escaping ((Error) -> Void),
-                                      unexpectedFailure: @escaping ((Error) -> Void),
-                                      cancel: @escaping (() -> Void)) {
+    public func tryToUnlockScreenLock(
+        success: @escaping (() -> Void),
+        failure: @escaping ((Error) -> Void),
+        unexpectedFailure: @escaping ((Error) -> Void),
+        cancel: @escaping (() -> Void),
+    ) {
         AssertIsOnMainThread()
 
-        tryToVerifyLocalAuthentication(localizedReason: OWSLocalizedString("SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK",
-                                                                          comment: "Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'."),
-                                       completion: { (outcome: Outcome) in
-                                        AssertIsOnMainThread()
+        tryToVerifyLocalAuthentication(
+            localizedReason: OWSLocalizedString(
+                "SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK",
+                comment: "Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'.",
+            ),
+            completion: { (outcome: Outcome) in
+                AssertIsOnMainThread()
 
-                                        switch outcome {
-                                        case .failure(let error):
-                                            Logger.error("local authentication failed with error: \(error)")
-                                            failure(self.authenticationError(errorDescription: error))
-                                        case .unexpectedFailure(let error):
-                                            Logger.error("local authentication failed with unexpected error: \(error)")
-                                            unexpectedFailure(self.authenticationError(errorDescription: error))
-                                        case .success:
-                                            success()
-                                        case .cancel:
-                                            cancel()
-                                        }
-        })
+                switch outcome {
+                case .failure(let error):
+                    Logger.error("local authentication failed with error: \(error)")
+                    failure(self.authenticationError(errorDescription: error))
+                case .unexpectedFailure(let error):
+                    Logger.error("local authentication failed with unexpected error: \(error)")
+                    unexpectedFailure(self.authenticationError(errorDescription: error))
+                case .success:
+                    success()
+                case .cancel:
+                    cancel()
+                }
+            },
+        )
     }
 
     // This method should only be called:
@@ -159,8 +165,10 @@ public class ScreenLock: NSObject {
     //
     // * Asynchronously.
     // * On the main thread.
-    private func tryToVerifyLocalAuthentication(localizedReason: String,
-                                                completion completionParam: @escaping ((Outcome) -> Void)) {
+    private func tryToVerifyLocalAuthentication(
+        localizedReason: String,
+        completion completionParam: @escaping ((Outcome) -> Void),
+    ) {
         AssertIsOnMainThread()
 
         let defaultErrorDescription = DeviceAuthenticationErrorMessage.unknownError
@@ -179,8 +187,10 @@ public class ScreenLock: NSObject {
         if !canEvaluatePolicy || authError != nil {
             Logger.error("could not determine if local authentication is supported: \(String(describing: authError))")
 
-            let outcome = self.outcomeForLAError(errorParam: authError,
-                                                 defaultErrorDescription: defaultErrorDescription)
+            let outcome = self.outcomeForLAError(
+                errorParam: authError,
+                defaultErrorDescription: defaultErrorDescription,
+            )
             switch outcome {
             case .success:
                 owsFailDebug("local authentication unexpected success")
@@ -197,8 +207,10 @@ public class ScreenLock: NSObject {
                 Logger.info("local authentication succeeded.")
                 completion(.success)
             } else {
-                let outcome = self.outcomeForLAError(errorParam: evaluateError,
-                                                     defaultErrorDescription: defaultErrorDescription)
+                let outcome = self.outcomeForLAError(
+                    errorParam: evaluateError,
+                    defaultErrorDescription: defaultErrorDescription,
+                )
                 switch outcome {
                 case .success:
                     owsFailDebug("local authentication unexpected success")
@@ -270,9 +282,11 @@ public class ScreenLock: NSObject {
     }
 
     private func authenticationError(errorDescription: String) -> Error {
-        return OWSError(error: .localAuthenticationError,
-                        description: errorDescription,
-                        isRetryable: false)
+        return OWSError(
+            error: .localAuthenticationError,
+            description: errorDescription,
+            isRetryable: false,
+        )
     }
 }
 
@@ -282,15 +296,15 @@ extension ScreenLock {
     private enum ErrorMessage {
         static let authenticationNotAvailable = OWSLocalizedString(
             "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE",
-            comment: "Indicates that Touch ID/Face ID/Phone Passcode are not available on this device."
+            comment: "Indicates that Touch ID/Face ID/Phone Passcode are not available on this device.",
         )
         static let authenticationNotEnrolled = OWSLocalizedString(
             "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED",
-            comment: "Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device."
+            comment: "Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device.",
         )
         static let passcodeNotSet = OWSLocalizedString(
             "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET",
-            comment: "Indicates that Touch ID/Face ID/Phone Passcode passcode is not set."
+            comment: "Indicates that Touch ID/Face ID/Phone Passcode passcode is not set.",
         )
     }
 }
@@ -298,20 +312,20 @@ extension ScreenLock {
 public enum DeviceAuthenticationErrorMessage {
     public static let errorSheetTitle = OWSLocalizedString(
         "SCREEN_LOCK_UNLOCK_FAILED",
-        comment: "Title for alert indicating that screen lock could not be unlocked."
+        comment: "Title for alert indicating that screen lock could not be unlocked.",
     )
 
     public static let unknownError = OWSLocalizedString(
         "SCREEN_LOCK_ENABLE_UNKNOWN_ERROR",
-        comment: "Indicates that an unknown error occurred while using Touch ID/Face ID/Phone Passcode."
+        comment: "Indicates that an unknown error occurred while using Touch ID/Face ID/Phone Passcode.",
     )
 
     public static let lockout = OWSLocalizedString(
         "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT",
-        comment: "Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures."
+        comment: "Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures.",
     )
     public static let authenticationFailed = OWSLocalizedString(
         "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED",
-        comment: "Indicates that Touch ID/Face ID/Phone Passcode authentication failed."
+        comment: "Indicates that Touch ID/Face ID/Phone Passcode authentication failed.",
     )
 }

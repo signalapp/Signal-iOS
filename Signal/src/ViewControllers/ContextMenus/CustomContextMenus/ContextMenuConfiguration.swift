@@ -27,11 +27,11 @@ public class ContextMenuAction {
 
     public let handler: ContextMenuActionHandler
 
-    public init (
+    public init(
         title: String = "",
         image: UIImage? = nil,
         attributes: ContextMenuAction.Attributes = [],
-        handler: @escaping ContextMenuActionHandler
+        handler: @escaping ContextMenuActionHandler,
     ) {
         self.title = title
         self.image = image
@@ -46,7 +46,7 @@ public class ContextMenu {
     public let children: [ContextMenuAction]
 
     public init(
-        _ children: [ContextMenuAction]
+        _ children: [ContextMenuAction],
     ) {
         self.children = children
     }
@@ -58,7 +58,7 @@ protocol ContextMenuTargetedPreviewAccessoryInteractionDelegate: AnyObject {
     func contextMenuTargetedPreviewAccessoryRequestsEmojiPicker(
         for message: TSMessage,
         accessory: ContextMenuTargetedPreviewAccessory,
-        completion: @escaping (String) -> Void
+        completion: @escaping (String) -> Void,
     )
 }
 
@@ -109,7 +109,7 @@ public class ContextMenuTargetedPreviewAccessory {
 
     init(
         accessoryView: UIView,
-        accessoryAlignment: AccessoryAlignment
+        accessoryAlignment: AccessoryAlignment,
     ) {
         self.accessoryView = accessoryView
         self.accessoryAlignment = accessoryAlignment
@@ -118,7 +118,7 @@ public class ContextMenuTargetedPreviewAccessory {
     func animateIn(
         duration: TimeInterval,
         previewWillShift: Bool,
-        completion: @escaping () -> Void
+        completion: @escaping () -> Void,
     ) {
         completion()
     }
@@ -126,7 +126,7 @@ public class ContextMenuTargetedPreviewAccessory {
     func animateOut(
         duration: TimeInterval,
         previewWillShift: Bool,
-        completion: @escaping () -> Void
+        completion: @escaping () -> Void,
     ) {
         completion()
     }
@@ -136,6 +136,7 @@ public class ContextMenuTargetedPreviewAccessory {
     func touchLocationInViewDidChange(locationInView: CGPoint) {
 
     }
+
     /// Called when a current touch event ended
     /// - Parameter locationInView: location relative to accessoryView's coordinate space
     /// - Returns: true if accessory handled the touch ending, false if the touch is not relevant to this view
@@ -165,6 +166,7 @@ public class ContextMenuTargetedPreview {
             }
         }
     }
+
     public let previewView: UIView
     public let previewViewSourceFrame: CGRect
     public var auxiliarySnapshot: UIView?
@@ -188,7 +190,7 @@ public class ContextMenuTargetedPreview {
     public convenience init?(
         view: UIView,
         alignment: Alignment,
-        accessoryViews: [ContextMenuTargetedPreviewAccessory]?
+        accessoryViews: [ContextMenuTargetedPreviewAccessory]?,
     ) {
         AssertIsOnMainThread()
         owsAssertDebug(view.window != nil, "View must be in a window")
@@ -202,7 +204,7 @@ public class ContextMenuTargetedPreview {
             previewView: snapshot,
             previewViewSourceFrame: view.frame,
             alignment: alignment,
-            accessoryViews: accessoryViews ?? []
+            accessoryViews: accessoryViews ?? [],
         )
     }
 
@@ -219,7 +221,7 @@ public class ContextMenuTargetedPreview {
         previewView: UIView,
         previewViewSourceFrame: CGRect? = nil,
         alignment: Alignment,
-        accessoryViews: [ContextMenuTargetedPreviewAccessory]
+        accessoryViews: [ContextMenuTargetedPreviewAccessory],
     ) {
         self.view = view
         self.previewView = previewView
@@ -237,10 +239,10 @@ public class ContextMenuConfiguration {
     public let actionProvider: ContextMenuActionProvider?
     public let forceDarkTheme: Bool
 
-    public init (
+    public init(
         identifier: NSCopying?,
         forceDarkTheme: Bool = false,
-        actionProvider: ContextMenuActionProvider?
+        actionProvider: ContextMenuActionProvider?,
     ) {
         if let ident = identifier {
             self.identifier = ident

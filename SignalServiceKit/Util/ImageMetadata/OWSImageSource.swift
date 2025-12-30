@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import ImageIO
 import Foundation
+import ImageIO
 
 import SDWebImage
 
@@ -58,7 +58,7 @@ extension OWSImageSource {
         return imageMetadata() != nil
     }
 
-    fileprivate func ows_guessHighEfficiencyImageFormat() -> ImageFormat? {
+    private func ows_guessHighEfficiencyImageFormat() -> ImageFormat? {
         // A HEIF image file has the first 16 bytes like
         // 0000 0018 6674 7970 6865 6963 0000 0000
         // so in this case the 5th to 12th bytes shall make a string of "ftypheic"
@@ -91,7 +91,7 @@ extension OWSImageSource {
         }
     }
 
-    fileprivate func ows_guessImageFormat() -> ImageFormat? {
+    private func ows_guessImageFormat() -> ImageFormat? {
         guard byteLength >= 2 else {
             return nil
         }
@@ -106,7 +106,7 @@ extension OWSImageSource {
         case Data([0x42, 0x4d]):
             return .bmp
         case Data([0x4d, 0x4d]), // Motorola byte order TIFF
-            Data([0x49, 0x49]): // Intel byte order TIFF
+             Data([0x49, 0x49]): // Intel byte order TIFF
             return .tiff
         case Data([0x52, 0x49]):
             // First two letters of RIFF tag.
@@ -222,7 +222,7 @@ extension OWSImageSource {
         return .valid(metadata)
     }
 
-    fileprivate func imageMetadata(withIsAnimated isAnimated: Bool, imageFormat: ImageFormat) -> ImageMetadata? {
+    private func imageMetadata(withIsAnimated isAnimated: Bool, imageFormat: ImageFormat) -> ImageMetadata? {
         if imageFormat == .webp {
             let imageSize = sizeForWebpData
             guard isImageSizeValid(imageSize, depthBytes: 1, isAnimated: isAnimated) else {
@@ -254,7 +254,7 @@ extension OWSImageSource {
         return UIImage.sd_image(with: data)
     }
 
-    fileprivate var sizeForWebpData: CGSize {
+    private var sizeForWebpData: CGSize {
         let webpMetadata = metadataForWebp
         guard webpMetadata.isValid else {
             return .zero
@@ -262,7 +262,7 @@ extension OWSImageSource {
         return .init(width: CGFloat(webpMetadata.canvasWidth), height: CGFloat(webpMetadata.canvasHeight))
     }
 
-    fileprivate var metadataForWebp: WebpMetadata {
+    private var metadataForWebp: WebpMetadata {
         guard let data = try? self.readIntoMemory() else {
             return WebpMetadata(isValid: false, canvasWidth: 0, canvasHeight: 0, frameCount: 0)
         }
@@ -277,7 +277,7 @@ extension OWSImageSource {
             isValid: width > 0 && height > 0 && count > 0,
             canvasWidth: UInt32(width),
             canvasHeight: UInt32(height),
-            frameCount: UInt32(count)
+            frameCount: UInt32(count),
         )
     }
 }

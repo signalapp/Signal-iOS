@@ -8,7 +8,7 @@ import LibSignalClient
 
 public class EditManagerImpl: EditManager {
 
-    internal enum Constants {
+    enum Constants {
         // RECEIVE
 
         // Edits will only be received for up to 48 hours from the
@@ -41,7 +41,7 @@ public class EditManagerImpl: EditManager {
             attachmentStore: AttachmentStore,
             editManagerAttachments: EditManagerAttachments,
             editMessageStore: EditMessageStore,
-            receiptManagerShim: EditManagerImpl.Shims.ReceiptManager
+            receiptManagerShim: EditManagerImpl.Shims.ReceiptManager,
         ) {
             self.attachmentContentValidator = attachmentContentValidator
             self.attachmentStore = attachmentStore
@@ -69,7 +69,7 @@ public class EditManagerImpl: EditManager {
         serverDeliveryTimestamp: UInt64,
         thread: TSThread,
         editTarget: EditMessageTarget,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws -> TSMessage {
         guard let threadRowId = thread.sqliteRowId else {
             throw OWSAssertionError("Can't apply edit in uninserted thread")
@@ -80,7 +80,7 @@ public class EditManagerImpl: EditManager {
             editTarget: editTarget,
             editMessage: newDataMessage,
             serverTimestamp: serverTimestamp,
-            tx: tx
+            tx: tx,
         )
 
         var bodyRanges: MessageBodyRanges = .empty
@@ -110,7 +110,7 @@ public class EditManagerImpl: EditManager {
         let body = newDataMessage.body.map {
             context.attachmentContentValidator.truncatedMessageBodyForInlining(
                 MessageBody(text: $0, ranges: bodyRanges),
-                    tx: tx
+                tx: tx,
             )
         }
 
@@ -131,7 +131,7 @@ public class EditManagerImpl: EditManager {
             newOversizeText: oversizeText,
             quotedReplyEdit: quotedReplyEdit,
             newLinkPreview: linkPreview,
-            tx: tx
+            tx: tx,
         )
 
         return editedMessage
@@ -162,7 +162,7 @@ public class EditManagerImpl: EditManager {
 
         if !thread.isNoteToSelf {
             let (result, isOverflow) = interaction.timestamp.addingReportingOverflow(Constants.editSendWindowMilliseconds)
-            guard !isOverflow && Date.ows_millisecondTimestamp() <= result else {
+            guard !isOverflow, Date.ows_millisecondTimestamp() <= result else {
                 return .editWindowClosed
             }
         }
@@ -172,13 +172,15 @@ public class EditManagerImpl: EditManager {
     public func validateCanSendEdit(
         targetMessageTimestamp: UInt64,
         thread: TSThread,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> EditSendValidationError? {
-        guard let editTarget = context.editMessageStore.editTarget(
-            timestamp: targetMessageTimestamp,
-            authorAci: nil,
-            tx: tx
-        ) else {
+        guard
+            let editTarget = context.editMessageStore.editTarget(
+                timestamp: targetMessageTimestamp,
+                authorAci: nil,
+                tx: tx,
+            )
+        else {
             owsFailDebug("Target edit message missing")
             return .messageNotFound
         }
@@ -194,7 +196,7 @@ public class EditManagerImpl: EditManager {
         }
 
         let numberOfEdits = context.editMessageStore.numberOfEdits(for: targetMessage, tx: tx)
-        if !thread.isNoteToSelf && numberOfEdits >= Constants.maxSendEdits {
+        if !thread.isNoteToSelf, numberOfEdits >= Constants.maxSendEdits {
             return .tooManyEdits(Constants.maxSendEdits)
         }
 
@@ -213,7 +215,7 @@ public class EditManagerImpl: EditManager {
         oversizeText: AttachmentDataSource?,
         quotedReplyEdit: MessageEdits.Edit<Void>,
         linkPreview: LinkPreviewDataSource?,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws -> OutgoingEditMessage {
         guard let threadRowId = thread.sqliteRowId else {
             throw OWSAssertionError("Can't apply edit in uninserted thread")
@@ -221,7 +223,7 @@ public class EditManagerImpl: EditManager {
 
         let editTargetWrapper = OutgoingEditMessageWrapper(
             message: targetMessage,
-            thread: thread
+            thread: thread,
         )
 
         let editedMessage = try applyAndInsertEdits(
@@ -231,14 +233,14 @@ public class EditManagerImpl: EditManager {
             newOversizeText: oversizeText.map { .dataSource($0) },
             quotedReplyEdit: quotedReplyEdit,
             newLinkPreview: linkPreview.map { .draft($0) },
-            tx: tx
+            tx: tx,
         )
 
         let outgoingEditMessage = OutgoingEditMessage(
             thread: thread,
             targetMessageTimestamp: targetMessage.timestamp,
             editMessage: editedMessage,
-            transaction: tx
+            transaction: tx,
         )
 
         return outgoingEditMessage
@@ -263,14 +265,14 @@ public class EditManagerImpl: EditManager {
         newOversizeText: MessageEdits.OversizeTextSource?,
         quotedReplyEdit: MessageEdits.Edit<Void>,
         newLinkPreview: MessageEdits.LinkPreviewSource?,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws -> EditTarget.MessageType {
         /// Create and insert a clone of the existing message, with edits
         /// applied.
         let latestRevisionMessage: EditTarget.MessageType = createEditedMessage(
             editTargetWrapper: editTargetWrapper,
             edits: editsToApply,
-            tx: tx
+            tx: tx,
         )
         latestRevisionMessage.anyOverwritingUpdate(transaction: tx)
         let latestRevisionRowId = latestRevisionMessage.sqliteRowId!
@@ -284,11 +286,11 @@ public class EditManagerImpl: EditManager {
             applying: .noChanges(),
             isLatestRevision: false,
             attachmentContentValidator: context.attachmentContentValidator,
-            tx: tx
+            tx: tx,
         )
         let priorRevisionMessage = EditTarget.build(
             priorRevisionMessageBuilder,
-            tx: tx
+            tx: tx,
         )
         priorRevisionMessage.anyInsert(transaction: tx)
         let priorRevisionRowId = priorRevisionMessage.sqliteRowId!
@@ -303,14 +305,14 @@ public class EditManagerImpl: EditManager {
             newOversizeText: newOversizeText,
             newLinkPreview: newLinkPreview,
             quotedReplyEdit: quotedReplyEdit,
-            tx: tx
+            tx: tx,
         )
 
         // Update the newly inserted message with any data that needs to be
         // copied from the original message
         editTargetWrapper.updateMessageCopy(
             newMessageCopy: priorRevisionMessage,
-            tx: tx
+            tx: tx,
         )
 
         let editRecord = EditRecord(
@@ -338,19 +340,19 @@ public class EditManagerImpl: EditManager {
     private func createEditedMessage<EditTarget: EditMessageWrapper>(
         editTargetWrapper editTarget: EditTarget,
         edits: MessageEdits,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) -> EditTarget.MessageType {
 
         let editedMessageBuilder = editTarget.cloneAsBuilderWithoutAttachments(
             applying: edits,
             isLatestRevision: true,
             attachmentContentValidator: context.attachmentContentValidator,
-            tx: tx
+            tx: tx,
         )
 
         let editedMessage = EditTarget.build(
             editedMessageBuilder,
-            tx: tx
+            tx: tx,
         )
 
         // Swap out the newly created grdbId/uniqueId with the
@@ -360,7 +362,7 @@ public class EditManagerImpl: EditManager {
         if let rowId = editTarget.message.grdbId {
             editedMessage.replaceRowId(
                 rowId.int64Value,
-                uniqueId: editTarget.message.uniqueId
+                uniqueId: editTarget.message.uniqueId,
             )
             editedMessage.replaceSortId(editTarget.message.sortId)
         } else {
@@ -377,7 +379,7 @@ public class EditManagerImpl: EditManager {
         editTarget: EditMessageTarget,
         editMessage: SSKProtoDataMessage,
         serverTimestamp: UInt64,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws {
         let targetMessage = editTarget.wrapper.message
 
@@ -391,7 +393,7 @@ public class EditManagerImpl: EditManager {
             }
 
             let (result, isOverflow) = originalServerTimestamp.addingReportingOverflow(Constants.editWindowMilliseconds)
-            guard !isOverflow && serverTimestamp <= result else {
+            guard !isOverflow, serverTimestamp <= result else {
                 throw OWSAssertionError("Message edit outside of allowed timeframe")
             }
         case .outgoingMessage:
@@ -421,7 +423,7 @@ public class EditManagerImpl: EditManager {
 
         let firstAttachmentRef = context.attachmentStore.fetchFirstReference(
             owner: .messageBodyAttachment(messageRowId: targetMessage.sqliteRowId!),
-            tx: tx
+            tx: tx,
         )
 
         // Voice memos only ever have one attachment; only need to check the first.
@@ -477,7 +479,7 @@ public class EditManagerImpl: EditManager {
     public func markEditRevisionsAsRead(
         for edit: TSMessage,
         thread: TSThread,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         try context.editMessageStore
             .findEditHistory(forMostRecentRevision: edit, tx: tx)
@@ -494,7 +496,7 @@ public class EditManagerImpl: EditManager {
                     message,
                     thread: thread,
                     circumstance: .onThisDevice,
-                    tx: tx
+                    tx: tx,
                 )
             }
     }

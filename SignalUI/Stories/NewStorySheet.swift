@@ -18,7 +18,7 @@ public class NewStorySheet: OWSTableSheetViewController {
             OWSTableViewController2.cellHInnerMargin + 48 + OWSTableItem.iconSpacing
     }
 
-    public override func updateTableContents(shouldReload: Bool = true) {
+    override public func updateTableContents(shouldReload: Bool = true) {
         let contents = OWSTableContents()
         defer { tableViewController.setContents(contents, shouldReload: shouldReload) }
 
@@ -45,33 +45,43 @@ public class NewStorySheet: OWSTableSheetViewController {
         contents.add(optionsSection)
         optionsSection.add(buildOptionItem(
             icon: .genericStories,
-            title: OWSLocalizedString("NEW_STORY_SHEET_CUSTOM_STORY_TITLE",
-                                     comment: "Title for create custom story row on the 'new story sheet'"),
-            subtitle: OWSLocalizedString("NEW_STORY_SHEET_CUSTOM_STORY_SUBTITLE",
-                                        comment: "Subtitle for create custom story row on the 'new story sheet'"),
+            title: OWSLocalizedString(
+                "NEW_STORY_SHEET_CUSTOM_STORY_TITLE",
+                comment: "Title for create custom story row on the 'new story sheet'",
+            ),
+            subtitle: OWSLocalizedString(
+                "NEW_STORY_SHEET_CUSTOM_STORY_SUBTITLE",
+                comment: "Subtitle for create custom story row on the 'new story sheet'",
+            ),
             action: { [weak self] in
-                guard let self = self else { return }
+                guard let self else { return }
                 let presentingViewController = self.presentingViewController
                 self.dismiss(animated: true) {
                     let vc = NewPrivateStoryRecipientsViewController(selectItemsInParent: self.selectItemsInParent)
                     presentingViewController?.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
                 }
-            }))
+            },
+        ))
 
         optionsSection.add(buildOptionItem(
             icon: .genericGroup,
-            title: OWSLocalizedString("NEW_STORY_SHEET_GROUP_STORY_TITLE",
-                                     comment: "Title for create group story row on the 'new story sheet'"),
-            subtitle: OWSLocalizedString("NEW_STORY_SHEET_GROUP_STORY_SUBTITLE",
-                                        comment: "Subtitle for create group story row on the 'new story sheet'"),
+            title: OWSLocalizedString(
+                "NEW_STORY_SHEET_GROUP_STORY_TITLE",
+                comment: "Title for create group story row on the 'new story sheet'",
+            ),
+            subtitle: OWSLocalizedString(
+                "NEW_STORY_SHEET_GROUP_STORY_SUBTITLE",
+                comment: "Subtitle for create group story row on the 'new story sheet'",
+            ),
             action: { [weak self] in
-                guard let self = self else { return }
+                guard let self else { return }
                 let presentingViewController = self.presentingViewController
                 self.dismiss(animated: true) {
                     let vc = NewGroupStoryViewController(selectItemsInParent: self.selectItemsInParent)
                     presentingViewController?.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
                 }
-            }))
+            },
+        ))
     }
 
     func buildOptionItem(icon: ThemeIcon, title: String, subtitle: String, action: @escaping () -> Void) -> OWSTableItem {
@@ -84,7 +94,7 @@ public class NewStorySheet: OWSTableSheetViewController {
                 icon: icon,
                 iconSize: AvatarBuilder.standardAvatarSizePoints,
                 innerIconSize: 24,
-                iconTintColor: Theme.primaryTextColor
+                iconTintColor: Theme.primaryTextColor,
             )
 
             let rowTitleLabel = UILabel()
@@ -99,11 +109,11 @@ public class NewStorySheet: OWSTableSheetViewController {
             rowSubtitleLabel.font = .dynamicTypeSubheadlineClamped
             rowSubtitleLabel.numberOfLines = 0
 
-            let titleStack = UIStackView(arrangedSubviews: [ rowTitleLabel, rowSubtitleLabel ])
+            let titleStack = UIStackView(arrangedSubviews: [rowTitleLabel, rowSubtitleLabel])
             titleStack.axis = .vertical
             titleStack.alignment = .leading
 
-            let contentRow = UIStackView(arrangedSubviews: [ iconView, titleStack ])
+            let contentRow = UIStackView(arrangedSubviews: [iconView, titleStack])
             contentRow.spacing = ContactCellView.avatarTextHSpacing
             contentRow.alignment = .center
 

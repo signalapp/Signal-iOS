@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalServiceKit
 import LibSignalClient
+import SignalServiceKit
 import SignalUI
 import SwiftUI
 
@@ -25,7 +25,7 @@ class PollDetailsViewController: HostingController<PollDetailsView> {
         message: TSMessage,
         pollManager: PollMessageManager,
         db: DB,
-        databaseChangeObserver: DatabaseChangeObserver
+        databaseChangeObserver: DatabaseChangeObserver,
     ) {
         self.viewModel = PollDetailsViewModel(poll: poll)
         self.message = message
@@ -70,7 +70,7 @@ extension PollDetailsViewController: PollDetailsViewModel.ActionsDelegate {
         ProfileSheetSheetCoordinator(
             address: address,
             groupViewHelper: nil,
-            spoilerState: SpoilerRenderState()
+            spoilerState: SpoilerRenderState(),
         )
         .presentAppropriateSheet(from: self)
     }
@@ -99,16 +99,16 @@ private class PollDetailsViewModel: ObservableObject {
         OWSActionSheets.showConfirmationAlert(
             title: OWSLocalizedString(
                 "POLL_END_CONFIRMATION",
-                comment: "Title for an action sheet confirming the user wants end a poll."
+                comment: "Title for an action sheet confirming the user wants end a poll.",
             ),
             message: OWSLocalizedString(
                 "POLL_END_CONFIRMATION_MESSAGE",
-                comment: "Message for an action sheet confirming the user wants to end a poll."
+                comment: "Message for an action sheet confirming the user wants to end a poll.",
             ),
             proceedTitle: CommonStrings.okButton,
             proceedAction: { [weak self] _ in
                 self?.actionsDelegate?.pollTerminate()
-            }
+            },
         )
     }
 
@@ -139,8 +139,8 @@ struct PollDetailsView: View {
                     Text(
                         OWSLocalizedString(
                             "POLL_QUESTION_LABEL",
-                            comment: "Header for the poll question text box when making a new poll"
-                        )
+                            comment: "Header for the poll question text box when making a new poll",
+                        ),
                     )
                 }
                 if #unavailable(iOS 26) {
@@ -170,7 +170,7 @@ struct PollDetailsView: View {
                                 address: SignalServiceAddress(aci),
                                 onTap: { address in
                                     viewModel.presentContactSheet(address: address)
-                                }
+                                },
                             )
                             .padding(.vertical, 1)
                             .padding(.horizontal, 4)
@@ -178,7 +178,7 @@ struct PollDetailsView: View {
                         if option.acis.count == 0 {
                             Text(OWSLocalizedString(
                                 "POLL_NO_VOTES",
-                                comment: "String to display when a poll has no votes"
+                                comment: "String to display when a poll has no votes",
                             ))
                             .font(.body)
                             .foregroundColor(Color.Signal.secondaryLabel)
@@ -190,7 +190,7 @@ struct PollDetailsView: View {
                                 .fontWeight(.medium)
                             Spacer()
                             if option.acis.count > 0 {
-                                if poll.isEnded && option.acis.count == maxVotes {
+                                if poll.isEnded, option.acis.count == maxVotes {
                                     Image("poll-win")
                                 }
                                 Text(
@@ -198,10 +198,10 @@ struct PollDetailsView: View {
                                         OWSLocalizedString(
                                             "POLL_VOTE_COUNT",
                                             tableName: "PluralAware",
-                                            comment: "Count indicating number of votes for this option. Embeds {{number of votes}}"
+                                            comment: "Count indicating number of votes for this option. Embeds {{number of votes}}",
                                         ),
-                                        option.acis.count
-                                    )
+                                        option.acis.count,
+                                    ),
                                 )
                                 .font(.body)
                             }
@@ -246,7 +246,7 @@ struct PollDetailsView: View {
 
     struct ContactRow: UIViewRepresentable {
         let address: SignalServiceAddress
-        var onTap: ((SignalServiceAddress) -> Void)
+        var onTap: (SignalServiceAddress) -> Void
 
         func updateUIView(_ uiView: ManualStackView, context: Context) {
         }
@@ -284,7 +284,7 @@ struct PollDetailsView: View {
         allowsMultiSelect: false,
         votes: [:],
         isEnded: false,
-        ownerIsLocalUser: false
+        ownerIsLocalUser: false,
     )
 
     PollDetailsView(viewModel: PollDetailsViewModel(poll: poll))

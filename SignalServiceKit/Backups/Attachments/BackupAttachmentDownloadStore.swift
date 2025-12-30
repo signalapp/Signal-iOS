@@ -30,7 +30,7 @@ public class BackupAttachmentDownloadStore {
         tx: DBWriteTransaction,
         file: StaticString? = #file,
         function: StaticString? = #function,
-        line: UInt? = #line
+        line: UInt? = #line,
     ) {
         if let file, let function, let line {
             Logger.info("Enqueuing \(referencedAttachment.attachment.id) thumbnail? \(thumbnail) from \(file) \(line): \(function)")
@@ -71,7 +71,7 @@ public class BackupAttachmentDownloadStore {
         } else if
             let existingRecord,
             existingRecord.state != state
-                || existingRecord.canDownloadFromMediaTier != canDownloadFromMediaTier
+            || existingRecord.canDownloadFromMediaTier != canDownloadFromMediaTier
         {
             // We can modify the state of the existing record even if the
             // new timestamp doesn't match; use the greater timestamp and
@@ -108,8 +108,8 @@ public class BackupAttachmentDownloadStore {
                 attachment: referencedAttachment.attachment,
                 reference: referencedAttachment.reference,
                 isThumbnail: thumbnail,
-                canDownloadFromMediaTier: canDownloadFromMediaTier
-            )
+                canDownloadFromMediaTier: canDownloadFromMediaTier,
+            ),
         )
         failIfThrows {
             try record.insert(db)
@@ -119,7 +119,7 @@ public class BackupAttachmentDownloadStore {
     public func getEnqueuedDownload(
         attachmentRowId: Attachment.IDType,
         thumbnail: Bool,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> QueuedBackupAttachmentDownload? {
         let query = QueuedBackupAttachmentDownload
             .filter(Column(QueuedBackupAttachmentDownload.CodingKeys.attachmentRowId) == attachmentRowId)
@@ -135,16 +135,16 @@ public class BackupAttachmentDownloadStore {
     public func peek(
         count: UInt,
         isThumbnail: Bool,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> [QueuedBackupAttachmentDownload] {
         let query = QueuedBackupAttachmentDownload
             .filter(
                 Column(QueuedBackupAttachmentDownload.CodingKeys.state)
-                    == QueuedBackupAttachmentDownload.State.ready.rawValue
+                    == QueuedBackupAttachmentDownload.State.ready.rawValue,
             )
             .filter(Column(QueuedBackupAttachmentDownload.CodingKeys.isThumbnail) == isThumbnail)
             .order([
-                Column(QueuedBackupAttachmentDownload.CodingKeys.minRetryTimestamp).asc
+                Column(QueuedBackupAttachmentDownload.CodingKeys.minRetryTimestamp).asc,
             ])
             .limit(Int(count))
 
@@ -156,7 +156,7 @@ public class BackupAttachmentDownloadStore {
     /// Returns true if there are any rows in the ready state.
     public func hasAnyReadyDownloads(
         isThumbnail: Bool,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> Bool {
         let query = QueuedBackupAttachmentDownload
             .filter(Column(QueuedBackupAttachmentDownload.CodingKeys.state) == QueuedBackupAttachmentDownload.State.ready.rawValue)
@@ -173,7 +173,7 @@ public class BackupAttachmentDownloadStore {
     public func markDone(
         attachmentId: Attachment.IDType,
         thumbnail: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         var query = QueuedBackupAttachmentDownload
             .filter(Column(QueuedBackupAttachmentDownload.CodingKeys.attachmentRowId) == attachmentId)
@@ -197,7 +197,7 @@ public class BackupAttachmentDownloadStore {
     public func markIneligible(
         attachmentId: Attachment.IDType,
         thumbnail: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         let query = QueuedBackupAttachmentDownload
             .filter(Column(QueuedBackupAttachmentDownload.CodingKeys.attachmentRowId) == attachmentId)
@@ -206,9 +206,10 @@ public class BackupAttachmentDownloadStore {
         failIfThrows {
             try query.updateAll(
                 tx.database,
-                [Column(QueuedBackupAttachmentDownload.CodingKeys.state)
-                    .set(to: QueuedBackupAttachmentDownload.State.ineligible.rawValue)
-                ]
+                [
+                    Column(QueuedBackupAttachmentDownload.CodingKeys.state)
+                        .set(to: QueuedBackupAttachmentDownload.State.ineligible.rawValue),
+                ],
             )
         }
     }
@@ -224,7 +225,7 @@ public class BackupAttachmentDownloadStore {
         tx: DBWriteTransaction,
         file: StaticString? = #file,
         function: StaticString? = #function,
-        line: UInt? = #line
+        line: UInt? = #line,
     ) {
         if let file, let function, let line {
             Logger.info("Deleting \(attachmentId) thumbnail? \(thumbnail) from \(file) \(line): \(function)")
@@ -245,11 +246,11 @@ public class BackupAttachmentDownloadStore {
     /// there we don't need to worry about downloading from transit tier before it expires.
     public func markAllMediaTierFullsizeDownloadsIneligible(
         olderThan timestamp: UInt64,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         let query = QueuedBackupAttachmentDownload
             .filter(Column(QueuedBackupAttachmentDownload.CodingKeys.state) ==
-                    QueuedBackupAttachmentDownload.State.ready.rawValue)
+                QueuedBackupAttachmentDownload.State.ready.rawValue)
             .filter(Column(QueuedBackupAttachmentDownload.CodingKeys.canDownloadFromMediaTier) == true)
             .filter(Column(QueuedBackupAttachmentDownload.CodingKeys.maxOwnerTimestamp) != nil)
             .filter(Column(QueuedBackupAttachmentDownload.CodingKeys.maxOwnerTimestamp) < timestamp)
@@ -257,9 +258,10 @@ public class BackupAttachmentDownloadStore {
         failIfThrows {
             try query.updateAll(
                 tx.database,
-                [Column(QueuedBackupAttachmentDownload.CodingKeys.state)
-                    .set(to: QueuedBackupAttachmentDownload.State.ineligible.rawValue)
-                ]
+                [
+                    Column(QueuedBackupAttachmentDownload.CodingKeys.state)
+                        .set(to: QueuedBackupAttachmentDownload.State.ineligible.rawValue),
+                ],
             )
         }
     }
@@ -268,14 +270,15 @@ public class BackupAttachmentDownloadStore {
     public func markAllIneligibleReady(tx: DBWriteTransaction) {
         let query = QueuedBackupAttachmentDownload
             .filter(Column(QueuedBackupAttachmentDownload.CodingKeys.state) ==
-                    QueuedBackupAttachmentDownload.State.ineligible.rawValue)
+                QueuedBackupAttachmentDownload.State.ineligible.rawValue)
 
         failIfThrows {
             try query.updateAll(
                 tx.database,
-                [Column(QueuedBackupAttachmentDownload.CodingKeys.state)
-                    .set(to: QueuedBackupAttachmentDownload.State.ready.rawValue)
-                ]
+                [
+                    Column(QueuedBackupAttachmentDownload.CodingKeys.state)
+                        .set(to: QueuedBackupAttachmentDownload.State.ready.rawValue),
+                ],
             )
         }
     }
@@ -284,14 +287,15 @@ public class BackupAttachmentDownloadStore {
     public func markAllReadyIneligible(tx: DBWriteTransaction) {
         let query = QueuedBackupAttachmentDownload
             .filter(Column(QueuedBackupAttachmentDownload.CodingKeys.state) ==
-                    QueuedBackupAttachmentDownload.State.ready.rawValue)
+                QueuedBackupAttachmentDownload.State.ready.rawValue)
 
         failIfThrows {
             try query.updateAll(
                 tx.database,
-                [Column(QueuedBackupAttachmentDownload.CodingKeys.state)
-                    .set(to: QueuedBackupAttachmentDownload.State.ineligible.rawValue)
-                ]
+                [
+                    Column(QueuedBackupAttachmentDownload.CodingKeys.state)
+                        .set(to: QueuedBackupAttachmentDownload.State.ineligible.rawValue),
+                ],
             )
         }
     }
@@ -301,7 +305,7 @@ public class BackupAttachmentDownloadStore {
         tx: DBWriteTransaction,
         file: StaticString? = #file,
         function: StaticString? = #function,
-        line: UInt? = #line
+        line: UInt? = #line,
     ) {
         if let file, let function, let line {
             Logger.info("Deleting all done rows from \(file) \(line): \(function)")
@@ -313,7 +317,7 @@ public class BackupAttachmentDownloadStore {
 
         let query = QueuedBackupAttachmentDownload
             .filter(Column(QueuedBackupAttachmentDownload.CodingKeys.state) ==
-                    QueuedBackupAttachmentDownload.State.done.rawValue)
+                QueuedBackupAttachmentDownload.State.done.rawValue)
 
         failIfThrows {
             try query.deleteAll(tx.database)
@@ -322,12 +326,12 @@ public class BackupAttachmentDownloadStore {
 
     public func computeEstimatedFinishedFullsizeByteCount(tx: DBReadTransaction) -> UInt64? {
         let sql = """
-            SELECT SUM(\(QueuedBackupAttachmentDownload.CodingKeys.estimatedByteCount.rawValue))
-            FROM \(QueuedBackupAttachmentDownload.databaseTableName)
-            WHERE
-                \(QueuedBackupAttachmentDownload.CodingKeys.state.rawValue) = \(QueuedBackupAttachmentDownload.State.done.rawValue)
-                AND \(QueuedBackupAttachmentDownload.CodingKeys.isThumbnail.rawValue) = 0;
-            """
+        SELECT SUM(\(QueuedBackupAttachmentDownload.CodingKeys.estimatedByteCount.rawValue))
+        FROM \(QueuedBackupAttachmentDownload.databaseTableName)
+        WHERE
+            \(QueuedBackupAttachmentDownload.CodingKeys.state.rawValue) = \(QueuedBackupAttachmentDownload.State.done.rawValue)
+            AND \(QueuedBackupAttachmentDownload.CodingKeys.isThumbnail.rawValue) = 0;
+        """
 
         return failIfThrows {
             try UInt64.fetchOne(tx.database, sql: sql)
@@ -336,12 +340,12 @@ public class BackupAttachmentDownloadStore {
 
     public func computeEstimatedRemainingFullsizeByteCount(tx: DBReadTransaction) -> UInt64? {
         let sql = """
-            SELECT SUM(\(QueuedBackupAttachmentDownload.CodingKeys.estimatedByteCount.rawValue))
-            FROM \(QueuedBackupAttachmentDownload.databaseTableName)
-            WHERE
-                \(QueuedBackupAttachmentDownload.CodingKeys.state.rawValue) = \(QueuedBackupAttachmentDownload.State.ready.rawValue)
-                AND \(QueuedBackupAttachmentDownload.CodingKeys.isThumbnail.rawValue) = 0;
-            """
+        SELECT SUM(\(QueuedBackupAttachmentDownload.CodingKeys.estimatedByteCount.rawValue))
+        FROM \(QueuedBackupAttachmentDownload.databaseTableName)
+        WHERE
+            \(QueuedBackupAttachmentDownload.CodingKeys.state.rawValue) = \(QueuedBackupAttachmentDownload.State.ready.rawValue)
+            AND \(QueuedBackupAttachmentDownload.CodingKeys.isThumbnail.rawValue) = 0;
+        """
 
         return failIfThrows {
             try UInt64.fetchOne(tx.database, sql: sql)
@@ -383,13 +387,13 @@ public extension QueuedBackupAttachmentDownload {
         attachment: Attachment,
         reference: AttachmentReference?,
         isThumbnail: Bool,
-        canDownloadFromMediaTier: Bool
+        canDownloadFromMediaTier: Bool,
     ) -> UInt32 {
         if isThumbnail {
             // We don't know how big the thumbnail will be; just estimate
             // it to be its largest allowed size.
             return Cryptography.estimatedMediaTierCDNSize(
-                unencryptedSize: UInt64(safeCast: AttachmentThumbnailQuality.backupThumbnailMaxSizeBytes)
+                unencryptedSize: UInt64(safeCast: AttachmentThumbnailQuality.backupThumbnailMaxSizeBytes),
             ).flatMap(UInt32.init(exactly:))!
         } else {
             // Media tier has the larger byte count, and its better to overcount than
@@ -404,7 +408,7 @@ public extension QueuedBackupAttachmentDownload {
             if
                 canDownloadFromMediaTier,
                 let unencryptedByteCount =
-                    attachment.mediaTierInfo?.unencryptedByteCount
+                attachment.mediaTierInfo?.unencryptedByteCount
                     ?? attachment.latestTransitTierInfo?.unencryptedByteCount
                     ?? reference?.sourceUnencryptedByteCount
             {
@@ -413,7 +417,7 @@ public extension QueuedBackupAttachmentDownload {
                 ) ?? .max)
             } else if
                 let unencryptedByteCount =
-                    attachment.latestTransitTierInfo?.unencryptedByteCount
+                attachment.latestTransitTierInfo?.unencryptedByteCount
                     ?? attachment.mediaTierInfo?.unencryptedByteCount
                     ?? reference?.sourceUnencryptedByteCount
             {

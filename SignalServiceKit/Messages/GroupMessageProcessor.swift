@@ -22,7 +22,7 @@ private struct IncomingGroupsV2MessageJobInfo {
 /// * It retries immediately if reachability, etc., change.
 ///
 /// It returns when all jobs are processed.
-internal class SpecificGroupMessageProcessor {
+class SpecificGroupMessageProcessor {
     fileprivate let groupId: Data
     private let finder = GroupMessageProcessorJobStore()
 
@@ -38,13 +38,13 @@ internal class SpecificGroupMessageProcessor {
             self,
             selector: #selector(chatConnectionStateDidChange),
             name: OWSChatConnection.chatConnectionStateDidChange,
-            object: nil
+            object: nil,
         )
         nc.addObserver(
             self,
             selector: #selector(reachabilityChanged),
             name: SSKReachability.owsReachabilityDidChange,
-            object: nil
+            object: nil,
         )
     }
 
@@ -126,7 +126,7 @@ internal class SpecificGroupMessageProcessor {
 
                     let hasMore = try await self.processBatch(
                         batchLimit: batchSize,
-                        newestGuaranteedFailureJobId: &newestGuaranteedFailureJobId
+                        newestGuaranteedFailureJobId: &newestGuaranteedFailureJobId,
                     )
                     if !hasMore {
                         return
@@ -200,14 +200,14 @@ internal class SpecificGroupMessageProcessor {
             envelope: envelope,
             plaintextData: plaintextData,
             groupContext: groupContext,
-            groupContextInfo: groupContextInfo
+            groupContextInfo: groupContextInfo,
         )
     }
 
-    internal static func discardMode(
+    static func discardMode(
         forMessageFrom sourceAci: Aci,
         groupContext: SSKProtoGroupContextV2,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> GroupMessageProcessorManager.DiscardMode {
         guard groupContext.hasRevision else {
             Logger.info("Missing revision in group context")
@@ -225,19 +225,21 @@ internal class SpecificGroupMessageProcessor {
         return GroupMessageProcessorManager.discardMode(
             forMessageFrom: sourceAci,
             groupId: groupContextInfo.groupId,
-            tx: tx
+            tx: tx,
         )
     }
 
     private static func discardMode(
         forJobInfo jobInfo: IncomingGroupsV2MessageJobInfo,
         hasGroupBeenUpdated: Bool,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> GroupMessageProcessorManager.DiscardMode {
-        guard let sourceAci = Aci.parseFrom(
-            serviceIdBinary: jobInfo.envelope.sourceServiceIDBinary,
-            serviceIdString: jobInfo.envelope.sourceServiceID,
-        ) else {
+        guard
+            let sourceAci = Aci.parseFrom(
+                serviceIdBinary: jobInfo.envelope.sourceServiceIDBinary,
+                serviceIdString: jobInfo.envelope.sourceServiceID,
+            )
+        else {
             owsFailDebug("Invalid source address.")
             return .discard
         }
@@ -245,7 +247,7 @@ internal class SpecificGroupMessageProcessor {
             forMessageFrom: sourceAci,
             groupId: jobInfo.groupContextInfo.groupId,
             shouldCheckGroupModel: hasGroupBeenUpdated,
-            tx: tx
+            tx: tx,
         )
     }
 
@@ -256,7 +258,7 @@ internal class SpecificGroupMessageProcessor {
     /// network requests, so they aren't batched with other messages.
     private func canJobBeProcessedWithoutUpdate(
         jobInfo: IncomingGroupsV2MessageJobInfo,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> Bool {
         if .discard == Self.discardMode(forJobInfo: jobInfo, hasGroupBeenUpdated: false, tx: tx) {
             return true
@@ -264,7 +266,7 @@ internal class SpecificGroupMessageProcessor {
         return GroupMessageProcessorManager.canContextBeProcessedWithoutUpdate(
             groupContext: jobInfo.groupContext,
             groupContextInfo: jobInfo.groupContextInfo,
-            tx: tx
+            tx: tx,
         )
     }
 
@@ -300,7 +302,7 @@ internal class SpecificGroupMessageProcessor {
         if let asyncJob {
             let didUpdateGroup = try await updateGroup(
                 jobInfo: asyncJob,
-                newestGuaranteedFailureJobId: &newestGuaranteedFailureJobId
+                newestGuaranteedFailureJobId: &newestGuaranteedFailureJobId,
             )
             await databaseStorage.awaitableWrite { tx in
                 if didUpdateGroup {
@@ -336,7 +338,7 @@ internal class SpecificGroupMessageProcessor {
 
     private func performLocalProcessingSync(
         jobInfo: IncomingGroupsV2MessageJobInfo,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         let discardMode = Self.discardMode(forJobInfo: jobInfo, hasGroupBeenUpdated: true, tx: tx)
         switch discardMode {
@@ -351,14 +353,14 @@ internal class SpecificGroupMessageProcessor {
                 serverDeliveryTimestamp: jobInfo.job.serverDeliveryTimestamp,
                 shouldDiscardVisibleMessages: discardMode == .discardVisibleMessages,
                 localIdentifiers: DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx)!,
-                tx: tx
+                tx: tx,
             )
         }
     }
 
     private func updateGroup(
         jobInfo: IncomingGroupsV2MessageJobInfo,
-        newestGuaranteedFailureJobId: inout Int64?
+        newestGuaranteedFailureJobId: inout Int64?,
     ) async throws(RetryableError) -> Bool {
         // First, we try to update the group locally using changes embedded in
         // the group context (if any).
@@ -400,7 +402,7 @@ internal class SpecificGroupMessageProcessor {
     /// and we should fail over to fetching group changes and/or latest group
     /// state from the service.
     private func updateUsingEmbeddedGroupUpdate(
-        jobInfo: IncomingGroupsV2MessageJobInfo
+        jobInfo: IncomingGroupsV2MessageJobInfo,
     ) async throws(RetryableError) -> Bool {
         let groupId = jobInfo.groupContextInfo.groupId
         let secretParams = jobInfo.groupContextInfo.groupSecretParams
@@ -456,7 +458,7 @@ internal class SpecificGroupMessageProcessor {
             try await SSKEnvironment.shared.groupsV2Ref.updateGroupWithChangeActions(
                 spamReportingMetadata: spamReportingMetadata,
                 changeActionsProto: changeActionsProto,
-                groupSecretParams: secretParams
+                groupSecretParams: secretParams,
             )
         } catch {
             if let retryableError = RetryableError(error) {
@@ -484,7 +486,7 @@ internal class SpecificGroupMessageProcessor {
             try await SSKEnvironment.shared.groupV2UpdatesRef.refreshGroup(
                 secretParams: jobInfo.groupContextInfo.groupSecretParams,
                 spamReportingMetadata: spamReportingMetadata,
-                source: .groupMessage(revision: jobInfo.groupContext.revision)
+                source: .groupMessage(revision: jobInfo.groupContext.revision),
             )
             return true
         } catch {
@@ -623,7 +625,7 @@ public class GroupMessageProcessorManager {
         envelope: DecryptedIncomingEnvelope,
         envelopeData: Data,
         serverDeliveryTimestamp: UInt64,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         guard !envelopeData.isEmpty else {
             owsFailDebug("Empty envelope.")
@@ -644,7 +646,7 @@ public class GroupMessageProcessorManager {
                 groupId: groupId,
                 wasReceivedByUD: envelope.wasReceivedByUD,
                 serverDeliveryTimestamp: serverDeliveryTimestamp,
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -671,7 +673,7 @@ public class GroupMessageProcessorManager {
 
     public class func canContextBeProcessedImmediately(
         groupContext: SSKProtoGroupContextV2,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> Bool {
         let groupContextInfo: GroupV2ContextInfo
         do {
@@ -697,14 +699,14 @@ public class GroupMessageProcessorManager {
         return canContextBeProcessedWithoutUpdate(
             groupContext: groupContext,
             groupContextInfo: groupContextInfo,
-            tx: tx
+            tx: tx,
         )
     }
 
     fileprivate class func canContextBeProcessedWithoutUpdate(
         groupContext: SSKProtoGroupContextV2,
         groupContextInfo: GroupV2ContextInfo,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> Bool {
         guard let groupThread = TSGroupThread.fetch(forGroupId: groupContextInfo.groupId, tx: tx) else {
             return false
@@ -778,12 +780,12 @@ public class GroupMessageProcessorManager {
         forMessageFrom sourceAci: Aci,
         groupId: GroupIdentifier,
         shouldCheckGroupModel: Bool = true,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> DiscardMode {
         let blockingManager = SSKEnvironment.shared.blockingManagerRef
         let isBlocked: Bool = (
             blockingManager.isAddressBlocked(SignalServiceAddress(sourceAci), transaction: tx)
-            || blockingManager.isGroupIdBlocked(groupId, transaction: tx)
+                || blockingManager.isGroupIdBlocked(groupId, transaction: tx),
         )
         if isBlocked {
             Logger.info("Discarding blocked envelope.")

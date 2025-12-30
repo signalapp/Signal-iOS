@@ -30,13 +30,15 @@ class AvatarViewController: UIViewController, InteractivelyDismissableViewContro
 
     init?(thread: TSThread, renderLocalUserAsNoteToSelf: Bool, readTx: DBReadTransaction) {
         let localUserDisplayMode: LocalUserDisplayMode = (renderLocalUserAsNoteToSelf
-                                                            ? .noteToSelf
-                                                            : .asUser)
-        guard let avatarImage = SSKEnvironment.shared.avatarBuilderRef.avatarImage(
+            ? .noteToSelf
+            : .asUser)
+        guard
+            let avatarImage = SSKEnvironment.shared.avatarBuilderRef.avatarImage(
                 forThread: thread,
                 diameterPoints: UInt(UIScreen.main.bounds.size.smallerAxis),
                 localUserDisplayMode: localUserDisplayMode,
-                transaction: readTx) else { return nil }
+                transaction: readTx,
+            ) else { return nil }
 
         self.avatarImage = avatarImage
         super.init(nibName: nil, bundle: nil)
@@ -50,7 +52,7 @@ class AvatarViewController: UIViewController, InteractivelyDismissableViewContro
             forAddress: address,
             diameterPoints: UInt(UIScreen.main.bounds.size.smallerAxis),
             localUserDisplayMode: renderLocalUserAsNoteToSelf ? .noteToSelf : .asUser,
-            transaction: readTx
+            transaction: readTx,
         )
         guard let avatarImage else {
             return nil
@@ -103,7 +105,8 @@ class AvatarViewController: UIViewController, InteractivelyDismissableViewContro
             style: .plain,
             target: self,
             action: #selector(didTapClose),
-            accessibilityIdentifier: "close")
+            accessibilityIdentifier: "close",
+        )
         navigationBar.setItems([navigationItem], animated: false)
 
         interactiveDismissal.addGestureRecognizer(to: view)
@@ -143,29 +146,30 @@ extension AvatarViewController: MediaPresentationContextProvider {
         return MediaPresentationContext(
             mediaView: circleView,
             presentationFrame: circleView.frame,
-            mediaViewShape: .circle
+            mediaViewShape: .circle,
         )
     }
 }
 
 extension AvatarViewController: UIViewControllerTransitioningDelegate {
-    public func animationController(
+    func animationController(
         forPresented presented: UIViewController,
         presenting: UIViewController,
-        source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        source: UIViewController,
+    ) -> UIViewControllerAnimatedTransitioning? {
         return MediaZoomAnimationController(image: avatarImage)
     }
 
-    public func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+    func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         let animationController = MediaDismissAnimationController(
             image: avatarImage,
-            interactionController: interactiveDismissal
+            interactionController: interactiveDismissal,
         )
         interactiveDismissal.interactiveDismissDelegate = animationController
         return animationController
     }
 
-    public func interactionControllerForDismissal(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
+    func interactionControllerForDismissal(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
         guard
             let animationController = animator as? MediaDismissAnimationController,
             animationController.interactionController.interactionInProgress

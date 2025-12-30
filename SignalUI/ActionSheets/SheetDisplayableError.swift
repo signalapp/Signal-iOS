@@ -21,14 +21,14 @@ open class SheetDisplayableError: Error {
     public static let networkError: SheetDisplayableError = ActionSheetDisplayableError(
         localizedMessage: OWSLocalizedString(
             "ACTION_SHEET_DISPLAYABLE_ERROR_NETWORK_ERROR",
-            comment: "Message shown in an action sheet when a network error occurs."
+            comment: "Message shown in an action sheet when a network error occurs.",
         ),
     )
 
     public static let genericError: SheetDisplayableError = ActionSheetDisplayableError(
         localizedMessage: OWSLocalizedString(
             "ACTION_SHEET_DISPLAYABLE_ERROR_GENERIC_ERROR",
-            comment: "Message shown in an action sheet when a generic error occurs."
+            comment: "Message shown in an action sheet when a generic error occurs.",
         ),
     )
 

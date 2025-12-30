@@ -57,41 +57,41 @@ class ReactionsBurstView: UIView, ReactionBurstDelegate {
             label: labels[0],
             relativeDuration: 0.4,
             scaleFactor: 2,
-            rotation: -27...27
+            rotation: -27...27,
         )
 
         let emoji1Animation = prepareAnimation(
             label: labels[1],
             relativeDuration: 0.54,
             scaleFactor: 2.5,
-            rotation: -30...0
+            rotation: -30...0,
         )
 
         let emoji2Animation = prepareAnimation(
             label: labels[2],
             relativeDuration: 0.6,
             scaleFactor: 3,
-            rotation: -8...8
+            rotation: -8...8,
         )
 
         let emoji3Animation = prepareAnimation(
             label: labels[3],
             relativeDuration: 0.85,
             scaleFactor: 3,
-            rotation: -12...12
+            rotation: -12...12,
         )
 
         let emoji4Animation = prepareAnimation(
             label: labels[4],
             relativeDuration: 0.65,
             scaleFactor: 2.5,
-            rotation: -12...12
+            rotation: -12...12,
         )
 
         let emoji5Animation = prepareAnimation(
             label: labels[5],
             relativeDuration: 0.7,
-            scaleFactor: 2
+            scaleFactor: 2,
         )
 
         UIView.animateKeyframes(withDuration: 2.5, delay: 0) {
@@ -121,29 +121,29 @@ class ReactionsBurstView: UIView, ReactionBurstDelegate {
         label: UILabel,
         relativeDuration: Double,
         scaleFactor: CGFloat,
-        rotation: ClosedRange<CGFloat>? = nil
+        rotation: ClosedRange<CGFloat>? = nil,
     ) -> () -> Void {
         let reactionSize = label.intrinsicContentSize
         let container = OWSLayerView(frame: CGRect(origin: .zero, size: reactionSize * 4)) { view in
             label.frame = view.bounds
         }
         container.addSubview(label)
-        if let rotation = rotation {
+        if let rotation {
             container.transform = .init(rotationAngle: rotation.lowerBound.toRadians)
         }
 
         let position = burstAligner.burstStartingPoint(in: self)
 
         container.frame.origin = CGPoint(
-            x: position.x - container.width/4 - reactionSize.width/2,
-            y: position.y - container.height/4-reactionSize.height/2
+            x: position.x - container.width / 4 - reactionSize.width / 2,
+            y: position.y - container.height / 4 - reactionSize.height / 2,
         )
         addSubview(container)
 
         return {
             UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: relativeDuration) {
                 container.frame.origin.y = -container.height
-                if let rotation = rotation {
+                if let rotation {
                     container.transform = .init(rotationAngle: rotation.upperBound.toRadians)
                 }
                 container.transform = container.transform.scaledBy(x: scaleFactor, y: scaleFactor)
@@ -233,6 +233,7 @@ private class RotatingArray<T: Timestamped> {
 private protocol Timestamped {
     var timestamp: TimeInterval { get }
 }
+
 extension Reaction: Timestamped {}
 
 // MARK: - ReactionBurstDelegate
@@ -249,7 +250,7 @@ class ReactionBurstManager {
     private weak var burstDelegate: ReactionBurstDelegate?
     private var recentBursts = RotatingArray<Burst>(
         capacity: Constants.maxBurstsInTimespan,
-        timespan: Constants.timespanForMaxBursts
+        timespan: Constants.timespanForMaxBursts,
     )
 
     private struct Burst: Timestamped {
@@ -291,7 +292,7 @@ class ReactionBurstManager {
         } else {
             let rxnArray = RotatingArray<Reaction>(
                 capacity: Constants.reactionCountNeededForBurst,
-                timespan: Constants.timespanDuringWhichReactionsMustOccur
+                timespan: Constants.timespanDuringWhichReactionsMustOccur,
             )
             incomingEmojiDictionary[key] = rxnArray
             array = rxnArray
@@ -317,7 +318,7 @@ class ReactionBurstManager {
         }
         let areBurstsShutOff = self.recentBursts.atCapacityAndWithinTimespan(compareToNow: true)
 
-        if thresholdMet && !isEmojiCoolingOff && !areBurstsShutOff {
+        if thresholdMet, !isEmojiCoolingOff, !areBurstsShutOff {
             self.burstDelegate?.burst(reactions: array.toArray())
             array.removeAll()
             cooloffDictionary[key] = Date.timeIntervalSinceReferenceDate

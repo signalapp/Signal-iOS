@@ -54,9 +54,11 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
         return conversationStyle.bubbleTextColor(message: message)
     }
 
-    public func configureForRendering(componentView componentViewParam: CVComponentView,
-                                      cellMeasurement: CVCellMeasurement,
-                                      componentDelegate: CVComponentDelegate) {
+    public func configureForRendering(
+        componentView componentViewParam: CVComponentView,
+        cellMeasurement: CVCellMeasurement,
+        componentDelegate: CVComponentDelegate,
+    ) {
         guard let componentView = componentViewParam as? CVComponentViewBodyMedia else {
             owsFailDebug("Unexpected componentView.")
             componentViewParam.reset()
@@ -66,20 +68,24 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
         let conversationStyle = self.conversationStyle
 
         let albumView = componentView.albumView
-        albumView.configure(mediaCache: self.mediaCache,
-                            items: self.items,
-                            interaction: self.interaction,
-                            isBorderless: self.isBorderless,
-                            cellMeasurement: cellMeasurement,
-                            conversationStyle: conversationStyle)
+        albumView.configure(
+            mediaCache: self.mediaCache,
+            items: self.items,
+            interaction: self.interaction,
+            isBorderless: self.isBorderless,
+            cellMeasurement: cellMeasurement,
+            conversationStyle: conversationStyle,
+        )
 
         let stackView = componentView.stackView
 
         stackView.reset()
-        stackView.configure(config: stackConfig,
-                            cellMeasurement: cellMeasurement,
-                            measurementKey: Self.measurementKey_stackView,
-                            subviews: [ albumView ])
+        stackView.configure(
+            config: stackConfig,
+            cellMeasurement: cellMeasurement,
+            measurementKey: Self.measurementKey_stackView,
+            subviews: [albumView],
+        )
 
         if let footerOverlay = self.footerOverlay {
             let footerView: CVComponentView
@@ -90,9 +96,11 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
                 componentView.footerOverlayView = footerOverlayView
                 footerView = footerOverlayView
             }
-            footerOverlay.configureForRendering(componentView: footerView,
-                                                cellMeasurement: cellMeasurement,
-                                                componentDelegate: componentDelegate)
+            footerOverlay.configureForRendering(
+                componentView: footerView,
+                cellMeasurement: cellMeasurement,
+                componentDelegate: componentDelegate,
+            )
             let footerRootView = footerView.rootView
             stackView.addSubview(footerRootView)
             let footerSize = cellMeasurement.size(key: Self.measurementKey_footerSize) ?? .zero
@@ -103,12 +111,12 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
                 footerFrame.width -= conversationStyle.textInsetHorizontal * 2
                 // Ensure footer height fits within text insets.
                 let maxFooterHeight = (view.bounds.height -
-                                        (conversationStyle.textInsetTop + conversationStyle.textInsetBottom))
+                    (conversationStyle.textInsetTop + conversationStyle.textInsetBottom))
                 footerFrame.height = min(maxFooterHeight, footerSize.height)
                 // Bottom align.
                 footerFrame.y = (view.bounds.height -
-                                    (footerFrame.height +
-                                        conversationStyle.textInsetBottom))
+                    (footerFrame.height +
+                        conversationStyle.textInsetBottom))
                 footerRootView.frame = footerFrame
             }
 
@@ -116,8 +124,8 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
             let gradientLayer = CAGradientLayer()
             gradientLayer.colors = [
                 UIColor(white: 0, alpha: 0.0).cgColor,
-                UIColor(white: 0, alpha: 0.4).cgColor
-                ]
+                UIColor(white: 0, alpha: 0.4).cgColor,
+            ]
             let gradientView = OWSLayerView(frame: .zero) { layerView in
                 var layerFrame = layerView.bounds
                 layerFrame.height = min(maxGradientHeight, layerView.height)
@@ -131,13 +139,17 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
         }
 
         // Only apply "inner shadow" for single media, not albums.
-        if !isBorderless,
-           albumView.itemViews.count == 1,
-           let firstMediaView = albumView.itemViews.first {
+        if
+            !isBorderless,
+            albumView.itemViews.count == 1,
+            let firstMediaView = albumView.itemViews.first
+        {
             let shadowColor: UIColor = isDarkThemeEnabled ? .white : .black
-            let innerShadowView = OWSBubbleShapeView(mode: .innerShadow(color: shadowColor,
-                                                                        radius: 0.5,
-                                                                        opacity: 0.15))
+            let innerShadowView = OWSBubbleShapeView(mode: .innerShadow(
+                color: shadowColor,
+                radius: 0.5,
+                opacity: 0.15,
+            ))
             componentView.innerShadowView = innerShadowView
             firstMediaView.addSubview(innerShadowView)
             stackView.layoutSubviewToFillSuperviewEdges(innerShadowView)
@@ -147,10 +159,12 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
             let iconView = CVImageView()
             iconView.setTemplateImageName(Theme.iconName(.arrowDown), tintColor: UIColor.ows_white)
             if albumView.itemViews.count > 1 {
-                let downloadStackConfig = ManualStackView.Config(axis: .horizontal,
-                                                                 alignment: .center,
-                                                                 spacing: 8,
-                                                                 layoutMargins: UIEdgeInsets(hMargin: 16, vMargin: 10))
+                let downloadStackConfig = ManualStackView.Config(
+                    axis: .horizontal,
+                    alignment: .center,
+                    spacing: 8,
+                    layoutMargins: UIEdgeInsets(hMargin: 16, vMargin: 10),
+                )
                 let downloadStack = ManualStackView(name: "downloadStack")
                 downloadStack.apply(config: downloadStackConfig)
                 var subviewInfos = [ManualStackSubviewInfo]()
@@ -164,27 +178,39 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
 
                 let downloadLabel = CVLabel()
                 let downloadFormat = (areAllItemsImages
-                                        ? OWSLocalizedString("MEDIA_GALLERY_ITEM_IMAGE_COUNT_%d", tableName: "PluralAware",
-                                        comment: "Format for an indicator of the number of image items in a media gallery. Embeds {{ the number of items in the media gallery }}.")
-                                        : OWSLocalizedString("MEDIA_GALLERY_ITEM_MIXED_COUNT_%d", tableName: "PluralAware",
-                                        comment: "Format for an indicator of the number of image or video items in a media gallery. Embeds {{ the number of items in the media gallery }}."))
+                    ? OWSLocalizedString(
+                        "MEDIA_GALLERY_ITEM_IMAGE_COUNT_%d",
+                        tableName: "PluralAware",
+                        comment: "Format for an indicator of the number of image items in a media gallery. Embeds {{ the number of items in the media gallery }}.",
+                    )
+                    : OWSLocalizedString(
+                        "MEDIA_GALLERY_ITEM_MIXED_COUNT_%d",
+                        tableName: "PluralAware",
+                        comment: "Format for an indicator of the number of image or video items in a media gallery. Embeds {{ the number of items in the media gallery }}.",
+                    ))
                 downloadStack.addArrangedSubview(downloadLabel)
                 let downloadLabelConfig = CVLabelConfig(
                     text: .text(String.localizedStringWithFormat(downloadFormat, items.count)),
                     displayConfig: .forUnstyledText(font: .dynamicTypeSubheadline, textColor: .ows_white),
                     font: .dynamicTypeSubheadline,
-                    textColor: UIColor.ows_white
+                    textColor: UIColor.ows_white,
                 )
                 downloadLabelConfig.applyForRendering(label: downloadLabel)
-                let downloadLabelSize = CVText.measureLabel(config: downloadLabelConfig,
-                                                            maxWidth: CGFloat.greatestFiniteMagnitude)
+                let downloadLabelSize = CVText.measureLabel(
+                    config: downloadLabelConfig,
+                    maxWidth: CGFloat.greatestFiniteMagnitude,
+                )
                 subviewInfos.append(downloadLabelSize.asManualSubviewInfo)
 
-                let downloadStackMeasurement = ManualStackView.measure(config: downloadStackConfig,
-                                                                       subviewInfos: subviewInfos)
+                let downloadStackMeasurement = ManualStackView.measure(
+                    config: downloadStackConfig,
+                    subviewInfos: subviewInfos,
+                )
                 downloadStack.measurement = downloadStackMeasurement
-                stackView.addSubviewToCenterOnSuperview(downloadStack,
-                                                        size: downloadStackMeasurement.measuredSize)
+                stackView.addSubviewToCenterOnSuperview(
+                    downloadStack,
+                    size: downloadStackMeasurement.measuredSize,
+                )
             } else {
                 let circleSize: CGFloat = 44
                 let circleView = OWSLayerView.circleView(size: circleSize)
@@ -224,10 +250,13 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
 
                 if totalSize > 0 {
                     var downloadSizeText = [OWSFormat.localizedFileSizeString(from: Int64(totalSize))]
-                    if pendingManualDownloadAttachments.count == 1,
-                       let firstAttachmentPointer = pendingManualDownloadAttachments.first {
+                    if
+                        pendingManualDownloadAttachments.count == 1,
+                        let firstAttachmentPointer = pendingManualDownloadAttachments.first
+                    {
                         let mimeType = firstAttachmentPointer.attachment.mimeType
-                        if MimeTypeUtil.isSupportedDefinitelyAnimatedMimeType(mimeType)
+                        if
+                            MimeTypeUtil.isSupportedDefinitelyAnimatedMimeType(mimeType)
                             || firstAttachmentPointer.reference.renderingFlag == .shouldLoop
                         {
                             // Do nothing.
@@ -246,12 +275,14 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
                         text: .text(downloadSizeText.joined(separator: " • ")),
                         displayConfig: .forUnstyledText(font: .dynamicTypeCaption1, textColor: .ows_white),
                         font: .dynamicTypeCaption1,
-                        textColor: .ows_white
+                        textColor: .ows_white,
                     )
                     let downloadSizeLabel = CVLabel()
                     downloadSizeLabelConfig.applyForRendering(label: downloadSizeLabel)
-                    let downloadSizeLabelSize = CVText.measureLabel(config: downloadSizeLabelConfig,
-                                                                    maxWidth: .greatestFiniteMagnitude)
+                    let downloadSizeLabelSize = CVText.measureLabel(
+                        config: downloadSizeLabelConfig,
+                        maxWidth: .greatestFiniteMagnitude,
+                    )
                     downloadSizeView.addSubviewToFillSuperviewMargins(downloadSizeLabel)
 
                     let downloadSizeViewSize = downloadSizeLabelSize + downloadSizeView.layoutMargins.asSize
@@ -259,12 +290,14 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
                     stackView.addLayoutBlock { view in
                         let hInset: CGFloat = 16
                         let x = (CurrentAppContext().isRTL
-                                    ? view.width - (downloadSizeViewSize.width - hInset)
-                                    : hInset)
-                        downloadSizeView.frame = CGRect(x: x,
-                                                        y: 9,
-                                                        width: downloadSizeViewSize.width,
-                                                        height: downloadSizeViewSize.height)
+                            ? view.width - (downloadSizeViewSize.width - hInset)
+                            : hInset)
+                        downloadSizeView.frame = CGRect(
+                            x: x,
+                            y: 9,
+                            width: downloadSizeViewSize.width,
+                            height: downloadSizeViewSize.height,
+                        )
                     }
                 }
             }
@@ -282,10 +315,12 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
     private static var senderNameFont: UIFont { UIFont.dynamicTypeCaption1.semibold() }
 
     private var stackConfig: CVStackViewConfig {
-        CVStackViewConfig(axis: .vertical,
-                          alignment: .fill,
-                          spacing: 0,
-                          layoutMargins: .zero)
+        CVStackViewConfig(
+            axis: .vertical,
+            alignment: .fill,
+            spacing: 0,
+            layoutMargins: .zero,
+        )
     }
 
     private var maxMediaMessageWidth: CGFloat {
@@ -307,31 +342,37 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
         var minWidth: CGFloat = 0
         if let footerOverlay = self.footerOverlay {
             let maxFooterWidth = max(0, maxWidth - conversationStyle.textInsets.totalWidth)
-            let footerSize = footerOverlay.measure(maxWidth: maxFooterWidth,
-                                                   measurementBuilder: measurementBuilder)
+            let footerSize = footerOverlay.measure(
+                maxWidth: maxFooterWidth,
+                measurementBuilder: measurementBuilder,
+            )
             minWidth = min(maxWidth, footerSize.width + conversationStyle.textInsets.totalWidth)
             measurementBuilder.setSize(key: Self.measurementKey_footerSize, size: footerSize)
         }
 
         let maxWidth = min(maxWidth, maxMediaMessageWidth)
 
-        let albumSize = CVMediaAlbumView.measure(maxWidth: maxWidth,
-                                                 minWidth: minWidth,
-                                                 items: self.items,
-                                                 measurementBuilder: measurementBuilder)
+        let albumSize = CVMediaAlbumView.measure(
+            maxWidth: maxWidth,
+            minWidth: minWidth,
+            items: self.items,
+            measurementBuilder: measurementBuilder,
+        )
         let albumInfo = albumSize.asManualSubviewInfo
-        let stackMeasurement = ManualStackView.measure(config: stackConfig,
-                                                       measurementBuilder: measurementBuilder,
-                                                       measurementKey: Self.measurementKey_stackView,
-                                                       subviewInfos: [ albumInfo ],
-                                                       maxWidth: maxWidth)
+        let stackMeasurement = ManualStackView.measure(
+            config: stackConfig,
+            measurementBuilder: measurementBuilder,
+            measurementKey: Self.measurementKey_stackView,
+            subviewInfos: [albumInfo],
+            maxWidth: maxWidth,
+        )
         return stackMeasurement.measuredSize
     }
 
     // MARK: - Events
 
-    public override func cellWillBecomeVisible(
-        componentDelegate: CVComponentDelegate
+    override public func cellWillBecomeVisible(
+        componentDelegate: CVComponentDelegate,
     ) {
         AssertIsOnMainThread()
 
@@ -343,11 +384,11 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
         }
     }
 
-    public override func handleTap(
+    override public func handleTap(
         sender: UIGestureRecognizer,
         componentDelegate: CVComponentDelegate,
         componentView: CVComponentView,
-        renderItem: CVRenderItem
+        renderItem: CVRenderItem,
     ) -> Bool {
         AssertIsOnMainThread()
 
@@ -399,7 +440,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
             componentDelegate.didTapBodyMedia(
                 itemViewModel: itemViewModel,
                 attachmentStream: stream,
-                imageView: mediaView
+                imageView: mediaView,
             )
             return true
         case .backupThumbnail:
@@ -414,17 +455,19 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
 
     public func albumItemView(
         forAttachment attachment: ReferencedAttachment,
-        componentView: CVComponentView
+        componentView: CVComponentView,
     ) -> UIView? {
         guard let componentView = componentView as? CVComponentViewBodyMedia else {
             owsFailDebug("Unexpected componentView.")
             return nil
         }
         let albumView = componentView.albumView
-        guard let albumItemView = (albumView.itemViews.first {
-            $0.attachment.attachment.attachment.id == attachment.attachment.id
-                && $0.attachment.attachment.reference.hasSameOwner(as: attachment.reference)
-        }) else {
+        guard
+            let albumItemView = (albumView.itemViews.first {
+                $0.attachment.attachment.attachment.id == attachment.attachment.id
+                    && $0.attachment.attachment.reference.hasSameOwner(as: attachment.reference)
+            })
+        else {
             assert(albumView.moreItemsView != nil)
             return albumView.moreItemsView
         }
@@ -440,7 +483,7 @@ public class CVComponentBodyMedia: CVComponentBase, CVComponent {
 
         fileprivate var footerOverlayView: CVComponentView?
 
-        open override func reset() {
+        override open func reset() {
             bodyMediaGradientView = nil
             footerOverlayView = nil
 
@@ -514,10 +557,10 @@ protocol BodyMediaPresentationContext {
 extension CVComponentBodyMedia.CVComponentViewBodyMediaRootView: BodyMediaPresentationContext {
     var mediaOverlayViews: [UIView] {
         var result = [UIView]()
-        if let footerOverlayView = footerOverlayView {
+        if let footerOverlayView {
             result.append(footerOverlayView.rootView)
         }
-        if let bodyMediaGradientView = bodyMediaGradientView {
+        if let bodyMediaGradientView {
             result.append(bodyMediaGradientView)
         }
         return result
@@ -530,7 +573,9 @@ extension CVComponentBodyMedia: CVAccessibilityComponent {
     public var accessibilityDescription: String {
         // TODO: We could describe how many media
         // and their type (video, image, animated image).
-        OWSLocalizedString("ACCESSIBILITY_LABEL_MEDIA",
-                          comment: "Accessibility label for media.")
+        OWSLocalizedString(
+            "ACCESSIBILITY_LABEL_MEDIA",
+            comment: "Accessibility label for media.",
+        )
     }
 }

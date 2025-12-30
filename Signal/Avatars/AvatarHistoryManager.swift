@@ -31,14 +31,14 @@ class AvatarHistoryManager {
 
     init(
         appReadiness: AppReadiness,
-        db: any DB
+        db: any DB,
     ) {
         self.db = db
         self.keyValueStore = KeyValueStore(collection: "AvatarHistory")
         self.imageHistoryDirectory = URL(
             fileURLWithPath: "AvatarHistory",
             isDirectory: true,
-            relativeTo: URL(fileURLWithPath: OWSFileSystem.appSharedDataDirectoryPath())
+            relativeTo: URL(fileURLWithPath: OWSFileSystem.appSharedDataDirectoryPath()),
         )
     }
 
@@ -155,7 +155,7 @@ class AvatarHistoryManager {
 
     func models(
         for context: Context,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> [AvatarModel] {
         let records: [AvatarRecord]?
 
@@ -178,7 +178,7 @@ class AvatarHistoryManager {
                 models.append(.init(
                     identifier: record.identifier,
                     type: .icon(icon),
-                    theme: AvatarTheme(rawValue: record.theme) ?? .default
+                    theme: AvatarTheme(rawValue: record.theme) ?? .default,
                 ))
             case .image:
                 guard let imageUrl = record.imageUrl, OWSFileSystem.fileOrFolderExists(url: imageUrl) else {
@@ -188,7 +188,7 @@ class AvatarHistoryManager {
                 models.append(.init(
                     identifier: record.identifier,
                     type: .image(imageUrl),
-                    theme: AvatarTheme(rawValue: record.theme) ?? .default
+                    theme: AvatarTheme(rawValue: record.theme) ?? .default,
                 ))
             case .text:
                 guard let text = record.text else {
@@ -198,7 +198,7 @@ class AvatarHistoryManager {
                 models.append(.init(
                     identifier: record.identifier,
                     type: .text(text),
-                    theme: AvatarTheme(rawValue: record.theme) ?? .default
+                    theme: AvatarTheme(rawValue: record.theme) ?? .default,
                 ))
             }
         }
@@ -213,8 +213,11 @@ class AvatarHistoryManager {
 // doesn't know about.
 private struct AvatarRecord: Codable {
     enum Kind: String, Codable {
-        case icon, text, image
+        case icon
+        case text
+        case image
     }
+
     let kind: Kind
     let identifier: String
     let imageUrl: URL?

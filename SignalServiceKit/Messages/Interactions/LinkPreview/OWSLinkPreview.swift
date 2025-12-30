@@ -25,6 +25,7 @@ public class OWSLinkPreviewDraft: Equatable {
     public var urlString: String {
         return url.absoluteString
     }
+
     public let title: String?
     public let imageData: Data?
     public let imageMimeType: String?
@@ -58,7 +59,7 @@ public class OWSLinkPreviewDraft: Equatable {
     /// Uses identity equatability even though comparing fields seems like it would make more sense because this
     /// object used to inherit from `NSObject` without overridding `isEqual(_)` so it would have inherited
     /// identity equatability.
-    public static func == (lhs: OWSLinkPreviewDraft, rhs: OWSLinkPreviewDraft) -> Bool {
+    public static func ==(lhs: OWSLinkPreviewDraft, rhs: OWSLinkPreviewDraft) -> Bool {
         return lhs === rhs
     }
 }
@@ -89,7 +90,7 @@ public final class OWSLinkPreview: NSObject, NSCoding, NSCopying, Codable {
         }
     }
 
-    public override var hash: Int {
+    override public var hash: Int {
         var hasher = Hasher()
         hasher.combine(date)
         hasher.combine(previewDescription)
@@ -98,7 +99,7 @@ public final class OWSLinkPreview: NSObject, NSCoding, NSCopying, Codable {
         return hasher.finalize()
     }
 
-    public override func isEqual(_ object: Any?) -> Bool {
+    override public func isEqual(_ object: Any?) -> Bool {
         guard let object = object as? Self else { return false }
         guard type(of: self) == type(of: object) else { return false }
         guard self.date == object.date else { return false }
@@ -156,7 +157,7 @@ public final class OWSLinkPreview: NSObject, NSCoding, NSCopying, Codable {
     }
 
     public var displayDomain: String? {
-        urlString.flatMap(URL.init(string: )).flatMap(LinkPreviewHelper.displayDomain(forUrl:))
+        urlString.flatMap(URL.init(string:)).flatMap(LinkPreviewHelper.displayDomain(forUrl:))
     }
 
     // MARK: - Codable
@@ -181,16 +182,16 @@ public final class OWSLinkPreview: NSObject, NSCoding, NSCopying, Codable {
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        if let urlString = urlString {
+        if let urlString {
             try container.encode(urlString, forKey: .urlString)
         }
-        if let title = title {
+        if let title {
             try container.encode(title, forKey: .title)
         }
-        if let previewDescription = previewDescription {
+        if let previewDescription {
             try container.encode(previewDescription, forKey: .previewDescription)
         }
-        if let date = date {
+        if let date {
             try container.encode(date, forKey: .date)
         }
     }

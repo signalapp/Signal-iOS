@@ -28,7 +28,7 @@ public extension DebugLogger {
             source: String,
             file: String,
             function: String,
-            line: UInt
+            line: UInt,
         ) {
             // TODO: Remove.
             let message = "MCSDK: " + message.description
@@ -71,11 +71,11 @@ public extension DebugLogger {
 
         @inlinable public var logLevel: Logging.Logger.Level {
             get {
-                #if DEBUG
+#if DEBUG
                 return .trace
-                #else
+#else
                 return .info
-                #endif
+#endif
             }
             set {
                 _ = newValue

@@ -23,7 +23,7 @@ class ChangePhoneNumberPniManagerTest: XCTestCase {
 
     private var changeNumberPniManager: ChangePhoneNumberPniManager!
 
-    public override func setUp() {
+    override func setUp() {
         let recipientDbTable = RecipientDatabaseTable()
         let recipientFetcher = RecipientFetcher(
             recipientDatabaseTable: recipientDbTable,
@@ -31,7 +31,7 @@ class ChangePhoneNumberPniManagerTest: XCTestCase {
         )
         let recipientIdFinder = RecipientIdFinder(
             recipientDatabaseTable: recipientDbTable,
-            recipientFetcher: recipientFetcher
+            recipientFetcher: recipientFetcher,
         )
         identityManagerMock = .init(recipientIdFinder: recipientIdFinder)
         pniDistributionParameterBuilderMock = .init()
@@ -52,7 +52,7 @@ class ChangePhoneNumberPniManagerTest: XCTestCase {
             pniKyberPreKeyStore: kyberPreKeyStoreMock,
             preKeyManager: preKeyManagerMock,
             registrationIdGenerator: registrationIdGeneratorMock,
-            tsAccountManager: tsAccountManagerMock
+            tsAccountManager: tsAccountManagerMock,
         )
     }
 
@@ -113,7 +113,7 @@ class ChangePhoneNumberPniManagerTest: XCTestCase {
 
         XCTAssertEqual(
             identityManagerMock.identityKeyPairs,
-            [.pni: pendingState.pniIdentityKeyPair]
+            [.pni: pendingState.pniIdentityKeyPair],
         )
 
         db.read { tx in
@@ -122,7 +122,7 @@ class ChangePhoneNumberPniManagerTest: XCTestCase {
 
         XCTAssertEqual(
             tsAccountManagerMock.pniRegistrationIdMock(),
-            pendingState.localDevicePniRegistrationId
+            pendingState.localDevicePniRegistrationId,
         )
 
         XCTAssertEqual(preKeyManagerMock.attemptedRefreshes.count, 1)
@@ -139,7 +139,7 @@ class ChangePhoneNumberPniManagerTest: XCTestCase {
         return await changeNumberPniManager.generatePniIdentity(
             forNewE164: e164,
             localAci: aci,
-            localDeviceId: localDeviceId
+            localDeviceId: localDeviceId,
         )
     }
 }
@@ -147,7 +147,7 @@ class ChangePhoneNumberPniManagerTest: XCTestCase {
 private extension ChangePhoneNumberPni.GeneratePniIdentityResult {
     var unwrapSuccess: (
         PniDistribution.Parameters,
-        ChangePhoneNumberPni.PendingState
+        ChangePhoneNumberPni.PendingState,
     ) {
         guard case let .success(parameters, pendingState) = self else {
             owsFail("Failed to unwrap success!")
@@ -188,7 +188,7 @@ private class PniDistributionParameterBuilderMock: PniDistributionParamaterBuild
         localE164: E164,
         localDevicePniSignedPreKey: LibSignalClient.SignedPreKeyRecord,
         localDevicePniPqLastResortPreKey: LibSignalClient.KyberPreKeyRecord,
-        localDevicePniRegistrationId: UInt32
+        localDevicePniRegistrationId: UInt32,
     ) async throws -> PniDistribution.Parameters {
         let buildOutcome = buildOutcomes.first!
         buildOutcomes = Array(buildOutcomes.dropFirst())
@@ -200,7 +200,7 @@ private class PniDistributionParameterBuilderMock: PniDistributionParamaterBuild
                 localDeviceId: localDeviceId.ifValid!,
                 localDevicePniSignedPreKey: localDevicePniSignedPreKey,
                 localDevicePniPqLastResortPreKey: localDevicePniPqLastResortPreKey,
-                localDevicePniRegistrationId: localDevicePniRegistrationId
+                localDevicePniRegistrationId: localDevicePniRegistrationId,
             )
         case .failure:
             throw OWSGenericError("")

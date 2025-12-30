@@ -74,7 +74,7 @@ public struct CallLink: Equatable {
 
     // MARK: - Equatable
 
-    public static func == (lhs: CallLink, rhs: CallLink) -> Bool {
+    public static func ==(lhs: CallLink, rhs: CallLink) -> Bool {
         lhs.url() == rhs.url()
     }
 }

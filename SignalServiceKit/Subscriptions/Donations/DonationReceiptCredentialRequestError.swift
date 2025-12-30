@@ -25,7 +25,7 @@ public struct DonationReceiptCredentialRequestError: Codable, Equatable {
     ) {
         owsPrecondition(
             chargeFailureCodeIfPaymentFailed == nil || errorCode == .paymentFailed,
-            "Charge failure must only be populated if the error code is payment failed!"
+            "Charge failure must only be populated if the error code is payment failed!",
         )
 
         self.errorCode = errorCode
@@ -51,14 +51,16 @@ public struct DonationReceiptCredentialRequestError: Codable, Equatable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
         let rawErrorCode = try container.decode(Int.self, forKey: .errorCode)
-        if let errorCode = ReceiptCredentialRequestError.ErrorCode(
-            rawValue: rawErrorCode,
-        ) {
+        if
+            let errorCode = ReceiptCredentialRequestError.ErrorCode(
+                rawValue: rawErrorCode,
+            )
+        {
             self.errorCode = errorCode
         } else {
             throw DecodingError.dataCorrupted(DecodingError.Context(
                 codingPath: [CodingKeys.errorCode],
-                debugDescription: "Unexpected error code value: \(rawErrorCode)"
+                debugDescription: "Unexpected error code value: \(rawErrorCode)",
             ))
         }
 
@@ -66,7 +68,7 @@ public struct DonationReceiptCredentialRequestError: Codable, Equatable {
             guard let paymentMethod = DonationPaymentMethod(rawValue: paymentMethodString) else {
                 throw DecodingError.dataCorrupted(DecodingError.Context(
                     codingPath: [CodingKeys.paymentMethod],
-                    debugDescription: "Unexpected payment method value: \(paymentMethodString)"
+                    debugDescription: "Unexpected payment method value: \(paymentMethodString)",
                 ))
             }
 

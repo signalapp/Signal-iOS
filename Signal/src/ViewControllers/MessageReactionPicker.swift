@@ -46,14 +46,14 @@ class MessageReactionPicker: UIStackView {
         var emoji: Emoji {
             switch self {
             case .emoji(let emoji, _): .emoji(emoji)
-            case .more(_): .more
+            case .more: .more
             }
         }
 
         var emojiButton: OWSFlatButton? {
             switch self {
             case .emoji(_, let button): button
-            case .more(_): nil
+            case .more: nil
             }
         }
 
@@ -82,7 +82,7 @@ class MessageReactionPicker: UIStackView {
         delegate: MessageReactionPickerDelegate?,
         style: Style,
     ) {
-        if let selectedEmoji = selectedEmoji {
+        if let selectedEmoji {
             self.selectedEmoji = EmojiWithSkinTones(rawValue: selectedEmoji)
             owsAssertDebug(self.selectedEmoji != nil)
         } else {
@@ -115,7 +115,7 @@ class MessageReactionPicker: UIStackView {
         case (.configure, false), (.contextMenu(allowGlass: _), _):
             backgroundView = addBackgroundView(
                 withBackgroundColor: .Signal.secondaryGroupedBackground,
-                cornerRadius: pickerDiameter / 2
+                cornerRadius: pickerDiameter / 2,
             )
             backgroundView?.layer.cornerCurve = .continuous
             backgroundView?.layer.shadowColor = UIColor.black.cgColor
@@ -143,7 +143,7 @@ class MessageReactionPicker: UIStackView {
             top: pickerPadding,
             leading: style.isInline ? 0 : pickerPadding,
             bottom: pickerPadding,
-            trailing: style.isInline ? 4 : pickerPadding
+            trailing: style.isInline ? 4 : pickerPadding,
         )
 
         let emojiSet = currentEmojiSetOnDisk(style: style)
@@ -176,7 +176,7 @@ class MessageReactionPicker: UIStackView {
             button.setTitle(
                 title: emoji.rawValue,
                 font: .systemFont(ofSize: reactionFontSize),
-                titleColor: .Signal.label
+                titleColor: .Signal.label,
             )
             button.setPressedBlock { [weak self] in
                 // current title of button may have changed in the meantime
@@ -248,7 +248,7 @@ class MessageReactionPicker: UIStackView {
             // This could happen if another platform supports an emoji that we don't yet (say, because there's a newer
             // version of Unicode), or if a bug results in a string that's not valid at all, or fewer entries than the
             // default.
-            let savedReactions = ReactionManager.defaultEmojiSet.enumerated().map { (i, defaultEmoji) -> EmojiWithSkinTones in
+            let savedReactions = ReactionManager.defaultEmojiSet.enumerated().map { i, defaultEmoji -> EmojiWithSkinTones in
                 // Treat "out-of-bounds index" and "in-bounds but not valid" the same way.
                 if let customReaction = customSet[safe: i] ?? nil {
                     return customReaction
@@ -294,27 +294,27 @@ class MessageReactionPicker: UIStackView {
         }
     }
 
-    public func replaceEmojiReaction(_ oldEmoji: String, newEmoji: String, inPosition position: Int) {
+    func replaceEmojiReaction(_ oldEmoji: String, newEmoji: String, inPosition position: Int) {
         guard let button = buttonForEmoji[position].emojiButton else { return }
         button.setTitle(title: newEmoji, font: .systemFont(ofSize: reactionFontSize), titleColor: .Signal.label)
         buttonForEmoji.replaceSubrange(
             position...position,
-            with: [.emoji(emoji: newEmoji, button: button)]
+            with: [.emoji(emoji: newEmoji, button: button)],
         )
     }
 
-    public func currentEmojiSet() -> [String] {
+    func currentEmojiSet() -> [String] {
         buttonForEmoji.compactMap { button in
             switch button {
             case .emoji(let emoji, _):
                 emoji
-            case .more(_):
+            case .more:
                 nil
             }
         }
     }
 
-    public func startReplaceAnimation(focusedEmoji: String, inPosition position: Int) {
+    func startReplaceAnimation(focusedEmoji: String, inPosition position: Int) {
         var buttonToWiggle: UIView?
         UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut) {
             for (index, button) in self.buttonViews.enumerated() {
@@ -328,7 +328,7 @@ class MessageReactionPicker: UIStackView {
                 }
             }
         } completion: { finished in
-            if finished, let buttonToWiggle = buttonToWiggle {
+            if finished, let buttonToWiggle {
                 let leftRotationValue = NSValue(caTransform3D: CATransform3DConcat(CATransform3DMakeScale(1.3, 1.3, 1), CATransform3DMakeRotation(-0.08, 0, 0, 1)))
                 let rightRotationValue = NSValue(caTransform3D: CATransform3DConcat(CATransform3DMakeScale(1.3, 1.3, 1), CATransform3DMakeRotation(0.08, 0, 0, 1)))
                 let animation = CAKeyframeAnimation(keyPath: "transform")
@@ -341,7 +341,7 @@ class MessageReactionPicker: UIStackView {
         }
     }
 
-    public func endReplaceAnimation() {
+    func endReplaceAnimation() {
         UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut) {
             for button in self.buttonViews {
                 button.alpha = 1
@@ -390,8 +390,8 @@ class MessageReactionPicker: UIStackView {
         var focusedButton: UIView?
 
         if
-            let focusedEmoji = focusedEmoji,
-            let focusedButton = buttonForEmoji.first(where: { $0.emoji == focusedEmoji})?.view
+            let focusedEmoji,
+            let focusedButton = buttonForEmoji.first(where: { $0.emoji == focusedEmoji })?.view
         {
             previouslyFocusedButton = focusedButton
         }
@@ -446,7 +446,7 @@ class MessageReactionPicker: UIStackView {
     }
 
     private class FadingHScrollView: UIScrollView {
-        var fadeLocation: CGFloat = 31/32
+        var fadeLocation: CGFloat = 31 / 32
         private lazy var gradient: GradientView = {
             let view = GradientView(colors: [.black, .clear], locations: [fadeLocation, 1])
             // Blur is at top by default. Rotate to right edge on LTR, left edge on RTL

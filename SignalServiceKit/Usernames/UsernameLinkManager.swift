@@ -36,7 +36,7 @@ public protocol UsernameLinkManager {
     /// the `entropy` return value will be equivalent to it.
     func generateEncryptedUsername(
         username: String,
-        existingEntropy: Data?
+        existingEntropy: Data?,
     ) throws -> (entropy: Data, encryptedUsername: Data)
 
     /// Uses the given link to fetch an encrypted username and decrypt it into a
@@ -58,7 +58,7 @@ public final class UsernameLinkManagerImpl: UsernameLinkManager {
 
     public func generateEncryptedUsername(
         username: String,
-        existingEntropy: Data?
+        existingEntropy: Data?,
     ) throws -> (entropy: Data, encryptedUsername: Data) {
         let lscUsername = try LibSignalClient.Username(username)
         let (entropyBytes, encryptedUsernameBytes) = try lscUsername.createLink(previousEntropy: existingEntropy)
@@ -70,12 +70,12 @@ public final class UsernameLinkManagerImpl: UsernameLinkManager {
     }
 
     public func decryptEncryptedLink(
-        link: Usernames.UsernameLink
+        link: Usernames.UsernameLink,
     ) async throws -> String? {
         return try await self.apiClient.getUsernameLink(handle: link.handle).map {
             let lscUsername = try LibSignalClient.Username(
                 fromLink: $0,
-                withRandomness: link.entropy
+                withRandomness: link.entropy,
             )
             return lscUsername.value
         }

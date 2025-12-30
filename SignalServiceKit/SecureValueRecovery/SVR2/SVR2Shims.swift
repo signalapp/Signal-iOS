@@ -11,6 +11,7 @@ extension SVR2 {
         public typealias AppContext = _SVR2_AppContextShim
         public typealias OWS2FAManager = _SVR2_OWS2FAManagerShim
     }
+
     public enum Wrappers {
         public typealias AppContext = _SVR2_AppContextWrapper
         public typealias OWS2FAManager = _SVR2_OWS2FAManagerWrapper
@@ -69,16 +70,16 @@ protocol SVR2PinHash {
     func decryptMasterKey(_ encryptedMasterKey: Data) throws -> Data
 }
 
-internal protocol SVR2ClientWrapper {
+protocol SVR2ClientWrapper {
 
     func hashPin(
         connection: SgxWebsocketConnection<SVR2WebsocketConfigurator>,
         utf8NormalizedPin: Data,
-        username: String
+        username: String,
     ) throws -> SVR2PinHash
 }
 
-internal class SVR2ClientWrapperImpl: SVR2ClientWrapper {
+class SVR2ClientWrapperImpl: SVR2ClientWrapper {
 
     init() {}
 
@@ -111,7 +112,7 @@ internal class SVR2ClientWrapperImpl: SVR2ClientWrapper {
             let masterKey = try Sha256HmacSiv.decrypt(
                 iv: encryptedMasterKey[ivRange],
                 cipherText: encryptedMasterKey[cipherRange],
-                key: encryptionKey
+                key: encryptionKey,
             )
 
             guard masterKey.count == MasterKey.Constants.byteLength else { throw SVR.SVRError.assertion }
@@ -123,9 +124,9 @@ internal class SVR2ClientWrapperImpl: SVR2ClientWrapper {
     func hashPin(
         connection: SgxWebsocketConnection<SVR2WebsocketConfigurator>,
         utf8NormalizedPin: Data,
-        username: String
+        username: String,
     ) throws -> SVR2PinHash {
-        let pinHash = try LibSignalClient.PinHash.init(normalizedPin: utf8NormalizedPin, username: username, mrenclave: connection.mrEnclave.dataValue)
+        let pinHash = try LibSignalClient.PinHash(normalizedPin: utf8NormalizedPin, username: username, mrenclave: connection.mrEnclave.dataValue)
         return SVR2PinHashImpl(pinHash)
     }
 
@@ -139,7 +140,7 @@ extension SVR2 {
     }
 }
 
-internal class _SVR2_AppContextMock: _SVR2_AppContextShim {
+class _SVR2_AppContextMock: _SVR2_AppContextShim {
 
     init() {}
 
@@ -148,7 +149,7 @@ internal class _SVR2_AppContextMock: _SVR2_AppContextShim {
     var isNSE: Bool { false }
 }
 
-internal class MockSVR2ClientWrapper: SVR2ClientWrapper {
+class MockSVR2ClientWrapper: SVR2ClientWrapper {
 
     init() {}
 
@@ -173,14 +174,14 @@ internal class MockSVR2ClientWrapper: SVR2ClientWrapper {
         }
     }
 
-    public var didHashPin: ((_ utf8NormalizedPin: Data, _ username: String) throws -> MockSVR2PinHash) = { utf8NormalizedPin, _ in
+    var didHashPin: ((_ utf8NormalizedPin: Data, _ username: String) throws -> MockSVR2PinHash) = { utf8NormalizedPin, _ in
         return MockSVR2PinHash(utf8NormalizedPin: utf8NormalizedPin)
     }
 
     func hashPin(
         connection: SgxWebsocketConnection<SVR2WebsocketConfigurator>,
         utf8NormalizedPin: Data,
-        username: String
+        username: String,
     ) throws -> SVR2PinHash {
         return try didHashPin(utf8NormalizedPin, username)
     }

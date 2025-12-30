@@ -19,7 +19,7 @@ public class MessagePipelineSupervisor: NSObject {
     /// Initializes a MessagePipelineSupervisor
     ///   Only to be used by tests.
     @objc
-    public override init() {
+    override public init() {
         super.init()
 
         SwiftSingletons.register(self)
@@ -136,7 +136,7 @@ public class MessagePipelineSupervisor: NSObject {
         // Make a copy so we don't need to hold the lock while we call out
         let toNotify = lock.withLock { return Array(pipelineStages.allObjects) }
 
-        toNotify.forEach { (stage) in
+        toNotify.forEach { stage in
             if isSuspended {
                 stage.supervisorDidSuspendMessageProcessing?(self)
             } else {

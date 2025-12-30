@@ -49,10 +49,12 @@ public class ThreadViewModel: NSObject {
     /// - Important
     /// Crashes if the corresponding thread does not exist.
     public convenience init(threadUniqueId: String, forChatList: Bool, transaction tx: DBReadTransaction) {
-        guard let thread = DependenciesBridge.shared.threadStore.fetchThread(
-            uniqueId: threadUniqueId,
-            tx: tx
-        ) else {
+        guard
+            let thread = DependenciesBridge.shared.threadStore.fetchThread(
+                uniqueId: threadUniqueId,
+                tx: tx,
+            )
+        else {
             owsFail("Unexpectedly missing thread for unique ID!")
         }
 
@@ -97,7 +99,7 @@ public class ThreadViewModel: NSObject {
                 thread: thread,
                 lastMessageForInbox: lastMessageForInbox,
                 hasPendingMessageRequest: hasPendingMessageRequest,
-                transaction: transaction
+                transaction: transaction,
             )
         } else {
             chatListInfo = nil
@@ -135,7 +137,7 @@ public class ChatListInfo {
         thread: TSThread,
         lastMessageForInbox: TSInteraction?,
         hasPendingMessageRequest: Bool,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) {
 
         self.lastMessageDate = lastMessageForInbox?.timestampDate
@@ -148,17 +150,17 @@ public class ChatListInfo {
                 let receiptData = paymentMessage.paymentNotification?.mcReceiptData,
                 let paymentModel = PaymentFinder.paymentModels(
                     forMcReceiptData: receiptData,
-                    transaction: transaction
+                    transaction: transaction,
                 ).first
             {
                 return MessageRecipientStatusUtils.recipientStatus(
                     outgoingMessage: outgoingMessage,
-                    paymentModel: paymentModel
+                    paymentModel: paymentModel,
                 )
             } else {
                 return MessageRecipientStatusUtils.recipientStatus(
                     outgoingMessage: outgoingMessage,
-                    transaction: transaction
+                    transaction: transaction,
                 )
             }
         }()
@@ -167,7 +169,7 @@ public class ChatListInfo {
             thread: thread,
             hasPendingMessageRequest: hasPendingMessageRequest,
             lastMessageForInbox: lastMessageForInbox,
-            transaction: transaction
+            transaction: transaction,
         )
     }
 
@@ -175,19 +177,23 @@ public class ChatListInfo {
         thread: TSThread,
         hasPendingMessageRequest: Bool,
         lastMessageForInbox: TSInteraction?,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> CLVSnippet {
 
         let isBlocked = SSKEnvironment.shared.blockingManagerRef.isThreadBlocked(thread, transaction: transaction)
 
         func loadDraftText() -> HydratedMessageBody? {
-            guard let draftMessageBody = thread.currentDraft(shouldFetchLatest: false,
-                                                             transaction: transaction) else {
+            guard
+                let draftMessageBody = thread.currentDraft(
+                    shouldFetchLatest: false,
+                    transaction: transaction,
+                )
+            else {
                 return nil
             }
             return draftMessageBody
                 .hydrating(
-                    mentionHydrator: ContactsMentionHydrator.mentionHydrator(transaction: transaction)
+                    mentionHydrator: ContactsMentionHydrator.mentionHydrator(transaction: transaction),
                 )
         }
         func hasVoiceMemoDraft() -> Bool {
@@ -196,7 +202,7 @@ public class ChatListInfo {
         func loadLastMessageText() -> HydratedMessageBody? {
             if let previewable = lastMessageForInbox as? OWSPreviewText {
                 return HydratedMessageBody.fromPlaintextWithoutRanges(
-                    previewable.previewText(transaction: transaction).filterStringForDisplay()
+                    previewable.previewText(transaction: transaction).filterStringForDisplay(),
                 )
             } else if let tsMessage = lastMessageForInbox as? TSMessage {
                 return tsMessage.conversationListPreviewText(transaction)
@@ -212,7 +218,7 @@ public class ChatListInfo {
                 return SSKEnvironment.shared.contactManagerImplRef.shortestDisplayName(
                     forGroupMember: incomingMessage.authorAddress,
                     inGroup: groupThread.groupModel,
-                    transaction: transaction
+                    transaction: transaction,
                 )
             } else if lastMessageForInbox is TSOutgoingMessage {
                 return CommonStrings.you

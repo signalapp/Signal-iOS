@@ -7,9 +7,9 @@ import Foundation
 
 public class OutgoingEditMessageSyncTranscript: OWSOutgoingSentMessageTranscript {
 
-    public override func prepareDataSyncMessageContent(
+    override public func prepareDataSyncMessageContent(
         with sentBuilder: SSKProtoSyncMessageSentBuilder,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> Bool {
         guard let message = message as? OutgoingEditMessage else {
             return false
@@ -17,10 +17,12 @@ public class OutgoingEditMessageSyncTranscript: OWSOutgoingSentMessageTranscript
 
         let editBuilder = SSKProtoEditMessage.builder()
 
-        guard let dataBuilder = message.dataMessageBuilder(
-            with: messageThread,
-            transaction: tx
-        ) else {
+        guard
+            let dataBuilder = message.dataMessageBuilder(
+                with: messageThread,
+                transaction: tx,
+            )
+        else {
             return false
         }
 

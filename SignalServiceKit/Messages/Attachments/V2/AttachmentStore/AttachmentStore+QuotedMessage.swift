@@ -10,7 +10,7 @@ extension AttachmentStore {
     public func quotedAttachmentReference(
         from info: OWSAttachmentInfo,
         parentMessage: TSMessage,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> QuotedMessageAttachmentReference? {
         guard let messageRowId = parentMessage.sqliteRowId else {
             owsFailDebug("Uninserted message!")
@@ -19,7 +19,7 @@ extension AttachmentStore {
 
         let reference = self.fetchFirstReference(
             owner: .quotedReplyAttachment(messageRowId: messageRowId),
-            tx: tx
+            tx: tx,
         )
 
         if let reference {
@@ -32,8 +32,8 @@ extension AttachmentStore {
     }
 
     public func quotedAttachmentReference(
-            for message: TSMessage,
-            tx: DBReadTransaction
+        for message: TSMessage,
+        tx: DBReadTransaction,
     ) -> QuotedMessageAttachmentReference? {
         guard let info = message.quotedMessage?.attachmentInfo() else {
             return nil
@@ -43,7 +43,7 @@ extension AttachmentStore {
 
     public func quotedThumbnailAttachment(
         for message: TSMessage,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> AttachmentReference? {
         let ref = self.quotedAttachmentReference(for: message, tx: tx)
         switch ref {
@@ -56,7 +56,7 @@ extension AttachmentStore {
 
     public func attachmentToUseInQuote(
         originalMessageRowId: Int64,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> AttachmentReference? {
         return self.orderedBodyAttachments(forMessageRowId: originalMessageRowId, tx: tx).first
             ?? self.fetchFirstReference(owner: .messageLinkPreview(messageRowId: originalMessageRowId), tx: tx)

@@ -22,21 +22,21 @@ extension EditSendValidationError: LocalizedError {
         case .editWindowClosed:
             return OWSLocalizedString(
                 "EDIT_MESSAGE_SEND_MESSAGE_TOO_OLD_ERROR",
-                comment: "Error message to display to user when a message is too old to edit"
+                comment: "Error message to display to user when a message is too old to edit",
             )
         case .tooManyEdits(let numEdits):
             return String.localizedStringWithFormat(
                 OWSLocalizedString(
                     "EDIT_MESSAGE_SEND_TOO_MANY_EDITS_ERROR",
                     tableName: "PluralAware",
-                    comment: "Error message to display to user when edit limit reached"
+                    comment: "Error message to display to user when edit limit reached",
                 ),
-                numEdits
+                numEdits,
             )
         default:
             return OWSLocalizedString(
                 "EDIT_MESSAGE_SEND_MESSAGE_UNKNOWN_ERROR",
-                comment: "Edit failed for an unexpected reason"
+                comment: "Edit failed for an unexpected reason",
             )
         }
     }
@@ -57,7 +57,7 @@ public protocol EditManager {
         serverDeliveryTimestamp: UInt64,
         thread: TSThread,
         editTarget: EditMessageTarget,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws -> TSMessage
 
     // MARK: - Edit UI Validation
@@ -67,7 +67,7 @@ public protocol EditManager {
     func validateCanSendEdit(
         targetMessageTimestamp: UInt64,
         thread: TSThread,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> EditSendValidationError?
 
     // MARK: - Outgoing Edit Send
@@ -82,7 +82,7 @@ public protocol EditManager {
         oversizeText: AttachmentDataSource?,
         quotedReplyEdit: MessageEdits.Edit<Void>,
         linkPreview: LinkPreviewDataSource?,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws -> OutgoingEditMessage
 
     // MARK: - Edit Revision Read State
@@ -90,7 +90,7 @@ public protocol EditManager {
     func markEditRevisionsAsRead(
         for edit: TSMessage,
         thread: TSThread,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws
 }
 

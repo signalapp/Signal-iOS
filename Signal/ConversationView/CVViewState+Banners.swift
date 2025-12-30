@@ -37,7 +37,7 @@ private class BannerHiding {
     init(
         identifier: String,
         hideDuration: TimeInterval,
-        hideForeverAfterNumberOfHides: UInt? = nil
+        hideForeverAfterNumberOfHides: UInt? = nil,
     ) {
         bannerHidingStore = KeyValueStore(collection: identifier)
 
@@ -52,7 +52,7 @@ private class BannerHiding {
         }
 
         if
-            let hideForeverAfterNumberOfHides = hideForeverAfterNumberOfHides,
+            let hideForeverAfterNumberOfHides,
             hiddenState.numberOfTimesHidden >= hideForeverAfterNumberOfHides
         {
             // This banner was hidden too many times, and is now hidden forever.
@@ -74,7 +74,7 @@ private class BannerHiding {
         if let existingHiddenState = getHiddenState(forThreadId: threadId, transaction: transaction) {
             stateToWrite = HiddenState(
                 lastHiddenDate: Date(),
-                numberOfTimesHidden: existingHiddenState.numberOfTimesHidden + 1
+                numberOfTimesHidden: existingHiddenState.numberOfTimesHidden + 1,
             )
         } else {
             stateToWrite = HiddenState(lastHiddenDate: Date(), numberOfTimesHidden: 1)
@@ -84,7 +84,7 @@ private class BannerHiding {
             try bannerHidingStore.setCodable(
                 stateToWrite,
                 key: Self.hiddenStateKey(forThreadId: threadId),
-                transaction: transaction
+                transaction: transaction,
             )
         } catch let error {
             owsFailDebug("Caught error while encoding banner hiding state: \(error)!")
@@ -95,7 +95,7 @@ private class BannerHiding {
         do {
             return try bannerHidingStore.getCodableValue(
                 forKey: Self.hiddenStateKey(forThreadId: threadId),
-                transaction: transaction
+                transaction: transaction,
             )
         } catch let error {
             owsFailDebug("Caught error while getting banner hiding state: \(error)!")
@@ -121,7 +121,7 @@ private class PendingMemberRequestsBannerHiding: BannerHiding {
     func isHidden(
         currentRequestingMemberAcis: [Aci],
         threadUniqueId threadId: String,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> Bool {
         guard isHidden(threadUniqueId: threadId, transaction: transaction) else {
             return false
@@ -132,7 +132,7 @@ private class PendingMemberRequestsBannerHiding: BannerHiding {
 
         let persistedMemberRequestAcis: [Aci] = getRequestingMembersState(
             forThreadId: threadId,
-            transaction: transaction
+            transaction: transaction,
         )?.requestingMemberAcis.map({ $0.wrappedValue }) ?? []
 
         return Set(currentRequestingMemberAcis).subtracting(persistedMemberRequestAcis).isEmpty
@@ -141,19 +141,19 @@ private class PendingMemberRequestsBannerHiding: BannerHiding {
     func hide(
         currentPendingMemberRequestAcis: [Aci],
         threadUniqueId threadId: String,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) {
         super.hide(threadUniqueId: threadId, transaction: transaction)
 
         do {
             let newPendingMemberRequestState = RequestingMembersState(
-                requestingMemberAcis: Set(currentPendingMemberRequestAcis.map { $0.codableUuid })
+                requestingMemberAcis: Set(currentPendingMemberRequestAcis.map { $0.codableUuid }),
             )
 
             try bannerHidingStore.setCodable(
                 newPendingMemberRequestState,
                 key: Self.requestingMembersStateKey(forThreadId: threadId),
-                transaction: transaction
+                transaction: transaction,
             )
         } catch let error {
             owsFailDebug("Caught error while encoding banner hiding state: \(error)!")
@@ -162,12 +162,12 @@ private class PendingMemberRequestsBannerHiding: BannerHiding {
 
     private func getRequestingMembersState(
         forThreadId threadId: String,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> RequestingMembersState? {
         do {
             return try bannerHidingStore.getCodableValue(
                 forKey: Self.requestingMembersStateKey(forThreadId: threadId),
-                transaction: transaction
+                transaction: transaction,
             )
         } catch let error {
             owsFailDebug("Caught error while getting banner hiding state: \(error)!")
@@ -182,39 +182,39 @@ public extension CVViewState {
     /// responsive to changes in pending member request state.
     private static let isPendingMemberRequestsBannerHiding = PendingMemberRequestsBannerHiding(
         identifier: "BannerHiding_pendingMemberRequests",
-        hideDuration: .week
+        hideDuration: .week,
     )
 
     /// This banner will snooze for only 1 hour after each hiding, since this
     /// is a potential safety concern (and only appears in message requests).
     private static let isMessageRequestNameCollisionBannerHiding = BannerHiding(
         identifier: "BannerHiding_messageRequestNameCollision",
-        hideDuration: .hour
+        hideDuration: .hour,
     )
 
     func shouldShowPendingMemberRequestsBanner(
         currentPendingMembers: some Sequence<SignalServiceAddress>,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> Bool {
         let currentPendingMemberAcis = currentPendingMembers.compactMap { $0.serviceId as? Aci }
 
         return !Self.isPendingMemberRequestsBannerHiding.isHidden(
             currentRequestingMemberAcis: currentPendingMemberAcis,
             threadUniqueId: threadUniqueId,
-            transaction: transaction
+            transaction: transaction,
         )
     }
 
     func hidePendingMemberRequestsBanner(
         currentPendingMembers: some Sequence<SignalServiceAddress>,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) {
         let currentPendingMemberAcis = currentPendingMembers.compactMap { $0.serviceId as? Aci }
 
         Self.isPendingMemberRequestsBannerHiding.hide(
             currentPendingMemberRequestAcis: currentPendingMemberAcis,
             threadUniqueId: threadUniqueId,
-            transaction: transaction
+            transaction: transaction,
         )
     }
 

@@ -17,7 +17,7 @@ public final class TransformingOutputStream: OutputStreamable {
     public init(
         transforms: [any StreamTransform],
         outputStream: OutputStreamable,
-        runLoop: RunLoop? = nil
+        runLoop: RunLoop? = nil,
     ) {
         self.transforms = transforms
         self.outputStream = outputStream
@@ -49,7 +49,7 @@ public final class TransformingOutputStream: OutputStreamable {
     public var hasPendingBytes: Bool {
         return
             transforms.contains { $0.hasPendingBytes }
-            || transforms.compactMap { $0 as? FinalizableStreamTransform }.contains { !$0.hasFinalized }
+                || transforms.compactMap { $0 as? FinalizableStreamTransform }.contains { !$0.hasFinalized }
     }
 
     public func close() throws {

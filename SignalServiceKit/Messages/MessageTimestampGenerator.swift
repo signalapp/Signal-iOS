@@ -31,7 +31,7 @@ public class MessageTimestampGenerator {
 
     private static func avoidAndExtendRange(
         _ oldRange: ClosedRange<UInt64>?,
-        proposedValue: UInt64
+        proposedValue: UInt64,
     ) -> ClosedRange<UInt64> {
         if let oldRange, oldRange.contains(proposedValue) {
             // If we have a range from the last value, ensure that the new one is

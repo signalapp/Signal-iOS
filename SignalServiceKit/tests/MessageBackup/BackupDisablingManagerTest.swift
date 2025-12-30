@@ -32,7 +32,7 @@ struct BackupDisablingManagerTest {
             backupPlanManager: mockBackupPlanManager,
             backupSettingsStore: mockBackupSettingsStore,
             db: mockDB,
-            tsAccountManager: mockTSAccountManager
+            tsAccountManager: mockTSAccountManager,
         )
 
         struct DeleteBackupError: Error {}

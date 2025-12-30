@@ -38,18 +38,18 @@ class InternalSettingsViewController: OWSTableViewController2 {
 
         let debugSection = OWSTableSection()
 
-        #if USE_DEBUG_UI
+#if USE_DEBUG_UI
         debugSection.add(.disclosureItem(
             withText: "Debug UI",
             actionBlock: { [weak self] in
-                guard let self = self else { return }
+                guard let self else { return }
                 DebugUITableViewController.presentDebugUI(
                     fromViewController: self,
-                    thread: nil
+                    thread: nil,
                 )
-            }
+            },
         ))
-        #endif
+#endif
 
         if DebugFlags.audibleErrorLogging {
             debugSection.add(.disclosureItem(
@@ -58,7 +58,7 @@ class InternalSettingsViewController: OWSTableViewController2 {
                     Logger.flush()
                     let vc = LogPickerViewController(logDirUrl: DebugLogger.errorLogsDir)
                     self?.navigationController?.pushViewController(vc, animated: true)
-                }
+                },
             ))
         }
 
@@ -67,30 +67,30 @@ class InternalSettingsViewController: OWSTableViewController2 {
             actionBlock: { [weak self] in
                 let vc = FlagsViewController()
                 self?.navigationController?.pushViewController(vc, animated: true)
-            }
+            },
         ))
         debugSection.add(.disclosureItem(
             withText: "Testing",
             actionBlock: { [weak self] in
                 let vc = TestingViewController()
                 self?.navigationController?.pushViewController(vc, animated: true)
-            }
+            },
         ))
         debugSection.add(.actionItem(
             withText: "Export Database",
             actionBlock: { [weak self] in
-                guard let self = self else {
+                guard let self else {
                     return
                 }
                 SignalApp.shared.showExportDatabaseUI(from: self)
-            }
+            },
         ))
         debugSection.add(.actionItem(
             withText: "Query Database",
             actionBlock: { [weak self] in
                 let vc = InternalSQLClientViewController()
                 self?.navigationController?.pushViewController(vc, animated: true)
-            }
+            },
         ))
         debugSection.add(.actionItem(
             withText: "Run Database Integrity Checks",
@@ -98,7 +98,7 @@ class InternalSettingsViewController: OWSTableViewController2 {
                 guard let self else { return }
 
                 ModalActivityIndicatorViewController.present(
-                    fromViewController: self
+                    fromViewController: self,
                 ) { modal in
                     let databaseStorage = SSKEnvironment.shared.databaseStorageRef
                     let integrityCheckResult = GRDBDatabaseStorageAdapter.checkIntegrity(
@@ -114,7 +114,7 @@ class InternalSettingsViewController: OWSTableViewController2 {
                         }
                     }
                 }
-            }
+            },
         ))
         debugSection.add(.actionItem(
             withText: "Clean Orphaned Data",
@@ -128,7 +128,7 @@ class InternalSettingsViewController: OWSTableViewController2 {
                         modalActivityIndicator.dismiss()
                     },
                 )
-            }
+            },
         ))
 
         if mode == .registration {
@@ -161,7 +161,7 @@ class InternalSettingsViewController: OWSTableViewController2 {
                 isOn: { Attachment.offloadingThresholdOverride },
                 actionBlock: { _ in
                     Attachment.offloadingThresholdOverride = !Attachment.offloadingThresholdOverride
-                }
+                },
             ))
         }
         backupsSection.add(.switch(
@@ -171,7 +171,7 @@ class InternalSettingsViewController: OWSTableViewController2 {
             actionBlock: { _ in
                 BackupAttachmentDownloadEligibility.disableTransitTierDownloadsOverride =
                     !BackupAttachmentDownloadEligibility.disableTransitTierDownloadsOverride
-            }
+            },
         ))
         backupsSection.add(.switch(
             withText: "Don't reuse transit tier uploads",
@@ -180,7 +180,7 @@ class InternalSettingsViewController: OWSTableViewController2 {
             actionBlock: { _ in
                 Upload.disableTransitTierUploadReuse =
                     !Upload.disableTransitTierUploadReuse
-            }
+            },
         ))
         backupsSection.add(.actionItem(withText: "Enable Backups onboarding flow") { [weak self] in
             let backupSettingsStore = BackupSettingsStore()
@@ -198,7 +198,7 @@ class InternalSettingsViewController: OWSTableViewController2 {
         })
         backupsSection.add(.copyableItem(
             label: "Last Backup chats/messages file size",
-            value: lastBackupDetails.flatMap { ByteCountFormatter().string(for: $0.backupFileSizeBytes) }
+            value: lastBackupDetails.flatMap { ByteCountFormatter().string(for: $0.backupFileSizeBytes) },
         ))
 
         if backupsSection.items.isEmpty.negated {
@@ -213,24 +213,24 @@ class InternalSettingsViewController: OWSTableViewController2 {
                         guard let self else { return }
                         navigationController?.pushViewController(
                             InternalFileBrowserViewController(fileURL: fileUrl),
-                            animated: true
+                            animated: true,
                         )
-                    }
+                    },
                 )
             }
 
             let fileBrowsingSection = OWSTableSection(title: "Browse App Files")
             fileBrowsingSection.add(makeFileBrowsingActionItem(
                 "App Container: Library",
-                URL(string: OWSFileSystem.appLibraryDirectoryPath())!.deletingLastPathComponent()
+                URL(string: OWSFileSystem.appLibraryDirectoryPath())!.deletingLastPathComponent(),
             ))
             fileBrowsingSection.add(makeFileBrowsingActionItem(
                 "App Container: Documents",
-                URL(string: OWSFileSystem.appDocumentDirectoryPath())!.deletingLastPathComponent()
+                URL(string: OWSFileSystem.appDocumentDirectoryPath())!.deletingLastPathComponent(),
             ))
             fileBrowsingSection.add(makeFileBrowsingActionItem(
                 "Shared App Container",
-                URL(string: OWSFileSystem.appSharedDataDirectoryPath())!.deletingLastPathComponent()
+                URL(string: OWSFileSystem.appSharedDataDirectoryPath())!.deletingLastPathComponent(),
             ))
             contents.add(fileBrowsingSection)
         }
@@ -243,7 +243,7 @@ class InternalSettingsViewController: OWSTableViewController2 {
             donationSubscriberID,
             storageServiceManifestVersion,
             aciRegistrationId,
-            pniRegistrationId
+            pniRegistrationId,
         ) = SSKEnvironment.shared.databaseStorageRef.read { tx in
             return (
                 TSThread.anyFetchAll(transaction: tx).filter { !$0.isGroupThread }.count,
@@ -253,7 +253,7 @@ class InternalSettingsViewController: OWSTableViewController2 {
                 DonationSubscriptionManager.getSubscriberID(transaction: tx),
                 SSKEnvironment.shared.storageServiceManagerRef.currentManifestVersion(tx: tx),
                 DependenciesBridge.shared.tsAccountManager.getRegistrationId(for: .aci, tx: tx),
-                DependenciesBridge.shared.tsAccountManager.getRegistrationId(for: .pni, tx: tx)
+                DependenciesBridge.shared.tsAccountManager.getRegistrationId(for: .pni, tx: tx),
             )
         }
 
@@ -263,8 +263,8 @@ class InternalSettingsViewController: OWSTableViewController2 {
         regSection.add(.copyableItem(label: "ACI", value: localIdentifiers?.aci.serviceIdString))
         regSection.add(.copyableItem(label: "PNI", value: localIdentifiers?.pni?.serviceIdString))
         regSection.add(.copyableItem(label: "Device ID", value: "\(DependenciesBridge.shared.tsAccountManager.storedDeviceIdWithMaybeTransaction)"))
-        regSection.add(.copyableItem(label: "ACI Registration ID", value: aciRegistrationId.map({"\($0)"}) ?? "<missing>"))
-        regSection.add(.copyableItem(label: "PNI Registration ID", value: pniRegistrationId.map({"\($0)"}) ?? "<missing>"))
+        regSection.add(.copyableItem(label: "ACI Registration ID", value: aciRegistrationId.map({ "\($0)" }) ?? "<missing>"))
+        regSection.add(.copyableItem(label: "PNI Registration ID", value: pniRegistrationId.map({ "\($0)" }) ?? "<missing>"))
         regSection.add(.copyableItem(label: "Push Token", value: SSKEnvironment.shared.preferencesRef.pushToken))
         regSection.add(.copyableItem(label: "Profile Key", value: SSKEnvironment.shared.databaseStorageRef.read(block: SSKEnvironment.shared.profileManagerRef.localUserProfile(tx:))?.profileKey?.keyData.hexadecimalString ?? "none"))
         if let donationSubscriberID {
@@ -303,8 +303,9 @@ class InternalSettingsViewController: OWSTableViewController2 {
                         let vc = await InternalDiskUsageViewController.build()
                         self?.navigationController?.pushViewController(vc, animated: true)
                         modal.dismiss(animated: true)
-                    })
-            }
+                    },
+                )
+            },
         ))
         contents.add(dbSection)
 
@@ -328,7 +329,8 @@ class InternalSettingsViewController: OWSTableViewController2 {
             withText: "Spinning checkmarks",
             isOn: { SpinningCheckmarks.shouldSpin },
             target: self,
-            selector: #selector(spinCheckmarks(_:))))
+            selector: #selector(spinCheckmarks(_:)),
+        ))
         otherSection.add(.disclosureItem(withText: "Show Call Quality Survey") { [weak self] in
             self?.present(CallQualitySurveyNavigationController(), animated: true)
         })
@@ -397,7 +399,7 @@ private extension InternalSettingsViewController {
         let exportMetadata: Upload.EncryptedBackupUploadMetadata
         do {
             (backupKey, exportMetadata) = try await ModalActivityIndicatorViewController.presentAndPropagateResult(
-                from: self
+                from: self,
             ) {
                 let (messageBackupKey, localIdentifiers) = try db.read { tx in
                     let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx)!
@@ -409,13 +411,13 @@ private extension InternalSettingsViewController {
 
                 let backupKey = try MessageBackupKey(
                     backupKey: messageBackupKey.backupKey,
-                    backupId: messageBackupKey.backupId
+                    backupId: messageBackupKey.backupId,
                 )
 
                 let exportMetadata = try await backupArchiveManager.exportEncryptedBackup(
                     localIdentifiers: localIdentifiers,
                     backupPurpose: .remoteExport(key: messageBackupKey, chatAuth: .implicit()),
-                    progress: nil
+                    progress: nil,
                 )
 
                 return (backupKey, exportMetadata)
@@ -427,17 +429,17 @@ private extension InternalSettingsViewController {
         }
 
         let keyString = "AES key: \(backupKey.aesKey.base64EncodedString())"
-        + "\nHMAC key: \(backupKey.hmacKey.base64EncodedString())"
+            + "\nHMAC key: \(backupKey.hmacKey.base64EncodedString())"
 
         let activityVC = UIActivityViewController(
             activityItems: [exportMetadata.fileUrl],
-            applicationActivities: nil
+            applicationActivities: nil,
         )
         activityVC.popoverPresentationController?.sourceView = view
         activityVC.completionWithItemsHandler = { _, _, _, _ in
             UIPasteboard.general.setItems(
                 [[UIPasteboard.typeAutomatic: keyString]],
-                options: [.expirationDate: Date().addingTimeInterval(120)]
+                options: [.expirationDate: Date().addingTimeInterval(120)],
             )
 
             presentBackupErrorsAndToast("Success! Encryption key copied.")

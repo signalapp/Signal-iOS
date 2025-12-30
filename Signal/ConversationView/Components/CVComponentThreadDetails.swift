@@ -35,23 +35,27 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         super.init(itemModel: itemModel)
     }
 
-    public func configureCellRootComponent(cellView: UIView,
-                                           cellMeasurement: CVCellMeasurement,
-                                           componentDelegate: CVComponentDelegate,
-                                           messageSwipeActionState: CVMessageSwipeActionState,
-                                           componentView: CVComponentView) {
-        Self.configureCellRootComponent(rootComponent: self,
-                                        cellView: cellView,
-                                        cellMeasurement: cellMeasurement,
-                                        componentDelegate: componentDelegate,
-                                        componentView: componentView)
+    public func configureCellRootComponent(
+        cellView: UIView,
+        cellMeasurement: CVCellMeasurement,
+        componentDelegate: CVComponentDelegate,
+        messageSwipeActionState: CVMessageSwipeActionState,
+        componentView: CVComponentView,
+    ) {
+        Self.configureCellRootComponent(
+            rootComponent: self,
+            cellView: cellView,
+            cellMeasurement: cellMeasurement,
+            componentDelegate: componentDelegate,
+            componentView: componentView,
+        )
     }
 
     public func buildComponentView(componentDelegate: CVComponentDelegate) -> CVComponentView {
         CVComponentViewThreadDetails()
     }
 
-    public override func wallpaperBlurView(componentView: CVComponentView) -> CVWallpaperBlurView? {
+    override public func wallpaperBlurView(componentView: CVComponentView) -> CVWallpaperBlurView? {
         guard let componentView = componentView as? CVComponentViewThreadDetails else {
             owsFailDebug("Unexpected componentView.")
             return nil
@@ -59,9 +63,11 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         return componentView.wallpaperBlurView
     }
 
-    public func configureForRendering(componentView componentViewParam: CVComponentView,
-                                      cellMeasurement: CVCellMeasurement,
-                                      componentDelegate: CVComponentDelegate) {
+    public func configureForRendering(
+        componentView componentViewParam: CVComponentView,
+        cellMeasurement: CVCellMeasurement,
+        componentDelegate: CVComponentDelegate,
+    ) {
         guard let componentView = componentViewParam as? CVComponentViewThreadDetails else {
             owsFailDebug("Unexpected componentView.")
             componentViewParam.reset()
@@ -107,15 +113,15 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
                 let unblurAvatarLabelConfig = CVLabelConfig.unstyledText(
                     OWSLocalizedString(
                         "THREAD_DETAILS_TAP_TO_UNBLUR_AVATAR",
-                        comment: "Indicator that a blurred avatar can be revealed by tapping."
+                        comment: "Indicator that a blurred avatar can be revealed by tapping.",
                     ),
                     font: UIFont.dynamicTypeSubheadlineClamped,
-                    textColor: .ows_white
+                    textColor: .ows_white,
                 )
                 let maxWidth = CGFloat(avatarSizeClass.diameter) - 12
                 let unblurAvatarLabelSize = CVText.measureLabel(
                     config: unblurAvatarLabelConfig,
-                    maxWidth: maxWidth
+                    maxWidth: maxWidth,
                 )
                 unblurAvatarSubviewInfos.append(unblurAvatarLabelSize.asManualSubviewInfo)
                 let unblurAvatarLabel = CVLabel()
@@ -127,22 +133,22 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
                 axis: .vertical,
                 alignment: .center,
                 spacing: 8,
-                layoutMargins: .zero
+                layoutMargins: .zero,
             )
             let unblurAvatarStackMeasurement = ManualStackView.measure(
                 config: unblurAvatarStackConfig,
-                subviewInfos: unblurAvatarSubviewInfos
+                subviewInfos: unblurAvatarSubviewInfos,
             )
 
             let unblurAvatarStack = ManualStackView(name: "unblurAvatarStack")
             unblurAvatarStack.configure(
                 config: unblurAvatarStackConfig,
                 measurement: unblurAvatarStackMeasurement,
-                subviews: subviews
+                subviews: subviews,
             )
             avatarWrapper.addSubviewToCenterOnSuperview(
                 unblurAvatarStack,
-                size: unblurAvatarStackMeasurement.measuredSize
+                size: unblurAvatarStackMeasurement.measuredSize,
             )
         } else {
             innerViews.append(avatarView)
@@ -154,7 +160,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             configureWallpaperBlurView(
                 wallpaperBlurView: wallpaperBlurView,
                 maskCornerRadius: 24,
-                componentDelegate: componentDelegate
+                componentDelegate: componentDelegate,
             )
             innerStackView.addSubviewToFillSuperviewEdges(wallpaperBlurView)
         }
@@ -206,7 +212,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
                 divider.autoSetDimension(.height, toSize: 1)
                 divider.backgroundColor = UIColor(
                     white: Theme.isDarkThemeEnabled ? 1 : 0,
-                    alpha: 0.12
+                    alpha: 0.12,
                 )
                 innerViews.append(divider)
             } else {
@@ -225,9 +231,9 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             innerViews.append(groupInfoWrapper)
 
             let maxWidth = cellMeasurement.cellSize.width
-            - outerStackConfig.layoutMargins.totalWidth
-            - innerStackConfig.layoutMargins.totalWidth
-            - (hPaddingSafetySection * 2)
+                - outerStackConfig.layoutMargins.totalWidth
+                - innerStackConfig.layoutMargins.totalWidth
+                - (hPaddingSafetySection * 2)
 
             if safetySection.shouldShowProfileNamesEducation {
                 groupInfoSubviews.append(namesEducationLabel)
@@ -279,32 +285,36 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
 
             let groupInfoStackMeasurement = ManualStackView.measure(
                 config: groupStackConfig,
-                subviewInfos: groupInfoSubviewInfos
+                subviewInfos: groupInfoSubviewInfos,
             )
 
             let groupInfoStack = ManualStackView(name: "groupInfoStack")
             groupInfoStack.configure(
                 config: groupStackConfig,
                 measurement: groupInfoStackMeasurement,
-                subviews: groupInfoSubviews
+                subviews: groupInfoSubviews,
             )
             groupInfoWrapper.addSubviewToCenterOnSuperview(
                 groupInfoStack,
-                size: groupInfoStackMeasurement.measuredSize
+                size: groupInfoStackMeasurement.measuredSize,
             )
         } else {
             innerViews.append(UIView.spacer(withHeight: minBottomPadding))
         }
 
-        innerStackView.configure(config: innerStackConfig,
-                                 cellMeasurement: cellMeasurement,
-                                 measurementKey: Self.measurementKey_innerStack,
-                                 subviews: innerViews)
-        let outerViews = [ innerStackView ]
-        outerStackView.configure(config: outerStackConfig,
-                                 cellMeasurement: cellMeasurement,
-                                 measurementKey: Self.measurementKey_outerStack,
-                                 subviews: outerViews)
+        innerStackView.configure(
+            config: innerStackConfig,
+            cellMeasurement: cellMeasurement,
+            measurementKey: Self.measurementKey_innerStack,
+            subviews: innerViews,
+        )
+        let outerViews = [innerStackView]
+        outerStackView.configure(
+            config: outerStackConfig,
+            cellMeasurement: cellMeasurement,
+            measurementKey: Self.measurementKey_outerStack,
+            subviews: outerViews,
+        )
     }
 
     private var titleLabelConfig: CVLabelConfig {
@@ -322,7 +332,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
                 image: verifiedBadgeImage,
                 font: .dynamicTypeTitle3,
                 centerVerticallyRelativeTo: font,
-                heightReference: .pointSize
+                heightReference: .pointSize,
             )
             attributedString.append(verifiedBadgeAttachment)
         }
@@ -332,25 +342,25 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
                 SignalSymbol.chevronTrailing(for: titleText).attributedString(
                     dynamicTypeBaseSize: 24,
                     leadingCharacter: .nonBreakingSpace,
-                    attributes: [.foregroundColor: UIColor.Signal.secondaryLabel]
-                )
+                    attributes: [.foregroundColor: UIColor.Signal.secondaryLabel],
+                ),
             )
         }
 
-        return CVLabelConfig.init(
+        return CVLabelConfig(
             text: .attributedText(attributedString),
             displayConfig: .forUnstyledText(font: font, textColor: textColor),
             font: font,
             textColor: textColor,
             numberOfLines: 0,
             lineBreakMode: .byWordWrapping,
-            textAlignment: .center
+            textAlignment: .center,
         )
     }
 
     private func configureTitleAction(
         button: OWSButton,
-        delegate: CVComponentDelegate?
+        delegate: CVComponentDelegate?,
     ) {
         guard
             canTapTitle,
@@ -376,7 +386,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             textColor: Theme.primaryTextColor,
             numberOfLines: 0,
             lineBreakMode: .byWordWrapping,
-            textAlignment: .center
+            textAlignment: .center,
         )
     }
 
@@ -389,29 +399,29 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
     private static var reviewCarefullyTextColor: UIColor { UIColor(rgbHex: 0xA88746) }
 
     private func reviewCarefullyConfig() -> CVLabelConfig {
-        CVLabelConfig.init(
+        CVLabelConfig(
             text: .attributedText(
                 .composed(of: [
                     NSAttributedString.with(
                         image: UIImage(named: "error-triangle-fill-compact")!,
                         font: .dynamicTypeCallout,
                         centerVerticallyRelativeTo: Self.reviewCarefullyFont,
-                        heightReference: .pointSize
+                        heightReference: .pointSize,
                     ),
                     SignalSymbol.LeadingCharacter.nonBreakingSpace.rawValue,
                     OWSLocalizedString(
                         "SYSTEM_MESSAGE_UNKNOWN_THREAD_REVIEW_CAREFULLY_WARNING",
-                        comment: "Indicator warning about an unknown contact thread"
+                        comment: "Indicator warning about an unknown contact thread",
                     ),
-                ]).styled(with: .alignment(.center))
+                ]).styled(with: .alignment(.center)),
             ),
             displayConfig: .forUnstyledText(
                 font: Self.reviewCarefullyFont,
-                textColor: Self.reviewCarefullyTextColor
+                textColor: Self.reviewCarefullyTextColor,
             ),
             font: Self.reviewCarefullyFont,
             textColor: Self.reviewCarefullyTextColor,
-            numberOfLines: 0
+            numberOfLines: 0,
         )
     }
 
@@ -430,23 +440,23 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             (
                 OWSLocalizedString(
                     "THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_SUBJECT",
-                    comment: "Label displayed below profiles. This is the subject part of the sentence 'Profile names are not verified'. It is embedded into THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_PREDICATE."
+                    comment: "Label displayed below profiles. This is the subject part of the sentence 'Profile names are not verified'. It is embedded into THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_PREDICATE.",
                 ),
                 OWSLocalizedString(
                     "THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_PREDICATE",
-                    comment: "Label displayed below profiles. This is the predicate part of the sentence 'Profile names are not verified'. Embeds {{ THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_SUBJECT }}"
-                )
+                    comment: "Label displayed below profiles. This is the predicate part of the sentence 'Profile names are not verified'. Embeds {{ THREAD_DETAILS_PROFILE_NAMES_ARE_NOT_VERIFIED_SUBJECT }}",
+                ),
             )
         case .group:
             (
                 OWSLocalizedString(
                     "THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_SUBJECT",
-                    comment: "Label displayed below group info. This is the subject part of the sentence 'Group names are not verified'. It is embedded into THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_PREDICATE."
+                    comment: "Label displayed below group info. This is the subject part of the sentence 'Group names are not verified'. It is embedded into THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_PREDICATE.",
                 ),
                 OWSLocalizedString(
                     "THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_PREDICATE",
-                    comment: "Label displayed below group info. This is the predicate part of the sentence 'Group names are not verified'. Embeds {{ THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_SUBJECT }}"
-                )
+                    comment: "Label displayed below group info. This is the predicate part of the sentence 'Group names are not verified'. Embeds {{ THREAD_DETAILS_GROUP_NAMES_ARE_NOT_VERIFIED_SUBJECT }}",
+                ),
             )
         }
 
@@ -458,7 +468,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
                 .underlineStyle: NSUnderlineStyle.single.rawValue,
                 .underlineColor: Self.underlineColor,
             ],
-            range: subjectRange
+            range: subjectRange,
         )
         return attributedString
     }
@@ -471,19 +481,19 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
                         image: self.namesEducationIcon(type: type),
                         font: .dynamicTypeCallout,
                         centerVerticallyRelativeTo: Self.mutualGroupsFont,
-                        heightReference: .pointSize
+                        heightReference: .pointSize,
                     ),
                     SignalSymbol.LeadingCharacter.nonBreakingSpace.rawValue,
-                    self.underlinedNamesEducationString(type: type)
-                ]).styled(with: .alignment(.center))
+                    self.underlinedNamesEducationString(type: type),
+                ]).styled(with: .alignment(.center)),
             ),
             displayConfig: .forUnstyledText(
                 font: Self.mutualGroupsFont,
-                textColor: Self.mutualGroupsTextColor
+                textColor: Self.mutualGroupsTextColor,
             ),
             font: Self.mutualGroupsFont,
             textColor: Self.mutualGroupsTextColor,
-            numberOfLines: 0
+            numberOfLines: 0,
         )
     }
 
@@ -492,23 +502,24 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             text: .attributedText(attributedText),
             displayConfig: .forUnstyledText(
                 font: Self.mutualGroupsFont,
-                textColor: Self.mutualGroupsTextColor
+                textColor: Self.mutualGroupsTextColor,
             ),
             font: Self.mutualGroupsFont,
             textColor: Self.mutualGroupsTextColor,
             numberOfLines: 0,
             lineBreakMode: .byWordWrapping,
-            textAlignment: .center
+            textAlignment: .center,
         )
     }
+
     private func safetyTipsConfig() -> CVLabelConfig {
         CVLabelConfig.unstyledText(
             OWSLocalizedString(
                 "SAFETY_TIPS_BUTTON_ACTION_TITLE",
-                comment: "Title for Safety Tips button in thread details."
+                comment: "Title for Safety Tips button in thread details.",
             ),
             font: UIFont.dynamicTypeCaption1.medium(),
-            textColor: Theme.isDarkThemeEnabled ? .ows_white : .ows_black
+            textColor: Theme.isDarkThemeEnabled ? .ows_white : .ows_black,
         )
     }
 
@@ -519,7 +530,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             textColor: Theme.primaryTextColor,
             numberOfLines: 2,
             lineBreakMode: .byTruncatingTail,
-            textAlignment: .center
+            textAlignment: .center,
         )
     }
 
@@ -529,19 +540,19 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
     static func buildComponentState(
         thread: TSThread,
         transaction: DBReadTransaction,
-        avatarBuilder: CVAvatarBuilder
+        avatarBuilder: CVAvatarBuilder,
     ) -> CVComponentState.ThreadDetails {
         if let contactThread = thread as? TSContactThread {
             return buildComponentState(
                 contactThread: contactThread,
                 transaction: transaction,
-                avatarBuilder: avatarBuilder
+                avatarBuilder: avatarBuilder,
             )
         } else if let groupThread = thread as? TSGroupThread {
             return buildComponentState(
                 groupThread: groupThread,
                 transaction: transaction,
-                avatarBuilder: avatarBuilder
+                avatarBuilder: avatarBuilder,
             )
         } else {
             owsFailDebug("Invalid thread.")
@@ -553,7 +564,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
                 shouldShowVerifiedBadge: false,
                 bioText: nil,
                 safetySection: nil,
-                groupDescriptionText: nil
+                groupDescriptionText: nil,
             )
         }
     }
@@ -561,26 +572,26 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
     private static func buildComponentState(
         contactThread: TSContactThread,
         transaction: DBReadTransaction,
-        avatarBuilder: CVAvatarBuilder
+        avatarBuilder: CVAvatarBuilder,
     ) -> CVComponentState.ThreadDetails {
 
         let avatarDataSource = avatarBuilder.buildAvatarDataSource(
             forAddress: contactThread.contactAddress,
             includingBadge: true,
             localUserDisplayMode: .noteToSelf,
-            diameterPoints: avatarSizeClass.diameter
+            diameterPoints: avatarSizeClass.diameter,
         )
 
         let contactManager = SSKEnvironment.shared.contactManagerImplRef
         let isAvatarBlurred = contactManager.shouldBlurContactAvatar(
             address: contactThread.contactAddress,
-            tx: transaction
+            tx: transaction,
         )
         let isAvatarBeingDownloaded = contactManager.avatarAddressesToShowDownloadingSpinner.contains(contactThread.contactAddress)
 
         let displayName = SSKEnvironment.shared.contactManagerRef.displayName(
             for: contactThread.contactAddress,
-            tx: transaction
+            tx: transaction,
         )
 
         let titleText = { () -> String in
@@ -605,7 +616,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         let safetySection = Self.buildContactSafetySection(
             for: displayName,
             in: contactThread,
-            tx: transaction
+            tx: transaction,
         )
 
         return CVComponentState.ThreadDetails(
@@ -616,26 +627,27 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             shouldShowVerifiedBadge: shouldShowVerifiedBadge,
             bioText: bioText,
             safetySection: safetySection,
-            groupDescriptionText: nil
+            groupDescriptionText: nil,
         )
     }
 
     private static func buildComponentState(
         groupThread: TSGroupThread,
         transaction: DBReadTransaction,
-        avatarBuilder: CVAvatarBuilder
+        avatarBuilder: CVAvatarBuilder,
     ) -> CVComponentState.ThreadDetails {
         // If we need to reload this cell to reflect changes to any of the
-        // state captured here, we need update the didThreadDetailsChange().        
+        // state captured here, we need update the didThreadDetailsChange().
 
         let avatarDataSource = avatarBuilder.buildAvatarDataSource(
             forGroupThread: groupThread,
-            diameterPoints: avatarSizeClass.diameter)
+            diameterPoints: avatarSizeClass.diameter,
+        )
 
         let contactManager = SSKEnvironment.shared.contactManagerImplRef
         let isAvatarBlurred = contactManager.shouldBlurGroupAvatar(
             groupId: groupThread.groupId,
-            tx: transaction
+            tx: transaction,
         )
         let isAvatarBeingDownloaded = contactManager.avatarGroupIdsToShowDownloadingSpinner.contains(groupThread.groupId)
 
@@ -643,7 +655,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
 
         let safetySection = Self.buildGroupsSafetySection(
             from: groupThread,
-            tx: transaction
+            tx: transaction,
         )
         let descriptionText: String? = {
             guard let groupModelV2 = groupThread.groupModel as? TSGroupModelV2 else { return nil }
@@ -658,7 +670,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             shouldShowVerifiedBadge: false,
             bioText: nil,
             safetySection: safetySection,
-            groupDescriptionText: descriptionText
+            groupDescriptionText: descriptionText,
         )
     }
 
@@ -668,6 +680,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
     private func vSpacingSafetySection(hasWallpaper: Bool) -> CGFloat {
         hasWallpaper ? 12 : 16
     }
+
     private let minBottomPadding: CGFloat = 4
 
     private var outerStackConfig: CVStackViewConfig {
@@ -675,7 +688,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             axis: .vertical,
             alignment: .fill,
             spacing: 0,
-            layoutMargins: UIEdgeInsets(top: 8, left: 32, bottom: 16, right: 32)
+            layoutMargins: UIEdgeInsets(top: 8, left: 32, bottom: 16, right: 32),
         )
     }
 
@@ -684,7 +697,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             axis: .vertical,
             alignment: .center,
             spacing: 0,
-            layoutMargins: UIEdgeInsets(top: 20, leading: 16, bottom: 8, trailing: 16)
+            layoutMargins: UIEdgeInsets(top: 20, leading: 16, bottom: 8, trailing: 16),
         )
     }
 
@@ -693,7 +706,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             axis: .vertical,
             alignment: .center,
             spacing: 12,
-            layoutMargins: .init(hMargin: hPaddingSafetySection, vMargin: 16)
+            layoutMargins: .init(hMargin: hPaddingSafetySection, vMargin: 16),
         )
     }
 
@@ -706,7 +719,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         var innerSubviewInfos = [ManualStackSubviewInfo]()
 
         let maxContentWidth = maxWidth - (outerStackConfig.layoutMargins.totalWidth +
-                                            innerStackConfig.layoutMargins.totalWidth)
+            innerStackConfig.layoutMargins.totalWidth)
 
         innerSubviewInfos.append(avatarSizeClass.size.asManualSubviewInfo)
         innerSubviewInfos.append(CGSize(square: vSpacingTitle).asManualSubviewInfo)
@@ -715,8 +728,10 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         innerSubviewInfos.append(titleSize.asManualSubviewInfo)
 
         if let bioText = self.bioText {
-            let bioSize = CVText.measureLabel(config: bioLabelConfig(text: bioText),
-                                              maxWidth: maxContentWidth)
+            let bioSize = CVText.measureLabel(
+                config: bioLabelConfig(text: bioText),
+                maxWidth: maxContentWidth,
+            )
             innerSubviewInfos.append(CGSize(square: vSpacingSubtitle).asManualSubviewInfo)
             innerSubviewInfos.append(bioSize.asManualSubviewInfo)
         }
@@ -724,7 +739,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         if let groupDescriptionText = self.groupDescriptionText {
             var groupDescriptionSize = CVText.measureLabel(
                 config: groupDescriptionTextLabelConfig(text: groupDescriptionText),
-                maxWidth: maxContentWidth
+                maxWidth: maxContentWidth,
             )
             groupDescriptionSize.width = maxContentWidth
             innerSubviewInfos.append(groupDescriptionSize.asManualSubviewInfo(hasFixedWidth: true))
@@ -737,7 +752,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             if safetySection.shouldShowLowTrustWarning {
                 let reviewCarefullySize = CVText.measureLabel(
                     config: self.reviewCarefullyConfig(),
-                    maxWidth: maxGroupWidth
+                    maxWidth: maxGroupWidth,
                 )
                 groupInfoSubviewInfos.append(reviewCarefullySize.asManualSubviewInfo)
             }
@@ -752,7 +767,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             if safetySection.shouldShowProfileNamesEducation {
                 let size = CVText.measureLabel(
                     config: self.namesEducationConfig(type: safetySection.threadType),
-                    maxWidth: maxGroupWidth
+                    maxWidth: maxGroupWidth,
                 )
                 groupInfoSubviewInfos.append(size.asManualSubviewInfo)
             }
@@ -760,7 +775,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             if let detailsText = safetySection.detailsText {
                 let size = CVText.measureLabel(
                     config: mutualGroupsLabelConfig(attributedText: detailsText),
-                    maxWidth: maxGroupWidth
+                    maxWidth: maxGroupWidth,
                 )
                 groupInfoSubviewInfos.append(size.asManualSubviewInfo)
             }
@@ -768,7 +783,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             if let mutualGroupsText = safetySection.mutualGroupsText {
                 let groupLabelSize = CVText.measureLabel(
                     config: mutualGroupsLabelConfig(attributedText: mutualGroupsText),
-                    maxWidth: maxGroupWidth
+                    maxWidth: maxGroupWidth,
                 )
                 groupInfoSubviewInfos.append(groupLabelSize.asManualSubviewInfo)
             }
@@ -776,40 +791,44 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
             if safetySection.shouldShowSafetyTipsButton {
                 let safetyTipSize = CVText.measureLabel(
                     config: safetyTipsConfig(),
-                    maxWidth: maxGroupWidth
+                    maxWidth: maxGroupWidth,
                 )
                 groupInfoSubviewInfos.append(safetyTipSize.asManualSubviewInfo)
             }
 
             mutualGroupsSize = ManualStackView.measure(
                 config: groupStackConfig,
-                subviewInfos: groupInfoSubviewInfos
+                subviewInfos: groupInfoSubviewInfos,
             ).measuredSize
             innerSubviewInfos.append(mutualGroupsSize.asManualSubviewInfo)
         } else {
             innerSubviewInfos.append(CGSize(square: minBottomPadding).asManualSubviewInfo)
         }
 
-        let innerStackMeasurement = ManualStackView.measure(config: innerStackConfig,
-                                                            measurementBuilder: measurementBuilder,
-                                                            measurementKey: Self.measurementKey_innerStack,
-                                                            subviewInfos: innerSubviewInfos)
-        let outerSubviewInfos = [ innerStackMeasurement.measuredSize.asManualSubviewInfo ]
-        let outerStackMeasurement = ManualStackView.measure(config: outerStackConfig,
-                                                            measurementBuilder: measurementBuilder,
-                                                            measurementKey: Self.measurementKey_outerStack,
-                                                            subviewInfos: outerSubviewInfos,
-                                                            maxWidth: maxWidth)
+        let innerStackMeasurement = ManualStackView.measure(
+            config: innerStackConfig,
+            measurementBuilder: measurementBuilder,
+            measurementKey: Self.measurementKey_innerStack,
+            subviewInfos: innerSubviewInfos,
+        )
+        let outerSubviewInfos = [innerStackMeasurement.measuredSize.asManualSubviewInfo]
+        let outerStackMeasurement = ManualStackView.measure(
+            config: outerStackConfig,
+            measurementBuilder: measurementBuilder,
+            measurementKey: Self.measurementKey_outerStack,
+            subviewInfos: outerSubviewInfos,
+            maxWidth: maxWidth,
+        )
         return outerStackMeasurement.measuredSize
     }
 
     // MARK: - Events
 
-    public override func handleTap(
+    override public func handleTap(
         sender: UIGestureRecognizer,
         componentDelegate: CVComponentDelegate,
         componentView: CVComponentView,
-        renderItem: CVRenderItem
+        renderItem: CVRenderItem,
     ) -> Bool {
         guard let componentView = componentView as? CVComponentViewThreadDetails else {
             owsFailDebug("Unexpected componentView.")
@@ -886,7 +905,7 @@ public class CVComponentThreadDetails: CVComponentBase, CVRootComponent {
         fileprivate let mutualGroupsLabel = CVLabel()
         fileprivate let showTipsButton = OWSRoundedButton()
         fileprivate let groupDescriptionPreviewView = GroupDescriptionPreviewView(
-            shouldDeactivateConstraints: true
+            shouldDeactivateConstraints: true,
         )
 
         fileprivate let outerStackView = ManualStackView(name: "Thread details outer")
@@ -942,7 +961,7 @@ extension CVComponentThreadDetails {
 
     private static func buildGroupsSafetySection(
         from groupThread: TSGroupThread,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> CVComponentState.ThreadDetails.SafetySection {
         let accountManager = DependenciesBridge.shared.tsAccountManager
 
@@ -969,53 +988,53 @@ extension CVComponentThreadDetails {
         case (0, _):
             formatString = OWSLocalizedString(
                 "THREAD_DETAILS_NO_MEMBERS",
-                comment: "Label for a group with no members or no members but yourself"
+                comment: "Label for a group with no members or no members but yourself",
             )
         case (1, false):
             formatString = OWSLocalizedString(
                 "THREAD_DETAILS_ONE_MEMBER",
-                comment: "Label for a group with one member (not counting yourself), displaying their name"
+                comment: "Label for a group with one member (not counting yourself), displaying their name",
             )
         case (1, true):
             formatString = OWSLocalizedString(
                 "THREAD_DETAILS_ONE_MEMBER_AND_YOURSELF",
-                comment: "Label for a group you are in with one other member, listing their name and yourself"
+                comment: "Label for a group you are in with one other member, listing their name and yourself",
             )
         case (2, false):
             formatString = OWSLocalizedString(
                 "THREAD_DETAILS_TWO_MEMBERS",
-                comment: "Label for a group you are not in which has two members, listing their names"
+                comment: "Label for a group you are not in which has two members, listing their names",
             )
         case (2, true):
             formatString = OWSLocalizedString(
                 "THREAD_DETAILS_TWO_MEMBERS_AND_YOURSELF",
-                comment: "Label for a group you are in which has two other members, listing their names and yourself"
+                comment: "Label for a group you are in which has two other members, listing their names and yourself",
             )
         case (3, false):
             formatString = OWSLocalizedString(
                 "THREAD_DETAILS_THREE_MEMBERS",
-                comment: "Label for a group you are not in which has three members, listing their names"
+                comment: "Label for a group you are not in which has three members, listing their names",
             )
         case (3, true):
             formatString = OWSLocalizedString(
                 "THREAD_DETAILS_THREE_MEMBERS_AND_YOURSELF",
-                comment: "Label for a group you are in which has three other members, listing their names and yourself"
+                comment: "Label for a group you are in which has three other members, listing their names and yourself",
             )
         case (4, false):
             formatString = OWSLocalizedString(
                 "THREAD_DETAILS_FOUR_MEMBERS",
-                comment: "Label for a group you are not in which has four members, listing their names"
+                comment: "Label for a group you are not in which has four members, listing their names",
             )
         default:
             formatString = OWSLocalizedString(
                 "THREAD_DETAILS_MANY_MEMBERS",
-                comment: "Label for a group with more than four members, listing the first three members' names and embedding THREAD_DETAILS_OTHER_MEMBERS_COUNT_%ld as a count of other members"
+                comment: "Label for a group with more than four members, listing the first three members' names and embedding THREAD_DETAILS_OTHER_MEMBERS_COUNT_%ld as a count of other members",
             )
 
             let otherMembersFormat = OWSLocalizedString(
                 "THREAD_DETAILS_OTHER_MEMBERS_COUNT_%ld",
                 tableName: "PluralAware",
-                comment: "The number of other members in a group. Embedded into the last parameter of THREAD_DETAILS_MANY_MEMBERS"
+                comment: "The number of other members in a group. Embedded into the last parameter of THREAD_DETAILS_MANY_MEMBERS",
             )
 
             let firstThreeMembers = Array(arguments.prefix(3))
@@ -1029,7 +1048,7 @@ extension CVComponentThreadDetails {
 
         let membersString = String(
             format: formatString,
-            arguments: arguments
+            arguments: arguments,
         )
         let membersAttributedString: NSAttributedString
         if let underlinedPortion {
@@ -1040,7 +1059,7 @@ extension CVComponentThreadDetails {
                     .underlineStyle: NSUnderlineStyle.single.rawValue,
                     .underlineColor: Self.underlineColor,
                 ],
-                range: underlinedRange
+                range: underlinedRange,
             )
             membersAttributedString = attributedString
         } else {
@@ -1050,13 +1069,13 @@ extension CVComponentThreadDetails {
         let membersAttributedText = NSAttributedString.composed(of: [
             NSAttributedString.with(
                 image: UIImage(named: "group-resizable")!,
-                font: Self.mutualGroupsFont
+                font: Self.mutualGroupsFont,
             ),
             "  ",
             membersAttributedString,
         ]).styled(
             with: .font(Self.mutualGroupsFont),
-            .color(Self.mutualGroupsTextColor)
+            .color(Self.mutualGroupsTextColor),
         )
 
         let shouldShowUnknownThreadWarning = SSKEnvironment.shared.contactManagerImplRef.isLowTrustGroup(groupThread: groupThread, tx: tx)
@@ -1067,14 +1086,14 @@ extension CVComponentThreadDetails {
             detailsText: membersAttributedText,
             mutualGroupsText: nil,
             threadType: .group,
-            shouldShowSafetyTipsButton: shouldShowUnknownThreadWarning && groupThread.hasPendingMessageRequest(transaction: tx)
+            shouldShowSafetyTipsButton: shouldShowUnknownThreadWarning && groupThread.hasPendingMessageRequest(transaction: tx),
         )
     }
 
     private static func buildContactSafetySection(
         for displayName: DisplayName,
         in contactThread: TSContactThread,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> CVComponentState.ThreadDetails.SafetySection? {
         switch displayName {
         case .nickname, .systemContactName, .profileName:
@@ -1093,13 +1112,13 @@ extension CVComponentThreadDetails {
                 detailsText: nil,
                 mutualGroupsText: OWSLocalizedString(
                     "THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION",
-                    comment: "Subtitle appearing at the top of the users 'note to self' conversation"
+                    comment: "Subtitle appearing at the top of the users 'note to self' conversation",
                 ).styled(
                     with: .font(.dynamicTypeSubheadline),
-                    .color(UIColor.Signal.label)
+                    .color(UIColor.Signal.label),
                 ),
                 threadType: .contact,
-                shouldShowSafetyTipsButton: false
+                shouldShowSafetyTipsButton: false,
             )
         }
 
@@ -1110,7 +1129,7 @@ extension CVComponentThreadDetails {
 
         let shouldShowUnknownThreadWarning = SSKEnvironment.shared.contactManagerImplRef.isLowTrustContact(
             contactThread: contactThread,
-            tx: tx
+            tx: tx,
         )
 
         // We need these to be CVarArgs for them to format appropriately.
@@ -1121,7 +1140,7 @@ extension CVComponentThreadDetails {
             formattedString = String(
                 format: OWSLocalizedString(
                     "THREAD_DETAILS_ZERO_MUTUAL_GROUPS",
-                    comment: "A string indicating there are no mutual groups the user shares with this contact"
+                    comment: "A string indicating there are no mutual groups the user shares with this contact",
                 ),
                 groupNamesFormatArg,
             )
@@ -1129,7 +1148,7 @@ extension CVComponentThreadDetails {
             formattedString = String(
                 format: OWSLocalizedString(
                     "THREAD_DETAILS_ONE_MUTUAL_GROUP",
-                    comment: "A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}}"
+                    comment: "A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}}",
                 ),
                 groupNamesFormatArg,
             )
@@ -1137,7 +1156,7 @@ extension CVComponentThreadDetails {
             formattedString = String(
                 format: OWSLocalizedString(
                     "THREAD_DETAILS_TWO_MUTUAL_GROUP",
-                    comment: "A string indicating two mutual groups the user shares with this contact. Embeds {{mutual group name}}"
+                    comment: "A string indicating two mutual groups the user shares with this contact. Embeds {{mutual group name}}",
                 ),
                 groupNamesFormatArg,
             )
@@ -1145,7 +1164,7 @@ extension CVComponentThreadDetails {
             formattedString = String(
                 format: OWSLocalizedString(
                     "THREAD_DETAILS_THREE_MUTUAL_GROUP",
-                    comment: "A string indicating three mutual groups the user shares with this contact. Embeds {{mutual group name}}"
+                    comment: "A string indicating three mutual groups the user shares with this contact. Embeds {{mutual group name}}",
                 ),
                 groupNamesFormatArg,
             )
@@ -1160,7 +1179,7 @@ extension CVComponentThreadDetails {
                 OWSLocalizedString(
                     "THREAD_DETAILS_MORE_MUTUAL_GROUP_%3$ld",
                     tableName: "PluralAware",
-                    comment: "A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{group name, group name, number of other groups}}"
+                    comment: "A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{group name, group name, number of other groups}}",
                 ),
                 formatArgs,
             )
@@ -1200,13 +1219,13 @@ extension CVComponentThreadDetails {
             mutualGroupsText: NSAttributedString.composed(of: [
                 NSAttributedString.with(
                     image: UIImage(named: "group-resizable")!,
-                    font: Self.mutualGroupsFont
+                    font: Self.mutualGroupsFont,
                 ),
                 "  ",
                 formattedString,
             ]),
             threadType: .contact,
-            shouldShowSafetyTipsButton: isMessageRequest
+            shouldShowSafetyTipsButton: isMessageRequest,
         )
     }
 }

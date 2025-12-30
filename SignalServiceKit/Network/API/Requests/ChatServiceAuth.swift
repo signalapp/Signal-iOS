@@ -28,7 +28,7 @@ public class ChatServiceAuth: Equatable, Hashable {
     public static func explicit(
         aci: Aci,
         deviceId: DeviceId,
-        password: String
+        password: String,
     ) -> ChatServiceAuth {
         let authUsername = { () -> String in
             if deviceId.isPrimary {
@@ -50,7 +50,7 @@ public class ChatServiceAuth: Equatable, Hashable {
         }
     }
 
-    public static func == (lhs: ChatServiceAuth, rhs: ChatServiceAuth) -> Bool {
+    public static func ==(lhs: ChatServiceAuth, rhs: ChatServiceAuth) -> Bool {
         lhs.credentials == rhs.credentials
     }
 

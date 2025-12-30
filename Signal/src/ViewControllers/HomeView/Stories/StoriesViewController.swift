@@ -34,7 +34,7 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate, Hom
     private let appReadiness: AppReadinessSetter
     private let spoilerState: SpoilerRenderState
 
-    public init(appReadiness: AppReadinessSetter, spoilerState: SpoilerRenderState) {
+    init(appReadiness: AppReadinessSetter, spoilerState: SpoilerRenderState) {
         self.appReadiness = appReadiness
         self.spoilerState = spoilerState
         super.init()
@@ -212,7 +212,7 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate, Hom
     private func updateTableViewPaddingIfNeeded() {
         guard #available(iOS 26, *) else { return }
 
-        if let splitViewController = splitViewController, !splitViewController.isCollapsed {
+        if let splitViewController, !splitViewController.isCollapsed {
             useSidebarStoryListCellAppearance = true
         } else {
             useSidebarStoryListCellAppearance = false
@@ -230,19 +230,19 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate, Hom
                     UIAction(
                         title: OWSLocalizedString(
                             "STORY_PRIVACY_TITLE",
-                            comment: "Title for the story privacy settings view"
+                            comment: "Title for the story privacy settings view",
                         ),
                         image: Theme.iconImage(.contextMenuPrivacy),
                         handler: { [weak self] _ in
                             self?.showPrivacySettings()
-                        }
+                        },
                     ),
                     settingsAction,
                 ]
             },
             showAppSettings: { [weak self] in
                 self?.showAppSettings()
-            }
+            },
         )
 
         let cameraButton = UIBarButtonItem(image: Theme.iconImage(.buttonCamera), style: .plain, target: self, action: #selector(showCameraView))
@@ -280,7 +280,7 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate, Hom
         }
     }
 
-    public func showMyStories(animated: Bool) {
+    func showMyStories(animated: Bool) {
         navigationController?.pushViewController(MyStoriesViewController(spoilerState: spoilerState), animated: animated)
     }
 
@@ -310,14 +310,14 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate, Hom
 
     private var scrollTarget: ScrollTarget?
 
-    public func tableViewDidUpdate() {
+    func tableViewDidUpdate() {
         emptyStateLabel.isHidden = !dataSource.isEmpty
         tableView.isScrollEnabled = !dataSource.isEmpty
         // Because scrolling is disabled when data is empty, disable
         // collapsing to ensure the search bar stays visible.
         navigationItem.hidesSearchBarWhenScrolling = !dataSource.isEmpty
 
-        guard let scrollTarget = scrollTarget else {
+        guard let scrollTarget else {
             return
         }
         switch scrollTarget {
@@ -332,13 +332,15 @@ class StoriesViewController: OWSViewController, StoryListDataSourceDelegate, Hom
             let index: Int
             if
                 sectionConstraint ?? .visibleStories == .visibleStories,
-                let visibleStoryIndex = dataSource.visibleStories.firstIndex(where: { $0.context == context }) {
+                let visibleStoryIndex = dataSource.visibleStories.firstIndex(where: { $0.context == context })
+            {
                 section = .visibleStories
                 index = visibleStoryIndex
             } else if
                 sectionConstraint ?? .hiddenStories == .hiddenStories,
                 let hiddenStoryIndex = dataSource.hiddenStories.firstIndex(where: { $0.context == context }),
-                dataSource.shouldDisplayHiddenStories {
+                dataSource.shouldDisplayHiddenStories
+            {
                 section = .hiddenStories
                 // Offset for the header
                 let headerOffset = dataSource.shouldDisplayHiddenStoriesHeader ? 1 : 0
@@ -434,7 +436,7 @@ extension StoriesViewController: UITableViewDelegate {
                 context: model.context,
                 spoilerState: spoilerState,
                 viewableContexts: viewableContexts,
-                hiddenStoryFilter: startedFromHidden
+                hiddenStoryFilter: startedFromHidden,
             )
             vc.contextDataSource = self
             presentFullScreen(vc, animated: true)
@@ -494,7 +496,7 @@ extension StoriesViewController: UITableViewDelegate {
                 spoilerState: self.spoilerState,
                 sourceView: { [weak self] in
                     return self?.tableView.cellForRow(at: indexPath)
-                }
+                },
             )
             return .init(children: actions)
         })
@@ -527,7 +529,8 @@ extension StoriesViewController: UITableViewDataSource {
             indexPath = IndexPath(row: visibleRow, section: Section.visibleStories.rawValue)
         } else if
             dataSource.shouldDisplayHiddenStories,
-            let hiddenRow = dataSource.hiddenStories.firstIndex(where: { $0.context == context }) {
+            let hiddenRow = dataSource.hiddenStories.firstIndex(where: { $0.context == context })
+        {
             // Offset by 1 to account for the header cell.
             let headerOffset = dataSource.shouldDisplayHiddenStoriesHeader ? 1 : 0
             indexPath = IndexPath(row: hiddenRow + headerOffset, section: Section.hiddenStories.rawValue)
@@ -550,10 +553,10 @@ extension StoriesViewController: UITableViewDataSource {
             cell.configure(with: myStoryModel, spoilerState: spoilerState) { [weak self] in self?.showCameraView() }
             return cell
         case .hiddenStories:
-            if indexPath.row == 0 && dataSource.shouldDisplayHiddenStoriesHeader {
+            if indexPath.row == 0, dataSource.shouldDisplayHiddenStoriesHeader {
                 let cell = tableView.dequeueReusableCell(
                     withIdentifier: HiddenStoryHeaderCell.reuseIdentifier,
-                    for: indexPath
+                    for: indexPath,
                 ) as! HiddenStoryHeaderCell
                 cell.configure(isCollapsed: dataSource.isHiddenStoriesSectionCollapsed)
                 return cell
@@ -587,7 +590,7 @@ extension StoriesViewController: UITableViewDataSource {
             return dataSource.visibleStories.count
         case .hiddenStories:
             return (
-                dataSource.shouldDisplayHiddenStoriesHeader ? 1 : 0
+                dataSource.shouldDisplayHiddenStoriesHeader ? 1 : 0,
             ) + (
                 dataSource.shouldDisplayHiddenStories ? dataSource.hiddenStories.count : 0
             )
@@ -607,7 +610,7 @@ extension StoriesViewController: UISearchResultsUpdating {
 extension StoriesViewController: StoryPageViewControllerDataSource {
     func storyPageViewControllerAvailableContexts(
         _ storyPageViewController: StoryPageViewController,
-        hiddenStoryFilter: Bool?
+        hiddenStoryFilter: Bool?,
     ) -> [StoryContext] {
         if hiddenStoryFilter == true {
             return dataSource.threadSafeHiddenStoryContexts

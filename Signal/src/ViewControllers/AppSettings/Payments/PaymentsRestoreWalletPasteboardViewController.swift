@@ -22,34 +22,38 @@ public class PaymentsRestoreWalletPasteboardViewController: OWSViewController {
         super.init()
     }
 
-    public override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
 
-        title = OWSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE",
-                                  comment: "Title for the 'restore payments wallet from pasteboard' view of the app settings.")
+        title = OWSLocalizedString(
+            "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_TITLE",
+            comment: "Title for the 'restore payments wallet from pasteboard' view of the app settings.",
+        )
 
         OWSTableViewController2.removeBackButtonText(viewController: self)
 
-        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel,
-                                                           target: self,
-                                                           action: #selector(didTapDismiss),
-                                                           accessibilityIdentifier: "dismiss")
+        navigationItem.leftBarButtonItem = UIBarButtonItem(
+            barButtonSystemItem: .cancel,
+            target: self,
+            action: #selector(didTapDismiss),
+            accessibilityIdentifier: "dismiss",
+        )
         createContents()
     }
 
-    public override func viewWillAppear(_ animated: Bool) {
+    override public func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
         textField.becomeFirstResponder()
     }
 
-    public override func viewDidAppear(_ animated: Bool) {
+    override public func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
         textField.becomeFirstResponder()
     }
 
-    public override func themeDidChange() {
+    override public func themeDidChange() {
         super.themeDidChange()
 
         updateContents()
@@ -84,23 +88,29 @@ public class PaymentsRestoreWalletPasteboardViewController: OWSViewController {
         textField.accessibilityIdentifier = "payments.passphrase.restore-paste"
         textField.delegate = self
 
-        textField.placeholder = OWSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_PLACEHOLDER",
-                                                  comment: "Format for the placeholder text in the 'restore payments wallet from pasteboard' view of the app settings.")
+        textField.placeholder = OWSLocalizedString(
+            "SETTINGS_PAYMENTS_RESTORE_WALLET_PASTE_PLACEHOLDER",
+            comment: "Format for the placeholder text in the 'restore payments wallet from pasteboard' view of the app settings.",
+        )
 
-        let textfieldStack = UIStackView(arrangedSubviews: [ textField ])
+        let textfieldStack = UIStackView(arrangedSubviews: [textField])
         textfieldStack.axis = .vertical
         textfieldStack.alignment = .fill
         textfieldStack.isLayoutMarginsRelativeArrangement = true
-        textfieldStack.layoutMargins = UIEdgeInsets(hMargin: OWSTableViewController2.cellHInnerMargin,
-                                                    vMargin: OWSTableViewController2.cellVInnerMargin)
+        textfieldStack.layoutMargins = UIEdgeInsets(
+            hMargin: OWSTableViewController2.cellHInnerMargin,
+            vMargin: OWSTableViewController2.cellVInnerMargin,
+        )
         textfieldStack.addBackgroundView(withBackgroundColor: Theme.backgroundColor, cornerRadius: 10)
 
-        let nextButton = OWSFlatButton.button(title: CommonStrings.nextButton,
-                                              font: UIFont.dynamicTypeHeadline,
-                                              titleColor: .white,
-                                              backgroundColor: .ows_accentBlue,
-                                              target: self,
-                                              selector: #selector(didTapNextButton))
+        let nextButton = OWSFlatButton.button(
+            title: CommonStrings.nextButton,
+            font: UIFont.dynamicTypeHeadline,
+            titleColor: .white,
+            backgroundColor: .ows_accentBlue,
+            target: self,
+            selector: #selector(didTapNextButton),
+        )
         nextButton.autoSetHeightUsingFont()
 
         rootView.removeAllSubviews()
@@ -109,7 +119,7 @@ public class PaymentsRestoreWalletPasteboardViewController: OWSViewController {
             textfieldStack,
             UIView.vStretchingSpacer(),
             nextButton,
-            UIView.spacer(withHeight: 8)
+            UIView.spacer(withHeight: 8),
         ])
     }
 
@@ -127,7 +137,7 @@ public class PaymentsRestoreWalletPasteboardViewController: OWSViewController {
 
     @objc
     private func tryToRestoreFromPassphrase() {
-        guard let restoreWalletDelegate = restoreWalletDelegate else {
+        guard let restoreWalletDelegate else {
             owsFailDebug("Missing restoreWalletDelegate.")
             dismiss(animated: true, completion: nil)
             return
@@ -137,20 +147,26 @@ public class PaymentsRestoreWalletPasteboardViewController: OWSViewController {
                 return nil
             }
             do {
-                return try PaymentsPassphrase.parse(passphrase: passphraseText,
-                                                    validateWords: true)
+                return try PaymentsPassphrase.parse(
+                    passphrase: passphraseText,
+                    validateWords: true,
+                )
             } catch {
                 Logger.warn("Error: \(error)")
                 return nil
             }
         }
         guard let passphrase = tryToParsePassphrase() else {
-            OWSActionSheets.showErrorAlert(message: OWSLocalizedString("SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_PASSPHRASE",
-                                                                      comment: "Error indicating that the user has entered an invalid payments passphrase in the 'restore payments wallet' views."))
+            OWSActionSheets.showErrorAlert(message: OWSLocalizedString(
+                "SETTINGS_PAYMENTS_RESTORE_WALLET_WORD_INVALID_PASSPHRASE",
+                comment: "Error indicating that the user has entered an invalid payments passphrase in the 'restore payments wallet' views.",
+            ))
             return
         }
-        let view = PaymentsRestoreWalletCompleteViewController(restoreWalletDelegate: restoreWalletDelegate,
-                                                               passphrase: passphrase)
+        let view = PaymentsRestoreWalletCompleteViewController(
+            restoreWalletDelegate: restoreWalletDelegate,
+            passphrase: passphrase,
+        )
         navigationController?.pushViewController(view, animated: true)
     }
 }

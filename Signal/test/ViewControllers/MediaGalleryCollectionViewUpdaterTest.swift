@@ -23,6 +23,7 @@ class CollectionViewLogger: MediaGalleryCollectionViewUpdaterDelegate {
                 return "reload sections at indexes \(Array(sections))"
             }
         }
+
         case deleteSections(IndexSet)
         case deleteItems([IndexPath])
         case insertSections(IndexSet)
@@ -80,11 +81,15 @@ final class MediaGalleryCollectionViewUpdaterTest: XCTestCase {
 
     func testItemDeleteUsesOriginalSectionIndex() {
         makeUpdater([10, 20, 30])
-        updater.update([.remove(index: 0),
-                        .modify(index: 0, changes: [.removeItem(index: 5)])])
+        updater.update([
+            .remove(index: 0),
+            .modify(index: 0, changes: [.removeItem(index: 5)]),
+        ])
 
-        XCTAssertEqual(logger.log, [.deleteItems([IndexPath(item: 5, section: 1)]),
-                                    .deleteSections(IndexSet([0]))])
+        XCTAssertEqual(logger.log, [
+            .deleteItems([IndexPath(item: 5, section: 1)]),
+            .deleteSections(IndexSet([0])),
+        ])
     }
 
     func testSectionDelete() {
@@ -118,36 +123,52 @@ final class MediaGalleryCollectionViewUpdaterTest: XCTestCase {
         makeUpdater([10, 20, 30])
         updater.update([
             .prepend,
-            .modify(index: 1, changes: [.updateItem(index: 5)])])
-        XCTAssertEqual(logger.log,
-                       [.reloadItems([IndexPath(item: 5, section: 0)]),
-                        .insertSections(IndexSet(integer: 0))])
+            .modify(index: 1, changes: [.updateItem(index: 5)]),
+        ])
+        XCTAssertEqual(
+            logger.log,
+            [
+                .reloadItems([IndexPath(item: 5, section: 0)]),
+                .insertSections(IndexSet(integer: 0)),
+            ],
+        )
     }
 
     func testUpdateOriginalItemAfterRemovingPredecessor() {
         makeUpdater([10, 20, 30])
         updater.update([
-            .modify(index: 0,
-                    changes: [
-                        .removeItem(index: 1),
-                        .updateItem(index: 2)  // NOTE: This corresponds to the item with original index 3.
-                    ])])
-        XCTAssertEqual(logger.log,
-                       [.reloadItems([IndexPath(item: 3, section: 0)]),
-                        .deleteItems([IndexPath(item: 1, section: 0)])
-                       ])
+            .modify(
+                index: 0,
+                changes: [
+                    .removeItem(index: 1),
+                    .updateItem(index: 2), // NOTE: This corresponds to the item with original index 3.
+                ],
+            ),
+        ])
+        XCTAssertEqual(
+            logger.log,
+            [
+                .reloadItems([IndexPath(item: 3, section: 0)]),
+                .deleteItems([IndexPath(item: 1, section: 0)]),
+            ],
+        )
     }
 
     func testUpdateDeletedItem() {
         makeUpdater([10, 20, 30])
         updater.update([
-            .modify(index: 0,
-                    changes: [
-                        .updateItem(index: 9),
-                        .removeItem(index: 9)
-                    ])])
-        XCTAssertEqual(logger.log,
-                       [.deleteItems([IndexPath(item: 9, section: 0)])])
+            .modify(
+                index: 0,
+                changes: [
+                    .updateItem(index: 9),
+                    .removeItem(index: 9),
+                ],
+            ),
+        ])
+        XCTAssertEqual(
+            logger.log,
+            [.deleteItems([IndexPath(item: 9, section: 0)])],
+        )
     }
 
     func testUpdateItems() {
@@ -160,76 +181,97 @@ final class MediaGalleryCollectionViewUpdaterTest: XCTestCase {
     func testReloadSection() {
         makeUpdater([10, 20, 30])
         // After a reload, nothing else you do to this section has an effect.
-        updater.update([.modify(index: 1,
-                                changes: [
-                                    .removeItem(index: 0),
-                                    .updateItem(index: 1),
-                                    .reloadSection,
-                                    .updateItem(index: 1),
-                                    .removeItem(index: 2)])])
+        updater.update([.modify(
+            index: 1,
+            changes: [
+                .removeItem(index: 0),
+                .updateItem(index: 1),
+                .reloadSection,
+                .updateItem(index: 1),
+                .removeItem(index: 2),
+            ],
+        )])
         XCTAssertEqual(logger.log, [.reloadSections(IndexSet(integer: 1))])
     }
 
     func testRemoveAll() {
         makeUpdater([10, 20, 30])
-        updater.update([.append,
-                        .prepend,
-                        .removeAll])
+        updater.update([
+            .append,
+            .prepend,
+            .removeAll,
+        ])
         XCTAssertEqual(logger.log, [.deleteSections(IndexSet([0, 1, 2]))])
     }
 
     func testSurvivingSectionsNotAllAppended() {
         makeUpdater([10, 20, 30])
-        updater.update([.append,
-                        .prepend,
-                        .removeAll,
-                        .append,
-                        .prepend])
-        XCTAssertEqual(logger.log, [.deleteSections(IndexSet([0, 1, 2])),
-                                    .insertSections(IndexSet([0, 1]))])
+        updater.update([
+            .append,
+            .prepend,
+            .removeAll,
+            .append,
+            .prepend,
+        ])
+        XCTAssertEqual(logger.log, [
+            .deleteSections(IndexSet([0, 1, 2])),
+            .insertSections(IndexSet([0, 1])),
+        ])
     }
 
     func testAllSurvivingSectionsAppended() {
         makeUpdater([10, 20, 30])
-        updater.update([.removeAll,
-                        .append,
-                        .append])
-        XCTAssertEqual(logger.log, [.deleteSections(IndexSet([0, 1, 2])),
-                                    .insertSections(IndexSet([0, 1]))])
+        updater.update([
+            .removeAll,
+            .append,
+            .append,
+        ])
+        XCTAssertEqual(logger.log, [
+            .deleteSections(IndexSet([0, 1, 2])),
+            .insertSections(IndexSet([0, 1])),
+        ])
     }
 
     func testEverything() {
         makeUpdater([10, 20, 30])
         updater.update([
-            .remove(index: 0),  // 10,20,30 -> 20,30
-            .prepend,           // 20,30 -> ?,20,30
-            .remove(index: 1),  // ?,20,30 -> ?,30
-            .append,            // ?,30 -> ?,30,?
+            .remove(index: 0), // 10,20,30 -> 20,30
+            .prepend, // 20,30 -> ?,20,30
+            .remove(index: 1), // ?,20,30 -> ?,30
+            .append, // ?,30 -> ?,30,?
             .modify(index: 1, changes: [
                 .updateItem(index: 29),
-                .removeItem(index: 2),  // ?,30,? -> ?,29,?
-                .removeItem(index: 3),  // ?,30,? -> ?,28,?
-                .removeItem(index: 4)  // ?,30,? -> ?,27,?
-            ]),                 // ?,28,?
+                .removeItem(index: 2), // ?,30,? -> ?,29,?
+                .removeItem(index: 3), // ?,30,? -> ?,28,?
+                .removeItem(index: 4), // ?,30,? -> ?,27,?
+            ]), // ?,28,?
             // These two have no effect because they operate on unreported sections.
             .modify(index: 0, changes: [
                 .removeItem(index: 1),
-                .updateItem(index: 1)]),
+                .updateItem(index: 1),
+            ]),
             .modify(index: 2, changes: [
                 .removeItem(index: 1),
-                .updateItem(index: 1)]),
-            .append,           // ?,28,? -> ?,28,?,?
-            .modify(index: 3, changes: [.removeItem(index: 0)]),  //  Modifying a novel section so no change
-            .remove(index: 3)  // ?,28,?,? -> ?,28,?
+                .updateItem(index: 1),
+            ]),
+            .append, // ?,28,? -> ?,28,?,?
+            .modify(index: 3, changes: [.removeItem(index: 0)]), //  Modifying a novel section so no change
+            .remove(index: 3), // ?,28,?,? -> ?,28,?
         ])
 
-        XCTAssertEqual(logger.log,
-                       [.reloadItems([IndexPath(item: 29, section: 2)]),
-                        .deleteItems([IndexPath(item: 2, section: 2),
-                                      IndexPath(item: 4, section: 2),
-                                      IndexPath(item: 6, section: 2)]),
-                        .deleteSections(IndexSet([0, 1])),
-                        .insertSections(IndexSet([0, 2]))])
+        XCTAssertEqual(
+            logger.log,
+            [
+                .reloadItems([IndexPath(item: 29, section: 2)]),
+                .deleteItems([
+                    IndexPath(item: 2, section: 2),
+                    IndexPath(item: 4, section: 2),
+                    IndexPath(item: 6, section: 2),
+                ]),
+                .deleteSections(IndexSet([0, 1])),
+                .insertSections(IndexSet([0, 2])),
+            ],
+        )
 
     }
 

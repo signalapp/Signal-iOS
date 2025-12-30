@@ -16,7 +16,7 @@ class PhoneNumberChangedMessageInserter: RecipientMergeObserver {
         groupMemberStore: GroupMemberStore,
         interactionStore: InteractionStore,
         threadAssociatedDataStore: ThreadAssociatedDataStore,
-        threadStore: ThreadStore
+        threadStore: ThreadStore,
     ) {
         self.groupMemberStore = groupMemberStore
         self.interactionStore = interactionStore
@@ -56,7 +56,7 @@ class PhoneNumberChangedMessageInserter: RecipientMergeObserver {
                 thread: thread,
                 aci: aci,
                 oldNumber: oldPhoneNumber,
-                newNumber: newPhoneNumber
+                newNumber: newPhoneNumber,
             )
             interactionStore.insertInteraction(infoMessage, tx: tx)
         }

@@ -10,14 +10,6 @@ struct ImageEditorPinchState {
     let distance: CGFloat
     let angleRadians: CGFloat
 
-    init(centroid: CGPoint,
-         distance: CGFloat,
-         angleRadians: CGFloat) {
-        self.centroid = centroid
-        self.distance = distance
-        self.angleRadians = angleRadians
-    }
-
     static var empty: ImageEditorPinchState {
         return ImageEditorPinchState(centroid: .zero, distance: 1.0, angleRadians: 0)
     }
@@ -76,7 +68,7 @@ class ImageEditorPinchGestureRecognizer: UIGestureRecognizer {
         case .began, .changed:
             switch touchState(for: event) {
             case .possible:
-                if let gestureBeganLocation = gestureBeganLocation {
+                if let gestureBeganLocation {
                     let location = centroid(forTouches: event.allTouches)
 
                     // If the initial touch moves too much without a second touch,
@@ -149,7 +141,7 @@ class ImageEditorPinchGestureRecognizer: UIGestureRecognizer {
     }
 
     private func pinchState() -> ImageEditorPinchState? {
-        guard let referenceView = referenceView else {
+        guard let referenceView else {
             owsFailDebug("Missing view")
             return nil
         }
@@ -168,9 +160,11 @@ class ImageEditorPinchGestureRecognizer: UIGestureRecognizer {
         // changes to the angle.
         let delta = CGPoint.subtract(location1, location0)
         let angleRadians = atan2(delta.y, delta.x)
-        return ImageEditorPinchState(centroid: centroid,
-                                     distance: distance,
-                                     angleRadians: angleRadians)
+        return ImageEditorPinchState(
+            centroid: centroid,
+            distance: distance,
+            angleRadians: angleRadians,
+        )
     }
 
     private func centroid(forTouches touches: Set<UITouch>?) -> CGPoint {
@@ -178,7 +172,7 @@ class ImageEditorPinchGestureRecognizer: UIGestureRecognizer {
             owsFailDebug("Missing view")
             return .zero
         }
-        guard let touches = touches else {
+        guard let touches else {
             return .zero
         }
         guard touches.count > 0 else {

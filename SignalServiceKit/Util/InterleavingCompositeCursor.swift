@@ -31,7 +31,7 @@ open class InterleavingCompositeCursor<CursorType: InterleavableCursor> {
     /// cursor should return a value from next.
     public init(
         interleaving cursors: [CursorType],
-        nextElementComparator: @escaping ElementSortComparator
+        nextElementComparator: @escaping ElementSortComparator,
     ) throws {
         self.nextElementComparator = nextElementComparator
 
@@ -54,7 +54,7 @@ open class InterleavingCompositeCursor<CursorType: InterleavableCursor> {
         ///
         /// Note that if all cursors are depleted the min element is `nil`.
         guard
-            let (nextCursorId, nextCursorElement) = nextElements.min(by: { (lhs, rhs) in
+            let (nextCursorId, nextCursorElement) = nextElements.min(by: { lhs, rhs in
                 if let lhsElement = lhs.value, let rhsElement = rhs.value {
                     // The comparator returns true if LHS is ordered first,
                     // which matches how min(by:) works.

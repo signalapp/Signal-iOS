@@ -38,7 +38,7 @@ public class ContactsFrameworkContactStoreAdaptee: ContactStoreAdaptee {
         CNContactPostalAddressesKey as CNKeyDescriptor,
         CNContactThumbnailImageDataKey as CNKeyDescriptor, // TODO full image instead of thumbnail?
         CNContactViewController.descriptorForRequiredKeys(),
-        CNContactVCardSerialization.descriptorForRequiredKeys()
+        CNContactVCardSerialization.descriptorForRequiredKeys(),
     ]
 
     var rawAuthorizationStatus: RawContactAuthorizationStatus {
@@ -53,7 +53,7 @@ public class ContactsFrameworkContactStoreAdaptee: ContactStoreAdaptee {
         case .limited:
             return .limited
         case .authorized:
-             return .authorized
+            return .authorized
         @unknown default:
             owsFailDebug("unexpected value: \(authorizationStatus.rawValue)")
             return .authorized
@@ -104,7 +104,7 @@ public class ContactsFrameworkContactStoreAdaptee: ContactStoreAdaptee {
             let contactFetchRequest = CNContactFetchRequest(keysToFetch: Self.discoveryContactKeys)
             contactFetchRequest.sortOrder = .userDefault
             try autoreleasepool {
-                try contactStoreForLargeRequests.enumerateContacts(with: contactFetchRequest) { (systemContact, _) -> Void in
+                try contactStoreForLargeRequests.enumerateContacts(with: contactFetchRequest) { systemContact, _ -> Void in
                     contacts.append(SystemContact(cnContact: systemContact, didFetchEmailAddresses: false))
                 }
             }
@@ -129,7 +129,7 @@ public class ContactsFrameworkContactStoreAdaptee: ContactStoreAdaptee {
             contactFetchRequest.predicate = CNContact.predicateForContacts(withIdentifiers: [contactId])
 
             var result: CNContact?
-            try self.contactStoreForSmallRequests.enumerateContacts(with: contactFetchRequest) { (contact, _) -> Void in
+            try self.contactStoreForSmallRequests.enumerateContacts(with: contactFetchRequest) { contact, _ -> Void in
                 guard result == nil else {
                     owsFailDebug("More than one contact with contact id.")
                     return
@@ -152,11 +152,11 @@ protocol SystemContactsFetcherDelegate: AnyObject {
     func systemContactsFetcher(
         _ systemContactsFetcher: SystemContactsFetcher,
         updatedContacts contacts: [SystemContact],
-        isUserRequested: Bool
+        isUserRequested: Bool,
     )
     func systemContactsFetcher(
         _ systemContactsFetcher: SystemContactsFetcher,
-        hasAuthorizationStatus authorizationStatus: RawContactAuthorizationStatus
+        hasAuthorizationStatus authorizationStatus: RawContactAuthorizationStatus,
     )
 }
 
@@ -238,8 +238,8 @@ public class SystemContactsFetcher {
                 completion(nil)
                 return
             }
-            self.contactStoreAdapter.requestAccess { (granted, error) in
-                if let error = error {
+            self.contactStoreAdapter.requestAccess { granted, error in
+                if let error {
                     Logger.error("error fetching contacts: \(error)")
                     completion(error)
                     return
@@ -322,7 +322,7 @@ public class SystemContactsFetcher {
 
     private func updateContacts(
         isUserRequested: Bool = false,
-        completion completionParam: ((Error?) -> Void)?
+        completion completionParam: ((Error?) -> Void)?,
     ) {
         AssertIsOnMainThread()
 

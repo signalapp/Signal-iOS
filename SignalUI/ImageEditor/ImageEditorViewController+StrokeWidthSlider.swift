@@ -30,12 +30,14 @@ extension ImageEditorViewController {
     }
 
     func updateStrokeWidthPreviewSize() {
-        guard let strokeWidthPreviewDotSize = strokeWidthPreviewDotSize else { return }
+        guard let strokeWidthPreviewDotSize else { return }
 
         let unitStrokeWidth = currentStrokeUnitWidth()
         let viewSize = imageEditorView.gestureReferenceView.bounds.size
-        let strokeWidth = ImageEditorStrokeItem.strokeWidth(forUnitStrokeWidth: unitStrokeWidth,
-                                                            dstSize: viewSize)
+        let strokeWidth = ImageEditorStrokeItem.strokeWidth(
+            forUnitStrokeWidth: unitStrokeWidth,
+            dstSize: viewSize,
+        )
         var dotSize = max(strokeWidth, 1)
         if currentStrokeType != .blur {
             dotSize += 2 * strokeWidthPreviewDot.layer.borderWidth
@@ -67,7 +69,7 @@ extension ImageEditorViewController {
             owsAssertDebug(hideStrokeWidthSliderTimer == nil)
 
             hideStrokeWidthSliderTimer = Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { [weak self] _ in
-                guard let self = self else { return }
+                guard let self else { return }
 
                 self.setStrokeWidthSlider(revealed: false)
             }
@@ -105,8 +107,8 @@ extension ImageEditorViewController {
 
     private func updateStrokeWidthSliderPosition() {
         strokeWidthSliderPosition?.constant = strokeWidthSliderRevealed
-        ? strokeWidthSliderContainer.bounds.height/2 - 12
-        : 0
+            ? strokeWidthSliderContainer.bounds.height / 2 - 12
+            : 0
         UIView.animate(withDuration: 0.2) {
             if !self.strokeWidthSliderRevealed {
                 self.strokeWidthPreviewDot.alpha = 0

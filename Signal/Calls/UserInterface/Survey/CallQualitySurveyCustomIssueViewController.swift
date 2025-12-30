@@ -9,7 +9,7 @@ import SignalUI
 final class CallQualitySurveyCustomIssueViewController: OWSTableViewController2 {
     static let placeholderText: String = OWSLocalizedString(
         "CALL_QUALITY_SURVEY_CUSTOM_ISSUE_PLACEHOLDER",
-        comment: "Placeholder text for the custom issue entry in the call quality survey"
+        comment: "Placeholder text for the custom issue entry in the call quality survey",
     )
 
     protocol Delegate: AnyObject {
@@ -39,12 +39,12 @@ final class CallQualitySurveyCustomIssueViewController: OWSTableViewController2 
         section.add(self.textViewItem(
             textView,
             minimumHeight: 114,
-            dataDetectorTypes: []
+            dataDetectorTypes: [],
         ))
 
         section.footerTitle = OWSLocalizedString(
             "CALL_QUALITY_SURVEY_CUSTOM_ISSUE_FOOTER",
-            comment: "Footer text explaining custom issue descriptions in the call quality survey"
+            comment: "Footer text explaining custom issue descriptions in the call quality survey",
         )
 
         setContents(OWSTableContents(sections: [section]))

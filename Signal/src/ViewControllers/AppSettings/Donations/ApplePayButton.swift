@@ -4,8 +4,8 @@
 //
 
 import PassKit
-import SignalUI
 import SignalServiceKit
+import SignalUI
 
 class ApplePayButton: UIButton {
     private let actionBlock: () -> Void
@@ -16,7 +16,7 @@ class ApplePayButton: UIButton {
 
         applePayButton = PKPaymentButton(
             paymentButtonType: .plain,
-            paymentButtonStyle: .automatic
+            paymentButtonStyle: .automatic,
         )
 
         super.init(frame: .zero)
@@ -24,13 +24,13 @@ class ApplePayButton: UIButton {
             UIAction { [weak self] _ in
                 self?.actionBlock()
             },
-            for: .primaryActionTriggered
+            for: .primaryActionTriggered,
         )
 
         addSubview(applePayButton)
 
 #if compiler(>=6.2)
-        if #available(iOS 26.0, *){
+        if #available(iOS 26.0, *) {
             tintColor = .Signal.label
             configuration = .prominentGlass()
         }

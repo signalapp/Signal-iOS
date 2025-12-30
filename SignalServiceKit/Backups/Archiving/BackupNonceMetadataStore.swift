@@ -18,8 +18,8 @@ public enum BackupNonce {
     /// length is variable.
     static let metadataHeaderByteLengthUpperBound: UInt16 =
         UInt16(magicFileSignature.count)
-        + varintLengthUpperBound
-        + metadataHeaderLengthUpperBound
+            + varintLengthUpperBound
+            + metadataHeaderLengthUpperBound
 
     /// SBACKUP\x01
     static let magicFileSignature = Data([83, 66, 65, 67, 75, 85, 80, 01])
@@ -87,7 +87,7 @@ extension BackupNonce.MetadataHeader {
         // Read the varint length of the header metadata.
         let (headerLength, varintLength) = ChunkedInputStreamTransform.decodeVariableLengthInteger(
             buffer: rawData,
-            start: fileSignatureLength
+            start: fileSignatureLength,
         )
         guard
             headerLength > 0,
@@ -132,7 +132,7 @@ public class BackupNonceMetadataStore {
     /// a different backup key (e.g. an AEP rotation happened between then and now).
     public func getLastForwardSecrecyToken(
         for backupKey: MessageRootBackupKey,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> BackupForwardSecrecyToken? {
         var sha = SHA256()
         sha.update(data: backupKey.serialize())
@@ -154,7 +154,7 @@ public class BackupNonceMetadataStore {
     public func setLastForwardSecrecyToken(
         _ token: BackupForwardSecrecyToken,
         for backupKey: MessageRootBackupKey,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         var sha = SHA256()
         sha.update(data: backupKey.serialize())
@@ -169,7 +169,7 @@ public class BackupNonceMetadataStore {
     /// a different backup key (e.g. an AEP rotation happened between then and now).
     public func getNextSecretMetadata(
         for backupKey: MessageRootBackupKey,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> BackupNonce.NextSecretMetadata? {
         var sha = SHA256()
         sha.update(data: backupKey.serialize())
@@ -195,7 +195,7 @@ public class BackupNonceMetadataStore {
     public func setNextSecretMetadata(
         _ metadata: BackupNonce.NextSecretMetadata,
         for backupKey: MessageRootBackupKey,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         var sha = SHA256()
         sha.update(data: backupKey.serialize())

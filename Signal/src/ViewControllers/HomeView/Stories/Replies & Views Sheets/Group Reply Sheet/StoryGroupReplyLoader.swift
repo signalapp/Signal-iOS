@@ -16,6 +16,7 @@ class StoryGroupReplyLoader {
     private var replyUniqueIds = [String]() {
         didSet { AssertIsOnMainThread() }
     }
+
     private var replyItems = [String: StoryGroupReplyViewItem]() {
         didSet { AssertIsOnMainThread() }
     }
@@ -28,7 +29,7 @@ class StoryGroupReplyLoader {
 
     var isScrolledToBottom: Bool {
         AssertIsOnMainThread()
-        guard let tableView = tableView else { return false }
+        guard let tableView else { return false }
 
         let lastIndexPath = IndexPath(row: replyUniqueIds.count - 1, section: 0)
 
@@ -43,7 +44,7 @@ class StoryGroupReplyLoader {
 
     @MainActor
     init?(storyMessage: StoryMessage, threadUniqueId: String?, tableView: UITableView) {
-        guard let threadUniqueId = threadUniqueId else {
+        guard let threadUniqueId else {
             owsFailDebug("Unexpectedly missing threadUniqueId")
             return nil
         }
@@ -53,11 +54,11 @@ class StoryGroupReplyLoader {
         self.tableView = tableView
         self.messageBatchFetcher = StoryGroupReplyBatchFetcher(
             storyAuthor: storyMessage.authorAci,
-            storyTimestamp: storyMessage.timestamp
+            storyTimestamp: storyMessage.timestamp,
         )
         self.messageLoader = MessageLoader(
             batchFetcher: messageBatchFetcher,
-            interactionFetchers: [SSKEnvironment.shared.modelReadCachesRef.interactionReadCache, SDSInteractionFetcherImpl()]
+            interactionFetchers: [SSKEnvironment.shared.modelReadCachesRef.interactionReadCache, SDSInteractionFetcherImpl()],
         )
 
         // Load the first page synchronously.
@@ -98,7 +99,7 @@ class StoryGroupReplyLoader {
     func reload(
         updatedInteractionIds: Set<String>? = nil,
         deletedInteractionIds: Set<String>? = nil,
-        canReuseInteractions: Bool = true
+        canReuseInteractions: Bool = true,
     ) {
         LoadingMode.reload.async {
             SSKEnvironment.shared.databaseStorageRef.read { self.load(
@@ -106,7 +107,7 @@ class StoryGroupReplyLoader {
                 canReuseInteractions: canReuseInteractions,
                 updatedInteractionIds: updatedInteractionIds,
                 deletedInteractionIds: deletedInteractionIds,
-                transaction: $0
+                transaction: $0,
             ) }
         }
     }
@@ -139,7 +140,7 @@ class StoryGroupReplyLoader {
         canReuseInteractions: Bool = true,
         updatedInteractionIds: Set<String>? = nil,
         deletedInteractionIds: Set<String>? = nil,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) {
         assertOnQueue(mode.queue)
 
@@ -149,7 +150,7 @@ class StoryGroupReplyLoader {
         if canReuseInteractions {
             let loadedInteractions = messageLoader.loadedInteractions
             reusableInteractions = loadedInteractions.reduce(
-                into: [String: TSInteraction]()
+                into: [String: TSInteraction](),
             ) { partialResult, interaction in
                 guard updatedInteractionIds?.contains(interaction.uniqueId) != true else { return }
                 partialResult[interaction.uniqueId] = interaction
@@ -167,25 +168,25 @@ class StoryGroupReplyLoader {
                     focusMessageId: messageBatchFetcher.uniqueIdsAndRowIds.first?.uniqueId,
                     reusableInteractions: reusableInteractions,
                     deletedInteractionIds: deletedInteractionIds,
-                    tx: transaction
+                    tx: transaction,
                 )
             case .newer:
                 try self.messageLoader.loadNewerMessagePage(
                     reusableInteractions: reusableInteractions,
                     deletedInteractionIds: deletedInteractionIds,
-                    tx: transaction
+                    tx: transaction,
                 )
             case .older:
                 try self.messageLoader.loadOlderMessagePage(
                     reusableInteractions: reusableInteractions,
                     deletedInteractionIds: deletedInteractionIds,
-                    tx: transaction
+                    tx: transaction,
                 )
             case .reload:
                 try self.messageLoader.loadSameLocation(
                     reusableInteractions: reusableInteractions,
                     deletedInteractionIds: deletedInteractionIds,
-                    tx: transaction
+                    tx: transaction,
                 )
             }
         } catch {
@@ -236,7 +237,7 @@ class StoryGroupReplyLoader {
         let groupNameColors = GroupNameColors.forThread(groupThread, localAci: localIdentifiers.aci)
         let displayNamesByAddress = SSKEnvironment.shared.contactManagerImplRef.displayNamesByAddress(
             for: Array(authorAddresses),
-            transaction: transaction
+            transaction: transaction,
         )
 
         var newReplyItems = [String: StoryGroupReplyViewItem]()
@@ -262,13 +263,13 @@ class StoryGroupReplyLoader {
                     authorDisplayName: displayName,
                     authorColor: groupNameColors.color(for: authorAddress.aci),
                     recipientStatus: recipientStatus,
-                    transaction: transaction
+                    transaction: transaction,
                 )
             }
 
             newReplyItems[message.uniqueId] = replyItem
 
-            if let previousItem = previousItem, canCollapse(item: replyItem, previousItem: previousItem) {
+            if let previousItem, canCollapse(item: replyItem, previousItem: previousItem) {
                 switch previousItem.cellType.position {
                 case .standalone:
                     previousItem.cellType.position = .top
@@ -300,8 +301,8 @@ class StoryGroupReplyLoader {
         case .reaction: return true
         case .text:
             return previousItem.authorAddress == item.authorAddress &&
-            previousItem.timeString == item.timeString &&
-            ![.pending, .uploading, .sending, .failed].contains(previousItem.recipientStatus)
+                previousItem.timeString == item.timeString &&
+                ![.pending, .uploading, .sending, .failed].contains(previousItem.recipientStatus)
         }
     }
 }
@@ -311,7 +312,7 @@ extension StoryGroupReplyLoader: DatabaseChangeDelegate {
         guard let storyId = storyMessage.id, databaseChanges.storyMessageRowIds.contains(storyId) else { return }
         reload(
             updatedInteractionIds: databaseChanges.interactionUniqueIds,
-            deletedInteractionIds: databaseChanges.interactionDeletedUniqueIds
+            deletedInteractionIds: databaseChanges.interactionDeletedUniqueIds,
         )
     }
 
@@ -341,7 +342,7 @@ private class StoryGroupReplyBatchFetcher: MessageLoaderBatchFetcher {
         uniqueIdsAndRowIds = InteractionFinder.groupReplyUniqueIdsAndRowIds(
             storyAuthor: storyAuthor,
             storyTimestamp: storyTimestamp,
-            transaction: tx
+            transaction: tx,
         )
     }
 

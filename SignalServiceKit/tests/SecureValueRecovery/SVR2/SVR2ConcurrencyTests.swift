@@ -4,8 +4,8 @@
 //
 
 import Foundation
-import XCTest
 import LibSignalClient
+import XCTest
 
 @testable import SignalServiceKit
 
@@ -48,7 +48,7 @@ class SVR2ConcurrencyTests: XCTestCase {
             svrLocalStorage: localStorage,
             tsAccountManager: MockTSAccountManager(),
             tsConstants: TSConstants.shared,
-            twoFAManager: SVR2.TestMocks.OWS2FAManager()
+            twoFAManager: SVR2.TestMocks.OWS2FAManager(),
         )
     }
 
@@ -112,7 +112,7 @@ class SVR2ConcurrencyTests: XCTestCase {
         firstBackupFuture.resolve(backupResponse())
         wait(for: [
             madeRequestExpectations[0],
-            madeRequestExpectations[1]
+            madeRequestExpectations[1],
         ], timeout: 10, enforceOrder: true)
 
         let secondMasterKey = MasterKey()
@@ -129,7 +129,7 @@ class SVR2ConcurrencyTests: XCTestCase {
             madeRequestExpectations[2], // second backup
             madeRequestExpectations[3], // second expose
             secondBackupExpectation,
-            closeExpectation
+            closeExpectation,
         ], timeout: 10, enforceOrder: true)
     }
 
@@ -196,13 +196,13 @@ class SVR2ConcurrencyTests: XCTestCase {
         secondExposeFuture.resolve(exposeResponse())
         wait(for: [
             madeRequestExpectations[0], // first backup
-            firstBackupExpectation
+            firstBackupExpectation,
         ], timeout: 10, enforceOrder: true)
         wait(for: [
             madeRequestExpectations[1], // second backup
             madeRequestExpectations[2], // second expose
             secondBackupExpectation,
-            closeExpectation
+            closeExpectation,
         ], timeout: 10, enforceOrder: true)
     }
 
@@ -289,7 +289,7 @@ class SVR2ConcurrencyTests: XCTestCase {
             madeRequestExpectations[0], // first backup
             firstCloseExpectation,
             firstBackupExpectation,
-            secondBackupExpectation
+            secondBackupExpectation,
         ], timeout: 10, enforceOrder: true)
 
         XCTAssertEqual(numOpenedConnections, 1)
@@ -354,7 +354,7 @@ class SVR2ConcurrencyTests: XCTestCase {
                 svrLocalStorage: localStorage,
                 tsAccountManager: MockTSAccountManager(),
                 tsConstants: TSConstants.shared,
-                twoFAManager: SVR2.TestMocks.OWS2FAManager()
+                twoFAManager: SVR2.TestMocks.OWS2FAManager(),
             )
             let masterKey = MasterKey()
             firstBackupPromise = svr.backupMasterKey(pin: "1234", masterKey: masterKey, authMethod: .implicit)
@@ -388,7 +388,7 @@ class SVR2ConcurrencyTests: XCTestCase {
         wait(for: [
             closeExpectation,
             firstBackupExpectation,
-            secondBackupExpectation
+            secondBackupExpectation,
         ], timeout: 10)
     }
 

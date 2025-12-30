@@ -45,11 +45,11 @@ extension DonationViewsUtil {
         /// terminated at the right time and network conditions are right.
         static func throwIfAlreadySendingGift(
             threadId: String,
-            transaction: DBReadTransaction
+            transaction: DBReadTransaction,
         ) throws {
             let isAlreadyGifting = DonationUtilities.sendGiftBadgeJobQueue.alreadyHasJob(
                 threadId: threadId,
-                transaction: transaction
+                transaction: transaction,
             )
             if isAlreadyGifting {
                 Logger.warn("[Gifting] Already sending a gift to this recipient")
@@ -60,36 +60,36 @@ extension DonationViewsUtil {
         /// Prepare a payment with Apple Pay, using Stripe.
         static func prepareToPay(
             amount: FiatMoney,
-            applePayPayment: PKPayment
+            applePayPayment: PKPayment,
         ) async throws -> PreparedGiftPayment {
             return try await prepareToPay(
                 amount: amount,
-                withStripePaymentMethod: .applePay(payment: applePayPayment)
+                withStripePaymentMethod: .applePay(payment: applePayPayment),
             )
         }
 
         /// Prepare a payment with a credit/debit card, using Stripe.
         static func prepareToPay(
             amount: FiatMoney,
-            creditOrDebitCard: Stripe.PaymentMethod.CreditOrDebitCard
+            creditOrDebitCard: Stripe.PaymentMethod.CreditOrDebitCard,
         ) async throws -> PreparedGiftPayment {
             try await prepareToPay(
                 amount: amount,
-                withStripePaymentMethod: .creditOrDebitCard(creditOrDebitCard: creditOrDebitCard)
+                withStripePaymentMethod: .creditOrDebitCard(creditOrDebitCard: creditOrDebitCard),
             )
         }
 
         /// Prepare a payment with Stripe.
         private static func prepareToPay(
             amount: FiatMoney,
-            withStripePaymentMethod paymentMethod: Stripe.PaymentMethod
+            withStripePaymentMethod paymentMethod: Stripe.PaymentMethod,
         ) async throws -> PreparedGiftPayment {
             do {
                 return try await withCooperativeTimeout(seconds: 30) {
                     let paymentIntent = try await Stripe.createBoostPaymentIntent(
                         for: amount,
                         level: .giftBadge(.signalGift),
-                        paymentMethod: paymentMethod.stripePaymentMethod
+                        paymentMethod: paymentMethod.stripePaymentMethod,
                     )
                     let paymentMethodId = try await Stripe.createPaymentMethod(with: paymentMethod)
                     return .forStripe(paymentIntent: paymentIntent, paymentMethodId: paymentMethodId)
@@ -139,14 +139,14 @@ extension DonationViewsUtil {
             messageText: String,
             databaseStorage: SDSDatabaseStorage,
             blockingManager: BlockingManager,
-            onChargeSucceeded: @MainActor () -> Void = {}
+            onChargeSucceeded: @MainActor () -> Void = {},
         ) async throws {
             let jobRecord = SendGiftBadgeJobQueue.createJob(
                 preparedPayment: preparedPayment,
                 receiptRequest: ReceiptCredentialManager.generateReceiptRequest(),
                 amount: amount,
                 thread: thread,
-                messageText: messageText
+                messageText: messageText,
             )
             let chargePromise: Promise<Void>
             let completionPromise: Promise<Void>
@@ -176,29 +176,29 @@ extension DonationViewsUtil {
             case .recipientIsBlocked:
                 title = OWSLocalizedString(
                     "DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_IS_BLOCKED_ERROR_TITLE",
-                    comment: "Users can donate on a friend's behalf. This is the title for an error message that appears if the try to do this, but the recipient is blocked."
+                    comment: "Users can donate on a friend's behalf. This is the title for an error message that appears if the try to do this, but the recipient is blocked.",
                 )
                 message = OWSLocalizedString(
                     "DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_IS_BLOCKED_ERROR_BODY",
-                    comment: "Users can donate on a friend's behalf. This is the error message that appears if the try to do this, but the recipient is blocked."
+                    comment: "Users can donate on a friend's behalf. This is the error message that appears if the try to do this, but the recipient is blocked.",
                 )
             case .failedAndUserNotCharged:
                 title = OWSLocalizedString(
                     "DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_FAILED_ERROR_TITLE",
-                    comment: "Users can donate on a friend's behalf. If the payment fails and the user has not been charged, an error dialog will be shown. This is the title of that dialog."
+                    comment: "Users can donate on a friend's behalf. If the payment fails and the user has not been charged, an error dialog will be shown. This is the title of that dialog.",
                 )
                 message = OWSLocalizedString(
                     "DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_FAILED_ERROR_BODY",
-                    comment: "Users can donate on a friend's behalf. If the payment fails and the user has not been charged, this error message is shown."
+                    comment: "Users can donate on a friend's behalf. If the payment fails and the user has not been charged, this error message is shown.",
                 )
             case .failedAndUserMaybeCharged:
                 title = OWSLocalizedString(
                     "DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_SUCCEEDED_BUT_MESSAGE_FAILED_ERROR_TITLE",
-                    comment: "Users can donate on a friend's behalf. If the payment was processed but the donation failed to send, an error dialog will be shown. This is the title of that dialog."
+                    comment: "Users can donate on a friend's behalf. If the payment was processed but the donation failed to send, an error dialog will be shown. This is the title of that dialog.",
                 )
                 message = OWSLocalizedString(
                     "DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_SUCCEEDED_BUT_MESSAGE_FAILED_ERROR_BODY",
-                    comment: "Users can donate on a friend's behalf. If the payment was processed but the donation failed to send, this error message will be shown."
+                    comment: "Users can donate on a friend's behalf. If the payment was processed but the donation failed to send, this error message will be shown.",
                 )
             }
 

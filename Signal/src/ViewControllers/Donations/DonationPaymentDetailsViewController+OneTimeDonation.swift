@@ -9,7 +9,7 @@ import SignalUI
 
 extension DonationPaymentDetailsViewController {
     /// Make a one-time donation.
-    /// 
+    ///
     /// See also: code for other payment methods, such as Apple Pay.
     func oneTimeDonation(with validForm: FormState.ValidForm) {
         Logger.info("[Donations] Starting one-time donation")
@@ -24,7 +24,7 @@ extension DonationPaymentDetailsViewController {
                         let confirmedIntent = try await Stripe.boost(
                             amount: amount,
                             level: .boostBadge,
-                            for: validForm.stripePaymentMethod
+                            for: validForm.stripePaymentMethod,
                         )
 
                         let intentId: String
@@ -33,13 +33,13 @@ extension DonationPaymentDetailsViewController {
                                 Logger.info("[Donations] One-time iDEAL donation requires authentication. Presenting...")
                                 let donation = PendingOneTimeIDEALDonation(
                                     paymentIntentId: confirmedIntent.paymentIntentId,
-                                    amount: amount
+                                    amount: amount,
                                 )
                                 await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
                                     do {
                                         try DependenciesBridge.shared.externalPendingIDEALDonationStore.setPendingOneTimeDonation(
                                             donation: donation,
-                                            tx: transaction
+                                            tx: transaction,
                                         )
                                     } catch {
                                         owsFailDebug("[Donations] Failed to persist pending One-time iDEAL donation")
@@ -59,9 +59,9 @@ extension DonationPaymentDetailsViewController {
                             paymentIntentId: intentId,
                             amount: amount,
                             paymentMethod: validForm.donationPaymentMethod,
-                            databaseStorage: SSKEnvironment.shared.databaseStorageRef
+                            databaseStorage: SSKEnvironment.shared.databaseStorageRef,
                         )
-                    }
+                    },
                 )
                 Logger.info("[Donations] One-time donation finished")
                 self.onFinished(nil)

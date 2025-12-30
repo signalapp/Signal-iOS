@@ -41,6 +41,7 @@ class ImageEditorCropViewController: OWSViewController {
         view.isOpaque = false
         return view
     }()
+
     // This constraint reflects current aspec ratio of the clip rectangle.
     // This constraint gets updated using values from `transform` whenever user makes changes.
     private var clipViewAspectRatioConstraint: NSLayoutConstraint?
@@ -77,14 +78,23 @@ class ImageEditorCropViewController: OWSViewController {
             cropViewFrameBottom.constant = -cropViewFrameInsets.bottom
         }
     }
-    private lazy var cropViewFrameLeading = cropView.cropFrameLayoutGuide.leadingAnchor.constraint(equalTo: clipView.leadingAnchor,
-                                                                                                   constant: cropViewFrameInsets.leading)
-    private lazy var cropViewFrameTop = cropView.cropFrameLayoutGuide.topAnchor.constraint(equalTo: clipView.topAnchor,
-                                                                                      constant: cropViewFrameInsets.top)
-    private lazy var cropViewFrameTrailing = cropView.cropFrameLayoutGuide.trailingAnchor.constraint(equalTo: clipView.trailingAnchor,
-                                                                                                constant: -cropViewFrameInsets.trailing)
-    private lazy var cropViewFrameBottom = cropView.cropFrameLayoutGuide.bottomAnchor.constraint(equalTo: clipView.bottomAnchor,
-                                                                                            constant: -cropViewFrameInsets.bottom)
+
+    private lazy var cropViewFrameLeading = cropView.cropFrameLayoutGuide.leadingAnchor.constraint(
+        equalTo: clipView.leadingAnchor,
+        constant: cropViewFrameInsets.leading,
+    )
+    private lazy var cropViewFrameTop = cropView.cropFrameLayoutGuide.topAnchor.constraint(
+        equalTo: clipView.topAnchor,
+        constant: cropViewFrameInsets.top,
+    )
+    private lazy var cropViewFrameTrailing = cropView.cropFrameLayoutGuide.trailingAnchor.constraint(
+        equalTo: clipView.trailingAnchor,
+        constant: -cropViewFrameInsets.trailing,
+    )
+    private lazy var cropViewFrameBottom = cropView.cropFrameLayoutGuide.bottomAnchor.constraint(
+        equalTo: clipView.bottomAnchor,
+        constant: -cropViewFrameInsets.bottom,
+    )
 
     // Controls.
     private lazy var resetButton: UIButton = {
@@ -95,6 +105,7 @@ class ImageEditorCropViewController: OWSViewController {
         button.addTarget(self, action: #selector(didTapReset), for: .touchUpInside)
         return button
     }()
+
     private lazy var footerView: UIView = {
         let footerView = UIView()
         footerView.preservesSuperviewLayoutMargins = true
@@ -115,6 +126,7 @@ class ImageEditorCropViewController: OWSViewController {
 
         return footerView
     }()
+
     private lazy var rotationControl = RotationControl()
     private lazy var bottomBar: ImageEditorBottomBar = {
         let bottomBar = ImageEditorBottomBar(buttonProvider: self)
@@ -140,6 +152,7 @@ class ImageEditorCropViewController: OWSViewController {
         view.backgroundColor = .black
 
         // MARK: - Clip view & content.
+
         view.addSubview(clipView)
         updateClipViewAspectRatio()
 
@@ -154,23 +167,26 @@ class ImageEditorCropViewController: OWSViewController {
         view.addConstraints([
             imageView.centerXAnchor.constraint(equalTo: clipView.centerXAnchor),
             imageView.centerYAnchor.constraint(equalTo: clipView.centerYAnchor),
-            imageView.widthAnchor.constraint(equalTo: imageView.heightAnchor, multiplier: imageAspectRatio)
+            imageView.widthAnchor.constraint(equalTo: imageView.heightAnchor, multiplier: imageAspectRatio),
         ])
 
         // MARK: - Crop frame
+
         view.addSubview(cropView)
         cropView.autoPinEdgesToSuperviewEdges()
 
         // Visible crop frame is constrained to clipView using auto layout.
-        view.addConstraints([ cropViewFrameLeading, cropViewFrameTop, cropViewFrameTrailing, cropViewFrameBottom ])
+        view.addConstraints([cropViewFrameLeading, cropViewFrameTop, cropViewFrameTrailing, cropViewFrameBottom])
 
         // MARK: - Footer
+
         view.addSubview(footerView)
         footerView.autoPinWidthToSuperview()
         footerView.autoPinEdge(toSuperviewEdge: .bottom)
         setupRotationControlActions()
 
         // MARK: - Layout guides for clip view
+
         initialStateContentLayoutGuide.identifier = "Content - Initial State"
         view.addLayoutGuide(initialStateContentLayoutGuide)
         let topConstraint: NSLayoutConstraint = {
@@ -184,7 +200,8 @@ class ImageEditorCropViewController: OWSViewController {
             topConstraint,
             initialStateContentLayoutGuide.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             initialStateContentLayoutGuide.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            initialStateContentLayoutGuide.bottomAnchor.constraint(equalTo: bottomBar.topAnchor) ])
+            initialStateContentLayoutGuide.bottomAnchor.constraint(equalTo: bottomBar.topAnchor),
+        ])
 
         finalStateContentLayoutGuide.identifier = "Content - Final State"
         view.addLayoutGuide(finalStateContentLayoutGuide)
@@ -192,15 +209,19 @@ class ImageEditorCropViewController: OWSViewController {
             finalStateContentLayoutGuide.centerYAnchor.constraint(equalTo: initialStateContentLayoutGuide.centerYAnchor),
             finalStateContentLayoutGuide.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
             finalStateContentLayoutGuide.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
-            finalStateContentLayoutGuide.bottomAnchor.constraint(equalTo: footerView.topAnchor) ])
+            finalStateContentLayoutGuide.bottomAnchor.constraint(equalTo: footerView.topAnchor),
+        ])
 
         // MARK: - Reset Button
+
         resetButton.translatesAutoresizingMaskIntoConstraints = false
         let mediaTopBar = MediaTopBar()
         mediaTopBar.addSubview(resetButton)
-        mediaTopBar.addConstraints([ resetButton.topAnchor.constraint(equalTo: mediaTopBar.controlsLayoutGuide.topAnchor),
-                                     resetButton.trailingAnchor.constraint(equalTo: mediaTopBar.controlsLayoutGuide.trailingAnchor),
-                                     resetButton.bottomAnchor.constraint(equalTo: mediaTopBar.controlsLayoutGuide.bottomAnchor) ])
+        mediaTopBar.addConstraints([
+            resetButton.topAnchor.constraint(equalTo: mediaTopBar.controlsLayoutGuide.topAnchor),
+            resetButton.trailingAnchor.constraint(equalTo: mediaTopBar.controlsLayoutGuide.trailingAnchor),
+            resetButton.bottomAnchor.constraint(equalTo: mediaTopBar.controlsLayoutGuide.bottomAnchor),
+        ])
         mediaTopBar.install(in: view)
         updateResetButtonAppearance(animated: false)
 
@@ -215,7 +236,7 @@ class ImageEditorCropViewController: OWSViewController {
         transitionUI(toState: .final, animated: true)
     }
 
-    public override var prefersStatusBarHidden: Bool {
+    override var prefersStatusBarHidden: Bool {
         !UIDevice.current.hasIPhoneXNotch && !UIDevice.current.isIPad && !DependenciesBridge.shared.currentCallProvider.hasCurrentCall
     }
 
@@ -254,7 +275,7 @@ class ImageEditorCropViewController: OWSViewController {
             c1.priority = .defaultHigh
             let c2 = clipView.heightAnchor.constraint(equalTo: layoutGuide.heightAnchor)
             c2.priority = .defaultHigh
-            return [ c1, c2 ]
+            return [c1, c2]
         }())
 
         // Constrain image view to fit the current layout guide's frame.
@@ -272,7 +293,7 @@ class ImageEditorCropViewController: OWSViewController {
         // is clipView's aspect ratio, which is defined by the current transform.
         //
         // Constraint needs to be re-created because NSLayoutConstraint.multiplier is read-only.
-        if let clipViewAspectRatioConstraint = clipViewAspectRatioConstraint {
+        if let clipViewAspectRatioConstraint {
             view.removeConstraint(clipViewAspectRatioConstraint)
         }
         let aspectRatio = transform.outputSizePixels
@@ -303,13 +324,16 @@ class ImageEditorCropViewController: OWSViewController {
             rotationControl.angle = transform.rotationRadians.radiansToDegrees
         }
 
-        UIView.animate(withDuration: 0.25,
-                       animations: {
-            self.updateClipViewAspectRatio()
-            self.resetCropFrameInsets()
-            self.updateImageViewTransform()
-            self.updateResetButtonAppearance(animated: false)
-        }, completion: completion)
+        UIView.animate(
+            withDuration: 0.25,
+            animations: {
+                self.updateClipViewAspectRatio()
+                self.resetCropFrameInsets()
+                self.updateImageViewTransform()
+                self.updateResetButtonAppearance(animated: false)
+            },
+            completion: completion,
+        )
     }
 
     private func applyTransformHidingCropFrame(_ transform: ImageEditorTransform) {
@@ -328,8 +352,8 @@ class ImageEditorCropViewController: OWSViewController {
         let viewSize = clipView.bounds.size
         let imageSize = imageView.bounds.size
 
-        guard viewSize.width > 0 && viewSize.height > 0 else { return }
-        guard imageSize.width > 0 && imageSize.height > 0 else { return }
+        guard viewSize.width > 0, viewSize.height > 0 else { return }
+        guard imageSize.width > 0, imageSize.height > 0 else { return }
 
         // Re-use this method that calculates bounding box rect for image with transform applied to it.
         // We only need size of the result returned by this method.
@@ -385,7 +409,7 @@ class ImageEditorCropViewController: OWSViewController {
         }
 
         let timer = Timer.scheduledTimer(withTimeInterval: delay, repeats: false) { [weak self] _ in
-            guard let self = self else { return }
+            guard let self else { return }
             self.setCropFrameGridLines(hidden: hidden, animated: animated)
         }
         setGridHiddenTimer = timer
@@ -427,16 +451,18 @@ class ImageEditorCropViewController: OWSViewController {
         imageView.layer.cornerRadius = imageCornerRadius
 
         if animated {
-            UIView.animate(withDuration: animationDuration,
-                           animations: {
-                setControlsHiddenBlock()
-                self.constrainContent(to: layoutGuide)
-                self.updateImageViewTransform()
-                // Animate layout changes made within bottomBar.setControls(hidden:).
-                self.view.setNeedsDisplay()
-                self.view.layoutIfNeeded()
-            },
-                           completion: completion)
+            UIView.animate(
+                withDuration: animationDuration,
+                animations: {
+                    setControlsHiddenBlock()
+                    self.constrainContent(to: layoutGuide)
+                    self.updateImageViewTransform()
+                    // Animate layout changes made within bottomBar.setControls(hidden:).
+                    self.view.setNeedsDisplay()
+                    self.view.layoutIfNeeded()
+                },
+                completion: completion,
+            )
         } else {
             setControlsHiddenBlock()
             constrainContent(to: layoutGuide)
@@ -468,10 +494,12 @@ class ImageEditorCropViewController: OWSViewController {
         panGestureRecognizer.shouldBeRequiredToFail(by: pinchGestureRecognizer)
     }
 
-    private class func unitTranslation(oldLocationView: CGPoint,
-                                       newLocationView: CGPoint,
-                                       viewBounds: CGRect,
-                                       oldTransform: ImageEditorTransform) -> CGPoint {
+    private class func unitTranslation(
+        oldLocationView: CGPoint,
+        newLocationView: CGPoint,
+        viewBounds: CGRect,
+        oldTransform: ImageEditorTransform,
+    ) -> CGPoint {
 
         // The beauty of using an SRT (scale-rotate-translation) transform ordering
         // is that the translation is applied last, so it's trivial to convert
@@ -494,26 +522,30 @@ class ImageEditorCropViewController: OWSViewController {
             gestureStartTransform = transform
 
         case .changed, .ended:
-            guard let gestureStartTransform = gestureStartTransform else {
+            guard let gestureStartTransform else {
                 owsFailDebug("Missing pinchTransform.")
                 return
             }
 
             let unitTranslation =
-            ImageEditorCropViewController.unitTranslation(oldLocationView: gestureRecognizer.pinchStateStart.centroid,
-                                                          newLocationView: gestureRecognizer.pinchStateLast.centroid,
-                                                          viewBounds: clipView.bounds,
-                                                          oldTransform: gestureStartTransform)
+                ImageEditorCropViewController.unitTranslation(
+                    oldLocationView: gestureRecognizer.pinchStateStart.centroid,
+                    newLocationView: gestureRecognizer.pinchStateLast.centroid,
+                    viewBounds: clipView.bounds,
+                    oldTransform: gestureStartTransform,
+                )
 
             // NOTE: We use max(1, ...) to avoid divide-by-zero.
             let scaling = gestureStartTransform.scaling * gestureRecognizer.pinchStateLast.distance / max(1.0, gestureRecognizer.pinchStateStart.distance)
             let clampedScaling = scaling.clamp(ImageEditorTextItem.kMinScaling, ImageEditorTextItem.kMaxScaling)
 
-            let newTransform = ImageEditorTransform(outputSizePixels: gestureStartTransform.outputSizePixels,
-                                                    unitTranslation: unitTranslation,
-                                                    rotationRadians: gestureStartTransform.rotationRadians,
-                                                    scaling: clampedScaling,
-                                                    isFlipped: gestureStartTransform.isFlipped)
+            let newTransform = ImageEditorTransform(
+                outputSizePixels: gestureStartTransform.outputSizePixels,
+                unitTranslation: unitTranslation,
+                rotationRadians: gestureStartTransform.rotationRadians,
+                scaling: clampedScaling,
+                isFlipped: gestureStartTransform.isFlipped,
+            )
             applyTransformWithoutAnimation(newTransform.normalize(srcImageSizePixels: model.srcImageSizePixels))
             updateResetButtonAppearance(animated: true)
 
@@ -573,7 +605,7 @@ class ImageEditorCropViewController: OWSViewController {
             panCropRegion = cropRegion(forGestureRecognizer: gestureRecognizer)
 
         case .changed, .ended:
-            if let panCropRegion = panCropRegion {
+            if let panCropRegion {
                 // Crop pan gesture
                 handleCropPanGesture(gestureRecognizer, panCropRegion: panCropRegion)
             } else {
@@ -606,8 +638,10 @@ class ImageEditorCropViewController: OWSViewController {
         }
     }
 
-    private func handleCropPanGesture(_ gestureRecognizer: ImageEditorPanGestureRecognizer,
-                                      panCropRegion: CropRegion) {
+    private func handleCropPanGesture(
+        _ gestureRecognizer: ImageEditorPanGestureRecognizer,
+        panCropRegion: CropRegion,
+    ) {
         AssertIsOnMainThread()
 
         guard let locationStart = gestureRecognizer.locationFirst else {
@@ -676,8 +710,10 @@ class ImageEditorCropViewController: OWSViewController {
         let viewBounds = clipView.bounds
 
         // TODO: The output size should be rounded, although this can cause crop to be slightly not WYSIWYG.
-        let croppedOutputSizePixels = CGSize.round(CGSize(width: transform.outputSizePixels.width * cropRect.width / viewBounds.width,
-                                                          height: transform.outputSizePixels.height * cropRect.height / viewBounds.height))
+        let croppedOutputSizePixels = CGSize.round(CGSize(
+            width: transform.outputSizePixels.width * cropRect.width / viewBounds.width,
+            height: transform.outputSizePixels.height * cropRect.height / viewBounds.height,
+        ))
 
         // We need to update the transform's unitTranslation and scaling properties
         // to reflect the crop.
@@ -688,11 +724,13 @@ class ImageEditorCropViewController: OWSViewController {
         // Therefore, the simplest and more reliable way to update the scaling is to measure
         // the difference between the "before crop"/"after crop" image frames and adjust the
         // scaling accordingly.
-        let naiveTransform = ImageEditorTransform(outputSizePixels: croppedOutputSizePixels,
-                                                  unitTranslation: transform.unitTranslation,
-                                                  rotationRadians: transform.rotationRadians,
-                                                  scaling: transform.scaling,
-                                                  isFlipped: transform.isFlipped)
+        let naiveTransform = ImageEditorTransform(
+            outputSizePixels: croppedOutputSizePixels,
+            unitTranslation: transform.unitTranslation,
+            rotationRadians: transform.rotationRadians,
+            scaling: transform.scaling,
+            isFlipped: transform.isFlipped,
+        )
         let naiveImageFrameOld = ImageEditorCanvasView.imageFrame(forViewSize: transform.outputSizePixels, imageSize: model.srcImageSizePixels, transform: naiveTransform)
         let naiveImageFrameNew = ImageEditorCanvasView.imageFrame(forViewSize: croppedOutputSizePixels, imageSize: model.srcImageSizePixels, transform: naiveTransform)
         let scalingDeltaX = naiveImageFrameNew.width / naiveImageFrameOld.width
@@ -723,18 +761,20 @@ class ImageEditorCropViewController: OWSViewController {
         // unit midpoint.
         let unitTranslation = newImageCenterUnit.minus(CGPoint.unitMidpoint)
 
-        let newTransform = ImageEditorTransform(outputSizePixels: croppedOutputSizePixels,
-                                                unitTranslation: unitTranslation,
-                                                rotationRadians: transform.rotationRadians,
-                                                scaling: scaling,
-                                                isFlipped: transform.isFlipped)
+        let newTransform = ImageEditorTransform(
+            outputSizePixels: croppedOutputSizePixels,
+            unitTranslation: unitTranslation,
+            rotationRadians: transform.rotationRadians,
+            scaling: scaling,
+            isFlipped: transform.isFlipped,
+        )
         applyTransformWithAnimation(newTransform.normalize(srcImageSizePixels: model.srcImageSizePixels))
     }
 
     private func handleNormalPanGesture(_ gestureRecognizer: ImageEditorPanGestureRecognizer) {
         AssertIsOnMainThread()
 
-        guard let gestureStartTransform = gestureStartTransform else {
+        guard let gestureStartTransform else {
             owsFailDebug("Missing pinchTransform.")
             return
         }
@@ -744,16 +784,20 @@ class ImageEditorCropViewController: OWSViewController {
         }
 
         let currentLocation = gestureRecognizer.location(in: clipView)
-        let unitTranslation = ImageEditorCropViewController.unitTranslation(oldLocationView: startLocation,
-                                                                            newLocationView: currentLocation,
-                                                                            viewBounds: clipView.bounds,
-                                                                            oldTransform: gestureStartTransform)
+        let unitTranslation = ImageEditorCropViewController.unitTranslation(
+            oldLocationView: startLocation,
+            newLocationView: currentLocation,
+            viewBounds: clipView.bounds,
+            oldTransform: gestureStartTransform,
+        )
 
-        let newTransform = ImageEditorTransform(outputSizePixels: gestureStartTransform.outputSizePixels,
-                                                unitTranslation: unitTranslation,
-                                                rotationRadians: gestureStartTransform.rotationRadians,
-                                                scaling: gestureStartTransform.scaling,
-                                                isFlipped: gestureStartTransform.isFlipped)
+        let newTransform = ImageEditorTransform(
+            outputSizePixels: gestureStartTransform.outputSizePixels,
+            unitTranslation: unitTranslation,
+            rotationRadians: gestureStartTransform.rotationRadians,
+            scaling: gestureStartTransform.scaling,
+            isFlipped: gestureStartTransform.isFlipped,
+        )
 
         applyTransformWithoutAnimation(newTransform.normalize(srcImageSizePixels: model.srcImageSizePixels))
         updateResetButtonAppearance(animated: true)
@@ -807,23 +851,23 @@ extension ImageEditorCropViewController: ImageEditorBottomBarButtonProvider {
     var middleButtons: [UIButton] {
         let rotateButton = RoundMediaButton(
             image: UIImage(imageLiteralResourceName: "rotate-28"),
-            backgroundStyle: .none
+            backgroundStyle: .none,
         )
         rotateButton.addTarget(self, action: #selector(didTapRotateImage), for: .touchUpInside)
 
         let flipButton = RoundMediaButton(
             image: UIImage(imageLiteralResourceName: "flip-28"),
-            backgroundStyle: .none
+            backgroundStyle: .none,
         )
         flipButton.addTarget(self, action: #selector(didTapFlipImage), for: .touchUpInside)
 
         let aspectRatioButton = RoundMediaButton(
             image: UIImage(imageLiteralResourceName: "ratio-28"),
-            backgroundStyle: .none
+            backgroundStyle: .none,
         )
         aspectRatioButton.addTarget(self, action: #selector(didTapChooseAspectRatio), for: .touchUpInside)
 
-        return [ rotateButton, flipButton, aspectRatioButton ]
+        return [rotateButton, flipButton, aspectRatioButton]
     }
 }
 
@@ -888,11 +932,11 @@ extension ImageEditorCropViewController {
         if currentAspectRatio - imageAspectRatio > aspectRatioEpsilon {
             // Image is cropped at top and bottom - extend source cropping frame vertically.
             let heightDiff = currentCropRect.height - currentCropRect.width / imageAspectRatio
-            currentCropRect = currentCropRect.insetBy(dx: 0, dy: heightDiff/2)
+            currentCropRect = currentCropRect.insetBy(dx: 0, dy: heightDiff / 2)
         } else if imageAspectRatio - currentAspectRatio > aspectRatioEpsilon {
             // Image is cropped at left and right - extend source cropping frame horizontally.
             let widthDiff = currentCropRect.width - currentCropRect.height * imageAspectRatio
-            currentCropRect = currentCropRect.insetBy(dx: widthDiff/2, dy: 0)
+            currentCropRect = currentCropRect.insetBy(dx: widthDiff / 2, dy: 0)
         }
         currentAspectRatio = currentCropRect.width / currentCropRect.height
 
@@ -907,25 +951,25 @@ extension ImageEditorCropViewController {
                 return 1
 
             case .fourByThree:
-                return 4/3
+                return 4 / 3
 
             case .threeByFour:
-                return 3/4
+                return 3 / 4
 
             case .sixteenByNine:
-                return 16/9
+                return 16 / 9
 
             case .nineBySixteen:
-                return 9/16
+                return 9 / 16
             }
         }()
         var newCropRect: CGRect
         if newAspectRatio - currentAspectRatio > aspectRatioEpsilon {
             let heightDiff = currentCropRect.height - currentCropRect.width / newAspectRatio
-            newCropRect = currentCropRect.insetBy(dx: 0, dy: heightDiff/2)
+            newCropRect = currentCropRect.insetBy(dx: 0, dy: heightDiff / 2)
         } else if currentAspectRatio - newAspectRatio > aspectRatioEpsilon {
             let widthDiff = currentCropRect.width - currentCropRect.height * newAspectRatio
-            newCropRect = currentCropRect.insetBy(dx: widthDiff/2, dy: 0)
+            newCropRect = currentCropRect.insetBy(dx: widthDiff / 2, dy: 0)
         } else {
             newCropRect = currentCropRect
         }
@@ -969,21 +1013,25 @@ extension ImageEditorCropViewController {
     private func didTapRotateImage() {
         let outputSizePixels = CGSize(width: transform.outputSizePixels.height, height: transform.outputSizePixels.width)
         let rotationRadians = transform.rotationRadians - CGFloat.pi / 2
-        let newTransform = ImageEditorTransform(outputSizePixels: outputSizePixels,
-                                                unitTranslation: transform.unitTranslation,
-                                                rotationRadians: rotationRadians,
-                                                scaling: transform.scaling,
-                                                isFlipped: transform.isFlipped)
+        let newTransform = ImageEditorTransform(
+            outputSizePixels: outputSizePixels,
+            unitTranslation: transform.unitTranslation,
+            rotationRadians: rotationRadians,
+            scaling: transform.scaling,
+            isFlipped: transform.isFlipped,
+        )
         applyTransformHidingCropFrame(newTransform.normalize(srcImageSizePixels: model.srcImageSizePixels))
     }
 
     @objc
     private func didTapFlipImage() {
-        let newTransform = ImageEditorTransform(outputSizePixels: transform.outputSizePixels,
-                                                unitTranslation: transform.unitTranslation,
-                                                rotationRadians: transform.rotationRadians,
-                                                scaling: transform.scaling,
-                                                isFlipped: !transform.isFlipped)
+        let newTransform = ImageEditorTransform(
+            outputSizePixels: transform.outputSizePixels,
+            unitTranslation: transform.unitTranslation,
+            rotationRadians: transform.rotationRadians,
+            scaling: transform.scaling,
+            isFlipped: !transform.isFlipped,
+        )
         applyTransformHidingCropFrame(newTransform.normalize(srcImageSizePixels: model.srcImageSizePixels))
     }
 
@@ -1000,12 +1048,14 @@ extension ImageEditorCropViewController {
         for aspectRatio in AspectRatio.allCases {
             guard isCurrentImageCompatibleWith(aspectRatio: aspectRatio) else { continue }
             actionSheet.addAction(
-                ActionSheetAction(title: aspectRatio.localizedTitle(),
-                                  style: .default,
-                                  handler: { [weak self] _ in
-                                      guard let self = self else { return }
-                                      self.cropTo(aspectRatio: aspectRatio)
-                                  }))
+                ActionSheetAction(
+                    title: aspectRatio.localizedTitle(),
+                    style: .default,
+                    handler: { [weak self] _ in
+                        guard let self else { return }
+                        self.cropTo(aspectRatio: aspectRatio)
+                    },
+                ))
         }
         actionSheet.addAction(ActionSheetAction(title: CommonStrings.cancelButton, style: .cancel))
         presentActionSheet(actionSheet)
@@ -1025,11 +1075,13 @@ extension ImageEditorCropViewController {
     @objc
     private func rotationControlValueChanged(_ sender: RotationControl) {
         let newAngle = sender.angle.degreesToRadians
-        let newTransform = ImageEditorTransform(outputSizePixels: transform.outputSizePixels,
-                                                unitTranslation: transform.unitTranslation,
-                                                rotationRadians: newAngle,
-                                                scaling: transform.scaling,
-                                                isFlipped: transform.isFlipped)
+        let newTransform = ImageEditorTransform(
+            outputSizePixels: transform.outputSizePixels,
+            unitTranslation: transform.unitTranslation,
+            rotationRadians: newAngle,
+            scaling: transform.scaling,
+            isFlipped: transform.isFlipped,
+        )
         applyTransformWithoutAnimation(newTransform.normalize(srcImageSizePixels: model.srcImageSizePixels))
         updateResetButtonAppearance(animated: true)
     }

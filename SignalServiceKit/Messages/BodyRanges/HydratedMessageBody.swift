@@ -24,7 +24,7 @@ public class HydratedMessageBody: Equatable, Hashable {
 
     public var isEmpty: Bool { hydratedText.isEmpty }
 
-    public static func == (lhs: HydratedMessageBody, rhs: HydratedMessageBody) -> Bool {
+    public static func ==(lhs: HydratedMessageBody, rhs: HydratedMessageBody) -> Bool {
         return lhs.hydratedText == rhs.hydratedText
             && lhs.mentionAttributes == rhs.mentionAttributes
             && lhs.styleAttributes == rhs.styleAttributes
@@ -38,11 +38,11 @@ public class HydratedMessageBody: Equatable, Hashable {
         hasher.combine(styleAttributes)
     }
 
-    internal init(
+    init(
         hydratedText: String,
         unhydratedMentions: [NSRangedValue<UnhydratedMentionAttribute>] = [],
         mentionAttributes: [NSRangedValue<HydratedMentionAttribute>],
-        styleAttributes: [NSRangedValue<StyleAttribute>]
+        styleAttributes: [NSRangedValue<StyleAttribute>],
     ) {
         self.hydratedText = hydratedText
         self.unhydratedMentions = unhydratedMentions
@@ -54,10 +54,10 @@ public class HydratedMessageBody: Equatable, Hashable {
         return HydratedMessageBody(hydratedText: text, mentionAttributes: [], styleAttributes: [])
     }
 
-    internal init(
+    init(
         messageBody: MessageBody,
         mentionHydrator: MentionHydrator,
-        isRTL: Bool = CurrentAppContext().isRTL
+        isRTL: Bool = CurrentAppContext().isRTL,
     ) {
         if messageBody.text.isEmpty {
             self.hydratedText = ""
@@ -94,7 +94,7 @@ public class HydratedMessageBody: Equatable, Hashable {
             {
                 finalStyleAttributes.append(.init(
                     StyleAttribute.fromCollapsedStyle(style.style),
-                    range: style.newRange
+                    range: style.newRange,
                 ))
                 styleAtCurrentIndex = nil
             }
@@ -106,9 +106,9 @@ public class HydratedMessageBody: Equatable, Hashable {
                     originalRange: originalRange,
                     newRange: NSRange(
                         location: originalRange.location + rangeOffset,
-                        length: originalRange.length
+                        length: originalRange.length,
                     ),
-                    style: style.value
+                    style: style.value,
                 )
             }
 
@@ -116,10 +116,10 @@ public class HydratedMessageBody: Equatable, Hashable {
             // Mentions can't overlap, so we don't need a while loop to check for multiple.
             guard
                 let mention = mentionsInOriginal.first,
-                (
-                    mention.range.contains(currentIndex)
-                    || mention.range.location == currentIndex
-                )
+
+                mention.range.contains(currentIndex)
+                || mention.range.location == currentIndex
+
             else {
                 // No mentions, so no additional logic needed, just go to the next index.
                 continue
@@ -128,7 +128,7 @@ public class HydratedMessageBody: Equatable, Hashable {
 
             let newMentionRange = NSRange(
                 location: mention.range.location + rangeOffset,
-                length: mention.range.length
+                length: mention.range.length,
             )
 
             let finalMentionLength: Int
@@ -138,7 +138,7 @@ public class HydratedMessageBody: Equatable, Hashable {
                 // Preserve the mention without replacement and proceed.
                 unhydratedMentions.append(.init(
                     UnhydratedMentionAttribute.fromOriginalRange(mention.range, mentionAci: mention.value),
-                    range: newMentionRange
+                    range: newMentionRange,
                 ))
                 continue
             case let .hydrate(displayName):
@@ -157,9 +157,9 @@ public class HydratedMessageBody: Equatable, Hashable {
                         HydratedMentionAttribute.fromOriginalRange(
                             mention.range,
                             mentionAci: mention.value,
-                            displayName: displayName
+                            displayName: displayName,
                         ),
-                        range: NSRange(location: newMentionRange.location, length: finalMentionLength)
+                        range: NSRange(location: newMentionRange.location, length: finalMentionLength),
                     ))
                 } else {
                     mentionOffsetDelta = 0
@@ -177,8 +177,8 @@ public class HydratedMessageBody: Equatable, Hashable {
                         StyleAttribute.fromCollapsedStyle(style.style),
                         range: NSRange(
                             location: style.newRange.location,
-                            length: finalLength
-                        )
+                            length: finalLength,
+                        ),
                     ))
 
                     // We are done with it, now.
@@ -191,9 +191,9 @@ public class HydratedMessageBody: Equatable, Hashable {
                         originalRange: style.originalRange,
                         newRange: NSRange(
                             location: style.newRange.location,
-                            length: style.newRange.length + mentionOffsetDelta
+                            length: style.newRange.length + mentionOffsetDelta,
                         ),
-                        style: style.style
+                        style: style.style,
                     )
                 }
             }
@@ -203,11 +203,11 @@ public class HydratedMessageBody: Equatable, Hashable {
             // Styles that ran right to the end (or overran) should be finalized.
             let finalRange = NSRange(
                 location: style.newRange.location,
-                length: finalText.length - style.newRange.location
+                length: finalText.length - style.newRange.location,
             )
             finalStyleAttributes.append(.init(
                 StyleAttribute.fromCollapsedStyle(style.style),
-                range: finalRange
+                range: finalRange,
             ))
         }
 
@@ -233,7 +233,7 @@ public class HydratedMessageBody: Equatable, Hashable {
             public init(
                 matchingBackgroundColor: ThemedColor,
                 matchingForegroundColor: ThemedColor,
-                matchedRanges: [NSRange]
+                matchedRanges: [NSRange],
             ) {
                 self.matchingBackgroundColor = matchingBackgroundColor
                 self.matchingForegroundColor = matchingForegroundColor
@@ -249,16 +249,16 @@ public class HydratedMessageBody: Equatable, Hashable {
 
             public func apply(
                 _ string: NSMutableAttributedString,
-                isDarkThemeEnabled: Bool
+                isDarkThemeEnabled: Bool,
             ) {
                 for searchMatchRange in matchedRanges {
                     string.addAttributes(
                         [
                             .backgroundColor: matchingBackgroundColor.color(isDarkThemeEnabled: isDarkThemeEnabled),
                             .foregroundColor: matchingForegroundColor.color(isDarkThemeEnabled: isDarkThemeEnabled),
-                            Self.configKey: self as Any
+                            Self.configKey: self as Any,
                         ],
-                        range: searchMatchRange
+                        range: searchMatchRange,
                     )
                 }
             }
@@ -271,7 +271,7 @@ public class HydratedMessageBody: Equatable, Hashable {
             baseTextColor: ThemedColor,
             mention: MentionDisplayConfiguration,
             style: StyleDisplayConfiguration,
-            searchRanges: SearchRanges?
+            searchRanges: SearchRanges?,
         ) {
             self.baseFont = baseFont
             self.baseTextColor = baseTextColor
@@ -312,7 +312,7 @@ public class HydratedMessageBody: Equatable, Hashable {
             revealAllSpoilers: Bool = false,
             revealedSpoilerIds: Set<StyleIdType> = Set(),
             searchRanges: SearchRanges? = nil,
-            useAnimatedSpoilers: Bool
+            useAnimatedSpoilers: Bool,
         ) {
             self.init(
                 baseFont: baseFont,
@@ -320,7 +320,7 @@ public class HydratedMessageBody: Equatable, Hashable {
                 mention: .init(
                     font: mentionFont ?? baseFont,
                     foregroundColor: mentionForegroundColor ?? baseTextColor,
-                    backgroundColor: mentionBackgroundColor
+                    backgroundColor: mentionBackgroundColor,
                 ),
                 style: .init(
                     baseFont: baseFont,
@@ -329,9 +329,9 @@ public class HydratedMessageBody: Equatable, Hashable {
                     revealedSpoilerBgColor: revealedSpoilerBgColor,
                     revealAllIds: revealAllSpoilers,
                     revealedIds: revealedSpoilerIds,
-                    useAnimatedSpoilers: useAnimatedSpoilers
+                    useAnimatedSpoilers: useAnimatedSpoilers,
                 ),
-                searchRanges: searchRanges
+                searchRanges: searchRanges,
             )
         }
 
@@ -351,14 +351,14 @@ public class HydratedMessageBody: Equatable, Hashable {
         baseFont: UIFont? = nil,
         baseTextColor: UIColor? = nil,
         textAlignment: NSTextAlignment? = nil,
-        isDarkThemeEnabled: Bool
+        isDarkThemeEnabled: Bool,
     ) -> NSAttributedString {
         let baseFont = baseFont ?? config.baseFont
         let baseTextColor = baseTextColor ?? config.baseTextColor.color(isDarkThemeEnabled: isDarkThemeEnabled)
 
         var baseAttributes: [NSAttributedString.Key: Any] = [
             .font: baseFont,
-            .foregroundColor: baseTextColor
+            .foregroundColor: baseTextColor,
         ]
         if let textAlignment {
             let paragraphStyle = NSMutableParagraphStyle()
@@ -367,23 +367,23 @@ public class HydratedMessageBody: Equatable, Hashable {
         }
         let string = NSMutableAttributedString(
             string: hydratedText,
-            attributes: baseAttributes
+            attributes: baseAttributes,
         )
         return Self.applyAttributes(
             on: string,
             mentionAttributes: mentionAttributes,
             styleAttributes: styleAttributes,
             config: config,
-            isDarkThemeEnabled: isDarkThemeEnabled
+            isDarkThemeEnabled: isDarkThemeEnabled,
         )
     }
 
-    internal static func applyAttributes(
+    static func applyAttributes(
         on string: NSMutableAttributedString,
         mentionAttributes: [NSRangedValue<HydratedMentionAttribute>],
         styleAttributes: [NSRangedValue<StyleAttribute>],
         config: HydratedMessageBody.DisplayConfiguration,
-        isDarkThemeEnabled: Bool
+        isDarkThemeEnabled: Bool,
     ) -> NSMutableAttributedString {
         // Start by removing the background color attribute on the
         // whole string. This is brittle but a big efficiency gain.
@@ -409,7 +409,7 @@ public class HydratedMessageBody: Equatable, Hashable {
                 to: string,
                 at: $0.range,
                 config: config.mention,
-                isDarkThemeEnabled: isDarkThemeEnabled
+                isDarkThemeEnabled: isDarkThemeEnabled,
             )
         }
 
@@ -422,7 +422,7 @@ public class HydratedMessageBody: Equatable, Hashable {
                 at: $0.range,
                 config: config.style,
                 searchRanges: config.searchRanges,
-                isDarkThemeEnabled: isDarkThemeEnabled
+                isDarkThemeEnabled: isDarkThemeEnabled,
             )
         }
         return string
@@ -454,7 +454,7 @@ public class HydratedMessageBody: Equatable, Hashable {
     // MARK: - Forwarding
 
     public func asMessageBodyForForwarding(
-        preservingAllMentions: Bool = false
+        preservingAllMentions: Bool = false,
     ) -> MessageBody {
         var mentionsDict = [NSRange: Aci]()
         unhydratedMentions.forEach {
@@ -470,14 +470,14 @@ public class HydratedMessageBody: Equatable, Hashable {
             text: hydratedText,
             ranges: MessageBodyRanges(
                 mentions: mentionsDict,
-                styles: Self.flattenStylesPreservingSharedIds(styleAttributes)
-            )
+                styles: Self.flattenStylesPreservingSharedIds(styleAttributes),
+            ),
         )
     }
 
     // MARK: - Editing
 
-    internal func asEditableMessageBody() -> EditableMessageBodyTextStorage.Body {
+    func asEditableMessageBody() -> EditableMessageBodyTextStorage.Body {
         var mentions = [NSRange: Aci]()
         self.mentionAttributes.forEach {
             mentions[$0.range] = $0.value.mentionAci
@@ -506,16 +506,17 @@ public class HydratedMessageBody: Equatable, Hashable {
                 }
             }
         }
-        flattenedStyles.append(contentsOf: runningStyles
-            .map({ style, values in
-                return NSRangedValue<SingleStyle>(style, range: values.1)
-            })
+        flattenedStyles.append(
+            contentsOf: runningStyles
+                .map({ style, values in
+                    return NSRangedValue<SingleStyle>(style, range: values.1)
+                }),
         )
         flattenedStyles.sort(by: { $0.range.location < $1.range.location })
         return .init(
             hydratedText: hydratedText,
             mentions: mentions,
-            flattenedStyles: flattenedStyles
+            flattenedStyles: flattenedStyles,
         )
     }
 
@@ -534,7 +535,7 @@ public class HydratedMessageBody: Equatable, Hashable {
             hydratedText: prefix.text + hydratedText,
             unhydratedMentions: unhydratedMentions.map { $0.offset(by: offset) },
             mentionAttributes: mentionAttributes.map { $0.offset(by: offset) },
-            styleAttributes: prefixStyles + styleAttributes.map { $0.offset(by: offset) }
+            styleAttributes: prefixStyles + styleAttributes.map { $0.offset(by: offset) },
         )
     }
 
@@ -551,7 +552,7 @@ public class HydratedMessageBody: Equatable, Hashable {
     /// so as to not cut off mid-mention.
     public func truncatingIfNeeded(
         maxGlyphCount: Int,
-        truncationSuffix: String
+        truncationSuffix: String,
     ) -> HydratedMessageBody? {
         guard var truncatedBody = hydratedText.trimmedIfNeeded(maxGlyphCount: maxGlyphCount) else {
             return nil
@@ -584,7 +585,7 @@ public class HydratedMessageBody: Equatable, Hashable {
             return true
         })
         let unhydratedMentions = self.unhydratedMentions.filter { $0.range.upperBound <= truncatedUtf16Length }
-        let styles = self.styleAttributes.compactMap { (styleAttribute) -> NSRangedValue<StyleAttribute>? in
+        let styles = self.styleAttributes.compactMap { styleAttribute -> NSRangedValue<StyleAttribute>? in
             if styleAttribute.range.location > truncatedUtf16Length {
                 return nil
             } else if styleAttribute.range.upperBound <= truncatedUtf16Length {
@@ -594,8 +595,8 @@ public class HydratedMessageBody: Equatable, Hashable {
                     styleAttribute.value,
                     range: NSRange(
                         location: styleAttribute.range.location,
-                        length: truncatedUtf16Length - styleAttribute.range.location
-                    )
+                        length: truncatedUtf16Length - styleAttribute.range.location,
+                    ),
                 )
             }
         }
@@ -604,7 +605,7 @@ public class HydratedMessageBody: Equatable, Hashable {
             hydratedText: truncatedBody + truncationSuffix,
             unhydratedMentions: unhydratedMentions,
             mentionAttributes: mentions,
-            styleAttributes: styles
+            styleAttributes: styles,
         )
         // Strip. It's less efficient but avoids code repetition to go through message body.
         return newSelf
@@ -631,7 +632,7 @@ public class HydratedMessageBody: Equatable, Hashable {
     }
 
     public func spoilerRangesForAnimation(
-        config: DisplayConfiguration
+        config: DisplayConfiguration,
     ) -> [AnimatableSpoilerRange] {
         // We want to collapse adjacent ranges because they should
         // all animate together even if they are distinct ranges
@@ -676,22 +677,22 @@ public class HydratedMessageBody: Equatable, Hashable {
                         coloredRanges.append(.init(
                             range: NSRange(
                                 location: remainingSpoilerRange.location,
-                                length: intersection.location - remainingSpoilerRange.location
+                                length: intersection.location - remainingSpoilerRange.location,
                             ),
                             color: config.style.spoilerColor,
-                            isSearchResult: false
+                            isSearchResult: false,
                         ))
                     }
                     // The overlapping part gets the search config's color.
                     coloredRanges.append(
-                        .init(range: intersection, color: searchConfig.matchingBackgroundColor, isSearchResult: true)
+                        .init(range: intersection, color: searchConfig.matchingBackgroundColor, isSearchResult: true),
                     )
                     if spoilerRange.upperBound <= intersection.upperBound {
                         break searchRangeLoop
                     } else {
                         remainingSpoilerRange = NSRange(
                             location: intersection.upperBound,
-                            length: remainingSpoilerRange.upperBound - intersection.upperBound
+                            length: remainingSpoilerRange.upperBound - intersection.upperBound,
                         )
                     }
                 } else if searchRange.location >= remainingSpoilerRange.upperBound {
@@ -727,23 +728,23 @@ public class HydratedMessageBody: Equatable, Hashable {
 
     public func tappableItems(
         revealedSpoilerIds: Set<Int>,
-        dataDetector: NSDataDetector?
+        dataDetector: NSDataDetector?,
     ) -> [TappableItem] {
         return Self.tappableItems(
             text: hydratedText,
             mentionAttributes: mentionAttributes,
             styleAttributes: styleAttributes,
             revealedSpoilerIds: revealedSpoilerIds,
-            dataDetector: dataDetector
+            dataDetector: dataDetector,
         )
     }
 
-    internal static func tappableItems(
+    static func tappableItems(
         text: String,
         mentionAttributes: [NSRangedValue<HydratedMentionAttribute>],
         styleAttributes: [NSRangedValue<StyleAttribute>],
         revealedSpoilerIds: Set<Int>,
-        dataDetector: NSDataDetector?
+        dataDetector: NSDataDetector?,
     ) -> [TappableItem] {
         // We "cheat" by using NSAttributedString to deal with overlapping
         // ranges for us. We add our items and their ranges as attributes,
@@ -753,7 +754,7 @@ public class HydratedMessageBody: Equatable, Hashable {
         func setRange(
             value: Any,
             key: NSAttributedString.Key,
-            range: NSRange
+            range: NSRange,
         ) {
             if range.upperBound > attrString.length {
                 attrString.append(String(repeating: " ", count: range.upperBound - attrString.length))
@@ -776,7 +777,7 @@ public class HydratedMessageBody: Equatable, Hashable {
                 setRange(
                     value: TappableItem.UnrevealedSpoiler(range: $0.range, id: spoilerId),
                     key: unrevealedSpoilerKey,
-                    range: $0.range
+                    range: $0.range,
                 )
             }
         }
@@ -784,7 +785,7 @@ public class HydratedMessageBody: Equatable, Hashable {
             setRange(
                 value: TappableItem.Mention(range: $0.range, mentionAci: $0.value.mentionAci),
                 key: mentionKey,
-                range: $0.range
+                range: $0.range,
             )
         }
 
@@ -793,7 +794,7 @@ public class HydratedMessageBody: Equatable, Hashable {
             setRange(
                 value: $0,
                 key: dataKey,
-                range: $0.range
+                range: $0.range,
             )
         }
 
@@ -820,7 +821,7 @@ public class HydratedMessageBody: Equatable, Hashable {
         return regex.matches(
             in: hydratedText,
             options: [.withoutAnchoringBounds],
-            range: hydratedText.entireRange
+            range: hydratedText.entireRange,
         ).map(\.range)
     }
 
@@ -855,7 +856,7 @@ public class HydratedMessageBody: Equatable, Hashable {
 
     public func shouldAllowLinkification(
         linkDetector: NSDataDetector,
-        isValidLink: (String) -> Bool
+        isValidLink: (String) -> Bool,
     ) -> Bool {
         guard LinkValidator.canParseURLs(in: hydratedText) else {
             return false
@@ -881,7 +882,7 @@ public class HydratedMessageBody: Equatable, Hashable {
 
     // MARK: - Helpers
 
-    internal static func flattenStylesPreservingSharedIds(_ styleAttributes: [NSRangedValue<StyleAttribute>]) -> [NSRangedValue<SingleStyle>] {
+    static func flattenStylesPreservingSharedIds(_ styleAttributes: [NSRangedValue<StyleAttribute>]) -> [NSRangedValue<SingleStyle>] {
         var styleIdToIndex = [StyleIdType: Int]()
         var styles = [NSRangedValue<MessageBodyRanges.SingleStyle>]()
         for styleAttribute in styleAttributes {

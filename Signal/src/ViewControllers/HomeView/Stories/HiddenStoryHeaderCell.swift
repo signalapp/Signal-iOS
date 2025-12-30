@@ -23,7 +23,7 @@ class HiddenStoryHeaderCell: UITableViewCell {
 
         label.text = OWSLocalizedString(
             "STORIES_HIDDEN_SECTION_HEADER",
-            comment: "Header for the hidden stories section of the stories list"
+            comment: "Header for the hidden stories section of the stories list",
         )
         label.textColor = .Signal.label
         label.font = UIFont.dynamicTypeHeadline
@@ -47,15 +47,15 @@ class HiddenStoryHeaderCell: UITableViewCell {
 
         // Rotate the chevron down when not collapsed
         let applyIconRotation = {
-            let expandedRotationAngle: CGFloat = CurrentAppContext().isRTL ? -.pi/2 : .pi/2
-            self.iconView.transform = CGAffineTransform.init(
-                rotationAngle: isCollapsed ? 0 : expandedRotationAngle
+            let expandedRotationAngle: CGFloat = CurrentAppContext().isRTL ? -.pi / 2 : .pi / 2
+            self.iconView.transform = CGAffineTransform(
+                rotationAngle: isCollapsed ? 0 : expandedRotationAngle,
             )
         }
         defer {
             self.isCollapsed = isCollapsed
         }
-        guard animated && isCollapsed != self.isCollapsed else {
+        guard animated, isCollapsed != self.isCollapsed else {
             applyIconRotation()
             return
         }

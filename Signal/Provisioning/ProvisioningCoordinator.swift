@@ -27,7 +27,7 @@ protocol ProvisioningCoordinator {
     func completeProvisioning(
         provisionMessage: LinkingProvisioningMessage,
         deviceName: String,
-        progressViewModel: LinkAndSyncSecondaryProgressViewModel
+        progressViewModel: LinkAndSyncSecondaryProgressViewModel,
     ) async throws(CompleteProvisioningError)
 }
 

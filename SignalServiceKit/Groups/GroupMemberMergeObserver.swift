@@ -14,7 +14,7 @@ class GroupMemberMergeObserverImpl: RecipientMergeObserver {
     init(
         threadStore: ThreadStore,
         groupMemberUpdater: GroupMemberUpdater,
-        groupMemberStore: GroupMemberStore
+        groupMemberStore: GroupMemberStore,
     ) {
         self.threadStore = threadStore
         self.groupMemberUpdater = groupMemberUpdater

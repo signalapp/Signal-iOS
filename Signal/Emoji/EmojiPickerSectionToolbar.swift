@@ -19,6 +19,7 @@ class EmojiPickerSectionToolbar: UIView, UICollectionViewDelegate {
     private enum Section {
         case main
     }
+
     private var dataSource: UICollectionViewDiffableDataSource<Section, ThemeIcon>!
     private var collectionView: UICollectionView!
 
@@ -72,7 +73,7 @@ class EmojiPickerSectionToolbar: UIView, UICollectionViewDelegate {
                 imageView.widthAnchor.constraint(equalToConstant: EmojiSectionCellContentView.imageSize),
                 imageView.heightAnchor.constraint(equalToConstant: EmojiSectionCellContentView.imageSize),
                 imageView.centerXAnchor.constraint(equalTo: centerXAnchor),
-                imageView.centerYAnchor.constraint(equalTo: centerYAnchor)
+                imageView.centerYAnchor.constraint(equalTo: centerYAnchor),
             ])
 
             configure()
@@ -121,7 +122,7 @@ class EmojiPickerSectionToolbar: UIView, UICollectionViewDelegate {
             .emojiTravel,
             .emojiObject,
             .emojiSymbol,
-            .emojiFlag
+            .emojiFlag,
         ]
         if delegate.emojiPickerSectionToolbarShouldShowRecentsSection(self) == true {
             emojiSectionIcons.insert(.emojiRecent, at: 0)
@@ -206,8 +207,8 @@ class EmojiPickerSectionToolbar: UIView, UICollectionViewDelegate {
         // Configure data source.
         collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "cell")
         dataSource = UICollectionViewDiffableDataSource<Section, ThemeIcon>(
-            collectionView: collectionView
-        ) { (collectionView, indexPath, itemIdentifier) -> UICollectionViewCell? in
+            collectionView: collectionView,
+        ) { collectionView, indexPath, itemIdentifier -> UICollectionViewCell? in
 
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
             cell.automaticallyUpdatesContentConfiguration = true
@@ -237,7 +238,7 @@ class EmojiPickerSectionToolbar: UIView, UICollectionViewDelegate {
         let layout = UICollectionViewCompositionalLayout { _, environment in
             let itemSize = NSCollectionLayoutSize(
                 widthDimension: .absolute(cellSize),
-                heightDimension: .absolute(cellSize)
+                heightDimension: .absolute(cellSize),
             )
             let item = NSCollectionLayoutItem(layoutSize: itemSize)
 
@@ -249,7 +250,7 @@ class EmojiPickerSectionToolbar: UIView, UICollectionViewDelegate {
             if minimumWidth <= availableWidth {
                 let groupSize = NSCollectionLayoutSize(
                     widthDimension: .fractionalWidth(1),
-                    heightDimension: .absolute(cellSize)
+                    heightDimension: .absolute(cellSize),
                 )
                 let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitem: item, count: numberOfItems)
                 group.interItemSpacing = .fixed(collectionViewSectionMargin)
@@ -261,7 +262,7 @@ class EmojiPickerSectionToolbar: UIView, UICollectionViewDelegate {
             } else {
                 let groupSize = NSCollectionLayoutSize(
                     widthDimension: .absolute(cellSize),
-                    heightDimension: .absolute(cellSize)
+                    heightDimension: .absolute(cellSize),
                 )
                 let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
 
@@ -270,7 +271,7 @@ class EmojiPickerSectionToolbar: UIView, UICollectionViewDelegate {
                 section.interGroupSpacing = collectionViewSectionMargin
                 section.contentInsets = .init(
                     hMargin: collectionViewSectionMargin * 2,
-                    vMargin: collectionViewSectionMargin
+                    vMargin: collectionViewSectionMargin,
                 )
                 return section
             }
@@ -290,7 +291,7 @@ class EmojiPickerSectionToolbar: UIView, UICollectionViewDelegate {
         collectionView.selectItem(
             at: IndexPath(item: section, section: 0),
             animated: true,
-            scrollPosition: .centeredHorizontally
+            scrollPosition: .centeredHorizontally,
         )
     }
 }

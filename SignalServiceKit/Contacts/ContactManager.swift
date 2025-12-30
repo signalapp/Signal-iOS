@@ -39,7 +39,7 @@ extension ContactManager {
             }
             return DisplayName.SystemContactName(
                 nameComponents: nameComponents,
-                multipleAccountLabel: $0?.multipleAccountLabelText
+                multipleAccountLabel: $0?.multipleAccountLabelText,
             )
         }
     }

@@ -13,7 +13,7 @@ final class CallRecordTest: XCTestCase {
         let allGroupStatusRawValues = CallRecord.CallStatus.GroupCallStatus.allCases.map { $0.rawValue }
 
         XCTAssertFalse(
-            Set(allIndividualStatusRawValues).intersects(Set(allGroupStatusRawValues))
+            Set(allIndividualStatusRawValues).intersects(Set(allGroupStatusRawValues)),
         )
     }
 }

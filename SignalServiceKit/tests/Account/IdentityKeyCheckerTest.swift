@@ -26,14 +26,14 @@ final class IdentityKeyCheckerTest: XCTestCase {
         )
         let recipientIdFinder = RecipientIdFinder(
             recipientDatabaseTable: recipientDbTable,
-            recipientFetcher: recipientFetcher
+            recipientFetcher: recipientFetcher,
         )
         identityManagerMock = .init(recipientIdFinder: recipientIdFinder)
         profileFetcherMock = ProfileFetcherMock()
         identityKeyChecker = IdentityKeyCheckerImpl(
             db: db,
             identityManager: identityManagerMock,
-            profileFetcher: profileFetcherMock
+            profileFetcher: profileFetcherMock,
         )
         identityKey1 = ECKeyPair.generateKeyPair()
         identityKey2 = ECKeyPair.generateKeyPair()

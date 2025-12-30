@@ -6,7 +6,7 @@
 import Foundation
 import LibSignalClient
 
-internal class BackupArchiveReactionArchiver: BackupArchiveProtoStreamWriter {
+class BackupArchiveReactionArchiver: BackupArchiveProtoStreamWriter {
     private typealias ArchiveFrameError = BackupArchive.ArchiveFrameError<BackupArchive.InteractionUniqueId>
 
     private let reactionStore: BackupArchiveReactionStore
@@ -19,7 +19,7 @@ internal class BackupArchiveReactionArchiver: BackupArchiveProtoStreamWriter {
 
     func archiveReactions(
         _ message: TSMessage,
-        context: BackupArchive.RecipientArchivingContext
+        context: BackupArchive.RecipientArchivingContext,
     ) -> BackupArchive.ArchiveInteractionResult<[BackupProto_Reaction]> {
         let reactions: [OWSReaction]
         do {
@@ -35,7 +35,7 @@ internal class BackupArchiveReactionArchiver: BackupArchiveProtoStreamWriter {
             guard
                 let authorAddress = BackupArchive.ContactAddress(
                     aci: reaction.reactorAci,
-                    e164: E164(reaction.reactorPhoneNumber)
+                    e164: E164(reaction.reactorPhoneNumber),
                 )?.asArchivingAddress()
             else {
                 // Skip this reaction.
@@ -46,7 +46,7 @@ internal class BackupArchiveReactionArchiver: BackupArchiveProtoStreamWriter {
             guard let authorId = context[authorAddress] else {
                 errors.append(.archiveFrameError(
                     .referencedRecipientIdMissing(authorAddress),
-                    message.uniqueInteractionId
+                    message.uniqueInteractionId,
                 ))
                 continue
             }
@@ -55,7 +55,7 @@ internal class BackupArchiveReactionArchiver: BackupArchiveProtoStreamWriter {
             guard BackupArchive.Timestamps.isValid(sentAtTimestamp) else {
                 errors.append(.archiveFrameError(
                     .invalidReactionTimestamp,
-                    message.uniqueInteractionId
+                    message.uniqueInteractionId,
                 ))
                 continue
             }
@@ -82,7 +82,7 @@ internal class BackupArchiveReactionArchiver: BackupArchiveProtoStreamWriter {
         _ reactions: [BackupProto_Reaction],
         chatItemId: BackupArchive.ChatItemId,
         message: TSMessage,
-        context: BackupArchive.RecipientRestoringContext
+        context: BackupArchive.RecipientRestoringContext,
     ) -> BackupArchive.RestoreInteractionResult<Void> {
         var reactionErrors = [BackupArchive.RestoreFrameError<BackupArchive.ChatItemId>]()
         for reaction in reactions {
@@ -98,7 +98,7 @@ internal class BackupArchiveReactionArchiver: BackupArchiveProtoStreamWriter {
                         reactorAci: context.localIdentifiers.aci,
                         sentAtTimestamp: reaction.sentTimestamp,
                         sortOrder: reaction.sortOrder,
-                        context: context
+                        context: context,
                     )
                 }
             case .contact(let address):
@@ -110,7 +110,7 @@ internal class BackupArchiveReactionArchiver: BackupArchiveProtoStreamWriter {
                             reactorAci: aci,
                             sentAtTimestamp: reaction.sentTimestamp,
                             sortOrder: reaction.sortOrder,
-                            context: context
+                            context: context,
                         )
                     }
                 } else if let e164 = address.e164 {
@@ -121,13 +121,13 @@ internal class BackupArchiveReactionArchiver: BackupArchiveProtoStreamWriter {
                             reactorE164: e164,
                             sentAtTimestamp: reaction.sentTimestamp,
                             sortOrder: reaction.sortOrder,
-                            context: context
+                            context: context,
                         )
                     }
                 } else {
                     reactionErrors.append(.restoreFrameError(
                         .invalidProtoData(.reactionNotFromAciOrE164),
-                        chatItemId
+                        chatItemId,
                     ))
                     continue
                 }
@@ -135,13 +135,13 @@ internal class BackupArchiveReactionArchiver: BackupArchiveProtoStreamWriter {
                 // Referencing a group or distributionList as the author is invalid.
                 reactionErrors.append(.restoreFrameError(
                     .invalidProtoData(.reactionNotFromAciOrE164),
-                    chatItemId
+                    chatItemId,
                 ))
                 continue
             case nil:
                 reactionErrors.append(.restoreFrameError(
                     .invalidProtoData(.recipientIdNotFound(reaction.authorRecipientId)),
-                    chatItemId
+                    chatItemId,
                 ))
                 continue
             }
@@ -151,7 +151,7 @@ internal class BackupArchiveReactionArchiver: BackupArchiveProtoStreamWriter {
                 break
             case .failure(let insertError):
                 reactionErrors.append(
-                    .restoreFrameError(.databaseInsertionFailed(insertError), chatItemId)
+                    .restoreFrameError(.databaseInsertionFailed(insertError), chatItemId),
                 )
             }
         }

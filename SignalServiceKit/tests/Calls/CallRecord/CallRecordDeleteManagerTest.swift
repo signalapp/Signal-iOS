@@ -42,7 +42,7 @@ final class CallRecordDeleteManagerTest: XCTestCase {
             outgoingCallEventSyncMessageManager: mockOutgoingCallEventSyncMessageManager,
             deletedCallRecordExpirationJob: mockDeletedCallRecordExpirationJob,
             deletedCallRecordStore: mockDeletedCallRecordStore,
-            threadStore: mockThreadStore
+            threadStore: mockThreadStore,
         )
     }
 
@@ -75,7 +75,7 @@ final class CallRecordDeleteManagerTest: XCTestCase {
     private func insertCallRecord(
         interaction: TSInteraction,
         thread: TSThread,
-        isGroup: Bool
+        isGroup: Bool,
     ) -> CallRecord {
         return mockDB.write { tx in
             let callRecord = CallRecord(
@@ -85,7 +85,7 @@ final class CallRecordDeleteManagerTest: XCTestCase {
                 callType: isGroup ? .groupCall : .audioCall,
                 callDirection: .incoming,
                 callStatus: isGroup ? .group(.generic) : .individual(.accepted),
-                callBeganTimestamp: .maxRandom
+                callBeganTimestamp: .maxRandom,
             )
 
             mockCallRecordStore.insert(callRecord: callRecord, tx: tx)
@@ -112,7 +112,7 @@ final class CallRecordDeleteManagerTest: XCTestCase {
             deleteManager.deleteCallRecords(
                 [individualCallRecord1],
                 sendSyncMessageOnDelete: false,
-                tx: tx
+                tx: tx,
             )
             XCTAssertEqual(mockCallRecordStore.callRecords.count, 3)
             XCTAssertEqual(mockOutgoingCallEventSyncMessageManager.syncMessageSendCount, 0)
@@ -121,7 +121,7 @@ final class CallRecordDeleteManagerTest: XCTestCase {
             deleteManager.deleteCallRecords(
                 [individualCallRecord2],
                 sendSyncMessageOnDelete: true,
-                tx: tx
+                tx: tx,
             )
             XCTAssertEqual(mockCallRecordStore.callRecords.count, 2)
             XCTAssertEqual(mockOutgoingCallEventSyncMessageManager.syncMessageSendCount, 1)
@@ -130,7 +130,7 @@ final class CallRecordDeleteManagerTest: XCTestCase {
             deleteManager.deleteCallRecords(
                 [groupCallRecord1],
                 sendSyncMessageOnDelete: false,
-                tx: tx
+                tx: tx,
             )
             XCTAssertEqual(mockCallRecordStore.callRecords.count, 1)
             XCTAssertEqual(mockOutgoingCallEventSyncMessageManager.syncMessageSendCount, 1)
@@ -139,7 +139,7 @@ final class CallRecordDeleteManagerTest: XCTestCase {
             deleteManager.deleteCallRecords(
                 [groupCallRecord2],
                 sendSyncMessageOnDelete: true,
-                tx: tx
+                tx: tx,
             )
             XCTAssertEqual(mockCallRecordStore.callRecords.count, 0)
             XCTAssertEqual(mockOutgoingCallEventSyncMessageManager.syncMessageSendCount, 2)

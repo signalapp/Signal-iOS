@@ -13,14 +13,15 @@ protocol BadgeCollectionDataSource: AnyObject {
 }
 
 class BadgeCollectionView: UICollectionView {
-    weak private var badgeDataSource: BadgeCollectionDataSource?
+    private weak var badgeDataSource: BadgeCollectionDataSource?
 
     enum SelectionMode: Equatable {
         case none
         case feature
         case detailsSheet(owner: BadgeDetailsSheet.Owner)
     }
-    public var badgeSelectionMode: SelectionMode = .none {
+
+    var badgeSelectionMode: SelectionMode = .none {
         didSet {
             indexPathsForSelectedItems?.forEach { deselectItem(at: $0, animated: false) }
             allowsSelection = badgeSelectionMode != .none
@@ -57,6 +58,7 @@ class BadgeCollectionView: UICollectionView {
     }
 
     // MARK: - Sizing
+
     // For now, the number of badges is small enough that there's no need to enable scrolling
     // Instead, let's just pin the intrinsic height to the size of its content so autolayout
     // sizes us appropriately.
@@ -76,6 +78,7 @@ class BadgeCollectionView: UICollectionView {
             }
         }
     }
+
     override var bounds: CGRect {
         didSet {
             if bounds != oldValue {
@@ -142,7 +145,7 @@ extension BadgeCollectionView: UICollectionViewDelegateFlowLayout, UICollectionV
 
             let detailsSheet = BadgeDetailsSheet(
                 focusedBadge: badge,
-                owner: owner
+                owner: owner,
             )
             dataSource.present(detailsSheet, animated: true, completion: nil)
         }
@@ -160,8 +163,10 @@ extension BadgeCollectionView: UICollectionViewDelegateFlowLayout, UICollectionV
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let newCell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath)
-        if let badgeCell = newCell as? BadgeCollectionViewCell,
-           let badge = badgeDataSource?.availableBadges[safe: indexPath.item] {
+        if
+            let badgeCell = newCell as? BadgeCollectionViewCell,
+            let badge = badgeDataSource?.availableBadges[safe: indexPath.item]
+        {
             badgeCell.applyBadge(badge)
         } else {
             owsFailDebug("Invalid badge")
@@ -172,7 +177,7 @@ extension BadgeCollectionView: UICollectionViewDelegateFlowLayout, UICollectionV
     func collectionView(
         _ collectionView: UICollectionView,
         layout collectionViewLayout: UICollectionViewLayout,
-        sizeForItemAt indexPath: IndexPath
+        sizeForItemAt indexPath: IndexPath,
     ) -> CGSize {
         cellSize
     }

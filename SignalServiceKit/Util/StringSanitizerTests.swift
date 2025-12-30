@@ -68,7 +68,7 @@ class StringReplacementTests: XCTestCase {
             " abcd": "abcd",
             "ab cd": "abcd",
             "ab  1 cd ": "ab1cd",
-            "ab            cd ": "abcd"
+            "ab            cd ": "abcd",
         ]
 
         for key in testCases.keys {
@@ -89,7 +89,7 @@ class StringReplacementTests: XCTestCase {
             "abcd ": "abcdX ",
             " abcd": "X abcd",
             "ab cd": "abX cd",
-            "ab  1 cd ": "abX X 1X cdX "
+            "ab  1 cd ": "abX X 1X cdX ",
         ]
 
         for key in testCases.keys {
@@ -101,7 +101,7 @@ class StringReplacementTests: XCTestCase {
         }
     }
 
-     func testEquivalent3() {
+    func testEquivalent3() {
 
         let testCases: [String: String] = [
             "": "",
@@ -111,7 +111,7 @@ class StringReplacementTests: XCTestCase {
             " abcd": " ",
             "ab cd": " ",
             "ab  1 cd ": "  1  ",
-            "ab  1 ZcdX ": "  1 ZX "
+            "ab  1 ZcdX ": "  1 ZX ",
         ]
 
         for key in testCases.keys {

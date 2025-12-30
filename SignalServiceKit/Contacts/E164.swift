@@ -46,9 +46,11 @@ public struct E164: Equatable, Hashable, Codable, CustomDebugStringConvertible {
         let stringValue = try decoder.singleValueContainer().decode(String.self)
 
         guard let selfValue = E164(stringValue) else {
-            throw DecodingError.dataCorrupted(DecodingError.Context(
-                codingPath: [],
-                debugDescription: "Failed to construct E164 from underlying string!")
+            throw DecodingError.dataCorrupted(
+                DecodingError.Context(
+                    codingPath: [],
+                    debugDescription: "Failed to construct E164 from underlying string!",
+                ),
             )
         }
 
@@ -78,14 +80,14 @@ public class E164ObjC: NSObject, NSCopying {
     public var stringValue: String { wrappedValue.stringValue }
 
     @objc
-    public override var hash: Int { stringValue.hash }
+    override public var hash: Int { stringValue.hash }
 
     @objc
-    public override func isEqual(_ object: Any?) -> Bool { stringValue == (object as? E164ObjC)?.stringValue }
+    override public func isEqual(_ object: Any?) -> Bool { stringValue == (object as? E164ObjC)?.stringValue }
 
     @objc
     public func copy(with zone: NSZone? = nil) -> Any { self }
 
     @objc
-    public override var description: String { wrappedValue.debugDescription }
+    override public var description: String { wrappedValue.debugDescription }
 }

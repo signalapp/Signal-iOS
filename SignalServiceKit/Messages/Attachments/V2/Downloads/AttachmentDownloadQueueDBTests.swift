@@ -24,25 +24,25 @@ class AttachmentDownloadQueueDBTests: XCTestCase {
         // Create an attachment.
         let attachmentParams = Attachment.ConstructionParams.mockPointer()
         let referenceParams = AttachmentReference.ConstructionParams.mock(
-            owner: .thread(.globalThreadWallpaperImage(creationTimestamp: Date().ows_millisecondsSince1970))
+            owner: .thread(.globalThreadWallpaperImage(creationTimestamp: Date().ows_millisecondsSince1970)),
         )
 
         let attachmentRowId = try db.write { tx in
             try attachmentStore.insert(
                 attachmentParams,
                 reference: referenceParams,
-                tx: tx
+                tx: tx,
             )
             return try Int64.fetchOne(
                 tx.database,
-                sql: "SELECT \(Attachment.Record.CodingKeys.sqliteId.rawValue) from \(Attachment.Record.databaseTableName)"
+                sql: "SELECT \(Attachment.Record.CodingKeys.sqliteId.rawValue) from \(Attachment.Record.databaseTableName)",
             )!
         }
 
         // Create a download for the attachment.
         var download = QueuedAttachmentDownloadRecord.forNewDownload(
             ofAttachmentWithId: attachmentRowId,
-            sourceType: .transitTier
+            sourceType: .transitTier,
         )
         try db.write { tx in
             try download.insert(tx.database)
@@ -55,8 +55,9 @@ class AttachmentDownloadQueueDBTests: XCTestCase {
 
         // The download should be deleted.
         try db.read { tx in
-            XCTAssertNil(try QueuedAttachmentDownloadRecord
-                .fetchOne(tx.database)
+            XCTAssertNil(
+                try QueuedAttachmentDownloadRecord
+                    .fetchOne(tx.database),
             )
         }
 
@@ -66,8 +67,8 @@ class AttachmentDownloadQueueDBTests: XCTestCase {
                 download.partialDownloadRelativeFilePath,
                 try String.fetchOne(
                     tx.database,
-                    sql: "SELECT \(OrphanedAttachmentRecord.CodingKeys.localRelativeFilePath.rawValue) FROM \(OrphanedAttachmentRecord.databaseTableName)"
-                )
+                    sql: "SELECT \(OrphanedAttachmentRecord.CodingKeys.localRelativeFilePath.rawValue) FROM \(OrphanedAttachmentRecord.databaseTableName)",
+                ),
             )
         }
     }
@@ -94,9 +95,9 @@ class AttachmentDownloadQueueDBTests: XCTestCase {
             XCTAssertEqual(
                 queryPlan,
                 "SEARCH \(QueuedAttachmentDownloadRecord.databaseTableName) "
-                + "USING INDEX index_AttachmentDownloadQueue_on_attachmentId_and_sourceType "
-                + "(\(QueuedAttachmentDownloadRecord.CodingKeys.attachmentId.rawValue)=? "
-                + "AND \(QueuedAttachmentDownloadRecord.CodingKeys.sourceType.rawValue)=?)"
+                    + "USING INDEX index_AttachmentDownloadQueue_on_attachmentId_and_sourceType "
+                    + "(\(QueuedAttachmentDownloadRecord.CodingKeys.attachmentId.rawValue)=? "
+                    + "AND \(QueuedAttachmentDownloadRecord.CodingKeys.sourceType.rawValue)=?)",
             )
 
             // Check priority count.
@@ -107,8 +108,8 @@ class AttachmentDownloadQueueDBTests: XCTestCase {
             XCTAssertEqual(
                 queryPlan,
                 "SEARCH \(QueuedAttachmentDownloadRecord.databaseTableName) "
-                + "USING COVERING INDEX index_AttachmentDownloadQueue_on_priority "
-                + "(\(QueuedAttachmentDownloadRecord.CodingKeys.priority.rawValue)=?)"
+                    + "USING COVERING INDEX index_AttachmentDownloadQueue_on_priority "
+                    + "(\(QueuedAttachmentDownloadRecord.CodingKeys.priority.rawValue)=?)",
             )
 
             // Pop next off the queue
@@ -123,8 +124,8 @@ class AttachmentDownloadQueueDBTests: XCTestCase {
             XCTAssertEqual(
                 queryPlan,
                 "SCAN \(QueuedAttachmentDownloadRecord.databaseTableName) "
-                + "USING INDEX "
-                + "partial_index_AttachmentDownloadQueue_on_priority_DESC_and_id_where_minRetryTimestamp_isNull"
+                    + "USING INDEX "
+                    + "partial_index_AttachmentDownloadQueue_on_priority_DESC_and_id_where_minRetryTimestamp_isNull",
             )
 
             // Find the next minimum retry timestamp
@@ -137,8 +138,8 @@ class AttachmentDownloadQueueDBTests: XCTestCase {
             XCTAssertEqual(
                 queryPlan,
                 "SEARCH \(QueuedAttachmentDownloadRecord.databaseTableName) "
-                + "USING INDEX partial_index_AttachmentDownloadQueue_on_minRetryTimestamp_where_isNotNull "
-                + "(\(QueuedAttachmentDownloadRecord.CodingKeys.minRetryTimestamp.rawValue)>?)"
+                    + "USING INDEX partial_index_AttachmentDownloadQueue_on_minRetryTimestamp_where_isNotNull "
+                    + "(\(QueuedAttachmentDownloadRecord.CodingKeys.minRetryTimestamp.rawValue)>?)",
             )
         }
     }

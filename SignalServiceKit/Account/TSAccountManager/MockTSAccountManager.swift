@@ -24,7 +24,7 @@ public class MockTSAccountManager: TSAccountManager {
         return LocalIdentifiers(
             aci: .randomForTesting(),
             pni: .randomForTesting(),
-            e164: .init("+15555555555")!
+            e164: .init("+15555555555")!,
         )
     }
 
@@ -127,7 +127,7 @@ public class MockTSAccountManager: TSAccountManager {
     }
 
     public lazy var setIsManualMessageFetchEnabledMock: (
-        Bool
+        Bool,
     ) -> Void = { [weak self] isManualMessageFetchEnabled in
         self?.isManualMessageFetchEnabledMock = { isManualMessageFetchEnabled }
     }

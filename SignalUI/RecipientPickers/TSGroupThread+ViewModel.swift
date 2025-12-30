@@ -28,7 +28,7 @@ public extension TSGroupThread {
         limit: Int = .max,
         useShortNameIfAvailable: Bool = false,
         nameResolver: NameResolver = NameResolverImpl(contactsManager: SSKEnvironment.shared.contactManagerRef),
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> [String] {
         let tx = transaction
         let config: DisplayName.ComparableValue.Config = .current()
@@ -51,7 +51,7 @@ public extension TSGroupThread {
             if let searchText {
                 wrappedDisplayNameMatch = wrapIfMatch(
                     searchText: searchText,
-                    displayName: comparableName.resolvedValue(useShortNameIfAvailable: useShortNameIfAvailable)
+                    displayName: comparableName.resolvedValue(useShortNameIfAvailable: useShortNameIfAvailable),
                 )
             }
 
@@ -82,7 +82,7 @@ public extension TSGroupThread {
         }
         return displayName.replacingCharacters(
             in: matchRange,
-            with: "<\(FullTextSearchIndexer.matchTag)>\(displayName[matchRange])</\(FullTextSearchIndexer.matchTag)>"
+            with: "<\(FullTextSearchIndexer.matchTag)>\(displayName[matchRange])</\(FullTextSearchIndexer.matchTag)>",
         )
     }
 }

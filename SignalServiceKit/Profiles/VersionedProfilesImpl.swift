@@ -16,7 +16,7 @@ public struct VersionedProfileRequest {
         aci: Aci,
         request: TSRequest,
         profileKey: ProfileKey,
-        requestContext: ProfileKeyCredentialRequestContext?
+        requestContext: ProfileKeyCredentialRequestContext?,
     ) {
         self.aci = aci
         self.request = request
@@ -44,12 +44,14 @@ public class VersionedProfilesImpl: VersionedProfiles {
 
         static func getValidCredential(
             for aci: Aci,
-            transaction: DBReadTransaction
+            transaction: DBReadTransaction,
         ) throws -> ExpiringProfileKeyCredential? {
-            guard let credentialData = expiringCredentialStore.getData(
-                storeKey(for: aci),
-                transaction: transaction
-            ) else {
+            guard
+                let credentialData = expiringCredentialStore.getData(
+                    storeKey(for: aci),
+                    transaction: transaction,
+                )
+            else {
                 return nil
             }
 
@@ -69,7 +71,7 @@ public class VersionedProfilesImpl: VersionedProfiles {
         static func setCredential(
             _ credential: ExpiringProfileKeyCredential,
             for aci: Aci,
-            transaction: DBWriteTransaction
+            transaction: DBWriteTransaction,
         ) throws {
             let credentialData = credential.serialize()
 
@@ -80,7 +82,7 @@ public class VersionedProfilesImpl: VersionedProfiles {
             expiringCredentialStore.setData(
                 credentialData,
                 key: storeKey(for: aci),
-                transaction: transaction
+                transaction: transaction,
             )
         }
 
@@ -121,7 +123,7 @@ public class VersionedProfilesImpl: VersionedProfiles {
         profileAvatarMutation: VersionedProfileAvatarMutation,
         visibleBadgeIds: [String],
         profileKey: Aes256Key,
-        authedAccount: AuthedAccount
+        authedAccount: AuthedAccount,
     ) async throws -> VersionedProfileUpdate {
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
         let localAci = try tsAccountManager.localIdentifiersWithMaybeSneakyTransaction(authedAccount: authedAccount).aci
@@ -162,7 +164,7 @@ public class VersionedProfilesImpl: VersionedProfiles {
             return try OWSUserProfile.encrypt(
                 givenName: profileGivenName,
                 familyName: profileFamilyName,
-                profileKey: profileKey
+                profileKey: profileKey,
             )
         }()
 
@@ -222,7 +224,7 @@ public class VersionedProfilesImpl: VersionedProfiles {
             visibleBadgeIds: visibleBadgeIds,
             version: profileKeyVersionString,
             commitment: commitmentData,
-            auth: authedAccount.chatServiceAuth
+            auth: authedAccount.chatServiceAuth,
         )
         let response = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request)
 
@@ -236,7 +238,7 @@ public class VersionedProfilesImpl: VersionedProfiles {
             let encryptedAvatarData = try OWSUserProfile.encrypt(profileData: avatarData, profileKey: profileKey)
             avatarUrlPath = .setTo(try await uploadAvatar(
                 formResponseData: response.responseBodyData,
-                encryptedAvatarData: encryptedAvatarData
+                encryptedAvatarData: encryptedAvatarData,
             ))
         }
 
@@ -260,14 +262,14 @@ public class VersionedProfilesImpl: VersionedProfiles {
         profileKey: ProfileKey,
         shouldRequestCredential: Bool,
         udAccessKey: SMKUDAccessKey?,
-        auth chatServiceAuth: ChatServiceAuth
+        auth chatServiceAuth: ChatServiceAuth,
     ) throws -> VersionedProfileRequest {
         // We need to request a credential if we don't have a valid one already.
         var requestContext: ProfileKeyCredentialRequestContext?
         if shouldRequestCredential {
             requestContext = try self.clientZkProfileOperations().createProfileKeyCredentialRequestContext(
                 userId: aci,
-                profileKey: profileKey
+                profileKey: profileKey,
             )
         }
 
@@ -284,10 +286,10 @@ public class VersionedProfilesImpl: VersionedProfiles {
                 aci: aci,
                 profileKeyVersion: try profileKey.getProfileKeyVersion(userId: aci).asHexadecimalString(),
                 credentialRequest: try requestContext?.getRequest().serialize(),
-                auth: auth
+                auth: auth,
             ),
             profileKey: profileKey,
-            requestContext: requestContext
+            requestContext: requestContext,
         )
     }
 
@@ -314,7 +316,7 @@ public class VersionedProfilesImpl: VersionedProfiles {
             let clientZkProfileOperations = self.clientZkProfileOperations()
             let profileKeyCredential = try clientZkProfileOperations.receiveExpiringProfileKeyCredential(
                 profileKeyCredentialRequestContext: requestContext,
-                profileKeyCredentialResponse: credentialResponse
+                profileKeyCredentialResponse: credentialResponse,
             )
 
             guard profile.serviceId == profileRequest.aci else {
@@ -345,7 +347,7 @@ public class VersionedProfilesImpl: VersionedProfiles {
 
     public func validProfileKeyCredential(
         for aci: Aci,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) throws -> ExpiringProfileKeyCredential? {
         try CredentialStore.getValidCredential(for: aci, transaction: transaction)
     }

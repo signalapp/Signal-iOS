@@ -42,9 +42,10 @@ public class RegistrationSessionManagerMock: RegistrationSessionManager {
     public func addFulfillChallengeResponseMock(_ mock: Registration.UpdateSessionResponse) {
         fulfillChallengeResponseMocks.append(mock)
     }
+
     public func fulfillChallenge(
         for session: RegistrationSession,
-        fulfillment: Registration.ChallengeFulfillment
+        fulfillment: Registration.ChallengeFulfillment,
     ) async -> Registration.UpdateSessionResponse {
         latestChallengeFulfillment = fulfillment
         return fulfillChallengeResponseMocks.removeFirst()
@@ -57,9 +58,10 @@ public class RegistrationSessionManagerMock: RegistrationSessionManager {
     public func addRequestCodeResponseMock(_ mock: Registration.UpdateSessionResponse) {
         requestCodeResponseMocks.append(mock)
     }
+
     public func requestVerificationCode(
         for session: RegistrationSession,
-        transport: Registration.CodeTransport
+        transport: Registration.CodeTransport,
     ) async -> Registration.UpdateSessionResponse {
         didRequestCode = true
         // TODO: Append step to known steps
@@ -75,7 +77,7 @@ public class RegistrationSessionManagerMock: RegistrationSessionManager {
 
     public func submitVerificationCode(
         for session: RegistrationSession,
-        code: String
+        code: String,
     ) async -> Registration.UpdateSessionResponse {
         return submitCodeResponseMocks.removeFirst()
     }

@@ -55,7 +55,7 @@ private class TestDependencies {
         threadStore = MockThreadStore()
         threadMerger = ThreadMerger.forUnitTests(
             threadAssociatedDataStore: threadAssociatedDataStore,
-            threadStore: threadStore
+            threadStore: threadStore,
         )
         recipientMerger = RecipientMergerImpl(
             blockedRecipientStore: BlockedRecipientStore(),
@@ -63,14 +63,14 @@ private class TestDependencies {
             observers: RecipientMergerImpl.Observers(
                 preThreadMerger: [],
                 threadMerger: threadMerger,
-                postThreadMerger: observers
+                postThreadMerger: observers,
             ),
             recipientDatabaseTable: recipientDatabaseTable,
             recipientFetcher: recipientFetcher,
             searchableNameIndexer: searchableNameIndexer,
             sessionStore: sessionStore,
             storageServiceManager: storageServiceManager,
-            storyRecipientStore: StoryRecipientStore()
+            storyRecipientStore: StoryRecipientStore(),
         )
     }
 }
@@ -95,7 +95,7 @@ class RecipientMergerTest: XCTestCase {
             trustLevel: TrustLevel,
             mergeRequest: (aci: Aci?, phoneNumber: E164?),
             initialState: [(rowId: Int64, aci: Aci?, phoneNumber: E164?)],
-            finalState: [(rowId: Int64, aci: Aci?, phoneNumber: E164?)]
+            finalState: [(rowId: Int64, aci: Aci?, phoneNumber: E164?)],
         )] = [
             (.high, (aci_A, nil), [], [(1, aci_A, nil)]),
             (.low, (aci_A, nil), [], [(1, aci_A, nil)]),
@@ -121,7 +121,7 @@ class RecipientMergerTest: XCTestCase {
             (.low, (aci_A, e164_A), [(1, aci_A, e164_B), (2, aci_B, e164_A)], [(1, aci_A, e164_B), (2, aci_B, e164_A)]),
             (.high, (aci_A, e164_A), [(1, aci_A, e164_B), (2, nil, e164_A)], [(1, aci_A, e164_A)]),
             (.high, (aci_A, e164Me), [(1, aciMe, e164Me), (2, aci_A, nil)], [(1, aciMe, e164Me), (2, aci_A, nil)]),
-            (.low, (aci_A, e164Me), [(1, aciMe, e164Me), (2, aci_A, nil)], [(1, aciMe, e164Me), (2, aci_A, nil)])
+            (.low, (aci_A, e164Me), [(1, aciMe, e164Me), (2, aci_A, nil)], [(1, aciMe, e164Me), (2, aci_A, nil)]),
         ]
 
         for (idx, testCase) in testCases.enumerated() {
@@ -143,7 +143,7 @@ class RecipientMergerTest: XCTestCase {
                         localIdentifiers: localIdentifiers,
                         aci: aci,
                         phoneNumber: phoneNumber,
-                        tx: transaction
+                        tx: transaction,
                     )
                 case (_, let aci?, _):
                     _ = d.recipientFetcher.fetchOrCreate(serviceId: aci, tx: transaction)
@@ -179,14 +179,14 @@ class RecipientMergerTest: XCTestCase {
             forName: .didLearnRecipientAssociation,
             object: recipientMergeNotifier,
             queue: nil,
-            using: { _ in XCTFail("Unexpected notification!") }
+            using: { _ in XCTFail("Unexpected notification!") },
         )
         d.mockDB.write { tx in
             _ = d.recipientMerger.applyMergeFromSealedSender(
                 localIdentifiers: .forUnitTests,
                 aci: aci,
                 phoneNumber: nil,
-                tx: tx
+                tx: tx,
             )
         }
         NotificationCenter.default.removeObserver(observerThatWillFail)
@@ -200,7 +200,7 @@ class RecipientMergerTest: XCTestCase {
                 phoneNumber: phoneNumber,
                 pni: pni,
                 aci: aci,
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -217,7 +217,7 @@ class RecipientMergerTest: XCTestCase {
 
         let testCases: [(
             initialState: [(aci: Aci?, phoneNumber: E164?, identityKey: IdentityKey?)],
-            shouldInsertEvent: Bool
+            shouldInsertEvent: Bool,
         )] = [
             ([(ac1, nil, ik1), (nil, pn1, ik2)], true),
             ([(ac1, nil, ik1), (nil, pn1, ik1)], false),
@@ -226,7 +226,7 @@ class RecipientMergerTest: XCTestCase {
             ([(ac1, pn2, ik1), (nil, pn1, ik1)], false),
             ([(ac1, pn2, ik1), (nil, pn1, ik2)], true),
             ([(ac1, nil, ik1), (ac2, pn1, ik1)], false),
-            ([(ac1, nil, ik1), (ac2, pn1, ik2)], false)
+            ([(ac1, nil, ik1), (ac2, pn1, ik2)], false),
         ]
 
         for testCase in testCases {
@@ -248,7 +248,7 @@ class RecipientMergerTest: XCTestCase {
                             identityKey: identityKey.publicKey.keyBytes,
                             isFirstKnownKey: true,
                             createdAt: Date(),
-                            verificationState: .default
+                            verificationState: .default,
                         )
                         d.sessionStore.upsertSession(
                             forRecipientId: recipient.id,
@@ -264,7 +264,7 @@ class RecipientMergerTest: XCTestCase {
                     localIdentifiers: .forUnitTests,
                     aci: ac1,
                     phoneNumber: pn1,
-                    tx: tx
+                    tx: tx,
                 )
 
                 XCTAssertEqual(d.identityManager.identityChangeInfoMessages, testCase.shouldInsertEvent ? [ac1] : [])
@@ -283,7 +283,7 @@ class RecipientMergerTest: XCTestCase {
         let testCases: [(
             initialState: [(aci: Aci?, phoneNumber: E164?, pni: Pni?)],
             includeAci: Bool,
-            finalState: [(aci: Aci?, phoneNumber: E164?, pni: Pni?)?]
+            finalState: [(aci: Aci?, phoneNumber: E164?, pni: Pni?)?],
         )] = [
             // If they're already associated, do nothing.
             ([(aci1, phone1, pni1)], false, [(aci1, phone1, pni1)]),
@@ -304,7 +304,7 @@ class RecipientMergerTest: XCTestCase {
             ([(aci1, nil, pni1)], false, [(aci1, phone1, pni1)]),
 
             // If nothing exists, create it.
-            ([], false, [(nil, phone1, pni1)])
+            ([], false, [(nil, phone1, pni1)]),
         ]
 
         for testCase in testCases {
@@ -323,7 +323,7 @@ class RecipientMergerTest: XCTestCase {
                     phoneNumber: phone1,
                     pni: pni1,
                     aci: testCase.includeAci ? aci1 : nil,
-                    tx: tx
+                    tx: tx,
                 )
             }
 
@@ -369,7 +369,7 @@ class RecipientMergerTest: XCTestCase {
                 _ mergeRequest: (aci: Aci?, phoneNumber: E164, pni: Pni),
                 hasSession: [Int],
                 needsEvent: [Int],
-                _ lineNumber: Int = #line
+                _ lineNumber: Int = #line,
             ) {
                 self.mergeRequest = mergeRequest
                 self.hasSession = hasSession
@@ -415,7 +415,7 @@ class RecipientMergerTest: XCTestCase {
                     let thread = TSContactThread(contactAddress: SignalServiceAddress(
                         serviceId: recipient.aci ?? recipient.pni,
                         phoneNumber: recipient.phoneNumber?.stringValue,
-                        cache: SignalServiceAddressCache()
+                        cache: SignalServiceAddressCache(),
                     ))
                     thread.shouldThreadBeVisible = true
                     d.threadStore.insertThread(thread)
@@ -429,13 +429,13 @@ class RecipientMergerTest: XCTestCase {
                     phoneNumber: testCase.mergeRequest.phoneNumber,
                     pni: testCase.mergeRequest.pni,
                     aci: testCase.mergeRequest.aci,
-                    tx: tx
+                    tx: tx,
                 )
             }
 
             for recipientNumberNeedingEvent in testCase.needsEvent {
                 let recipientNeedingEvent = recipients.dropFirst(recipientNumberNeedingEvent - 1).first!
-                let foundRecipient = d.identityManager.sessionSwitchoverMessages.removeFirst(where: { (recipient, _) in
+                let foundRecipient = d.identityManager.sessionSwitchoverMessages.removeFirst(where: { recipient, _ in
                     recipient.uniqueId == recipientNeedingEvent.uniqueId
                 })
                 XCTAssertNotNil(foundRecipient)
@@ -508,7 +508,7 @@ class RecipientMergerTest: XCTestCase {
                 initialState: [(aci: Aci?, phoneNumber: E164?, pni: Pni?)],
                 mergeRequest: (aci: Aci?, phoneNumber: E164?, pni: Pni?),
                 finalState: [(aci: Aci?, phoneNumber: E164?, pni: Pni?, isResult: Bool)],
-                lineNumber: Int = #line
+                lineNumber: Int = #line,
             ) {
                 self.isPrimaryDevice = isPrimaryDevice
                 self.initialState = initialState
@@ -524,74 +524,74 @@ class RecipientMergerTest: XCTestCase {
                 isPrimaryDevice: true,
                 initialState: [(aci1, nil, pni1)],
                 mergeRequest: (nil, phoneNumber1, pni1),
-                finalState: [(aci1, phoneNumber1, pni1, true)]
+                finalState: [(aci1, phoneNumber1, pni1, true)],
             ),
             // If we're linking a phone number/PNI across recipients, the phone number has precedence.
             TestCase(
                 isPrimaryDevice: true,
                 initialState: [(aci1, nil, pni1), (aci2, phoneNumber1, nil)],
                 mergeRequest: (nil, phoneNumber1, pni1),
-                finalState: [(aci1, nil, nil, false), (aci2, phoneNumber1, pni1, true)]
+                finalState: [(aci1, nil, nil, false), (aci2, phoneNumber1, pni1, true)],
             ),
             // If we're trying to re-associate on a primary, that's not allowed/ignored.
             TestCase(
                 isPrimaryDevice: true,
                 initialState: [(aci1, phoneNumber1, pni1)],
                 mergeRequest: (nil, phoneNumber1, pni2),
-                finalState: [(aci1, phoneNumber1, pni1, true)]
+                finalState: [(aci1, phoneNumber1, pni1, true)],
             ),
             TestCase(
                 isPrimaryDevice: false,
                 initialState: [(aci1, phoneNumber1, pni1)],
                 mergeRequest: (nil, phoneNumber1, pni2),
-                finalState: [(aci1, phoneNumber1, pni2, true)]
+                finalState: [(aci1, phoneNumber1, pni2, true)],
             ),
             TestCase(
                 isPrimaryDevice: true,
                 initialState: [(aci1, phoneNumber1, pni1)],
                 mergeRequest: (nil, phoneNumber2, pni1),
-                finalState: [(aci1, phoneNumber1, pni1, true)]
+                finalState: [(aci1, phoneNumber1, pni1, true)],
             ),
             TestCase(
                 isPrimaryDevice: false,
                 initialState: [(aci1, phoneNumber1, pni1)],
                 mergeRequest: (nil, phoneNumber2, pni1),
-                finalState: [(aci1, phoneNumber1, nil, false), (nil, phoneNumber2, pni1, true)]
+                finalState: [(aci1, phoneNumber1, nil, false), (nil, phoneNumber2, pni1, true)],
             ),
             // If we learn the PNI but not the phone number, we should add the PNI.
             TestCase(
                 isPrimaryDevice: true,
                 initialState: [(aci1, phoneNumber1, nil)],
                 mergeRequest: (aci1, nil, pni1),
-                finalState: [(aci1, phoneNumber1, pni1, true)]
+                finalState: [(aci1, phoneNumber1, pni1, true)],
             ),
             // But not if we already know some other PNI for the phone number.
             TestCase(
                 isPrimaryDevice: true,
                 initialState: [(aci1, phoneNumber1, pni1)],
                 mergeRequest: (aci1, nil, pni2),
-                finalState: [(aci1, phoneNumber1, pni1, true)]
+                finalState: [(aci1, phoneNumber1, pni1, true)],
             ),
             // Unless we're on a linked device.
             TestCase(
                 isPrimaryDevice: false,
                 initialState: [(aci1, phoneNumber1, pni1)],
                 mergeRequest: (aci1, nil, pni2),
-                finalState: [(aci1, phoneNumber1, pni2, true)]
+                finalState: [(aci1, phoneNumber1, pni2, true)],
             ),
             // But we can if we don't know a phone number.
             TestCase(
                 isPrimaryDevice: true,
                 initialState: [(aci1, nil, pni1)],
                 mergeRequest: (aci1, nil, pni2),
-                finalState: [(aci1, nil, pni2, true)]
+                finalState: [(aci1, nil, pni2, true)],
             ),
             // If we get an ACI/PNI result, we should infer the phone number.
             TestCase(
                 isPrimaryDevice: true,
                 initialState: [(aci1, phoneNumber2, pni2), (nil, phoneNumber1, pni1)],
                 mergeRequest: (aci1, nil, pni1),
-                finalState: [(aci1, phoneNumber1, pni1, true)]
+                finalState: [(aci1, phoneNumber1, pni1, true)],
             ),
         ]
 
@@ -613,7 +613,7 @@ class RecipientMergerTest: XCTestCase {
                     isPrimaryDevice: testCase.isPrimaryDevice,
                     serviceIds: AtLeastOneServiceId(aci: testCase.mergeRequest.aci, pni: testCase.mergeRequest.pni)!,
                     phoneNumber: testCase.mergeRequest.phoneNumber,
-                    tx: tx
+                    tx: tx,
                 )
             }
 

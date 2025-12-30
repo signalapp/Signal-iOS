@@ -55,14 +55,14 @@ class BackupSettingsAttachmentTrackerTest<Update: Equatable> {
 
     func runTest(
         updateStream: AsyncStream<Update?>,
-        expectedUpdates: [ExpectedUpdate]
+        expectedUpdates: [ExpectedUpdate],
     ) async {
         await runTest(updateStreams: [updateStream], expectedUpdates: expectedUpdates)
     }
 
     func runTest(
         updateStreams: [AsyncStream<Update?>],
-        expectedUpdates: [ExpectedUpdate]
+        expectedUpdates: [ExpectedUpdate],
     ) async {
         let expectedUpdateCompletionTracker = ExpectedUpdateCompletionTracker(expectedUpdates)
         var streamIds: [UUID] = []

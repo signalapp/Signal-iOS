@@ -15,7 +15,7 @@ extension DonateViewController {
     func paymentAuthorizationControllerForOneTime(
         _ controller: PKPaymentAuthorizationController,
         didAuthorizePayment payment: PKPayment,
-        handler completion: @escaping (PKPaymentAuthorizationResult) -> Void
+        handler completion: @escaping (PKPaymentAuthorizationResult) -> Void,
     ) {
         guard let oneTime = state.oneTime, let amount = oneTime.amount else {
             owsFail("Amount or currency code are missing")
@@ -29,11 +29,11 @@ extension DonateViewController {
                 confirmedIntent = try await Stripe.boost(
                     amount: amount,
                     level: .boostBadge,
-                    for: .applePay(payment: payment)
+                    for: .applePay(payment: payment),
                 )
                 owsPrecondition(
                     confirmedIntent.redirectToUrl == nil,
-                    "[Donations] There shouldn't be a 3DS redirect for Apple Pay"
+                    "[Donations] There shouldn't be a 3DS redirect for Apple Pay",
                 )
                 completion(.init(status: .success, errors: nil))
             } catch {
@@ -51,10 +51,10 @@ extension DonateViewController {
                                 boostPaymentIntentId: confirmedIntent.paymentIntentId,
                                 amount: amount,
                                 paymentProcessor: .stripe,
-                                paymentMethod: .applePay
+                                paymentMethod: .applePay,
                             )
                         }
-                    }
+                    },
                 )
                 self.didCompleteDonation(receiptCredentialSuccessMode: .oneTimeBoost)
             } catch {
@@ -63,7 +63,7 @@ extension DonateViewController {
                     error: error,
                     mode: .oneTime,
                     badge: boostBadge,
-                    paymentMethod: .applePay
+                    paymentMethod: .applePay,
                 )
             }
         }

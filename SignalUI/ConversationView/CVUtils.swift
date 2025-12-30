@@ -13,15 +13,19 @@ public class CVUtils {
     private init() {}
 
     private static let workQueue_userInitiated: DispatchQueue = {
-        DispatchQueue(label: "org.signal.conversation-view.user-initiated",
-                      qos: .userInitiated,
-                      autoreleaseFrequency: .workItem)
+        DispatchQueue(
+            label: "org.signal.conversation-view.user-initiated",
+            qos: .userInitiated,
+            autoreleaseFrequency: .workItem,
+        )
     }()
 
     private static let workQueue_userInteractive: DispatchQueue = {
-        DispatchQueue(label: "org.signal.conversation-view.user-interactive",
-                      qos: .userInteractive,
-                      autoreleaseFrequency: .workItem)
+        DispatchQueue(
+            label: "org.signal.conversation-view.user-interactive",
+            qos: .userInteractive,
+            autoreleaseFrequency: .workItem,
+        )
     }()
 
     public static func workQueue(isInitialLoad: Bool) -> DispatchQueue {
@@ -38,7 +42,7 @@ public protocol CVView: UIView {
 // MARK: -
 
 open class CVLabel: UILabel, CVView {
-    public override func updateConstraints() {
+    override public func updateConstraints() {
         super.updateConstraints()
 
         deactivateAllConstraints()
@@ -55,7 +59,7 @@ open class CVLabel: UILabel, CVView {
 }
 
 open class CVButton: OWSButton, CVView {
-    open override func updateConstraints() {
+    override open func updateConstraints() {
         super.updateConstraints()
         deactivateAllConstraints()
     }
@@ -96,7 +100,7 @@ open class CVImageView: UIImageView, CVView {
 
     // MARK: -
 
-    public override func updateConstraints() {
+    override public func updateConstraints() {
         super.updateConstraints()
 
         deactivateAllConstraints()
@@ -113,7 +117,7 @@ open class CVImageView: UIImageView, CVView {
         layoutBlocks.append(layoutBlock)
     }
 
-    public override var bounds: CGRect {
+    override public var bounds: CGRect {
         didSet {
             if oldValue.size != bounds.size {
                 viewSizeDidChange()
@@ -121,7 +125,7 @@ open class CVImageView: UIImageView, CVView {
         }
     }
 
-    public override var frame: CGRect {
+    override public var frame: CGRect {
         didSet {
             if oldValue.size != frame.size {
                 viewSizeDidChange()
@@ -133,7 +137,7 @@ open class CVImageView: UIImageView, CVView {
         layoutSubviews()
     }
 
-    open override func layoutSubviews() {
+    override open func layoutSubviews() {
         layoutSubviews(skipLayoutBlocks: false)
     }
 
@@ -177,7 +181,7 @@ open class CVImageView: UIImageView, CVView {
         // UIViewPropertyAnimator aggressively drops animations it thinks aren't needed;
         // if we animate to 2pi it won't spin because 2pi == 0, we have to do half
         // and half in two parts to get it to animate at all.
-        spinningAnimation?.addAnimations  { [weak self] in
+        spinningAnimation?.addAnimations { [weak self] in
             self?.transform = .init(rotationAngle: .pi * 2)
         }
         spinningAnimation?.addCompletion { [weak self] _ in
@@ -200,7 +204,7 @@ open class CVImageView: UIImageView, CVView {
 // MARK: -
 
 public class CVAnimatedImageView: SDAnimatedImageView, CVView {
-    public override func updateConstraints() {
+    override public func updateConstraints() {
         super.updateConstraints()
 
         deactivateAllConstraints()

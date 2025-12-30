@@ -29,7 +29,7 @@ public struct OWSPoll: Equatable {
             optionIndex: OptionIndex,
             text: String,
             acis: [Aci],
-            latestPendingState: PendingVoteType?
+            latestPendingState: PendingVoteType?,
         ) {
             self.optionIndex = optionIndex
             self.text = text
@@ -57,7 +57,7 @@ public struct OWSPoll: Equatable {
         allowsMultiSelect: Bool,
         votes: [OptionIndex: [Aci]],
         isEnded: Bool,
-        ownerIsLocalUser: Bool
+        ownerIsLocalUser: Bool,
     ) {
         self.interactionId = interactionId
         self.question = question
@@ -81,7 +81,7 @@ public struct OWSPoll: Equatable {
         })
     }
 
-    public static func == (lhs: OWSPoll, rhs: OWSPoll) -> Bool {
+    public static func ==(lhs: OWSPoll, rhs: OWSPoll) -> Bool {
         return lhs.interactionId == rhs.interactionId
             && lhs.isEnded == rhs.isEnded
             && lhs.options == rhs.options

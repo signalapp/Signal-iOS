@@ -57,7 +57,7 @@ public class SignalApp {
             self,
             selector: #selector(spamChallenge),
             name: SpamChallengeResolver.NeedsCaptchaNotification,
-            object: nil
+            object: nil,
         )
 
         switch launchInterface {
@@ -92,7 +92,7 @@ public class SignalApp {
     func showRegistration(
         loader: RegistrationCoordinatorLoader,
         desiredMode: RegistrationMode,
-        appReadiness: AppReadinessSetter
+        appReadiness: AppReadinessSetter,
     ) {
         switch desiredMode {
         case .registering:
@@ -162,7 +162,7 @@ public class SignalApp {
     func presentConversationForAddress(
         _ address: SignalServiceAddress,
         action: ConversationViewAction = .none,
-        animated: Bool
+        animated: Bool,
     ) {
         let thread = SSKEnvironment.shared.databaseStorageRef.write { transaction in
             return TSContactThread.getOrCreateThread(withContactAddress: address, transaction: transaction)
@@ -170,7 +170,7 @@ public class SignalApp {
         presentConversationForThread(
             threadUniqueId: thread.uniqueId,
             action: action,
-            animated: animated
+            animated: animated,
         )
     }
 
@@ -178,7 +178,7 @@ public class SignalApp {
         threadUniqueId: String,
         action: ConversationViewAction = .none,
         focusMessageId: String? = nil,
-        animated: Bool
+        animated: Bool,
     ) {
         AssertIsOnMainThread()
 
@@ -206,7 +206,7 @@ public class SignalApp {
                 threadUniqueId: threadUniqueId,
                 action: action,
                 focusMessageId: focusMessageId,
-                animated: animated
+                animated: animated,
             )
         }
     }
@@ -241,7 +241,7 @@ public class SignalApp {
                 threadUniqueId: threadUniqueId,
                 action: .none,
                 focusMessageId: nil,
-                animated: false
+                animated: false,
             )
             sendMediaNavigationController.dismiss(animated: animated)
             return
@@ -252,7 +252,7 @@ public class SignalApp {
             threadUniqueId: threadUniqueId,
             action: .none,
             focusMessageId: nil,
-            animated: animated
+            animated: animated,
         )
     }
 
@@ -330,22 +330,22 @@ public class SignalApp {
         let actionSheet = ActionSheetController(
             title: OWSLocalizedString(
                 "OUTGOING_TRANSFER_COMPLETE_TITLE",
-                comment: "Title for action sheet shown when device transfer completes"
+                comment: "Title for action sheet shown when device transfer completes",
             ),
             message: OWSLocalizedString(
                 "OUTGOING_TRANSFER_COMPLETE_MESSAGE",
-                comment: "Message for action sheet shown when device transfer completes"
-            )
+                comment: "Message for action sheet shown when device transfer completes",
+            ),
         )
         actionSheet.addAction(.init(
             title: OWSLocalizedString(
                 "OUTGOING_TRANSFER_COMPLETE_EXIT_ACTION",
-                comment: "Button for action sheet shown when device transfer completes; quits the Signal app immediately (does not automatically relaunch, but the user may choose to relaunch)."
+                comment: "Button for action sheet shown when device transfer completes; quits the Signal app immediately (does not automatically relaunch, but the user may choose to relaunch).",
             ),
             style: .destructive,
             handler: { _ in
                 exit(0)
-            }
+            },
         ))
         actionSheet.isCancelable = false
         CurrentAppContext().frontmostViewController()?.present(actionSheet, animated: true)
@@ -368,7 +368,8 @@ public class SignalApp {
                 + "The database file will remain encrypted and the password provided after export, "
                 + "but it is still much less secure because it's now out of the app's control.\n\n"
                 + "NO ONE AT SIGNAL CAN MAKE YOU DO THIS! Don't do it if you're not comfortable.",
-            preferredStyle: .alert)
+            preferredStyle: .alert,
+        )
         alert.addAction(.init(title: "Export", style: .destructive) { _ in
             if SSKEnvironment.hasShared {
                 // Try to sync the database first, since we don't export the WAL.
@@ -382,9 +383,11 @@ public class SignalApp {
                     return
                 }
                 UIPasteboard.general.string = password
-                let passwordAlert = UIAlertController(title: "Your database password has been copied to the clipboard",
-                                                      message: nil,
-                                                      preferredStyle: .alert)
+                let passwordAlert = UIAlertController(
+                    title: "Your database password has been copied to the clipboard",
+                    message: nil,
+                    preferredStyle: .alert,
+                )
                 passwordAlert.addAction(.init(title: "OK", style: .default) { _ in
                     completion()
                 })

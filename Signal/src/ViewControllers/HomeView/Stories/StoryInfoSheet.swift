@@ -30,14 +30,14 @@ class StoryInfoSheet: OWSTableSheetViewController {
         tableViewController.tableView.register(ContactTableViewCell.self, forCellReuseIdentifier: ContactTableViewCell.reuseIdentifier)
     }
 
-    public override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
+    override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
         super.dismiss(animated: flag) { [dismissHandler] in
             completion?()
             dismissHandler?()
         }
     }
 
-    public override func tableContents() -> OWSTableContents {
+    override func tableContents() -> OWSTableContents {
         storyMessage = SSKEnvironment.shared.databaseStorageRef.read { StoryMessage.anyFetch(uniqueId: storyMessage.uniqueId, transaction: $0) ?? storyMessage }
 
         let contents = OWSTableContents()
@@ -77,9 +77,9 @@ class StoryInfoSheet: OWSTableSheetViewController {
         let timestampLabel = buildValueLabel(
             name: OWSLocalizedString(
                 "MESSAGE_METADATA_VIEW_SENT_DATE_TIME",
-                comment: "Label for the 'sent date & time' field of the 'message metadata' view."
+                comment: "Label for the 'sent date & time' field of the 'message metadata' view.",
             ),
-            value: DateUtil.formatPastTimestampRelativeToNow(storyMessage.timestamp)
+            value: DateUtil.formatPastTimestampRelativeToNow(storyMessage.timestamp),
         )
         stackView.addArrangedSubview(timestampLabel)
         timestampLabel.isUserInteractionEnabled = true
@@ -96,9 +96,9 @@ class StoryInfoSheet: OWSTableSheetViewController {
             let receivedTimestampLabel = buildValueLabel(
                 name: OWSLocalizedString(
                     "MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME",
-                    comment: "Label for the 'received date & time' field of the 'message metadata' view."
+                    comment: "Label for the 'received date & time' field of the 'message metadata' view.",
                 ),
-                value: DateUtil.formatPastTimestampRelativeToNow(receivedTimestamp)
+                value: DateUtil.formatPastTimestampRelativeToNow(receivedTimestamp),
             )
             stackView.addArrangedSubview(receivedTimestampLabel)
         }
@@ -115,9 +115,9 @@ class StoryInfoSheet: OWSTableSheetViewController {
                 stackView.addArrangedSubview(buildValueLabel(
                     name: OWSLocalizedString(
                         "MESSAGE_METADATA_VIEW_ATTACHMENT_FILE_SIZE",
-                        comment: "Label for file size of attachments in the 'message metadata' view."
+                        comment: "Label for file size of attachments in the 'message metadata' view.",
                     ),
-                    value: formattedByteCount
+                    value: formattedByteCount,
                 ))
             } else {
                 owsFailDebug("formattedByteCount was unexpectedly nil")
@@ -131,12 +131,12 @@ class StoryInfoSheet: OWSTableSheetViewController {
         let section = OWSTableSection()
         section.headerTitle = OWSLocalizedString(
             "MESSAGE_DETAILS_VIEW_SENT_FROM_TITLE",
-            comment: "Title for the 'sent from' section on the 'message details' view."
+            comment: "Title for the 'sent from' section on the 'message details' view.",
         )
         section.hasBackground = false
         section.add(contactItem(
             for: storyMessage.authorAddress,
-            accessoryText: DateUtil.formatPastTimestampRelativeToNow(storyMessage.timestamp)
+            accessoryText: DateUtil.formatPastTimestampRelativeToNow(storyMessage.timestamp),
         ))
         return section
     }
@@ -151,7 +151,7 @@ class StoryInfoSheet: OWSTableSheetViewController {
             .sending,
             .pending,
             .failed,
-            .skipped
+            .skipped,
         ]
 
         let groupedRecipientStates = Dictionary(grouping: recipientStates) { $0.value.sendingState }
@@ -162,7 +162,7 @@ class StoryInfoSheet: OWSTableSheetViewController {
             let sortedRecipientAddresses = SSKEnvironment.shared.databaseStorageRef.read { tx in
                 return SSKEnvironment.shared.contactManagerImplRef.sortSignalServiceAddresses(
                     recipients.map { SignalServiceAddress($0.key) },
-                    transaction: tx
+                    transaction: tx,
                 )
             }
 
@@ -174,7 +174,7 @@ class StoryInfoSheet: OWSTableSheetViewController {
             for address in sortedRecipientAddresses {
                 section.add(contactItem(
                     for: address,
-                    accessoryText: statusMessage(for: state)
+                    accessoryText: statusMessage(for: state),
                 ))
             }
         }
@@ -187,27 +187,27 @@ class StoryInfoSheet: OWSTableSheetViewController {
         case .sent, .delivered, .read, .viewed:
             return OWSLocalizedString(
                 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT",
-                comment: "Status label for messages which are sent."
+                comment: "Status label for messages which are sent.",
             )
         case .sending:
             return OWSLocalizedString(
                 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING",
-                comment: "Status label for messages which are sending."
+                comment: "Status label for messages which are sending.",
             )
         case .pending:
             return OWSLocalizedString(
                 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_PAUSED",
-                comment: "Status label for messages which are paused."
+                comment: "Status label for messages which are paused.",
             )
         case .failed:
             return OWSLocalizedString(
                 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED",
-                comment: "Status label for messages which are failed."
+                comment: "Status label for messages which are failed.",
             )
         case .skipped:
             return OWSLocalizedString(
                 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED",
-                comment: "Status label for messages which were skipped."
+                comment: "Status label for messages which were skipped.",
             )
         }
     }
@@ -225,7 +225,7 @@ class StoryInfoSheet: OWSTableSheetViewController {
         case .skipped:
             return OWSLocalizedString(
                 "MESSAGE_STATUS_RECIPIENT_SKIPPED",
-                comment: "message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or unregistered their Signal account."
+                comment: "message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or unregistered their Signal account.",
             )
         }
     }
@@ -239,7 +239,7 @@ class StoryInfoSheet: OWSTableSheetViewController {
 
         let toast = ToastController(text: OWSLocalizedString(
             "MESSAGE_DETAIL_VIEW_DID_COPY_SENT_TIMESTAMP",
-            comment: "Toast indicating that the user has copied the sent timestamp."
+            comment: "Toast indicating that the user has copied the sent timestamp.",
         ))
         toast.presentToastView(from: .bottom, of: view, inset: view.safeAreaInsets.bottom + 8)
     }
@@ -248,7 +248,7 @@ class StoryInfoSheet: OWSTableSheetViewController {
         .composed(of: [
             name.styled(with: .font(UIFont.dynamicTypeFootnoteClamped.semibold())),
             " ",
-            value
+            value,
         ])
     }
 
@@ -262,11 +262,13 @@ class StoryInfoSheet: OWSTableSheetViewController {
 
     private func contactItem(for address: SignalServiceAddress, accessoryText: String) -> OWSTableItem {
         return .init(customCellBlock: { [weak self] in
-            guard let self = self else { return UITableViewCell() }
+            guard let self else { return UITableViewCell() }
             let tableView = self.tableViewController.tableView
-            guard let cell = tableView.dequeueReusableCell(
-                withIdentifier: ContactTableViewCell.reuseIdentifier
-            ) as? ContactTableViewCell else {
+            guard
+                let cell = tableView.dequeueReusableCell(
+                    withIdentifier: ContactTableViewCell.reuseIdentifier,
+                ) as? ContactTableViewCell
+            else {
                 owsFailDebug("Missing cell.")
                 return UITableViewCell()
             }
@@ -276,7 +278,7 @@ class StoryInfoSheet: OWSTableSheetViewController {
                 configuration.forceDarkAppearance = true
                 configuration.accessoryView = self.buildAccessoryView(
                     text: accessoryText,
-                    transaction: transaction
+                    transaction: transaction,
                 )
                 cell.configure(configuration: configuration, transaction: transaction)
             }
@@ -286,11 +288,11 @@ class StoryInfoSheet: OWSTableSheetViewController {
 
             return cell
         }, actionBlock: { [weak self] in
-            guard let self = self else { return }
+            guard let self else { return }
             ProfileSheetSheetCoordinator(
                 address: address,
                 groupViewHelper: nil,
-                spoilerState: self.spoilerState
+                spoilerState: self.spoilerState,
             )
             .presentAppropriateSheet(from: self)
         })
@@ -298,13 +300,13 @@ class StoryInfoSheet: OWSTableSheetViewController {
 
     private func buildAccessoryView(
         text: String,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> ContactCellAccessoryView {
         let label = CVLabel()
         let labelConfig = CVLabelConfig.unstyledText(
             text,
             font: .dynamicTypeFootnoteClamped,
-            textColor: Theme.darkThemeSecondaryTextAndIconColor
+            textColor: Theme.darkThemeSecondaryTextAndIconColor,
         )
         labelConfig.applyForRendering(label: label)
         let labelSize = CVText.measureLabel(config: labelConfig, maxWidth: .greatestFiniteMagnitude)

@@ -23,7 +23,7 @@ extension GroupAttributesEditorHelperDelegate {
 // "create new group" and "edit group" views.
 class GroupAttributesEditorHelper: NSObject {
 
-    public enum EditAction {
+    enum EditAction {
         case none
         case name
         case avatar
@@ -72,14 +72,14 @@ class GroupAttributesEditorHelper: NSObject {
 
     var hasUnsavedChanges: Bool {
         return (groupNameOriginal != groupNameCurrent ||
-                    groupDescriptionOriginal != groupDescriptionCurrent ||
-                    avatarOriginal?.imageData != avatarCurrent?.imageData)
+            groupDescriptionOriginal != groupDescriptionCurrent ||
+            avatarOriginal?.imageData != avatarCurrent?.imageData)
     }
 
-    public convenience init(
+    convenience init(
         groupModel: TSGroupModel,
         iconViewSize: UInt = AvatarBuilder.largeAvatarSizePoints,
-        renderDefaultAvatarWhenCleared: Bool = false
+        renderDefaultAvatarWhenCleared: Bool = false,
     ) {
         self.init(
             groupModelOriginal: groupModel,
@@ -88,18 +88,18 @@ class GroupAttributesEditorHelper: NSObject {
             groupDescriptionOriginal: (groupModel as? TSGroupModelV2)?.descriptionText,
             avatarOriginalData: groupModel.avatarDataState.dataIfPresent,
             iconViewSize: iconViewSize,
-            renderDefaultAvatarWhenCleared: renderDefaultAvatarWhenCleared
+            renderDefaultAvatarWhenCleared: renderDefaultAvatarWhenCleared,
         )
     }
 
-    public init(
+    init(
         groupModelOriginal: TSGroupModel? = nil,
         groupId: Data,
         groupNameOriginal: String?,
         groupDescriptionOriginal: String? = nil,
         avatarOriginalData: Data?,
         iconViewSize: UInt,
-        renderDefaultAvatarWhenCleared: Bool = false
+        renderDefaultAvatarWhenCleared: Bool = false,
     ) {
         self.groupModelOriginal = groupModelOriginal
         self.groupId = groupId
@@ -128,8 +128,10 @@ class GroupAttributesEditorHelper: NSObject {
         avatarImageView.clipsToBounds = true
         avatarImageView.autoSetDimensions(to: CGSize(square: CGFloat(iconViewSize)))
         avatarImageView.isUserInteractionEnabled = true
-        avatarImageView.addGestureRecognizer(UITapGestureRecognizer(target: self,
-                                                              action: #selector(didTapAvatarView)))
+        avatarImageView.addGestureRecognizer(UITapGestureRecognizer(
+            target: self,
+            action: #selector(didTapAvatarView),
+        ))
 
         avatarWrapper.addSubview(avatarImageView)
         avatarImageView.autoPinEdgesToSuperviewEdges()
@@ -147,16 +149,20 @@ class GroupAttributesEditorHelper: NSObject {
         nameTextField.textColor = Theme.primaryTextColor
         nameTextField.delegate = self
         nameTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
-        nameTextField.placeholder = OWSLocalizedString("GROUP_NAME_PLACEHOLDER",
-                                                      comment: "Placeholder text for 'group name' field.")
+        nameTextField.placeholder = OWSLocalizedString(
+            "GROUP_NAME_PLACEHOLDER",
+            comment: "Placeholder text for 'group name' field.",
+        )
 
         descriptionTextView.text = groupDescriptionOriginal
         descriptionTextView.delegate = self
-        descriptionTextView.placeholderText = OWSLocalizedString("GROUP_DESCRIPTION_PLACEHOLDER",
-                                                                comment: "Placeholder text for 'group description' field.")
+        descriptionTextView.placeholderText = OWSLocalizedString(
+            "GROUP_DESCRIPTION_PLACEHOLDER",
+            comment: "Placeholder text for 'group description' field.",
+        )
     }
 
-    public static func buildCameraButtonForCorner() -> UIView {
+    static func buildCameraButtonForCorner() -> UIView {
         let cameraImageContainer = UIView()
         cameraImageContainer.autoSetDimensions(to: CGSize.square(32))
         cameraImageContainer.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray15 : UIColor(rgbHex: 0xf8f9f9)
@@ -187,7 +193,7 @@ class GroupAttributesEditorHelper: NSObject {
         return cameraImageContainer
     }
 
-    public static func buildCameraButtonForCenter() -> UIView {
+    static func buildCameraButtonForCenter() -> UIView {
         let cameraImageView = UIImageView()
         cameraImageView.setTemplateImageName("camera", tintColor: Theme.primaryIconColor)
         let iconSize: CGFloat = 32
@@ -196,7 +202,7 @@ class GroupAttributesEditorHelper: NSObject {
     }
 
     private func updateAvatarView(groupAvatar: GroupAvatar?) {
-        if let groupAvatar = groupAvatar {
+        if let groupAvatar {
             avatarImageView.image = groupAvatar.image
             avatarImageView.layer.borderWidth = 0
             avatarImageView.layer.borderColor = nil
@@ -210,7 +216,7 @@ class GroupAttributesEditorHelper: NSObject {
                 avatarBuilder.defaultAvatarImage(
                     forGroupId: groupId,
                     diameterPoints: iconViewSize,
-                    transaction: tx
+                    transaction: tx,
                 )
             }
             avatarImageView.layer.borderWidth = 0
@@ -228,12 +234,14 @@ class GroupAttributesEditorHelper: NSObject {
 
     func setAvatarImage(_ image: UIImage?) {
         let groupAvatar: GroupAvatar? = {
-            guard let image = image else {
+            guard let image else {
                 return nil
             }
             guard let groupAvatar = GroupAvatar.build(image: image) else {
-                OWSActionSheets.showErrorAlert(message: OWSLocalizedString("EDIT_GROUP_ERROR_INVALID_AVATAR",
-                                                                          comment: "Error message indicating that an avatar image is invalid and cannot be used."))
+                OWSActionSheets.showErrorAlert(message: OWSLocalizedString(
+                    "EDIT_GROUP_ERROR_INVALID_AVATAR",
+                    comment: "Error message indicating that an avatar image is invalid and cannot be used.",
+                ))
                 owsFailDebug("Invalid image.")
                 return nil
             }
@@ -263,7 +271,7 @@ class GroupAttributesEditorHelper: NSObject {
 
         let vc = AvatarSettingsViewController(
             context: .groupId(groupId),
-            currentAvatarImage: avatarCurrent?.image
+            currentAvatarImage: avatarCurrent?.image,
         ) { [weak self] newAvatarImage in
             self?.setAvatarImage(newAvatarImage)
         }
@@ -304,10 +312,10 @@ class GroupAttributesEditorHelper: NSObject {
                     title: currentTitle,
                     description: currentDescription,
                     avatarData: currentAvatarData,
-                    inExistingGroup: oldGroupModel
+                    inExistingGroup: oldGroupModel,
                 )
             },
-            completion: completion
+            completion: completion,
         )
     }
 }
@@ -319,7 +327,7 @@ struct GroupAvatar {
     let image: UIImage
 
     static func build(imageData: Data?) -> GroupAvatar? {
-        guard let imageData = imageData else {
+        guard let imageData else {
             return nil
         }
         guard DataImageSource(imageData).ows_isValidImage else {
@@ -338,7 +346,7 @@ struct GroupAvatar {
     }
 
     static func build(image: UIImage?) -> GroupAvatar? {
-        guard let image = image else {
+        guard let image else {
             return nil
         }
         guard let imageData = TSGroupModel.dataForGroupAvatar(image) else {
@@ -350,13 +358,13 @@ struct GroupAvatar {
 }
 
 extension GroupAttributesEditorHelper: UITextFieldDelegate {
-    public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString: String) -> Bool {
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString: String) -> Bool {
         // Truncate the replacement to fit.
         let isValidChange = TextFieldHelper.textField(
             textField,
             shouldChangeCharactersInRange: range,
             replacementString: replacementString.withoutBidiControlCharacters(),
-            maxGlyphCount: GroupManager.maxGroupNameGlyphCount
+            maxGlyphCount: GroupManager.maxGroupNameGlyphCount,
         )
 
         if
@@ -383,14 +391,14 @@ extension GroupAttributesEditorHelper: TextViewWithPlaceholderDelegate {
         _ textView: TextViewWithPlaceholder,
         uiTextView: UITextView,
         shouldChangeTextIn range: NSRange,
-        replacementText text: String
+        replacementText text: String,
     ) -> Bool {
         // Truncate the replacement to fit.
         return TextViewHelper.textView(
             uiTextView,
             shouldChangeTextIn: range,
             replacementText: text,
-            maxGlyphCount: GroupManager.maxGroupDescriptionGlyphCount
+            maxGlyphCount: GroupManager.maxGroupDescriptionGlyphCount,
         )
     }
 }

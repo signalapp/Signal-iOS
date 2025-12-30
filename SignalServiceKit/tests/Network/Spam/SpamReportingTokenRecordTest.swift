@@ -31,7 +31,7 @@ final class SpamReportingTokenRecordTest: XCTestCase {
         try databaseQueue.write { db in
             let record = SpamReportingTokenRecord(
                 sourceAci: sourceAci,
-                spamReportingToken: spamReportingToken
+                spamReportingToken: spamReportingToken,
             )
             try record.insert(db)
         }
@@ -55,7 +55,7 @@ final class SpamReportingTokenRecordTest: XCTestCase {
             let recordsToUpsert: [SpamReportingTokenRecord] = [
                 .init(sourceAci: sourceAci1, spamReportingToken: spamReportingToken1),
                 .init(sourceAci: sourceAci2, spamReportingToken: spamReportingToken1),
-                .init(sourceAci: sourceAci1, spamReportingToken: spamReportingToken2)
+                .init(sourceAci: sourceAci1, spamReportingToken: spamReportingToken2),
             ]
             for record in recordsToUpsert {
                 try record.upsert(db)
@@ -64,8 +64,8 @@ final class SpamReportingTokenRecordTest: XCTestCase {
 
         let (tokenForUuid1, tokenForUuid2) = try databaseQueue.read { db in (
             try SpamReportingTokenRecord.fetchOne(db, key: sourceAci1.rawUUID)?.spamReportingToken,
-            try SpamReportingTokenRecord.fetchOne(db, key: sourceAci2.rawUUID)?.spamReportingToken
-        )}
+            try SpamReportingTokenRecord.fetchOne(db, key: sourceAci2.rawUUID)?.spamReportingToken,
+        ) }
         XCTAssertEqual(tokenForUuid1, spamReportingToken2)
         XCTAssertEqual(tokenForUuid2, spamReportingToken1)
     }

@@ -9,7 +9,7 @@ import NaturalLanguage
 extension NSString {
     @objc
     @available(swift, obsoleted: 1)
-    internal var filterStringForDisplay: NSString {
+    var filterStringForDisplay: NSString {
         (self as String).filterStringForDisplay() as NSString
     }
 }
@@ -44,7 +44,7 @@ public extension String {
 
     func replaceCharacters(
         characterSet: CharacterSet,
-        replacement: String
+        replacement: String,
     ) -> String {
         let endIndex = self.endIndex
         var startIndex = self.startIndex
@@ -227,11 +227,11 @@ public extension NSAttributedString {
         return copy.copy() as! NSAttributedString
     }
 
-    static func + (lhs: NSAttributedString, rhs: NSAttributedString) -> NSAttributedString {
+    static func +(lhs: NSAttributedString, rhs: NSAttributedString) -> NSAttributedString {
         return lhs.stringByAppendingString(rhs)
     }
 
-    static func + (lhs: NSAttributedString, rhs: String) -> NSAttributedString {
+    static func +(lhs: NSAttributedString, rhs: String) -> NSAttributedString {
         return lhs.stringByAppendingString(rhs)
     }
 
@@ -379,7 +379,7 @@ public extension NSMutableAttributedString {
         if newEndOfString < mutableString.length {
             mutableString.replaceCharacters(
                 in: NSRange(location: newEndOfString, length: mutableString.length - newEndOfString),
-                with: ""
+                with: "",
             )
         }
 
@@ -387,7 +387,7 @@ public extension NSMutableAttributedString {
         if newStartOfString > 0 {
             mutableString.replaceCharacters(
                 in: NSRange(location: 0, length: newStartOfString),
-                with: ""
+                with: "",
             )
         }
     }
@@ -411,7 +411,7 @@ public extension NSAttributedString {
         font: UIFont,
         attributes: [NSAttributedString.Key: Any]? = nil,
         centerVerticallyRelativeTo centeringFont: UIFont? = nil,
-        heightReference: ImageAttachmentHeightReference = .lineHeight
+        heightReference: ImageAttachmentHeightReference = .lineHeight,
     ) -> NSAttributedString {
         let attachment = NSTextAttachment()
         attachment.image = image
@@ -426,12 +426,12 @@ public extension NSAttributedString {
             x: 0,
             y: (centeringFont.capHeight - imageHeight) / 2,
             width: imageWidth,
-            height: imageHeight
+            height: imageHeight,
         )
 
         let attachmentString = NSAttributedString(attachment: attachment)
 
-        if let attributes = attributes {
+        if let attributes {
             let mutableString = NSMutableAttributedString(attributedString: attachmentString)
             mutableString.addAttributes(attributes, range: mutableString.entireRange)
             return mutableString
@@ -452,7 +452,7 @@ public extension String {
     /// than the natural alignment of the current system locale depending on
     /// the language of the string, especially for user entered text.
     var naturalTextAlignment: NSTextAlignment {
-        guard let dominantLanguage = dominantLanguage else {
+        guard let dominantLanguage else {
             // If we can't identify the strings language, use the system language's natural alignment
             return .natural
         }
@@ -601,7 +601,7 @@ extension UnicodeScalar {
         EmojiRange(rangeStart: 0x1F85A, rangeEnd: 0x1F85F),
         EmojiRange(rangeStart: 0x1F888, rangeEnd: 0x1F88F),
         EmojiRange(rangeStart: 0x1F8AE, rangeEnd: 0x1FFFD),
-        EmojiRange(rangeStart: 0xE0020, rangeEnd: 0xE007F)
+        EmojiRange(rangeStart: 0xE0020, rangeEnd: 0xE007F),
     ]
 
     var isEmoji: Bool {
@@ -830,7 +830,7 @@ public extension String {
     /// could ever be a dialable phone number.
     private static let validE164StructureRegex = try! NSRegularExpression(
         pattern: #"^\+[1-9][0-9]{0,18}$"#,
-        options: []
+        options: [],
     )
 
     /// Checks if the value starts with a "+" and has [1, 19] digits.

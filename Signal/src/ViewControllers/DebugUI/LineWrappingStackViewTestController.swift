@@ -11,7 +11,7 @@ public import UIKit
 
 public class LineWrappingStackViewTestController: UIViewController {
 
-    public override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
 
         self.view.backgroundColor = .white
@@ -155,7 +155,7 @@ public class LineWrappingStackViewTestController: UIViewController {
             $0.constant = labelWidthConstraint
             if labelWidthConstraint >= view.bounds.width - 24 {
                 $0.isActive = false
-            } else  {
+            } else {
                 $0.isActive = true
             }
         })

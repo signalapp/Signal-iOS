@@ -166,7 +166,7 @@ public class Cron {
                     // again, or we were canceled while running. Don't set any state so that we
                     // run again at the next opportunity.
                     break
-                case .success(true), .failure(_):
+                case .success(true), .failure:
                     // We ran or hit a terminal error while trying to run; mark the job as
                     // completed so that we wait for `approximateInterval` before retrying.
                     Logger.info("job \(uniqueKey) reached terminal result: \(result)")
@@ -237,7 +237,7 @@ public class Cron {
         handleResult: @escaping (Result<T, any Error>) async -> Void,
     ) {
         self.jobs.update {
-            $0.append({ (ctx) async -> Void in
+            $0.append({ ctx async -> Void in
                 let attemptResult = await Self.runOuterOperationAttempt(
                     mustBeRegistered: mustBeRegistered,
                     mustBeConnected: mustBeConnected,

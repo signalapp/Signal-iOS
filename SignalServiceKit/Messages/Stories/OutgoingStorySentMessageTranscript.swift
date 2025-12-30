@@ -14,7 +14,7 @@ public class OutgoingStorySentMessageTranscript: OWSOutgoingSyncMessage {
         super.init(coder: coder)
     }
 
-    public override func encode(with coder: NSCoder) {
+    override public func encode(with coder: NSCoder) {
         super.encode(with: coder)
         if let isRecipientUpdate {
             coder.encode(isRecipientUpdate, forKey: "isRecipientUpdate")
@@ -27,7 +27,7 @@ public class OutgoingStorySentMessageTranscript: OWSOutgoingSyncMessage {
         }
     }
 
-    public override var hash: Int {
+    override public var hash: Int {
         var hasher = Hasher()
         hasher.combine(super.hash)
         hasher.combine(isRecipientUpdate)
@@ -36,7 +36,7 @@ public class OutgoingStorySentMessageTranscript: OWSOutgoingSyncMessage {
         return hasher.finalize()
     }
 
-    public override func isEqual(_ object: Any?) -> Bool {
+    override public func isEqual(_ object: Any?) -> Bool {
         guard let object = object as? Self else { return false }
         guard super.isEqual(object) else { return false }
         guard self.isRecipientUpdate == object.isRecipientUpdate else { return false }
@@ -45,7 +45,7 @@ public class OutgoingStorySentMessageTranscript: OWSOutgoingSyncMessage {
         return true
     }
 
-    public override func copy(with zone: NSZone? = nil) -> Any {
+    override public func copy(with zone: NSZone? = nil) -> Any {
         let result = super.copy(with: zone) as! Self
         result.isRecipientUpdate = self.isRecipientUpdate
         result.storyEncodedRecipientStates = self.storyEncodedRecipientStates
@@ -81,18 +81,19 @@ public class OutgoingStorySentMessageTranscript: OWSOutgoingSyncMessage {
             return nil
         }
         return (try? JSONDecoder().decode(
-            [ServiceIdUppercaseString<ServiceId>: StoryRecipientState].self, from: encodedRecipientStates
+            [ServiceIdUppercaseString<ServiceId>: StoryRecipientState].self,
+            from: encodedRecipientStates,
         ))?.mapKeys(injectiveTransform: { $0.wrappedValue })
     }
 
-    public override var isUrgent: Bool { false }
+    override public var isUrgent: Bool { false }
 
     private func storyMessage(transaction: DBReadTransaction) -> StoryMessage? {
-        guard let storyMessageUniqueId = storyMessageUniqueId else { return nil }
+        guard let storyMessageUniqueId else { return nil }
         return StoryMessage.anyFetch(uniqueId: storyMessageUniqueId, transaction: transaction)
     }
 
-    public override func syncMessageBuilder(transaction: DBReadTransaction) -> SSKProtoSyncMessageBuilder? {
+    override public func syncMessageBuilder(transaction: DBReadTransaction) -> SSKProtoSyncMessageBuilder? {
         let sentBuilder = SSKProtoSyncMessageSent.builder()
         sentBuilder.setTimestamp(timestamp)
         sentBuilder.setIsRecipientUpdate(isRecipientUpdate.boolValue)
@@ -155,7 +156,7 @@ public class OutgoingStorySentMessageTranscript: OWSOutgoingSyncMessage {
                 let storyMessageRowId = storyMessage.id,
                 let attachment = DependenciesBridge.shared.attachmentStore.fetchFirstReferencedAttachment(
                     for: .storyMessageMedia(storyMessageRowId: storyMessageRowId),
-                    tx: transaction
+                    tx: transaction,
                 ),
                 let pointer = attachment.attachment.asTransitTierPointer(),
                 case let .digestSHA256Ciphertext(digestSHA256Ciphertext) = pointer.info.integrityCheck
@@ -166,18 +167,20 @@ public class OutgoingStorySentMessageTranscript: OWSOutgoingSyncMessage {
             let attachmentProto = DependenciesBridge.shared.attachmentManager.buildProtoForSending(
                 from: attachment.reference,
                 pointer: pointer,
-                digestSHA256Ciphertext: digestSHA256Ciphertext
+                digestSHA256Ciphertext: digestSHA256Ciphertext,
             )
             builder.setFileAttachment(attachmentProto)
             if let storyMediaCaption = attachment.reference.storyMediaCaption {
                 builder.setBodyRanges(storyMediaCaption.toProtoBodyRanges())
             }
         case .text(let attachment):
-            guard let attachmentProto = try? attachment.buildProto(
-                parentStoryMessage: storyMessage,
-                bodyRangeHandler: builder.setBodyRanges(_:),
-                transaction: transaction
-            ) else {
+            guard
+                let attachmentProto = try? attachment.buildProto(
+                    parentStoryMessage: storyMessage,
+                    bodyRangeHandler: builder.setBodyRanges(_:),
+                    transaction: transaction,
+                )
+            else {
                 owsFailDebug("Missing attachment for outgoing story message")
                 return nil
             }
@@ -187,9 +190,11 @@ public class OutgoingStorySentMessageTranscript: OWSOutgoingSyncMessage {
         builder.setAllowsReplies(true)
 
         do {
-            if let groupId = storyMessage.groupId,
-               let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction),
-               let groupModel = groupThread.groupModel as? TSGroupModelV2 {
+            if
+                let groupId = storyMessage.groupId,
+                let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction),
+                let groupModel = groupThread.groupModel as? TSGroupModelV2
+            {
                 builder.setGroup(try GroupsV2Protos.buildGroupContextProto(groupModel: groupModel, groupChangeProtoData: nil))
             }
 

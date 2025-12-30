@@ -25,7 +25,7 @@ public class TestAppContext: NSObject, AppContext {
     public var mainWindow: UIWindow?
     public let appLaunchTime: Date
 
-    public override init() {
+    override public init() {
         // Avoid using OWSTemporaryDirectory(); it can consult the current app context.
         let dirName = "ows_temp_\(UUID().uuidString)"
         let temporaryDirectory = NSTemporaryDirectory().appendingPathComponent(dirName)

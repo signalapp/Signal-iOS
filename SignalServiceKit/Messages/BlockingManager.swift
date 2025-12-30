@@ -30,15 +30,15 @@ public class BlockingManager {
 
     private let syncQueue = SerialTaskQueue()
 
-    #if TESTABLE_BUILD
+#if TESTABLE_BUILD
     func flushSyncQueueTask() -> Task<Void, any Error> {
         return self.syncQueue.enqueue {}
     }
-    #endif
+#endif
 
     init(
         blockedGroupStore: BlockedGroupStore,
-        blockedRecipientStore: BlockedRecipientStore
+        blockedRecipientStore: BlockedRecipientStore,
     ) {
         self.blockedGroupStore = blockedGroupStore
         self.blockedRecipientStore = blockedRecipientStore
@@ -119,7 +119,7 @@ public class BlockingManager {
     public func addBlockedAddress(
         _ address: SignalServiceAddress,
         blockMode: BlockMode,
-        transaction tx: DBWriteTransaction
+        transaction tx: DBWriteTransaction,
     ) {
         guard !address.isLocalAddress else {
             owsFailDebug("Cannot block the local address")
@@ -160,7 +160,7 @@ public class BlockingManager {
         storyRecipientManager.removeRecipientIdFromAllPrivateStoryThreads(
             recipient.id,
             shouldUpdateStorageService: true,
-            tx: tx
+            tx: tx,
         )
 
         switch blockMode {
@@ -175,7 +175,7 @@ public class BlockingManager {
             if let contactThread = threadStore.fetchContactThread(recipient: recipient, tx: tx) {
                 interactionStore.insertInteraction(
                     TSInfoMessage(thread: contactThread, messageType: .blockedOtherUser),
-                    tx: tx
+                    tx: tx,
                 )
             }
         }
@@ -186,7 +186,7 @@ public class BlockingManager {
     public func removeBlockedAddress(
         _ address: SignalServiceAddress,
         wasLocallyInitiated: Bool,
-        transaction tx: DBWriteTransaction
+        transaction tx: DBWriteTransaction,
     ) {
         guard address.isValid else {
             owsFailDebug("Invalid address: \(address).")
@@ -219,7 +219,7 @@ public class BlockingManager {
         if let contactThread = threadStore.fetchContactThread(recipient: recipient, tx: tx) {
             interactionStore.insertInteraction(
                 TSInfoMessage(thread: contactThread, messageType: .unblockedOtherUser),
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -257,7 +257,7 @@ public class BlockingManager {
             {
                 GroupManager.leaveGroupOrDeclineInviteAsyncWithoutUI(
                     groupThread: groupThread,
-                    tx: transaction
+                    tx: transaction,
                 )
             }
 
@@ -270,7 +270,7 @@ public class BlockingManager {
                 // Insert an info message that we blocked this group.
                 DependenciesBridge.shared.interactionStore.insertInteraction(
                     TSInfoMessage(thread: groupThread, messageType: .blockedGroup),
-                    tx: transaction
+                    tx: transaction,
                 )
             }
         }
@@ -310,7 +310,7 @@ public class BlockingManager {
             // Insert an info message that we unblocked.
             DependenciesBridge.shared.interactionStore.insertInteraction(
                 TSInfoMessage(thread: groupThread, messageType: .unblockedGroup),
-                tx: transaction
+                tx: transaction,
             )
 
             // Refresh unblocked group.
@@ -363,7 +363,7 @@ public class BlockingManager {
         blockedPhoneNumbers: Set<String>,
         blockedAcis: Set<Aci>,
         blockedGroupIds: Set<Data>,
-        tx transaction: DBWriteTransaction
+        tx transaction: DBWriteTransaction,
     ) {
         Logger.info("")
         transaction.addSyncCompletion {
@@ -413,7 +413,7 @@ public class BlockingManager {
     }
 
     public func syncBlockListIfNecessary(force: Bool) async throws {
-        let sendResult = try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { (tx) -> (sendPromise: Promise<Void>, changeToken: UInt64)? in
+        let sendResult = try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx -> (sendPromise: Promise<Void>, changeToken: UInt64)? in
             // If we're not forcing a sync, then we only sync if our last synced token is stale
             // and we're not in the NSE. We'll leaving syncing to the main app.
             let changeToken = fetchChangeToken(tx: tx)
@@ -446,17 +446,17 @@ public class BlockingManager {
                 phoneNumbers: blockedRecipients.compactMap { $0.phoneNumber?.stringValue },
                 aciStrings: blockedRecipients.compactMap { $0.aci?.serviceIdString },
                 groupIds: Array(blockedGroupIds),
-                transaction: tx
+                transaction: tx,
             )
 
             let preparedMessage = PreparedOutgoingMessage.preprepared(
-                transientMessageWithoutAttachments: message
+                transientMessageWithoutAttachments: message,
             )
 
             let sendPromise = SSKEnvironment.shared.messageSenderJobQueueRef.add(
                 .promise,
                 message: preparedMessage,
-                transaction: tx
+                transaction: tx,
             )
 
             return (sendPromise, changeToken)

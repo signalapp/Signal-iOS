@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import LibSignalClient
 import Foundation
+import LibSignalClient
 import XCTest
 
 @testable import SignalServiceKit
@@ -33,7 +33,7 @@ class ZkParamsMigratorTest: XCTestCase {
             db: mockDb,
             profileManager: OWSFakeProfileManager(),
             tsAccountManager: MockTSAccountManager(),
-            versionedProfiles: versionedProfilesRef
+            versionedProfiles: versionedProfilesRef,
         )
 
         let groupAuthCredentialStore = KeyValueStore(collection: "GroupsV2Impl.authCredentialStoreStore")
@@ -62,7 +62,7 @@ class ZkParamsMigratorTest: XCTestCase {
             XCTAssertNil(migrationStore.getString(ZkParamsMigrator.Constants.lastServerPublicParamsKey, transaction: tx))
             XCTAssertEqual(
                 migrationStore.getInt(ZkParamsMigrator.Constants.lastZkGroupVersionCounterKey, transaction: tx),
-                ZkParamsMigrator.Constants.zkGroupMigrationCounter
+                ZkParamsMigrator.Constants.zkGroupMigrationCounter,
             )
         }
     }

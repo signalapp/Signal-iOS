@@ -11,7 +11,7 @@ protocol PniSignatureProcessor {
         _ pniSignatureMessage: SSKProtoPniSignatureMessage,
         from sourceAci: Aci,
         localIdentifiers: LocalIdentifiers,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws
 }
 
@@ -29,7 +29,7 @@ final class PniSignatureProcessorImpl: PniSignatureProcessor {
     init(
         identityManager: OWSIdentityManager,
         recipientDatabaseTable: RecipientDatabaseTable,
-        recipientMerger: RecipientMerger
+        recipientMerger: RecipientMerger,
     ) {
         self.identityManager = identityManager
         self.recipientDatabaseTable = recipientDatabaseTable
@@ -40,7 +40,7 @@ final class PniSignatureProcessorImpl: PniSignatureProcessor {
         _ pniSignatureMessage: SSKProtoPniSignatureMessage,
         from aci: Aci,
         localIdentifiers: LocalIdentifiers,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         guard let pniData = pniSignatureMessage.pni, let pniUuid = UUID(data: pniData) else {
             throw PniSignatureProcessorError.malformedProtobuf

@@ -8,7 +8,7 @@ extension SDSCodableModelDatabaseInterfaceImpl {
     /// Remove a model from the database.
     func removeModel<Model: SDSCodableModel>(
         _ model: Model,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) {
         guard model.shouldBeSaved else {
             Logger.warn("Skipping delete of \(Model.self).")
@@ -24,7 +24,7 @@ extension SDSCodableModelDatabaseInterfaceImpl {
 
     private func removeModelFromDatabase<Model: SDSCodableModel>(
         _ model: Model,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) {
         failIfThrows {
             let sql: String = """

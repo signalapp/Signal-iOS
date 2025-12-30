@@ -12,7 +12,7 @@ extension DonateViewController {
     /// Executes a PayPal one-time donation flow.
     func startPaypalBoost(
         with amount: FiatMoney,
-        badge: ProfileBadge
+        badge: ProfileBadge,
     ) {
         Logger.info("[Donations] Starting one-time PayPal donation")
         Task {
@@ -26,13 +26,13 @@ extension DonateViewController {
             let (approvalUrl, paymentId) = try await DonationViewsUtil.Paypal.createPaypalPaymentBehindActivityIndicator(
                 amount: amount,
                 level: .boostBadge,
-                fromViewController: self
+                fromViewController: self,
             )
 
             Logger.info("[Donations] Presenting PayPal web UI for user approval of one-time donation")
             let approvalParams: Paypal.OneTimePaymentWebAuthApprovalParams = try await Paypal.presentExpectingApprovalParams(
                 approvalUrl: approvalUrl,
-                withPresentationContext: self
+                withPresentationContext: self,
             )
 
             Logger.info("[Donations] Creating and redeeming one-time boost receipt for PayPal donation")
@@ -42,14 +42,14 @@ extension DonateViewController {
                     try await self.confirmPaypalPaymentAndRedeemBoost(
                         amount: amount,
                         paymentId: paymentId,
-                        approvalParams: approvalParams
+                        approvalParams: approvalParams,
                     )
-                }
+                },
             )
 
             Logger.info("[Donations] One-time PayPal donation finished")
             self.didCompleteDonation(
-                receiptCredentialSuccessMode: .oneTimeBoost
+                receiptCredentialSuccessMode: .oneTimeBoost,
             )
         } catch {
             if let webAuthError = error as? Paypal.AuthError {
@@ -64,7 +64,7 @@ extension DonateViewController {
                     error: error,
                     mode: .oneTime,
                     badge: badge,
-                    paymentMethod: .paypal
+                    paymentMethod: .paypal,
                 )
             }
         }
@@ -73,13 +73,13 @@ extension DonateViewController {
     private func confirmPaypalPaymentAndRedeemBoost(
         amount: FiatMoney,
         paymentId: String,
-        approvalParams: Paypal.OneTimePaymentWebAuthApprovalParams
+        approvalParams: Paypal.OneTimePaymentWebAuthApprovalParams,
     ) async throws {
         let paymentIntentId = try await Paypal.confirmOneTimePayment(
             amount: amount,
             level: .boostBadge,
             paymentId: paymentId,
-            approvalParams: approvalParams
+            approvalParams: approvalParams,
         )
 
         try await DonationViewsUtil.waitForRedemption(paymentMethod: .paypal) {
@@ -87,7 +87,7 @@ extension DonateViewController {
                 boostPaymentIntentId: paymentIntentId,
                 amount: amount,
                 paymentProcessor: .braintree,
-                paymentMethod: .paypal
+                paymentMethod: .paypal,
             )
         }
     }

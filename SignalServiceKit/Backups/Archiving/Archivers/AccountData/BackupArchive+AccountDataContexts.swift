@@ -28,7 +28,7 @@ extension BackupArchive {
             isPrimaryDevice: Bool,
             currentRemoteConfig: RemoteConfig,
             backupPurpose: MessageBackupPurpose,
-            tx: DBWriteTransaction
+            tx: DBWriteTransaction,
         ) {
             self.currentRemoteConfig = currentRemoteConfig
             self.backupPurpose = backupPurpose
@@ -36,7 +36,7 @@ extension BackupArchive {
                 startTimestampMs: startTimestampMs,
                 attachmentByteCounter: attachmentByteCounter,
                 isPrimaryDevice: isPrimaryDevice,
-                tx: tx
+                tx: tx,
             )
         }
     }

@@ -38,7 +38,7 @@ public struct StyleDisplayConfiguration: Equatable {
         revealedSpoilerBgColor: ThemedColor? = nil,
         revealAllIds: Bool,
         revealedIds: Set<StyleIdType>,
-        useAnimatedSpoilers: Bool
+        useAnimatedSpoilers: Bool,
     ) {
         self.baseFont = baseFont
         self.textColor = textColor
@@ -57,7 +57,7 @@ public struct StyleDisplayConfiguration: Equatable {
     }
 }
 
-internal struct StyleAttribute: Equatable, Hashable {
+struct StyleAttribute: Equatable, Hashable {
     typealias Style = MessageBodyRanges.Style
     typealias SingleStyle = MessageBodyRanges.SingleStyle
     typealias CollapsedStyle = MessageBodyRanges.CollapsedStyle
@@ -68,24 +68,19 @@ internal struct StyleAttribute: Equatable, Hashable {
     ///
     /// Really this is just the original full range of the style, hashed. But that detail is
     /// irrelevant to everthing outside of this class.
-    internal let ids: [SingleStyle: StyleIdType]
-    internal let style: Style
+    let ids: [SingleStyle: StyleIdType]
+    let style: Style
 
-    internal static func fromCollapsedStyle(_ style: CollapsedStyle) -> Self {
+    static func fromCollapsedStyle(_ style: CollapsedStyle) -> Self {
         return .init(ids: style.originals.mapValues(\.id), style: style.style)
     }
 
-    private init(ids: [SingleStyle: StyleIdType], style: Style) {
-        self.ids = ids
-        self.style = style
-    }
-
-    internal func applyAttributes(
+    func applyAttributes(
         to string: NSMutableAttributedString,
         at range: NSRange,
         config: StyleDisplayConfiguration,
         searchRanges: HydratedMessageBody.DisplayConfiguration.SearchRanges?,
-        isDarkThemeEnabled: Bool
+        isDarkThemeEnabled: Bool,
     ) {
         var fontTraits: UIFontDescriptor.SymbolicTraits = []
         var attributes: [NSAttributedString.Key: Any] = [:]
@@ -115,7 +110,7 @@ internal struct StyleAttribute: Equatable, Hashable {
             }
         }
 
-        if style.contains(.strikethrough) && (isSpoilerRevealed ?? true) {
+        if style.contains(.strikethrough), isSpoilerRevealed ?? true {
             attributes[.strikethroughStyle] = NSUnderlineStyle.single.rawValue
             attributes[.strikethroughColor] = config.textColor.color(isDarkThemeEnabled: isDarkThemeEnabled)
         }
@@ -145,9 +140,9 @@ internal struct StyleAttribute: Equatable, Hashable {
                 string.addAttributes(
                     [
                         .backgroundColor: backgroundColor,
-                        .foregroundColor: UIColor.clear
+                        .foregroundColor: UIColor.clear,
                     ],
-                    range: intersection
+                    range: intersection,
                 )
             }
         }
@@ -156,16 +151,16 @@ internal struct StyleAttribute: Equatable, Hashable {
     private static let plaintextSpoilerCharacter = "■"
     private static let maxPlaintextSpoilerLength = 4
 
-    internal func applyPlaintextSpoiler(
+    func applyPlaintextSpoiler(
         to string: NSMutableString,
-        at range: NSRange
+        at range: NSRange,
     ) {
         string.replaceCharacters(
             in: range,
             with: String(
                 repeating: Self.plaintextSpoilerCharacter,
-                count: min(range.length, Self.maxPlaintextSpoilerLength)
-            )
+                count: min(range.length, Self.maxPlaintextSpoilerLength),
+            ),
         )
     }
 }

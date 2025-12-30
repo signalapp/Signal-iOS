@@ -171,7 +171,7 @@ struct MediaGalleryCollectionViewUpdater {
         self.originalSectionCount = itemCounts.count
 
         // Construct the model.
-        model = itemCounts.enumerated().map { (index, count) in
+        model = itemCounts.enumerated().map { index, count in
             ModelSection.preexisting(index: index, items: ModelItems(count))
         }
     }
@@ -207,8 +207,10 @@ struct MediaGalleryCollectionViewUpdater {
     }
 
     /// - Returns: An updated `ModelSection` to replace the one at `sectionIndex`.
-    private func updatedSectionInfo(sectionIndex: Int,
-                                    itemChange: MediaGallery.Sections.ItemChange) -> ModelSection {
+    private func updatedSectionInfo(
+        sectionIndex: Int,
+        itemChange: MediaGallery.Sections.ItemChange,
+    ) -> ModelSection {
         switch model[sectionIndex] {
         case .preexisting(index: let index, items: var items):
             switch itemChange {
@@ -244,8 +246,10 @@ struct MediaGalleryCollectionViewUpdater {
         performSectionInserts()
 
         let newCount = originalSectionCount + prependsIndexSet.indexSet.count + appendsIndexSet.indexSet.count - deletedSectionIndexes.indexSet.count
-        delegate?.updaterDidFinish(numberOfSectionsBefore: originalSectionCount,
-                                   numberOfSectionsAfter: newCount)
+        delegate?.updaterDidFinish(
+            numberOfSectionsBefore: originalSectionCount,
+            numberOfSectionsAfter: newCount,
+        )
     }
 
     private func performItemDeletes() {

@@ -22,7 +22,7 @@ final class RecipientStateMergerTest: XCTestCase {
         recipientDatabaseTable = RecipientDatabaseTable()
         recipientStateMerger = RecipientStateMerger(
             recipientDatabaseTable: recipientDatabaseTable,
-            signalServiceAddressCache: _signalServiceAddressCache
+            signalServiceAddressCache: _signalServiceAddressCache,
         )
     }
 
@@ -44,7 +44,7 @@ final class RecipientStateMergerTest: XCTestCase {
             makeAddress(aci2): makeState(deliveryTimestamp: 2),
             makeAddress(pni3): makeState(deliveryTimestamp: 3),
             makeAddress(aci4): makeState(deliveryTimestamp: 4),
-            makeAddress(pni4): makeState(deliveryTimestamp: 5)
+            makeAddress(pni4): makeState(deliveryTimestamp: 5),
         ]
         mockDB.read { tx in
             recipientStateMerger.normalize(&recipientStates, tx: tx)
@@ -67,7 +67,7 @@ final class RecipientStateMergerTest: XCTestCase {
         return SignalServiceAddress(
             serviceId: serviceId,
             phoneNumber: nil,
-            cache: _signalServiceAddressCache
+            cache: _signalServiceAddressCache,
         )
     }
 
@@ -76,7 +76,7 @@ final class RecipientStateMergerTest: XCTestCase {
             status: .delivered,
             statusTimestamp: deliveryTimestamp,
             wasSentByUD: false,
-            errorCode: nil
+            errorCode: nil,
         )
     }
 }

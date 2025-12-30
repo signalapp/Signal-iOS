@@ -126,7 +126,7 @@ class ExpandableContactListView: UIView {
     }()
 
     private var scrollViewMaxWidthConstraint: NSLayoutConstraint?
-    static private let gradientWidth: CGFloat = 14
+    private static let gradientWidth: CGFloat = 14
     private var isLeadingEdgeFaded = false
     private var isTrailingEdgeFaded = false
 
@@ -159,8 +159,8 @@ class ExpandableContactListView: UIView {
 
         let gradientWidthInPercent = Self.gradientWidth / scrollViewContainer.width
 
-        let gradientStopLocations: [CGFloat] = [ 0, gradientWidthInPercent, 1-gradientWidthInPercent, 1 ]
-        var gradientColors: [UIColor] = [ .black, .black ]
+        let gradientStopLocations: [CGFloat] = [0, gradientWidthInPercent, 1 - gradientWidthInPercent, 1]
+        var gradientColors: [UIColor] = [.black, .black]
         gradientColors.insert(isLeadingEdgeFaded ? .clear : .black, at: 0)
         gradientColors.append(isTrailingEdgeFaded ? .clear : .black)
 
@@ -179,17 +179,19 @@ extension ExpandableContactListView {
     @objc
     private func handleSingleTap(gestureRecognizer: UITapGestureRecognizer) {
         expanded = !expanded
-        UIView.animate(withDuration: 0.3,
-                       animations: {
-            self.superview?.setNeedsLayout()
-            self.superview?.layoutIfNeeded()
-            if self.expanded {
+        UIView.animate(
+            withDuration: 0.3,
+            animations: {
+                self.superview?.setNeedsLayout()
+                self.superview?.layoutIfNeeded()
+                if self.expanded {
+                    self.updateTextLabelEdgesFading()
+                }
+            },
+            completion: { _ in
                 self.updateTextLabelEdgesFading()
-            }
-        },
-                       completion: { _ in
-            self.updateTextLabelEdgesFading()
-        })
+            },
+        )
     }
 }
 

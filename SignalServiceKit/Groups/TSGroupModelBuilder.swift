@@ -117,7 +117,7 @@ public struct TSGroupModelBuilder {
                 name: name,
                 avatarData: avatarDataState.dataIfPresent,
                 members: Array(groupMembership.fullMembers),
-                addedBy: addedByAddress
+                addedBy: addedByAddress,
             )
         case .V2(let secretParamsData):
             let groupSecretParams = try GroupSecretParams(contents: secretParamsData)
@@ -137,7 +137,7 @@ public struct TSGroupModelBuilder {
                 isJoinRequestPlaceholder: isJoinRequestPlaceholder,
                 wasJustMigrated: wasJustMigrated,
                 didJustAddSelfViaGroupLink: didJustAddSelfViaGroupLink,
-                addedByAddress: addedByAddress
+                addedByAddress: addedByAddress,
             )
         }
     }

@@ -43,14 +43,14 @@ extension Bitmaps {
         /// pixel bytes.
         private let bytes: [UInt8]
 
-        #if TESTABLE_BUILD
+#if TESTABLE_BUILD
         init(width: Int, height: Int, rawBytes: [UInt8]) {
             self.width = width
             self.height = height
             self.bytesPerRow = 4 * width
             self.bytes = rawBytes
         }
-        #endif
+#endif
 
         /// Create a bitmap of the given image.
         ///
@@ -77,15 +77,17 @@ extension Bitmaps {
 
             var imageBytes = [UInt8](repeating: 0, count: height * bytesPerRow)
 
-            guard let cgContext = CGContext(
-                data: &imageBytes,
-                width: width,
-                height: height,
-                bitsPerComponent: 8,
-                bytesPerRow: bytesPerRow,
-                space: CGColorSpaceCreateDeviceRGB(),
-                bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
-            ) else {
+            guard
+                let cgContext = CGContext(
+                    data: &imageBytes,
+                    width: width,
+                    height: height,
+                    bitsPerComponent: 8,
+                    bytesPerRow: bytesPerRow,
+                    space: CGColorSpaceCreateDeviceRGB(),
+                    bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue,
+                )
+            else {
                 owsFailDebug("Failed to create CGContext!")
                 return nil
             }
@@ -130,7 +132,7 @@ extension Bitmaps {
                 r: bytes[pixelStartOffset],
                 g: bytes[pixelStartOffset + 1],
                 b: bytes[pixelStartOffset + 2],
-                a: bytes[pixelStartOffset + 3]
+                a: bytes[pixelStartOffset + 3],
             )
         }
     }

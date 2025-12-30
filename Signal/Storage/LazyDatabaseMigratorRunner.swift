@@ -19,7 +19,7 @@ class LazyDatabaseMigratorRunner: BGProcessingTaskRunner {
         self.infoMessageMigrator = InfoMessageGroupUpdateMigrator(
             db: databaseStorage,
             modelReadCaches: modelReadCaches,
-            tsAccountManager: tsAccountManager
+            tsAccountManager: tsAccountManager,
         )
     }
 
@@ -159,14 +159,14 @@ private struct LazyIndexMigrator {
             try! GRDBSchemaMigrator.removeInteractionConversationLoadDistanceIndex(tx: tx)
         }
 
-        #if DEBUG
+#if DEBUG
         // If we just ran the migration, we shouldn't need to run it again. If this
         // fails, the list of indexes and migrations we perform don't match.
         owsAssertDebug(
             !needsToRun(),
-            "Needs to run, but just ran!"
+            "Needs to run, but just ran!",
         )
-        #endif
+#endif
 
         logger.info("Done!")
     }

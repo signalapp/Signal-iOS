@@ -35,7 +35,7 @@ enum UniqueRecipientObjectMerger {
         uniqueIdField: KeyPath<T, String>,
         fetchObjectsForServiceId: (ServiceId) -> [T],
         fetchObjectsForPhoneNumber: (E164) -> [T],
-        updateObject: (T) -> Void
+        updateObject: (T) -> Void,
     ) -> [T] {
         var results = [T]()
 

@@ -34,7 +34,7 @@ public final class Promise<Value>: Thenable, Catchable {
     }
 
     public convenience init(
-        _ block: (Future<Value>) throws -> Void
+        _ block: (Future<Value>) throws -> Void,
     ) {
         self.init()
         do {
@@ -46,7 +46,7 @@ public final class Promise<Value>: Thenable, Catchable {
 
     public convenience init(
         on scheduler: Scheduler,
-        _ block: @escaping (Future<Value>) throws -> Void
+        _ block: @escaping (Future<Value>) throws -> Void,
     ) {
         self.init()
         scheduler.asyncIfNecessary {

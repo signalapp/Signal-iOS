@@ -15,12 +15,12 @@ public enum MessageSenderError: Error, IsRetryableProvider, UserErrorDescription
         case .blockedContactRecipient:
             return OWSLocalizedString(
                 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST",
-                comment: "Error message indicating that message send failed due to block list"
+                comment: "Error message indicating that message send failed due to block list",
             )
         case .threadMissing:
             return OWSLocalizedString(
                 "MESSAGE_STATUS_SEND_FAILED",
-                comment: "Label indicating that a message failed to send."
+                comment: "Label indicating that a message failed to send.",
             )
         }
     }
@@ -72,7 +72,7 @@ public class MessageSenderNoSuchSignalRecipientError: CustomNSError, IsRetryable
     public var localizedDescription: String {
         OWSLocalizedString(
             "ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT",
-            comment: "Error message when attempting to send message"
+            comment: "Error message when attempting to send message",
         )
     }
 
@@ -91,43 +91,43 @@ public class MessageSenderNoSuchSignalRecipientError: CustomNSError, IsRetryable
 // MARK: -
 
 class MessageSenderErrorNoValidRecipients: CustomNSError, IsRetryableProvider, UserErrorDescriptionProvider {
-    public static var asNSError: NSError {
+    static var asNSError: NSError {
         MessageSenderErrorNoValidRecipients() as Error as NSError
     }
 
     // NSError bridging: the domain of the error.
-    public static let errorDomain = OWSError.errorDomain
+    static let errorDomain = OWSError.errorDomain
 
     // NSError bridging: the error code within the given domain.
-    public var errorCode: Int { OWSErrorCode.messageSendNoValidRecipients.rawValue }
+    var errorCode: Int { OWSErrorCode.messageSendNoValidRecipients.rawValue }
 
     // NSError bridging: the error code within the given domain.
-    public var errorUserInfo: [String: Any] {
+    var errorUserInfo: [String: Any] {
         [NSLocalizedDescriptionKey: self.localizedDescription]
     }
 
-    public var localizedDescription: String {
+    var localizedDescription: String {
         OWSLocalizedString(
             "ERROR_DESCRIPTION_NO_VALID_RECIPIENTS",
-            comment: "Error indicating that an outgoing message had no valid recipients."
+            comment: "Error indicating that an outgoing message had no valid recipients.",
         )
     }
 
-    public var isRetryableProvider: Bool { false }
+    var isRetryableProvider: Bool { false }
 }
 
 // MARK: -
 
 class MessageSenderNoSessionForTransientMessageError: CustomNSError, IsRetryableProvider, UserErrorDescriptionProvider {
     // NSError bridging: the domain of the error.
-    public static let errorDomain = OWSError.errorDomain
+    static let errorDomain = OWSError.errorDomain
 
     // NSError bridging: the error code within the given domain.
-    public var errorCode: Int { OWSErrorCode.noSessionForTransientMessage.rawValue }
+    var errorCode: Int { OWSErrorCode.noSessionForTransientMessage.rawValue }
 
-    public var isRetryableProvider: Bool { false }
+    var isRetryableProvider: Bool { false }
 
-    public var localizedDescription: String {
+    var localizedDescription: String {
         // These messages are never presented to the user, since these errors only
         // occur to transient messages. We only specify an error to avoid an assert.
         return OWSError.genericErrorDescription()
@@ -156,7 +156,7 @@ public class UntrustedIdentityError: CustomNSError, IsRetryableProvider, UserErr
     public var localizedDescription: String {
         let format = OWSLocalizedString(
             "FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY",
-            comment: "action sheet header when re-sending message which failed because of untrusted identity keys"
+            comment: "action sheet header when re-sending message which failed because of untrusted identity keys",
         )
         return String(format: format, SSKEnvironment.shared.databaseStorageRef.read { tx in
             return SSKEnvironment.shared.contactManagerRef.displayName(for: SignalServiceAddress(serviceId), tx: tx).resolvedValue()
@@ -193,7 +193,7 @@ public class InvalidKeySignatureError: CustomNSError, IsRetryableProvider, UserE
     public var localizedDescription: String {
         let format = OWSLocalizedString(
             "FAILED_SENDING_BECAUSE_INVALID_KEY_SIGNATURE",
-            comment: "action sheet header when re-sending message which failed because of an invalid key signature"
+            comment: "action sheet header when re-sending message which failed because of an invalid key signature",
         )
         return String(format: format, SSKEnvironment.shared.databaseStorageRef.read { tx in
             return SSKEnvironment.shared.contactManagerRef.displayName(for: SignalServiceAddress(serviceId), tx: tx).resolvedValue()
@@ -224,7 +224,7 @@ public class SpamChallengeRequiredError: CustomNSError, IsRetryableProvider, Use
     public var localizedDescription: String {
         OWSLocalizedString(
             "ERROR_DESCRIPTION_SUSPECTED_SPAM",
-            comment: "Description for errors returned from the server due to suspected spam."
+            comment: "Description for errors returned from the server due to suspected spam.",
         )
     }
 
@@ -238,72 +238,72 @@ public class SpamChallengeRequiredError: CustomNSError, IsRetryableProvider, Use
 
 class SpamChallengeResolvedError: CustomNSError, IsRetryableProvider, UserErrorDescriptionProvider {
     // NSError bridging: the domain of the error.
-    public static let errorDomain = OWSError.errorDomain
+    static let errorDomain = OWSError.errorDomain
 
     // NSError bridging: the error code within the given domain.
-    public var errorUserInfo: [String: Any] {
+    var errorUserInfo: [String: Any] {
         [NSLocalizedDescriptionKey: self.localizedDescription]
     }
 
-    public var localizedDescription: String {
+    var localizedDescription: String {
         OWSLocalizedString(
             "ERROR_DESCRIPTION_SUSPECTED_SPAM",
-            comment: "Description for errors returned from the server due to suspected spam."
+            comment: "Description for errors returned from the server due to suspected spam.",
         )
     }
 
     // NSError bridging: the error code within the given domain.
-    public var errorCode: Int { OWSErrorCode.serverRejectedSuspectedSpam.rawValue }
+    var errorCode: Int { OWSErrorCode.serverRejectedSuspectedSpam.rawValue }
 
-    public var isRetryableProvider: Bool { true }
+    var isRetryableProvider: Bool { true }
 }
 
 // MARK: -
 
 class OWSRetryableMessageSenderError: Error, IsRetryableProvider {
-    public static var asNSError: NSError {
+    static var asNSError: NSError {
         OWSRetryableMessageSenderError() as Error as NSError
     }
 
     // MARK: - IsRetryableProvider
 
-    public var isRetryableProvider: Bool { true }
+    var isRetryableProvider: Bool { true }
 }
 
 // MARK: -
 
 // NOTE: We typically prefer to use a more specific error.
 class OWSUnretryableMessageSenderError: Error, IsRetryableProvider {
-    public static var asNSError: NSError {
+    static var asNSError: NSError {
         OWSUnretryableMessageSenderError() as Error as NSError
     }
 
     // MARK: - IsRetryableProvider
 
-    public var isRetryableProvider: Bool { false }
+    var isRetryableProvider: Bool { false }
 }
 
 // MARK: -
 
 class MessageDeletedBeforeSentError: CustomNSError, IsRetryableProvider {
-    public static var asNSError: NSError {
+    static var asNSError: NSError {
         MessageDeletedBeforeSentError() as Error as NSError
     }
 
     // NSError bridging: the domain of the error.
-    public static let errorDomain = OWSError.errorDomain
+    static let errorDomain = OWSError.errorDomain
 
     // NSError bridging: the error code within the given domain.
-    public var errorCode: Int { OWSErrorCode.messageDeletedBeforeSent.rawValue }
+    var errorCode: Int { OWSErrorCode.messageDeletedBeforeSent.rawValue }
 
-    public var isRetryableProvider: Bool { false }
+    var isRetryableProvider: Bool { false }
 }
 
 // MARK: -
 
 class MessageSendEncryptionError: CustomNSError, IsRetryableProvider {
-    public let serviceId: ServiceId
-    public let deviceId: DeviceId
+    let serviceId: ServiceId
+    let deviceId: DeviceId
 
     init(serviceId: ServiceId, deviceId: DeviceId) {
         self.serviceId = serviceId
@@ -311,10 +311,10 @@ class MessageSendEncryptionError: CustomNSError, IsRetryableProvider {
     }
 
     // NSError bridging: the domain of the error.
-    public static let errorDomain = OWSError.errorDomain
+    static let errorDomain = OWSError.errorDomain
 
     // NSError bridging: the error code within the given domain.
-    public var errorCode: Int { OWSErrorCode.messageSendEncryptionFailure.rawValue }
+    var errorCode: Int { OWSErrorCode.messageSendEncryptionFailure.rawValue }
 
-    public var isRetryableProvider: Bool { true }
+    var isRetryableProvider: Bool { true }
 }

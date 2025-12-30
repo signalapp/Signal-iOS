@@ -43,7 +43,7 @@ extension Stripe {
     /// The new payment ID.
     public static func setupNewSubscription(
         clientSecret: String,
-        paymentMethod: PaymentMethod
+        paymentMethod: PaymentMethod,
     ) async throws -> ConfirmedSetupIntent {
         let paymentMethodId = try await createPaymentMethod(with: paymentMethod)
         // Pass in the correct callback URL
@@ -51,7 +51,7 @@ extension Stripe {
             mandate: paymentMethod.mandate,
             paymentMethodId: paymentMethodId,
             clientSecret: clientSecret,
-            callbackURL: paymentMethod.callbackURL
+            callbackURL: paymentMethod.callbackURL,
         )
     }
 }

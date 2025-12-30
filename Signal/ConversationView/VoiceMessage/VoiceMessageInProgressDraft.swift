@@ -63,8 +63,8 @@ final class VoiceMessageInProgressDraft: VoiceMessageSendableDraft {
                     AVFormatIDKey: kAudioFormatMPEG4AAC,
                     AVSampleRateKey: 44100,
                     AVNumberOfChannelsKey: 1,
-                    AVEncoderBitRateKey: 32000
-                ]
+                    AVEncoderBitRateKey: 32000,
+                ],
             )
             self.audioRecorder = audioRecorder
         } catch {
@@ -93,7 +93,7 @@ final class VoiceMessageInProgressDraft: VoiceMessageSendableDraft {
             sleepManager.removeBlock(blockObject: sleepBlockObject)
         }
 
-        guard let audioRecorder = audioRecorder else { return }
+        guard let audioRecorder else { return }
         self.audioRecorder = nil
 
         self.duration = audioRecorder.currentTime
@@ -113,7 +113,7 @@ final class VoiceMessageInProgressDraft: VoiceMessageSendableDraft {
             sleepManager.removeBlock(blockObject: sleepBlockObject)
         }
 
-        guard let audioRecorder = audioRecorder else { return }
+        guard let audioRecorder else { return }
         self.audioRecorder = nil
 
         self.duration = audioRecorder.currentTime
@@ -132,7 +132,7 @@ final class VoiceMessageInProgressDraft: VoiceMessageSendableDraft {
         let directoryUrl = VoiceMessageInterruptedDraftStore.saveDraft(
             audioFileUrl: audioFileUrl,
             threadUniqueId: threadUniqueId,
-            transaction: transaction
+            transaction: transaction,
         )
         return VoiceMessageInterruptedDraft(threadUniqueId: threadUniqueId, directoryUrl: directoryUrl)
     }

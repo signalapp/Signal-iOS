@@ -21,7 +21,7 @@ class ContactViewController: OWSTableViewController2 {
         didSet {
             AssertIsOnMainThread()
 
-            if oldValue != viewMode && isViewLoaded {
+            if oldValue != viewMode, isViewLoaded {
                 updateContent()
             }
         }
@@ -46,14 +46,18 @@ class ContactViewController: OWSTableViewController2 {
 
         super.init()
 
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(updateMode),
-                                               name: .OWSContactsManagerSignalAccountsDidChange,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(updateMode),
-                                               name: SSKReachability.owsReachabilityDidChange,
-                                               object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(updateMode),
+            name: .OWSContactsManagerSignalAccountsDidChange,
+            object: nil,
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(updateMode),
+            name: SSKReachability.owsReachabilityDidChange,
+            object: nil,
+        )
     }
 
     override func viewDidLoad() {
@@ -81,7 +85,7 @@ class ContactViewController: OWSTableViewController2 {
             ifSendablePhoneNumbers: { _ in .systemContactWithSignal },
             elseIfInvitablePhoneNumbers: { _ in .systemContactWithoutSignal },
             elseIfAddablePhoneNumbers: { _ in .nonSystemContact },
-            elseIfNoPhoneNumbers: { .noPhoneNumber }
+            elseIfNoPhoneNumbers: { .noPhoneNumber },
         )
     }
 
@@ -129,31 +133,31 @@ class ContactViewController: OWSTableViewController2 {
             let buttonMessage = SettingsHeaderButton(
                 title: OWSLocalizedString(
                     "CONVERSATION_SETTINGS_MESSAGE_BUTTON",
-                    comment: "Button to message the chat"
+                    comment: "Button to message the chat",
                 ).capitalized,
-                icon: .settingsChats
+                icon: .settingsChats,
             ) { [weak self] in
                 self?.didPressSendMessage()
             }
             let buttonVideoCall = SettingsHeaderButton(
                 title: OWSLocalizedString(
                     "CONVERSATION_SETTINGS_VIDEO_CALL_BUTTON",
-                    comment: "Button to start a video call"
+                    comment: "Button to start a video call",
                 ).capitalized,
-                icon: .buttonVideoCall
+                icon: .buttonVideoCall,
             ) { [weak self] in
                 self?.didPressVideoCall()
             }
             let buttonAudioCall = SettingsHeaderButton(
                 title: OWSLocalizedString(
                     "CONVERSATION_SETTINGS_VOICE_CALL_BUTTON",
-                    comment: "Button to start a voice call"
+                    comment: "Button to start a voice call",
                 ).capitalized,
-                icon: .buttonVoiceCall
+                icon: .buttonVoiceCall,
             ) { [weak self] in
                 self?.didPressAudioCall()
             }
-            let buttonStack = UIStackView(arrangedSubviews: [ buttonMessage, buttonVideoCall, buttonAudioCall ])
+            let buttonStack = UIStackView(arrangedSubviews: [buttonMessage, buttonVideoCall, buttonAudioCall])
             buttonStack.axis = .horizontal
             buttonStack.spacing = 8
             buttonStack.distribution = .fillEqually
@@ -172,7 +176,7 @@ class ContactViewController: OWSTableViewController2 {
                 withText: OWSLocalizedString("ACTION_INVITE", comment: ""),
                 actionBlock: { [weak self] in
                     self?.didPressInvite()
-                }
+                },
             ))
         }
 
@@ -181,11 +185,12 @@ class ContactViewController: OWSTableViewController2 {
                 icon: .contactInfoAddToContacts,
                 withText: OWSLocalizedString(
                     "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER",
-                    comment: "")
+                    comment: "",
+                )
                 ,
                 actionBlock: { [weak self] in
                     self?.didPressAddToContacts()
-                }
+                },
             ))
         }
 
@@ -202,7 +207,7 @@ class ContactViewController: OWSTableViewController2 {
                 },
                 actionBlock: { [weak self] in
                     self?.didPressPhoneNumber(phoneNumber: phoneNumber)
-                }
+                },
             )
         }))
         infoSection.add(items: contactShare.emails.map({ email in
@@ -212,7 +217,7 @@ class ContactViewController: OWSTableViewController2 {
                 },
                 actionBlock: { [weak self] in
                     self?.didPressEmail(email: email)
-                }
+                },
             )
         }))
         infoSection.add(items: contactShare.addresses.map({ address in
@@ -222,7 +227,7 @@ class ContactViewController: OWSTableViewController2 {
                 },
                 actionBlock: { [weak self] in
                     self?.didPressAddress(address: address)
-                }
+                },
             )
         }))
         sections.append(infoSection)
@@ -275,8 +280,10 @@ class ContactViewController: OWSTableViewController2 {
         verticalContentStack.addArrangedSubview(nameLabel)
 
         // Organization Name
-        if let organizationName = contactShare.name.organizationName?.ows_stripped().nilIfEmpty,
-           contactShare.name.hasAnyNamePart {
+        if
+            let organizationName = contactShare.name.organizationName?.ows_stripped().nilIfEmpty,
+            contactShare.name.hasAnyNamePart
+        {
             let label = UILabel()
             label.text = organizationName
             label.font = .dynamicTypeSubheadline
@@ -365,23 +372,23 @@ extension ContactViewController {
                         handler: { _ in
                             let address = SignalServiceAddress(phoneNumber: phoneNumber)
                             SignalApp.shared.presentConversationForAddress(address, action: action, animated: true)
-                        }
+                        },
                     ))
                 }
                 addAction(title: CommonStrings.sendMessage, action: .compose)
                 addAction(
                     title: OWSLocalizedString(
                         "ACTION_VOICE_CALL",
-                        comment: "Label for 'voice call' button in contact view."
+                        comment: "Label for 'voice call' button in contact view.",
                     ),
-                    action: .voiceCall
+                    action: .voiceCall,
                 )
                 addAction(
                     title: OWSLocalizedString(
                         "ACTION_VIDEO_CALL",
-                        comment: "Label for 'video call' button in contact view."
+                        comment: "Label for 'video call' button in contact view.",
                     ),
-                    action: .voiceCall
+                    action: .voiceCall,
                 )
             } else {
                 // TODO: We could offer callPhoneNumberWithSystemCall.
@@ -390,9 +397,9 @@ extension ContactViewController {
         actionSheet.addAction(ActionSheetAction(
             title: OWSLocalizedString(
                 "EDIT_ITEM_COPY_ACTION",
-                comment: "Short name for edit menu item to copy contents of media message."
+                comment: "Short name for edit menu item to copy contents of media message.",
             ),
-            style: .default
+            style: .default,
         ) { _ in
             UIPasteboard.general.string = phoneNumber.phoneNumber
         })
@@ -417,18 +424,18 @@ extension ContactViewController {
         actionSheet.addAction(ActionSheetAction(
             title: OWSLocalizedString(
                 "CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP",
-                comment: "Label for 'open email in email app' button in contact view."
+                comment: "Label for 'open email in email app' button in contact view.",
             ),
-            style: .default
+            style: .default,
         ) { [weak self] _ in
             self?.openEmailInEmailApp(email: email)
         })
         actionSheet.addAction(ActionSheetAction(
             title: OWSLocalizedString(
                 "EDIT_ITEM_COPY_ACTION",
-                comment: "Short name for edit menu item to copy contents of media message."
+                comment: "Short name for edit menu item to copy contents of media message.",
             ),
-            style: .default
+            style: .default,
         ) { _ in
             UIPasteboard.general.string = email.email
         })
@@ -453,18 +460,18 @@ extension ContactViewController {
         actionSheet.addAction(ActionSheetAction(
             title: OWSLocalizedString(
                 "CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP",
-                comment: "Label for 'open address in maps app' button in contact view."
+                comment: "Label for 'open address in maps app' button in contact view.",
             ),
-            style: .default
+            style: .default,
         ) { [weak self] _ in
             self?.openAddressInMaps(address: address)
         })
         actionSheet.addAction(ActionSheetAction(
             title: OWSLocalizedString(
                 "EDIT_ITEM_COPY_ACTION",
-                comment: "Short name for edit menu item to copy contents of media message."
+                comment: "Short name for edit menu item to copy contents of media message.",
             ),
-            style: .default
+            style: .default,
         ) { [weak self] _ in
             guard let self else { return }
             UIPasteboard.general.string = self.formatAddressForQuery(address: address)
@@ -496,7 +503,7 @@ extension ContactViewController {
 
         // Open address in Apple Maps app.
         var addressParts = [String]()
-        let addAddressPart: ((String?) -> Void) = { (part) in
+        let addAddressPart: ((String?) -> Void) = { part in
             guard let part, !part.isEmpty else { return }
 
             addressParts.append(part)

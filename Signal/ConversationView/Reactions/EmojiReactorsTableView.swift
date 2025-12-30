@@ -38,7 +38,7 @@ class EmojiReactorsTableView: UITableView {
             return ReactorItem(
                 address: reaction.reactor,
                 displayName: displayName,
-                emoji: reaction.emoji
+                emoji: reaction.emoji,
             )
         }
     }

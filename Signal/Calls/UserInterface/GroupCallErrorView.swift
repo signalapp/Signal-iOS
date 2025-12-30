@@ -14,7 +14,7 @@ class GroupCallErrorView: UIView {
 
     var iconImage: UIImage? {
         didSet {
-            if let iconImage = iconImage {
+            if let iconImage {
                 iconView.setTemplateImage(iconImage, tintColor: .ows_white)
                 miniBlockIndicator.setTemplateImage(iconImage, tintColor: .ows_white)
             } else {
@@ -50,7 +50,8 @@ class GroupCallErrorView: UIView {
     private(set) lazy var button: UIButton = {
         let buttonLabel = OWSLocalizedString(
             "GROUP_CALL_ERROR_DETAILS",
-            comment: "A button to receive more info about not seeing a participant in group call grid")
+            comment: "A button to receive more info about not seeing a participant in group call grid",
+        )
 
         let button = UIButton()
         button.backgroundColor = .ows_gray75
@@ -76,7 +77,7 @@ class GroupCallErrorView: UIView {
         let stackView = UIStackView(arrangedSubviews: [
             iconView,
             label,
-            button
+            button,
         ])
         stackView.axis = .vertical
         stackView.alignment = .center

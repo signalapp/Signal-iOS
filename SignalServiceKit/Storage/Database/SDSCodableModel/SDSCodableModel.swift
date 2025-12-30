@@ -132,11 +132,11 @@ public extension SDSCodableModel {
 
 public extension SDSCodableModel {
     static func anyCount(
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> UInt {
         SDSCodableModelDatabaseInterfaceImpl().countAllModels(
             modelType: Self.self,
-            transaction: transaction
+            transaction: transaction,
         )
     }
 
@@ -144,12 +144,12 @@ public extension SDSCodableModel {
     /// See that class for details.
     static func anyFetch(
         rowId: Int64,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> Self? {
         SDSCodableModelDatabaseInterfaceImpl().fetchModel(
             modelType: Self.self,
             rowId: rowId,
-            tx: transaction
+            tx: transaction,
         )
     }
 
@@ -157,36 +157,36 @@ public extension SDSCodableModel {
     /// See that class for details.
     static func anyFetch(
         uniqueId: String,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> Self? {
         SDSCodableModelDatabaseInterfaceImpl().fetchModel(
             modelType: Self.self,
             uniqueId: uniqueId,
-            transaction: transaction
+            transaction: transaction,
         )
     }
 
     static func anyFetch(
         sql: String,
         arguments: StatementArguments = [],
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> Self? {
         SDSCodableModelDatabaseInterfaceImpl().fetchModel(
             modelType: Self.self,
             sql: sql,
             arguments: arguments,
-            transaction: transaction
+            transaction: transaction,
         )
     }
 
     /// Convenience method delegating to ``SDSCodableModelDatabaseInterface``.
     /// See that class for details.
     static func anyFetchAll(
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> [Self] {
         SDSCodableModelDatabaseInterfaceImpl().fetchAllModels(
             modelType: Self.self,
-            transaction: transaction
+            transaction: transaction,
         )
     }
 
@@ -222,7 +222,7 @@ public extension SDSCodableModel where Self: AnyObject {
         SDSCodableModelDatabaseInterfaceImpl().updateModel(
             self,
             transaction: transaction,
-            block: block
+            block: block,
         )
     }
 }
@@ -233,13 +233,13 @@ public extension SDSCodableModel {
     static func anyEnumerate(
         transaction: DBReadTransaction,
         batchingPreference: BatchingPreference = .unbatched,
-        block: (Self, UnsafeMutablePointer<ObjCBool>) -> Void
+        block: (Self, UnsafeMutablePointer<ObjCBool>) -> Void,
     ) {
         SDSCodableModelDatabaseInterfaceImpl().enumerateModels(
             modelType: Self.self,
             transaction: transaction,
             batchingPreference: batchingPreference,
-            block: block
+            block: block,
         )
     }
 
@@ -249,7 +249,7 @@ public extension SDSCodableModel {
         transaction: DBReadTransaction,
         sql: String,
         arguments: StatementArguments,
-        block: (Self, UnsafeMutablePointer<ObjCBool>) -> Void
+        block: (Self, UnsafeMutablePointer<ObjCBool>) -> Void,
     ) {
         SDSCodableModelDatabaseInterfaceImpl().enumerateModels(
             modelType: Self.self,
@@ -257,7 +257,7 @@ public extension SDSCodableModel {
             sql: sql,
             arguments: arguments,
             batchingPreference: .unbatched,
-            block: block
+            block: block,
         )
     }
 }

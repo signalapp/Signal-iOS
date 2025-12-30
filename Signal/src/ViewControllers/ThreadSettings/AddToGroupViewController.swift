@@ -16,8 +16,10 @@ public class AddToGroupViewController: OWSTableViewController2 {
         super.init()
     }
 
-    public class func presentForUser(_ address: SignalServiceAddress,
-                                     from fromViewController: UIViewController) {
+    public class func presentForUser(
+        _ address: SignalServiceAddress,
+        from fromViewController: UIViewController,
+    ) {
         AssertIsOnMainThread()
 
         let view = AddToGroupViewController(address: address)
@@ -27,7 +29,7 @@ public class AddToGroupViewController: OWSTableViewController2 {
 
     // MARK: -
 
-    public override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
 
         title = OWSLocalizedString("ADD_TO_GROUP_TITLE", comment: "Title of the 'add to group' view.")
@@ -66,8 +68,8 @@ public class AddToGroupViewController: OWSTableViewController2 {
                             threadViewModel: ThreadViewModel(
                                 thread: thread,
                                 forChatList: false,
-                                transaction: transaction
-                            )
+                                transaction: transaction,
+                            ),
                         )
 
                         if groupViewHelper.canEditConversationMembership {
@@ -96,7 +98,7 @@ public class AddToGroupViewController: OWSTableViewController2 {
 
     // MARK: Helpers
 
-    public override func themeDidChange() {
+    override public func themeDidChange() {
         super.themeDidChange()
         self.tableView.sectionIndexColor = Theme.primaryTextColor
         updateTableContents()
@@ -113,25 +115,30 @@ public class AddToGroupViewController: OWSTableViewController2 {
             return SSKEnvironment.shared.contactManagerRef.displayName(for: self.address, tx: transaction).resolvedValue(useShortNameIfAvailable: true)
         }
 
-        let messageFormat = OWSLocalizedString("ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT",
-                                            comment: "The title on the 'add to group' confirmation action sheet. Embeds {contact name, group name}")
+        let messageFormat = OWSLocalizedString(
+            "ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT",
+            comment: "The title on the 'add to group' confirmation action sheet. Embeds {contact name, group name}",
+        )
 
         OWSActionSheets.showConfirmationAlert(
             title: OWSLocalizedString(
                 "ADD_TO_GROUP_ACTION_SHEET_TITLE",
-                comment: "The title on the 'add to group' confirmation action sheet."
+                comment: "The title on the 'add to group' confirmation action sheet.",
             ),
             message: String(format: messageFormat, shortName, groupThread.groupNameOrDefault),
-            proceedTitle: OWSLocalizedString("ADD_TO_GROUP_ACTION_PROCEED_BUTTON",
-                                            comment: "The button on the 'add to group' confirmation to add the user to the group."),
-            proceedStyle: .default) { _ in
-                self.addToGroup(groupThread, shortName: shortName)
+            proceedTitle: OWSLocalizedString(
+                "ADD_TO_GROUP_ACTION_PROCEED_BUTTON",
+                comment: "The button on the 'add to group' confirmation to add the user to the group.",
+            ),
+            proceedStyle: .default,
+        ) { _ in
+            self.addToGroup(groupThread, shortName: shortName)
         }
     }
 
     private func addToGroup(_ groupThread: TSGroupThread, shortName: String) {
         AssertIsOnMainThread()
-        owsPrecondition(groupThread.isGroupV2Thread)  // non-gv2 filtered above when fetching groups
+        owsPrecondition(groupThread.isGroupV2Thread) // non-gv2 filtered above when fetching groups
 
         guard let serviceId = self.address.serviceId else {
             GroupViewUtils.showInvalidGroupMemberAlert(fromViewController: self)
@@ -145,12 +152,12 @@ public class AddToGroupViewController: OWSTableViewController2 {
             updateBlock: {
                 try await GroupManager.addOrInvite(
                     serviceIds: [serviceId],
-                    toExistingGroup: oldGroupModel
+                    toExistingGroup: oldGroupModel,
                 )
             },
             completion: { [weak self] in
                 self?.notifyOfAddedAndDismiss(groupThread: groupThread, shortName: shortName)
-            }
+            },
         )
     }
 
@@ -158,7 +165,7 @@ public class AddToGroupViewController: OWSTableViewController2 {
         dismiss(animated: true) { [presentingViewController] in
             let toastFormat = OWSLocalizedString(
                 "ADD_TO_GROUP_SUCCESS_TOAST_FORMAT",
-                comment: "A toast on the 'add to group' view indicating the user was added. Embeds {contact name} and {group name}"
+                comment: "A toast on the 'add to group' view indicating the user was added. Embeds {contact name} and {group name}",
             )
             let toastText = String(format: toastFormat, shortName, groupThread.groupNameOrDefault)
             presentingViewController?.presentToast(text: toastText)
@@ -170,7 +177,7 @@ public class AddToGroupViewController: OWSTableViewController2 {
     private func item(forGroupThread groupThread: TSGroupThread, tx: DBReadTransaction) -> OWSTableItem {
         let alreadyAMemberText = OWSLocalizedString(
             "ADD_TO_GROUP_ALREADY_A_MEMBER",
-            comment: "Text indicating your contact is already a member of the group on the 'add to group' view."
+            comment: "Text indicating your contact is already a member of the group on the 'add to group' view.",
         )
         let isAlreadyAMember: Bool
         if let serviceId = self.address.serviceId {
@@ -193,14 +200,14 @@ public class AddToGroupViewController: OWSTableViewController2 {
                 cell.configure(
                     thread: groupThread,
                     customSubtitle: isAlreadyAMember ? alreadyAMemberText : nil,
-                    customTextColor: isAlreadyAMember ? .Signal.tertiaryLabel : nil
+                    customTextColor: isAlreadyAMember ? .Signal.tertiaryLabel : nil,
                 )
                 cell.isUserInteractionEnabled = !isAlreadyAMember
                 return cell
             },
             actionBlock: { [weak self] in
                 self?.didSelectGroup(groupThread)
-            }
+            },
         )
     }
 }

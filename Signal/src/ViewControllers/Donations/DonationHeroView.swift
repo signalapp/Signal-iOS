@@ -26,7 +26,7 @@ class DonationHeroView: UIStackView {
 
         let titleLabel = UILabel.title2Label(text: OWSLocalizedString(
             "DONATION_SCREENS_HEADER_TITLE",
-            comment: "On donation screens, a small amount of information text is shown. This is the title for that text."
+            comment: "On donation screens, a small amount of information text is shown. This is the title for that text.",
         ))
         self.addArrangedSubview(titleLabel)
         self.setCustomSpacing(6, after: titleLabel)
@@ -42,7 +42,7 @@ class DonationHeroView: UIStackView {
 
         let descriptionBodyText = OWSLocalizedString(
             "DONATION_SCREENS_HEADER_DESCRIPTION",
-            comment: "On donation screens, a small amount of information text is shown. This is the subtitle for that text."
+            comment: "On donation screens, a small amount of information text is shown. This is the subtitle for that text.",
         )
         // We'd like a link that doesn't go anywhere, because we'd like to
         // handle the tapping ourselves. We use a "fake" URL because
@@ -50,12 +50,12 @@ class DonationHeroView: UIStackView {
         let linkPart = StringStyle.Part.link(URL.Support.Donations.subscriptionFAQ)
         let readMoreText = OWSLocalizedString(
             "DONATION_SCREENS_HEADER_READ_MORE",
-            comment: "On donation screens, a small amount of information text is shown. Users can click this link to learn more information."
+            comment: "On donation screens, a small amount of information text is shown. Users can click this link to learn more information.",
         ).styled(with: linkPart)
         descriptionTextView.attributedText = .composed(of: [
             descriptionBodyText,
             " ",
-            readMoreText
+            readMoreText,
         ]).styled(with: .color(UIColor.Signal.secondaryLabel), .font(.dynamicTypeBody))
         descriptionTextView.textAlignment = .center
     }

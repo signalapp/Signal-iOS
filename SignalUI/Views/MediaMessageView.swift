@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import SDWebImage
 import SignalServiceKit
 import UIKit
-import SDWebImage
 
 class MediaMessageView: UIView, AudioPlayerDelegate {
 
@@ -96,7 +96,7 @@ class MediaMessageView: UIView, AudioPlayerDelegate {
         subviews.append(audioPlayButton)
 
         let fileNameLabel = createFileNameLabel()
-        if let fileNameLabel = fileNameLabel {
+        if let fileNameLabel {
             subviews.append(fileNameLabel)
         }
 
@@ -135,7 +135,7 @@ class MediaMessageView: UIView, AudioPlayerDelegate {
         guard
             attachment.isImage,
             let image = SDAnimatedImage(contentsOfFile: attachment.rawValue.dataSource.fileUrl.path),
-            image.size.width > 0 && image.size.height > 0
+            image.size.width > 0, image.size.height > 0
         else {
             createGenericPreview()
             return
@@ -180,7 +180,7 @@ class MediaMessageView: UIView, AudioPlayerDelegate {
         guard
             attachment.isImage,
             let image = attachment.rawValue.image(),
-            image.size.width > 0 && image.size.height > 0
+            image.size.width > 0, image.size.height > 0
         else {
             createGenericPreview()
             return
@@ -201,7 +201,7 @@ class MediaMessageView: UIView, AudioPlayerDelegate {
         guard
             attachment.isVideo,
             let image = attachment.rawValue.videoPreview(),
-            image.size.width > 0 && image.size.height > 0
+            image.size.width > 0, image.size.height > 0
         else {
             createGenericPreview()
             return
@@ -226,7 +226,7 @@ class MediaMessageView: UIView, AudioPlayerDelegate {
         subviews.append(imageView)
 
         let fileNameLabel = createFileNameLabel()
-        if let fileNameLabel = fileNameLabel {
+        if let fileNameLabel {
             subviews.append(fileNameLabel)
         }
 
@@ -271,9 +271,13 @@ class MediaMessageView: UIView, AudioPlayerDelegate {
             return nil
         }
 
-        return String(format: OWSLocalizedString("ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT",
-                                               comment: "Format string for file extension label in call interstitial view"),
-                      fileExtension.uppercased())
+        return String(
+            format: OWSLocalizedString(
+                "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT",
+                comment: "Format string for file extension label in call interstitial view",
+            ),
+            fileExtension.uppercased(),
+        )
     }
 
     private func formattedFileName() -> String? {
@@ -304,9 +308,13 @@ class MediaMessageView: UIView, AudioPlayerDelegate {
     private func createFileSizeLabel() -> UIView {
         let label = UILabel()
         let fileSize = (try? attachment.rawValue.dataSource.readLength()) ?? 0
-        label.text = String(format: OWSLocalizedString("ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT",
-                                                     comment: "Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}."),
-                            OWSFormat.localizedFileSizeString(from: Int64(fileSize)))
+        label.text = String(
+            format: OWSLocalizedString(
+                "ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT",
+                comment: "Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}.",
+            ),
+            OWSFormat.localizedFileSizeString(from: Int64(fileSize)),
+        )
 
         label.textColor = tintColor
         label.font = labelFont

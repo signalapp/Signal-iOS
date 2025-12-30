@@ -38,13 +38,13 @@ public class MessageProcessor {
         if stages.contains(.messageProcessor) {
             preconditions.append(NotificationPrecondition(
                 notificationName: Self.messageProcessorDidDrainQueue,
-                isSatisfied: { !self.hasPendingEnvelopes }
+                isSatisfied: { !self.hasPendingEnvelopes },
             ))
         }
         if stages.contains(.groupMessageProcessor) {
             preconditions.append(NotificationPrecondition(
                 notificationName: GroupMessageProcessorManager.didFlushGroupsV2MessageQueue,
-                isSatisfied: { !SSKEnvironment.shared.groupMessageProcessorManagerRef.isProcessing() }
+                isSatisfied: { !SSKEnvironment.shared.groupMessageProcessorManagerRef.isProcessing() },
             ))
         }
         try await Preconditions(preconditions).waitUntilSatisfied()
@@ -64,7 +64,7 @@ public class MessageProcessor {
                 self,
                 selector: #selector(self.registrationStateDidChange),
                 name: .registrationStateDidChange,
-                object: nil
+                object: nil,
             )
         }
     }
@@ -73,7 +73,7 @@ public class MessageProcessor {
         _ envelopeData: Data,
         serverDeliveryTimestamp: UInt64,
         envelopeSource: EnvelopeSource,
-        completion: @escaping () -> Void
+        completion: @escaping () -> Void,
     ) {
         self.queueForEnqueueing.async {
             self._enqueueReceivedEnvelopeData(
@@ -93,7 +93,7 @@ public class MessageProcessor {
         _ envelopeData: Data,
         serverDeliveryTimestamp: UInt64,
         envelopeSource: EnvelopeSource,
-        completion: @escaping () -> Void
+        completion: @escaping () -> Void,
     ) {
         assertOnQueue(self.queueForEnqueueing)
 
@@ -123,9 +123,9 @@ public class MessageProcessor {
             ReceivedEnvelope(
                 envelope: protoEnvelope,
                 serverDeliveryTimestamp: serverDeliveryTimestamp,
-                completion: completion
+                completion: completion,
             ),
-            envelopeSource: envelopeSource
+            envelopeSource: envelopeSource,
         )
     }
 
@@ -139,9 +139,9 @@ public class MessageProcessor {
     private let queueForEnqueueing = DispatchQueue(label: "org.signal.message-processor-enqueue")
     private let queueForProcessing = DispatchQueue(label: "org.signal.message-processor-process", autoreleaseFrequency: .workItem)
 
-    #if TESTABLE_BUILD
+#if TESTABLE_BUILD
     var serialQueueForTests: DispatchQueue { queueForProcessing }
-    #endif
+#endif
 
     private var pendingEnvelopes = PendingEnvelopes()
 
@@ -229,12 +229,12 @@ public class MessageProcessor {
                         envelopes: &remainingEnvelopes,
                         localIdentifiers: localIdentifiers,
                         localDeviceId: localDeviceId,
-                        tx: tx
+                        tx: tx,
                     )
                     handle(
                         combinedRequest: combinedRequest,
                         localIdentifiers: localIdentifiers,
-                        transaction: tx
+                        transaction: tx,
                     )
                 }
             }
@@ -264,7 +264,7 @@ public class MessageProcessor {
         envelopes: inout ArraySlice<ReceivedEnvelope>,
         localIdentifiers: LocalIdentifiers,
         localDeviceId: LocalDeviceId,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) -> RelatedProcessingRequests {
         let result = RelatedProcessingRequests()
         while let envelope = envelopes.first {
@@ -273,7 +273,7 @@ public class MessageProcessor {
                 for: envelope,
                 localIdentifiers: localIdentifiers,
                 localDeviceId: localDeviceId,
-                tx: tx
+                tx: tx,
             )
             result.add(request)
             if request.deliveryReceiptMessageTimestamps == nil {
@@ -299,7 +299,7 @@ public class MessageProcessor {
         _ request: ProcessingRequest,
         context: DeliveryReceiptContext,
         localIdentifiers: LocalIdentifiers,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) {
         switch request.state {
         case .completed(error: let error):
@@ -309,7 +309,7 @@ public class MessageProcessor {
                 envelope: decryptedEnvelope,
                 envelopeData: envelopeData,
                 serverDeliveryTimestamp: request.receivedEnvelope.serverDeliveryTimestamp,
-                tx: transaction
+                tx: transaction,
             )
             SSKEnvironment.shared.messageReceiverRef.finishProcessingEnvelope(decryptedEnvelope, tx: transaction)
         case .messageReceiverRequest(let messageReceiverRequest):
@@ -326,7 +326,7 @@ public class MessageProcessor {
         _ request: ProcessingRequest,
         context: DeliveryReceiptContext,
         localIdentifiers: LocalIdentifiers,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         reallyHandleProcessingRequest(request, context: context, localIdentifiers: localIdentifiers, transaction: tx)
         tx.addSyncCompletion { request.receivedEnvelope.completion() }
@@ -399,7 +399,7 @@ private struct ProcessingRequestBuilder {
         localDeviceId: LocalDeviceId,
         localIdentifiers: LocalIdentifiers,
         messageDecrypter: OWSMessageDecrypter,
-        messageReceiver: MessageReceiver
+        messageReceiver: MessageReceiver,
     ) {
         self.receivedEnvelope = receivedEnvelope
         self.blockingManager = blockingManager
@@ -415,7 +415,7 @@ private struct ProcessingRequestBuilder {
                 messageDecrypter: messageDecrypter,
                 localIdentifiers: localIdentifiers,
                 localDeviceId: localDeviceId,
-                tx: tx
+                tx: tx,
             )
             switch decryptionResult {
             case .serverReceipt(let receiptEnvelope):
@@ -436,7 +436,7 @@ private struct ProcessingRequestBuilder {
 
     private func processingStep(
         for decryptedEnvelope: DecryptedIncomingEnvelope,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) -> ProcessingStep {
         guard
             let contentProto = decryptedEnvelope.content,
@@ -446,10 +446,12 @@ private struct ProcessingRequestBuilder {
             return .processNow(shouldDiscardVisibleMessages: false)
         }
 
-        guard GroupMessageProcessorManager.canContextBeProcessedImmediately(
-            groupContext: groupContextV2,
-            tx: tx
-        ) else {
+        guard
+            GroupMessageProcessorManager.canContextBeProcessedImmediately(
+                groupContext: groupContextV2,
+                tx: tx,
+            )
+        else {
             // Some v2 group messages required group state to be
             // updated before they can be processed.
             return .enqueueForGroupProcessing
@@ -457,7 +459,7 @@ private struct ProcessingRequestBuilder {
         let discardMode = SpecificGroupMessageProcessor.discardMode(
             forMessageFrom: decryptedEnvelope.sourceAci,
             groupContext: groupContextV2,
-            tx: tx
+            tx: tx,
         )
         switch discardMode {
         case .discard:
@@ -474,7 +476,7 @@ private struct ProcessingRequestBuilder {
 
     private func processingRequest(
         for decryptedEnvelope: DecryptedIncomingEnvelope,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) -> ProcessingRequest.State {
         owsPrecondition(CurrentAppContext().shouldProcessIncomingMessages)
 
@@ -531,7 +533,7 @@ private struct ProcessingRequestBuilder {
                 for: decryptedEnvelope,
                 serverDeliveryTimestamp: receivedEnvelope.serverDeliveryTimestamp,
                 shouldDiscardVisibleMessages: shouldDiscardVisibleMessages,
-                tx: tx
+                tx: tx,
             )
 
             switch buildResult {
@@ -551,7 +553,7 @@ private extension MessageProcessor {
         for envelope: ReceivedEnvelope,
         localIdentifiers: LocalIdentifiers,
         localDeviceId: LocalDeviceId,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) -> ProcessingRequest {
         assertOnQueue(queueForProcessing)
         if let serverGuid = ValidatedIncomingEnvelope.parseServerGuid(fromEnvelope: envelope.envelope), recentlyProcessedGuids.contains(serverGuid) {
@@ -563,7 +565,7 @@ private extension MessageProcessor {
             localDeviceId: localDeviceId,
             localIdentifiers: localIdentifiers,
             messageDecrypter: SSKEnvironment.shared.messageDecrypterRef,
-            messageReceiver: SSKEnvironment.shared.messageReceiverRef
+            messageReceiver: SSKEnvironment.shared.messageReceiverRef,
         )
         return ProcessingRequest(envelope, state: builder.build(tx: tx))
     }
@@ -593,7 +595,7 @@ private struct ReceivedEnvelope {
         messageDecrypter: OWSMessageDecrypter,
         localIdentifiers: LocalIdentifiers,
         localDeviceId: LocalDeviceId,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws -> DecryptionResult {
         // Figure out what type of envelope we're dealing with.
         let validatedEnvelope = try ValidatedIncomingEnvelope(envelope, localIdentifiers: localIdentifiers)
@@ -604,14 +606,20 @@ private struct ReceivedEnvelope {
         case .identifiedSender(let cipherType):
             return .decryptedMessage(
                 try messageDecrypter.decryptIdentifiedEnvelope(
-                    validatedEnvelope, cipherType: cipherType, localIdentifiers: localIdentifiers, tx: tx
-                )
+                    validatedEnvelope,
+                    cipherType: cipherType,
+                    localIdentifiers: localIdentifiers,
+                    tx: tx,
+                ),
             )
         case .unidentifiedSender:
             return .decryptedMessage(
                 try messageDecrypter.decryptUnidentifiedSenderEnvelope(
-                    validatedEnvelope, localIdentifiers: localIdentifiers, localDeviceId: localDeviceId, tx: tx
-                )
+                    validatedEnvelope,
+                    localIdentifiers: localIdentifiers,
+                    localDeviceId: localDeviceId,
+                    tx: tx,
+                ),
             )
         }
     }
@@ -650,7 +658,7 @@ private class PendingEnvelopes {
         unfairLock.withLock {
             Batch(
                 batchEnvelopes: Array(pendingEnvelopes.prefix(batchSize)),
-                pendingEnvelopesCount: pendingEnvelopes.count
+                pendingEnvelopesCount: pendingEnvelopes.count,
             )
         }
     }

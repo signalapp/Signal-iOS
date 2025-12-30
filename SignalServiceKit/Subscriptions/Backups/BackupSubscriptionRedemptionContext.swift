@@ -42,7 +42,7 @@ final class BackupSubscriptionRedemptionContext: Codable {
         /// transaction.
         case receiptCredentialRequesting(
             request: ReceiptCredentialRequest,
-            context: ReceiptCredentialRequestContext
+            context: ReceiptCredentialRequestContext,
         )
 
         /// We have a receipt credential, and need to redeem it.
@@ -125,13 +125,13 @@ final class BackupSubscriptionRedemptionContext: Codable {
         {
             attemptState = .receiptCredentialRequesting(
                 request: try ReceiptCredentialRequest(contents: requestData),
-                context: try ReceiptCredentialRequestContext(contents: contextData)
+                context: try ReceiptCredentialRequestContext(contents: contextData),
             )
         } else if
             let credentialData = try container.decodeIfPresent(Data.self, forKey: .receiptCredential)
         {
             attemptState = .receiptCredentialRedemption(
-                try ReceiptCredential(contents: credentialData)
+                try ReceiptCredential(contents: credentialData),
             )
         } else {
             attemptState = .unattempted

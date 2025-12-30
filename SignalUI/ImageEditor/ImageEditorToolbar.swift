@@ -9,7 +9,7 @@ class ImageEditorTopBar: MediaTopBar {
 
     let undoButton = RoundMediaButton(
         image: UIImage(imageLiteralResourceName: "undo-28"),
-        backgroundStyle: .blur
+        backgroundStyle: .blur,
     )
     var isUndoButtonHidden: Bool {
         get { undoButton.alpha == 0 }
@@ -26,12 +26,14 @@ class ImageEditorTopBar: MediaTopBar {
         super.init(frame: frame)
 
         let clearAllButtonTitle =
-        OWSLocalizedString("MEDIA_EDITOR_CLEAR_ALL",
-                           comment: "Title for the button that discards all edits in media editor.")
+            OWSLocalizedString(
+                "MEDIA_EDITOR_CLEAR_ALL",
+                comment: "Title for the button that discards all edits in media editor.",
+            )
         clearAllButton.setTitle(clearAllButtonTitle, for: .normal)
         clearAllButton.ows_contentEdgeInsets = UIEdgeInsets(hMargin: 26, vMargin: 15)
 
-        let stackView = UIStackView(arrangedSubviews: [ undoButton, UIView.hStretchingSpacer(), clearAllButton ])
+        let stackView = UIStackView(arrangedSubviews: [undoButton, UIView.hStretchingSpacer(), clearAllButton])
         for button in stackView.arrangedSubviews {
             button.setContentHuggingPriority(.defaultHigh, for: .vertical)
             button.setCompressionResistanceVerticalHigh()
@@ -45,7 +47,7 @@ class ImageEditorTopBar: MediaTopBar {
             undoButton.layoutMarginsGuide.leadingAnchor.constraint(equalTo: controlsLayoutGuide.leadingAnchor),
             stackView.topAnchor.constraint(equalTo: controlsLayoutGuide.topAnchor),
             stackView.bottomAnchor.constraint(equalTo: controlsLayoutGuide.bottomAnchor),
-            stackView.trailingAnchor.constraint(equalTo: controlsLayoutGuide.trailingAnchor)
+            stackView.trailingAnchor.constraint(equalTo: controlsLayoutGuide.trailingAnchor),
         ])
     }
 
@@ -69,11 +71,11 @@ class ImageEditorBottomBar: UIView {
 
     let cancelButton: UIButton = RoundMediaButton(
         image: UIImage(imageLiteralResourceName: "x-28"),
-        backgroundStyle: .solid(RoundMediaButton.defaultBackgroundColor)
+        backgroundStyle: .solid(RoundMediaButton.defaultBackgroundColor),
     )
     let doneButton: UIButton = RoundMediaButton(
         image: UIImage(imageLiteralResourceName: "check-28"),
-        backgroundStyle: .solid(RoundMediaButton.defaultBackgroundColor)
+        backgroundStyle: .solid(RoundMediaButton.defaultBackgroundColor),
     )
 
     let buttons: [UIButton]
@@ -85,7 +87,7 @@ class ImageEditorBottomBar: UIView {
 
     init(buttonProvider: ImageEditorBottomBarButtonProvider?) {
         let middleButtons = buttonProvider?.middleButtons ?? []
-        self.buttons = [ cancelButton ] + middleButtons + [ doneButton ]
+        self.buttons = [cancelButton] + middleButtons + [doneButton]
 
         super.init(frame: .zero)
 
@@ -104,7 +106,7 @@ class ImageEditorBottomBar: UIView {
 
         let middleStackView = UIStackView(arrangedSubviews: middleButtons)
         middleStackView.spacing = 2
-        stackView.addArrangedSubviews([ cancelButton, middleStackView, doneButton ])
+        stackView.addArrangedSubviews([cancelButton, middleStackView, doneButton])
         stackView.distribution = .equalSpacing
         stackView.isOpaque = false
         addSubview(stackView)
@@ -122,7 +124,7 @@ class ImageEditorBottomBar: UIView {
     func setControls(hidden: Bool) {
         guard hidden != areControlsHidden || stackViewPositionConstraint == nil else { return }
 
-        if let stackViewPositionConstraint = stackViewPositionConstraint {
+        if let stackViewPositionConstraint {
             removeConstraint(stackViewPositionConstraint)
             self.stackViewPositionConstraint = nil
         }

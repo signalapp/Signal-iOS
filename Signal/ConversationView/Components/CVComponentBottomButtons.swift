@@ -25,9 +25,11 @@ public class CVComponentBottomButtons: CVComponentBase, CVComponent {
         CVComponentViewBottomButtons()
     }
 
-    public func configureForRendering(componentView componentViewParam: CVComponentView,
-                                      cellMeasurement: CVCellMeasurement,
-                                      componentDelegate: CVComponentDelegate) {
+    public func configureForRendering(
+        componentView componentViewParam: CVComponentView,
+        cellMeasurement: CVCellMeasurement,
+        componentDelegate: CVComponentDelegate,
+    ) {
         guard let componentView = componentViewParam as? CVComponentViewBottomButtons else {
             owsFailDebug("Unexpected componentView.")
             componentViewParam.reset()
@@ -51,10 +53,12 @@ public class CVComponentBottomButtons: CVComponentBase, CVComponent {
 
         let stackView = componentView.stackView
         stackView.reset()
-        stackView.configure(config: stackConfig,
-                            cellMeasurement: cellMeasurement,
-                            measurementKey: Self.measurementKey_stackView,
-                            subviews: subviews)
+        stackView.configure(
+            config: stackConfig,
+            cellMeasurement: cellMeasurement,
+            measurementKey: Self.measurementKey_stackView,
+            subviews: subviews,
+        )
     }
 
     private var stackConfig: CVStackViewConfig {
@@ -62,7 +66,7 @@ public class CVComponentBottomButtons: CVComponentBase, CVComponent {
             axis: .vertical,
             alignment: .fill,
             spacing: Self.buttonSpacing,
-            layoutMargins: .init(top: 6, leading: 12, bottom: 12, trailing: 12)
+            layoutMargins: .init(top: 6, leading: 12, bottom: 12, trailing: 12),
         )
     }
 
@@ -76,23 +80,27 @@ public class CVComponentBottomButtons: CVComponentBase, CVComponent {
 
         let subviewSize = CGSize(width: maxWidth - stackConfig.layoutMargins.totalWidth, height: Self.buttonHeight)
         var subviewInfos = [ManualStackSubviewInfo]()
-        for _ in 0 ..< actions.count {
+        for _ in 0..<actions.count {
             subviewInfos.append(subviewSize.asManualSubviewInfo)
         }
-        let stackMeasurement = ManualStackView.measure(config: stackConfig,
-                                                       measurementBuilder: measurementBuilder,
-                                                       measurementKey: Self.measurementKey_stackView,
-                                                       subviewInfos: subviewInfos,
-                                                       maxWidth: maxWidth)
+        let stackMeasurement = ManualStackView.measure(
+            config: stackConfig,
+            measurementBuilder: measurementBuilder,
+            measurementKey: Self.measurementKey_stackView,
+            subviewInfos: subviewInfos,
+            maxWidth: maxWidth,
+        )
         return stackMeasurement.measuredSize
     }
 
     // MARK: - Events
 
-    public override func handleTap(sender: UIGestureRecognizer,
-                                   componentDelegate: CVComponentDelegate,
-                                   componentView: CVComponentView,
-                                   renderItem: CVRenderItem) -> Bool {
+    override public func handleTap(
+        sender: UIGestureRecognizer,
+        componentDelegate: CVComponentDelegate,
+        componentView: CVComponentView,
+        renderItem: CVRenderItem,
+    ) -> Bool {
 
         guard let componentView = componentView as? CVComponentViewBottomButtons else {
             owsFailDebug("Unexpected componentView.")

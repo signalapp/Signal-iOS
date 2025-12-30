@@ -3,16 +3,16 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
-import UIKit
-import SignalServiceKit
 import BonMot
+import Foundation
+import SignalServiceKit
+import UIKit
 
 public class MyStorySettingsViewController: OWSTableViewController2, MyStorySettingsDataSourceDelegate {
 
     private lazy var dataSource = MyStorySettingsDataSource(delegate: self)
 
-    public override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
 
         title = OWSLocalizedString("MY_STORY_SETTINGS_TITLE", comment: "Title for the my story settings view")
@@ -36,12 +36,12 @@ public class MyStorySettingsSheetViewController: OWSTableSheetViewController, My
         super.init()
     }
 
-    public override func viewWillDisappear(_ animated: Bool) {
+    override public func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         willDisappear?()
     }
 
-    public override func updateTableContents(shouldReload: Bool = true) {
+    override public func updateTableContents(shouldReload: Bool = true) {
         let contents = dataSource.generateTableContents(style: .sheet)
         self.tableViewController.setContents(contents, shouldReload: shouldReload)
     }
@@ -80,7 +80,7 @@ private class MyStorySettingsDataSource: NSObject {
         let (
             hasSetMyStoriesPrivacy,
             myStoryThread,
-            myStoryThreadRecipientIds
+            myStoryThreadRecipientIds,
         ) = databaseStorage.read { transaction -> (Bool, TSPrivateStoryThread, [SignalRecipient.RowId]) in
             let myStoryThread: TSPrivateStoryThread = TSPrivateStoryThread.getMyStory(transaction: transaction)
             return (
@@ -88,7 +88,7 @@ private class MyStorySettingsDataSource: NSObject {
                 myStoryThread,
                 failIfThrows {
                     return try storyRecipientStore.fetchRecipientIds(forStoryThreadId: myStoryThread.sqliteRowId!, tx: transaction)
-                }
+                },
             )
         }
 
@@ -102,7 +102,7 @@ private class MyStorySettingsDataSource: NSObject {
         case .fullscreen:
             visibilitySection.headerTitle = OWSLocalizedString(
                 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER",
-                comment: "Section header for the 'viewers' section on the 'story settings' view"
+                comment: "Section header for the 'viewers' section on the 'story settings' view",
             )
             let footerTextView = makeWhoCanViewThisTextView(for: style)
             let footerContainer = UIView()
@@ -127,7 +127,8 @@ private class MyStorySettingsDataSource: NSObject {
                 let formatString = OWSLocalizedString(
                     "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_SUBTITLE_%d",
                     tableName: "PluralAware",
-                    comment: "Subtitle for the visibility option. Embeds number of allowed members")
+                    comment: "Subtitle for the visibility option. Embeds number of allowed members",
+                )
                 detailText = String.localizedStringWithFormat(formatString, myStoryThread.recipientAddressesWithSneakyTransaction.count)
             } else {
                 detailText = nil
@@ -135,20 +136,21 @@ private class MyStorySettingsDataSource: NSObject {
             visibilitySection.add(buildVisibilityItem(
                 title: OWSLocalizedString(
                     "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_TITLE",
-                    comment: "Title for the visibility option"),
+                    comment: "Title for the visibility option",
+                ),
                 detailText: detailText,
                 isSelected: isSelected,
                 accessory: .button(title: CommonStrings.viewButton, action: { [weak self] in
                     let vc = AllSignalConnectionsViewController()
                     self?.delegate?.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
-                })
+                }),
             ) { [weak self] in
                 SSKEnvironment.shared.databaseStorageRef.write { transaction in
                     myStoryThread.updateWithStoryViewMode(
                         .blockList,
                         storyRecipientIds: .setTo([]),
                         updateStorageService: true,
-                        transaction: transaction
+                        transaction: transaction,
                     )
                 }
                 self?.delegate?.reloadTableContents()
@@ -162,7 +164,8 @@ private class MyStorySettingsDataSource: NSObject {
                 let formatString = OWSLocalizedString(
                     "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_SUBTITLE_%d",
                     tableName: "PluralAware",
-                    comment: "Subtitle for the visibility option. Embeds number of excluded members")
+                    comment: "Subtitle for the visibility option. Embeds number of excluded members",
+                )
                 detailText = String.localizedStringWithFormat(formatString, myStoryThreadRecipientIds.count)
             } else {
                 detailText = nil
@@ -170,10 +173,11 @@ private class MyStorySettingsDataSource: NSObject {
             visibilitySection.add(buildVisibilityItem(
                 title: OWSLocalizedString(
                     "MY_STORIES_SETTINGS_VISIBILITY_ALL_SIGNAL_CONNECTIONS_EXCEPT_TITLE",
-                    comment: "Title for the visibility option"),
+                    comment: "Title for the visibility option",
+                ),
                 detailText: detailText,
                 isSelected: isSelected,
-                accessory: .none
+                accessory: .none,
             ) { [unowned self] in
                 let databaseStorage = SSKEnvironment.shared.databaseStorageRef
                 let viewController = databaseStorage.read { tx in
@@ -181,7 +185,7 @@ private class MyStorySettingsDataSource: NSObject {
                         for: myStoryThread,
                         mode: .blockList,
                         tx: tx,
-                        completionBlock: { [weak self] in self?.delegate?.reloadTableContents() }
+                        completionBlock: { [weak self] in self?.delegate?.reloadTableContents() },
                     )
                 }
                 self.delegate?.presentFormSheet(OWSNavigationController(rootViewController: viewController), animated: true)
@@ -195,7 +199,8 @@ private class MyStorySettingsDataSource: NSObject {
                 let formatString = OWSLocalizedString(
                     "MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_SUBTITLE_%d",
                     tableName: "PluralAware",
-                    comment: "Subtitle for the visibility option. Embeds number of allowed members")
+                    comment: "Subtitle for the visibility option. Embeds number of allowed members",
+                )
                 detailText = String.localizedStringWithFormat(formatString, myStoryThreadRecipientIds.count)
             } else {
                 detailText = nil
@@ -203,10 +208,11 @@ private class MyStorySettingsDataSource: NSObject {
             visibilitySection.add(buildVisibilityItem(
                 title: OWSLocalizedString(
                     "MY_STORIES_SETTINGS_VISIBILITY_ONLY_SHARE_WITH_TITLE",
-                    comment: "Title for the visibility option"),
+                    comment: "Title for the visibility option",
+                ),
                 detailText: detailText,
                 isSelected: isSelected,
-                accessory: .none
+                accessory: .none,
             ) { [unowned self] in
                 let databaseStorage = SSKEnvironment.shared.databaseStorageRef
                 let viewController = databaseStorage.read { tx in
@@ -214,7 +220,7 @@ private class MyStorySettingsDataSource: NSObject {
                         for: myStoryThread,
                         mode: .explicit,
                         tx: tx,
-                        completionBlock: { [weak self] in self?.delegate?.reloadTableContents() }
+                        completionBlock: { [weak self] in self?.delegate?.reloadTableContents() },
                     )
                 }
                 self.delegate?.presentFormSheet(OWSNavigationController(rootViewController: viewController), animated: true)
@@ -234,7 +240,7 @@ private class MyStorySettingsDataSource: NSObject {
                 withText: StoryStrings.repliesAndReactionsToggle,
                 isOn: { myStoryThread.allowsReplies },
                 target: self,
-                selector: #selector(didToggleReplies(_:))
+                selector: #selector(didToggleReplies(_:)),
             ))
         }
 
@@ -261,7 +267,7 @@ private class MyStorySettingsDataSource: NSObject {
         detailText: String? = nil,
         isSelected: Bool,
         accessory: Accessory,
-        action: @escaping () -> Void
+        action: @escaping () -> Void,
     ) -> OWSTableItem {
         OWSTableItem {
             let cell = OWSTableItem.newCell()
@@ -338,7 +344,7 @@ private class MyStorySettingsDataSource: NSObject {
 
             titleLabel.text = OWSLocalizedString(
                 "MY_STORY_SETTINGS_SHEET_TITLE",
-                comment: "Title for the my story settings sheet"
+                comment: "Title for the my story settings sheet",
             )
             titleLabel.textAlignment = .center
             titleLabel.font = .dynamicTypeHeadline.semibold()
@@ -384,13 +390,13 @@ private class MyStorySettingsDataSource: NSObject {
             textAlignment = .natural
             baseString = OWSLocalizedString(
                 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER",
-                comment: "Section footer for the 'viewers' section on the 'story settings' view"
+                comment: "Section footer for the 'viewers' section on the 'story settings' view",
             )
         case .sheet:
             textAlignment = .center
             baseString = OWSLocalizedString(
                 "STORY_SETTINGS_WHO_CAN_VIEW_THIS_SHEET_HEADER",
-                comment: "Header for the 'viewers' section on the 'story settings' bottom sheet"
+                comment: "Header for the 'viewers' section on the 'story settings' bottom sheet",
             )
         }
 
@@ -399,13 +405,13 @@ private class MyStorySettingsDataSource: NSObject {
         textView.attributedText = NSAttributedString.composed(of: [
             baseString,
             "\n",
-            learnMoreString
+            learnMoreString,
         ]).styled(
             with: .font(.dynamicTypeCaption1Clamped),
             .color(Theme.secondaryTextAndIconColor),
-            .alignment(textAlignment)
+            .alignment(textAlignment),
         )
-        textView.linkTextAttributes = [ .foregroundColor: Theme.primaryTextColor ]
+        textView.linkTextAttributes = [.foregroundColor: Theme.primaryTextColor]
 
         textView.delegate = self
 

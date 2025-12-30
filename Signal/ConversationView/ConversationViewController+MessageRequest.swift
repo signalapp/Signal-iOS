@@ -54,14 +54,16 @@ extension ConversationViewController: MessageRequestDelegate {
         if let groupThread = thread as? TSGroupThread {
             threadName = groupThread.groupNameOrDefault
             message = OWSLocalizedString(
-                "BLOCK_LIST_UNBLOCK_GROUP_MESSAGE", comment: "An explanation of what unblocking a group means.")
+                "BLOCK_LIST_UNBLOCK_GROUP_MESSAGE",
+                comment: "An explanation of what unblocking a group means.",
+            )
         } else if let contactThread = thread as? TSContactThread {
             threadName = SSKEnvironment.shared.databaseStorageRef.read { tx in
                 return SSKEnvironment.shared.contactManagerRef.displayName(for: contactThread.contactAddress, tx: tx).resolvedValue()
             }
             message = OWSLocalizedString(
                 "BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE",
-                comment: "An explanation of what unblocking a contact means."
+                comment: "An explanation of what unblocking a contact means.",
             )
         } else {
             owsFailDebug("Invalid thread.")
@@ -71,9 +73,9 @@ extension ConversationViewController: MessageRequestDelegate {
         let title = String(
             format: OWSLocalizedString(
                 "BLOCK_LIST_UNBLOCK_TITLE_FORMAT",
-                comment: "A format for the 'unblock conversation' action sheet title. Embeds the {{conversation title}}."
+                comment: "A format for the 'unblock conversation' action sheet title. Embeds the {{conversation title}}.",
             ),
-            threadName
+            threadName,
         )
 
         OWSActionSheets.showConfirmationAlert(
@@ -81,8 +83,8 @@ extension ConversationViewController: MessageRequestDelegate {
             message: message,
             proceedTitle: OWSLocalizedString(
                 "BLOCK_LIST_UNBLOCK_BUTTON",
-                comment: "Button label for the 'unblock' button"
-            )
+                comment: "Button label for the 'unblock' button",
+            ),
         ) { _ in
             self.messageRequestViewDidTapAccept(mode: mode, unblockThread: true, unhideRecipient: true)
         }
@@ -100,9 +102,11 @@ private extension ConversationViewController {
     func blockThread() {
         // Leave the group while blocking the thread.
         SSKEnvironment.shared.databaseStorageRef.write { transaction in
-            SSKEnvironment.shared.blockingManagerRef.addBlockedThread(thread,
-                                             blockMode: .localShouldLeaveGroups,
-                                             transaction: transaction)
+            SSKEnvironment.shared.blockingManagerRef.addBlockedThread(
+                thread,
+                blockMode: .localShouldLeaveGroups,
+                transaction: transaction,
+            )
         }
         SSKEnvironment.shared.syncManagerRef.sendMessageRequestResponseSyncMessage(thread: thread, responseType: .block)
         NotificationCenter.default.post(name: ChatListViewController.clearSearch, object: nil)
@@ -113,9 +117,11 @@ private extension ConversationViewController {
         // that below so that we can surface an error to the user
         // if leaving the group fails.
         SSKEnvironment.shared.databaseStorageRef.write { transaction in
-            SSKEnvironment.shared.blockingManagerRef.addBlockedThread(thread,
-                                             blockMode: .localShouldNotLeaveGroups,
-                                             transaction: transaction)
+            SSKEnvironment.shared.blockingManagerRef.addBlockedThread(
+                thread,
+                blockMode: .localShouldNotLeaveGroups,
+                transaction: transaction,
+            )
         }
         leaveAndSoftDeleteThread(messageRequestResponseType: .blockAndDelete)
     }
@@ -128,8 +134,8 @@ private extension ConversationViewController {
         presentToastCVC(
             OWSLocalizedString(
                 "MESSAGE_REQUEST_SPAM_REPORTED_AND_BLOCKED",
-                comment: "String indicating that spam has been reported and the chat has been blocked."
-            )
+                comment: "String indicating that spam has been reported and the chat has been blocked.",
+            ),
         )
         NotificationCenter.default.post(name: ChatListViewController.clearSearch, object: nil)
     }
@@ -142,8 +148,8 @@ private extension ConversationViewController {
         presentToastCVC(
             OWSLocalizedString(
                 "MESSAGE_REQUEST_SPAM_REPORTED",
-                comment: "String indicating that spam has been reported."
-            )
+                comment: "String indicating that spam has been reported.",
+            ),
         )
         NotificationCenter.default.post(name: ChatListViewController.clearSearch, object: nil)
     }
@@ -156,7 +162,7 @@ private extension ConversationViewController {
             SSKEnvironment.shared.blockingManagerRef.addBlockedAci(
                 aci,
                 blockMode: .localShouldNotLeaveGroups,
-                tx: transaction
+                tx: transaction,
             )
         }
         leaveAndSoftDeleteThread(messageRequestResponseType: .delete)
@@ -171,7 +177,7 @@ private extension ConversationViewController {
                 SSKEnvironment.shared.blockingManagerRef.addBlockedGroupId(
                     groupThread.groupId,
                     blockMode: .localShouldNotLeaveGroups,
-                    transaction: transaction
+                    transaction: transaction,
                 )
             } else {
                 owsFailDebug("Invalid thread.")
@@ -179,20 +185,20 @@ private extension ConversationViewController {
             SSKEnvironment.shared.blockingManagerRef.addBlockedAci(
                 aci,
                 blockMode: .localShouldNotLeaveGroups,
-                tx: transaction
+                tx: transaction,
             )
         }
         leaveAndSoftDeleteThread(messageRequestResponseType: .blockAndDelete)
     }
 
     func leaveAndSoftDeleteThread(
-        messageRequestResponseType: OWSSyncMessageRequestResponseType
+        messageRequestResponseType: OWSSyncMessageRequestResponseType,
     ) {
         AssertIsOnMainThread()
 
         SSKEnvironment.shared.syncManagerRef.sendMessageRequestResponseSyncMessage(
             thread: self.thread,
-            responseType: messageRequestResponseType
+            responseType: messageRequestResponseType,
         )
 
         let completion = {
@@ -201,7 +207,7 @@ private extension ConversationViewController {
                     threads: [self.thread],
                     // We're already sending a sync message about this above!
                     sendDeleteForMeSyncMessage: false,
-                    tx: transaction
+                    tx: transaction,
                 )
             }
             self.conversationSplitViewController?.closeSelectedConversation(animated: true)
@@ -227,7 +233,7 @@ private extension ConversationViewController {
         in thread: TSThread,
         mode: MessageRequestMode,
         unblockThread: Bool,
-        unhideRecipient: Bool
+        unhideRecipient: Bool,
     ) async {
         switch mode {
         case .none:
@@ -252,7 +258,7 @@ private extension ConversationViewController {
                 SSKEnvironment.shared.blockingManagerRef.removeBlockedThread(
                     thread,
                     wasLocallyInitiated: true,
-                    transaction: transaction
+                    transaction: transaction,
                 )
             }
 
@@ -261,7 +267,7 @@ private extension ConversationViewController {
                     try DependenciesBridge.shared.recipientHidingManager.removeHiddenRecipient(
                         thread.contactAddress,
                         wasLocallyInitiated: true,
-                        tx: transaction
+                        tx: transaction,
                     )
                 } catch {
                     owsFailDebug("Couldn't unhide recipient")
@@ -275,9 +281,9 @@ private extension ConversationViewController {
                 DependenciesBridge.shared.interactionStore.insertInteraction(
                     TSInfoMessage(
                         thread: thread,
-                        messageType: .acceptedMessageRequest
+                        messageType: .acceptedMessageRequest,
                     ),
-                    tx: transaction
+                    tx: transaction,
                 )
 
                 /// Send a sync message telling our other devices that we
@@ -285,7 +291,7 @@ private extension ConversationViewController {
                 SSKEnvironment.shared.syncManagerRef.sendMessageRequestResponseSyncMessage(
                     thread: thread,
                     responseType: .accept,
-                    transaction: transaction
+                    transaction: transaction,
                 )
             }
 
@@ -293,7 +299,7 @@ private extension ConversationViewController {
             SSKEnvironment.shared.profileManagerRef.addThread(
                 toProfileWhitelist: thread,
                 userProfileWriter: .localUser,
-                transaction: transaction
+                transaction: transaction,
             )
 
             if !thread.isGroupThread {
@@ -303,10 +309,10 @@ private extension ConversationViewController {
                 let profileKeyMessage = OWSProfileKeyMessage(
                     thread: thread,
                     profileKey: profileManager.localProfileKey(tx: transaction)!.serialize(),
-                    transaction: transaction
+                    transaction: transaction,
                 )
                 let preparedMessage = PreparedOutgoingMessage.preprepared(
-                    transientMessageWithoutAttachments: profileKeyMessage
+                    transientMessageWithoutAttachments: profileKeyMessage,
                 )
                 SSKEnvironment.shared.messageSenderJobQueueRef.add(message: preparedMessage, transaction: transaction)
             }
@@ -335,9 +341,11 @@ extension ConversationViewController {
 
         let groupMembership = groupThread.groupModel.groupMembership
 
-        guard let invitedAtServiceId = groupMembership.localUserInvitedAtServiceId(
-            localIdentifiers: localIdentifiers
-        ) else {
+        guard
+            let invitedAtServiceId = groupMembership.localUserInvitedAtServiceId(
+                localIdentifiers: localIdentifiers,
+            )
+        else {
             owsFailDebug("Can't reject invite if not invited!")
             return
         }
@@ -347,9 +355,9 @@ extension ConversationViewController {
         actionSheet.addAction(ActionSheetAction(
             title: OWSLocalizedString(
                 "GROUPS_INVITE_BLOCK_GROUP",
-                comment: "Label for 'block group' button in group invite view."
+                comment: "Label for 'block group' button in group invite view.",
             ),
-            style: .default
+            style: .default,
         ) { [weak self] _ in
             self?.blockThread()
         })
@@ -363,11 +371,11 @@ extension ConversationViewController {
                 title: String(
                     format: OWSLocalizedString(
                         "GROUPS_INVITE_BLOCK_INVITER_FORMAT",
-                        comment: "Label for 'block inviter' button in group invite view. Embeds {{name of user who invited you}}."
+                        comment: "Label for 'block inviter' button in group invite view. Embeds {{name of user who invited you}}.",
                     ),
-                    addedByName
+                    addedByName,
                 ),
-                style: .default
+                style: .default,
             ) { [weak self] _ in
                 self?.blockUserAndDelete(addedByAci)
             })
@@ -376,10 +384,11 @@ extension ConversationViewController {
                 title: String(
                     format: OWSLocalizedString(
                         "GROUPS_INVITE_BLOCK_GROUP_AND_INVITER_FORMAT",
-                        comment: "Label for 'block group and inviter' button in group invite view. Embeds {{name of user who invited you}}."),
-                    addedByName
+                        comment: "Label for 'block group and inviter' button in group invite view. Embeds {{name of user who invited you}}.",
+                    ),
+                    addedByName,
                 ),
-                style: .default
+                style: .default,
             ) { [weak self] _ in
                 self?.blockUserAndGroupAndDelete(addedByAci)
             })
@@ -398,20 +407,20 @@ extension ConversationViewController {
         if thread.isGroupThread {
             actionSheetTitleFormat = OWSLocalizedString(
                 "MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT",
-                comment: "Action sheet title to confirm blocking a group via a message request. Embeds {{group name}}"
+                comment: "Action sheet title to confirm blocking a group via a message request. Embeds {{group name}}",
             )
             actionSheetMessage = OWSLocalizedString(
                 "MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE",
-                comment: "Action sheet message to confirm blocking a group via a message request."
+                comment: "Action sheet message to confirm blocking a group via a message request.",
             )
         } else {
             actionSheetTitleFormat = OWSLocalizedString(
                 "MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT",
-                comment: "Action sheet title to confirm blocking a contact via a message request. Embeds {{contact name or phone number}}"
+                comment: "Action sheet title to confirm blocking a contact via a message request. Embeds {{contact name or phone number}}",
             )
             actionSheetMessage = OWSLocalizedString(
                 "MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE",
-                comment: "Action sheet message to confirm blocking a conversation via a message request."
+                comment: "Action sheet message to confirm blocking a conversation via a message request.",
             )
         }
 
@@ -426,15 +435,15 @@ extension ConversationViewController {
 
         let blockActionTitle = OWSLocalizedString(
             "MESSAGE_REQUEST_BLOCK_ACTION",
-            comment: "Action sheet action to confirm blocking a thread via a message request."
+            comment: "Action sheet action to confirm blocking a thread via a message request.",
         )
         let blockAndDeleteActionTitle = OWSLocalizedString(
             "MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION",
-            comment: "Action sheet action to confirm blocking and deleting a thread via a message request."
+            comment: "Action sheet action to confirm blocking and deleting a thread via a message request.",
         )
         let blockAndReportSpamActionTitle = OWSLocalizedString(
             "MESSAGE_REQUEST_BLOCK_AND_REPORT_SPAM_ACTION",
-            comment: "Action sheet action to confirm blocking and reporting spam for a thread via a message request."
+            comment: "Action sheet action to confirm blocking and reporting spam for a thread via a message request.",
         )
 
         actionSheet.addAction(ActionSheetAction(title: blockActionTitle) { [weak self] _ in
@@ -474,28 +483,28 @@ extension ConversationViewController {
         if isMemberOfGroup {
             actionSheetTitle = OWSLocalizedString(
                 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE",
-                comment: "Action sheet title to confirm deleting a group via a message request."
+                comment: "Action sheet title to confirm deleting a group via a message request.",
             )
             actionSheetMessage = OWSLocalizedString(
                 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE",
-                comment: "Action sheet message to confirm deleting a group via a message request."
+                comment: "Action sheet message to confirm deleting a group via a message request.",
             )
             confirmationText = OWSLocalizedString(
                 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION",
-                comment: "Action sheet action to confirm deleting a group via a message request."
+                comment: "Action sheet action to confirm deleting a group via a message request.",
             )
         } else { // either 1:1 thread, or a group of which I'm not a member
             actionSheetTitle = OWSLocalizedString(
                 "MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE",
-                comment: "Action sheet title to confirm deleting a conversation via a message request."
+                comment: "Action sheet title to confirm deleting a conversation via a message request.",
             )
             actionSheetMessage = OWSLocalizedString(
                 "MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE",
-                comment: "Action sheet message to confirm deleting a conversation via a message request."
+                comment: "Action sheet message to confirm deleting a conversation via a message request.",
             )
             confirmationText = OWSLocalizedString(
                 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION",
-                comment: "Action sheet action to confirm deleting a conversation via a message request."
+                comment: "Action sheet action to confirm deleting a conversation via a message request.",
             )
         }
 
@@ -511,7 +520,7 @@ extension ConversationViewController {
     func createReportThreadActionSheet() -> ActionSheetController {
         return ReportSpamUIUtils.createReportSpamActionSheet(
             for: thread,
-            isBlocked: threadViewModel.isBlocked
+            isBlocked: threadViewModel.isBlocked,
         )
     }
 }

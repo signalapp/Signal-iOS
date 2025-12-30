@@ -23,14 +23,14 @@ class ConversationViewModel {
             aci: DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx)!.aci,
             in: thread.uniqueId,
             includeReadMessages: false,
-            tx: tx
+            tx: tx,
         ).map { $0.uniqueId }
 
         return ConversationViewModel(
             groupCallInProgress: groupCallInProgress,
             isSystemContact: isSystemContact,
             shouldShowVerifiedBadge: shouldShowVerifiedBadge(for: thread, tx: tx),
-            unreadMentionMessageIds: unreadMentionMessageIds
+            unreadMentionMessageIds: unreadMentionMessageIds,
         )
     }
 
@@ -38,7 +38,7 @@ class ConversationViewModel {
         groupCallInProgress: Bool,
         isSystemContact: Bool,
         shouldShowVerifiedBadge: Bool,
-        unreadMentionMessageIds: [String]
+        unreadMentionMessageIds: [String],
     ) {
         self.groupCallInProgress = groupCallInProgress
         self.isSystemContact = isSystemContact

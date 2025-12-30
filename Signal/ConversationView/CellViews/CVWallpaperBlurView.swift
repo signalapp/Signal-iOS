@@ -55,8 +55,10 @@ public class CVWallpaperBlurView: ManualLayoutViewWithLayer {
         updateIfNecessary()
     }
 
-    public func configure(provider: WallpaperBlurProvider,
-                          maskCornerRadius: CGFloat) {
+    public func configure(
+        provider: WallpaperBlurProvider,
+        maskCornerRadius: CGFloat,
+    ) {
         resetContentAndConfiguration()
 
         self.isPreview = false
@@ -73,7 +75,7 @@ public class CVWallpaperBlurView: ManualLayoutViewWithLayer {
             imageView.isHidden = true
             return
         }
-        guard let provider = provider else {
+        guard let provider else {
             owsFailDebug("Missing provider.")
             resetContentAndConfiguration()
             return
@@ -130,7 +132,7 @@ public class CVWallpaperBlurView: ManualLayoutViewWithLayer {
 
     // MARK: - CALayerDelegate
 
-    public override func action(for layer: CALayer, forKey event: String) -> CAAction? {
+    override public func action(for layer: CALayer, forKey event: String) -> CAAction? {
         // Disable all implicit CALayer animations.
         NSNull()
     }

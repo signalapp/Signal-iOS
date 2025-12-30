@@ -16,7 +16,7 @@ public class WallpaperImageStoreImpl: WallpaperImageStore {
         attachmentManager: AttachmentManager,
         attachmentStore: AttachmentStore,
         attachmentValidator: AttachmentContentValidator,
-        db: any DB
+        db: any DB,
     ) {
         self.attachmentManager = attachmentManager
         self.attachmentStore = attachmentStore
@@ -27,7 +27,7 @@ public class WallpaperImageStoreImpl: WallpaperImageStore {
     public func setWallpaperImage(
         _ photo: UIImage?,
         for thread: TSThread,
-        onInsert: @escaping (DBWriteTransaction) throws -> Void
+        onInsert: @escaping (DBWriteTransaction) throws -> Void,
     ) async throws {
         guard let rowId = thread.sqliteRowId else {
             throw OWSAssertionError("Inserting wallpaper for uninserted thread!")
@@ -37,20 +37,20 @@ public class WallpaperImageStoreImpl: WallpaperImageStore {
             try await setWallpaperImage(
                 dataSource,
                 owner: .threadWallpaperImage(threadRowId: rowId),
-                onInsert: onInsert
+                onInsert: onInsert,
             )
         } else {
             try await setWallpaperImage(
                 nil,
                 owner: .threadWallpaperImage(threadRowId: rowId),
-                onInsert: onInsert
+                onInsert: onInsert,
             )
         }
     }
 
     public func setGlobalThreadWallpaperImage(
         _ photo: UIImage?,
-        onInsert: @escaping (DBWriteTransaction) throws -> Void
+        onInsert: @escaping (DBWriteTransaction) throws -> Void,
     ) async throws {
         if let photo {
             let dataSource = try await dataSource(wallpaperImage: photo)
@@ -92,7 +92,7 @@ public class WallpaperImageStoreImpl: WallpaperImageStore {
                 threadSource,
                 with: fromReference,
                 newOwnerThreadRowId: toRowId,
-                tx: tx
+                tx: tx,
             )
         default:
             throw OWSAssertionError("Unexpected attachment reference type")
@@ -116,7 +116,7 @@ public class WallpaperImageStoreImpl: WallpaperImageStore {
             data: imageData,
             mimeType: mimeType,
             renderingFlag: .default,
-            sourceFilename: nil
+            sourceFilename: nil,
         )
         return .pendingAttachment(pendingAttachment)
     }
@@ -124,7 +124,7 @@ public class WallpaperImageStoreImpl: WallpaperImageStore {
     private func setWallpaperImage(
         _ dataSource: AttachmentDataSource?,
         owner: AttachmentReference.OwnerBuilder,
-        onInsert: @escaping (DBWriteTransaction) throws -> Void
+        onInsert: @escaping (DBWriteTransaction) throws -> Void,
     ) async throws {
         try await db.awaitableWrite { tx in
             // First remove any existing wallpaper.
@@ -135,7 +135,7 @@ public class WallpaperImageStoreImpl: WallpaperImageStore {
             if let dataSource {
                 let dataSource = OwnedAttachmentDataSource(
                     dataSource: dataSource,
-                    owner: owner
+                    owner: owner,
                 )
                 try self.attachmentManager.createAttachmentStream(from: dataSource, tx: tx)
             }
@@ -147,7 +147,7 @@ public class WallpaperImageStoreImpl: WallpaperImageStore {
         guard
             let attachment = attachmentStore.fetchFirstReferencedAttachment(
                 for: ownerId,
-                tx: tx
+                tx: tx,
             )
         else {
             return nil

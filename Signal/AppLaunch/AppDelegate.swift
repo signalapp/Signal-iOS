@@ -125,7 +125,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(
         _ application: UIApplication,
-        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
+        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil,
     ) -> Bool {
         let launchStartedAt = CACurrentMediaTime()
 
@@ -164,12 +164,12 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         let deviceTransferService = DeviceTransferService(
             appReadiness: appReadiness,
             deviceSleepManager: deviceSleepManager,
-            keychainStorage: keychainStorage
+            keychainStorage: keychainStorage,
         )
 
         AppEnvironment.setSharedEnvironment(AppEnvironment(
             appReadiness: appReadiness,
-            deviceTransferService: deviceTransferService
+            deviceTransferService: deviceTransferService,
         ))
 
         // This *must* happen before we try and access or verify the database,
@@ -180,7 +180,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             title: "Slow device transfer service launch",
             logIfLongerThan: 0.01,
             logInProduction: true,
-            block: { deviceTransferService.launchCleanup() }
+            block: { deviceTransferService.launchCleanup() },
         )
 
         let databaseStorage: SDSDatabaseStorage
@@ -188,7 +188,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             databaseStorage = try SDSDatabaseStorage(
                 appReadiness: appReadiness,
                 databaseFileUrl: SDSDatabaseStorage.grdbDatabaseFileUrl,
-                keychainStorage: keychainStorage
+                keychainStorage: keychainStorage,
             )
         } catch KeychainError.notAllowed where application.applicationState == .background {
             notifyThatPhoneMustBeUnlocked()
@@ -205,16 +205,16 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 logDumper: .preLaunch(),
                 title: OWSLocalizedString(
                     "APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE",
-                    comment: "Error indicating that the app could not launch because the database could not be loaded."
+                    comment: "Error indicating that the app could not launch because the database could not be loaded.",
                 ),
                 message: OWSLocalizedString(
                     "APP_LAUNCH_FAILURE_ALERT_MESSAGE",
-                    comment: "Default message for the 'app launch failed' alert."
+                    comment: "Default message for the 'app launch failed' alert.",
                 ),
                 actions: [
                     .submitDebugLogsAndCrash,
                     .wipeAppDataAndCrash(keyFetcher: GRDBKeyFetcher(keychainStorage: keychainStorage)),
-                ]
+                ],
             )
             return true
         }
@@ -257,7 +257,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         let preflightError = checkIfAllowedToLaunch(
             mainAppContext: mainAppContext,
             appVersion: appVersion,
-            didDeviceTransferRestoreSucceed: didDeviceTransferRestoreSucceed
+            didDeviceTransferRestoreSucceed: didDeviceTransferRestoreSucceed,
         )
 
         if let preflightError {
@@ -268,7 +268,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 preflightError,
                 launchContext: launchContext,
                 window: window,
-                viewController: viewController
+                viewController: viewController,
             )
             return true
         }
@@ -286,7 +286,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         let attachmentValidationRunner = AttachmentValidationBackfillRunner(
             db: databaseStorage,
             store: attachmentBackfillStore,
-            migrator: { DependenciesBridge.shared.attachmentValidationBackfillMigrator }
+            migrator: { DependenciesBridge.shared.attachmentValidationBackfillMigrator },
         )
         attachmentValidationRunner.registerBGProcessingTask(appReadiness: appReadiness)
 
@@ -316,7 +316,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             Task {
                 databaseMigratorRunner.scheduleBGProcessingTaskIfNeeded()
 
-                #if targetEnvironment(simulator)
+#if targetEnvironment(simulator)
                 // The simulator won't run BGProcessingTasks, but we still want to run
                 // these migrations for simulators. So, if they're needed, run them.
                 //
@@ -330,7 +330,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 if databaseMigratorRunner.startCondition() != .never || databaseMigratorRunner.simulatePriorCancellation() {
                     try await databaseMigratorRunner.run()
                 }
-                #endif
+#endif
             }
         }
 
@@ -364,7 +364,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     private func launchApp(
         in window: UIWindow,
         launchContext: LaunchContext,
-        loadingViewController: LoadingViewController
+        loadingViewController: LoadingViewController,
     ) {
         assert(window.rootViewController == loadingViewController)
         configureGlobalUI(in: window)
@@ -386,7 +386,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
     private func setUpMainAppEnvironment(
         launchContext: LaunchContext,
-        loadingViewController: LoadingViewController?
+        loadingViewController: LoadingViewController?,
     ) async -> (AppSetup.FinalContinuation, DeviceSleepBlockObject) {
         let sleepBlockObject = DeviceSleepBlockObject(blockReason: "app launch")
         launchContext.deviceSleepManager.addBlock(blockObject: sleepBlockObject)
@@ -396,7 +396,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
         let schemaMigrationContinuation = AppSetup().start(
             appContext: launchContext.appContext,
-            databaseStorage: launchContext.databaseStorage
+            databaseStorage: launchContext.databaseStorage,
         )
         let globalsContinuation = await schemaMigrationContinuation.migrateDatabaseSchema()
         let dataMigrationContinuation = globalsContinuation.initGlobals(
@@ -412,7 +412,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         )
         SUIEnvironment.shared.setUp(
             appReadiness: appReadiness,
-            authCredentialManager: dataMigrationContinuation.authCredentialManager
+            authCredentialManager: dataMigrationContinuation.authCredentialManager,
         )
         AppEnvironment.shared.setUp(
             appReadiness: appReadiness,
@@ -430,8 +430,8 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 mutableCurrentCall: _currentCall,
                 networkManager: dataMigrationContinuation.sskEnvironment.networkManagerRef,
                 remoteConfig: dataMigrationContinuation.sskEnvironment.remoteConfigManagerRef.currentConfig(),
-                tsAccountManager: dataMigrationContinuation.dependenciesBridge.tsAccountManager
-            )
+                tsAccountManager: dataMigrationContinuation.dependenciesBridge.tsAccountManager,
+            ),
         )
         let finalContinuation = await dataMigrationContinuation.migrateDatabaseData()
         finalContinuation.runLaunchTasksIfNeededAndReloadCaches()
@@ -440,9 +440,11 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     private func checkEnoughDiskSpaceAvailable() -> Bool {
-        guard let freeSpaceInBytes = try? OWSFileSystem.freeSpaceInBytes(
-            forPath: SDSDatabaseStorage.grdbDatabaseFileUrl
-        ) else {
+        guard
+            let freeSpaceInBytes = try? OWSFileSystem.freeSpaceInBytes(
+                forPath: SDSDatabaseStorage.grdbDatabaseFileUrl,
+            )
+        else {
             owsFailDebug("Failed to get free space: falling back to trying to create a temp dir.")
 
             let tempDir = URL(fileURLWithPath: NSTemporaryDirectory())
@@ -451,7 +453,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             let succeededCreatingDir = OWSFileSystem.ensureDirectoryExists(tempDir)
 
             // Best effort at deleting temp dir, which shouldn't ever fail
-            if succeededCreatingDir && !OWSFileSystem.deleteFile(tempDir) {
+            if succeededCreatingDir, !OWSFileSystem.deleteFile(tempDir) {
                 owsFailDebug("Failed to delete temp dir used for checking disk space!")
             }
 
@@ -466,7 +468,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         finalContinuation: AppSetup.FinalContinuation,
         launchContext: LaunchContext,
         sleepBlockObject: DeviceSleepBlockObject,
-        window: UIWindow
+        window: UIWindow,
     ) {
         AssertIsOnMainThread()
 
@@ -498,7 +500,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
         switch finalContinuation.setUpLocalIdentifiers(
             willResumeInProgressRegistration: hasInProgressRegistration,
-            canInitiateRegistration: true
+            canInitiateRegistration: true,
         ) {
         case .corruptRegistrationState:
             let viewController = terminalErrorViewController()
@@ -509,13 +511,13 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 logDumper: .fromGlobals(),
                 title: OWSLocalizedString(
                     "APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_TITLE",
-                    comment: "Title for an error indicating that the app couldn't launch because some unexpected error happened with the user's registration status."
+                    comment: "Title for an error indicating that the app couldn't launch because some unexpected error happened with the user's registration status.",
                 ),
                 message: OWSLocalizedString(
                     "APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_MESSAGE",
-                    comment: "Message for an error indicating that the app couldn't launch because some unexpected error happened with the user's registration status."
+                    comment: "Message for an error indicating that the app couldn't launch because some unexpected error happened with the user's registration status.",
                 ),
-                actions: [.submitDebugLogsAndCrash]
+                actions: [.submitDebugLogsAndCrash],
             )
         case nil:
             let backgroundTask = OWSBackgroundTask(label: #function)
@@ -527,7 +529,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 DispatchQueue.main.async {
                     self.setAppIsReady(
                         launchInterface: launchInterface,
-                        launchContext: launchContext
+                        launchContext: launchContext,
                     )
                     finalContinuation.dependenciesBridge.deviceSleepManager?.removeBlock(blockObject: sleepBlockObject)
                 }
@@ -538,7 +540,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     @MainActor
     private func setAppIsReady(
         launchInterface: LaunchInterface,
-        launchContext: LaunchContext
+        launchContext: LaunchContext,
     ) {
         owsPrecondition(!appReadiness.isAppReady)
         owsPrecondition(!CurrentAppContext().isRunningTests)
@@ -584,7 +586,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             Task.detached(priority: .low) {
                 await FullTextSearchOptimizer(
                     appContext: appContext,
-                    db: DependenciesBridge.shared.db
+                    db: DependenciesBridge.shared.db,
                 ).run()
             }
         }
@@ -596,7 +598,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                     authorMergeHelper: DependenciesBridge.shared.authorMergeHelper,
                     db: DependenciesBridge.shared.db,
                     modelReadCaches: AuthorMergeHelperBuilder.Wrappers.ModelReadCaches(SSKEnvironment.shared.modelReadCachesRef),
-                    recipientDatabaseTable: DependenciesBridge.shared.recipientDatabaseTable
+                    recipientDatabaseTable: DependenciesBridge.shared.recipientDatabaseTable,
                 ).buildTableIfNeeded()
             }
         }
@@ -620,7 +622,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 SSKEnvironment.shared.udManagerRef.setPhoneNumberSharingMode(
                     .nobody,
                     updateStorageServiceAndProfile: true,
-                    tx: tx
+                    tx: tx,
                 )
             }
         }
@@ -681,7 +683,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             let fetchJobRunner = CallLinkFetchJobRunner(
                 callLinkStore: DependenciesBridge.shared.callLinkStore,
                 callLinkStateUpdater: AppEnvironment.shared.callService.callLinkStateUpdater,
-                db: DependenciesBridge.shared.db
+                db: DependenciesBridge.shared.db,
             )
             fetchJobRunner.observeDatabase(DependenciesBridge.shared.databaseChangeObserver)
             fetchJobRunner.setMightHavePendingFetchAndFetch()
@@ -820,7 +822,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                         },
                         performRotation: {
                             try await SyncPushTokensJob(mode: .rotateIfEligible).run()
-                        }
+                        },
                     )
                 } catch {
                     Logger.warn("\(error)")
@@ -839,13 +841,13 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             self,
             selector: #selector(registrationStateDidChange),
             name: .registrationStateDidChange,
-            object: nil
+            object: nil,
         )
 
         SignalApp.shared.showLaunchInterface(
             launchInterface,
             appReadiness: appReadiness,
-            launchStartedAt: launchContext.launchStartedAt
+            launchStartedAt: launchContext.launchStartedAt,
         )
     }
 
@@ -861,15 +863,15 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         notificationContent.body = String(
             format: OWSLocalizedString(
                 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT",
-                comment: "Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone')"
+                comment: "Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone')",
             ),
-            UIDevice.current.localizedModel
+            UIDevice.current.localizedModel,
         )
 
         let notificationRequest = UNNotificationRequest(
             identifier: UUID().uuidString,
             content: notificationContent,
-            trigger: nil
+            trigger: nil,
         )
 
         let application: UIApplication = .shared
@@ -892,11 +894,11 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     private func buildLaunchInterface(regLoader: RegistrationCoordinatorLoader) -> LaunchInterface {
         let (
             tsRegistrationState,
-            lastMode
+            lastMode,
         ) = SSKEnvironment.shared.databaseStorageRef.read { tx in
             return (
                 DependenciesBridge.shared.tsAccountManager.registrationState(tx: tx),
-                regLoader.restoreLastMode(transaction: tx)
+                regLoader.restoreLastMode(transaction: tx),
             )
         }
 
@@ -936,10 +938,10 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             return .chatList
 
         case
-                .transferringIncoming,
-                .transferringPrimaryOutgoing,
-                .transferringLinkedOutgoing,
-                .transferred:
+            .transferringIncoming,
+            .transferringPrimaryOutgoing,
+            .transferringLinkedOutgoing,
+            .transferred:
             fallthrough
 
         case .unregistered:
@@ -989,7 +991,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     private func checkIfAllowedToLaunch(
         mainAppContext: MainAppContext,
         appVersion: AppVersion,
-        didDeviceTransferRestoreSucceed: Bool
+        didDeviceTransferRestoreSucceed: Bool,
     ) -> LaunchPreflightError? {
         guard checkEnoughDiskSpaceAvailable() else {
             return .lowStorageSpaceAvailable
@@ -1032,7 +1034,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         _ preflightError: LaunchPreflightError,
         launchContext: LaunchContext,
         window: UIWindow,
-        viewController: UIViewController
+        viewController: UIViewController,
     ) {
         Logger.warn("preflightError: \(preflightError)")
 
@@ -1044,11 +1046,11 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         case .databaseCorrupted:
             title = OWSLocalizedString(
                 "APP_LAUNCH_FAILURE_DATABASE_CORRUPTED_TITLE",
-                comment: "Title for an action sheet explaining that Signal can't launch because the database is corrupted."
+                comment: "Title for an action sheet explaining that Signal can't launch because the database is corrupted.",
             )
             message = OWSLocalizedString(
                 "APP_LAUNCH_FAILURE_DATABASE_CORRUPTED_MESSAGE",
-                comment: "Message for an action sheet explaining that Signal can't launch because the database is corrupted."
+                comment: "Message for an action sheet explaining that Signal can't launch because the database is corrupted.",
             )
             actions = [
                 .presentDatabaseRecovery(window: window, launchContext: launchContext),
@@ -1060,48 +1062,48 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         case .unknownDatabaseVersion:
             title = OWSLocalizedString(
                 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE",
-                comment: "Error indicating that the app could not launch without reverting unknown database migrations."
+                comment: "Error indicating that the app could not launch without reverting unknown database migrations.",
             )
             message = OWSLocalizedString(
                 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE",
-                comment: "Error indicating that the app could not launch without reverting unknown database migrations."
+                comment: "Error indicating that the app could not launch without reverting unknown database migrations.",
             )
             actions = [.submitDebugLogsAndCrash]
 
         case .couldNotRestoreTransferredData:
             title = OWSLocalizedString(
                 "APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE",
-                comment: "Error indicating that the app could not restore transferred data."
+                comment: "Error indicating that the app could not restore transferred data.",
             )
             message = OWSLocalizedString(
                 "APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE",
-                comment: "Error indicating that the app could not restore transferred data."
+                comment: "Error indicating that the app could not restore transferred data.",
             )
             actions = [.submitDebugLogsAndCrash]
 
         case .lastAppLaunchCrashed:
             title = OWSLocalizedString(
                 "APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_TITLE",
-                comment: "Error indicating that the app crashed during the previous launch."
+                comment: "Error indicating that the app crashed during the previous launch.",
             )
             message = OWSLocalizedString(
                 "APP_LAUNCH_FAILURE_LAST_LAUNCH_CRASHED_MESSAGE",
-                comment: "Error indicating that the app crashed during the previous launch."
+                comment: "Error indicating that the app crashed during the previous launch.",
             )
             actions = [
                 .submitDebugLogsAndLaunchApp(window: window, launchContext: launchContext),
-                .launchApp(window: window, launchContext: launchContext)
+                .launchApp(window: window, launchContext: launchContext),
             ]
 
         case .lowStorageSpaceAvailable:
             shouldKillAppWhenBackgrounded = true
             title = OWSLocalizedString(
                 "APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_TITLE",
-                comment: "Error title indicating that the app crashed because there was low storage space available on the device."
+                comment: "Error title indicating that the app crashed because there was low storage space available on the device.",
             )
             message = OWSLocalizedString(
                 "APP_LAUNCH_FAILURE_LOW_STORAGE_SPACE_AVAILABLE_MESSAGE",
-                comment: "Error description indicating that the app crashed because there was low storage space available on the device."
+                comment: "Error description indicating that the app crashed because there was low storage space available on the device.",
             )
             actions = []
         }
@@ -1112,7 +1114,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             logDumper: .preLaunch(),
             title: title,
             message: message,
-            actions: actions
+            actions: actions,
         )
     }
 
@@ -1133,7 +1135,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                     return await self.setUpMainAppEnvironment(launchContext: launchContext, loadingViewController: nil)
                 }
             },
-            launchApp: { (finalContinuation, sleepBlockObject) in
+            launchApp: { finalContinuation, sleepBlockObject in
                 // Pretend we didn't fail!
                 self.didAppLaunchFail = false
                 self.configureGlobalUI(in: window)
@@ -1141,9 +1143,9 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                     finalContinuation: finalContinuation,
                     launchContext: launchContext,
                     sleepBlockObject: sleepBlockObject,
-                    window: window
+                    window: window,
                 )
-            }
+            },
         )
 
         // Prevent dismissal.
@@ -1172,7 +1174,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         logDumper: DebugLogDumper,
         title: String,
         message: String,
-        actions: [LaunchFailureActionSheetAction]
+        actions: [LaunchFailureActionSheetAction],
     ) {
         let actionSheet = ActionSheetController(title: title, message: message)
 
@@ -1185,7 +1187,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                         logDumper: logDumper,
                         title: title,
                         message: message,
-                        actions: actions
+                        actions: actions,
                     )
                 }
             })
@@ -1213,7 +1215,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             self.launchApp(
                 in: window,
                 launchContext: launchContext,
-                loadingViewController: loadingViewController
+                loadingViewController: loadingViewController,
             )
         }
 
@@ -1245,13 +1247,13 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                             window: window,
                             launchContext: launchContext,
                         )
-                    }
+                    },
                 ))
 
             case .wipeAppDataAndCrash(let keyFetcher):
                 let wipeAppDataActionTitle = OWSLocalizedString(
                     "APP_LAUNCH_FAILURE_WIPE_APP_DATA_ACTION_TITLE",
-                    comment: "Action in an action sheet offering to wipe all app data."
+                    comment: "Action in an action sheet offering to wipe all app data.",
                 )
 
                 actionSheet.addAction(.init(
@@ -1261,11 +1263,11 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                         OWSActionSheets.showConfirmationAlert(
                             title: OWSLocalizedString(
                                 "APP_LAUNCH_FAILURE_WIPE_APP_DATA_CONFIRMATION_TITLE",
-                                comment: "Title for an action sheet confirming the user wants to wipe all app data."
+                                comment: "Title for an action sheet confirming the user wants to wipe all app data.",
                             ),
                             message: OWSLocalizedString(
                                 "APP_LAUNCH_FAILURE_WIPE_APP_DATA_CONFIRMATION_MESSAGE",
-                                comment: "Message for an action sheet confirming the user wants to wipe all app data."
+                                comment: "Message for an action sheet confirming the user wants to wipe all app data.",
                             ),
                             proceedTitle: wipeAppDataActionTitle,
                             proceedStyle: .destructive,
@@ -1275,18 +1277,18 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                                 }
                             },
                         )
-                    }
+                    },
                 ))
 
             case .launchApp(let window, let launchContext):
                 actionSheet.addAction(.init(
                     title: OWSLocalizedString(
                         "APP_LAUNCH_FAILURE_CONTINUE",
-                        comment: "Button to try launching the app even though the last launch failed"
+                        comment: "Button to try launching the app even though the last launch failed",
                     ),
                     handler: { [unowned window] _ in
                         ignoreErrorAndLaunchApp(in: window, launchContext: launchContext)
-                    }
+                    },
                 ))
             }
         }
@@ -1296,10 +1298,10 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
     // MARK: -
 
-    public func userNotificationCenter(
+    func userNotificationCenter(
         _ center: UNUserNotificationCenter,
         willPresent notification: UNNotification,
-        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
+        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void,
     ) {
         appReadiness.runNowOrWhenAppDidBecomeReadySync {
             // We need to respect the in-app notification sound preference. This method, which is called
@@ -1336,7 +1338,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
         if registeredState != nil {
             DependenciesBridge.shared.db.read { tx in
-            // Always check prekeys after app launches, and sometimes check on app activation.
+                // Always check prekeys after app launches, and sometimes check on app activation.
                 DependenciesBridge.shared.preKeyManager.checkPreKeysIfNecessary(tx: tx)
             }
         }
@@ -1528,18 +1530,18 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
 
         Logger.warn("")
         self.appReadiness.runNowOrWhenAppDidBecomeReadySync {
-            #if DEBUG
+#if DEBUG
             AppEnvironment.shared.pushRegistrationManagerRef.didReceiveVanillaPushToken(Data(count: 32))
-            #else
+#else
             AppEnvironment.shared.pushRegistrationManagerRef.didFailToReceiveVanillaPushToken(error: error)
-            #endif
+#endif
         }
     }
 
     func application(
         _ application: UIApplication,
         didReceiveRemoteNotification userInfo: [AnyHashable: Any],
-        fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
+        fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void,
     ) {
         AssertIsOnMainThread()
 
@@ -1649,7 +1651,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(
         _ application: UIApplication,
         continue userActivity: NSUserActivity,
-        restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void
+        restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void,
     ) -> Bool {
         AssertIsOnMainThread()
 
@@ -1678,7 +1680,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 }
                 SignalApp.shared.presentConversationAndScrollToFirstUnreadMessage(
                     threadUniqueId: threadUniqueId,
-                    animated: false
+                    animated: false,
                 )
             }
             return true
@@ -1687,21 +1689,21 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
                 INStartVideoCallIntent.self,
                 userActivity: userActivity,
                 contacts: \.contacts,
-                isVideoCall: { _ in true }
+                isVideoCall: { _ in true },
             )
         case "INStartAudioCallIntent":
             return handleStartCallIntent(
                 INStartAudioCallIntent.self,
                 userActivity: userActivity,
                 contacts: \.contacts,
-                isVideoCall: { _ in false }
+                isVideoCall: { _ in false },
             )
         case "INStartCallIntent":
             return handleStartCallIntent(
                 INStartCallIntent.self,
                 userActivity: userActivity,
                 contacts: \.contacts,
-                isVideoCall: { $0.callCapability == .videoCall }
+                isVideoCall: { $0.callCapability == .videoCall },
             )
         case NSUserActivityTypeBrowsingWeb:
             guard let webpageUrl = userActivity.webpageURL else {
@@ -1718,7 +1720,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         _ intentType: T.Type,
         userActivity: NSUserActivity,
         contacts: KeyPath<T, [INPerson]?>,
-        isVideoCall: (T) -> Bool
+        isVideoCall: (T) -> Bool,
     ) -> Bool {
         let intent = userActivity.interaction?.intent
         guard let intent = intent as? T else {
@@ -1800,7 +1802,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(
         _ application: UIApplication,
         performActionFor shortcutItem: UIApplicationShortcutItem,
-        completionHandler: @escaping (Bool) -> Void
+        completionHandler: @escaping (Bool) -> Void,
     ) {
         AssertIsOnMainThread()
 
@@ -1814,7 +1816,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else {
                 let controller = ActionSheetController(
                     title: OWSLocalizedString("REGISTER_CONTACTS_WELCOME", comment: ""),
-                    message: OWSLocalizedString("REGISTRATION_RESTRICTED_MESSAGE", comment: "")
+                    message: OWSLocalizedString("REGISTRATION_RESTRICTED_MESSAGE", comment: ""),
                 )
                 controller.addAction(ActionSheetAction(title: CommonStrings.okButton))
                 UIApplication.shared.frontmostViewController?.present(controller, animated: true, completion: {
@@ -1827,7 +1829,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
 
-    public static func updateApplicationShortcutItems(isRegistered: Bool) {
+    static func updateApplicationShortcutItems(isRegistered: Bool) {
         guard CurrentAppContext().isMainApp else { return }
         UIApplication.shared.shortcutItems = applicationShortcutItems(isRegistered: isRegistered)
     }
@@ -1838,10 +1840,10 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             type: "\(Bundle.main.bundleIdPrefix).quickCompose",
             localizedTitle: OWSLocalizedString(
                 "APPLICATION_SHORTCUT_NEW_MESSAGE",
-                comment: "On the iOS home screen, if you tap and hold the Signal icon, this shortcut will appear. Tapping it will let users send a new message. You may want to refer to similar behavior in other iOS apps, such as Messages, for equivalent strings."
+                comment: "On the iOS home screen, if you tap and hold the Signal icon, this shortcut will appear. Tapping it will let users send a new message. You may want to refer to similar behavior in other iOS apps, such as Messages, for equivalent strings.",
             ),
             localizedSubtitle: nil,
-            icon: UIApplicationShortcutIcon(type: .compose)
+            icon: UIApplicationShortcutIcon(type: .compose),
         )]
     }
 
@@ -1867,7 +1869,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
             let urlOpener = UrlOpener(
                 appReadiness: appReadiness,
                 databaseStorage: SSKEnvironment.shared.databaseStorageRef,
-                tsAccountManager: DependenciesBridge.shared.tsAccountManager
+                tsAccountManager: DependenciesBridge.shared.tsAccountManager,
             )
 
             urlOpener.openUrl(parsedUrl, in: self.window!)
@@ -1882,10 +1884,10 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
     // The method will be called on the delegate when the user responded to the notification by opening the application,
     // dismissing the notification or choosing a UNNotificationAction. The delegate must be set before the application
     // returns from application:didFinishLaunchingWithOptions:.
-    public func userNotificationCenter(
+    func userNotificationCenter(
         _ center: UNUserNotificationCenter,
         didReceive response: UNNotificationResponse,
-        withCompletionHandler completionHandler: @escaping () -> Void
+        withCompletionHandler completionHandler: @escaping () -> Void,
     ) {
         let startDate = MonotonicDate()
         Task { @MainActor [appReadiness] () -> Void in

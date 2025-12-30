@@ -28,7 +28,7 @@ class UsernameSelectionCoordinator {
         isAttemptingRecovery: Bool = false,
         usernameChangeDelegate: UsernameChangeDelegate? = nil,
         usernameSelectionDelegate: (any UsernameSelectionDelegate)? = nil,
-        context: Context
+        context: Context,
     ) {
         self.currentUsername = currentUsername
         self.isAttemptingRecovery = isAttemptingRecovery
@@ -59,7 +59,7 @@ class UsernameSelectionCoordinator {
             self.context.databaseStorage.write { tx in
                 self.context.usernameEducationManager.setShouldShowUsernameEducation(
                     false,
-                    tx: tx
+                    tx: tx,
                 )
             }
 
@@ -79,8 +79,8 @@ class UsernameSelectionCoordinator {
                 networkManager: context.networkManager,
                 databaseStorage: context.databaseStorage,
                 localUsernameManager: context.localUsernameManager,
-                storageServiceManager: context.storageServiceManager
-            )
+                storageServiceManager: context.storageServiceManager,
+            ),
         )
 
         vc.usernameChangeDelegate = usernameChangeDelegate
@@ -88,7 +88,7 @@ class UsernameSelectionCoordinator {
 
         fromViewController.presentFormSheet(
             OWSNavigationController(rootViewController: vc),
-            animated: true
+            animated: true,
         )
     }
 }

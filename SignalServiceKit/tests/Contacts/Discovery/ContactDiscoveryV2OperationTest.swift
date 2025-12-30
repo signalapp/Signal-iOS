@@ -74,7 +74,7 @@ final class ContactDiscoveryV2OperationTest: XCTestCase {
             mode: .oneOffUserRequest,
             udManager: OWSMockUDManager(),
             connectionImpl: connection,
-            remoteAttestation: MockRemoteAttestation()
+            remoteAttestation: MockRemoteAttestation(),
         )
 
         // Prepare the server's responses to the client's request.
@@ -110,7 +110,7 @@ final class ContactDiscoveryV2OperationTest: XCTestCase {
             persistentState: nil,
             udManager: OWSMockUDManager(),
             connectionImpl: connection,
-            remoteAttestation: MockRemoteAttestation()
+            remoteAttestation: MockRemoteAttestation(),
         )
 
         // Prepare the server's responses to the client's request.
@@ -137,7 +137,7 @@ final class ContactDiscoveryV2OperationTest: XCTestCase {
             persistentState: persistentState,
             udManager: OWSMockUDManager(),
             connectionImpl: connection,
-            remoteAttestation: MockRemoteAttestation()
+            remoteAttestation: MockRemoteAttestation(),
         )
 
         // Establish the initial state.
@@ -180,7 +180,7 @@ final class ContactDiscoveryV2OperationTest: XCTestCase {
             persistentState: persistentState,
             udManager: OWSMockUDManager(),
             connectionImpl: connection,
-            remoteAttestation: MockRemoteAttestation()
+            remoteAttestation: MockRemoteAttestation(),
         )
 
         // Establish the initial state.

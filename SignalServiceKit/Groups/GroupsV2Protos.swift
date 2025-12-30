@@ -21,13 +21,13 @@ public class GroupsV2Protos {
     public class func buildMemberProto(
         profileKeyCredential: ExpiringProfileKeyCredential,
         role: GroupsProtoMemberRole,
-        groupV2Params: GroupV2Params
+        groupV2Params: GroupV2Params,
     ) throws -> GroupsProtoMember {
         var builder = GroupsProtoMember.builder()
         builder.setRole(role)
         let presentationData = try self.presentationData(
             profileKeyCredential: profileKeyCredential,
-            groupV2Params: groupV2Params
+            groupV2Params: groupV2Params,
         )
         builder.setPresentation(presentationData)
         return builder.buildInfallibly()
@@ -36,7 +36,7 @@ public class GroupsV2Protos {
     public class func buildPendingMemberProto(
         serviceId: ServiceId,
         role: GroupsProtoMemberRole,
-        groupV2Params: GroupV2Params
+        groupV2Params: GroupV2Params,
     ) throws -> GroupsProtoPendingMember {
         var builder = GroupsProtoPendingMember.builder()
 
@@ -49,12 +49,14 @@ public class GroupsV2Protos {
         return builder.buildInfallibly()
     }
 
-    public class func buildRequestingMemberProto(profileKeyCredential: ExpiringProfileKeyCredential,
-                                                 groupV2Params: GroupV2Params) throws -> GroupsProtoRequestingMember {
+    public class func buildRequestingMemberProto(
+        profileKeyCredential: ExpiringProfileKeyCredential,
+        groupV2Params: GroupV2Params,
+    ) throws -> GroupsProtoRequestingMember {
         var builder = GroupsProtoRequestingMember.builder()
         let presentationData = try self.presentationData(
             profileKeyCredential: profileKeyCredential,
-            groupV2Params: groupV2Params
+            groupV2Params: groupV2Params,
         )
         builder.setPresentation(presentationData)
         return builder.buildInfallibly()
@@ -71,13 +73,13 @@ public class GroupsV2Protos {
 
     public class func presentationData(
         profileKeyCredential: ExpiringProfileKeyCredential,
-        groupV2Params: GroupV2Params
+        groupV2Params: GroupV2Params,
     ) throws -> Data {
         let serverPublicParams = self.serverPublicParams()
         let profileOperations = ClientZkProfileOperations(serverPublicParams: serverPublicParams)
         let presentation = try profileOperations.createProfileKeyCredentialPresentation(
             groupSecretParams: groupV2Params.groupSecretParams,
-            profileKeyCredential: profileKeyCredential
+            profileKeyCredential: profileKeyCredential,
         )
         return presentation.serialize()
     }
@@ -107,7 +109,7 @@ public class GroupsV2Protos {
     public class func buildNewGroupProto(
         _ newGroup: NewGroupParams,
         profileKeyCredentials: [Aci: ExpiringProfileKeyCredential],
-        localAci: Aci
+        localAci: Aci,
     ) throws -> GroupsProtoGroup {
         let groupV2Params = try GroupV2Params(groupSecretParams: newGroup.secretParams)
 
@@ -146,20 +148,20 @@ public class GroupsV2Protos {
         groupBuilder.addMembers(try buildMemberProto(
             profileKeyCredential: localProfileKeyCredential,
             role: .administrator,
-            groupV2Params: groupV2Params
+            groupV2Params: groupV2Params,
         ))
         for serviceId in newGroup.otherMembers {
             if let aci = serviceId as? Aci, let profileKeyCredential = profileKeyCredentials[aci] {
                 groupBuilder.addMembers(try buildMemberProto(
                     profileKeyCredential: profileKeyCredential,
                     role: .default,
-                    groupV2Params: groupV2Params
+                    groupV2Params: groupV2Params,
                 ))
             } else {
                 groupBuilder.addPendingMembers(try buildPendingMemberProto(
                     serviceId: serviceId,
                     role: .default,
-                    groupV2Params: groupV2Params
+                    groupV2Params: groupV2Params,
                 ))
             }
         }
@@ -191,19 +193,19 @@ public class GroupsV2Protos {
 
     public class func buildGroupContextProto(
         groupModel: TSGroupModelV2,
-        groupChangeProtoData: Data?
+        groupChangeProtoData: Data?,
     ) throws -> SSKProtoGroupContextV2 {
         return buildGroupContextProto(
             masterKey: try groupModel.masterKey(),
             revision: groupModel.revision,
-            groupChangeProtoData: groupChangeProtoData
+            groupChangeProtoData: groupChangeProtoData,
         )
     }
 
     public class func buildGroupContextProto(
         masterKey: GroupMasterKey,
         revision: UInt32,
-        groupChangeProtoData: Data?
+        groupChangeProtoData: Data?,
     ) -> SSKProtoGroupContextV2 {
         let builder = SSKProtoGroupContextV2.builder()
         builder.setMasterKey(masterKey.serialize())
@@ -232,7 +234,7 @@ public class GroupsV2Protos {
     /// This method throws if verification fails.
     public static func parseGroupChangeProto(
         _ changeProto: GroupsProtoGroupChange,
-        verificationOperation: VerificationOperation
+        verificationOperation: VerificationOperation,
     ) throws -> GroupsProtoGroupChangeActions {
         guard let changeActionsProtoData = changeProto.actions else {
             throw OWSAssertionError("Missing changeActionsProtoData.")
@@ -255,7 +257,7 @@ public class GroupsV2Protos {
     class func parse(
         groupResponseProto: GroupsProtoGroupResponse,
         downloadedAvatars: GroupAvatarStateMap,
-        groupV2Params: GroupV2Params
+        groupV2Params: GroupV2Params,
     ) throws -> GroupV2SnapshotResponse {
         guard let groupProto = groupResponseProto.group else {
             throw OWSAssertionError("Missing group state in response.")
@@ -268,9 +270,9 @@ public class GroupsV2Protos {
                 groupProto: groupProto,
                 fetchedAlongsideChangeActionsProto: nil,
                 downloadedAvatars: downloadedAvatars,
-                groupV2Params: groupV2Params
+                groupV2Params: groupV2Params,
             ),
-            groupSendEndorsementsResponse: groupSendEndorsementsResponse
+            groupSendEndorsementsResponse: groupSendEndorsementsResponse,
         )
     }
 
@@ -278,7 +280,7 @@ public class GroupsV2Protos {
         groupProto: GroupsProtoGroup,
         fetchedAlongsideChangeActionsProto: GroupsProtoGroupChangeActions?,
         downloadedAvatars: GroupAvatarStateMap,
-        groupV2Params: GroupV2Params
+        groupV2Params: GroupV2Params,
     ) throws -> GroupV2Snapshot {
 
         let title = groupV2Params.decryptGroupName(groupProto.title) ?? ""
@@ -330,7 +332,7 @@ public class GroupsV2Protos {
                 aci,
                 role: role,
                 didJoinFromInviteLink: membersJoinedViaInviteLink.contains(aci),
-                didJoinFromAcceptedJoinRequest: false
+                didJoinFromAcceptedJoinRequest: false,
             )
 
             guard let profileKeyCiphertextData = memberProto.profileKey else {
@@ -438,7 +440,7 @@ public class GroupsV2Protos {
         let groupAccess = GroupAccess(
             members: GroupV2Access.access(forProtoAccess: accessControlForMembers),
             attributes: GroupV2Access.access(forProtoAccess: accessControlForAttributes),
-            addFromInviteLink: GroupV2Access.access(forProtoAccess: accessControlForAddFromInviteLink)
+            addFromInviteLink: GroupV2Access.access(forProtoAccess: accessControlForAddFromInviteLink),
         )
 
         validateInviteLinkState(inviteLinkPassword: inviteLinkPassword, groupAccess: groupAccess)
@@ -457,7 +459,7 @@ public class GroupsV2Protos {
             inviteLinkPassword: inviteLinkPassword,
             disappearingMessageToken: disappearingMessageToken,
             isAnnouncementsOnly: isAnnouncementsOnly,
-            profileKeys: profileKeys
+            profileKeys: profileKeys,
         )
     }
 
@@ -465,7 +467,7 @@ public class GroupsV2Protos {
     /// the group via the invite link.
     private class func parseMembersJoinedViaInviteLink(
         changeActionsProto: GroupsProtoGroupChangeActions,
-        groupV2Params: GroupV2Params
+        groupV2Params: GroupV2Params,
     ) -> Set<Aci> {
         let acis: [Aci] = changeActionsProto.addMembers.compactMap { addMemberAction in
             guard
@@ -485,12 +487,16 @@ public class GroupsV2Protos {
 
     // MARK: -
 
-    public class func parseGroupInviteLinkPreview(_ protoData: Data,
-                                                  groupV2Params: GroupV2Params) throws -> GroupInviteLinkPreview {
-        let joinInfoProto = try GroupsProtoGroupJoinInfo.init(serializedData: protoData)
-        guard let titleData = joinInfoProto.title,
-            !titleData.isEmpty else {
-                throw OWSAssertionError("Missing or invalid titleData.")
+    public class func parseGroupInviteLinkPreview(
+        _ protoData: Data,
+        groupV2Params: GroupV2Params,
+    ) throws -> GroupInviteLinkPreview {
+        let joinInfoProto = try GroupsProtoGroupJoinInfo(serializedData: protoData)
+        guard
+            let titleData = joinInfoProto.title,
+            !titleData.isEmpty
+        else {
+            throw OWSAssertionError("Missing or invalid titleData.")
         }
         guard let title = groupV2Params.decryptGroupName(titleData) else {
             throw OWSAssertionError("Missing or invalid title.")
@@ -510,13 +516,15 @@ public class GroupsV2Protos {
         let revision = joinInfoProto.revision
         let isLocalUserRequestingMember = joinInfoProto.pendingAdminApproval
 
-        return GroupInviteLinkPreview(title: title,
-                                      descriptionText: descriptionText,
-                                      avatarUrlPath: avatarUrlPath,
-                                      memberCount: memberCount,
-                                      addFromInviteLinkAccess: addFromInviteLinkAccess,
-                                      revision: revision,
-                                      isLocalUserRequestingMember: isLocalUserRequestingMember)
+        return GroupInviteLinkPreview(
+            title: title,
+            descriptionText: descriptionText,
+            avatarUrlPath: avatarUrlPath,
+            memberCount: memberCount,
+            addFromInviteLinkAccess: addFromInviteLinkAccess,
+            revision: revision,
+            isLocalUserRequestingMember: isLocalUserRequestingMember,
+        )
     }
 
     // MARK: -
@@ -545,7 +553,7 @@ public class GroupsV2Protos {
                 changeActionsProto: try changeStateProto.groupChange.map {
                     // No need to verify the signature; these are from the service.
                     return try parseGroupChangeProto($0, verificationOperation: .alreadyTrusted)
-                }
+                },
             )
 
             guard let parsedChange else {
@@ -561,7 +569,7 @@ public class GroupsV2Protos {
 
     public class func collectAvatarUrlPaths(
         groupProtos: [GroupsProtoGroup] = [],
-        changeActionsProtos: [GroupsProtoGroupChangeActions] = []
+        changeActionsProtos: [GroupsProtoGroupChangeActions] = [],
     ) -> [String] {
         var avatarUrlPaths = [String]()
         for groupProto in groupProtos {

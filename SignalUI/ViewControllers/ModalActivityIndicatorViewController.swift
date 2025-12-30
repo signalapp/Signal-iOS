@@ -13,7 +13,7 @@ public class ModalActivityIndicatorViewController: OWSViewController {
         public static let defaultPresentationDelay: TimeInterval = 0.05
     }
 
-    private(set) public var wasCancelled: Bool = false
+    public private(set) var wasCancelled: Bool = false
 
     private let canCancel: Bool
     private let isInvisible: Bool
@@ -38,7 +38,7 @@ public class ModalActivityIndicatorViewController: OWSViewController {
         canCancel: Bool,
         presentationDelay: TimeInterval = Constants.defaultPresentationDelay,
         backgroundBlockQueueQos: DispatchQoS = .default,
-        backgroundBlock: @escaping (ModalActivityIndicatorViewController) -> Void
+        backgroundBlock: @escaping (ModalActivityIndicatorViewController) -> Void,
     ) {
         present(
             fromViewController: fromViewController,
@@ -46,14 +46,14 @@ public class ModalActivityIndicatorViewController: OWSViewController {
             presentationDelay: presentationDelay,
             isInvisible: false,
             backgroundBlockQueueQos: backgroundBlockQueueQos,
-            backgroundBlock: backgroundBlock
+            backgroundBlock: backgroundBlock,
         )
     }
 
     @MainActor
     public class func presentAsInvisible(
         fromViewController: UIViewController,
-        backgroundBlock: @escaping (ModalActivityIndicatorViewController) -> Void
+        backgroundBlock: @escaping (ModalActivityIndicatorViewController) -> Void,
     ) {
         present(
             fromViewController: fromViewController,
@@ -61,7 +61,7 @@ public class ModalActivityIndicatorViewController: OWSViewController {
             presentationDelay: Constants.defaultPresentationDelay,
             isInvisible: true,
             backgroundBlockQueueQos: .default,
-            backgroundBlock: backgroundBlock
+            backgroundBlock: backgroundBlock,
         )
     }
 
@@ -72,21 +72,21 @@ public class ModalActivityIndicatorViewController: OWSViewController {
         presentationDelay: TimeInterval,
         isInvisible: Bool,
         backgroundBlockQueueQos: DispatchQoS,
-        backgroundBlock: @escaping (ModalActivityIndicatorViewController) -> Void
+        backgroundBlock: @escaping (ModalActivityIndicatorViewController) -> Void,
     ) {
         AssertIsOnMainThread()
 
         ModalActivityIndicatorViewController(
             canCancel: canCancel,
             presentationDelay: presentationDelay,
-            isInvisible: isInvisible
+            isInvisible: isInvisible,
         ).present(
             from: fromViewController,
             asyncBlock: { viewController in
                 DispatchQueue.global(qos: backgroundBlockQueueQos.qosClass).async {
                     backgroundBlock(viewController)
                 }
-            }
+            },
         )
     }
 
@@ -106,17 +106,17 @@ public class ModalActivityIndicatorViewController: OWSViewController {
         canCancel: Bool = false,
         presentationDelay: TimeInterval = Constants.defaultPresentationDelay,
         isInvisible: Bool = false,
-        asyncBlock: @escaping @MainActor (ModalActivityIndicatorViewController) async -> Void
+        asyncBlock: @escaping @MainActor (ModalActivityIndicatorViewController) async -> Void,
     ) {
         AssertIsOnMainThread()
 
         ModalActivityIndicatorViewController(
             canCancel: canCancel,
             presentationDelay: presentationDelay,
-            isInvisible: isInvisible
+            isInvisible: isInvisible,
         ).present(
             from: fromViewController,
-            asyncBlock: asyncBlock
+            asyncBlock: asyncBlock,
         )
     }
 
@@ -133,7 +133,7 @@ public class ModalActivityIndicatorViewController: OWSViewController {
         from viewController: UIViewController,
         canCancel: Bool = false,
         presentationDelay: TimeInterval = Constants.defaultPresentationDelay,
-        wrappedAsyncBlock: @escaping () async throws(E) -> T
+        wrappedAsyncBlock: @escaping () async throws(E) -> T,
     ) async throws(E) -> T {
         let result: Result<T, E> = await withCheckedContinuation { continuation in
             present(
@@ -145,7 +145,7 @@ public class ModalActivityIndicatorViewController: OWSViewController {
                     modal.dismiss {
                         continuation.resume(returning: result)
                     }
-                }
+                },
             )
         }
 
@@ -200,7 +200,7 @@ public class ModalActivityIndicatorViewController: OWSViewController {
 
     // MARK: -
 
-    public override func loadView() {
+    override public func loadView() {
         super.loadView()
 
         if isInvisible {
@@ -208,8 +208,8 @@ public class ModalActivityIndicatorViewController: OWSViewController {
             self.view.isOpaque = false
         } else {
             self.view.backgroundColor = (Theme.isDarkThemeEnabled
-                                            ? UIColor(white: 0.35, alpha: 0.35)
-                                            : UIColor(white: 0, alpha: 0.25))
+                ? UIColor(white: 0.35, alpha: 0.35)
+                : UIColor(white: 0, alpha: 0.25))
             self.view.isOpaque = false
 
             let activityIndicator = UIActivityIndicatorView(style: .large)
@@ -245,7 +245,7 @@ public class ModalActivityIndicatorViewController: OWSViewController {
         self.view.layer.opacity = 0.0
     }
 
-    public override func viewWillAppear(_ animated: Bool) {
+    override public func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
         self.activityIndicator?.startAnimating()
@@ -265,13 +265,13 @@ public class ModalActivityIndicatorViewController: OWSViewController {
         }
     }
 
-    public override func viewWillDisappear(_ animated: Bool) {
+    override public func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
         clearTimer()
     }
 
-    public override func viewDidDisappear(_ animated: Bool) {
+    override public func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
 
         self.activityIndicator?.stopAnimating()

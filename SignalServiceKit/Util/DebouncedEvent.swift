@@ -63,19 +63,25 @@ public enum DebouncedEvents {
     // A very small interval.
     public static let thetaInterval: Double = 0.001
 
-    public static func build(mode: DebouncedEventMode,
-                             maxFrequencySeconds: TimeInterval,
-                             onQueue queue: DispatchQueue,
-                             notifyBlock: @escaping () -> Void) -> DebouncedEvent {
+    public static func build(
+        mode: DebouncedEventMode,
+        maxFrequencySeconds: TimeInterval,
+        onQueue queue: DispatchQueue,
+        notifyBlock: @escaping () -> Void,
+    ) -> DebouncedEvent {
         switch mode {
         case .lastOnly:
-            return DebouncedEventLastOnly(maxFrequencySeconds: maxFrequencySeconds,
-                                          onQueue: queue,
-                                           notifyBlock: notifyBlock)
+            return DebouncedEventLastOnly(
+                maxFrequencySeconds: maxFrequencySeconds,
+                onQueue: queue,
+                notifyBlock: notifyBlock,
+            )
         case .firstLast:
-            return DebouncedEventFirstLast(maxFrequencySeconds: maxFrequencySeconds,
-                                           onQueue: queue,
-                                           notifyBlock: notifyBlock)
+            return DebouncedEventFirstLast(
+                maxFrequencySeconds: maxFrequencySeconds,
+                onQueue: queue,
+                notifyBlock: notifyBlock,
+            )
         }
     }
 }
@@ -90,15 +96,17 @@ private class DebouncedEventLastOnly: DebouncedEvent {
     private let queue: DispatchQueue
     private let unfairLock = UnfairLock()
 
-    public init(maxFrequencySeconds: TimeInterval,
-                onQueue queue: DispatchQueue,
-                notifyBlock: @escaping () -> Void) {
+    init(
+        maxFrequencySeconds: TimeInterval,
+        onQueue queue: DispatchQueue,
+        notifyBlock: @escaping () -> Void,
+    ) {
         self.maxFrequencySeconds = maxFrequencySeconds
         self.queue = queue
         self.notifyBlock = notifyBlock
     }
 
-    public func requestNotify() {
+    func requestNotify() {
         unfairLock.withLock {
             if hasEnqueuedNotification {
                 // Delayed notification is already enqueued. We can ignore this request
@@ -141,15 +149,17 @@ private class DebouncedEventFirstLast: DebouncedEvent {
     private let queue: DispatchQueue
     private let unfairLock = UnfairLock()
 
-    public init(maxFrequencySeconds: TimeInterval,
-                onQueue queue: DispatchQueue,
-                notifyBlock: @escaping () -> Void) {
+    init(
+        maxFrequencySeconds: TimeInterval,
+        onQueue queue: DispatchQueue,
+        notifyBlock: @escaping () -> Void,
+    ) {
         self.maxFrequencySeconds = maxFrequencySeconds
         self.queue = queue
         self.notifyBlock = notifyBlock
     }
 
-    public func requestNotify() {
+    func requestNotify() {
         unfairLock.withLock {
             if hasEnqueuedNotification {
                 // Delayed notification is already enqueued. We can ignore this request

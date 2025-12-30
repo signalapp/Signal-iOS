@@ -129,7 +129,7 @@ public struct SendableAttachment {
                 asset,
                 from: startTime,
                 duration: segmentDuration,
-                totalDuration: cmDuration
+                totalDuration: cmDuration,
             ))
             startTime += segmentDuration
         }
@@ -147,7 +147,7 @@ public struct SendableAttachment {
         _ asset: AVURLAsset,
         from startTime: TimeInterval,
         duration: TimeInterval,
-        totalDuration: CMTime
+        totalDuration: CMTime,
     ) async throws -> URL {
         guard let exportSession = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetPassthrough) else {
             throw OWSAssertionError("Failed to start export session for segmentation")
@@ -156,7 +156,7 @@ public struct SendableAttachment {
         // tmp url is ok, it gets moved when converted to a Attachment later anyway.
         let outputUrl = OWSFileSystem.temporaryFileUrl(
             fileExtension: asset.url.pathExtension,
-            isAvailableWhileDeviceLocked: true
+            isAvailableWhileDeviceLocked: true,
         )
         exportSession.outputURL = outputUrl
         /// This is hardcoded here and in our media editor. That's in signalUI, so hard to link the two.

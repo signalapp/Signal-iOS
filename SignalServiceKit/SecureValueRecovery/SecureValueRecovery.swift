@@ -141,13 +141,13 @@ public protocol SecureValueRecovery {
     func storeKeys(
         fromKeysSyncMessage syncMessage: SSKProtoSyncMessageKeys,
         authedDevice: AuthedDevice,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws(SVR.KeysError)
 
     func storeKeys(
         fromProvisioningMessage provisioningMessage: LinkingProvisioningMessage,
         authedDevice: AuthedDevice,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws(SVR.KeysError)
 
     func handleMasterKeyUpdated(

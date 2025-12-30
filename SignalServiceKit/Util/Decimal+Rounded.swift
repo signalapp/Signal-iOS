@@ -21,7 +21,7 @@ public extension Decimal {
             raiseOnExactness: false,
             raiseOnOverflow: false,
             raiseOnUnderflow: false,
-            raiseOnDivideByZero: false
+            raiseOnDivideByZero: false,
         ))
         return nsResult as Decimal
     }

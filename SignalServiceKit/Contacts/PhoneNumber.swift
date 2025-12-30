@@ -40,7 +40,7 @@ public struct PhoneNumber {
     private static func bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber(_ input: String, regionCode: String) -> String {
         let formatter: NBAsYouTypeFormatter = NBAsYouTypeFormatter(
             regionCode: regionCode,
-            metadataHelper: SSKEnvironment.shared.phoneNumberUtilRef.nbMetadataHelper
+            metadataHelper: SSKEnvironment.shared.phoneNumberUtilRef.nbMetadataHelper,
         )
         var result = input
         // Note that the objc code this was converted from would've performed this in UTF-16 code units.

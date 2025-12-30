@@ -9,10 +9,12 @@ public class MessageRequestPendingReceipts: PendingReceiptRecorder {
 
     public init(appReadiness: AppReadiness) {
         appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
-            NotificationCenter.default.addObserver(self,
-                                                   selector: #selector(self.profileWhitelistDidChange(notification:)),
-                                                   name: UserProfileNotifications.profileWhitelistDidChange,
-                                                   object: nil)
+            NotificationCenter.default.addObserver(
+                self,
+                selector: #selector(self.profileWhitelistDidChange(notification:)),
+                name: UserProfileNotifications.profileWhitelistDidChange,
+                object: nil,
+            )
 
             DispatchQueue.global().async {
                 self.auditPendingReceipts()
@@ -20,7 +22,7 @@ public class MessageRequestPendingReceipts: PendingReceiptRecorder {
         }
     }
 
-    // MARK: - 
+    // MARK: -
 
     let finder = PendingReceiptFinder()
 
@@ -151,7 +153,7 @@ public class MessageRequestPendingReceipts: PendingReceiptRecorder {
                 for: authorAci,
                 timestamp: UInt64(receipt.messageTimestamp),
                 messageUniqueId: receipt.messageUniqueId,
-                tx: transaction
+                tx: transaction,
             )
         }
         try finder.delete(pendingReadReceipts: pendingReadReceipts, transaction: transaction)
@@ -165,7 +167,7 @@ public class MessageRequestPendingReceipts: PendingReceiptRecorder {
                 for: authorAci,
                 timestamp: UInt64(receipt.messageTimestamp),
                 messageUniqueId: receipt.messageUniqueId,
-                tx: transaction
+                tx: transaction,
             )
         }
         try finder.delete(pendingViewedReceipts: pendingViewedReceipts, transaction: transaction)
@@ -196,7 +198,7 @@ public class PendingReceiptFinder {
             messageTimestamp: Int64(message.timestamp),
             messageUniqueId: message.uniqueId,
             authorPhoneNumber: message.authorPhoneNumber,
-            authorAci: Aci.parseFrom(aciString: message.authorUUID)
+            authorAci: Aci.parseFrom(aciString: message.authorUUID),
         )
 
         try record.insert(transaction.database)
@@ -212,7 +214,7 @@ public class PendingReceiptFinder {
             messageTimestamp: Int64(message.timestamp),
             messageUniqueId: message.uniqueId,
             authorPhoneNumber: message.authorPhoneNumber,
-            authorAci: Aci.parseFrom(aciString: message.authorUUID)
+            authorAci: Aci.parseFrom(aciString: message.authorUUID),
         )
 
         try record.insert(transaction.database)
@@ -276,7 +278,7 @@ public class PendingReceiptFinder {
 
 // MARK: -
 
-fileprivate extension Notification {
+private extension Notification {
     var userProfileWriter: UserProfileWriter {
         guard let userProfileWriterValue = userInfo?[OWSProfileManager.notificationKeyUserProfileWriter] as? NSNumber else {
             owsFailDebug("userProfileWriterValue was unexpectedly nil")

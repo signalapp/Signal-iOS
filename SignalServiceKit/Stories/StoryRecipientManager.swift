@@ -15,7 +15,7 @@ public class StoryRecipientManager {
         recipientDatabaseTable: RecipientDatabaseTable,
         storyRecipientStore: StoryRecipientStore,
         storageServiceManager: any StorageServiceManager,
-        threadStore: any ThreadStore
+        threadStore: any ThreadStore,
     ) {
         self.recipientDatabaseTable = recipientDatabaseTable
         self.storyRecipientStore = storyRecipientStore
@@ -25,7 +25,7 @@ public class StoryRecipientManager {
 
     public func fetchRecipients(
         forStoryThread storyThread: TSPrivateStoryThread,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> [SignalRecipient] {
         let recipientIds = try storyRecipientStore.fetchRecipientIds(forStoryThreadId: storyThread.sqliteRowId!, tx: tx)
         return try recipientIds.map { recipientId in
@@ -40,7 +40,7 @@ public class StoryRecipientManager {
         _ recipientIds: [SignalRecipient.RowId],
         for storyThread: TSPrivateStoryThread,
         shouldUpdateStorageService: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         let storyThreadId = storyThread.sqliteRowId!
         try storyRecipientStore.removeRecipientIds(forStoryThreadId: storyThreadId, tx: tx)
@@ -56,7 +56,7 @@ public class StoryRecipientManager {
         _ recipientIds: [SignalRecipient.RowId],
         for storyThread: TSPrivateStoryThread,
         shouldUpdateStorageService: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         let storyThreadId = storyThread.sqliteRowId!
         for recipientId in recipientIds {
@@ -71,7 +71,7 @@ public class StoryRecipientManager {
         _ recipientIds: [SignalRecipient.RowId],
         for storyThread: TSPrivateStoryThread,
         shouldUpdateStorageService: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         let storyThreadId = storyThread.sqliteRowId!
         for recipientId in recipientIds {

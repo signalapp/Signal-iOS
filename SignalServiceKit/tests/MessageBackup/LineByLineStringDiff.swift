@@ -7,14 +7,6 @@ struct LineByLineStringDiff {
     private let insertedLineGroups: [SequentialLineChanges]
     private let removedLineGroups: [SequentialLineChanges]
 
-    private init(
-        insertedLineGroups: [SequentialLineChanges],
-        removedLineGroups: [SequentialLineChanges]
-    ) {
-        self.insertedLineGroups = insertedLineGroups
-        self.removedLineGroups = removedLineGroups
-    }
-
     static func diffing(lhs: String, rhs: String) -> LineByLineStringDiff {
         func lines(_ str: String) -> [String] {
             return str.split(whereSeparator: \.isNewline).map { String($0) }
@@ -29,7 +21,7 @@ struct LineByLineStringDiff {
 
         return LineByLineStringDiff(
             insertedLineGroups: insertedLineGroups,
-            removedLineGroups: removedLineGroups
+            removedLineGroups: removedLineGroups,
         )
     }
 
@@ -38,7 +30,7 @@ struct LineByLineStringDiff {
     func prettyPrint(
         lhsLabel: String,
         rhsLabel: String,
-        diffGroupDivider divider: String
+        diffGroupDivider divider: String,
     ) -> String {
         /// Sort the line change groups by the line number at which the group
         /// starts, in an attempt to improve the readability of a complex diff.
@@ -55,9 +47,9 @@ struct LineByLineStringDiff {
                 /// "removals" will represent `rhs` lines missing from `lhs`.
                 return lineGroup.prettyPrint(
                     insertionLabel: lhsLabel,
-                    removalLabel: rhsLabel
+                    removalLabel: rhsLabel,
                 )
-            }.joined(separator: "\n\(divider)\n")
+            }.joined(separator: "\n\(divider)\n"),
         )
         output.append("\n\(divider)")
 
@@ -92,12 +84,12 @@ private extension LineByLineStringDiff {
 
         func prettyPrint(
             insertionLabel: String,
-            removalLabel: String
+            removalLabel: String,
         ) -> String {
             return sequentialLines.map { change -> String in
                 return change.prettyPrint(
                     insertionLabel: insertionLabel,
-                    removalLabel: removalLabel
+                    removalLabel: removalLabel,
                 )
             }.joined(separator: "\n")
         }
@@ -137,15 +129,15 @@ private extension CollectionDifference.Change {
     var offset: Int {
         switch self {
         case
-                .insert(let offset, _, _),
-                .remove(let offset, _, _):
+            .insert(let offset, _, _),
+            .remove(let offset, _, _):
             return offset
         }
     }
 
     func prettyPrint(
         insertionLabel: String,
-        removalLabel: String
+        removalLabel: String,
     ) -> String {
         switch self {
         case .insert(let offset, let element, _):

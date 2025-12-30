@@ -28,7 +28,7 @@ public class CVComponentGiftBadge: CVComponentBase, CVComponent {
     static func buildViewState(_ giftBadge: CVComponentState.GiftBadge) -> ViewState {
         ViewState(
             timeRemainingText: GiftBadgeView.timeRemainingText(for: giftBadge.expirationDate),
-            cachedBadgeValue: giftBadge.cachedBadge.cachedValue
+            cachedBadgeValue: giftBadge.cachedBadge.cachedValue,
         )
     }
 
@@ -50,7 +50,7 @@ public class CVComponentGiftBadge: CVComponentBase, CVComponent {
             otherUserShortName: self.giftBadge.otherUserShortName,
             redemptionState: self.giftBadge.redemptionState,
             isIncoming: self.isIncoming,
-            conversationStyle: self.conversationStyle
+            conversationStyle: self.conversationStyle,
         )
     }
 
@@ -67,7 +67,7 @@ public class CVComponentGiftBadge: CVComponentBase, CVComponent {
     public func configureForRendering(
         componentView: CVComponentView,
         cellMeasurement: CVCellMeasurement,
-        componentDelegate: CVComponentDelegate
+        componentDelegate: CVComponentDelegate,
     ) {
         guard let componentView = componentView as? CVComponentViewGiftBadge else {
             owsFailDebug("unexpected componentView")
@@ -79,7 +79,7 @@ public class CVComponentGiftBadge: CVComponentBase, CVComponent {
         componentView.giftBadgeView.configureForRendering(
             state: self.state,
             cellMeasurement: cellMeasurement,
-            componentDelegate: componentDelegate
+            componentDelegate: componentDelegate,
         )
     }
 
@@ -98,11 +98,11 @@ public class CVComponentGiftBadge: CVComponentBase, CVComponent {
         return (giftWrap.rootView, giftWrap.bubbleViewPartner)
     }
 
-    public override func handleTap(
+    override public func handleTap(
         sender: UIGestureRecognizer,
         componentDelegate: CVComponentDelegate,
         componentView: CVComponentView,
-        renderItem: CVRenderItem
+        renderItem: CVRenderItem,
     ) -> Bool {
 
         guard let componentView = componentView as? CVComponentViewGiftBadge else {
@@ -137,7 +137,7 @@ public class CVComponentGiftBadge: CVComponentBase, CVComponent {
             itemViewModel,
             profileBadge: profileBadge,
             isExpired: giftBadge.expirationDate.isBeforeNow,
-            isRedeemed: giftBadge.redemptionState == .redeemed
+            isRedeemed: giftBadge.redemptionState == .redeemed,
         )
         return true
     }

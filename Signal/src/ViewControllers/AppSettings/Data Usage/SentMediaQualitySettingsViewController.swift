@@ -32,7 +32,7 @@ final class SentMediaQualitySettingsViewController: OWSTableViewController2 {
 
         title = OWSLocalizedString(
             "SETTINGS_DATA_SENT_MEDIA_QUALITY_ITEM_TITLE",
-            comment: "Item title for the sent media quality setting"
+            comment: "Item title for the sent media quality setting",
         )
 
         updateTableContents()
@@ -45,11 +45,11 @@ final class SentMediaQualitySettingsViewController: OWSTableViewController2 {
         let section = OWSTableSection()
         section.headerTitle = OWSLocalizedString(
             "SETTINGS_SENT_MEDIA_QUALITY_SECTION_TITLE",
-            comment: "The title for the photos and videos section in the sent media quality settings."
+            comment: "The title for the photos and videos section in the sent media quality settings.",
         )
         section.footerTitle = OWSLocalizedString(
             "SETTINGS_SENT_MEDIA_QUALITY_SECTION_FOOTER",
-            comment: "The footer for the photos and videos section in the sent media quality settings."
+            comment: "The footer for the photos and videos section in the sent media quality settings.",
         )
 
         section.add(qualityItem(.standard))
@@ -64,7 +64,7 @@ final class SentMediaQualitySettingsViewController: OWSTableViewController2 {
             actionBlock: { [weak self] in
                 self?.changeImageQuality(imageQuality)
             },
-            accessoryType: self.imageQuality == imageQuality ? .checkmark : .none
+            accessoryType: self.imageQuality == imageQuality ? .checkmark : .none,
         )
     }
 

@@ -28,8 +28,10 @@ private class ImageEditorOperation: NSObject {
 protocol ImageEditorModelObserver: AnyObject {
     // Used for large changes to the model, when the entire
     // model should be reloaded.
-    func imageEditorModelDidChange(before: ImageEditorContents,
-                                   after: ImageEditorContents)
+    func imageEditorModelDidChange(
+        before: ImageEditorContents,
+        after: ImageEditorContents,
+    )
 
     // Used for small narrow changes to the model, usually
     // to a single item.
@@ -72,8 +74,10 @@ class ImageEditorModel: NSObject {
             Logger.error("Couldn't determine MIME type for file.")
             throw ImageEditorError.invalidInput
         }
-        guard MimeTypeUtil.isSupportedImageMimeType(mimeType),
-              !MimeTypeUtil.isSupportedDefinitelyAnimatedMimeType(mimeType) else {
+        guard
+            MimeTypeUtil.isSupportedImageMimeType(mimeType),
+            !MimeTypeUtil.isSupportedDefinitelyAnimatedMimeType(mimeType)
+        else {
             Logger.error("Invalid MIME type: \(mimeType).")
             throw ImageEditorError.invalidInput
         }
@@ -157,15 +161,19 @@ class ImageEditorModel: NSObject {
         observers.append(Weak(value: observer))
     }
 
-    private func fireModelDidChange(before: ImageEditorContents,
-                                    after: ImageEditorContents) {
+    private func fireModelDidChange(
+        before: ImageEditorContents,
+        after: ImageEditorContents,
+    ) {
         // We could diff here and yield a more narrow change event.
         for weakObserver in observers {
             guard let observer = weakObserver.value else {
                 continue
             }
-            observer.imageEditorModelDidChange(before: before,
-                                               after: after)
+            observer.imageEditorModelDidChange(
+                before: before,
+                after: after,
+            )
         }
     }
 
@@ -214,25 +222,30 @@ class ImageEditorModel: NSObject {
     }
 
     func append(item: ImageEditorItem) {
-        performAction({ (oldContents) in
+        performAction({ oldContents in
             let newContents = oldContents.clone()
             newContents.append(item: item)
             return newContents
         }, changedItemIds: [item.itemId])
     }
 
-    func replace(item: ImageEditorItem,
-                 suppressUndo: Bool = false) {
-        performAction({ (oldContents) in
-            let newContents = oldContents.clone()
-            newContents.replace(item: item)
-            return newContents
-        }, changedItemIds: [item.itemId],
-                      suppressUndo: suppressUndo)
+    func replace(
+        item: ImageEditorItem,
+        suppressUndo: Bool = false,
+    ) {
+        performAction(
+            { oldContents in
+                let newContents = oldContents.clone()
+                newContents.replace(item: item)
+                return newContents
+            },
+            changedItemIds: [item.itemId],
+            suppressUndo: suppressUndo,
+        )
     }
 
     func remove(item: ImageEditorItem) {
-        performAction({ (oldContents) in
+        performAction({ oldContents in
             let newContents = oldContents.clone()
             newContents.remove(item: item)
             return newContents
@@ -275,9 +288,11 @@ class ImageEditorModel: NSObject {
         }
     }
 
-    private func performAction(_ action: (ImageEditorContents) -> ImageEditorContents,
-                               changedItemIds: [String]?,
-                               suppressUndo: Bool = false) {
+    private func performAction(
+        _ action: (ImageEditorContents) -> ImageEditorContents,
+        changedItemIds: [String]?,
+        suppressUndo: Bool = false,
+    ) {
         if !suppressUndo {
             let undoOperation = ImageEditorOperation(contents: contents)
             undoStack.append(undoOperation)
@@ -288,11 +303,13 @@ class ImageEditorModel: NSObject {
         let newContents = action(oldContents)
         contents = newContents
 
-        if let changedItemIds = changedItemIds {
+        if let changedItemIds {
             fireModelDidChange(changedItemIds: changedItemIds)
         } else {
-            fireModelDidChange(before: oldContents,
-                               after: self.contents)
+            fireModelDidChange(
+                before: oldContents,
+                after: self.contents,
+            )
         }
     }
 }

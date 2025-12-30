@@ -23,7 +23,7 @@ public struct EmojiWithSkinTones: Hashable {
     }
 
     var rawValue: String {
-        if let skinTones = skinTones {
+        if let skinTones {
             return baseEmoji.emojiPerSkinTonePermutation?[skinTones] ?? baseEmoji.rawValue
         } else {
             return baseEmoji.rawValue
@@ -57,7 +57,7 @@ extension Emoji {
     }
 
     func setPreferredSkinTones(_ preferredSkinTonePermutation: [SkinTone]?, transaction: DBWriteTransaction) {
-        if let preferredSkinTonePermutation = preferredSkinTonePermutation {
+        if let preferredSkinTonePermutation {
             Self.keyValueStore.setObject(preferredSkinTonePermutation.map { $0.rawValue }, key: rawValue, transaction: transaction)
         } else {
             Self.keyValueStore.removeValue(forKey: rawValue, transaction: transaction)

@@ -50,18 +50,18 @@ public struct TextCheckingDataItem: Equatable {
     // used when overlapping with other tappable attributes but only
     // in a subrange; the non-overlapping subrange remains tappable as
     // if it applied to the whole range.
-    internal func copyInNewRange(_ newRange: NSRange) -> TextCheckingDataItem {
+    func copyInNewRange(_ newRange: NSRange) -> TextCheckingDataItem {
         return TextCheckingDataItem(
             dataType: dataType,
             range: newRange,
             snippet: snippet,
-            url: url
+            url: url,
         )
     }
 
     public static func detectedItems(
         in text: String,
-        using detector: NSDataDetector?
+        using detector: NSDataDetector?,
     ) -> [TextCheckingDataItem] {
         guard let detector else {
             return []
@@ -110,13 +110,15 @@ public struct TextCheckingDataItem: Equatable {
                     // By default, build a query URL for Apple Maps.
                     customUrl = Self.buildAddressQueryUrl(
                         appScheme: "maps",
-                        addressToQuery: snippet
+                        addressToQuery: snippet,
                     )
                 }
             } else if resultType.contains(.link) {
-                if let url = matchUrl,
-                   url.absoluteString.lowercased().hasPrefix("mailto:"),
-                   !snippet.lowercased().hasPrefix("mailto:") {
+                if
+                    let url = matchUrl,
+                    url.absoluteString.lowercased().hasPrefix("mailto:"),
+                    !snippet.lowercased().hasPrefix("mailto:")
+                {
                     dataType = .emailAddress
                 } else {
                     dataType = .link
@@ -154,9 +156,11 @@ public struct TextCheckingDataItem: Equatable {
 
                 // Skip building customUrl if we already have a URL.
                 if matchUrl == nil {
-                    guard let components = match.components,
-                          let airline = components[.airline]?.nilIfEmpty,
-                          let flight = components[.flight]?.nilIfEmpty else {
+                    guard
+                        let components = match.components,
+                        let airline = components[.airline]?.nilIfEmpty,
+                        let flight = components[.flight]?.nilIfEmpty
+                    else {
                         Logger.warn("Missing components.")
                         return nil
                     }
@@ -186,7 +190,7 @@ public struct TextCheckingDataItem: Equatable {
                 dataType: dataType,
                 range: match.range,
                 snippet: snippet,
-                url: url
+                url: url,
             )
         }
     }
@@ -201,14 +205,14 @@ public struct TextCheckingDataItem: Equatable {
     /// The URL, or `nil` if the URL could not be constructed.
     public static func buildAddressQueryUrl(
         appScheme: String,
-        addressToQuery: String
+        addressToQuery: String,
     ) -> URL? {
         var components = URLComponents()
         components.scheme = appScheme
         components.host = ""
         components.queryItems = [URLQueryItem(
             name: "q",
-            value: addressToQuery
+            value: addressToQuery,
         )]
 
         return components.url

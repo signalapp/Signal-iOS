@@ -143,7 +143,7 @@ extension RemoteMegaphoneModel {
             primaryAction: Action?,
             primaryActionData: ActionData?,
             secondaryAction: Action?,
-            secondaryActionData: ActionData?
+            secondaryActionData: ActionData?,
         ) {
             self.id = id
             self.priority = priority
@@ -205,23 +205,23 @@ extension RemoteMegaphoneModel {
             try container.encode(dontShowAfter, forKey: .dontShowAfter)
             try container.encode(showForNumberOfDays, forKey: .showForNumberOfDays)
 
-            if let conditionalCheck = conditionalCheck {
+            if let conditionalCheck {
                 try container.encode(conditionalCheck, forKey: .conditionalCheck)
             }
 
-            if let primaryAction = primaryAction {
+            if let primaryAction {
                 try container.encode(primaryAction, forKey: .primaryAction)
             }
 
-            if let primaryActionData = primaryActionData {
+            if let primaryActionData {
                 try container.encode(primaryActionData, forKey: .primaryActionData)
             }
 
-            if let secondaryAction = secondaryAction {
+            if let secondaryAction {
                 try container.encode(secondaryAction, forKey: .secondaryAction)
             }
 
-            if let secondaryActionData = secondaryActionData {
+            if let secondaryActionData {
                 try container.encode(secondaryActionData, forKey: .secondaryActionData)
             }
         }
@@ -402,7 +402,7 @@ extension RemoteMegaphoneModel.Manifest {
 
             try container.encode(actionDataId, forKey: .actionDataId)
 
-            if let associatedData = associatedData {
+            if let associatedData {
                 try container.encode(associatedData, forKey: .associatedData)
             }
         }
@@ -452,7 +452,7 @@ extension RemoteMegaphoneModel {
             imageRemoteUrlPath: String?,
             hasImage: Bool,
             primaryActionText: String?,
-            secondaryActionText: String?
+            secondaryActionText: String?,
         ) {
             self.id = id
             self.title = title
@@ -475,7 +475,7 @@ extension RemoteMegaphoneModel {
             body: String,
             imageRemoteUrlPath: String?,
             primaryActionText: String?,
-            secondaryActionText: String?
+            secondaryActionText: String?,
         ) -> Translation {
             Translation(
                 id: id,
@@ -484,7 +484,7 @@ extension RemoteMegaphoneModel {
                 imageRemoteUrlPath: imageRemoteUrlPath,
                 hasImage: false,
                 primaryActionText: primaryActionText,
-                secondaryActionText: secondaryActionText
+                secondaryActionText: secondaryActionText,
             )
         }
 
@@ -521,17 +521,17 @@ extension RemoteMegaphoneModel {
             try container.encode(title, forKey: .title)
             try container.encode(body, forKey: .body)
 
-            if let imageRemoteUrlPath = imageRemoteUrlPath {
+            if let imageRemoteUrlPath {
                 try container.encode(imageRemoteUrlPath, forKey: .imageRemoteUrlPath)
             }
 
             try container.encode(hasImage, forKey: .hasImage)
 
-            if let primaryActionText = primaryActionText {
+            if let primaryActionText {
                 try container.encode(primaryActionText, forKey: .primaryActionText)
             }
 
-            if let secondaryActionText = secondaryActionText {
+            if let secondaryActionText {
                 try container.encode(secondaryActionText, forKey: .secondaryActionText)
             }
         }

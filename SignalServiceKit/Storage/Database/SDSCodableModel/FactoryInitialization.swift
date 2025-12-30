@@ -67,7 +67,7 @@ protocol NeedsFactoryInitializationFromRecordType: Decodable {
     /// The subclass type to initialize ourselves as. A `nil` result represents
     /// an error state, such as no subclass matching `recordType`.
     static func classToInitialize(
-        forRecordType recordType: UInt
+        forRecordType recordType: UInt,
     ) -> (any FactoryInitializableFromRecordType.Type)?
 }
 
@@ -92,7 +92,7 @@ extension NeedsFactoryInitializationFromRecordType {
 
             throw DecodingError.dataCorrupted(.init(
                 codingPath: [Self.recordTypeCodingKey],
-                debugDescription: errorMessage
+                debugDescription: errorMessage,
             ))
         }
 
@@ -103,7 +103,7 @@ extension NeedsFactoryInitializationFromRecordType {
 
             throw DecodingError.dataCorrupted(.init(
                 codingPath: [Self.recordTypeCodingKey],
-                debugDescription: errorMessage
+                debugDescription: errorMessage,
             ))
         }
 

@@ -24,7 +24,7 @@ public enum NewAccountDiscovery {
             forTSMessage: message,
             thread: thread,
             wantsSound: false,
-            transaction: tx
+            transaction: tx,
         )
     }
 }

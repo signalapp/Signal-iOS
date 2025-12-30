@@ -4,8 +4,8 @@
 //
 
 import Foundation
-import SignalServiceKit
 import SignalRingRTC
+import SignalServiceKit
 
 final class CallLinkUpdateMessageSender {
     private let messageSenderJobQueue: MessageSenderJobQueue
@@ -20,7 +20,7 @@ final class CallLinkUpdateMessageSender {
             localThread: localThread,
             rootKey: rootKey,
             adminPasskey: adminPasskey,
-            tx: tx
+            tx: tx,
         )
         messageSenderJobQueue.add(message: .preprepared(transientMessageWithoutAttachments: callLinkUpdate), transaction: tx)
     }

@@ -15,15 +15,15 @@ public struct AccountAttributesRequestFactory {
     /// If you are updating capabilities for a secondary device, use `updateLinkedDeviceCapabilitiesRequest` instead
     public func updatePrimaryDeviceAttributesRequest(
         _ attributes: AccountAttributes,
-        auth: ChatServiceAuth
+        auth: ChatServiceAuth,
     ) -> TSRequest {
         owsPrecondition(
             tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice ?? true,
-            "Trying to set primary device attributes from secondary/linked device"
+            "Trying to set primary device attributes from secondary/linked device",
         )
 
         let urlPathComponents = URLPathComponents(
-            ["v1", "accounts", "attributes"]
+            ["v1", "accounts", "attributes"],
         )
         var urlComponents = URLComponents()
         urlComponents.percentEncodedPath = urlPathComponents.percentEncoded
@@ -37,7 +37,7 @@ public struct AccountAttributesRequestFactory {
         var result = TSRequest(
             url: url,
             method: "PUT",
-            parameters: parameters
+            parameters: parameters,
         )
         result.headers["X-Signal-Agent"] = "OWI"
         result.auth = .identified(auth)
@@ -46,17 +46,17 @@ public struct AccountAttributesRequestFactory {
 
     public func updateLinkedDeviceCapabilitiesRequest(
         _ capabilities: AccountAttributes.Capabilities,
-        auth: ChatServiceAuth
+        auth: ChatServiceAuth,
     ) -> TSRequest {
         owsPrecondition(
             (tsAccountManager.registrationStateWithMaybeSneakyTransaction.isPrimaryDevice ?? false).negated,
-            "Trying to set seconday device attributes from primary device"
+            "Trying to set seconday device attributes from primary device",
         )
 
         var result = TSRequest(
             url: URL(string: "v1/devices/capabilities")!,
             method: "PUT",
-            parameters: capabilities.requestParameters
+            parameters: capabilities.requestParameters,
         )
         result.auth = .identified(auth)
         return result

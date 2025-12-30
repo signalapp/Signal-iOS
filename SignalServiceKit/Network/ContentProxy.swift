@@ -17,7 +17,7 @@ public enum ContentProxy {
             "HTTPPort": proxyPort,
             "HTTPSEnable": 1,
             "HTTPSProxy": proxyHost,
-            "HTTPSPort": proxyPort
+            "HTTPSPort": proxyPort,
         ]
         return configuration
     }
@@ -25,7 +25,7 @@ public enum ContentProxy {
     public static func configureProxiedRequest(request: inout URLRequest) -> Bool {
         request.setValue(
             OWSURLSession.userAgentHeaderValueSignalIos,
-            forHTTPHeaderField: HttpHeaders.userAgentHeaderKey
+            forHTTPHeaderField: HttpHeaders.userAgentHeaderKey,
         )
 
         padRequestSize(request: &request)

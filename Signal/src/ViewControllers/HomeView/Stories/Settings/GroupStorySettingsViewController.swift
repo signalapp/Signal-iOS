@@ -15,7 +15,7 @@ class GroupStorySettingsViewController: OWSTableViewController2 {
         super.init()
     }
 
-    public override func viewWillAppear(_ animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         updateBarButtons()
         updateTableContents()
@@ -35,20 +35,20 @@ class GroupStorySettingsViewController: OWSTableViewController2 {
             UIAction(
                 title: OWSLocalizedString(
                     "STORIES_GO_TO_CHAT_ACTION",
-                    comment: "Context menu action to open the chat associated with the selected story"
+                    comment: "Context menu action to open the chat associated with the selected story",
                 ),
                 image: Theme.iconImage(.contextMenuOpenInChat),
                 handler: { [weak self] _ in
-                    guard let self = self else { return }
+                    guard let self else { return }
                     self.dismiss(animated: true) {
                         SignalApp.shared.presentConversationForThread(
                             threadUniqueId: self.thread.uniqueId,
                             action: .compose,
-                            animated: true
+                            animated: true,
                         )
                     }
-                }
-            )
+                },
+            ),
         ])
 
         navigationItem.rightBarButtonItem = .init(customView: contextButton)
@@ -70,11 +70,11 @@ class GroupStorySettingsViewController: OWSTableViewController2 {
         let viewersSection = OWSTableSection()
         viewersSection.headerTitle = OWSLocalizedString(
             "GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_HEADER",
-            comment: "Section header for the 'viewers' section on the 'group story settings' view"
+            comment: "Section header for the 'viewers' section on the 'group story settings' view",
         )
         let format = OWSLocalizedString(
             "GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT",
-            comment: "Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }}"
+            comment: "Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }}",
         )
         viewersSection.footerTitle = String.localizedStringWithFormat(format, thread.groupNameOrDefault)
         viewersSection.separatorInsetLeading = Self.cellHInnerMargin + CGFloat(AvatarBuilder.smallAvatarSizePoints) + ContactCellView.avatarTextHSpacing
@@ -125,7 +125,7 @@ class GroupStorySettingsViewController: OWSTableViewController2 {
                         icon: .groupInfoShowAllMembers,
                         iconSize: AvatarBuilder.smallAvatarSizePoints,
                         innerIconSize: 20,
-                        iconTintColor: Theme.primaryTextColor
+                        iconTintColor: Theme.primaryTextColor,
                     )
 
                     let rowLabel = UILabel()
@@ -134,7 +134,7 @@ class GroupStorySettingsViewController: OWSTableViewController2 {
                     rowLabel.font = OWSTableItem.primaryLabelFont
                     rowLabel.lineBreakMode = .byTruncatingTail
 
-                    let contentRow = UIStackView(arrangedSubviews: [ iconView, rowLabel ])
+                    let contentRow = UIStackView(arrangedSubviews: [iconView, rowLabel])
                     contentRow.spacing = ContactCellView.avatarTextHSpacing
 
                     cell.contentView.addSubview(contentRow)
@@ -145,7 +145,7 @@ class GroupStorySettingsViewController: OWSTableViewController2 {
                 },
                 actionBlock: { [weak self] in
                     self?.showAllViewers(revealingIndices: expandedViewerIndices)
-                }
+                },
             ))
         }
 
@@ -154,37 +154,40 @@ class GroupStorySettingsViewController: OWSTableViewController2 {
         deleteSection.add(.actionItem(
             withText: OWSLocalizedString(
                 "GROUP_STORY_SETTINGS_DELETE_BUTTON",
-                comment: "Button to delete the story on the 'group story settings' view"
+                comment: "Button to delete the story on the 'group story settings' view",
             ),
             textColor: .ows_accentRed,
             accessibilityIdentifier: nil,
             actionBlock: { [weak self] in
                 self?.deleteStoryWithConfirmation()
-            }))
+            },
+        ))
     }
 
     private func deleteStoryWithConfirmation() {
         let format = OWSLocalizedString(
             "GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT",
-            comment: "Action sheet title confirming deletion of a group story on the 'group story settings' view. Embeds {{ group name }}"
+            comment: "Action sheet title confirming deletion of a group story on the 'group story settings' view. Embeds {{ group name }}",
         )
         let actionSheet = ActionSheetController(
-            message: String.localizedStringWithFormat(format, thread.groupNameOrDefault)
+            message: String.localizedStringWithFormat(format, thread.groupNameOrDefault),
         )
         actionSheet.addAction(OWSActionSheets.cancelAction)
-        actionSheet.addAction(.init(
-            title: OWSLocalizedString(
-                "GROUP_STORY_SETTINGS_DELETE_BUTTON",
-                comment: "Button to delete the story on the 'group story settings' view"
+        actionSheet.addAction(
+            .init(
+                title: OWSLocalizedString(
+                    "GROUP_STORY_SETTINGS_DELETE_BUTTON",
+                    comment: "Button to delete the story on the 'group story settings' view",
+                ),
+                style: .destructive,
+                handler: { [weak self] _ in
+                    guard let self else { return }
+                    SSKEnvironment.shared.databaseStorageRef.write { transaction in
+                        self.thread.updateWithStorySendEnabled(false, transaction: transaction)
+                    }
+                    self.navigationController?.popViewController(animated: true)
+                },
             ),
-            style: .destructive,
-            handler: { [weak self] _ in
-                guard let self = self else { return }
-                SSKEnvironment.shared.databaseStorageRef.write { transaction in
-                    self.thread.updateWithStorySendEnabled(false, transaction: transaction)
-                }
-                self.navigationController?.popViewController(animated: true)
-            })
         )
         presentActionSheet(actionSheet)
     }
@@ -213,7 +216,7 @@ class GroupStorySettingsViewController: OWSTableViewController2 {
         ProfileSheetSheetCoordinator(
             address: address,
             groupViewHelper: nil,
-            spoilerState: SpoilerRenderState()
+            spoilerState: SpoilerRenderState(),
         )
         .presentAppropriateSheet(from: self)
     }

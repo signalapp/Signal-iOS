@@ -26,47 +26,47 @@ final class BackupArchiveChatUpdateMessageArchiver: BackupArchiveProtoStreamWrit
         groupCallRecordManager: any GroupCallRecordManager,
         groupUpdateItemBuilder: any GroupUpdateItemBuilder,
         individualCallRecordManager: any IndividualCallRecordManager,
-        interactionStore: BackupArchiveInteractionStore
+        interactionStore: BackupArchiveInteractionStore,
     ) {
         groupUpdateMessageArchiver = BackupArchiveGroupUpdateMessageArchiver(
             groupUpdateBuilder: groupUpdateItemBuilder,
-            interactionStore: interactionStore
+            interactionStore: interactionStore,
         )
         expirationTimerChatUpdateArchiver = BackupArchiveExpirationTimerChatUpdateArchiver(
             contactManager: contactManager,
             groupUpdateArchiver: groupUpdateMessageArchiver,
-            interactionStore: interactionStore
+            interactionStore: interactionStore,
         )
         groupCallArchiver = BackupArchiveGroupCallArchiver(
             callRecordStore: callRecordStore,
             groupCallRecordManager: groupCallRecordManager,
-            interactionStore: interactionStore
+            interactionStore: interactionStore,
         )
         individualCallArchiver = BackupArchiveIndividualCallArchiver(
             callRecordStore: callRecordStore,
             individualCallRecordManager: individualCallRecordManager,
-            interactionStore: interactionStore
+            interactionStore: interactionStore,
         )
         learnedProfileChatUpdateArchiver = BackupArchiveLearnedProfileChatUpdateArchiver(
-            interactionStore: interactionStore
+            interactionStore: interactionStore,
         )
         profileChangeChatUpdateArchiver = BackupArchiveProfileChangeChatUpdateArchiver(
-            interactionStore: interactionStore
+            interactionStore: interactionStore,
         )
         sessionSwitchoverChatUpdateArchiver = BackupArchiveSessionSwitchoverChatUpdateArchiver(
-            interactionStore: interactionStore
+            interactionStore: interactionStore,
         )
         simpleChatUpdateArchiver = BackupArchiveSimpleChatUpdateArchiver(
-            interactionStore: interactionStore
+            interactionStore: interactionStore,
         )
         threadMergeChatUpdateArchiver = BackupArchiveThreadMergeChatUpdateArchiver(
-            interactionStore: interactionStore
+            interactionStore: interactionStore,
         )
         pollTerminatedChatUpdateArchiver = BackupArchivePollTerminateChatUpdateArchiver(
-            interactionStore: interactionStore
+            interactionStore: interactionStore,
         )
         pinMessageChatUpdateArchiver = BackupArchivePinMessageChatUpdateArchiver(
-            interactionStore: interactionStore
+            interactionStore: interactionStore,
         )
     }
 
@@ -75,47 +75,47 @@ final class BackupArchiveChatUpdateMessageArchiver: BackupArchiveProtoStreamWrit
     func archiveIndividualCall(
         _ individualCallInteraction: TSCall,
         threadInfo: BackupArchive.ChatArchivingContext.CachedThreadInfo,
-        context: BackupArchive.ChatArchivingContext
+        context: BackupArchive.ChatArchivingContext,
     ) -> ArchiveChatUpdateMessageResult {
         return individualCallArchiver.archiveIndividualCall(
             individualCallInteraction,
             threadInfo: threadInfo,
-            context: context
+            context: context,
         )
     }
 
     func archiveGroupCall(
         _ groupCallInteraction: OWSGroupCallMessage,
         threadInfo: BackupArchive.ChatArchivingContext.CachedThreadInfo,
-        context: BackupArchive.ChatArchivingContext
+        context: BackupArchive.ChatArchivingContext,
     ) -> ArchiveChatUpdateMessageResult {
         return groupCallArchiver.archiveGroupCall(
             groupCallInteraction,
             threadInfo: threadInfo,
-            context: context
+            context: context,
         )
     }
 
     func archiveErrorMessage(
         _ errorMessage: TSErrorMessage,
         threadInfo: BackupArchive.ChatArchivingContext.CachedThreadInfo,
-        context: BackupArchive.ChatArchivingContext
+        context: BackupArchive.ChatArchivingContext,
     ) -> ArchiveChatUpdateMessageResult {
         /// All `TSErrorMessage`s map to simple chat updates.
         return simpleChatUpdateArchiver.archiveSimpleChatUpdate(
             errorMessage: errorMessage,
             threadInfo: threadInfo,
-            context: context
+            context: context,
         )
     }
 
     func archiveInfoMessage(
         _ infoMessage: TSInfoMessage,
         threadInfo: BackupArchive.ChatArchivingContext.CachedThreadInfo,
-        context: BackupArchive.ChatArchivingContext
+        context: BackupArchive.ChatArchivingContext,
     ) -> ArchiveChatUpdateMessageResult {
         switch infoMessage.groupUpdateMetadata(
-            localIdentifiers: context.recipientContext.localIdentifiers
+            localIdentifiers: context.recipientContext.localIdentifiers,
         ) {
         case .legacyRawString:
             // These will be dropped by the group update message archiver.
@@ -124,7 +124,7 @@ final class BackupArchiveChatUpdateMessageArchiver: BackupArchiveProtoStreamWrit
             return groupUpdateMessageArchiver.archiveGroupUpdate(
                 infoMessage: infoMessage,
                 threadInfo: threadInfo,
-                context: context
+                context: context,
             )
         case .nonGroupUpdate:
             break
@@ -151,67 +151,67 @@ final class BackupArchiveChatUpdateMessageArchiver: BackupArchiveProtoStreamWrit
             /// This info message type is handled specially.
             return .skippableInteraction(.contactHiddenInfoMessage)
         case
-                .verificationStateChange,
-                .typeLocalUserEndedSession,
-                .typeRemoteUserEndedSession,
-                .unknownProtocolVersion,
-                .userJoinedSignal,
-                .phoneNumberChange,
-                .paymentsActivationRequest,
-                .paymentsActivated,
-                .reportedSpam,
-                .blockedOtherUser,
-                .blockedGroup,
-                .unblockedOtherUser,
-                .unblockedGroup,
-                .acceptedMessageRequest:
+            .verificationStateChange,
+            .typeLocalUserEndedSession,
+            .typeRemoteUserEndedSession,
+            .unknownProtocolVersion,
+            .userJoinedSignal,
+            .phoneNumberChange,
+            .paymentsActivationRequest,
+            .paymentsActivated,
+            .reportedSpam,
+            .blockedOtherUser,
+            .blockedGroup,
+            .unblockedOtherUser,
+            .unblockedGroup,
+            .acceptedMessageRequest:
             /// These info message types map to simple chat updates.
             return simpleChatUpdateArchiver.archiveSimpleChatUpdate(
                 infoMessage: infoMessage,
                 threadInfo: threadInfo,
-                context: context
+                context: context,
             )
         case .profileUpdate:
             return profileChangeChatUpdateArchiver.archive(
                 infoMessage: infoMessage,
                 threadInfo: threadInfo,
-                context: context
+                context: context,
             )
         case .typeDisappearingMessagesUpdate:
             return expirationTimerChatUpdateArchiver.archiveExpirationTimerChatUpdate(
                 infoMessage: infoMessage,
                 threadInfo: threadInfo,
-                context: context
+                context: context,
             )
         case .threadMerge:
             return threadMergeChatUpdateArchiver.archiveThreadMergeChatUpdate(
                 infoMessage: infoMessage,
                 threadInfo: threadInfo,
-                context: context
+                context: context,
             )
         case .sessionSwitchover:
             return sessionSwitchoverChatUpdateArchiver.archiveSessionSwitchoverChatUpdate(
                 infoMessage: infoMessage,
                 threadInfo: threadInfo,
-                context: context
+                context: context,
             )
         case .learnedProfileName:
             return learnedProfileChatUpdateArchiver.archiveLearnedProfileChatUpdate(
                 infoMessage: infoMessage,
                 threadInfo: threadInfo,
-                context: context
+                context: context,
             )
         case .typeEndPoll:
             return pollTerminatedChatUpdateArchiver.archivePollTerminateChatUpdate(
                 infoMessage: infoMessage,
                 threadInfo: threadInfo,
-                context: context
+                context: context,
             )
         case .typePinnedMessage:
             return pinMessageChatUpdateArchiver.archivePinMessageChatUpdate(
                 infoMessage: infoMessage,
                 threadInfo: threadInfo,
-                context: context
+                context: context,
             )
         }
     }
@@ -221,7 +221,7 @@ final class BackupArchiveChatUpdateMessageArchiver: BackupArchiveProtoStreamWrit
     func restoreChatItem(
         _ chatItem: BackupProto_ChatItem,
         chatThread: BackupArchive.ChatThread,
-        context: BackupArchive.ChatItemRestoringContext
+        context: BackupArchive.ChatItemRestoringContext,
     ) -> RestoreChatUpdateMessageResult {
         let chatUpdateMessage: BackupProto_ChatUpdateMessage
         do {
@@ -231,7 +231,7 @@ final class BackupArchiveChatUpdateMessageArchiver: BackupArchiveProtoStreamWrit
             default:
                 return .messageFailure([.restoreFrameError(
                     .developerError(OWSAssertionError("Non-chat update!")),
-                    chatItem.id
+                    chatItem.id,
                 )])
             }
         }
@@ -239,84 +239,84 @@ final class BackupArchiveChatUpdateMessageArchiver: BackupArchiveProtoStreamWrit
         switch chatUpdateMessage.update {
         case nil:
             return .unrecognizedEnum(BackupArchive.UnrecognizedEnumError(
-                enumType: BackupProto_ChatUpdateMessage.OneOf_Update.self
+                enumType: BackupProto_ChatUpdateMessage.OneOf_Update.self,
             ))
         case .groupChange(let groupChangeChatUpdateProto):
             return groupUpdateMessageArchiver.restoreGroupUpdate(
                 groupChangeChatUpdateProto,
                 chatItem: chatItem,
                 chatThread: chatThread,
-                context: context
+                context: context,
             )
         case .individualCall(let individualCallProto):
             return individualCallArchiver.restoreIndividualCall(
                 individualCallProto,
                 chatItem: chatItem,
                 chatThread: chatThread,
-                context: context
+                context: context,
             )
         case .groupCall(let groupCallProto):
             return groupCallArchiver.restoreGroupCall(
                 groupCallProto,
                 chatItem: chatItem,
                 chatThread: chatThread,
-                context: context
+                context: context,
             )
         case .simpleUpdate(let simpleChatUpdateProto):
             return simpleChatUpdateArchiver.restoreSimpleChatUpdate(
                 simpleChatUpdateProto,
                 chatItem: chatItem,
                 chatThread: chatThread,
-                context: context
+                context: context,
             )
         case .expirationTimerChange(let expirationTimerUpdateProto):
             return expirationTimerChatUpdateArchiver.restoreExpirationTimerChatUpdate(
                 expirationTimerUpdateProto,
                 chatItem: chatItem,
                 chatThread: chatThread,
-                context: context
+                context: context,
             )
         case .profileChange(let profileChangeUpdateProto):
             return profileChangeChatUpdateArchiver.restoreProfileChangeChatUpdate(
                 profileChangeUpdateProto,
                 chatItem: chatItem,
                 chatThread: chatThread,
-                context: context
+                context: context,
             )
         case .threadMerge(let threadMergeUpdateProto):
             return threadMergeChatUpdateArchiver.restoreThreadMergeChatUpdate(
                 threadMergeUpdateProto,
                 chatItem: chatItem,
                 chatThread: chatThread,
-                context: context
+                context: context,
             )
         case .sessionSwitchover(let sessionSwitchoverUpdateProto):
             return sessionSwitchoverChatUpdateArchiver.restoreSessionSwitchoverChatUpdate(
                 sessionSwitchoverUpdateProto,
                 chatItem: chatItem,
                 chatThread: chatThread,
-                context: context
+                context: context,
             )
         case .learnedProfileChange(let learnedProfileChangeProto):
             return learnedProfileChatUpdateArchiver.restoreLearnedProfileChatUpdate(
                 learnedProfileChangeProto,
                 chatItem: chatItem,
                 chatThread: chatThread,
-                context: context
+                context: context,
             )
         case .pollTerminate(let pollTerminateUpdateProto):
             return pollTerminatedChatUpdateArchiver.restorePollTerminateChatUpdate(
                 pollTerminateUpdateProto,
                 chatItem: chatItem,
                 chatThread: chatThread,
-                context: context
+                context: context,
             )
         case .pinMessage(let pinMessageUpdateProto):
             return pinMessageChatUpdateArchiver.restorePinMessageChatUpdate(
                 pinMessageUpdateProto,
                 chatItem: chatItem,
                 chatThread: chatThread,
-                context: context
+                context: context,
             )
         }
     }

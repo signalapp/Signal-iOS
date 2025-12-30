@@ -70,7 +70,7 @@ open class ActionSheetController: OWSViewController {
         }
     }
 
-    private(set) public var actions = [ActionSheetAction]() {
+    public private(set) var actions = [ActionSheetAction]() {
         didSet {
             isCancelable = firstCancelAction != nil
         }
@@ -118,7 +118,7 @@ open class ActionSheetController: OWSViewController {
         return BonMot.StringStyle(.font(messageLabelFont), .alignment(.center))
     }
 
-    public override init() {
+    override public init() {
         super.init()
         modalPresentationStyle = .custom
         transitioningDelegate = self
@@ -140,21 +140,23 @@ open class ActionSheetController: OWSViewController {
 
     @objc
     public func addAction(_ action: ActionSheetAction) {
-        if action.style == .cancel && firstCancelAction != nil {
+        if action.style == .cancel, firstCancelAction != nil {
             owsFailDebug("Only one cancel button permitted per action sheet.")
         }
 
         // If we've already added a cancel action, any non-cancel actions should come before it
         // This matches how UIAlertController handles cancel actions.
-        if action.style != .cancel,
-            let firstCancelAction = firstCancelAction,
-            let index = stackView.arrangedSubviews.firstIndex(of: firstCancelAction.button) {
+        if
+            action.style != .cancel,
+            let firstCancelAction,
+            let index = stackView.arrangedSubviews.firstIndex(of: firstCancelAction.button)
+        {
             stackView.insertArrangedSubview(action.button, at: index)
         } else {
             stackView.addArrangedSubview(action.button)
         }
         action.button.releaseAction = { [weak self, weak action] in
-            guard let self = self, let action = action else { return }
+            guard let self, let action else { return }
             self.dismiss(animated: true) { action.handler?(action) }
         }
         actions.append(action)
@@ -162,7 +164,7 @@ open class ActionSheetController: OWSViewController {
 
     // MARK: -
 
-    public override var canBecomeFirstResponder: Bool {
+    override public var canBecomeFirstResponder: Bool {
         return true
     }
 
@@ -264,7 +266,7 @@ open class ActionSheetController: OWSViewController {
 #if compiler(>=6.2)
         if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
             let glassEffect = UIGlassEffect(style: .regular)
-            glassEffect.tintColor = UIColor.Signal.background.withAlphaComponent(2/3)
+            glassEffect.tintColor = UIColor.Signal.background.withAlphaComponent(2 / 3)
             let background = UIVisualEffectView(effect: glassEffect)
             return background
         } else {
@@ -296,14 +298,14 @@ open class ActionSheetController: OWSViewController {
                 }
                 backgroundView?.cornerConfiguration = .uniformEdges(
                     topRadius: .fixed(topRadius),
-                    bottomRadius: .containerConcentric(minimum: 20)
+                    bottomRadius: .containerConcentric(minimum: 20),
                 )
             }
 #endif
         }
     }
 
-    public override func viewDidLayoutSubviews() {
+    override public func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
         updateWidthConstraints()
@@ -323,12 +325,12 @@ open class ActionSheetController: OWSViewController {
         scrollView.contentOffset = CGPoint(x: 0, y: scrollView.contentSize.height - scrollView.height + bottomInset)
     }
 
-    open override func viewSafeAreaInsetsDidChange() {
+    override open func viewSafeAreaInsetsDidChange() {
         stackView.layoutMargins.bottom = max(20, view.safeAreaInsets.bottom)
         super.viewSafeAreaInsetsDidChange()
     }
 
-    open override func viewDidDisappear(_ animated: Bool) {
+    override open func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         dismissalDelegate?.didDismissPresentedSheet()
         onDismissHandler = nil
@@ -344,7 +346,7 @@ open class ActionSheetController: OWSViewController {
         guard !contentView.frame.contains(point) else { return }
 
         dismiss(animated: true) { [firstCancelAction] in
-            guard let firstCancelAction = firstCancelAction else { return }
+            guard let firstCancelAction else { return }
             firstCancelAction.handler?(firstCancelAction)
         }
     }
@@ -370,7 +372,7 @@ open class ActionSheetController: OWSViewController {
         self.defaultHeader = headerStack
 
         // Title
-        if let title = title {
+        if let title {
             let titleLabel = UILabel()
             titleLabel.textColor = UIColor.Signal.label
             titleLabel.font = .dynamicTypeHeadline.semibold()
@@ -384,7 +386,7 @@ open class ActionSheetController: OWSViewController {
         }
 
         // Message
-        if let message = message {
+        if let message {
             let messageView: UIView = {
                 switch message {
                 case let .text(text):
@@ -441,7 +443,7 @@ public class ActionSheetAction: NSObject {
     fileprivate let handler: Handler?
     public typealias Handler = @MainActor (ActionSheetAction) -> Void
 
-    private(set) public lazy var button = Button(action: self)
+    public private(set) lazy var button = Button(action: self)
 
     public init(title: String, style: Style = .default, handler: Handler? = nil) {
         self.title = title
@@ -493,21 +495,21 @@ extension ActionSheetAction {
     public static var acknowledge: ActionSheetAction {
         ActionSheetAction(
             title: CommonStrings.acknowledgeButton,
-            style: .default
+            style: .default,
         )
     }
 
     public static var okay: ActionSheetAction {
         ActionSheetAction(
             title: CommonStrings.okayButton,
-            style: .default
+            style: .default,
         )
     }
 
     public static var cancel: ActionSheetAction {
         ActionSheetAction(
             title: CommonStrings.cancelButton,
-            style: .cancel
+            style: .cancel,
         )
     }
 }
@@ -523,7 +525,7 @@ private class ActionSheetPresentationController: UIPresentationController {
     }
 
     override func presentationTransitionWillBegin() {
-        guard let containerView = containerView, let presentedVC = presentedViewController as? ActionSheetController else { return }
+        guard let containerView, let presentedVC = presentedViewController as? ActionSheetController else { return }
         backdropView.alpha = 0
         containerView.addSubview(backdropView)
         backdropView.autoPinEdgesToSuperviewEdges()
@@ -540,7 +542,7 @@ private class ActionSheetPresentationController: UIPresentationController {
     }
 
     override func dismissalTransitionWillBegin() {
-        guard let containerView = containerView, let presentedVC = presentedViewController as? ActionSheetController else { return }
+        guard let containerView, let presentedVC = presentedViewController as? ActionSheetController else { return }
 
         var endFrame = containerView.frame
         endFrame.origin.y = presentedVC.height
@@ -556,7 +558,7 @@ private class ActionSheetPresentationController: UIPresentationController {
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
-        guard let presentedView = presentedView else { return }
+        guard let presentedView else { return }
         coordinator.animate(alongsideTransition: { _ in
             presentedView.frame = self.frameOfPresentedViewInContainerView
             presentedView.layoutIfNeeded()
@@ -575,7 +577,7 @@ extension ActionSheetController: UITextViewDelegate {
         _ textView: UITextView,
         shouldInteractWith url: URL,
         in characterRange: NSRange,
-        interaction: UITextItemInteraction
+        interaction: UITextItemInteraction,
     ) -> Bool {
         // Because of our modal presentation style, we can't present another controller over this
         // one. We must dismiss it first.

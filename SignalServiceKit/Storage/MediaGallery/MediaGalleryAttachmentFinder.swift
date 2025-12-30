@@ -38,23 +38,23 @@ public struct MediaGalleryAttachmentFinder {
         excluding deletedAttachmentIds: Set<AttachmentReferenceId>,
         offset: Int,
         ascending: Bool,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> [AttachmentReferenceId] {
         let query = galleryItemQuery(
             in: givenInterval,
             excluding: deletedAttachmentIds,
             offset: offset,
-            ascending: ascending
+            ascending: ascending,
         )
 
         do {
             return try query
                 .fetchAll(tx.database)
-                .map { (record) -> AttachmentReferenceId in
+                .map { record -> AttachmentReferenceId in
                     let reference = try AttachmentReference(record: record)
                     return .init(
                         ownerId: reference.owner.id,
-                        orderInMessage: record.orderInMessage
+                        orderInMessage: record.orderInMessage,
                     )
                 }
         } catch {
@@ -68,26 +68,26 @@ public struct MediaGalleryAttachmentFinder {
         excluding deletedAttachmentIds: Set<AttachmentReferenceId>,
         offset: Int,
         ascending: Bool,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> [DatedAttachmentReferenceId] {
         let query = galleryItemQuery(
             in: givenInterval,
             excluding: deletedAttachmentIds,
             offset: offset,
-            ascending: ascending
+            ascending: ascending,
         )
 
         do {
             return try query
                 .fetchAll(tx.database)
-                .map { (record) -> DatedAttachmentReferenceId in
+                .map { record -> DatedAttachmentReferenceId in
                     let reference = try AttachmentReference(record: record)
                     return .init(
                         id: .init(
                             ownerId: reference.owner.id,
-                            orderInMessage: record.orderInMessage
+                            orderInMessage: record.orderInMessage,
                         ),
-                        receivedAtTimestamp: record.receivedAtTimestamp
+                        receivedAtTimestamp: record.receivedAtTimestamp,
                     )
                 }
         } catch {
@@ -104,10 +104,10 @@ public struct MediaGalleryAttachmentFinder {
 
             let attachments = DependenciesBridge.shared.attachmentStore.fetch(
                 ids: references.map(\.attachmentRowId),
-                tx: tx
+                tx: tx,
             )
             let attachmentsMap = Dictionary(grouping: attachments, by: \.id)
-            return references.compactMap { (reference) -> ReferencedAttachment? in
+            return references.compactMap { reference -> ReferencedAttachment? in
                 guard let attachment = attachmentsMap[reference.attachmentRowId]?.first else {
                     return nil
                 }
@@ -124,12 +124,12 @@ public struct MediaGalleryAttachmentFinder {
         excluding deletedAttachmentIds: Set<AttachmentReferenceId>,
         range: NSRange,
         tx: DBReadTransaction,
-        block: (Int, ReferencedAttachment) -> Void
+        block: (Int, ReferencedAttachment) -> Void,
     ) {
         let query = enumerateMediaAttachmentsQuery(
             in: dateInterval,
             excluding: deletedAttachmentIds,
-            range: range
+            range: range,
         )
 
         do {
@@ -142,7 +142,7 @@ public struct MediaGalleryAttachmentFinder {
                 let reference = try AttachmentReference(record: referenceRecord)
                 let attachment = DependenciesBridge.shared.attachmentStore.fetch(
                     id: reference.attachmentRowId,
-                    tx: tx
+                    tx: tx,
                 )
                 guard let attachment else {
                     continue
@@ -167,7 +167,7 @@ public struct MediaGalleryAttachmentFinder {
         excluding deletedAttachmentIds: Set<AttachmentReferenceId>,
         count: Int,
         tx: DBReadTransaction,
-        block: (DatedAttachmentReferenceId) -> Void
+        block: (DatedAttachmentReferenceId) -> Void,
     ) -> EnumerationCompletion {
         return self.enumerateTimestamps(
             beforeDate: date,
@@ -176,7 +176,7 @@ public struct MediaGalleryAttachmentFinder {
             count: count,
             ascending: false,
             tx: tx,
-            block: block
+            block: block,
         )
     }
 
@@ -185,7 +185,7 @@ public struct MediaGalleryAttachmentFinder {
         excluding deletedAttachmentIds: Set<AttachmentReferenceId>,
         count: Int,
         tx: DBReadTransaction,
-        block: (DatedAttachmentReferenceId) -> Void
+        block: (DatedAttachmentReferenceId) -> Void,
     ) -> EnumerationCompletion {
         return self.enumerateTimestamps(
             beforeDate: nil,
@@ -194,7 +194,7 @@ public struct MediaGalleryAttachmentFinder {
             count: count,
             ascending: true,
             tx: tx,
-            block: block
+            block: block,
         )
     }
 
@@ -205,14 +205,14 @@ public struct MediaGalleryAttachmentFinder {
         count: Int,
         ascending: Bool,
         tx: DBReadTransaction,
-        block: (DatedAttachmentReferenceId) -> Void
+        block: (DatedAttachmentReferenceId) -> Void,
     ) -> EnumerationCompletion {
         let query = enumerateTimestampsQuery(
             beforeDate: beforeDate,
             afterDate: afterDate,
             excluding: deletedAttachmentIds,
             count: count,
-            ascending: ascending
+            ascending: ascending,
         )
 
         do {
@@ -224,7 +224,7 @@ public struct MediaGalleryAttachmentFinder {
                 let reference = try AttachmentReference(record: record)
                 block(.init(
                     id: .init(ownerId: reference.owner.id, orderInMessage: record.orderInMessage),
-                    receivedAtTimestamp: record.receivedAtTimestamp
+                    receivedAtTimestamp: record.receivedAtTimestamp,
                 ))
                 countSoFar += 1
             }
@@ -244,7 +244,7 @@ public struct MediaGalleryAttachmentFinder {
         of attachment: ReferencedAttachmentStream,
         in interval: DateInterval,
         excluding deletedAttachmentIds: Set<AttachmentReferenceId>,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> AttachmentReferenceId? {
         let id = attachment.reference.referenceId
         if deletedAttachmentIds.contains(id) {
@@ -256,7 +256,7 @@ public struct MediaGalleryAttachmentFinder {
     /// Returns the number of attachments attached to `interaction`, whether or not they are media attachments. Disregards allowedMediaType.
     public func countAllAttachments(
         of interaction: TSInteraction,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> UInt {
         guard let rowId = interaction.sqliteRowId else {
             owsFailDebug("Counting attachments for uninserted message!")
@@ -264,13 +264,13 @@ public struct MediaGalleryAttachmentFinder {
         }
         return UInt(DependenciesBridge.shared.attachmentStore.fetchReferences(
             owner: .messageBodyAttachment(messageRowId: rowId),
-            tx: tx
+            tx: tx,
         ).count)
     }
 
     // MARK: - Private
 
-    internal typealias RecordType = AttachmentReference.MessageAttachmentReferenceRecord
+    typealias RecordType = AttachmentReference.MessageAttachmentReferenceRecord
 
     private func baseQuery() -> QueryInterfaceRequest<RecordType> {
         let threadIdColumn = Column(RecordType.CodingKeys.threadRowId)
@@ -305,10 +305,10 @@ public struct MediaGalleryAttachmentFinder {
             query = query
                 .filter(
                     contentTypeColumn == AttachmentReference.ContentType.animatedImage.rawValue
-                    || (
-                        contentTypeColumn == AttachmentReference.ContentType.video.rawValue
-                        && renderingFlagColumn == AttachmentReference.RenderingFlag.shouldLoop.rawValue
-                    )
+                        || (
+                            contentTypeColumn == AttachmentReference.ContentType.video.rawValue
+                                && renderingFlagColumn == AttachmentReference.RenderingFlag.shouldLoop.rawValue
+                        ),
                 )
         case .videos:
             query = query
@@ -332,7 +332,7 @@ public struct MediaGalleryAttachmentFinder {
 
     private func applyDateInterval(
         _ dateInterval: DateInterval?,
-        to query: QueryInterfaceRequest<RecordType>
+        to query: QueryInterfaceRequest<RecordType>,
     ) -> QueryInterfaceRequest<RecordType> {
         if let dateInterval {
             // Both DateInterval and SQL BETWEEN are closed ranges, but rounding to millisecond precision loses range
@@ -350,7 +350,7 @@ public struct MediaGalleryAttachmentFinder {
 
     private func applySort(
         ascending: Bool = true,
-        to query: QueryInterfaceRequest<RecordType>
+        to query: QueryInterfaceRequest<RecordType>,
     ) -> QueryInterfaceRequest<RecordType> {
         // Sort by timestamp (of the owning message)
         // Break ties between messages of the same timestamp by sqlite row id.
@@ -367,7 +367,7 @@ public struct MediaGalleryAttachmentFinder {
 
     private func filterOut(
         attachmentIds: Set<AttachmentReferenceId>,
-        on query: QueryInterfaceRequest<RecordType>
+        on query: QueryInterfaceRequest<RecordType>,
     ) -> QueryInterfaceRequest<RecordType> {
         var query = query
         for attachmentId in attachmentIds {
@@ -397,11 +397,11 @@ public struct MediaGalleryAttachmentFinder {
 
     // MARK: Internal exposed for testing
 
-    internal func galleryItemQuery(
+    func galleryItemQuery(
         in givenInterval: DateInterval?,
         excluding deletedAttachmentIds: Set<AttachmentReferenceId>,
         offset: Int,
-        ascending: Bool
+        ascending: Bool,
     ) -> QueryInterfaceRequest<RecordType> {
         var query = baseQuery()
             .limit(Int.max, offset: offset)
@@ -413,8 +413,8 @@ public struct MediaGalleryAttachmentFinder {
         return query
     }
 
-    internal func recentMediaAttachmentsQuery(
-        limit: Int
+    func recentMediaAttachmentsQuery(
+        limit: Int,
     ) -> QueryInterfaceRequest<RecordType> {
         var query = baseQuery()
             .limit(limit)
@@ -422,10 +422,10 @@ public struct MediaGalleryAttachmentFinder {
         return query
     }
 
-    internal func enumerateMediaAttachmentsQuery(
+    func enumerateMediaAttachmentsQuery(
         in dateInterval: DateInterval,
         excluding deletedAttachmentIds: Set<AttachmentReferenceId>,
-        range: NSRange
+        range: NSRange,
     ) -> QueryInterfaceRequest<RecordType> {
         var query = baseQuery()
             .limit(range.length, offset: range.lowerBound)
@@ -437,12 +437,12 @@ public struct MediaGalleryAttachmentFinder {
         return query
     }
 
-    internal func enumerateTimestampsQuery(
+    func enumerateTimestampsQuery(
         beforeDate: Date?,
         afterDate: Date?,
         excluding deletedAttachmentIds: Set<AttachmentReferenceId>,
         count: Int,
-        ascending: Bool
+        ascending: Bool,
     ) -> QueryInterfaceRequest<RecordType> {
         let dateColumn = Column(RecordType.CodingKeys.receivedAtTimestamp)
 

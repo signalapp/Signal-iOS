@@ -14,12 +14,15 @@ public class CVComponentReactions: CVComponentBase, CVComponent, CVAccessibility
     private var reactionState: InteractionReactionState {
         reactions.reactionState
     }
+
     private var viewState: CVReactionCountsView.State {
         reactions.viewState
     }
 
-    init(itemModel: CVItemModel,
-         reactions: CVComponentState.Reactions) {
+    init(
+        itemModel: CVItemModel,
+        reactions: CVComponentState.Reactions,
+    ) {
         self.reactions = reactions
 
         super.init(itemModel: itemModel)
@@ -29,9 +32,11 @@ public class CVComponentReactions: CVComponentBase, CVComponent, CVAccessibility
         CVComponentViewReactions()
     }
 
-    public func configureForRendering(componentView componentViewParam: CVComponentView,
-                                      cellMeasurement: CVCellMeasurement,
-                                      componentDelegate: CVComponentDelegate) {
+    public func configureForRendering(
+        componentView componentViewParam: CVComponentView,
+        cellMeasurement: CVCellMeasurement,
+        componentDelegate: CVComponentDelegate,
+    ) {
         guard let componentView = componentViewParam as? CVComponentViewReactions else {
             owsFailDebug("Unexpected componentView.")
             componentViewParam.reset()
@@ -39,23 +44,29 @@ public class CVComponentReactions: CVComponentBase, CVComponent, CVAccessibility
         }
 
         let reactionCountsView = componentView.reactionCountsView
-        reactionCountsView.configure(state: viewState,
-                                     cellMeasurement: cellMeasurement)
+        reactionCountsView.configure(
+            state: viewState,
+            cellMeasurement: cellMeasurement,
+        )
     }
 
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
         owsAssertDebug(maxWidth > 0)
 
-        return CVReactionCountsView.measure(state: viewState,
-                                            measurementBuilder: measurementBuilder)
+        return CVReactionCountsView.measure(
+            state: viewState,
+            measurementBuilder: measurementBuilder,
+        )
     }
 
     // MARK: - Events
 
-    public override func handleTap(sender: UIGestureRecognizer,
-                                   componentDelegate: CVComponentDelegate,
-                                   componentView: CVComponentView,
-                                   renderItem: CVRenderItem) -> Bool {
+    override public func handleTap(
+        sender: UIGestureRecognizer,
+        componentDelegate: CVComponentDelegate,
+        componentView: CVComponentView,
+        renderItem: CVRenderItem,
+    ) -> Bool {
 
         guard let message = interaction as? TSMessage else {
             owsFailDebug("Invalid interaction.")
@@ -69,7 +80,7 @@ public class CVComponentReactions: CVComponentBase, CVComponent, CVAccessibility
 
     public var accessibilityDescription: String {
         var fullString = ""
-        let pills = [viewState.pill1, viewState.pill2, viewState.pill3].compactMap{ $0 }
+        let pills = [viewState.pill1, viewState.pill2, viewState.pill3].compactMap { $0 }
 
         for pill in pills {
             let string: String
@@ -79,19 +90,19 @@ public class CVComponentReactions: CVComponentBase, CVComponent, CVAccessibility
                     OWSLocalizedString(
                         "MESSAGE_REACTIONS_ACCESSIBILITY_LABEL_%d",
                         tableName: "PluralAware",
-                        comment: "Accessibility label reading out a reaction to a message and its count. Embeds {{ count }} and {{ emoji name }}."
+                        comment: "Accessibility label reading out a reaction to a message and its count. Embeds {{ count }} and {{ emoji name }}.",
                     ),
                     count,
-                    emoji
+                    emoji,
                 )
             case .moreCount(let count, _):
                 string = String.localizedStringWithFormat(
                     OWSLocalizedString(
                         "OVERFLOW_REACTIONS_ACCESSIBILITY_LABEL_%d",
                         tableName: "PluralAware",
-                        comment: "Accessibility label stating that there are additional reactions to a message that couldn't be displayed. Embeds {{ count of additional reactions }}"
+                        comment: "Accessibility label stating that there are additional reactions to a message that couldn't be displayed. Embeds {{ count of additional reactions }}",
                     ),
-                    count
+                    count,
                 )
             }
             fullString.append(string)

@@ -21,7 +21,7 @@ public enum GiphyAPI {
         return OWSURLSession(
             baseUrl: kGiphyBaseURL,
             securityPolicy: OWSURLSession.defaultSecurityPolicy,
-            configuration: configuration
+            configuration: configuration,
         )
     }
 
@@ -38,7 +38,7 @@ public enum GiphyAPI {
     public static func search(query: String) async throws -> [GiphyImageInfo] {
         try await fetch(urlPath: "/v1/gifs/search", queryItems: [
             URLQueryItem(name: "q", value: query),
-            URLQueryItem(name: "offset", value: "0")
+            URLQueryItem(name: "offset", value: "0"),
         ])
     }
 
@@ -47,7 +47,7 @@ public enum GiphyAPI {
         urlComponents.path = urlPath
         let baseQueryItems: [URLQueryItem] = [
             URLQueryItem(name: "api_key", value: kGiphyApiKey),
-            URLQueryItem(name: "limit", value: "\(kGiphyPageSize)")
+            URLQueryItem(name: "limit", value: "\(kGiphyPageSize)"),
         ]
         urlComponents.queryItems = baseQueryItems + queryItems
         guard let urlString = urlComponents.string else {

@@ -19,14 +19,14 @@ final class CallRecordLoaderTest: XCTestCase {
 
     private func setupCallRecordLoader(
         onlyLoadMissedCalls: Bool = false,
-        onlyMatchThreadRowIds: [Int64]? = nil
+        onlyMatchThreadRowIds: [Int64]? = nil,
     ) {
         callRecordLoader = CallRecordLoaderImpl(
             callRecordQuerier: mockCallRecordQuerier,
             configuration: CallRecordLoaderImpl.Configuration(
                 onlyLoadMissedCalls: onlyLoadMissedCalls,
-                onlyMatchThreadRowIds: onlyMatchThreadRowIds
-            )
+                onlyMatchThreadRowIds: onlyMatchThreadRowIds,
+            ),
         )
     }
 
@@ -41,7 +41,8 @@ final class CallRecordLoaderTest: XCTestCase {
 
     func testNothingMatching() {
         mockCallRecordQuerier.mockCallRecords = [
-            .fixture(callId: 1), .fixture(callId: 2)
+            .fixture(callId: 1),
+            .fixture(callId: 2),
         ]
 
         setupCallRecordLoader(onlyMatchThreadRowIds: [1])
@@ -60,9 +61,13 @@ final class CallRecordLoaderTest: XCTestCase {
         setupCallRecordLoader()
 
         mockCallRecordQuerier.mockCallRecords = [
-            .fixture(callId: 1), .fixture(callId: 2), .fixture(callId: 3),
-            .fixture(callId: 4), .fixture(callId: 5), .fixture(callId: 6),
-            .fixture(callId: 7)
+            .fixture(callId: 1),
+            .fixture(callId: 2),
+            .fixture(callId: 3),
+            .fixture(callId: 4),
+            .fixture(callId: 5),
+            .fixture(callId: 6),
+            .fixture(callId: 7),
         ]
 
         XCTAssertEqual([7, 6, 5], loadRecords(loadDirection: .olderThan(oldestCallTimestamp: nil)))
@@ -76,9 +81,11 @@ final class CallRecordLoaderTest: XCTestCase {
 
         mockCallRecordQuerier.mockCallRecords = [
             .fixture(callId: 1),
-            .fixture(callId: 2, threadRowId: 1), .fixture(callId: 3, threadRowId: 2),
+            .fixture(callId: 2, threadRowId: 1),
+            .fixture(callId: 3, threadRowId: 2),
             .fixture(callId: 4),
-            .fixture(callId: 5, threadRowId: 2), .fixture(callId: 6, threadRowId: 1),
+            .fixture(callId: 5, threadRowId: 2),
+            .fixture(callId: 6, threadRowId: 1),
             .fixture(callId: 7),
         ]
 
@@ -138,9 +145,13 @@ final class CallRecordLoaderTest: XCTestCase {
         setupCallRecordLoader()
 
         mockCallRecordQuerier.mockCallRecords = [
-            .fixture(callId: 1), .fixture(callId: 2), .fixture(callId: 3),
-            .fixture(callId: 4), .fixture(callId: 5), .fixture(callId: 6),
-            .fixture(callId: 7)
+            .fixture(callId: 1),
+            .fixture(callId: 2),
+            .fixture(callId: 3),
+            .fixture(callId: 4),
+            .fixture(callId: 5),
+            .fixture(callId: 6),
+            .fixture(callId: 7),
         ]
 
         XCTAssertEqual([1, 2, 3], loadRecords(loadDirection: .newerThan(newestCallTimestamp: 0)))
@@ -154,9 +165,11 @@ final class CallRecordLoaderTest: XCTestCase {
 
         mockCallRecordQuerier.mockCallRecords = [
             .fixture(callId: 1),
-            .fixture(callId: 2, threadRowId: 1), .fixture(callId: 3, threadRowId: 2),
+            .fixture(callId: 2, threadRowId: 1),
+            .fixture(callId: 3, threadRowId: 2),
             .fixture(callId: 4),
-            .fixture(callId: 5, threadRowId: 2), .fixture(callId: 6, threadRowId: 1),
+            .fixture(callId: 5, threadRowId: 2),
+            .fixture(callId: 6, threadRowId: 1),
             .fixture(callId: 7),
         ]
 
@@ -219,7 +232,7 @@ private extension CallRecord {
     static func fixture(
         callId: UInt64,
         threadRowId: Int64 = 0,
-        callStatus: CallRecord.CallStatus = .group(.joined)
+        callStatus: CallRecord.CallStatus = .group(.joined),
     ) -> CallRecord {
         return CallRecord(
             callId: callId,
@@ -228,7 +241,7 @@ private extension CallRecord {
             callType: .groupCall,
             callDirection: .incoming,
             callStatus: callStatus,
-            callBeganTimestamp: callId
+            callBeganTimestamp: callId,
         )
     }
 }

@@ -36,7 +36,7 @@ class MessageLoaderTest: XCTestCase {
         var interactions = [TSInteraction]()
         func fetchInteractions(for uniqueIds: [String], tx: DBReadTransaction) -> [String: TSInteraction] {
             return Dictionary(
-                uniqueKeysWithValues: interactions.lazy.filter { uniqueIds.contains($0.uniqueId) }.map { ($0.uniqueId, $0) }
+                uniqueKeysWithValues: interactions.lazy.filter { uniqueIds.contains($0.uniqueId) }.map { ($0.uniqueId, $0) },
             )
         }
     }
@@ -48,7 +48,7 @@ class MessageLoaderTest: XCTestCase {
         interactionFetcher = MockInteractionFetcher()
         messageLoader = MessageLoader(
             batchFetcher: batchFetcher,
-            interactionFetchers: [interactionFetcher]
+            interactionFetchers: [interactionFetcher],
         )
         mockDB = InMemoryDB()
     }
@@ -70,7 +70,7 @@ class MessageLoaderTest: XCTestCase {
                 focusMessageId: nil,
                 reusableInteractions: [:],
                 deletedInteractionIds: [],
-                tx: tx
+                tx: tx,
             )
         }
         XCTAssertEqual(messageLoader.loadedInteractions, [])
@@ -84,7 +84,7 @@ class MessageLoaderTest: XCTestCase {
                 focusMessageId: nil,
                 reusableInteractions: [:],
                 deletedInteractionIds: [],
-                tx: tx
+                tx: tx,
             )
         }
         XCTAssertEqual(messageLoader.loadedInteractions.count, 5)
@@ -100,7 +100,7 @@ class MessageLoaderTest: XCTestCase {
                 focusMessageId: nil,
                 reusableInteractions: [:],
                 deletedInteractionIds: [],
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -114,7 +114,7 @@ class MessageLoaderTest: XCTestCase {
             return try self.messageLoader.loadSameLocation(
                 reusableInteractions: [:],
                 deletedInteractionIds: deletedInteractionIds,
-                tx: tx
+                tx: tx,
             )
         }
         XCTAssertEqual(remainingMessages.map { $0.uniqueId }, messageLoader.loadedInteractions.map { $0.uniqueId })
@@ -129,7 +129,7 @@ class MessageLoaderTest: XCTestCase {
                 focusMessageId: nil,
                 reusableInteractions: [:],
                 deletedInteractionIds: [],
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -138,7 +138,7 @@ class MessageLoaderTest: XCTestCase {
             return try self.messageLoader.loadSameLocation(
                 reusableInteractions: [:],
                 deletedInteractionIds: [],
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -155,7 +155,7 @@ class MessageLoaderTest: XCTestCase {
                 focusMessageId: nil,
                 reusableInteractions: [:],
                 deletedInteractionIds: [],
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -167,7 +167,7 @@ class MessageLoaderTest: XCTestCase {
             return try self.messageLoader.loadSameLocation(
                 reusableInteractions: [:],
                 deletedInteractionIds: deletedInteractionIds,
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -183,7 +183,7 @@ class MessageLoaderTest: XCTestCase {
                 focusMessageId: nil,
                 reusableInteractions: [:],
                 deletedInteractionIds: [],
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -197,7 +197,7 @@ class MessageLoaderTest: XCTestCase {
             return try self.messageLoader.loadSameLocation(
                 reusableInteractions: [:],
                 deletedInteractionIds: removedIds,
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -214,7 +214,7 @@ class MessageLoaderTest: XCTestCase {
                 focusMessageId: nil,
                 reusableInteractions: [:],
                 deletedInteractionIds: [],
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -229,7 +229,7 @@ class MessageLoaderTest: XCTestCase {
             return try self.messageLoader.loadSameLocation(
                 reusableInteractions: [:],
                 deletedInteractionIds: removedIds,
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -252,14 +252,14 @@ class MessageLoaderTest: XCTestCase {
                     focusMessageId: nil,
                     reusableInteractions: [:],
                     deletedInteractionIds: [],
-                    tx: tx
+                    tx: tx,
                 )
                 XCTAssertLessThan(messageLoader.loadedInteractions.count, initialMessages.count)
                 try messageLoader.loadMessagePage(
                     aroundInteractionId: message.uniqueId,
                     reusableInteractions: [:],
                     deletedInteractionIds: [],
-                    tx: tx
+                    tx: tx,
                 )
             }
             XCTAssertNotNil(messageLoader.loadedInteractions.map { $0.uniqueId }.firstIndex(of: message.uniqueId))
@@ -279,7 +279,7 @@ class MessageLoaderTest: XCTestCase {
                 focusMessageId: nil,
                 reusableInteractions: [:],
                 deletedInteractionIds: [],
-                tx: tx
+                tx: tx,
             )
         }
         XCTAssertEqual(batch1.map { $0.uniqueId }, messageLoader.loadedInteractions.map { $0.uniqueId })
@@ -289,7 +289,7 @@ class MessageLoaderTest: XCTestCase {
             return try self.messageLoader.loadSameLocation(
                 reusableInteractions: [:],
                 deletedInteractionIds: Set(batch1.map { $0.uniqueId }),
-                tx: tx
+                tx: tx,
             )
         }
         XCTAssertEqual(messageLoader.loadedInteractions, [])
@@ -299,7 +299,7 @@ class MessageLoaderTest: XCTestCase {
             return try self.messageLoader.loadSameLocation(
                 reusableInteractions: [:],
                 deletedInteractionIds: [],
-                tx: tx
+                tx: tx,
             )
         }
         XCTAssertEqual(batch2.map { $0.uniqueId }, messageLoader.loadedInteractions.map { $0.uniqueId })
@@ -309,7 +309,7 @@ class MessageLoaderTest: XCTestCase {
             return try self.messageLoader.loadSameLocation(
                 reusableInteractions: [:],
                 deletedInteractionIds: Set(batch2.map { $0.uniqueId }),
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -322,10 +322,10 @@ class MessageLoaderTest: XCTestCase {
         setInteractions(messages)
         try mockDB.read { tx in
             try self.messageLoader.loadInitialMessagePage(
-                focusMessageId: messages[100].uniqueId,  // pretend this is the first unread message
+                focusMessageId: messages[100].uniqueId, // pretend this is the first unread message
                 reusableInteractions: [:],
                 deletedInteractionIds: [],
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -338,14 +338,14 @@ class MessageLoaderTest: XCTestCase {
         let removedInteractions1 = [
             messages.remove(at: (messages.startIndex + messages.endIndex) / 2),
             messages.remove(at: messages.endIndex - 1),
-            messages.remove(at: messages.startIndex)
+            messages.remove(at: messages.startIndex),
         ]
         setInteractions(messages)
         try mockDB.read { tx in
             return try self.messageLoader.loadOlderMessagePage(
                 reusableInteractions: [:],
                 deletedInteractionIds: Set(removedInteractions1.map { $0.uniqueId }),
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -358,7 +358,7 @@ class MessageLoaderTest: XCTestCase {
         let removedInteractions2 = [
             messages.remove(at: (messages.startIndex + messages.endIndex) / 2),
             messages.remove(at: messages.endIndex - 1),
-            messages.remove(at: messages.startIndex)
+            messages.remove(at: messages.startIndex),
         ]
         setInteractions(messages)
 
@@ -366,7 +366,7 @@ class MessageLoaderTest: XCTestCase {
             return try self.messageLoader.loadOlderMessagePage(
                 reusableInteractions: [:],
                 deletedInteractionIds: Set(removedInteractions2.map { $0.uniqueId }),
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -381,10 +381,10 @@ class MessageLoaderTest: XCTestCase {
         setInteractions(messages)
         try mockDB.read { tx in
             try self.messageLoader.loadInitialMessagePage(
-                focusMessageId: messages[100].uniqueId,  // pretend this is the first unread message
+                focusMessageId: messages[100].uniqueId, // pretend this is the first unread message
                 reusableInteractions: [:],
                 deletedInteractionIds: [],
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -397,14 +397,14 @@ class MessageLoaderTest: XCTestCase {
         let removedInteractions1 = [
             messages.remove(at: (messages.startIndex + messages.endIndex) / 2),
             messages.remove(at: messages.endIndex - 1),
-            messages.remove(at: messages.startIndex)
+            messages.remove(at: messages.startIndex),
         ]
         setInteractions(messages)
         try mockDB.read { tx in
             return try self.messageLoader.loadNewerMessagePage(
                 reusableInteractions: [:],
                 deletedInteractionIds: Set(removedInteractions1.map { $0.uniqueId }),
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -417,7 +417,7 @@ class MessageLoaderTest: XCTestCase {
         let removedInteractions2 = [
             messages.remove(at: (messages.startIndex + messages.endIndex) / 2),
             messages.remove(at: messages.endIndex - 1),
-            messages.remove(at: messages.startIndex)
+            messages.remove(at: messages.startIndex),
         ]
         setInteractions(messages)
 
@@ -425,7 +425,7 @@ class MessageLoaderTest: XCTestCase {
             return try self.messageLoader.loadNewerMessagePage(
                 reusableInteractions: [:],
                 deletedInteractionIds: Set(removedInteractions2.map { $0.uniqueId }),
-                tx: tx
+                tx: tx,
             )
         }
 

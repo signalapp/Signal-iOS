@@ -26,7 +26,7 @@ class OutgoingDeviceRestorePresenter: OutgoingDeviceRestoreInitialPresenter {
 
     init(
         deviceTransferService: DeviceTransferService,
-        quickRestoreManager: QuickRestoreManager
+        quickRestoreManager: QuickRestoreManager,
     ) {
         self.deviceTransferService = deviceTransferService
         self.quickRestoreManager = quickRestoreManager
@@ -35,17 +35,17 @@ class OutgoingDeviceRestorePresenter: OutgoingDeviceRestoreInitialPresenter {
     func present(
         provisioningURL: DeviceProvisioningURL,
         presentingViewController: UIViewController,
-        animated: Bool
+        animated: Bool,
     ) {
         self.viewModel = OutgoingDeviceRestoreViewModel(
             deviceTransferService: deviceTransferService,
             quickRestoreManager: quickRestoreManager,
-            deviceProvisioningURL: provisioningURL
+            deviceProvisioningURL: provisioningURL,
         )
 
         internalNavigationController.setViewControllers(
             [OutgoingDeviceRestoreIntialViewController(presenter: self)],
-            animated: false
+            animated: false,
         )
 
         self.presentingViewController = presentingViewController
@@ -58,13 +58,13 @@ class OutgoingDeviceRestorePresenter: OutgoingDeviceRestoreInitialPresenter {
             hero: .image(UIImage(named: "other-device")!),
             title: OWSLocalizedString(
                 "OUTGOING_DEVICE_RESTORE_CONTINUE_ON_OTHER_DEVICE_TITLE",
-                comment: "Title of prompt notifying that action is necessary on the other device."
+                comment: "Title of prompt notifying that action is necessary on the other device.",
             ),
             body: OWSLocalizedString(
                 "OUTGOING_DEVICE_RESTORE_CONTINUE_ON_OTHER_DEVICE_BODY",
-                comment: "Body of prompt notifying that action is necessary on the other device."
+                comment: "Body of prompt notifying that action is necessary on the other device.",
             ),
-            primary: .hero(.animation(named: "circular_indeterminate", height: 60))
+            primary: .hero(.animation(named: "circular_indeterminate", height: 60)),
         )
         internalNavigationController.present(sheet, animated: true)
     }
@@ -72,13 +72,13 @@ class OutgoingDeviceRestorePresenter: OutgoingDeviceRestoreInitialPresenter {
     @MainActor
     private func pushProgressViewController(
         viewModel: OutgoingDeviceRestoreViewModel,
-        presentingViewController: UIViewController
+        presentingViewController: UIViewController,
     ) async {
         await internalNavigationController.awaitableDismiss(animated: false)
         await presentingViewController.awaitableDismiss(animated: true)
         await presentingViewController.awaitablePresent(
             OutgoingDeviceRestoreProgressViewController(viewModel: viewModel.transferStatusViewModel),
-            animated: true
+            animated: true,
         )
     }
 
@@ -88,13 +88,13 @@ class OutgoingDeviceRestorePresenter: OutgoingDeviceRestoreInitialPresenter {
             hero: .image(UIImage(resource: .checkCircle)),
             title: OWSLocalizedString(
                 "OUTGOING_DEVICE_TRANSFER_COMPLETE_TITLE",
-                comment: "Title of prompt notifying device transfer completed."
+                comment: "Title of prompt notifying device transfer completed.",
             ),
             body: OWSLocalizedString(
                 "OUTGOING_DEVICE_TRANSFER_COMPLETE_BODY",
-                comment: "Body of prompt notifying device transfer completed."
+                comment: "Body of prompt notifying device transfer completed.",
             ),
-            primaryButton: .dismissing(title: CommonStrings.okayButton)
+            primaryButton: .dismissing(title: CommonStrings.okayButton),
         )
         await presentingViewController.awaitablePresent(sheet, animated: true)
     }
@@ -106,23 +106,23 @@ class OutgoingDeviceRestorePresenter: OutgoingDeviceRestoreInitialPresenter {
             (
                 OWSLocalizedString(
                     "OUTGOING_DEVICE_RESTORE_COMPLETE_TITLE",
-                    comment: "Title of prompt notifying device restore started on the new device."
+                    comment: "Title of prompt notifying device restore started on the new device.",
                 ),
                 OWSLocalizedString(
                     "OUTGOING_DEVICE_RESTORE_COMPLETE_BODY",
-                    comment: "Body of prompt notifying device restore started on the new device."
-                )
+                    comment: "Body of prompt notifying device restore started on the new device.",
+                ),
             )
         } else {
             (
                 OWSLocalizedString(
                     "OUTGOING_DEVICE_REGISTRATION_COMPLETE_TITLE",
-                    comment: "Title of prompt notifying registration without restore completed on the new device."
+                    comment: "Title of prompt notifying registration without restore completed on the new device.",
                 ),
                 OWSLocalizedString(
                     "OUTGOING_DEVICE_REGISTRATION_COMPLETE_BODY",
-                    comment: "Body of prompt notifying registration without restore completed on the new device."
-                )
+                    comment: "Body of prompt notifying registration without restore completed on the new device.",
+                ),
             )
         }
 
@@ -132,7 +132,7 @@ class OutgoingDeviceRestorePresenter: OutgoingDeviceRestoreInitialPresenter {
             body: body,
             primaryButton: .init(title: CommonStrings.okayButton, action: { _ in
                 presentingViewController.dismiss(animated: false)
-            })
+            }),
         )
         await presentingViewController.presentedViewController?.awaitableDismiss(animated: true)
         await internalNavigationController.awaitablePresent(sheet, animated: true)
@@ -176,7 +176,7 @@ class OutgoingDeviceRestorePresenter: OutgoingDeviceRestoreInitialPresenter {
                 // Push the status sheet if this is a transfer
                 await pushProgressViewController(
                     viewModel: viewModel,
-                    presentingViewController: presentingViewController
+                    presentingViewController: presentingViewController,
                 )
 
                 await viewModel.waitForDeviceConnection(peerConnectionData: peerConnectionData)
@@ -191,7 +191,7 @@ class OutgoingDeviceRestorePresenter: OutgoingDeviceRestoreInitialPresenter {
                         Logger.warn("Device transfer failed: \(error)")
                         await self?.handleError(
                             DeviceRestoreError.unknownError,
-                            presentingViewController: presentingViewController
+                            presentingViewController: presentingViewController,
                         )
                     }
                 }
@@ -199,7 +199,7 @@ class OutgoingDeviceRestorePresenter: OutgoingDeviceRestoreInitialPresenter {
                 if !success {
                     await handleError(
                         DeviceRestoreError.restoreCancelled,
-                        presentingViewController: presentingViewController
+                        presentingViewController: presentingViewController,
                     )
                 } else {
                     await displayTransferComplete(presentingViewController: presentingViewController)
@@ -224,35 +224,35 @@ class OutgoingDeviceRestorePresenter: OutgoingDeviceRestoreInitialPresenter {
 
         let (title, body) = switch error {
         case .invalidRestoreData: (
-            OWSLocalizedString(
-                "OUTGOING_DEVICE_REGISTRATION_FAILED_RESTORE_TITLE",
-                comment: "Title of prompt notifying restore failed."
-            ),
-            OWSLocalizedString(
-                "OUTGOING_DEVICE_REGISTRATION_FAILED_RESTORE_BODY",
-                comment: "Body of prompt notifying restore failed."
+                OWSLocalizedString(
+                    "OUTGOING_DEVICE_REGISTRATION_FAILED_RESTORE_TITLE",
+                    comment: "Title of prompt notifying restore failed.",
+                ),
+                OWSLocalizedString(
+                    "OUTGOING_DEVICE_REGISTRATION_FAILED_RESTORE_BODY",
+                    comment: "Body of prompt notifying restore failed.",
+                ),
             )
-        )
         case .restoreCancelled: (
-            OWSLocalizedString(
-                "OUTGOING_DEVICE_REGISTRATION_CANCELLED_RESTORE_TITLE",
-                comment: "Title of prompt notifying restore was cancelled."
-            ),
-            OWSLocalizedString(
-                "OUTGOING_DEVICE_REGISTRATION_CANCELLED_RESTORE_BODY",
-                comment: "Body of prompt notifying restore was cancelled."
+                OWSLocalizedString(
+                    "OUTGOING_DEVICE_REGISTRATION_CANCELLED_RESTORE_TITLE",
+                    comment: "Title of prompt notifying restore was cancelled.",
+                ),
+                OWSLocalizedString(
+                    "OUTGOING_DEVICE_REGISTRATION_CANCELLED_RESTORE_BODY",
+                    comment: "Body of prompt notifying restore was cancelled.",
+                ),
             )
-        )
         case .unknownError: (
-            OWSLocalizedString(
-                "OUTGOING_DEVICE_REGISTRATION_UNKNOWN_ERROR_TITLE",
-                comment: "Title of prompt notifying restore failed for unknown reasons."
-            ),
-            OWSLocalizedString(
-                "OUTGOING_DEVICE_REGISTRATION_UNKNOWN_ERROR_BODY",
-                comment: "Body of prompt notifying restore failed for unknown reasons."
+                OWSLocalizedString(
+                    "OUTGOING_DEVICE_REGISTRATION_UNKNOWN_ERROR_TITLE",
+                    comment: "Title of prompt notifying restore failed for unknown reasons.",
+                ),
+                OWSLocalizedString(
+                    "OUTGOING_DEVICE_REGISTRATION_UNKNOWN_ERROR_BODY",
+                    comment: "Body of prompt notifying restore failed for unknown reasons.",
+                ),
             )
-        )
         }
 
         let sheet = HeroSheetViewController(
@@ -261,7 +261,7 @@ class OutgoingDeviceRestorePresenter: OutgoingDeviceRestoreInitialPresenter {
             body: body,
             primaryButton: .init(title: CommonStrings.okayButton, action: { _ in
                 presentingViewController.dismiss(animated: true)
-            })
+            }),
         )
         await presentingViewController.awaitableDismiss(animated: true)
         await presentingViewController.awaitablePresent(sheet, animated: true)

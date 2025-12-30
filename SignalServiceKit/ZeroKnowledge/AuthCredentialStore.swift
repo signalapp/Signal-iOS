@@ -40,11 +40,11 @@ class AuthCredentialStore {
 
     func callLinkAuthCredential(
         for redemptionTime: UInt64,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> LibSignalClient.CallLinkAuthCredential? {
         return try callLinkAuthCredentialStore.getData(
             Self.callLinkAuthCredentialKey(for: redemptionTime),
-            transaction: tx
+            transaction: tx,
         ).map {
             return try LibSignalClient.CallLinkAuthCredential(contents: $0)
         }
@@ -53,12 +53,12 @@ class AuthCredentialStore {
     func setCallLinkAuthCredential(
         _ credential: LibSignalClient.CallLinkAuthCredential,
         for redemptionTime: UInt64,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         callLinkAuthCredentialStore.setData(
             credential.serialize(),
             key: Self.callLinkAuthCredentialKey(for: redemptionTime),
-            transaction: tx
+            transaction: tx,
         )
     }
 
@@ -70,25 +70,25 @@ class AuthCredentialStore {
 
     func groupAuthCredential(
         for redemptionTime: UInt64,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> AuthCredentialWithPni? {
         return try groupAuthCredentialStore.getData(
             Self.groupAuthCredentialKey(for: redemptionTime),
-            transaction: tx
+            transaction: tx,
         ).map {
-            return try AuthCredentialWithPni.init(contents: $0)
+            return try AuthCredentialWithPni(contents: $0)
         }
     }
 
     func setGroupAuthCredential(
         _ credential: AuthCredentialWithPni,
         for redemptionTime: UInt64,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         groupAuthCredentialStore.setData(
             credential.serialize(),
             key: Self.groupAuthCredentialKey(for: redemptionTime),
-            transaction: tx
+            transaction: tx,
         )
     }
 
@@ -101,7 +101,7 @@ class AuthCredentialStore {
     func backupAuthCredential(
         for credentialType: BackupAuthCredentialType,
         redemptionTime: UInt64,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> BackupAuthCredential? {
         let store: KeyValueStore = switch credentialType {
         case .media: backupMediaAuthCredentialStore
@@ -111,9 +111,9 @@ class AuthCredentialStore {
         do {
             return try store.getData(
                 Self.backupAuthCredentialKey(for: redemptionTime),
-                transaction: tx
+                transaction: tx,
             ).map {
-                return try BackupAuthCredential.init(contents: $0)
+                return try BackupAuthCredential(contents: $0)
             }
         } catch {
             Logger.warn("Invalid backup credential format")
@@ -125,7 +125,7 @@ class AuthCredentialStore {
         _ credential: BackupAuthCredential,
         for credentialType: BackupAuthCredentialType,
         redemptionTime: UInt64,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         let store: KeyValueStore = switch credentialType {
         case .media: backupMediaAuthCredentialStore
@@ -135,7 +135,7 @@ class AuthCredentialStore {
         store.setData(
             credential.serialize(),
             key: Self.backupAuthCredentialKey(for: redemptionTime),
-            transaction: tx
+            transaction: tx,
         )
     }
 
@@ -157,13 +157,13 @@ class AuthCredentialStore {
         }
         return Auth(
             username: username,
-            password: password
+            password: password,
         )
     }
 
     func setSVRBAuthCredential(
         _ credential: LibSignalClient.Auth?,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         guard let credential else {
             svrBAuthCredentialStore.removeAll(transaction: tx)
@@ -174,7 +174,7 @@ class AuthCredentialStore {
         svrBAuthCredentialStore.setDate(
             dateProvider().addingTimeInterval(Self.svrBAuthCredentialExpirationTime),
             key: Self.svrBAuthCredentialExpiryDateKey,
-            transaction: tx
+            transaction: tx,
         )
     }
 

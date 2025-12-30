@@ -40,19 +40,20 @@ public class RefreshEvent {
             self,
             selector: #selector(didEnterBackground),
             name: .OWSApplicationDidEnterBackground,
-            object: nil
+            object: nil,
         )
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(didBecomeActive),
             name: .OWSApplicationDidBecomeActive,
-            object: nil
+            object: nil,
         )
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(fireEvent),
             name: SSKReachability.owsReachabilityDidChange,
-            object: nil)
+            object: nil,
+        )
     }
 
     private var canFire: Bool {

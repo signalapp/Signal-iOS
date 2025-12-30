@@ -41,20 +41,20 @@ public class BackupArchiveCallLinkRecipientArchiver: BackupArchiveProtoStreamWri
     private let callLinkStore: CallLinkRecordStore
 
     init(
-        callLinkStore: CallLinkRecordStore
+        callLinkStore: CallLinkRecordStore,
     ) {
         self.callLinkStore = callLinkStore
     }
 
     func archiveAllCallLinkRecipients(
         stream: BackupArchiveProtoOutputStream,
-        context: BackupArchive.RecipientArchivingContext
+        context: BackupArchive.RecipientArchivingContext,
     ) throws(CancellationError) -> ArchiveMultiFrameResult {
         var errors = [ArchiveFrameError]()
         do {
             try context.bencher.wrapEnumeration(
                 callLinkStore.enumerateAll(tx:block:),
-                tx: context.tx
+                tx: context.tx,
             ) { record, frameBencher in
                 try Task.checkCancellation()
                 autoreleasepool {
@@ -93,7 +93,7 @@ public class BackupArchiveCallLinkRecipientArchiver: BackupArchiveProtoStreamWri
                         \.expirationMs,
                         on: &callLink,
                         \.expirationMs,
-                        allowZero: true
+                        allowZero: true,
                     )
 
                     owsAssertDebug(record.revoked != true, "call links should be deleted, not revoked")
@@ -102,7 +102,7 @@ public class BackupArchiveCallLinkRecipientArchiver: BackupArchiveProtoStreamWri
                     Self.writeFrameToStream(
                         stream,
                         objectId: callLinkAppId,
-                        frameBencher: frameBencher
+                        frameBencher: frameBencher,
                     ) {
                         var recipient = BackupProto_Recipient()
                         recipient.id = recipientId.value
@@ -129,11 +129,11 @@ public class BackupArchiveCallLinkRecipientArchiver: BackupArchiveProtoStreamWri
     func restoreCallLinkRecipientProto(
         _ callLinkProto: BackupProto_CallLink,
         recipient: BackupProto_Recipient,
-        context: BackupArchive.RecipientRestoringContext
+        context: BackupArchive.RecipientRestoringContext,
     ) -> RestoreFrameResult {
         func restoreFrameError(
             _ error: RestoreFrameError.ErrorType,
-            line: UInt = #line
+            line: UInt = #line,
         ) -> RestoreFrameResult {
             return .failure([.restoreFrameError(error, recipient.recipientId, line: line)])
         }
@@ -166,8 +166,8 @@ public class BackupArchiveCallLinkRecipientArchiver: BackupArchiveProtoStreamWri
 
         let hasAnyState: Bool = (
             !callLinkProto.name.isEmpty
-            || restrictions != .unknown
-            || callLinkProto.expirationMs != 0
+                || restrictions != .unknown
+                || callLinkProto.expirationMs != 0,
         )
 
         do {
@@ -179,7 +179,7 @@ public class BackupArchiveCallLinkRecipientArchiver: BackupArchiveProtoStreamWri
                 revoked: hasAnyState ? false : nil,
                 expiration: hasAnyState ? Int64(callLinkProto.expirationMs / 1000) : nil,
                 isUpcoming: hasAnyState ? (adminKey != nil) : nil,
-                tx: context.tx
+                tx: context.tx,
             )
             let callLinkRecordId = CallLinkRecordId(record)
             context[recipient.recipientId] = .callLink(callLinkRecordId)
@@ -192,7 +192,7 @@ public class BackupArchiveCallLinkRecipientArchiver: BackupArchiveProtoStreamWri
     }
 }
 
-fileprivate extension CallLinkRecord {
+private extension CallLinkRecord {
     var expirationMs: UInt64? {
         if let expiration {
             return UInt64(expiration) * 1000

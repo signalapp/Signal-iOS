@@ -37,6 +37,7 @@ class StoryZoomAnimator: NSObject, UIViewControllerAnimatedTransitioning {
             return crossFadeDuration
         }
     }
+
     var presentationDuration: TimeInterval { 0.2 }
 
     func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
@@ -51,7 +52,7 @@ class StoryZoomAnimator: NSObject, UIViewControllerAnimatedTransitioning {
         let getCenterCroppedDismissedFrame = {
             return containerView.convert(
                 self.context.thumbnailView.frame,
-                from: self.context.thumbnailView.superview
+                from: self.context.thumbnailView.superview,
             )
         }
         var storyViewDismissedSize = getCenterCroppedDismissedFrame().size
@@ -104,7 +105,7 @@ class StoryZoomAnimator: NSObject, UIViewControllerAnimatedTransitioning {
                 self.animatePresentation(
                     delay: self.presentationDelay,
                     endFrame: presentedFrame,
-                    storyViewEndSize: presentedFrame.size
+                    storyViewEndSize: presentedFrame.size,
                 )
                 self.animateChromeFade(delay: self.presentationDelay + self.presentationDuration)
             } completion: { _ in
@@ -135,10 +136,10 @@ class StoryZoomAnimator: NSObject, UIViewControllerAnimatedTransitioning {
                 context.coordinator.updateHandler = { percentComplete in
                     self.storyViewContainer.frame = self.mediaFrame(
                         in: self.context.pageViewController.currentContextViewController.view.frame,
-                        containerView: self.context.pageViewController.view
+                        containerView: self.context.pageViewController.view,
                     ).insetBy(
                         dx: presentedFrame.width * (0.1 * percentComplete),
-                        dy: presentedFrame.height * (0.1 * percentComplete)
+                        dy: presentedFrame.height * (0.1 * percentComplete),
                     )
                     self.context.storyView.frame = self.storyViewContainer.bounds
                 }
@@ -194,7 +195,7 @@ class StoryZoomAnimator: NSObject, UIViewControllerAnimatedTransitioning {
                     self.animatePresentation(
                         delay: self.presentationDelay,
                         endFrame: getCenterCroppedDismissedFrame(),
-                        storyViewEndSize: storyViewDismissedSize
+                        storyViewEndSize: storyViewDismissedSize,
                     )
                     self.animateThumbnailFade(delay: self.presentationDuration + self.crossFadeDuration)
                 } completion: { _ in
@@ -231,7 +232,7 @@ class StoryZoomAnimator: NSObject, UIViewControllerAnimatedTransitioning {
             // Center in view
             mediaFrame.origin = CGPoint(
                 x: mediaFrame.origin.x + containerView.frame.midX - (mediaFrame.width / 2),
-                y: mediaFrame.origin.y + containerView.frame.midY - (mediaFrame.height / 2)
+                y: mediaFrame.origin.y + containerView.frame.midY - (mediaFrame.height / 2),
             )
         } else {
             // Pin to top of view
@@ -283,7 +284,7 @@ private extension CGRect {
     func centerCropping(fullSize: CGSize) -> CGRect {
         insetBy(
             dx: width - fullSize.width,
-            dy: height - fullSize.height
+            dy: height - fullSize.height,
         )
     }
 }

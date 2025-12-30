@@ -25,24 +25,24 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
         orphanedAttachmentCleaner = OrphanedAttachmentCleanerImpl(
             db: db,
             fileSystem: mockFileSystem,
-            taskScheduler: mockTaskScheduler
+            taskScheduler: mockTaskScheduler,
         )
     }
 
     func testDeleteAttachment() async throws {
         let localRelativeFilePath = UUID().uuidString
         let attachmentParams = Attachment.ConstructionParams.mockStream(
-            streamInfo: .mock(localRelativeFilePath: localRelativeFilePath)
+            streamInfo: .mock(localRelativeFilePath: localRelativeFilePath),
         )
         let referenceParams = AttachmentReference.ConstructionParams.mock(
-            owner: .thread(.globalThreadWallpaperImage(creationTimestamp: Date().ows_millisecondsSince1970))
+            owner: .thread(.globalThreadWallpaperImage(creationTimestamp: Date().ows_millisecondsSince1970)),
         )
 
         try db.write { tx in
             _ = try attachmentStore.insert(
                 attachmentParams,
                 reference: referenceParams,
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -67,7 +67,7 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
         XCTAssertEqual(
             mockFileSystem.deletedFiles,
             [AttachmentStream.absoluteAttachmentFileURL(relativeFilePath: localRelativeFilePath)]
-            + thumbnailFileURLs(localRelativeFilePath: localRelativeFilePath)
+                + thumbnailFileURLs(localRelativeFilePath: localRelativeFilePath),
         )
 
         // And no rows left.
@@ -85,7 +85,7 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
                     localRelativeFilePath: filePath,
                     localRelativeFilePathThumbnail: nil,
                     localRelativeFilePathAudioWaveform: nil,
-                    localRelativeFilePathVideoStillFrame: nil
+                    localRelativeFilePathVideoStillFrame: nil,
                 )
                 try record.insert(tx.database)
             }
@@ -102,7 +102,7 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
             filePaths.flatMap {
                 return [AttachmentStream.absoluteAttachmentFileURL(relativeFilePath: $0)]
                     + thumbnailFileURLs(localRelativeFilePath: $0)
-            }
+            },
         )
 
         // And no rows left.
@@ -123,7 +123,7 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
                     localRelativeFilePath: filePath,
                     localRelativeFilePathThumbnail: nil,
                     localRelativeFilePathAudioWaveform: nil,
-                    localRelativeFilePathVideoStillFrame: nil
+                    localRelativeFilePathVideoStillFrame: nil,
                 )
                 try record.insert(tx.database)
             }
@@ -161,7 +161,7 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
         XCTAssertEqual(
             mockFileSystem.deletedFiles,
             [url2]
-            + thumbnailFileURLs(localRelativeFilePath: filePath2)
+                + thumbnailFileURLs(localRelativeFilePath: filePath2),
         )
 
         // The first row should still be around.
@@ -191,7 +191,7 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
                 localRelativeFilePath: filePath3,
                 localRelativeFilePathThumbnail: nil,
                 localRelativeFilePathAudioWaveform: nil,
-                localRelativeFilePathVideoStillFrame: nil
+                localRelativeFilePathVideoStillFrame: nil,
             )
             try record.insert(tx.database)
         }
@@ -203,7 +203,7 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
         XCTAssertEqual(
             mockFileSystem.deletedFiles,
             [url3]
-            + thumbnailFileURLs(localRelativeFilePath: filePath3)
+                + thumbnailFileURLs(localRelativeFilePath: filePath3),
         )
 
         // The first row should still be around.
@@ -222,10 +222,11 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
                 localRelativeFilePath: UUID().uuidString,
                 localRelativeFilePathThumbnail: nil,
                 localRelativeFilePathAudioWaveform: nil,
-                localRelativeFilePathVideoStillFrame: nil
+                localRelativeFilePathVideoStillFrame: nil,
             )
-            skippedIds.append(try await orphanedAttachmentCleaner
-                .commitPendingAttachment(record)
+            skippedIds.append(
+                try await orphanedAttachmentCleaner
+                    .commitPendingAttachment(record),
             )
         }
 
@@ -234,7 +235,7 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
             localRelativeFilePath: UUID().uuidString,
             localRelativeFilePathThumbnail: UUID().uuidString,
             localRelativeFilePathAudioWaveform: UUID().uuidString,
-            localRelativeFilePathVideoStillFrame: UUID().uuidString
+            localRelativeFilePathVideoStillFrame: UUID().uuidString,
         )
 
         try db.write { tx in
@@ -277,7 +278,7 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
             localRelativeFilePath: UUID().uuidString,
             localRelativeFilePathThumbnail: UUID().uuidString,
             localRelativeFilePathAudioWaveform: UUID().uuidString,
-            localRelativeFilePathVideoStillFrame: UUID().uuidString
+            localRelativeFilePathVideoStillFrame: UUID().uuidString,
         )
 
         try db.write { tx in
@@ -313,7 +314,7 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
         return AttachmentThumbnailQuality.allCases.map { quality in
             return AttachmentThumbnailQuality.thumbnailCacheFileUrl(
                 attachmentLocalRelativeFilePath: localRelativeFilePath,
-                at: quality
+                at: quality,
             )
         }
     }

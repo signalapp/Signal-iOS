@@ -83,7 +83,7 @@ class AudioWaveformSampler {
             var remainingCount = sampleCount
             while remainingCount > 0 {
                 let chunkCount = min(remainingCount, self.currentSegmentRemainingCount)
-                assert(chunkCount > 0)  // because currentSegmentRemainingCount starts > 0 and is checked on each iteration
+                assert(chunkCount > 0) // because currentSegmentRemainingCount starts > 0 and is checked on each iteration
                 var chunkAverage: Float = 0
                 vDSP_meanv(bufferPtr.baseAddress!.advanced(by: sampleCount - remainingCount), 1, &chunkAverage, vDSP_Length(chunkCount))
                 remainingCount -= chunkCount
@@ -91,7 +91,7 @@ class AudioWaveformSampler {
 
                 // Add the new average to the running average for this segment.
                 let totalChunkCount = self.currentSegmentCount - self.currentSegmentRemainingCount
-                assert(totalChunkCount > 0)  // because chunkCount > 0
+                assert(totalChunkCount > 0) // because chunkCount > 0
                 let newChunkWeight = Float(chunkCount) / Float(totalChunkCount)
                 let oldChunkWeight = 1 - newChunkWeight
                 self.currentSegmentAverage *= oldChunkWeight
@@ -100,7 +100,7 @@ class AudioWaveformSampler {
                 // If we reached the end of the chunk, add it to the output.
                 if self.currentSegmentRemainingCount <= 0 {
                     self.output.append(self.currentSegmentAverage)
-                    self.currentSegmentAverage = 0  // technically redundant
+                    self.currentSegmentAverage = 0 // technically redundant
 
                     self.currentSegmentCount = self.segmentLength
                     self.overflowCounter -= self.segmentRemainder

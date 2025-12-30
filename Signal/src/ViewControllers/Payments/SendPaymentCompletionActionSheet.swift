@@ -84,7 +84,7 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
         fromViewController.presentFormSheet(self, animated: true)
     }
 
-    open override func viewDidLoad() {
+    override open func viewDidLoad() {
         super.viewDidLoad()
 
         createSubviews()
@@ -99,28 +99,28 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
         }
     }
 
-    public override func viewWillAppear(_ animated: Bool) {
+    override public func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
         updateContentsForMode()
     }
 
-    public override func viewDidAppear(_ animated: Bool) {
+    override public func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
         // For now, the design only allows for portrait layout on non-iPads
-        if !UIDevice.current.isIPad && view.window?.windowScene?.interfaceOrientation != .portrait {
+        if !UIDevice.current.isIPad, view.window?.windowScene?.interfaceOrientation != .portrait {
             UIDevice.current.ows_setOrientation(.portrait)
         }
     }
 
-    public override func themeDidChange() {
+    override public func themeDidChange() {
         super.themeDidChange()
 
         updateContentsForMode()
     }
 
-    public override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+    override public var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         UIDevice.current.isIPad ? .all : .portrait
     }
 
@@ -177,8 +177,10 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
         if canCancel {
             cancelLabel.textColor = Theme.primaryTextColor
             cancelLabel.isUserInteractionEnabled = true
-            cancelLabel.addGestureRecognizer(UITapGestureRecognizer(target: self,
-                                                                    action: #selector(didTapCancel)))
+            cancelLabel.addGestureRecognizer(UITapGestureRecognizer(
+                target: self,
+                action: #selector(didTapCancel),
+            ))
         } else {
             cancelLabel.textColor = Theme.secondaryTextAndIconColor
         }
@@ -186,8 +188,10 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
         cancelLabel.setContentHuggingHigh()
 
         let titleLabel = UILabel()
-        titleLabel.text = OWSLocalizedString("PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_TITLE",
-                                            comment: "Title for the 'confirm payment' ui in the 'send payment' UI.")
+        titleLabel.text = OWSLocalizedString(
+            "PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_TITLE",
+            comment: "Title for the 'confirm payment' ui in the 'send payment' UI.",
+        )
         titleLabel.font = UIFont.dynamicTypeHeadlineClamped
         titleLabel.textColor = Theme.primaryTextColor
         titleLabel.textAlignment = .center
@@ -217,7 +221,7 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
             UIView.spacer(withHeight: 32),
             buildConfirmPaymentButtons(),
             UIView.spacer(withHeight: vSpacingAboveBalance),
-            balanceLabel
+            balanceLabel,
         ])
     }
 
@@ -227,8 +231,8 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
         updateHeader(canCancel: false)
 
         let animationName = (Theme.isDarkThemeEnabled
-                                ? "payments_spinner_dark"
-                                : "payments_spinner")
+            ? "payments_spinner_dark"
+            : "payments_spinner")
         let animationView = LottieAnimationView(name: animationName)
         animationView.backgroundBehavior = .pauseAndRestore
         animationView.loopMode = .loop
@@ -239,8 +243,10 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
         // To void layout jitter, we use a label
         // that occupies exactly the same height.
         let bottomLabel = buildBottomLabel()
-        bottomLabel.text = OWSLocalizedString("PAYMENTS_NEW_PAYMENT_PROCESSING",
-                                             comment: "Indicator that a new payment is being processed in the 'send payment' UI.")
+        bottomLabel.text = OWSLocalizedString(
+            "PAYMENTS_NEW_PAYMENT_PROCESSING",
+            comment: "Indicator that a new payment is being processed in the 'send payment' UI.",
+        )
 
         setContents([
             buildConfirmPaymentRows(paymentInfo: paymentInfo),
@@ -249,7 +255,7 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
             // in the layout, exactly matching its height.
             wrapBottomControl(animationView),
             UIView.spacer(withHeight: vSpacingAboveBalance),
-            bottomLabel
+            bottomLabel,
         ])
     }
 
@@ -277,7 +283,7 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
             // in the layout, exactly matching its height.
             wrapBottomControl(animationView),
             UIView.spacer(withHeight: vSpacingAboveBalance),
-            bottomLabel
+            bottomLabel,
         ])
     }
 
@@ -316,7 +322,7 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
             // in the layout, exactly matching its height.
             wrapBottomControl(animationView),
             UIView.spacer(withHeight: vSpacingAboveBalance),
-            bottomLabel
+            bottomLabel,
         ])
     }
 
@@ -331,14 +337,14 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
             titleView: UILabel,
             valueView: UILabel,
             titleIconView: UIView? = nil,
-            addSeparator: Bool = false
+            addSeparator: Bool = false,
         ) -> UIView {
 
             valueView.setCompressionResistanceHorizontalHigh()
             valueView.setContentHuggingHorizontalHigh()
 
             let subviews: [UIView]
-            if let titleIconView = titleIconView {
+            if let titleIconView {
                 subviews = [titleView, titleIconView, UIView.hStretchingSpacer(), valueView]
             } else {
                 subviews = [titleView, valueView]
@@ -357,7 +363,7 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
                 top: margin,
                 leading: margin,
                 bottom: margin,
-                trailing: margin
+                trailing: margin,
             )
 
             group.append(row)
@@ -371,7 +377,7 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
             value: String,
             titleIconView: UIView? = nil,
             isTotal: Bool = false,
-            addSeparator: Bool = false
+            addSeparator: Bool = false,
         ) -> UIView {
 
             let titleLabel = UILabel()
@@ -395,21 +401,29 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
                 titleView: titleLabel,
                 valueView: valueLabel,
                 titleIconView: titleIconView,
-                addSeparator: addSeparator
+                addSeparator: addSeparator,
             )
         }
 
         let recipientDescription = recipientDescriptionWithSneakyTransaction(paymentInfo: paymentInfo)
-        addRow(to: &topGroup,
-               title: recipientDescription,
-               value: formatMobileCoinAmount(paymentInfo.paymentAmount),
-               addSeparator: true)
+        addRow(
+            to: &topGroup,
+            title: recipientDescription,
+            value: formatMobileCoinAmount(paymentInfo.paymentAmount),
+            addSeparator: true,
+        )
 
         if let currencyConversion = paymentInfo.currencyConversion {
-            if let fiatAmountString = PaymentsFormat.formatAsFiatCurrency(paymentAmount: paymentInfo.paymentAmount,
-                                                                        currencyConversionInfo: currencyConversion) {
-                let fiatFormat = OWSLocalizedString("PAYMENTS_NEW_PAYMENT_FIAT_CONVERSION_FORMAT",
-                                                   comment: "Format for the 'fiat currency conversion estimate' indicator. Embeds {{ the fiat currency code }}.")
+            if
+                let fiatAmountString = PaymentsFormat.formatAsFiatCurrency(
+                    paymentAmount: paymentInfo.paymentAmount,
+                    currencyConversionInfo: currencyConversion,
+                )
+            {
+                let fiatFormat = OWSLocalizedString(
+                    "PAYMENTS_NEW_PAYMENT_FIAT_CONVERSION_FORMAT",
+                    comment: "Format for the 'fiat currency conversion estimate' indicator. Embeds {{ the fiat currency code }}.",
+                )
 
                 let currencyConversionInfoView = UIImageView.withTemplateImageName("info-compact", tintColor: Theme.secondaryTextAndIconColor)
                 currencyConversionInfoView.autoSetDimensions(to: .square(16))
@@ -420,7 +434,7 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
                     title: String(format: fiatFormat, currencyConversion.currencyCode),
                     value: fiatAmountString,
                     titleIconView: currencyConversionInfoView,
-                    addSeparator: true
+                    addSeparator: true,
                 )
 
                 row.isUserInteractionEnabled = true
@@ -434,9 +448,10 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
             to: &topGroup,
             title: OWSLocalizedString(
                 "PAYMENTS_NEW_PAYMENT_ESTIMATED_FEE",
-                comment: "Label for the 'payment estimated fee' indicator."),
+                comment: "Label for the 'payment estimated fee' indicator.",
+            ),
             value: formatMobileCoinAmount(paymentInfo.estimatedFeeAmount),
-            addSeparator: false
+            addSeparator: false,
         )
 
         let totalAmount = paymentInfo.paymentAmount.plus(paymentInfo.estimatedFeeAmount)
@@ -444,9 +459,10 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
             to: &bottomGroup,
             title: OWSLocalizedString(
                 "PAYMENTS_NEW_PAYMENT_PAYMENT_TOTAL",
-                comment: "Label for the 'total payment amount' indicator."),
+                comment: "Label for the 'total payment amount' indicator.",
+            ),
             value: formatMobileCoinAmount(totalAmount),
-            isTotal: true
+            isTotal: true,
         )
 
         let groups: [UIStackView] = [topGroup, bottomGroup].map { subviews in
@@ -475,8 +491,10 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
         case .publicAddress(let recipientPublicAddress):
             otherUserName = PaymentsImpl.formatAsBase58(publicAddress: recipientPublicAddress)
         }
-        let userFormat = OWSLocalizedString("PAYMENTS_NEW_PAYMENT_RECIPIENT_AMOUNT_FORMAT",
-                                           comment: "Format for the 'payment recipient amount' indicator. Embeds {{ the name of the recipient of the payment }}.")
+        let userFormat = OWSLocalizedString(
+            "PAYMENTS_NEW_PAYMENT_RECIPIENT_AMOUNT_FORMAT",
+            comment: "Format for the 'payment recipient amount' indicator. Embeds {{ the name of the recipient of the payment }}.",
+        )
         return String(format: userFormat, otherUserName)
     }
 
@@ -487,53 +505,75 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
                 switch paymentsError {
                 case .insufficientFunds:
                     if let paymentBalance = SUIEnvironment.shared.paymentsSwiftRef.currentPaymentBalance {
-                        let formattedBalance = PaymentsFormat.format(paymentAmount: paymentBalance.amount,
-                                                                     isShortForm: false)
-                        let format = OWSLocalizedString("PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS_FORMAT",
-                                                       comment: "Indicates that a payment failed due to insufficient funds. Embeds {{ current balance }}.")
+                        let formattedBalance = PaymentsFormat.format(
+                            paymentAmount: paymentBalance.amount,
+                            isShortForm: false,
+                        )
+                        let format = OWSLocalizedString(
+                            "PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS_FORMAT",
+                            comment: "Indicates that a payment failed due to insufficient funds. Embeds {{ current balance }}.",
+                        )
                         return String(format: format, formattedBalance)
                     } else {
-                        return OWSLocalizedString("PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS",
-                                                 comment: "Indicates that a payment failed due to insufficient funds.")
+                        return OWSLocalizedString(
+                            "PAYMENTS_NEW_PAYMENT_ERROR_INSUFFICIENT_FUNDS",
+                            comment: "Indicates that a payment failed due to insufficient funds.",
+                        )
                     }
                 case .outgoingVerificationTakingTooLong:
-                    return OWSLocalizedString("PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG",
-                                             comment: "Indicates that an outgoing payment could not be verified in a timely way.")
+                    return OWSLocalizedString(
+                        "PAYMENTS_NEW_PAYMENT_ERROR_OUTGOING_VERIFICATION_TAKING_TOO_LONG",
+                        comment: "Indicates that an outgoing payment could not be verified in a timely way.",
+                    )
                 case .timeout,
                      .connectionFailure,
                      .serverRateLimited,
                      .authorizationFailure,
                      .invalidServerResponse,
                      .attestationVerificationFailed:
-                    return OWSLocalizedString("PAYMENTS_NEW_PAYMENT_ERROR_CONNECTIVITY_FAILURE",
-                                             comment: "Indicates that a payment failed due to a connectivity failure.")
+                    return OWSLocalizedString(
+                        "PAYMENTS_NEW_PAYMENT_ERROR_CONNECTIVITY_FAILURE",
+                        comment: "Indicates that a payment failed due to a connectivity failure.",
+                    )
                 case .outdatedClient:
-                    return OWSLocalizedString("PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT",
-                                             comment: "Indicates that a payment failed due to an outdated client.")
+                    return OWSLocalizedString(
+                        "PAYMENTS_NEW_PAYMENT_ERROR_OUTDATED_CLIENT",
+                        comment: "Indicates that a payment failed due to an outdated client.",
+                    )
                 case .userHasNoPublicAddress,
                      .invalidCurrency,
                      .invalidAmount,
                      .invalidFee,
                      .invalidModel,
                      .invalidInput:
-                    return OWSLocalizedString("PAYMENTS_NEW_PAYMENT_ERROR_INVALID_TRANSACTION",
-                                             comment: "Indicates that a payment failed due to being invalid.")
+                    return OWSLocalizedString(
+                        "PAYMENTS_NEW_PAYMENT_ERROR_INVALID_TRANSACTION",
+                        comment: "Indicates that a payment failed due to being invalid.",
+                    )
                 default:
-                    return OWSLocalizedString("PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN",
-                                             comment: "Indicates that an unknown error occurred while sending a payment or payment request.")
+                    return OWSLocalizedString(
+                        "PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN",
+                        comment: "Indicates that an unknown error occurred while sending a payment or payment request.",
+                    )
                 }
             case let paymentsError as PaymentsUIError:
                 switch paymentsError {
                 case .paymentsLockFailed:
-                    return OWSLocalizedString("PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_FAILURE",
-                                             comment: "Indicates that a payment failed because the payments lock failed to authenticate.")
+                    return OWSLocalizedString(
+                        "PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_FAILURE",
+                        comment: "Indicates that a payment failed because the payments lock failed to authenticate.",
+                    )
                 case .paymentsLockCancelled:
-                    return OWSLocalizedString("PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_CANCELLED",
-                                             comment: "Indicates that a payment failed because the payments lock attempt was cancelled.")
+                    return OWSLocalizedString(
+                        "PAYMENTS_NEW_PAYMENT_ERROR_PAYMENTS_LOCK_AUTH_CANCELLED",
+                        comment: "Indicates that a payment failed because the payments lock attempt was cancelled.",
+                    )
                 }
             default:
-                return OWSLocalizedString("PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN",
-                                                     comment: "Indicates that an unknown error occurred while sending a payment or payment request.")
+                return OWSLocalizedString(
+                    "PAYMENTS_NEW_PAYMENT_ERROR_UNKNOWN",
+                    comment: "Indicates that an unknown error occurred while sending a payment or payment request.",
+                )
             }
         }()
 
@@ -546,15 +586,19 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
 
     private func buildConfirmPaymentButtons() -> UIView {
         buildBottomButtonStack([
-            buildBottomButton(title: OWSLocalizedString("PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_BUTTON",
-                                                       comment: "Label for the 'confirm payment' button."),
-                              target: self,
-                              selector: #selector(didTapConfirmButton))
+            buildBottomButton(
+                title: OWSLocalizedString(
+                    "PAYMENTS_NEW_PAYMENT_CONFIRM_PAYMENT_BUTTON",
+                    comment: "Label for the 'confirm payment' button.",
+                ),
+                target: self,
+                selector: #selector(didTapConfirmButton),
+            ),
         ])
     }
 
     public func updateBalanceLabel() {
-        guard let helper = helper else {
+        guard let helper else {
             return
         }
         helper.updateBalanceLabel(balanceLabel)
@@ -571,7 +615,7 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
                 paymentAmount: paymentInfo.paymentAmount,
                 memoMessage: paymentInfo.memoMessage,
                 isOutgoingTransfer: paymentInfo.isOutgoingTransfer,
-                canDefragment: false
+                canDefragment: false,
             )
         }
         preparedPaymentTask.set(preparePaymentTask)
@@ -659,7 +703,7 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
 
         let delegate = self.delegate
         DispatchQueue.main.asyncAfter(deadline: .now() + Self.autoDismissDelay) { [weak self] in
-            guard let self = self else { return }
+            guard let self else { return }
             self.dismiss(animated: true) {
                 delegate?.didSendPayment(success: true)
             }
@@ -671,7 +715,7 @@ public class SendPaymentCompletionActionSheet: ActionSheetController {
 
         let delegate = self.delegate
         DispatchQueue.main.asyncAfter(deadline: .now() + Self.autoDismissDelay) { [weak self] in
-            guard let self = self else { return }
+            guard let self else { return }
             self.dismiss(animated: true) {
                 PaymentActionSheets.showBiometryAuthFailedActionSheet { _ in
                     delegate?.didSendPayment(success: false)
@@ -713,7 +757,7 @@ extension SendPaymentCompletionActionSheet: SendPaymentHelperDelegate {
     public func currencyConversionDidChange() {}
 }
 
-fileprivate extension UIStackView {
+private extension UIStackView {
     static func makeGroupedStyle(views: [UIView]) -> UIStackView {
         // Add separators to all except the last view
         views.enumerated().forEach { offset, value in
@@ -726,7 +770,7 @@ fileprivate extension UIStackView {
             NSLayoutConstraint.activate([
                 separator.leadingAnchor.constraint(equalTo: value.leadingAnchor, constant: CGFloat(16)),
                 separator.trailingAnchor.constraint(equalTo: value.trailingAnchor),
-                separator.bottomAnchor.constraint(equalTo: value.bottomAnchor)
+                separator.bottomAnchor.constraint(equalTo: value.bottomAnchor),
             ])
 
         }

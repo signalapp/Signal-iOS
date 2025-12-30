@@ -38,7 +38,7 @@ public extension OWSRequestFactory {
         integerMoneyValue: UInt,
         inCurrencyCode currencyCode: Currency.Code,
         level: UInt64,
-        paymentMethod: StripePaymentMethod
+        paymentMethod: StripePaymentMethod,
     ) -> TSRequest {
         var request = TSRequest(
             url: URL(string: BoostApiPaths.stripeCreatePaymentIntent)!,
@@ -47,8 +47,8 @@ public extension OWSRequestFactory {
                 "currency": currencyCode.lowercased(),
                 "amount": integerMoneyValue,
                 "level": level,
-                "paymentMethod": paymentMethod.rawValue
-            ]
+                "paymentMethod": paymentMethod.rawValue,
+            ],
         )
         request.auth = .anonymous
         return request
@@ -60,7 +60,7 @@ public extension OWSRequestFactory {
         inCurrencyCode currencyCode: Currency.Code,
         level: UInt64,
         returnUrl: URL,
-        cancelUrl: URL
+        cancelUrl: URL,
     ) -> TSRequest {
         var request = TSRequest(
             url: URL(string: BoostApiPaths.paypalCreatePayment)!,
@@ -70,8 +70,8 @@ public extension OWSRequestFactory {
                 "amount": integerMoneyValue,
                 "level": level,
                 "returnUrl": returnUrl.absoluteString,
-                "cancelUrl": cancelUrl.absoluteString
-            ]
+                "cancelUrl": cancelUrl.absoluteString,
+            ],
         )
         request.auth = .anonymous
         return request
@@ -84,7 +84,7 @@ public extension OWSRequestFactory {
         level: UInt64,
         payerId: String,
         paymentId: String,
-        paymentToken: String
+        paymentToken: String,
     ) -> TSRequest {
         var request = TSRequest(
             url: URL(string: BoostApiPaths.paypalConfirmPayment)!,
@@ -95,8 +95,8 @@ public extension OWSRequestFactory {
                 "level": level,
                 "payerId": payerId,
                 "paymentId": paymentId,
-                "paymentToken": paymentToken
-            ]
+                "paymentToken": paymentToken,
+            ],
         )
         request.auth = .anonymous
         return request

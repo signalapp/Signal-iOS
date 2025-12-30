@@ -20,7 +20,7 @@ public class BackupArchiveDistributionListRecipientArchiver: BackupArchiveProtoS
     init(
         privateStoryThreadDeletionManager: any PrivateStoryThreadDeletionManager,
         storyStore: BackupArchiveStoryStore,
-        threadStore: BackupArchiveThreadStore
+        threadStore: BackupArchiveThreadStore,
     ) {
         self.privateStoryThreadDeletionManager = privateStoryThreadDeletionManager
         self.storyStore = storyStore
@@ -29,7 +29,7 @@ public class BackupArchiveDistributionListRecipientArchiver: BackupArchiveProtoS
 
     func archiveAllDistributionListRecipients(
         stream: BackupArchiveProtoOutputStream,
-        context: BackupArchive.RecipientArchivingContext
+        context: BackupArchive.RecipientArchivingContext,
     ) throws(CancellationError) -> ArchiveMultiFrameResult {
         var errors = [ArchiveFrameError]()
 
@@ -44,14 +44,14 @@ public class BackupArchiveDistributionListRecipientArchiver: BackupArchiveProtoS
                             stream: stream,
                             frameBencher: frameBencher,
                             context: context,
-                            errors: &errors
+                            errors: &errors,
                         )
                     }
                 }
             }
             try context.bencher.wrapEnumeration(
                 threadStore.enumerateStoryThreads(tx:block:),
-                tx: context.tx
+                tx: context.tx,
             ) { storyThread, frameBencher in
                 try Task.checkCancellation()
                 autoreleasepool {
@@ -60,7 +60,7 @@ public class BackupArchiveDistributionListRecipientArchiver: BackupArchiveProtoS
                         stream: stream,
                         frameBencher: frameBencher,
                         context: context,
-                        errors: &errors
+                        errors: &errors,
                     )
                 }
 
@@ -85,7 +85,7 @@ public class BackupArchiveDistributionListRecipientArchiver: BackupArchiveProtoS
         stream: BackupArchiveProtoOutputStream,
         frameBencher: BackupArchive.Bencher.FrameBencher,
         context: BackupArchive.RecipientArchivingContext,
-        errors: inout [ArchiveFrameError]
+        errors: inout [ArchiveFrameError],
     ) {
         guard let distributionId = BackupArchive.DistributionId(storyThread: storyThread) else {
             // This optionality is a result of the UUID initializer being failable.
@@ -95,7 +95,7 @@ public class BackupArchiveDistributionListRecipientArchiver: BackupArchiveProtoS
             errors.append(.archiveFrameError(
                 .distributionListMissingDistributionId,
                 // Spoof a random id since we don't have one but error mechanisms require it.
-                .distributionList(.init(UUID()))
+                .distributionList(.init(UUID())),
             ))
             return
         }
@@ -163,7 +163,7 @@ public class BackupArchiveDistributionListRecipientArchiver: BackupArchiveProtoS
         Self.writeFrameToStream(
             stream,
             objectId: distributionListAppId,
-            frameBencher: frameBencher
+            frameBencher: frameBencher,
         ) {
             var recipient = BackupProto_Recipient()
             recipient.id = recipientId.value
@@ -180,7 +180,7 @@ public class BackupArchiveDistributionListRecipientArchiver: BackupArchiveProtoS
         stream: BackupArchiveProtoOutputStream,
         frameBencher: BackupArchive.Bencher.FrameBencher,
         context: BackupArchive.RecipientArchivingContext,
-        errors: inout [ArchiveFrameError]
+        errors: inout [ArchiveFrameError],
     ) {
         guard let distributionUUID = UUID(data: rawDistributionId) else {
             // This optionality is a result of the UUID initializer being failable.
@@ -190,17 +190,19 @@ public class BackupArchiveDistributionListRecipientArchiver: BackupArchiveProtoS
             errors.append(.archiveFrameError(
                 .distributionListMissingDistributionId,
                 // Spoof a random id since we don't have one but error mechanisms require it.
-                .distributionList(.init(UUID()))
+                .distributionList(.init(UUID())),
             ))
             return
         }
         let distributionId = BackupArchive.DistributionId(distributionUUID)
         let distributionListAppId: RecipientAppId = .distributionList(distributionId)
 
-        guard let deletionTimestamp = privateStoryThreadDeletionManager.deletedAtTimestamp(
-            forDistributionListIdentifier: rawDistributionId,
-            tx: context.tx
-        ) else {
+        guard
+            let deletionTimestamp = privateStoryThreadDeletionManager.deletedAtTimestamp(
+                forDistributionListIdentifier: rawDistributionId,
+                tx: context.tx,
+            )
+        else {
             errors.append(.archiveFrameError(.distributionListMissingDeletionTimestamp, distributionListAppId))
             return
         }
@@ -219,7 +221,7 @@ public class BackupArchiveDistributionListRecipientArchiver: BackupArchiveProtoS
         Self.writeFrameToStream(
             stream,
             objectId: distributionListAppId,
-            frameBencher: frameBencher
+            frameBencher: frameBencher,
         ) {
             var recipient = BackupProto_Recipient()
             recipient.id = recipientId.value
@@ -234,18 +236,18 @@ public class BackupArchiveDistributionListRecipientArchiver: BackupArchiveProtoS
     func restoreDistributionListRecipientProto(
         _ distributionListItemProto: BackupProto_DistributionListItem,
         recipient: BackupProto_Recipient,
-        context: BackupArchive.RecipientRestoringContext
+        context: BackupArchive.RecipientRestoringContext,
     ) -> RestoreFrameResult {
         func restoreFrameError(
             _ error: RestoreFrameError.ErrorType,
-            line: UInt = #line
+            line: UInt = #line,
         ) -> RestoreFrameResult {
             return .failure([.restoreFrameError(error, recipient.recipientId, line: line)])
         }
 
         guard
             let distributionId =
-                BackupArchive.DistributionId(distributionListItem: distributionListItemProto)
+            BackupArchive.DistributionId(distributionListItem: distributionListItemProto)
         else {
             return restoreFrameError(.invalidProtoData(.invalidDistributionListId))
         }
@@ -264,7 +266,7 @@ public class BackupArchiveDistributionListRecipientArchiver: BackupArchiveProtoS
                 privateStoryThreadDeletionManager.recordDeletedAtTimestamp(
                     deletionTimestamp,
                     forDistributionListIdentifier: distributionId.value.data,
-                    tx: context.tx
+                    tx: context.tx,
                 )
                 result = .success
             } else {
@@ -275,11 +277,11 @@ public class BackupArchiveDistributionListRecipientArchiver: BackupArchiveProtoS
                 from: distributionListItemProto,
                 distributionId: distributionId,
                 recipientId: recipient.recipientId,
-                context: context
+                context: context,
             )
         case nil:
             result = .unrecognizedEnum(BackupArchive.UnrecognizedEnumError(
-                enumType: BackupProto_DistributionListItem.OneOf_Item.self
+                enumType: BackupProto_DistributionListItem.OneOf_Item.self,
             ))
         }
 
@@ -291,7 +293,7 @@ public class BackupArchiveDistributionListRecipientArchiver: BackupArchiveProtoS
         from distributionListProto: BackupProto_DistributionList,
         distributionId: BackupArchive.DistributionId,
         recipientId: BackupArchive.RecipientId,
-        context: BackupArchive.RecipientRestoringContext
+        context: BackupArchive.RecipientRestoringContext,
     ) -> RestoreFrameResult {
         var partialErrors = [BackupArchive.RestoreFrameError<RecipientId>]()
 
@@ -305,20 +307,19 @@ public class BackupArchiveDistributionListRecipientArchiver: BackupArchiveProtoS
             guard distributionId.isMyStoryId else {
                 return .failure([.restoreFrameError(
                     .invalidProtoData(.customDistributionListPrivacyModeAllOrAllExcept),
-                    recipientId
+                    recipientId,
                 )])
             }
             viewMode = .blockList
             // Ignore any addresses in the proto, set to empty.
             recipientDbRowIds = []
-
         case .allExcept:
             // Only My Story is allowed to use the `allExcept` mode.
             // The way we represent this locally is a `blocklist`.
             guard distributionId.isMyStoryId else {
                 return .failure([.restoreFrameError(
                     .invalidProtoData(.customDistributionListPrivacyModeAllOrAllExcept),
-                    recipientId
+                    recipientId,
                 )])
             }
             viewMode = .blockList
@@ -328,7 +329,7 @@ public class BackupArchiveDistributionListRecipientArchiver: BackupArchiveProtoS
                 from: distributionListProto,
                 recipientId: recipientId,
                 context: context,
-                partialErrors: &partialErrors
+                partialErrors: &partialErrors,
             )
         case .onlyWith:
             // All stories are allowed to use `onlyWith` aka `explicit`.
@@ -337,7 +338,7 @@ public class BackupArchiveDistributionListRecipientArchiver: BackupArchiveProtoS
                 from: distributionListProto,
                 recipientId: recipientId,
                 context: context,
-                partialErrors: &partialErrors
+                partialErrors: &partialErrors,
             )
         case .unknown, .UNRECOGNIZED:
             // Fallback to an empty explicit list.
@@ -356,7 +357,7 @@ public class BackupArchiveDistributionListRecipientArchiver: BackupArchiveProtoS
                     name: distributionListProto.name,
                     allowReplies: distributionListProto.allowReplies,
                     viewMode: viewMode,
-                    context: context
+                    context: context,
                 )
             } catch let error {
                 return .failure([.restoreFrameError(.databaseInsertionFailed(error), recipientId)])
@@ -366,7 +367,7 @@ public class BackupArchiveDistributionListRecipientArchiver: BackupArchiveProtoS
                 uniqueId: distributionId.value.uuidString,
                 name: distributionListProto.name,
                 allowsReplies: distributionListProto.allowReplies,
-                viewMode: viewMode
+                viewMode: viewMode,
             )
             do {
                 try storyStore.insert(storyThread, context: context)
@@ -390,7 +391,7 @@ public class BackupArchiveDistributionListRecipientArchiver: BackupArchiveProtoS
         from distributionListProto: BackupProto_DistributionList,
         recipientId: BackupArchive.RecipientId,
         context: BackupArchive.RecipientRestoringContext,
-        partialErrors: inout [BackupArchive.RestoreFrameError<RecipientId>]
+        partialErrors: inout [BackupArchive.RestoreFrameError<RecipientId>],
     ) -> [SignalRecipient.RowId] {
         distributionListProto
             .memberRecipientIds
@@ -400,7 +401,7 @@ public class BackupArchiveDistributionListRecipientArchiver: BackupArchiveProtoS
                 } else {
                     partialErrors.append(.restoreFrameError(
                         .invalidProtoData(.invalidDistributionListMember(protoClass: BackupProto_DistributionList.self)),
-                        recipientId
+                        recipientId,
                     ))
                     return nil
                 }

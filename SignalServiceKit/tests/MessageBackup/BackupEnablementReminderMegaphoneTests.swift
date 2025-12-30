@@ -4,8 +4,8 @@
 //
 
 import Foundation
-import LibSignalClient
 import GRDB
+import LibSignalClient
 import XCTest
 
 @testable import SignalServiceKit
@@ -26,7 +26,7 @@ class BackupEnablementReminderMegaphoneTests: XCTestCase {
         contactThread = TSContactThread(contactAddress: SignalServiceAddress(
             serviceId: testPNI,
             phoneNumber: testPhone.stringValue,
-            cache: SignalServiceAddressCache()
+            cache: SignalServiceAddressCache(),
         ))
         experienceUpgrade = ExperienceUpgrade.makeNew(withManifest: ExperienceUpgradeManifest.enableBackupsReminder)
     }
@@ -40,7 +40,7 @@ class BackupEnablementReminderMegaphoneTests: XCTestCase {
         return ExperienceUpgradeManifest.checkPreconditionsForBackupEnablementReminder(
             backupSettingsStore: backupSettingsStore,
             tsAccountManager: tsAccountManager,
-            transaction: tx
+            transaction: tx,
         )
     }
 
@@ -134,7 +134,7 @@ private extension TSOutgoingMessage {
     convenience init(in thread: TSThread, messageBody: String) {
         let builder: TSOutgoingMessageBuilder = .withDefaultValues(
             thread: thread,
-            messageBody: AttachmentContentValidatorMock.mockValidatedBody(messageBody)
+            messageBody: AttachmentContentValidatorMock.mockValidatedBody(messageBody),
         )
         self.init(outgoingMessageWith: builder, recipientAddressStates: [:])
     }

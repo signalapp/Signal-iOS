@@ -10,8 +10,10 @@ import SignalServiceKit
 import SignalUI
 
 protocol GroupThreadCallDelegate: AnyObject {
-    @MainActor func groupThreadCallRequestMembershipProof(_ call: GroupThreadCall)
-    @MainActor func groupThreadCallRequestGroupMembers(_ call: GroupThreadCall)
+    @MainActor
+    func groupThreadCallRequestMembershipProof(_ call: GroupThreadCall)
+    @MainActor
+    func groupThreadCallRequestGroupMembers(_ call: GroupThreadCall)
 }
 
 final class GroupThreadCall: Signal.GroupCall {
@@ -25,7 +27,7 @@ final class GroupThreadCall: Signal.GroupCall {
         delegate: any GroupThreadCallDelegate,
         ringRtcCall: SignalRingRTC.GroupCall,
         groupId: GroupIdentifier,
-        videoCaptureController: VideoCaptureController
+        videoCaptureController: VideoCaptureController,
     ) {
         self.delegate = delegate
         self.groupId = groupId
@@ -44,7 +46,7 @@ final class GroupThreadCall: Signal.GroupCall {
         super.init(
             audioDescription: "[SignalCall] with group \(groupId)",
             ringRtcCall: ringRtcCall,
-            videoCaptureController: videoCaptureController
+            videoCaptureController: videoCaptureController,
         )
 
         if groupThread.groupModel.groupMembers.count > RemoteConfig.current.maxGroupCallRingSize {
@@ -197,7 +199,7 @@ final class GroupThreadCall: Signal.GroupCall {
 
             ringRestrictions.update(
                 .callInProgress,
-                present: peekInfo.deviceCountExcludingPendingDevices >= minDevicesToConsiderCallInProgress
+                present: peekInfo.deviceCountExcludingPendingDevices >= minDevicesToConsiderCallInProgress,
             )
         }
 
@@ -221,14 +223,14 @@ final class GroupThreadCall: Signal.GroupCall {
 
 extension SignalRingRTC.GroupCall {
     var isFull: Bool {
-        guard let peekInfo = peekInfo, let maxDevices = peekInfo.maxDevices else {
+        guard let peekInfo, let maxDevices = peekInfo.maxDevices else {
             return false
         }
         return peekInfo.deviceCountIncludingPendingDevices >= maxDevices
     }
 
     var maxDevices: UInt32? {
-        guard let peekInfo = peekInfo, let maxDevices = peekInfo.maxDevices else {
+        guard let peekInfo, let maxDevices = peekInfo.maxDevices else {
             return nil
         }
         return maxDevices

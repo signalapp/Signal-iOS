@@ -20,50 +20,63 @@ class CallControls: UIView {
     private lazy var hangUpButton: CallButton = {
         let button = createButton(
             iconName: "phone-down-fill-28",
-            accessibilityLabel: viewModel.hangUpButtonAccessibilityLabel) { [viewModel] _ in
-                viewModel.didPressHangup()
-            }
+            accessibilityLabel: viewModel.hangUpButtonAccessibilityLabel,
+        ) { [viewModel] _ in
+            viewModel.didPressHangup()
+        }
         button.unselectedBackgroundColor = UIColor(rgbHex: 0xEB5545)
         return button
     }()
+
     private(set) lazy var audioSourceButton = createButton(
         iconName: "speaker-fill-28",
-        accessibilityLabel: viewModel.audioSourceAccessibilityLabel) { [viewModel] _ in
-            viewModel.didPressAudioSource()
-        }
+        accessibilityLabel: viewModel.audioSourceAccessibilityLabel,
+    ) { [viewModel] _ in
+        viewModel.didPressAudioSource()
+    }
+
     private lazy var muteButton = createButton(
         iconName: "mic-fill",
         selectedIconName: "mic-slash-fill-28",
-        accessibilityLabel: viewModel.muteButtonAccessibilityLabel) { [viewModel] _ in
-            viewModel.didPressMute()
-        }
+        accessibilityLabel: viewModel.muteButtonAccessibilityLabel,
+    ) { [viewModel] _ in
+        viewModel.didPressMute()
+    }
+
     private lazy var videoButton = createButton(
         iconName: "video-fill-28",
         selectedIconName: "video-slash-fill-28",
-        accessibilityLabel: viewModel.videoButtonAccessibilityLabel) { [viewModel] _ in
-            viewModel.didPressVideo()
-        }
+        accessibilityLabel: viewModel.videoButtonAccessibilityLabel,
+    ) { [viewModel] _ in
+        viewModel.didPressVideo()
+    }
+
     private lazy var ringButton = createButton(
         iconName: "bell-ring-fill-28",
         selectedIconName: "bell-slash-fill",
-        accessibilityLabel: viewModel.ringButtonAccessibilityLabel) { [viewModel] _ in
-            viewModel.didPressRing()
-        }
+        accessibilityLabel: viewModel.ringButtonAccessibilityLabel,
+    ) { [viewModel] _ in
+        viewModel.didPressRing()
+    }
+
     private lazy var flipCameraButton: CallButton = {
         let button = createButton(
             iconName: "switch-camera-28",
-            accessibilityLabel: viewModel.flipCameraButtonAccessibilityLabel) { [viewModel] _ in
-                viewModel.didPressFlipCamera()
-            }
+            accessibilityLabel: viewModel.flipCameraButtonAccessibilityLabel,
+        ) { [viewModel] _ in
+            viewModel.didPressFlipCamera()
+        }
         button.selectedIconColor = button.iconColor
         button.selectedBackgroundColor = button.unselectedBackgroundColor
         return button
     }()
+
     private lazy var moreButton = createButton(
         iconName: "more",
-        accessibilityLabel: viewModel.moreButtonAccessibilityLabel) { [viewModel] _ in
-            viewModel.didPressMore()
-        }
+        accessibilityLabel: viewModel.moreButtonAccessibilityLabel,
+    ) { [viewModel] _ in
+        viewModel.didPressMore()
+    }
 
     private lazy var joinButtonActivityIndicator = UIActivityIndicatorView(style: .medium)
 
@@ -100,13 +113,13 @@ class CallControls: UIView {
         call: SignalCall,
         callService: CallService,
         confirmationToastManager: CallControlsConfirmationToastManager,
-        delegate: CallControlsDelegate
+        delegate: CallControlsDelegate,
     ) {
         let viewModel = CallControlsViewModel(
             call: call,
             callService: callService,
             confirmationToastManager: confirmationToastManager,
-            delegate: delegate
+            delegate: delegate,
         )
         self.viewModel = viewModel
         self.delegate = delegate
@@ -124,7 +137,7 @@ class CallControls: UIView {
 
         let controlsStack = UIStackView(arrangedSubviews: [
             topStackView,
-            joinButtonContainer
+            joinButtonContainer,
         ])
         controlsStack.axis = .vertical
         controlsStack.spacing = HeightConstants.stackSpacing
@@ -135,7 +148,7 @@ class CallControls: UIView {
         controlsStack.autoPinEdge(
             toSuperviewSafeArea: .bottom,
             withInset: HeightConstants.bottomPadding,
-            relation: .lessThanOrEqual
+            relation: .lessThanOrEqual,
         )
         NSLayoutConstraint.autoSetPriority(.defaultHigh - 1) {
             controlsStack.autoPinEdge(toSuperviewSafeArea: .bottom, withInset: 56)
@@ -178,7 +191,7 @@ class CallControls: UIView {
         joinButton.superview?.isHidden = viewModel.joinButtonIsHidden
 
         // Sizing and spacing
-        let controlCount = topStackView.arrangedSubviews.filter({!$0.isHidden}).count
+        let controlCount = topStackView.arrangedSubviews.filter({ !$0.isHidden }).count
         topStackView.spacing = viewModel.controlSpacing(controlCount: controlCount)
         let shouldControlButtonsBeSmall = viewModel.shouldControlButtonsBeSmall(controlCount: controlCount)
         for view in topStackView.arrangedSubviews {
@@ -244,7 +257,7 @@ class CallControls: UIView {
             let animator = UIViewPropertyAnimator(
                 duration: 0.5,
                 controlPoint1: .init(x: 0.25, y: 1),
-                controlPoint2: .init(x: 0.25, y: 1)
+                controlPoint2: .init(x: 0.25, y: 1),
             )
             animator.addAnimations { [unowned self] in
                 self.audioSourceButton.isHiddenInStackView = self.viewModel.audioSourceButtonIsHidden
@@ -264,7 +277,7 @@ class CallControls: UIView {
         iconName: String,
         selectedIconName: String? = nil,
         accessibilityLabel: String? = nil,
-        action: @escaping UIActionHandler
+        action: @escaping UIActionHandler,
     ) -> CallButton {
         let button = CallButton(iconName: iconName)
         button.selectedIconName = selectedIconName
@@ -322,7 +335,7 @@ private class CallControlsViewModel {
         call: SignalCall,
         callService: CallService,
         confirmationToastManager: CallControlsConfirmationToastManager,
-        delegate: CallControlsDelegate
+        delegate: CallControlsDelegate,
     ) {
         self.call = call
         self.callService = callService
@@ -390,7 +403,7 @@ private class CallControlsViewModel {
 
     var hangUpButtonIsHidden: Bool {
         switch call.mode {
-        case .individual(_):
+        case .individual:
             return false
         case .groupThread(let call as GroupCall), .callLink(let call as GroupCall):
             return !call.hasJoinedOrIsWaitingForAdminApproval
@@ -423,7 +436,7 @@ private class CallControlsViewModel {
 
     var joinButtonIsHidden: Bool {
         switch call.mode {
-        case .individual(_):
+        case .individual:
             // TODO: Introduce lobby for starting 1:1 video calls.
             return true
         case .groupThread(let call as GroupCall), .callLink(let call as GroupCall):
@@ -446,11 +459,11 @@ private class CallControlsViewModel {
             return JoinButtonConfiguration(
                 label: OWSLocalizedString(
                     "GROUP_CALL_IS_FULL",
-                    comment: "Text explaining the group call is full"
+                    comment: "Text explaining the group call is full",
                 ),
                 color: .ows_whiteAlpha40,
                 adjustsImageWhenHighlighted: false,
-                isUserInteractionEnabled: true
+                isUserInteractionEnabled: true,
             )
         }
         if call.joinState == .joining {
@@ -458,14 +471,14 @@ private class CallControlsViewModel {
                 label: "",
                 color: .ows_whiteAlpha40,
                 adjustsImageWhenHighlighted: false,
-                isUserInteractionEnabled: false
+                isUserInteractionEnabled: false,
             )
         }
         return JoinButtonConfiguration(
             label: Self.joinButtonLabel(for: call),
             color: .white,
             adjustsImageWhenHighlighted: true,
-            isUserInteractionEnabled: true
+            isUserInteractionEnabled: true,
         )
     }
 
@@ -487,14 +500,14 @@ private class CallControlsViewModel {
     private static func startCallText() -> String {
         return OWSLocalizedString(
             "CALL_START_BUTTON",
-            comment: "Button to start a call"
+            comment: "Button to start a call",
         )
     }
 
     private static func askToJoinText() -> String {
         return OWSLocalizedString(
             "ASK_TO_JOIN_CALL",
-            comment: "Button to try to join a call. The admin may need to approve the request before the user can join."
+            comment: "Button to try to join a call. The admin may need to approve the request before the user can join.",
         )
     }
 
@@ -505,7 +518,7 @@ private class CallControlsViewModel {
     @MainActor
     var ringButtonIsHidden: Bool {
         switch call.mode {
-        case .individual(_):
+        case .individual:
             return true
         case .groupThread(let call):
             return call.joinState == .joined || call.ringRestrictions.contains(.callInProgress)
@@ -523,7 +536,7 @@ private class CallControlsViewModel {
     @MainActor
     var ringButtonConfiguration: RingButtonConfiguration? {
         switch call.mode {
-        case .individual(_):
+        case .individual:
             // We never show the ring button for 1:1 calls.
             return nil
         case .groupThread(let call):
@@ -543,7 +556,7 @@ private class CallControlsViewModel {
             return RingButtonConfiguration(
                 isUserInteractionEnabled: isUserInteractionEnabled,
                 isSelected: isSelected,
-                shouldDrawAsDisabled: shouldDrawAsDisabled
+                shouldDrawAsDisabled: shouldDrawAsDisabled,
             )
         case .callLink:
             return nil
@@ -552,7 +565,7 @@ private class CallControlsViewModel {
 
     var moreButtonIsHidden: Bool {
         switch call.mode {
-        case .individual(_):
+        case .individual:
             return true
         case .groupThread(let call as GroupCall), .callLink(let call as GroupCall):
             return call.ringRtcCall.localDeviceState.joinState != .joined
@@ -690,7 +703,7 @@ extension CallControlsViewModel {
         callService.updateIsLocalVideoMuted(isLocalVideoMuted: !call.isOutgoingVideoMuted)
 
         // When turning off video, default speakerphone to on.
-        if call.isOutgoingVideoMuted && !callService.audioService.hasExternalInputs {
+        if call.isOutgoingVideoMuted, !callService.audioService.hasExternalInputs {
             callService.audioService.requestSpeakerphone(call: self.call, isEnabled: true)
         }
         refreshView?()
@@ -745,15 +758,15 @@ extension CallControlsViewModel {
 extension CallControlsViewModel {
     public var hangUpButtonAccessibilityLabel: String {
         switch call.mode {
-        case .individual(_):
+        case .individual:
             return OWSLocalizedString(
                 "CALL_VIEW_HANGUP_LABEL",
-                comment: "Accessibility label for hang up call"
+                comment: "Accessibility label for hang up call",
             )
         case .groupThread, .callLink:
             return OWSLocalizedString(
                 "CALL_VIEW_LEAVE_CALL_LABEL",
-                comment: "Accessibility label for leaving a call"
+                comment: "Accessibility label for leaving a call",
             )
         }
     }
@@ -762,7 +775,7 @@ extension CallControlsViewModel {
         // TODO: This is not the most helpful descriptor.
         return OWSLocalizedString(
             "CALL_VIEW_AUDIO_SOURCE_LABEL",
-            comment: "Accessibility label for selection the audio source"
+            comment: "Accessibility label for selection the audio source",
         )
     }
 
@@ -770,12 +783,12 @@ extension CallControlsViewModel {
         if call.isOutgoingAudioMuted {
             return OWSLocalizedString(
                 "CALL_VIEW_UNMUTE_LABEL",
-                comment: "Accessibility label for unmuting the microphone"
+                comment: "Accessibility label for unmuting the microphone",
             )
         } else {
             return OWSLocalizedString(
                 "CALL_VIEW_MUTE_LABEL",
-                comment: "Accessibility label for muting the microphone"
+                comment: "Accessibility label for muting the microphone",
             )
         }
     }
@@ -784,12 +797,12 @@ extension CallControlsViewModel {
         if call.isOutgoingVideoMuted {
             return OWSLocalizedString(
                 "CALL_VIEW_TURN_VIDEO_ON_LABEL",
-                comment: "Accessibility label for turning on the camera"
+                comment: "Accessibility label for turning on the camera",
             )
         } else {
             return OWSLocalizedString(
                 "CALL_VIEW_TURN_VIDEO_OFF_LABEL",
-                comment: "Accessibility label for turning off the camera"
+                comment: "Accessibility label for turning off the camera",
             )
         }
     }
@@ -804,12 +817,12 @@ extension CallControlsViewModel {
             case .shouldRing:
                 return OWSLocalizedString(
                     "CALL_VIEW_TURN_OFF_RINGING",
-                    comment: "Accessibility label for turning off call ringing"
+                    comment: "Accessibility label for turning off call ringing",
                 )
             case .doNotRing:
                 return OWSLocalizedString(
                     "CALL_VIEW_TURN_ON_RINGING",
-                    comment: "Accessibility label for turning on call ringing"
+                    comment: "Accessibility label for turning on call ringing",
                 )
             default:
                 // Ring button shouldn't be available.
@@ -822,14 +835,14 @@ extension CallControlsViewModel {
     public var flipCameraButtonAccessibilityLabel: String {
         return OWSLocalizedString(
             "CALL_VIEW_SWITCH_CAMERA_DIRECTION",
-            comment: "Accessibility label to toggle front- vs. rear-facing camera"
+            comment: "Accessibility label to toggle front- vs. rear-facing camera",
         )
     }
 
     public var moreButtonAccessibilityLabel: String {
         return OWSLocalizedString(
             "CALL_VIEW_MORE_LABEL",
-            comment: "Accessibility label for the More button in the Call Controls row."
+            comment: "Accessibility label for the More button in the Call Controls row.",
         )
     }
 }

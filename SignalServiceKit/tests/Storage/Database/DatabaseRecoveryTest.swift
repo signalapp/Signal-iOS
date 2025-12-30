@@ -17,7 +17,7 @@ final class DatabaseRecoveryTest: SSKBaseTest {
         SSKEnvironment.shared.databaseStorageRef.write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
                 localIdentifiers: .forUnitTests,
-                tx: tx
+                tx: tx,
             )
         }
     }
@@ -86,7 +86,7 @@ final class DatabaseRecoveryTest: SSKBaseTest {
     }
 
     private func normalTableRowCounts(databaseStorage: SDSDatabaseStorage) throws -> [String: Int] {
-        return try databaseStorage.read { (tx) throws -> [String: Int] in
+        return try databaseStorage.read { tx throws -> [String: Int] in
             var result = [String: Int]()
             for tableName in try allNormalTableNames(tx: tx) {
                 let sql = "SELECT COUNT(*) FROM \(tableName)"
@@ -130,7 +130,7 @@ final class DatabaseRecoveryTest: SSKBaseTest {
             // Threads
             let contactThread = insertContactThread(
                 contactAddress: SignalServiceAddress(contactAci),
-                transaction: transaction
+                transaction: transaction,
             )
             guard let contactThreadId = contactThread.sqliteRowId else {
                 XCTFail("Thread was not inserted properly")
@@ -142,7 +142,7 @@ final class DatabaseRecoveryTest: SSKBaseTest {
                 thread: contactThread,
                 timestamp: 1234,
                 authorAci: contactAci,
-                messageBody: AttachmentContentValidatorMock.mockValidatedBody("test outgoing message")
+                messageBody: AttachmentContentValidatorMock.mockValidatedBody("test outgoing message"),
             )
             let message = messageBuilder.build()
             message.anyInsert(transaction: transaction)
@@ -153,7 +153,7 @@ final class DatabaseRecoveryTest: SSKBaseTest {
                 emoji: "💽",
                 reactor: localAci,
                 sentAtTimestamp: 1234,
-                receivedAtTimestamp: 1234
+                receivedAtTimestamp: 1234,
             )
             reaction.anyInsert(transaction: transaction)
 
@@ -163,7 +163,7 @@ final class DatabaseRecoveryTest: SSKBaseTest {
                 messageTimestamp: Int64(message.timestamp),
                 messageUniqueId: message.uniqueId,
                 authorPhoneNumber: nil,
-                authorAci: contactAci
+                authorAci: contactAci,
             )
             try pendingReadReceipt.insert(transaction.database)
         }
@@ -186,9 +186,9 @@ final class DatabaseRecoveryTest: SSKBaseTest {
             // Thread
             let thread = TSContactThread.getWithContactAddress(
                 SignalServiceAddress(contactAci),
-                transaction: transaction
+                transaction: transaction,
             )
-            guard let thread = thread else {
+            guard let thread else {
                 XCTFail("Contact thread not found in migrated database")
                 return
             }
@@ -199,7 +199,7 @@ final class DatabaseRecoveryTest: SSKBaseTest {
                 let finder = InteractionFinder(threadUniqueId: thread.uniqueId)
                 try? finder.enumerateInteractionsForConversationView(
                     rowIdFilter: .newest,
-                    tx: transaction
+                    tx: transaction,
                 ) { interaction -> Bool in
                     result.append(interaction)
                     return true
@@ -236,7 +236,7 @@ final class DatabaseRecoveryTest: SSKBaseTest {
             }
             XCTAssert(
                 pendingReadReceipts.isEmpty,
-                "Unexpectedly found \(pendingReadReceipts.count) pending read receipt(s)"
+                "Unexpectedly found \(pendingReadReceipts.count) pending read receipt(s)",
             )
         }
     }
@@ -257,7 +257,7 @@ final class DatabaseRecoveryTest: SSKBaseTest {
         XCTAssertThrowsError(try dump.run()) { error in
             XCTAssertEqual(
                 error as? DatabaseRecoveryError,
-                DatabaseRecoveryError.unrecoverablyCorrupted
+                DatabaseRecoveryError.unrecoverablyCorrupted,
             )
         }
     }
@@ -304,14 +304,14 @@ final class DatabaseRecoveryTest: SSKBaseTest {
 
             let contactThread = insertContactThread(
                 contactAddress: SignalServiceAddress(contactAci),
-                transaction: transaction
+                transaction: transaction,
             )
 
             let messageBuilder: TSIncomingMessageBuilder = .withDefaultValues(
                 thread: contactThread,
                 timestamp: 1234,
                 authorAci: contactAci,
-                messageBody: AttachmentContentValidatorMock.mockValidatedBody("foo bar")
+                messageBody: AttachmentContentValidatorMock.mockValidatedBody("foo bar"),
             )
             let message = messageBuilder.build()
             message.anyInsert(transaction: transaction)
@@ -341,7 +341,7 @@ final class DatabaseRecoveryTest: SSKBaseTest {
                 FullTextSearchIndexer.search(
                     for: searchText,
                     maxResults: 99,
-                    tx: transaction
+                    tx: transaction,
                 ) { match, _, _ in
                     result.append(match)
                 }
@@ -373,11 +373,11 @@ final class DatabaseRecoveryTest: SSKBaseTest {
 
         let tableNamesToSkip: Set<String> = ["grdb_migrations", "sqlite_sequence"]
         return allTableNames.filter { tableName in
-            return (
+            return
                 !tableNamesToSkip.contains(tableName)
-                && !tableName.starts(with: "indexable_text")
-                && !tableName.starts(with: SearchableNameIndexerImpl.Constants.databaseTableName)
-            )
+                    && !tableName.starts(with: "indexable_text")
+                    && !tableName.starts(with: SearchableNameIndexerImpl.Constants.databaseTableName)
+
         }
     }
 
@@ -396,11 +396,11 @@ final class DatabaseRecoveryTest: SSKBaseTest {
 
     func insertContactThread(
         contactAddress: SignalServiceAddress,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) -> TSContactThread {
         TSContactThread.getOrCreateThread(
             withContactAddress: contactAddress,
-            transaction: transaction
+            transaction: transaction,
         )
     }
 }

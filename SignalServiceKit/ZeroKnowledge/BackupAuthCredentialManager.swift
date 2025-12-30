@@ -6,7 +6,7 @@
 import Foundation
 public import LibSignalClient
 
-public enum BackupAuthCredentialType: String, Codable, CaseIterable, CodingKeyRepresentable  {
+public enum BackupAuthCredentialType: String, Codable, CaseIterable, CodingKeyRepresentable {
     case media
     case messages
 }
@@ -44,7 +44,7 @@ public protocol BackupAuthCredentialManager {
         key: BackupKeyMaterial,
         localAci: Aci,
         chatServiceAuth: ChatServiceAuth,
-        forceRefreshUnlessCachedPaidCredential: Bool
+        forceRefreshUnlessCachedPaidCredential: Bool,
     ) async throws -> BackupServiceAuth
 
     func fetchSVRBAuthCredential(
@@ -74,7 +74,7 @@ class BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
         backupTestFlightEntitlementManager: BackupTestFlightEntitlementManager,
         dateProvider: @escaping DateProvider,
         db: any DB,
-        networkManager: NetworkManager
+        networkManager: NetworkManager,
     ) {
         self.authCredentialStore = authCredentialStore
         self.backupIdService = backupIdService
@@ -123,7 +123,7 @@ class BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
         key: BackupKeyMaterial,
         localAci: Aci,
         chatServiceAuth auth: ChatServiceAuth,
-        forceRefreshUnlessCachedPaidCredential: Bool
+        forceRefreshUnlessCachedPaidCredential: Bool,
     ) async throws -> BackupServiceAuth {
         return try await serialTaskQueue.run {
             try await _fetchBackupServiceAuth(
@@ -139,18 +139,20 @@ class BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
         key: BackupKeyMaterial,
         localAci: Aci,
         chatServiceAuth auth: ChatServiceAuth,
-        forceRefreshUnlessCachedPaidCredential: Bool
+        forceRefreshUnlessCachedPaidCredential: Bool,
     ) async throws -> BackupServiceAuth {
 
         try await waitForAuthCredentialDependency(.registerBackupId(localAci: localAci, auth: auth))
         try await waitForAuthCredentialDependency(.renewBackupEntitlementForTestFlight)
         try await waitForAuthCredentialDependency(.redeemBackupSubscriptionViaIAP)
 
-        if let cachedServiceAuth = readCachedServiceAuth(
-            key: key,
-            localAci: localAci,
-            forceRefreshUnlessCachedPaidCredential: forceRefreshUnlessCachedPaidCredential
-        ) {
+        if
+            let cachedServiceAuth = readCachedServiceAuth(
+                key: key,
+                localAci: localAci,
+                forceRefreshUnlessCachedPaidCredential: forceRefreshUnlessCachedPaidCredential,
+            )
+        {
             return cachedServiceAuth
         }
 
@@ -202,7 +204,7 @@ class BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
             key: key,
             localAci: key.aci,
             chatServiceAuth: auth,
-            forceRefreshUnlessCachedPaidCredential: false
+            forceRefreshUnlessCachedPaidCredential: false,
         )
         let response = try await networkManager.asyncRequest(
             OWSRequestFactory.fetchSVRBAuthCredential(auth: backupServiceAuth),
@@ -213,7 +215,7 @@ class BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
         let receivedSVRBAuthCredential = try JSONDecoder().decode(ReceivedSVRBAuthCredentials.self, from: bodyData)
         let svrBAuth = LibSignalClient.Auth(
             username: receivedSVRBAuthCredential.username,
-            password: receivedSVRBAuthCredential.password
+            password: receivedSVRBAuthCredential.password,
         )
 
         await db.awaitableWrite { tx in
@@ -284,19 +286,23 @@ class BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
 
             // Check there are more than 4 days of credentials remaining.
             // If not, return nil and trigger a credential fetch.
-            guard let _ = self.authCredentialStore.backupAuthCredential(
-                for: key.credentialType,
-                redemptionTime: redemptionTime + 4 * .dayInSeconds,
-                tx: tx
-            ) else {
+            guard
+                let _ = self.authCredentialStore.backupAuthCredential(
+                    for: key.credentialType,
+                    redemptionTime: redemptionTime + 4 * .dayInSeconds,
+                    tx: tx,
+                )
+            else {
                 return nil
             }
 
-            guard let authCredential = self.authCredentialStore.backupAuthCredential(
-                for: key.credentialType,
-                redemptionTime: redemptionTime,
-                tx: tx
-            ) else {
+            guard
+                let authCredential = self.authCredentialStore.backupAuthCredential(
+                    for: key.credentialType,
+                    redemptionTime: redemptionTime,
+                    tx: tx,
+                )
+            else {
                 owsFailDebug("Unexpectedly missing auth credential for now, but had one for a future date!")
                 return nil
             }
@@ -309,7 +315,7 @@ class BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
     private func readCachedServiceAuth(
         key: BackupKeyMaterial,
         localAci: Aci,
-        forceRefreshUnlessCachedPaidCredential: Bool
+        forceRefreshUnlessCachedPaidCredential: Bool,
     ) -> BackupServiceAuth? {
         guard let cachedAuthCredential = readCachedAuthCredential(key: key) else {
             return nil
@@ -364,7 +370,7 @@ class BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
     private func fetchNewAuthCredentials(
         localAci: Aci,
         key: BackupKeyMaterial,
-        auth: ChatServiceAuth
+        auth: ChatServiceAuth,
     ) async throws -> ([ReceivedBackupAuthCredential], first: BackupServiceAuth) {
 
         // Always fetch 7d worth of credentials at once.
@@ -375,7 +381,7 @@ class BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
         let request = OWSRequestFactory.backupAuthenticationCredentialRequest(
             from: startTimestampSeconds,
             to: endTimestampSeconds,
-            auth: auth
+            auth: auth,
         )
 
         let response: HTTPResponse
@@ -412,7 +418,7 @@ class BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
             do {
                 let backupRequestContext = BackupAuthCredentialRequestContext.create(
                     backupKey: key.serialize(),
-                    aci: localAci.rawUUID
+                    aci: localAci.rawUUID,
                 )
 
                 let backupAuthResponse = try BackupAuthCredentialResponse(contents: credential.credential)
@@ -420,12 +426,12 @@ class BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
                 let receivedCredential = try backupRequestContext.receive(
                     backupAuthResponse,
                     timestamp: redemptionDate,
-                    params: backupServerPublicParams
+                    params: backupServerPublicParams,
                 )
 
                 return ReceivedBackupAuthCredential(
                     redemptionTime: credential.redemptionTime,
-                    credential: receivedCredential
+                    credential: receivedCredential,
                 )
             } catch {
                 Logger.warn("Error creating credential! \(error)")
@@ -443,7 +449,7 @@ class BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
                 privateKey: key.deriveEcKey(aci: localAci),
                 authCredential: firstAuthCredential,
                 type: key.credentialType,
-            )
+            ),
         )
     }
 

@@ -45,7 +45,7 @@ extension AttachmentMultisend {
                 return .init(
                     conversationItem: conversation,
                     thread: thread,
-                    messageBody: hydratedMessageBody
+                    messageBody: hydratedMessageBody,
                 )
             }
         }
@@ -55,7 +55,7 @@ extension AttachmentMultisend {
             let validatedMessageBody: ValidatedMessageBody?
             if let messageBody {
                 validatedMessageBody = try await deps.attachmentValidator.prepareOversizeTextIfNeeded(
-                    messageBody
+                    messageBody,
                 )
             } else {
                 validatedMessageBody = nil
@@ -64,7 +64,7 @@ extension AttachmentMultisend {
                 .init(
                     conversationItem: $0.conversationItem,
                     thread: $0.thread,
-                    messageBody: validatedMessageBody
+                    messageBody: validatedMessageBody,
                 )
             }
         }
@@ -76,17 +76,17 @@ extension AttachmentMultisend {
                 destinations.append(.init(
                     conversationItem: preDestination.conversationItem,
                     thread: preDestination.thread,
-                    messageBody: nil
+                    messageBody: nil,
                 ))
                 continue
             }
             let validatedMessageBody = try await deps.attachmentValidator.prepareOversizeTextIfNeeded(
-                hydratedMessageBody.asMessageBodyForForwarding()
+                hydratedMessageBody.asMessageBodyForForwarding(),
             )
             destinations.append(.init(
                 conversationItem: preDestination.conversationItem,
                 thread: preDestination.thread,
-                messageBody: validatedMessageBody
+                messageBody: validatedMessageBody,
             ))
         }
         return destinations

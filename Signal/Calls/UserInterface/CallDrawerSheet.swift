@@ -3,11 +3,11 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import Combine
 import LibSignalClient
 import SignalRingRTC
 import SignalServiceKit
 import SignalUI
-import Combine
 
 protocol CallDrawerDelegate: AnyObject {
     func didPresentViewController(_ viewController: UIViewController)
@@ -25,6 +25,7 @@ class CallDrawerSheet: InteractiveSheetViewController {
     override var canBeDismissed: Bool {
         return false
     }
+
     override var canInteractWithParent: Bool {
         return true
     }
@@ -37,6 +38,7 @@ class CallDrawerSheet: InteractiveSheetViewController {
         stackView.addArrangedSubview(self.tableView)
         return stackView
     }()
+
     private lazy var tableHeaderContainer: UIView = {
         let container = UIView()
         container.layoutMargins = .init(hMargin: 21, vMargin: 0)
@@ -47,8 +49,8 @@ class CallDrawerSheet: InteractiveSheetViewController {
         let doneButton = UIButton(primaryAction: .init(
             title: OWSLocalizedString(
                 "GROUP_CALL_MEMBER_LIST_DONE_BUTTON_TITLE",
-                comment: "Title for a 'done' button on a sheet showing the group call members list"
-            )
+                comment: "Title for a 'done' button on a sheet showing the group call members list",
+            ),
         ) { [weak self] _ in
             self?.callDrawerDelegate?.didTapDone()
         })
@@ -61,18 +63,20 @@ class CallDrawerSheet: InteractiveSheetViewController {
 
         return container
     }()
+
     private let sheetTitleLabel: UILabel = {
         let label = UILabel()
         // "Call Info" for normal group calls. Will be
         // overwritten by call link state otherwise.
         label.text = OWSLocalizedString(
             "GROUP_CALL_MEMBER_LIST_TITLE",
-            comment: "Title for the sheet showing the group call members list"
+            comment: "Title for the sheet showing the group call members list",
         )
         label.font = .dynamicTypeHeadline
         label.textColor = UIColor.Signal.label
         return label
     }()
+
     private let tableView = UITableView(frame: .zero, style: .insetGrouped)
     private let call: SignalCall
     private let callSheetDataSource: CallDrawerSheetDataSource
@@ -91,7 +95,7 @@ class CallDrawerSheet: InteractiveSheetViewController {
         return CallLinkAdminManager(
             rootKey: callLinkDataSource.callLink.rootKey,
             adminPasskey: adminPasskey,
-            callLinkState: callLinkDataSource.callLinkState
+            callLinkState: callLinkDataSource.callLinkState,
         )
     }()
 
@@ -110,7 +114,7 @@ class CallDrawerSheet: InteractiveSheetViewController {
         confirmationToastManager: CallControlsConfirmationToastManager,
         callControlsDelegate: CallControlsDelegate,
         sheetPanDelegate: (any SheetPanDelegate)?,
-        callDrawerDelegate: CallDrawerDelegate? = nil
+        callDrawerDelegate: CallDrawerDelegate? = nil,
     ) {
         self.call = call
         self.callSheetDataSource = callSheetDataSource
@@ -118,7 +122,7 @@ class CallDrawerSheet: InteractiveSheetViewController {
             call: call,
             callService: callService,
             confirmationToastManager: confirmationToastManager,
-            delegate: callControlsDelegate
+            delegate: callControlsDelegate,
         )
 
         super.init()
@@ -142,11 +146,11 @@ class CallDrawerSheet: InteractiveSheetViewController {
         let halfHeight = windowHeight / 2
         let twoThirdsHeight = 2 * windowHeight / 3
         let tableHeight = tableView.contentSize.height
-        + tableView.safeAreaInsets.totalHeight
-        + Constants.handleHeight
-        + tableHeaderContainer.frame.height
-        + HeightConstants.titleViewBottomPadding
-        + HeightConstants.tableViewTopPadding
+            + tableView.safeAreaInsets.totalHeight
+            + Constants.handleHeight
+            + tableHeaderContainer.frame.height
+            + HeightConstants.titleViewBottomPadding
+            + HeightConstants.tableViewTopPadding
         if tableHeight >= twoThirdsHeight {
             return twoThirdsHeight
         } else if tableHeight > halfHeight {
@@ -189,7 +193,7 @@ class CallDrawerSheet: InteractiveSheetViewController {
     }
 
     private lazy var dataSource = DiffableDataSource(
-        tableView: tableView
+        tableView: tableView,
     ) { [weak self] tableView, indexPath, id -> UITableViewCell? in
         switch id {
         case let .member(section: section, id: memberID):
@@ -207,18 +211,18 @@ class CallDrawerSheet: InteractiveSheetViewController {
             let canBeRemoved = section == .inCall && !viewModel.isLocalUser && isCallAdmin
 
             let removeUserButtonVisibility: GroupCallMemberCell.Visibility =
-            if canBeRemoved {
-                .visible
-            } else if isCallAdmin && section == .inCall {
-                .spaceReserved
-            } else {
-                .hidden
-            }
+                if canBeRemoved {
+                    .visible
+                } else if isCallAdmin, section == .inCall {
+                    .spaceReserved
+                } else {
+                    .hidden
+                }
 
             cell.configure(
                 with: viewModel,
                 isHandRaised: section == .raisedHands,
-                removeUserButtonVisibility: removeUserButtonVisibility
+                removeUserButtonVisibility: removeUserButtonVisibility,
             )
 
             return cell
@@ -271,12 +275,12 @@ class CallDrawerSheet: InteractiveSheetViewController {
             case .raisedHands:
                 OWSLocalizedString(
                     "GROUP_CALL_MEMBER_LIST_RAISED_HANDS_SECTION_HEADER",
-                    comment: "Title for the section of the group call member list which displays the list of members with their hand raised."
+                    comment: "Title for the section of the group call member list which displays the list of members with their hand raised.",
                 )
             case .inCall:
                 OWSLocalizedString(
                     "GROUP_CALL_MEMBER_LIST_IN_CALL_SECTION_HEADER",
-                    comment: "Title for the section of the group call member list which displays the list of all members in the call."
+                    comment: "Title for the section of the group call member list which displays the list of all members in the call.",
                 )
             }
 
@@ -286,13 +290,13 @@ class CallDrawerSheet: InteractiveSheetViewController {
                 String(
                     format: OWSLocalizedString(
                         "GROUP_CALL_MEMBER_LIST_SECTION_HEADER_MEMBER_COUNT",
-                        comment: "A count of members in a given group call member list section, displayed after the header."
+                        comment: "A count of members in a given group call member list section, displayed after the header.",
                     ),
-                    self.memberCount
-                )
+                    self.memberCount,
+                ),
             ]).styled(
                 with: .font(.dynamicTypeBody),
-                .color(Theme.darkThemePrimaryColor)
+                .color(Theme.darkThemePrimaryColor),
             )
         }
     }
@@ -308,7 +312,7 @@ class CallDrawerSheet: InteractiveSheetViewController {
         tableViewContainer.transform = .translate(.init(x: 0, y: translation))
     }
 
-    override public func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
 
         tableView.delegate = self
@@ -337,7 +341,7 @@ class CallDrawerSheet: InteractiveSheetViewController {
         contentView.addSubview(callControls)
         NSLayoutConstraint.activate([
             callControls.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            callControls.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10)
+            callControls.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
         ])
 
         updateMembers()
@@ -406,7 +410,7 @@ class CallDrawerSheet: InteractiveSheetViewController {
         typealias OrganizedMembers = (joinedMembers: [JoinedMember], unknownMembers: UnknownMembers)
 
         let organizedMembers: OrganizedMembers = unsortedMembers.reduce(
-            into: ([], UnknownMembers())
+            into: ([], UnknownMembers()),
         ) { partialResult, member in
             if member.isUnknown {
                 partialResult.unknownMembers.members.append(member)
@@ -455,7 +459,7 @@ class CallDrawerSheet: InteractiveSheetViewController {
                 raiseHandMemberIds.map {
                     RowID.member(section: .raisedHands, id: $0)
                 },
-                toSection: .members(.raisedHands)
+                toSection: .members(.raisedHands),
             )
 
             raisedHandsHeader.memberCount = raiseHandMemberIds.count
@@ -467,7 +471,7 @@ class CallDrawerSheet: InteractiveSheetViewController {
             snapshot.appendSections([.members(.inCall)])
             snapshot.appendItems(
                 sortedMembers.map { RowID.member(section: .inCall, id: $0.id) },
-                toSection: .members(.inCall)
+                toSection: .members(.inCall),
             )
 
             if unknownMembers.count > 0 {
@@ -562,7 +566,7 @@ class CallDrawerSheet: InteractiveSheetViewController {
 
             if height <= self.minimizedHeight {
                 changesForSnapToMin()
-            } else if height > self.minimizedHeight && height < pivotPoint {
+            } else if height > self.minimizedHeight, height < pivotPoint {
                 tableViewContainer.alpha = 0
                 let denominator = pivotPoint - self.minimizedHeight
                 if denominator <= 0 {
@@ -571,7 +575,7 @@ class CallDrawerSheet: InteractiveSheetViewController {
                 } else {
                     callControls.alpha = max(0.1, 1 - ((height - self.minimizedHeight) / denominator))
                 }
-            } else if height >= pivotPoint && height < maxHeight {
+            } else if height >= pivotPoint, height < maxHeight {
                 callControls.alpha = 0
 
                 // Table view fades in as sheet opens and fades out as sheet closes.
@@ -693,7 +697,7 @@ extension CallDrawerSheet: UITableViewDelegate {
 
         let shareSheet = UIActivityViewController(
             activityItems: [callLinkDataSource.url()],
-            applicationActivities: nil
+            applicationActivities: nil,
         )
         shareSheet.popoverPresentationController?.sourceView = sourceView
         present(shareSheet, animated: true)
@@ -709,7 +713,7 @@ extension CallDrawerSheet: UITableViewDelegate {
             oldName: callLinkAdminManager.callLinkState?.name ?? "",
             setNewName: { name in
                 try await callLinkAdminManager.updateName(name)
-            }
+            },
         ).presentInNavController(from: self, forceDarkMode: true)
     }
 }
@@ -733,25 +737,25 @@ extension CallDrawerSheet: GroupCallMemberCellDelegate {
             title: String(
                 format: OWSLocalizedString(
                     "GROUP_CALL_REMOVE_MEMBER_CONFIRMATION_ACTION_SHEET_TITLE",
-                    comment: "Title for action sheet confirming removal of a member from a group call. embeds {{ name }}"
+                    comment: "Title for action sheet confirming removal of a member from a group call. embeds {{ name }}",
                 ),
-                name
+                name,
             ),
         )
         actionSheet.overrideUserInterfaceStyle = .dark
         actionSheet.addAction(.init(
             title: OWSLocalizedString(
                 "GROUP_CALL_REMOVE_MEMBER_CONFIRMATION_ACTION_SHEET_REMOVE_ACTION",
-                comment: "Label for the button to confirm removing a member from a group call."
-            )
+                comment: "Label for the button to confirm removing a member from a group call.",
+            ),
         ) { [callLinkDataSource] _ in
             callLinkDataSource.removeMember(demuxId: demuxId)
         })
         actionSheet.addAction(.init(
             title: OWSLocalizedString(
                 "GROUP_CALL_REMOVE_MEMBER_CONFIRMATION_ACTION_SHEET_BLOCK_ACTION",
-                comment: "Label for a button to block a member from a group call."
-            )
+                comment: "Label for a button to block a member from a group call.",
+            ),
         ) { [callLinkDataSource] _ in
             callLinkDataSource.blockMember(demuxId: demuxId)
         })
@@ -826,7 +830,7 @@ private class CallLinkURLCell: UITableViewCell, ReusableTableViewCell {
         titleLabel.textColor = .white
         titleLabel.text = OWSLocalizedString(
             "GROUP_CALL_MEMBER_LIST_SHARE_CALL_LINK_BUTTON",
-            comment: "Title for a button on the group members sheet for sharing that call's link."
+            comment: "Title for a button on the group members sheet for sharing that call's link.",
         )
 
         self.contentView.addSubview(hStack)
@@ -887,7 +891,7 @@ private class GroupCallMemberCell: UITableViewCell, ReusableTableViewCell {
     private let avatarView = ConversationAvatarView(
         sizeClass: .thirtySix,
         localUserDisplayMode: .asUser,
-        badged: false
+        badged: false,
     )
 
     private let nameLabel = UILabel()
@@ -895,7 +899,7 @@ private class GroupCallMemberCell: UITableViewCell, ReusableTableViewCell {
     private lazy var lowerHandButton = OWSButton(
         title: CallStrings.lowerHandButton,
         tintColor: .ows_white,
-        dimsWhenHighlighted: true
+        dimsWhenHighlighted: true,
     ) { [weak self] in
         self?.delegate?.raiseHand(raise: false)
     }
@@ -910,9 +914,9 @@ private class GroupCallMemberCell: UITableViewCell, ReusableTableViewCell {
             SignalSymbol.minusCircle.attributedString(
                 dynamicTypeBaseSize: 24,
                 weight: .light,
-                attributes: [.foregroundColor: UIColor.Signal.label]
+                attributes: [.foregroundColor: UIColor.Signal.label],
             ),
-            for: .normal
+            for: .normal,
         )
         button.dimsWhenHighlighted = true
         return button
@@ -987,7 +991,9 @@ private class GroupCallMemberCell: UITableViewCell, ReusableTableViewCell {
     // MARK: Configuration
 
     enum Visibility {
-        case visible, spaceReserved, hidden
+        case visible
+        case spaceReserved
+        case hidden
     }
 
     // isHandRaised isn't part of ViewModel because the same view model is used
@@ -995,7 +1001,7 @@ private class GroupCallMemberCell: UITableViewCell, ReusableTableViewCell {
     func configure(
         with viewModel: ViewModel,
         isHandRaised: Bool,
-        removeUserButtonVisibility: Visibility
+        removeUserButtonVisibility: Visibility,
     ) {
         self.subscriptions.removeAll()
 
@@ -1089,7 +1095,9 @@ private class UnknownMembersCell: UITableViewCell, ReusableTableViewCell {
         let borderConstraints: [NSLayoutConstraint]
 
         enum Position {
-            case front, middle, back
+            case front
+            case middle
+            case back
         }
 
         init(in containerView: UIView, position: Position) {
@@ -1183,12 +1191,12 @@ private class UnknownMembersCell: UITableViewCell, ReusableTableViewCell {
         let infoButton = OWSButton(
             imageName: "info",
             tintColor: .white,
-            dimsWhenHighlighted: true
+            dimsWhenHighlighted: true,
         ) { [weak self] in
             let actionSheet = ActionSheetController(
                 message: OWSLocalizedString(
                     "GROUP_CALL_MEMBER_LIST_UNKNOWN_MEMBERS_INFO_SHEET",
-                    comment: "Message on an action sheet when tapping an info button next to unknown members in the group call member list."
+                    comment: "Message on an action sheet when tapping an info button next to unknown members in the group call member list.",
                 ),
             )
             actionSheet.overrideUserInterfaceStyle = .dark
@@ -1206,37 +1214,37 @@ private class UnknownMembersCell: UITableViewCell, ReusableTableViewCell {
         if unknownMembers.count == 1, !unknownMembers.callHasKnownUsers {
             bodyLabel.text = OWSLocalizedString(
                 "GROUP_CALL_MEMBER_LIST_SINGLE_UNKNOWN_MEMBER_ROW",
-                comment: "Label for an unknown member in the group call member list when they are the only member of the call."
+                comment: "Label for an unknown member in the group call member list when they are the only member of the call.",
             )
         } else {
             bodyLabel.text = String.localizedStringWithFormat(
                 OWSLocalizedString(
                     "GROUP_CALL_MEMBER_LIST_UNKNOWN_MEMBERS_ROW_%ld",
                     tableName: "PluralAware",
-                    comment: "Label for one or more unknown members in the group call member list when there is at least one known member in the call. Embeds {{ count }}"
+                    comment: "Label for one or more unknown members in the group call member list when there is at least one known member in the call. Embeds {{ count }}",
                 ),
-                unknownMembers.count
+                unknownMembers.count,
             )
         }
 
         frontAvatar.configure(
             with: unknownMembers.members.first?.serviceId,
-            totalAvatars: unknownMembers.members.count
+            totalAvatars: unknownMembers.members.count,
         )
         if unknownMembers.members.count == 2 {
             middleAvatar.hide()
             backAvatar.configure(
                 with: unknownMembers.members.last?.serviceId,
-                totalAvatars: unknownMembers.members.count
+                totalAvatars: unknownMembers.members.count,
             )
         } else {
             middleAvatar.configure(
                 with: unknownMembers.members[safe: 1]?.serviceId,
-                totalAvatars: unknownMembers.members.count
+                totalAvatars: unknownMembers.members.count,
             )
             backAvatar.configure(
                 with: unknownMembers.members[safe: 2]?.serviceId,
-                totalAvatars: unknownMembers.members.count
+                totalAvatars: unknownMembers.members.count,
             )
         }
     }
@@ -1253,7 +1261,7 @@ extension CallDrawerSheet: CallControlsHeightObserver {
         }
     }
 
-    open override func viewSafeAreaInsetsDidChange() {
+    override open func viewSafeAreaInsetsDidChange() {
         super.viewSafeAreaInsetsDidChange()
         self.setBottomSheetMinimizedHeight()
     }

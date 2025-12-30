@@ -85,7 +85,7 @@ class CameraCaptureSession: NSObject {
     init(
         delegate: CameraCaptureSessionDelegate,
         maxPlaintextVideoBytes: UInt64,
-        qrCodeSampleBufferScanner: QRCodeSampleBufferScanner
+        qrCodeSampleBufferScanner: QRCodeSampleBufferScanner,
     ) {
         self.delegate = delegate
         self.videoCapture = VideoCapture(
@@ -212,9 +212,9 @@ class CameraCaptureSession: NSObject {
         }
         focusObservation = newInput.observe(
             \.device.isAdjustingFocus,
-             options: [.old, .new]
+            options: [.old, .new],
         ) { [weak self] _, change in
-            guard let self = self else { return }
+            guard let self else { return }
 
             guard let oldValue = change.oldValue else {
                 return
@@ -224,7 +224,7 @@ class CameraCaptureSession: NSObject {
                 return
             }
 
-            if oldValue == true && newValue == false {
+            if oldValue == true, newValue == false {
                 self.didCompleteFocusing()
             }
         }
@@ -269,37 +269,38 @@ class CameraCaptureSession: NSObject {
         with focusMode: AVCaptureDevice.FocusMode,
         exposureMode: AVCaptureDevice.ExposureMode,
         at devicePoint: CGPoint,
-        monitorSubjectAreaChange: Bool) {
-            sessionQueue.async {
-                Logger.debug("focusMode: \(focusMode), exposureMode: \(exposureMode), devicePoint: \(devicePoint), monitorSubjectAreaChange:\(monitorSubjectAreaChange)")
-                guard let device = self.videoCaptureDevice else {
-                    if !Platform.isSimulator {
-                        owsFailDebug("device was unexpectedly nil")
-                    }
-                    return
+        monitorSubjectAreaChange: Bool,
+    ) {
+        sessionQueue.async {
+            Logger.debug("focusMode: \(focusMode), exposureMode: \(exposureMode), devicePoint: \(devicePoint), monitorSubjectAreaChange:\(monitorSubjectAreaChange)")
+            guard let device = self.videoCaptureDevice else {
+                if !Platform.isSimulator {
+                    owsFailDebug("device was unexpectedly nil")
                 }
-                do {
-                    try device.lockForConfiguration()
+                return
+            }
+            do {
+                try device.lockForConfiguration()
 
-                    // Setting (focus/exposure)PointOfInterest alone does not initiate a (focus/exposure) operation.
-                    // Call set(Focus/Exposure)Mode() to apply the new point of interest.
-                    if device.isFocusPointOfInterestSupported && device.isFocusModeSupported(focusMode) {
-                        device.focusPointOfInterest = devicePoint
-                        device.focusMode = focusMode
-                    }
-
-                    if device.isExposurePointOfInterestSupported && device.isExposureModeSupported(exposureMode) {
-                        device.exposurePointOfInterest = devicePoint
-                        device.exposureMode = exposureMode
-                    }
-
-                    device.isSubjectAreaChangeMonitoringEnabled = monitorSubjectAreaChange
-                    device.unlockForConfiguration()
-                } catch {
-                    owsFailDebug("error: \(error)")
+                // Setting (focus/exposure)PointOfInterest alone does not initiate a (focus/exposure) operation.
+                // Call set(Focus/Exposure)Mode() to apply the new point of interest.
+                if device.isFocusPointOfInterestSupported, device.isFocusModeSupported(focusMode) {
+                    device.focusPointOfInterest = devicePoint
+                    device.focusMode = focusMode
                 }
+
+                if device.isExposurePointOfInterestSupported, device.isExposureModeSupported(exposureMode) {
+                    device.exposurePointOfInterest = devicePoint
+                    device.exposureMode = exposureMode
+                }
+
+                device.isSubjectAreaChangeMonitoringEnabled = monitorSubjectAreaChange
+                device.unlockForConfiguration()
+            } catch {
+                owsFailDebug("error: \(error)")
             }
         }
+    }
 
     func resetFocusAndExposure() {
         let devicePoint = CGPoint(x: 0.5, y: 0.5)
@@ -375,10 +376,10 @@ class CameraCaptureSession: NSObject {
             withHandler: { [weak self] accelerometerData, error in
                 if let orientation = accelerometerData?.acceleration.deviceOrientation {
                     self?.updateOrientation(orientation)
-                } else if let error = error {
+                } else if let error {
                     Logger.debug("Photo capture accelerometer error: \(error)")
                 }
-            }
+            },
         )
 
         return initialOrientation
@@ -410,8 +411,8 @@ class CameraCaptureSession: NSObject {
     }()
 
     private class func availableVideoCaptureDevices(forPosition position: AVCaptureDevice.Position) -> [AVCaptureDevice.DeviceType: AVCaptureDevice] {
-        var queryDeviceTypes: [AVCaptureDevice.DeviceType] = [ .builtInWideAngleCamera, .builtInTelephotoCamera, .builtInDualCamera ]
-        queryDeviceTypes.append(contentsOf: [ .builtInUltraWideCamera, .builtInDualWideCamera, .builtInTripleCamera ])
+        var queryDeviceTypes: [AVCaptureDevice.DeviceType] = [.builtInWideAngleCamera, .builtInTelephotoCamera, .builtInDualCamera]
+        queryDeviceTypes.append(contentsOf: [.builtInUltraWideCamera, .builtInDualWideCamera, .builtInTripleCamera])
         let session = AVCaptureDevice.DiscoverySession(deviceTypes: queryDeviceTypes, mediaType: .video, position: position)
         let deviceMap = session.devices.reduce(into: [AVCaptureDevice.DeviceType: AVCaptureDevice]()) { deviceMap, device in
             deviceMap[device.deviceType] = device
@@ -452,10 +453,10 @@ class CameraCaptureSession: NSObject {
     }
 
     enum CameraSystem {
-        case wide       // Single-camera devices.
-        case dual       // W + T
-        case dualWide   // UW + W
-        case triple     // UW + W + T
+        case wide // Single-camera devices.
+        case dual // W + T
+        case dualWide // UW + W
+        case triple // UW + W + T
     }
 
     private func availableCameras(forPosition position: AVCaptureDevice.Position) -> Set<CameraType> {
@@ -479,19 +480,20 @@ class CameraCaptureSession: NSObject {
     }
 
     private func defaultVideoCaptureDevice(forPosition position: AVCaptureDevice.Position) -> AVCaptureDevice? {
-        guard let devices: [AVCaptureDevice.DeviceType: AVCaptureDevice] = {
-            switch position {
-            case .front, .unspecified:
-                return availableFrontVideoCaptureDeviceMap
+        guard
+            let devices: [AVCaptureDevice.DeviceType: AVCaptureDevice] = {
+                switch position {
+                case .front, .unspecified:
+                    return availableFrontVideoCaptureDeviceMap
 
-            case .back:
-                return availableRearVideoCaptureDeviceMap
+                case .back:
+                    return availableRearVideoCaptureDeviceMap
 
-            @unknown default:
-                owsFailDebug("Unknown AVCaptureDevice.Position: [\(position)]")
-                return nil
-            }
-        }() else { return nil }
+                @unknown default:
+                    owsFailDebug("Unknown AVCaptureDevice.Position: [\(position)]")
+                    return nil
+                }
+            }() else { return nil }
 
         if let device = devices[.builtInTripleCamera] {
             return device
@@ -521,7 +523,7 @@ class CameraCaptureSession: NSObject {
         desiredPosition = newPosition
 
         return sessionQueue.async(.promise) { [weak self] in
-            guard let self = self else { return }
+            guard let self else { return }
 
             self.avCaptureSession.beginConfiguration()
             defer { self.avCaptureSession.commitConfiguration() }
@@ -706,7 +708,7 @@ class CameraCaptureSession: NSObject {
 
             let visibleZoomFactor = clampedZoomFactor * zoomFactorMultiplier
             DispatchQueue.main.async { [weak self] in
-                guard let self = self else { return }
+                guard let self else { return }
                 self.delegate?.cameraCaptureSession(self, didChangeZoomFactor: visibleZoomFactor, forCameraPosition: devicePosition)
             }
         } catch {
@@ -744,6 +746,7 @@ class CameraCaptureSession: NSObject {
         case stopping
         case canceling
     }
+
     private var _videoRecordingState: VideoRecordingState = .ready
     private var videoRecordingState: VideoRecordingState {
         get {
@@ -767,7 +770,7 @@ class CameraCaptureSession: NSObject {
         } else {
             screenAspect = size.width / size.height
         }
-        return screenAspect.clamp(9/16, 3/4)
+        return screenAspect.clamp(9 / 16, 3 / 4)
     }
 
     private func startVideoRecording() {
@@ -778,7 +781,7 @@ class CameraCaptureSession: NSObject {
             return
         }
 
-        guard let delegate = delegate else { return }
+        guard let delegate else { return }
         guard delegate.cameraCaptureSessionCanCaptureMoreItems(self) else {
             delegate.photoCaptureDidTryToCaptureTooMany(self)
             return
@@ -797,7 +800,7 @@ class CameraCaptureSession: NSObject {
             do {
                 try videoCapture.beginRecording(
                     aspectRatio: aspectRatio,
-                    includeAudio: audioCaptureStarted
+                    includeAudio: audioCaptureStarted,
                 )
             } catch {
                 DispatchQueue.main.async {
@@ -925,23 +928,24 @@ class CameraCaptureSession: NSObject {
 
     private var volumeButtonObservation: AVVolumeButtonObservation?
 
-    public func beginObservingVolumeButtons() {
+    func beginObservingVolumeButtons() {
         let volumeButtonObservation =
             self.volumeButtonObservation
-            ?? AVVolumeButtonObservation(
-                observer: self,
-                capturePreviewView: previewView
-            )
+                ?? AVVolumeButtonObservation(
+                    observer: self,
+                    capturePreviewView: previewView,
+                )
         self.volumeButtonObservation = volumeButtonObservation
         volumeButtonObservation.isEnabled = true
     }
 
-    public func stopObservingVolumeButtons() {
+    func stopObservingVolumeButtons() {
         volumeButtonObservation?.isEnabled = false
     }
 }
 
 // MARK: -
+
 extension CameraCaptureSession: VideoCaptureDelegate {
 
     fileprivate func videoCaptureDidStartRecording(_ videoCapture: VideoCapture) {
@@ -986,7 +990,7 @@ extension CameraCaptureSession: PhotoCaptureDelegate {
 
     fileprivate func photoCaptureDidProduce(result: Result<Data, Error>) {
         AssertIsOnMainThread()
-        guard let delegate = delegate else { return }
+        guard let delegate else { return }
 
         switch result {
         case .failure(let error):
@@ -1198,10 +1202,12 @@ private class VideoCapture: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
         let outputURL = OWSFileSystem.temporaryFileUrl(fileExtension: "mp4")
         let assetWriter = try AVAssetWriter(outputURL: outputURL, fileType: .mp4)
 
-        guard var videoSettings = videoDataOutput.recommendedVideoSettings(
-            forVideoCodecType: .h264,
-            assetWriterOutputFileType: assetWriter.outputFileType,
-        ) else {
+        guard
+            var videoSettings = videoDataOutput.recommendedVideoSettings(
+                forVideoCodecType: .h264,
+                assetWriterOutputFileType: assetWriter.outputFileType,
+            )
+        else {
             throw OWSAssertionError("videoSettings was unexpectedly nil")
         }
         guard
@@ -1222,8 +1228,8 @@ private class VideoCapture: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
             AVVideoCompressionPropertiesKey: [
                 AVVideoAverageBitRateKey: 2000000,
                 AVVideoProfileLevelKey: AVVideoProfileLevelH264Baseline41,
-                AVVideoMaxKeyFrameIntervalKey: 90
-            ] as [String: Any]
+                AVVideoMaxKeyFrameIntervalKey: 90,
+            ] as [String: Any],
         ]
         videoSettings.merge(customSettings) { $1 }
 
@@ -1236,7 +1242,7 @@ private class VideoCapture: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
         let videoWriterInput = AVAssetWriterInput(
             mediaType: .video,
             outputSettings: videoSettings,
-            sourceFormatHint: nil
+            sourceFormatHint: nil,
         )
         videoWriterInput.expectsMediaDataInRealTime = true
         guard assetWriter.canAdd(videoWriterInput) else {
@@ -1308,7 +1314,7 @@ private class VideoCapture: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
         assetWriter.finishWriting {
             self.recordingQueue.async {
                 let result: Result<URL, Error>
-                if assetWriter.status == .completed && assetWriter.error == nil {
+                if assetWriter.status == .completed, assetWriter.error == nil {
                     result = .success(assetWriter.outputURL)
                 } else {
                     result = .failure(VideoCaptureFailedError())
@@ -1320,14 +1326,14 @@ private class VideoCapture: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
                         OWSActionSheets.showActionSheet(
                             message: OWSLocalizedString(
                                 "MAX_VIDEO_RECORDING_LENGTH_ALERT",
-                                comment: "Title for error sheet shown when the max video length is recorded with the in-app camera"
+                                comment: "Title for error sheet shown when the max video length is recorded with the in-app camera",
                             ),
                             buttonAction: { _ in
                                 // Pass through the result even though we hit an "error".
                                 self.delegate?.videoCapture(self, didFinishWith: result)
-                            }
+                            },
                         )
-                    case .none, .some(_):
+                    case .none, .some:
                         // Pass through the result even if we hit an "error".
                         self.delegate?.videoCapture(self, didFinishWith: result)
                     }
@@ -1340,9 +1346,9 @@ private class VideoCapture: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
 
     func setVideoOrientation(_ videoOrientation: AVCaptureVideoOrientation) {
         guard let videoConnection = videoDataOutput.connection(with: .video) else {
-            #if !targetEnvironment(simulator)
+#if !targetEnvironment(simulator)
             owsFailBeta("videoConnection was unexpectedly nil")
-            #endif
+#endif
             return
         }
         Logger.info("set videoOrientation: \(videoOrientation)")
@@ -1358,7 +1364,7 @@ private class VideoCapture: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
 
         let presentationTime = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
 
-        if !isAssetWriterSessionStarted && assetWriterInput == videoWriterInput {
+        if !isAssetWriterSessionStarted, assetWriterInput == videoWriterInput {
             assetWriter.startSession(atSourceTime: presentationTime)
             isAssetWriterSessionStarted = true
             DispatchQueue.main.async {
@@ -1366,7 +1372,7 @@ private class VideoCapture: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
             }
         }
 
-        guard isAssetWriterAcceptingSampleBuffers && isAssetWriterSessionStarted else {
+        guard isAssetWriterAcceptingSampleBuffers, isAssetWriterSessionStarted else {
             return
         }
         guard assetWriterInput.isReadyForMoreMediaData else {
@@ -1517,14 +1523,14 @@ private class PhotoCapture {
         func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
             defer { completion() }
 
-            guard let delegate = delegate else { return }
+            guard let delegate else { return }
 
             let result: Result<Data, Error>
             do {
                 if let error {
                     throw error
                 }
-                guard let rawData = photo.fileDataRepresentation()  else {
+                guard let rawData = photo.fileDataRepresentation() else {
                     throw OWSAssertionError("photo data was unexpectedly empty")
                 }
 
@@ -1553,10 +1559,12 @@ private class PhotoCapture {
 
             let width = CGFloat(cgImage.width)
             let height = CGFloat(cgImage.height)
-            let cropRect = CGRect(x: outputRect.origin.x * width,
-                                  y: outputRect.origin.y * height,
-                                  width: outputRect.size.width * width,
-                                  height: outputRect.size.height * height)
+            let cropRect = CGRect(
+                x: outputRect.origin.x * width,
+                y: outputRect.origin.y * height,
+                width: outputRect.size.width * width,
+                height: outputRect.size.height * height,
+            )
             let croppedCGImage = cgImage.cropping(to: cropRect)!
             let croppedUIImage = UIImage(cgImage: croppedCGImage, scale: 1, orientation: originalImage.imageOrientation)
             guard let croppedData = croppedUIImage.jpegData(compressionQuality: 0.9) else {

@@ -13,8 +13,10 @@ public enum OWSMediaError: Error {
 public enum OWSMediaUtils {
 
     public static func thumbnail(forImage image: UIImage, maxDimensionPixels: CGFloat) throws -> UIImage {
-        if image.pixelSize.width <= maxDimensionPixels,
-           image.pixelSize.height <= maxDimensionPixels {
+        if
+            image.pixelSize.width <= maxDimensionPixels,
+            image.pixelSize.height <= maxDimensionPixels
+        {
             let result = image.withNativeScale
             return result
         }
@@ -175,5 +177,5 @@ public enum OWSMediaUtils {
 @objc
 class OWSMediaUtilsObjc: NSObject {
     @objc
-    public static let kOversizeTextMessageSizeThresholdBytes = UInt(OWSMediaUtils.kOversizeTextMessageSizeThresholdBytes)
+    static let kOversizeTextMessageSizeThresholdBytes = UInt(OWSMediaUtils.kOversizeTextMessageSizeThresholdBytes)
 }

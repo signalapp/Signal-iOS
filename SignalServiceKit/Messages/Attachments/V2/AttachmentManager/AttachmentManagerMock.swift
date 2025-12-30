@@ -11,7 +11,7 @@ open class AttachmentManagerMock: AttachmentManager {
 
     open func createAttachmentPointer(
         from ownedProto: OwnedAttachmentPointerProto,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         // Do nothing
     }
@@ -20,7 +20,7 @@ open class AttachmentManagerMock: AttachmentManager {
         from ownedBackupProto: OwnedAttachmentBackupPointerProto,
         uploadEra: String,
         attachmentByteCounter: BackupArchiveAttachmentByteCounter,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) -> OwnedAttachmentBackupPointerProto.CreationError? {
         // Do nothing
         return nil
@@ -28,7 +28,7 @@ open class AttachmentManagerMock: AttachmentManager {
 
     open func createAttachmentStream(
         from ownedDataSource: OwnedAttachmentDataSource,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         // Do nothing
     }
@@ -36,7 +36,7 @@ open class AttachmentManagerMock: AttachmentManager {
     open func updateAttachmentWithOversizeTextFromBackup(
         attachmentId: Attachment.IDType,
         pendingAttachment: PendingAttachment,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         // Do nothing
     }
@@ -51,14 +51,14 @@ open class AttachmentManagerMock: AttachmentManager {
 
     open func removeAttachment(
         reference: AttachmentReference,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         // Do nothing
     }
 
     open func removeAllAttachments(
         from owners: [AttachmentReference.OwnerId],
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         // Do nothing
     }

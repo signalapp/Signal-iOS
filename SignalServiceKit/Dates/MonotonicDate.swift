@@ -52,13 +52,13 @@ public struct MonotonicDate: Comparable {
         return MonotonicDate(rawValue: self.rawValue + timeInterval.clampedNanoseconds)
     }
 
-    public static func < (lhs: MonotonicDate, rhs: MonotonicDate) -> Bool {
+    public static func <(lhs: MonotonicDate, rhs: MonotonicDate) -> Bool {
         return lhs.rawValue < rhs.rawValue
     }
 
     /// - Important
     /// The given date must not be after this date!
-    public static func - (lhs: MonotonicDate, rhs: MonotonicDate) -> MonotonicDuration {
+    public static func -(lhs: MonotonicDate, rhs: MonotonicDate) -> MonotonicDuration {
         return MonotonicDuration(nanoseconds: lhs.rawValue - rhs.rawValue)
     }
 }
@@ -92,7 +92,7 @@ public struct MonotonicDuration: Comparable, CustomDebugStringConvertible {
         return TimeInterval(self.nanoseconds) / TimeInterval(NSEC_PER_SEC)
     }
 
-    public static func < (lhs: MonotonicDuration, rhs: MonotonicDuration) -> Bool {
+    public static func <(lhs: MonotonicDuration, rhs: MonotonicDuration) -> Bool {
         return lhs.nanoseconds < rhs.nanoseconds
     }
 

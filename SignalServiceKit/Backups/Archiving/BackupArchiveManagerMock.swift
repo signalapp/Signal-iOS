@@ -15,14 +15,14 @@ open class BackupArchiveManagerMock: BackupArchiveManager {
     ) async throws -> BackupCdnInfo {
         return BackupCdnInfo(
             fileInfo: AttachmentDownloads.CdnInfo(contentLength: 0, lastModified: Date()),
-            metadataHeader: BackupNonce.MetadataHeader(data: Data())
+            metadataHeader: BackupNonce.MetadataHeader(data: Data()),
         )
     }
 
     public func downloadEncryptedBackup(
         backupKey: MessageRootBackupKey,
         backupAuth: BackupServiceAuth,
-        progress: OWSProgressSink?
+        progress: OWSProgressSink?,
     ) async throws -> URL {
         return URL(string: "file://")!
     }
@@ -38,14 +38,14 @@ open class BackupArchiveManagerMock: BackupArchiveManager {
             cdnNumber: 1,
             localUploadMetadata: metadata,
             beginTimestamp: 0,
-            finishTimestamp: Date().ows_millisecondsSince1970
+            finishTimestamp: Date().ows_millisecondsSince1970,
         )
     }
 
     public func exportEncryptedBackup(
         localIdentifiers: LocalIdentifiers,
         backupPurpose: BackupExportPurpose,
-        progress: OWSProgressSink?
+        progress: OWSProgressSink?,
     ) async throws -> Upload.EncryptedBackupUploadMetadata {
         let source = await progress?.addSource(withLabel: "", unitCount: 1)
         source?.incrementCompletedUnitCount(by: 1)
@@ -75,7 +75,7 @@ open class BackupArchiveManagerMock: BackupArchiveManager {
         localIdentifiers: LocalIdentifiers,
         isPrimaryDevice: Bool,
         source: BackupImportSource,
-        progress: OWSProgressSink?
+        progress: OWSProgressSink?,
     ) async throws {
         let source = await progress?.addSource(withLabel: "", unitCount: 1)
         source?.incrementCompletedUnitCount(by: 1)

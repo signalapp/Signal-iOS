@@ -33,7 +33,7 @@ struct CLVRenderState {
         CLVRenderState(
             viewInfo: .empty,
             pinnedThreadUniqueIds: [],
-            unpinnedThreadUniqueIds: []
+            unpinnedThreadUniqueIds: [],
         )
     }
 
@@ -47,7 +47,7 @@ struct CLVRenderState {
     init(
         viewInfo: CLVViewInfo,
         pinnedThreadUniqueIds: [String],
-        unpinnedThreadUniqueIds: [String]
+        unpinnedThreadUniqueIds: [String],
     ) {
         self.viewInfo = viewInfo
         self.pinnedThreadUniqueIds = pinnedThreadUniqueIds
@@ -63,7 +63,7 @@ struct CLVRenderState {
             return Section(
                 type: sectionType,
                 title: isTitleVisible ? OWSLocalizedString("PINNED_SECTION_TITLE", comment: "The title for pinned conversation section on the conversation list") : nil,
-                threadUniqueIds: \.pinnedThreadUniqueIds
+                threadUniqueIds: \.pinnedThreadUniqueIds,
             )
 
         case .unpinned:
@@ -71,7 +71,7 @@ struct CLVRenderState {
             return Section(
                 type: sectionType,
                 title: isTitleVisible ? OWSLocalizedString("UNPINNED_SECTION_TITLE", comment: "The title for unpinned conversation section on the conversation list") : nil,
-                threadUniqueIds: \.unpinnedThreadUniqueIds
+                threadUniqueIds: \.unpinnedThreadUniqueIds,
             )
 
         case .reminders where hasVisibleReminders,
@@ -189,8 +189,9 @@ struct CLVRenderState {
 
         let firstIndexPath = IndexPath(item: 0, section: section.index)
 
-        guard let thread,
-              let index = self[keyPath: section.threadUniqueIds].firstIndex(of: thread.uniqueId)
+        guard
+            let thread,
+            let index = self[keyPath: section.threadUniqueIds].firstIndex(of: thread.uniqueId)
         else { return firstIndexPath }
 
         if index < (self[keyPath: section.threadUniqueIds].count - 1) {

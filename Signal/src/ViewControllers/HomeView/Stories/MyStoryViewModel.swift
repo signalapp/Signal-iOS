@@ -19,6 +19,7 @@ struct MyStoryViewModel {
         case partial
         case complete
     }
+
     let failureState: FailureState
 
     let secondLatestMessageIdentifier: InteractionSnapshotIdentifier?

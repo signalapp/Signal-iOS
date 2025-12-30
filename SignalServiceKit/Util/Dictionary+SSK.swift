@@ -18,7 +18,7 @@ extension Dictionary {
 public extension Dictionary {
     mutating func append<T>(
         additionalElement: T,
-        forKey key: Key
+        forKey key: Key,
     ) where Value == [T] {
         if let existingValue: [T] = self[key] {
             self[key] = existingValue + [additionalElement]

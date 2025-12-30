@@ -63,7 +63,7 @@ class ProxyLinkSheetViewController: OWSTableSheetViewController {
             let cell = OWSTableItem.newCell()
             cell.selectionStyle = .none
 
-            guard let self = self else { return cell }
+            guard let self else { return cell }
 
             let stackView = UIStackView(arrangedSubviews: [
                 self.button(
@@ -71,7 +71,8 @@ class ProxyLinkSheetViewController: OWSTableSheetViewController {
                     titleColor: Theme.primaryTextColor,
                     touchHandler: { [weak self] in
                         self?.dismiss(animated: true)
-                    }),
+                    },
+                ),
                 self.button(
                     title: OWSLocalizedString("USE_PROXY_BUTTON", comment: "Button to activate the signal proxy"),
                     titleColor: .ows_accentBlue,
@@ -93,7 +94,8 @@ class ProxyLinkSheetViewController: OWSTableSheetViewController {
                         }
 
                         self?.dismiss(animated: true)
-                    })
+                    },
+                ),
             ])
             stackView.axis = .horizontal
             stackView.spacing = 12

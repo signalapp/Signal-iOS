@@ -49,7 +49,7 @@ public protocol ChangePhoneNumberPniManager {
         signedPreKey: Result<LibSignalClient.SignedPreKeyRecord, DecodingError>,
         lastResortPreKey: Result<LibSignalClient.KyberPreKeyRecord, DecodingError>,
         registrationId: UInt32,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws
 }
 
@@ -71,7 +71,7 @@ public enum ChangePhoneNumberPni {
             pniIdentityKeyPair: ECKeyPair,
             localDevicePniSignedPreKeyRecord: LibSignalClient.SignedPreKeyRecord,
             localDevicePniPqLastResortPreKeyRecord: LibSignalClient.KyberPreKeyRecord,
-            localDevicePniRegistrationId: UInt32
+            localDevicePniRegistrationId: UInt32,
         ) {
             self.newE164 = newE164
             self.pniIdentityKeyPair = pniIdentityKeyPair
@@ -115,7 +115,7 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
         pniKyberPreKeyStore: KyberPreKeyStoreImpl,
         preKeyManager: PreKeyManager,
         registrationIdGenerator: RegistrationIdGenerator,
-        tsAccountManager: TSAccountManager
+        tsAccountManager: TSAccountManager,
     ) {
         self.db = db
         self.identityManager = identityManager
@@ -146,7 +146,7 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
             pniIdentityKeyPair: pniIdentityKeyPair,
             localDevicePniSignedPreKeyRecord: localDevicePniSignedPreKeyRecord,
             localDevicePniPqLastResortPreKeyRecord: localDevicePniPqLastResortPreKeyRecord,
-            localDevicePniRegistrationId: registrationIdGenerator.generate()
+            localDevicePniRegistrationId: registrationIdGenerator.generate(),
         )
 
         do {
@@ -157,7 +157,7 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
                 localE164: newE164,
                 localDevicePniSignedPreKey: localDevicePniSignedPreKeyRecord,
                 localDevicePniPqLastResortPreKey: localDevicePniPqLastResortPreKeyRecord,
-                localDevicePniRegistrationId: pendingState.localDevicePniRegistrationId
+                localDevicePniRegistrationId: pendingState.localDevicePniRegistrationId,
             )
             return .success(parameters: parameters, pendingState: pendingState)
         } catch {
@@ -172,7 +172,7 @@ class ChangePhoneNumberPniManagerImpl: ChangePhoneNumberPniManager {
         signedPreKey: Result<LibSignalClient.SignedPreKeyRecord, DecodingError>,
         lastResortPreKey: Result<LibSignalClient.KyberPreKeyRecord, DecodingError>,
         registrationId: UInt32,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         logger.info("Finalizing PNI identity.")
 

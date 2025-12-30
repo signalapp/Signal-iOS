@@ -5,8 +5,8 @@
 
 import XCTest
 
-@testable import Signal
 import SignalServiceKit
+@testable import Signal
 
 class VisibleBadgeResolverTest: XCTestCase {
 
@@ -39,7 +39,7 @@ class VisibleBadgeResolverTest: XCTestCase {
                     switchType: .displayOnProfile,
                     defaultSwitchValue: true,
                     selectedSwitchValue: selectedSwitchValue,
-                    newVisibleBadgeIds: selectedSwitchValue ? [badgeId] : []
+                    newVisibleBadgeIds: selectedSwitchValue ? [badgeId] : [],
                 )
             }
         }
@@ -62,7 +62,7 @@ class VisibleBadgeResolverTest: XCTestCase {
                 switchType: .makeFeaturedBadge,
                 defaultSwitchValue: false,
                 selectedSwitchValue: false,
-                newVisibleBadgeIds: ["R_LOW", "GIFT"]
+                newVisibleBadgeIds: ["R_LOW", "GIFT"],
             ),
 
             // You already have a Boost badge on your profile and are redeeming a gift.
@@ -74,7 +74,7 @@ class VisibleBadgeResolverTest: XCTestCase {
                 switchType: .makeFeaturedBadge,
                 defaultSwitchValue: true,
                 selectedSwitchValue: true,
-                newVisibleBadgeIds: ["GIFT", "BOOST"]
+                newVisibleBadgeIds: ["GIFT", "BOOST"],
             ),
 
             // You already have a Gift badge on your profile and are buying a subscription.
@@ -86,7 +86,7 @@ class VisibleBadgeResolverTest: XCTestCase {
                 switchType: .makeFeaturedBadge,
                 defaultSwitchValue: true,
                 selectedSwitchValue: false,
-                newVisibleBadgeIds: ["GIFT", "R_LOW"]
+                newVisibleBadgeIds: ["GIFT", "R_LOW"],
             ),
 
             // You already have a Boost badge on your profile and purchase another one.
@@ -98,7 +98,7 @@ class VisibleBadgeResolverTest: XCTestCase {
                 switchType: .none,
                 defaultSwitchValue: true,
                 selectedSwitchValue: true,
-                newVisibleBadgeIds: ["BOOST"]
+                newVisibleBadgeIds: ["BOOST"],
             ),
 
             // You already have a Boost badge that you've hidden, and you purchase another one.
@@ -110,7 +110,7 @@ class VisibleBadgeResolverTest: XCTestCase {
                 switchType: .displayOnProfile,
                 defaultSwitchValue: true,
                 selectedSwitchValue: false,
-                newVisibleBadgeIds: []
+                newVisibleBadgeIds: [],
             ),
 
             // You have a Boost and Sustainer badge visible on your profile, and you purchase a Boost.
@@ -122,7 +122,7 @@ class VisibleBadgeResolverTest: XCTestCase {
                 switchType: .none,
                 defaultSwitchValue: true,
                 selectedSwitchValue: true,
-                newVisibleBadgeIds: ["BOOST", "R_LOW"]
+                newVisibleBadgeIds: ["BOOST", "R_LOW"],
             ),
 
             // EDGE CASES THAT REQUIRE BADGE UPDATES FROM IPAD / BADGE EXPIRATIONS
@@ -137,7 +137,7 @@ class VisibleBadgeResolverTest: XCTestCase {
                 defaultSwitchValue: true,
                 selectedSwitchValue: false,
                 areBadgesVisibleWhenUpdating: true,
-                newVisibleBadgeIds: ["GIFT", "BOOST"]
+                newVisibleBadgeIds: ["GIFT", "BOOST"],
             ),
 
             // You have a hidden Gift badge, you purchase a Boost, and you unhide badges on another device.
@@ -150,7 +150,7 @@ class VisibleBadgeResolverTest: XCTestCase {
                 defaultSwitchValue: true,
                 selectedSwitchValue: false,
                 areBadgesVisibleWhenUpdating: true,
-                newVisibleBadgeIds: ["GIFT", "BOOST"]
+                newVisibleBadgeIds: ["GIFT", "BOOST"],
             ),
 
             // You have a visible Gift badge, you purchase a Boost, and you hide badges on another device.
@@ -163,7 +163,7 @@ class VisibleBadgeResolverTest: XCTestCase {
                 defaultSwitchValue: true,
                 selectedSwitchValue: false,
                 areBadgesVisibleWhenUpdating: false,
-                newVisibleBadgeIds: []
+                newVisibleBadgeIds: [],
             ),
 
             // You have a visible Gift badge, you purchase a Boost, and you hide badges on another device.
@@ -176,8 +176,8 @@ class VisibleBadgeResolverTest: XCTestCase {
                 defaultSwitchValue: true,
                 selectedSwitchValue: true,
                 areBadgesVisibleWhenUpdating: false,
-                newVisibleBadgeIds: ["BOOST", "GIFT"]
-            )
+                newVisibleBadgeIds: ["BOOST", "GIFT"],
+            ),
         ]
 
         for testCase in testCases {
@@ -185,8 +185,8 @@ class VisibleBadgeResolverTest: XCTestCase {
                 badgesSnapshot: ProfileBadgesSnapshot(
                     existingBadges: testCase.profileBadgeIds.map {
                         .init(id: $0, isVisible: testCase.areBadgesVisible)
-                    }
-                )
+                    },
+                ),
             )
 
             let switchType = initialResolver.switchType(for: testCase.newBadgeId)
@@ -206,13 +206,13 @@ class VisibleBadgeResolverTest: XCTestCase {
                 badgesSnapshot: ProfileBadgesSnapshot(
                     existingBadges: testCase.profileBadgeIds.map {
                         .init(id: $0, isVisible: testCase.areBadgesVisibleWhenUpdating ?? testCase.areBadgesVisible)
-                    }
-                )
+                    },
+                ),
             )
 
             let visibleBadgeIds = updateResolver.visibleBadgeIds(
                 adding: testCase.newBadgeId,
-                isVisibleAndFeatured: testCase.selectedSwitchValue
+                isVisibleAndFeatured: testCase.selectedSwitchValue,
             )
             XCTAssertEqual(visibleBadgeIds, testCase.newVisibleBadgeIds, "\(testCase)")
         }
@@ -235,12 +235,12 @@ class VisibleBadgeResolverTest: XCTestCase {
             ([badgeC, badgeA], ["A"]),
             ([badgeA, badgeB, badgeC], ["A", "B"]),
             ([badgeA, badgeC, badgeB], ["A", "B"]),
-            ([badgeC, badgeA, badgeD], ["A"])
+            ([badgeC, badgeA, badgeD], ["A"]),
         ]
 
         for (existingBadges, visibleBadgeIds) in testCases {
             let visibleBadgeResolver = VisibleBadgeResolver(
-                badgesSnapshot: ProfileBadgesSnapshot(existingBadges: existingBadges)
+                badgesSnapshot: ProfileBadgesSnapshot(existingBadges: existingBadges),
             )
             XCTAssertEqual(visibleBadgeResolver.currentlyVisibleBadgeIds(), visibleBadgeIds)
         }

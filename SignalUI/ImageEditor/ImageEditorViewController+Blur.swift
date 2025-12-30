@@ -46,14 +46,16 @@ extension ImageEditorViewController {
 
     @objc
     func didToggleAutoBlur(sender: UISwitch) {
-        if let currentAutoBlurItem = currentAutoBlurItem {
+        if let currentAutoBlurItem {
             model.remove(item: currentAutoBlurItem)
         }
 
         guard sender.isOn else { return }
 
-        guard let srcImage = ImageEditorCanvasView.loadSrcImage(model: model),
-            let srcCGImage = srcImage.cgImage else {
+        guard
+            let srcImage = ImageEditorCanvasView.loadSrcImage(model: model),
+            let srcCGImage = srcImage.cgImage
+        else {
             return
         }
 
@@ -62,12 +64,12 @@ extension ImageEditorViewController {
         ModalActivityIndicatorViewController.present(
             fromViewController: self,
             canCancel: false,
-            presentationDelay: 0.5
+            presentationDelay: 0.5,
         ) { modal in
             func showToast() {
                 let toastController = ToastController(text: OWSLocalizedString(
                     "IMAGE_EDITOR_BLUR_TOAST",
-                    comment: "A toast indicating that you can blur more faces after detection"
+                    comment: "A toast indicating that you can blur more faces after detection",
                 ))
                 let bottomInset = self.view.safeAreaInsets.bottom + 90
                 toastController.presentToastView(from: .bottom, of: self.view, inset: bottomInset)
@@ -81,7 +83,7 @@ extension ImageEditorViewController {
             }
 
             let request = VNDetectFaceRectanglesRequest { request, error in
-                if let error = error {
+                if let error {
                     owsFailDebug("Face Detection Error \(error)")
                     return faceDetectionFailed()
                 }
@@ -99,7 +101,7 @@ extension ImageEditorViewController {
 
                     let autoBlurItem = ImageEditorBlurRegionsItem(
                         itemId: ImageEditorViewController.autoBlurItemIdentifier,
-                        unitBoundingBoxes: results.map(unitBoundingBox)
+                        unitBoundingBoxes: results.map(unitBoundingBox),
                     )
                     self.model.append(item: autoBlurItem)
 
@@ -107,9 +109,11 @@ extension ImageEditorViewController {
                 }
             }
 
-            let imageRequestHandler = VNImageRequestHandler(cgImage: srcCGImage,
-                                                            orientation: cgOrientation,
-                                                            options: [:])
+            let imageRequestHandler = VNImageRequestHandler(
+                cgImage: srcCGImage,
+                orientation: cgOrientation,
+                options: [:],
+            )
 
             // Send the requests to the request handler.
             do {
@@ -137,13 +141,17 @@ extension ImageEditorViewController {
         func tryToAppendBlurSample(_ locationInView: CGPoint) {
             let view = self.imageEditorView.gestureReferenceView
             let viewBounds = view.bounds
-            let newSample = ImageEditorCanvasView.locationImageUnit(forLocationInView: locationInView,
-                                                                    viewBounds: viewBounds,
-                                                                    model: self.model,
-                                                                    transform: self.model.currentTransform())
+            let newSample = ImageEditorCanvasView.locationImageUnit(
+                forLocationInView: locationInView,
+                viewBounds: viewBounds,
+                model: self.model,
+                transform: self.model.currentTransform(),
+            )
 
-            if let prevSample = self.currentStrokeSamples.last,
-                prevSample == newSample {
+            if
+                let prevSample = self.currentStrokeSamples.last,
+                prevSample == newSample
+            {
                 // Ignore duplicate samples.
                 return
             }
@@ -165,9 +173,11 @@ extension ImageEditorViewController {
             let locationInView = gestureRecognizer.location(in: imageEditorView.gestureReferenceView)
             tryToAppendBlurSample(locationInView)
 
-            let blur = ImageEditorStrokeItem(strokeType: .blur,
-                                             unitSamples: currentStrokeSamples,
-                                             unitStrokeWidth: unitBlurStrokeWidth)
+            let blur = ImageEditorStrokeItem(
+                strokeType: .blur,
+                unitSamples: currentStrokeSamples,
+                unitStrokeWidth: unitBlurStrokeWidth,
+            )
             model.append(item: blur)
             currentStroke = blur
 
@@ -183,10 +193,12 @@ extension ImageEditorViewController {
 
             // Model items are immutable; we _replace_ the
             // blur item rather than modify it.
-            let blurStroke = ImageEditorStrokeItem(itemId: lastBlur.itemId,
-                                                   strokeType: .blur,
-                                                   unitSamples: currentStrokeSamples,
-                                                   unitStrokeWidth: unitBlurStrokeWidth)
+            let blurStroke = ImageEditorStrokeItem(
+                itemId: lastBlur.itemId,
+                strokeType: .blur,
+                unitSamples: currentStrokeSamples,
+                unitStrokeWidth: unitBlurStrokeWidth,
+            )
             model.replace(item: blurStroke, suppressUndo: true)
 
             if gestureRecognizer.state == .ended {

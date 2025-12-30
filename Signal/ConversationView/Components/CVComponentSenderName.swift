@@ -31,9 +31,11 @@ public class CVComponentSenderName: CVComponentBase, CVComponent {
         return conversationStyle.bubbleTextColor(message: message)
     }
 
-    public func configureForRendering(componentView componentViewParam: CVComponentView,
-                                      cellMeasurement: CVCellMeasurement,
-                                      componentDelegate: CVComponentDelegate) {
+    public func configureForRendering(
+        componentView componentViewParam: CVComponentView,
+        cellMeasurement: CVCellMeasurement,
+        componentDelegate: CVComponentDelegate,
+    ) {
         guard let componentView = componentViewParam as? CVComponentViewSenderName else {
             owsFailDebug("Unexpected componentView.")
             componentViewParam.reset()
@@ -56,14 +58,18 @@ public class CVComponentSenderName: CVComponentBase, CVComponent {
 
         labelConfig.applyForRendering(label: label)
 
-        innerStack.configure(config: innerStackConfig,
-                            cellMeasurement: cellMeasurement,
-                            measurementKey: Self.measurementKey_innerStack,
-                            subviews: [ label ])
-        outerStack.configure(config: outerStackConfig,
-                            cellMeasurement: cellMeasurement,
-                            measurementKey: Self.measurementKey_outerStack,
-                            subviews: [ innerStack ])
+        innerStack.configure(
+            config: innerStackConfig,
+            cellMeasurement: cellMeasurement,
+            measurementKey: Self.measurementKey_innerStack,
+            subviews: [label],
+        )
+        outerStack.configure(
+            config: outerStackConfig,
+            cellMeasurement: cellMeasurement,
+            measurementKey: Self.measurementKey_outerStack,
+            subviews: [innerStack],
+        )
     }
 
     private var isBorderlessWithWallpaper: Bool {
@@ -78,25 +84,29 @@ public class CVComponentSenderName: CVComponentBase, CVComponent {
             font: font,
             textColor: senderNameColor,
             numberOfLines: 0,
-            lineBreakMode: .byWordWrapping
+            lineBreakMode: .byWordWrapping,
         )
     }
 
     private var outerStackConfig: CVStackViewConfig {
-        CVStackViewConfig(axis: .vertical,
-                          alignment: .leading,
-                          spacing: 0,
-                          layoutMargins: .zero)
+        CVStackViewConfig(
+            axis: .vertical,
+            alignment: .leading,
+            spacing: 0,
+            layoutMargins: .zero,
+        )
     }
 
     private var innerStackConfig: CVStackViewConfig {
         let layoutMargins: UIEdgeInsets = (isBorderlessWithWallpaper
-                                            ? UIEdgeInsets(hMargin: 12, vMargin: 3)
-                                            : .zero)
-        return CVStackViewConfig(axis: .vertical,
-                                 alignment: .center,
-                                 spacing: 0,
-                                 layoutMargins: layoutMargins)
+            ? UIEdgeInsets(hMargin: 12, vMargin: 3)
+            : .zero)
+        return CVStackViewConfig(
+            axis: .vertical,
+            alignment: .center,
+            spacing: 0,
+            layoutMargins: layoutMargins,
+        )
     }
 
     private static let measurementKey_outerStack = "CVComponentSenderName.measurementKey_outerStack"
@@ -106,19 +116,23 @@ public class CVComponentSenderName: CVComponentBase, CVComponent {
         owsAssertDebug(maxWidth > 0)
 
         let maxWidth = maxWidth - (outerStackConfig.layoutMargins.totalWidth +
-                                    innerStackConfig.layoutMargins.totalWidth)
+            innerStackConfig.layoutMargins.totalWidth)
         let labelSize = CVText.measureLabel(config: labelConfig, maxWidth: maxWidth)
         let labelInfo = labelSize.asManualSubviewInfo
-        let innerStackMeasurement = ManualStackView.measure(config: innerStackConfig,
-                                                       measurementBuilder: measurementBuilder,
-                                                       measurementKey: Self.measurementKey_innerStack,
-                                                       subviewInfos: [ labelInfo ])
+        let innerStackMeasurement = ManualStackView.measure(
+            config: innerStackConfig,
+            measurementBuilder: measurementBuilder,
+            measurementKey: Self.measurementKey_innerStack,
+            subviewInfos: [labelInfo],
+        )
         let innerStackInfo = innerStackMeasurement.measuredSize.asManualSubviewInfo
-        let outerStackMeasurement = ManualStackView.measure(config: outerStackConfig,
-                                                       measurementBuilder: measurementBuilder,
-                                                       measurementKey: Self.measurementKey_outerStack,
-                                                       subviewInfos: [ innerStackInfo ],
-                                                       maxWidth: maxWidth)
+        let outerStackMeasurement = ManualStackView.measure(
+            config: outerStackConfig,
+            measurementBuilder: measurementBuilder,
+            measurementKey: Self.measurementKey_outerStack,
+            subviewInfos: [innerStackInfo],
+            maxWidth: maxWidth,
+        )
         return outerStackMeasurement.measuredSize
     }
 

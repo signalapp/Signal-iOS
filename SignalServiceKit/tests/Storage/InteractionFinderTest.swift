@@ -20,18 +20,20 @@ class InteractionFinderTest: SSKBaseTest {
         let errorMessage1: TSErrorMessage = .nonblockingIdentityChange(
             thread: contactThread1,
             address: address1,
-            wasIdentityVerified: false
+            wasIdentityVerified: false,
         )
         let errorMessage2: TSErrorMessage = .failedDecryption(
             thread: contactThread1,
             timestamp: 0,
-            sender: nil
+            sender: nil,
         )
         // Non-message interactions
-        let missedCall = TSCall(callType: .incomingMissed,
-                                offerType: .audio,
-                                thread: contactThread1,
-                                sentAtTimestamp: NSDate.ows_millisecondTimeStamp())
+        let missedCall = TSCall(
+            callType: .incomingMissed,
+            offerType: .audio,
+            thread: contactThread1,
+            sentAtTimestamp: NSDate.ows_millisecondTimeStamp(),
+        )
 
         let finder1 = InteractionFinder(threadUniqueId: contactThread1.uniqueId)
         let finder2 = InteractionFinder(threadUniqueId: contactThread2.uniqueId)
@@ -100,7 +102,7 @@ private extension TSOutgoingMessage {
     convenience init(in thread: TSThread, messageBody: String) {
         let builder: TSOutgoingMessageBuilder = .withDefaultValues(
             thread: thread,
-            messageBody: AttachmentContentValidatorMock.mockValidatedBody(messageBody)
+            messageBody: AttachmentContentValidatorMock.mockValidatedBody(messageBody),
         )
         self.init(outgoingMessageWith: builder, recipientAddressStates: [:])
     }

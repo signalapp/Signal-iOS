@@ -38,7 +38,7 @@ struct BackupCDNCredentialStore {
         do {
             let cachedCredential: BackupCDNReadCredential? = try kvStore.getCodableValue(
                 forKey: Self.backupCDNAuthCredentialKey(cdnNumber: cdnNumber, authType: authType),
-                transaction: tx
+                transaction: tx,
             )
 
             if
@@ -73,7 +73,7 @@ struct BackupCDNCredentialStore {
             try kvStore.setCodable(
                 backupCDNReadCredential,
                 key: Self.backupCDNAuthCredentialKey(cdnNumber: cdnNumber, authType: authType),
-                transaction: tx
+                transaction: tx,
             )
         } catch {
             Logger.warn("Failed to serialize BackupCDNReadCredential! \(error)")
@@ -84,7 +84,7 @@ struct BackupCDNCredentialStore {
 
     private static func backupCDNMetadataKeys(authType: BackupAuthCredentialType) -> (
         metadata: String,
-        metadataSavedDate: String
+        metadataSavedDate: String,
     ) {
         return (
             "BackupCDNMetadata:\(authType.rawValue)",

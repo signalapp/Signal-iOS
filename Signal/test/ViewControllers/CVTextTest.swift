@@ -25,7 +25,7 @@ class CVTextTest: XCTestCase {
                 Etiam sed felis nunc. Suspendisse vestibulum elit eu dignissim accumsan. Morbi tortor arcu, vulputate eu varius vel, varius ac sapien. Aenean ut efficitur augue. Sed semper diam at ipsum aliquet scelerisque. Pellentesque blandit quis sem non euismod. Sed accumsan tellus quis sapien fermentum, quis dapibus urna tincidunt. Nam mattis fermentum nisl, non eleifend tortor facilisis sed. Vestibulum vitae efficitur dolor. Nam ligula odio, molestie eu porttitor eu, dignissim ut nulla. Ut tempor diam id sapien mattis dignissim. Pellentesque accumsan nibh a velit convallis laoreet.
                 """,
                 font: .dynamicTypeBody,
-                textColor: .black
+                textColor: .black,
             ),
             CVTextViewConfig(
                 text: """
@@ -34,7 +34,7 @@ class CVTextTest: XCTestCase {
                 Ετ δθο σολεατ αθδιαμ, σιτ πθταντ σανcτθσ ιδ. Αν αccθμσαν ιντερπρεταρισ εθμ, μελ νολθισσε διγνισσιμ νε. Φορενσιβθσ ρεφορμιδανσ θλλαμcορπερ θτ ηασ, ναμ απεριαμ αλιqθιδ αν. Cθ σολθμ δελενιτ πατριοqθε εθμ, δετραcτο cονσετετθρ εστ τε. Νοvθμ σανcτθσ σεδ νο.
                 """,
                 font: .dynamicTypeBody,
-                textColor: .black
+                textColor: .black,
             ),
             CVTextViewConfig(
                 text: """
@@ -45,7 +45,7 @@ class CVTextTest: XCTestCase {
 
                 """,
                 font: .dynamicTypeBody,
-                textColor: .black
+                textColor: .black,
             ),
             CVTextViewConfig(
                 text: """
@@ -54,21 +54,21 @@ class CVTextTest: XCTestCase {
                 足己謙告保士清修根選暮区細理貨聞年半。読治問形球漂注出裏下公療演続。芸意記栄山写日撃掲国主治当性発。生意逃免渡資一取引裕督転。応点続果安罰村必禁家政拳。写禁法考証言心彫埼権川関員奏届新営覚掲。南応要参愛類娘都誰定尚同勝積鎌記写塁。政回過市主覧貨張加主子義空教対券。載捕構方聞度名出結字夜何動問暮理詳半話。
                 """,
                 font: .dynamicTypeBody,
-                textColor: .black
+                textColor: .black,
             ),
             CVTextViewConfig(
                 text: """
                 Lorem ipsum dolor sit amet 😟, consectetur adipiscing elit. Nullam lectus nulla, eleifend eget libero sit amet, tempor lobortis lacus. Nulla luctus id mi a auctor. Etiam bibendum sed ante et blandit. Phasellus bibendum commodo dapibus. Vivamus lorem diam, finibus vitae mi vel, dignissim ornare felis. Praesent nibh sem 🧐, bibendum vitae fringilla ac, sodales ut ipsum. Vestibulum metus magna, elementum eu dapibus in, faucibus at lacus. In ac 🤞 ornare nisi, ac fringilla sem. Sed ultricies sollicitudin semper. In hac habitasse platea dictumst.
                 """,
                 font: .dynamicTypeBody,
-                textColor: .black
+                textColor: .black,
             ),
             CVTextViewConfig(
                 text: """
                 He’s awesome. This album isn’t listed on his discography, but it’s a cool album of duets with Courtney Barnett: https://open.spotify.com/album/3gvo4nvimDdqA9c3y7Bptc?si=aA8z06HoQAG8Xl2MbhFiRQ
                 """,
                 font: .dynamicTypeBody,
-                textColor: .black
+                textColor: .black,
             ),
             CVTextViewConfig(
                 text: """
@@ -79,37 +79,45 @@ class CVTextTest: XCTestCase {
                 Etiam sed felis nunc. Suspendisse vestibulum elit eu dignissim accumsan. Morbi tortor arcu, vulputate eu varius vel, varius ac sapien. Aenean ut efficitur augue. Sed semper diam at ipsum aliquet scelerisque. Pellentesque blandit quis sem non euismod. Sed accumsan tellus quis sapien fermentum, quis dapibus urna tincidunt. Nam mattis fermentum nisl, non eleifend tortor facilisis sed. Vestibulum vitae efficitur dolor. Nam ligula odio, molestie eu porttitor eu, dignissim ut nulla. Ut tempor diam id sapien mattis dignissim. Pellentesque accumsan nibh a velit convallis laoreet.
                 """,
                 font: .dynamicTypeBody,
-                textColor: .black
+                textColor: .black,
             ),
             CVTextViewConfig(
                 attributedText: NSAttributedString(string: "short"),
                 font: .dynamicTypeBody,
-                textColor: .black
+                textColor: .black,
             ),
             CVTextViewConfig(
                 attributedText: NSAttributedString(string: "one\ntwo\nthree"),
                 font: .dynamicTypeBody,
-                textColor: .black
+                textColor: .black,
             ),
             CVTextViewConfig(
                 attributedText: NSAttributedString.composed(of: [
-                    Theme.iconImage(.video16), "Some text", "\n", Theme.iconImage(.video16), "Some text2"
+                    Theme.iconImage(.video16),
+                    "Some text",
+                    "\n",
+                    Theme.iconImage(.video16),
+                    "Some text2",
                 ]),
                 font: .dynamicTypeBody,
-                textColor: .black
+                textColor: .black,
             ),
             CVTextViewConfig(
                 attributedText: {
                     let labelText = NSMutableAttributedString()
 
-                    labelText.appendTemplatedImage(named: Theme.iconName(.compose16),
-                                                   font: .dynamicTypeFootnote,
-                                                   heightReference: .lineHeight)
+                    labelText.appendTemplatedImage(
+                        named: Theme.iconName(.compose16),
+                        font: .dynamicTypeFootnote,
+                        heightReference: .lineHeight,
+                    )
                     labelText.append("  You changed the group name to “Test Group Call 2“.\n", attributes: [:])
 
-                    labelText.appendTemplatedImage(named: Theme.iconName(.photo16),
-                                                   font: .dynamicTypeFootnote,
-                                                   heightReference: .lineHeight)
+                    labelText.appendTemplatedImage(
+                        named: Theme.iconName(.photo16),
+                        font: .dynamicTypeFootnote,
+                        heightReference: .lineHeight,
+                    )
                     labelText.append("  You updated the photo.", attributes: [:])
 
                     let paragraphStyle = NSMutableParagraphStyle()
@@ -121,8 +129,8 @@ class CVTextTest: XCTestCase {
                 }(),
                 font: .dynamicTypeFootnote,
                 textColor: .black,
-                textAlignment: .center
-            )
+                textAlignment: .center,
+            ),
         ]
 
         for config in configs {
@@ -149,7 +157,7 @@ class CVTextTest: XCTestCase {
             numberOfLines: 0,
             cacheKey: textViewConfig.cacheKey,
             items: [],
-            linkifyStyle: .underlined(bodyTextColor: textViewConfig.textColor)
+            linkifyStyle: .underlined(bodyTextColor: textViewConfig.textColor),
         )
     }
 
@@ -296,17 +304,17 @@ class CVTextTest: XCTestCase {
             textWasTruncated: true,
             revealedSpoilerIds: Set(),
             interactionUniqueId: UUID().uuidString,
-            interactionIdentifier: InteractionSnapshotIdentifier(timestamp: 0, authorAci: nil)
+            interactionIdentifier: InteractionSnapshotIdentifier(timestamp: 0, authorAci: nil),
         )
         CVTextLabel.linkifyData(
             attributedText: truncatedText,
             linkifyStyle: .linkAttribute,
-            items: dataItems
+            items: dataItems,
         )
         var values: [String] = []
         var ranges: [NSRange] = []
         truncatedText.enumerateAttribute(.link, in: truncatedText.entireRange, options: []) { value, range, _ in
-            if let value = value {
+            if let value {
                 values.append(value as! String)
                 ranges.append(range)
             }
@@ -322,17 +330,17 @@ class CVTextTest: XCTestCase {
             textWasTruncated: false,
             revealedSpoilerIds: Set(),
             interactionUniqueId: UUID().uuidString,
-            interactionIdentifier: InteractionSnapshotIdentifier(timestamp: 0, authorAci: nil)
+            interactionIdentifier: InteractionSnapshotIdentifier(timestamp: 0, authorAci: nil),
         )
         CVTextLabel.linkifyData(
             attributedText: fullText,
             linkifyStyle: .linkAttribute,
-            items: dataItems
+            items: dataItems,
         )
         values.removeAll()
         ranges.removeAll()
         fullText.enumerateAttribute(.link, in: fullText.entireRange, options: []) { value, range, _ in
-            if let value = value {
+            if let value {
                 values.append(value as! String)
                 ranges.append(range)
             }
@@ -350,16 +358,16 @@ class CVTextTest: XCTestCase {
             textWasTruncated: true,
             revealedSpoilerIds: Set(),
             interactionUniqueId: UUID().uuidString,
-            interactionIdentifier: InteractionSnapshotIdentifier(timestamp: 0, authorAci: nil)
+            interactionIdentifier: InteractionSnapshotIdentifier(timestamp: 0, authorAci: nil),
         )
         CVTextLabel.linkifyData(
             attributedText: truncatedEmail,
             linkifyStyle: .linkAttribute,
-            items: dataItems
+            items: dataItems,
         )
         values.removeAll()
         truncatedEmail.enumerateAttribute(.link, in: truncatedEmail.entireRange, options: []) { value, _, _ in
-            if let value = value {
+            if let value {
                 values.append(value as! String)
             }
         }
@@ -374,16 +382,16 @@ class CVTextTest: XCTestCase {
             textWasTruncated: true,
             revealedSpoilerIds: Set(),
             interactionUniqueId: UUID().uuidString,
-            interactionIdentifier: InteractionSnapshotIdentifier(timestamp: 0, authorAci: nil)
+            interactionIdentifier: InteractionSnapshotIdentifier(timestamp: 0, authorAci: nil),
         )
         CVTextLabel.linkifyData(
             attributedText: truncatedPhone,
             linkifyStyle: .linkAttribute,
-            items: dataItems
+            items: dataItems,
         )
         values.removeAll()
         truncatedPhone.enumerateAttribute(.link, in: truncatedPhone.entireRange, options: []) { value, _, _ in
-            if let value = value {
+            if let value {
                 values.append(value as! String)
             }
         }
@@ -398,7 +406,7 @@ extension CVLabelConfig {
         font: UIFont,
         textColor: UIColor,
         numberOfLines: Int = 1,
-        lineBreakMode: NSLineBreakMode = .byWordWrapping
+        lineBreakMode: NSLineBreakMode = .byWordWrapping,
     ) {
         self.init(
             text: .text(text),
@@ -406,7 +414,7 @@ extension CVLabelConfig {
             font: font,
             textColor: textColor,
             numberOfLines: numberOfLines,
-            lineBreakMode: lineBreakMode
+            lineBreakMode: lineBreakMode,
         )
     }
 
@@ -416,7 +424,7 @@ extension CVLabelConfig {
         textColor: UIColor,
         numberOfLines: Int = 1,
         lineBreakMode: NSLineBreakMode = .byWordWrapping,
-        textAlignment: NSTextAlignment? = nil
+        textAlignment: NSTextAlignment? = nil,
     ) {
         self.init(
             text: .attributedText(attributedText),
@@ -425,7 +433,7 @@ extension CVLabelConfig {
             textColor: textColor,
             numberOfLines: numberOfLines,
             lineBreakMode: lineBreakMode,
-            textAlignment: textAlignment
+            textAlignment: textAlignment,
         )
     }
 }
@@ -435,7 +443,7 @@ extension CVTextViewConfig {
     fileprivate init(
         text: String,
         font: UIFont,
-        textColor: UIColor
+        textColor: UIColor,
     ) {
         self.init(
             text: .text(text),
@@ -444,7 +452,7 @@ extension CVTextViewConfig {
             displayConfiguration: .forUnstyledText(font: font, textColor: textColor),
             linkifyStyle: .linkAttribute,
             linkItems: [],
-            matchedSearchRanges: []
+            matchedSearchRanges: [],
         )
     }
 
@@ -452,7 +460,7 @@ extension CVTextViewConfig {
         attributedText: NSAttributedString,
         font: UIFont,
         textColor: UIColor,
-        textAlignment: NSTextAlignment? = nil
+        textAlignment: NSTextAlignment? = nil,
     ) {
         self.init(
             text: .attributedText(attributedText),
@@ -462,7 +470,7 @@ extension CVTextViewConfig {
             displayConfiguration: .forUnstyledText(font: font, textColor: textColor),
             linkifyStyle: .linkAttribute,
             linkItems: [],
-            matchedSearchRanges: []
+            matchedSearchRanges: [],
         )
     }
 }

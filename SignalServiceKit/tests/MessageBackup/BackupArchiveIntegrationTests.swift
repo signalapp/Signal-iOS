@@ -71,7 +71,7 @@ class BackupArchiveIntegrationTests: XCTestCase {
         let binProtoFileUrls: [URL] = {
             let allBinprotoUrls = Bundle(for: type(of: self)).urls(
                 forResourcesWithExtension: "binproto",
-                subdirectory: nil
+                subdirectory: nil,
             ) ?? []
 
             return allBinprotoUrls.filter { binprotoUrl in
@@ -115,7 +115,7 @@ class BackupArchiveIntegrationTests: XCTestCase {
 
                 try await runRoundTripTest(
                     testCaseFileUrl: binprotoFileUrl,
-                    failureLogOutput: preferredFailureLogOutput
+                    failureLogOutput: preferredFailureLogOutput,
                 )
             } catch TestError.failure(let message) {
                 logFailure("""
@@ -165,7 +165,7 @@ class BackupArchiveIntegrationTests: XCTestCase {
     @MainActor
     private func runRoundTripTest(
         testCaseFileUrl: URL,
-        failureLogOutput: LibSignalComparisonFailureLogOutput
+        failureLogOutput: LibSignalComparisonFailureLogOutput,
     ) async throws {
 
         /// Backup files hardcode timestamps, some of which are interpreted
@@ -187,7 +187,7 @@ class BackupArchiveIntegrationTests: XCTestCase {
             try await self._runRoundTripTest(
                 testCaseFileUrl: testCaseFileUrl,
                 backupTimeMs: backupTimeMs,
-                failureLogOutput: failureLogOutput
+                failureLogOutput: failureLogOutput,
             )
         }
         await deinitializeApp(oldContext: oldContext)
@@ -197,7 +197,7 @@ class BackupArchiveIntegrationTests: XCTestCase {
     private func _runRoundTripTest(
         testCaseFileUrl: URL,
         backupTimeMs: UInt64,
-        failureLogOutput: LibSignalComparisonFailureLogOutput
+        failureLogOutput: LibSignalComparisonFailureLogOutput,
     ) async throws {
         /// A backup doesn't contain our own local identifiers. Rather, those
         /// are determined as part of registration for a backup import, and are
@@ -210,7 +210,7 @@ class BackupArchiveIntegrationTests: XCTestCase {
 
         try await deps.backupArchiveManager.importPlaintextBackupForTests(
             fileUrl: testCaseFileUrl,
-            localIdentifiers: localIdentifiers
+            localIdentifiers: localIdentifiers,
         )
 
         let exportedBackupUrl = try await deps.backupArchiveManager
@@ -219,7 +219,7 @@ class BackupArchiveIntegrationTests: XCTestCase {
         try compareViaLibsignal(
             sharedTestCaseBackupUrl: testCaseFileUrl,
             exportedBackupUrl: exportedBackupUrl,
-            failureLogOutput: failureLogOutput
+            failureLogOutput: failureLogOutput,
         )
     }
 
@@ -232,7 +232,7 @@ class BackupArchiveIntegrationTests: XCTestCase {
     private func compareViaLibsignal(
         sharedTestCaseBackupUrl: URL,
         exportedBackupUrl: URL,
-        failureLogOutput: LibSignalComparisonFailureLogOutput
+        failureLogOutput: LibSignalComparisonFailureLogOutput,
     ) throws {
 #if targetEnvironment(simulator)
         let sharedTestCaseBackup = try ComparableBackup(url: sharedTestCaseBackupUrl)
@@ -260,13 +260,13 @@ class BackupArchiveIntegrationTests: XCTestCase {
             case .minimalDiff:
                 let jsonStringDiff: LineByLineStringDiff = .diffing(
                     lhs: sharedTestCaseBackupString,
-                    rhs: exportedBackupString
+                    rhs: exportedBackupString,
                 )
 
                 let prettyDiff = jsonStringDiff.prettyPrint(
                     lhsLabel: "testcase",
                     rhsLabel: "exported",
-                    diffGroupDivider: "************"
+                    diffGroupDivider: "************",
                 )
 
                 throw TestError.failure("""
@@ -291,7 +291,7 @@ class BackupArchiveIntegrationTests: XCTestCase {
         let stream: BackupArchiveProtoInputStream
         switch plaintextStreamProvider.openPlaintextInputFileStream(
             fileUrl: testCaseFileUrl,
-            frameRestoreProgress: nil
+            frameRestoreProgress: nil,
         ) {
         case .success(let _stream, _):
             stream = _stream
@@ -337,8 +337,8 @@ class BackupArchiveIntegrationTests: XCTestCase {
                 dateProvider: dateProvider,
                 networkManager: CrashyMocks.MockNetworkManager(appReadiness: appReadiness, libsignalNet: nil),
                 storageServiceManager: FakeStorageServiceManager(),
-                webSocketFactory: CrashyMocks.MockWebSocketFactory()
-            )
+                webSocketFactory: CrashyMocks.MockWebSocketFactory(),
+            ),
         )
 
         await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
@@ -363,7 +363,7 @@ private extension LibSignalClient.ComparableBackup {
         try self.init(
             purpose: .remoteBackup,
             length: fileLength,
-            stream: fileHandle
+            stream: fileHandle,
         )
     }
 }
@@ -373,7 +373,7 @@ private extension LibSignalClient.ComparableBackup {
 
 private func failTest<T>(
     _ type: T.Type,
-    _ function: StaticString = #function
+    _ function: StaticString = #function,
 ) -> Never {
     let message = "Unexpectedly called \(type)#\(function)!"
     XCTFail(message)

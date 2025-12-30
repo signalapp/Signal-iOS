@@ -3,15 +3,15 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import XCTest
 import SignalServiceKit
+import XCTest
 
 class OWSOutgoingReactionMessageTest: SSKBaseTest {
     private lazy var reactionMessage: OWSOutgoingReactionMessage = {
         write { transaction in
             let thread = TSContactThread.getOrCreateThread(
                 withContactAddress: SignalServiceAddress(phoneNumber: "+12223334444"),
-                transaction: transaction
+                transaction: transaction,
             )
 
             let messageBuilder = TSOutgoingMessageBuilder.outgoingMessageBuilder(thread: thread, messageBody: nil)
@@ -25,7 +25,7 @@ class OWSOutgoingReactionMessageTest: SSKBaseTest {
                 isRemoving: false,
                 expiresInSeconds: 1234,
                 expireTimerVersion: nil,
-                transaction: transaction
+                transaction: transaction,
             )
         }
     }()

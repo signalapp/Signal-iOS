@@ -6,27 +6,27 @@
 import Foundation
 import LibSignalClient
 
-internal class SVR2WebsocketConfigurator: SgxWebsocketConfigurator {
+class SVR2WebsocketConfigurator: SgxWebsocketConfigurator {
 
-    internal typealias Request = SVR2Proto_Request
-    internal typealias Response = SVR2Proto_Response
-    internal typealias Client = Svr2Client
+    typealias Request = SVR2Proto_Request
+    typealias Response = SVR2Proto_Response
+    typealias Client = Svr2Client
 
-    internal let mrenclave: MrEnclave
-    internal var authMethod: SVR2.AuthMethod
+    let mrenclave: MrEnclave
+    var authMethod: SVR2.AuthMethod
 
     init(mrenclave: MrEnclave = TSConstants.svr2Enclave, authMethod: SVR2.AuthMethod) {
         self.mrenclave = mrenclave
         self.authMethod = authMethod
     }
 
-    internal static var signalServiceType: SignalServiceType { .svr2 }
+    static var signalServiceType: SignalServiceType { .svr2 }
 
-    internal static func websocketUrlPath(mrenclaveString: String) -> String {
+    static func websocketUrlPath(mrenclaveString: String) -> String {
         return "v1/\(mrenclaveString)"
     }
 
-    internal func fetchAuth() async throws -> RemoteAttestation.Auth {
+    func fetchAuth() async throws -> RemoteAttestation.Auth {
         switch authMethod {
         case .svrAuth(let credential, _):
             return credential.credential
@@ -37,15 +37,15 @@ internal class SVR2WebsocketConfigurator: SgxWebsocketConfigurator {
         }
     }
 
-    internal static func client(
+    static func client(
         mrenclave: MrEnclave,
         attestationMessage: Data,
-        currentDate: Date
+        currentDate: Date,
     ) throws -> Svr2Client {
-        return try Svr2Client.init(
+        return try Svr2Client(
             mrenclave: mrenclave.dataValue,
             attestationMessage: attestationMessage,
-            currentDate: currentDate
+            currentDate: currentDate,
         )
     }
 }

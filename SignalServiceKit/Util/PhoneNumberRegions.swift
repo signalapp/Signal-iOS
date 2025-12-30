@@ -49,7 +49,7 @@ public class PhoneNumberRegions: Equatable, ExpressibleByArrayLiteral, CustomDeb
         return result
     }
 
-    public static func == (lhs: PhoneNumberRegions, rhs: PhoneNumberRegions) -> Bool {
+    public static func ==(lhs: PhoneNumberRegions, rhs: PhoneNumberRegions) -> Bool {
         lhs.regions == rhs.regions
     }
 

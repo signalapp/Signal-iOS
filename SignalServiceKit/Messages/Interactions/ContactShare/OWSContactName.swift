@@ -41,7 +41,7 @@ public final class OWSContactName: NSObject, NSCoding, NSCopying {
         }
     }
 
-    public override var hash: Int {
+    override public var hash: Int {
         var hasher = Hasher()
         hasher.combine(familyName)
         hasher.combine(givenName)
@@ -53,7 +53,7 @@ public final class OWSContactName: NSObject, NSCoding, NSCopying {
         return hasher.finalize()
     }
 
-    public override func isEqual(_ object: Any?) -> Bool {
+    override public func isEqual(_ object: Any?) -> Bool {
         guard let object = object as? Self else { return false }
         guard type(of: self) == type(of: object) else { return false }
         guard self.familyName == object.familyName else { return false }
@@ -93,7 +93,7 @@ public final class OWSContactName: NSObject, NSCoding, NSCopying {
         nameSuffix: String? = nil,
         middleName: String? = nil,
         nickname: String? = nil,
-        organizationName: String? = nil
+        organizationName: String? = nil,
     ) {
         self.givenName = givenName
         self.familyName = familyName
@@ -114,7 +114,7 @@ public final class OWSContactName: NSObject, NSCoding, NSCopying {
             nameSuffix: cnContact.nameSuffix.stripped,
             middleName: cnContact.middleName.stripped,
             nickname: cnContact.nickname.stripped,
-            organizationName: cnContact.organizationName.stripped
+            organizationName: cnContact.organizationName.stripped,
         )
     }
 
@@ -134,7 +134,7 @@ public final class OWSContactName: NSObject, NSCoding, NSCopying {
         return displayName
     }
 
-    internal func ensureDisplayName() {
+    func ensureDisplayName() {
         if _displayName.isEmptyOrNil {
             if let cnContact = systemContactForName() {
                 if let nickname = cnContact.nickname.nilIfEmpty {
@@ -155,7 +155,7 @@ public final class OWSContactName: NSObject, NSCoding, NSCopying {
         }
     }
 
-    internal func updateDisplayName() {
+    func updateDisplayName() {
         _displayName = nil
         ensureDisplayName()
     }
@@ -176,7 +176,7 @@ public final class OWSContactName: NSObject, NSCoding, NSCopying {
     // Returns true if any of the name parts (which doesn't include
     // organization name) is non-empty.
     public var hasAnyNamePart: Bool {
-        let components: [String?] = [ givenName, middleName, familyName, namePrefix, nameSuffix, nickname ]
+        let components: [String?] = [givenName, middleName, familyName, namePrefix, nameSuffix, nickname]
         for component in components {
             if component?.strippedOrNil != nil {
                 return true

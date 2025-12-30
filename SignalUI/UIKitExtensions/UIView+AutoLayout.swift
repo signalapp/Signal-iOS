@@ -43,7 +43,7 @@ public extension UIView {
     func autoPinWidthToSuperviewMargins(withInset inset: CGFloat) -> [NSLayoutConstraint] {
         return [
             autoPinEdge(toSuperviewMargin: .leading, withInset: inset),
-            autoPinEdge(toSuperviewMargin: .trailing, withInset: inset)
+            autoPinEdge(toSuperviewMargin: .trailing, withInset: inset),
         ]
     }
 
@@ -57,7 +57,7 @@ public extension UIView {
         let resolvedRelation = relation.inverse
         return [
             autoPinEdge(toSuperviewMargin: .leading, relation: resolvedRelation),
-            autoPinEdge(toSuperviewMargin: .trailing, relation: resolvedRelation)
+            autoPinEdge(toSuperviewMargin: .trailing, relation: resolvedRelation),
         ]
     }
 
@@ -83,7 +83,7 @@ public extension UIView {
         let resolvedRelation = relation.inverse
         return [
             autoPinEdge(toSuperviewMargin: .top, relation: resolvedRelation),
-            autoPinEdge(toSuperviewMargin: .bottom, relation: resolvedRelation)
+            autoPinEdge(toSuperviewMargin: .bottom, relation: resolvedRelation),
         ]
     }
 
@@ -99,7 +99,7 @@ public extension UIView {
         let resolvedRelation = relation.inverse
         return [
             autoPinEdge(toSuperviewEdge: .leading, withInset: margin, relation: resolvedRelation),
-            autoPinEdge(toSuperviewEdge: .trailing, withInset: margin, relation: resolvedRelation)
+            autoPinEdge(toSuperviewEdge: .trailing, withInset: margin, relation: resolvedRelation),
         ]
     }
 
@@ -113,7 +113,7 @@ public extension UIView {
         let resolvedRelation = relation.inverse
         return [
             autoPinEdge(toSuperviewEdge: .top, withInset: margin, relation: resolvedRelation),
-            autoPinEdge(toSuperviewEdge: .bottom, withInset: margin, relation: resolvedRelation)
+            autoPinEdge(toSuperviewEdge: .bottom, withInset: margin, relation: resolvedRelation),
         ]
     }
 
@@ -125,7 +125,7 @@ public extension UIView {
             autoPinEdge(.leading, to: .leading, of: view, withOffset: insets.leading),
             autoPinEdge(.top, to: .top, of: view, withOffset: insets.top),
             autoPinEdge(.trailing, to: .trailing, of: view, withOffset: -insets.trailing),
-            autoPinEdge(.bottom, to: .bottom, of: view, withOffset: -insets.bottom)
+            autoPinEdge(.bottom, to: .bottom, of: view, withOffset: -insets.bottom),
         ]
     }
 
@@ -143,7 +143,7 @@ public extension UIView {
     func autoPinHorizontalEdges(toEdgesOf view: UIView) -> [NSLayoutConstraint] {
         return [
             autoPinEdge(.leading, to: .leading, of: view),
-            autoPinEdge(.trailing, to: .trailing, of: view)
+            autoPinEdge(.trailing, to: .trailing, of: view),
         ]
     }
 
@@ -151,7 +151,7 @@ public extension UIView {
     func autoPinVerticalEdges(toEdgesOf view: UIView) -> [NSLayoutConstraint] {
         return [
             autoPinEdge(.top, to: .top, of: view),
-            autoPinEdge(.bottom, to: .bottom, of: view)
+            autoPinEdge(.bottom, to: .bottom, of: view),
         ]
     }
 
@@ -239,7 +239,8 @@ public extension UIView {
             toItem: self,
             attribute: .height,
             multiplier: clampedRatio,
-            constant: 0)
+            constant: 0,
+        )
         constraint.autoInstall()
         return constraint
     }

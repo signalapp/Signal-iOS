@@ -28,7 +28,7 @@ class BackupArchiveProtoInputStream {
 
     init(
         inputStream: InputStreamable,
-        inputStreamDelegate: StreamDelegate
+        inputStreamDelegate: StreamDelegate,
     ) {
         self.inputStream = inputStream
         self.inputStreamDelegate = inputStreamDelegate
@@ -55,11 +55,11 @@ class BackupArchiveProtoInputStream {
     }
 
     private func readProto<T>(
-        _ initializer: (Data) throws -> T
+        _ initializer: (Data) throws -> T,
     ) -> BackupArchive.ProtoInputStreamReadResult<T> {
         do {
             let data = try inputStream.read(maxLength: 65_536)
-            if data.count == 0 && !inputStream.hasBytesAvailable {
+            if data.count == 0, !inputStream.hasBytesAvailable {
                 return .emptyFinalFrame
             } else {
                 let protoObject = try initializer(data)

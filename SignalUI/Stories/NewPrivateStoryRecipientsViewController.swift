@@ -9,7 +9,7 @@ public import SignalServiceKit
 public class NewPrivateStoryRecipientsViewController: BaseMemberViewController {
     var recipientSet: OrderedSet<PickedRecipient> = []
 
-    public override var hasUnsavedChanges: Bool { !recipientSet.isEmpty }
+    override public var hasUnsavedChanges: Bool { !recipientSet.isEmpty }
 
     let selectItemsInParent: (([StoryConversationItem]) -> Void)?
 
@@ -22,7 +22,7 @@ public class NewPrivateStoryRecipientsViewController: BaseMemberViewController {
 
     // MARK: - View Lifecycle
 
-    public override func viewWillAppear(_ animated: Bool) {
+    override public func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         updateBarButtons()
     }
@@ -37,20 +37,22 @@ public class NewPrivateStoryRecipientsViewController: BaseMemberViewController {
             style: .plain,
             action: { [weak self] in
                 self?.nextPressed()
-            }
+            },
         )
         navigationItem.rightBarButtonItem?.isEnabled = hasUnsavedChanges
 
         if recipientSet.isEmpty {
             title = OWSLocalizedString(
                 "NEW_PRIVATE_STORY_VIEW_TITLE",
-                comment: "The title for the 'new private story' view.")
+                comment: "The title for the 'new private story' view.",
+            )
 
         } else {
             let format = OWSLocalizedString(
                 "NEW_PRIVATE_STORY_VIEW_TITLE_%d",
                 tableName: "PluralAware",
-                comment: "The title for the 'new private story' view if already some connections are selected. Embeds {{number}} of connections.")
+                comment: "The title for the 'new private story' view if already some connections are selected. Embeds {{number}} of connections.",
+            )
             title = String.localizedStringWithFormat(format, recipientSet.count)
         }
     }
@@ -62,7 +64,7 @@ public class NewPrivateStoryRecipientsViewController: BaseMemberViewController {
 
         let vc = NewPrivateStoryConfirmViewController(
             recipientSet: recipientSet,
-            selectItemsInParent: selectItemsInParent
+            selectItemsInParent: selectItemsInParent,
         )
         navigationController?.pushViewController(vc, animated: true)
     }

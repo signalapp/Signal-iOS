@@ -32,7 +32,7 @@ public protocol RecipientHidingManager {
     /// `SignalRecipient` is currently hidden.
     func fetchHiddenRecipient(
         signalRecipient: SignalRecipient,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> HiddenRecipient?
 
     /// Should the thread for the given hidden recipient be in a message-request
@@ -46,7 +46,7 @@ public protocol RecipientHidingManager {
     func isHiddenRecipientThreadInMessageRequest(
         hiddenRecipient: HiddenRecipient,
         contactThread: TSContactThread?,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> Bool
 
     // MARK: Write
@@ -63,7 +63,7 @@ public protocol RecipientHidingManager {
         _ recipient: SignalRecipient,
         inKnownMessageRequestState: Bool,
         wasLocallyInitiated: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws
 
     /// Removes a recipient from the hidden recipient table.
@@ -75,7 +75,7 @@ public protocol RecipientHidingManager {
     func removeHiddenRecipient(
         _ recipient: SignalRecipient,
         wasLocallyInitiated: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws
 }
 
@@ -84,7 +84,7 @@ public extension RecipientHidingManager {
     /// Whether the given `SignalRecipient` is currently hidden.
     func isHiddenRecipient(
         _ recipient: SignalRecipient,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> Bool {
         return fetchHiddenRecipient(signalRecipient: recipient, tx: tx) != nil
     }
@@ -140,7 +140,7 @@ public final class RecipientHidingManagerImpl: RecipientHidingManager {
         profileManager: ProfileManager,
         storageServiceManager: StorageServiceManager,
         tsAccountManager: TSAccountManager,
-        messageSenderJobQueue: MessageSenderJobQueue
+        messageSenderJobQueue: MessageSenderJobQueue,
     ) {
         self.profileManager = profileManager
         self.storageServiceManager = storageServiceManager
@@ -168,7 +168,7 @@ public final class RecipientHidingManagerImpl: RecipientHidingManager {
 
     public func fetchHiddenRecipient(
         signalRecipient: SignalRecipient,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> HiddenRecipient? {
         do {
             return try HiddenRecipient.fetchOne(tx.database, key: signalRecipient.id)
@@ -181,7 +181,7 @@ public final class RecipientHidingManagerImpl: RecipientHidingManager {
     public func isHiddenRecipientThreadInMessageRequest(
         hiddenRecipient: HiddenRecipient,
         contactThread: TSContactThread?,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> Bool {
         if hiddenRecipient.inKnownMessageRequestState {
             /// We know, immediately, that this thread should be in a
@@ -225,21 +225,21 @@ public final class RecipientHidingManagerImpl: RecipientHidingManager {
         } else if let individualCall = mostRecentInteraction as? TSCall {
             switch individualCall.callType {
             case
-                    .incoming,
-                    .incomingMissed,
-                    .incomingIncomplete,
-                    .incomingMissedBecauseOfChangedIdentity,
-                    .incomingDeclined,
-                    .incomingAnsweredElsewhere,
-                    .incomingDeclinedElsewhere,
-                    .incomingBusyElsewhere,
-                    .incomingMissedBecauseOfDoNotDisturb,
-                    .incomingMissedBecauseBlockedSystemContact:
+                .incoming,
+                .incomingMissed,
+                .incomingIncomplete,
+                .incomingMissedBecauseOfChangedIdentity,
+                .incomingDeclined,
+                .incomingAnsweredElsewhere,
+                .incomingDeclinedElsewhere,
+                .incomingBusyElsewhere,
+                .incomingMissedBecauseOfDoNotDisturb,
+                .incomingMissedBecauseBlockedSystemContact:
                 return true
             case
-                    .outgoing,
-                    .outgoingIncomplete,
-                    .outgoingMissed:
+                .outgoing,
+                .outgoingIncomplete,
+                .outgoingMissed:
                 return false
             @unknown default:
                 owsFailDebug("Unknown call type: \(individualCall.callType)")
@@ -258,7 +258,7 @@ public final class RecipientHidingManagerImpl: RecipientHidingManager {
         _ recipient: SignalRecipient,
         inKnownMessageRequestState: Bool,
         wasLocallyInitiated: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         Logger.info("Hiding recipient")
         guard !isHiddenRecipient(recipient, tx: tx) else {
@@ -274,7 +274,7 @@ public final class RecipientHidingManagerImpl: RecipientHidingManager {
 
         let record = HiddenRecipient(
             signalRecipientRowId: recipient.id,
-            inKnownMessageRequestState: inKnownMessageRequestState
+            inKnownMessageRequestState: inKnownMessageRequestState,
         )
         try record.save(tx.database)
 
@@ -284,7 +284,7 @@ public final class RecipientHidingManagerImpl: RecipientHidingManager {
     public func removeHiddenRecipient(
         _ recipient: SignalRecipient,
         wasLocallyInitiated: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         if isHiddenRecipient(recipient, tx: tx) {
             Logger.info("Unhiding recipient")
@@ -311,16 +311,18 @@ private extension RecipientHidingManagerImpl {
     func didSetAsHidden(
         recipient: SignalRecipient,
         wasLocallyInitiated: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         // Triggers UI updates of recipient lists.
         NotificationCenter.default.postOnMainThread(name: Self.hideListDidChange, object: nil)
 
         Logger.info("[Recipient hiding][side effects] Beginning side effects of setting as hidden.")
-        if let thread = TSContactThread.getWithContactAddress(
-            recipient.address,
-            transaction: tx
-        ) {
+        if
+            let thread = TSContactThread.getWithContactAddress(
+                recipient.address,
+                transaction: tx,
+            )
+        {
             Logger.info("[Recipient hiding][side effects] Posting TSInfoMessage.")
             let infoMessage: TSInfoMessage = .makeForContactHidden(contactThread: thread)
             infoMessage.anyInsert(transaction: tx)
@@ -335,14 +337,14 @@ private extension RecipientHidingManagerImpl {
             profileManager.removeUser(
                 fromProfileWhitelist: recipient.address,
                 userProfileWriter: .localUser,
-                transaction: tx
+                transaction: tx,
             )
             Logger.info("[Recipient hiding][side effects] Remove from story distribution lists.")
             let storyRecipientManager = DependenciesBridge.shared.storyRecipientManager
             storyRecipientManager.removeRecipientIdFromAllPrivateStoryThreads(
                 recipient.id,
                 shouldUpdateStorageService: true,
-                tx: tx
+                tx: tx,
             )
             Logger.info("[Recipient hiding][side effects] Sync with storage service.")
             storageServiceManager.recordPendingUpdates(updatedAddresses: [recipient.address])
@@ -362,7 +364,7 @@ private extension RecipientHidingManagerImpl {
             !GroupManager.hasMutualGroupThread(
                 with: recipientServiceId,
                 localAci: localAci,
-                tx: tx
+                tx: tx,
             )
         {
             // Profile key rotations should only be initiated by the primary device
@@ -370,7 +372,7 @@ private extension RecipientHidingManagerImpl {
             // members are authorized to have profile keys of all group members).
             Logger.info("[Recipient hiding][side effects] Rotate profile key.")
             self.profileManager.rotateProfileKeyUponRecipientHide(
-                withTx: tx
+                withTx: tx,
             )
             // A nice-to-have was to throw out the other user's profile key if we're
             // not in a group with them. Product said this was not strictly necessary.
@@ -401,7 +403,7 @@ private extension RecipientHidingManagerImpl {
             profileManager.addUser(
                 toProfileWhitelist: recipient.address,
                 userProfileWriter: .localUser,
-                transaction: tx
+                transaction: tx,
             )
             Logger.info("[Recipient hiding][side effects] Sync with storage service.")
             storageServiceManager.recordPendingUpdates(updatedAddresses: [recipient.address])
@@ -410,22 +412,22 @@ private extension RecipientHidingManagerImpl {
         if
             let thread = TSContactThread.getWithContactAddress(
                 recipient.address,
-                transaction: tx
+                transaction: tx,
             ),
             let profileKey = profileManager.localProfileKey(tx: tx)
         {
             let profileKeyMessage = OWSProfileKeyMessage(
                 thread: thread,
                 profileKey: profileKey.serialize(),
-                transaction: tx
+                transaction: tx,
             )
             Logger.info("[Recipient hiding][side effects] Share profile key.")
             let preparedMessage = PreparedOutgoingMessage.preprepared(
-                transientMessageWithoutAttachments: profileKeyMessage
+                transientMessageWithoutAttachments: profileKeyMessage,
             )
             self.messageSenderJobQueue.add(
                 message: preparedMessage,
-                transaction: tx
+                transaction: tx,
             )
         }
     }

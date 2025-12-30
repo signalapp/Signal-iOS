@@ -34,7 +34,7 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
         newOversizeText: MessageEdits.OversizeTextSource?,
         newLinkPreview: MessageEdits.LinkPreviewSource?,
         quotedReplyEdit: MessageEdits.Edit<Void>,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         try reconcileQuotedReply(
             editTarget: editTarget,
@@ -44,7 +44,7 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
             priorRevisionRowId: priorRevisionRowId,
             threadRowId: threadRowId,
             quotedReplyEdit: quotedReplyEdit,
-            tx: tx
+            tx: tx,
         )
         try reconcileLinkPreview(
             editTarget: editTarget,
@@ -54,7 +54,7 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
             priorRevisionRowId: priorRevisionRowId,
             threadRowId: threadRowId,
             newLinkPreview: newLinkPreview,
-            tx: tx
+            tx: tx,
         )
         try reconcileOversizeText(
             editTarget: editTarget,
@@ -64,7 +64,7 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
             priorRevisionRowId: priorRevisionRowId,
             threadRowId: threadRowId,
             newOversizeText: newOversizeText,
-            tx: tx
+            tx: tx,
         )
         try reconcileBodyMediaAttachments(
             editTarget: editTarget,
@@ -73,7 +73,7 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
             priorRevision: priorRevision,
             priorRevisionRowId: priorRevisionRowId,
             threadRowId: threadRowId,
-            tx: tx
+            tx: tx,
         )
     }
 
@@ -87,14 +87,14 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
         priorRevisionRowId: Int64,
         threadRowId: Int64,
         quotedReplyEdit: MessageEdits.Edit<Void>,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         // The editTarget's copy of the message has no edits applied.
         let quotedReplyPriorToEdit = editTarget.message.quotedMessage
 
         let attachmentReferencePriorToEdit = attachmentStore.quotedThumbnailAttachment(
             for: editTarget.message,
-            tx: tx
+            tx: tx,
         )
 
         if let quotedReplyPriorToEdit {
@@ -115,7 +115,7 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
                     newOwnerMessageRowId: priorRevisionRowId,
                     newOwnerThreadRowId: threadRowId,
                     newOwnerIsPastEditRevision: true,
-                    tx: tx
+                    tx: tx,
                 )
             default:
                 throw OWSAssertionError("Invalid attachment reference type!")
@@ -135,7 +135,7 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
                 try attachmentStore.update(
                     attachmentReferencePriorToEdit,
                     withReceivedAtTimestamp: latestRevision.receivedAtTimestamp,
-                    tx: tx
+                    tx: tx,
                 )
             }
         case .change:
@@ -145,7 +145,7 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
                 try attachmentStore.removeAllOwners(
                     withId: .quotedReplyAttachment(messageRowId: latestRevisionRowId),
                     for: attachmentReferencePriorToEdit.attachmentRowId,
-                    tx: tx
+                    tx: tx,
                 )
             }
             // No need to touch the TSMessage.quotedReply as it is already nil by default.
@@ -160,14 +160,14 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
         priorRevisionRowId: Int64,
         threadRowId: Int64,
         newLinkPreview: MessageEdits.LinkPreviewSource?,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         // The editTarget's copy of the message has no edits applied.
         let linkPreviewPriorToEdit = editTarget.message.linkPreview
 
         let attachmentReferencePriorToEdit = attachmentStore.fetchFirstReference(
             owner: .messageLinkPreview(messageRowId: editTarget.message.sqliteRowId!),
-            tx: tx
+            tx: tx,
         )
 
         if let linkPreviewPriorToEdit {
@@ -188,7 +188,7 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
                     newOwnerMessageRowId: priorRevisionRowId,
                     newOwnerThreadRowId: threadRowId,
                     newOwnerIsPastEditRevision: true,
-                    tx: tx
+                    tx: tx,
                 )
             default:
                 throw OWSAssertionError("Invalid attachment reference type!")
@@ -199,7 +199,7 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
             try attachmentStore.removeAllOwners(
                 withId: .messageLinkPreview(messageRowId: latestRevisionRowId),
                 for: attachmentReferencePriorToEdit.attachmentRowId,
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -223,7 +223,7 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
                             messageRowId: latestRevisionRowId,
                             receivedAtTimestamp: latestRevision.receivedAtTimestamp,
                             threadRowId: threadRowId,
-                            isPastEditRevision: latestRevision.isPastEditRevision()
+                            isPastEditRevision: latestRevision.isPastEditRevision(),
                         )),
                     ),
                     tx: tx,
@@ -246,7 +246,7 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
                                 messageRowId: latestRevisionRowId,
                                 receivedAtTimestamp: latestRevision.receivedAtTimestamp,
                                 threadRowId: threadRowId,
-                                isPastEditRevision: latestRevision.isPastEditRevision()
+                                isPastEditRevision: latestRevision.isPastEditRevision(),
                             )),
                         ),
                         tx: tx,
@@ -267,13 +267,13 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
         priorRevisionRowId: Int64,
         threadRowId: Int64,
         newOversizeText: MessageEdits.OversizeTextSource?,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         // The editTarget's copy of the message has no edits applied;
         // fetch _its_ attachment.
         let oversizeTextReferencePriorToEdit = attachmentStore.fetchFirstReference(
             owner: .messageOversizeText(messageRowId: editTarget.message.sqliteRowId!),
-            tx: tx
+            tx: tx,
         )
 
         if let oversizeTextReferencePriorToEdit {
@@ -290,7 +290,7 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
                     newOwnerMessageRowId: priorRevisionRowId,
                     newOwnerThreadRowId: threadRowId,
                     newOwnerIsPastEditRevision: true,
-                    tx: tx
+                    tx: tx,
                 )
             default:
                 throw OWSAssertionError("Invalid attachment reference type!")
@@ -301,7 +301,7 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
             try attachmentStore.removeAllOwners(
                 withId: .messageOversizeText(messageRowId: latestRevisionRowId),
                 for: oversizeTextReferencePriorToEdit.attachmentRowId,
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -318,10 +318,10 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
                         messageRowId: latestRevisionRowId,
                         receivedAtTimestamp: latestRevision.receivedAtTimestamp,
                         threadRowId: threadRowId,
-                        isPastEditRevision: latestRevision.isPastEditRevision()
-                    ))
+                        isPastEditRevision: latestRevision.isPastEditRevision(),
+                    )),
                 ),
-                tx: tx
+                tx: tx,
             )
         case .proto(let protoPointer):
             try attachmentManager.createAttachmentPointer(
@@ -331,10 +331,10 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
                         messageRowId: latestRevisionRowId,
                         receivedAtTimestamp: latestRevision.receivedAtTimestamp,
                         threadRowId: threadRowId,
-                        isPastEditRevision: latestRevision.isPastEditRevision()
-                    ))
+                        isPastEditRevision: latestRevision.isPastEditRevision(),
+                    )),
                 ),
-                tx: tx
+                tx: tx,
             )
         }
     }
@@ -346,13 +346,13 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
         priorRevision: TSMessage,
         priorRevisionRowId: Int64,
         threadRowId: Int64,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         // The editTarget's copy of the message has no edits applied;
         // fetch _its_ attachment(s).
         let attachmentReferencesPriorToEdit = attachmentStore.fetchReferences(
             owner: .messageBodyAttachment(messageRowId: editTarget.message.sqliteRowId!),
-            tx: tx
+            tx: tx,
         )
 
         for attachmentReference in attachmentReferencesPriorToEdit {
@@ -365,7 +365,7 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
                     newOwnerMessageRowId: priorRevisionRowId,
                     newOwnerThreadRowId: threadRowId,
                     newOwnerIsPastEditRevision: true,
-                    tx: tx
+                    tx: tx,
                 )
             default:
                 throw OWSAssertionError("Invalid attachment reference type!")
@@ -375,7 +375,7 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
             try attachmentStore.update(
                 attachmentReference,
                 withReceivedAtTimestamp: latestRevision.receivedAtTimestamp,
-                tx: tx
+                tx: tx,
             )
         }
     }

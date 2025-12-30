@@ -6,7 +6,9 @@
 import SignalServiceKit
 
 public enum OWSNavigationBarStyle: Int {
-    case solid, alwaysDark, blur
+    case solid
+    case alwaysDark
+    case blur
 
     var forcedStatusBarStyle: UIStatusBarStyle? {
         switch self {
@@ -48,6 +50,7 @@ public class OWSNavigationBar: UINavigationBar {
             appearanceBlurEffectViewBackgroundColorObservation = nil
         }
     }
+
     /// These are KVO observations we keep on the nodes in the view heirarchy graph so
     /// we can keep our `appearanceBlurEffectView` reference up to date.
     private var backgroundSublayerObservation: NSKeyValueObservation?
@@ -60,7 +63,7 @@ public class OWSNavigationBar: UINavigationBar {
         updateAppearance(animated: false)
     }
 
-    public override func didAddSubview(_ subview: UIView) {
+    override public func didAddSubview(_ subview: UIView) {
         super.didAddSubview(subview)
 
         if String(describing: type(of: subview)) == "_UIBarBackground" {
@@ -76,7 +79,7 @@ public class OWSNavigationBar: UINavigationBar {
         setAppearanceBlurViewIfExists()
     }
 
-    public override var barPosition: UIBarPosition {
+    override public var barPosition: UIBarPosition {
         return .topAttached
     }
 
@@ -86,8 +89,8 @@ public class OWSNavigationBar: UINavigationBar {
 
     // MARK: Background Color
 
-    internal var navbarBackgroundColorOverride: UIColor?
-    internal var navbarTintColorOverride: UIColor?
+    var navbarBackgroundColorOverride: UIColor?
+    var navbarTintColorOverride: UIColor?
 
     private var navbarBackgroundColor: UIColor {
         return navbarBackgroundColorOverride ?? Theme.navbarBackgroundColor
@@ -102,7 +105,7 @@ public class OWSNavigationBar: UINavigationBar {
     private var style: OWSNavigationBarStyle?
     private var appearance: OWSNavigationBarAppearance?
 
-    internal func setStyle(_ style: OWSNavigationBarStyle, animated: Bool) {
+    func setStyle(_ style: OWSNavigationBarStyle, animated: Bool) {
         self.style = style
         updateAppearance(animated: animated)
     }
@@ -113,7 +116,7 @@ public class OWSNavigationBar: UINavigationBar {
         let appearance = OWSNavigationBarAppearance.appearance(
             for: style ?? .blur,
             navbarBackgroundColor: navbarBackgroundColor,
-            tintColor: navbarTintColor
+            tintColor: navbarTintColor,
         )
 
         guard appearance != self.appearance else {
@@ -177,7 +180,7 @@ public class OWSNavigationBar: UINavigationBar {
     }
 }
 
-internal struct OWSNavigationBarAppearance: Equatable {
+struct OWSNavigationBarAppearance: Equatable {
 
     var tintColor: UIColor?
     var barStyle: UIBarStyle = .default
@@ -200,7 +203,7 @@ internal struct OWSNavigationBarAppearance: Equatable {
     static func appearance(
         for style: OWSNavigationBarStyle,
         navbarBackgroundColor: UIColor,
-        tintColor: UIColor
+        tintColor: UIColor,
     ) -> Self {
         var appearance = OWSNavigationBarAppearance()
         appearance.barStyle = Theme.barStyle
@@ -249,7 +252,7 @@ internal struct OWSNavigationBarAppearance: Equatable {
         appearance.backgroundEffect = blurEffect
         appearance.backgroundColor = backgroundColor
         appearance.backgroundImage = backgroundImage(
-            userInterfaceLevel: navigationBar.traitCollection.userInterfaceLevel
+            userInterfaceLevel: navigationBar.traitCollection.userInterfaceLevel,
         )
         appearance.titleTextAttributes = titleTextAttributes
         appearance.shadowImage = shadowImage
@@ -285,7 +288,7 @@ internal struct OWSNavigationBarAppearance: Equatable {
                 with: UITraitCollection(traitsFrom: [
                     UITraitCollection.current,
                     UITraitCollection(userInterfaceLevel: userInterfaceLevel),
-                ])
+                ]),
             ))
         }
     }
@@ -314,14 +317,14 @@ internal struct OWSNavigationBarAppearance: Equatable {
 
     private var titleTextAttributes: [NSAttributedString.Key: Any] {
         var attributes = [NSAttributedString.Key: Any]()
-        if let titleTextColor = titleTextColor {
+        if let titleTextColor {
             attributes[.foregroundColor] = titleTextColor
         }
         return attributes
     }
 }
 
-fileprivate extension UIVisualEffectView {
+private extension UIVisualEffectView {
 
     var tintingView: UIView? {
         return subviews.first(where: {
@@ -336,7 +339,7 @@ fileprivate extension UIVisualEffectView {
     /// Return true if this was successful, and false otherwise.
     @discardableResult
     func matchBackgroundColor(_ color: UIColor) -> Bool {
-        if let tintingView = tintingView {
+        if let tintingView {
             tintingView.backgroundColor = color
             return true
         } else {

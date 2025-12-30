@@ -106,7 +106,7 @@ public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploa
         case .thumbnail:
             state.isThumbnailQueueEmpty = true
         }
-        if state.isFullsizeQueueEmpty == true && state.isThumbnailQueueEmpty == true {
+        if state.isFullsizeQueueEmpty == true, state.isThumbnailQueueEmpty == true {
             stopObservingDeviceAndLocalStates()
         }
     }
@@ -139,7 +139,7 @@ public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploa
         deviceBatteryLevelManager: (any DeviceBatteryLevelManager)?,
         reachabilityManager: SSKReachabilityManager,
         remoteConfigManager: RemoteConfigManager,
-        tsAccountManager: TSAccountManager
+        tsAccountManager: TSAccountManager,
     ) {
         self.appContext = appContext
         self.appReadiness = appReadiness
@@ -166,7 +166,7 @@ public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploa
             batteryLevel: nil,
             isLowPowerMode: nil,
             isMainAppAndActive: appContext.isMainAppAndActive,
-            areUploadsSuspended: false
+            areUploadsSuspended: false,
         )
 
         appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync { [weak self] in
@@ -214,7 +214,7 @@ public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploa
             batteryLevel: Float?,
             isLowPowerMode: Bool?,
             isMainAppAndActive: Bool,
-            areUploadsSuspended: Bool?
+            areUploadsSuspended: Bool?,
         ) {
             self.isFullsizeQueueEmpty = isFullsizeQueueEmpty
             self.isThumbnailQueueEmpty = isThumbnailQueueEmpty
@@ -286,7 +286,7 @@ public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploa
                 return .lowPowerMode
             }
 
-            if !isMainAppAndActive && !isMainAppAndActiveOverride {
+            if !isMainAppAndActive, !isMainAppAndActiveOverride {
                 return .appBackgrounded
             }
 
@@ -322,7 +322,7 @@ public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploa
         let (isFullsizeQueueEmpty, isThumbnailQueueEmpty) = db.read { tx in
             return (
                 ((try? backupAttachmentUploadStore.fetchNextUploads(count: 1, isFullsize: true, tx: tx)) ?? []).isEmpty,
-                ((try? backupAttachmentUploadStore.fetchNextUploads(count: 1, isFullsize: false, tx: tx)) ?? []).isEmpty
+                ((try? backupAttachmentUploadStore.fetchNextUploads(count: 1, isFullsize: false, tx: tx)) ?? []).isEmpty,
             )
         }
         state.isFullsizeQueueEmpty = isFullsizeQueueEmpty
@@ -343,13 +343,13 @@ public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploa
             backupPlan,
             hasConsumedMediaTierCapacity,
             shouldAllowBackupUploadsOnCellular,
-            areUploadsSuspended
+            areUploadsSuspended,
         ) = db.read { tx in
             (
                 backupSettingsStore.backupPlan(tx: tx),
                 backupSettingsStore.hasConsumedMediaTierCapacity(tx: tx),
                 backupSettingsStore.shouldAllowBackupUploadsOnCellular(tx: tx),
-                backupSettingsStore.isBackupAttachmentUploadQueueSuspended(tx: tx)
+                backupSettingsStore.isBackupAttachmentUploadQueueSuspended(tx: tx),
             )
         }
 
@@ -370,7 +370,7 @@ public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploa
                 self,
                 selector: selector,
                 name: name,
-                object: nil
+                object: nil,
             )
         }
 
@@ -389,7 +389,7 @@ public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploa
             batteryLevel: batteryLevelMonitor?.batteryLevel,
             isLowPowerMode: deviceBatteryLevelManager?.isLowPowerModeEnabled,
             isMainAppAndActive: appContext.isMainAppAndActive,
-            areUploadsSuspended: areUploadsSuspended
+            areUploadsSuspended: areUploadsSuspended,
         )
     }
 

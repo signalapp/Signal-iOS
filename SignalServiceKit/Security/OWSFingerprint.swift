@@ -36,7 +36,7 @@ public class OWSFingerprint {
         myAciIdentityKey: IdentityKey,
         theirAciIdentityKey: IdentityKey,
         theirName: String,
-        hashIterations: UInt32 = Constants.defaultHashIterations
+        hashIterations: UInt32 = Constants.defaultHashIterations,
     ) {
         self.myAci = myAci
         self.theirAci = theirAci
@@ -49,12 +49,12 @@ public class OWSFingerprint {
         self.myFingerprintData = Self.dataForStableAddress(
             myStableSourceData,
             publicKey: myAciIdentityKey,
-            hashIterations: hashIterations
+            hashIterations: hashIterations,
         )
         self.theirFingerprintData = Self.dataForStableAddress(
             theirStableSourceData,
             publicKey: theirAciIdentityKey,
-            hashIterations: hashIterations
+            hashIterations: hashIterations,
         )
     }
 
@@ -70,7 +70,7 @@ public class OWSFingerprint {
 
         let logicalFingerprints: FingerprintProtoLogicalFingerprints
         do {
-            logicalFingerprints = try FingerprintProtoLogicalFingerprints.init(serializedData: otherData)
+            logicalFingerprints = try FingerprintProtoLogicalFingerprints(serializedData: otherData)
         } catch {
             owsFailDebug("fingerprint failure: \(error)")
             let description = OWSLocalizedString("PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE", comment: "alert body")
@@ -96,7 +96,7 @@ public class OWSFingerprint {
             Logger.warn("Verification failed. We have the wrong fingerprint for them")
             let descriptionFormat = OWSLocalizedString(
                 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM",
-                comment: "Alert body when verifying with {{contact name}}"
+                comment: "Alert body when verifying with {{contact name}}",
             )
             let description = String(format: descriptionFormat, self.theirName)
             return .noMatch(localizedErrorDescription: description)
@@ -105,7 +105,7 @@ public class OWSFingerprint {
             Logger.warn("Verification failed. They have the wrong fingerprint for us")
             let descriptionFormat = OWSLocalizedString(
                 "PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME",
-                comment: "Alert body when verifying with {{contact name}}"
+                comment: "Alert body when verifying with {{contact name}}",
             )
             let description = String(format: descriptionFormat, self.theirName)
             return .noMatch(localizedErrorDescription: description)
@@ -150,10 +150,10 @@ public class OWSFingerprint {
 
     private func generateImage() -> UIImage? {
         let remoteFingerprintBuilder = FingerprintProtoLogicalFingerprint.builder(
-            identityData: Self.scannableData(from: self.theirFingerprintData)
+            identityData: Self.scannableData(from: self.theirFingerprintData),
         )
         let localFingerprintBuilder = FingerprintProtoLogicalFingerprint.builder(
-            identityData: Self.scannableData(from: self.myFingerprintData)
+            identityData: Self.scannableData(from: self.myFingerprintData),
         )
         let remoteFingerprint: FingerprintProtoLogicalFingerprint
         let localFingerprint: FingerprintProtoLogicalFingerprint
@@ -168,7 +168,7 @@ public class OWSFingerprint {
         let logicalFingerprintsBuilder = FingerprintProtoLogicalFingerprints.builder(
             version: self.scannableFingerprintVersion,
             localFingerprint: localFingerprint,
-            remoteFingerprint: remoteFingerprint
+            remoteFingerprint: remoteFingerprint,
         )
 
         let fingerprintData: Data
@@ -250,7 +250,7 @@ public class OWSFingerprint {
             encodedChunkFromData(data, offset: 10),
             encodedChunkFromData(data, offset: 15),
             encodedChunkFromData(data, offset: 20),
-            encodedChunkFromData(data, offset: 25)
+            encodedChunkFromData(data, offset: 25),
         )
     }
 

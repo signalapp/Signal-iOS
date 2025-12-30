@@ -28,7 +28,7 @@ public class TSAccountManagerImpl: TSAccountManager {
         self.db = db
 
         let kvStore = NewKeyValueStore(
-            collection: "TSStorageUserAccountCollection"
+            collection: "TSStorageUserAccountCollection",
         )
         self.kvStore = kvStore
 
@@ -148,13 +148,13 @@ extension TSAccountManagerImpl: PhoneNumberDiscoverabilitySetter {
             kvStore.writeValue(
                 phoneNumberDiscoverability == .everybody,
                 forKey: Keys.isDiscoverableByPhoneNumber,
-                tx: tx
+                tx: tx,
             )
 
             kvStore.writeValue(
                 dateProvider(),
                 forKey: Keys.lastSetIsDiscoverableByPhoneNumber,
-                tx: tx
+                tx: tx,
             )
         }
     }
@@ -168,7 +168,7 @@ extension TSAccountManagerImpl: LocalIdentifiersSetter {
         pni: Pni,
         deviceId: DeviceId,
         serverAuthToken: String,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         mutateWithLock(tx: tx) {
             let oldNumber = kvStore.fetchValue(String.self, forKey: Keys.localPhoneNumber, tx: tx)
@@ -200,7 +200,7 @@ extension TSAccountManagerImpl: LocalIdentifiersSetter {
         newE164: E164,
         aci: Aci,
         pni: Pni,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         mutateWithLock(tx: tx) {
             let oldNumber = kvStore.fetchValue(String.self, forKey: Keys.localPhoneNumber, tx: tx)
@@ -239,7 +239,7 @@ extension TSAccountManagerImpl: LocalIdentifiersSetter {
         localAci: Aci,
         discoverability: PhoneNumberDiscoverability?,
         wasPrimaryDevice: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         mutateWithLock(tx: tx) {
             Self.regStateLogger.info("Resetting for reregistration, was primary? \(wasPrimaryDevice)")
@@ -345,12 +345,12 @@ extension TSAccountManagerImpl {
     @discardableResult
     private func reloadAccountState(
         logger: PrefixedLogger?,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> AccountState {
         return accountStateLock.withLock {
             return loadAccountState(
                 logger: logger,
-                tx: tx
+                tx: tx,
             )
         }
     }
@@ -374,12 +374,12 @@ extension TSAccountManagerImpl {
     @discardableResult
     private func loadAccountState(
         logger: PrefixedLogger? = nil,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> AccountState {
-        let accountState = AccountState.init(
+        let accountState = AccountState(
             kvStore: kvStore,
             logger: logger,
-            tx: tx
+            tx: tx,
         )
         self.cachedAccountState = accountState
         return accountState
@@ -423,7 +423,7 @@ extension TSAccountManagerImpl {
         init(
             kvStore: NewKeyValueStore,
             logger: PrefixedLogger?,
-            tx: DBReadTransaction
+            tx: DBReadTransaction,
         ) {
             // WARNING: AccountState is loaded before data migrations have run (as well as after).
             // Do not use data migrations to update AccountState data; do it through schema migrations
@@ -431,7 +431,7 @@ extension TSAccountManagerImpl {
             let localIdentifiers = Self.loadLocalIdentifiers(
                 kvStore: kvStore,
                 logger: logger,
-                tx: tx
+                tx: tx,
             )
             self.localIdentifiers = localIdentifiers
 
@@ -470,7 +470,7 @@ extension TSAccountManagerImpl {
                 isTransferInProgress: isTransferInProgress,
                 kvStore: kvStore,
                 logger: logger,
-                tx: tx
+                tx: tx,
             )
             if self.registrationState.isRegistered {
                 owsPrecondition(localIdentifiers != nil, "If we're registered, we must have LocalIdentifiers.")
@@ -488,7 +488,7 @@ extension TSAccountManagerImpl {
         private static func loadLocalIdentifiers(
             kvStore: NewKeyValueStore,
             logger: PrefixedLogger?,
-            tx: DBReadTransaction
+            tx: DBReadTransaction,
         ) -> LocalIdentifiers? {
             guard
                 let localNumber = kvStore.fetchValue(String.self, forKey: Keys.localPhoneNumber, tx: tx)
@@ -511,7 +511,7 @@ extension TSAccountManagerImpl {
             isTransferInProgress: Bool,
             kvStore: NewKeyValueStore,
             logger: PrefixedLogger?,
-            tx: DBReadTransaction
+            tx: DBReadTransaction,
         ) -> TSRegistrationState {
             let reregistrationPhoneNumber = kvStore.fetchValue(String.self, forKey: Keys.reregistrationPhoneNumber, tx: tx)
             // TODO: Eventually require reregistrationAci during re-registration.
@@ -551,13 +551,13 @@ extension TSAccountManagerImpl {
                     logger?.info("rereg phone number set, and wasPrimaryDevice true; reregistering")
                     return .reregistering(
                         phoneNumber: reregistrationPhoneNumber,
-                        aci: reregistrationAci
+                        aci: reregistrationAci,
                     )
                 } else {
                     logger?.info("rereg phone number set, and wasPrimaryDevice false; relinking")
                     return .relinking(
                         phoneNumber: reregistrationPhoneNumber,
-                        aci: reregistrationAci
+                        aci: reregistrationAci,
                     )
                 }
             } else if isDeregisteredOrDelinked == true {

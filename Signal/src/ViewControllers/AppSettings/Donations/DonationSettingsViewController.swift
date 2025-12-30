@@ -33,7 +33,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
                 subscription: Subscription,
                 subscriptionLevel: DonationSubscriptionLevel?,
                 previouslyHadActiveSubscription: Bool,
-                receiptCredentialRequestError: DonationReceiptCredentialRequestError?
+                receiptCredentialRequestError: DonationReceiptCredentialRequestError?,
             )
         }
 
@@ -45,10 +45,10 @@ class DonationSettingsViewController: OWSTableViewController2 {
             profileBadgeLookup: ProfileBadgeLookup,
             pendingOneTimeDonation: PendingOneTimeIDEALDonation?,
             hasAnyBadges: Bool,
-            hasAnyDonationReceipts: Bool
+            hasAnyDonationReceipts: Bool,
         )
 
-        public var debugDescription: String {
+        var debugDescription: String {
             switch self {
             case .initializing:
                 return "initializing"
@@ -82,7 +82,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
         )
     }
 
-    public var showExpirationSheet: Bool
+    var showExpirationSheet: Bool
 
     /// This view can display sheets to the user on first appearance.  However there are  scenarios
     /// (eg. deep links) where suppressing any dialogs may be wanted.  This boolean allows for that.
@@ -91,20 +91,20 @@ class DonationSettingsViewController: OWSTableViewController2 {
         super.init()
     }
 
-    public override func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
         setUpAvatarView()
         title = OWSLocalizedString("DONATION_VIEW_TITLE", comment: "Title on the 'Donate to Signal' screen")
     }
 
-    public override func viewWillAppear(_ animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         Task {
             await self.loadAndUpdateState()
         }
     }
 
-    public override func viewDidAppear(_ animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
         if showExpirationSheet {
@@ -113,7 +113,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
             }
             // viewDidAppear can be called multiple times, and we don't want
             // Record that an intial attempt was made to show a sheet and
-            // don't try again after that. 
+            // don't try again after that.
             showExpirationSheet = false
         }
     }
@@ -121,12 +121,14 @@ class DonationSettingsViewController: OWSTableViewController2 {
     @objc
     private func didLongPressAvatar(sender: UIGestureRecognizer) {
         let subscriberID = SSKEnvironment.shared.databaseStorageRef.read { DonationSubscriptionManager.getSubscriberID(transaction: $0) }
-        guard let subscriberID = subscriberID else { return }
+        guard let subscriberID else { return }
 
         UIPasteboard.general.string = subscriberID.asBase64Url
 
-        presentToast(text: OWSLocalizedString("SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD",
-                                             comment: "Toast indicating that the user has copied their subscriber ID. (Externally referred to as donor ID)"))
+        presentToast(text: OWSLocalizedString(
+            "SUBSCRIPTION_SUBSCRIBER_ID_COPIED_TO_CLIPBOARD",
+            comment: "Toast indicating that the user has copied their subscriber ID. (Externally referred to as donor ID)",
+        ))
     }
 
     // MARK: - Data loading
@@ -153,7 +155,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
             hasAnyDonationReceipts,
             pendingIDEALOneTimeDonation,
             pendingIDEALSubscription,
-            hasAnyBadges
+            hasAnyBadges,
         ) = SSKEnvironment.shared.databaseStorageRef.read { tx in
             let resultStore = DependenciesBridge.shared.donationReceiptCredentialResultStore
 
@@ -165,7 +167,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
                 hasAnyDonationReceipts: DonationReceiptFinder.hasAny(transaction: tx),
                 idealStore.getPendingOneTimeDonation(tx: tx),
                 idealStore.getPendingSubscription(tx: tx),
-                profileManager.localUserProfile(tx: tx)?.hasBadge == true
+                profileManager.localUserProfile(tx: tx)?.hasBadge == true,
             )
         }
 
@@ -180,12 +182,12 @@ class DonationSettingsViewController: OWSTableViewController2 {
                     subscriptionLevel: DonationViewsUtil.subscriptionLevelForSubscription(
                         subscriptionLevels: try await DonationViewsUtil.loadSubscriptionLevels(
                             donationConfiguration: try await donationConfiguration,
-                            badgeStore: SSKEnvironment.shared.profileManagerRef.badgeStore
+                            badgeStore: SSKEnvironment.shared.profileManagerRef.badgeStore,
                         ),
-                        subscription: currentSubscription
+                        subscription: currentSubscription,
                     ),
                     previouslyHadActiveSubscription: hasEverRedeemedRecurringSubscriptionBadge,
-                    receiptCredentialRequestError: recurringSubscriptionReceiptCredentialRequestError
+                    receiptCredentialRequestError: recurringSubscriptionReceiptCredentialRequestError,
                 )
 
             } else if let pendingIDEALSubscription {
@@ -200,7 +202,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
                 profileBadgeLookup: await loadProfileBadgeLookup(donationConfiguration: try? await donationConfiguration),
                 pendingOneTimeDonation: pendingIDEALOneTimeDonation,
                 hasAnyBadges: hasAnyBadges,
-                hasAnyDonationReceipts: hasAnyDonationReceipts
+                hasAnyDonationReceipts: hasAnyDonationReceipts,
             )
             if let pendingIDEALSubscription {
                 // Serialized badges lose their assets, so ensure they've
@@ -217,7 +219,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
                 profileBadgeLookup: await loadProfileBadgeLookup(donationConfiguration: try? await donationConfiguration),
                 pendingOneTimeDonation: pendingIDEALOneTimeDonation,
                 hasAnyBadges: hasAnyBadges,
-                hasAnyDonationReceipts: hasAnyDonationReceipts
+                hasAnyDonationReceipts: hasAnyDonationReceipts,
             )
             return result
         }
@@ -228,7 +230,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
             let result = ProfileBadgeLookup(
                 boostBadge: donationConfiguration.boost.badge,
                 giftBadge: donationConfiguration.gift.badge,
-                subscriptionLevels: donationConfiguration.subscription.levels
+                subscriptionLevels: donationConfiguration.subscription.levels,
             )
             await result.attemptToPopulateBadgeAssets(populateAssetsOnBadge: SSKEnvironment.shared.profileManagerRef.badgeStore.populateAssetsOnBadge(_:))
             return result
@@ -237,7 +239,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
             return ProfileBadgeLookup(
                 boostBadge: nil,
                 giftBadge: nil,
-                subscriptionLevels: []
+                subscriptionLevels: [],
             )
         }
     }
@@ -272,7 +274,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
             profileBadgeLookup,
             pendingOneTimeDonation,
             hasAnyBadges,
-            hasAnyDonationReceipts
+            hasAnyDonationReceipts,
         ):
             let sections = loadFinishedSections(
                 subscriptionStatus: subscriptionStatus,
@@ -280,7 +282,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
                 oneTimeBoostReceiptCredentialRequestError: oneTimeBoostReceiptCredentialRequestError,
                 pendingOneTimeDonation: pendingOneTimeDonation,
                 hasAnyBadges: hasAnyBadges,
-                hasAnyDonationReceipts: hasAnyDonationReceipts
+                hasAnyDonationReceipts: hasAnyDonationReceipts,
             )
             contents.add(sections: sections)
         }
@@ -291,13 +293,13 @@ class DonationSettingsViewController: OWSTableViewController2 {
     private func heroSection() -> OWSTableSection {
         OWSTableSection(items: [.init(customCellBlock: { [weak self] in
             let cell = OWSTableItem.newCell()
-            guard let self = self else { return cell }
+            guard let self else { return cell }
 
             let heroStack = DonationHeroView(avatarView: self.avatarView)
             heroStack.delegate = self
             let buttonTitle = OWSLocalizedString(
                 "DONATION_SCREEN_DONATE_BUTTON",
-                comment: "On the donation settings screen, tapping this button will take the user to a screen where they can donate."
+                comment: "On the donation settings screen, tapping this button will take the user to a screen where they can donate.",
             )
             let button = UIButton(
                 configuration: .largePrimary(title: buttonTitle),
@@ -307,7 +309,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
                     } else {
                         DonationViewsUtil.openDonateWebsite()
                     }
-                }
+                },
             )
             heroStack.addArrangedSubview(button)
             button.translatesAutoresizingMaskIntoConstraints = false
@@ -333,7 +335,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
         oneTimeBoostReceiptCredentialRequestError: DonationReceiptCredentialRequestError?,
         pendingOneTimeDonation: PendingOneTimeIDEALDonation?,
         hasAnyBadges: Bool,
-        hasAnyDonationReceipts: Bool
+        hasAnyDonationReceipts: Bool,
     ) -> [OWSTableSection] {
         [
             mySupportSection(
@@ -341,14 +343,14 @@ class DonationSettingsViewController: OWSTableViewController2 {
                 profileBadgeLookup: profileBadgeLookup,
                 oneTimeBoostReceiptCredentialRequestError: oneTimeBoostReceiptCredentialRequestError,
                 pendingOneTimeDonation: pendingOneTimeDonation,
-                hasAnyBadges: hasAnyBadges
+                hasAnyBadges: hasAnyBadges,
             ),
             otherWaysToDonateSection(),
             moreSection(
                 subscriptionStatus: subscriptionStatus,
                 profileBadgeLookup: profileBadgeLookup,
-                hasAnyDonationReceipts: hasAnyDonationReceipts
-            )
+                hasAnyDonationReceipts: hasAnyDonationReceipts,
+            ),
         ].compacted()
     }
 
@@ -357,7 +359,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
 
         let title = OWSLocalizedString(
             "DONATION_VIEW_OTHER_WAYS_TO_DONATE_TITLE",
-            comment: "Title for the \"other ways to donate\" section on the donation view."
+            comment: "Title for the \"other ways to donate\" section on the donation view.",
         )
         let section = OWSTableSection(title: title)
 
@@ -365,10 +367,10 @@ class DonationSettingsViewController: OWSTableViewController2 {
             icon: .donateGift,
             withText: OWSLocalizedString(
                 "DONATION_VIEW_DONATE_ON_BEHALF_OF_A_FRIEND",
-                comment: "Title for the \"donate for a friend\" button on the donation view."
+                comment: "Title for the \"donate for a friend\" button on the donation view.",
             ),
             actionBlock: { [weak self] in
-                guard let self = self else { return }
+                guard let self else { return }
 
                 // It's possible (but unlikely) to lose the ability to send gifts while this button is
                 // visible. For example, Apple Pay could be disabled in parental controls after this
@@ -381,7 +383,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
 
                 let vc = BadgeGiftingChooseBadgeViewController()
                 self.navigationController?.pushViewController(vc, animated: true)
-            }
+            },
         ))
 
         return section
@@ -390,11 +392,11 @@ class DonationSettingsViewController: OWSTableViewController2 {
     private func moreSection(
         subscriptionStatus: State.SubscriptionStatus,
         profileBadgeLookup: ProfileBadgeLookup,
-        hasAnyDonationReceipts: Bool
+        hasAnyDonationReceipts: Bool,
     ) -> OWSTableSection? {
         let section = OWSTableSection(title: OWSLocalizedString(
             "DONATION_VIEW_MORE_SECTION_TITLE",
-            comment: "Title for the 'more' section on the donation screen"
+            comment: "Title for the 'more' section on the donation screen",
         ))
 
         // It should be unusual to hit this case—having a subscription but no receipts—
@@ -416,12 +418,12 @@ class DonationSettingsViewController: OWSTableViewController2 {
                 icon: .settingsHelp,
                 withText: OWSLocalizedString(
                     "DONATION_VIEW_DONOR_FAQ",
-                    comment: "Title for the 'Donor FAQ' button on the donation screen"
+                    comment: "Title for the 'Donor FAQ' button on the donation screen",
                 ),
                 actionBlock: { [weak self] in
                     let vc = SFSafariViewController(url: URL.Support.Donations.donorFAQ)
                     self?.present(vc, animated: true, completion: nil)
-                }
+                },
             ))
         }
 
@@ -439,7 +441,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
             actionBlock: { [weak self] in
                 let vc = DonationReceiptsViewController(profileBadgeLookup: profileBadgeLookup)
                 self?.navigationController?.pushViewController(vc, animated: true)
-            }
+            },
         )
     }
 
@@ -447,26 +449,26 @@ class DonationSettingsViewController: OWSTableViewController2 {
 
     func showDonateViewController(preferredDonateMode: DonateViewController.DonateMode) {
         let donateVc = DonateViewController(preferredDonateMode: preferredDonateMode) { [weak self] finishResult in
-            guard let self = self else { return }
+            guard let self else { return }
             switch finishResult {
             case let .completedDonation(_, receiptCredentialSuccessMode):
                 self.navigationController?.popToViewController(self, animated: true) { [weak self] in
                     guard
                         let self,
                         let badgeThanksSheetPresenter = BadgeThanksSheetPresenter.fromGlobalsWithSneakyTransaction(
-                            successMode: receiptCredentialSuccessMode
+                            successMode: receiptCredentialSuccessMode,
                         )
                     else { return }
 
                     Task {
                         await badgeThanksSheetPresenter.presentAndRecordBadgeThanks(
-                            fromViewController: self
+                            fromViewController: self,
                         )
                     }
                 }
             case let .monthlySubscriptionCancelled(_, toastText):
                 self.navigationController?.popToViewController(self, animated: true) { [weak self] in
-                    guard let self = self else { return }
+                    guard let self else { return }
                     self.view.presentToast(text: toastText, fromViewController: self)
                 }
             }
@@ -478,11 +480,11 @@ class DonationSettingsViewController: OWSTableViewController2 {
 
     // MARK: - Gift Badge Expiration
 
-    public static func shouldShowExpiredGiftBadgeSheetWithSneakyTransaction() -> Bool {
+    static func shouldShowExpiredGiftBadgeSheetWithSneakyTransaction() -> Bool {
         let expiredGiftBadgeID = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             DonationSubscriptionManager.mostRecentlyExpiredGiftBadgeID(transaction: transaction)
         }
-        guard let expiredGiftBadgeID = expiredGiftBadgeID, GiftBadgeIds.contains(expiredGiftBadgeID) else {
+        guard let expiredGiftBadgeID, GiftBadgeIds.contains(expiredGiftBadgeID) else {
             return false
         }
         return true
@@ -496,7 +498,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
         firstly {
             DonationSubscriptionManager.getCachedBadge(level: .giftBadge(.signalGift)).fetchIfNeeded()
         }.done { [weak self] cachedValue in
-            guard let self = self else { return }
+            guard let self else { return }
             guard UIApplication.shared.frontmostViewController == self else { return }
             guard case .profileBadge(let profileBadge) = cachedValue else {
                 // The server confirmed this badge doesn't exist. This shouldn't happen,
@@ -531,24 +533,24 @@ class DonationSettingsViewController: OWSTableViewController2 {
         func showError(title: String, message: String, donationMode: DonateViewController.DonateMode) {
             let actionSheet = ActionSheetController(
                 title: title,
-                message: message
+                message: message,
             )
 
             actionSheet.addAction(ActionSheetAction(
                 title: OWSLocalizedString(
                     "DONATION_BADGE_ISSUE_SHEET_TRY_AGAIN_BUTTON_TITLE",
-                    comment: "Title for a button asking the user to try their donation again, because something went wrong."
+                    comment: "Title for a button asking the user to try their donation again, because something went wrong.",
                 ),
                 handler: { [weak self] _ in
                     guard let self else { return }
                     self.presentAwaitingIDEALAuthorizationActionSheet(donateMode: donationMode)
-                }
+                },
             ))
 
             actionSheet.addAction(.init(
                 title: CommonStrings.okayButton,
                 style: .cancel,
-                handler: nil
+                handler: nil,
             ))
 
             presentActionSheet(actionSheet)
@@ -564,11 +566,11 @@ class DonationSettingsViewController: OWSTableViewController2 {
             if abs(pendingOneTime.createDate.timeIntervalSinceNow) > expiration {
                 let title = OWSLocalizedString(
                     "DONATION_SETTINGS_MY_SUPPORT_DONATION_FAILED_ALERT_TITLE",
-                    comment: "Title for a sheet explaining that a payment failed."
+                    comment: "Title for a sheet explaining that a payment failed.",
                 )
                 let message = OWSLocalizedString(
                     "DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_FAILED_MESSAGE",
-                    comment: "Message shown in a sheet explaining that the user's iDEAL one-time donation coultn't be processed."
+                    comment: "Message shown in a sheet explaining that the user's iDEAL one-time donation coultn't be processed.",
                 )
                 showError(title: title, message: message, donationMode: .oneTime)
 
@@ -579,11 +581,11 @@ class DonationSettingsViewController: OWSTableViewController2 {
             } else {
                 let title = OWSLocalizedString(
                     "DONATION_SETTINGS_MY_SUPPORT_DONATION_UNCONFIMRED_ALERT_TITLE",
-                    comment: "Title for a sheet explaining that a payment needs confirmation."
+                    comment: "Title for a sheet explaining that a payment needs confirmation.",
                 )
                 let messageFormat = OWSLocalizedString(
                     "DONATION_SETTINGS_MY_SUPPORT_IDEAL_ONE_TIME_DONATION_NOT_CONFIRMED_MESSAGE_FORMAT",
-                    comment: "Title for a sheet explaining that a payment needs confirmation."
+                    comment: "Title for a sheet explaining that a payment needs confirmation.",
                 )
                 let message = String(format: messageFormat, CurrencyFormatter.format(money: pendingOneTime.amount))
                 showError(title: title, message: message, donationMode: .oneTime)
@@ -593,11 +595,11 @@ class DonationSettingsViewController: OWSTableViewController2 {
             if abs(pendingSubscription.createDate.timeIntervalSinceNow) > expiration {
                 let title = OWSLocalizedString(
                     "DONATION_SETTINGS_MY_SUPPORT_DONATION_FAILED_ALERT_TITLE",
-                    comment: "Title for a sheet explaining that a payment failed."
+                    comment: "Title for a sheet explaining that a payment failed.",
                 )
                 let message = OWSLocalizedString(
                     "DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_FAILED_MESSAGE",
-                    comment: "Message shown in a sheet explaining that the user's iDEAL recurring monthly donation coultn't be processed."
+                    comment: "Message shown in a sheet explaining that the user's iDEAL recurring monthly donation coultn't be processed.",
                 )
                 showError(title: title, message: message, donationMode: .monthly)
                 SSKEnvironment.shared.databaseStorageRef.write { tx in
@@ -606,11 +608,11 @@ class DonationSettingsViewController: OWSTableViewController2 {
             } else {
                 let title = OWSLocalizedString(
                     "DONATION_SETTINGS_MY_SUPPORT_DONATION_UNCONFIMRED_ALERT_TITLE",
-                    comment: "Title for a sheet explaining that a payment needs confirmation."
+                    comment: "Title for a sheet explaining that a payment needs confirmation.",
                 )
                 let messageFormat = OWSLocalizedString(
                     "DONATION_SETTINGS_MY_SUPPORT_IDEAL_RECURRING_SUBSCRIPTION_NOT_CONFIRMED_MESSAGE_FORMAT",
-                    comment: "Message shown in a sheet explaining that the user's iDEAL recurring monthly donation hasn't been confirmed. Embeds {{ formatted current amount }}."
+                    comment: "Message shown in a sheet explaining that the user's iDEAL recurring monthly donation hasn't been confirmed. Embeds {{ formatted current amount }}.",
                 )
                 let message = String(format: messageFormat, CurrencyFormatter.format(money: pendingSubscription.amount))
                 showError(title: title, message: message, donationMode: .monthly)
@@ -625,16 +627,16 @@ class DonationSettingsViewController: OWSTableViewController2 {
             title: nil,
             message: OWSLocalizedString(
                 "DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_MESSAGE",
-                comment: "Prompt confirming the user wants to abandon the current donation flow and start a new donation."
-            )
+                comment: "Prompt confirming the user wants to abandon the current donation flow and start a new donation.",
+            ),
         )
 
         actionSheet.addAction(showDonateAndClearPendingIDEALDonation(
             title: OWSLocalizedString(
                 "DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_DONATE_ACTION",
-                comment: "Button title confirming the user wants to begin a new donation."
+                comment: "Button title confirming the user wants to begin a new donation.",
             ),
-            preferredDonateMode: donateMode
+            preferredDonateMode: donateMode,
         ))
         actionSheet.addAction(OWSActionSheets.cancelAction)
 
@@ -643,7 +645,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
 
     private func showDonateAndClearPendingIDEALDonation(
         title: String,
-        preferredDonateMode: DonateViewController.DonateMode
+        preferredDonateMode: DonateViewController.DonateMode,
     ) -> ActionSheetAction {
         return clearErrorAndShowDonateAction(title: title, donateMode: preferredDonateMode) { tx in
             switch preferredDonateMode {
@@ -660,7 +662,7 @@ class DonationSettingsViewController: OWSTableViewController2 {
     func clearErrorAndShowDonateAction(
         title: String,
         donateMode: DonateViewController.DonateMode,
-        clearErrorBlock: @escaping (DBWriteTransaction) -> Void
+        clearErrorBlock: @escaping (DBWriteTransaction) -> Void,
     ) -> ActionSheetAction {
         return ActionSheetAction(title: title) { _ in
             SSKEnvironment.shared.databaseStorageRef.write { tx in
@@ -699,8 +701,8 @@ extension DonationSettingsViewController: BadgeConfigurationDelegate {
             OWSActionSheets.showErrorAlert(
                 message: OWSLocalizedString(
                     "PROFILE_VIEW_NO_CONNECTION",
-                    comment: "Error shown when the user tries to update their profile when the app is not connected to the internet."
-                )
+                    comment: "Error shown when the user tries to update their profile when the app is not connected to the internet.",
+                ),
             )
             return
         }
@@ -742,7 +744,7 @@ extension DonationSettingsViewController: BadgeConfigurationDelegate {
                         unsavedRotatedProfileKey: nil,
                         userProfileWriter: .localUser,
                         authedAccount: .implicit(),
-                        tx: tx
+                        tx: tx,
                     )
                 }
                 try await updatePromise.awaitable()
@@ -760,7 +762,7 @@ extension DonationSettingsViewController: BadgeConfigurationDelegate {
                 DonationSubscriptionManager.setDisplayBadgesOnProfile(
                     displayBadgesOnProfile,
                     updateStorageService: true,
-                    transaction: tx
+                    transaction: tx,
                 )
             }
         } catch {

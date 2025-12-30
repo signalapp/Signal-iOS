@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import XCTest
 import Contacts
+import XCTest
 @testable import SignalUI
 
 final class ContactsPickerTest: XCTestCase {
@@ -22,7 +22,7 @@ final class ContactsPickerTest: XCTestCase {
             TestCase(givenName: "", familyName: "Johnson ", sortOrder: .familyName, expectedResult: "Johnson"),
             TestCase(givenName: "Alice ", familyName: " Johnson", sortOrder: .familyName, expectedResult: "Johnson Alice"),
             TestCase(givenName: "Alice ", familyName: " Johnson", emailAddress: "abc@example.com", sortOrder: .givenName, expectedResult: "Alice   Johnson"),
-            TestCase(emailAddress: "  abc@example.com", sortOrder: .givenName, expectedResult: "abc@example.com")
+            TestCase(emailAddress: "  abc@example.com", sortOrder: .givenName, expectedResult: "abc@example.com"),
         ]
         for testCase in testCases {
             let cnContact = CNMutableContact()

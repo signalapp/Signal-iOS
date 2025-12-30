@@ -39,7 +39,7 @@ enum OWSFrontingHost {
         }
     }
 
-    fileprivate var requiresPathPrefix: Bool {
+    private var requiresPathPrefix: Bool {
         switch self {
         case .googleEgypt, .googleUae, .googleOman, .googlePakistan, .googleQatar, .googleUzbekistan, .googleVenezuela, .`default`:
             return true

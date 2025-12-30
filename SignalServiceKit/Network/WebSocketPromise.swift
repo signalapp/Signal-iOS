@@ -9,7 +9,7 @@ import Network
 extension WebSocketFactory {
     func webSocketPromise(
         request: WebSocketRequest,
-        callbackScheduler: Scheduler
+        callbackScheduler: Scheduler,
     ) -> WebSocketPromise? {
         guard let webSocket = buildSocket(request: request, callbackScheduler: callbackScheduler) else {
             return nil

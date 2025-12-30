@@ -19,7 +19,7 @@ public import LibSignalClient
 /// number-only members of legacy V1 groups may end up with a PNI; for example,
 /// that phone-number-only member may become re-registered, and we may
 /// subsequently learn about their PNI.
-/// 
+///
 /// - Note
 /// At the time of writing there exists a `UNIQUE INDEX` on the phone number and
 /// group thread ID columns of this model. This is currently safe, as it's
@@ -51,7 +51,7 @@ public final class TSGroupMember: NSObject, SDSCodableModel, Decodable {
     public init(
         address: NormalizedDatabaseRecordAddress,
         groupThreadId: String,
-        lastInteractionTimestamp: UInt64
+        lastInteractionTimestamp: UInt64,
     ) {
         self.uniqueId = UUID().uuidString
         self.serviceId = address.serviceId
@@ -92,7 +92,7 @@ public final class TSGroupMember: NSObject, SDSCodableModel, Decodable {
 
     public func anyUpdateWith(
         lastInteractionTimestamp: UInt64,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) {
         anyUpdate(transaction: transaction) { groupMember in
             groupMember.lastInteractionTimestamp = lastInteractionTimestamp
@@ -101,7 +101,7 @@ public final class TSGroupMember: NSObject, SDSCodableModel, Decodable {
 
     public func updateWith(
         lastInteractionTimestamp: UInt64,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         self.lastInteractionTimestamp = lastInteractionTimestamp
         try self.update(tx.database)
@@ -110,7 +110,7 @@ public final class TSGroupMember: NSObject, SDSCodableModel, Decodable {
     public class func groupMember(
         for address: SignalServiceAddress,
         in groupThreadId: String,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> TSGroupMember? {
         let sql = """
             SELECT * FROM \(databaseTableName)
@@ -125,7 +125,7 @@ public final class TSGroupMember: NSObject, SDSCodableModel, Decodable {
             return try fetchOne(
                 transaction.database,
                 sql: sql,
-                arguments: [address.serviceIdUppercaseString, address.phoneNumber, groupThreadId]
+                arguments: [address.serviceIdUppercaseString, address.phoneNumber, groupThreadId],
             )
         }
     }
@@ -133,7 +133,7 @@ public final class TSGroupMember: NSObject, SDSCodableModel, Decodable {
     public class func groupMember(
         for aci: Aci,
         in groupThread: TSGroupThread,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> TSGroupMember? {
         return try TSGroupMember
             .filter(Column(CodingKeys.serviceId) == aci.serviceIdUppercaseString)
@@ -157,7 +157,7 @@ public final class TSGroupMember: NSObject, SDSCodableModel, Decodable {
             let cursor = try fetchCursor(
                 transaction.database,
                 sql: sql,
-                arguments: [address.serviceIdUppercaseString, address.phoneNumber]
+                arguments: [address.serviceIdUppercaseString, address.phoneNumber],
             )
             while let member = try cursor.next() {
                 var stop: ObjCBool = false
@@ -174,7 +174,7 @@ public extension TSGroupThread {
     @objc(groupThreadsWithAddress:transaction:)
     class func groupThreads(
         with address: SignalServiceAddress,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> [TSGroupThread] {
         let sql = """
             SELECT \(TSGroupMember.columnName(.groupThreadId)) FROM \(TSGroupMember.databaseTableName)
@@ -190,14 +190,16 @@ public extension TSGroupThread {
             let cursor = try String.fetchCursor(
                 transaction.database,
                 sql: sql,
-                arguments: [address.serviceIdUppercaseString, address.phoneNumber]
+                arguments: [address.serviceIdUppercaseString, address.phoneNumber],
             )
 
             while let groupThreadId = try cursor.next() {
-                guard let groupThread = TSGroupThread.anyFetchGroupThread(
-                    uniqueId: groupThreadId,
-                    transaction: transaction
-                ) else {
+                guard
+                    let groupThread = TSGroupThread.anyFetchGroupThread(
+                        uniqueId: groupThreadId,
+                        transaction: transaction,
+                    )
+                else {
                     owsFailDebug("Missing group thread")
                     continue
                 }
@@ -212,7 +214,7 @@ public extension TSGroupThread {
     class func enumerateGroupThreads(
         with address: SignalServiceAddress,
         transaction: DBReadTransaction,
-        block: (TSGroupThread, UnsafeMutablePointer<ObjCBool>) -> Void
+        block: (TSGroupThread, UnsafeMutablePointer<ObjCBool>) -> Void,
     ) {
         let sql = """
             SELECT \(TSGroupMember.columnName(.groupThreadId)) FROM \(TSGroupMember.databaseTableName)
@@ -225,12 +227,16 @@ public extension TSGroupThread {
         let cursor = try! String.fetchCursor(
             transaction.database,
             sql: sql,
-            arguments: [address.serviceIdUppercaseString, address.phoneNumber]
+            arguments: [address.serviceIdUppercaseString, address.phoneNumber],
         )
 
         while let groupThreadId = try! cursor.next() {
-            guard let groupThread = TSGroupThread.anyFetchGroupThread(uniqueId: groupThreadId,
-                                                                      transaction: transaction) else {
+            guard
+                let groupThread = TSGroupThread.anyFetchGroupThread(
+                    uniqueId: groupThreadId,
+                    transaction: transaction,
+                )
+            else {
                 owsFailDebug("Missing group thread")
                 continue
             }
@@ -242,7 +248,7 @@ public extension TSGroupThread {
 
     class func groupThreadIds(
         with address: SignalServiceAddress,
-        transaction tx: DBReadTransaction
+        transaction tx: DBReadTransaction,
     ) -> [String] {
         let sql = """
             SELECT \(TSGroupMember.columnName(.groupThreadId))
@@ -256,7 +262,7 @@ public extension TSGroupThread {
             try String.fetchAll(
                 tx.database,
                 sql: sql,
-                arguments: [address.serviceIdUppercaseString, address.phoneNumber]
+                arguments: [address.serviceIdUppercaseString, address.phoneNumber],
             )
         }
     }

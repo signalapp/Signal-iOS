@@ -30,15 +30,17 @@ extension ConversationViewController: AttachmentApprovalViewControllerDelegate {
         self.popKeyBoard()
     }
 
-    public func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController,
-                                   didChangeMessageBody newMessageBody: MessageBody?) {
+    public func attachmentApproval(
+        _ attachmentApproval: AttachmentApprovalViewController,
+        didChangeMessageBody newMessageBody: MessageBody?,
+    ) {
         AssertIsOnMainThread()
 
         guard hasViewWillAppearEverBegun else {
             owsFailDebug("InputToolbar not yet ready.")
             return
         }
-        guard let inputToolbar = inputToolbar else {
+        guard let inputToolbar else {
             return
         }
         inputToolbar.setMessageBody(newMessageBody, animated: false)
@@ -113,7 +115,7 @@ extension ConversationViewController: ContactPickerDelegate {
                 profileManager: SSKEnvironment.shared.profileManagerRef,
                 recipientManager: DependenciesBridge.shared.recipientManager,
                 tsAccountManager: DependenciesBridge.shared.tsAccountManager,
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -141,8 +143,11 @@ extension ConversationViewController: ContactPickerDelegate {
 
 extension ConversationViewController: ContactShareViewControllerDelegate {
 
-    public func contactShareViewController(_ viewController: ContactShareViewController, didApproveContactShare contactShare:
-        ContactShareDraft) {
+    public func contactShareViewController(
+        _ viewController: ContactShareViewController,
+        didApproveContactShare contactShare:
+        ContactShareDraft,
+    ) {
         dismiss(animated: true) {
             self.send(contactShareDraft: contactShare)
         }
@@ -172,7 +177,7 @@ extension ConversationViewController: ContactShareViewControllerDelegate {
             let didAddToProfileWhitelist = ThreadUtil.addThreadToProfileWhitelistIfEmptyOrPendingRequest(
                 thread,
                 setDefaultTimerIfNecessary: true,
-                tx: transaction
+                tx: transaction,
             )
             transaction.addSyncCompletion {
                 Task { @MainActor in
@@ -203,7 +208,7 @@ extension ConversationViewController: ConversationHeaderViewDelegate {
         if conversationHeaderView.avatarView.configuration.hasStoriesToDisplay {
             let vc = StoryPageViewController(
                 context: thread.storyContext,
-                spoilerState: spoilerState
+                spoilerState: spoilerState,
             )
             present(vc, animated: true)
         } else {
@@ -297,8 +302,10 @@ extension ConversationViewController: ConversationSearchControllerDelegate {
         }
     }
 
-    public func conversationSearchController(_ conversationSearchController: ConversationSearchController,
-                                             didUpdateSearchResults resultSet: ConversationScreenSearchResultSet?) {
+    public func conversationSearchController(
+        _ conversationSearchController: ConversationSearchController,
+        didUpdateSearchResults resultSet: ConversationScreenSearchResultSet?,
+    ) {
         AssertIsOnMainThread()
 
         self.lastSearchedText = resultSet?.searchText
@@ -307,7 +314,7 @@ extension ConversationViewController: ConversationSearchControllerDelegate {
 
     public func conversationSearchController(
         _ conversationSearchController: ConversationSearchController,
-        didSelectMessageId messageId: String
+        didSelectMessageId messageId: String,
     ) {
         AssertIsOnMainThread()
 
@@ -315,7 +322,7 @@ extension ConversationViewController: ConversationSearchControllerDelegate {
             messageId,
             onScreenPercentage: 1,
             alignment: .centerIfNotEntirelyOnScreen,
-            isAnimated: true
+            isAnimated: true,
         )
     }
 }
@@ -384,7 +391,7 @@ extension ConversationViewController {
         autoLoadMoreIfNecessary()
 
         performMessageHighlightAnimationIfNeeded()
-   }
+    }
 
     func resetForSizeOrOrientationChange() {
         AssertIsOnMainThread()

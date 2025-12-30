@@ -29,15 +29,17 @@ extension CallHTTPClient: HTTPDelegate {
         let session = OWSURLSession(
             securityPolicy: OWSURLSession.signalServiceSecurityPolicy,
             configuration: OWSURLSession.defaultConfigurationWithoutCaching,
-            canUseSignalProxy: true
+            canUseSignalProxy: true,
         )
         session.require2xxOr3xx = false
         session.allowRedirects = true
         session.customRedirectHandler = { redirectedRequest in
             var redirectedRequest = redirectedRequest
-            if let authHeader = request.headers.first(where: {
-                $0.key.caseInsensitiveCompare("Authorization") == .orderedSame
-            }) {
+            if
+                let authHeader = request.headers.first(where: {
+                    $0.key.caseInsensitiveCompare("Authorization") == .orderedSame
+                })
+            {
                 redirectedRequest.setValue(authHeader.value, forHTTPHeaderField: authHeader.key)
             }
             return redirectedRequest
@@ -52,11 +54,11 @@ extension CallHTTPClient: HTTPDelegate {
                     request.url,
                     method: request.method.httpMethod,
                     headers: headers,
-                    body: request.body
+                    body: request.body,
                 )
                 self.ringRtcHttpClient.receivedResponse(
                     requestId: requestId,
-                    response: response.asRingRTCResponse
+                    response: response.asRingRTCResponse,
                 )
             } catch {
                 if error.isNetworkFailureOrTimeout {
@@ -85,7 +87,7 @@ extension SignalServiceKit.HTTPResponse {
     var asRingRTCResponse: SignalRingRTC.HTTPResponse {
         return SignalRingRTC.HTTPResponse(
             statusCode: UInt16(responseStatusCode),
-            body: responseBodyData
+            body: responseBodyData,
         )
     }
 }

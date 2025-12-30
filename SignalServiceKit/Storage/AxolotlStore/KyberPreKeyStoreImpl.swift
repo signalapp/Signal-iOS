@@ -51,7 +51,7 @@ struct KyberPreKeyRecord: Codable {
 
 public class KyberPreKeyStoreImpl {
 
-    internal enum Constants {
+    enum Constants {
         static let lastKeyId = "lastKeyId"
         static let lastKeyRotationDate = "lastKeyRotationDate"
     }

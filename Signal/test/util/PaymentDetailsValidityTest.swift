@@ -36,7 +36,7 @@ final class PaymentDetailsValidityTest: XCTestCase {
             "2223003122003222",
             "6011111111111117",
             "3056930009020004",
-            "3566002020360505"
+            "3566002020360505",
         ]
         for number in other {
             XCTAssertEqual(cardType(number), .other)
@@ -88,7 +88,7 @@ final class PaymentDetailsValidityTest: XCTestCase {
                 ofExpirationMonth: month,
                 andYear: year,
                 currentMonth: 3,
-                currentYear: currentYear
+                currentYear: currentYear,
             )
         }
 
@@ -257,7 +257,7 @@ private func XCTAssertEqual(
     _ expression1: @autoclosure () throws -> CreditAndDebitCards.Validity,
     _ expression2: @autoclosure () throws -> CreditAndDebitCards.Validity,
     file: StaticString = #filePath,
-    line: UInt = #line
+    line: UInt = #line,
 ) rethrows {
     let lhs = try expression1()
     let rhs = try expression2()

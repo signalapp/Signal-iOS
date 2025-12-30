@@ -13,7 +13,7 @@ class DomainFrontingCountryViewController: OWSTableViewController2 {
 
         title = OWSLocalizedString(
             "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE",
-            comment: "Title for the 'censorship circumvention country' view."
+            comment: "Title for the 'censorship circumvention country' view.",
         )
 
         updateTableContents()
@@ -25,7 +25,7 @@ class DomainFrontingCountryViewController: OWSTableViewController2 {
         let section = OWSTableSection()
         section.headerTitle = OWSLocalizedString(
             "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER",
-            comment: "Section title for the 'domain fronting country' view."
+            comment: "Section title for the 'domain fronting country' view.",
         )
         for countryMetadata in OWSCountryMetadata.allCountryMetadatas {
             section.add(OWSTableItem(
@@ -39,7 +39,7 @@ class DomainFrontingCountryViewController: OWSTableViewController2 {
                 },
                 actionBlock: { [weak self] in
                     self?.selectCountry(countryMetadata)
-                }
+                },
             ))
         }
 

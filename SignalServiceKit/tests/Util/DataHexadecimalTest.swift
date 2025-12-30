@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-@testable import SignalServiceKit
 import XCTest
+@testable import SignalServiceKit
 
 final class DataHexadecimalTest: XCTestCase {
 

@@ -24,7 +24,7 @@ final class PniDistributionSyncMessage {
         signedPreKey: LibSignalClient.SignedPreKeyRecord,
         pqLastResortPreKey: LibSignalClient.KyberPreKeyRecord,
         registrationId: UInt32,
-        e164: E164
+        e164: E164,
     ) {
         self.pniIdentityKeyPair = pniIdentityKeyPair
         self.signedPreKey = signedPreKey

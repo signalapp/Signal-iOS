@@ -27,7 +27,7 @@ class UrlOpener {
     init(
         appReadiness: AppReadinessSetter,
         databaseStorage: SDSDatabaseStorage,
-        tsAccountManager: TSAccountManager
+        tsAccountManager: TSAccountManager,
     ) {
         self.appReadiness = appReadiness
         self.databaseStorage = databaseStorage
@@ -127,7 +127,7 @@ class UrlOpener {
             owsFailDebug("Ignoring URL; no root view controller.")
             return
         }
-        if shouldDismiss(for: parsedUrl.openableUrl) && rootViewController.presentedViewController != nil {
+        if shouldDismiss(for: parsedUrl.openableUrl), rootViewController.presentedViewController != nil {
             rootViewController.dismiss(animated: false, completion: {
                 self.openUrlAfterDismissing(parsedUrl.openableUrl, rootViewController: rootViewController)
             })
@@ -162,10 +162,12 @@ class UrlOpener {
         case .usernameLink(let link):
             _ = try tsAccountManager.registeredStateWithMaybeSneakyTransaction()
             Task {
-                guard let (_, aci) = await UsernameQuerier().queryForUsernameLink(
-                    link: link,
-                    fromViewController: rootViewController,
-                ) else {
+                guard
+                    let (_, aci) = await UsernameQuerier().queryForUsernameLink(
+                        link: link,
+                        fromViewController: rootViewController,
+                    )
+                else {
                     return
                 }
 
@@ -197,15 +199,15 @@ class UrlOpener {
             let linkDeviceWarningActionSheet = ActionSheetController(
                 message: OWSLocalizedString(
                     "LINKED_DEVICE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_MESSAGE",
-                    comment: "Message for an action sheet telling users how to link a device, when trying to open an external device-linking URL."
-                )
+                    comment: "Message for an action sheet telling users how to link a device, when trying to open an external device-linking URL.",
+                ),
             )
 
             let showLinkedDevicesAction = ActionSheetAction(
                 title: OWSLocalizedString(
                     "LINKED_DEVICES_TITLE",
-                    comment: "Menu item and navbar title for the device manager"
-                )
+                    comment: "Menu item and navbar title for the device manager",
+                ),
             ) { _ in
                 SignalApp.shared.showAppSettings(mode: .linkedDevices)
             }
@@ -224,25 +226,25 @@ class UrlOpener {
             let quickRestoreWarningActionSheet = ActionSheetController(
                 message: OWSLocalizedString(
                     "QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_MESSAGE",
-                    comment: "Message for an action sheet telling users how to use quick restore, when trying to open an external quick restore URL."
-                )
+                    comment: "Message for an action sheet telling users how to use quick restore, when trying to open an external quick restore URL.",
+                ),
             )
 
             let showCameraViewAction = ActionSheetAction(
-                title: CommonStrings.continueButton
+                title: CommonStrings.continueButton,
             ) { _ in
                 SignalApp.shared.showCameraCaptureView { navController in
                     let sheet = HeroSheetViewController(
                         hero: .image(UIImage(named: "phone-qr")!),
                         title: OWSLocalizedString(
                             "QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_ACTION_TITLE",
-                            comment: "Title for sheet with info about scanning a Quick Restore QR code"
+                            comment: "Title for sheet with info about scanning a Quick Restore QR code",
                         ),
                         body: OWSLocalizedString(
                             "QUICK_RESTORE_URL_OPENED_ACTION_SHEET_EXTERNAL_URL_ACTION_BODY",
-                            comment: "Body for sheet with info about scanning a Quick Restore QR code"
+                            comment: "Body for sheet with info about scanning a Quick Restore QR code",
                         ),
-                        primaryButton: .dismissing(title: CommonStrings.okButton)
+                        primaryButton: .dismissing(title: CommonStrings.okButton),
                     )
                     navController.topViewController?.present(sheet, animated: true)
                 }
@@ -257,7 +259,7 @@ class UrlOpener {
             Task { [appReadiness, databaseStorage] in
                 let handled = await DonationViewsUtil.attemptToContinueActiveIDEALDonation(
                     type: donationType,
-                    databaseStorage: databaseStorage
+                    databaseStorage: databaseStorage,
                 )
                 if handled {
                     Logger.info("[Donations] Completed iDEAL donation")
@@ -268,7 +270,7 @@ class UrlOpener {
                         type: donationType,
                         rootViewController: rootViewController,
                         databaseStorage: databaseStorage,
-                        appReadiness: appReadiness
+                        appReadiness: appReadiness,
                     )
                     Logger.info("[Donations] Completed iDEAL donation")
                 } catch Signal.DonationJobError.timeout {

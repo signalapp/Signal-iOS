@@ -39,7 +39,7 @@ public struct HttpSecurityPolicy {
         guard SecTrustEvaluateWithError(serverTrust, nil) else {
             return false
         }
-        var result: SecTrustResultType = .otherError  // initialize to a value that would fail if SecTrustGetTrustResult doesn't overwrite it
+        var result: SecTrustResultType = .otherError // initialize to a value that would fail if SecTrustGetTrustResult doesn't overwrite it
         guard SecTrustGetTrustResult(serverTrust, &result) == errSecSuccess else {
             return false
         }

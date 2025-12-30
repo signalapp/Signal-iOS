@@ -32,8 +32,8 @@ public struct SetDeque<Element> where Element: Hashable {
             self.nextIndexToPush = self.orderedMembers.count
             self.orderedMembers = Array(
                 self.orderedMembers[self.nextIndexToPop...]
-                + self.orderedMembers[..<self.nextIndexToPop]
-                + Array(repeating: nil, count: self.orderedMembers.count)
+                    + self.orderedMembers[..<self.nextIndexToPop]
+                    + Array(repeating: nil, count: self.orderedMembers.count),
             )
             self.nextIndexToPop = 0
         }

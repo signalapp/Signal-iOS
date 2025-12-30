@@ -20,7 +20,7 @@ public class AuthedAccount: Hashable, Equatable {
             pni: Pni,
             e164: E164,
             deviceId: DeviceId,
-            authPassword: String
+            authPassword: String,
         ) {
             self.aci = aci
             self.pni = pni
@@ -51,14 +51,14 @@ public class AuthedAccount: Hashable, Equatable {
         pni: Pni,
         e164: E164,
         deviceId: DeviceId,
-        authPassword: String
+        authPassword: String,
     ) -> AuthedAccount {
         return AuthedAccount(.explicit(Explicit(
             aci: aci,
             pni: pni,
             e164: e164,
             deviceId: deviceId,
-            authPassword: authPassword
+            authPassword: authPassword,
         )))
     }
 
@@ -73,7 +73,7 @@ public class AuthedAccount: Hashable, Equatable {
         }
     }
 
-    public static func == (lhs: AuthedAccount, rhs: AuthedAccount) -> Bool {
+    public static func ==(lhs: AuthedAccount, rhs: AuthedAccount) -> Bool {
         return lhs.info == rhs.info
     }
 
@@ -116,7 +116,7 @@ public class AuthedAccount: Hashable, Equatable {
                 phoneNumber: info.e164,
                 pni: info.pni,
                 deviceId: info.deviceId,
-                authPassword: info.authPassword
+                authPassword: info.authPassword,
             ))
         }
     }

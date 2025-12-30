@@ -25,12 +25,14 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
         super.init(name: "media album view")
     }
 
-    public func configure(mediaCache: CVMediaCache,
-                          items: [CVMediaAlbumItem],
-                          interaction: TSInteraction,
-                          isBorderless: Bool,
-                          cellMeasurement: CVCellMeasurement,
-                          conversationStyle: ConversationStyle) {
+    public func configure(
+        mediaCache: CVMediaCache,
+        items: [CVMediaAlbumItem],
+        interaction: TSInteraction,
+        isBorderless: Bool,
+        cellMeasurement: CVCellMeasurement,
+        conversationStyle: ConversationStyle,
+    ) {
 
         guard let maxMessageWidth = cellMeasurement.value(key: Self.measurementKey_maxMessageWidth) else {
             owsFailDebug("Missing maxMessageWidth.")
@@ -48,7 +50,7 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
         self.itemViews = CVMediaAlbumView.itemsToDisplay(forItems: items).map { item in
             let thumbnailQuality = Self.thumbnailQuality(
                 mediaSizePoints: item.mediaSize,
-                viewSizePoints: viewSizePoints
+                viewSizePoints: viewSizePoints,
             )
             return CVMediaView(
                 mediaCache: mediaCache,
@@ -59,18 +61,20 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
                 isLoopingVideo: item.renderingFlag == .shouldLoop,
                 isBroken: item.isBroken,
                 thumbnailQuality: thumbnailQuality,
-                conversationStyle: conversationStyle
+                conversationStyle: conversationStyle,
             )
         }
 
         self.isBorderless = isBorderless
         self.backgroundColor = isBorderless ? .clear : Theme.backgroundColor
 
-        createContents(imageArrangement: imageArrangement,
-                       cellMeasurement: cellMeasurement)
+        createContents(
+            imageArrangement: imageArrangement,
+            cellMeasurement: cellMeasurement,
+        )
     }
 
-    public override func reset() {
+    override public func reset() {
         super.reset()
 
         subStack1.reset()
@@ -83,8 +87,10 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
         removeAllSubviews()
     }
 
-    private func createContents(imageArrangement: ImageArrangement,
-                                cellMeasurement: CVCellMeasurement) {
+    private func createContents(
+        imageArrangement: ImageArrangement,
+        cellMeasurement: CVCellMeasurement,
+    ) {
 
         let outerStackView = self
         let subStack1 = self.subStack1
@@ -96,10 +102,12 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
         var outerViews = [UIView]()
         let imageGroup1 = imageArrangement.imageGroup1
         let itemViews1 = Array(itemViews.prefix(imageGroup1.imageCount))
-        subStack1.configure(config: imageArrangement.innerStackConfig,
-                            cellMeasurement: cellMeasurement,
-                            measurementKey: Self.measurementKey_substack1,
-                            subviews: itemViews1)
+        subStack1.configure(
+            config: imageArrangement.innerStackConfig,
+            cellMeasurement: cellMeasurement,
+            measurementKey: Self.measurementKey_substack1,
+            subviews: itemViews1,
+        )
         outerViews.append(subStack1)
 
         if let imageGroup2 = imageArrangement.imageGroup2 {
@@ -122,9 +130,13 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
 
                 let moreCount = max(1, items.count - CVMediaAlbumView.kMaxItems)
                 let moreCountText = OWSFormat.formatInt(moreCount)
-                let moreText = String(format: OWSLocalizedString("MEDIA_GALLERY_MORE_ITEMS_FORMAT",
-                                                                comment: "Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}."),
-                                      moreCountText)
+                let moreText = String(
+                    format: OWSLocalizedString(
+                        "MEDIA_GALLERY_MORE_ITEMS_FORMAT",
+                        comment: "Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}.",
+                    ),
+                    moreCountText,
+                )
                 let moreLabel = CVLabel()
                 moreLabel.text = moreText
                 moreLabel.textColor = UIColor.ows_white
@@ -138,19 +150,23 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
                 }
             }
 
-            subStack2.configure(config: imageArrangement.innerStackConfig,
-                                cellMeasurement: cellMeasurement,
-                                measurementKey: Self.measurementKey_substack2,
-                                subviews: itemViews2)
+            subStack2.configure(
+                config: imageArrangement.innerStackConfig,
+                cellMeasurement: cellMeasurement,
+                measurementKey: Self.measurementKey_substack2,
+                subviews: itemViews2,
+            )
             outerViews.append(subStack2)
         } else {
             owsAssertDebug(itemViews.count == imageGroup1.imageCount)
         }
 
-        outerStackView.configure(config: imageArrangement.outerStackConfig,
-                                 cellMeasurement: cellMeasurement,
-                                 measurementKey: Self.measurementKey_outerStack,
-                                 subviews: outerViews)
+        outerStackView.configure(
+            config: imageArrangement.outerStackConfig,
+            cellMeasurement: cellMeasurement,
+            measurementKey: Self.measurementKey_outerStack,
+            subviews: outerViews,
+        )
 
         for itemView in itemViews {
             guard moreItemsView != itemView else {
@@ -175,12 +191,14 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
             itemView.addLayoutBlock { view in
                 let inset: CGFloat = 6
                 let x = (CurrentAppContext().isRTL
-                            ? view.width - (icon.size.width + inset)
-                            : inset)
-                iconView.frame = CGRect(x: x,
-                                        y: inset,
-                                        width: icon.size.width,
-                                        height: icon.size.height)
+                    ? view.width - (icon.size.width + inset)
+                    : inset)
+                iconView.frame = CGRect(
+                    x: x,
+                    y: inset,
+                    width: icon.size.width,
+                    height: icon.size.height,
+                )
             }
         }
     }
@@ -209,17 +227,21 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
     }
 
     private static var hStackConfig: CVStackViewConfig {
-        CVStackViewConfig(axis: .horizontal,
-                          alignment: .fill,
-                          spacing: Self.kSpacingPts,
-                          layoutMargins: .zero)
+        CVStackViewConfig(
+            axis: .horizontal,
+            alignment: .fill,
+            spacing: Self.kSpacingPts,
+            layoutMargins: .zero,
+        )
     }
 
     private static var vStackConfig: CVStackViewConfig {
-        CVStackViewConfig(axis: .vertical,
-                          alignment: .fill,
-                          spacing: Self.kSpacingPts,
-                          layoutMargins: .zero)
+        CVStackViewConfig(
+            axis: .vertical,
+            alignment: .fill,
+            spacing: Self.kSpacingPts,
+            layoutMargins: .zero,
+        )
     }
 
     private static let measurementKey_maxMessageWidth: String = "CVMediaAlbumView.maxMessageWidth"
@@ -228,50 +250,66 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
     private static let measurementKey_substack1 = "CVMediaAlbumView.measurementKey_substack1"
     private static let measurementKey_substack2 = "CVMediaAlbumView.measurementKey_substack2"
 
-    public class func measure(maxWidth: CGFloat,
-                              minWidth: CGFloat,
-                              items: [CVMediaAlbumItem],
-                              measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
+    public class func measure(
+        maxWidth: CGFloat,
+        minWidth: CGFloat,
+        items: [CVMediaAlbumItem],
+        measurementBuilder: CVCellMeasurement.Builder,
+    ) -> CGSize {
 
-        func measureImageStackLayout(imageSize: CGSize,
-                                     imageCount: Int,
-                                     stackConfig: CVStackViewConfig,
-                                     measurementKey: String) -> CGSize {
+        func measureImageStackLayout(
+            imageSize: CGSize,
+            imageCount: Int,
+            stackConfig: CVStackViewConfig,
+            measurementKey: String,
+        ) -> CGSize {
             let subviewInfos: [ManualStackSubviewInfo] = (0..<imageCount).map { _ in
                 imageSize.asManualSubviewInfo
             }
-            let stackMeasurement = ManualStackView.measure(config: stackConfig,
-                                                           measurementBuilder: measurementBuilder,
-                                                           measurementKey: measurementKey,
-                                                           subviewInfos: subviewInfos)
+            let stackMeasurement = ManualStackView.measure(
+                config: stackConfig,
+                measurementBuilder: measurementBuilder,
+                measurementKey: measurementKey,
+                subviewInfos: subviewInfos,
+            )
             return stackMeasurement.measuredSize
         }
 
-        let imageArrangement = Self.imageArrangement(minWidth: minWidth,
-                                                     maxWidth: maxWidth,
-                                                     items: items)
+        let imageArrangement = Self.imageArrangement(
+            minWidth: minWidth,
+            maxWidth: maxWidth,
+            items: items,
+        )
 
-        measurementBuilder.setObject(key: Self.measurementKey_imageArrangement,
-                                     value: CVMeasurementImageArrangement(imageArrangement: imageArrangement))
+        measurementBuilder.setObject(
+            key: Self.measurementKey_imageArrangement,
+            value: CVMeasurementImageArrangement(imageArrangement: imageArrangement),
+        )
         measurementBuilder.setValue(key: Self.measurementKey_maxMessageWidth, value: maxWidth)
 
         var groupInfos = [ManualStackSubviewInfo]()
         let imageGroup1 = imageArrangement.imageGroup1
-        groupInfos.append(measureImageStackLayout(imageSize: imageGroup1.imageSize,
-                                                  imageCount: imageGroup1.imageCount,
-                                                  stackConfig: imageArrangement.innerStackConfig,
-                                                  measurementKey: Self.measurementKey_substack1).asManualSubviewInfo)
+        groupInfos.append(measureImageStackLayout(
+            imageSize: imageGroup1.imageSize,
+            imageCount: imageGroup1.imageCount,
+            stackConfig: imageArrangement.innerStackConfig,
+            measurementKey: Self.measurementKey_substack1,
+        ).asManualSubviewInfo)
         if let imageGroup2 = imageArrangement.imageGroup2 {
-            groupInfos.append(measureImageStackLayout(imageSize: imageGroup2.imageSize,
-                                                      imageCount: imageGroup2.imageCount,
-                                                      stackConfig: imageArrangement.innerStackConfig,
-                                                      measurementKey: Self.measurementKey_substack2).asManualSubviewInfo)
+            groupInfos.append(measureImageStackLayout(
+                imageSize: imageGroup2.imageSize,
+                imageCount: imageGroup2.imageCount,
+                stackConfig: imageArrangement.innerStackConfig,
+                measurementKey: Self.measurementKey_substack2,
+            ).asManualSubviewInfo)
         }
-        let outerStackMeasurement = ManualStackView.measure(config: imageArrangement.outerStackConfig,
-                                                            measurementBuilder: measurementBuilder,
-                                                            measurementKey: Self.measurementKey_outerStack,
-                                                            subviewInfos: groupInfos,
-                                                            maxWidth: maxWidth)
+        let outerStackMeasurement = ManualStackView.measure(
+            config: imageArrangement.outerStackConfig,
+            measurementBuilder: measurementBuilder,
+            measurementKey: Self.measurementKey_outerStack,
+            subviewInfos: groupInfos,
+            maxWidth: maxWidth,
+        )
         return outerStackMeasurement.measuredSize
     }
 
@@ -341,10 +379,14 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
         func worstCaseMediaRenderSizePoints(conversationStyle: ConversationStyle) -> CGSize {
             let maxMediaMessageWidth = conversationStyle.maxMediaMessageWidth
 
-            func worstCaseMediaRenderSize(horizontalRow row: ImageGroup,
-                                          rowSize: CGSize) -> CGSize {
-                return CGSize(width: rowSize.width / CGFloat(row.imageCount),
-                              height: rowSize.height)
+            func worstCaseMediaRenderSize(
+                horizontalRow row: ImageGroup,
+                rowSize: CGSize,
+            ) -> CGSize {
+                return CGSize(
+                    width: rowSize.width / CGFloat(row.imageCount),
+                    height: rowSize.height,
+                )
             }
 
             switch self {
@@ -352,8 +394,10 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
                 return .square(maxMediaMessageWidth)
             default:
                 let imageSizes = self.imageSizes
-                return CGSize(width: imageSizes.map { $0.width }.reduce(0, max),
-                              height: imageSizes.map { $0.height }.reduce(0, max))
+                return CGSize(
+                    width: imageSizes.map { $0.width }.reduce(0, max),
+                    height: imageSizes.map { $0.height }.reduce(0, max),
+                )
             }
         }
 
@@ -382,14 +426,16 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
 
         // MARK: - Equatable
 
-        public static func == (lhs: CVMeasurementImageArrangement, rhs: CVMeasurementImageArrangement) -> Bool {
+        static func ==(lhs: CVMeasurementImageArrangement, rhs: CVMeasurementImageArrangement) -> Bool {
             lhs.imageArrangement == rhs.imageArrangement
         }
     }
 
-    private class func imageArrangement(minWidth: CGFloat,
-                                        maxWidth: CGFloat,
-                                        items: [CVMediaAlbumItem]) -> ImageArrangement {
+    private class func imageArrangement(
+        minWidth: CGFloat,
+        maxWidth: CGFloat,
+        items: [CVMediaAlbumItem],
+    ) -> ImageArrangement {
 
         let itemCount = itemsToDisplay(forItems: items).count
         switch itemCount {
@@ -418,7 +464,7 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
                 }
 
                 let mediaSize = mediaAlbumItem.mediaSize
-                guard mediaSize.width > 0 && mediaSize.height > 0 else {
+                guard mediaSize.width > 0, mediaSize.height > 0 else {
                     // This could be a pending or invalid attachment.
                     return nil
                 }
@@ -448,7 +494,7 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
                 let minimumSize: CGFloat = max(150, minWidth)
                 let shortSrcDimension: CGFloat = min(mediaSize.width, mediaSize.height)
                 let shortDstDimension: CGFloat = min(mediaWidth, mediaHeight)
-                if shortDstDimension > minimumSize && shortDstDimension > shortSrcDimension {
+                if shortDstDimension > minimumSize, shortDstDimension > shortSrcDimension {
                     let factor: CGFloat = minimumSize / shortDstDimension
                     mediaWidth *= factor
                     mediaHeight *= factor
@@ -471,23 +517,29 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
             // Big on left, 2 small on right.
             let smallImageSize: CGFloat = floor((maxWidth - kSpacingPts * 2) / 3)
             let bigImageSize: CGFloat = smallImageSize * 2 + kSpacingPts
-            return .twoVerticalColumns(column1: ImageGroup(imageCount: 1, imageSize: .square(bigImageSize)),
-                                       column2: ImageGroup(imageCount: 2, imageSize: .square(smallImageSize)))
+            return .twoVerticalColumns(
+                column1: ImageGroup(imageCount: 1, imageSize: .square(bigImageSize)),
+                column2: ImageGroup(imageCount: 2, imageSize: .square(smallImageSize)),
+            )
         case 4:
             // XX
             // XX
             // Square
             let imageSize = CGSize(square: floor((maxWidth - CVMediaAlbumView.kSpacingPts) / 2))
-            return .twoHorizontalRows(row1: ImageGroup(imageCount: 2, imageSize: imageSize),
-                                       row2: ImageGroup(imageCount: 2, imageSize: imageSize))
+            return .twoHorizontalRows(
+                row1: ImageGroup(imageCount: 2, imageSize: imageSize),
+                row2: ImageGroup(imageCount: 2, imageSize: imageSize),
+            )
         default:
             // X X
             // xxx
             // 2 big on top, 3 small on bottom.
             let bigImageSize: CGFloat = floor((maxWidth - kSpacingPts) / 2)
             let smallImageSize: CGFloat = floor((maxWidth - kSpacingPts * 2) / 3)
-            return .twoHorizontalRows(row1: ImageGroup(imageCount: 2, imageSize: .square(bigImageSize)),
-                                       row2: ImageGroup(imageCount: 3, imageSize: .square(smallImageSize)))
+            return .twoHorizontalRows(
+                row1: ImageGroup(imageCount: 2, imageSize: .square(bigImageSize)),
+                row2: ImageGroup(imageCount: 3, imageSize: .square(smallImageSize)),
+            )
         }
     }
 
@@ -497,7 +549,7 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
         for itemView in itemViews {
             let itemCenter = convert(itemView.center, from: itemView.superview)
             let distance = location.distance(itemCenter)
-            if bestMediaView != nil && distance > bestDistance {
+            if bestMediaView != nil, distance > bestDistance {
                 continue
             }
             bestMediaView = itemView
@@ -512,28 +564,34 @@ public class CVMediaAlbumView: ManualStackViewWithLayer {
 
     private static func thumbnailQuality(
         mediaSizePoints: CGSize,
-        viewSizePoints: CGSize
+        viewSizePoints: CGSize,
     ) -> AttachmentThumbnailQuality {
-        guard mediaSizePoints.isNonEmpty,
-              viewSizePoints.isNonEmpty else {
+        guard
+            mediaSizePoints.isNonEmpty,
+            viewSizePoints.isNonEmpty
+        else {
             owsFailDebug("Invalid sizes. mediaSizePoints: \(mediaSizePoints), viewSizePoints: \(viewSizePoints).")
             return .medium
         }
         // Determine render size for .scaleAspectFill.
-        let renderSizeByWidth = CGSize(width: viewSizePoints.width,
-                                       height: viewSizePoints.width * mediaSizePoints.height / mediaSizePoints.width)
-        let renderSizeByHeight = CGSize(width: viewSizePoints.height * mediaSizePoints.width / mediaSizePoints.height,
-                                       height: viewSizePoints.height)
+        let renderSizeByWidth = CGSize(
+            width: viewSizePoints.width,
+            height: viewSizePoints.width * mediaSizePoints.height / mediaSizePoints.width,
+        )
+        let renderSizeByHeight = CGSize(
+            width: viewSizePoints.height * mediaSizePoints.width / mediaSizePoints.height,
+            height: viewSizePoints.height,
+        )
         let renderSizePoints = (renderSizeByWidth.width > renderSizeByHeight.width
-                                    ? renderSizeByWidth
-                                    : renderSizeByHeight)
+            ? renderSizeByWidth
+            : renderSizeByHeight)
         let renderDimensionPoints = renderSizePoints.largerAxis
         let quality: AttachmentThumbnailQuality = {
             // Find the smallest quality of acceptable size.
             let qualities: [AttachmentThumbnailQuality] = [
                 .small,
                 .medium,
-                .mediumLarge
+                .mediumLarge,
                 // Skip .large
             ]
             for quality in qualities {
@@ -583,7 +641,7 @@ public struct CVMediaAlbumItem: Equatable {
     /// Whether the containing thread has a pending message request
     public let threadHasPendingMessageRequest: Bool
 
-    public static func == (lhs: CVMediaAlbumItem, rhs: CVMediaAlbumItem) -> Bool {
+    public static func ==(lhs: CVMediaAlbumItem, rhs: CVMediaAlbumItem) -> Bool {
         return lhs.attachment == rhs.attachment
             && lhs.hasCaption == rhs.hasCaption
             && lhs.mediaSize == rhs.mediaSize

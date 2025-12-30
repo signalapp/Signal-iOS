@@ -8,8 +8,8 @@ import Foundation
 import Lottie
 public import SignalServiceKit
 public import SignalUI
-import UIKit
 import SafariServices
+import UIKit
 
 // MARK: - Profile badge lookup
 
@@ -48,8 +48,8 @@ public class ProfileBadgeLookup {
 
     public func attemptToPopulateBadgeAssets(populateAssetsOnBadge: @escaping (ProfileBadge) async throws -> Void) async -> Void {
         var badgesToLoad = Array(badgesBySubscriptionLevel.values)
-        if let boostBadge = boostBadge { badgesToLoad.append(boostBadge) }
-        if let giftBadge = giftBadge { badgesToLoad.append(giftBadge) }
+        if let boostBadge { badgesToLoad.append(boostBadge) }
+        if let giftBadge { badgesToLoad.append(giftBadge) }
 
         await withTaskGroup(of: Void.self) { group in
             for badge in badgesToLoad {
@@ -71,7 +71,7 @@ public class DonationCurrencyPickerButton: UIView {
     init(
         currentCurrencyCode: Currency.Code,
         hasLabel: Bool,
-        block: @escaping () -> Void
+        block: @escaping () -> Void,
     ) {
         super.init(frame: .zero)
 
@@ -82,7 +82,7 @@ public class DonationCurrencyPickerButton: UIView {
             label.textColor = .Signal.label
             label.text = OWSLocalizedString(
                 "DONATIONS_CURRENCY_PICKER_LABEL",
-                comment: "Label for the currency picker button in donation views"
+                comment: "Label for the currency picker button in donation views",
             )
             label.setContentHuggingHorizontalHigh()
             label.setContentHuggingVerticalLow()
@@ -103,7 +103,7 @@ public class DonationCurrencyPickerButton: UIView {
             configuration: .bordered(),
             primaryAction: UIAction { _ in
                 block()
-            }
+            },
         )
         picker.configuration?.attributedTitle = AttributedString(
             NSAttributedString.composed(of: [
@@ -111,14 +111,14 @@ public class DonationCurrencyPickerButton: UIView {
                 Special.noBreakSpace,
                 NSAttributedString.with(
                     image: UIImage(imageLiteralResourceName: "chevron-down-extra-small"),
-                    font: .regularFont(ofSize: 17)
+                    font: .regularFont(ofSize: 17),
                 ).styled(
-                    with: .color(.Signal.tertiaryLabel)
-                )
+                    with: .color(.Signal.tertiaryLabel),
+                ),
             ]).styled(
                 with: .font(.regularFont(ofSize: 17)),
-                .color(.Signal.label)
-            )
+                .color(.Signal.label),
+            ),
         )
         picker.configuration?.contentInsets = .init(hMargin: 12, vMargin: 8)
         picker.configuration?.baseBackgroundColor = DonationViewsUtil.bubbleBackgroundColor
@@ -187,17 +187,18 @@ public class GiftBadgeCellView: UIStackView {
             let formattedDurationText = String(
                 format: OWSLocalizedString(
                     "DONATION_FOR_A_FRIEND_ROW_DURATION",
-                    comment: "When donating on behalf of a friend, a badge will be sent. This shows how long the badge lasts. Embeds {{formatted duration}}."
+                    comment: "When donating on behalf of a friend, a badge will be sent. This shows how long the badge lasts. Embeds {{formatted duration}}.",
                 ),
-                formattedDuration
+                formattedDuration,
             )
 
             return String(
                 format: OWSLocalizedString(
                     "JOINED_WITH_DOT",
-                    comment: "Two strings, joined by a dot. Embeds {first} and {second}, which are on opposite sides of the dot"
+                    comment: "Two strings, joined by a dot. Embeds {first} and {second}, which are on opposite sides of the dot",
                 ),
-                formattedPrice, formattedDurationText
+                formattedPrice,
+                formattedDurationText,
             )
         }()
         secondLineLabel.textColor = .Signal.label
@@ -218,7 +219,7 @@ public class GiftBadgeCellView: UIStackView {
 
 // MARK: - Misc. utilities
 
-public final class DonationViewsUtil {
+public enum DonationViewsUtil {
     public static let bubbleBorderWidth: CGFloat = 1.5
     public static var bubbleBackgroundColor: UIColor { .Signal.secondaryGroupedBackground }
     public static var amountFieldMinHeight: CGFloat = if #available(iOS 26, *) { 52 } else { 48 }
@@ -238,7 +239,7 @@ public final class DonationViewsUtil {
         newSubscriptionLevel: DonationSubscriptionLevel,
         priorSubscriptionLevel: DonationSubscriptionLevel?,
         currencyCode: Currency.Code,
-        databaseStorage: SDSDatabaseStorage
+        databaseStorage: SDSDatabaseStorage,
     ) async throws {
         let pendingStore = DependenciesBridge.shared.externalPendingIDEALDonationStore
         var rethrowError: Error?
@@ -248,7 +249,7 @@ public final class DonationViewsUtil {
                 paymentType: paymentType,
                 newSubscriptionLevel: newSubscriptionLevel,
                 priorSubscriptionLevel: priorSubscriptionLevel,
-                currencyCode: currencyCode
+                currencyCode: currencyCode,
             )
         } catch {
             rethrowError = error
@@ -267,7 +268,7 @@ public final class DonationViewsUtil {
         paymentIntentId: String,
         amount: FiatMoney,
         paymentMethod: DonationPaymentMethod,
-        databaseStorage: SDSDatabaseStorage
+        databaseStorage: SDSDatabaseStorage,
     ) async throws {
         let pendingStore = DependenciesBridge.shared.externalPendingIDEALDonationStore
         var rethrowError: Error?
@@ -275,7 +276,7 @@ public final class DonationViewsUtil {
             try await DonationViewsUtil.createAndRedeemOneTimeDonation(
                 paymentIntentId: paymentIntentId,
                 amount: amount,
-                paymentMethod: paymentMethod
+                paymentMethod: paymentMethod,
             )
         } catch {
             rethrowError = error
@@ -291,14 +292,14 @@ public final class DonationViewsUtil {
     public static func createAndRedeemOneTimeDonation(
         paymentIntentId: String,
         amount: FiatMoney,
-        paymentMethod: DonationPaymentMethod
+        paymentMethod: DonationPaymentMethod,
     ) async throws {
         return try await DonationViewsUtil.waitForRedemption(paymentMethod: paymentMethod) {
             try await DonationSubscriptionManager.requestAndRedeemReceipt(
                 boostPaymentIntentId: paymentIntentId,
                 amount: amount,
                 paymentProcessor: .stripe,
-                paymentMethod: paymentMethod
+                paymentMethod: paymentMethod,
             )
         }
     }
@@ -308,7 +309,7 @@ public final class DonationViewsUtil {
         paymentType: DonationSubscriptionManager.RecurringSubscriptionPaymentType,
         newSubscriptionLevel: DonationSubscriptionLevel,
         priorSubscriptionLevel: DonationSubscriptionLevel?,
-        currencyCode: Currency.Code
+        currencyCode: Currency.Code,
     ) async throws {
         Logger.info("[Donations] Finalizing new subscription")
 
@@ -316,7 +317,7 @@ public final class DonationViewsUtil {
             forSubscriberId: subscriberId,
             paymentType: paymentType,
             subscription: newSubscriptionLevel,
-            currencyCode: currencyCode
+            currencyCode: currencyCode,
         )
 
         Logger.info("[Donations] Redeeming monthly receipts")
@@ -328,7 +329,7 @@ public final class DonationViewsUtil {
                 priorSubscriptionLevel: priorSubscriptionLevel?.level,
                 paymentProcessor: paymentType.paymentProcessor,
                 paymentMethod: paymentType.paymentMethod,
-                isNewSubscription: true
+                isNewSubscription: true,
             )
         }
     }
@@ -357,8 +358,10 @@ public final class DonationViewsUtil {
         }
     }
 
-    public static func subscriptionLevelForSubscription(subscriptionLevels: [DonationSubscriptionLevel],
-                                                        subscription: Subscription) -> DonationSubscriptionLevel? {
+    public static func subscriptionLevelForSubscription(
+        subscriptionLevels: [DonationSubscriptionLevel],
+        subscription: Subscription,
+    ) -> DonationSubscriptionLevel? {
         subscriptionLevels.first { $0.level == subscription.level }
     }
 
@@ -370,12 +373,12 @@ public final class DonationViewsUtil {
         let actionSheet = ActionSheetController(
             title: OWSLocalizedString(
                 "SUSTAINER_STILL_PROCESSING_BADGE_TITLE",
-                comment: "Action sheet title for Still Processing Badge sheet"
+                comment: "Action sheet title for Still Processing Badge sheet",
             ),
             message: OWSLocalizedString(
                 "SUSTAINER_VIEW_STILL_PROCESSING_BADGE_MESSAGE",
-                comment: "Action sheet message for Still Processing Badge sheet"
-            )
+                comment: "Action sheet message for Still Processing Badge sheet",
+            ),
         )
         actionSheet.addAction(OWSActionSheets.okayAction)
 
@@ -384,14 +387,16 @@ public final class DonationViewsUtil {
 
     static func completeIDEALDonation(
         donationType: Stripe.IDEALCallbackType,
-        databaseStorage: SDSDatabaseStorage
+        databaseStorage: SDSDatabaseStorage,
     ) async throws {
         let paymentStore = DependenciesBridge.shared.externalPendingIDEALDonationStore
         switch donationType {
         case let .monthly(success, clientSecret, intentId):
-            guard let monthlyDonation = databaseStorage.read(block: { tx in
-                paymentStore.getPendingSubscription(tx: tx)
-            }) else {
+            guard
+                let monthlyDonation = databaseStorage.read(block: { tx in
+                    paymentStore.getPendingSubscription(tx: tx)
+                })
+            else {
                 Logger.error("[Donations] Could not find iDEAL subscription to complete")
                 throw OWSUnretryableError()
             }
@@ -412,12 +417,14 @@ public final class DonationViewsUtil {
                 newSubscriptionLevel: monthlyDonation.newSubscriptionLevel,
                 priorSubscriptionLevel: monthlyDonation.oldSubscriptionLevel,
                 currencyCode: monthlyDonation.amount.currencyCode,
-                databaseStorage: databaseStorage
+                databaseStorage: databaseStorage,
             )
         case let .oneTime(success, intentId):
-            guard let oneTimePayment = databaseStorage.read(block: { tx in
-                paymentStore.getPendingOneTimeDonation(tx: tx)
-            }) else {
+            guard
+                let oneTimePayment = databaseStorage.read(block: { tx in
+                    paymentStore.getPendingOneTimeDonation(tx: tx)
+                })
+            else {
                 Logger.error("[Donations] Could not find iDEAL payment to complete")
                 throw OWSUnretryableError()
             }
@@ -433,7 +440,7 @@ public final class DonationViewsUtil {
                 paymentIntentId: oneTimePayment.paymentIntentId,
                 amount: oneTimePayment.amount,
                 paymentMethod: .ideal,
-                databaseStorage: databaseStorage
+                databaseStorage: databaseStorage,
             )
         }
     }
@@ -443,7 +450,7 @@ public final class DonationViewsUtil {
         error: Error,
         mode donateMode: DonateViewController.DonateMode,
         badge: ProfileBadge,
-        paymentMethod: DonationPaymentMethod?
+        paymentMethod: DonationPaymentMethod?,
     ) {
         if let donationJobError = error as? DonationJobError {
             switch donationJobError {
@@ -452,31 +459,31 @@ public final class DonationViewsUtil {
                     from: viewController,
                     badge: badge,
                     paymentMethod: paymentMethod,
-                    donateMode: donateMode
+                    donateMode: donateMode,
                 )
             case .assertion:
                 DonationViewsUtil.presentBadgeCantBeAddedSheet(
                     from: viewController,
-                    donateMode: donateMode
+                    donateMode: donateMode,
                 )
             }
         } else if let stripeError = error as? Stripe.StripeError {
             DonationViewsUtil.presentDonationErrorSheet(
                 from: viewController,
                 forDonationChargeErrorCode: stripeError.code,
-                using: paymentMethod
+                using: paymentMethod,
             )
         } else if let redirectError = error as? Stripe.RedirectAuthorizationError {
             DonationViewsUtil.presentRedirectAuthErrorSheet(
                 from: viewController,
                 donateMode: donateMode,
                 paymentMethod: paymentMethod,
-                error: redirectError
+                error: redirectError,
             )
         } else {
             presentBadgeCantBeAddedSheet(
                 from: viewController,
-                donateMode: donateMode
+                donateMode: donateMode,
             )
         }
     }
@@ -485,14 +492,14 @@ public final class DonationViewsUtil {
         from viewController: UIViewController,
         donateMode: DonateViewController.DonateMode,
         paymentMethod: DonationPaymentMethod?,
-        error: Stripe.RedirectAuthorizationError
+        error: Stripe.RedirectAuthorizationError,
     ) {
         let actionSheet = ActionSheetController(
             title: OWSLocalizedString(
                 "SUSTAINER_VIEW_ERROR_AUTHORIZING_PAYMENT_TITLE",
-                comment: "Action sheet title for Error Authorizing Payment sheet"
+                comment: "Action sheet title for Error Authorizing Payment sheet",
             ),
-            message: DonationViewsUtil.localizedDonationFailureForPaymentAuthorizationRedirect(error: error)
+            message: DonationViewsUtil.localizedDonationFailureForPaymentAuthorizationRedirect(error: error),
         )
 
         actionSheet.addAction(.init(title: CommonStrings.okButton, style: .cancel, handler: { _ in
@@ -517,18 +524,18 @@ public final class DonationViewsUtil {
     private static func presentDonationErrorSheet(
         from viewController: UIViewController,
         forDonationChargeErrorCode chargeErrorCode: String,
-        using paymentMethod: DonationPaymentMethod?
+        using paymentMethod: DonationPaymentMethod?,
     ) {
         let errorSheetDetails = DonationViewsUtil.localizedDonationFailure(
             chargeErrorCode: chargeErrorCode,
-            paymentMethod: paymentMethod
+            paymentMethod: paymentMethod,
         )
         let actionSheet = ActionSheetController(
             title: OWSLocalizedString(
                 "SUSTAINER_VIEW_ERROR_PROCESSING_PAYMENT_TITLE",
-                comment: "Action sheet title for Error Processing Payment sheet"
+                comment: "Action sheet title for Error Processing Payment sheet",
             ),
-            message: errorSheetDetails.message
+            message: errorSheetDetails.message,
         )
 
         actionSheet.addAction(.init(title: CommonStrings.okButton, style: .cancel, handler: nil))
@@ -550,12 +557,12 @@ public final class DonationViewsUtil {
         from viewController: UIViewController,
         badge: ProfileBadge,
         paymentMethod: DonationPaymentMethod?,
-        donateMode: DonateViewController.DonateMode
+        donateMode: DonateViewController.DonateMode,
     ) {
         switch paymentMethod {
         case nil, .applePay, .creditOrDebitCard, .paypal:
             viewController.presentActionSheet(
-                DonationViewsUtil.nonBankPaymentStillProcessingActionSheet()
+                DonationViewsUtil.nonBankPaymentStillProcessingActionSheet(),
             )
         case .sepa, .ideal:
             let badgeIssueSheetMode: BadgeIssueSheetState.Mode = {
@@ -570,16 +577,16 @@ public final class DonationViewsUtil {
             viewController.present(
                 BadgeIssueSheet(
                     badge: badge,
-                    mode: badgeIssueSheetMode
+                    mode: badgeIssueSheetMode,
                 ),
-                animated: true
+                animated: true,
             )
         }
     }
 
     private static func presentBadgeCantBeAddedSheet(
         from viewController: UIViewController,
-        donateMode: DonateViewController.DonateMode
+        donateMode: DonateViewController.DonateMode,
     ) {
         let receiptCredentialRequestError = SSKEnvironment.shared.databaseStorageRef.read { tx -> DonationReceiptCredentialRequestError? in
             let resultStore = DependenciesBridge.shared.donationReceiptCredentialResultStore
@@ -608,13 +615,19 @@ public final class DonationViewsUtil {
             title: OWSLocalizedString("CONTACT_SUPPORT", comment: "Button text to initiate an email to signal support staff"),
             style: .default,
             handler: { _ in
-                let localizedSheetTitle = OWSLocalizedString("EMAIL_SIGNAL_TITLE",
-                                                            comment: "Title for the fallback support sheet if user cannot send email")
-                let localizedSheetMessage = OWSLocalizedString("EMAIL_SIGNAL_MESSAGE",
-                                                              comment: "Description for the fallback support sheet if user cannot send email")
+                let localizedSheetTitle = OWSLocalizedString(
+                    "EMAIL_SIGNAL_TITLE",
+                    comment: "Title for the fallback support sheet if user cannot send email",
+                )
+                let localizedSheetMessage = OWSLocalizedString(
+                    "EMAIL_SIGNAL_MESSAGE",
+                    comment: "Description for the fallback support sheet if user cannot send email",
+                )
                 guard ComposeSupportEmailOperation.canSendEmails else {
-                    let fallbackSheet = ActionSheetController(title: localizedSheetTitle,
-                                                              message: localizedSheetMessage)
+                    let fallbackSheet = ActionSheetController(
+                        title: localizedSheetTitle,
+                        message: localizedSheetMessage,
+                    )
                     let buttonTitle = OWSLocalizedString("BUTTON_OKAY", comment: "Label for the 'okay' button.")
                     fallbackSheet.addAction(ActionSheetAction(title: buttonTitle, style: .default))
                     viewController.presentActionSheet(fallbackSheet)
@@ -624,13 +637,13 @@ public final class DonationViewsUtil {
                 supportVC.selectedFilter = .donationsAndBadges
                 let navVC = OWSNavigationController(rootViewController: supportVC)
                 viewController.presentFormSheet(navVC, animated: true)
-            }
+            },
         ))
 
         actionSheet.addAction(ActionSheetAction(
             title: OWSLocalizedString("SUSTAINER_VIEW_SUBSCRIPTION_CONFIRMATION_NOT_NOW", comment: "Sustainer view Not Now Action sheet button"),
             style: .cancel,
-            handler: nil
+            handler: nil,
         ))
         viewController.presentActionSheet(actionSheet)
     }

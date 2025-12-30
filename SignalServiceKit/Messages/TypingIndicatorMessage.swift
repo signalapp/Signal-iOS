@@ -18,26 +18,26 @@ public final class TypingIndicatorMessage: TSOutgoingMessage {
         super.init(coder: coder)
     }
 
-    public override func encode(with coder: NSCoder) {
+    override public func encode(with coder: NSCoder) {
         super.encode(with: coder)
         coder.encode(NSNumber(value: self.action.rawValue), forKey: "action")
     }
 
-    public override var hash: Int {
+    override public var hash: Int {
         var hasher = Hasher()
         hasher.combine(super.hash)
         hasher.combine(action)
         return hasher.finalize()
     }
 
-    public override func isEqual(_ object: Any?) -> Bool {
+    override public func isEqual(_ object: Any?) -> Bool {
         guard let object = object as? Self else { return false }
         guard super.isEqual(object) else { return false }
         guard self.action == object.action else { return false }
         return true
     }
 
-    public override func copy(with zone: NSZone? = nil) -> Any {
+    override public func copy(with zone: NSZone? = nil) -> Any {
         let result = super.copy(with: zone) as! Self
         result.action = self.action
         return result
@@ -48,9 +48,11 @@ public final class TypingIndicatorMessage: TSOutgoingMessage {
     // MARK: Initializers
 
     @objc
-    public init(thread: TSThread,
-                action: TypingIndicatorAction,
-                transaction: DBReadTransaction) {
+    public init(
+        thread: TSThread,
+        action: TypingIndicatorAction,
+        transaction: DBReadTransaction,
+    ) {
         self.action = action
 
         let builder: TSOutgoingMessageBuilder = .withDefaultValues(thread: thread)
@@ -59,22 +61,22 @@ public final class TypingIndicatorMessage: TSOutgoingMessage {
             additionalRecipients: [],
             explicitRecipients: [],
             skippedRecipients: [],
-            transaction: transaction
+            transaction: transaction,
         )
     }
 
     @objc
-    public override func shouldSyncTranscript() -> Bool {
+    override public func shouldSyncTranscript() -> Bool {
         return false
     }
 
     @objc
-    public override var isOnline: Bool {
+    override public var isOnline: Bool {
         return true
     }
 
     @objc
-    public override var isUrgent: Bool { false }
+    override public var isUrgent: Bool { false }
 
     private func protoAction(forAction action: TypingIndicatorAction) -> SSKProtoTypingMessageAction {
         switch action {
@@ -85,8 +87,10 @@ public final class TypingIndicatorMessage: TSOutgoingMessage {
         }
     }
 
-    public override func contentBuilder(thread: TSThread,
-                                        transaction: DBReadTransaction) -> SSKProtoContentBuilder? {
+    override public func contentBuilder(
+        thread: TSThread,
+        transaction: DBReadTransaction,
+    ) -> SSKProtoContentBuilder? {
         let typingBuilder = SSKProtoTypingMessage.builder(timestamp: self.timestamp)
         typingBuilder.setAction(protoAction(forAction: action))
 
@@ -108,12 +112,12 @@ public final class TypingIndicatorMessage: TSOutgoingMessage {
     // MARK: TSYapDatabaseObject overrides
 
     @objc
-    public override var shouldBeSaved: Bool {
+    override public var shouldBeSaved: Bool {
         return false
     }
 
     @objc
-    public override var debugDescription: String {
+    override public var debugDescription: String {
         return "typingIndicatorMessage"
     }
 

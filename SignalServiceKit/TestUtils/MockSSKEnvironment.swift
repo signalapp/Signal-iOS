@@ -97,8 +97,8 @@ public class MockSSKEnvironment {
                 syncManager: OWSMockSyncManager(),
                 systemStoryManager: SystemStoryManagerMock(),
                 versionedProfiles: MockVersionedProfiles(),
-                webSocketFactory: WebSocketFactoryMock()
-            )
+                webSocketFactory: WebSocketFactoryMock(),
+            ),
         ).migrateDatabaseData()
         finalContinuation.runLaunchTasksIfNeededAndReloadCaches()
         return SampleDatabase(fileUrl: databaseUrl, keychainStorage: keychainStorage)

@@ -19,12 +19,12 @@ open class AvatarImageView: UIImageView, CVView {
         self.configureView()
     }
 
-    required public init?(coder aDecoder: NSCoder) {
+    public required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         self.configureView()
     }
 
-    public override init(image: UIImage?) {
+    override public init(image: UIImage?) {
         super.init(image: image)
         self.configureView()
     }
@@ -50,7 +50,7 @@ open class AvatarImageView: UIImageView, CVView {
         layer.cornerRadius = frame.size.width / 2
     }
 
-    public override func updateConstraints() {
+    override public func updateConstraints() {
         super.updateConstraints()
 
         if shouldDeactivateConstraints {

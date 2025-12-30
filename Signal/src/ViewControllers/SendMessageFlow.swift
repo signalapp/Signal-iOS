@@ -54,16 +54,16 @@ class SendMessageFlow {
     private let presentationStyle: PresentationStyle
 
     enum PresentationStyle {
-      case pushOnto(UINavigationController)
-      case presentFrom(UIViewController)
+        case pushOnto(UINavigationController)
+        case presentFrom(UIViewController)
     }
 
     private weak var navigationController: UINavigationController?
 
-    public init(
+    init(
         unapprovedContent: SendMessageUnapprovedContent,
         presentationStyle: PresentationStyle,
-        delegate: SendMessageDelegate
+        delegate: SendMessageDelegate,
     ) {
         self.unapprovedContent = unapprovedContent
         self.presentationStyle = presentationStyle
@@ -85,7 +85,7 @@ class SendMessageFlow {
         case .pushOnto:
             if navigationController.viewControllers.isEmpty {
                 navigationController.setViewControllers([
-                    conversationPicker
+                    conversationPicker,
                 ], animated: false)
             } else {
                 navigationController.pushViewController(conversationPicker, animated: true)
@@ -101,15 +101,15 @@ class SendMessageFlow {
         navigationController?.dismiss(animated: animated)
     }
 
-    fileprivate func fireComplete(threads: [TSThread]) {
+    private func fireComplete(threads: [TSThread]) {
         delegate?.sendMessageFlowDidComplete(threads: threads)
     }
 
-    fileprivate func fireWillShowConversation() {
+    private func fireWillShowConversation() {
         delegate?.sendMessageFlowWillShowConversation()
     }
 
-    fileprivate func fireCancelled() {
+    private func fireCancelled() {
         delegate?.sendMessageFlowDidCancel()
     }
 
@@ -126,7 +126,7 @@ class SendMessageFlow {
         }
 
         owsAssertDebug(groupThread != nil)
-        if let groupThread = groupThread, groupThread.allowsMentionSend {
+        if let groupThread, groupThread.allowsMentionSend {
             mentionCandidates = groupThread.recipientAddressesWithSneakyTransaction
         } else {
             mentionCandidates = []
@@ -139,7 +139,7 @@ class SendMessageFlow {
 extension SendMessageFlow {
 
     private func pushViewController(_ viewController: UIViewController, animated: Bool) {
-        guard let navigationController = navigationController else {
+        guard let navigationController else {
             owsFailDebug("Missing navigationController.")
             return
         }
@@ -166,7 +166,7 @@ extension SendMessageFlow {
                     draftMessageBody: messageBody,
                     replyInfo: nil,
                     editTargetTimestamp: nil,
-                    transaction: transaction
+                    transaction: transaction,
                 )
                 return thread
             }
@@ -175,7 +175,7 @@ extension SendMessageFlow {
                 SignalApp.shared.presentConversationForThread(
                     threadUniqueId: thread.uniqueId,
                     action: .updateDraft,
-                    animated: true
+                    animated: true,
                 )
             }
         }
@@ -306,7 +306,7 @@ public class SendMessageController: SendMessageDelegate {
 
         sendMessageFlow.set(nil)
 
-        guard let fromViewController = fromViewController else {
+        guard let fromViewController else {
             return
         }
 
@@ -326,7 +326,7 @@ public class SendMessageController: SendMessageDelegate {
 
         sendMessageFlow.set(nil)
 
-        guard let fromViewController = fromViewController else {
+        guard let fromViewController else {
             return
         }
 

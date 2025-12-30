@@ -29,13 +29,17 @@ class BlockingAnnouncementOnlyView: ConversationBottomPanelView {
             overrideUserInterfaceStyle = .dark
         }
 
-        let format = OWSLocalizedString("GROUPS_ANNOUNCEMENT_ONLY_BLOCKING_SEND_OR_CALL_FORMAT",
-                                       comment: "Format for indicator that only group administrators can starts a group call and sends messages to an 'announcement-only' group. Embeds {{ a \"admins\" link. }}.")
-        let adminsText = OWSLocalizedString("GROUPS_ANNOUNCEMENT_ONLY_ADMINISTRATORS",
-                                           comment: "Label for group administrators in the 'announcement-only' group UI.")
+        let format = OWSLocalizedString(
+            "GROUPS_ANNOUNCEMENT_ONLY_BLOCKING_SEND_OR_CALL_FORMAT",
+            comment: "Format for indicator that only group administrators can starts a group call and sends messages to an 'announcement-only' group. Embeds {{ a \"admins\" link. }}.",
+        )
+        let adminsText = OWSLocalizedString(
+            "GROUPS_ANNOUNCEMENT_ONLY_ADMINISTRATORS",
+            comment: "Label for group administrators in the 'announcement-only' group UI.",
+        )
         let text = String(format: format, adminsText)
         let attributedString = NSMutableAttributedString(string: text)
-        attributedString.setAttributes([ .foregroundColor: UIColor.Signal.link ], forSubstring: adminsText)
+        attributedString.setAttributes([.foregroundColor: UIColor.Signal.link], forSubstring: adminsText)
 
         let label = UILabel()
         label.font = .dynamicTypeSubheadlineClamped
@@ -79,8 +83,8 @@ class BlockingAnnouncementOnlyView: ConversationBottomPanelView {
     // MARK: -
 
     @objc
-    public func didTapContactAdmins() {
-        guard let fromViewController = fromViewController else {
+    func didTapContactAdmins() {
+        guard let fromViewController else {
             owsFailDebug("Missing fromViewController.")
             return
         }
@@ -115,50 +119,51 @@ class MessageUserSubsetSheet: OWSTableSheetViewController {
         tableViewController.forceDarkMode = forceDarkMode
 
         tableViewController.defaultSeparatorInsetLeading = (OWSTableViewController2.cellHInnerMargin +
-                                                            CGFloat(AvatarBuilder.smallAvatarSizePoints) +
-                                                            ContactCellView.avatarTextHSpacing)
+            CGFloat(AvatarBuilder.smallAvatarSizePoints) +
+            ContactCellView.avatarTextHSpacing)
 
         tableViewController.tableView.register(
             ContactTableViewCell.self,
-            forCellReuseIdentifier: ContactTableViewCell.reuseIdentifier
+            forCellReuseIdentifier: ContactTableViewCell.reuseIdentifier,
         )
     }
 
     // MARK: -
 
-    public override func tableContents() -> OWSTableContents {
+    override func tableContents() -> OWSTableContents {
         let contents = OWSTableContents()
 
         let section = OWSTableSection()
         section.headerTitle = OWSLocalizedString(
             "GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN",
-            comment: "Label indicating the user can contact a group administrators of an 'announcement-only' group."
+            comment: "Label indicating the user can contact a group administrators of an 'announcement-only' group.",
         )
         contents.add(section)
         for address in addresses {
             section.add(OWSTableItem(
-                            dequeueCellBlock: { [weak self] tableView in
-                                guard let cell = tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.reuseIdentifier) as? ContactTableViewCell else {
-                                    owsFailDebug("Missing cell.")
-                                    return UITableViewCell()
-                                }
+                dequeueCellBlock: { [weak self] tableView in
+                    guard let cell = tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.reuseIdentifier) as? ContactTableViewCell else {
+                        owsFailDebug("Missing cell.")
+                        return UITableViewCell()
+                    }
 
-                                cell.selectionStyle = .none
+                    cell.selectionStyle = .none
 
-                                let configuration = ContactCellConfiguration(address: address, localUserDisplayMode: .asLocalUser)
-                                configuration.forceDarkAppearance = self?.forceDarkMode ?? false
+                    let configuration = ContactCellConfiguration(address: address, localUserDisplayMode: .asLocalUser)
+                    configuration.forceDarkAppearance = self?.forceDarkMode ?? false
 
-                                SSKEnvironment.shared.databaseStorageRef.read {
-                                    cell.configure(configuration: configuration, transaction: $0)
-                                }
+                    SSKEnvironment.shared.databaseStorageRef.read {
+                        cell.configure(configuration: configuration, transaction: $0)
+                    }
 
-                                return cell
-                            },
+                    return cell
+                },
                 actionBlock: { [weak self] in
                     self?.dismiss(animated: true) {
                         SignalApp.shared.presentConversationForAddress(address, action: .compose, animated: true)
                     }
-                }))
+                },
+            ))
         }
 
         return contents

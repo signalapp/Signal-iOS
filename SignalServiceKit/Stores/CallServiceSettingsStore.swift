@@ -12,6 +12,7 @@ public struct CallServiceSettingsStore {
         // This used to be called "high bandwidth", but "data" is more accurate.
         static let highDataPreferenceKey = "HighBandwidthPreferenceKey"
     }
+
     private let keyValueStore = KeyValueStore(collection: "CallService")
 
     public init() {}
@@ -22,22 +23,24 @@ public struct CallServiceSettingsStore {
         self.keyValueStore.setUInt(
             interfaceSet.rawValue,
             key: Keys.highDataPreferenceKey,
-            transaction: tx
+            transaction: tx,
         )
 
         tx.addSyncCompletion {
             NotificationCenter.default.postOnMainThread(
                 name: Notification.Name.callServicePreferencesDidChange,
-                object: nil
+                object: nil,
             )
         }
     }
 
     public func highDataNetworkInterfaces(tx: DBReadTransaction) -> NetworkInterfaceSet {
-        guard let highDataPreference = keyValueStore.getUInt(
-            Keys.highDataPreferenceKey,
-            transaction: tx
-        ) else {
+        guard
+            let highDataPreference = keyValueStore.getUInt(
+                Keys.highDataPreferenceKey,
+                transaction: tx,
+            )
+        else {
             return .wifiAndCellular
         }
 

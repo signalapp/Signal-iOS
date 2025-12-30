@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import Contacts
+import Foundation
 
 public enum ExperienceUpgradeManifest {
     /// Informs the user that a new device was linked if they have
@@ -165,7 +165,7 @@ extension ExperienceUpgradeManifest {
         .contactPermissionReminder,
         .backupKeyReminder,
         .enableBackupsReminder,
-        .haveEnabledBackupsNotification
+        .haveEnabledBackupsNotification,
     ]
 }
 
@@ -208,7 +208,7 @@ extension ExperienceUpgradeManifest {
 }
 
 extension ExperienceUpgradeManifest: Equatable {
-    public static func == (lhs: ExperienceUpgradeManifest, rhs: ExperienceUpgradeManifest) -> Bool {
+    public static func ==(lhs: ExperienceUpgradeManifest, rhs: ExperienceUpgradeManifest) -> Bool {
         lhs.uniqueId == rhs.uniqueId
     }
 }
@@ -296,21 +296,21 @@ extension ExperienceUpgradeManifest {
     var skipForNewUsers: Bool {
         switch self {
         case
-                .newLinkedDeviceNotification,
-                .introducingPins,
-                .createUsernameReminder,
-                .remoteMegaphone,
-                .inactiveLinkedDeviceReminder,
-                .inactivePrimaryDeviceReminder,
-                .haveEnabledBackupsNotification:
+            .newLinkedDeviceNotification,
+            .introducingPins,
+            .createUsernameReminder,
+            .remoteMegaphone,
+            .inactiveLinkedDeviceReminder,
+            .inactivePrimaryDeviceReminder,
+            .haveEnabledBackupsNotification:
             return false
         case
-                .notificationPermissionReminder,
-                .pinReminder,
-                .contactPermissionReminder,
-                .backupKeyReminder,
-                .enableBackupsReminder,
-                .unrecognized:
+            .notificationPermissionReminder,
+            .pinReminder,
+            .contactPermissionReminder,
+            .backupKeyReminder,
+            .enableBackupsReminder,
+            .unrecognized:
             return true
         }
     }
@@ -321,21 +321,21 @@ extension ExperienceUpgradeManifest {
     var shouldSave: Bool {
         switch self {
         case
-                .newLinkedDeviceNotification,
-                .introducingPins,
-                .pinReminder,
-                .haveEnabledBackupsNotification,
-                .unrecognized:
+            .newLinkedDeviceNotification,
+            .introducingPins,
+            .pinReminder,
+            .haveEnabledBackupsNotification,
+            .unrecognized:
             return false
         case
-                .notificationPermissionReminder,
-                .createUsernameReminder,
-                .inactiveLinkedDeviceReminder,
-                .inactivePrimaryDeviceReminder,
-                .remoteMegaphone,
-                .enableBackupsReminder,
-                .backupKeyReminder,
-                .contactPermissionReminder:
+            .notificationPermissionReminder,
+            .createUsernameReminder,
+            .inactiveLinkedDeviceReminder,
+            .inactivePrimaryDeviceReminder,
+            .remoteMegaphone,
+            .enableBackupsReminder,
+            .backupKeyReminder,
+            .contactPermissionReminder:
             return true
         }
     }
@@ -347,18 +347,18 @@ extension ExperienceUpgradeManifest {
     var shouldComplete: Bool {
         switch self {
         case
-                .newLinkedDeviceNotification,
-                .introducingPins,
-                .notificationPermissionReminder,
-                .createUsernameReminder,
-                .inactiveLinkedDeviceReminder,
-                .inactivePrimaryDeviceReminder,
-                .pinReminder,
-                .contactPermissionReminder,
-                .backupKeyReminder,
-                .enableBackupsReminder,
-                .haveEnabledBackupsNotification,
-                .unrecognized:
+            .newLinkedDeviceNotification,
+            .introducingPins,
+            .notificationPermissionReminder,
+            .createUsernameReminder,
+            .inactiveLinkedDeviceReminder,
+            .inactivePrimaryDeviceReminder,
+            .pinReminder,
+            .contactPermissionReminder,
+            .backupKeyReminder,
+            .enableBackupsReminder,
+            .haveEnabledBackupsNotification,
+            .unrecognized:
             return false
         case .remoteMegaphone:
             return true
@@ -374,20 +374,20 @@ extension ExperienceUpgradeManifest {
 
         switch self {
         case
-                .introducingPins,
-                .pinReminder,
-                .backupKeyReminder:
+            .introducingPins,
+            .pinReminder,
+            .backupKeyReminder:
             return 2 * .day
         case
-                .notificationPermissionReminder,
-                .inactiveLinkedDeviceReminder:
+            .notificationPermissionReminder,
+            .inactiveLinkedDeviceReminder:
             return 3 * .day
         case .inactivePrimaryDeviceReminder:
             return 7 * .day
         case
-                .newLinkedDeviceNotification,
-                .haveEnabledBackupsNotification,
-                .createUsernameReminder:
+            .newLinkedDeviceNotification,
+            .haveEnabledBackupsNotification,
+            .createUsernameReminder:
             // On snooze, never show again.
             return .infinity
         case .remoteMegaphone(let megaphone):
@@ -413,7 +413,7 @@ extension ExperienceUpgradeManifest {
                 }()
 
                 if
-                    let snoozeDurationDays = snoozeDurationDays,
+                    let snoozeDurationDays,
                     let lastDurationDays = snoozeDurationDays.last
                 {
                     // Safe to subtract from `snoozeCount`, since we checked for 0 above.
@@ -439,17 +439,17 @@ extension ExperienceUpgradeManifest {
     var numberOfDaysToShowFor: Int {
         switch self {
         case
-                .newLinkedDeviceNotification,
-                .introducingPins,
-                .notificationPermissionReminder,
-                .createUsernameReminder,
-                .inactiveLinkedDeviceReminder,
-                .inactivePrimaryDeviceReminder,
-                .pinReminder,
-                .contactPermissionReminder,
-                .backupKeyReminder,
-                .enableBackupsReminder,
-                .haveEnabledBackupsNotification:
+            .newLinkedDeviceNotification,
+            .introducingPins,
+            .notificationPermissionReminder,
+            .createUsernameReminder,
+            .inactiveLinkedDeviceReminder,
+            .inactivePrimaryDeviceReminder,
+            .pinReminder,
+            .contactPermissionReminder,
+            .backupKeyReminder,
+            .enableBackupsReminder,
+            .haveEnabledBackupsNotification:
             return Int.max
         case .remoteMegaphone(let megaphone):
             return megaphone.manifest.showForNumberOfDays
@@ -463,15 +463,15 @@ extension ExperienceUpgradeManifest {
     private var delayAfterRegistration: TimeInterval {
         switch self {
         case
-                .newLinkedDeviceNotification,
-                .haveEnabledBackupsNotification:
+            .newLinkedDeviceNotification,
+            .haveEnabledBackupsNotification:
             return 0
         case
-                .notificationPermissionReminder,
-                .createUsernameReminder,
-                .inactiveLinkedDeviceReminder,
-                .inactivePrimaryDeviceReminder,
-                .contactPermissionReminder:
+            .notificationPermissionReminder,
+            .createUsernameReminder,
+            .inactiveLinkedDeviceReminder,
+            .inactivePrimaryDeviceReminder,
+            .contactPermissionReminder:
             return .day
         case .introducingPins:
             return 2 * .hour
@@ -503,17 +503,17 @@ extension ExperienceUpgradeManifest {
     private var expirationDate: Date {
         switch self {
         case
-                .newLinkedDeviceNotification,
-                .introducingPins,
-                .notificationPermissionReminder,
-                .createUsernameReminder,
-                .inactiveLinkedDeviceReminder,
-                .inactivePrimaryDeviceReminder,
-                .pinReminder,
-                .contactPermissionReminder,
-                .backupKeyReminder,
-                .enableBackupsReminder,
-                .haveEnabledBackupsNotification:
+            .newLinkedDeviceNotification,
+            .introducingPins,
+            .notificationPermissionReminder,
+            .createUsernameReminder,
+            .inactiveLinkedDeviceReminder,
+            .inactivePrimaryDeviceReminder,
+            .pinReminder,
+            .contactPermissionReminder,
+            .backupKeyReminder,
+            .enableBackupsReminder,
+            .haveEnabledBackupsNotification:
             return Date.distantFuture
         case .remoteMegaphone(let megaphone):
             return Date(timeIntervalSince1970: TimeInterval(megaphone.manifest.dontShowAfter))
@@ -526,23 +526,23 @@ extension ExperienceUpgradeManifest {
     private var showOnLinkedDevices: Bool {
         switch self {
         case
-                .newLinkedDeviceNotification,
-                .introducingPins,
-                .pinReminder,
-                .inactiveLinkedDeviceReminder,
-                .contactPermissionReminder,
-                .backupKeyReminder,
-                .enableBackupsReminder,
-                .haveEnabledBackupsNotification,
-                .unrecognized:
+            .newLinkedDeviceNotification,
+            .introducingPins,
+            .pinReminder,
+            .inactiveLinkedDeviceReminder,
+            .contactPermissionReminder,
+            .backupKeyReminder,
+            .enableBackupsReminder,
+            .haveEnabledBackupsNotification,
+            .unrecognized:
             return false
         case
-                .notificationPermissionReminder,
-                .createUsernameReminder,
-                .inactivePrimaryDeviceReminder:
+            .notificationPermissionReminder,
+            .createUsernameReminder,
+            .inactivePrimaryDeviceReminder:
             return true
         case
-                .remoteMegaphone:
+            .remoteMegaphone:
             // Controlled by conditional check
             return true
         }
@@ -555,7 +555,7 @@ extension ExperienceUpgradeManifest {
     public func shouldCheckPreconditions(
         timeIntervalSinceRegistration: TimeInterval,
         isRegisteredPrimaryDevice: Bool,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> Bool {
         if timeIntervalSinceRegistration < delayAfterRegistration {
             // We have not waited long enough after registration to show this
@@ -615,7 +615,7 @@ extension ExperienceUpgradeManifest {
     }
 
     public static func checkPreconditionsForNewLinkedDeviceNotification(
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> NewLinkedDeviceNotificationResult {
         let deviceStore = DependenciesBridge.shared.deviceStore
         guard
@@ -659,7 +659,7 @@ extension ExperienceUpgradeManifest {
     public static func checkPreconditionsForCreateUsernameReminder(transaction: DBReadTransaction) -> Bool {
         guard
             DependenciesBridge.shared.localUsernameManager.usernameState(
-                tx: transaction
+                tx: transaction,
             ).isExplicitlyUnset
         else {
             // If we have a username, do not show the reminder.
@@ -713,7 +713,7 @@ extension ExperienceUpgradeManifest {
     public static func checkPreconditionsForRecoveryKeyReminder(
         backupSettingsStore: BackupSettingsStore,
         tsAccountManager: TSAccountManager,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> Bool {
         guard
             BuildFlags.Backups.showMegaphones,
@@ -783,31 +783,40 @@ extension ExperienceUpgradeManifest {
             return false
         }
 
-        guard RemoteConfig.isCountryCodeBucketEnabled(
-            csvString: megaphone.manifest.countries,
-            key: megaphone.manifest.id,
-            localIdentifiers: localIdentifiers
-        ) else {
+        guard
+            RemoteConfig.isCountryCodeBucketEnabled(
+                csvString: megaphone.manifest.countries,
+                key: megaphone.manifest.id,
+                localIdentifiers: localIdentifiers,
+            )
+        else {
             return false
         }
 
-        guard validateRemoteMegaphone(
-            conditionalCheck: megaphone.manifest.conditionalCheck, tx: tx
-        ) else {
+        guard
+            validateRemoteMegaphone(
+                conditionalCheck: megaphone.manifest.conditionalCheck,
+                tx: tx,
+            )
+        else {
             return false
         }
 
-        guard validateRemoteMegaphone(
-            action: megaphone.manifest.primaryAction,
-            withText: megaphone.translation.primaryActionText
-        ) else {
+        guard
+            validateRemoteMegaphone(
+                action: megaphone.manifest.primaryAction,
+                withText: megaphone.translation.primaryActionText,
+            )
+        else {
             return false
         }
 
-        guard validateRemoteMegaphone(
-            action: megaphone.manifest.secondaryAction,
-            withText: megaphone.translation.secondaryActionText
-        ) else {
+        guard
+            validateRemoteMegaphone(
+                action: megaphone.manifest.secondaryAction,
+                withText: megaphone.translation.secondaryActionText,
+            )
+        else {
             return false
         }
 
@@ -816,7 +825,7 @@ extension ExperienceUpgradeManifest {
 
     private static func validateRemoteMegaphone(
         conditionalCheck: RemoteMegaphoneModel.Manifest.ConditionalCheck?,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> Bool {
         guard let conditionalCheck else {
             // Having no conditional check is valid.
@@ -849,9 +858,9 @@ extension ExperienceUpgradeManifest {
 
     private static func validateRemoteMegaphone(
         action: RemoteMegaphoneModel.Manifest.Action?,
-        withText text: String?
+        withText text: String?,
     ) -> Bool {
-        guard let action = action else {
+        guard let action else {
             // Having no action is valid...
             return true
         }

@@ -30,8 +30,8 @@ public struct ProvideScrollAnchor: ViewModifier {
         content
             .transformAnchorPreference(
                 key: ScrollAnchorPreferenceKey.self,
-                value: .top
-            ) { (key, anchor) in
+                value: .top,
+            ) { key, anchor in
                 key.append(ScrollAnchor(topAnchor: anchor, correction: correction))
             }
     }

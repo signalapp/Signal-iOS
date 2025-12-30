@@ -51,7 +51,8 @@ final class ChatListFilterControl: UIView {
     }
 
     enum FilterState: Equatable {
-        case on, off
+        case on
+        case off
 
         var isOn: Bool {
             switch self {
@@ -316,7 +317,8 @@ final class ChatListFilterControl: UIView {
         updateContentInsetIfNecessary()
     }
 
-    @objc private func cancelFilterIconAnimator() {
+    @objc
+    private func cancelFilterIconAnimator() {
         guard let filterIconAnimator, filterIconAnimator.state == .active else { return }
         filterIconAnimator.stopAnimation(false)
         filterIconAnimator.finishAnimation(at: .start)
@@ -543,6 +545,7 @@ final class ChatListFilterControl: UIView {
         case .tracking(state: .off):
             cancelFilterIconAnimator()
             fallthrough
+
         case .committed(newState: .off):
             state = .off
 

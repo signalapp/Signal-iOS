@@ -60,7 +60,7 @@ class DonationReceiptsViewController: OWSTableViewController2 {
 
             let tableItem = OWSTableItem(
                 customCellBlock: { [weak self] in
-                    guard let self = self else {
+                    guard let self else {
                         owsFailDebug("Missing self")
                         return OWSTableItem.newCell()
                     }
@@ -74,13 +74,13 @@ class DonationReceiptsViewController: OWSTableViewController2 {
                         accessoryText: formattedAmount,
                         accessoryTextColor: .Signal.label,
                         accessoryType: .disclosureIndicator,
-                        accessibilityIdentifier: accessibilityIdentifier
+                        accessibilityIdentifier: accessibilityIdentifier,
                     )
                 },
                 actionBlock: { [weak self] in
                     let vc = DonationReceiptViewController(model: donationReceipt)
                     self?.navigationController?.pushViewController(vc, animated: true)
-                }
+                },
             )
 
             sectionForThisYear.add(tableItem)
@@ -89,7 +89,7 @@ class DonationReceiptsViewController: OWSTableViewController2 {
         let footerSection = OWSTableSection()
         footerSection.footerTitle = OWSLocalizedString(
             "DONATION_RECEIPTS_MIGHT_BE_MISSING_IF_YOU_REINSTALLED",
-            comment: "Text at the bottom of the donation receipts list, telling users that receipts might not be available"
+            comment: "Text at the bottom of the donation receipts list, telling users that receipts might not be available",
         )
         sections.append(footerSection)
 

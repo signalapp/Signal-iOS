@@ -62,9 +62,9 @@ extension SignalProxy {
             connection = NWConnection(
                 to: NWEndpoint.hostPort(
                     host: NWEndpoint.Host(actualHost),
-                    port: NWEndpoint.Port(integerLiteral: proxyPort)
+                    port: NWEndpoint.Port(integerLiteral: proxyPort),
                 ),
-                using: networkParams
+                using: networkParams,
             )
             connection?.stateUpdateHandler = stateDidChange
             receive()
@@ -75,14 +75,14 @@ extension SignalProxy {
             guard isStarted else { return }
             isStarted = false
 
-            if let error = error {
+            if let error {
                 owsFailDebug("Proxy client \(id) did fail with error \(error)")
             }
 
             connection?.stateUpdateHandler = nil
             connection?.cancel()
 
-            if let didStopCallback = didStopCallback {
+            if let didStopCallback {
                 self.didStopCallback = nil
                 didStopCallback(error)
             }
@@ -90,9 +90,9 @@ extension SignalProxy {
 
         func send(_ data: Data) {
             connection?.send(content: data, completion: .contentProcessed({ [weak self] error in
-                guard let self = self else { return }
+                guard let self else { return }
 
-                if let error = error {
+                if let error {
                     self.stop(error: error)
                     return
                 }
@@ -113,13 +113,13 @@ extension SignalProxy {
 
         private func receive() {
             connection?.receive(minimumIncompleteLength: 1, maximumLength: 65535) { [weak self] content, _, isComplete, error in
-                guard let self = self else { return }
+                guard let self else { return }
 
                 content.map { self.relayClient?.send($0) }
 
                 if isComplete {
                     self.stop()
-                } else if let error = error {
+                } else if let error {
                     self.stop(error: error)
                 } else {
                     self.receive()

@@ -13,6 +13,6 @@ final class TSThreadTests: XCTestCase {
         XCTAssertNil(thread.messageDraft)
         let now = Date()
         let creationDate = try XCTUnwrap(thread.creationDate)
-        XCTAssertEqual(creationDate.timeIntervalSinceReferenceDate, now.timeIntervalSinceReferenceDate, accuracy: 0.01 /* 10 ms */)
+        XCTAssertEqual(creationDate.timeIntervalSinceReferenceDate, now.timeIntervalSinceReferenceDate, accuracy: 0.01 /* 10 ms */ )
     }
 }

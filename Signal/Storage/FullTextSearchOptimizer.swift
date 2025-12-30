@@ -73,11 +73,11 @@ final class FullTextSearchOptimizer {
                 db: tx.database,
                 ftsTableName: FullTextSearchIndexer.ftsTableName,
                 numberOfPages: Constants.numberOfPagesToMergeAtATime,
-                isFirstBatch: isFirstBatch
+                isFirstBatch: isFirstBatch,
             )
         }
 
-        let formattedDuration = String(format: "%.1fms", (CACurrentMediaTime() - startTime)*1000)
+        let formattedDuration = String(format: "%.1fms", (CACurrentMediaTime() - startTime) * 1000)
         Logger.info("\(mergeResult) in \(formattedDuration)")
 
         return mergeResult == .workWasPerformed

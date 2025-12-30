@@ -46,12 +46,14 @@ class ArchivedConversationsCell: UITableViewCell, ReusableTableViewCell {
         disclosureImageView.setContentHuggingHigh()
         disclosureImageView.setCompressionResistanceHigh()
 
-        label.text = OWSLocalizedString("HOME_VIEW_ARCHIVED_CONVERSATIONS",
-                                       comment: "Label for 'archived conversations' button.")
+        label.text = OWSLocalizedString(
+            "HOME_VIEW_ARCHIVED_CONVERSATIONS",
+            comment: "Label for 'archived conversations' button.",
+        )
         label.textAlignment = .center
         label.font = .dynamicTypeBody
 
-        let stackView = UIStackView(arrangedSubviews: [ label, disclosureImageView ])
+        let stackView = UIStackView(arrangedSubviews: [label, disclosureImageView])
         stackView.axis = .horizontal
         stackView.spacing = 5
         stackView.alignment = .center
@@ -71,10 +73,12 @@ class ArchivedConversationsCell: UITableViewCell, ReusableTableViewCell {
     func configure(enabled: Bool) {
         self.enabled = enabled
         NotificationCenter.default.removeObserver(self)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(multiSelectionModeDidChange),
-                                               name: MultiSelectState.multiSelectionModeDidChange,
-                                               object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(multiSelectionModeDidChange),
+            name: MultiSelectState.multiSelectionModeDidChange,
+            object: nil,
+        )
     }
 
     override func prepareForReuse() {

@@ -15,7 +15,7 @@ public extension Paypal {
     @MainActor
     static func presentExpectingApprovalParams<ApprovalParams: FromApprovedPaypalWebAuthFinalUrlQueryItems>(
         approvalUrl: URL,
-        withPresentationContext presentationContext: ASWebAuthenticationPresentationContextProviding
+        withPresentationContext presentationContext: ASWebAuthenticationPresentationContextProviding,
     ) async throws -> ApprovalParams {
         let authSession = AuthSession<ApprovalParams>(approvalUrl: approvalUrl)
         return try await authSession.start(presentationContextProvider: presentationContext)
@@ -226,7 +226,7 @@ private extension Paypal {
             return try await withCheckedThrowingContinuation { continuation in
                 authSession = ASWebAuthenticationSession(
                     url: approvalUrl,
-                    callbackURLScheme: Paypal.authSessionScheme
+                    callbackURLScheme: Paypal.authSessionScheme,
                 ) { finalUrl, error in
                     /// Our auth session should only complete on its own if the user cancels
                     /// it interactively, since it can only auto-complete if we are using a
@@ -291,8 +291,8 @@ private extension Paypal {
             case .canceledLogin:
                 return AuthError.userCanceled
             case
-                    .presentationContextNotProvided,
-                    .presentationContextInvalid:
+                .presentationContextNotProvided,
+                .presentationContextInvalid:
                 owsFail("Unexpected issue with presentation context. Was the auth session set up correctly?")
             @unknown default:
                 return OWSAssertionError("Unexpected auth sesion error code: \(authSessionError.code)")

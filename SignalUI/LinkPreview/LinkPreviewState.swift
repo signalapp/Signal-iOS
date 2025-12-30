@@ -25,7 +25,7 @@ public struct LinkPreviewImageCacheKey: Hashable, Equatable {
         id: Attachment.IDType?,
         urlString: String?,
         isBlurHash: Bool = false,
-        thumbnailQuality: AttachmentThumbnailQuality
+        thumbnailQuality: AttachmentThumbnailQuality,
     ) {
         self.id = id
         self.urlString = urlString
@@ -42,7 +42,7 @@ public protocol LinkPreviewState: AnyObject {
     var imageState: LinkPreviewImageState { get }
     func imageAsync(
         thumbnailQuality: AttachmentThumbnailQuality,
-        completion: @escaping (UIImage) -> Void
+        completion: @escaping (UIImage) -> Void,
     )
     func imageCacheKey(thumbnailQuality: AttachmentThumbnailQuality) -> LinkPreviewImageCacheKey?
     var imagePixelSize: CGSize { get }
@@ -187,7 +187,7 @@ public class LinkPreviewDraft: LinkPreviewState {
     }
 
     public func imageCacheKey(thumbnailQuality: AttachmentThumbnailQuality) -> LinkPreviewImageCacheKey? {
-        guard let urlString = urlString else {
+        guard let urlString else {
             owsFailDebug("Missing urlString.")
             return nil
         }
@@ -211,8 +211,10 @@ public class LinkPreviewDraft: LinkPreviewState {
             return .zero
         }
         let imagePixelSize = imageMetadata.pixelSize
-        guard imagePixelSize.width > 0,
-              imagePixelSize.height > 0 else {
+        guard
+            imagePixelSize.width > 0,
+            imagePixelSize.height > 0
+        else {
             owsFailDebug("Invalid image size.")
             return .zero
         }
@@ -248,7 +250,7 @@ public class LinkPreviewSent: LinkPreviewState {
         linkPreview: OWSLinkPreview,
         imageAttachment: ReferencedAttachment?,
         isFailedImageAttachmentDownload: Bool,
-        conversationStyle: ConversationStyle?
+        conversationStyle: ConversationStyle?,
     ) {
         self.linkPreview = linkPreview
         self.imageAttachment = imageAttachment
@@ -277,7 +279,7 @@ public class LinkPreviewSent: LinkPreviewState {
     public var title: String? { linkPreview.title?.filterForDisplay.nilIfEmpty }
 
     public var imageState: LinkPreviewImageState {
-        guard let imageAttachment = imageAttachment else {
+        guard let imageAttachment else {
             return .none
         }
         guard let attachmentStream = imageAttachment.attachment.asStream() else {
@@ -349,7 +351,7 @@ public class LinkPreviewSent: LinkPreviewState {
                 id: imageAttachment.attachment.id,
                 urlString: nil,
                 isBlurHash: true,
-                thumbnailQuality: thumbnailQuality
+                thumbnailQuality: thumbnailQuality,
             )
         }
         return .init(id: attachmentStream.id, urlString: nil, thumbnailQuality: thumbnailQuality)

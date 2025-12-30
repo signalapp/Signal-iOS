@@ -26,12 +26,14 @@ public class CVColorOrGradientView: ManualLayoutViewWithLayer {
         let color: UIColor
         let width: CGFloat
     }
+
     public struct BubbleConfig {
         let sharpCorners: OWSDirectionalRectCorner
         let sharpCornerRadius: CGFloat
         let wideCornerRadius: CGFloat
         let strokeConfig: StrokeConfig?
     }
+
     private var bubbleConfig: BubbleConfig?
     private var hasPillRounding = false
 
@@ -65,10 +67,12 @@ public class CVColorOrGradientView: ManualLayoutViewWithLayer {
         }
     }
 
-    public func configure(value: ColorOrGradientValue,
-                          referenceView: UIView,
-                          bubbleConfig: BubbleConfig? = nil,
-                          hasPillRounding: Bool = false) {
+    public func configure(
+        value: ColorOrGradientValue,
+        referenceView: UIView,
+        bubbleConfig: BubbleConfig? = nil,
+        hasPillRounding: Bool = false,
+    ) {
         // At most one of these parameters should be set.
         owsAssertDebug(!hasPillRounding || bubbleConfig == nil)
 
@@ -84,15 +88,19 @@ public class CVColorOrGradientView: ManualLayoutViewWithLayer {
 
     public static func build(conversationStyle: ConversationStyle, referenceView: UIView) -> CVColorOrGradientView {
         let view = CVColorOrGradientView()
-        view.configure(value: conversationStyle.bubbleChatColorOutgoing,
-                       referenceView: referenceView)
+        view.configure(
+            value: conversationStyle.bubbleChatColorOutgoing,
+            referenceView: referenceView,
+        )
         return view
     }
 
     public func updateAppearance() {
 
-        guard let value = self.value,
-              let referenceView = self.referenceView else {
+        guard
+            let value = self.value,
+            let referenceView = self.referenceView
+        else {
             self.backgroundColor = nil
             gradientLayer.removeFromSuperlayer()
             dimmerLayer?.removeFromSuperlayer()
@@ -118,7 +126,7 @@ public class CVColorOrGradientView: ManualLayoutViewWithLayer {
 
             gradientLayer.colors = [
                 color1.cgColor,
-                color2.cgColor
+                color2.cgColor,
             ]
 
             /* The start and end points of the gradient when drawn into the layer's
@@ -164,13 +172,17 @@ public class CVColorOrGradientView: ManualLayoutViewWithLayer {
             let referenceFrameLocalPoints = self.convert(referenceView.bounds, from: referenceView)
             // The reference frame (bounding box of the entire gradient)
             // in local unit coordinates.
-            let referenceFrameLocalUnits = CGRect(x: referenceFrameLocalPoints.x.inverseLerp(bounds.minX, bounds.maxX),
-                                                  y: referenceFrameLocalPoints.y.inverseLerp(bounds.minY, bounds.maxY),
-                                                  width: referenceFrameLocalPoints.width / bounds.width,
-                                                  height: referenceFrameLocalPoints.height / bounds.height)
+            let referenceFrameLocalUnits = CGRect(
+                x: referenceFrameLocalPoints.x.inverseLerp(bounds.minX, bounds.maxX),
+                y: referenceFrameLocalPoints.y.inverseLerp(bounds.minY, bounds.maxY),
+                width: referenceFrameLocalPoints.width / bounds.width,
+                height: referenceFrameLocalPoints.height / bounds.height,
+            )
             func convertFromGradientToLocal(_ point: CGPoint) -> CGPoint {
-                CGPoint(x: point.x.lerp(referenceFrameLocalUnits.minX, referenceFrameLocalUnits.maxX),
-                        y: point.y.lerp(referenceFrameLocalUnits.minY, referenceFrameLocalUnits.maxY))
+                CGPoint(
+                    x: point.x.lerp(referenceFrameLocalUnits.minX, referenceFrameLocalUnits.maxX),
+                    y: point.y.lerp(referenceFrameLocalUnits.minY, referenceFrameLocalUnits.maxY),
+                )
             }
             // Control points within the local UIView viewport.
             // Expressed as unit values with upper-left origin.
@@ -219,17 +231,19 @@ public class CVColorOrGradientView: ManualLayoutViewWithLayer {
 
         if let bubbleConfig = self.bubbleConfig {
             let sharpCorners = UIView.uiRectCorner(forOWSDirectionalRectCorner: bubbleConfig.sharpCorners)
-            let bubblePath = UIBezierPath.roundedRect(self.bounds,
-                                                      sharpCorners: sharpCorners,
-                                                      sharpCornerRadius: bubbleConfig.sharpCornerRadius,
-                                                      wideCornerRadius: bubbleConfig.wideCornerRadius)
+            let bubblePath = UIBezierPath.roundedRect(
+                self.bounds,
+                sharpCorners: sharpCorners,
+                sharpCornerRadius: bubbleConfig.sharpCornerRadius,
+                wideCornerRadius: bubbleConfig.wideCornerRadius,
+            )
 
             if sharpCorners == .allCorners || sharpCorners == [] {
                 // If all of the corners have the same radius, don't
                 // bother using a mask layer.
                 layer.cornerRadius = (sharpCorners == []
-                                        ? bubbleConfig.wideCornerRadius
-                                        : bubbleConfig.sharpCornerRadius)
+                    ? bubbleConfig.wideCornerRadius
+                    : bubbleConfig.sharpCornerRadius)
                 layer.mask = nil
                 layer.masksToBounds = true
             } else {
@@ -268,7 +282,7 @@ public class CVColorOrGradientView: ManualLayoutViewWithLayer {
         ensureSubviewLayout()
     }
 
-    public override func reset() {
+    override public func reset() {
         super.reset()
 
         self.referenceView = nil
@@ -283,7 +297,7 @@ public class CVColorOrGradientView: ManualLayoutViewWithLayer {
 
     // MARK: - CALayerDelegate
 
-    public override func action(for layer: CALayer, forKey event: String) -> CAAction? {
+    override public func action(for layer: CALayer, forKey event: String) -> CAAction? {
         // Disable all implicit CALayer animations if needed
         if animationsEnabled {
             return super.action(for: layer, forKey: event)
@@ -368,10 +382,12 @@ extension CVColorOrGradientView: OWSBubbleViewHost {
             return UIBezierPath()
         }
         let sharpCorners = UIView.uiRectCorner(forOWSDirectionalRectCorner: bubbleConfig.sharpCorners)
-        let bubblePath = UIBezierPath.roundedRect(self.bounds,
-                                                  sharpCorners: sharpCorners,
-                                                  sharpCornerRadius: bubbleConfig.sharpCornerRadius,
-                                                  wideCornerRadius: bubbleConfig.wideCornerRadius)
+        let bubblePath = UIBezierPath.roundedRect(
+            self.bounds,
+            sharpCorners: sharpCorners,
+            sharpCornerRadius: bubbleConfig.sharpCornerRadius,
+            wideCornerRadius: bubbleConfig.wideCornerRadius,
+        )
         return bubblePath
     }
 

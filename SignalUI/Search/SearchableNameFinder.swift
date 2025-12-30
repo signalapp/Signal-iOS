@@ -17,7 +17,7 @@ public class SearchableNameFinder {
         contactManager: any ContactManager,
         searchableNameIndexer: any SearchableNameIndexer,
         phoneNumberVisibilityFetcher: any PhoneNumberVisibilityFetcher,
-        recipientDatabaseTable: RecipientDatabaseTable
+        recipientDatabaseTable: RecipientDatabaseTable,
     ) {
         self.contactManager = contactManager
         self.searchableNameIndexer = searchableNameIndexer
@@ -31,13 +31,13 @@ public class SearchableNameFinder {
         localIdentifiers: LocalIdentifiers,
         tx: DBReadTransaction,
         addGroupThread: (TSGroupThread) -> Void,
-        addStoryThread: (TSPrivateStoryThread) -> Void
+        addStoryThread: (TSPrivateStoryThread) -> Void,
     ) throws(CancellationError) -> [SignalServiceAddress] {
         var contactMatches = ContactMatches()
         try searchableNameIndexer.search(
             for: searchText,
             maxResults: maxResults,
-            tx: tx
+            tx: tx,
         ) { indexableName throws(CancellationError) in
             if Task.isCancelled {
                 throw CancellationError()
@@ -54,7 +54,7 @@ public class SearchableNameFinder {
                 contactMatches.addResult(
                     for: signalRecipient,
                     phoneNumberVisibilityFetcher: phoneNumberVisibilityFetcher,
-                    tx: tx
+                    tx: tx,
                 )
 
             case let usernameLookupRecord as UsernameLookupRecord:
@@ -64,7 +64,7 @@ public class SearchableNameFinder {
                 contactMatches.addResult(
                     for: nicknameRecord,
                     recipientDatabaseTable: self.recipientDatabaseTable,
-                    tx: tx
+                    tx: tx,
                 )
 
             case let groupThread as TSGroupThread:
@@ -95,12 +95,12 @@ private struct ContactMatches {
 
     private var rawValue = [SignalServiceAddress: ContactMatch]()
 
-    public var count: Int { rawValue.count }
+    var count: Int { rawValue.count }
 
     mutating func addResult(
         for nickname: NicknameRecord,
         recipientDatabaseTable: RecipientDatabaseTable,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) {
         guard let recipient = recipientDatabaseTable.fetchRecipient(rowId: nickname.recipientRowID, tx: tx) else { return }
         let address = recipient.address
@@ -126,7 +126,7 @@ private struct ContactMatches {
     mutating func addResult(
         for signalRecipient: SignalRecipient,
         phoneNumberVisibilityFetcher: any PhoneNumberVisibilityFetcher,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) {
         guard signalRecipient.isRegistered else {
             return

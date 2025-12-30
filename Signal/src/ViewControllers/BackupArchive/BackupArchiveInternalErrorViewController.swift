@@ -12,11 +12,11 @@ import UIKit
 class BackupArchiveErrorPresenterFactoryInternal: BackupArchiveErrorPresenterFactory {
     func build(
         db: any DB,
-        tsAccountManager: TSAccountManager
+        tsAccountManager: TSAccountManager,
     ) -> BackupArchiveErrorPresenter {
         return BackupArchiveErrorPresenterInternal(
             db: db,
-            tsAccountManager: tsAccountManager
+            tsAccountManager: tsAccountManager,
         )
     }
 }
@@ -36,7 +36,7 @@ class BackupArchiveErrorPresenterInternal: BackupArchiveErrorPresenter {
 
     init(
         db: any DB,
-        tsAccountManager: TSAccountManager
+        tsAccountManager: TSAccountManager,
     ) {
         self.db = db
         self.tsAccountManager = tsAccountManager
@@ -46,7 +46,7 @@ class BackupArchiveErrorPresenterInternal: BackupArchiveErrorPresenter {
     func persistErrors(
         _ errors: [SignalServiceKit.BackupArchive.CollapsedErrorLog],
         didFail: Bool,
-        tx outerTx: DBWriteTransaction
+        tx outerTx: DBWriteTransaction,
     ) {
         guard BuildFlags.Backups.errorDisplay else {
             return
@@ -59,9 +59,9 @@ class BackupArchiveErrorPresenterInternal: BackupArchiveErrorPresenter {
         let stringified = errors
             .map {
                 var text = ($0.typeLogString) + "\n"
-                + "Were frames dropped? \($0.wasFrameDropped)\n"
-                + "Repeated \($0.errorCount) times, from: \($0.idLogStrings)\n"
-                + "Example callsite: \($0.exampleCallsiteString)"
+                    + "Were frames dropped? \($0.wasFrameDropped)\n"
+                    + "Repeated \($0.errorCount) times, from: \($0.idLogStrings)\n"
+                    + "Example callsite: \($0.exampleCallsiteString)"
                 if let exampleProtoFrameJson = $0.exampleProtoFrameJson {
                     text.append("\nProto:\n\(exampleProtoFrameJson)")
                 }
@@ -126,7 +126,7 @@ class BackupArchiveErrorPresenterInternal: BackupArchiveErrorPresenter {
             hadFatalError: hadFatalError,
             validationErrorString: validationErrorString,
             isRegistered: isRegistered,
-            completion: completion
+            completion: completion,
         )
         let navVc = OWSNavigationController(rootViewController: vc)
         UIApplication.shared.frontmostViewController?.present(navVc, animated: true)
@@ -151,7 +151,7 @@ private class BackupArchiveInternalErrorViewController: OWSViewController {
         hadFatalError: Bool,
         validationErrorString: String?,
         isRegistered: Bool,
-        completion: (() -> Void)?
+        completion: (() -> Void)?,
     ) {
         var text: String
         if hadFatalError {
@@ -161,9 +161,9 @@ private class BackupArchiveInternalErrorViewController: OWSViewController {
             text.append("\n\nSUCCESS SUCCESS SUCCESS\n\n")
         }
         text.append("""
-            \n\nPlease send the errors below to your nearest iOS dev.\n
-            Feel free to edit to remove any private info before sending.\n\n
-            """)
+        \n\nPlease send the errors below to your nearest iOS dev.\n
+        Feel free to edit to remove any private info before sending.\n\n
+        """)
 
         text.append("\n" + AppVersionImpl.shared.currentAppVersion4.debugDescription + "\n")
 
@@ -173,9 +173,9 @@ private class BackupArchiveInternalErrorViewController: OWSViewController {
             text.append(validationErrorString)
             text.append("\n\n------iOS errors------\n")
             text.append(errorString)
-        } else  if let errorString {
+        } else if let errorString {
             text.append(errorString)
-        } else  if let validationErrorString {
+        } else if let validationErrorString {
             text.append("------Validator error------\n")
             text.append(validationErrorString)
         }
@@ -187,7 +187,7 @@ private class BackupArchiveInternalErrorViewController: OWSViewController {
 
     // MARK: View Lifecycle
 
-    public override func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
 
         navigationItem.title = "Backup errors"
@@ -197,19 +197,19 @@ private class BackupArchiveInternalErrorViewController: OWSViewController {
         self.textView.contentOffset = CGPoint(x: 0, y: self.textView.contentInset.top)
     }
 
-    public override func viewDidDisappear(_ animated: Bool) {
+    override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
 
         completion?()
     }
 
-    public override func themeDidChange() {
+    override func themeDidChange() {
         super.themeDidChange()
 
         loadContent()
     }
 
-    public func loadContent() {
+    func loadContent() {
         view.backgroundColor = Theme.backgroundColor
         textView.backgroundColor = Theme.backgroundColor
         textView.textColor = Theme.primaryTextColor
@@ -252,9 +252,9 @@ private class BackupArchiveInternalErrorViewController: OWSViewController {
                 image: Theme.iconImage(.buttonShare),
                 style: .plain,
                 target: self,
-                action: #selector(shareButtonPressed)
+                action: #selector(shareButtonPressed),
             ),
-            .flexibleSpace()
+            .flexibleSpace(),
         ]
         if isRegistered {
             footerItems.append(.button(icon: .buttonForward, style: .plain) { [weak self] in
@@ -277,7 +277,7 @@ private class BackupArchiveInternalErrorViewController: OWSViewController {
         ForwardMessageViewController.present(
             forMessageBody: .init(text: textView.text, ranges: .empty),
             from: self,
-            delegate: self
+            delegate: self,
         )
     }
 }
@@ -288,7 +288,7 @@ extension BackupArchiveInternalErrorViewController: ForwardMessageDelegate {
             ForwardMessageViewController.finalizeForward(
                 items: items,
                 recipientThreads: recipientThreads,
-                fromViewController: self
+                fromViewController: self,
             )
         }
     }

@@ -90,12 +90,12 @@ class GetStartedBannerCell: UICollectionViewCell {
         imageView.autoPinEdge(.bottom, to: .top, of: actionButton, withOffset: -11)
 
         closeButton.block = { [weak self] in
-            guard let self = self else { return }
+            guard let self else { return }
             self.delegate?.didTapClose(self)
         }
 
         actionButton.block = { [weak self] in
-            guard let self = self else { return }
+            guard let self else { return }
             self.delegate?.didTapAction(self)
         }
 
@@ -103,7 +103,8 @@ class GetStartedBannerCell: UICollectionViewCell {
             self,
             selector: #selector(applyTheme),
             name: .themeDidChange,
-            object: nil)
+            object: nil,
+        )
 
         applyTheme()
     }

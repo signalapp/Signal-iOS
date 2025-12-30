@@ -58,7 +58,7 @@ class WindowManager {
 
     func updateWindowFrames() {
         let desiredFrame = CurrentAppContext().frame
-        for window in [ rootWindow!, callViewWindow, screenBlockingWindow! ] {
+        for window in [rootWindow!, callViewWindow, screenBlockingWindow!] {
             guard window.frame != desiredFrame else { continue }
             window.frame = desiredFrame
         }
@@ -85,6 +85,7 @@ class WindowManager {
 
         return window
     }()
+
     private lazy var returnToCallViewController = ReturnToCallViewController()
 
     // UIWindow.Level._callView
@@ -139,7 +140,7 @@ class WindowManager {
             ensureCallViewWindowHidden()
         }
         // Show Call View
-        else if shouldShowCallView && callViewController != nil {
+        else if shouldShowCallView, callViewController != nil {
             ensureCallViewWindowShown()
             ensureRootWindowHidden()
             ensureReturnToCallWindowHidden()

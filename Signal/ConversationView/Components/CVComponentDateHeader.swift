@@ -19,6 +19,7 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
     struct State: Equatable {
         let text: String
     }
+
     private let dateHeaderState: State
 
     init(itemModel: CVItemModel, dateHeaderState: State) {
@@ -27,23 +28,27 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
         super.init(itemModel: itemModel)
     }
 
-    public func configureCellRootComponent(cellView: UIView,
-                                           cellMeasurement: CVCellMeasurement,
-                                           componentDelegate: CVComponentDelegate,
-                                           messageSwipeActionState: CVMessageSwipeActionState,
-                                           componentView: CVComponentView) {
-        Self.configureCellRootComponent(rootComponent: self,
-                                        cellView: cellView,
-                                        cellMeasurement: cellMeasurement,
-                                        componentDelegate: componentDelegate,
-                                        componentView: componentView)
+    public func configureCellRootComponent(
+        cellView: UIView,
+        cellMeasurement: CVCellMeasurement,
+        componentDelegate: CVComponentDelegate,
+        messageSwipeActionState: CVMessageSwipeActionState,
+        componentView: CVComponentView,
+    ) {
+        Self.configureCellRootComponent(
+            rootComponent: self,
+            cellView: cellView,
+            cellMeasurement: cellMeasurement,
+            componentDelegate: componentDelegate,
+            componentView: componentView,
+        )
     }
 
     public func buildComponentView(componentDelegate: CVComponentDelegate) -> CVComponentView {
         CVComponentViewDateHeader()
     }
 
-    public override func wallpaperBlurView(componentView: CVComponentView) -> CVWallpaperBlurView? {
+    override public func wallpaperBlurView(componentView: CVComponentView) -> CVWallpaperBlurView? {
         guard let componentView = componentView as? CVComponentViewDateHeader else {
             owsFailDebug("Unexpected componentView.")
             return nil
@@ -51,8 +56,10 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
         return componentView.plainContentView?.wallpaperBlurView
     }
 
-    public override func apply(layoutAttributes: CVCollectionViewLayoutAttributes,
-                               componentView: CVComponentView) {
+    override public func apply(
+        layoutAttributes: CVCollectionViewLayoutAttributes,
+        componentView: CVComponentView,
+    ) {
         guard let componentView = componentView as? CVComponentViewDateHeader else {
             owsFailDebug("Unexpected componentView.")
             return
@@ -69,9 +76,11 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
         let stickyView: UIView
     }
 
-    public func configureForRendering(componentView: CVComponentView,
-                                      cellMeasurement: CVCellMeasurement,
-                                      componentDelegate: CVComponentDelegate) {
+    public func configureForRendering(
+        componentView: CVComponentView,
+        cellMeasurement: CVCellMeasurement,
+        componentDelegate: CVComponentDelegate,
+    ) {
         guard let componentView = componentView as? CVComponentViewDateHeader else {
             owsFailDebug("Unexpected componentView.")
             return
@@ -82,8 +91,8 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
         let wallpaperModeHasChanged = hasWallpaper != componentView.hasWallpaper
 
         let isReusing = (componentView.rootView.superview != nil &&
-                         !themeHasChanged &&
-                         !wallpaperModeHasChanged)
+            !themeHasChanged &&
+            !wallpaperModeHasChanged)
         if !isReusing {
             componentView.reset(resetReusableState: true)
         }
@@ -103,23 +112,29 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
         }()
 
         if isReusing {
-            outerStack.configureForReuse(config: outerStackConfig,
-                                         cellMeasurement: cellMeasurement,
-                                         measurementKey: Self.measurementKey_outerStack)
+            outerStack.configureForReuse(
+                config: outerStackConfig,
+                cellMeasurement: cellMeasurement,
+                measurementKey: Self.measurementKey_outerStack,
+            )
 
             let plainContentView = componentView.plainContentView
-            plainContentView?.configure(componentView: componentView,
-                                        cellMeasurement: cellMeasurement,
-                                        componentDelegate: componentDelegate,
-                                        hasWallpaper: hasWallpaper,
-                                        titleLabelConfig: titleLabelConfigForPlainContentView,
-                                        innerStackConfig: innerStackConfig,
-                                        isReusing: true)
+            plainContentView?.configure(
+                componentView: componentView,
+                cellMeasurement: cellMeasurement,
+                componentDelegate: componentDelegate,
+                hasWallpaper: hasWallpaper,
+                titleLabelConfig: titleLabelConfigForPlainContentView,
+                innerStackConfig: innerStackConfig,
+                isReusing: true,
+            )
 
             let contentViewVisualEffect = componentView.visualEffectContentView
-            contentViewVisualEffect?.configure(blurBackgroundColor: blurBackgroundColor,
-                                               titleLabelConfig: titleLabelConfigForVisualEffectContentView,
-                                               innerStackConfig: innerStackConfig)
+            contentViewVisualEffect?.configure(
+                blurBackgroundColor: blurBackgroundColor,
+                titleLabelConfig: titleLabelConfigForVisualEffectContentView,
+                innerStackConfig: innerStackConfig,
+            )
         } else {
             outerStack.reset()
             doubleContentWrapper.reset()
@@ -127,20 +142,24 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
             let contentView: UIView = {
                 func buildPlainContentView() -> UIView {
                     let contentView = componentView.ensurePlainContentView()
-                    contentView.configure(componentView: componentView,
-                                          cellMeasurement: cellMeasurement,
-                                          componentDelegate: componentDelegate,
-                                          hasWallpaper: hasWallpaper,
-                                          titleLabelConfig: titleLabelConfigForPlainContentView,
-                                          innerStackConfig: innerStackConfig,
-                                          isReusing: false)
+                    contentView.configure(
+                        componentView: componentView,
+                        cellMeasurement: cellMeasurement,
+                        componentDelegate: componentDelegate,
+                        hasWallpaper: hasWallpaper,
+                        titleLabelConfig: titleLabelConfigForPlainContentView,
+                        innerStackConfig: innerStackConfig,
+                        isReusing: false,
+                    )
                     return contentView.rootView
                 }
                 func buildVisualEffectContentView() -> UIView {
                     let contentView = componentView.ensureVisualEffectContentView()
-                    contentView.configure(blurBackgroundColor: blurBackgroundColor,
-                                          titleLabelConfig: titleLabelConfigForVisualEffectContentView,
-                                          innerStackConfig: innerStackConfig)
+                    contentView.configure(
+                        blurBackgroundColor: blurBackgroundColor,
+                        titleLabelConfig: titleLabelConfigForVisualEffectContentView,
+                        innerStackConfig: innerStackConfig,
+                    )
                     return contentView.rootView
                 }
 
@@ -158,16 +177,20 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
                     let visualEffectContentView = buildVisualEffectContentView()
                     doubleContentWrapper.addSubviewToFillSuperviewEdges(plainContentView)
                     doubleContentWrapper.addSubviewToFillSuperviewEdges(visualEffectContentView)
-                    componentView.doubleContentView = DoubleContentView(normalView: plainContentView,
-                                                                        stickyView: visualEffectContentView)
+                    componentView.doubleContentView = DoubleContentView(
+                        normalView: plainContentView,
+                        stickyView: visualEffectContentView,
+                    )
                     return doubleContentWrapper
                 }
             }()
 
-            outerStack.configure(config: outerStackConfig,
-                                 cellMeasurement: cellMeasurement,
-                                 measurementKey: Self.measurementKey_outerStack,
-                                 subviews: [ contentView ])
+            outerStack.configure(
+                config: outerStackConfig,
+                cellMeasurement: cellMeasurement,
+                measurementKey: Self.measurementKey_outerStack,
+                subviews: [contentView],
+            )
         }
 
         componentView.rootView.accessibilityLabel = titleLabelConfigForPlainContentView.text.accessibilityDescription
@@ -188,7 +211,7 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
             font: UIFont.dynamicTypeFootnote.semibold(),
             textColor: textColor,
             lineBreakMode: .byTruncatingTail,
-            textAlignment: .center
+            textAlignment: .center,
         )
     }
 
@@ -207,20 +230,26 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
     }
 
     private var outerStackConfig: CVStackViewConfig {
-        CVStackViewConfig(axis: .vertical,
-                          alignment: .center,
-                          spacing: 0,
-                          layoutMargins: UIEdgeInsets(top: 0,
-                                                      leading: conversationStyle.headerGutterLeading,
-                                                      bottom: 0,
-                                                      trailing: conversationStyle.headerGutterTrailing))
+        CVStackViewConfig(
+            axis: .vertical,
+            alignment: .center,
+            spacing: 0,
+            layoutMargins: UIEdgeInsets(
+                top: 0,
+                leading: conversationStyle.headerGutterLeading,
+                bottom: 0,
+                trailing: conversationStyle.headerGutterTrailing,
+            ),
+        )
     }
 
     private var innerStackConfig: CVStackViewConfig {
-        CVStackViewConfig(axis: .vertical,
-                          alignment: .center,
-                          spacing: 0,
-                          layoutMargins: UIEdgeInsets(hMargin: 10, vMargin: 4))
+        CVStackViewConfig(
+            axis: .vertical,
+            alignment: .center,
+            spacing: 0,
+            layoutMargins: UIEdgeInsets(hMargin: 10, vMargin: 4),
+        )
     }
 
     fileprivate static let measurementKey_outerStack = "CVComponentDateHeader.measurementKey_outerStack"
@@ -229,22 +258,29 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
         owsAssertDebug(maxWidth > 0)
 
-        let availableWidth = max(0, maxWidth -
-                                 (innerStackConfig.layoutMargins.totalWidth +
-                                  outerStackConfig.layoutMargins.totalWidth))
+        let availableWidth = max(
+            0,
+            maxWidth -
+                (innerStackConfig.layoutMargins.totalWidth +
+                    outerStackConfig.layoutMargins.totalWidth),
+        )
         let labelSize = CVText.measureLabel(config: titleLabelConfigForPlainContentView, maxWidth: availableWidth)
 
         let labelInfo = labelSize.asManualSubviewInfo
-        let innerStackMeasurement = ManualStackView.measure(config: innerStackConfig,
-                                                            measurementBuilder: measurementBuilder,
-                                                            measurementKey: Self.measurementKey_innerStack,
-                                                            subviewInfos: [ labelInfo ])
+        let innerStackMeasurement = ManualStackView.measure(
+            config: innerStackConfig,
+            measurementBuilder: measurementBuilder,
+            measurementKey: Self.measurementKey_innerStack,
+            subviewInfos: [labelInfo],
+        )
         let innerStackInfo = innerStackMeasurement.measuredSize.asManualSubviewInfo
-        let outerStackMeasurement = ManualStackView.measure(config: outerStackConfig,
-                                                            measurementBuilder: measurementBuilder,
-                                                            measurementKey: Self.measurementKey_outerStack,
-                                                            subviewInfos: [ innerStackInfo ],
-                                                            maxWidth: maxWidth)
+        let outerStackMeasurement = ManualStackView.measure(
+            config: outerStackConfig,
+            measurementBuilder: measurementBuilder,
+            measurementKey: Self.measurementKey_outerStack,
+            subviewInfos: [innerStackInfo],
+            maxWidth: maxWidth,
+        )
         return outerStackMeasurement.measuredSize
     }
 
@@ -390,9 +426,11 @@ private class ContentViewWithGlassEffect: VisualEffectContentView {
         self.wrapper = ManualLayoutView.wrapSubviewUsingIOSAutoLayout(glassView)
     }
 
-    func configure(blurBackgroundColor: UIColor,
-                   titleLabelConfig: CVLabelConfig,
-                   innerStackConfig: CVStackViewConfig) {
+    func configure(
+        blurBackgroundColor: UIColor,
+        titleLabelConfig: CVLabelConfig,
+        innerStackConfig: CVStackViewConfig,
+    ) {
 
         titleLabelConfig.applyForRendering(label: titleLabel)
 
@@ -433,13 +471,15 @@ private class ContentViewNoVisualEffect {
         return wallpaperBlurView
     }
 
-    func configure(componentView: CVComponentDateHeader.CVComponentViewDateHeader,
-                   cellMeasurement: CVCellMeasurement,
-                   componentDelegate: CVComponentDelegate,
-                   hasWallpaper: Bool,
-                   titleLabelConfig: CVLabelConfig,
-                   innerStackConfig: CVStackViewConfig,
-                   isReusing: Bool) {
+    func configure(
+        componentView: CVComponentDateHeader.CVComponentViewDateHeader,
+        cellMeasurement: CVCellMeasurement,
+        componentDelegate: CVComponentDelegate,
+        hasWallpaper: Bool,
+        titleLabelConfig: CVLabelConfig,
+        innerStackConfig: CVStackViewConfig,
+        isReusing: Bool,
+    ) {
 
         if !isReusing {
             reset(resetReusableState: true)
@@ -448,25 +488,31 @@ private class ContentViewNoVisualEffect {
         titleLabelConfig.applyForRendering(label: titleLabel)
 
         if isReusing {
-            innerStack.configureForReuse(config: innerStackConfig,
-                                         cellMeasurement: cellMeasurement,
-                                         measurementKey: CVComponentDateHeader.measurementKey_innerStack)
+            innerStack.configureForReuse(
+                config: innerStackConfig,
+                cellMeasurement: cellMeasurement,
+                measurementKey: CVComponentDateHeader.measurementKey_innerStack,
+            )
         } else {
             if hasWallpaper {
                 let wallpaperBlurView = ensureWallpaperBlurView()
-                CVComponentBase.configureWallpaperBlurView(wallpaperBlurView: wallpaperBlurView,
-                                                           maskCornerRadius: 8,
-                                                           componentDelegate: componentDelegate)
+                CVComponentBase.configureWallpaperBlurView(
+                    wallpaperBlurView: wallpaperBlurView,
+                    maskCornerRadius: 8,
+                    componentDelegate: componentDelegate,
+                )
                 innerStack.addSubviewToFillSuperviewEdges(wallpaperBlurView)
             }
-            innerStack.configure(config: innerStackConfig,
-                                 cellMeasurement: cellMeasurement,
-                                 measurementKey: CVComponentDateHeader.measurementKey_innerStack,
-                                 subviews: [ titleLabel ])
+            innerStack.configure(
+                config: innerStackConfig,
+                cellMeasurement: cellMeasurement,
+                measurementKey: CVComponentDateHeader.measurementKey_innerStack,
+                subviews: [titleLabel],
+            )
         }
     }
 
-    public func reset(resetReusableState: Bool) {
+    func reset(resetReusableState: Bool) {
         if resetReusableState {
             innerStack.reset()
 

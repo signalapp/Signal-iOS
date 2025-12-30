@@ -14,7 +14,7 @@ class RegistrationLoadingViewController: OWSViewController, OWSNavigationChildCo
         case restoringBackup(BackupProgressModal)
     }
 
-    public init(mode: RegistrationLoadingMode) {
+    init(mode: RegistrationLoadingMode) {
         spinnerView = AnimatedProgressView(loadingText: {
             switch mode {
             case .generic:
@@ -22,13 +22,13 @@ class RegistrationLoadingViewController: OWSViewController, OWSNavigationChildCo
             case let .submittingPhoneNumber(e164):
                 let format = OWSLocalizedString(
                     "REGISTRATION_VIEW_PHONE_NUMBER_SPINNER_LABEL_FORMAT",
-                    comment: "Label for the progress spinner shown during phone number registration. Embeds {{phone number}}."
+                    comment: "Label for the progress spinner shown during phone number registration. Embeds {{phone number}}.",
                 )
                 return String(format: format, e164.e164FormattedAsPhoneNumberWithoutBreaks)
             case .submittingVerificationCode:
                 return OWSLocalizedString(
                     "ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL",
-                    comment: "Label for a progress spinner currently validating code"
+                    comment: "Label for a progress spinner currently validating code",
                 )
             case .restoringBackup:
                 // TODO: [Backups] localize
@@ -43,23 +43,23 @@ class RegistrationLoadingViewController: OWSViewController, OWSNavigationChildCo
     }
 
     @available(*, unavailable)
-    public override init() {
+    override init() {
         owsFail("This should not be called")
     }
 
     // MARK: OWSNavigationChildController
 
-    public var preferredNavigationBarStyle: OWSNavigationBarStyle { .solid }
+    var preferredNavigationBarStyle: OWSNavigationBarStyle { .solid }
 
-    public var navbarBackgroundColorOverride: UIColor? { .clear }
+    var navbarBackgroundColorOverride: UIColor? { .clear }
 
-    public var prefersNavigationBarHidden: Bool { true }
+    var prefersNavigationBarHidden: Bool { true }
 
     // MARK: - Rendering
 
     private let spinnerView: AnimatedProgressView
 
-    public override func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
 
         view.backgroundColor = .Signal.background
@@ -73,7 +73,7 @@ class RegistrationLoadingViewController: OWSViewController, OWSNavigationChildCo
         ])
     }
 
-    public override func viewWillAppear(_ animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         if spinnerView.isAnimating.negated {
             spinnerView.startAnimating()

@@ -12,8 +12,10 @@ public class CVComponentLinkPreview: CVComponentBase, CVComponent {
 
     private let linkPreviewState: CVComponentState.LinkPreview
 
-    init(itemModel: CVItemModel,
-         linkPreviewState: CVComponentState.LinkPreview) {
+    init(
+        itemModel: CVItemModel,
+        linkPreviewState: CVComponentState.LinkPreview,
+    ) {
         self.linkPreviewState = linkPreviewState
 
         super.init(itemModel: itemModel)
@@ -23,9 +25,11 @@ public class CVComponentLinkPreview: CVComponentBase, CVComponent {
         CVComponentViewLinkPreview()
     }
 
-    public func configureForRendering(componentView componentViewParam: CVComponentView,
-                                      cellMeasurement: CVCellMeasurement,
-                                      componentDelegate: CVComponentDelegate) {
+    public func configureForRendering(
+        componentView componentViewParam: CVComponentView,
+        cellMeasurement: CVCellMeasurement,
+        componentDelegate: CVComponentDelegate,
+    ) {
         guard let componentView = componentViewParam as? CVComponentViewLinkPreview else {
             owsFailDebug("Unexpected componentView.")
             componentViewParam.reset()
@@ -33,35 +37,43 @@ public class CVComponentLinkPreview: CVComponentBase, CVComponent {
         }
 
         let linkPreviewView = componentView.linkPreviewView
-        linkPreviewView.configureForRendering(state: linkPreviewState.state,
-                                              isDraft: false,
-                                              hasAsymmetricalRounding: false,
-                                              cellMeasurement: cellMeasurement)
+        linkPreviewView.configureForRendering(
+            state: linkPreviewState.state,
+            isDraft: false,
+            hasAsymmetricalRounding: false,
+            cellMeasurement: cellMeasurement,
+        )
     }
 
     private var stackConfig: CVStackViewConfig {
-        CVStackViewConfig(axis: .vertical,
-                          alignment: .fill,
-                          spacing: 0,
-                          layoutMargins: .zero)
+        CVStackViewConfig(
+            axis: .vertical,
+            alignment: .fill,
+            spacing: 0,
+            layoutMargins: .zero,
+        )
     }
 
     public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
         owsAssertDebug(maxWidth > 0)
 
         let maxWidth = min(maxWidth, conversationStyle.maxMediaMessageWidth)
-        return LinkPreviewView.measure(maxWidth: maxWidth,
-                                       measurementBuilder: measurementBuilder,
-                                       state: linkPreviewState.state,
-                                       isDraft: false)
+        return LinkPreviewView.measure(
+            maxWidth: maxWidth,
+            measurementBuilder: measurementBuilder,
+            state: linkPreviewState.state,
+            isDraft: false,
+        )
     }
 
     // MARK: - Events
 
-    public override func handleTap(sender: UIGestureRecognizer,
-                                   componentDelegate: CVComponentDelegate,
-                                   componentView: CVComponentView,
-                                   renderItem: CVRenderItem) -> Bool {
+    override public func handleTap(
+        sender: UIGestureRecognizer,
+        componentDelegate: CVComponentDelegate,
+        componentView: CVComponentView,
+        renderItem: CVRenderItem,
+    ) -> Bool {
 
         componentDelegate.didTapLinkPreview(linkPreviewState.linkPreview)
         return true

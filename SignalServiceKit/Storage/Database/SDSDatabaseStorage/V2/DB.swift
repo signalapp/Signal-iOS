@@ -15,7 +15,7 @@ public protocol DB {
         line: Int,
         block: @escaping (DBReadTransaction) -> T,
         completionQueue: DispatchQueue,
-        completion: ((T) -> Void)?
+        completion: ((T) -> Void)?,
     )
 
     func asyncWrite<T>(
@@ -24,7 +24,7 @@ public protocol DB {
         line: Int,
         block: @escaping (DBWriteTransaction) -> T,
         completionQueue: DispatchQueue,
-        completion: ((T) -> Void)?
+        completion: ((T) -> Void)?,
     )
 
     // MARK: - Awaitable Methods
@@ -33,14 +33,14 @@ public protocol DB {
         file: String,
         function: String,
         line: Int,
-        block: (DBWriteTransaction) throws(E) -> T
+        block: (DBWriteTransaction) throws(E) -> T,
     ) async throws(E) -> T
 
     func awaitableWriteWithRollbackIfThrows<T, E>(
         file: String,
         function: String,
         line: Int,
-        block: (DBWriteTransaction) throws(E) -> T
+        block: (DBWriteTransaction) throws(E) -> T,
     ) async throws(E) -> T
 
     // MARK: - Value Methods
@@ -49,28 +49,28 @@ public protocol DB {
         file: String,
         function: String,
         line: Int,
-        block: (DBReadTransaction) throws(E) -> T
+        block: (DBReadTransaction) throws(E) -> T,
     ) throws(E) -> T
 
     func write<T, E>(
         file: String,
         function: String,
         line: Int,
-        block: (DBWriteTransaction) throws(E) -> T
+        block: (DBWriteTransaction) throws(E) -> T,
     ) throws(E) -> T
 
     func writeWithRollbackIfThrows<T, E>(
         file: String,
         function: String,
         line: Int,
-        block: (DBWriteTransaction) throws(E) -> T
+        block: (DBWriteTransaction) throws(E) -> T,
     ) throws(E) -> T
 
     // MARK: - Observation
 
     func add(
         transactionObserver: TransactionObserver,
-        extent: Database.TransactionObservationExtent
+        extent: Database.TransactionObservationExtent,
     )
 
     // MARK: - Touching
@@ -95,7 +95,7 @@ extension DB {
         line: Int = #line,
         block: @escaping (DBReadTransaction) -> T,
         completionQueue: DispatchQueue = .main,
-        completion: ((T) -> Void)? = nil
+        completion: ((T) -> Void)? = nil,
     ) {
         asyncRead(file: file, function: function, line: line, block: block, completionQueue: completionQueue, completion: completion)
     }
@@ -106,7 +106,7 @@ extension DB {
         line: Int = #line,
         block: @escaping (DBWriteTransaction) -> T,
         completionQueue: DispatchQueue = .main,
-        completion: ((T) -> Void)? = nil
+        completion: ((T) -> Void)? = nil,
     ) {
         asyncWrite(file: file, function: function, line: line, block: block, completionQueue: completionQueue, completion: completion)
     }
@@ -117,7 +117,7 @@ extension DB {
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        block: (DBWriteTransaction) throws(E) -> T
+        block: (DBWriteTransaction) throws(E) -> T,
     ) async throws(E) -> T {
         return try await awaitableWrite(file: file, function: function, line: line, block: block)
     }
@@ -126,7 +126,7 @@ extension DB {
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        block: (DBWriteTransaction) throws(E) -> T
+        block: (DBWriteTransaction) throws(E) -> T,
     ) async throws(E) -> T {
         return try await awaitableWriteWithRollbackIfThrows(file: file, function: function, line: line, block: block)
     }
@@ -137,7 +137,7 @@ extension DB {
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        block: (DBReadTransaction) throws(E) -> T
+        block: (DBReadTransaction) throws(E) -> T,
     ) throws(E) -> T {
         return try read(file: file, function: function, line: line, block: block)
     }
@@ -146,7 +146,7 @@ extension DB {
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        block: (DBWriteTransaction) throws(E) -> T
+        block: (DBWriteTransaction) throws(E) -> T,
     ) throws(E) -> T {
         return try write(file: file, function: function, line: line, block: block)
     }
@@ -155,7 +155,7 @@ extension DB {
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        block: (DBWriteTransaction) throws(E) -> T
+        block: (DBWriteTransaction) throws(E) -> T,
     ) throws(E) -> T {
         return try writeWithRollbackIfThrows(file: file, function: function, line: line, block: block)
     }

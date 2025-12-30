@@ -14,7 +14,7 @@ public final class OutgoingEditMessage: TSOutgoingMessage {
         super.init(coder: coder)
     }
 
-    public override func encode(with coder: NSCoder) {
+    override public func encode(with coder: NSCoder) {
         super.encode(with: coder)
         if let editedMessage {
             coder.encode(editedMessage, forKey: "editedMessage")
@@ -22,7 +22,7 @@ public final class OutgoingEditMessage: TSOutgoingMessage {
         coder.encode(NSNumber(value: self.targetMessageTimestamp), forKey: "targetMessageTimestamp")
     }
 
-    public override var hash: Int {
+    override public var hash: Int {
         var hasher = Hasher()
         hasher.combine(super.hash)
         hasher.combine(editedMessage)
@@ -30,7 +30,7 @@ public final class OutgoingEditMessage: TSOutgoingMessage {
         return hasher.finalize()
     }
 
-    public override func isEqual(_ object: Any?) -> Bool {
+    override public func isEqual(_ object: Any?) -> Bool {
         guard let object = object as? Self else { return false }
         guard super.isEqual(object) else { return false }
         guard self.editedMessage == object.editedMessage else { return false }
@@ -38,7 +38,7 @@ public final class OutgoingEditMessage: TSOutgoingMessage {
         return true
     }
 
-    public override func copy(with zone: NSZone? = nil) -> Any {
+    override public func copy(with zone: NSZone? = nil) -> Any {
         let result = super.copy(with: zone) as! Self
         result.editedMessage = self.editedMessage
         result.targetMessageTimestamp = self.targetMessageTimestamp
@@ -56,10 +56,10 @@ public final class OutgoingEditMessage: TSOutgoingMessage {
     // MARK: - Overrides
 
     @objc
-    public override var shouldBeSaved: Bool { false }
+    override public var shouldBeSaved: Bool { false }
 
     @objc
-    public override var debugDescription: String { "editMessage" }
+    override public var debugDescription: String { "editMessage" }
 
     @objc
     override var shouldRecordSendLog: Bool { true }
@@ -74,29 +74,29 @@ public final class OutgoingEditMessage: TSOutgoingMessage {
         thread: TSThread,
         targetMessageTimestamp: UInt64,
         editMessage: TSOutgoingMessage,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) {
         self.targetMessageTimestamp = targetMessageTimestamp
         self.editedMessage = editMessage
 
         let builder: TSOutgoingMessageBuilder = .withDefaultValues(
             thread: thread,
-            timestamp: editMessage.timestamp
+            timestamp: editMessage.timestamp,
         )
         super.init(
             outgoingMessageWith: builder,
             additionalRecipients: [],
             explicitRecipients: [],
             skippedRecipients: [],
-            transaction: transaction
+            transaction: transaction,
         )
     }
 
     // MARK: - Builders
 
-    public override func contentBuilder(
+    override public func contentBuilder(
         thread: TSThread,
-        transaction tx: DBReadTransaction
+        transaction tx: DBReadTransaction,
     ) -> SSKProtoContentBuilder? {
 
         let editBuilder = SSKProtoEditMessage.builder()
@@ -123,19 +123,19 @@ public final class OutgoingEditMessage: TSOutgoingMessage {
         }
     }
 
-    public override func dataMessageBuilder(
+    override public func dataMessageBuilder(
         with thread: TSThread,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> SSKProtoDataMessageBuilder? {
         return editedMessage?.dataMessageBuilder(
             with: thread,
-            transaction: transaction
+            transaction: transaction,
         )
     }
 
-    public override func buildTranscriptSyncMessage(
+    override public func buildTranscriptSyncMessage(
         localThread: TSContactThread,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) -> OWSOutgoingSyncMessage? {
         guard let thread = thread(tx: transaction) else {
             owsFailDebug("Missing thread for interaction.")
@@ -147,7 +147,7 @@ public final class OutgoingEditMessage: TSOutgoingMessage {
             messageThread: thread,
             outgoingMessage: self,
             isRecipientUpdate: false,
-            transaction: transaction
+            transaction: transaction,
         )
         return transcript
     }
@@ -158,9 +158,9 @@ public final class OutgoingEditMessage: TSOutgoingMessage {
     /// entry in the interactions table. Instead, when updating this message,
     /// ensure that the `recipientAddressStates` are in sync between the
     /// OutgoingEditMessage and its wrapped TSOutgoingMessage.
-    public override func anyUpdateOutgoingMessage(
+    override public func anyUpdateOutgoingMessage(
         transaction tx: DBWriteTransaction,
-        block: (TSOutgoingMessage) -> Void
+        block: (TSOutgoingMessage) -> Void,
     ) {
         super.anyUpdateOutgoingMessage(transaction: tx, block: block)
 

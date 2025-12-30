@@ -43,6 +43,7 @@ public final class Future<Value> {
             observersUnsynchronized.append(execute)
         }
     }
+
     private func sealResult(_ result: ResultType) {
         let observers: [(ResultType) -> Void] = lock.withLock {
             guard self.resultUnsynchronized == nil else { return [] }
@@ -62,7 +63,7 @@ public final class Future<Value> {
 
     public func resolve<T: Thenable>(
         on scheduler: Scheduler? = nil,
-        with thenable: T
+        with thenable: T,
     ) where T.Value == Value {
         thenable.done(on: scheduler) { value in
             self.sealResult(.success(value))

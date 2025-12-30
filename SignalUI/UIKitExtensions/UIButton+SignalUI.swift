@@ -36,26 +36,26 @@ public extension UIButton {
                 top: ows_contentEdgeInsets.top,
                 left: padding,
                 bottom: ows_contentEdgeInsets.bottom,
-                right: ows_contentEdgeInsets.right
+                right: ows_contentEdgeInsets.right,
             )
             ows_titleEdgeInsets = .init(
                 top: ows_titleEdgeInsets.top,
                 left: -padding,
                 bottom: ows_titleEdgeInsets.bottom,
-                right: padding
+                right: padding,
             )
         } else {
             ows_contentEdgeInsets = .init(
                 top: ows_contentEdgeInsets.top,
                 left: ows_contentEdgeInsets.left,
                 bottom: ows_contentEdgeInsets.bottom,
-                right: padding
+                right: padding,
             )
             ows_titleEdgeInsets = .init(
                 top: ows_titleEdgeInsets.top,
                 left: padding,
                 bottom: ows_titleEdgeInsets.bottom,
-                right: -padding
+                right: -padding,
             )
         }
     }
@@ -272,7 +272,7 @@ public extension UIBarButtonItem {
         style: UIBarButtonItem.Style,
         target: Any?,
         action: Selector?,
-        accessibilityIdentifier: String
+        accessibilityIdentifier: String,
     ) {
         self.init(image: image, style: style, target: target, action: action)
         self.accessibilityIdentifier = accessibilityIdentifier
@@ -284,7 +284,7 @@ public extension UIBarButtonItem {
         style: UIBarButtonItem.Style,
         target: Any?,
         action: Selector?,
-        accessibilityIdentifier: String
+        accessibilityIdentifier: String,
     ) {
         self.init(image: image, landscapeImagePhone: landscapeImagePhone, style: style, target: target, action: action)
         self.accessibilityIdentifier = accessibilityIdentifier
@@ -295,7 +295,7 @@ public extension UIBarButtonItem {
         style: UIBarButtonItem.Style,
         target: Any?,
         action: Selector?,
-        accessibilityIdentifier: String
+        accessibilityIdentifier: String,
     ) {
         self.init(title: title, style: style, target: target, action: action)
         self.accessibilityIdentifier = accessibilityIdentifier
@@ -305,7 +305,7 @@ public extension UIBarButtonItem {
         barButtonSystemItem systemItem: UIBarButtonItem.SystemItem,
         target: Any?,
         action: Selector?,
-        accessibilityIdentifier: String
+        accessibilityIdentifier: String,
     ) {
         self.init(barButtonSystemItem: systemItem, target: target, action: action)
         self.accessibilityIdentifier = accessibilityIdentifier
@@ -322,6 +322,7 @@ public extension UIBarButtonItem {
             init(actionClosure: @escaping () -> Void) {
                 self.actionClosure = actionClosure
             }
+
             @objc
             func action() {
                 actionClosure()
@@ -332,7 +333,7 @@ public extension UIBarButtonItem {
 
         convenience init(
             systemItem: UIBarButtonItem.SystemItem,
-            action: @escaping () -> Void
+            action: @escaping () -> Void,
         ) {
             let handler = Handler(actionClosure: action)
             // The `Handler` type exists because we can't
@@ -345,7 +346,7 @@ public extension UIBarButtonItem {
         convenience init(
             title: String,
             style: UIBarButtonItem.Style,
-            action: @escaping () -> Void
+            action: @escaping () -> Void,
         ) {
             let handler = Handler(actionClosure: action)
             self.init(title: title, style: style, target: handler, action: #selector(handler.action))
@@ -355,7 +356,7 @@ public extension UIBarButtonItem {
         convenience init(
             image: UIImage,
             style: UIBarButtonItem.Style,
-            action: @escaping () -> Void
+            action: @escaping () -> Void,
         ) {
             let handler = Handler(actionClosure: action)
             self.init(image: image, style: style, target: handler, action: #selector(handler.action))
@@ -367,7 +368,7 @@ public extension UIBarButtonItem {
     static func button(
         title: String,
         style: UIBarButtonItem.Style,
-        action: @escaping () -> Void
+        action: @escaping () -> Void,
     ) -> UIBarButtonItem {
         ClosureBarButtonItem(title: title, style: style, action: action)
     }
@@ -376,7 +377,7 @@ public extension UIBarButtonItem {
     static func button(
         icon: ThemeIcon,
         style: UIBarButtonItem.Style,
-        action: @escaping () -> Void
+        action: @escaping () -> Void,
     ) -> UIBarButtonItem {
         ClosureBarButtonItem(image: Theme.iconImage(icon), style: style, action: action)
     }
@@ -385,7 +386,7 @@ public extension UIBarButtonItem {
     static func button(
         image: UIImage,
         style: UIBarButtonItem.Style,
-        action: @escaping () -> Void
+        action: @escaping () -> Void,
     ) -> UIBarButtonItem {
         ClosureBarButtonItem(image: image, style: style, action: action)
     }
@@ -401,7 +402,7 @@ public extension UIBarButtonItem {
     /// - Returns: A new `UIBarButtonItem`.
     static func systemItem(
         _ systemItem: UIBarButtonItem.SystemItem,
-        action: @escaping () -> Void
+        action: @escaping () -> Void,
     ) -> UIBarButtonItem {
         ClosureBarButtonItem(systemItem: systemItem, action: action)
     }
@@ -420,7 +421,7 @@ public extension UIBarButtonItem {
     static func cancelButton(
         dismissingFrom viewController: UIViewController?,
         animated: Bool = true,
-        completion: (() -> Void)? = nil
+        completion: (() -> Void)? = nil,
     ) -> UIBarButtonItem {
         Self.cancelButton { [weak viewController] in
             viewController?.dismiss(animated: animated, completion: completion)
@@ -440,7 +441,7 @@ public extension UIBarButtonItem {
         dismissingFrom viewController: UIViewController?,
         hasUnsavedChanges: @escaping () -> Bool?,
         animated: Bool = true,
-        completion: (() -> Void)? = nil
+        completion: (() -> Void)? = nil,
     ) -> UIBarButtonItem {
         Self.cancelButton { [weak viewController] in
             if hasUnsavedChanges() == true {
@@ -460,7 +461,7 @@ public extension UIBarButtonItem {
     /// - Returns: A new `UIBarButtonItem`.
     static func cancelButton(
         poppingFrom navigationController: UINavigationController?,
-        animated: Bool = true
+        animated: Bool = true,
     ) -> UIBarButtonItem {
         Self.cancelButton { [weak navigationController] in
             navigationController?.popViewController(animated: animated)
@@ -481,7 +482,7 @@ public extension UIBarButtonItem {
     static func doneButton(
         dismissingFrom viewController: UIViewController?,
         animated: Bool = true,
-        completion: (() -> Void)? = nil
+        completion: (() -> Void)? = nil,
     ) -> UIBarButtonItem {
         let systemItem: SystemItem = if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
             .close
@@ -502,7 +503,7 @@ public extension UIBarButtonItem {
             return .button(
                 title: CommonStrings.setButton,
                 style: .done,
-                action: action
+                action: action,
             )
         }
     }

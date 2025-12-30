@@ -18,6 +18,6 @@ public protocol SentMessageTranscriptReceiver {
     func process(
         _ sentMessageTranscript: SentMessageTranscript,
         localIdentifiers: LocalIdentifiers,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) -> Swift.Result<TSOutgoingMessage?, Error>
 }

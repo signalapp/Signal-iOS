@@ -20,7 +20,7 @@ class ZkParamsMigrator {
         db: any DB,
         profileManager: ProfileManager,
         tsAccountManager: TSAccountManager,
-        versionedProfiles: VersionedProfiles
+        versionedProfiles: VersionedProfiles,
     ) {
         self.appReadiness = appReadiness
         self.authCredentialStore = authCredentialStore
@@ -90,7 +90,7 @@ class ZkParamsMigrator {
                         unsavedRotatedProfileKey: nil,
                         mustReuploadAvatar: false,
                         authedAccount: .implicit(),
-                        tx: tx
+                        tx: tx,
                     )
                 }
             }.catch { error in

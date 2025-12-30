@@ -45,7 +45,7 @@ public final class SerialTaskQueue {
     /// Like enqueue, but cancels all previous tasks.
     @discardableResult
     public func enqueueCancellingPrevious<T>(
-        operation: @escaping @Sendable () async throws -> T
+        operation: @escaping @Sendable () async throws -> T,
     ) -> Task<T, Error> {
         cancelAll()
         return enqueue(operation: operation)

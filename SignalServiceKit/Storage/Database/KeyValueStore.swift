@@ -28,7 +28,7 @@ public struct KeyValueStore {
     }
 
     public func setString(_ value: String?, key: String, transaction: DBWriteTransaction) {
-        guard let value = value else {
+        guard let value else {
             write(nil, forKey: key, transaction: transaction)
             return
         }
@@ -180,7 +180,7 @@ public struct KeyValueStore {
     // MARK: - Object
 
     public func setObject(_ anyValue: Any?, key: String, transaction: DBWriteTransaction) {
-        guard let anyValue = anyValue else {
+        guard let anyValue else {
             write(nil, forKey: key, transaction: transaction)
             return
         }
@@ -318,7 +318,7 @@ public struct KeyValueStore {
         _ key: String,
         keyClass: DecodedKey.Type,
         objectClass: DecodedObject.Type,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> [DecodedKey: DecodedObject]? {
         return self.getData(key, transaction: transaction).flatMap {
             do {
@@ -354,12 +354,12 @@ public struct KeyValueStore {
     private func write(
         _ value: NSCoding?,
         forKey key: String,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) {
         let encoded: Data? = value.flatMap {
             try? NSKeyedArchiver.archivedData(
                 withRootObject: $0,
-                requiringSecureCoding: false
+                requiringSecureCoding: false,
             )
         }
 

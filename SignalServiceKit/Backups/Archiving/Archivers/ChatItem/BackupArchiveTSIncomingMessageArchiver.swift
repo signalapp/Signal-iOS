@@ -19,11 +19,11 @@ class BackupArchiveTSIncomingMessageArchiver {
         contentsArchiver: BackupArchiveTSMessageContentsArchiver,
         editMessageStore: EditMessageStore,
         interactionStore: BackupArchiveInteractionStore,
-        pinnedMessageManager: PinnedMessageManager
+        pinnedMessageManager: PinnedMessageManager,
     ) {
         self.contentsArchiver = contentsArchiver
         self.editHistoryArchiver = BackupArchiveTSMessageEditHistoryArchiver(
-            editMessageStore: editMessageStore
+            editMessageStore: editMessageStore,
         )
         self.editMessageStore = editMessageStore
         self.interactionStore = interactionStore
@@ -35,7 +35,7 @@ class BackupArchiveTSIncomingMessageArchiver {
     func archiveIncomingMessage(
         _ incomingMessage: TSIncomingMessage,
         threadInfo: BackupArchive.ChatArchivingContext.CachedThreadInfo,
-        context: BackupArchive.ChatArchivingContext
+        context: BackupArchive.ChatArchivingContext,
     ) -> BackupArchive.ArchiveInteractionResult<Details> {
         var partialErrors = [ArchiveFrameError]()
 
@@ -44,7 +44,7 @@ class BackupArchiveTSIncomingMessageArchiver {
             incomingMessage,
             threadInfo: threadInfo,
             context: context,
-            builder: self
+            builder: self,
         ).bubbleUp(Details.self, partialErrors: &partialErrors) {
         case .continue(let _incomingMessageDetails):
             incomingMessageDetails = _incomingMessageDetails
@@ -64,7 +64,7 @@ class BackupArchiveTSIncomingMessageArchiver {
     func restoreIncomingChatItem(
         _ topLevelChatItem: BackupProto_ChatItem,
         chatThread: BackupArchive.ChatThread,
-        context: BackupArchive.ChatItemRestoringContext
+        context: BackupArchive.ChatItemRestoringContext,
     ) -> BackupArchive.RestoreInteractionResult<Void> {
         var partialErrors = [RestoreFrameError]()
 
@@ -73,7 +73,7 @@ class BackupArchiveTSIncomingMessageArchiver {
                 topLevelChatItem,
                 chatThread: chatThread,
                 context: context,
-                builder: self
+                builder: self,
             )
             .bubbleUp(Void.self, partialErrors: &partialErrors)
         {
@@ -102,7 +102,7 @@ extension BackupArchiveTSIncomingMessageArchiver: BackupArchive.TSMessageEditHis
         message incomingMessage: MessageType,
         editRecord: EditRecord?,
         threadInfo: BackupArchive.ChatArchivingContext.CachedThreadInfo,
-        context: BackupArchive.ChatArchivingContext
+        context: BackupArchive.ChatArchivingContext,
     ) -> BackupArchive.ArchiveInteractionResult<Details> {
         var partialErrors = [ArchiveFrameError]()
 
@@ -110,7 +110,7 @@ extension BackupArchiveTSIncomingMessageArchiver: BackupArchive.TSMessageEditHis
             let authorAddress = BackupArchive.ContactAddress(
                 // Incoming message authors are always ACIs, not PNIs
                 aci: Aci.parseFrom(aciString: incomingMessage.authorUUID),
-                e164: E164(incomingMessage.authorPhoneNumber)
+                e164: E164(incomingMessage.authorPhoneNumber),
             )
         else {
             // This is an invalid message.
@@ -119,14 +119,14 @@ extension BackupArchiveTSIncomingMessageArchiver: BackupArchive.TSMessageEditHis
         guard let author = context.recipientContext[authorAddress.asArchivingAddress()] else {
             return .messageFailure([.archiveFrameError(
                 .referencedRecipientIdMissing(authorAddress.asArchivingAddress()),
-                incomingMessage.uniqueInteractionId
+                incomingMessage.uniqueInteractionId,
             )])
         }
 
         let chatItemType: BackupArchiveTSMessageContentsArchiver.ChatItemType
         switch contentsArchiver.archiveMessageContents(
             incomingMessage,
-            context: context
+            context: context,
         ).bubbleUp(Details.self, partialErrors: &partialErrors) {
         case .continue(let _chatItemType):
             chatItemType = _chatItemType
@@ -157,7 +157,7 @@ extension BackupArchiveTSIncomingMessageArchiver: BackupArchive.TSMessageEditHis
             // they were outgoing messages.
             partialErrors.append(.archiveFrameError(
                 .incomingMessageFromSelf,
-                incomingMessage.uniqueInteractionId
+                incomingMessage.uniqueInteractionId,
             ))
             let pair = buildSwizzledOutgoingNoteToSelfMessage()
             directionalDetails = pair.0
@@ -169,7 +169,7 @@ extension BackupArchiveTSIncomingMessageArchiver: BackupArchive.TSMessageEditHis
             // So we swizzle this into an outgoing message from self.
             partialErrors.append(.archiveFrameError(
                 .nonSelfAuthorInNoteToSelf,
-                incomingMessage.uniqueInteractionId
+                incomingMessage.uniqueInteractionId,
             ))
             let pair = buildSwizzledOutgoingNoteToSelfMessage()
             directionalDetails = pair.0
@@ -177,7 +177,7 @@ extension BackupArchiveTSIncomingMessageArchiver: BackupArchive.TSMessageEditHis
         } else {
             let incomingMessageDetails: BackupProto_ChatItem.IncomingMessageDetails = buildIncomingMessageDetails(
                 incomingMessage,
-                editRecord: editRecord
+                editRecord: editRecord,
             )
             directionalDetails = .incoming(incomingMessageDetails)
             detailsAuthor = .contact(authorAddress)
@@ -192,7 +192,7 @@ extension BackupArchiveTSIncomingMessageArchiver: BackupArchive.TSMessageEditHis
 
         guard let interactionRowId = incomingMessage.sqliteRowId else {
             return .completeFailure(.fatalArchiveError(
-                .fetchedInteractionMissingRowId
+                .fetchedInteractionMissingRowId,
             ))
         }
 
@@ -210,7 +210,7 @@ extension BackupArchiveTSIncomingMessageArchiver: BackupArchive.TSMessageEditHis
             isSmsPreviouslyRestoredFromBackup: incomingMessage.isSmsMessageRestoredFromBackup,
             threadInfo: threadInfo,
             pinMessageDetails: pinMessageDetails,
-            context: context.recipientContext
+            context: context.recipientContext,
         )
 
         let details: Details
@@ -230,7 +230,7 @@ extension BackupArchiveTSIncomingMessageArchiver: BackupArchive.TSMessageEditHis
 
     private func buildIncomingMessageDetails(
         _ incomingMessage: TSIncomingMessage,
-        editRecord: EditRecord?
+        editRecord: EditRecord?,
     ) -> BackupProto_ChatItem.IncomingMessageDetails {
         var incomingDetails = BackupProto_ChatItem.IncomingMessageDetails()
         incomingDetails.dateReceived = incomingMessage.receivedAtTimestamp
@@ -265,11 +265,11 @@ extension BackupArchiveTSIncomingMessageArchiver: BackupArchive.TSMessageEditHis
         _ chatItem: BackupProto_ChatItem,
         revisionType: BackupArchive.TSMessageEditHistory.RevisionType<MessageType>,
         chatThread: BackupArchive.ChatThread,
-        context: BackupArchive.ChatItemRestoringContext
+        context: BackupArchive.ChatItemRestoringContext,
     ) -> BackupArchive.RestoreInteractionResult<MessageType> {
         guard let chatItemItem = chatItem.item else {
             return .unrecognizedEnum(BackupArchive.UnrecognizedEnumError(
-                enumType: BackupProto_ChatItem.OneOf_Item.self
+                enumType: BackupProto_ChatItem.OneOf_Item.self,
             ))
         }
 
@@ -280,11 +280,11 @@ extension BackupArchiveTSIncomingMessageArchiver: BackupArchive.TSMessageEditHis
         case .outgoing, .directionless:
             return .messageFailure([.restoreFrameError(
                 .invalidProtoData(.revisionOfIncomingMessageMissingIncomingDetails),
-                chatItem.id
+                chatItem.id,
             )])
         case nil:
             return .unrecognizedEnum(BackupArchive.UnrecognizedEnumError(
-                enumType: BackupProto_ChatItem.OneOf_DirectionalDetails.self
+                enumType: BackupProto_ChatItem.OneOf_DirectionalDetails.self,
             ))
         }
 
@@ -295,7 +295,7 @@ extension BackupArchiveTSIncomingMessageArchiver: BackupArchive.TSMessageEditHis
             // See NormalizedDatabaseRecordAddress for more details.
             authorAci = address.aci
             authorE164 = authorAci == nil ? address.e164 : nil
-            if authorAci == nil && authorE164 == nil {
+            if authorAci == nil, authorE164 == nil {
                 // Don't accept pni-only addresses. An incoming
                 // message can only come from an aci, or if its
                 // a legacy message, possibly from an e164.
@@ -304,7 +304,7 @@ extension BackupArchiveTSIncomingMessageArchiver: BackupArchive.TSMessageEditHis
         default:
             return .messageFailure([.restoreFrameError(
                 .invalidProtoData(.incomingMessageNotFromAciOrE164),
-                chatItem.id
+                chatItem.id,
             )])
         }
 
@@ -313,7 +313,7 @@ extension BackupArchiveTSIncomingMessageArchiver: BackupArchive.TSMessageEditHis
             guard let _expiresInSeconds: UInt32 = .msToSecs(chatItem.expiresInMs) else {
                 return .messageFailure([.restoreFrameError(
                     .invalidProtoData(.expirationTimerOverflowedLocalType),
-                    chatItem.id
+                    chatItem.id,
                 )])
             }
             expiresInSeconds = _expiresInSeconds
@@ -346,7 +346,7 @@ extension BackupArchiveTSIncomingMessageArchiver: BackupArchive.TSMessageEditHis
         case .latestRevision(hasPastRevisions: true):
             editState = incomingDetails.read ? .latestRevisionRead : .latestRevisionUnread
             wasReadForInteraction = incomingDetails.read
-        case .pastRevision(_):
+        case .pastRevision:
             editState = .pastRevision
             // Past revisions always have their interaction "read", and track
             // read state instead via an EditRecord.
@@ -361,7 +361,7 @@ extension BackupArchiveTSIncomingMessageArchiver: BackupArchive.TSMessageEditHis
                 chatItemItem,
                 chatItemId: chatItem.id,
                 chatThread: chatThread,
-                context: context
+                context: context,
             )
             .bubbleUp(MessageType.self, partialErrors: &partialErrors)
         {
@@ -404,7 +404,7 @@ extension BackupArchiveTSIncomingMessageArchiver: BackupArchive.TSMessageEditHis
                 messageSticker: nil,
                 giftBadge: nil,
                 paymentNotification: nil,
-                isPoll: false // TODO(KC): fill in once polls are implemented in backups
+                isPoll: false, // TODO(KC): fill in once polls are implemented in backups
             )
 
             switch contents {
@@ -413,7 +413,7 @@ extension BackupArchiveTSIncomingMessageArchiver: BackupArchive.TSMessageEditHis
                     incomingMessageWith: messageBuilder,
                     amount: archivedPayment.amount,
                     fee: archivedPayment.fee,
-                    note: archivedPayment.note
+                    note: archivedPayment.note,
                 )
             case .remoteDeleteTombstone:
                 messageBuilder.wasRemotelyDeleted = true
@@ -477,7 +477,7 @@ extension BackupArchiveTSIncomingMessageArchiver: BackupArchive.TSMessageEditHis
                 chatItemId: chatItem.id,
                 pinDetails: chatItem.hasPinDetails ? chatItem.pinDetails : nil,
                 restoredContents: contents,
-                context: context
+                context: context,
             )
             .bubbleUp(TSIncomingMessage.self, partialErrors: &partialErrors)
         {
@@ -510,8 +510,8 @@ extension BackupArchiveTSIncomingMessageArchiver: BackupArchive.TSMessageEditHis
                 incomingMessage,
                 [.restoreFrameError(
                     .databaseInsertionFailed(error),
-                    chatItem.id
-                )] + partialErrors
+                    chatItem.id,
+                )] + partialErrors,
             )
         }
 

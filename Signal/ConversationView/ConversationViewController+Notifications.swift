@@ -3,50 +3,67 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalServiceKit
 import AVFoundation
+import SignalServiceKit
 
 extension ConversationViewController {
     func addNotificationListeners() {
         AssertIsOnMainThread()
 
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(blockListDidChange),
-                                               name: BlockingManager.blockListDidChange,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(identityStateDidChange),
-                                               name: .identityStateDidChange,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(applicationWillEnterForeground),
-                                               name: .OWSApplicationWillEnterForeground,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(applicationDidEnterBackground),
-                                               name: .OWSApplicationDidEnterBackground,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(applicationWillResignActive),
-                                               name: .OWSApplicationWillResignActive,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(applicationDidBecomeActive),
-                                               name: .OWSApplicationDidBecomeActive,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(otherUsersProfileDidChange),
-                                               name: UserProfileNotifications.otherUsersProfileDidChange,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(profileWhitelistDidChange),
-                                               name: UserProfileNotifications.profileWhitelistDidChange,
-                                               object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(blockListDidChange),
+            name: BlockingManager.blockListDidChange,
+            object: nil,
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(identityStateDidChange),
+            name: .identityStateDidChange,
+            object: nil,
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(applicationWillEnterForeground),
+            name: .OWSApplicationWillEnterForeground,
+            object: nil,
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(applicationDidEnterBackground),
+            name: .OWSApplicationDidEnterBackground,
+            object: nil,
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(applicationWillResignActive),
+            name: .OWSApplicationWillResignActive,
+            object: nil,
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(applicationDidBecomeActive),
+            name: .OWSApplicationDidBecomeActive,
+            object: nil,
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(otherUsersProfileDidChange),
+            name: UserProfileNotifications.otherUsersProfileDidChange,
+            object: nil,
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(profileWhitelistDidChange),
+            name: UserProfileNotifications.profileWhitelistDidChange,
+            object: nil,
+        )
 
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(audioSessionInterrupted),
-                                               name: AVAudioSession.interruptionNotification,
-                                               object: AVAudioSession.sharedInstance()
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(audioSessionInterrupted),
+            name: AVAudioSession.interruptionNotification,
+            object: AVAudioSession.sharedInstance(),
         )
 
         AppEnvironment.shared.callService.callServiceState.addObserver(self, syncStateImmediately: false)
@@ -82,15 +99,19 @@ extension ConversationViewController {
         AssertIsOnMainThread()
 
         // If profile whitelist just changed, we may want to hide a profile whitelist offer.
-        if let address = notification.userInfo?[UserProfileNotifications.profileAddressKey] as? SignalServiceAddress,
-           address.isValid,
-           thread.recipientAddressesWithSneakyTransaction.contains(address) {
+        if
+            let address = notification.userInfo?[UserProfileNotifications.profileAddressKey] as? SignalServiceAddress,
+            address.isValid,
+            thread.recipientAddressesWithSneakyTransaction.contains(address)
+        {
             ensureBannerState()
             showMessageRequestDialogIfRequired()
-        } else if let groupId = notification.userInfo?[UserProfileNotifications.profileGroupIdKey] as? Data,
-                  !groupId.isEmpty,
-                  let groupThread = thread as? TSGroupThread,
-                  groupThread.groupModel.groupId == groupId {
+        } else if
+            let groupId = notification.userInfo?[UserProfileNotifications.profileGroupIdKey] as? Data,
+            !groupId.isEmpty,
+            let groupThread = thread as? TSGroupThread,
+            groupThread.groupModel.groupId == groupId
+        {
             ensureBannerState()
             showMessageRequestDialogIfRequired()
         }

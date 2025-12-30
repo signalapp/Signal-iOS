@@ -95,8 +95,10 @@ public class VideoPlayerView: UIView {
     // MARK: -
 
     override public var intrinsicContentSize: CGSize {
-        guard let player = self.player,
-              let playerItem = player.currentItem else {
+        guard
+            let player = self.player,
+            let playerItem = player.currentItem
+        else {
             return CGSize(square: UIView.noIntrinsicMetric)
         }
 
@@ -114,25 +116,25 @@ public class VideoPlayerView: UIView {
     private var periodicTimeObserver: Any?
 
     private func addKVO(player: AVPlayer?) {
-        guard let player = player else {
+        guard let player else {
             return
         }
 
         // Observe status changes: anything that might affect "isPlaying".
         let changeHandler = { [weak self] (_: AVPlayer, _: Any) in
-            guard let self = self else { return }
+            guard let self else { return }
             self.delegate?.videoPlayerViewStatusDidChange(self)
         }
         playerObservers = [
             player.observe(\AVPlayer.status, options: [.new, .initial], changeHandler: changeHandler),
             player.observe(\AVPlayer.timeControlStatus, options: [.new, .initial], changeHandler: changeHandler),
-            player.observe(\AVPlayer.rate, options: [.new, .initial], changeHandler: changeHandler)
+            player.observe(\AVPlayer.rate, options: [.new, .initial], changeHandler: changeHandler),
         ]
 
         // Observe playback progress.
         let interval = CMTime(seconds: 0.01, preferredTimescale: 1000)
         periodicTimeObserver = player.addPeriodicTimeObserver(forInterval: interval, queue: DispatchQueue.main) { [weak self] _ in
-            guard let self = self else { return }
+            guard let self else { return }
             self.delegate?.videoPlayerViewPlaybackTimeDidChange(self)
         }
     }

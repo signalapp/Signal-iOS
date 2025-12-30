@@ -28,6 +28,7 @@ public class MessageSelectionView: ManualLayoutView {
     public static var totalSize: CGSize {
         CGSize(square: ConversationStyle.selectionViewWidth)
     }
+
     private static var uiSize: CGSize {
         CGSize(square: ConversationStyle.selectionViewWidth - 2)
     }
@@ -56,7 +57,7 @@ public class MessageSelectionView: ManualLayoutView {
             unselectedView.layer.borderColor = UIColor.ows_white.cgColor
             backgroundView.backgroundColor = UIColor.ows_black.withAlphaComponent(0.2)
             backgroundView.isHidden = (!conversationStyle.hasWallpaper ||
-                                        !conversationStyle.isWallpaperPhoto)
+                !conversationStyle.isWallpaperPhoto)
         } else {
             selectedView.tintColor = .ows_accentBlue
             unselectedView.layer.borderColor = UIColor.ows_gray25.cgColor

@@ -28,10 +28,12 @@ public class ToastController: NSObject, ToastViewDelegate {
 
     // MARK: Public
 
-    public func presentToastView(from edge: ALEdge,
-                                 of view: UIView,
-                                 inset: CGFloat,
-                                 dismissAfter: DispatchTimeInterval = .seconds(4)) {
+    public func presentToastView(
+        from edge: ALEdge,
+        of view: UIView,
+        inset: CGFloat,
+        dismissAfter: DispatchTimeInterval = .seconds(4),
+    ) {
         let toastView = ToastView()
         toastView.text = self.toastText
         toastView.delegate = self
@@ -107,7 +109,7 @@ public class ToastController: NSObject, ToastViewDelegate {
             toItem: viewOwningKeyboard.keyboardLayoutGuide,
             attribute: .top,
             multiplier: 1.0,
-            constant: -8
+            constant: -8,
         )
     }
 
@@ -125,8 +127,8 @@ public class ToastController: NSObject, ToastViewDelegate {
         if
             let constraint = self.toastBottomConstraint,
             let view = self.viewToPinTo,
-            let offset = offset,
-            let toastView = toastView
+            let offset,
+            let toastView
         {
             NSLayoutConstraint.deactivate([constraint])
             let newConstraint: NSLayoutConstraint
@@ -157,7 +159,7 @@ public class ToastController: NSObject, ToastViewDelegate {
     func dismissToastView() {
         Logger.debug("")
 
-        guard !isDismissing, let toastView = toastView else {
+        guard !isDismissing, let toastView else {
             return
         }
         isDismissing = true
@@ -166,14 +168,16 @@ public class ToastController: NSObject, ToastViewDelegate {
             type(of: self).currentToastController = nil
         }
 
-        UIView.animate(withDuration: 0.2,
-                       animations: {
-            toastView.alpha = 0
-        },
-                       completion: { (_) in
-            toastView.removeFromSuperview()
-            self.toastView = nil
-        })
+        UIView.animate(
+            withDuration: 0.2,
+            animations: {
+                toastView.alpha = 0
+            },
+            completion: { _ in
+                toastView.removeFromSuperview()
+                self.toastView = nil
+            },
+        )
     }
 }
 
@@ -192,6 +196,7 @@ class ToastView: UIView {
             label.text = newValue
         }
     }
+
     weak var delegate: ToastViewDelegate?
 
     private let label: UILabel

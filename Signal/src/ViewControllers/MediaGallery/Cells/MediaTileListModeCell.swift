@@ -72,12 +72,12 @@ class MediaTileListModeCell: UICollectionViewCell, MediaGalleryCollectionViewCel
             selectionButton.heightAnchor.constraint(equalToConstant: 24),
 
             separator.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
-            separator.trailingAnchor.constraint(equalTo: contentView.trailingAnchor)
+            separator.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
         ])
         selectedMaskView.autoPinEdgesToSuperviewEdges()
     }
 
-    override public func prepareForReuse() {
+    override func prepareForReuse() {
         super.prepareForReuse()
 
         selectedMaskView.isHidden = true
@@ -120,7 +120,7 @@ class MediaTileListModeCell: UICollectionViewCell, MediaGalleryCollectionViewCel
         updateSelectionState(animated: animated)
     }
 
-    override public var isSelected: Bool {
+    override var isSelected: Bool {
         didSet {
             updateSelectionState(animated: false)
         }

@@ -4,9 +4,9 @@
 //
 
 import Foundation
-import UIKit
 import SignalServiceKit
 import SignalUI
+import UIKit
 
 class StoryCell: UITableViewCell {
     static let reuseIdentifier = "StoryCell"
@@ -146,7 +146,7 @@ class StoryCell: UITableViewCell {
             let storyThumbnailView = StoryThumbnailView(
                 attachment: model.latestMessageAttachment,
                 interactionIdentifier: model.latestMessageIdentifier,
-                spoilerState: spoilerState
+                spoilerState: spoilerState,
             )
             attachmentThumbnail.addSubview(storyThumbnailView)
             storyThumbnailView.autoPinEdgesToSuperviewEdges()

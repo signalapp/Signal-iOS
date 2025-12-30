@@ -69,7 +69,7 @@ struct InfoMessageGroupUpdateMigrator {
                 let lastMigratedInfoMessageRowID = kvStore.fetchValue(
                     Int64.self,
                     forKey: StoreKeys.lastMigratedInfoMessageRowID,
-                    tx: tx
+                    tx: tx,
                 )
 
                 return TxContext(
@@ -129,7 +129,7 @@ struct InfoMessageGroupUpdateMigrator {
                         infoMessageUserInfo: infoMessageUserInfo,
                         customMessage: nil,
                         localIdentifiers: localIdentifiers,
-                        tx: tx
+                        tx: tx,
                     )
                 else {
                     // No precomputed group update items. This may not be a
@@ -158,7 +158,7 @@ struct InfoMessageGroupUpdateMigrator {
                         SET \(InfoMessage.infoMessageUserInfoColumn) = ?
                         WHERE \(InfoMessage.idColumn) = ?
                     """,
-                    arguments: [newInfoMessageUserInfoBlob, infoMessage.rowID]
+                    arguments: [newInfoMessageUserInfoBlob, infoMessage.rowID],
                 )
 
                 context.lastMigratedInfoMessageRowID = infoMessage.rowID

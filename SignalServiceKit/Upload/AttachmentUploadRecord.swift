@@ -37,7 +37,7 @@ public struct AttachmentUploadRecord: Codable, FetchableRecord, MutablePersistab
         case attempt
     }
 
-    mutating public func didInsert(with rowID: Int64, for column: String?) {
+    public mutating func didInsert(with rowID: Int64, for column: String?) {
         sqliteId = rowID
     }
 }

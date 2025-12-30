@@ -3,11 +3,11 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import XCTest
 import LibSignalClient
+import XCTest
 
-@testable import SignalServiceKit
 import SwiftProtobuf
+@testable import SignalServiceKit
 
 class SSKProtoEnvelopeTest: XCTestCase {
     func testParse_EmptyData() {
@@ -47,7 +47,7 @@ class SSKProtoEnvelopeTest: XCTestCase {
         let encodedData = "OAFaJEZEMkU1M0RELUJEQjAtNDg1Qi04OUFELTlBRTA3RTYxRjUzMw=="
         let data = Data(base64Encoded: encodedData)!
 
-        XCTAssertThrowsError(try SSKProtoEnvelope(serializedData: data)) { (error) -> Void in
+        XCTAssertThrowsError(try SSKProtoEnvelope(serializedData: data)) { error -> Void in
             switch error {
             case SSKProtoError.invalidProtobuf:
                 break

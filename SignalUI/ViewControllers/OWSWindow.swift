@@ -6,21 +6,21 @@
 import UIKit
 
 public class OWSWindow: UIWindow {
-    public override init(frame: CGRect) {
+    override public init(frame: CGRect) {
         super.init(frame: frame)
 
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(themeDidChange),
             name: .themeDidChange,
-            object: nil
+            object: nil,
         )
 
         applyTheme()
     }
 
     // This useless override is defined so that you can call `-init` from Swift.
-    public override init(windowScene: UIWindowScene) {
+    override public init(windowScene: UIWindowScene) {
         fatalError("init(windowScene:) has not been implemented")
     }
 
@@ -45,7 +45,7 @@ public class OWSWindow: UIWindow {
         }
     }
 
-    public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+    override public func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
 
         if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {

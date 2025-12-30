@@ -7,7 +7,7 @@ public import AVFAudio
 import SignalServiceKit
 
 public class SpeechManager: NSObject, AVSpeechSynthesizerDelegate {
-    nonisolated(unsafe) private let speechSynthesizer = AVSpeechSynthesizer()
+    private nonisolated(unsafe) let speechSynthesizer = AVSpeechSynthesizer()
 
     override init() {
         super.init()
@@ -44,7 +44,7 @@ public class SpeechManager: NSObject, AVSpeechSynthesizerDelegate {
             self,
             selector: #selector(stop),
             name: .OWSApplicationDidEnterBackground,
-            object: nil
+            object: nil,
         )
     }
 

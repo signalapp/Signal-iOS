@@ -25,7 +25,7 @@ final class CallRecordStoreTest: XCTestCase {
     }
 
     private func makeCallRecord(
-        callStatus: CallRecord.CallStatus = .individual(.pending)
+        callStatus: CallRecord.CallStatus = .individual(.pending),
     ) -> CallRecord {
         let (threadRowId, interactionRowId) = insertThreadAndInteraction()
 
@@ -36,7 +36,7 @@ final class CallRecordStoreTest: XCTestCase {
             callType: .audioCall,
             callDirection: .outgoing,
             callStatus: callStatus,
-            callBeganTimestamp: .maxRandomInt64Compat
+            callBeganTimestamp: .maxRandomInt64Compat,
         )
     }
 
@@ -59,7 +59,7 @@ final class CallRecordStoreTest: XCTestCase {
             callRecordStore.fetch(
                 callId: 1234,
                 conversationId: .thread(threadRowId: 6789),
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -84,7 +84,7 @@ final class CallRecordStoreTest: XCTestCase {
 
         XCTAssertTrue(
             explanation.contains(substring),
-            "\(explanation) did not contain \(substring)!"
+            "\(explanation) did not contain \(substring)!",
         )
     }
 
@@ -101,7 +101,7 @@ final class CallRecordStoreTest: XCTestCase {
             callRecordStore.fetch(
                 callId: callRecord.callId,
                 conversationId: .thread(threadRowId: callRecord.threadRowId),
-                tx: tx
+                tx: tx,
             ).unwrapped
         }
         XCTAssertTrue(callRecord.matches(fetchedByCallId))
@@ -119,14 +119,14 @@ final class CallRecordStoreTest: XCTestCase {
         mockDeletedCallRecordStore.deletedCallRecords.append(DeletedCallRecord(
             callId: callId,
             conversationId: .thread(threadRowId: threadRowId),
-            deletedAtTimestamp: 9
+            deletedAtTimestamp: 9,
         ))
 
         inMemoryDB.read { tx in
             switch callRecordStore.fetch(
                 callId: callId,
                 conversationId: .thread(threadRowId: threadRowId),
-                tx: tx
+                tx: tx,
             ) {
             case .matchFound, .matchNotFound:
                 XCTFail("Unexpected fetch result!")
@@ -156,13 +156,13 @@ final class CallRecordStoreTest: XCTestCase {
             for callRecord in [callRecord1, callRecord2] {
                 XCTAssertNil(callRecordStore.fetch(
                     interactionRowId: callRecord.interactionRowId,
-                    tx: tx
+                    tx: tx,
                 ))
 
                 switch callRecordStore.fetch(
                     callId: callRecord.callId,
                     conversationId: .thread(threadRowId: callRecord.threadRowId),
-                    tx: tx
+                    tx: tx,
                 ) {
                 case .matchNotFound:
                     // Test pass
@@ -187,7 +187,7 @@ final class CallRecordStoreTest: XCTestCase {
             callRecordStore._updateCallAndUnreadStatus(
                 callRecord: callRecord,
                 newCallStatus: .group(.joined),
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -195,7 +195,7 @@ final class CallRecordStoreTest: XCTestCase {
             callRecordStore.fetch(
                 callId: callRecord.callId,
                 conversationId: .thread(threadRowId: callRecord.threadRowId),
-                tx: tx
+                tx: tx,
             ).unwrapped
         }
 
@@ -213,7 +213,7 @@ final class CallRecordStoreTest: XCTestCase {
             beforeCallStatus: CallRecord.CallStatus,
             beforeUnreadStatus: CallRecord.CallUnreadStatus,
             afterCallStatus: CallRecord.CallStatus,
-            afterUnreadStatus: CallRecord.CallUnreadStatus
+            afterUnreadStatus: CallRecord.CallUnreadStatus,
         )] = [
             (.individual(.pending), .read, .individual(.incomingMissed), .unread),
             (.individual(.incomingMissed), .unread, .individual(.pending), .read),
@@ -233,7 +233,7 @@ final class CallRecordStoreTest: XCTestCase {
         ]
         XCTAssertEqual(
             testCases.count,
-            CallRecord.CallStatus.allCases.count
+            CallRecord.CallStatus.allCases.count,
         )
 
         for (beforeCallStatus, beforeUnreadStatus, afterCallStatus, afterUnreadStatus) in testCases {
@@ -246,7 +246,7 @@ final class CallRecordStoreTest: XCTestCase {
                 callRecordStore._updateCallAndUnreadStatus(
                     callRecord: callRecord,
                     newCallStatus: afterCallStatus,
-                    tx: tx
+                    tx: tx,
                 )
                 XCTAssertEqual(callRecord.callStatus, afterCallStatus)
                 XCTAssertEqual(callRecord.unreadStatus, afterUnreadStatus)
@@ -254,7 +254,7 @@ final class CallRecordStoreTest: XCTestCase {
                 let fetched = callRecordStore.fetch(
                     callId: callRecord.callId,
                     conversationId: .thread(threadRowId: callRecord.threadRowId),
-                    tx: tx
+                    tx: tx,
                 ).unwrapped
                 XCTAssertTrue(callRecord.matches(fetched))
             }
@@ -277,7 +277,7 @@ final class CallRecordStoreTest: XCTestCase {
             callRecordStore.fetch(
                 callId: unreadCallRecord.callId,
                 conversationId: .thread(threadRowId: unreadCallRecord.threadRowId),
-                tx: tx
+                tx: tx,
             ).unwrapped
         }
 
@@ -298,7 +298,7 @@ final class CallRecordStoreTest: XCTestCase {
             callRecordStore.updateWithMergedThread(
                 fromThreadRowId: callRecord.threadRowId,
                 intoThreadRowId: newThreadRowId,
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -306,13 +306,13 @@ final class CallRecordStoreTest: XCTestCase {
             callRecordStore.fetch(
                 callId: callRecord.callId,
                 conversationId: .thread(threadRowId: newThreadRowId),
-                tx: tx
+                tx: tx,
             ).unwrapped
         }
 
         XCTAssertTrue(fetched.matches(
             callRecord,
-            overridingThreadRowId: newThreadRowId
+            overridingThreadRowId: newThreadRowId,
         ))
     }
 
@@ -329,8 +329,8 @@ final class CallRecordStoreTest: XCTestCase {
             XCTAssertThrowsError(
                 try tx.database.execute(
                     sql: "DELETE FROM model_TSInteraction WHERE id = ?",
-                    arguments: [callRecord.interactionRowId]
-                )
+                    arguments: [callRecord.interactionRowId],
+                ),
             ) { error in
                 guard let error = error as? GRDB.DatabaseError else {
                     XCTFail("Unexpected error!")
@@ -361,7 +361,7 @@ final class CallRecordStoreTest: XCTestCase {
             """
 
             XCTAssertThrowsError(
-                try tx.database.execute(sql: deleteThreadSql)
+                try tx.database.execute(sql: deleteThreadSql),
             ) { error in
                 guard let error = error as? GRDB.DatabaseError else {
                     XCTFail("Unexpected error!")
@@ -425,7 +425,7 @@ final class CallRecordStoreTest: XCTestCase {
                 callStatus: .individual(.pending),
                 groupCallRingerAci: nil,
                 callBeganTimestamp: 1701299999,
-                callEndedTimestamp: 0
+                callEndedTimestamp: 0,
             ),
             .fixture(
                 id: 2,
@@ -437,7 +437,7 @@ final class CallRecordStoreTest: XCTestCase {
                 callStatus: .group(.ringingAccepted),
                 groupCallRingerAci: nil,
                 callBeganTimestamp: 1701300000,
-                callEndedTimestamp: 0
+                callEndedTimestamp: 0,
             ),
             {
                 /// A call record's unread status is set during init, based on
@@ -454,7 +454,7 @@ final class CallRecordStoreTest: XCTestCase {
                     callStatus: .group(.ringingMissed),
                     groupCallRingerAci: Aci.constantForTesting("C2459E88-8A6A-474B-80FD-51A79923FD50"),
                     callBeganTimestamp: 1701300001,
-                    callEndedTimestamp: 0
+                    callEndedTimestamp: 0,
                 )
                 fixture.unreadStatus = .read
                 return fixture
@@ -469,7 +469,7 @@ final class CallRecordStoreTest: XCTestCase {
                 callStatus: .group(.ringingMissed),
                 groupCallRingerAci: Aci.constantForTesting("227A8EEF-E8DD-45F2-A18C-3276DC2DA653"),
                 callBeganTimestamp: 1701300002,
-                callEndedTimestamp: 0
+                callEndedTimestamp: 0,
             ),
             .fixture(
                 id: 5,
@@ -481,7 +481,7 @@ final class CallRecordStoreTest: XCTestCase {
                 callStatus: .group(.ringingAccepted),
                 groupCallRingerAci: Aci.constantForTesting("C2459E88-8A6A-474B-80FD-51A79923FD50"),
                 callBeganTimestamp: 1701300003,
-                callEndedTimestamp: 1701300004
+                callEndedTimestamp: 1701300004,
             ),
             .fixture(
                 id: 6,
@@ -493,7 +493,7 @@ final class CallRecordStoreTest: XCTestCase {
                 callStatus: .group(.ringingAccepted),
                 groupCallRingerAci: Aci.constantForTesting("227A8EEF-E8DD-45F2-A18C-3276DC2DA653"),
                 callBeganTimestamp: 1701300005,
-                callEndedTimestamp: 1701300006
+                callEndedTimestamp: 1701300006,
             ),
         ]
 
@@ -504,7 +504,7 @@ final class CallRecordStoreTest: XCTestCase {
             for (idx, actualCallRecord) in actualCallRecords.enumerated() {
                 XCTAssertTrue(
                     actualCallRecord.matches(expectedRecords[idx]),
-                    "Fixture at index \(idx) failed to compare!"
+                    "Fixture at index \(idx) failed to compare!",
                 )
             }
         }
@@ -535,7 +535,7 @@ private extension CallRecord {
         callStatus: CallStatus,
         groupCallRingerAci: Aci?,
         callBeganTimestamp: UInt64,
-        callEndedTimestamp: UInt64
+        callEndedTimestamp: UInt64,
     ) -> CallRecord {
         let record = CallRecord(
             callId: callId,
@@ -546,7 +546,7 @@ private extension CallRecord {
             callStatus: callStatus,
             groupCallRingerAci: groupCallRingerAci,
             callBeganTimestamp: callBeganTimestamp,
-            callEndedTimestamp: callEndedTimestamp
+            callEndedTimestamp: callEndedTimestamp,
         )
         record.sqliteRowId = id
 
@@ -557,7 +557,7 @@ private extension CallRecord {
         switch conversationId {
         case .thread(let threadRowId):
             return threadRowId
-        case .callLink(_):
+        case .callLink:
             fatalError()
         }
     }

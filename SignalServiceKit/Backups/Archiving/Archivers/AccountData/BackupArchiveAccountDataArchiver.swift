@@ -101,7 +101,7 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
         theme: ThemeDataStore,
         typingIndicators: BackupArchive.Shims.TypingIndicators,
         udManager: BackupArchive.Shims.UDManager,
-        usernameEducationManager: UsernameEducationManager
+        usernameEducationManager: UsernameEducationManager,
     ) {
         self.backupAttachmentUploadEraStore = backupAttachmentUploadEraStore
         self.backupPlanManager = backupPlanManager
@@ -134,7 +134,7 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
 
     func archiveAccountData(
         stream: BackupArchiveProtoOutputStream,
-        context: BackupArchive.CustomChatColorArchivingContext
+        context: BackupArchive.CustomChatColorArchivingContext,
     ) -> BackupArchive.ArchiveAccountDataResult {
         return context.bencher.processFrame { frameBencher in
             guard let localProfile = profileManager.getUserProfileForLocalUser(tx: context.tx) else {
@@ -195,7 +195,7 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
             let error = Self.writeFrameToStream(
                 stream,
                 objectId: BackupArchive.AccountDataId.localUser,
-                frameBencher: frameBencher
+                frameBencher: frameBencher,
             ) {
                 var frame = BackupProto_Frame()
                 frame.item = .account(accountData)
@@ -211,7 +211,7 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
     }
 
     private func buildUsernameLinkProto(
-        context: BackupArchive.ArchivingContext
+        context: BackupArchive.ArchivingContext,
     ) -> (username: String, usernameLink: BackupProto_AccountData.UsernameLink)? {
         switch self.localUsernameManager.usernameState(tx: context.tx) {
         case .unset, .linkCorrupted, .usernameAndLinkCorrupted:
@@ -227,7 +227,7 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
     }
 
     private func buildAccountSettingsProto(
-        context: BackupArchive.CustomChatColorArchivingContext
+        context: BackupArchive.CustomChatColorArchivingContext,
     ) -> BackupArchive.ArchiveSingleFrameResult<BackupProto_AccountData.AccountSettings, BackupArchive.AccountDataId> {
 
         // Fetch all the account settings
@@ -242,7 +242,7 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
         let preferContactAvatars = sskPreferences.preferContactAvatars(tx: context.tx)
         let universalExpireTimerSeconds = disappearingMessageConfigurationStore.fetchOrBuildDefault(
             for: .universal,
-            tx: context.tx
+            tx: context.tx,
         ).durationSeconds
         let displayBadgesOnProfile = donationSubscriptionManager.displayBadgesOnProfile(tx: context.tx)
         let keepMutedChatsArchived = sskPreferences.shouldKeepMutedChatsArchived(tx: context.tx)
@@ -290,7 +290,7 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
         }
 
         let customChatColorsResult = chatStyleArchiver.archiveCustomChatColors(
-            context: context
+            context: context,
         )
         switch customChatColorsResult {
         case .success(let customChatColors):
@@ -302,7 +302,7 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
         // This has to happen _after_ we archive custom chat colors, because
         // the default chat style might use a custom chat color.
         let defaultChatStyleResult = chatStyleArchiver.archiveDefaultChatStyle(
-            context: context
+            context: context,
         )
         switch defaultChatStyleResult {
         case .success(let chatStyleProto):
@@ -361,12 +361,12 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
         _ accountData: BackupProto_AccountData,
         context: BackupArchive.AccountDataRestoringContext,
         chatColorsContext: BackupArchive.CustomChatColorRestoringContext,
-        chatItemContext: BackupArchive.ChatItemRestoringContext
+        chatItemContext: BackupArchive.ChatItemRestoringContext,
     ) -> BackupArchive.RestoreAccountDataResult {
         guard let profileKey = Aes256Key(data: accountData.profileKey) else {
             return .failure([.restoreFrameError(
                 .invalidProtoData(.invalidLocalProfileKey),
-                .localUser
+                .localUser,
             )])
         }
 
@@ -381,7 +381,7 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
             bio: accountData.bioText.nilIfEmpty,
             bioEmoji: accountData.bioEmoji.nilIfEmpty,
             profileKey: profileKey,
-            tx: context.tx
+            tx: context.tx,
         )
 
         // Restore donation subscription data, if present.
@@ -400,17 +400,17 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
             typealias IAPSubscriptionID = BackupSubscriptionManager.IAPSubscriberData.IAPSubscriptionId
             let iapSubscriptionID: IAPSubscriptionID = switch protoIapSubscriberID {
             case .purchaseToken(let value):
-                    .purchaseToken(value)
+                .purchaseToken(value)
             case .originalTransactionID(let value):
-                    .originalTransactionId(value)
+                .originalTransactionId(value)
             }
 
             backupSubscriptionManager.restoreIAPSubscriberData(
                 BackupSubscriptionManager.IAPSubscriberData(
                     subscriberId: subscriberID,
-                    iapSubscriptionId: iapSubscriptionID
+                    iapSubscriptionId: iapSubscriptionID,
                 ),
-                tx: context.tx
+                tx: context.tx,
             )
         }
 
@@ -418,12 +418,12 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
         if accountData.accountSettings.hasBackupTier {
             guard
                 let parsedLevel =
-                    UInt8(exactly: accountData.accountSettings.backupTier)
+                UInt8(exactly: accountData.accountSettings.backupTier)
                     .map(BackupLevel.init(rawValue:))
             else {
                 return .failure([.restoreFrameError(
                     .invalidProtoData(.invalidBackupTier),
-                    .localUser
+                    .localUser,
                 )])
             }
             backupLevel = parsedLevel
@@ -482,15 +482,15 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
                 updateAccountAttributes: false, // This should be updated later, similar to storage service
                 updateStorageService: false,
                 authedAccount: .implicit(),
-                tx: context.tx
+                tx: context.tx,
             )
             sskPreferences.setPreferContactAvatars(value: settings.preferContactAvatars, tx: context.tx)
             disappearingMessageConfigurationStore.setUniversalTimer(
                 token: DisappearingMessageToken(
                     isEnabled: settings.universalExpireTimerSeconds > 0,
-                    durationSeconds: settings.universalExpireTimerSeconds
+                    durationSeconds: settings.universalExpireTimerSeconds,
                 ),
-                tx: context.tx
+                tx: context.tx,
             )
             if settings.preferredReactionEmoji.count > 0 {
                 reactionManager.setCustomEmojiSet(emojis: settings.preferredReactionEmoji, tx: context.tx)
@@ -516,12 +516,12 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
                         return .nobody
                     }
                 }(),
-                tx: context.tx
+                tx: context.tx,
             )
 
             let customChatColorsResult = chatStyleArchiver.restoreCustomChatColors(
                 settings.customChatColors,
-                context: chatColorsContext
+                context: chatColorsContext,
             )
             switch customChatColorsResult {
             case .success:
@@ -545,7 +545,7 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
             }
             let defaultChatStyleResult = chatStyleArchiver.restoreDefaultChatStyle(
                 defaultChatStyleToRestore,
-                context: chatColorsContext
+                context: chatColorsContext,
             )
             switch defaultChatStyleResult {
             case .success:
@@ -575,25 +575,25 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
                         mediaBandwidthPreferenceStore.set(
                             mediaSettings.audio.mediaBandwidthPreference,
                             for: .audio,
-                            tx: context.tx
+                            tx: context.tx,
                         )
                     case .video:
                         mediaBandwidthPreferenceStore.set(
                             mediaSettings.video.mediaBandwidthPreference,
                             for: .video,
-                            tx: context.tx
+                            tx: context.tx,
                         )
                     case .document:
                         mediaBandwidthPreferenceStore.set(
                             mediaSettings.documents.mediaBandwidthPreference,
                             for: .document,
-                            tx: context.tx
+                            tx: context.tx,
                         )
                     case .photo:
                         mediaBandwidthPreferenceStore.set(
                             mediaSettings.images.mediaBandwidthPreference,
                             for: .photo,
-                            tx: context.tx
+                            tx: context.tx,
                         )
                     }
                 }
@@ -626,7 +626,7 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
             }
             callServiceSettingsStore.setHighDataInterfaces(
                 callServiceDataMode,
-                tx: context.tx
+                tx: context.tx,
             )
         }
 

@@ -15,6 +15,7 @@ class TransferProgressView: UIStackView {
         progressBar.trackTintColor = Theme.isDarkThemeEnabled ? .ows_gray90 : .ows_gray05
         return progressBar
     }()
+
     let topLabel: UILabel = {
         let label = UILabel()
         label.numberOfLines = 0
@@ -24,6 +25,7 @@ class TransferProgressView: UIStackView {
         label.textAlignment = .center
         return label
     }()
+
     let bottomLabel: UILabel = {
         let label = UILabel()
         label.font = .dynamicTypeSubheadline
@@ -31,6 +33,7 @@ class TransferProgressView: UIStackView {
         label.textAlignment = .center
         return label
     }()
+
     let dateComponentsFormatter: DateComponentsFormatter = {
         let formatter = DateComponentsFormatter()
         formatter.allowedUnits = [.hour, .minute, .second]
@@ -93,7 +96,7 @@ class TransferProgressView: UIStackView {
         forKeyPath keyPath: String?,
         of object: Any?,
         change: [NSKeyValueChangeKey: Any]?,
-        context: UnsafeMutableRawPointer?
+        context: UnsafeMutableRawPointer?,
     ) {
         guard keyPath == "fractionCompleted" else {
             return super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)

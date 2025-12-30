@@ -12,7 +12,7 @@ public class NavigationPreviewController: OWSNavigationController {
 
     public init(
         animateFirstAppearance: Bool = false,
-        viewController: UIViewController
+        viewController: UIViewController,
     ) {
         self.animateFirstAppearance = animateFirstAppearance
         self.viewController = viewController
@@ -21,7 +21,7 @@ public class NavigationPreviewController: OWSNavigationController {
         self.pushViewController(UIViewController(), animated: false)
     }
 
-    public override func viewDidAppear(_ animated: Bool) {
+    override public func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         self.pushViewController(self.viewController, animated: animateFirstAppearance)
     }

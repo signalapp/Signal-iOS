@@ -52,7 +52,7 @@ public class LineWrappingStackView: UIView {
         addSubview(subview)
         let constraints = [
             subview.widthAnchor.constraint(lessThanOrEqualTo: self.widthAnchor),
-            self.bottomAnchor.constraint(greaterThanOrEqualTo: subview.bottomAnchor)
+            self.bottomAnchor.constraint(greaterThanOrEqualTo: subview.bottomAnchor),
         ]
         constraints[1].priority = .required
         constraints.forEach({ $0.isActive = true })
@@ -77,30 +77,30 @@ public class LineWrappingStackView: UIView {
 
     // MARK: - Layout
 
-    public override class var requiresConstraintBasedLayout: Bool { true }
+    override public class var requiresConstraintBasedLayout: Bool { true }
 
-    public override func layoutSubviews() {
+    override public func layoutSubviews() {
         super.layoutSubviews()
         zip(arrangedSubviews.filter({ !$0.isHidden }), arrangedSubviewRects()).forEach {
             $0.frame = $1
         }
     }
 
-    public override func updateConstraints() {
+    override public func updateConstraints() {
         super.updateConstraints()
         zip(arrangedSubviews.filter({ !$0.isHidden }), arrangedSubviewRects()).forEach {
             $0.frame = $1
         }
     }
 
-    public override func sizeThatFits(_ size: CGSize) -> CGSize {
+    override public func sizeThatFits(_ size: CGSize) -> CGSize {
         return CGSize(
             width: bounds.width,
-            height: arrangedSubviewRects().lazy.map(\.maxY).max() ?? 0
+            height: arrangedSubviewRects().lazy.map(\.maxY).max() ?? 0,
         )
     }
 
-    public override var intrinsicContentSize: CGSize {
+    override public var intrinsicContentSize: CGSize {
         return sizeThatFits(CGSize(width: bounds.width, height: .greatestFiniteMagnitude))
     }
 
@@ -123,25 +123,25 @@ public class LineWrappingStackView: UIView {
                 // Check what size the subview prefers to be, up to a full line width.
                 let unconstrainedContentSize = subview.sizeThatFits(CGSize(
                     width: bounds.width,
-                    height: CGFloat.greatestFiniteMagnitude
+                    height: CGFloat.greatestFiniteMagnitude,
                 ))
                 // Now apply constraints.
                 var constrainedSize = subview.systemLayoutSizeFitting(
                     unconstrainedContentSize,
                     withHorizontalFittingPriority: .fittingSizeLevel,
-                    verticalFittingPriority: .required
+                    verticalFittingPriority: .required,
                 )
                 // Do a second round content size calculation, now constrained by width
                 // so individual views can overflow height.
                 let constrainedContentSize = subview.sizeThatFits(CGSize(
                     width: constrainedSize.width,
-                    height: CGFloat.greatestFiniteMagnitude
+                    height: CGFloat.greatestFiniteMagnitude,
                 ))
                 // And lastly check with constraints at the new height.
                 constrainedSize = subview.systemLayoutSizeFitting(
                     constrainedContentSize,
                     withHorizontalFittingPriority: .fittingSizeLevel,
-                    verticalFittingPriority: .defaultHigh
+                    verticalFittingPriority: .defaultHigh,
                 )
 
                 var subviewWidth = min(bounds.width - x, constrainedSize.width)

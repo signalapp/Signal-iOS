@@ -11,10 +11,11 @@ class CustomColorViewController: OWSTableViewController2 {
     private let thread: TSThread?
     private var wallpaperViewBuilder: WallpaperViewBuilder?
 
-    public enum ValueMode {
+    enum ValueMode {
         case createNew
         case editExisting(key: CustomChatColor.Key, value: CustomChatColor)
     }
+
     private let valueMode: ValueMode
 
     private let completion: (CustomChatColor) -> Void
@@ -59,10 +60,10 @@ class CustomColorViewController: OWSTableViewController2 {
     private var saturationSpectrum: HSLSpectrum
     private let saturationSlider: SpectrumSlider
 
-    public init(
+    init(
         thread: TSThread? = nil,
         valueMode: ValueMode,
-        completion: @escaping (CustomChatColor) -> Void
+        completion: @escaping (CustomChatColor) -> Void,
     ) {
         self.thread = thread
         self.valueMode = valueMode
@@ -102,22 +103,24 @@ class CustomColorViewController: OWSTableViewController2 {
             self,
             selector: #selector(updateTableContents),
             name: .themeDidChange,
-            object: nil
+            object: nil,
         )
     }
 
-    public override func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = OWSLocalizedString("CUSTOM_CHAT_COLOR_SETTINGS_TITLE",
-                                  comment: "Title for the custom chat color settings view.")
+        title = OWSLocalizedString(
+            "CUSTOM_CHAT_COLOR_SETTINGS_TITLE",
+            comment: "Title for the custom chat color settings view.",
+        )
 
         navigationItem.rightBarButtonItem = .button(
             title: CommonStrings.setButton,
             style: .done,
             action: { [weak self] in
                 self?.didTapSet()
-            }
+            },
         )
 
         createSubviews()
@@ -130,23 +133,33 @@ class CustomColorViewController: OWSTableViewController2 {
     }
 
     private func createSubviews() {
-        modeControl.insertSegment(withTitle: OWSLocalizedString("CUSTOM_CHAT_COLOR_SETTINGS_SOLID_COLOR",
-                                                               comment: "Label for the 'solid color' mode in the custom chat color settings view."),
-                                  at: EditMode.solidColor.rawValue,
-                                  animated: false)
-        modeControl.insertSegment(withTitle: OWSLocalizedString("CUSTOM_CHAT_COLOR_SETTINGS_GRADIENT",
-                                                               comment: "Label for the 'gradient' mode in the custom chat color settings view."),
-                                  at: EditMode.gradientColor1.rawValue,
-                                  animated: false)
+        modeControl.insertSegment(
+            withTitle: OWSLocalizedString(
+                "CUSTOM_CHAT_COLOR_SETTINGS_SOLID_COLOR",
+                comment: "Label for the 'solid color' mode in the custom chat color settings view.",
+            ),
+            at: EditMode.solidColor.rawValue,
+            animated: false,
+        )
+        modeControl.insertSegment(
+            withTitle: OWSLocalizedString(
+                "CUSTOM_CHAT_COLOR_SETTINGS_GRADIENT",
+                comment: "Label for the 'gradient' mode in the custom chat color settings view.",
+            ),
+            at: EditMode.gradientColor1.rawValue,
+            animated: false,
+        )
         switch editMode {
         case .solidColor:
             modeControl.selectedSegmentIndex = EditMode.solidColor.rawValue
         case .gradientColor1, .gradientColor2:
             modeControl.selectedSegmentIndex = EditMode.gradientColor1.rawValue
         }
-        modeControl.addTarget(self,
-                              action: #selector(modeControlDidChange),
-                              for: .valueChanged)
+        modeControl.addTarget(
+            self,
+            action: #selector(modeControlDidChange),
+            for: .valueChanged,
+        )
     }
 
     private var hasUnsavedChanges: Bool {
@@ -169,12 +182,13 @@ class CustomColorViewController: OWSTableViewController2 {
         case noUnsavedChanges
         case hasUnsavedChanges
     }
+
     private var navigationState: NavigationState = .unknown
 
     private func updateNavigation() {
         let navigationState: NavigationState = (hasUnsavedChanges
-                                                    ? .hasUnsavedChanges
-                                                    : .noUnsavedChanges)
+            ? .hasUnsavedChanges
+            : .noUnsavedChanges)
         guard self.navigationState != navigationState else {
             return
         }
@@ -190,7 +204,7 @@ class CustomColorViewController: OWSTableViewController2 {
                 style: .done,
                 action: { [weak self] in
                     self?.didTapDone()
-                }
+                },
             )
         } else {
             navigationItem.rightBarButtonItem = nil
@@ -233,8 +247,8 @@ class CustomColorViewController: OWSTableViewController2 {
             sliderView: hueSlider,
             headerText: OWSLocalizedString(
                 "CUSTOM_CHAT_COLOR_SETTINGS_HUE",
-                comment: "Title for the 'hue' section in the chat color settings view."
-            )
+                comment: "Title for the 'hue' section in the chat color settings view.",
+            ),
         ))
         contents.add(hueSection)
 
@@ -246,8 +260,8 @@ class CustomColorViewController: OWSTableViewController2 {
             sliderView: saturationSlider,
             headerText: OWSLocalizedString(
                 "CUSTOM_CHAT_COLOR_SETTINGS_SATURATION",
-                comment: "Title for the 'Saturation' section in the chat color settings view."
-            )
+                comment: "Title for the 'Saturation' section in the chat color settings view.",
+            ),
         ))
         contents.add(saturationSection)
 
@@ -285,7 +299,7 @@ class CustomColorViewController: OWSTableViewController2 {
             .init(lightness: 0.4, alpha: 180.0 / 360.0),
             .init(lightness: 0.5, alpha: 240.0 / 360.0),
             .init(lightness: 0.4, alpha: 300.0 / 360.0),
-            .init(lightness: 0.45, alpha: 360.0 / 360.0)
+            .init(lightness: 0.45, alpha: 360.0 / 360.0),
         ]
         return LightnessSpectrum(values: values)
     }()
@@ -392,9 +406,11 @@ class CustomColorViewController: OWSTableViewController2 {
             let solidColor = self.solidOrGradientColor2Setting.asOWSColor(hueSpectrum: hueSpectrum)
             return .solidColor(color: solidColor)
         case .gradientColor1, .gradientColor2:
-            return .gradient(gradientColor1: gradientColor1,
-                             gradientColor2: gradientColor2,
-                             angleRadians: self.angleRadians)
+            return .gradient(
+                gradientColor1: gradientColor1,
+                gradientColor2: gradientColor2,
+                angleRadians: self.angleRadians,
+            )
         }
     }
 
@@ -428,7 +444,7 @@ class CustomColorViewController: OWSTableViewController2 {
             usageCountToConfirm = SSKEnvironment.shared.databaseStorageRef.read { tx in
                 return DependenciesBridge.shared.chatColorSettingStore.usageCount(
                     of: colorKey,
-                    tx: tx
+                    tx: tx,
                 )
             }
             guard usageCountToConfirm > 1 else {
@@ -440,19 +456,19 @@ class CustomColorViewController: OWSTableViewController2 {
         let messageFormat = OWSLocalizedString(
             "CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d",
             tableName: "PluralAware",
-            comment: "Message for the 'edit chat color confirm alert' in the chat color settings view. Embeds: {{ the number of conversations that use this chat color }}."
+            comment: "Message for the 'edit chat color confirm alert' in the chat color settings view. Embeds: {{ the number of conversations that use this chat color }}.",
         )
         let message = String.localizedStringWithFormat(messageFormat, usageCountToConfirm)
         let actionSheet = ActionSheetController(
             title: OWSLocalizedString(
                 "CHAT_COLOR_SETTINGS_UPDATE_ALERT_ALERT_TITLE",
-                comment: "Title for the 'edit chat color confirm alert' in the chat color settings view."
+                comment: "Title for the 'edit chat color confirm alert' in the chat color settings view.",
             ),
-            message: message
+            message: message,
         )
 
         actionSheet.addAction(ActionSheetAction(
-            title: CommonStrings.saveButton
+            title: CommonStrings.saveButton,
         ) { [weak self] _ in
             self?.saveAndDismiss()
         })
@@ -536,7 +552,7 @@ private class SpectrumSlider: ManualLayoutView {
         }
     }
 
-    public var value: CGFloat {
+    var value: CGFloat {
         didSet {
             setNeedsLayout()
         }
@@ -580,10 +596,12 @@ private class SpectrumSlider: ManualLayoutView {
             }
             let knobMinX: CGFloat = 0
             let knobMaxX: CGFloat = max(0, view.width - Self.knobDiameter)
-            knobView.frame = CGRect(x: view.value.lerp(knobMinX, knobMaxX),
-                                    y: 0,
-                                    width: Self.knobDiameter,
-                                    height: Self.knobDiameter)
+            knobView.frame = CGRect(
+                x: view.value.lerp(knobMinX, knobMaxX),
+                y: 0,
+                width: Self.knobDiameter,
+                height: Self.knobDiameter,
+            )
 
             let inset = (Self.knobDiameter - Self.spectrumImageDiameter) * 0.5
             spectrumImageView.frame = view.bounds.inset(by: UIEdgeInsets(margin: inset))
@@ -618,8 +636,10 @@ private class SpectrumSlider: ManualLayoutView {
             spectrumImageView.image = nil
             return
         }
-        if let spectrumImage = spectrumImageView.image,
-           spectrumImage.pixelSize == spectrumImageSizePixels {
+        if
+            let spectrumImage = spectrumImageView.image,
+            spectrumImage.pixelSize == spectrumImageSizePixels
+        {
             // Image is already valid.
             return
         }
@@ -670,8 +690,10 @@ private struct LightnessValue: LerpableValue {
 
     func interpolate(_ other: LightnessValue, interpolationAlpha: CGFloat) -> LightnessValue {
         let interpolationAlpha = interpolationAlpha.clamp01()
-        return LightnessValue(lightness: interpolationAlpha.lerp(lightness, other.lightness),
-                              alpha: interpolationAlpha.lerp(alpha, other.alpha))
+        return LightnessValue(
+            lightness: interpolationAlpha.lerp(lightness, other.lightness),
+            alpha: interpolationAlpha.lerp(alpha, other.alpha),
+        )
     }
 }
 
@@ -707,10 +729,12 @@ private struct HSLValue: LerpableValue {
 
     func interpolate(_ other: HSLValue, interpolationAlpha: CGFloat) -> HSLValue {
         let interpolationAlpha = interpolationAlpha.clamp01()
-        return HSLValue(hue: interpolationAlpha.lerp(hue, other.hue),
-                        saturation: interpolationAlpha.lerp(saturation, other.saturation),
-                        lightness: interpolationAlpha.lerp(lightness, other.lightness),
-                        alpha: interpolationAlpha.lerp(alpha, other.alpha))
+        return HSLValue(
+            hue: interpolationAlpha.lerp(hue, other.hue),
+            saturation: interpolationAlpha.lerp(saturation, other.saturation),
+            lightness: interpolationAlpha.lerp(lightness, other.lightness),
+            alpha: interpolationAlpha.lerp(alpha, other.alpha),
+        )
     }
 
     var asUIColor: UIColor {
@@ -768,15 +792,19 @@ extension LerpableSpectrum {
         var leftIndex: Int = 0
         var rightIndex: Int = values.count - 1
         while true {
-            guard leftIndex <= rightIndex,
-                  let left = values[safe: leftIndex],
-                  let right = values[safe: rightIndex] else {
+            guard
+                leftIndex <= rightIndex,
+                let left = values[safe: leftIndex],
+                let right = values[safe: rightIndex]
+            else {
                 owsFailDebug("Invalid indices. leftIndex: \(leftIndex), rightIndex: \(rightIndex), values: \(values.count).")
                 return values.first!
             }
-            guard left.alpha <= right.alpha,
-                  left.alpha <= targetAlpha,
-                  right.alpha >= targetAlpha else {
+            guard
+                left.alpha <= right.alpha,
+                left.alpha <= targetAlpha,
+                right.alpha >= targetAlpha
+            else {
                 owsFailDebug("Invalid alphas. left.alpha: \(left.alpha), right.alpha: \(right.alpha), targetAlpha: \(targetAlpha).")
                 return left
             }
@@ -922,7 +950,7 @@ private class CustomColorPreviewView: UIView {
 
     private weak var delegate: CustomColorPreviewDelegate?
 
-    public override var bounds: CGRect {
+    override var bounds: CGRect {
         didSet {
             if oldValue != bounds {
                 viewSizeDidChange()
@@ -930,7 +958,7 @@ private class CustomColorPreviewView: UIView {
         }
     }
 
-    public override var frame: CGRect {
+    override var frame: CGRect {
         didSet {
             if oldValue != frame {
                 viewSizeDidChange()
@@ -957,7 +985,7 @@ private class CustomColorPreviewView: UIView {
         let mockConversationView = MockConversationView(
             model: CustomColorPreviewView.buildMockConversationModel(),
             hasWallpaper: hasWallpaper,
-            customChatColor: delegate.currentColorOrGradientSetting()
+            customChatColor: delegate.currentColorOrGradientSetting(),
         )
 
         self.mockConversationView = mockConversationView
@@ -990,9 +1018,11 @@ private class CustomColorPreviewView: UIView {
     }
 
     fileprivate lazy var updateMockConversationEvent = {
-        DebouncedEvents.build(mode: .lastOnly,
-                              maxFrequencySeconds: 0.05,
-                              onQueue: .main) { [weak self] in
+        DebouncedEvents.build(
+            mode: .lastOnly,
+            maxFrequencySeconds: 0.05,
+            onQueue: .main,
+        ) { [weak self] in
             self?._updateMockConversation()
         }
     }()
@@ -1006,7 +1036,7 @@ private class CustomColorPreviewView: UIView {
     }
 
     private func _updateMockConversation() {
-        guard let delegate = delegate else { return }
+        guard let delegate else { return }
 
         mockConversationView.customChatColor = delegate.currentColorOrGradientSetting()
 
@@ -1059,8 +1089,8 @@ private class CustomColorPreviewView: UIView {
             swatchView.autoCenterInSuperview()
 
             let selectedColor = (Theme.isDarkThemeEnabled
-                                    ? UIColor.ows_white
-                                    : UIColor(white: 0, alpha: 0.6))
+                ? UIColor.ows_white
+                : UIColor(white: 0, alpha: 0.6))
             selectedBorder.layer.borderColor = selectedColor.cgColor
             selectedBorder.layer.borderWidth = Self.selectedBorderThickness
             selectedBorder.autoSetDimensions(to: .square(Self.swatchSize + Self.selectedBorderThickness * 2))
@@ -1098,7 +1128,7 @@ private class CustomColorPreviewView: UIView {
     private var knobView2ConstraintY: NSLayoutConstraint?
 
     private func ensureControlState() {
-        guard let delegate = delegate else { return }
+        guard let delegate else { return }
 
         switch delegate.editMode {
         case .solidColor:
@@ -1117,11 +1147,11 @@ private class CustomColorPreviewView: UIView {
 
         let knobView1 = KnobView(
             isSelected: delegate.editMode == .gradientColor1,
-            colorSetting: .solidColor(color: delegate.gradientColor1)
+            colorSetting: .solidColor(color: delegate.gradientColor1),
         )
         let knobView2 = KnobView(
             isSelected: delegate.editMode == .gradientColor2,
-            colorSetting: .solidColor(color: delegate.gradientColor2)
+            colorSetting: .solidColor(color: delegate.gradientColor2),
         )
         self.knobView1 = knobView1
         self.knobView2 = knobView2
@@ -1129,34 +1159,42 @@ private class CustomColorPreviewView: UIView {
         addSubview(knobView1)
         addSubview(knobView2)
 
-        knobView1ConstraintX = NSLayoutConstraint(item: knobView1,
-                                                  attribute: .centerX,
-                                                  relatedBy: .equal,
-                                                  toItem: self,
-                                                  attribute: .centerX,
-                                                  multiplier: 1,
-                                                  constant: 0)
-        knobView1ConstraintY = NSLayoutConstraint(item: knobView1,
-                                                  attribute: .centerY,
-                                                  relatedBy: .equal,
-                                                  toItem: self,
-                                                  attribute: .centerY,
-                                                  multiplier: 1,
-                                                  constant: 0)
-        knobView2ConstraintX = NSLayoutConstraint(item: knobView2,
-                                                  attribute: .centerX,
-                                                  relatedBy: .equal,
-                                                  toItem: self,
-                                                  attribute: .centerX,
-                                                  multiplier: 1,
-                                                  constant: 0)
-        knobView2ConstraintY = NSLayoutConstraint(item: knobView2,
-                                                  attribute: .centerY,
-                                                  relatedBy: .equal,
-                                                  toItem: self,
-                                                  attribute: .centerY,
-                                                  multiplier: 1,
-                                                  constant: 0)
+        knobView1ConstraintX = NSLayoutConstraint(
+            item: knobView1,
+            attribute: .centerX,
+            relatedBy: .equal,
+            toItem: self,
+            attribute: .centerX,
+            multiplier: 1,
+            constant: 0,
+        )
+        knobView1ConstraintY = NSLayoutConstraint(
+            item: knobView1,
+            attribute: .centerY,
+            relatedBy: .equal,
+            toItem: self,
+            attribute: .centerY,
+            multiplier: 1,
+            constant: 0,
+        )
+        knobView2ConstraintX = NSLayoutConstraint(
+            item: knobView2,
+            attribute: .centerX,
+            relatedBy: .equal,
+            toItem: self,
+            attribute: .centerX,
+            multiplier: 1,
+            constant: 0,
+        )
+        knobView2ConstraintY = NSLayoutConstraint(
+            item: knobView2,
+            attribute: .centerY,
+            relatedBy: .equal,
+            toItem: self,
+            attribute: .centerY,
+            multiplier: 1,
+            constant: 0,
+        )
         knobView1ConstraintX?.autoInstall()
         knobView1ConstraintY?.autoInstall()
         knobView2ConstraintX?.autoInstall()
@@ -1184,9 +1222,11 @@ private class CustomColorPreviewView: UIView {
     private func handleGesture(_ sender: CustomColorGestureRecognizer) {
         switch sender.state {
         case .began, .changed, .ended:
-            guard let delegate = self.delegate,
-                  let knobView1 = self.knobView1,
-                  let knobView2 = self.knobView2 else {
+            guard
+                let delegate = self.delegate,
+                let knobView1 = self.knobView1,
+                let knobView2 = self.knobView2
+            else {
                 gestureMode = .none
                 return
             }
@@ -1197,8 +1237,10 @@ private class CustomColorPreviewView: UIView {
                 let knobDistance1 = knobView1.frame.center.distance(touchLocation)
                 let knobDistance2 = knobView2.frame.center.distance(touchLocation)
                 let minFirstTouchDistance = KnobView.knobSize * 2
-                if knobDistance1 < minFirstTouchDistance,
-                   knobDistance2 < minFirstTouchDistance {
+                if
+                    knobDistance1 < minFirstTouchDistance,
+                    knobDistance2 < minFirstTouchDistance
+                {
                     if knobDistance1 < knobDistance2 {
                         gestureMode = .knob1
                     } else {
@@ -1215,8 +1257,8 @@ private class CustomColorPreviewView: UIView {
             }
 
             delegate.switchToEditMode(gestureMode == .knob1
-                                        ? .gradientColor1
-                                        : .gradientColor2)
+                ? .gradientColor1
+                : .gradientColor2)
             knobView1.isSelected = gestureMode == .knob1
             knobView2.isSelected = gestureMode == .knob2
 
@@ -1247,19 +1289,23 @@ private class CustomColorPreviewView: UIView {
     }
 
     private func updateKnobLayout() {
-        guard let delegate = self.delegate,
-              let knobView1ConstraintX = self.knobView1ConstraintX,
-              let knobView1ConstraintY = self.knobView1ConstraintY,
-              let knobView2ConstraintX = self.knobView2ConstraintX,
-              let knobView2ConstraintY = self.knobView2ConstraintY,
-              let axisShapeLayer = self.axisShapeLayer else {
+        guard
+            let delegate = self.delegate,
+            let knobView1ConstraintX = self.knobView1ConstraintX,
+            let knobView1ConstraintY = self.knobView1ConstraintY,
+            let knobView2ConstraintX = self.knobView2ConstraintX,
+            let knobView2ConstraintY = self.knobView2ConstraintY,
+            let axisShapeLayer = self.axisShapeLayer
+        else {
             return
         }
 
         let knobInset: CGFloat = 20
         let knobRect = self.bounds.inset(by: UIEdgeInsets(margin: knobInset))
-        guard knobRect.size.width > 0,
-              knobRect.size.height > 0 else {
+        guard
+            knobRect.size.width > 0,
+            knobRect.size.height > 0
+        else {
             return
         }
 
@@ -1270,8 +1316,10 @@ private class CustomColorPreviewView: UIView {
         let scaleFactorX = (knobRect.size.width / 2) / abs(oversizeVector.x)
         let scaleFactorY = (knobRect.size.height / 2) / abs(oversizeVector.y)
         let scaleFactor: CGFloat
-        if abs(oversizeVector.x) > 0,
-           abs(oversizeVector.y) > 0 {
+        if
+            abs(oversizeVector.x) > 0,
+            abs(oversizeVector.y) > 0
+        {
             scaleFactor = min(scaleFactorX, scaleFactorY)
         } else if abs(oversizeVector.x) > 0 {
             scaleFactor = scaleFactorX
@@ -1336,20 +1384,20 @@ private class CustomColorPreviewView: UIView {
             .date,
             .incoming(text: OWSLocalizedString(
                 "CHAT_COLOR_INCOMING_MESSAGE_1",
-                comment: "The first incoming bubble text when setting a chat color."
+                comment: "The first incoming bubble text when setting a chat color.",
             )),
             .outgoing(text: OWSLocalizedString(
                 "CHAT_COLOR_OUTGOING_MESSAGE_1",
-                comment: "The first outgoing bubble text when setting a chat color."
+                comment: "The first outgoing bubble text when setting a chat color.",
             )),
             .incoming(text: OWSLocalizedString(
                 "CHAT_COLOR_INCOMING_MESSAGE_2",
-                comment: "The second incoming bubble text when setting a chat color."
+                comment: "The second incoming bubble text when setting a chat color.",
             )),
             .outgoing(text: OWSLocalizedString(
                 "CHAT_COLOR_OUTGOING_MESSAGE_2",
-                comment: "The second outgoing bubble text when setting a chat color."
-            ))
+                comment: "The second outgoing bubble text when setting a chat color.",
+            )),
         ])
     }
 
@@ -1383,17 +1431,21 @@ private class CustomColorPreviewView: UIView {
         if nil != self.customColorTooltip {
             hideTooltip()
         } else {
-            guard let knobView1 = knobView1,
-                  let knobView2 = knobView2 else {
+            guard
+                let knobView1,
+                let knobView2
+            else {
                 hideTooltip()
                 return
             }
             let knobView = (knobView1.frame.y < knobView2.frame.y
-                                ? knobView1
-                                : knobView2)
-            self.customColorTooltip = CustomColorTooltip.present(fromView: self,
-                                                                 widthReferenceView: self,
-                                                                 tailReferenceView: knobView) { [weak self] in
+                ? knobView1
+                : knobView2)
+            self.customColorTooltip = CustomColorTooltip.present(
+                fromView: self,
+                widthReferenceView: self,
+                tailReferenceView: knobView,
+            ) { [weak self] in
                 self?.dismissTooltip()
             }
         }
@@ -1405,34 +1457,38 @@ private class CustomColorPreviewView: UIView {
 class CustomColorGestureRecognizer: UIGestureRecognizer {
     private var isActive = false
 
-    public override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent) {
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent) {
         handle(event: event)
     }
 
-    public override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent) {
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent) {
         handle(event: event)
     }
 
-    public override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent) {
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent) {
         handle(event: event)
     }
 
-    public override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent) {
+    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent) {
         handle(event: event)
     }
 
     private func handle(event: UIEvent) {
-        guard let allTouches = event.allTouches,
-              allTouches.count == 1,
-              let firstTouch = allTouches.first else {
+        guard
+            let allTouches = event.allTouches,
+            allTouches.count == 1,
+            let firstTouch = allTouches.first
+        else {
             self.state = .failed
             self.isActive = false
             return
         }
         switch firstTouch.phase {
         case .began:
-            guard let view = self.view,
-                  view.bounds.contains(firstTouch.location(in: view)) else {
+            guard
+                let view = self.view,
+                view.bounds.contains(firstTouch.location(in: view))
+            else {
                 self.state = .failed
                 self.isActive = false
                 return
@@ -1472,34 +1528,44 @@ extension CustomColorPreviewView: MockConversationDelegate {
 
 private class CustomColorTooltip: TooltipView {
 
-    private override init(fromView: UIView,
-                          widthReferenceView: UIView,
-                          tailReferenceView: UIView,
-                          wasTappedBlock: (() -> Void)?) {
-        super.init(fromView: fromView,
-                   widthReferenceView: widthReferenceView,
-                   tailReferenceView: tailReferenceView,
-                   wasTappedBlock: wasTappedBlock)
+    override private init(
+        fromView: UIView,
+        widthReferenceView: UIView,
+        tailReferenceView: UIView,
+        wasTappedBlock: (() -> Void)?,
+    ) {
+        super.init(
+            fromView: fromView,
+            widthReferenceView: widthReferenceView,
+            tailReferenceView: tailReferenceView,
+            wasTappedBlock: wasTappedBlock,
+        )
     }
 
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    public class func present(fromView: UIView,
-                              widthReferenceView: UIView,
-                              tailReferenceView: UIView,
-                              wasTappedBlock: (() -> Void)?) -> CustomColorTooltip {
-        return CustomColorTooltip(fromView: fromView,
-                                  widthReferenceView: widthReferenceView,
-                                  tailReferenceView: tailReferenceView,
-                                  wasTappedBlock: wasTappedBlock)
+    class func present(
+        fromView: UIView,
+        widthReferenceView: UIView,
+        tailReferenceView: UIView,
+        wasTappedBlock: (() -> Void)?,
+    ) -> CustomColorTooltip {
+        return CustomColorTooltip(
+            fromView: fromView,
+            widthReferenceView: widthReferenceView,
+            tailReferenceView: tailReferenceView,
+            wasTappedBlock: wasTappedBlock,
+        )
     }
 
-    public override func bubbleContentView() -> UIView {
+    override func bubbleContentView() -> UIView {
         let label = UILabel()
-        label.text = OWSLocalizedString("CUSTOM_CHAT_COLOR_SETTINGS_TOOLTIP",
-                                       comment: "Tooltip highlighting the custom chat color controls.")
+        label.text = OWSLocalizedString(
+            "CUSTOM_CHAT_COLOR_SETTINGS_TOOLTIP",
+            comment: "Tooltip highlighting the custom chat color controls.",
+        )
         label.font = .dynamicTypeSubheadline
         label.textColor = .ows_white
         label.numberOfLines = 0
@@ -1507,19 +1573,19 @@ private class CustomColorTooltip: TooltipView {
         return horizontalStack(forSubviews: [label])
     }
 
-    public override var bubbleColor: UIColor {
+    override var bubbleColor: UIColor {
         .ows_accentBlue
     }
 
-    public override var tailDirection: TooltipView.TailDirection {
+    override var tailDirection: TooltipView.TailDirection {
         .up
     }
 
-    public override var bubbleInsets: UIEdgeInsets {
+    override var bubbleInsets: UIEdgeInsets {
         UIEdgeInsets(hMargin: 12, vMargin: 7)
     }
 
-    public override var bubbleHSpacing: CGFloat {
+    override var bubbleHSpacing: CGFloat {
         10
     }
 }

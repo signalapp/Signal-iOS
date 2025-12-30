@@ -29,7 +29,7 @@ extension BadgeGiftingConfirmationViewController: PKPaymentAuthorizationControll
     func paymentAuthorizationController(
         _ controller: PKPaymentAuthorizationController,
         didAuthorizePayment payment: PKPayment,
-        handler completion: @escaping (PKPaymentAuthorizationResult) -> Void
+        handler completion: @escaping (PKPaymentAuthorizationResult) -> Void,
     ) {
         var hasCalledCompletion = false
         @MainActor
@@ -44,7 +44,7 @@ extension BadgeGiftingConfirmationViewController: PKPaymentAuthorizationControll
                 try SSKEnvironment.shared.databaseStorageRef.read { transaction in
                     try DonationViewsUtil.Gifts.throwIfAlreadySendingGift(
                         threadId: self.thread.uniqueId,
-                        transaction: transaction
+                        transaction: transaction,
                     )
                 }
 
@@ -54,7 +54,7 @@ extension BadgeGiftingConfirmationViewController: PKPaymentAuthorizationControll
                     for: self.thread,
                     didPresent: {
                         wrappedCompletion(.init(status: .success, errors: nil))
-                    }
+                    },
                 )
                 guard safetyNumberConfirmationResult else {
                     throw DonationViewsUtil.Gifts.SendGiftError.userCanceledBeforeChargeCompleted
@@ -102,7 +102,7 @@ extension BadgeGiftingConfirmationViewController: PKPaymentAuthorizationControll
                             wrappedCompletion(.init(status: .success, errors: nil))
                             controller.dismiss()
                             presentModalActivityIndicatorIfNotAlreadyPresented()
-                        }
+                        },
                     )
                 }
 

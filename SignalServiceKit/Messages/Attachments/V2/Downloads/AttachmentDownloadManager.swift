@@ -36,12 +36,12 @@ public enum AttachmentDownloads {
                 cdnReadCredential: MediaTierReadCredential,
                 outerEncryptionMetadata: MediaTierEncryptionMetadata,
                 integrityCheck: AttachmentIntegrityCheck,
-                plaintextLength: UInt32?
+                plaintextLength: UInt32?,
             )
             case mediaTierThumbnail(
                 cdnReadCredential: MediaTierReadCredential,
                 outerEncyptionMetadata: MediaTierEncryptionMetadata,
-                innerEncryptionMetadata: MediaTierEncryptionMetadata
+                innerEncryptionMetadata: MediaTierEncryptionMetadata,
             )
             case linkNSyncBackup(cdnKey: String)
 
@@ -97,7 +97,7 @@ public enum AttachmentDownloads {
             mimeType: String,
             cdnNumber: UInt32,
             encryptionKey: Data,
-            source: Source
+            source: Source,
         ) {
             self.mimeType = mimeType
             self.cdnNumber = cdnNumber
@@ -123,36 +123,36 @@ public enum AttachmentDownloads {
 public protocol AttachmentDownloadManager {
 
     func backupCdnInfo(
-        metadata: BackupReadCredential
+        metadata: BackupReadCredential,
     ) async throws -> BackupCdnInfo
 
     func downloadBackup(
         metadata: BackupReadCredential,
-        progress: OWSProgressSink?
+        progress: OWSProgressSink?,
     ) -> Promise<URL>
 
     func downloadTransientAttachment(
         metadata: AttachmentDownloads.DownloadMetadata,
-        progress: OWSProgressSink?
+        progress: OWSProgressSink?,
     ) -> Promise<URL>
 
     func enqueueDownloadOfAttachmentsForMessage(
         _ message: TSMessage,
         priority: AttachmentDownloadPriority,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     )
 
     func enqueueDownloadOfAttachmentsForStoryMessage(
         _ message: StoryMessage,
         priority: AttachmentDownloadPriority,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     )
 
     func enqueueDownloadOfAttachment(
         id: Attachment.IDType,
         priority: AttachmentDownloadPriority,
         source: QueuedAttachmentDownloadRecord.SourceType,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     )
 
     /// There's two sources of truth for calculating download progress,
@@ -165,7 +165,7 @@ public protocol AttachmentDownloadManager {
         id: Attachment.IDType,
         priority: AttachmentDownloadPriority,
         source: QueuedAttachmentDownloadRecord.SourceType,
-        progress: OWSProgressSink?
+        progress: OWSProgressSink?,
     ) async throws
 
     /// Starts downloading off the persisted queue, if there's anything to download
@@ -178,24 +178,24 @@ public protocol AttachmentDownloadManager {
 extension AttachmentDownloadManager {
 
     public func downloadTransientAttachment(
-        metadata: AttachmentDownloads.DownloadMetadata
+        metadata: AttachmentDownloads.DownloadMetadata,
     ) -> Promise<URL> {
         return downloadTransientAttachment(
             metadata: metadata,
-            progress: nil
+            progress: nil,
         )
     }
 
     public func enqueueDownloadOfAttachmentsForMessage(
         _ message: TSMessage,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         enqueueDownloadOfAttachmentsForMessage(message, priority: .default, tx: tx)
     }
 
     public func enqueueDownloadOfAttachmentsForStoryMessage(
         _ message: StoryMessage,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         enqueueDownloadOfAttachmentsForStoryMessage(message, priority: .default, tx: tx)
     }
@@ -203,13 +203,13 @@ extension AttachmentDownloadManager {
     public func downloadAttachment(
         id: Attachment.IDType,
         priority: AttachmentDownloadPriority,
-        source: QueuedAttachmentDownloadRecord.SourceType
+        source: QueuedAttachmentDownloadRecord.SourceType,
     ) async throws {
         try await downloadAttachment(
             id: id,
             priority: priority,
             source: source,
-            progress: nil
+            progress: nil,
         )
     }
 }

@@ -19,7 +19,7 @@ class StoryPrivacySettingsViewController: OWSTableViewController2 {
         } else {
             title = OWSLocalizedString(
                 "STORY_SETTINGS_TITLE",
-                comment: "Label for the stories section of the settings view"
+                comment: "Label for the stories section of the settings view",
             )
         }
 
@@ -49,19 +49,20 @@ class StoryPrivacySettingsViewController: OWSTableViewController2 {
             let turnOnSection = OWSTableSection()
             turnOnSection.footerTitle = OWSLocalizedString(
                 "STORIES_SETTINGS_TURN_ON_FOOTER",
-                comment: "Footer for the 'turn on' section of the stories settings"
+                comment: "Footer for the 'turn on' section of the stories settings",
             )
             contents.add(turnOnSection)
             turnOnSection.add(.actionItem(
                 withText: OWSLocalizedString(
                     "STORIES_SETTINGS_TURN_ON_STORIES_BUTTON",
-                    comment: "Button to turn on stories on the story privacy settings view"
+                    comment: "Button to turn on stories on the story privacy settings view",
                 ),
                 actionBlock: {
                     SSKEnvironment.shared.databaseStorageRef.write { transaction in
                         StoryManager.setAreStoriesEnabled(true, transaction: transaction)
                     }
-                }))
+                },
+            ))
 
             return
         }
@@ -70,13 +71,13 @@ class StoryPrivacySettingsViewController: OWSTableViewController2 {
         myStoriesSection.customHeaderView = NewStoryHeaderView(
             title: OWSLocalizedString(
                 "STORIES_SETTINGS_STORIES_HEADER",
-                comment: "Header for the 'Stories' section of the stories settings"
+                comment: "Header for the 'Stories' section of the stories settings",
             ),
-            delegate: self
+            delegate: self,
         )
         myStoriesSection.footerTitle = OWSLocalizedString(
             "STORIES_SETTINGS_STORIES_FOOTER",
-            comment: "Footer for the 'Stories' section of the stories settings"
+            comment: "Footer for the 'Stories' section of the stories settings",
         )
         contents.add(myStoriesSection)
 
@@ -86,7 +87,7 @@ class StoryPrivacySettingsViewController: OWSTableViewController2 {
                     includeImplicitGroupThreads: false,
                     excludeHiddenContexts: false,
                     blockingManager: SSKEnvironment.shared.blockingManagerRef,
-                    transaction: transaction
+                    transaction: transaction,
                 )
                 .lazy
                 .map { (item: $0, title: $0.title(transaction: transaction)) }
@@ -112,39 +113,40 @@ class StoryPrivacySettingsViewController: OWSTableViewController2 {
                 },
                 actionBlock: { [weak self] in
                     self?.showSettings(for: item)
-                }
+                },
             ))
         }
 
         let viewReceiptsSection = OWSTableSection()
         viewReceiptsSection.footerTitle = OWSLocalizedString(
             "STORIES_SETTINGS_VIEW_RECEIPTS_FOOTER",
-            comment: "Footer for the 'view receipts' section of the stories settings"
+            comment: "Footer for the 'view receipts' section of the stories settings",
         )
         viewReceiptsSection.add(.switch(
             withText: OWSLocalizedString("STORIES_SETTINGS_VIEW_RECEIPTS", comment: "Title for the 'view receipts' setting in stories settings"),
             isOn: { StoryManager.areViewReceiptsEnabled },
             target: self,
-            selector: #selector(didToggleViewReceipts)
+            selector: #selector(didToggleViewReceipts),
         ))
         contents.add(viewReceiptsSection)
 
         let turnOffStoriesSection = OWSTableSection()
         turnOffStoriesSection.footerTitle = OWSLocalizedString(
             "STORIES_SETTINGS_TURN_OFF_FOOTER",
-            comment: "Footer for the 'turn off' section of the stories settings"
+            comment: "Footer for the 'turn off' section of the stories settings",
         )
         contents.add(turnOffStoriesSection)
         turnOffStoriesSection.add(.item(
             name: OWSLocalizedString(
                 "STORIES_SETTINGS_TURN_OFF_STORIES_BUTTON",
-                comment: "Button to turn off stories on the story privacy settings view"
+                comment: "Button to turn off stories on the story privacy settings view",
             ),
             textColor: .ows_accentRed,
             accessibilityIdentifier: nil,
             actionBlock: { [weak self] in
                 self?.turnOffStoriesConfirmation()
-            }))
+            },
+        ))
     }
 
     override func themeDidChange() {
@@ -192,19 +194,20 @@ class StoryPrivacySettingsViewController: OWSTableViewController2 {
         let actionSheet = ActionSheetController(
             message: OWSLocalizedString(
                 "STORIES_SETTINGS_TURN_OFF_ACTION_SHEET_MESSAGE",
-                comment: "Title for the action sheet confirming you want to turn off and delete all stories"
-            )
+                comment: "Title for the action sheet confirming you want to turn off and delete all stories",
+            ),
         )
         actionSheet.addAction(OWSActionSheets.cancelAction)
         actionSheet.addAction(.init(
             title: OWSLocalizedString(
                 "STORIES_SETTINGS_TURN_OFF_AND_DELETE_STORIES_BUTTON",
-                comment: "Button to turn off and delete stories on the story privacy settings view"
+                comment: "Button to turn off and delete stories on the story privacy settings view",
             ),
             style: .destructive,
             handler: { [weak self] _ in
                 self?.turnOffStories()
-            }))
+            },
+        ))
         presentActionSheet(actionSheet)
     }
 
@@ -241,21 +244,23 @@ extension StoryPrivacySettingsViewController: NewStoryHeaderDelegate {
 }
 
 private class StoryThreadCell: ContactTableViewCell {
-    open override class var reuseIdentifier: String { "StoryThreadCell" }
+    override open class var reuseIdentifier: String { "StoryThreadCell" }
 
     // MARK: - ContactTableViewCell
 
-    public func configure(conversationItem: StoryConversationItem, transaction: DBReadTransaction) {
+    func configure(conversationItem: StoryConversationItem, transaction: DBReadTransaction) {
         let configuration: ContactCellConfiguration
         switch conversationItem.messageRecipient {
         case .contact:
             owsFailDebug("Unexpected recipient for story")
             return
         case .group(let groupThreadId):
-            guard let groupThread = TSGroupThread.anyFetchGroupThread(
-                uniqueId: groupThreadId,
-                transaction: transaction
-            ) else {
+            guard
+                let groupThread = TSGroupThread.anyFetchGroupThread(
+                    uniqueId: groupThreadId,
+                    transaction: transaction,
+                )
+            else {
                 owsFailDebug("Failed to find group thread")
                 return
             }

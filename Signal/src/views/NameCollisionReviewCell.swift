@@ -35,7 +35,7 @@ extension NameCollision {
         blockingManager: BlockingManager,
         contactsManager: any ContactManager,
         viewControllerForPresentation: UIViewController,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> [NameCollisionCellModel] {
         elements.map {
             return NameCollisionCellModel(
@@ -51,7 +51,7 @@ extension NameCollision {
                 isBlocked: blockingManager.isAddressBlocked($0.address, transaction: tx),
                 hasPendingRequest: ContactThreadFinder().contactThread(for: $0.address, tx: tx)?.hasPendingMessageRequest(transaction: tx) ?? false,
                 isSystemContact: contactsManager.fetchSignalAccount(for: $0.address, transaction: tx) != nil,
-                viewControllerForPresentation: viewControllerForPresentation
+                viewControllerForPresentation: viewControllerForPresentation,
             )
         }
     }
@@ -90,7 +90,8 @@ final class NameCollisionCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
         let horizontalStack = UIStackView(arrangedSubviews: [
-            avatarView, verticalStack
+            avatarView,
+            verticalStack,
         ])
 
         horizontalStack.axis = .horizontal
@@ -107,7 +108,7 @@ final class NameCollisionCell: UITableViewCell {
 
     static func createWithModel(
         _ model: NameCollisionCellModel,
-        action: NameCollisionCell.Action?
+        action: NameCollisionCell.Action?,
     ) -> Self {
         let cell = self.init(style: .default, reuseIdentifier: nil)
         cell.configure(model: model, action: action)
@@ -147,17 +148,17 @@ final class NameCollisionCell: UITableViewCell {
         if let profileNameChange = model.profileNameChange {
             let formatString = OWSLocalizedString(
                 "NAME_COLLISION_RECENT_CHANGE_FORMAT_STRING",
-                comment: "Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ current name, which may be a profile name or an address book name }}, {{ %2$@ old profile name }}, and {{ %3$@ current profile name }}"
+                comment: "Format string describing a recent profile name change that led to a name collision. Embeds {{ %1$@ current name, which may be a profile name or an address book name }}, {{ %2$@ old profile name }}, and {{ %3$@ current profile name }}",
             )
             let string = String(
                 format: formatString,
                 model.shortName,
                 profileNameChange.oldestProfileName,
-                profileNameChange.newestProfileName
+                profileNameChange.newestProfileName,
             )
             verticalStack.addArrangedSubview(ProfileDetailLabel.profile(
                 displayName: string,
-                font: detailFont
+                font: detailFont,
             ))
         }
 
@@ -166,22 +167,22 @@ final class NameCollisionCell: UITableViewCell {
             verticalStack.addArrangedSubview(ProfileDetailLabel.signalConnectionLink(
                 font: detailFont,
                 shouldDismissOnNavigation: false,
-                presentEducationFrom: model.viewControllerForPresentation
+                presentEducationFrom: model.viewControllerForPresentation,
             ))
         } else if model.isBlocked {
             verticalStack.addArrangedSubview(ProfileDetailLabel.blocked(
                 name: model.shortName,
-                font: detailFont
+                font: detailFont,
             ))
         } else if model.hasPendingRequest {
             verticalStack.addArrangedSubview(ProfileDetailLabel.pendingRequest(
                 name: model.shortName,
-                font: detailFont
+                font: detailFont,
             ))
         } else {
             verticalStack.addArrangedSubview(ProfileDetailLabel.noDirectChat(
                 name: model.shortName,
-                font: detailFont
+                font: detailFont,
             ))
         }
 
@@ -189,7 +190,7 @@ final class NameCollisionCell: UITableViewCell {
         if model.isSystemContact {
             verticalStack.addArrangedSubview(ProfileDetailLabel.inSystemContacts(
                 name: model.shortName,
-                font: detailFont
+                font: detailFont,
             ))
         }
 
@@ -198,7 +199,7 @@ final class NameCollisionCell: UITableViewCell {
             verticalStack.addArrangedSubview(ProfileDetailLabel.phoneNumber(
                 phoneNumber,
                 font: detailFont,
-                presentSuccessToastFrom: model.viewControllerForPresentation
+                presentSuccessToastFrom: model.viewControllerForPresentation,
             ))
         }
 
@@ -206,7 +207,7 @@ final class NameCollisionCell: UITableViewCell {
         verticalStack.addArrangedSubview(ProfileDetailLabel.mutualGroups(
             for: model.thread,
             mutualGroups: model.mutualGroups,
-            font: detailFont
+            font: detailFont,
         ))
 
         separatorView.isHidden = action == nil
@@ -242,7 +243,7 @@ final class NameCollisionCell: UITableViewCell {
                 title: MessageRequestView.LocalizedStrings.block,
                 icon: .chatSettingsBlock,
                 role: .destructive,
-                action: action
+                action: action,
             )
         }
 
@@ -251,7 +252,7 @@ final class NameCollisionCell: UITableViewCell {
                 title: MessageRequestView.LocalizedStrings.unblock,
                 icon: .chatSettingsBlock,
                 role: .normal,
-                action: action
+                action: action,
             )
         }
 
@@ -259,11 +260,11 @@ final class NameCollisionCell: UITableViewCell {
             Action(
                 title: OWSLocalizedString(
                     "CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON",
-                    comment: "Label for 'remove from group' button in conversation settings view."
+                    comment: "Label for 'remove from group' button in conversation settings view.",
                 ),
                 icon: .groupMemberRemoveFromGroup,
                 role: .destructive,
-                action: action
+                action: action,
             )
         }
 
@@ -271,11 +272,11 @@ final class NameCollisionCell: UITableViewCell {
             Action(
                 title: OWSLocalizedString(
                     "MESSAGE_REQUEST_NAME_COLLISON_UPDATE_CONTACT_ACTION",
-                    comment: "A button that updates a known contact's information to resolve a name collision"
+                    comment: "A button that updates a known contact's information to resolve a name collision",
                 ),
                 icon: .profileAbout,
                 role: .normal,
-                action: action
+                action: action,
             )
         }
     }
@@ -285,7 +286,7 @@ final class NameCollisionCell: UITableViewCell {
             configuration: .plain(),
             primaryAction: UIAction { _ in
                 action.action()
-            }
+            },
         )
         button.configuration?.title = action.title
         button.configuration?.baseForegroundColor = action.role.color

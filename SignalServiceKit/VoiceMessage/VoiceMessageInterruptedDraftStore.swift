@@ -14,8 +14,8 @@ public class VoiceMessageInterruptedDraftStore {
         isDirectory: true,
         relativeTo: URL(
             fileURLWithPath: CurrentAppContext().appSharedDataDirectoryPath(),
-            isDirectory: true
-        )
+            isDirectory: true,
+        ),
     )
 
     public enum Constants {
@@ -53,13 +53,13 @@ public class VoiceMessageInterruptedDraftStore {
     }
 
     public static func allDraftFilePaths(transaction: DBReadTransaction) -> Set<String> {
-        return Set(keyValueStore.allKeys(transaction: transaction).compactMap { (threadUniqueId) -> [String]? in
+        return Set(keyValueStore.allKeys(transaction: transaction).compactMap { threadUniqueId -> [String]? in
             guard let directoryPath = self.directoryPath(threadUniqueId: threadUniqueId, transaction: transaction) else {
                 return nil
             }
             return [
                 directoryPath.appendingPathComponent(Constants.audioFilename),
-                directoryPath.appendingPathComponent(Constants.waveformFilename)
+                directoryPath.appendingPathComponent(Constants.waveformFilename),
             ]
         }.reduce([], +))
     }

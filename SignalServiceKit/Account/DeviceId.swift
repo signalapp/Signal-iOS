@@ -34,7 +34,7 @@ public struct DeviceId: Codable, Comparable, CustomStringConvertible, Hashable {
 
     public var description: String { "\(rawValue)" }
 
-    public static func < (lhs: Self, rhs: Self) -> Bool {
+    public static func <(lhs: Self, rhs: Self) -> Bool {
         return lhs.rawValue < rhs.rawValue
     }
 

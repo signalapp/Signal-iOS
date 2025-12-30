@@ -30,7 +30,7 @@ struct UsernameEducationManagerImpl: UsernameEducationManager {
         return keyValueStore.getBool(
             Constants.shouldShowUsernameEducationKey,
             defaultValue: true,
-            transaction: tx
+            transaction: tx,
         )
     }
 
@@ -38,7 +38,7 @@ struct UsernameEducationManagerImpl: UsernameEducationManager {
         keyValueStore.setBool(
             shouldShow,
             key: Constants.shouldShowUsernameEducationKey,
-            transaction: tx
+            transaction: tx,
         )
     }
 
@@ -46,7 +46,7 @@ struct UsernameEducationManagerImpl: UsernameEducationManager {
         return keyValueStore.getBool(
             Constants.shouldShowUsernameLinkTooltipKey,
             defaultValue: true,
-            transaction: tx
+            transaction: tx,
         )
     }
 
@@ -54,7 +54,7 @@ struct UsernameEducationManagerImpl: UsernameEducationManager {
         keyValueStore.setBool(
             shouldShow,
             key: Constants.shouldShowUsernameLinkTooltipKey,
-            transaction: tx
+            transaction: tx,
         )
     }
 }

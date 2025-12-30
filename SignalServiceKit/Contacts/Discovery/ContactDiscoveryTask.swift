@@ -29,7 +29,7 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue {
         recipientMerger: RecipientMerger,
         tsAccountManager: TSAccountManager,
         udManager: OWSUDManager,
-        libsignalNet: Net
+        libsignalNet: Net,
     ) {
         self.db = db
         self.recipientDatabaseTable = recipientDatabaseTable
@@ -53,7 +53,7 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue {
             mode: mode,
             udManager: udManager,
             connectionImpl: libsignalNet,
-            remoteAttestation: ContactDiscoveryV2Operation<LibSignalClient.Net>.Wrappers.RemoteAttestation()
+            remoteAttestation: ContactDiscoveryV2Operation<LibSignalClient.Net>.Wrappers.RemoteAttestation(),
         ).perform()
 
         return try await self.processResults(requestedPhoneNumbers: e164s, discoveryResults: discoveryResults)
@@ -61,7 +61,7 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue {
 
     private func processResults(
         requestedPhoneNumbers: Set<E164>,
-        discoveryResults: [ContactDiscoveryResult]
+        discoveryResults: [ContactDiscoveryResult],
     ) async throws -> [SignalRecipient] {
         var registeredRecipients = [SignalRecipient]()
 
@@ -74,7 +74,7 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue {
                 phoneNumber: discoveryResult.e164,
                 pni: discoveryResult.pni,
                 aci: discoveryResult.aci,
-                tx: tx
+                tx: tx,
             )
             guard var recipient else {
                 return
@@ -124,7 +124,7 @@ final class ContactDiscoveryTaskQueueImpl: ContactDiscoveryTaskQueue {
     private func setPhoneNumberDiscoverable(
         _ isPhoneNumberDiscoverable: Bool,
         for recipient: inout SignalRecipient,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         if recipient.phoneNumber?.isDiscoverable == isPhoneNumberDiscoverable {
             return

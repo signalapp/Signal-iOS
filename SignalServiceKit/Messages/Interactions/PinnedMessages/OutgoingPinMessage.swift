@@ -15,7 +15,7 @@ public class OutgoingPinMessage: TSOutgoingMessage {
         super.init(coder: coder)
     }
 
-    public override func encode(with coder: NSCoder) {
+    override public func encode(with coder: NSCoder) {
         super.encode(with: coder)
         coder.encode(NSNumber(value: self.pinDurationForever), forKey: "pinDurationForever")
         coder.encode(NSNumber(value: self.pinDurationSeconds), forKey: "pinDurationSeconds")
@@ -25,7 +25,7 @@ public class OutgoingPinMessage: TSOutgoingMessage {
         coder.encode(NSNumber(value: self.targetMessageTimestamp), forKey: "targetMessageTimestamp")
     }
 
-    public override var hash: Int {
+    override public var hash: Int {
         var hasher = Hasher()
         hasher.combine(super.hash)
         hasher.combine(pinDurationForever)
@@ -35,7 +35,7 @@ public class OutgoingPinMessage: TSOutgoingMessage {
         return hasher.finalize()
     }
 
-    public override func isEqual(_ object: Any?) -> Bool {
+    override public func isEqual(_ object: Any?) -> Bool {
         guard let object = object as? Self else { return false }
         guard super.isEqual(object) else { return false }
         guard self.pinDurationForever == object.pinDurationForever else { return false }
@@ -45,7 +45,7 @@ public class OutgoingPinMessage: TSOutgoingMessage {
         return true
     }
 
-    public override func copy(with zone: NSZone? = nil) -> Any {
+    override public func copy(with zone: NSZone? = nil) -> Any {
         let result = super.copy(with: zone) as! Self
         result.pinDurationForever = self.pinDurationForever
         result.pinDurationSeconds = self.pinDurationSeconds
@@ -66,7 +66,7 @@ public class OutgoingPinMessage: TSOutgoingMessage {
         pinDurationSeconds: UInt32,
         pinDurationForever: Bool,
         messageExpiresInSeconds: UInt32,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) {
         self.targetMessageTimestamp = targetMessageTimestamp
         self.targetMessageAuthorAciBinary = targetMessageAuthorAciBinary.serviceIdBinary
@@ -83,7 +83,7 @@ public class OutgoingPinMessage: TSOutgoingMessage {
             additionalRecipients: [],
             explicitRecipients: [],
             skippedRecipients: [],
-            transaction: tx
+            transaction: tx,
         )
     }
 
@@ -93,19 +93,22 @@ public class OutgoingPinMessage: TSOutgoingMessage {
 
     override public func dataMessageBuilder(
         with thread: TSThread,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> SSKProtoDataMessageBuilder? {
-        guard let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction)?.aci,
-              thread.canUserEditPinnedMessages(aci: localAci) else
-        {
+        guard
+            let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction)?.aci,
+            thread.canUserEditPinnedMessages(aci: localAci)
+        else {
             Logger.error("Local user no longer has permission to change pin status")
             return nil
         }
 
-        guard let dataMessageBuilder = super.dataMessageBuilder(
-            with: thread,
-            transaction: transaction
-        ) else {
+        guard
+            let dataMessageBuilder = super.dataMessageBuilder(
+                with: thread,
+                transaction: transaction,
+            )
+        else {
             return nil
         }
 
@@ -124,17 +127,19 @@ public class OutgoingPinMessage: TSOutgoingMessage {
         }
 
         dataMessageBuilder.setPinMessage(
-            pinMessageBuilder.buildInfallibly()
+            pinMessageBuilder.buildInfallibly(),
         )
 
         return dataMessageBuilder
     }
 
-    public override func updateWithSendSuccess(tx: DBWriteTransaction) {
+    override public func updateWithSendSuccess(tx: DBWriteTransaction) {
         let pinnedMessageManager = DependenciesBridge.shared.pinnedMessageManager
 
-        guard let targetMessageAuthorAciBinary,
-                let targetMessageAuthorAci = try? Aci.parseFrom(serviceIdBinary: targetMessageAuthorAciBinary) else {
+        guard
+            let targetMessageAuthorAciBinary,
+            let targetMessageAuthorAci = try? Aci.parseFrom(serviceIdBinary: targetMessageAuthorAciBinary)
+        else {
             owsFailDebug("Couldn't parse ACI")
             return
         }
@@ -147,7 +152,7 @@ public class OutgoingPinMessage: TSOutgoingMessage {
             expiresAt: expiresAtMs,
             isPin: true,
             sentTimestamp: timestamp,
-            tx: tx
+            tx: tx,
         )
     }
 }

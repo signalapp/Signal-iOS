@@ -16,7 +16,7 @@ class StaleProfileFetcher {
     init(
         db: any DB,
         profileFetcher: any ProfileFetcher,
-        tsAccountManager: any TSAccountManager
+        tsAccountManager: any TSAccountManager,
     ) {
         self.db = db
         self.profileFetcher = profileFetcher

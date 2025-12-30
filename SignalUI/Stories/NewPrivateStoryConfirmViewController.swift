@@ -24,22 +24,22 @@ public class NewPrivateStoryConfirmViewController: OWSTableViewController2 {
 
     // MARK: - View Lifecycle
 
-    public override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
 
         title = OWSLocalizedString(
             "NEW_PRIVATE_STORY_CONFIRM_TITLE",
-            comment: "Title for the 'new private story' confirmation view"
+            comment: "Title for the 'new private story' confirmation view",
         )
 
         navigationItem.rightBarButtonItem = UIBarButtonItem(
             title: OWSLocalizedString(
                 "NEW_PRIVATE_STORY_CREATE_BUTTON",
-                comment: "Button to create a new private story"
+                comment: "Button to create a new private story",
             ),
             style: .plain,
             target: self,
-            action: #selector(didTapCreate)
+            action: #selector(didTapCreate),
         )
 
         tableView.register(ContactTableViewCell.self, forCellReuseIdentifier: ContactTableViewCell.reuseIdentifier)
@@ -48,7 +48,7 @@ public class NewPrivateStoryConfirmViewController: OWSTableViewController2 {
     }
 
     private var lastViewSize = CGSize.zero
-    public override func viewWillLayoutSubviews() {
+    override public func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
 
         guard view.frame.size != lastViewSize else { return }
@@ -56,7 +56,7 @@ public class NewPrivateStoryConfirmViewController: OWSTableViewController2 {
         updateTableContents()
     }
 
-    public override func viewDidAppear(_ animated: Bool) {
+    override public func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
         nameTextField.becomeFirstResponder()
@@ -71,13 +71,13 @@ public class NewPrivateStoryConfirmViewController: OWSTableViewController2 {
         textField.backgroundColor = .clear
         textField.placeholder = OWSLocalizedString(
             "NEW_PRIVATE_STORY_NAME_PLACEHOLDER",
-            comment: "Placeholder text for a new private story name"
+            comment: "Placeholder text for a new private story name",
         )
 
         return textField
     }()
 
-    public override func themeDidChange() {
+    override public func themeDidChange() {
         super.themeDidChange()
 
         nameTextField.textColor = Theme.primaryTextColor
@@ -89,20 +89,20 @@ public class NewPrivateStoryConfirmViewController: OWSTableViewController2 {
         let nameAndAvatarSection = OWSTableSection()
         nameAndAvatarSection.footerTitle = OWSLocalizedString(
             "NEW_PRIVATE_STORY_NAME_FOOTER",
-            comment: "Section footer for the name text field on the 'new private story' creation view"
+            comment: "Section footer for the name text field on the 'new private story' creation view",
         )
         nameAndAvatarSection.add(.init(
             customCellBlock: { [weak self] in
                 let cell = OWSTableItem.newCell()
                 cell.selectionStyle = .none
-                guard let self = self else { return cell }
+                guard let self else { return cell }
 
                 cell.contentView.addSubview(self.nameTextField)
                 self.nameTextField.autoPinEdgesToSuperviewMargins()
 
                 return cell
             },
-            actionBlock: {}
+            actionBlock: {},
         ))
         contents.add(nameAndAvatarSection)
 
@@ -115,20 +115,20 @@ public class NewPrivateStoryConfirmViewController: OWSTableViewController2 {
             withText: StoryStrings.repliesAndReactionsToggle,
             isOn: { [allowsReplies] in allowsReplies },
             target: self,
-            selector: #selector(didToggleReplies)
+            selector: #selector(didToggleReplies),
         ))
 
         let viewerAddresses = SSKEnvironment.shared.databaseStorageRef.read { transaction in
             return BaseMemberViewController.sortedMemberAddresses(
                 recipientSet: self.recipientSet,
-                tx: transaction
+                tx: transaction,
             )
         }
 
         let viewersSection = OWSTableSection()
         viewersSection.headerTitle = OWSLocalizedString(
             "NEW_PRIVATE_STORY_VIEWERS_HEADER",
-            comment: "Header for the 'viewers' section of the 'new private story' view"
+            comment: "Header for the 'viewers' section of the 'new private story' view",
         )
 
         for address in viewerAddresses {
@@ -172,7 +172,7 @@ public class NewPrivateStoryConfirmViewController: OWSTableViewController2 {
                 let newStory = TSPrivateStoryThread(
                     name: name,
                     allowsReplies: allowsReplies,
-                    viewMode: .explicit
+                    viewMode: .explicit,
                 )
                 newStory.anyInsert(transaction: tx)
 
@@ -185,7 +185,7 @@ public class NewPrivateStoryConfirmViewController: OWSTableViewController2 {
                         recipientIds,
                         for: newStory,
                         shouldUpdateStorageService: true,
-                        tx: tx
+                        tx: tx,
                     )
                 }
 
@@ -195,8 +195,8 @@ public class NewPrivateStoryConfirmViewController: OWSTableViewController2 {
             self.selectItemsInParent?(
                 [StoryConversationItem(
                     backingItem: .privateStory(.init(storyThreadId: threadUniqueId, isMyStory: false)),
-                    storyState: nil
-                )]
+                    storyState: nil,
+                )],
             )
         }
     }
@@ -212,12 +212,12 @@ public class NewPrivateStoryConfirmViewController: OWSTableViewController2 {
         OWSActionSheets.showActionSheet(
             title: OWSLocalizedString(
                 "NEW_PRIVATE_STORY_MISSING_NAME_ALERT_TITLE",
-                comment: "Title for error alert indicating that a story name is required."
+                comment: "Title for error alert indicating that a story name is required.",
             ),
             message: OWSLocalizedString(
                 "NEW_PRIVATE_STORY_MISSING_NAME_ALERT_MESSAGE",
-                comment: "Message for error alert indicating that a story name is required."
-            )
+                comment: "Message for error alert indicating that a story name is required.",
+            ),
         )
     }
 }

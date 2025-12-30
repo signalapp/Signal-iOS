@@ -22,36 +22,36 @@ public protocol AttachmentStore {
     /// Results are unordered.
     func fetchReferences(
         owners: [AttachmentReference.OwnerId],
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> [AttachmentReference]
 
     /// Fetch all references for the provider message owner row id.
     /// Results are unordered.
     func fetchAllReferences(
         owningMessageRowId: Int64,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> [AttachmentReference]
 
     func fetchMaxRowId(
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> Attachment.IDType?
 
     /// Fetch attachments by id.
     func fetch(
         ids: [Attachment.IDType],
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> [Attachment]
 
     /// Fetch attachment by plaintext hash. There can be only one match.
     func fetchAttachment(
         sha256ContentHash: Data,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> Attachment?
 
     /// Fetch attachment by media name. There can be only one match.
     func fetchAttachment(
         mediaName: String,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> Attachment?
 
     /// Enumerate all references to a given attachment id, calling the block for each one.
@@ -59,14 +59,14 @@ public protocol AttachmentStore {
     func enumerateAllReferences(
         toAttachmentId: Attachment.IDType,
         tx: DBReadTransaction,
-        block: (AttachmentReference, _ stop: inout Bool) -> Void
+        block: (AttachmentReference, _ stop: inout Bool) -> Void,
     )
 
     /// Return all attachments that are themselves quoted replies
     /// of another attachment; provide the original attachment they point to.
     func allQuotedReplyAttachments(
         forOriginalAttachmentId: Attachment.IDType,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> [Attachment]
 
     /// For each unique sticker pack id present in message sticker attachments, return
@@ -74,13 +74,13 @@ public protocol AttachmentStore {
     ///
     /// Not very efficient; don't put this query on the hot path for anything.
     func oldestStickerPackReferences(
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> [AttachmentReference.Owner.MessageSource.StickerMetadata]
 
     /// Return all attachment ids that reference the provided sticker.
     func allAttachmentIdsForSticker(
         _ stickerInfo: StickerInfo,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> [Attachment.IDType]
 
     // MARK: - Writes
@@ -100,7 +100,7 @@ public protocol AttachmentStore {
         newOwnerMessageRowId: Int64,
         newOwnerThreadRowId: Int64,
         newOwnerIsPastEditRevision: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws
 
     /// Create a new ownership reference, copying properties of an existing reference.
@@ -111,7 +111,7 @@ public protocol AttachmentStore {
         _ existingOwnerSource: AttachmentReference.Owner.ThreadSource,
         with reference: AttachmentReference,
         newOwnerThreadRowId: Int64,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws
 
     /// Update the received at timestamp on a reference.
@@ -119,7 +119,7 @@ public protocol AttachmentStore {
     func update(
         _ reference: AttachmentReference,
         withReceivedAtTimestamp: UInt64,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws
 
     func updateAttachmentAsDownloaded(
@@ -129,24 +129,24 @@ public protocol AttachmentStore {
         validatedMimeType: String,
         streamInfo: Attachment.StreamInfo,
         timestamp: UInt64,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws
 
     func updateAttachmentAsFailedToDownload(
         from source: QueuedAttachmentDownloadRecord.SourceType,
         id: Attachment.IDType,
         timestamp: UInt64,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws
 
     func removeMediaTierInfo(
         forAttachmentId id: Attachment.IDType,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws
 
     func removeThumbnailMediaTierInfo(
         forAttachmentId id: Attachment.IDType,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws
 
     /// Update an attachment after revalidating.
@@ -155,7 +155,7 @@ public protocol AttachmentStore {
         revalidatedContentType contentType: Attachment.ContentType,
         mimeType: String,
         blurHash: String?,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws
 
     /// Update an attachment when we have a media name or plaintext hash collision.
@@ -171,13 +171,13 @@ public protocol AttachmentStore {
         originalTransitTierInfo: Attachment.TransitTierInfo?,
         mediaTierInfo: Attachment.MediaTierInfo?,
         thumbnailMediaTierInfo: Attachment.ThumbnailMediaTierInfo?,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws
 
     func addOwner(
         _ reference: AttachmentReference.ConstructionParams,
         for attachmentId: Attachment.IDType,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws
 
     /// Removes all owner edges to the provided attachment that
@@ -188,7 +188,7 @@ public protocol AttachmentStore {
     func removeAllOwners(
         withId owner: AttachmentReference.OwnerId,
         for attachmentId: Attachment.IDType,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws
 
     /// Removes a single owner edge to the provided attachment that
@@ -197,7 +197,7 @@ public protocol AttachmentStore {
     /// has multiple edges to the same attachment.
     func removeOwner(
         reference: AttachmentReference,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws
 
     /// Throws ``AttachmentInsertError.duplicatePlaintextHash`` if an existing
@@ -207,7 +207,7 @@ public protocol AttachmentStore {
     func insert(
         _ attachment: Attachment.ConstructionParams,
         reference: AttachmentReference.ConstructionParams,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws -> Attachment.IDType
 
     /// Remove all owners of thread types (wallpaper and global wallpaper owners).
@@ -219,7 +219,7 @@ public protocol AttachmentStore {
     func markViewedFullscreen(
         attachment: Attachment,
         timestamp: UInt64,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws
 
     // MARK: - Thread Merging
@@ -227,7 +227,7 @@ public protocol AttachmentStore {
     func updateMessageAttachmentThreadRowIdsForThreadMerge(
         fromThreadRowId: Int64,
         intoThreadRowId: Int64,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws
 }
 
@@ -239,7 +239,7 @@ extension AttachmentStore {
     /// Results are unordered.
     public func fetchReferences(
         owner: AttachmentReference.OwnerId,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> [AttachmentReference] {
         return fetchReferences(owners: [owner], tx: tx)
     }
@@ -251,7 +251,7 @@ extension AttachmentStore {
     /// allows only one (or no) reference.
     public func fetchFirstReference(
         owner: AttachmentReference.OwnerId,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> AttachmentReference? {
         return fetchReferences(owner: owner, tx: tx).first
     }
@@ -259,7 +259,7 @@ extension AttachmentStore {
     /// Fetch an attachment by id.
     public func fetch(
         id: Attachment.IDType,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> Attachment? {
         return fetch(ids: [id], tx: tx).first
     }
@@ -268,7 +268,7 @@ extension AttachmentStore {
     /// owner -> AttachmentReference(s) -> Attachment(s).
     public func fetch(
         owner: AttachmentReference.OwnerId,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> [Attachment] {
         let refs = fetchReferences(owner: owner, tx: tx)
         return fetch(for: refs, tx: tx)
@@ -282,7 +282,7 @@ extension AttachmentStore {
     /// allows only one (or no) attachment.
     public func fetchFirst(
         owner: AttachmentReference.OwnerId,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> Attachment? {
         guard let ref = fetchFirstReference(owner: owner, tx: tx) else {
             return nil
@@ -292,21 +292,21 @@ extension AttachmentStore {
 
     public func fetch(
         for reference: AttachmentReference,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> Attachment? {
         return fetch(id: reference.attachmentRowId, tx: tx)
     }
 
     public func fetch(
         for references: [AttachmentReference],
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> [Attachment] {
         return fetch(ids: references.map(\.attachmentRowId), tx: tx)
     }
 
     public func orderedBodyAttachments(
         for message: TSMessage,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> [AttachmentReference] {
         guard let messageRowId = message.sqliteRowId else {
             owsFailDebug("Fetching attachments for un-inserted message")
@@ -317,7 +317,7 @@ extension AttachmentStore {
 
     public func orderedBodyAttachments(
         forMessageRowId messageRowId: Int64,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> [AttachmentReference] {
         return self
             .fetchReferences(owner: .messageBodyAttachment(messageRowId: messageRowId), tx: tx)
@@ -338,12 +338,12 @@ extension AttachmentStore {
 
     public func fetchReferencedAttachments(
         owners: [AttachmentReference.OwnerId],
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> [ReferencedAttachment] {
         let references = self.fetchReferences(owners: owners, tx: tx)
         let attachments = Dictionary(
             grouping: self.fetch(ids: references.map(\.attachmentRowId), tx: tx),
-            by: \.id
+            by: \.id,
         )
         return references.compactMap { reference -> ReferencedAttachment? in
             guard let attachment = attachments[reference.attachmentRowId]?.first else {
@@ -356,19 +356,19 @@ extension AttachmentStore {
 
     public func fetchReferencedAttachments(
         for owner: AttachmentReference.OwnerId,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> [ReferencedAttachment] {
         return fetchReferencedAttachments(owners: [owner], tx: tx)
     }
 
     public func fetchAllReferencedAttachments(
         owningMessageRowId: Int64,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> [ReferencedAttachment] {
         let references = self.fetchAllReferences(owningMessageRowId: owningMessageRowId, tx: tx)
         let attachments = Dictionary(
             grouping: self.fetch(ids: references.map(\.attachmentRowId), tx: tx),
-            by: \.id
+            by: \.id,
         )
         return references.compactMap { reference -> ReferencedAttachment? in
             guard let attachment = attachments[reference.attachmentRowId]?.first else {
@@ -381,7 +381,7 @@ extension AttachmentStore {
 
     public func fetchFirstReferencedAttachment(
         for owner: AttachmentReference.OwnerId,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> ReferencedAttachment? {
         guard let reference = self.fetchFirstReference(owner: owner, tx: tx) else {
             return nil
@@ -395,12 +395,12 @@ extension AttachmentStore {
 
     public func orderedReferencedBodyAttachments(
         for message: TSMessage,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> [ReferencedAttachment] {
         let references = self.orderedBodyAttachments(for: message, tx: tx)
         let attachments = Dictionary(
             grouping: self.fetch(ids: references.map(\.attachmentRowId), tx: tx),
-            by: \.id
+            by: \.id,
         )
         return references.compactMap { reference -> ReferencedAttachment? in
             guard let attachment = attachments[reference.attachmentRowId]?.first else {
@@ -413,13 +413,13 @@ extension AttachmentStore {
 
     public func allAttachments(
         forMessageWithRowId messageRowId: Int64,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> [AttachmentReference] {
         return fetchReferences(
             owners: AttachmentReference.MessageOwnerTypeRaw.allCases.map {
                 $0.with(messageRowId: messageRowId)
             },
-            tx: tx
+            tx: tx,
         )
     }
 }

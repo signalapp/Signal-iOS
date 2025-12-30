@@ -24,9 +24,9 @@ public class LinkPreviewSettingStore {
         keyValueStore.setBool(newValue, key: Constants.areLinkPreviewsEnabledKey, transaction: tx)
     }
 
-    #if TESTABLE_BUILD
+#if TESTABLE_BUILD
     static func mock() -> LinkPreviewSettingStore {
         return LinkPreviewSettingStore(keyValueStore: KeyValueStore(collection: "blorp"))
     }
-    #endif
+#endif
 }

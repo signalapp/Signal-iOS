@@ -19,19 +19,19 @@ public class SSKEnvironment: NSObject {
         _shared = env
     }
 
-    #if TESTABLE_BUILD
-    private(set) public var contactManagerRef: any ContactManager
-    private(set) public var messageSenderRef: MessageSender
-    private(set) public var networkManagerRef: NetworkManager
-    private(set) public var paymentsHelperRef: PaymentsHelperSwift
-    private(set) public var groupsV2Ref: GroupsV2
-    #else
+#if TESTABLE_BUILD
+    public private(set) var contactManagerRef: any ContactManager
+    public private(set) var messageSenderRef: MessageSender
+    public private(set) var networkManagerRef: NetworkManager
+    public private(set) var paymentsHelperRef: PaymentsHelperSwift
+    public private(set) var groupsV2Ref: GroupsV2
+#else
     public let contactManagerRef: any ContactManager
     public let messageSenderRef: MessageSender
     public let networkManagerRef: NetworkManager
     public let paymentsHelperRef: PaymentsHelperSwift
     public let groupsV2Ref: GroupsV2
-    #endif
+#endif
     /// This should be deprecated.
     public var contactManagerImplRef: OWSContactsManager { contactManagerRef as! OWSContactsManager }
     @objc
@@ -158,7 +158,7 @@ public class SSKEnvironment: NSObject {
         avatarBuilder: AvatarBuilder,
         smJobQueues: SignalMessagingJobQueues,
         groupCallManager: GroupCallManager,
-        profileFetcher: any ProfileFetcher
+        profileFetcher: any ProfileFetcher,
     ) {
         self.contactManagerRef = contactManager
         self.messageSenderRef = messageSender
@@ -296,22 +296,22 @@ public class SSKEnvironment: NSObject {
     private func fixLocalRecipientIfNeeded(dependenciesBridge: DependenciesBridge) {
         self.databaseStorageRef.write { tx in
             guard let localIdentifiers = dependenciesBridge.tsAccountManager.localIdentifiers(tx: tx) else {
-                return  // Not registered yet.
+                return // Not registered yet.
             }
             guard let phoneNumber = E164(localIdentifiers.phoneNumber) else {
-                return  // Registered with an invalid phone number.
+                return // Registered with an invalid phone number.
             }
             let recipientMerger = dependenciesBridge.recipientMerger
             _ = recipientMerger.applyMergeForLocalAccount(
                 aci: localIdentifiers.aci,
                 phoneNumber: phoneNumber,
                 pni: localIdentifiers.pni,
-                tx: tx
+                tx: tx,
             )
         }
     }
 
-    #if TESTABLE_BUILD
+#if TESTABLE_BUILD
 
     public func setContactManagerForUnitTests(_ contactManager: any ContactManager) {
         self.contactManagerRef = contactManager
@@ -333,5 +333,5 @@ public class SSKEnvironment: NSObject {
         self.groupsV2Ref = groupsV2
     }
 
-    #endif
+#endif
 }

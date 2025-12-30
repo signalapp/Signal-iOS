@@ -8,9 +8,9 @@ import UIKit
 
 open class OWSTableSheetViewController: InteractiveSheetViewController {
     open var tableViewController = OWSTableViewController2()
-    open override var interactiveScrollViews: [UIScrollView] { [tableViewController.tableView] }
+    override open var interactiveScrollViews: [UIScrollView] { [tableViewController.tableView] }
 
-    open override var sheetBackgroundColor: UIColor {
+    override open var sheetBackgroundColor: UIColor {
         OWSTableViewController2.tableBackgroundColor(isUsingPresentedStyle: true, forceDarkMode: tableViewController.forceDarkMode)
     }
 
@@ -40,7 +40,7 @@ open class OWSTableSheetViewController: InteractiveSheetViewController {
             + bottomSafeAreaContentPadding
     }
 
-    public override init(visualEffect: UIVisualEffect? = nil) {
+    override public init(visualEffect: UIVisualEffect? = nil) {
         super.init(visualEffect: visualEffect)
 
         tableViewController.shouldDeferInitialLoad = false
@@ -52,7 +52,7 @@ open class OWSTableSheetViewController: InteractiveSheetViewController {
         self.minimizedHeight = self.contentSizeHeight
     }
 
-    public override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
 
         addChild(tableViewController)
@@ -70,7 +70,7 @@ open class OWSTableSheetViewController: InteractiveSheetViewController {
         updateTableContents(shouldReload: true)
     }
 
-    public override func viewDidLayoutSubviews() {
+    override public func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
         // The table view might not have its final size when this method is called.

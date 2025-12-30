@@ -21,7 +21,7 @@ class UserProfileMergerTest: XCTestCase {
             setProfileKeyShim: { [userProfileStore] userProfile, profileKey, tx in
                 userProfile.setValue(profileKey, forKey: "profileKey")
                 userProfileStore!.updateUserProfile(userProfile, tx: tx)
-            }
+            },
         )
     }
 
@@ -38,7 +38,7 @@ class UserProfileMergerTest: XCTestCase {
             buildUserProfile(serviceId: aci, phoneNumber: nil, profileKey: Data(repeating: 1, count: 32)),
             buildUserProfile(serviceId: nil, phoneNumber: phoneNumber.stringValue, profileKey: Data(repeating: 2, count: 32)),
             buildUserProfile(serviceId: pni, phoneNumber: nil, profileKey: Data(repeating: 3, count: 32)),
-            otherProfile
+            otherProfile,
         ]
 
         InMemoryDB().write { tx in
@@ -48,7 +48,7 @@ class UserProfileMergerTest: XCTestCase {
                     oldRecipient: nil,
                     newRecipient: try! SignalRecipient.insertRecord(aci: aci, phoneNumber: phoneNumber, pni: pni, tx: tx),
                 ),
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -73,7 +73,7 @@ class UserProfileMergerTest: XCTestCase {
             buildUserProfile(serviceId: pni, phoneNumber: phoneNumber.stringValue, profileKey: Data(repeating: 4, count: 32)),
             buildUserProfile(serviceId: pni, phoneNumber: nil, profileKey: Data(repeating: 5, count: 32)),
             otherAciProfile,
-            otherPniProfile
+            otherPniProfile,
         ]
 
         InMemoryDB().write { tx in
@@ -83,7 +83,7 @@ class UserProfileMergerTest: XCTestCase {
                     oldRecipient: nil,
                     newRecipient: try! SignalRecipient.insertRecord(aci: aci, phoneNumber: phoneNumber, pni: pni, tx: tx),
                 ),
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -109,7 +109,7 @@ class UserProfileMergerTest: XCTestCase {
             badges: [],
             lastFetchDate: nil,
             lastMessagingDate: nil,
-            isPhoneNumberShared: false
+            isPhoneNumberShared: false,
         )
     }
 }

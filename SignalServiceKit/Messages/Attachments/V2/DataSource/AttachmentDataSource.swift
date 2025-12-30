@@ -59,7 +59,7 @@ public enum AttachmentDataSource {
 
     public static func forwarding(
         existingAttachment: AttachmentStream,
-        with reference: AttachmentReference
+        with reference: AttachmentReference,
     ) -> AttachmentDataSource {
         return .existingAttachment(.init(
             id: existingAttachment.attachment.id,
@@ -67,7 +67,7 @@ public enum AttachmentDataSource {
             renderingFlag: reference.renderingFlag,
             sourceFilename: reference.sourceFilename,
             sourceUnencryptedByteCount: reference.sourceUnencryptedByteCount,
-            sourceMediaSizePixels: reference.sourceMediaSizePixels
+            sourceMediaSizePixels: reference.sourceMediaSizePixels,
         ))
     }
 

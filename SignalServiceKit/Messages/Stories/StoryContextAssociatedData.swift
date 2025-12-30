@@ -59,7 +59,7 @@ public final class StoryContextAssociatedData: SDSCodableModel, Decodable {
     /// Set for all known incoming stories, including those since expired or deleted.
     public private(set) var lastReceivedTimestamp: UInt64? {
         didSet {
-            if let oldValue = oldValue, let newValue = lastReceivedTimestamp, newValue > oldValue {
+            if let oldValue, let newValue = lastReceivedTimestamp, newValue > oldValue {
                 updateLatestUnexpiredTimestampIfNeeded()
             }
         }
@@ -69,7 +69,7 @@ public final class StoryContextAssociatedData: SDSCodableModel, Decodable {
         // We only ever move lastReceivedTimestamp forward for undeleted story messages, so its safe
         // to copy this over to latestUnexpiredTimestamp.
         if
-            let lastReceivedTimestamp = lastReceivedTimestamp,
+            let lastReceivedTimestamp,
             lastReceivedTimestamp > Date().ows_millisecondsSince1970 - StoryManager.storyLifetimeMillis
         {
             latestUnexpiredTimestamp = lastReceivedTimestamp
@@ -87,7 +87,7 @@ public final class StoryContextAssociatedData: SDSCodableModel, Decodable {
         guard let newValue = lastViewedTimestamp else {
             return
         }
-        guard newValue >= (lastReadTimestamp ??  0) else {
+        guard newValue >= (lastReadTimestamp ?? 0) else {
             return
         }
         lastReadTimestamp = newValue
@@ -98,10 +98,10 @@ public final class StoryContextAssociatedData: SDSCodableModel, Decodable {
     }
 
     public var hasUnviewedStories: Bool {
-        guard let latestUnexpiredTimestamp = latestUnexpiredTimestamp else {
+        guard let latestUnexpiredTimestamp else {
             return false
         }
-        guard let lastViewedTimestamp = lastViewedTimestamp else {
+        guard let lastViewedTimestamp else {
             return true
         }
         return lastViewedTimestamp < latestUnexpiredTimestamp
@@ -112,7 +112,7 @@ public final class StoryContextAssociatedData: SDSCodableModel, Decodable {
         isHidden: Bool = false,
         lastReceivedTimestamp: UInt64? = nil,
         lastReadTimestamp: UInt64? = nil,
-        lastViewedTimestamp: UInt64? = nil
+        lastViewedTimestamp: UInt64? = nil,
     ) {
         self.uniqueId = UUID().uuidString
         switch sourceContext {
@@ -138,22 +138,22 @@ public final class StoryContextAssociatedData: SDSCodableModel, Decodable {
         lastReceivedTimestamp: UInt64? = nil,
         lastReadTimestamp: UInt64? = nil,
         lastViewedTimestamp: UInt64? = nil,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) {
         var didTouchStorageServiceProperty = false
 
         let block = { (record: StoryContextAssociatedData) in
-            if let isHidden = isHidden {
+            if let isHidden {
                 record.isHidden = isHidden
                 didTouchStorageServiceProperty = true
             }
-            if let lastReceivedTimestamp = lastReceivedTimestamp {
+            if let lastReceivedTimestamp {
                 record.lastReceivedTimestamp = lastReceivedTimestamp
             }
-            if let lastReadTimestamp = lastReadTimestamp, lastReadTimestamp > (record.lastReadTimestamp ?? 0) {
+            if let lastReadTimestamp, lastReadTimestamp > (record.lastReadTimestamp ?? 0) {
                 record.lastReadTimestamp = lastReadTimestamp
             }
-            if let lastViewedTimestamp = lastViewedTimestamp, lastViewedTimestamp > (record.lastViewedTimestamp ?? 0) {
+            if let lastViewedTimestamp, lastViewedTimestamp > (record.lastViewedTimestamp ?? 0) {
                 record.lastViewedTimestamp = lastViewedTimestamp
             }
         }
@@ -212,7 +212,7 @@ public final class StoryContextAssociatedData: SDSCodableModel, Decodable {
                 if message.direction == .incoming, message.timestamp > latestUnexpiredTimestamp ?? 0 {
                     latestUnexpiredTimestamp = message.timestamp
                 }
-            }
+            },
         )
 
         let block = { (record: StoryContextAssociatedData) in
@@ -246,7 +246,7 @@ public final class StoryContextAssociatedData: SDSCodableModel, Decodable {
 
     public static func fetchOrDefault(
         sourceContext: SourceContext,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> StoryContextAssociatedData {
         if let existing = StoryFinder.getAssociatedData(forContext: sourceContext, transaction: transaction) {
             return existing
@@ -278,11 +278,11 @@ public final class StoryContextAssociatedData: SDSCodableModel, Decodable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
 
-        if let id = id { try container.encode(id, forKey: .id) }
+        if let id { try container.encode(id, forKey: .id) }
         try container.encode(Self.recordType, forKey: .recordType)
         try container.encode(uniqueId, forKey: .uniqueId)
         try container.encode(contactAci?.rawUUID, forKey: .contactAci)
-        if let groupId = groupId { try container.encode(groupId, forKey: .groupId) }
+        if let groupId { try container.encode(groupId, forKey: .groupId) }
         try container.encode(isHidden, forKey: .isHidden)
         try container.encode(latestUnexpiredTimestamp, forKey: .latestUnexpiredTimestamp)
         try container.encode(lastReceivedTimestamp, forKey: .lastReceivedTimestamp)

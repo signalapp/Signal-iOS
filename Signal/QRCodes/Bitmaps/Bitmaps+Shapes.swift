@@ -23,7 +23,7 @@ extension Bitmaps {
         func cgPoint(scaledBy s: CGFloat) -> CGPoint {
             return CGPoint(
                 x: CGFloat(x) * s + s / 2,
-                y: CGFloat(y) * s + s / 2
+                y: CGFloat(y) * s + s / 2,
             )
         }
     }
@@ -45,7 +45,7 @@ extension Bitmaps {
         /// See ``Point.cgPoint(scaledBy:)`` for more details.
         func cgRect(
             scaledBy scale: CGFloat = 1,
-            insetBy inset: CGFloat = 0
+            insetBy inset: CGFloat = 0,
         ) -> CGRect {
             let scaledOrigin = origin.cgPoint(scaledBy: scale)
 
@@ -53,7 +53,7 @@ extension Bitmaps {
                 x: scaledOrigin.x + inset * scale,
                 y: scaledOrigin.y + inset * scale,
                 width: CGFloat(width - 1) * scale - inset * scale * 2,
-                height: CGFloat(height - 1) * scale - inset * scale * 2
+                height: CGFloat(height - 1) * scale - inset * scale * 2,
             )
         }
 

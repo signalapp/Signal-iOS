@@ -74,7 +74,7 @@ public class ProvisioningManagerTests {
             return LocalIdentifiers(
                 aci: myAci,
                 pni: myPni,
-                e164: myPhoneNumber
+                e164: myPhoneNumber,
             )
         }
         mockProfileManager.localProfile = OWSUserProfile(address: .localUser, profileKey: profileKey)
@@ -90,14 +90,14 @@ public class ProvisioningManagerTests {
             linkAndSyncManager: mockLinkAndSyncManager,
             profileManager: mockProfileManager,
             receiptManager: mockReceiptManager,
-            tsAccountManager: mockTsAccountManager
+            tsAccountManager: mockTsAccountManager,
         )
 
         // New device: Build the linking URL that is shown in the QR code
         let provisioningUrl = DeviceProvisioningURL(
             type: .linkDevice,
             ephemeralDeviceId: ephemeralDeviceId,
-            publicKey: newDeviceIdentityKeyPair.publicKey
+            publicKey: newDeviceIdentityKeyPair.publicKey,
         )
 
         // Old device: Using the provisioning URL read from the new device, build a provisioning
@@ -111,7 +111,7 @@ public class ProvisioningManagerTests {
         let provisioningCipher = ProvisioningCipher(ourKeyPair: newDeviceIdentityKeyPair)
         let provisionMessageData = try provisioningCipher.decrypt(
             data: provisionEnvelope.body,
-            theirPublicKey: PublicKey(provisionEnvelope.publicKey)
+            theirPublicKey: PublicKey(provisionEnvelope.publicKey),
         )
         let provisionMessage = try LinkingProvisioningMessage(plaintext: provisionMessageData)
 
@@ -164,7 +164,7 @@ private class MockLinkAndSyncManager: LinkAndSyncManager {
     func waitForLinkingAndUploadBackup(
         ephemeralBackupKey: MessageRootBackupKey,
         tokenId: DeviceProvisioningTokenId,
-        progress: OWSSequentialProgressRootSink<PrimaryLinkNSyncProgressPhase>
+        progress: OWSSequentialProgressRootSink<PrimaryLinkNSyncProgressPhase>,
     ) async throws(PrimaryLinkNSyncError) {
         return
     }
@@ -173,7 +173,7 @@ private class MockLinkAndSyncManager: LinkAndSyncManager {
         localIdentifiers: LocalIdentifiers,
         auth: ChatServiceAuth,
         ephemeralBackupKey: MessageRootBackupKey,
-        progress: OWSSequentialProgressRootSink<SecondaryLinkNSyncProgressPhase>
+        progress: OWSSequentialProgressRootSink<SecondaryLinkNSyncProgressPhase>,
     ) async throws(SecondaryLinkNSyncError) {
         return
     }

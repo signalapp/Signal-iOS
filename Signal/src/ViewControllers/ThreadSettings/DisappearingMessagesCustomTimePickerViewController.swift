@@ -21,14 +21,14 @@ class DisappearingMessagesCustomTimePickerViewController: HostingController<Disa
         self.completion = completion
 
         self.viewModel = DisappearingMessagesCustomTimePickerViewModel(
-            initialDurationSeconds: initialDurationSeconds
+            initialDurationSeconds: initialDurationSeconds,
         )
 
         super.init(wrappedView: DisappearingMessagesCustomTimePickerView(viewModel: viewModel))
 
         title = OWSLocalizedString(
             "DISAPPEARING_MESSAGES",
-            comment: "table cell label in conversation settings"
+            comment: "table cell label in conversation settings",
         )
 
         viewModel.actionsDelegate = self
@@ -51,7 +51,7 @@ class DisappearingMessagesCustomTimePickerViewController: HostingController<Disa
                 style: .done,
                 action: { [weak self] in
                     self?.completeAndPop()
-                }
+                },
             )
         } else {
             navigationItem.rightBarButtonItem = nil
@@ -159,7 +159,7 @@ private class DisappearingMessagesCustomTimePickerViewModel: ObservableObject {
         let minUnit = Unit.allCases.first!
         self.init(
             selectedUnit: minUnit,
-            selectedValue: minUnit.allowedValues.lowerBound
+            selectedValue: minUnit.allowedValues.lowerBound,
         )
     }
 
@@ -185,7 +185,7 @@ private class DisappearingMessagesCustomTimePickerViewModel: ObservableObject {
         }
 
         actionsDelegate?.updateForSelection(
-            selectedDurationSeconds: selectedDurationSeconds
+            selectedDurationSeconds: selectedDurationSeconds,
         )
     }
 }
@@ -205,12 +205,12 @@ struct DisappearingMessagesCustomTimePickerView: View {
                 Picker(
                     OWSLocalizedString(
                         "DISAPPEARING_MESSAGES_CUSTOM_TIME_VALUE_PICKER",
-                        comment: "Title for a picker for the amount of time, in a given unit, to use for disappearing messages."
+                        comment: "Title for a picker for the amount of time, in a given unit, to use for disappearing messages.",
                     ),
                     selection: Binding(
                         get: { viewModel.selectedValue },
-                        set: { viewModel.setNewSelection(newSelectedUnit: nil, newSelectedValue: $0) }
-                    )
+                        set: { viewModel.setNewSelection(newSelectedUnit: nil, newSelectedValue: $0) },
+                    ),
                 ) {
                     ForEach(viewModel.selectedUnit.allowedValues, id: \.self) { val in
                         Text("\(val)")
@@ -222,35 +222,35 @@ struct DisappearingMessagesCustomTimePickerView: View {
                 Picker(
                     OWSLocalizedString(
                         "DISAPPEARING_MESSAGES_CUSTOM_TIME_UNIT_PICKER",
-                        comment: "Title for a picker for the unit of time to use for disappearing messages."
+                        comment: "Title for a picker for the unit of time to use for disappearing messages.",
                     ),
                     selection: Binding(
                         get: { viewModel.selectedUnit },
-                        set: { viewModel.setNewSelection(newSelectedUnit: $0, newSelectedValue: nil) }
-                    )
+                        set: { viewModel.setNewSelection(newSelectedUnit: $0, newSelectedValue: nil) },
+                    ),
                 ) {
                     ForEach(Unit.allCases, id: \.self) { unit in
                         let localizedString = switch unit {
                         case .seconds: OWSLocalizedString(
-                            "DISAPPEARING_MESSAGES_SECONDS",
-                            comment: "The unit for a number of seconds"
-                        )
+                                "DISAPPEARING_MESSAGES_SECONDS",
+                                comment: "The unit for a number of seconds",
+                            )
                         case .minutes: OWSLocalizedString(
-                            "DISAPPEARING_MESSAGES_MINUTES",
-                            comment: "The unit for a number of minutes"
-                        )
+                                "DISAPPEARING_MESSAGES_MINUTES",
+                                comment: "The unit for a number of minutes",
+                            )
                         case .hours: OWSLocalizedString(
-                            "DISAPPEARING_MESSAGES_HOURS",
-                            comment: "The unit for a number of hours"
-                        )
+                                "DISAPPEARING_MESSAGES_HOURS",
+                                comment: "The unit for a number of hours",
+                            )
                         case .days: OWSLocalizedString(
-                            "DISAPPEARING_MESSAGES_DAYS",
-                            comment: "The unit for a number of days"
-                        )
+                                "DISAPPEARING_MESSAGES_DAYS",
+                                comment: "The unit for a number of days",
+                            )
                         case .weeks: OWSLocalizedString(
-                            "DISAPPEARING_MESSAGES_WEEKS",
-                            comment: "The unit for a number of weeks"
-                        )
+                                "DISAPPEARING_MESSAGES_WEEKS",
+                                comment: "The unit for a number of weeks",
+                            )
                         }
 
                         Text(localizedString)

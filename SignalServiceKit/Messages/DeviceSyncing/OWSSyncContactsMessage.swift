@@ -12,13 +12,13 @@ public final class OWSSyncContactsMessage: OWSOutgoingSyncMessage {
     public init(
         uploadedAttachment: Upload.Result<Upload.LocalUploadMetadata>,
         localThread: TSContactThread,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) {
         self.uploadedAttachment = uploadedAttachment
         super.init(localThread: localThread, transaction: tx)
     }
 
-    public override func encode(with coder: NSCoder) {
+    override public func encode(with coder: NSCoder) {
         owsFail("Doesn't support serialization.")
     }
 
@@ -27,9 +27,9 @@ public final class OWSSyncContactsMessage: OWSOutgoingSyncMessage {
         return nil
     }
 
-    public override var isUrgent: Bool { false }
+    override public var isUrgent: Bool { false }
 
-    public override func syncMessageBuilder(transaction tx: DBReadTransaction) -> SSKProtoSyncMessageBuilder? {
+    override public func syncMessageBuilder(transaction tx: DBReadTransaction) -> SSKProtoSyncMessageBuilder? {
 
         let attachmentBuilder = SSKProtoAttachmentPointer.builder()
 

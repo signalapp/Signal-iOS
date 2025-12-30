@@ -20,11 +20,11 @@ public protocol BackupIdService {
 
     func updateMessageBackupIdForRegistration(
         key: MessageRootBackupKey,
-        auth: ChatServiceAuth
+        auth: ChatServiceAuth,
     ) async throws
 
     func fetchBackupIDLimits(
-        auth: ChatServiceAuth
+        auth: ChatServiceAuth,
     ) async throws -> BackupIdLimits
 }
 
@@ -73,7 +73,7 @@ final class BackupIdServiceImpl: BackupIdService {
 
     func registerBackupIDIfNecessary(
         localAci: Aci,
-        auth: ChatServiceAuth
+        auth: ChatServiceAuth,
     ) async throws {
         let (
             haveSetBackupId,
@@ -103,7 +103,7 @@ final class BackupIdServiceImpl: BackupIdService {
             localAci: localAci,
             messageBackupKey: messageBackupKey,
             mediaBackupKey: mediaBackupKey,
-            auth: auth
+            auth: auth,
         )
 
         await db.awaitableWrite { tx in
@@ -113,18 +113,18 @@ final class BackupIdServiceImpl: BackupIdService {
 
     func updateMessageBackupIdForRegistration(
         key: MessageRootBackupKey,
-        auth: ChatServiceAuth
+        auth: ChatServiceAuth,
     ) async throws {
         try await registerBackupId(
             localAci: key.aci,
             messageBackupKey: key,
             mediaBackupKey: nil,
-            auth: auth
+            auth: auth,
         )
     }
 
     func fetchBackupIDLimits(
-        auth: ChatServiceAuth
+        auth: ChatServiceAuth,
     ) async throws -> BackupIdLimits {
         let response = try await networkManager.asyncRequest(.fetchBackupIdLimits(auth: auth))
         guard let jsonData = response.responseBodyData else {
@@ -132,7 +132,7 @@ final class BackupIdServiceImpl: BackupIdService {
         }
         return try JSONDecoder().decode(
             BackupIdLimits.self,
-            from: jsonData
+            from: jsonData,
         )
     }
 
@@ -140,17 +140,17 @@ final class BackupIdServiceImpl: BackupIdService {
         localAci: Aci,
         messageBackupKey: MessageRootBackupKey,
         mediaBackupKey: MediaRootBackupKey?,
-        auth: ChatServiceAuth
+        auth: ChatServiceAuth,
     ) async throws {
         let messageBackupRequestContext: BackupAuthCredentialRequestContext = .create(
             backupKey: messageBackupKey.serialize(),
-            aci: localAci.rawUUID
+            aci: localAci.rawUUID,
         )
         let base64MessageRequestContext = messageBackupRequestContext.getRequest().serialize().base64EncodedString()
         let base64MediaRequestContext = mediaBackupKey.map {
             let mediaBackupRequestContext: BackupAuthCredentialRequestContext = .create(
                 backupKey: $0.serialize(),
-                aci: localAci.rawUUID
+                aci: localAci.rawUUID,
             )
             return mediaBackupRequestContext.getRequest().serialize().base64EncodedString()
         }
@@ -159,7 +159,7 @@ final class BackupIdServiceImpl: BackupIdService {
             .registerBackupId(
                 backupId: base64MessageRequestContext,
                 mediaBackupId: base64MediaRequestContext,
-                auth: auth
+                auth: auth,
             ),
         )
     }
@@ -171,9 +171,9 @@ private extension TSRequest {
     static func registerBackupId(
         backupId: String,
         mediaBackupId: String?,
-        auth: ChatServiceAuth
+        auth: ChatServiceAuth,
     ) -> TSRequest {
-        var parameters = [ "messagesBackupAuthCredentialRequest": backupId ]
+        var parameters = ["messagesBackupAuthCredentialRequest": backupId]
         if let mediaBackupId {
             parameters["mediaBackupAuthCredentialRequest"] = mediaBackupId
         }
@@ -181,19 +181,19 @@ private extension TSRequest {
         var request = TSRequest(
             url: URL(string: "v1/archives/backupid")!,
             method: "PUT",
-            parameters: parameters
+            parameters: parameters,
         )
         request.auth = .identified(auth)
         return request
     }
 
     static func fetchBackupIdLimits(
-        auth: ChatServiceAuth
+        auth: ChatServiceAuth,
     ) -> TSRequest {
         var request = TSRequest(
             url: URL(string: "v1/archives/backupid/limits")!,
             method: "GET",
-            parameters: nil
+            parameters: nil,
         )
         request.auth = .identified(auth)
         return request

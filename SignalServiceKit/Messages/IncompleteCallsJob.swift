@@ -33,7 +33,7 @@ public class IncompleteCallsJob {
     private func updateIncompleteCallIfNecessary(
         _ uniqueId: String,
         count: inout Int,
-        transaction writeTx: DBWriteTransaction
+        transaction writeTx: DBWriteTransaction,
     ) {
         // Preconditions: Must be a valid call that started before the app launched.
         guard
@@ -67,7 +67,7 @@ public class IncompleteCallsJob {
                 individualCallInteractionRowId: callRowId,
                 contactThread: contactThread,
                 newCallInteractionType: targetCallType,
-                tx: writeTx
+                tx: writeTx,
             )
         count += 1
 

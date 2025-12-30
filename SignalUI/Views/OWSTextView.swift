@@ -14,7 +14,7 @@ open class OWSTextView: UITextView {
         dataDetectorTypes = []
     }
 
-    required public init?(coder: NSCoder) {
+    public required init?(coder: NSCoder) {
         owsFail("Not implemented!")
     }
 }

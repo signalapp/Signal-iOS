@@ -11,12 +11,12 @@ public protocol OrphanedAttachmentStore {
 
     func orphanAttachmentExists(
         with id: OrphanedAttachmentRecord.IDType,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> Bool
 
     func insert(
         _ record: inout OrphanedAttachmentRecord,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws
 }
 
@@ -26,17 +26,17 @@ public class OrphanedAttachmentStoreImpl: OrphanedAttachmentStore {
 
     public func orphanAttachmentExists(
         with id: OrphanedAttachmentRecord.IDType,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> Bool {
         return (try? OrphanedAttachmentRecord.exists(
             tx.database,
-            key: id
+            key: id,
         )) ?? false
     }
 
     public func insert(
         _ record: inout OrphanedAttachmentRecord,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         try record.insert(tx.database)
     }

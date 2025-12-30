@@ -17,7 +17,7 @@ class LegacyGroupView: UIView {
     }
 
     @available(*, unavailable, message: "use other init() instead.")
-    required public init(coder aDecoder: NSCoder) {
+    required init(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
@@ -29,7 +29,7 @@ class LegacyGroupView: UIView {
         let attributedString = NSMutableAttributedString(string: text)
         attributedString.setAttributes(
             [.foregroundColor: Theme.accentBlueColor],
-            forSubstring: highlightedSubstring
+            forSubstring: highlightedSubstring,
         )
 
         label.attributedText = attributedString
@@ -38,18 +38,20 @@ class LegacyGroupView: UIView {
     private func configureDefaultLabelContents() {
         let format = OWSLocalizedString(
             "LEGACY_GROUP_UNSUPPORTED_MESSAGE",
-            comment: "Message explaining that this group can no longer be used because it is unsupported. Embeds a {{ learn more link }}."
+            comment: "Message explaining that this group can no longer be used because it is unsupported. Embeds a {{ learn more link }}.",
         )
         let learnMoreText = CommonStrings.learnMore
 
         configureLabel(format: format, highlightedSubstring: learnMoreText)
 
         isUserInteractionEnabled = true
-        addGestureRecognizer(UITapGestureRecognizer(target: self,
-                                                    action: #selector(didTapLearnMore)))
+        addGestureRecognizer(UITapGestureRecognizer(
+            target: self,
+            action: #selector(didTapLearnMore),
+        ))
     }
 
-    public func configure() {
+    func configure() {
         backgroundColor = Theme.secondaryBackgroundColor
         layer.cornerRadius = 4
         layoutMargins = UIEdgeInsets(top: 10, leading: 12, bottom: 10, trailing: 12)
@@ -69,14 +71,14 @@ class LegacyGroupView: UIView {
 
     @objc
     private func didTapLearnMore() {
-        guard let viewController = viewController else {
+        guard let viewController else {
             owsFailDebug("Missing viewController.")
             return
         }
 
         viewController.presentFormSheet(
             LegacyGroupLearnMoreViewController(mode: .explainUnsupportedLegacyGroups),
-            animated: true
+            animated: true,
         )
     }
 }

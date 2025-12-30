@@ -12,37 +12,37 @@ public struct SignalAccountFinder {
 
     public func signalAccount(
         for e164: E164,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> SignalAccount? {
         return signalAccount(for: e164.stringValue, tx: tx)
     }
 
     func signalAccount(
         for phoneNumber: String,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> SignalAccount? {
         return signalAccountWhere(
             column: SignalAccount.columnName(.recipientPhoneNumber),
             matches: phoneNumber,
-            tx: tx
+            tx: tx,
         )
     }
 
     func signalAccounts(
         for phoneNumbers: [String],
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> [SignalAccount?] {
         return signalAccountsForPhoneNumbers(phoneNumbers, tx: tx)
     }
 
     private func signalAccountsForPhoneNumbers(
         _ phoneNumbers: [String?],
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> [SignalAccount?] {
         let accounts = signalAccountsWhere(
             column: SignalAccount.columnName(.recipientPhoneNumber),
             anyValueIn: phoneNumbers.compacted(),
-            tx: tx
+            tx: tx,
         )
 
         let index: [String?: [SignalAccount?]] = Dictionary(grouping: accounts) { $0?.recipientPhoneNumber }
@@ -62,7 +62,7 @@ public struct SignalAccountFinder {
     private func signalAccountsWhere(
         column: String,
         anyValueIn values: [String],
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> [SignalAccount?] {
         guard !values.isEmpty else {
             return []
@@ -73,34 +73,34 @@ public struct SignalAccountFinder {
         return allSignalAccounts(
             tx: tx,
             sql: sql,
-            arguments: StatementArguments(values)
+            arguments: StatementArguments(values),
         )
     }
 
     private func signalAccountWhere(
         column: String,
         matches matchString: String,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> SignalAccount? {
         let sql = "SELECT * FROM \(SignalAccount.databaseTableName) WHERE \(column) = ? LIMIT 1"
 
         return allSignalAccounts(
             tx: tx,
             sql: sql,
-            arguments: [matchString]
+            arguments: [matchString],
         ).first
     }
 
     private func allSignalAccounts(
         tx: DBReadTransaction,
         sql: String,
-        arguments: StatementArguments
+        arguments: StatementArguments,
     ) -> [SignalAccount] {
         var result = [SignalAccount]()
         SignalAccount.anyEnumerate(
             transaction: tx,
             sql: sql,
-            arguments: arguments
+            arguments: arguments,
         ) { account, _ in
             result.append(account)
         }

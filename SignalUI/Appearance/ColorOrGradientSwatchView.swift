@@ -30,15 +30,18 @@ public class ColorOrGradientSwatchView: ManualLayoutViewWithLayer {
         case circle
         case rectangle
     }
+
     private let shapeMode: ShapeMode
 
     private let themeMode: ColorOrGradientThemeMode
 
     private let gradientLayer = CAGradientLayer()
 
-    public init(setting: ColorOrGradientSetting,
-                shapeMode: ShapeMode,
-                themeMode: ColorOrGradientThemeMode = .auto) {
+    public init(
+        setting: ColorOrGradientSetting,
+        shapeMode: ShapeMode,
+        themeMode: ColorOrGradientThemeMode = .auto,
+    ) {
         self.setting = setting
         self.shapeMode = shapeMode
         self.themeMode = themeMode
@@ -53,10 +56,10 @@ public class ColorOrGradientSwatchView: ManualLayoutViewWithLayer {
             colorName = String(
                 format: OWSLocalizedString(
                     "WALLPAPER_GRADIENT_COLORS_ACCESSIBILITY_LABEL",
-                    comment: "Accessibility label for gradient wallpaper swatch, naming the two colors in the gradient. {{ Embeds the names of the two colors in the gradient }}"
+                    comment: "Accessibility label for gradient wallpaper swatch, naming the two colors in the gradient. {{ Embeds the names of the two colors in the gradient }}",
                 ),
                 gradientColor1.asUIColor.accessibilityName,
-                gradientColor2.asUIColor.accessibilityName
+                gradientColor2.asUIColor.accessibilityName,
             )
         }
 
@@ -86,6 +89,7 @@ public class ColorOrGradientSwatchView: ManualLayoutViewWithLayer {
         let size: CGSize
         let setting: ColorOrGradientSetting
     }
+
     private var state: State?
 
     private func configure() {
@@ -173,7 +177,7 @@ public class ColorOrGradientSwatchView: ManualLayoutViewWithLayer {
 
             gradientLayer.colors = [
                 color1.cgColor,
-                color2.cgColor
+                color2.cgColor,
             ]
 
             CATransaction.commit()

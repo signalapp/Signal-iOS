@@ -58,7 +58,7 @@ enum Sha256HmacSiv {
 }
 
 extension Data {
-    fileprivate static func ^ (lhs: Data, rhs: Data) throws -> Data {
+    fileprivate static func ^(lhs: Data, rhs: Data) throws -> Data {
         guard lhs.count == rhs.count else { throw OWSAssertionError("lhs length must equal rhs length") }
         return Data(zip(lhs, rhs).map { $0 ^ $1 })
     }

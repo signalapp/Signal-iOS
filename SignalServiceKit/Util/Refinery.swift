@@ -26,7 +26,7 @@ public class Refinery<Key, Value> {
     public let keys: [Key]
 
     // Parallel to `keys`. Each call to `refine` may change some of these from nil to nonnil.
-    private(set) public var values: [Value?]
+    public private(set) var values: [Value?]
 
     // Indexes in `values` that are nil.
     private var indexes: IndexSet
@@ -44,9 +44,11 @@ public class Refinery<Key, Value> {
 
     // This helps you partition the keys so that they can be refined differently based on some precondition.
     // Keys meeting the condition are sent to the `then` closure; all others go to `otherwise`.
-    public func refine<Result>(condition: (Key) -> Bool,
-                               then: (AnySequence<Key>) -> Result,
-                               otherwise: (AnySequence<Key>) -> Result) -> Self where Result: Sequence, Result.Element == Value? {
+    public func refine<Result>(
+        condition: (Key) -> Bool,
+        then: (AnySequence<Key>) -> Result,
+        otherwise: (AnySequence<Key>) -> Result,
+    ) -> Self where Result: Sequence, Result.Element == Value? {
         let (matching, nonMatching) = partitionIndexes {
             condition(keys[$0])
         }
@@ -78,8 +80,10 @@ public class Refinery<Key, Value> {
 
     // `indexes` gives the indexes of `self.keys` to try to get values for from `closure`.
     // As a side-effect, it assigns to self.values and removes from self.indexes when a value is assigned.
-    private func internalRefine<Result>(_ indexes: IndexSet,
-                                        closure: (AnySequence<Key>) -> Result) where Result: Sequence, Result.Element == Value? {
+    private func internalRefine<Result>(
+        _ indexes: IndexSet,
+        closure: (AnySequence<Key>) -> Result,
+    ) where Result: Sequence, Result.Element == Value? {
         guard !indexes.isEmpty else {
             return
         }
@@ -87,8 +91,10 @@ public class Refinery<Key, Value> {
         handleResult(indexes: indexes, values: refinedValues)
     }
 
-    private func handleResult<Result>(indexes: IndexSet,
-                                      values refinedValues: Result) where Result: Sequence, Result.Element == Value? {
+    private func handleResult<Result>(
+        indexes: IndexSet,
+        values refinedValues: Result,
+    ) where Result: Sequence, Result.Element == Value? {
         for (index, maybeValue) in zip(indexes, refinedValues) {
             guard let value = maybeValue else {
                 continue
@@ -120,7 +126,7 @@ public class Refinery<Key, Value> {
 public extension Dictionary {
     init<T: Refinery<Key, Value>>(_ refinery: T) {
         let keysAndValues: [(Key, Value)] = zip(refinery.keys, refinery.values).compactMap { key, value in
-            guard let value = value else { return nil }
+            guard let value else { return nil }
             return (key, value)
         }
         self.init(uniqueKeysWithValues: keysAndValues)

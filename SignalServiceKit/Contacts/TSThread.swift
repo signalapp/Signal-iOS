@@ -18,7 +18,7 @@ extension TSThread {
         draftMessageBody: MessageBody?,
         replyInfo: ThreadReplyInfo?,
         editTargetTimestamp: UInt64?,
-        transaction tx: DBWriteTransaction
+        transaction tx: DBWriteTransaction,
     ) {
         let mostRecentInteractionID = InteractionFinder.maxInteractionRowId(transaction: tx)
 
@@ -51,7 +51,7 @@ extension TSThread {
     public func updateWithMentionNotificationMode(
         _ mentionNotificationMode: TSThreadMentionNotificationMode,
         wasLocallyInitiated: Bool,
-        transaction tx: DBWriteTransaction
+        transaction tx: DBWriteTransaction,
     ) {
         anyUpdate(transaction: tx) { thread in
             thread.mentionNotificationMode = mentionNotificationMode
@@ -63,7 +63,7 @@ extension TSThread {
             groupThread.isGroupV2Thread
         {
             SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(
-                groupModel: groupThread.groupModel
+                groupModel: groupThread.groupModel,
             )
         }
     }
@@ -71,7 +71,7 @@ extension TSThread {
     /// Updates `shouldThreadBeVisible`.
     public func updateWithShouldThreadBeVisible(
         _ shouldThreadBeVisible: Bool,
-        transaction tx: DBWriteTransaction
+        transaction tx: DBWriteTransaction,
     ) {
         anyUpdate(transaction: tx) { thread in
             thread.shouldThreadBeVisible = true
@@ -80,7 +80,7 @@ extension TSThread {
 
     public func updateWithLastSentStoryTimestamp(
         _ lastSentStoryTimestamp: UInt64,
-        transaction tx: DBWriteTransaction
+        transaction tx: DBWriteTransaction,
     ) {
         anyUpdate(transaction: tx) { thread in
             if lastSentStoryTimestamp > (thread.lastSentStoryTimestamp?.uint64Value ?? 0) {
@@ -96,11 +96,11 @@ extension TSThread {
         updateWithInteraction(interaction, wasInteractionInserted: true, tx: tx)
     }
 
-    public func updateWithUpdatedInteraction(_ interaction: TSInteraction, tx: DBWriteTransaction, ) {
+    public func updateWithUpdatedInteraction(_ interaction: TSInteraction, tx: DBWriteTransaction) {
         updateWithInteraction(interaction, wasInteractionInserted: false, tx: tx)
     }
 
-    private func updateWithInteraction(_ interaction: TSInteraction, wasInteractionInserted: Bool, tx: DBWriteTransaction, ) {
+    private func updateWithInteraction(_ interaction: TSInteraction, wasInteractionInserted: Bool, tx: DBWriteTransaction) {
         let db = DependenciesBridge.shared.db
 
         let hasLastVisibleInteraction = hasLastVisibleInteraction(transaction: tx)
@@ -123,17 +123,17 @@ extension TSThread {
             interaction,
             wasInteractionInserted: wasInteractionInserted,
             threadAssociatedData: threadAssociatedData,
-            tx: tx
+            tx: tx,
         )
         let needsToUpdateLastInteractionRowId = interactionRowId > lastInteractionRowId
         let needsToClearIsMarkedUnread = threadAssociatedData.isMarkedUnread && wasInteractionInserted
 
         if
             needsToMarkAsVisible
-                || needsToClearArchived
-                || needsToUpdateLastInteractionRowId
-                || needsToClearLastVisibleSortId
-                || needsToClearIsMarkedUnread
+            || needsToClearArchived
+            || needsToUpdateLastInteractionRowId
+            || needsToClearLastVisibleSortId
+            || needsToClearIsMarkedUnread
         {
             anyUpdate(transaction: tx) { thread in
                 thread.shouldThreadBeVisible = true
@@ -144,7 +144,7 @@ extension TSThread {
                 isArchived: needsToClearArchived,
                 isMarkedUnread: needsToClearIsMarkedUnread,
                 updateStorageService: true,
-                transaction: tx
+                transaction: tx,
             )
 
             if needsToMarkAsVisible {
@@ -154,7 +154,7 @@ extension TSThread {
                     thread: self,
                     shouldReindex: true,
                     shouldUpdateChatListUi: true,
-                    tx: tx
+                    tx: tx,
                 )
             }
 
@@ -170,7 +170,7 @@ extension TSThread {
         _ interaction: TSInteraction,
         wasInteractionInserted: Bool,
         threadAssociatedData: ThreadAssociatedData,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> Bool {
         var needsToClearArchived = threadAssociatedData.isArchived && wasInteractionInserted
 
@@ -187,38 +187,38 @@ extension TSThread {
         if let infoMessage = interaction as? TSInfoMessage {
             switch infoMessage.messageType {
             case
-                    .syncedThread,
-                    .threadMerge:
+                .syncedThread,
+                .threadMerge:
                 needsToClearArchived = false
             case
-                    .typeLocalUserEndedSession,
-                    .typeRemoteUserEndedSession,
-                    .userNotRegistered,
-                    .typeUnsupportedMessage,
-                    .typeGroupUpdate,
-                    .typeGroupQuit,
-                    .typeDisappearingMessagesUpdate,
-                    .addToContactsOffer,
-                    .verificationStateChange,
-                    .addUserToProfileWhitelistOffer,
-                    .addGroupToProfileWhitelistOffer,
-                    .unknownProtocolVersion,
-                    .userJoinedSignal,
-                    .profileUpdate,
-                    .phoneNumberChange,
-                    .recipientHidden,
-                    .paymentsActivationRequest,
-                    .paymentsActivated,
-                    .sessionSwitchover,
-                    .reportedSpam,
-                    .learnedProfileName,
-                    .blockedOtherUser,
-                    .blockedGroup,
-                    .unblockedOtherUser,
-                    .unblockedGroup,
-                    .acceptedMessageRequest,
-                    .typeEndPoll,
-                    .typePinnedMessage:
+                .typeLocalUserEndedSession,
+                .typeRemoteUserEndedSession,
+                .userNotRegistered,
+                .typeUnsupportedMessage,
+                .typeGroupUpdate,
+                .typeGroupQuit,
+                .typeDisappearingMessagesUpdate,
+                .addToContactsOffer,
+                .verificationStateChange,
+                .addUserToProfileWhitelistOffer,
+                .addGroupToProfileWhitelistOffer,
+                .unknownProtocolVersion,
+                .userJoinedSignal,
+                .profileUpdate,
+                .phoneNumberChange,
+                .recipientHidden,
+                .paymentsActivationRequest,
+                .paymentsActivated,
+                .sessionSwitchover,
+                .reportedSpam,
+                .learnedProfileName,
+                .blockedOtherUser,
+                .blockedGroup,
+                .unblockedOtherUser,
+                .unblockedGroup,
+                .acceptedMessageRequest,
+                .typeEndPoll,
+                .typePinnedMessage:
                 break
             }
         }
@@ -244,7 +244,7 @@ extension TSThread {
 
     public func updateWithRemovedInteraction(
         _ interaction: TSInteraction,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         let interactionRowId = interaction.sqliteRowId ?? 0
         let needsToUpdateLastInteractionRowId = interactionRowId == lastInteractionRowId
@@ -256,7 +256,7 @@ extension TSThread {
             needsToUpdateLastInteractionRowId: needsToUpdateLastInteractionRowId,
             needsToUpdateLastVisibleSortId: needsToUpdateLastVisibleSortId,
             lastVisibleSortId: lastVisibleSortId,
-            tx: tx
+            tx: tx,
         )
     }
 
@@ -269,7 +269,7 @@ extension TSThread {
             needsToUpdateLastInteractionRowId: needsToUpdateLastInteractionRowId,
             needsToUpdateLastVisibleSortId: needsToUpdateLastVisibleSortId,
             lastVisibleSortId: lastVisibleSortId(transaction: tx) ?? 0,
-            tx: tx
+            tx: tx,
         )
     }
 
@@ -288,14 +288,16 @@ extension TSThread {
             }
 
             if needsToUpdateLastVisibleSortId {
-                if let interactionBeforeRemovedInteraction = firstInteraction(
-                    atOrAroundSortId: lastVisibleSortId,
-                    transaction: tx
-                ) {
+                if
+                    let interactionBeforeRemovedInteraction = firstInteraction(
+                        atOrAroundSortId: lastVisibleSortId,
+                        transaction: tx,
+                    )
+                {
                     setLastVisibleInteraction(
                         sortId: interactionBeforeRemovedInteraction.sortId,
                         onScreenPercentage: 1.0,
-                        transaction: tx
+                        transaction: tx,
                     )
                 } else {
                     clearLastVisibleInteraction(transaction: tx)
@@ -322,8 +324,10 @@ extension TSThread {
     }
 
     public func canUserEditPinnedMessages(aci: Aci) -> Bool {
-        guard let groupThread = self as? TSGroupThread,
-              let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
+        guard
+            let groupThread = self as? TSGroupThread,
+            let groupModel = groupThread.groupModel as? TSGroupModelV2
+        else {
             // Not a group thread, so no access to check.
             return true
         }

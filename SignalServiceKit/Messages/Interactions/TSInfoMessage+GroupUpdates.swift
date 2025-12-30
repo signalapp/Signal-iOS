@@ -27,7 +27,7 @@ extension TSInfoMessage {
         timestamp: UInt64,
         spamReportingMetadata: GroupUpdateSpamReportingMetadata,
         groupThread: TSGroupThread,
-        updateItems: [PersistableGroupUpdateItem]
+        updateItems: [PersistableGroupUpdateItem],
     ) -> TSInfoMessage {
         owsPrecondition(!updateItems.isEmpty)
 
@@ -51,7 +51,7 @@ extension TSInfoMessage {
             messageType: .typeGroupUpdate,
             expireTimerVersion: nil,
             expiresInSeconds: 0,
-            infoMessageUserInfo: userInfoForNewMessage
+            infoMessageUserInfo: userInfoForNewMessage,
         )
         return infoMessage
     }
@@ -93,7 +93,7 @@ public extension TSInfoMessage {
     private static var groupUpdateItemBuilder: GroupUpdateItemBuilder {
         return GroupUpdateItemBuilderImpl(
             contactsManager: SSKEnvironment.shared.contactManagerRef,
-            recipientDatabaseTable: DependenciesBridge.shared.recipientDatabaseTable
+            recipientDatabaseTable: DependenciesBridge.shared.recipientDatabaseTable,
         )
     }
 
@@ -121,17 +121,19 @@ public extension TSInfoMessage {
             return NSAttributedString(string: string)
 
         case .newGroup, .modelDiff, .precomputed:
-            guard let persistableItems = computedGroupUpdateItems(
-                localIdentifiers: localIdentifiers,
-                tx: tx,
-            ) else {
+            guard
+                let persistableItems = computedGroupUpdateItems(
+                    localIdentifiers: localIdentifiers,
+                    tx: tx,
+                )
+            else {
                 return fallback
             }
 
             updateItems = Self.groupUpdateItemBuilder.displayableUpdateItemsForPrecomputed(
                 precomputedUpdateItems: persistableItems,
                 localIdentifiers: localIdentifiers,
-                tx: tx
+                tx: tx,
             )
         }
 
@@ -141,7 +143,7 @@ public extension TSInfoMessage {
         }
 
         let initialString = NSMutableAttributedString(
-            attributedString: firstUpdateItem.localizedText
+            attributedString: firstUpdateItem.localizedText,
         )
 
         return updateItems.dropFirst().reduce(initialString) { partialResult, updateItem in
@@ -153,16 +155,18 @@ public extension TSInfoMessage {
 
     func displayableGroupUpdateItems(
         localIdentifiers: LocalIdentifiers,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> [DisplayableGroupUpdateItem]? {
         switch groupUpdateMetadata(localIdentifiers: localIdentifiers) {
         case .legacyRawString, .nonGroupUpdate:
             return nil
 
         case .newGroup, .modelDiff, .precomputed:
-            guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(
-                tx: tx
-            ) else {
+            guard
+                let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(
+                    tx: tx,
+                )
+            else {
                 owsFailDebug("Missing local identifiers!")
                 return nil
             }
@@ -217,7 +221,7 @@ public extension TSInfoMessage {
                 newDisappearingMessageToken: newGroupModel.dmToken,
                 localIdentifiers: localIdentifiers,
                 groupUpdateSource: source,
-                tx: tx
+                tx: tx,
             )
 
         case let .modelDiff(oldGroupModel, newGroupModel, source):
@@ -228,7 +232,7 @@ public extension TSInfoMessage {
                 newDisappearingMessageToken: newGroupModel.dmToken,
                 localIdentifiers: localIdentifiers,
                 groupUpdateSource: source,
-                tx: tx
+                tx: tx,
             )
         }
     }
@@ -260,7 +264,7 @@ public extension TSInfoMessage {
                     return legacyItem.toNewItem(
                         updater: source,
                         oldGroupModel: infoMessageUserInfo?[.oldGroupModel] as? TSGroupModel,
-                        localIdentifiers: localIdentifiers
+                        localIdentifiers: localIdentifiers,
                     )
                 }
             return .precomputed(.init(mappedItems))
@@ -316,7 +320,7 @@ public extension TSInfoMessage {
             // Check for legacy persisted enum state.
             if
                 let legacyPrecomputed = infoMessageUserInfoDict[.legacyGroupUpdateItems]
-                    as? LegacyPersistableGroupUpdateItemsWrapper,
+                as? LegacyPersistableGroupUpdateItemsWrapper,
                 case let .inviteRemoved(_, wasLocalUser) = legacyPrecomputed.updateItems.first
             {
                 return wasLocalUser

@@ -19,7 +19,7 @@ class CurrencyPickerViewController<DataSourceType: CurrencyPickerDataSource>: OW
     private var dataSource: DataSourceType
     private let completion: (Currency.Code) -> Void
 
-    public init(dataSource: DataSourceType, completion: @escaping (Currency.Code) -> Void) {
+    init(dataSource: DataSourceType, completion: @escaping (Currency.Code) -> Void) {
         self.dataSource = dataSource
         self.completion = completion
 
@@ -33,8 +33,10 @@ class CurrencyPickerViewController<DataSourceType: CurrencyPickerDataSource>: OW
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = OWSLocalizedString("CURRENCY_PICKER_VIEW_TITLE",
-                                  comment: "Title for the 'currency picker' view in the app settings.")
+        title = OWSLocalizedString(
+            "CURRENCY_PICKER_VIEW_TITLE",
+            comment: "Title for the 'currency picker' view in the app settings.",
+        )
 
         navigationItem.leftBarButtonItem = .cancelButton { [weak self] in
             self?.dismissPicker()
@@ -66,34 +68,42 @@ class CurrencyPickerViewController<DataSourceType: CurrencyPickerDataSource>: OW
         preferredSection.customHeaderHeight = 12
         preferredSection.separatorInsetLeading = OWSTableViewController2.cellHInnerMargin
         for currencyInfo in preferredCurrencyInfos {
-            preferredSection.add(buildTableItem(forCurrencyInfo: currencyInfo,
-                                                currentCurrencyCode: currentCurrencyCode))
+            preferredSection.add(buildTableItem(
+                forCurrencyInfo: currencyInfo,
+                currentCurrencyCode: currentCurrencyCode,
+            ))
         }
         contents.add(preferredSection)
 
         let supportedSection = OWSTableSection()
         supportedSection.separatorInsetLeading = OWSTableViewController2.cellHInnerMargin
-        supportedSection.headerTitle = OWSLocalizedString("SETTINGS_PAYMENTS_CURRENCY_VIEW_SECTION_ALL_CURRENCIES",
-                                                         comment: "Label for 'all currencies' section in the payment currency settings.")
+        supportedSection.headerTitle = OWSLocalizedString(
+            "SETTINGS_PAYMENTS_CURRENCY_VIEW_SECTION_ALL_CURRENCIES",
+            comment: "Label for 'all currencies' section in the payment currency settings.",
+        )
         if supportedCurrencyInfos.isEmpty {
-            supportedSection.add(OWSTableItem(customCellBlock: {
-                let cell = OWSTableItem.newCell()
+            supportedSection.add(OWSTableItem(
+                customCellBlock: {
+                    let cell = OWSTableItem.newCell()
 
-                let activityIndicator = UIActivityIndicatorView(style: .medium)
-                activityIndicator.startAnimating()
+                    let activityIndicator = UIActivityIndicatorView(style: .medium)
+                    activityIndicator.startAnimating()
 
-                cell.contentView.addSubview(activityIndicator)
-                activityIndicator.autoHCenterInSuperview()
-                activityIndicator.autoPinEdge(toSuperviewMargin: .top, withInset: 16)
-                activityIndicator.autoPinEdge(toSuperviewMargin: .bottom, withInset: 16)
+                    cell.contentView.addSubview(activityIndicator)
+                    activityIndicator.autoHCenterInSuperview()
+                    activityIndicator.autoPinEdge(toSuperviewMargin: .top, withInset: 16)
+                    activityIndicator.autoPinEdge(toSuperviewMargin: .bottom, withInset: 16)
 
-                return cell
-            },
-            actionBlock: nil))
+                    return cell
+                },
+                actionBlock: nil,
+            ))
         } else {
             for currencyInfo in supportedCurrencyInfos {
-                supportedSection.add(buildTableItem(forCurrencyInfo: currencyInfo,
-                                                    currentCurrencyCode: currentCurrencyCode))
+                supportedSection.add(buildTableItem(
+                    forCurrencyInfo: currencyInfo,
+                    currentCurrencyCode: currentCurrencyCode,
+                ))
             }
         }
         contents.add(supportedSection)
@@ -114,21 +124,25 @@ class CurrencyPickerViewController<DataSourceType: CurrencyPickerDataSource>: OW
         let matchingCurrencyInfos = currencyInfosToSearch.filter { currencyInfo in
             // We do the simplest possible matching.
             // No terms, no sorting by match quality, etc.
-            (currencyInfo.name.lowercased().contains(searchText) ||
-                currencyInfo.code.lowercased().contains(searchText))
+            currencyInfo.name.lowercased().contains(searchText) ||
+                currencyInfo.code.lowercased().contains(searchText)
         }
 
         let resultsSection = OWSTableSection()
         resultsSection.customHeaderHeight = 12
         if matchingCurrencyInfos.isEmpty {
             for currencyInfo in matchingCurrencyInfos {
-                resultsSection.add(buildTableItem(forCurrencyInfo: currencyInfo,
-                                                  currentCurrencyCode: currentCurrencyCode))
+                resultsSection.add(buildTableItem(
+                    forCurrencyInfo: currencyInfo,
+                    currentCurrencyCode: currentCurrencyCode,
+                ))
             }
         } else {
             for currencyInfo in matchingCurrencyInfos {
-                resultsSection.add(buildTableItem(forCurrencyInfo: currencyInfo,
-                                                  currentCurrencyCode: currentCurrencyCode))
+                resultsSection.add(buildTableItem(
+                    forCurrencyInfo: currencyInfo,
+                    currentCurrencyCode: currentCurrencyCode,
+                ))
             }
         }
         contents.add(resultsSection)
@@ -136,45 +150,49 @@ class CurrencyPickerViewController<DataSourceType: CurrencyPickerDataSource>: OW
         self.contents = contents
     }
 
-    private func buildTableItem(forCurrencyInfo currencyInfo: Currency.Info,
-                                currentCurrencyCode: Currency.Code) -> OWSTableItem {
+    private func buildTableItem(
+        forCurrencyInfo currencyInfo: Currency.Info,
+        currentCurrencyCode: Currency.Code,
+    ) -> OWSTableItem {
 
         let currencyCode = currencyInfo.code
 
-        return OWSTableItem(customCellBlock: {
-            let cell = OWSTableItem.newCell()
+        return OWSTableItem(
+            customCellBlock: {
+                let cell = OWSTableItem.newCell()
 
-            let nameLabel = UILabel()
-            nameLabel.text = currencyInfo.name
-            nameLabel.font = .dynamicTypeBodyClamped
-            nameLabel.textColor = .Signal.label
+                let nameLabel = UILabel()
+                nameLabel.text = currencyInfo.name
+                nameLabel.font = .dynamicTypeBodyClamped
+                nameLabel.textColor = .Signal.label
 
-            let currencyCodeLabel = UILabel()
-            currencyCodeLabel.text = currencyCode.uppercased()
-            currencyCodeLabel.font = .dynamicTypeFootnoteClamped
-            currencyCodeLabel.textColor = .Signal.secondaryLabel
+                let currencyCodeLabel = UILabel()
+                currencyCodeLabel.text = currencyCode.uppercased()
+                currencyCodeLabel.font = .dynamicTypeFootnoteClamped
+                currencyCodeLabel.textColor = .Signal.secondaryLabel
 
-            let stackView = UIStackView(arrangedSubviews: [ nameLabel, currencyCodeLabel ])
-            stackView.axis = .vertical
-            stackView.alignment = .fill
-            cell.contentView.addSubview(stackView)
-            stackView.autoPinEdgesToSuperviewMargins()
+                let stackView = UIStackView(arrangedSubviews: [nameLabel, currencyCodeLabel])
+                stackView.axis = .vertical
+                stackView.alignment = .fill
+                cell.contentView.addSubview(stackView)
+                stackView.autoPinEdgesToSuperviewMargins()
 
-            cell.accessibilityIdentifier = "currency.\(currencyCode)"
-            cell.accessibilityLabel = currencyInfo.name
-            cell.isAccessibilityElement = true
+                cell.accessibilityIdentifier = "currency.\(currencyCode)"
+                cell.accessibilityLabel = currencyInfo.name
+                cell.isAccessibilityElement = true
 
-            if currencyCode == currentCurrencyCode {
-                cell.accessoryType = .checkmark
-            } else {
-                cell.accessoryType = .none
-            }
+                if currencyCode == currentCurrencyCode {
+                    cell.accessoryType = .checkmark
+                } else {
+                    cell.accessoryType = .none
+                }
 
-            return cell
-        },
-        actionBlock: { [weak self] in
-            self?.didSelectCurrency(currencyCode)
-        })
+                return cell
+            },
+            actionBlock: { [weak self] in
+                self?.didSelectCurrency(currencyCode)
+            },
+        )
     }
 
     // MARK: - Events
@@ -200,7 +218,7 @@ class CurrencyPickerViewController<DataSourceType: CurrencyPickerDataSource>: OW
         searchController.searchBar.text?.ows_stripped()
     }
 
-    public func updateSearchResults(for searchController: UISearchController) {
+    func updateSearchResults(for searchController: UISearchController) {
         updateTableContents()
     }
 }
@@ -227,7 +245,7 @@ struct StripeCurrencyPickerDataSource: CurrencyPickerDataSource {
         self.supportedCurrencyInfos = Currency.infos(
             for: supportedCurrencyCodes,
             ignoreMissingNames: false,
-            shouldSort: true
+            shouldSort: true,
         )
     }
 }
@@ -250,7 +268,7 @@ class PaymentsCurrencyPickerDataSource: NSObject, CurrencyPickerDataSource {
             self,
             selector: #selector(paymentConversionRatesDidChange),
             name: PaymentsCurrenciesImpl.paymentConversionRatesDidChange,
-            object: nil
+            object: nil,
         )
 
         SSKEnvironment.shared.paymentsCurrenciesRef.updateConversionRates()

@@ -18,7 +18,8 @@ class PhoneNumberPrivacySettingsViewController: OWSTableViewController2 {
         loadValues()
         title = OWSLocalizedString(
             "SETTINGS_PHONE_NUMBER_PRIVACY_TITLE",
-            comment: "The title for phone number privacy settings.")
+            comment: "The title for phone number privacy settings.",
+        )
         updateTableContents()
     }
 
@@ -49,7 +50,7 @@ class PhoneNumberPrivacySettingsViewController: OWSTableViewController2 {
         let seeMyNumberSection = OWSTableSection()
         seeMyNumberSection.headerTitle = OWSLocalizedString(
             "SETTINGS_PHONE_NUMBER_SHARING_TITLE",
-            comment: "The title for the phone number sharing setting section."
+            comment: "The title for the phone number sharing setting section.",
         )
         seeMyNumberSection.customFooterView = createSharingFooter()
         seeMyNumberSection.add(sharingItem(.everybody))
@@ -59,7 +60,7 @@ class PhoneNumberPrivacySettingsViewController: OWSTableViewController2 {
         let findByNumberSection = OWSTableSection()
         findByNumberSection.headerTitle = OWSLocalizedString(
             "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_TITLE",
-            comment: "The title for the phone number discoverability setting section."
+            comment: "The title for the phone number discoverability setting section.",
         )
         findByNumberSection.footerTitle = phoneNumberDiscoverability.descriptionForDiscoverability
         findByNumberSection.add(everybodyDiscoverabilityItem())
@@ -79,7 +80,7 @@ class PhoneNumberPrivacySettingsViewController: OWSTableViewController2 {
             actionBlock: { [weak self] in
                 self?.updateDiscoverability(.everybody)
             },
-            accessoryType: self.phoneNumberDiscoverability == .everybody ? .checkmark : .none
+            accessoryType: self.phoneNumberDiscoverability == .everybody ? .checkmark : .none,
         )
     }
 
@@ -113,7 +114,7 @@ class PhoneNumberPrivacySettingsViewController: OWSTableViewController2 {
                     self?.promptToDisableDiscoverability()
                 }
             },
-            accessoryType: accessory
+            accessoryType: accessory,
         )
     }
 
@@ -123,7 +124,7 @@ class PhoneNumberPrivacySettingsViewController: OWSTableViewController2 {
             actionBlock: { [weak self] in
                 self?.updatePhoneNumberSharing(mode)
             },
-            accessoryType: phoneNumberSharingMode == mode ? .checkmark : .none
+            accessoryType: phoneNumberSharingMode == mode ? .checkmark : .none,
         )
     }
 
@@ -132,7 +133,7 @@ class PhoneNumberPrivacySettingsViewController: OWSTableViewController2 {
     private func presentPhoneNumberDiscoverabilityDisabledToast() {
         presentToast(text: OWSLocalizedString(
             "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_DISABLED_TOAST",
-            comment: "A toast that displays when the user attempts to set discoverability to 'nobody' when their phone number sharing is set to 'everybody', which is not allowed."
+            comment: "A toast that displays when the user attempts to set discoverability to 'nobody' when their phone number sharing is set to 'everybody', which is not allowed.",
         ))
     }
 
@@ -140,12 +141,12 @@ class PhoneNumberPrivacySettingsViewController: OWSTableViewController2 {
         OWSActionSheets.showConfirmationAlert(
             title: OWSLocalizedString(
                 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_TITLE",
-                comment: "The title for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'."
+                comment: "The title for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'.",
             ),
             message: OWSLocalizedString(
                 "SETTINGS_PHONE_NUMBER_DISCOVERABILITY_NOBODY_CONFIRMATION_DESCRIPTION",
-                comment: "The description for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'."
-            )
+                comment: "The description for a sheet asking for confirmation that the user wants to set their phone number discoverability to 'nobody'.",
+            ),
         ) { [weak self] _ in
             self?.updateDiscoverability(.nobody)
         }
@@ -162,7 +163,7 @@ class PhoneNumberPrivacySettingsViewController: OWSTableViewController2 {
                 updateAccountAttributes: true,
                 updateStorageService: true,
                 authedAccount: .implicit(),
-                tx: transaction
+                tx: transaction,
             )
         }) { [weak self] in
             guard let self else { return }
@@ -185,7 +186,7 @@ class PhoneNumberPrivacySettingsViewController: OWSTableViewController2 {
                     updateAccountAttributes: true,
                     updateStorageService: true,
                     authedAccount: .implicit(),
-                    tx: transaction
+                    tx: transaction,
                 )
             }
         }) { [weak self] in
@@ -242,7 +243,7 @@ class PhoneNumberPrivacySettingsViewController: OWSTableViewController2 {
         let textView = buildFooterTextView(withDeepInsets: true)
         textView.text = OWSLocalizedString(
             "PHONE_NUMBER_SHARING_EVERYBODY_DESCRIPTION",
-            comment: "A user friendly description of the 'everybody' phone number sharing mode."
+            comment: "A user friendly description of the 'everybody' phone number sharing mode.",
         )
         return textView
     }
@@ -251,7 +252,7 @@ class PhoneNumberPrivacySettingsViewController: OWSTableViewController2 {
         let textView = buildFooterTextView(withDeepInsets: true)
         textView.text = OWSLocalizedString(
             "PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_NOBODY",
-            comment: "A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'nobody'."
+            comment: "A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'nobody'.",
         )
         return textView
     }
@@ -260,7 +261,7 @@ class PhoneNumberPrivacySettingsViewController: OWSTableViewController2 {
         let textView = buildFooterTextView(withDeepInsets: true)
         textView.text = OWSLocalizedString(
             "PHONE_NUMBER_SHARING_NOBODY_DESCRIPTION_DISCOVERABILITY_EVERYBODY",
-            comment: "A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'everybody'."
+            comment: "A user-friendly description of the 'nobody' phone number sharing mode when phone number discovery is set to 'everybody'.",
         )
         return textView
     }
@@ -274,11 +275,13 @@ extension PhoneNumberDiscoverability {
         case .everybody:
             return OWSLocalizedString(
                 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY",
-                comment: "A user friendly name for the 'everybody' phone number discoverability mode.")
+                comment: "A user friendly name for the 'everybody' phone number discoverability mode.",
+            )
         case .nobody:
             return OWSLocalizedString(
                 "PHONE_NUMBER_DISCOVERABILITY_NOBODY",
-                comment: "A user friendly name for the 'nobody' phone number discoverability mode.")
+                comment: "A user friendly name for the 'nobody' phone number discoverability mode.",
+            )
         }
     }
 
@@ -287,11 +290,13 @@ extension PhoneNumberDiscoverability {
         case .everybody:
             return OWSLocalizedString(
                 "PHONE_NUMBER_DISCOVERABILITY_EVERYBODY_DESCRIPTION",
-                comment: "A user friendly description of the 'everybody' phone number discoverability mode.")
+                comment: "A user friendly description of the 'everybody' phone number discoverability mode.",
+            )
         case .nobody:
             return OWSLocalizedString(
                 "PHONE_NUMBER_DISCOVERABILITY_NOBODY_DESCRIPTION",
-                comment: "A user friendly description of the 'nobody' phone number discoverability mode.")
+                comment: "A user friendly description of the 'nobody' phone number discoverability mode.",
+            )
         }
     }
 }
@@ -299,16 +304,18 @@ extension PhoneNumberDiscoverability {
 // MARK: - Phone number sharing strings
 
 extension PhoneNumberPrivacySettingsViewController {
-    fileprivate class func nameForMode(_ mode: PhoneNumberSharingMode) -> String {
+    private class func nameForMode(_ mode: PhoneNumberSharingMode) -> String {
         switch mode {
         case .everybody:
             return OWSLocalizedString(
                 "PHONE_NUMBER_SHARING_EVERYBODY",
-                comment: "A user friendly name for the 'everybody' phone number sharing mode.")
+                comment: "A user friendly name for the 'everybody' phone number sharing mode.",
+            )
         case .nobody:
             return OWSLocalizedString(
                 "PHONE_NUMBER_SHARING_NOBODY",
-                comment: "A user friendly name for the 'nobody' phone number sharing mode.")
+                comment: "A user friendly name for the 'nobody' phone number sharing mode.",
+            )
         }
     }
 }

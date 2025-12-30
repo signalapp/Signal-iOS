@@ -3,15 +3,15 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import AuthenticationServices
+import Foundation
 import SignalServiceKit
 
 extension DonationPaymentDetailsViewController {
     func show3DS(for redirectUrl: URL) -> Promise<String> {
         owsPrecondition(
             threeDSecureAuthenticationSession == nil,
-            "[Donations] Unexpectedly already had a 3DS authentication session going"
+            "[Donations] Unexpectedly already had a 3DS authentication session going",
         )
 
         Logger.info("[Donations] Presenting 3DS authentication sheet")
@@ -29,7 +29,7 @@ extension DonationPaymentDetailsViewController {
 
         let session = ASWebAuthenticationSession(
             url: redirectUrl,
-            callbackURLScheme: Stripe.SCHEME_FOR_3DS
+            callbackURLScheme: Stripe.SCHEME_FOR_3DS,
         ) { (callbackUrl: URL?, error: Error?) -> Void in
             switch ASWebAuthenticationSession.resultify(callbackUrl: callbackUrl, error: error) {
             case let .success(callbackUrl):
@@ -55,7 +55,7 @@ extension DonationPaymentDetailsViewController {
 
         owsPrecondition(
             session.start(),
-            "[Donations] Failed to start 3DS authentication session. Was it set up correctly?"
+            "[Donations] Failed to start 3DS authentication session. Was it set up correctly?",
         )
 
         // Keep a reference so we can cancel it when this view deallocates.

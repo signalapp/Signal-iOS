@@ -28,7 +28,7 @@ class MediaGalleryAttachmentFinderTest: XCTestCase {
             threadRowId: threadRowId,
             receivedAtTimestamp: 100,
             contentType: .image,
-            orderInMessage: 0
+            orderInMessage: 0,
         )
         // ...and one matching content type after the date range
         try insertAttachment(
@@ -36,7 +36,7 @@ class MediaGalleryAttachmentFinderTest: XCTestCase {
             threadRowId: threadRowId,
             receivedAtTimestamp: 300,
             contentType: .image,
-            orderInMessage: 1
+            orderInMessage: 1,
         )
         // ...and one non-matching content type within the date range
         try insertAttachment(
@@ -44,7 +44,7 @@ class MediaGalleryAttachmentFinderTest: XCTestCase {
             threadRowId: threadRowId,
             receivedAtTimestamp: 200,
             contentType: .audio,
-            orderInMessage: 2
+            orderInMessage: 2,
         )
         // ...and two matching content type within the date range
         try insertAttachment(
@@ -52,14 +52,14 @@ class MediaGalleryAttachmentFinderTest: XCTestCase {
             threadRowId: threadRowId,
             receivedAtTimestamp: 200,
             contentType: .image,
-            orderInMessage: 3
+            orderInMessage: 3,
         )
         try insertAttachment(
             messageRowId: messageRowId,
             threadRowId: threadRowId,
             receivedAtTimestamp: 200,
             contentType: .image,
-            orderInMessage: 4
+            orderInMessage: 4,
         )
         // ...and one within the date range that we will exclude.
         try insertAttachment(
@@ -67,7 +67,7 @@ class MediaGalleryAttachmentFinderTest: XCTestCase {
             threadRowId: threadRowId,
             receivedAtTimestamp: 200,
             contentType: .image,
-            orderInMessage: 5
+            orderInMessage: 5,
         )
         // ...and a view once attachment that will be excluded.
         try insertAttachment(
@@ -76,10 +76,10 @@ class MediaGalleryAttachmentFinderTest: XCTestCase {
             receivedAtTimestamp: 200,
             contentType: .image,
             isViewOnce: true,
-            orderInMessage: 6
+            orderInMessage: 6,
         )
         let exclusionSet = Set<AttachmentReferenceId>([
-            .init(ownerId: .messageBodyAttachment(messageRowId: messageRowId), orderInMessage: 5)
+            .init(ownerId: .messageBodyAttachment(messageRowId: messageRowId), orderInMessage: 5),
         ])
 
         let finder = MediaGalleryAttachmentFinder(threadId: thread.grdbId!.int64Value, filter: .allPhotoVideoCategory)
@@ -88,11 +88,11 @@ class MediaGalleryAttachmentFinderTest: XCTestCase {
         var query = finder.galleryItemQuery(
             in: .init(
                 start: .init(millisecondsSince1970: 150),
-                end: .init(millisecondsSince1970: 250)
+                end: .init(millisecondsSince1970: 250),
             ),
             excluding: exclusionSet,
             offset: 0,
-            ascending: true
+            ascending: true,
         )
 
         var results = try db.read { tx in
@@ -109,11 +109,11 @@ class MediaGalleryAttachmentFinderTest: XCTestCase {
         query = finder.galleryItemQuery(
             in: .init(
                 start: .init(millisecondsSince1970: 150),
-                end: .init(millisecondsSince1970: 250)
+                end: .init(millisecondsSince1970: 250),
             ),
             excluding: exclusionSet,
             offset: 1,
-            ascending: true
+            ascending: true,
         )
 
         results = try db.read { tx in
@@ -137,8 +137,8 @@ class MediaGalleryAttachmentFinderTest: XCTestCase {
             nil,
             .init(
                 start: .init(millisecondsSince1970: 100),
-                end: .init(millisecondsSince1970: 200)
-            )
+                end: .init(millisecondsSince1970: 200),
+            ),
         ]
         let exclusionSets: [Set<AttachmentReferenceId>] = [
             Set(),
@@ -147,8 +147,8 @@ class MediaGalleryAttachmentFinderTest: XCTestCase {
             Set([
                 .init(ownerId: .messageBodyAttachment(messageRowId: 100), orderInMessage: nil),
                 .init(ownerId: .messageBodyAttachment(messageRowId: 200), orderInMessage: nil),
-                .init(ownerId: .messageBodyAttachment(messageRowId: 300), orderInMessage: 5)
-            ])
+                .init(ownerId: .messageBodyAttachment(messageRowId: 300), orderInMessage: 5),
+            ]),
         ]
         let offsets: [Int] = [0, 5]
         let limits: [Int] = [5, 100]
@@ -171,7 +171,7 @@ class MediaGalleryAttachmentFinderTest: XCTestCase {
                                 in: dateInterval,
                                 excluding: exclusionSet,
                                 offset: offset,
-                                ascending: ascending
+                                ascending: ascending,
                             ))
                         }
                     }
@@ -184,7 +184,7 @@ class MediaGalleryAttachmentFinderTest: XCTestCase {
                             queries.append(finder.enumerateMediaAttachmentsQuery(
                                 in: dateInterval,
                                 excluding: exclusionSet,
-                                range: .init(location: offset, length: limit)
+                                range: .init(location: offset, length: limit),
                             ))
                         }
                     }
@@ -198,14 +198,14 @@ class MediaGalleryAttachmentFinderTest: XCTestCase {
                             afterDate: nil,
                             excluding: exclusionSet,
                             count: limit,
-                            ascending: false
+                            ascending: false,
                         ))
                         queries.append(finder.enumerateTimestampsQuery(
                             beforeDate: nil,
                             afterDate: dateInterval?.start,
                             excluding: exclusionSet,
                             count: limit,
-                            ascending: true
+                            ascending: true,
                         ))
                     }
                 }
@@ -220,8 +220,8 @@ class MediaGalleryAttachmentFinderTest: XCTestCase {
                     let queryPlan: [String] = try Row.fetchAll(
                         tx.database,
                         sql: "EXPLAIN QUERY PLAN \(preparedStatement.sql);",
-                        arguments: preparedStatement.arguments
-                    ).map{ $0["detail"] }
+                        arguments: preparedStatement.arguments,
+                    ).map { $0["detail"] }
 
                     // Ensure we use the relevant indexes and...
                     // * we use all the columns up to the ordering columns
@@ -229,7 +229,7 @@ class MediaGalleryAttachmentFinderTest: XCTestCase {
                     let allowedQueryPlans: [String] = [
                         "SEARCH MessageAttachmentReference USING INDEX message_attachment_reference_media_gallery_single_content_type_index (threadRowId=? AND ownerType=? AND contentType=?",
                         "SEARCH MessageAttachmentReference USING INDEX message_attachment_reference_media_gallery_visualMedia_content_type_index (threadRowId=? AND ownerType=? AND isVisualMediaContentType=?",
-                        "SEARCH MessageAttachmentReference USING INDEX message_attachment_reference_media_gallery_fileOrInvalid_content_type_index (threadRowId=? AND ownerType=? AND isInvalidOrFileContentType=?"
+                        "SEARCH MessageAttachmentReference USING INDEX message_attachment_reference_media_gallery_fileOrInvalid_content_type_index (threadRowId=? AND ownerType=? AND isInvalidOrFileContentType=?",
                     ]
                     XCTAssert(queryPlan.allSatisfy { queryPlan in
                         for allowedQueryPlan in allowedQueryPlans {
@@ -273,7 +273,7 @@ class MediaGalleryAttachmentFinderTest: XCTestCase {
         isViewOnce: Bool = false,
         isPastEditRevision: Bool = false,
         orderInMessage: UInt32,
-        idInOwner: UUID? = nil
+        idInOwner: UUID? = nil,
     ) throws -> Attachment.IDType {
         let attachmentParams = Attachment.ConstructionParams.mockStream(
             streamInfo: .mock(
@@ -292,8 +292,8 @@ class MediaGalleryAttachmentFinderTest: XCTestCase {
                     case .video:
                         return .video(duration: 1, pixelSize: .square(100), stillFrameRelativeFilePath: nil)
                     }
-                }()
-            )
+                }(),
+            ),
         )
         let referenceParams = AttachmentReference.ConstructionParams.mock(
             owner: .message(.bodyAttachment(.init(
@@ -306,8 +306,8 @@ class MediaGalleryAttachmentFinderTest: XCTestCase {
                 renderingFlag: renderingFlag,
                 orderInMessage: orderInMessage,
                 idInOwner: idInOwner,
-                isViewOnce: isViewOnce
-            )))
+                isViewOnce: isViewOnce,
+            ))),
         )
 
         var attachmentRecord = Attachment.Record(params: attachmentParams)

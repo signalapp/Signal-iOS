@@ -25,17 +25,17 @@ public extension OWSRequestFactory {
     ///
     /// A successful reservation is valid for 5 minutes.
     static func reserveUsernameRequest(
-        usernameHashes: [String]
+        usernameHashes: [String],
     ) -> TSRequest {
         let url = URL(string: UsernameApiPaths.reserveUsername)!
         let params: [String: Any] = [
-            "usernameHashes": usernameHashes
+            "usernameHashes": usernameHashes,
         ]
 
         return TSRequest(
             url: url,
             method: HTTPMethod.put.methodName,
-            parameters: params
+            parameters: params,
         )
     }
 
@@ -53,19 +53,19 @@ public extension OWSRequestFactory {
     static func confirmReservedUsernameRequest(
         reservedUsernameHash hashString: String,
         reservedUsernameZKProof proofString: String,
-        encryptedUsernameForLink: Data
+        encryptedUsernameForLink: Data,
     ) -> TSRequest {
         let url = URL(string: UsernameApiPaths.confirmReservedUsername)!
         let params: [String: String] = [
             "usernameHash": hashString,
             "zkProof": proofString,
-            "encryptedUsername": encryptedUsernameForLink.asBase64Url
+            "encryptedUsername": encryptedUsernameForLink.asBase64Url,
         ]
 
         return TSRequest(
             url: url,
             method: HTTPMethod.put.methodName,
-            parameters: params
+            parameters: params,
         )
     }
 
@@ -76,22 +76,22 @@ public extension OWSRequestFactory {
         return TSRequest(
             url: url,
             method: HTTPMethod.delete.methodName,
-            parameters: nil
+            parameters: nil,
         )
     }
 
     /// Look up the ACI for the given username hash.
     static func lookupAciUsernameRequest(
-        usernameHashToLookup usernameHash: String
+        usernameHashToLookup usernameHash: String,
     ) -> TSRequest {
         let url = URL(string: UsernameApiPaths.aciLookup(
-            forUsernameHash: usernameHash
+            forUsernameHash: usernameHash,
         ))!
 
         var request = TSRequest(
             url: url,
             method: HTTPMethod.get.methodName,
-            parameters: nil
+            parameters: nil,
         )
 
         request.auth = .anonymous
@@ -107,18 +107,18 @@ public extension OWSRequestFactory {
     /// ``Usernames.UsernameLink`` and ``UsernameLinkManager``.
     static func setUsernameLinkRequest(
         encryptedUsername: Data,
-        keepLinkHandle: Bool
+        keepLinkHandle: Bool,
     ) -> TSRequest {
         let url = URL(string: UsernameApiPaths.setUsernameLink)!
         let params: [String: Any] = [
             "usernameLinkEncryptedValue": encryptedUsername.asBase64Url,
-            "keepLinkHandle": keepLinkHandle
+            "keepLinkHandle": keepLinkHandle,
         ]
 
         let request = TSRequest(
             url: url,
             method: HTTPMethod.put.methodName,
-            parameters: params
+            parameters: params,
         )
 
         return request
@@ -127,13 +127,13 @@ public extension OWSRequestFactory {
     /// Look up the encrypted username for the given username link handle.
     static func lookupUsernameLinkRequest(handle: UUID) -> TSRequest {
         let url = URL(string: UsernameApiPaths.usernameLinkLookup(
-            handle: handle
+            handle: handle,
         ))!
 
         var request = TSRequest(
             url: url,
             method: HTTPMethod.get.methodName,
-            parameters: nil
+            parameters: nil,
         )
 
         request.auth = .anonymous

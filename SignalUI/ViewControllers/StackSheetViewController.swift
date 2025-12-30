@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalServiceKit
 import Combine
+import SignalServiceKit
 
 /// An interactive sheet view controller with stack view content. Automatically
 /// resizes the sheet and enables/disables scrolling based on content size.
@@ -13,16 +13,16 @@ import Combine
 /// content as arranged subviews. Optionally override `stackViewInsets` and/or
 /// `minimumBottomInsetIncludingSafeArea`.
 open class StackSheetViewController: InteractiveSheetViewController {
-    public override var interactiveScrollViews: [UIScrollView] { [contentScrollView] }
+    override public var interactiveScrollViews: [UIScrollView] { [contentScrollView] }
 
-    open override var sheetBackgroundColor: UIColor {
+    override open var sheetBackgroundColor: UIColor {
         UIColor.Signal.groupedBackground
     }
 
-    open override var placeOnGlassIfAvailable: Bool { true }
+    override open var placeOnGlassIfAvailable: Bool { true }
 
     private lazy var preferredHeight: CGFloat = self.maximumAllowedHeight()
-    open override func maximumPreferredHeight() -> CGFloat {
+    override open func maximumPreferredHeight() -> CGFloat {
         min(self.preferredHeight, self.maximumAllowedHeight())
     }
 
@@ -36,6 +36,7 @@ open class StackSheetViewController: InteractiveSheetViewController {
     open var stackViewInsets: UIEdgeInsets {
         .init(margin: 24)
     }
+
     /// The minimum inset for the bottom of the stack view, including the safe area.
     ///
     /// For example, if `stackViewInsets.bottom` is set to 20 and
@@ -58,7 +59,7 @@ open class StackSheetViewController: InteractiveSheetViewController {
         return stackView
     }()
 
-    open override func viewDidLoad() {
+    override open func viewDidLoad() {
         super.viewDidLoad()
 
         allowsExpansion = false
@@ -82,7 +83,7 @@ open class StackSheetViewController: InteractiveSheetViewController {
             }
     }
 
-    open override func viewSafeAreaInsetsDidChange() {
+    override open func viewSafeAreaInsetsDidChange() {
         super.viewSafeAreaInsetsDidChange()
 
         let desiredInsets = self.stackViewInsets
@@ -91,7 +92,7 @@ open class StackSheetViewController: InteractiveSheetViewController {
         // so add it in manually instead of inheriting it.
         let bottomMargin = max(
             self.view.safeAreaInsets.bottom + desiredInsets.bottom,
-            minimumBottomInsetIncludingSafeArea
+            minimumBottomInsetIncludingSafeArea,
         )
 
         contentScrollView.contentInsetAdjustmentBehavior = .never
@@ -101,7 +102,7 @@ open class StackSheetViewController: InteractiveSheetViewController {
             top: desiredInsets.top,
             leading: desiredInsets.leading,
             bottom: bottomMargin,
-            trailing: desiredInsets.trailing
+            trailing: desiredInsets.trailing,
         )
     }
 }

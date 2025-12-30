@@ -47,7 +47,7 @@ public class SerialTaskQueueTest: XCTestCase {
 
         await testActor.allowFirstTaskExecution()
 
-        _  = try! await secondTask.value
+        _ = try! await secondTask.value
 
         numExecuted = await testActor.numExecuted
         XCTAssertEqual(numExecuted, 2)

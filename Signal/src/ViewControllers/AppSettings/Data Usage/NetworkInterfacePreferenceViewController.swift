@@ -11,10 +11,11 @@ class NetworkInterfacePreferenceViewController: OWSTableViewController2 {
     private let availableOptions: [NetworkInterfaceSet]
     private let updateHandler: (NetworkInterfaceSet) -> Void
 
-    public init(
+    init(
         selectedOption: NetworkInterfaceSet?,
         availableOptions: [NetworkInterfaceSet],
-        updateHandler: @escaping (NetworkInterfaceSet) -> Void) {
+        updateHandler: @escaping (NetworkInterfaceSet) -> Void,
+    ) {
 
         self.selectedOption = selectedOption
         self.availableOptions = availableOptions
@@ -39,25 +40,30 @@ class NetworkInterfacePreferenceViewController: OWSTableViewController2 {
                         self?.updateHandler(option)
                         self?.navigationController?.popViewController(animated: true)
                     },
-                    accessoryType: option == selectedOption ? .checkmark : .none)
-            })
+                    accessoryType: option == selectedOption ? .checkmark : .none,
+                )
+            }),
         ])
     }
 
     static func name(forInterfaceSet interfaceSet: NetworkInterfaceSet) -> String? {
         switch interfaceSet {
         case .none: return OWSLocalizedString(
-            "NETWORK_INTERFACE_SET_NEVER",
-            comment: "String representing the 'never' condition of having no supported network interfaces")
+                "NETWORK_INTERFACE_SET_NEVER",
+                comment: "String representing the 'never' condition of having no supported network interfaces",
+            )
         case .cellular: return OWSLocalizedString(
-            "NETWORK_INTERFACE_SET_CELLULAR",
-            comment: "String representing only the cellular interface")
+                "NETWORK_INTERFACE_SET_CELLULAR",
+                comment: "String representing only the cellular interface",
+            )
         case .wifi: return OWSLocalizedString(
-            "NETWORK_INTERFACE_SET_WIFI",
-            comment: "String representing only the wifi interface")
+                "NETWORK_INTERFACE_SET_WIFI",
+                comment: "String representing only the wifi interface",
+            )
         case .wifiAndCellular: return OWSLocalizedString(
-            "NETWORK_INTERFACE_SET_WIFI_CELLULAR",
-            comment: "String representing both wifi and cellular interfaces")
+                "NETWORK_INTERFACE_SET_WIFI_CELLULAR",
+                comment: "String representing both wifi and cellular interfaces",
+            )
         default: return nil
         }
     }

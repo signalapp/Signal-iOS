@@ -40,7 +40,7 @@ class SendPaymentHelper {
     private weak var delegate: SendPaymentHelperDelegate?
 
     private var _currentCurrencyConversion: CurrencyConversionInfo?
-    public var currentCurrencyConversion: CurrencyConversionInfo? {
+    var currentCurrencyConversion: CurrencyConversionInfo? {
         get {
             AssertIsOnMainThread()
             return _currentCurrencyConversion
@@ -67,42 +67,46 @@ class SendPaymentHelper {
             self,
             selector: #selector(currentPaymentBalanceDidChange),
             name: PaymentsImpl.currentPaymentBalanceDidChange,
-            object: nil
+            object: nil,
         )
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(paymentConversionRatesDidChange),
             name: PaymentsCurrenciesImpl.paymentConversionRatesDidChange,
-            object: nil
+            object: nil,
         )
     }
 
     @MainActor
-    public func refreshObservedValues() {
+    func refreshObservedValues() {
         updateCurrentCurrencyConversion()
 
         SUIEnvironment.shared.paymentsSwiftRef.updateCurrentPaymentBalance()
         SSKEnvironment.shared.paymentsCurrenciesRef.updateConversionRates()
     }
 
-    public static let minTopVSpacing: CGFloat = 16
+    static let minTopVSpacing: CGFloat = 16
 
-    public static let vSpacingAboveBalance: CGFloat = 20
+    static let vSpacingAboveBalance: CGFloat = 20
 
-    public static func buildBottomButton(title: String,
-                                         target: Any,
-                                         selector: Selector) -> UIView {
-        let button = OWSFlatButton.insetButton(title: title,
-                                          font: bottomButtonFont,
-                                          titleColor: .white,
-                                          backgroundColor: .ows_accentBlue,
-                                          target: target,
-                                          selector: selector)
+    static func buildBottomButton(
+        title: String,
+        target: Any,
+        selector: Selector,
+    ) -> UIView {
+        let button = OWSFlatButton.insetButton(
+            title: title,
+            font: bottomButtonFont,
+            titleColor: .white,
+            backgroundColor: .ows_accentBlue,
+            target: target,
+            selector: selector,
+        )
         button.autoSetHeightUsingFont(extraVerticalInsets: 6)
         return button
     }
 
-    public static func buildBottomButtonStack(_ subviews: [UIView]) -> UIView {
+    static func buildBottomButtonStack(_ subviews: [UIView]) -> UIView {
         let buttonStack = UIStackView(arrangedSubviews: subviews)
         buttonStack.axis = .horizontal
         buttonStack.spacing = 20
@@ -112,21 +116,23 @@ class SendPaymentHelper {
         return buttonStack
     }
 
-    public static let progressIndicatorSize: CGFloat = 48
+    static let progressIndicatorSize: CGFloat = 48
 
     // To avoid layout jitter, all of the "bottom controls"
     // (buttons, progress indicator, error indicator) occupy
     // the same exact height.
-    public static var bottomControlHeight: CGFloat {
-        max(progressIndicatorSize,
-            OWSFlatButton.heightForFont(bottomButtonFont) + 2.0)
+    static var bottomControlHeight: CGFloat {
+        max(
+            progressIndicatorSize,
+            OWSFlatButton.heightForFont(bottomButtonFont) + 2.0,
+        )
     }
 
-    public static var bottomButtonFont: UIFont {
+    static var bottomButtonFont: UIFont {
         UIFont.dynamicTypeHeadline
     }
 
-    public static func buildBottomLabel() -> UILabel {
+    static func buildBottomLabel() -> UILabel {
         let label = UILabel()
         label.font = .dynamicTypeSubheadlineClamped
         label.textColor = Theme.secondaryTextAndIconColor
@@ -134,7 +140,7 @@ class SendPaymentHelper {
         return label
     }
 
-    public func updateBalanceLabel(_ balanceLabel: UILabel) {
+    func updateBalanceLabel(_ balanceLabel: UILabel) {
         AssertIsOnMainThread()
 
         guard let maximumPaymentAmount = self.maximumPaymentAmount else {
@@ -144,10 +150,14 @@ class SendPaymentHelper {
             return
         }
 
-        let format = OWSLocalizedString("PAYMENTS_NEW_PAYMENT_BALANCE_FORMAT",
-                                       comment: "Format for the 'balance' indicator. Embeds {{ the current payments balance }}.")
-        balanceLabel.text = String(format: format,
-                                   Self.formatMobileCoinAmount(maximumPaymentAmount))
+        let format = OWSLocalizedString(
+            "PAYMENTS_NEW_PAYMENT_BALANCE_FORMAT",
+            comment: "Format for the 'balance' indicator. Embeds {{ the current payments balance }}.",
+        )
+        balanceLabel.text = String(
+            format: format,
+            Self.formatMobileCoinAmount(maximumPaymentAmount),
+        )
     }
 
     private func updateMaximumPaymentAmount() {
@@ -182,8 +192,12 @@ class SendPaymentHelper {
     private func updateCurrentCurrencyConversion() {
         let localCurrencyCode = SSKEnvironment.shared.paymentsCurrenciesRef.currentCurrencyCode
         let currentCurrencyConversion = SSKEnvironment.shared.paymentsCurrenciesRef.conversionInfo(forCurrencyCode: localCurrencyCode)
-        guard !CurrencyConversionInfo.areEqual(currentCurrencyConversion,
-                                               self.currentCurrencyConversion) else {
+        guard
+            !CurrencyConversionInfo.areEqual(
+                currentCurrencyConversion,
+                self.currentCurrencyConversion,
+            )
+        else {
             // Did not change.
             return
         }
@@ -191,18 +205,24 @@ class SendPaymentHelper {
         delegate?.currencyConversionDidChange()
     }
 
-    public static func formatMobileCoinAmount(_ paymentAmount: TSPaymentAmount) -> String {
+    static func formatMobileCoinAmount(_ paymentAmount: TSPaymentAmount) -> String {
         owsAssertDebug(paymentAmount.isValidAmount(canBeEmpty: true))
         owsAssertDebug(paymentAmount.currency == .mobileCoin)
         owsAssertDebug(paymentAmount.picoMob >= 0)
 
-        let formattedAmount = PaymentsFormat.format(paymentAmount: paymentAmount,
-                                                    isShortForm: false)
-        let format = OWSLocalizedString("PAYMENTS_NEW_PAYMENT_CURRENCY_FORMAT",
-                                       comment: "Format for currency amounts in the 'send payment' UI. Embeds {{ %1$@ the current payments balance, %2$@ the currency indicator }}.")
-        return String(format: format,
-                      formattedAmount,
-                      PaymentsConstants.mobileCoinCurrencyIdentifier)
+        let formattedAmount = PaymentsFormat.format(
+            paymentAmount: paymentAmount,
+            isShortForm: false,
+        )
+        let format = OWSLocalizedString(
+            "PAYMENTS_NEW_PAYMENT_CURRENCY_FORMAT",
+            comment: "Format for currency amounts in the 'send payment' UI. Embeds {{ %1$@ the current payments balance, %2$@ the currency indicator }}.",
+        )
+        return String(
+            format: format,
+            formattedAmount,
+            PaymentsConstants.mobileCoinCurrencyIdentifier,
+        )
     }
 }
 

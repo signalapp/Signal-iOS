@@ -71,7 +71,7 @@ public class StoryFinder {
             ORDER BY \(StoryMessage.columnName(.timestamp)) DESC
         """
 
-        if let limit = limit {
+        if let limit {
             sql += " LIMIT \(limit)"
         }
 
@@ -107,7 +107,7 @@ public class StoryFinder {
 
     public static func enumerateUnreadIncomingStories(
         transaction: DBReadTransaction,
-        block: @escaping (StoryMessage, UnsafeMutablePointer<ObjCBool>) -> Void
+        block: @escaping (StoryMessage, UnsafeMutablePointer<ObjCBool>) -> Void,
     ) {
         let sql = """
             SELECT *
@@ -218,7 +218,7 @@ public class StoryFinder {
     public static func enumerateStories(
         fromSender senderAci: Aci,
         tx: DBReadTransaction,
-        block: (StoryMessage, UnsafeMutablePointer<ObjCBool>) -> Void
+        block: (StoryMessage, UnsafeMutablePointer<ObjCBool>) -> Void,
     ) {
         let sql = """
             SELECT *
@@ -377,7 +377,7 @@ extension StoryFinder {
 
     public static func getAssociatedData(
         forContext source: StoryContextAssociatedData.SourceContext,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> StoryContextAssociatedData? {
         switch source {
         case .contact(let contactAci):
@@ -394,7 +394,7 @@ extension StoryFinder {
 
     public static func getAssociatedData(
         forAci contactAci: Aci,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> StoryContextAssociatedData? {
         return getAssociatedData(forContext: .contact(contactAci: contactAci), transaction: tx)
     }
@@ -412,9 +412,9 @@ extension StoryFinder {
     public static func associatedDatasWithRecentlyViewedStories(limit: Int, transaction: DBReadTransaction) -> [StoryContextAssociatedData] {
         do {
             return try StoryContextAssociatedData
-            .order(Column(StoryContextAssociatedData.columnName(.lastViewedTimestamp)).desc)
-            .limit(limit)
-            .fetchAll(transaction.database)
+                .order(Column(StoryContextAssociatedData.columnName(.lastViewedTimestamp)).desc)
+                .limit(limit)
+                .fetchAll(transaction.database)
         } catch {
             owsFailDebug("Failed to query recent threads \(error)")
             return []

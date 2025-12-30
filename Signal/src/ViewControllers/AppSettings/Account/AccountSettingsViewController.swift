@@ -11,7 +11,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
     private let appReadiness: AppReadinessSetter
     private let context: ViewControllerContext
 
-    public init(appReadiness: AppReadinessSetter) {
+    init(appReadiness: AppReadinessSetter) {
         self.appReadiness = appReadiness
         // TODO[ViewContextPiping]
         self.context = ViewControllerContext.shared
@@ -43,15 +43,15 @@ class AccountSettingsViewController: OWSTableViewController2 {
 
             pinSection.headerTitle = OWSLocalizedString(
                 "SETTINGS_PINS_TITLE",
-                comment: "Title for the 'PINs' section of the privacy settings."
+                comment: "Title for the 'PINs' section of the privacy settings.",
             )
             pinSection.footerAttributedTitle = NSAttributedString.composed(of: [
                 OWSLocalizedString(
                     "SETTINGS_PINS_FOOTER",
-                    comment: "Footer for the 'PINs' section of the privacy settings."
+                    comment: "Footer for the 'PINs' section of the privacy settings.",
                 ),
                 " ",
-                CommonStrings.learnMore.styled(with: .link(URL.Support.pin))
+                CommonStrings.learnMore.styled(with: .link(URL.Support.pin)),
             ])
             .styled(with: defaultFooterTextStyle)
 
@@ -59,11 +59,11 @@ class AccountSettingsViewController: OWSTableViewController2 {
                 withText: isPinEnabled
                     ? OWSLocalizedString(
                         "SETTINGS_PINS_ITEM",
-                        comment: "Label for the 'pins' item of the privacy settings when the user does have a pin."
+                        comment: "Label for the 'pins' item of the privacy settings when the user does have a pin.",
                     )
                     : OWSLocalizedString(
                         "SETTINGS_PINS_ITEM_CREATE",
-                        comment: "Label for the 'pins' item of the privacy settings when the user doesn't have a pin."
+                        comment: "Label for the 'pins' item of the privacy settings when the user doesn't have a pin.",
                     ),
                 actionBlock: { [weak self] in
                     if isPinEnabled {
@@ -71,7 +71,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
                     } else {
                         self?.showCreatePin()
                     }
-                }
+                },
             ))
 
             // Reminders toggle.
@@ -79,11 +79,11 @@ class AccountSettingsViewController: OWSTableViewController2 {
                 pinSection.add(.switch(
                     withText: OWSLocalizedString(
                         "SETTINGS_PIN_REMINDER_SWITCH_LABEL",
-                        comment: "Label for the 'pin reminder' switch of the privacy settings."
+                        comment: "Label for the 'pin reminder' switch of the privacy settings.",
                     ),
                     isOn: { SSKEnvironment.shared.ows2FAManagerRef.areRemindersEnabled },
                     target: self,
-                    selector: #selector(arePINRemindersEnabledDidChange)
+                    selector: #selector(arePINRemindersEnabledDidChange),
                 ))
             }
 
@@ -92,17 +92,17 @@ class AccountSettingsViewController: OWSTableViewController2 {
             let regLockSection = OWSTableSection()
             regLockSection.footerTitle = OWSLocalizedString(
                 "SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER",
-                comment: "Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available."
+                comment: "Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available.",
             )
 
             regLockSection.add(.switch(
                 withText: OWSLocalizedString(
                     "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL",
-                    comment: "Label for the 'enable registration lock' switch of the privacy settings."
+                    comment: "Label for the 'enable registration lock' switch of the privacy settings.",
                 ),
                 isOn: { SSKEnvironment.shared.ows2FAManagerRef.isRegistrationLockV2Enabled },
                 target: self,
-                selector: #selector(isRegistrationLockV2EnabledDidChange)
+                selector: #selector(isRegistrationLockV2EnabledDidChange),
             ))
 
             contents.add(regLockSection)
@@ -111,12 +111,12 @@ class AccountSettingsViewController: OWSTableViewController2 {
             advancedSection.add(.disclosureItem(
                 withText: OWSLocalizedString(
                     "SETTINGS_ADVANCED_PIN_SETTINGS",
-                    comment: "Label for the 'advanced pin settings' button."
+                    comment: "Label for the 'advanced pin settings' button.",
                 ),
                 actionBlock: { [weak self] in
                     let vc = AdvancedPinSettingsTableViewController()
                     self?.navigationController?.pushViewController(vc, animated: true)
-                }
+                },
             ))
             contents.add(advancedSection)
         }
@@ -134,16 +134,18 @@ class AccountSettingsViewController: OWSTableViewController2 {
                 accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "reregister"),
                 actionBlock: { [weak self] in
                     self?.reregisterUser()
-                }
+                },
             ))
             accountSection.add(.actionItem(
-                withText: OWSLocalizedString("SETTINGS_DELETE_DATA_BUTTON",
-                                            comment: "Label for 'delete data' button."),
+                withText: OWSLocalizedString(
+                    "SETTINGS_DELETE_DATA_BUTTON",
+                    comment: "Label for 'delete data' button.",
+                ),
                 textColor: .ows_accentRed,
                 accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "delete_data"),
                 actionBlock: { [weak self] in
                     self?.deleteUnregisteredUserData()
-                }
+                },
             ))
         } else if tsRegistrationState.isRegisteredPrimaryDevice {
             switch self.changeNumberState() {
@@ -165,21 +167,21 @@ class AccountSettingsViewController: OWSTableViewController2 {
                         case .allowed(let changeNumberParams):
                             self.changePhoneNumber(changeNumberParams)
                         }
-                    }
+                    },
                 ))
             }
             accountSection.add(.actionItem(
                 withText: OWSLocalizedString(
                     "SETTINGS_ACCOUNT_DATA_REPORT_BUTTON",
-                    comment: "Label for button in settings to get your account data report"
+                    comment: "Label for button in settings to get your account data report",
                 ),
                 accessibilityIdentifier: UIView.accessibilityIdentifier(
                     in: self,
-                    name: "request_account_data_report"
+                    name: "request_account_data_report",
                 ),
                 actionBlock: { [weak self] in
                     self?.requestAccountDataReport()
-                }
+                },
             ))
             accountSection.add(.item(
                 name: OWSLocalizedString("SETTINGS_DELETE_ACCOUNT_BUTTON", comment: ""),
@@ -187,17 +189,19 @@ class AccountSettingsViewController: OWSTableViewController2 {
                 accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "delete_account"),
                 actionBlock: { [weak self] in
                     self?.unregisterUser()
-                }
+                },
             ))
         } else {
             accountSection.add(.actionItem(
-                withText: OWSLocalizedString("SETTINGS_DELETE_DATA_BUTTON",
-                                            comment: "Label for 'delete data' button."),
+                withText: OWSLocalizedString(
+                    "SETTINGS_DELETE_DATA_BUTTON",
+                    comment: "Label for 'delete data' button.",
+                ),
                 textColor: .ows_accentRed,
                 accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "delete_data"),
                 actionBlock: { [weak self] in
                     self?.deleteLinkedData()
-                }
+                },
             ))
         }
 
@@ -293,7 +297,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
                 oldE164: localE164,
                 oldAuthToken: authToken,
                 localAci: registeredState.localIdentifiers.aci,
-                localDeviceId: localDeviceId
+                localDeviceId: localDeviceId,
             ))
         }
     }
@@ -306,7 +310,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
         let coordinator = SSKEnvironment.shared.databaseStorageRef.write {
             return loader.coordinator(
                 forDesiredMode: desiredMode,
-                transaction: $0
+                transaction: $0,
             )
         }
         let navController = RegistrationNavigationController.withCoordinator(coordinator, appReadiness: appReadiness)
@@ -326,18 +330,18 @@ class AccountSettingsViewController: OWSTableViewController2 {
             let pinConfirmationVC = PinConfirmationViewController(
                 title: OWSLocalizedString(
                     "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE",
-                    comment: "The title for the dialog asking user to confirm their PIN to disable reminders"
+                    comment: "The title for the dialog asking user to confirm their PIN to disable reminders",
                 ),
                 explanation: OWSLocalizedString(
                     "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION",
-                    comment: "The explanation for the dialog asking user to confirm their PIN to disable reminders"
+                    comment: "The explanation for the dialog asking user to confirm their PIN to disable reminders",
                 ),
                 actionText: OWSLocalizedString(
                     "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION",
-                    comment: "The button text for the dialog asking user to confirm their PIN to disable reminders"
-                )
+                    comment: "The button text for the dialog asking user to confirm their PIN to disable reminders",
+                ),
             ) { [weak self] confirmed in
-                guard let self = self else { return }
+                guard let self else { return }
                 if confirmed {
                     SSKEnvironment.shared.databaseStorageRef.write { transaction in
                         SSKEnvironment.shared.ows2FAManagerRef.setAreRemindersEnabled(false, transaction: transaction)
@@ -363,23 +367,23 @@ class AccountSettingsViewController: OWSTableViewController2 {
             actionSheet = ActionSheetController(
                 title: OWSLocalizedString(
                     "SETTINGS_REGISTRATION_LOCK_TURN_ON_TITLE",
-                    comment: "Title for the alert confirming that the user wants to turn on registration lock."
+                    comment: "Title for the alert confirming that the user wants to turn on registration lock.",
                 ),
                 message: OWSLocalizedString(
                     "SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE",
-                    comment: "Body for the alert confirming that the user wants to turn on registration lock."
-                )
+                    comment: "Body for the alert confirming that the user wants to turn on registration lock.",
+                ),
             )
 
             let turnOnAction = ActionSheetAction(title: OWSLocalizedString(
                 "SETTINGS_REGISTRATION_LOCK_TURN_ON",
-                comment: "Action to turn on registration lock"
+                comment: "Action to turn on registration lock",
             )) { _ in
                 guard SSKEnvironment.shared.ows2FAManagerRef.isPinEnabledWithSneakyTransaction else {
                     OWSActionSheets.showActionSheet(
                         message: OWSLocalizedString(
                             "SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_PIN_REQUIRED",
-                            comment: "Message shown in an action sheet when attempting to enable registration lock, but the user does not have a PIN."
+                            comment: "Message shown in an action sheet when attempting to enable registration lock, but the user does not have a PIN.",
                         ),
                         fromViewController: self,
                     )
@@ -398,7 +402,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
                         OWSActionSheets.showActionSheet(
                             message: OWSLocalizedString(
                                 "SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_NETWORK",
-                                comment: "Message shown in an action sheet when attempting to enable registration lock, but encountering a network error."
+                                comment: "Message shown in an action sheet when attempting to enable registration lock, but encountering a network error.",
                             ),
                             fromViewController: self,
                         )
@@ -408,7 +412,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
                         OWSActionSheets.showContactSupportActionSheet(
                             message: OWSLocalizedString(
                                 "SETTINGS_REGISTRATION_LOCK_TURN_ON_ERROR_GENERIC",
-                                comment: "Message shown in an action sheet when attempting to enable registration lock, but encountering a generic error."
+                                comment: "Message shown in an action sheet when attempting to enable registration lock, but encountering a generic error.",
                             ),
                             emailFilter: .custom("RegLockEnableFailure"),
                             fromViewController: self,
@@ -422,15 +426,15 @@ class AccountSettingsViewController: OWSTableViewController2 {
         } else {
             actionSheet = ActionSheetController(title: OWSLocalizedString(
                 "SETTINGS_REGISTRATION_LOCK_TURN_OFF_TITLE",
-                comment: "Title for the alert confirming that the user wants to turn off registration lock."
+                comment: "Title for the alert confirming that the user wants to turn off registration lock.",
             ))
 
             let turnOffAction = ActionSheetAction(
                 title: OWSLocalizedString(
                     "SETTINGS_REGISTRATION_LOCK_TURN_OFF",
-                    comment: "Action to turn off registration lock"
+                    comment: "Action to turn off registration lock",
                 ),
-                style: .destructive
+                style: .destructive,
             ) { _ in
                 Task {
                     do {
@@ -443,7 +447,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
                         OWSActionSheets.showActionSheet(
                             message: OWSLocalizedString(
                                 "SETTINGS_REGISTRATION_LOCK_TURN_OFF_ERROR_NETWORK",
-                                comment: "Message shown in an action sheet when attempting to enable registration lock, but encountering a network error."
+                                comment: "Message shown in an action sheet when attempting to enable registration lock, but encountering a network error.",
                             ),
                             fromViewController: self,
                         )
@@ -453,7 +457,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
                         OWSActionSheets.showContactSupportActionSheet(
                             message: OWSLocalizedString(
                                 "SETTINGS_REGISTRATION_LOCK_TURN_OFF_ERROR_GENERIC",
-                                comment: "Message shown in an action sheet when attempting to enable registration lock, but encountering a generic error."
+                                comment: "Message shown in an action sheet when attempting to enable registration lock, but encountering a generic error.",
                             ),
                             emailFilter: .custom("RegLockDisableFailure"),
                             fromViewController: self,
@@ -468,7 +472,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
 
         let cancelAction = ActionSheetAction(
             title: CommonStrings.cancelButton,
-            style: .cancel
+            style: .cancel,
         ) { _ in
             self.updateTableContents()
         }
@@ -481,7 +485,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
 
     private func showChangePin() {
         let vc = PinSetupViewController(mode: .changing) { [weak self] _, _ in
-            guard let self = self else { return }
+            guard let self else { return }
             self.navigationController?.popToViewController(self, animated: true)
         }
         navigationController?.pushViewController(vc, animated: true)
@@ -491,7 +495,7 @@ class AccountSettingsViewController: OWSTableViewController2 {
         let vc = PinSetupViewController(
             mode: .creating,
         ) { [weak self] _, _ in
-            guard let self = self else { return }
+            guard let self else { return }
             self.navigationController?.popToViewController(self, animated: true)
         }
         navigationController?.pushViewController(vc, animated: true)

@@ -30,7 +30,7 @@ public extension UIFont {
     /// - Returns: The system font scaled to the current Dynamic Type setting.
     class func dynamicTypeFont(
         ofStandardSize standardSize: CGFloat,
-        weight: UIFont.Weight = .regular
+        weight: UIFont.Weight = .regular,
     ) -> UIFont {
         return UIFontMetrics.default.scaledFont(for: .systemFont(ofSize: standardSize, weight: weight))
     }
@@ -69,7 +69,7 @@ public extension UIFont {
 
     // We clamp the dynamic type sizes at the max size available
     // without "larger accessibility sizes" enabled.
-    static private var maxPointSizeMap: [UIFont.TextStyle: CGFloat] = [
+    private static var maxPointSizeMap: [UIFont.TextStyle: CGFloat] = [
         .title1: 34,
         .title2: 28,
         .title3: 26,
@@ -80,7 +80,7 @@ public extension UIFont {
         .footnote: 19,
         .caption1: 18,
         .caption2: 17,
-        .largeTitle: 40
+        .largeTitle: 40,
     ]
 
     private class func preferredFontClamped(forTextStyle textStyle: UIFont.TextStyle) -> UIFont {
@@ -106,7 +106,7 @@ public extension UIFont {
         return desiredStyleMetrics.scaledFont(
             for: unscaledFont,
             maximumPointSize: maxPointSize,
-            compatibleWith: .current
+            compatibleWith: .current,
         )
     }
 

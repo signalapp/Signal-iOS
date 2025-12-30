@@ -128,11 +128,11 @@ struct ContactConversationItem {
         address: SignalServiceAddress,
         isBlocked: Bool,
         disappearingMessagesConfig: OWSDisappearingMessagesConfiguration?,
-        comparableName: ComparableDisplayName
+        comparableName: ComparableDisplayName,
     ) {
         owsAssertBeta(
             !isBlocked,
-            "Should never get here with a blocked contact!"
+            "Should never get here with a blocked contact!",
         )
 
         self.address = address
@@ -141,7 +141,7 @@ struct ContactConversationItem {
         self.comparableName = comparableName
     }
 
-    public static func < (lhs: ContactConversationItem, rhs: ContactConversationItem) -> Bool {
+    static func <(lhs: ContactConversationItem, rhs: ContactConversationItem) -> Bool {
         return lhs.comparableName < rhs.comparableName
     }
 }
@@ -194,11 +194,11 @@ public struct GroupConversationItem {
     init(
         groupThreadId: String,
         isBlocked: Bool,
-        disappearingMessagesConfig: OWSDisappearingMessagesConfiguration?
+        disappearingMessagesConfig: OWSDisappearingMessagesConfiguration?,
     ) {
         owsAssertBeta(
             !isBlocked,
-            "Should never get here with a blocked group!"
+            "Should never get here with a blocked group!",
         )
 
         self.groupThreadId = groupThreadId
@@ -240,11 +240,13 @@ extension GroupConversationItem: ConversationItem {
     }
 
     public var image: UIImage? {
-        guard let groupThread = groupThread else { return nil }
+        guard let groupThread else { return nil }
         return SSKEnvironment.shared.databaseStorageRef.read { transaction in
-            SSKEnvironment.shared.avatarBuilderRef.avatarImage(forGroupThread: groupThread,
-                                                               diameterPoints: AvatarBuilder.standardAvatarSizePoints,
-                                                               transaction: transaction)
+            SSKEnvironment.shared.avatarBuilderRef.avatarImage(
+                forGroupThread: groupThread,
+                diameterPoints: AvatarBuilder.standardAvatarSizePoints,
+                transaction: transaction,
+            )
         }
     }
 
@@ -287,11 +289,11 @@ public struct StoryConversationItem {
         excludeHiddenContexts: Bool,
         prioritizeThreadsCreatedAfter: Date? = nil,
         blockingManager: BlockingManager,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> [StoryConversationItem] {
         func sortTime(
             for associatedData: StoryContextAssociatedData?,
-            thread: TSThread
+            thread: TSThread,
         ) -> UInt64 {
             if
                 let thread = thread as? TSGroupThread,
@@ -305,7 +307,7 @@ public struct StoryConversationItem {
 
         let threads = ThreadFinder().storyThreads(
             includeImplicitGroupThreads: includeImplicitGroupThreads,
-            transaction: transaction
+            transaction: transaction,
         )
 
         return buildItems(
@@ -324,7 +326,7 @@ public struct StoryConversationItem {
                     }
                 }
                 return sortTime(for: lhs.1, thread: lhs.0) > sortTime(for: rhs.1, thread: rhs.0)
-            }
+            },
         )
     }
 
@@ -333,12 +335,12 @@ public struct StoryConversationItem {
         excludeHiddenContexts: Bool,
         blockingManager: BlockingManager,
         transaction: DBReadTransaction,
-        sortingBy areInIncreasingOrderFunc: (((TSThread, StoryContextAssociatedData?), (TSThread, StoryContextAssociatedData?)) -> Bool)? = nil
+        sortingBy areInIncreasingOrderFunc: (((TSThread, StoryContextAssociatedData?), (TSThread, StoryContextAssociatedData?)) -> Bool)? = nil,
     ) -> [Self] {
         let outgoingStories = StoryFinder
             .outgoingStories(transaction: transaction)
             .reduce(
-                into: (privateStoryThreadUniqueIDs: Set<String>(), groupIDs: Set<Data>())
+                into: (privateStoryThreadUniqueIDs: Set<String>(), groupIDs: Set<Data>()),
             ) { partialResult, story in
                 if let groupID = story.groupId {
                     partialResult.groupIDs.insert(groupID)
@@ -352,7 +354,7 @@ public struct StoryConversationItem {
                     partialResult.privateStoryThreadUniqueIDs.formUnion(
                         recipientStates.values.lazy
                             .flatMap(\.contexts)
-                            .map(\.uuidString)
+                            .map(\.uuidString),
                     )
                 }
             }
@@ -374,7 +376,7 @@ public struct StoryConversationItem {
             .compactMap { thread, associatedData -> Self? in
                 let isThreadBlocked = blockingManager.isThreadBlocked(
                     thread,
-                    transaction: transaction
+                    transaction: transaction,
                 )
 
                 if isThreadBlocked {
@@ -404,7 +406,7 @@ public struct StoryConversationItem {
                     // There is an unviewed thread
                     storyState = .unviewed
                 case (_, true),
-                    (_, _) where threadHasOutgoingStories:
+                     (_, _) where threadHasOutgoingStories:
                     // There are unexpired or outgoing stories
                     storyState = .viewed
                 default:
@@ -415,7 +417,7 @@ public struct StoryConversationItem {
                 return .from(
                     thread: thread,
                     storyState: storyState,
-                    isBlocked: isThreadBlocked
+                    isBlocked: isThreadBlocked,
                 )
             }
     }
@@ -423,7 +425,7 @@ public struct StoryConversationItem {
     private static func from(
         thread: TSThread,
         storyState: StoryContextViewState?,
-        isBlocked: Bool
+        isBlocked: Bool,
     ) -> Self? {
         let backingItem: StoryConversationItem.ItemType? = {
             if let groupThread = thread as? TSGroupThread {
@@ -433,19 +435,19 @@ public struct StoryConversationItem {
                 return .groupStory(GroupConversationItem(
                     groupThreadId: groupThread.uniqueId,
                     isBlocked: isBlocked,
-                    disappearingMessagesConfig: nil
+                    disappearingMessagesConfig: nil,
                 ))
             } else if let privateStoryThread = thread as? TSPrivateStoryThread {
                 return .privateStory(PrivateStoryConversationItem(
                     storyThreadId: privateStoryThread.uniqueId,
-                    isMyStory: privateStoryThread.isMyStory
+                    isMyStory: privateStoryThread.isMyStory,
                 ))
             } else {
                 owsFailDebug("Unexpected story thread type \(type(of: thread))")
                 return nil
             }
         }()
-        guard let backingItem = backingItem else {
+        guard let backingItem else {
             return nil
         }
         return .init(backingItem: backingItem, storyState: storyState)
@@ -500,7 +502,8 @@ extension StoryConversationItem: ConversationItem {
                 guard StoryManager.hasSetMyStoriesPrivacy(transaction: transaction) else {
                     return OWSLocalizedString(
                         "MY_STORY_PICKER_UNSET_PRIVACY_SUBTITLE",
-                        comment: "Subtitle shown on my story in the conversation picker when sending a story for the first time with unset my story privacy settings.")
+                        comment: "Subtitle shown on my story in the conversation picker when sending a story for the first time with unset my story privacy settings.",
+                    )
                 }
                 switch thread.storyViewMode {
                 case .blockList:
@@ -508,7 +511,8 @@ extension StoryConversationItem: ConversationItem {
                         let format = OWSLocalizedString(
                             "MY_STORY_VIEWERS_ALL_CONNECTIONS_%d",
                             tableName: "PluralAware",
-                            comment: "Format string representing the viewer count for 'My Story' when accessible to all signal connections. Embeds {{ number of viewers }}.")
+                            comment: "Format string representing the viewer count for 'My Story' when accessible to all signal connections. Embeds {{ number of viewers }}.",
+                        )
                         // If we haven't added anybody to the block list, we show the total number
                         // of Signal Connections. That is *not* recipientIds; instead, it's the
                         // thread's recipient addresses, fetched here using the same method we'll
@@ -518,7 +522,8 @@ extension StoryConversationItem: ConversationItem {
                         let format = OWSLocalizedString(
                             "MY_STORY_VIEWERS_ALL_CONNECTIONS_EXCLUDING_%d",
                             tableName: "PluralAware",
-                            comment: "Format string representing the excluded viewer count for 'My Story' when accessible to all signal connections. Embeds {{ number of excluded viewers }}.")
+                            comment: "Format string representing the excluded viewer count for 'My Story' when accessible to all signal connections. Embeds {{ number of excluded viewers }}.",
+                        )
                         // If we have added somebody to the block list, we show how many people are
                         // in the exclusion list instead of the total number of Signal Connections.
                         return String.localizedStringWithFormat(format, recipientIds.count)
@@ -527,7 +532,8 @@ extension StoryConversationItem: ConversationItem {
                     let format = OWSLocalizedString(
                         "MY_STORY_VIEWERS_ONLY_%d",
                         tableName: "PluralAware",
-                        comment: "Format string representing the viewer count for 'My Story' when accessible to only an explicit list of viewers. Embeds {{ number of viewers }}.")
+                        comment: "Format string representing the viewer count for 'My Story' when accessible to only an explicit list of viewers. Embeds {{ number of viewers }}.",
+                    )
                     return String.localizedStringWithFormat(format, recipientIds.count)
                 case .default, .disabled:
                     owsFailDebug("Unexpected view mode for my story")
@@ -537,7 +543,8 @@ extension StoryConversationItem: ConversationItem {
                 let format = OWSLocalizedString(
                     "PRIVATE_STORY_VIEWERS_%d",
                     tableName: "PluralAware",
-                    comment: "Format string representing the viewer count for a custom story list. Embeds {{ number of viewers }}.")
+                    comment: "Format string representing the viewer count for a custom story list. Embeds {{ number of viewers }}.",
+                )
                 return String.localizedStringWithFormat(format, recipientIds.count)
             }
         case .groupStory:
@@ -548,7 +555,8 @@ extension StoryConversationItem: ConversationItem {
             let format = OWSLocalizedString(
                 "GROUP_STORY_VIEWERS_%d",
                 tableName: "PluralAware",
-                comment: "Format string representing the viewer count for a group story list. Embeds {{ number of viewers }}.")
+                comment: "Format string representing the viewer count for a group story list. Embeds {{ number of viewers }}.",
+            )
             return String.localizedStringWithFormat(format, thread.recipientAddresses(with: transaction).count)
         }
     }

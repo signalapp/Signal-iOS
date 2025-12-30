@@ -42,7 +42,7 @@ public class DeepCopies {
     // Instead we create a variety of specializations of
     // DeepCopies.deepCopy().  This is tedious but safer.
     static func deepCopy<K: DeepCopyable, V: DeepCopyable>(_ dictToCopy: [K: [V]]) throws -> [K: [V]] {
-        return Dictionary(uniqueKeysWithValues: try dictToCopy.map({ (key, value) in
+        return Dictionary(uniqueKeysWithValues: try dictToCopy.map({ key, value in
             let keyCopy: K = try DeepCopies.deepCopy(key)
             let valueCopy: [V] = try value.deepCopy()
             return (keyCopy, valueCopy)
@@ -51,7 +51,7 @@ public class DeepCopies {
 
     // NOTE: We do not get compile-time type safety with Any.
     static func deepCopy(_ dictToCopy: [InfoMessageUserInfoKey: Any]) throws -> [InfoMessageUserInfoKey: Any] {
-        return Dictionary(uniqueKeysWithValues: try dictToCopy.map({ (key, value) in
+        return Dictionary(uniqueKeysWithValues: try dictToCopy.map({ key, value in
             let keyCopy: String = try DeepCopies.deepCopy(key.rawValue as String)
             let valueCopy: AnyObject
             if let objectToCopy = NSObject.asDeepCopyable(value) {
@@ -86,7 +86,7 @@ extension Array where Element: DeepCopyable {
 
 extension Dictionary where Key: DeepCopyable, Value: DeepCopyable {
     public func deepCopy() throws -> [Key: Value] {
-        return Dictionary(uniqueKeysWithValues: try self.map({ (key, value) in
+        return Dictionary(uniqueKeysWithValues: try self.map({ key, value in
             let keyCopy: Key = try DeepCopies.deepCopy(key)
             let valueCopy: Value = try DeepCopies.deepCopy(value)
             return (keyCopy, valueCopy)

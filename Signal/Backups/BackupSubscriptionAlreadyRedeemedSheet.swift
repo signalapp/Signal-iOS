@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import SignalUI
 import SignalServiceKit
+import SignalUI
 
 final class BackupSubscriptionAlreadyRedeemedSheet: HeroSheetViewController {
     init() {

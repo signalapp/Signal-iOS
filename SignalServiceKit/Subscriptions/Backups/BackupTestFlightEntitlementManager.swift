@@ -48,7 +48,7 @@ final class BackupTestFlightEntitlementManagerImpl: BackupTestFlightEntitlementM
             attestationService: .shared,
             db: db,
             logger: logger,
-            networkManager: networkManager
+            networkManager: networkManager,
         )
         self.backupPlanManager = backupPlanManager
         self.backupSubscriptionIssueStore = backupSubscriptionIssueStore
@@ -91,10 +91,10 @@ final class BackupTestFlightEntitlementManagerImpl: BackupTestFlightEntitlementM
             maxAttempts: 5,
             isRetryable: { error in
                 return error.isNetworkFailureOrTimeout
-                || error.is5xxServiceResponse
-                // TODO: Back off for the amount specified in the retry-after
-                || error.httpStatusCode == 429
-            }
+                    || error.is5xxServiceResponse
+                    // TODO: Back off for the amount specified in the retry-after
+                    || error.httpStatusCode == 429
+            },
         ) {
             try await appAttestManager.performAttestationAction(.acquireBackupEntitlement)
         }
@@ -118,13 +118,13 @@ final class BackupTestFlightEntitlementManagerImpl: BackupTestFlightEntitlementM
             Bool,
             Bool,
             BackupPlan,
-            Date?
+            Date?,
         ) = db.read { tx in
             (
                 tsAccountManager.registrationState(tx: tx).isRegisteredPrimaryDevice,
                 BuildFlags.Backups.avoidStoreKitForTesters,
                 backupPlanManager.backupPlan(tx: tx),
-                kvStore.getDate(StoreKeys.lastEntitlementRenewalDate, transaction: tx)
+                kvStore.getDate(StoreKeys.lastEntitlementRenewalDate, transaction: tx),
             )
         }
 
@@ -143,7 +143,7 @@ final class BackupTestFlightEntitlementManagerImpl: BackupTestFlightEntitlementM
 
         guard isCurrentlyTesterBuild else {
             try await downgradeForNoLongerTestFlight(
-                hadOptimizeLocalStorage: optimizeLocalStorage
+                hadOptimizeLocalStorage: optimizeLocalStorage,
             )
             return
         }
@@ -161,7 +161,7 @@ final class BackupTestFlightEntitlementManagerImpl: BackupTestFlightEntitlementM
             kvStore.setDate(
                 dateProvider(),
                 key: StoreKeys.lastEntitlementRenewalDate,
-                transaction: tx
+                transaction: tx,
             )
         }
     }
@@ -265,7 +265,7 @@ private struct AppAttestManager {
         attestationService: DCAppAttestService,
         db: DB,
         logger: PrefixedLogger,
-        networkManager: NetworkManager
+        networkManager: NetworkManager,
     ) {
         self.attestationService = attestationService
         self.db = db
@@ -315,13 +315,13 @@ private struct AppAttestManager {
         do {
             let requestAssertion = try await generateAssertionForAction(
                 action,
-                attestedKey: attestedKey
+                attestedKey: attestedKey,
             )
 
             logger.info("Performing attestation action with assertion.")
             try await _performAttestationAction(
                 keyId: attestedKey.identifier,
-                requestAssertion: requestAssertion
+                requestAssertion: requestAssertion,
             )
         } catch AppAttestError.failedToGenerateAssertionWithPreviouslyAttestedKey {
             // If we failed to generate an assertion with a previously-attested
@@ -343,7 +343,7 @@ private struct AppAttestManager {
         let response = try await networkManager.asyncRequest(.performAttestationAction(
             keyIdData: keyIdData,
             assertedRequestData: requestAssertion.requestData,
-            assertion: requestAssertion.assertion
+            assertion: requestAssertion.assertion,
         ))
 
         switch response.responseStatusCode {
@@ -400,7 +400,7 @@ private struct AppAttestManager {
         do {
             keyAttestation = try await attestationService.attestKey(
                 newKeyId,
-                clientDataHash: Data(keyAttestationChallengeHash)
+                clientDataHash: Data(keyAttestationChallengeHash),
             )
         } catch let dcError as DCError {
             throw parseDCError(dcError)
@@ -414,7 +414,7 @@ private struct AppAttestManager {
         // to generate assertions for future requests.
         try await _attestAndRegisterKey(
             keyId: newKeyId,
-            keyAttestation: keyAttestation
+            keyAttestation: keyAttestation,
         )
 
         // Hurray! The key is valid, and reigstered with Signal servers. We can
@@ -443,7 +443,7 @@ private struct AppAttestManager {
         do {
             responseBody = try JSONDecoder().decode(
                 AttestationChallengeResponseBody.self,
-                from: responseBodyData
+                from: responseBodyData,
             )
         } catch {
             throw OWSAssertionError("Failed to decode response body fetching attestation challenge! \(error)", logger: logger)
@@ -465,7 +465,7 @@ private struct AppAttestManager {
 
         let response = try await networkManager.asyncRequest(.attestAndRegisterKey(
             keyIdData: keyIdData,
-            keyAttestation: keyAttestation
+            keyAttestation: keyAttestation,
         ))
 
         switch response.responseStatusCode {
@@ -493,7 +493,7 @@ private struct AppAttestManager {
         }
         let assertableAction = AssertableAttestationAction(
             action: action.rawValue,
-            challenge: try await getRequestAssertionChallenge(action: action)
+            challenge: try await getRequestAssertionChallenge(action: action),
         )
 
         let requestData: Data
@@ -507,7 +507,7 @@ private struct AppAttestManager {
         do {
             assertion = try await attestationService.generateAssertion(
                 attestedKey.identifier,
-                clientDataHash: Data(SHA256.hash(data: requestData))
+                clientDataHash: Data(SHA256.hash(data: requestData)),
             )
         } catch let dcError as DCError {
             switch dcError.code {
@@ -535,7 +535,7 @@ private struct AppAttestManager {
 
         return RequestAssertion(
             requestData: requestData,
-            assertion: assertion
+            assertion: assertion,
         )
     }
 
@@ -545,7 +545,7 @@ private struct AppAttestManager {
         action: AttestationAction,
     ) async throws -> String {
         let response = try await networkManager.asyncRequest(.getAssertionChallenge(
-            action: action
+            action: action,
         ))
 
         guard
@@ -562,7 +562,7 @@ private struct AppAttestManager {
         do {
             responseBody = try JSONDecoder().decode(
                 AssertionChallengeResponseBody.self,
-                from: responseBodyData
+                from: responseBodyData,
             )
         } catch {
             throw OWSAssertionError("Failed to decode response body fetching assertion challenge! \(error)", logger: logger)
@@ -621,7 +621,7 @@ private extension TSRequest {
         var request = TSRequest(
             url: URL(string: "\(urlPath)?keyId=\(keyIdData.asBase64Url)&request=\(assertedRequestData.asBase64Url)")!,
             method: "POST",
-            body: .data(assertion)
+            body: .data(assertion),
         )
         request.applyRedactionStrategy(.redactURL(replacement: "\(urlPath)?[REDACTED]"))
         request.headers["Content-Type"] = "application/octet-stream"
@@ -632,7 +632,7 @@ private extension TSRequest {
         return TSRequest(
             url: URL(string: "v1/devicecheck/attest")!,
             method: "GET",
-            parameters: nil
+            parameters: nil,
         )
     }
 
@@ -644,7 +644,7 @@ private extension TSRequest {
         var request = TSRequest(
             url: URL(string: "\(urlPath)?keyId=\(keyIdData.asBase64Url)")!,
             method: "PUT",
-            body: .data(keyAttestation)
+            body: .data(keyAttestation),
         )
         request.applyRedactionStrategy(.redactURL(replacement: "\(urlPath)?[REDACTED]"))
         request.headers["Content-Type"] = "application/octet-stream"

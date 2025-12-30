@@ -29,7 +29,7 @@ public class OrphanedBackupAttachmentQueueRunnerImpl: OrphanedBackupAttachmentQu
         db: any DB,
         listMediaManager: BackupListMediaManager,
         orphanedBackupAttachmentStore: OrphanedBackupAttachmentStore,
-        tsAccountManager: TSAccountManager
+        tsAccountManager: TSAccountManager,
     ) {
         self.appReadiness = appReadiness
         self.tsAccountManager = tsAccountManager
@@ -41,13 +41,13 @@ public class OrphanedBackupAttachmentQueueRunnerImpl: OrphanedBackupAttachmentQu
             db: db,
             listMediaManager: listMediaManager,
             orphanedBackupAttachmentStore: orphanedBackupAttachmentStore,
-            tsAccountManager: tsAccountManager
+            tsAccountManager: tsAccountManager,
         )
         self.taskQueue = TaskQueueLoader(
             maxConcurrentTasks: 8,
             dateProvider: dateProvider,
             db: db,
-            runner: taskRunner
+            runner: taskRunner,
         )
     }
 
@@ -83,7 +83,7 @@ public class OrphanedBackupAttachmentQueueRunnerImpl: OrphanedBackupAttachmentQu
             db: any DB,
             listMediaManager: BackupListMediaManager,
             orphanedBackupAttachmentStore: OrphanedBackupAttachmentStore,
-            tsAccountManager: TSAccountManager
+            tsAccountManager: TSAccountManager,
         ) {
             self.accountKeyStore = accountKeyStore
             self.attachmentStore = attachmentStore
@@ -126,12 +126,12 @@ public class OrphanedBackupAttachmentQueueRunnerImpl: OrphanedBackupAttachmentQu
 
             switch registrationState {
             case
-                    .unregistered,
-                    .reregistering,
-                    .deregistered,
-                    .transferringIncoming,
-                    .transferringPrimaryOutgoing,
-                    .transferred:
+                .unregistered,
+                .reregistering,
+                .deregistered,
+                .transferringIncoming,
+                .transferringPrimaryOutgoing,
+                .transferred:
                 // These states are potentially temporary. Return a retryable error
                 // but cancel the task.
                 Logger.info("Stopping when unregistered")
@@ -139,10 +139,10 @@ public class OrphanedBackupAttachmentQueueRunnerImpl: OrphanedBackupAttachmentQu
                 try? await loader.stop(reason: error)
                 return .retryableError(error)
             case
-                    .relinking,
-                    .delinked,
-                    .transferringLinkedOutgoing,
-                    .provisioned:
+                .relinking,
+                .delinked,
+                .transferringLinkedOutgoing,
+                .provisioned:
                 // Linked devices never issue these delete requests.
                 // Cancel the task so we never run it again.
                 return .cancelled
@@ -200,7 +200,7 @@ public class OrphanedBackupAttachmentQueueRunnerImpl: OrphanedBackupAttachmentQu
                 backupAuth = try await backupRequestManager.fetchBackupServiceAuth(
                     for: mediaRootBackupKey,
                     localAci: localAci,
-                    auth: .implicit()
+                    auth: .implicit(),
                 )
             } catch let error {
                 try? await loader.stop(reason: error)
@@ -211,9 +211,9 @@ public class OrphanedBackupAttachmentQueueRunnerImpl: OrphanedBackupAttachmentQu
                 try await backupRequestManager.deleteMediaObjects(
                     objects: [BackupArchive.Request.DeleteMediaTarget(
                         cdn: record.record.cdnNumber,
-                        mediaId: mediaId
+                        mediaId: mediaId,
                     )],
-                    auth: backupAuth
+                    auth: backupAuth,
                 )
             } catch let error {
                 if error.isNetworkFailureOrTimeout {

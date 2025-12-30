@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import SignalServiceKit
 import SignalUI
-import LibSignalClient
 
 // Conversation view loads have been decomposed into a series
 // of discrete phases. There's a bunch of common state used
@@ -32,7 +32,7 @@ struct CVLoadContext: CVItemBuildingContext {
         messageLoader: MessageLoader,
         prevRenderState: CVRenderState,
         localAci: Aci,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) {
         self.loadRequest = loadRequest
         self.threadViewModel = threadViewModel

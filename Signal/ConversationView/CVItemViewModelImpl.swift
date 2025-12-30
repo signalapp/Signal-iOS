@@ -241,7 +241,7 @@ extension CVItemViewModelImpl {
 
     func saveMediaAction() {
         AttachmentSaving.saveToPhotoLibrary(
-            referencedAttachmentStreams: saveableAttachments
+            referencedAttachmentStreams: saveableAttachments,
         )
     }
 
@@ -303,7 +303,7 @@ public extension CVComponentState {
         guard let bodyMedia = self.bodyMedia else {
             return []
         }
-        return bodyMedia.items.compactMap { (item) -> ReferencedAttachmentStream? in
+        return bodyMedia.items.compactMap { item -> ReferencedAttachmentStream? in
             guard let stream = item.attachmentStream else {
                 return nil
             }

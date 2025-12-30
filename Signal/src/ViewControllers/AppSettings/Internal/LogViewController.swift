@@ -14,7 +14,7 @@ public class LogPickerViewController: OWSTableViewController2 {
         super.init()
     }
 
-    public override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
         updateTableContents()
     }
@@ -30,15 +30,15 @@ public class LogPickerViewController: OWSTableViewController2 {
     private func buildPreferenceSection() -> OWSTableSection {
         let chooChoo = OWSTableItem.switch(
             withText: "🚂 Play Sound When Errors Occur",
-            isOn: { Preferences.isAudibleErrorLoggingEnabled},
+            isOn: { Preferences.isAudibleErrorLoggingEnabled },
             target: self,
-            selector: #selector(didToggleAudiblePreference(_:))
+            selector: #selector(didToggleAudiblePreference(_:)),
         )
         let failDebug = OWSTableItem.switch(
             withText: "💥 Crash When owsFailDebugs Occur",
             isOn: { Preferences.isFailDebugEnabled },
             target: self,
-            selector: #selector(didToggleFailDebug(_:))
+            selector: #selector(didToggleFailDebug(_:)),
         )
         return OWSTableSection(title: "Preferences", items: [chooChoo, failDebug])
     }
@@ -58,7 +58,7 @@ public class LogPickerViewController: OWSTableViewController2 {
         }
 
         let logUrls: [URL] = directoryEnumerator.compactMap { $0 as? URL }
-        let sortedUrls = logUrls.sorted { (a, b) -> Bool in
+        let sortedUrls = logUrls.sorted { a, b -> Bool in
             return a.lastPathComponent > b.lastPathComponent
         }
 
@@ -76,7 +76,7 @@ public class LogPickerViewController: OWSTableViewController2 {
                     return cell
                 },
                 actionBlock: { [weak self] in
-                    guard let self = self else { return }
+                    guard let self else { return }
                     let logVC = LogViewController(logUrl: logUrl)
 
                     guard let navigationController = self.navigationController else {
@@ -85,7 +85,7 @@ public class LogPickerViewController: OWSTableViewController2 {
                     }
 
                     navigationController.pushViewController(logVC, animated: true)
-                }
+                },
             )
         }
 
@@ -130,7 +130,7 @@ public class LogViewController: UIViewController {
         super.viewDidLoad()
         navigationItem.rightBarButtonItems = [
             UIBarButtonItem(image: Theme.iconImage(.buttonShare), style: .plain, target: self, action: #selector(didTapShare(_:))),
-            UIBarButtonItem(image: Theme.iconImage(.buttonDelete), style: .plain, target: self, action: #selector(didTapTrash(_:)))
+            UIBarButtonItem(image: Theme.iconImage(.buttonDelete), style: .plain, target: self, action: #selector(didTapTrash(_:))),
         ]
     }
 

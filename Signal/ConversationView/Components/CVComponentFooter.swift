@@ -45,29 +45,37 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
             let expirationTimestamp: UInt64
             let expiresInSeconds: UInt32
         }
+
         let expiration: Expiration?
 
     }
+
     private let footerState: State
 
     public var timestampText: String {
         footerState.timestampText
     }
+
     public var footerAccessibilityLabel: String? {
         footerState.accessibilityLabel
     }
+
     private var statusIndicator: StatusIndicator? {
         footerState.statusIndicator
     }
+
     public var tapForMoreState: TapForMoreState {
         footerState.tapForMoreState
     }
+
     public var displayEditedLabel: Bool {
         footerState.displayEditedLabel
     }
+
     private var expiration: State.Expiration? {
         footerState.expiration
     }
+
     private var isPinnedMessage: Bool {
         footerState.isPinnedMessage
     }
@@ -75,10 +83,12 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
     let isOverlayingMedia: Bool
     private let isOutsideBubble: Bool
 
-    init(itemModel: CVItemModel,
-         footerState: State,
-         isOverlayingMedia: Bool,
-         isOutsideBubble: Bool) {
+    init(
+        itemModel: CVItemModel,
+        footerState: State,
+        isOverlayingMedia: Bool,
+        isOutsideBubble: Bool,
+    ) {
 
         self.footerState = footerState
         self.isOverlayingMedia = isOverlayingMedia
@@ -91,7 +101,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         CVComponentViewFooter()
     }
 
-    public override func updateScrollingContent(componentView: CVComponentView) {
+    override public func updateScrollingContent(componentView: CVComponentView) {
         super.updateScrollingContent(componentView: componentView)
 
         guard let componentView = componentView as? CVComponentViewFooter else {
@@ -105,9 +115,11 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
     public static let bodyMediaQuotedReplyVSpacing: CGFloat = 6
     public static let quotedReplyTopMargin: CGFloat = 6
 
-    public func configureForRendering(componentView componentViewParam: CVComponentView,
-                                      cellMeasurement: CVCellMeasurement,
-                                      componentDelegate: CVComponentDelegate) {
+    public func configureForRendering(
+        componentView componentViewParam: CVComponentView,
+        cellMeasurement: CVCellMeasurement,
+        componentDelegate: CVComponentDelegate,
+    ) {
         guard let componentView = componentViewParam as? CVComponentViewFooter else {
             owsFailDebug("Unexpected componentView.")
             componentViewParam.reset()
@@ -122,11 +134,13 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         var outerViews = [UIView]()
         var innerViews = [UIView]()
 
-        if isBorderless && conversationStyle.hasWallpaper {
+        if isBorderless, conversationStyle.hasWallpaper {
             let chatColorView = componentView.chatColorView
-            chatColorView.configure(value: conversationStyle.bubbleChatColor(isIncoming: isIncoming),
-                                    referenceView: componentDelegate.view,
-                                    hasPillRounding: true)
+            chatColorView.configure(
+                value: conversationStyle.bubbleChatColor(isIncoming: isIncoming),
+                referenceView: componentDelegate.view,
+                hasPillRounding: true,
+            )
             innerStack.addSubviewToFillSuperviewEdges(chatColorView)
         }
 
@@ -142,12 +156,12 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
 
         let timestampLabel = componentView.timestampLabel
         let textColor: UIColor
-        if wasRemotelyDeleted && !conversationStyle.hasWallpaper {
+        if wasRemotelyDeleted, !conversationStyle.hasWallpaper {
             owsAssertDebug(!isOverlayingMedia)
             textColor = Theme.primaryTextColor
         } else if isOverlayingMedia {
             textColor = .ows_white
-        } else if isOutsideBubble && !conversationStyle.hasWallpaper {
+        } else if isOutsideBubble, !conversationStyle.hasWallpaper {
             textColor = Theme.secondaryTextAndIconColor
         } else {
             textColor = conversationStyle.bubbleSecondaryTextColor(isIncoming: isIncoming)
@@ -168,12 +182,12 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         timestampLabelConfig(textColor: textColor).applyForRendering(label: timestampLabel)
         innerViews.append(timestampLabel)
 
-        if let expiration = expiration {
+        if let expiration {
             let messageTimerView = componentView.messageTimerView
             messageTimerView.configure(
                 expirationTimestampMs: expiration.expirationTimestamp,
                 disappearingMessageInterval: expiration.expiresInSeconds,
-                tintColor: textColor
+                tintColor: textColor,
             )
             innerViews.append(messageTimerView)
         }
@@ -200,14 +214,18 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
             }
         }
 
-        innerStack.configure(config: innerStackConfig,
-                             cellMeasurement: cellMeasurement,
-                             measurementKey: Self.measurementKey_innerStack,
-                             subviews: innerViews)
-        outerStack.configure(config: outerStackConfig,
-                             cellMeasurement: cellMeasurement,
-                             measurementKey: Self.measurementKey_outerStack,
-                             subviews: outerViews)
+        innerStack.configure(
+            config: innerStackConfig,
+            cellMeasurement: cellMeasurement,
+            measurementKey: Self.measurementKey_innerStack,
+            subviews: innerViews,
+        )
+        outerStack.configure(
+            config: outerStackConfig,
+            cellMeasurement: cellMeasurement,
+            measurementKey: Self.measurementKey_outerStack,
+            subviews: outerViews,
+        )
     }
 
     static func outgoingMessageStatus(interaction: TSInteraction, hasBodyAttachments: Bool) -> MessageReceiptStatus? {
@@ -220,7 +238,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
     public static func timestampText(
         forInteraction interaction: TSInteraction,
         shouldUseLongFormat: Bool,
-        hasBodyAttachments: Bool
+        hasBodyAttachments: Bool,
     ) -> String {
 
         let status = Self.outgoingMessageStatus(interaction: interaction, hasBodyAttachments: hasBodyAttachments)
@@ -234,19 +252,27 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         }()
 
         if isPendingOutgoingMessage {
-            return OWSLocalizedString("MESSAGE_STATUS_PENDING",
-                                     comment: "Label indicating that a message send was paused.")
+            return OWSLocalizedString(
+                "MESSAGE_STATUS_PENDING",
+                comment: "Label indicating that a message send was paused.",
+            )
         } else if isFailedOutgoingMessage {
             if wasSentToAnyRecipient {
-                return OWSLocalizedString("MESSAGE_STATUS_PARTIALLY_SENT",
-                                         comment: "Label indicating that a message was only sent to some recipients.")
+                return OWSLocalizedString(
+                    "MESSAGE_STATUS_PARTIALLY_SENT",
+                    comment: "Label indicating that a message was only sent to some recipients.",
+                )
             } else {
-                return OWSLocalizedString("MESSAGE_STATUS_SEND_FAILED",
-                                         comment: "Label indicating that a message failed to send.")
+                return OWSLocalizedString(
+                    "MESSAGE_STATUS_SEND_FAILED",
+                    comment: "Label indicating that a message failed to send.",
+                )
             }
         } else {
-            return DateUtil.formatMessageTimestampForCVC(interaction.timestamp,
-                                                         shouldUseLongFormat: shouldUseLongFormat)
+            return DateUtil.formatMessageTimestampForCVC(
+                interaction.timestamp,
+                shouldUseLongFormat: shouldUseLongFormat,
+            )
         }
     }
 
@@ -254,20 +280,21 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         interaction: TSInteraction,
         paymentNotification: TSPaymentNotification?,
         tapForMoreState: TapForMoreState,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> State {
 
         guard
             let receiptData = paymentNotification?.mcReceiptData,
             let paymentModel = PaymentFinder.paymentModels(
                 forMcReceiptData: receiptData,
-                transaction: transaction).first
+                transaction: transaction,
+            ).first
         else {
             let hasBodyAttachments = (interaction as? TSMessage)?.hasBodyAttachments(transaction: transaction) ?? false
             let timestampText = Self.timestampText(
                 forInteraction: interaction,
                 shouldUseLongFormat: false,
-                hasBodyAttachments: hasBodyAttachments
+                hasBodyAttachments: hasBodyAttachments,
             )
 
             return State(
@@ -277,14 +304,14 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
                 tapForMoreState: tapForMoreState,
                 displayEditedLabel: false,
                 isPinnedMessage: false,
-                expiration: nil
+                expiration: nil,
             )
         }
 
         let timestampText = Self.paymentMessageTimestampText(
             forInteraction: interaction,
             paymentState: paymentModel.paymentState,
-            shouldUseLongFormat: false
+            shouldUseLongFormat: false,
         )
 
         var statusIndicator: StatusIndicator?
@@ -293,11 +320,11 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
 
             let messageStatus = MessageRecipientStatusUtils.recipientStatus(
                 outgoingMessage: outgoingMessage,
-                paymentModel: paymentModel
+                paymentModel: paymentModel,
             )
             accessibilityLabel = MessageRecipientStatusUtils.receiptMessage(
                 outgoingMessage: outgoingMessage,
-                paymentModel: paymentModel
+                paymentModel: paymentModel,
             )
 
             switch messageStatus {
@@ -305,31 +332,31 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
                 statusIndicator = StatusIndicator(
                     imageName: "message_status_sending",
                     imageSize: .square(12),
-                    isAnimated: true
+                    isAnimated: true,
                 )
             case .pending:
                 statusIndicator = StatusIndicator(
                     imageName: "message_status_sending",
                     imageSize: .square(12),
-                    isAnimated: false
+                    isAnimated: false,
                 )
             case .sent, .skipped:
                 statusIndicator = StatusIndicator(
                     imageName: "message_status_sent",
                     imageSize: .square(12),
-                    isAnimated: false
+                    isAnimated: false,
                 )
             case .delivered:
                 statusIndicator = StatusIndicator(
                     imageName: "message_status_delivered",
                     imageSize: .init(width: 18, height: 12),
-                    isAnimated: false
+                    isAnimated: false,
                 )
             case .read, .viewed:
                 statusIndicator = StatusIndicator(
                     imageName: "message_status_read",
                     imageSize: .init(width: 18, height: 12),
-                    isAnimated: false
+                    isAnimated: false,
                 )
             case .failed:
                 // No status indicator icon.
@@ -342,11 +369,13 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         }
 
         var expiration: State.Expiration?
-        if let message = interaction as? TSMessage,
-           message.hasPerConversationExpiration {
+        if
+            let message = interaction as? TSMessage,
+            message.hasPerConversationExpiration
+        {
             expiration = State.Expiration(
                 expirationTimestamp: message.expiresAt,
-                expiresInSeconds: message.expiresInSeconds
+                expiresInSeconds: message.expiresInSeconds,
             )
         }
 
@@ -357,31 +386,31 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
             tapForMoreState: tapForMoreState,
             displayEditedLabel: false,
             isPinnedMessage: false,
-            expiration: expiration
+            expiration: expiration,
         )
     }
 
     public static func paymentMessageTimestampText(
         forInteraction interaction: TSInteraction,
         paymentState: TSPaymentState,
-        shouldUseLongFormat: Bool
+        shouldUseLongFormat: Bool,
     ) -> String {
 
         switch paymentState.messageReceiptStatus {
         case .pending:
             return OWSLocalizedString(
                 "MESSAGE_STATUS_PENDING",
-                comment: "Label indicating that a message send was paused."
+                comment: "Label indicating that a message send was paused.",
             )
         case .failed:
             return OWSLocalizedString(
                 "MESSAGE_STATUS_SEND_FAILED",
-                comment: "Label indicating that a message failed to send."
+                comment: "Label indicating that a message failed to send.",
             )
         default:
             return DateUtil.formatMessageTimestampForCVC(
                 interaction.timestamp,
-                shouldUseLongFormat: shouldUseLongFormat
+                shouldUseLongFormat: shouldUseLongFormat,
             )
         }
     }
@@ -390,14 +419,14 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         interaction: TSInteraction,
         tapForMoreState: TapForMoreState,
         isPinnedMessage: Bool,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> State {
 
         let hasBodyAttachments = (interaction as? TSMessage)?.hasBodyAttachments(transaction: transaction) ?? false
         let timestampText = Self.timestampText(
             forInteraction: interaction,
             shouldUseLongFormat: false,
-            hasBodyAttachments: hasBodyAttachments
+            hasBodyAttachments: hasBodyAttachments,
         )
 
         var statusIndicator: StatusIndicator?
@@ -405,31 +434,41 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         if let outgoingMessage = interaction as? TSOutgoingMessage {
             let (messageStatus, label) = MessageRecipientStatusUtils.receiptStatusAndMessage(
                 outgoingMessage: outgoingMessage,
-                transaction: transaction
+                transaction: transaction,
             )
             accessibilityLabel = label
 
             switch messageStatus {
             case .uploading, .sending:
-                statusIndicator = StatusIndicator(imageName: "message_status_sending",
-                                                  imageSize: .square(12),
-                                                  isAnimated: true)
+                statusIndicator = StatusIndicator(
+                    imageName: "message_status_sending",
+                    imageSize: .square(12),
+                    isAnimated: true,
+                )
             case .pending:
-                statusIndicator = StatusIndicator(imageName: "message_status_sending",
-                                                  imageSize: .square(12),
-                                                  isAnimated: false)
+                statusIndicator = StatusIndicator(
+                    imageName: "message_status_sending",
+                    imageSize: .square(12),
+                    isAnimated: false,
+                )
             case .sent, .skipped:
-                statusIndicator = StatusIndicator(imageName: "message_status_sent",
-                                                  imageSize: .square(12),
-                                                  isAnimated: false)
+                statusIndicator = StatusIndicator(
+                    imageName: "message_status_sent",
+                    imageSize: .square(12),
+                    isAnimated: false,
+                )
             case .delivered:
-                statusIndicator = StatusIndicator(imageName: "message_status_delivered",
-                                                  imageSize: .init(width: 18, height: 12),
-                                                  isAnimated: false)
+                statusIndicator = StatusIndicator(
+                    imageName: "message_status_delivered",
+                    imageSize: .init(width: 18, height: 12),
+                    isAnimated: false,
+                )
             case .read, .viewed:
-                statusIndicator = StatusIndicator(imageName: "message_status_read",
-                                                  imageSize: .init(width: 18, height: 12),
-                                                  isAnimated: false)
+                statusIndicator = StatusIndicator(
+                    imageName: "message_status_read",
+                    imageSize: .init(width: 18, height: 12),
+                    isAnimated: false,
+                )
             case .failed:
                 // No status indicator icon.
                 break
@@ -446,7 +485,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
             if message.hasPerConversationExpiration {
                 expiration = State.Expiration(
                     expirationTimestamp: message.expiresAt,
-                    expiresInSeconds: message.expiresInSeconds
+                    expiresInSeconds: message.expiresInSeconds,
                 )
             }
 
@@ -467,20 +506,20 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
             tapForMoreState: tapForMoreState,
             displayEditedLabel: displayEditedLabel,
             isPinnedMessage: isPinnedMessage,
-            expiration: expiration
+            expiration: expiration,
         )
     }
 
     private func editedLabelConfig(textColor: UIColor) -> CVLabelConfig {
         let text = OWSLocalizedString(
             "MESSAGE_STATUS_EDITED",
-            comment: "status meesage for edited messages"
+            comment: "status meesage for edited messages",
         )
 
         return CVLabelConfig.unstyledText(
             text,
             font: .dynamicTypeCaption1,
-            textColor: textColor
+            textColor: textColor,
         )
     }
 
@@ -488,7 +527,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         return CVLabelConfig.unstyledText(
             timestampText,
             font: .dynamicTypeCaption1,
-            textColor: textColor
+            textColor: textColor,
         )
     }
 
@@ -504,13 +543,15 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
                 owsFailDebug("Invalid interaction.")
                 return nil
             }
-            let text = OWSLocalizedString("CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE",
-                                         comment: "Indicator on truncated text messages that they can be tapped to see the entire text message.")
+            let text = OWSLocalizedString(
+                "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE",
+                comment: "Indicator on truncated text messages that they can be tapped to see the entire text message.",
+            )
             return CVLabelConfig.unstyledText(
                 text,
                 font: UIFont.dynamicTypeSubheadlineClamped.semibold(),
                 textColor: conversationStyle.bubbleReadMoreTextColor(message: message),
-                textAlignment: .trailing
+                textAlignment: .trailing,
             )
         case .undownloadableLongText:
             guard !wasRemotelyDeleted else {
@@ -525,17 +566,17 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
             let attributedString = NSAttributedString.composed(of: [
                 NSAttributedString.with(
                     image: UIImage(named: "error-circle-20")!,
-                    font: font
+                    font: font,
                 ),
                 " ",
                 OWSLocalizedString(
                     "OVERSIZE_TEXT_UNAVAILABLE_FOOTER",
-                    comment: "Footer for message cell for long text when it is expired and unavailable for download"
+                    comment: "Footer for message cell for long text when it is expired and unavailable for download",
                 ),
                 " ",
                 NSAttributedString.with(
                     image: UIImage(named: "chevron-right-20")!,
-                    font: font
+                    font: font,
                 ),
             ])
             // TODO[AttachmentRendering]: have to render a horizontal line
@@ -545,7 +586,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
                 displayConfig: .forUnstyledText(font: font, textColor: textColor),
                 font: font,
                 textColor: textColor,
-                textAlignment: .trailing
+                textAlignment: .trailing,
             )
         }
     }
@@ -553,18 +594,22 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
     private let tapForMoreHeightFactor: CGFloat = 1.25
 
     private var outerStackConfig: CVStackViewConfig {
-        CVStackViewConfig(axis: .horizontal,
-                          alignment: .bottom,
-                          spacing: CVComponentFooter.hSpacing,
-                          layoutMargins: .zero)
+        CVStackViewConfig(
+            axis: .horizontal,
+            alignment: .bottom,
+            spacing: CVComponentFooter.hSpacing,
+            layoutMargins: .zero,
+        )
     }
 
     private var innerStackConfig: CVStackViewConfig {
         let layoutMargins = isBorderless ? UIEdgeInsets(hMargin: 12, vMargin: 3) : .zero
-        return CVStackViewConfig(axis: .horizontal,
-                                 alignment: .center,
-                                 spacing: CVComponentFooter.hSpacing,
-                                 layoutMargins: layoutMargins)
+        return CVStackViewConfig(
+            axis: .horizontal,
+            alignment: .center,
+            spacing: CVComponentFooter.hSpacing,
+            layoutMargins: layoutMargins,
+        )
     }
 
     private static let measurementKey_outerStack = "CVComponentFooter.measurementKey_outerStack"
@@ -582,8 +627,10 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         var innerSubviewInfos = [ManualStackSubviewInfo]()
 
         if let tapForMoreLabelConfig = self.tapForMoreLabelConfig {
-            var tapForMoreSize = CVText.measureLabel(config: tapForMoreLabelConfig,
-                                                     maxWidth: maxWidth)
+            var tapForMoreSize = CVText.measureLabel(
+                config: tapForMoreLabelConfig,
+                maxWidth: maxWidth,
+            )
             tapForMoreSize.height *= tapForMoreHeightFactor
             outerSubviewInfos.append(tapForMoreSize.asManualSubviewInfo(hasFixedWidth: true))
         }
@@ -604,12 +651,16 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
 
         // The color doesn't matter for measurement.
         let timestampLabelConfig = self.timestampLabelConfig(textColor: UIColor.black)
-        let timestampLabelSize = CVText.measureLabel(config: timestampLabelConfig,
-                                                     maxWidth: maxWidth)
+        let timestampLabelSize = CVText.measureLabel(
+            config: timestampLabelConfig,
+            maxWidth: maxWidth,
+        )
         innerSubviewInfos.append(timestampLabelSize.asManualSubviewInfo(hasFixedWidth: true))
 
-        if hasPerConversationExpiration,
-           interaction is TSMessage {
+        if
+            hasPerConversationExpiration,
+            interaction is TSMessage
+        {
             let timerSize = MessageTimerView.measureSize
             innerSubviewInfos.append(timerSize.asManualSubviewInfo(hasFixedWidth: true))
         }
@@ -624,16 +675,20 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
             innerSubviewInfos.append(statusSize.asManualSubviewInfo(hasFixedWidth: true))
         }
 
-        let innerStackMeasurement = ManualStackView.measure(config: innerStackConfig,
-                                                            measurementBuilder: measurementBuilder,
-                                                            measurementKey: Self.measurementKey_innerStack,
-                                                            subviewInfos: innerSubviewInfos)
+        let innerStackMeasurement = ManualStackView.measure(
+            config: innerStackConfig,
+            measurementBuilder: measurementBuilder,
+            measurementKey: Self.measurementKey_innerStack,
+            subviewInfos: innerSubviewInfos,
+        )
         outerSubviewInfos.append(innerStackMeasurement.measuredSize.asManualSubviewInfo(hasFixedWidth: true))
-        let outerStackMeasurement = ManualStackView.measure(config: outerStackConfig,
-                                                            measurementBuilder: measurementBuilder,
-                                                            measurementKey: Self.measurementKey_outerStack,
-                                                            subviewInfos: outerSubviewInfos,
-                                                            maxWidth: maxWidth)
+        let outerStackMeasurement = ManualStackView.measure(
+            config: outerStackConfig,
+            measurementBuilder: measurementBuilder,
+            measurementKey: Self.measurementKey_outerStack,
+            subviewInfos: outerSubviewInfos,
+            maxWidth: maxWidth,
+        )
         return outerStackMeasurement.measuredSize
     }
 
@@ -641,10 +696,12 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
 
     // MARK: - Events
 
-    public override func handleTap(sender: UIGestureRecognizer,
-                                   componentDelegate: CVComponentDelegate,
-                                   componentView: CVComponentView,
-                                   renderItem: CVRenderItem) -> Bool {
+    override public func handleTap(
+        sender: UIGestureRecognizer,
+        componentDelegate: CVComponentDelegate,
+        componentView: CVComponentView,
+        renderItem: CVRenderItem,
+    ) -> Bool {
 
         guard let componentView = componentView as? CVComponentViewFooter else {
             owsFailDebug("Unexpected componentView.")
@@ -734,7 +791,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         }
 
         fileprivate func animateSpinningIcon() {
-            let animation = CABasicAnimation.init(keyPath: "transform.rotation.z")
+            let animation = CABasicAnimation(keyPath: "transform.rotation.z")
             animation.toValue = CGFloat.pi * 2
             animation.duration = TimeInterval.second
             animation.isCumulative = true

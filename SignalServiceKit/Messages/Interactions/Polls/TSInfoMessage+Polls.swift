@@ -64,7 +64,7 @@ extension TSInfoMessage {
             return try DependenciesBridge.shared.interactionStore.fetchMessage(
                 timestamp: UInt64(endPollItem.timestamp),
                 incomingMessageAuthor: localAci == incomingMessageAuthor ? nil : incomingMessageAuthor,
-                transaction: transaction
+                transaction: transaction,
             )?.uniqueId
         } catch {
             Logger.info("Unable to get target poll \(error)")
@@ -103,19 +103,19 @@ extension TSInfoMessage {
         if localAci == pollTerminateAci {
             let formatString = OWSLocalizedString(
                 "POLL_ENDED_BY_YOU_CHAT_LIST_UPDATE",
-                comment: "Shown when the local user ends a poll. Embeds {{ poll question }}."
+                comment: "Shown when the local user ends a poll. Embeds {{ poll question }}.",
             )
             return String(format: formatString, question)
         }
 
         let displayName = SSKEnvironment.shared.contactManagerRef.displayName(
             for: SignalServiceAddress(pollTerminateAci),
-            tx: transaction
+            tx: transaction,
         )
 
         let formatString = OWSLocalizedString(
             "POLL_ENDED_BY_OTHER_CHAT_LIST_UPDATE",
-            comment: "Shown when another user ends a poll. Embeds {{ another user }} and {{ poll question }}."
+            comment: "Shown when another user ends a poll. Embeds {{ another user }} and {{ poll question }}.",
         )
 
         return String(format: formatString, displayName.resolvedValue(), question)

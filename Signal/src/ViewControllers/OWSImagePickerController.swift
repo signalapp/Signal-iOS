@@ -9,7 +9,7 @@ class OWSImagePickerController: UIImagePickerController {
 
     // MARK: Orientation
 
-    override public var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         return UIDevice.current.defaultSupportedOrientations
     }
 }

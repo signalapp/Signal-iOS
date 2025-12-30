@@ -10,7 +10,7 @@ class MockCallRecordSyncMessageConversationIdAdapter: CallRecordSyncMessageConve
     func hydrate(
         conversationId: Data,
         callId: UInt64,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> CallRecord? {
         return mockHydratedCallRecord
     }
@@ -18,7 +18,7 @@ class MockCallRecordSyncMessageConversationIdAdapter: CallRecordSyncMessageConve
     var mockConversationId: Data?
     func getConversationId(
         callRecord: CallRecord,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> Data {
         return mockConversationId!
     }

@@ -88,13 +88,13 @@ public class OWSBubbleShapeView: UIView, OWSBubbleViewPartner {
         fatalError("init(coder:) has not been implemented")
     }
 
-    public override func updateConstraints() {
+    override public func updateConstraints() {
         super.updateConstraints()
 
         deactivateAllConstraints()
     }
 
-    public override var bounds: CGRect {
+    override public var bounds: CGRect {
         didSet {
             if oldValue.size != bounds.size {
                 viewSizeDidChange()
@@ -102,7 +102,7 @@ public class OWSBubbleShapeView: UIView, OWSBubbleViewPartner {
         }
     }
 
-    public override var frame: CGRect {
+    override public var frame: CGRect {
         didSet {
             if oldValue.size != frame.size {
                 viewSizeDidChange()
@@ -121,8 +121,10 @@ public class OWSBubbleShapeView: UIView, OWSBubbleViewPartner {
     }
 
     public func updateLayers() {
-        guard isConfigured,
-              let bubbleViewHost = bubbleViewHost else {
+        guard
+            isConfigured,
+            let bubbleViewHost
+        else {
             return
         }
         // Add the bubble view's path to the local path.
@@ -130,16 +132,20 @@ public class OWSBubbleShapeView: UIView, OWSBubbleViewPartner {
         // We need to convert between coordinate systems using layers, not views.
         let bubbleOffset: CGPoint = self.convert(CGPoint.zero, from: bubbleViewHost.bubbleReferenceView)
 
-        let newState = State(bounds: bounds,
-                             bubbleOffset: bubbleOffset,
-                             bubbleBezierPath: bubbleBezierPath)
+        let newState = State(
+            bounds: bounds,
+            bubbleOffset: bubbleOffset,
+            bubbleBezierPath: bubbleBezierPath,
+        )
         guard newState != currentState else {
             return
         }
         currentState = newState
-        Self.updateLayers(mode: mode,
-                          state: newState,
-                          bubbleShapeView: self)
+        Self.updateLayers(
+            mode: mode,
+            state: newState,
+            bubbleShapeView: self,
+        )
     }
 
     private struct State: Equatable {
@@ -150,9 +156,11 @@ public class OWSBubbleShapeView: UIView, OWSBubbleViewPartner {
 
     private var currentState: State?
 
-    private static func updateLayers(mode: Mode,
-                                     state: State,
-                                     bubbleShapeView: OWSBubbleShapeView) {
+    private static func updateLayers(
+        mode: Mode,
+        state: State,
+        bubbleShapeView: OWSBubbleShapeView,
+    ) {
         let shapeLayer = bubbleShapeView.shapeLayer
         let maskLayer = bubbleShapeView.maskLayer
         let bounds = state.bounds
@@ -165,15 +173,17 @@ public class OWSBubbleShapeView: UIView, OWSBubbleViewPartner {
         bubbleBezierPath.apply(transform)
         bezierPath.append(bubbleBezierPath)
 
-        func configureForDrawing(fillColor: UIColor? = nil,
-                                 strokeColor: UIColor? = nil,
-                                 strokeThickness: CGFloat = 0) {
+        func configureForDrawing(
+            fillColor: UIColor? = nil,
+            strokeColor: UIColor? = nil,
+            strokeThickness: CGFloat = 0,
+        ) {
 
             bezierPath.append(UIBezierPath(rect: bounds))
 
             bubbleShapeView.clipsToBounds = true
 
-            if let strokeColor = strokeColor {
+            if let strokeColor {
                 shapeLayer.strokeColor = strokeColor.cgColor
                 shapeLayer.lineWidth = strokeThickness
                 shapeLayer.zPosition = 100
@@ -182,7 +192,7 @@ public class OWSBubbleShapeView: UIView, OWSBubbleViewPartner {
                 shapeLayer.lineWidth = 0
             }
 
-            if let fillColor = fillColor {
+            if let fillColor {
                 shapeLayer.fillColor = fillColor.cgColor
             } else {
                 shapeLayer.fillColor = nil
@@ -201,7 +211,7 @@ public class OWSBubbleShapeView: UIView, OWSBubbleViewPartner {
         case .shadow(let fillColor):
             bubbleShapeView.clipsToBounds = false
 
-            if let fillColor = fillColor {
+            if let fillColor {
                 shapeLayer.fillColor = fillColor.cgColor
             } else {
                 shapeLayer.fillColor = nil
@@ -211,7 +221,6 @@ public class OWSBubbleShapeView: UIView, OWSBubbleViewPartner {
             shapeLayer.frame = bounds
             shapeLayer.masksToBounds = true
             shapeLayer.shadowPath = bezierPath.cgPath
-
         case .clip:
             maskLayer.path = bezierPath.cgPath
             bubbleShapeView.layer.mask = maskLayer
@@ -225,8 +234,10 @@ public class OWSBubbleShapeView: UIView, OWSBubbleViewPartner {
             let shadowPath = bezierPath.copy() as! UIBezierPath
             // This can be any value large enough to cast a sufficiently large shadow.
             let shadowInset = radius * -4
-            let outerRect = shadowBounds.inset(by: UIEdgeInsets(hMargin: shadowInset,
-                                                                vMargin: shadowInset))
+            let outerRect = shadowBounds.inset(by: UIEdgeInsets(
+                hMargin: shadowInset,
+                vMargin: shadowInset,
+            ))
             let outerPath = UIBezierPath(rect: outerRect)
             // -[CALayer shadowPath] uses the non-zero winding rule
             // Reverse the path to make the directions line up correctly.
@@ -245,7 +256,7 @@ public class OWSBubbleShapeView: UIView, OWSBubbleViewPartner {
 
     // MARK: - CALayerDelegate
 
-    public override func action(for layer: CALayer, forKey event: String) -> CAAction? {
+    override public func action(for layer: CALayer, forKey event: String) -> CAAction? {
         // Disable all implicit CALayer animations.
         NSNull()
     }

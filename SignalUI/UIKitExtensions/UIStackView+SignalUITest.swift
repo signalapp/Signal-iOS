@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import XCTest
-import UIKit
 import SignalUI
+import UIKit
+import XCTest
 
 final class UIStackViewSignalUITest: XCTestCase {
     func testRemoveArrangedSubviewsAfter() {

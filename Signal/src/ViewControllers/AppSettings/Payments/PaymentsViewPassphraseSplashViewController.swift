@@ -36,9 +36,11 @@ public class PaymentsViewPassphraseSplashViewController: OWSViewController {
 
     private let rootView = UIStackView()
 
-    public init(passphrase: PaymentsPassphrase,
-                style: Style,
-                viewPassphraseDelegate: PaymentsViewPassphraseDelegate) {
+    public init(
+        passphrase: PaymentsPassphrase,
+        style: Style,
+        viewPassphraseDelegate: PaymentsViewPassphraseDelegate,
+    ) {
         self.passphrase = passphrase
         self.style = style
         self.viewPassphraseDelegate = viewPassphraseDelegate
@@ -46,11 +48,13 @@ public class PaymentsViewPassphraseSplashViewController: OWSViewController {
         super.init()
     }
 
-    public override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
 
-        title = OWSLocalizedString("SETTINGS_PAYMENTS_VIEW_PASSPHRASE_TITLE",
-                                  comment: "Title for the 'view payments passphrase' view of the app settings.")
+        title = OWSLocalizedString(
+            "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_TITLE",
+            comment: "Title for the 'view payments passphrase' view of the app settings.",
+        )
 
         OWSTableViewController2.removeBackButtonText(viewController: self)
 
@@ -65,7 +69,7 @@ public class PaymentsViewPassphraseSplashViewController: OWSViewController {
         updateNavbar()
     }
 
-    public override func themeDidChange() {
+    override public func themeDidChange() {
         super.themeDidChange()
 
         updateContents()
@@ -77,11 +81,11 @@ public class PaymentsViewPassphraseSplashViewController: OWSViewController {
             style: .plain,
             target: self,
             action: #selector(didTapDismiss),
-            accessibilityIdentifier: "dismiss"
+            accessibilityIdentifier: "dismiss",
         )
     }
 
-    public override func viewWillAppear(_ animated: Bool) {
+    override public func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
         updateContents()
@@ -104,7 +108,8 @@ public class PaymentsViewPassphraseSplashViewController: OWSViewController {
         let explanationLabel = PaymentsViewUtils.buildTextWithLearnMoreLinkTextView(
             text: self.style.explanationText,
             font: .dynamicTypeSubheadlineClamped,
-            learnMoreUrl: self.style.explanationUrl)
+            learnMoreUrl: self.style.explanationUrl,
+        )
         explanationLabel.textAlignment = .center
 
         let topStack = UIStackView(arrangedSubviews: [
@@ -112,7 +117,7 @@ public class PaymentsViewPassphraseSplashViewController: OWSViewController {
             UIView.spacer(withHeight: 20),
             titleLabel,
             UIView.spacer(withHeight: 10),
-            explanationLabel
+            explanationLabel,
         ])
         topStack.axis = .vertical
         topStack.alignment = .center
@@ -125,7 +130,7 @@ public class PaymentsViewPassphraseSplashViewController: OWSViewController {
             titleColor: .white,
             backgroundColor: .ows_accentBlue,
             target: self,
-            selector: #selector(didTapNextButton)
+            selector: #selector(didTapNextButton),
         )
 
         nextButton.autoSetHeightUsingFont()
@@ -137,7 +142,7 @@ public class PaymentsViewPassphraseSplashViewController: OWSViewController {
             titleColor: .ows_accentBlue,
             backgroundColor: .clear,
             target: self,
-            selector: #selector(didTapDismiss)
+            selector: #selector(didTapDismiss),
         )
 
         cancelButton.autoSetHeightUsingFont()
@@ -151,29 +156,37 @@ public class PaymentsViewPassphraseSplashViewController: OWSViewController {
             spacerFactory.buildVSpacer(),
             nextButton,
             cancelButton,
-            UIView.spacer(withHeight: 8)
+            UIView.spacer(withHeight: 8),
         ])
 
         spacerFactory.finalizeSpacers()
     }
 
     func showDismissConfirmation() {
-        let actionSheet = ActionSheetController(title: OWSLocalizedString("SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_TITLE",
-                                                                         comment: "Title of confirmation alert when discarding recovery phrase."),
-                                                message: OWSLocalizedString("SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_MESSAGE",
-                                                                           comment: "Message of confirmation alert when discarding recovery phrase."))
+        let actionSheet = ActionSheetController(
+            title: OWSLocalizedString(
+                "SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_TITLE",
+                comment: "Title of confirmation alert when discarding recovery phrase.",
+            ),
+            message: OWSLocalizedString(
+                "SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_MESSAGE",
+                comment: "Message of confirmation alert when discarding recovery phrase.",
+            ),
+        )
         actionSheet.addAction(ActionSheetAction(
-            title: OWSLocalizedString("SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_BUTTON",
-                                     comment: "Button when discarding recovery phrase."),
+            title: OWSLocalizedString(
+                "SETTINGS_PAYMENTS_PASSPHRASE_DISCARD_CONFIRMATION_BUTTON",
+                comment: "Button when discarding recovery phrase.",
+            ),
             style: .destructive,
             handler: { [weak self] _ in
                 self?.notifyCancelled()
-            }
+            },
         ))
         actionSheet.addAction(ActionSheetAction(
             title: CommonStrings.cancelButton,
             style: .cancel,
-            handler: nil
+            handler: nil,
         ))
         self.presentActionSheet(actionSheet)
     }
@@ -197,14 +210,14 @@ public class PaymentsViewPassphraseSplashViewController: OWSViewController {
     private func didTapNextButton() {
         AssertIsOnMainThread()
 
-        guard let viewPassphraseDelegate = viewPassphraseDelegate else {
+        guard let viewPassphraseDelegate else {
             dismiss(animated: false, completion: nil)
             return
         }
 
         if SSKEnvironment.shared.owsPaymentsLockRef.isPaymentsLockEnabled() {
             SSKEnvironment.shared.owsPaymentsLockRef.tryToUnlock { [weak self] outcome in
-                guard let self = self else { return }
+                guard let self else { return }
                 guard outcome == OWSPaymentsLock.LocalAuthOutcome.success else {
                     PaymentActionSheets.showBiometryAuthFailedActionSheet { _ in
                         self.dismiss(animated: false, completion: nil)
@@ -214,13 +227,15 @@ public class PaymentsViewPassphraseSplashViewController: OWSViewController {
 
                 let view = PaymentsViewPassphraseGridViewController(
                     passphrase: self.passphrase,
-                    viewPassphraseDelegate: viewPassphraseDelegate)
+                    viewPassphraseDelegate: viewPassphraseDelegate,
+                )
                 self.navigationController?.pushViewController(view, animated: true)
             }
         } else {
             let view = PaymentsViewPassphraseGridViewController(
                 passphrase: passphrase,
-                viewPassphraseDelegate: viewPassphraseDelegate)
+                viewPassphraseDelegate: viewPassphraseDelegate,
+            )
             navigationController?.pushViewController(view, animated: true)
         }
     }
@@ -231,25 +246,35 @@ extension PaymentsViewPassphraseSplashViewController.Style {
     var title: String {
         switch self {
         case .reviewed:
-            return OWSLocalizedString("SETTINGS_PAYMENTS_VIEW_PASSPHRASE_START_TITLE",
-                                     comment: "Title for the first step of the 'view payments passphrase' views.")
+            return OWSLocalizedString(
+                "SETTINGS_PAYMENTS_VIEW_PASSPHRASE_START_TITLE",
+                comment: "Title for the first step of the 'view payments passphrase' views.",
+            )
         case .fromBalance, .fromHelpCard, .fromHelpCardDismiss, .view:
-            return OWSLocalizedString("SETTINGS_PAYMENTS_SAVE_PASSPHRASE_START_TITLE",
-                                     comment: "Title for the first step of the 'save payments passphrase' views.")
+            return OWSLocalizedString(
+                "SETTINGS_PAYMENTS_SAVE_PASSPHRASE_START_TITLE",
+                comment: "Title for the first step of the 'save payments passphrase' views.",
+            )
         }
     }
 
     var explanationText: String {
         switch self {
         case .view, .reviewed:
-            return OWSLocalizedString("SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION",
-                                     comment: "Explanation of the 'payments passphrase' in the 'view payments passphrase' settings.")
+            return OWSLocalizedString(
+                "SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION",
+                comment: "Explanation of the 'payments passphrase' in the 'view payments passphrase' settings.",
+            )
         case .fromHelpCard, .fromHelpCardDismiss:
-            return OWSLocalizedString("SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_HELP_CARD",
-                                     comment: "Explanation of the 'payments passphrase' when from the help card.")
+            return OWSLocalizedString(
+                "SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_HELP_CARD",
+                comment: "Explanation of the 'payments passphrase' when from the help card.",
+            )
         case .fromBalance:
-            return OWSLocalizedString("SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_BALANCE",
-                                     comment: "Explanation of the 'payments passphrase' when there is a balance.")
+            return OWSLocalizedString(
+                "SETTINGS_PAYMENTS_PASSPHRASE_EXPLANATION_FROM_BALANCE",
+                comment: "Explanation of the 'payments passphrase' when there is a balance.",
+            )
         }
     }
 

@@ -32,7 +32,7 @@ public class PollMessageManager {
         messageSenderJobQueue: MessageSenderJobQueue,
         disappearingMessagesConfigurationStore: DisappearingMessagesConfigurationStore,
         attachmentContentValidator: AttachmentContentValidator,
-        db: DB
+        db: DB,
     ) {
         self.pollStore = pollStore
         self.recipientDatabaseTable = recipientDatabaseTable
@@ -46,13 +46,14 @@ public class PollMessageManager {
 
     public func validateIncomingPollCreate(
         pollCreateProto pollCreate: SSKProtoDataMessagePollCreate,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws -> ValidatedIncomingPollCreate {
         guard let question = pollCreate.question else {
             throw OWSAssertionError("Poll missing question")
         }
-        guard question.trimmedIfNeeded(maxByteCount: OWSMediaUtils.kOversizeTextMessageSizeThresholdBytes) == nil
-                && question.count <= OWSPoll.Constants.maxCharacterLength
+        guard
+            question.trimmedIfNeeded(maxByteCount: OWSMediaUtils.kOversizeTextMessageSizeThresholdBytes) == nil,
+            question.count <= OWSPoll.Constants.maxCharacterLength
         else {
             throw OWSAssertionError("Poll question too large")
         }
@@ -66,8 +67,9 @@ public class PollMessageManager {
         }
 
         for option in pollCreate.options {
-            guard option.trimmedIfNeeded(maxByteCount: OWSMediaUtils.kOversizeTextMessageSizeThresholdBytes) == nil
-                    && option.count <= OWSPoll.Constants.maxCharacterLength
+            guard
+                option.trimmedIfNeeded(maxByteCount: OWSMediaUtils.kOversizeTextMessageSizeThresholdBytes) == nil,
+                option.count <= OWSPoll.Constants.maxCharacterLength
             else {
                 throw OWSAssertionError("Poll option too large")
             }
@@ -91,13 +93,13 @@ public class PollMessageManager {
     public func processIncomingPollCreate(
         interactionId: Int64,
         pollCreateProto: SSKProtoDataMessagePollCreate,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) throws {
         try pollStore.createPoll(
             interactionId: interactionId,
             allowsMultiSelect: pollCreateProto.allowMultiple,
             options: pollCreateProto.options,
-            transaction: transaction
+            transaction: transaction,
         )
     }
 
@@ -105,23 +107,24 @@ public class PollMessageManager {
         interactionId: Int64,
         pollOptions: [String],
         allowsMultiSelect: Bool,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) throws {
         try pollStore.createPoll(
             interactionId: interactionId,
             allowsMultiSelect: allowsMultiSelect,
             options: pollOptions,
-            transaction: transaction
+            transaction: transaction,
         )
     }
 
     public func processIncomingPollVote(
         voteAuthor: Aci,
         pollVoteProto: SSKProtoDataMessagePollVote,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) throws -> (TSMessage, shouldNotifyAuthorOfVote: Bool)? {
-        guard let aciBinary = pollVoteProto.targetAuthorAciBinary,
-              let pollAuthorAci = try? Aci.parseFrom(serviceIdBinary: aciBinary)
+        guard
+            let aciBinary = pollVoteProto.targetAuthorAciBinary,
+            let pollAuthorAci = try? Aci.parseFrom(serviceIdBinary: aciBinary)
         else {
             Logger.error("Failure to parse Aci from binary")
             return nil
@@ -131,13 +134,14 @@ public class PollMessageManager {
             throw OWSAssertionError("User not registered")
         }
 
-        guard let targetMessage = try interactionStore.fetchMessage(
-            timestamp: pollVoteProto.targetSentTimestamp,
-            incomingMessageAuthor: localAci == pollAuthorAci ? nil : pollAuthorAci,
-            transaction: transaction
-        ),
-              targetMessage.isPoll,
-              let interactionId = targetMessage.grdbId?.int64Value
+        guard
+            let targetMessage = try interactionStore.fetchMessage(
+                timestamp: pollVoteProto.targetSentTimestamp,
+                incomingMessageAuthor: localAci == pollAuthorAci ? nil : pollAuthorAci,
+                transaction: transaction,
+            ),
+            targetMessage.isPoll,
+            let interactionId = targetMessage.grdbId?.int64Value
         else {
             Logger.error("Can't find target poll")
             return nil
@@ -155,7 +159,7 @@ public class PollMessageManager {
             optionsVoted: pollVoteProto.optionIndexes,
             voteAuthorId: voteAuthorId,
             voteCount: pollVoteProto.voteCount,
-            transaction: transaction
+            transaction: transaction,
         )
 
         let shouldNotifyAuthorOfVote = !isUnvote && localAci == pollAuthorAci && localAci != voteAuthor
@@ -166,20 +170,21 @@ public class PollMessageManager {
     public func processIncomingPollTerminate(
         pollTerminateProto: SSKProtoDataMessagePollTerminate,
         terminateAuthor: Aci,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) throws -> TSMessage? {
 
         guard let localAci = accountManager.localIdentifiers(tx: transaction)?.aci else {
             throw OWSAssertionError("User not registered")
         }
 
-        guard let targetMessage = try interactionStore.fetchMessage(
-            timestamp: pollTerminateProto.targetSentTimestamp,
-            incomingMessageAuthor: terminateAuthor == localAci ? nil : terminateAuthor,
-            transaction: transaction
-        ),
-              targetMessage.isPoll,
-              let interactionId = targetMessage.grdbId?.int64Value
+        guard
+            let targetMessage = try interactionStore.fetchMessage(
+                timestamp: pollTerminateProto.targetSentTimestamp,
+                incomingMessageAuthor: terminateAuthor == localAci ? nil : terminateAuthor,
+                transaction: transaction,
+            ),
+            targetMessage.isPoll,
+            let interactionId = targetMessage.grdbId?.int64Value
         else {
             Logger.error("Can't find target poll")
             return nil
@@ -191,8 +196,9 @@ public class PollMessageManager {
     }
 
     public func buildPoll(message: TSMessage, transaction: DBReadTransaction) throws -> OWSPoll? {
-        guard let question = message.body?.filterStringForDisplay().nilIfEmpty,
-              let localAci = accountManager.localIdentifiers(tx: transaction)?.aci
+        guard
+            let question = message.body?.filterStringForDisplay().nilIfEmpty,
+            let localAci = accountManager.localIdentifiers(tx: transaction)?.aci
         else {
             throw OWSAssertionError("Invalid question body or local user not registered")
         }
@@ -202,13 +208,13 @@ public class PollMessageManager {
             message: message,
             localUser: localAci,
             transaction: transaction,
-            ownerIsLocalUser: message.isOutgoing
+            ownerIsLocalUser: message.isOutgoing,
         )
     }
 
     public func buildProtoForSending(
         parentMessage: TSMessage,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> SSKProtoDataMessagePollCreate? {
         guard let poll = try buildPoll(message: parentMessage, transaction: tx) else {
             return nil
@@ -239,16 +245,16 @@ public class PollMessageManager {
                 thread: thread,
                 targetPollTimestamp: targetPoll.timestamp,
                 expiresInSeconds: disappearingMessagesConfigurationStore.durationSeconds(for: thread, tx: tx),
-                tx: tx
+                tx: tx,
             )
 
             let preparedMessage = PreparedOutgoingMessage.preprepared(
-                transientMessageWithoutAttachments: pollTerminateMessage
+                transientMessageWithoutAttachments: pollTerminateMessage,
             )
 
             messageSenderJobQueue.add(
                 message: preparedMessage,
-                transaction: tx
+                transaction: tx,
             )
 
             guard let localAci = accountManager.localIdentifiers(tx: tx)?.aci else {
@@ -264,7 +270,7 @@ public class PollMessageManager {
                 terminateAuthor: localAci,
                 expireTimer: dmConfig.durationSeconds,
                 expireTimerVersion: dmConfig.timerVersion,
-                tx: tx
+                tx: tx,
             )
         }
     }
@@ -277,13 +283,13 @@ public class PollMessageManager {
         terminateAuthor: Aci,
         expireTimer: UInt32?,
         expireTimerVersion: UInt32?,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         var userInfoForNewMessage: [InfoMessageUserInfoKey: Any] = [:]
         userInfoForNewMessage[.endPoll] = PersistableEndPollItem(
             question: pollQuestion,
             authorServiceIdBinary: terminateAuthor.serviceIdBinary,
-            timestamp: Int64(targetPollTimestamp)
+            timestamp: Int64(targetPollTimestamp),
         )
 
         var timerVersion: NSNumber?
@@ -298,7 +304,7 @@ public class PollMessageManager {
             messageType: .typeEndPoll,
             expireTimerVersion: timerVersion,
             expiresInSeconds: expireTimer ?? 0,
-            infoMessageUserInfo: userInfoForNewMessage
+            infoMessageUserInfo: userInfoForNewMessage,
         )
 
         infoMessage.anyInsert(transaction: tx)
@@ -309,26 +315,30 @@ public class PollMessageManager {
         targetPollAuthorAci: Aci,
         optionIndexes: [OWSPoll.OptionIndex],
         voteCount: UInt32,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         guard let localAci = accountManager.localIdentifiers(tx: tx)?.aci else {
             Logger.error("Can't find local ACI")
             return
         }
 
-        guard let localAuthorRecipientId = recipientDatabaseTable.fetchRecipient(
-            serviceId: localAci,
-            transaction: tx
-        )?.id else {
+        guard
+            let localAuthorRecipientId = recipientDatabaseTable.fetchRecipient(
+                serviceId: localAci,
+                transaction: tx,
+            )?.id
+        else {
             Logger.error("Can't find vote author recipient")
             return
         }
 
-        guard let interaction = try interactionStore.fetchMessage(
-            timestamp: UInt64(targetPollTimestamp),
-            incomingMessageAuthor: targetPollAuthorAci == localAci ? nil : targetPollAuthorAci,
-            transaction: tx
-        ), let interactionId = interaction.grdbId?.int64Value else {
+        guard
+            let interaction = try interactionStore.fetchMessage(
+                timestamp: UInt64(targetPollTimestamp),
+                incomingMessageAuthor: targetPollAuthorAci == localAci ? nil : targetPollAuthorAci,
+                transaction: tx,
+            ), let interactionId = interaction.grdbId?.int64Value
+        else {
             Logger.error("Can't find vote poll")
             return
         }
@@ -338,7 +348,7 @@ public class PollMessageManager {
             optionsVoted: optionIndexes,
             voteAuthorId: localAuthorRecipientId,
             voteCount: voteCount,
-            transaction: tx
+            transaction: tx,
         )
 
         // Touch message so it reloads to show updated vote state.
@@ -350,13 +360,15 @@ public class PollMessageManager {
         optionIndex: UInt32,
         isUnvote: Bool,
         thread: TSGroupThread,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws -> OutgoingPollVoteMessage? {
-        guard let pollInteractionId = pollInteraction.grdbId?.int64Value,
-              let poll = try pollStore.pollForInteractionId(
-                  interactionId: pollInteractionId,
-                  transaction: tx
-              ) else {
+        guard
+            let pollInteractionId = pollInteraction.grdbId?.int64Value,
+            let poll = try pollStore.pollForInteractionId(
+                interactionId: pollInteractionId,
+                transaction: tx,
+            )
+        else {
             Logger.error("Can't find target poll")
             return nil
         }
@@ -369,9 +381,11 @@ public class PollMessageManager {
         var authorAci: Aci?
         if let _ = pollInteraction as? TSOutgoingMessage {
             authorAci = localAci
-        } else if let incomingPoll = pollInteraction as? TSIncomingMessage,
-                  let authorUUID = incomingPoll.authorUUID,
-                  let incomingAci = try ServiceId.parseFrom(serviceIdString: authorUUID) as? Aci {
+        } else if
+            let incomingPoll = pollInteraction as? TSIncomingMessage,
+            let authorUUID = incomingPoll.authorUUID,
+            let incomingAci = try ServiceId.parseFrom(serviceIdString: authorUUID) as? Aci
+        {
             authorAci = incomingAci
         }
 
@@ -380,21 +394,25 @@ public class PollMessageManager {
             return nil
         }
 
-        guard let localRecipientId = recipientDatabaseTable.fetchRecipient(
-            serviceId: localAci,
-            transaction: tx
-        )?.id else {
+        guard
+            let localRecipientId = recipientDatabaseTable.fetchRecipient(
+                serviceId: localAci,
+                transaction: tx,
+            )?.id
+        else {
             Logger.error("Can't find vote author recipient")
             return nil
         }
 
-        guard let newHighestVoteCount = try pollStore.applyPendingVote(
-            interactionId: pollInteractionId,
-            localRecipientId: localRecipientId,
-            optionIndex: optionIndex,
-            isUnvote: isUnvote,
-            transaction: tx
-        ) else {
+        guard
+            let newHighestVoteCount = try pollStore.applyPendingVote(
+                interactionId: pollInteractionId,
+                localRecipientId: localRecipientId,
+                optionIndex: optionIndex,
+                isUnvote: isUnvote,
+                transaction: tx,
+            )
+        else {
             return nil
         }
 
@@ -404,7 +422,7 @@ public class PollMessageManager {
                 interactionId: pollInteractionId,
                 voteAuthorId: localRecipientId,
                 voteCount: newHighestVoteCount,
-                transaction: tx
+                transaction: tx,
             ).map { UInt32($0) }
         } else {
             // Single select, only need to send latest vote (or empty if its an unvote).
@@ -419,7 +437,7 @@ public class PollMessageManager {
             targetPollAuthorAci: authorAci,
             voteOptionIndexes: optionIndexVotes,
             voteCount: UInt32(newHighestVoteCount),
-            tx: tx
+            tx: tx,
         )
     }
 }
@@ -446,7 +464,7 @@ public struct BackupsPollData {
         question: String,
         allowMultiple: Bool,
         isEnded: Bool,
-        options: [BackupsPollOption]
+        options: [BackupsPollOption],
     ) {
         self.question = question
         self.options = options
@@ -459,7 +477,7 @@ extension PollMessageManager {
     public func buildPollForBackup(
         message: TSMessage,
         messageRowId: Int64,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> BackupArchive.ArchiveSingleFrameResult<BackupsPollData, BackupArchive.InteractionUniqueId> {
         guard let question = message.body?.nilIfEmpty else {
             return .failure(.archiveFrameError(.pollMessageMissingQuestionBody, BackupArchive.InteractionUniqueId(interaction: message)))
@@ -469,7 +487,7 @@ extension PollMessageManager {
             question: question,
             message: message,
             interactionId: messageRowId,
-            transaction: tx
+            transaction: tx,
         )
     }
 
@@ -477,12 +495,12 @@ extension PollMessageManager {
         pollBackupData: BackupsPollData,
         message: TSMessage,
         chatItemId: BackupArchive.ChatItemId,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) -> BackupArchive.RestoreFrameResult<BackupArchive.ChatItemId> {
         guard let interactionId = message.grdbId?.int64Value else {
             return .failure([.restoreFrameError(
                 .databaseModelMissingRowId(modelClass: type(of: message)),
-                chatItemId
+                chatItemId,
             )])
         }
 
@@ -491,13 +509,13 @@ extension PollMessageManager {
                 interactionId: interactionId,
                 allowsMultiSelect: pollBackupData.allowMultiple,
                 options: pollBackupData.options.map(\.text),
-                transaction: tx
+                transaction: tx,
             )
         } catch {
             return .failure([.restoreFrameError(
                 .pollCreateFailedToInsertInDatabase,
-                chatItemId
-                )])
+                chatItemId,
+            )])
         }
 
         var partialErrors = [BackupArchive.RestoreFrameError<BackupArchive.ChatItemId>]()
@@ -512,8 +530,8 @@ extension PollMessageManager {
                     if vote.voteCount != currentVoteCount {
                         partialErrors += [.restoreFrameError(
                             .invalidProtoData(.pollVoteCountRepeated),
-                            chatItemId
-                            )]
+                            chatItemId,
+                        )]
                         continue
                     }
                 } else {
@@ -526,8 +544,8 @@ extension PollMessageManager {
             guard let voteCount = voteCountByAuthorId[voteAuthorId] else {
                 partialErrors += [.restoreFrameError(
                     .invalidProtoData(.noPollVoteCountForAuthor),
-                    chatItemId
-                    )]
+                    chatItemId,
+                )]
                 continue
             }
 
@@ -537,13 +555,13 @@ extension PollMessageManager {
                     optionsVoted: optionIndices,
                     voteAuthorId: voteAuthorId,
                     voteCount: voteCount,
-                    transaction: tx
+                    transaction: tx,
                 )
             } catch {
                 partialErrors += [.restoreFrameError(
                     .pollVoteFailedToInsertInDatabase,
-                    chatItemId
-                    )]
+                    chatItemId,
+                )]
             }
         }
 
@@ -554,8 +572,8 @@ extension PollMessageManager {
         } catch {
             partialErrors += [.restoreFrameError(
                 .pollTerminateFailedToInsertInDatabase,
-                chatItemId
-                )]
+                chatItemId,
+            )]
         }
 
         if partialErrors.isEmpty {

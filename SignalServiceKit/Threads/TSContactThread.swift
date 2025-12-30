@@ -13,7 +13,7 @@ extension TSContactThread {
         owsAssertDebug(normalizedAddress != nil)
         self.init(
             contactUUID: normalizedAddress?.serviceId?.serviceIdUppercaseString,
-            contactPhoneNumber: normalizedAddress?.phoneNumber
+            contactPhoneNumber: normalizedAddress?.phoneNumber,
         )
     }
 

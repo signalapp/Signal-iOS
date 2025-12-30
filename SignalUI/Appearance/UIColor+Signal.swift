@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import UIKit
 import SignalServiceKit
+import UIKit
 public import SwiftUI
 
 // MARK: - Custom Colors -
@@ -12,7 +12,7 @@ public import SwiftUI
 extension UIColor {
     fileprivate static func byUserInterfaceLevel(
         base: UIColor,
-        elevated: UIColor
+        elevated: UIColor,
     ) -> UIColor {
         UIColor { traitCollection in
             if traitCollection.userInterfaceLevel == .elevated {
@@ -27,13 +27,13 @@ extension UIColor {
         light: UInt32,
         lightHighContrast: UInt32,
         dark: UInt32,
-        darkHighContrast: UInt32
+        darkHighContrast: UInt32,
     ) -> UIColor {
         UIColor(
             light: UIColor(rgbHex: light),
             lightHighContrast: UIColor(rgbHex: lightHighContrast),
             dark: UIColor(rgbHex: dark),
-            darkHighContrast: UIColor(rgbHex: darkHighContrast)
+            darkHighContrast: UIColor(rgbHex: darkHighContrast),
         )
     }
 
@@ -41,7 +41,7 @@ extension UIColor {
         light: UIColor,
         lightHighContrast: UIColor,
         dark: UIColor,
-        darkHighContrast: UIColor
+        darkHighContrast: UIColor,
     ) {
         self.init { traitCollection in
             switch (traitCollection.userInterfaceStyle, traitCollection.accessibilityContrast) {
@@ -73,7 +73,7 @@ extension UIColor.Signal {
             light: 0x2267F5,
             lightHighContrast: 0x0A43B9,
             dark: 0x2D70FA,
-            darkHighContrast: 0x5D92FF
+            darkHighContrast: 0x5D92FF,
         )
     }
 
@@ -82,7 +82,7 @@ extension UIColor.Signal {
             light: 0xFF3B30,
             lightHighContrast: 0xD70015,
             dark: 0xFF453A,
-            darkHighContrast: 0xFF6961
+            darkHighContrast: 0xFF6961,
         )
     }
 
@@ -91,7 +91,7 @@ extension UIColor.Signal {
             light: 0xFF9500,
             lightHighContrast: 0xC93400,
             dark: 0xFF9F0A,
-            darkHighContrast: 0xFFB340
+            darkHighContrast: 0xFFB340,
         )
     }
 
@@ -100,7 +100,7 @@ extension UIColor.Signal {
             light: 0xFFCC00,
             lightHighContrast: 0xB25000,
             dark: 0xFFD60A,
-            darkHighContrast: 0xFFD426
+            darkHighContrast: 0xFFD426,
         )
     }
 
@@ -109,7 +109,7 @@ extension UIColor.Signal {
             light: 0x34C759,
             lightHighContrast: 0x248A3D,
             dark: 0x30D158,
-            darkHighContrast: 0x30DB5B
+            darkHighContrast: 0x30DB5B,
         )
     }
 
@@ -118,7 +118,7 @@ extension UIColor.Signal {
             light: 0x5856D6,
             lightHighContrast: 0x3634A3,
             dark: 0x5E5CE6,
-            darkHighContrast: 0x7D7AFF
+            darkHighContrast: 0x7D7AFF,
         )
     }
 
@@ -133,7 +133,7 @@ extension UIColor.Signal {
             light: UIColor(rgbHex: 0x000000),
             lightHighContrast: UIColor(rgbHex: 0x000000),
             dark: UIColor(rgbHex: 0xFFFFFF),
-            darkHighContrast: UIColor(rgbHex: 0xFFFFFF)
+            darkHighContrast: UIColor(rgbHex: 0xFFFFFF),
         )
     }
 
@@ -142,7 +142,7 @@ extension UIColor.Signal {
             light: UIColor(rgbHex: 0x3C3C43, alpha: 0.72),
             lightHighContrast: UIColor(rgbHex: 0x3C3C43, alpha: 0.95),
             dark: UIColor(rgbHex: 0xEBEBF5, alpha: 0.7),
-            darkHighContrast: UIColor(rgbHex: 0xEBEBF5, alpha: 0.8)
+            darkHighContrast: UIColor(rgbHex: 0xEBEBF5, alpha: 0.8),
         )
     }
 
@@ -151,7 +151,7 @@ extension UIColor.Signal {
             light: UIColor(rgbHex: 0x3C3C43, alpha: 0.3),
             lightHighContrast: UIColor(rgbHex: 0x3C3C43, alpha: 0.5),
             dark: UIColor(rgbHex: 0xEBEBF5, alpha: 0.3),
-            darkHighContrast: UIColor(rgbHex: 0xEBEBF5, alpha: 0.4)
+            darkHighContrast: UIColor(rgbHex: 0xEBEBF5, alpha: 0.4),
         )
     }
 
@@ -160,7 +160,7 @@ extension UIColor.Signal {
             light: UIColor(rgbHex: 0x3C3C43, alpha: 0.18),
             lightHighContrast: UIColor(rgbHex: 0x3C3C43, alpha: 0.4),
             dark: UIColor(rgbHex: 0xEBEBF5, alpha: 0.16),
-            darkHighContrast: UIColor(rgbHex: 0xEBEBF5, alpha: 0.26)
+            darkHighContrast: UIColor(rgbHex: 0xEBEBF5, alpha: 0.26),
         )
     }
 
@@ -172,14 +172,14 @@ extension UIColor.Signal {
                 light: 0xFFFFFF,
                 lightHighContrast: 0xFFFFFF,
                 dark: 0x000000,
-                darkHighContrast: 0x000000
+                darkHighContrast: 0x000000,
             ),
             elevated: UIColor.byRGBHex(
                 light: 0xFFFFFF,
                 lightHighContrast: 0xFFFFFF,
                 dark: 0x1C1C1E,
-                darkHighContrast: 0x343438
-            )
+                darkHighContrast: 0x343438,
+            ),
         )
     }
 
@@ -192,14 +192,14 @@ extension UIColor.Signal {
                 light: 0xEFEFF0,
                 lightHighContrast: 0xE4E4E7,
                 dark: 0x1C1C1E,
-                darkHighContrast: 0x343438
+                darkHighContrast: 0x343438,
             ),
             elevated: UIColor.byRGBHex(
                 light: 0xEFEFF0,
                 lightHighContrast: 0xE4E4E7,
                 dark: 0x2C2C2E,
-                darkHighContrast: 0x444447
-            )
+                darkHighContrast: 0x444447,
+            ),
         )
     }
 
@@ -209,14 +209,14 @@ extension UIColor.Signal {
                 light: 0xFFFFFF,
                 lightHighContrast: 0xFFFFFF,
                 dark: 0x2C2C2E,
-                darkHighContrast: 0x444447
+                darkHighContrast: 0x444447,
             ),
             elevated: UIColor.byRGBHex(
                 light: 0xFFFFFF,
                 lightHighContrast: 0xFFFFFF,
                 dark: 0x3A3A3C,
-                darkHighContrast: 0x545457
-            )
+                darkHighContrast: 0x545457,
+            ),
         )
     }
 
@@ -245,14 +245,14 @@ extension UIColor.Signal {
                 light: 0xEFEFF0,
                 lightHighContrast: 0xE4E4E7,
                 dark: 0x000000,
-                darkHighContrast: 0x000000
+                darkHighContrast: 0x000000,
             ),
             elevated: UIColor.byRGBHex(
                 light: 0xEFEFF0,
                 lightHighContrast: 0xE4E4E7,
                 dark: 0x1C1C1E,
-                darkHighContrast: 0x343438
-            )
+                darkHighContrast: 0x343438,
+            ),
         )
     }
 
@@ -262,14 +262,14 @@ extension UIColor.Signal {
                 light: 0xFFFFFF,
                 lightHighContrast: 0xFFFFFF,
                 dark: 0x1C1C1E,
-                darkHighContrast: 0x343438
+                darkHighContrast: 0x343438,
             ),
             elevated: UIColor.byRGBHex(
                 light: 0xFFFFFF,
                 lightHighContrast: 0xFFFFFF,
                 dark: 0x2C2C2E,
-                darkHighContrast: 0x444447
-            )
+                darkHighContrast: 0x444447,
+            ),
         )
     }
 
@@ -282,14 +282,14 @@ extension UIColor.Signal {
                 light: 0xEFEFF0,
                 lightHighContrast: 0xE4E4E7,
                 dark: 0x2C2C2E,
-                darkHighContrast: 0x444447
+                darkHighContrast: 0x444447,
             ),
             elevated: UIColor.byRGBHex(
                 light: 0xEFEFF0,
                 lightHighContrast: 0xE4E4E7,
                 dark: 0x3A3A3C,
-                darkHighContrast: 0x545457
-            )
+                darkHighContrast: 0x545457,
+            ),
         )
     }
 
@@ -300,7 +300,7 @@ extension UIColor.Signal {
             light: UIColor(rgbHex: 0x787880, alpha: 0.2),
             lightHighContrast: UIColor(rgbHex: 0x787880, alpha: 0.3),
             dark: UIColor(rgbHex: 0x787880, alpha: 0.36),
-            darkHighContrast: UIColor(rgbHex: 0x787880, alpha: 0.46)
+            darkHighContrast: UIColor(rgbHex: 0x787880, alpha: 0.46),
         )
     }
 
@@ -309,7 +309,7 @@ extension UIColor.Signal {
             light: UIColor(rgbHex: 0x787880, alpha: 0.16),
             lightHighContrast: UIColor(rgbHex: 0x787880, alpha: 0.26),
             dark: UIColor(rgbHex: 0x787880, alpha: 0.32),
-            darkHighContrast: UIColor(rgbHex: 0x787880, alpha: 0.42)
+            darkHighContrast: UIColor(rgbHex: 0x787880, alpha: 0.42),
         )
     }
 
@@ -318,7 +318,7 @@ extension UIColor.Signal {
             light: UIColor(rgbHex: 0x767680, alpha: 0.12),
             lightHighContrast: UIColor(rgbHex: 0x767680, alpha: 0.22),
             dark: UIColor(rgbHex: 0x767680, alpha: 0.24),
-            darkHighContrast: UIColor(rgbHex: 0x767680, alpha: 0.34)
+            darkHighContrast: UIColor(rgbHex: 0x767680, alpha: 0.34),
         )
     }
 
@@ -327,7 +327,7 @@ extension UIColor.Signal {
             light: UIColor(rgbHex: 0x747480, alpha: 0.08),
             lightHighContrast: UIColor(rgbHex: 0x747480, alpha: 0.18),
             dark: UIColor(rgbHex: 0x747480, alpha: 0.18),
-            darkHighContrast: UIColor(rgbHex: 0x747480, alpha: 0.28)
+            darkHighContrast: UIColor(rgbHex: 0x747480, alpha: 0.28),
         )
     }
 
@@ -338,7 +338,7 @@ extension UIColor.Signal {
             light: 0xC6C6C8,
             lightHighContrast: 0xAEAEB2,
             dark: 0x38383A,
-            darkHighContrast: 0x515154
+            darkHighContrast: 0x515154,
         )
     }
 
@@ -347,7 +347,7 @@ extension UIColor.Signal {
             light: UIColor(rgbHex: 0x3C3C43, alpha: 0.36),
             lightHighContrast: UIColor(rgbHex: 0x3C3C43, alpha: 0.46),
             dark: UIColor(rgbHex: 0x545458, alpha: 0.65),
-            darkHighContrast: UIColor(rgbHex: 0x545458, alpha: 0.75)
+            darkHighContrast: UIColor(rgbHex: 0x545458, alpha: 0.75),
         )
     }
 }

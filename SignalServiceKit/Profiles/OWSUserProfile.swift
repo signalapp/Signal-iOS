@@ -42,7 +42,9 @@ public class OWSUserProfileBadgeInfo: NSObject, Codable {
 
     private enum CodingKeys: String, CodingKey {
         // Skip encoding of the actual badge content
-        case badgeId, expiration, isVisible
+        case badgeId
+        case expiration
+        case isVisible
     }
 
     @objc
@@ -59,10 +61,10 @@ public class OWSUserProfileBadgeInfo: NSObject, Codable {
 
     override public var description: String {
         var description = "Badge: \(badgeId)"
-        if let expiration = expiration {
+        if let expiration {
             description += ", Expires: \(Date(millisecondsSince1970: expiration))"
         }
-        if let isVisible = isVisible {
+        if let isVisible {
             description += ", Visible: \(isVisible ? "Yes" : "No")"
         }
         return description
@@ -97,7 +99,6 @@ extension UserProfileWriter {
         case .reupload: fallthrough
         case .systemContactsFetch:
             return true
-
         case .avatarDownload: fallthrough
         case .debugging: fallthrough
         case .linking: fallthrough
@@ -107,7 +108,6 @@ extension UserProfileWriter {
         case .syncMessage: fallthrough
         case .tests:
             return false
-
         case .unknown: fallthrough
         @unknown default:
             return false
@@ -210,34 +210,34 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
     ///
     /// This filename is relative to `profileAvatarsDirPath`.
     @objc
-    private(set) public var avatarFileName: String?
+    public private(set) var avatarFileName: String?
 
     /// The on-server location of the encrypted avatar.
     ///
     /// This URL is downloaded, decrypted, and saved to `avatarFileName`.
     @objc
-    private(set) public var avatarUrlPath: String?
+    public private(set) var avatarUrlPath: String?
 
     @objc
-    private(set) public var profileKey: Aes256Key?
+    public private(set) var profileKey: Aes256Key?
 
     @objc
-    private(set) public var givenName: String?
+    public private(set) var givenName: String?
 
     @objc
-    private(set) public var familyName: String?
+    public private(set) var familyName: String?
 
     @objc
-    private(set) public var bio: String?
+    public private(set) var bio: String?
 
     @objc
-    private(set) public var bioEmoji: String?
+    public private(set) var bioEmoji: String?
 
     @objc
-    private(set) public var badges: [OWSUserProfileBadgeInfo]
+    public private(set) var badges: [OWSUserProfileBadgeInfo]
 
     /// The last time we fetched a profile for this user.
-    private(set) public var lastFetchDate: Date?
+    public private(set) var lastFetchDate: Date?
 
     /// This field reflects the last time we sent or received a message from
     /// this user. It is coarse; we only update it when it changes by more than
@@ -245,21 +245,21 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
     /// (because we fetch our own profile more frequently than we fetch the
     /// profiles of other users).
     @objc
-    private(set) public var lastMessagingDate: Date?
+    public private(set) var lastMessagingDate: Date?
 
     /// Stores whether or not the phone number is shared for this account.
     ///
     /// Note that we may not yet know a phone number that's shared (and vice
     /// versa). If the value is nil, then it means there's not a value, we've
     /// never had a profile key for this user, or the value can't be decrypted.
-    private(set) public var isPhoneNumberShared: Bool?
+    public private(set) var isPhoneNumberShared: Bool?
 
     public convenience init(
         address: Address,
         givenName: String? = nil,
         familyName: String? = nil,
         profileKey: Aes256Key? = nil,
-        avatarUrlPath: String? = nil
+        avatarUrlPath: String? = nil,
     ) {
         let serviceId: ServiceId?
         let phoneNumber: String?
@@ -287,7 +287,7 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
             badges: [],
             lastFetchDate: nil,
             lastMessagingDate: nil,
-            isPhoneNumberShared: nil
+            isPhoneNumberShared: nil,
         )
     }
 
@@ -306,7 +306,7 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
         badges: [OWSUserProfileBadgeInfo],
         lastFetchDate: Date?,
         lastMessagingDate: Date?,
-        isPhoneNumberShared: Bool?
+        isPhoneNumberShared: Bool?,
     ) {
         self.id = id
         self.uniqueId = uniqueId
@@ -346,11 +346,11 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
             badges: badges,
             lastFetchDate: lastFetchDate,
             lastMessagingDate: lastMessagingDate,
-            isPhoneNumberShared: isPhoneNumberShared
+            isPhoneNumberShared: isPhoneNumberShared,
         )
     }
 
-    public override func isEqual(_ object: Any?) -> Bool {
+    override public func isEqual(_ object: Any?) -> Bool {
         guard let otherProfile = object as? OWSUserProfile else {
             return false
         }
@@ -479,7 +479,7 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
 
     static func insertableAddress(
         serviceId: ServiceId,
-        localIdentifiers: LocalIdentifiers
+        localIdentifiers: LocalIdentifiers,
     ) -> InsertableAddress {
         if localIdentifiers.contains(serviceId: serviceId) {
             return .localUser
@@ -490,7 +490,7 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
 
     static func insertableAddress(
         legacyPhoneNumberFromBackupRestore phoneNumber: E164,
-        localIdentifiers: LocalIdentifiers
+        localIdentifiers: LocalIdentifiers,
     ) -> InsertableAddress {
         if localIdentifiers.contains(phoneNumber: phoneNumber) {
             return .localUser
@@ -543,7 +543,7 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
     /// that are about to be referenced.
     static func consumeTemporaryAvatarFileUrl(
         _ avatarFileUrl: OptionalChange<URL?>,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws -> OptionalChange<String?> {
         switch avatarFileUrl {
         case .noChange:
@@ -653,7 +653,7 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
     private static let unfairLock = UnfairLock()
 
     private static func filterBioComponentForDisplay(_ input: String?, maxLengthGlyphs: Int, maxLengthBytes: Int) -> String? {
-        guard let input = input else {
+        guard let input else {
             return nil
         }
         let cacheKey = "\(maxLengthGlyphs)-\(maxLengthBytes)-\(input)"
@@ -673,18 +673,22 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
     public static func bioForDisplay(bio: String?, bioEmoji: String?) -> String? {
         var components = [String]()
         // TODO: We could use EmojiWithSkinTones to check for availability of the emoji.
-        if let emoji = filterBioComponentForDisplay(
-            bioEmoji,
-            maxLengthGlyphs: Constants.maxBioEmojiLengthGlyphs,
-            maxLengthBytes: Constants.maxBioEmojiLengthBytes
-        ) {
+        if
+            let emoji = filterBioComponentForDisplay(
+                bioEmoji,
+                maxLengthGlyphs: Constants.maxBioEmojiLengthGlyphs,
+                maxLengthBytes: Constants.maxBioEmojiLengthBytes,
+            )
+        {
             components.append(emoji)
         }
-        if let bioText = filterBioComponentForDisplay(
-            bio,
-            maxLengthGlyphs: Constants.maxBioLengthGlyphs,
-            maxLengthBytes: Constants.maxBioLengthBytes
-        ) {
+        if
+            let bioText = filterBioComponentForDisplay(
+                bio,
+                maxLengthGlyphs: Constants.maxBioLengthGlyphs,
+                maxLengthBytes: Constants.maxBioLengthBytes,
+            )
+        {
             components.append(bioText)
         }
         guard !components.isEmpty else {
@@ -788,7 +792,7 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
     public class func encrypt(
         givenName: OWSUserProfile.NameComponent,
         familyName: OWSUserProfile.NameComponent?,
-        profileKey: Aes256Key
+        profileKey: Aes256Key,
     ) throws -> ProfileValue {
         let encodedValues: [Data] = [givenName.dataValue, familyName?.dataValue].compacted()
         let encodedValue = Data(encodedValues.joined(separator: Data([0])))
@@ -823,19 +827,19 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
 
     public class func getOrBuildUserProfileForLocalUser(
         userProfileWriter: UserProfileWriter,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) -> OWSUserProfile {
         return getOrBuildUserProfile(
             for: .localUser,
             userProfileWriter: userProfileWriter,
-            tx: tx
+            tx: tx,
         )
     }
 
     public class func getOrBuildUserProfile(
         for insertableAddress: InsertableAddress,
         userProfileWriter: UserProfileWriter,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) -> OWSUserProfile {
         // If we already have a profile for this address, return it.
         if let userProfile = fetchAndExpungeUserProfiles(for: insertableAddress, tx: tx) {
@@ -858,7 +862,7 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
             userProfile.update(
                 profileKey: .setTo(Aes256Key.generateRandom()),
                 userProfileWriter: userProfileWriter,
-                transaction: tx
+                transaction: tx,
             )
         }
         return userProfile
@@ -871,7 +875,7 @@ public final class OWSUserProfile: NSObject, NSCopying, SDSCodableModel, Decodab
     /// remove duplicates.
     private class func fetchAndExpungeUserProfiles(
         for insertableAddress: InsertableAddress,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) -> OWSUserProfile? {
         let userProfiles: [OWSUserProfile]
         switch insertableAddress {
@@ -950,11 +954,11 @@ extension OWSUserProfile {
             let dataValue = Data(strippedTruncatedString.rawValue.utf8)
             return (
                 NameComponent(stringValue: strippedTruncatedString, dataValue: dataValue),
-                didTruncate: truncatedString != strippedString
+                didTruncate: truncatedString != strippedString,
             )
         }
 
-        public static func == (lhs: Self, rhs: Self) -> Bool {
+        public static func ==(lhs: Self, rhs: Self) -> Bool {
             // Don't check `dataValue` because it's essentially a computed property.
             return lhs.stringValue == rhs.stringValue
         }
@@ -1020,7 +1024,7 @@ extension OWSUserProfile {
     @discardableResult
     private func applyChanges(
         _ changes: UserProfileChanges,
-        userProfileWriter: UserProfileWriter
+        userProfileWriter: UserProfileWriter,
     ) -> UserVisibleChange {
         let canModifyStorageServiceProperties: Bool
         switch internalAddress {
@@ -1038,7 +1042,6 @@ extension OWSUserProfile {
                 case .reupload: fallthrough
                 case .tests:
                     return true
-
                 case .avatarDownload: fallthrough
                 case .groupState: fallthrough
                 case .linking: fallthrough
@@ -1046,7 +1049,6 @@ extension OWSUserProfile {
                 case .profileFetch: fallthrough
                 case .syncMessage:
                     return false
-
                 case .changePhoneNumber: fallthrough
                 case .systemContactsFetch: fallthrough
                 case .unknown: fallthrough
@@ -1074,7 +1076,7 @@ extension OWSUserProfile {
         let canUpdateAvatarFileName = canUpdateAvatarUrlPath || userProfileWriter == .avatarDownload
         let didChangeAvatar = updateAvatar(
             avatarUrlPath: canUpdateAvatarUrlPath ? changes.avatarUrlPath : .noChange,
-            avatarFileName: canUpdateAvatarFileName ? changes.avatarFileName : .noChange
+            avatarFileName: canUpdateAvatarFileName ? changes.avatarFileName : .noChange,
         )
 
         // And we also care if user-visible properties change.
@@ -1117,7 +1119,7 @@ extension OWSUserProfile {
     private func applyChanges(
         _ changes: UserProfileChanges,
         userProfileWriter: UserProfileWriter,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         let displayNameBeforeLearningProfileName = displayNameBeforeLearningProfileNameIfNecessary(tx: tx)
 
@@ -1185,7 +1187,7 @@ extension OWSUserProfile {
             TSInfoMessage.insertProfileChangeMessagesIfNecessary(
                 oldProfile: oldInstance,
                 newProfile: newInstance,
-                transaction: tx
+                transaction: tx,
             )
         }
 
@@ -1199,14 +1201,14 @@ extension OWSUserProfile {
             TSInfoMessage.insertLearnedProfileNameMessage(
                 serviceId: displayNameBeforeLearningProfileName.serviceId,
                 displayNameBefore: displayNameBeforeLearningProfileName.displayName,
-                tx: tx
+                tx: tx,
             )
         }
 
         updatePhoneNumberVisibilityIfNeeded(
             oldUserProfile: oldInstance,
             newUserProfile: newInstance,
-            tx: tx
+            tx: tx,
         )
 
         if changeResult == .nothing {
@@ -1258,7 +1260,7 @@ extension OWSUserProfile {
                 NotificationCenter.default.postOnMainThread(
                     name: UserProfileNotifications.otherUsersProfileDidChange,
                     object: nil,
-                    userInfo: [UserProfileNotifications.profileAddressKey: address]
+                    userInfo: [UserProfileNotifications.profileAddressKey: address],
                 )
             }
         }
@@ -1276,7 +1278,7 @@ extension OWSUserProfile {
     /// This implementation deliberately avoids the typical `DisplayName`
     /// calculation in `ContactManager`. See comments inline.
     private func displayNameBeforeLearningProfileNameIfNecessary(
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> DisplayNameBeforeLearningProfileName? {
         guard givenName == nil else {
             return nil
@@ -1302,7 +1304,7 @@ extension OWSUserProfile {
             /// such as in thread merging.
             return DisplayNameBeforeLearningProfileName(
                 serviceId: aci,
-                displayName: .username(username)
+                displayName: .username(username),
             )
         } else if
             let serviceId = signalServiceAddress.serviceId,
@@ -1316,7 +1318,7 @@ extension OWSUserProfile {
             /// the user brought with them, and that might change).
             return DisplayNameBeforeLearningProfileName(
                 serviceId: serviceId,
-                displayName: .phoneNumber(phoneNumber.stringValue)
+                displayName: .phoneNumber(phoneNumber.stringValue),
             )
         }
 
@@ -1326,10 +1328,10 @@ extension OWSUserProfile {
     private func updatePhoneNumberVisibilityIfNeeded(
         oldUserProfile: OWSUserProfile?,
         newUserProfile: OWSUserProfile,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         let shouldUpdateVisibility: Bool = {
-            if (oldUserProfile?.givenName == nil) && (newUserProfile.givenName != nil) {
+            if oldUserProfile?.givenName == nil, newUserProfile.givenName != nil {
                 return true
             }
             if newUserProfile.isPhoneNumberShared != oldUserProfile?.isPhoneNumberShared {
@@ -1369,7 +1371,7 @@ extension OWSUserProfile {
         badges: OptionalChange<[OWSUserProfileBadgeInfo]> = .noChange,
         isPhoneNumberShared: OptionalChange<Bool?> = .noChange,
         userProfileWriter: UserProfileWriter,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) {
         applyChanges(
             UserProfileChanges(
@@ -1383,10 +1385,10 @@ extension OWSUserProfile {
                 lastMessagingDate: lastMessagingDate,
                 profileKey: profileKey,
                 badges: badges,
-                isPhoneNumberShared: isPhoneNumberShared
+                isPhoneNumberShared: isPhoneNumberShared,
             ),
             userProfileWriter: userProfileWriter,
-            tx: transaction
+            tx: transaction,
         )
     }
 }
@@ -1408,7 +1410,7 @@ extension OWSUserProfile {
         bio: String?,
         bioEmoji: String?,
         profileKey: Aes256Key?,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         self.givenName = givenName
         self.familyName = familyName
@@ -1435,6 +1437,7 @@ public extension String.StringInterpolation {
     mutating func appendInterpolation(userProfileColumn column: OWSUserProfile.CodingKeys) {
         appendLiteral(OWSUserProfile.columnName(column))
     }
+
     mutating func appendInterpolation(userProfileColumnFullyQualified column: OWSUserProfile.CodingKeys) {
         appendLiteral(OWSUserProfile.columnName(column, fullyQualified: true))
     }

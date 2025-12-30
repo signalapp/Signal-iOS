@@ -30,7 +30,7 @@ public struct VersionedDisappearingMessageToken {
     public init(
         isEnabled: Bool,
         durationSeconds: UInt32,
-        version: UInt32?
+        version: UInt32?,
     ) {
         // Consider disabled if duration is zero.
         // Use zero duration if not enabled.
@@ -42,7 +42,7 @@ public struct VersionedDisappearingMessageToken {
 
     public static func forGroupThread(
         isEnabled: Bool,
-        durationSeconds: UInt32
+        durationSeconds: UInt32,
     ) -> Self {
         // Version is unused for group threads
         return .init(isEnabled: isEnabled, durationSeconds: durationSeconds, version: nil)
@@ -50,7 +50,7 @@ public struct VersionedDisappearingMessageToken {
 
     public static func forUniversalTimer(
         isEnabled: Bool,
-        durationSeconds: UInt32
+        durationSeconds: UInt32,
     ) -> Self {
         // Version is unused for the universal timer
         return .init(isEnabled: isEnabled, durationSeconds: durationSeconds, version: nil)
@@ -58,7 +58,7 @@ public struct VersionedDisappearingMessageToken {
 
     public static func token(
         forProtoExpireTimerSeconds expireTimerSeconds: UInt32?,
-        version: UInt32?
+        version: UInt32?,
     ) -> Self {
         return .init(durationSeconds: expireTimerSeconds ?? 0, version: version)
     }

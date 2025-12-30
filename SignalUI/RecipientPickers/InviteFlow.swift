@@ -10,7 +10,8 @@ public import SignalServiceKit
 
 public class InviteFlow: NSObject {
     private enum Channel {
-        case message, mail
+        case message
+        case mail
 
         var actionTitle: String {
             switch self {
@@ -50,7 +51,7 @@ public class InviteFlow: NSObject {
     public static var unsupportedFeatureMessage: String {
         OWSLocalizedString(
             "UNSUPPORTED_FEATURE_ERROR",
-            comment: "When inviting contacts to use Signal, this error is shown if the device doesn't support SMS or if there aren't any registered email accounts."
+            comment: "When inviting contacts to use Signal, this error is shown if the device doesn't support SMS or if there aren't any registered email accounts.",
         )
     }
 
@@ -110,7 +111,7 @@ public class InviteFlow: NSObject {
                 picker.title = OWSLocalizedString("INVITE_FRIENDS_PICKER_TITLE", comment: "Navbar title")
                 self.presentViewController(picker, animated: true)
             },
-            presentErrorFrom: presentingViewController
+            presentErrorFrom: presentingViewController,
         )
     }
 
@@ -121,15 +122,15 @@ public class InviteFlow: NSObject {
                     title: nil,
                     message: OWSLocalizedString(
                         "INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT",
-                        comment: "Alert warning that sending an invite to multiple users will create a group message whose recipients will be able to see each other."
-                    )
+                        comment: "Alert warning that sending an invite to multiple users will create a group message whose recipients will be able to see each other.",
+                    ),
                 )
                 warning.addAction(ActionSheetAction(
                     title: CommonStrings.continueButton,
                     style: .default,
                     handler: { _ in
                         self.sendSMSTo(phoneNumbers: phoneNumbers)
-                    }
+                    },
                 ))
                 warning.addAction(OWSActionSheets.cancelAction)
 
@@ -169,7 +170,7 @@ public class InviteFlow: NSObject {
 
         let subject = OWSLocalizedString("EMAIL_INVITE_SUBJECT", comment: "subject of email sent to contacts when inviting to install Signal")
         let bodyFormat = OWSLocalizedString("EMAIL_INVITE_BODY", comment: "body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}}")
-        let body = String.init(format: bodyFormat, installUrl, homepageUrl)
+        let body = String(format: bodyFormat, installUrl, homepageUrl)
         mailComposeViewController.setSubject(subject)
         mailComposeViewController.setMessageBody(body, isHTML: false)
 
@@ -248,7 +249,7 @@ extension InviteFlow: MFMailComposeViewControllerDelegate {
     public func mailComposeController(
         _ controller: MFMailComposeViewController,
         didFinishWith result: MFMailComposeResult,
-        error: Error?
+        error: Error?,
     ) {
         presentingViewController?.dismiss(animated: true) {
             switch result {

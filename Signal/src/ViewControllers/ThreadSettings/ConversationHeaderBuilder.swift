@@ -20,11 +20,11 @@ struct ConversationHeaderBuilder {
     struct Options: OptionSet {
         let rawValue: Int
 
-        static let message   = Options(rawValue: 1 << 0)
+        static let message = Options(rawValue: 1 << 0)
         static let audioCall = Options(rawValue: 1 << 1)
         static let videoCall = Options(rawValue: 1 << 2)
-        static let mute      = Options(rawValue: 1 << 3)
-        static let search    = Options(rawValue: 1 << 4)
+        static let mute = Options(rawValue: 1 << 3)
+        static let search = Options(rawValue: 1 << 4)
 
         static let renderLocalUserAsNoteToSelf = Options(rawValue: 1 << 5)
         static let noBackground = Options(rawValue: 1 << 6)
@@ -34,21 +34,21 @@ struct ConversationHeaderBuilder {
         for thread: TSThread,
         sizeClass: ConversationAvatarView.Configuration.SizeClass,
         options: Options,
-        delegate: ConversationHeaderDelegate
+        delegate: ConversationHeaderDelegate,
     ) -> UIView {
         if let groupThread = thread as? TSGroupThread {
             return ConversationHeaderBuilder.buildHeaderForGroup(
                 groupThread: groupThread,
                 sizeClass: sizeClass,
                 options: options,
-                delegate: delegate
+                delegate: delegate,
             )
         } else if let contactThread = thread as? TSContactThread {
             return ConversationHeaderBuilder.buildHeaderForContact(
                 contactThread: contactThread,
                 sizeClass: sizeClass,
                 options: options,
-                delegate: delegate
+                delegate: delegate,
             )
         } else {
             owsFailDebug("Invalid thread.")
@@ -60,7 +60,7 @@ struct ConversationHeaderBuilder {
         groupThread: TSGroupThread,
         sizeClass: ConversationAvatarView.Configuration.SizeClass,
         options: Options,
-        delegate: ConversationHeaderDelegate
+        delegate: ConversationHeaderDelegate,
     ) -> UIView {
         // Make sure the view is loaded before we open a transaction,
         // because it can end up creating a transaction within.
@@ -71,7 +71,7 @@ struct ConversationHeaderBuilder {
                 sizeClass: sizeClass,
                 options: options,
                 delegate: delegate,
-                transaction: transaction
+                transaction: transaction,
             )
         }
     }
@@ -81,13 +81,13 @@ struct ConversationHeaderBuilder {
         sizeClass: ConversationAvatarView.Configuration.SizeClass,
         options: Options,
         delegate: ConversationHeaderDelegate,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> UIView {
         var builder = ConversationHeaderBuilder(
             delegate: delegate,
             sizeClass: sizeClass,
             options: options,
-            transaction: transaction
+            transaction: transaction,
         )
 
         var isShowingGroupDescription = false
@@ -101,15 +101,17 @@ struct ConversationHeaderBuilder {
             }
         }
 
-        if !isShowingGroupDescription && !groupThread.groupModel.isPlaceholder {
+        if !isShowingGroupDescription, !groupThread.groupModel.isPlaceholder {
             let memberCount = groupThread.groupModel.groupMembership.fullMembers.count
             var groupMembersText = GroupViewUtils.formatGroupMembersLabel(memberCount: memberCount)
             if groupThread.isGroupV1Thread {
                 groupMembersText.append(" ")
                 groupMembersText.append("•")
                 groupMembersText.append(" ")
-                groupMembersText.append(OWSLocalizedString("GROUPS_LEGACY_GROUP_INDICATOR",
-                                                          comment: "Label indicating a legacy group."))
+                groupMembersText.append(OWSLocalizedString(
+                    "GROUPS_LEGACY_GROUP_INDICATOR",
+                    comment: "Label indicating a legacy group.",
+                ))
             }
             builder.addSubtitleLabel(text: groupMembersText)
         }
@@ -127,7 +129,7 @@ struct ConversationHeaderBuilder {
         contactThread: TSContactThread,
         sizeClass: ConversationAvatarView.Configuration.SizeClass,
         options: Options,
-        delegate: ConversationHeaderDelegate
+        delegate: ConversationHeaderDelegate,
     ) -> UIView {
         // Make sure the view is loaded before we open a transaction,
         // because it can end up creating a transaction within.
@@ -138,7 +140,7 @@ struct ConversationHeaderBuilder {
                 sizeClass: sizeClass,
                 options: options,
                 delegate: delegate,
-                transaction: transaction
+                transaction: transaction,
             )
         }
     }
@@ -148,13 +150,13 @@ struct ConversationHeaderBuilder {
         sizeClass: ConversationAvatarView.Configuration.SizeClass,
         options: Options,
         delegate: ConversationHeaderDelegate,
-        transaction: DBReadTransaction
+        transaction: DBReadTransaction,
     ) -> UIView {
         var builder = ConversationHeaderBuilder(
             delegate: delegate,
             sizeClass: sizeClass,
             options: options,
-            transaction: transaction
+            transaction: transaction,
         )
 
         let address = contactThread.contactAddress
@@ -182,10 +184,12 @@ struct ConversationHeaderBuilder {
         return builder.build()
     }
 
-    init(delegate: ConversationHeaderDelegate,
-         sizeClass: ConversationAvatarView.Configuration.SizeClass,
-         options: Options,
-         transaction: DBReadTransaction) {
+    init(
+        delegate: ConversationHeaderDelegate,
+        sizeClass: ConversationAvatarView.Configuration.SizeClass,
+        options: Options,
+        transaction: DBReadTransaction,
+    ) {
 
         self.delegate = delegate
         self.sizeClass = sizeClass
@@ -215,18 +219,18 @@ struct ConversationHeaderBuilder {
                 icon: .settingsChats,
                 title: OWSLocalizedString(
                     "CONVERSATION_SETTINGS_MESSAGE_BUTTON",
-                    comment: "Button to message the chat"
+                    comment: "Button to message the chat",
                 ),
                 action: { [weak delegate] in
-                    guard let delegate = delegate else { return }
+                    guard let delegate else { return }
                     SignalApp.shared.dismissAllModals(animated: true, completion: {
                         SignalApp.shared.presentConversationForThread(
                             threadUniqueId: delegate.thread.uniqueId,
                             action: .compose,
-                            animated: true
+                            animated: true,
                         )
                     })
-                }
+                },
             ))
         }
 
@@ -248,12 +252,12 @@ struct ConversationHeaderBuilder {
                     icon: .buttonVideoCall,
                     title: OWSLocalizedString(
                         "CONVERSATION_SETTINGS_VIDEO_CALL_BUTTON",
-                        comment: "Button to start a video call"
+                        comment: "Button to start a video call",
                     ),
                     isEnabled: isCurrentCallForThread || !hasCurrentCall,
                     action: { [weak delegate] in
                         delegate?.startCall(withVideo: true)
-                    }
+                    },
                 ))
             }
 
@@ -262,12 +266,12 @@ struct ConversationHeaderBuilder {
                     icon: .buttonVoiceCall,
                     title: OWSLocalizedString(
                         "CONVERSATION_SETTINGS_VOICE_CALL_BUTTON",
-                        comment: "Button to start a voice call"
+                        comment: "Button to start a voice call",
                     ),
                     isEnabled: isCurrentCallForThread || !hasCurrentCall,
                     action: { [weak delegate] in
                         delegate?.startCall(withVideo: false)
-                    }
+                    },
                 ))
             }
         }
@@ -276,20 +280,20 @@ struct ConversationHeaderBuilder {
             buttons.append(buildIconButton(
                 icon: .buttonMute,
                 title: delegate.threadViewModel.isMuted
-                ? OWSLocalizedString(
-                    "CONVERSATION_SETTINGS_MUTED_BUTTON",
-                    comment: "Button to unmute the chat"
-                )
-                : OWSLocalizedString(
-                    "CONVERSATION_SETTINGS_MUTE_BUTTON",
-                    comment: "Button to mute the chat"
-                ),
+                    ? OWSLocalizedString(
+                        "CONVERSATION_SETTINGS_MUTED_BUTTON",
+                        comment: "Button to unmute the chat",
+                    )
+                    : OWSLocalizedString(
+                        "CONVERSATION_SETTINGS_MUTE_BUTTON",
+                        comment: "Button to mute the chat",
+                    ),
                 menu: ConversationSettingsViewController.muteUnmuteMenu(
                     for: delegate.threadViewModel,
                     actionExecuted: { [weak delegate] in
                         delegate?.updateTableContents(shouldReload: true)
-                    }
-                )
+                    },
+                ),
             ))
         }
 
@@ -298,11 +302,11 @@ struct ConversationHeaderBuilder {
                 icon: .buttonSearch,
                 title: OWSLocalizedString(
                     "CONVERSATION_SETTINGS_SEARCH_BUTTON",
-                    comment: "Button to search the chat"
+                    comment: "Button to search the chat",
                 ),
                 action: { [weak delegate] in
                     delegate?.tappedConversationSearch()
-                }
+                },
             ))
         }
 
@@ -374,7 +378,7 @@ struct ConversationHeaderBuilder {
         previewView.descriptionText = text
         previewView.groupName = delegate.threadName(
             renderLocalUserAsNoteToSelf: true,
-            transaction: transaction
+            transaction: transaction,
         )
         previewView.font = .dynamicTypeSubheadlineClamped
         previewView.textColor = Theme.secondaryTextAndIconColor
@@ -389,7 +393,7 @@ struct ConversationHeaderBuilder {
         let button = OWSButton { [weak delegate] in delegate?.didTapAddGroupDescription() }
         button.setTitle(OWSLocalizedString(
             "GROUP_DESCRIPTION_PLACEHOLDER",
-            comment: "Placeholder text for 'group description' field."
+            comment: "Placeholder text for 'group description' field.",
         ), for: .normal)
         button.setTitleColor(Theme.secondaryTextAndIconColor, for: .normal)
         button.titleLabel?.font = .dynamicTypeSubheadlineClamped
@@ -403,7 +407,8 @@ struct ConversationHeaderBuilder {
     func buildAvatarView(transaction: DBReadTransaction) -> UIView {
         let avatarView = ConversationAvatarView(
             sizeClass: sizeClass,
-            localUserDisplayMode: options.contains(.renderLocalUserAsNoteToSelf) ? .noteToSelf : .asUser)
+            localUserDisplayMode: options.contains(.renderLocalUserAsNoteToSelf) ? .noteToSelf : .asUser,
+        )
 
         avatarView.update(transaction) {
             $0.dataSource = .thread(delegate.thread)
@@ -420,7 +425,7 @@ struct ConversationHeaderBuilder {
         var config = UIButton.Configuration.plain()
         let title = delegate.threadAttributedString(
             renderLocalUserAsNoteToSelf: options.contains(.renderLocalUserAsNoteToSelf),
-            tx: transaction
+            tx: transaction,
         ).styled(with: .alignment(.center))
         config.attributedTitle = AttributedString(title)
         config.titleLineBreakMode = .byWordWrapping
@@ -440,7 +445,7 @@ struct ConversationHeaderBuilder {
         isNoteToSelf: Bool,
         isSystemContact: Bool,
         canTap: Bool,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> NSAttributedString {
         let font = UIFont.dynamicTypeFont(ofStandardSize: 26, weight: .semibold)
 
@@ -456,7 +461,7 @@ struct ConversationHeaderBuilder {
                 image: verifiedBadgeImage,
                 font: .dynamicTypeTitle3,
                 centerVerticallyRelativeTo: font,
-                heightReference: .pointSize
+                heightReference: .pointSize,
             )
             attributedString.append(verifiedBadgeAttachment)
         }
@@ -465,7 +470,7 @@ struct ConversationHeaderBuilder {
             let contactIcon = SignalSymbol.personCircle.attributedString(
                 dynamicTypeBaseSize: 20,
                 weight: .bold,
-                leadingCharacter: .nonBreakingSpace
+                leadingCharacter: .nonBreakingSpace,
             )
             attributedString.append(contactIcon)
         }
@@ -475,7 +480,7 @@ struct ConversationHeaderBuilder {
                 dynamicTypeBaseSize: 24,
                 weight: .bold,
                 leadingCharacter: .nonBreakingSpace,
-                attributes: [.foregroundColor: UIColor.Signal.secondaryLabel]
+                attributes: [.foregroundColor: UIColor.Signal.secondaryLabel],
             )
             attributedString.append(chevron)
         }
@@ -595,21 +600,21 @@ extension ConversationHeaderDelegate {
         let threadName = threadName(renderLocalUserAsNoteToSelf: renderLocalUserAsNoteToSelf, transaction: tx)
 
         let isSystemContact =
-        if let contactThread = self.thread as? TSContactThread {
-            SSKEnvironment.shared.contactManagerRef.fetchSignalAccount(
-                for: contactThread.contactAddress,
-                transaction: tx
-            ) != nil
-        } else {
-            false
-        }
+            if let contactThread = self.thread as? TSContactThread {
+                SSKEnvironment.shared.contactManagerRef.fetchSignalAccount(
+                    for: contactThread.contactAddress,
+                    transaction: tx,
+                ) != nil
+            } else {
+                false
+            }
 
         return ConversationHeaderBuilder.threadAttributedString(
             threadName: threadName,
             isNoteToSelf: thread.isNoteToSelf,
             isSystemContact: isSystemContact,
             canTap: self.canTapThreadName,
-            tx: tx
+            tx: tx,
         )
     }
 
@@ -677,7 +682,7 @@ extension ConversationSettingsViewController: ConversationHeaderDelegate {
             for: thread,
             sizeClass: .eightyEight,
             options: options,
-            delegate: self
+            delegate: self,
         )
     }
 
@@ -687,7 +692,7 @@ extension ConversationSettingsViewController: ConversationHeaderDelegate {
         guard let groupThread = thread as? TSGroupThread else { return }
         let vc = GroupDescriptionViewController(
             groupModel: groupThread.groupModel,
-            options: [.editable, .updateImmediately]
+            options: [.editable, .updateImmediately],
         )
         vc.descriptionDelegate = self
         presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
@@ -733,7 +738,7 @@ public class OWSLabel: UILabel {
 
     @objc
     private func didTap() {
-        guard let tapBlock = tapBlock else {
+        guard let tapBlock else {
             owsFailDebug("Missing tapBlock.")
             return
         }
@@ -759,7 +764,7 @@ public class OWSLabel: UILabel {
         guard sender.state == .began else {
             return
         }
-        guard let longPressBlock = longPressBlock else {
+        guard let longPressBlock else {
             owsFailDebug("Missing longPressBlock.")
             return
         }

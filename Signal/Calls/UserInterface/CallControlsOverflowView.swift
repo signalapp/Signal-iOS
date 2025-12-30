@@ -26,14 +26,14 @@ class CallControlsOverflowView: UIView {
         var isHandRaised: Bool {
             didSet {
                 if isHandRaised {
-                    self.raiseHandLabel.text =  OWSLocalizedString(
+                    self.raiseHandLabel.text = OWSLocalizedString(
                         "CALL_LOWER_HAND_BUTTON_LABEL",
-                        comment: "Label on button for lowering hand in call."
+                        comment: "Label on button for lowering hand in call.",
                     )
                 } else {
-                    self.raiseHandLabel.text =  OWSLocalizedString(
+                    self.raiseHandLabel.text = OWSLocalizedString(
                         "CALL_RAISE_HAND_BUTTON_LABEL",
-                        comment: "Label on button for raising hand in call."
+                        comment: "Label on button for raising hand in call.",
                     )
                 }
             }
@@ -80,7 +80,7 @@ class CallControlsOverflowView: UIView {
 
             let backgroundView = self.addBackgroundView(
                 withBackgroundColor: .ows_gray75,
-                cornerRadius: Constants.stackViewCornerRadius
+                cornerRadius: Constants.stackViewCornerRadius,
             )
             backgroundView.layer.shadowColor = UIColor.ows_black.cgColor
             backgroundView.layer.shadowRadius = Constants.stackViewBackgroundViewShadowRadius
@@ -121,7 +121,7 @@ class CallControlsOverflowView: UIView {
         reactionsSink: ReactionsSink,
         raiseHandSender: RaiseHandSender,
         emojiPickerSheetPresenter: EmojiPickerSheetPresenter,
-        callControlsOverflowPresenter: CallControlsOverflowPresenter
+        callControlsOverflowPresenter: CallControlsOverflowPresenter,
     ) {
         self.call = call
         self.reactionSender = reactionSender
@@ -144,7 +144,7 @@ class CallControlsOverflowView: UIView {
             buttonStack.topAnchor.constraint(equalTo: reactionPicker.bottomAnchor, constant: Constants.spacingBetweenEmojiPickerAndStackView),
             buttonStack.leadingAnchor.constraint(equalTo: self.leadingAnchor),
             buttonStack.trailingAnchor.constraint(equalTo: self.trailingAnchor),
-            buttonStack.bottomAnchor.constraint(equalTo: self.bottomAnchor)
+            buttonStack.bottomAnchor.constraint(equalTo: self.bottomAnchor),
         ])
         buttonStack.raiseHandButton.addTarget(self, action: #selector(CallControlsOverflowView.didTapRaiseHandButton), for: .touchUpInside)
     }
@@ -215,7 +215,7 @@ class CallControlsOverflowView: UIView {
             duration: Constants.animationDuration,
             completion: { [weak self] in
                 self?.callControlsOverflowPresenter?.callControlsOverflowDidDisappear()
-            }
+            },
         )
         buttonStack.alpha = 1
         buttonStack.backgroundColor = .ows_gray75
@@ -242,7 +242,7 @@ extension CallControlsOverflowView: MessageReactionPickerDelegate {
     func didSelectAnyEmoji() {
         let sheet = EmojiPickerSheet(
             message: nil,
-            reactionPickerConfigurationListener: self
+            reactionPickerConfigurationListener: self,
         ) { [weak self] selectedEmoji in
             guard let selectedEmoji else { return }
             self?.react(with: selectedEmoji.rawValue)
@@ -250,7 +250,7 @@ extension CallControlsOverflowView: MessageReactionPickerDelegate {
         sheet.overrideUserInterfaceStyle = .dark
         emojiPickerSheetPresenter?.present(
             sheet: sheet,
-            animated: true
+            animated: true,
         )
     }
 
@@ -271,9 +271,9 @@ extension CallControlsOverflowView: MessageReactionPickerDelegate {
                     emoji: reaction,
                     name: CommonStrings.you,
                     aci: localAci,
-                    timestamp: Date.timeIntervalSinceReferenceDate
-                )
-            ]
+                    timestamp: Date.timeIntervalSinceReferenceDate,
+                ),
+            ],
         )
     }
 }

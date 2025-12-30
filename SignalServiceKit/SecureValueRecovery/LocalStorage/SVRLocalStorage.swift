@@ -39,56 +39,56 @@ public protocol SVRLocalStorageInternal: SVRLocalStorage {
 
 /// Stores state related to SVR independent of enclave; e.g. do we have backups at all,
 /// what type is our pin, etc.
-internal class SVRLocalStorageImpl: SVRLocalStorageInternal {
+class SVRLocalStorageImpl: SVRLocalStorageInternal {
     private let svrKvStore: KeyValueStore
 
-    public init() {
+    init() {
         // Collection name must not be changed; matches that historically kept in KeyBackupServiceImpl.
         self.svrKvStore = KeyValueStore(collection: "kOWSKeyBackupService_Keys")
     }
 
     // MARK: - Getters
 
-    public func getNeedsMasterKeyBackup(_ transaction: DBReadTransaction) -> Bool {
+    func getNeedsMasterKeyBackup(_ transaction: DBReadTransaction) -> Bool {
         return svrKvStore.getBool(Keys.needsMasterKeyBackup, defaultValue: false, transaction: transaction)
     }
 
-    public func getIsMasterKeyBackedUp(_ transaction: DBReadTransaction) -> Bool {
+    func getIsMasterKeyBackedUp(_ transaction: DBReadTransaction) -> Bool {
         return svrKvStore.getBool(Keys.isMasterKeyBackedUp, defaultValue: false, transaction: transaction)
     }
 
-    public func getPinType(_ transaction: DBReadTransaction) -> SVR.PinType? {
+    func getPinType(_ transaction: DBReadTransaction) -> SVR.PinType? {
         guard let raw = svrKvStore.getInt(Keys.pinType, transaction: transaction) else {
             return nil
         }
         return SVR.PinType(rawValue: raw)
     }
 
-    public func getSVR2MrEnclaveStringValue(_ transaction: DBReadTransaction) -> String? {
+    func getSVR2MrEnclaveStringValue(_ transaction: DBReadTransaction) -> String? {
         return svrKvStore.getString(Keys.svr2MrEnclaveStringValue, transaction: transaction)
     }
 
     // MARK: - Setters
 
-    public func setNeedsMasterKeyBackup(_ value: Bool, _ transaction: DBWriteTransaction) {
+    func setNeedsMasterKeyBackup(_ value: Bool, _ transaction: DBWriteTransaction) {
         return svrKvStore.setBool(value, key: Keys.needsMasterKeyBackup, transaction: transaction)
     }
 
-    public func setIsMasterKeyBackedUp(_ value: Bool, _ transaction: DBWriteTransaction) {
+    func setIsMasterKeyBackedUp(_ value: Bool, _ transaction: DBWriteTransaction) {
         svrKvStore.setBool(value, key: Keys.isMasterKeyBackedUp, transaction: transaction)
     }
 
-    public func setPinType(_ value: SVR.PinType, _ transaction: DBWriteTransaction) {
+    func setPinType(_ value: SVR.PinType, _ transaction: DBWriteTransaction) {
         svrKvStore.setInt(value.rawValue, key: Keys.pinType, transaction: transaction)
     }
 
-    public func setSVR2MrEnclaveStringValue(_ value: String?, _ transaction: DBWriteTransaction) {
+    func setSVR2MrEnclaveStringValue(_ value: String?, _ transaction: DBWriteTransaction) {
         svrKvStore.setString(value, key: Keys.svr2MrEnclaveStringValue, transaction: transaction)
     }
 
     // MARK: - Clearing Keys
 
-    public func clearSVRKeys(_ transaction: DBWriteTransaction) {
+    func clearSVRKeys(_ transaction: DBWriteTransaction) {
         svrKvStore.removeValues(
             forKeys: [
                 Keys.pinType,
@@ -96,13 +96,13 @@ internal class SVRLocalStorageImpl: SVRLocalStorageInternal {
                 Keys.syncedStorageServiceKey,
                 Keys.legacy_svr1EnclaveName,
                 Keys.svr2MrEnclaveStringValue,
-                Keys.needsMasterKeyBackup
+                Keys.needsMasterKeyBackup,
             ],
-            transaction: transaction
+            transaction: transaction,
         )
     }
 
-    public func clearStorageServiceKeys(_ transaction: DBWriteTransaction) {
+    func clearStorageServiceKeys(_ transaction: DBWriteTransaction) {
         svrKvStore.removeValue(forKey: Keys.syncedStorageServiceKey, transaction: transaction)
     }
 
@@ -113,7 +113,7 @@ internal class SVRLocalStorageImpl: SVRLocalStorageInternal {
             forKeys: [
                 Keys.legacy_svr1EnclaveName,
             ],
-            transaction: transaction
+            transaction: transaction,
         )
     }
 

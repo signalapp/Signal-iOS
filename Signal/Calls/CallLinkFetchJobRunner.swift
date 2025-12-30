@@ -15,7 +15,7 @@ actor CallLinkFetchJobRunner: DatabaseChangeDelegate {
     init(
         callLinkStore: any CallLinkRecordStore,
         callLinkStateUpdater: CallLinkStateUpdater,
-        db: any DB
+        db: any DB,
     ) {
         self.callLinkStore = callLinkStore
         self.callLinkStateUpdater = callLinkStateUpdater
@@ -73,7 +73,7 @@ actor CallLinkFetchJobRunner: DatabaseChangeDelegate {
                 sequentialFailureCount += 1
                 let retryDelayNs = OWSOperation.retryIntervalForExponentialBackoff(
                     failureCount: sequentialFailureCount,
-                    maxAverageBackoff: 6 * .hour
+                    maxAverageBackoff: 6 * .hour,
                 ).clampedNanoseconds
                 Logger.warn("Retrying persistent call link fetch after ≈\(OWSOperation.formattedNs(retryDelayNs))s; \(error)")
                 try? await Task.sleep(nanoseconds: retryDelayNs)

@@ -13,8 +13,8 @@ extension Usernames {
         }
 
         enum Wrappers {
-            internal typealias MessageProcessor = _UsernameValidationManager_MessageProcessorWrapper
-            internal typealias StorageServiceManager = _UsernameValidationManager_StorageServiceManagerWrapper
+            typealias MessageProcessor = _UsernameValidationManager_MessageProcessorWrapper
+            typealias StorageServiceManager = _UsernameValidationManager_StorageServiceManagerWrapper
         }
     }
 }
@@ -81,7 +81,7 @@ public class UsernameValidationManagerImpl: UsernameValidationManager {
             }
             return try await validateLocalUsernameLinkAgainstService(
                 localUsername: username,
-                localUsernameLink: usernameLink
+                localUsernameLink: usernameLink,
             )
         case let .linkCorrupted(username):
             // If we have a username but know our link is broken, no need to
@@ -117,7 +117,7 @@ public class UsernameValidationManagerImpl: UsernameValidationManager {
     /// value matches the service. The promise rejects if the local username
     /// does not match the service.
     private func validateLocalUsernameAgainstService(
-        localUsername: String?
+        localUsername: String?,
     ) async throws -> Bool {
         let whoAmIResponse = try await self.context.whoAmIManager.makeWhoAmIRequest()
 
@@ -134,9 +134,11 @@ public class UsernameValidationManagerImpl: UsernameValidationManager {
             case let (.some(localUsername), .some(remoteUsernameHash)):
                 // Both present -> check the values
 
-                guard let hashedLocalUsername = try? Usernames.HashedUsername(
-                    forUsername: localUsername
-                ) else {
+                guard
+                    let hashedLocalUsername = try? Usernames.HashedUsername(
+                        forUsername: localUsername,
+                    )
+                else {
                     return false
                 }
 
@@ -151,7 +153,7 @@ public class UsernameValidationManagerImpl: UsernameValidationManager {
 
             await self.context.database.awaitableWrite { tx in
                 self.context.localUsernameManager.setLocalUsernameCorrupted(
-                    tx: tx
+                    tx: tx,
                 )
             }
         }
@@ -160,19 +162,19 @@ public class UsernameValidationManagerImpl: UsernameValidationManager {
 
     private func validateLocalUsernameLinkAgainstService(
         localUsername: String,
-        localUsernameLink: Usernames.UsernameLink
+        localUsernameLink: Usernames.UsernameLink,
     ) async throws -> Bool {
         let validationSucceeded: Bool
         do {
             let usernameForLocalLink = try await self.context.usernameLinkManager.decryptEncryptedLink(
-                link: localUsernameLink
+                link: localUsernameLink,
             )
             if usernameForLocalLink == nil {
                 self.logger.warn("Couldn't find our own username link")
             }
             validationSucceeded = (usernameForLocalLink == localUsername)
         } catch
-            LibSignalClient.SignalError.usernameLinkInvalidEntropyDataLength,
+        LibSignalClient.SignalError.usernameLinkInvalidEntropyDataLength,
             LibSignalClient.SignalError.usernameLinkInvalid
         {
             self.logger.warn("Couldn't parse our own username link")
@@ -186,7 +188,7 @@ public class UsernameValidationManagerImpl: UsernameValidationManager {
             await self.context.database.awaitableWrite { tx in
                 self.context.localUsernameManager.setLocalUsernameWithCorruptedLink(
                     username: localUsername,
-                    tx: tx
+                    tx: tx,
                 )
             }
         }
@@ -202,13 +204,13 @@ public protocol _UsernameValidationManager_MessageProcessorShim {
     func waitForFetchingAndProcessing() async throws(CancellationError)
 }
 
-internal class _UsernameValidationManager_MessageProcessorWrapper: Usernames.Validation.Shims.MessageProcessor {
+class _UsernameValidationManager_MessageProcessorWrapper: Usernames.Validation.Shims.MessageProcessor {
     private let messageProcessor: MessageProcessor
-    public init(_ messageProcessor: MessageProcessor) {
+    init(_ messageProcessor: MessageProcessor) {
         self.messageProcessor = messageProcessor
     }
 
-    public func waitForFetchingAndProcessing() async throws(CancellationError) {
+    func waitForFetchingAndProcessing() async throws(CancellationError) {
         try await messageProcessor.waitForFetchingAndProcessing()
     }
 }
@@ -219,13 +221,13 @@ public protocol _UsernameValidationManager_StorageServiceManagerShim {
     func waitForPendingRestores() async throws
 }
 
-internal class _UsernameValidationManager_StorageServiceManagerWrapper: Usernames.Validation.Shims.StorageServiceManager {
+class _UsernameValidationManager_StorageServiceManagerWrapper: Usernames.Validation.Shims.StorageServiceManager {
     private let storageServiceManager: StorageServiceManager
-    public init(_ storageServiceManager: StorageServiceManager) {
+    init(_ storageServiceManager: StorageServiceManager) {
         self.storageServiceManager = storageServiceManager
     }
 
-    public func waitForPendingRestores() async throws {
+    func waitForPendingRestores() async throws {
         try await storageServiceManager.waitForPendingRestores()
     }
 }

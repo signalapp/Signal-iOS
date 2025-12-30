@@ -34,7 +34,7 @@ private class LocalUserLeaveGroupJobRunner: JobRunner {
             jobRecord: jobRecord,
             retryLimit: Constants.maxRetries,
             db: DependenciesBridge.shared.db,
-            block: { try await _runJobAttempt(jobRecord) }
+            block: { try await _runJobAttempt(jobRecord) },
         )
     }
 
@@ -120,7 +120,7 @@ private class LocalUserLeaveGroupJobRunner: JobRunner {
 public class LocalUserLeaveGroupJobQueue {
     private let jobQueueRunner: JobQueueRunner<
         JobRecordFinderImpl<LocalUserLeaveGroupJobRecord>,
-        LocalUserLeaveGroupJobRunnerFactory
+        LocalUserLeaveGroupJobRunnerFactory,
     >
     private var jobSerializer = CompletionSerializer()
     private let jobRunnerFactory: LocalUserLeaveGroupJobRunnerFactory
@@ -131,7 +131,7 @@ public class LocalUserLeaveGroupJobQueue {
             canExecuteJobsConcurrently: false,
             db: db,
             jobFinder: JobRecordFinderImpl(db: db),
-            jobRunnerFactory: self.jobRunnerFactory
+            jobRunnerFactory: self.jobRunnerFactory,
         )
         self.jobQueueRunner.listenForReachabilityChanges(reachabilityManager: reachabilityManager)
     }
@@ -150,7 +150,7 @@ public class LocalUserLeaveGroupJobQueue {
         replacementAdminAci: Aci?,
         waitForMessageProcessing: Bool,
         isDeletingAccount: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) -> Promise<[Promise<Void>]> {
         guard groupThread.isGroupV2Thread else {
             owsFail("[GV1] Mutations on V1 groups should be impossible!")
@@ -162,7 +162,7 @@ public class LocalUserLeaveGroupJobQueue {
                 waitForMessageProcessing: waitForMessageProcessing,
                 isDeletingAccount: isDeletingAccount,
                 future: future,
-                tx: tx
+                tx: tx,
             )
         }
     }
@@ -173,12 +173,12 @@ public class LocalUserLeaveGroupJobQueue {
         waitForMessageProcessing: Bool,
         isDeletingAccount: Bool,
         future: Future<[Promise<Void>]>,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         let jobRecord = LocalUserLeaveGroupJobRecord(
             threadId: threadId,
             replacementAdminAci: replacementAdminAci,
-            waitForMessageProcessing: waitForMessageProcessing
+            waitForMessageProcessing: waitForMessageProcessing,
         )
         jobRecord.anyInsert(transaction: tx)
         jobSerializer.addOrderedSyncCompletion(tx: tx) {

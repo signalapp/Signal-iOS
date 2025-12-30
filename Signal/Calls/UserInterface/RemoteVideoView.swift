@@ -123,21 +123,22 @@ extension RemoteVideoView: RTCVideoRenderer {
                 case .landscapeLeft:
                     isLandscape = true
                     switch frame.rotation {
-                        // Portrait upside-down
+                    // Portrait upside-down
                     case ._270:
                         rtcMetalView.rotationOverride = NSNumber(value: RTCVideoRotation._0.rawValue)
 
-                        // Portrait
+                    // Portrait
                     case ._90:
                         rtcMetalView.rotationOverride = NSNumber(value: RTCVideoRotation._180.rawValue)
 
-                        // Landscape right
+                    // Landscape right
                     case ._180:
                         rtcMetalView.rotationOverride = NSNumber(value: RTCVideoRotation._270.rawValue)
 
-                        // Landscape left
+                    // Landscape left
                     case ._0:
                         rtcMetalView.rotationOverride = NSNumber(value: RTCVideoRotation._90.rawValue)
+
                     @unknown default:
                         owsFailBeta("unknown frame.rotation: \(frame.rotation)")
                     }
@@ -145,21 +146,22 @@ extension RemoteVideoView: RTCVideoRenderer {
                 case .landscapeRight:
                     isLandscape = true
                     switch frame.rotation {
-                        // Portrait upside-down
+                    // Portrait upside-down
                     case ._270:
                         rtcMetalView.rotationOverride = NSNumber(value: RTCVideoRotation._180.rawValue)
 
-                        // Portrait
+                    // Portrait
                     case ._90:
                         rtcMetalView.rotationOverride = NSNumber(value: RTCVideoRotation._0.rawValue)
 
-                        // Landscape right
+                    // Landscape right
                     case ._180:
                         rtcMetalView.rotationOverride = NSNumber(value: RTCVideoRotation._90.rawValue)
 
-                        // Landscape left
+                    // Landscape left
                     case ._0:
                         rtcMetalView.rotationOverride = NSNumber(value: RTCVideoRotation._270.rawValue)
+
                     @unknown default:
                         owsFailBeta("unknown frame.rotation: \(frame.rotation)")
                     }
@@ -179,7 +181,7 @@ extension RemoteVideoView: RTCVideoRenderer {
 
             // If we're both in the same orientation, let the video fill the screen.
             // Otherwise, fit the video to the screen size respecting the aspect ratio.
-            if (isLandscape == remoteIsLandscape || isSquarish) && !isScreenShare {
+            if isLandscape == remoteIsLandscape || isSquarish, !isScreenShare {
                 rtcMetalView.videoContentMode = .scaleAspectFill
             } else {
                 rtcMetalView.videoContentMode = .scaleAspectFit

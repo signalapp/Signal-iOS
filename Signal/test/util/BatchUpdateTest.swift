@@ -4,8 +4,8 @@
 //
 
 import XCTest
-@testable import SignalServiceKit
 @testable import Signal
+@testable import SignalServiceKit
 
 class BatchUpdateTest: XCTestCase {
     func testScenario1() {
@@ -76,7 +76,7 @@ class BatchUpdateTest: XCTestCase {
             "ghSeWGUZK924DgQKKRkh0mbDfgA9YW3PUVtF3M0WFa7w=",
             "g/bhQLKkIXYdOE4/yY57rMCnG0dmENpWGgTrVD5O/TPw=",
             "gyqLPh6Fvm9nyChzlQmG+xkf42Hvl13h2736LTUNf5hI=",
-            "gRAHscZ8yNwTVXl7CJrZaASjLsmUDqL1eDhfaO9zUyFU="
+            "gRAHscZ8yNwTVXl7CJrZaASjLsmUDqL1eDhfaO9zUyFU=",
         ]
         let newValueIdList = [
             "glNBupGj/brC04rL1RQpMwu7Afnw204rVqi6yXd6rkRU=",
@@ -145,16 +145,18 @@ class BatchUpdateTest: XCTestCase {
             "ghSeWGUZK924DgQKKRkh0mbDfgA9YW3PUVtF3M0WFa7w=",
             "g/bhQLKkIXYdOE4/yY57rMCnG0dmENpWGgTrVD5O/TPw=",
             "gyqLPh6Fvm9nyChzlQmG+xkf42Hvl13h2736LTUNf5hI=",
-            "gRAHscZ8yNwTVXl7CJrZaASjLsmUDqL1eDhfaO9zUyFU="
+            "gRAHscZ8yNwTVXl7CJrZaASjLsmUDqL1eDhfaO9zUyFU=",
         ]
 
         let oldValues = oldValueIdList.map { MockValue($0) }
         let newValues = newValueIdList.map { MockValue($0) }
 
-        let batchUpdateItems = try! BatchUpdate.build(viewType: .uiTableView,
-                                                      oldValues: oldValues,
-                                                      newValues: newValues,
-                                                      changedValues: [])
+        let batchUpdateItems = try! BatchUpdate.build(
+            viewType: .uiTableView,
+            oldValues: oldValues,
+            newValues: newValues,
+            changedValues: [],
+        )
         XCTAssertTrue(!batchUpdateItems.isEmpty)
     }
 
@@ -165,7 +167,7 @@ class BatchUpdateTest: XCTestCase {
             "C",
             "D",
             "E",
-            "F"
+            "F",
         ]
         let newValueIdList = [
             "B",
@@ -175,17 +177,19 @@ class BatchUpdateTest: XCTestCase {
             "F",
 
             // The first element becomes last.
-            "A"
+            "A",
         ]
 
         let oldValues = oldValueIdList.map { MockValue($0) }
         let newValues = newValueIdList.map { MockValue($0) }
 
         do {
-            let batchUpdateItems = try! BatchUpdate.build(viewType: .uiTableView,
-                                                          oldValues: oldValues,
-                                                          newValues: newValues,
-                                                          changedValues: [])
+            let batchUpdateItems = try! BatchUpdate.build(
+                viewType: .uiTableView,
+                oldValues: oldValues,
+                newValues: newValues,
+                changedValues: [],
+            )
             // A UITableView can move one _unchanged_ item with one .move.
             XCTAssertEqual(batchUpdateItems.count, 1)
             XCTAssertEqual(batchUpdateItems.insertItems.count, 0)
@@ -195,10 +199,12 @@ class BatchUpdateTest: XCTestCase {
         }
 
         do {
-            let batchUpdateItems = try! BatchUpdate.build(viewType: .uiTableView,
-                                                          oldValues: oldValues,
-                                                          newValues: newValues,
-                                                          changedValues: [ MockValue("A") ])
+            let batchUpdateItems = try! BatchUpdate.build(
+                viewType: .uiTableView,
+                oldValues: oldValues,
+                newValues: newValues,
+                changedValues: [MockValue("A")],
+            )
             // A UITableView can move one _changed_ item with one .move.
             XCTAssertEqual(batchUpdateItems.count, 1)
             XCTAssertEqual(batchUpdateItems.insertItems.count, 0)
@@ -208,10 +214,12 @@ class BatchUpdateTest: XCTestCase {
         }
 
         do {
-            let batchUpdateItems = try! BatchUpdate.build(viewType: .uiCollectionView,
-                                                          oldValues: oldValues,
-                                                          newValues: newValues,
-                                                          changedValues: [])
+            let batchUpdateItems = try! BatchUpdate.build(
+                viewType: .uiCollectionView,
+                oldValues: oldValues,
+                newValues: newValues,
+                changedValues: [],
+            )
             if BatchUpdate<MockValue>.canUseMoveInCollectionView {
                 // A UICollectionView can move one _unchanged_ item with one .move.
                 XCTAssertEqual(batchUpdateItems.count, 1)
@@ -229,10 +237,12 @@ class BatchUpdateTest: XCTestCase {
         }
 
         do {
-            let batchUpdateItems = try! BatchUpdate.build(viewType: .uiCollectionView,
-                                                          oldValues: oldValues,
-                                                          newValues: newValues,
-                                                          changedValues: [ MockValue("A") ])
+            let batchUpdateItems = try! BatchUpdate.build(
+                viewType: .uiCollectionView,
+                oldValues: oldValues,
+                newValues: newValues,
+                changedValues: [MockValue("A")],
+            )
             // A UICollectionView can move one _changed_ item with
             // one .delete and one .move.
             XCTAssertEqual(batchUpdateItems.count, 2)
@@ -250,7 +260,7 @@ class BatchUpdateTest: XCTestCase {
             "C",
             "D",
             "E",
-            "F"
+            "F",
         ]
         let newValueIdList = [
             // The last element becomes first.
@@ -260,17 +270,19 @@ class BatchUpdateTest: XCTestCase {
             "B",
             "C",
             "D",
-            "E"
+            "E",
         ]
 
         let oldValues = oldValueIdList.map { MockValue($0) }
         let newValues = newValueIdList.map { MockValue($0) }
 
         do {
-            let batchUpdateItems = try! BatchUpdate.build(viewType: .uiTableView,
-                                                          oldValues: oldValues,
-                                                          newValues: newValues,
-                                                          changedValues: [])
+            let batchUpdateItems = try! BatchUpdate.build(
+                viewType: .uiTableView,
+                oldValues: oldValues,
+                newValues: newValues,
+                changedValues: [],
+            )
             // A UITableView can move one _unchanged_ item with one .move.
             XCTAssertEqual(batchUpdateItems.count, 1)
             XCTAssertEqual(batchUpdateItems.deleteItems.count, 0)
@@ -280,10 +292,12 @@ class BatchUpdateTest: XCTestCase {
         }
 
         do {
-            let batchUpdateItems = try! BatchUpdate.build(viewType: .uiTableView,
-                                                          oldValues: oldValues,
-                                                          newValues: newValues,
-                                                          changedValues: [ MockValue("F") ])
+            let batchUpdateItems = try! BatchUpdate.build(
+                viewType: .uiTableView,
+                oldValues: oldValues,
+                newValues: newValues,
+                changedValues: [MockValue("F")],
+            )
             // A UITableView can move one _changed_ item with one .move.
             XCTAssertEqual(batchUpdateItems.count, 1)
             XCTAssertEqual(batchUpdateItems.deleteItems.count, 0)
@@ -293,10 +307,12 @@ class BatchUpdateTest: XCTestCase {
         }
 
         do {
-            let batchUpdateItems = try! BatchUpdate.build(viewType: .uiCollectionView,
-                                                          oldValues: oldValues,
-                                                          newValues: newValues,
-                                                          changedValues: [])
+            let batchUpdateItems = try! BatchUpdate.build(
+                viewType: .uiCollectionView,
+                oldValues: oldValues,
+                newValues: newValues,
+                changedValues: [],
+            )
             if BatchUpdate<MockValue>.canUseMoveInCollectionView {
                 // A UICollectionView can move one _unchanged_ item with one .move.
                 XCTAssertEqual(batchUpdateItems.count, 1)
@@ -314,10 +330,12 @@ class BatchUpdateTest: XCTestCase {
         }
 
         do {
-            let batchUpdateItems = try! BatchUpdate.build(viewType: .uiCollectionView,
-                                                          oldValues: oldValues,
-                                                          newValues: newValues,
-                                                          changedValues: [ MockValue("F") ])
+            let batchUpdateItems = try! BatchUpdate.build(
+                viewType: .uiCollectionView,
+                oldValues: oldValues,
+                newValues: newValues,
+                changedValues: [MockValue("F")],
+            )
             // A UICollectionView can move one _changed_ item with
             // one .delete and one .insert.
             XCTAssertEqual(batchUpdateItems.count, 2)
@@ -335,7 +353,7 @@ class BatchUpdateTest: XCTestCase {
             "C",
             "D",
             "E",
-            "F"
+            "F",
         ]
         let newValueIdList = [
             // The last element becomes first.
@@ -347,17 +365,19 @@ class BatchUpdateTest: XCTestCase {
             "E",
 
             // The first element becomes last.
-            "A"
+            "A",
         ]
 
         let oldValues = oldValueIdList.map { MockValue($0) }
         let newValues = newValueIdList.map { MockValue($0) }
 
         do {
-            let batchUpdateItems = try! BatchUpdate.build(viewType: .uiTableView,
-                                                          oldValues: oldValues,
-                                                          newValues: newValues,
-                                                          changedValues: [])
+            let batchUpdateItems = try! BatchUpdate.build(
+                viewType: .uiTableView,
+                oldValues: oldValues,
+                newValues: newValues,
+                changedValues: [],
+            )
             // A UITableView can move two _unchanged_ items with two .moves.
             XCTAssertEqual(batchUpdateItems.count, 2)
             XCTAssertEqual(batchUpdateItems.deleteItems.count, 0)
@@ -367,10 +387,12 @@ class BatchUpdateTest: XCTestCase {
         }
 
         do {
-            let batchUpdateItems = try! BatchUpdate.build(viewType: .uiTableView,
-                                                          oldValues: oldValues,
-                                                          newValues: newValues,
-                                                          changedValues: [ MockValue("A"), MockValue("F") ])
+            let batchUpdateItems = try! BatchUpdate.build(
+                viewType: .uiTableView,
+                oldValues: oldValues,
+                newValues: newValues,
+                changedValues: [MockValue("A"), MockValue("F")],
+            )
             // A UITableView can move two _changed_ items with two .moves.
             XCTAssertEqual(batchUpdateItems.count, 2)
             XCTAssertEqual(batchUpdateItems.deleteItems.count, 0)
@@ -380,10 +402,12 @@ class BatchUpdateTest: XCTestCase {
         }
 
         do {
-            let batchUpdateItems = try! BatchUpdate.build(viewType: .uiCollectionView,
-                                                          oldValues: oldValues,
-                                                          newValues: newValues,
-                                                          changedValues: [])
+            let batchUpdateItems = try! BatchUpdate.build(
+                viewType: .uiCollectionView,
+                oldValues: oldValues,
+                newValues: newValues,
+                changedValues: [],
+            )
             if BatchUpdate<MockValue>.canUseMoveInCollectionView {
                 // A UICollectionView can move two _unchanged_ items with two .moves.
                 XCTAssertEqual(batchUpdateItems.count, 2)
@@ -401,10 +425,12 @@ class BatchUpdateTest: XCTestCase {
         }
 
         do {
-            let batchUpdateItems = try! BatchUpdate.build(viewType: .uiCollectionView,
-                                                          oldValues: oldValues,
-                                                          newValues: newValues,
-                                                          changedValues: [ MockValue("A"), MockValue("F") ])
+            let batchUpdateItems = try! BatchUpdate.build(
+                viewType: .uiCollectionView,
+                oldValues: oldValues,
+                newValues: newValues,
+                changedValues: [MockValue("A"), MockValue("F")],
+            )
             // A UICollectionView can move two _changed_ items with
             // two .deletes and two .inserts.
             XCTAssertEqual(batchUpdateItems.count, 4)
@@ -427,7 +453,7 @@ class BatchUpdateTest: XCTestCase {
             "H",
             "I",
             "J",
-            "K"
+            "K",
         ]
         // Three items move.
         let newValueIdList = [
@@ -445,22 +471,24 @@ class BatchUpdateTest: XCTestCase {
             // This value moves way down.
             "C",
             "I",
-            "K"
+            "K",
         ]
 
         let oldValues = oldValueIdList.map { MockValue($0) }
         let newValues = newValueIdList.map { MockValue($0) }
 
         do {
-            let batchUpdateItems = try! BatchUpdate.build(viewType: .uiTableView,
-                                                          oldValues: oldValues,
-                                                          newValues: newValues,
-                                                          changedValues: [
-                                                            // Three items change, one of which moves.
-                                                            MockValue("A"),
-                                                            MockValue("B"),
-                                                            MockValue("C")
-                                                          ])
+            let batchUpdateItems = try! BatchUpdate.build(
+                viewType: .uiTableView,
+                oldValues: oldValues,
+                newValues: newValues,
+                changedValues: [
+                    // Three items change, one of which moves.
+                    MockValue("A"),
+                    MockValue("B"),
+                    MockValue("C"),
+                ],
+            )
             XCTAssertEqual(batchUpdateItems.count, 5)
             XCTAssertEqual(batchUpdateItems.deleteItems.count, 0)
             XCTAssertEqual(batchUpdateItems.insertItems.count, 0)
@@ -469,15 +497,17 @@ class BatchUpdateTest: XCTestCase {
         }
 
         do {
-            let batchUpdateItems = try! BatchUpdate.build(viewType: .uiCollectionView,
-                                                          oldValues: oldValues,
-                                                          newValues: newValues,
-                                                          changedValues: [
-                                                            // Three items change, one of which moves.
-                                                            MockValue("A"),
-                                                            MockValue("B"),
-                                                            MockValue("C")
-                                                          ])
+            let batchUpdateItems = try! BatchUpdate.build(
+                viewType: .uiCollectionView,
+                oldValues: oldValues,
+                newValues: newValues,
+                changedValues: [
+                    // Three items change, one of which moves.
+                    MockValue("A"),
+                    MockValue("B"),
+                    MockValue("C"),
+                ],
+            )
             if BatchUpdate<MockValue>.canUseMoveInCollectionView {
                 XCTAssertEqual(batchUpdateItems.count, 6)
                 XCTAssertEqual(batchUpdateItems.deleteItems.count, 1)
@@ -502,7 +532,7 @@ class BatchUpdateTest: XCTestCase {
             "D",
             "E",
             "F",
-            "G"
+            "G",
         ]
         // The ordering is reversed.
         let newValueIdList = [
@@ -512,26 +542,28 @@ class BatchUpdateTest: XCTestCase {
             "D",
             "C",
             "B",
-            "A"
+            "A",
         ]
 
         let oldValues = oldValueIdList.map { MockValue($0) }
         let newValues = newValueIdList.map { MockValue($0) }
 
         do {
-            let batchUpdateItems = try! BatchUpdate.build(viewType: .uiTableView,
-                                                          oldValues: oldValues,
-                                                          newValues: newValues,
-                                                          changedValues: [
-                                                            // All items change.
-                                                            MockValue("A"),
-                                                            MockValue("B"),
-                                                            MockValue("C"),
-                                                            MockValue("D"),
-                                                            MockValue("E"),
-                                                            MockValue("F"),
-                                                            MockValue("G")
-                                                          ])
+            let batchUpdateItems = try! BatchUpdate.build(
+                viewType: .uiTableView,
+                oldValues: oldValues,
+                newValues: newValues,
+                changedValues: [
+                    // All items change.
+                    MockValue("A"),
+                    MockValue("B"),
+                    MockValue("C"),
+                    MockValue("D"),
+                    MockValue("E"),
+                    MockValue("F"),
+                    MockValue("G"),
+                ],
+            )
             XCTAssertEqual(batchUpdateItems.count, 7)
             XCTAssertEqual(batchUpdateItems.deleteItems.count, 0)
             XCTAssertEqual(batchUpdateItems.insertItems.count, 0)
@@ -540,19 +572,21 @@ class BatchUpdateTest: XCTestCase {
         }
 
         do {
-            let batchUpdateItems = try! BatchUpdate.build(viewType: .uiCollectionView,
-                                                          oldValues: oldValues,
-                                                          newValues: newValues,
-                                                          changedValues: [
-                                                            // All items change.
-                                                            MockValue("A"),
-                                                            MockValue("B"),
-                                                            MockValue("C"),
-                                                            MockValue("D"),
-                                                            MockValue("E"),
-                                                            MockValue("F"),
-                                                            MockValue("G")
-                                                          ])
+            let batchUpdateItems = try! BatchUpdate.build(
+                viewType: .uiCollectionView,
+                oldValues: oldValues,
+                newValues: newValues,
+                changedValues: [
+                    // All items change.
+                    MockValue("A"),
+                    MockValue("B"),
+                    MockValue("C"),
+                    MockValue("D"),
+                    MockValue("E"),
+                    MockValue("F"),
+                    MockValue("G"),
+                ],
+            )
             XCTAssertEqual(batchUpdateItems.count, 13)
             XCTAssertEqual(batchUpdateItems.deleteItems.count, 6)
             XCTAssertEqual(batchUpdateItems.insertItems.count, 6)
@@ -622,8 +656,8 @@ extension BatchUpdateMockItem {
 // MARK: -
 
 extension Array where Element == BatchUpdateMockItem {
-    var deleteItems: [BatchUpdateMockItem] { self.filter { $0.isDelete} }
-    var insertItems: [BatchUpdateMockItem] { self.filter { $0.isInsert} }
-    var moveItems: [BatchUpdateMockItem] { self.filter { $0.isMove} }
-    var updateItems: [BatchUpdateMockItem] { self.filter { $0.isUpdate} }
+    var deleteItems: [BatchUpdateMockItem] { self.filter { $0.isDelete } }
+    var insertItems: [BatchUpdateMockItem] { self.filter { $0.isInsert } }
+    var moveItems: [BatchUpdateMockItem] { self.filter { $0.isMove } }
+    var updateItems: [BatchUpdateMockItem] { self.filter { $0.isUpdate } }
 }

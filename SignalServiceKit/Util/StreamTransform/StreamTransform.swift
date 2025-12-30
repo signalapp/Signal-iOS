@@ -46,7 +46,7 @@ public protocol FinalizableStreamTransform {
 
 /// Read any available bytes remaining in the list of transforms including
 /// any buffered data or pending footer data.
-/// 
+///
 /// Do this by starting with an empty data buffer, and walking through
 /// each transform:
 /// 1. If there is data from the prior transform in the chain, transform

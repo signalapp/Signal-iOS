@@ -40,7 +40,7 @@ class EmojiPickerSheet: OWSViewController {
         message: TSMessage?,
         allowReactionConfiguration: Bool = true,
         reactionPickerConfigurationListener: ReactionPickerConfigurationListener? = nil,
-        completionHandler: @escaping (EmojiWithSkinTones?) -> Void
+        completionHandler: @escaping (EmojiWithSkinTones?) -> Void,
     ) {
         self.allowReactionConfiguration = allowReactionConfiguration
         self.reactionPickerConfigurationListener = reactionPickerConfigurationListener
@@ -117,7 +117,7 @@ class EmojiPickerSheet: OWSViewController {
 #endif
     }
 
-    public override func viewDidLayoutSubviews() {
+    override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
         // Ensure the scrollView's layout has completed
@@ -136,7 +136,7 @@ class EmojiPickerSheet: OWSViewController {
     @objc
     private func didSelectConfigureButton(sender: UIButton) {
         let configVC = EmojiReactionPickerConfigViewController(
-            reactionPickerConfigurationListener: self.reactionPickerConfigurationListener
+            reactionPickerConfigurationListener: self.reactionPickerConfigurationListener,
         )
         let navController = UINavigationController(rootViewController: configVC)
         if overrideUserInterfaceStyle == .dark {

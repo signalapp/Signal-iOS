@@ -7,7 +7,7 @@ public import SwiftUI
 
 public struct ScrollableContentPinnedFooterView<
     ScrollableContent: View,
-    PinnedFooter: View
+    PinnedFooter: View,
 >: View {
     private let scrollableContent: ScrollableContent
     private let pinnedFooter: PinnedFooter

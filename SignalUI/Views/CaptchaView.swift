@@ -13,7 +13,8 @@ public protocol CaptchaViewDelegate: NSObjectProtocol {
 }
 
 public enum CaptchaContext {
-    case registration, challenge
+    case registration
+    case challenge
 
     fileprivate var url: URL {
         switch self {
@@ -43,7 +44,8 @@ public class CaptchaView: UIView {
             self,
             selector: #selector(didBecomeActive),
             name: .OWSApplicationDidBecomeActive,
-            object: nil)
+            object: nil,
+        )
     }
 
     private var webView: WKWebView = {
@@ -56,13 +58,14 @@ public class CaptchaView: UIView {
         // this.
         let viewportInjection = WKUserScript(
             source: """
-                var meta = document.createElement('meta');
-                meta.setAttribute('name', 'viewport');
-                meta.setAttribute('content', 'width=device-width');
-                document.getElementsByTagName('head')[0].appendChild(meta);
-                """,
+            var meta = document.createElement('meta');
+            meta.setAttribute('name', 'viewport');
+            meta.setAttribute('content', 'width=device-width');
+            document.getElementsByTagName('head')[0].appendChild(meta);
+            """,
             injectionTime: .atDocumentEnd,
-            forMainFrameOnly: true)
+            forMainFrameOnly: true,
+        )
 
         let contentController = WKUserContentController()
         contentController.addUserScript(viewportInjection)

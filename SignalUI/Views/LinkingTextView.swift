@@ -27,7 +27,7 @@ public class LinkingTextView: UITextView {
         self.shouldInteractWithURLOverride = shouldInteractWithURL
     }
 
-    public override init(frame: CGRect, textContainer: NSTextContainer?) {
+    override public init(frame: CGRect, textContainer: NSTextContainer?) {
         super.init(frame: frame, textContainer: textContainer)
 
         self.disableAiWritingTools()
@@ -40,7 +40,7 @@ public class LinkingTextView: UITextView {
         self.textContainer.lineFragmentPadding = 0
         isScrollEnabled = false
         delegate = self
-        linkTextAttributes = [ .foregroundColor: UIColor.Signal.link ]
+        linkTextAttributes = [.foregroundColor: UIColor.Signal.link]
     }
 
     @available(*, unavailable)
@@ -63,16 +63,20 @@ public class LinkingTextView: UITextView {
             // required for compatibility with isScrollEnabled
             return super.gestureRecognizerShouldBegin(gestureRecognizer)
         }
-        if let tapGestureRecognizer = gestureRecognizer as? UITapGestureRecognizer,
-            tapGestureRecognizer.numberOfTapsRequired == 1 {
+        if
+            let tapGestureRecognizer = gestureRecognizer as? UITapGestureRecognizer,
+            tapGestureRecognizer.numberOfTapsRequired == 1
+        {
             // required for compatibility with links
             return super.gestureRecognizerShouldBegin(gestureRecognizer)
         }
         // allowing smallDelayRecognizer for links
         // https://stackoverflow.com/questions/46143868/xcode-9-uitextview-links-no-longer-clickable
-        if let longPressGestureRecognizer = gestureRecognizer as? UILongPressGestureRecognizer,
+        if
+            let longPressGestureRecognizer = gestureRecognizer as? UILongPressGestureRecognizer,
             // comparison value is used to distinguish between 0.12 (smallDelayRecognizer) and 0.5 (textSelectionForce and textLoupe)
-            longPressGestureRecognizer.minimumPressDuration < 0.325 {
+            longPressGestureRecognizer.minimumPressDuration < 0.325
+        {
             return super.gestureRecognizerShouldBegin(gestureRecognizer)
         }
         // preventing selection from loupe/magnifier (_UITextSelectionForceGesture), multi tap, tap and a half, etc.

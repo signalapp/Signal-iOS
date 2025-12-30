@@ -18,7 +18,7 @@ public struct NameCollision {
         fileprivate init(
             comparableName: ComparableDisplayName,
             profileNameChange: (oldestProfileName: String, newestProfileName: String)? = nil,
-            latestUpdateTimestamp: UInt64? = nil
+            latestUpdateTimestamp: UInt64? = nil,
         ) {
             self.address = comparableName.address
             self.comparableName = comparableName
@@ -60,11 +60,11 @@ public class ContactThreadNameCollisionFinder: NameCollisionFinder {
     /// Builds a collision finder that will only return collisions if the
     /// target contact thread represents a pending message request.
     public static func makeToCheckMessageRequestNameCollisions(
-        forContactThread contactThread: TSContactThread
+        forContactThread contactThread: TSContactThread,
     ) -> ContactThreadNameCollisionFinder {
         ContactThreadNameCollisionFinder(
             contactThread: contactThread,
-            onlySearchIfMessageRequest: true
+            onlySearchIfMessageRequest: true,
         )
     }
 
@@ -102,7 +102,7 @@ public class ContactThreadNameCollisionFinder: NameCollisionFinder {
         let targetName = ComparableDisplayName(
             address: contactThread.contactAddress,
             displayName: SSKEnvironment.shared.contactManagerRef.displayName(for: contactThread.contactAddress, tx: transaction),
-            config: config
+            config: config,
         )
 
         // If we don't have a name for this person, don't show collisions.
@@ -206,7 +206,7 @@ public class GroupMembershipNameCollisionFinder: NameCollisionFinder {
                     return NameCollision.Element(
                         comparableName: $0,
                         profileNameChange: profileNameChange(profileUpdateMessages: profileUpdateMessages),
-                        latestUpdateTimestamp: newestUpdateMessage?.timestamp
+                        latestUpdateTimestamp: newestUpdateMessage?.timestamp,
                     )
                 })!
             }
@@ -223,7 +223,7 @@ public class GroupMembershipNameCollisionFinder: NameCollisionFinder {
     }
 
     private func profileNameChange(
-        profileUpdateMessages: [TSInfoMessage]?
+        profileUpdateMessages: [TSInfoMessage]?,
     ) -> (oldestProfileName: String, newestProfileName: String)? {
         let oldestUpdateMessage = profileUpdateMessages?.min(by: { $0.sortId < $1.sortId })
         let newestUpdateMessage = profileUpdateMessages?.max(by: { $0.sortId < $1.sortId })
@@ -312,7 +312,7 @@ private extension NameCollision {
                 } else {
                     return (lhs.address.serviceId?.serviceIdString ?? lhs.address.phoneNumber ?? "") < (rhs.address.serviceId?.serviceIdString ?? rhs.address.phoneNumber ?? "")
                 }
-            }
+            },
         )!
     }
 }

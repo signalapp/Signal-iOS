@@ -40,7 +40,7 @@ public class BackupArchiveGroupRecipientArchiver: BackupArchiveProtoStreamWriter
         groupsV2: GroupsV2,
         profileManager: BackupArchive.Shims.ProfileManager,
         storyStore: BackupArchiveStoryStore,
-        threadStore: BackupArchiveThreadStore
+        threadStore: BackupArchiveThreadStore,
     ) {
         self.avatarDefaultColorManager = avatarDefaultColorManager
         self.avatarFetcher = avatarFetcher
@@ -54,7 +54,7 @@ public class BackupArchiveGroupRecipientArchiver: BackupArchiveProtoStreamWriter
 
     func archiveAllGroupRecipients(
         stream: BackupArchiveProtoOutputStream,
-        context: BackupArchive.RecipientArchivingContext
+        context: BackupArchive.RecipientArchivingContext,
     ) throws(CancellationError) -> ArchiveMultiFrameResult {
         var errors = [ArchiveFrameError]()
 
@@ -68,7 +68,7 @@ public class BackupArchiveGroupRecipientArchiver: BackupArchiveProtoStreamWriter
         do {
             try context.bencher.wrapEnumeration(
                 threadStore.enumerateGroupThreads(tx:block:),
-                tx: context.tx
+                tx: context.tx,
             ) { groupThread, frameBencher in
                 try Task.checkCancellation()
                 autoreleasepool {
@@ -78,7 +78,7 @@ public class BackupArchiveGroupRecipientArchiver: BackupArchiveProtoStreamWriter
                         stream: stream,
                         frameBencher: frameBencher,
                         context: context,
-                        errors: &errors
+                        errors: &errors,
                     )
                 }
 
@@ -104,7 +104,7 @@ public class BackupArchiveGroupRecipientArchiver: BackupArchiveProtoStreamWriter
         stream: BackupArchiveProtoOutputStream,
         frameBencher: BackupArchive.Bencher.FrameBencher,
         context: BackupArchive.RecipientArchivingContext,
-        errors: inout [ArchiveFrameError]
+        errors: inout [ArchiveFrameError],
     ) {
         guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
             return
@@ -128,13 +128,13 @@ public class BackupArchiveGroupRecipientArchiver: BackupArchiveProtoStreamWriter
         group.masterKey = groupMasterKey
         group.whitelisted = profileManager.isGroupId(
             inProfileWhitelist: groupId.value,
-            tx: context.tx
+            tx: context.tx,
         )
         group.blocked = blockedGroupIds.contains(groupId.value)
         do {
             group.hideStory = try storyStore.getOrCreateStoryContextAssociatedData(
                 for: groupThread,
-                context: context
+                context: context,
             ).isHidden
         } catch let error {
             errors.append(.archiveFrameError(.unableToReadStoryContextAssociatedData(error), groupAppId))
@@ -148,7 +148,7 @@ public class BackupArchiveGroupRecipientArchiver: BackupArchiveProtoStreamWriter
         }()
         group.avatarColor = avatarDefaultColorManager.defaultColor(
             useCase: .group(groupId: groupId.value),
-            tx: context.tx
+            tx: context.tx,
         ).asBackupProtoAvatarColor
         group.snapshot = { () -> BackupProto_Group.GroupSnapshot in
             var groupSnapshot = BackupProto_Group.GroupSnapshot()
@@ -198,7 +198,7 @@ public class BackupArchiveGroupRecipientArchiver: BackupArchiveProtoStreamWriter
                 invitedMemberProto.timestamp = 0
                 invitedMemberProto.member = .build(
                     serviceId: serviceId,
-                    role: role
+                    role: role,
                 )
                 return invitedMemberProto
             }
@@ -240,18 +240,18 @@ public class BackupArchiveGroupRecipientArchiver: BackupArchiveProtoStreamWriter
                 var frame = BackupProto_Frame()
                 frame.item = .recipient(recipient)
                 return frame
-            }
+            },
         ).map { errors.append($0) }
     }
 
     func restoreGroupRecipientProto(
         _ groupProto: BackupProto_Group,
         recipient: BackupProto_Recipient,
-        context: BackupArchive.RecipientRestoringContext
+        context: BackupArchive.RecipientRestoringContext,
     ) -> RestoreFrameResult {
         func restoreFrameError(
             _ error: RestoreFrameError.ErrorType,
-            line: UInt = #line
+            line: UInt = #line,
         ) -> RestoreFrameResult {
             return .failure([.restoreFrameError(error, recipient.recipientId, line: line)])
         }
@@ -297,7 +297,7 @@ public class BackupArchiveGroupRecipientArchiver: BackupArchiveProtoStreamWriter
             groupMembershipBuilder.addInvitedMember(
                 serviceId,
                 role: role,
-                addedByAci: addedByAci
+                addedByAci: addedByAci,
             )
         }
         for requestingMember in groupSnapshot.membersPendingAdminApproval {
@@ -315,7 +315,7 @@ public class BackupArchiveGroupRecipientArchiver: BackupArchiveProtoStreamWriter
 
             groupMembershipBuilder.addBannedMember(
                 aci,
-                bannedAtTimestamp: bannedAtTimestampMillis
+                bannedAtTimestamp: bannedAtTimestampMillis,
             )
         }
 
@@ -354,7 +354,7 @@ public class BackupArchiveGroupRecipientArchiver: BackupArchiveProtoStreamWriter
             groupThread = try threadStore.createGroupThread(
                 groupModel: groupModel,
                 isStorySendEnabled: isStorySendEnabled,
-                context: context
+                context: context,
             )
         } catch let error {
             return restoreFrameError(.databaseInsertionFailed(error))
@@ -366,7 +366,7 @@ public class BackupArchiveGroupRecipientArchiver: BackupArchiveProtoStreamWriter
             try threadStore.insertFullGroupMemberRecords(
                 acis: fullGroupMemberAcis,
                 groupThread: groupThread,
-                context: context
+                context: context,
             )
         } catch let error {
             return restoreFrameError(.databaseInsertionFailed(error))
@@ -375,10 +375,10 @@ public class BackupArchiveGroupRecipientArchiver: BackupArchiveProtoStreamWriter
         if let disappearingMessageTimer = groupSnapshot.extractDisappearingMessageTimer {
             disappearingMessageConfigStore.set(
                 token: .token(
-                    forProtoExpireTimerSeconds: disappearingMessageTimer
+                    forProtoExpireTimerSeconds: disappearingMessageTimer,
                 ),
                 for: groupThread,
-                tx: context.tx
+                tx: context.tx,
             )
         }
 
@@ -400,7 +400,7 @@ public class BackupArchiveGroupRecipientArchiver: BackupArchiveProtoStreamWriter
                 try avatarDefaultColorManager.persistDefaultColor(
                     defaultAvatarColor,
                     groupId: groupContextInfo.groupId.serialize(),
-                    tx: context.tx
+                    tx: context.tx,
                 )
             } catch {
                 // Don't fail entirely; colors aren't that important.
@@ -414,7 +414,7 @@ public class BackupArchiveGroupRecipientArchiver: BackupArchiveProtoStreamWriter
                 try storyStore.createStoryContextAssociatedData(
                     for: groupThread,
                     isHidden: true,
-                    context: context
+                    context: context,
                 )
             } catch let error {
                 // Don't fail entirely; the story will just be unhidden.
@@ -501,7 +501,7 @@ private extension BackupProto_Group.GroupSnapshot {
 private extension BackupProto_Group.Member {
     static func build(
         serviceId: ServiceId,
-        role: TSGroupMemberRole
+        role: TSGroupMemberRole,
     ) -> BackupProto_Group.Member {
         // iOS doesn't track the joinedAtRevision, so we'll default-populate it.
         var member = BackupProto_Group.Member()
@@ -562,7 +562,7 @@ private extension GroupAccess {
         self.init(
             members: GroupV2Access(backupProtoAccessRequired: backupProtoAccessControl.members),
             attributes: GroupV2Access(backupProtoAccessRequired: backupProtoAccessControl.attributes),
-            addFromInviteLink: GroupV2Access(backupProtoAccessRequired: backupProtoAccessControl.addFromInviteLink)
+            addFromInviteLink: GroupV2Access(backupProtoAccessRequired: backupProtoAccessControl.addFromInviteLink),
         )
     }
 

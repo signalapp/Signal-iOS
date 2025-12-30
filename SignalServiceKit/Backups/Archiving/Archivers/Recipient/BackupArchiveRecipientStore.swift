@@ -10,7 +10,7 @@ public class BackupArchiveRecipientStore {
 
     init(
         recipientTable: RecipientDatabaseTable,
-        searchableNameIndexer: SearchableNameIndexer
+        searchableNameIndexer: SearchableNameIndexer,
     ) {
         self.recipientTable = recipientTable
         self.searchableNameIndexer = searchableNameIndexer
@@ -20,7 +20,7 @@ public class BackupArchiveRecipientStore {
 
     func enumerateAllSignalRecipients(
         tx: DBReadTransaction,
-        block: (SignalRecipient) -> Void
+        block: (SignalRecipient) -> Void,
     ) throws {
         let cursor = try SignalRecipient.fetchCursor(tx.database)
         while let next = try cursor.next() {
@@ -31,14 +31,14 @@ public class BackupArchiveRecipientStore {
 
     func fetchRecipient(
         for address: BackupArchive.ContactAddress,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> SignalRecipient? {
         return recipientTable.fetchRecipient(address: address.asInteropAddress(), tx: tx)
     }
 
     func fetchRecipient(
         localIdentifiers: LocalIdentifiers,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) -> SignalRecipient? {
         return recipientTable.fetchRecipient(serviceId: localIdentifiers.aci, transaction: tx)
     }

@@ -21,6 +21,7 @@ extension DraftQuotedReplyModel {
             case stub(QuotedMessageAttachmentReference.Stub)
             case thumbnail(QuotedReplyAttachmentDataSource, originalAttachmentSourceFilename: String?)
         }
+
         public let attachment: Attachment?
 
         /// IFF this is a draft edit on a message that had a quoted reply, this is the TSQuotedMessage

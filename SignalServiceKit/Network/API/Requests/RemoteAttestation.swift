@@ -63,18 +63,18 @@ public extension RemoteAttestation {
     }
 }
 
-fileprivate extension RemoteAttestation.Auth {
+private extension RemoteAttestation.Auth {
     static func fetch(
         forService service: RemoteAttestation.Service,
-        auth: ChatServiceAuth
+        auth: ChatServiceAuth,
     ) async throws -> RemoteAttestation.Auth {
         var request = service.authRequest()
         request.auth = .identified(auth)
         let response = try await SSKEnvironment.shared.networkManagerRef.asyncRequest(request)
 
-        #if TESTABLE_BUILD
+#if TESTABLE_BUILD
         HTTPUtils.logCurl(for: request)
-        #endif
+#endif
 
         guard let authParamsDict = response.responseBodyDict else {
             throw attestationError(reason: "Missing or invalid JSON")
@@ -86,7 +86,7 @@ fileprivate extension RemoteAttestation.Auth {
 
 // MARK: - Service
 
-fileprivate extension RemoteAttestation {
+private extension RemoteAttestation {
     enum Service {
         case cdsi
         case svr2

@@ -14,7 +14,7 @@ final class CallQualitySurveyRatingViewController: CallQualitySurveySheetViewCon
 
         title = OWSLocalizedString(
             "CALL_QUALITY_SURVEY_RATING_TITLE",
-            comment: "Title for the initial rating screen in the call quality survey"
+            comment: "Title for the initial rating screen in the call quality survey",
         )
 
         view.addSubview(stackView)
@@ -29,7 +29,7 @@ final class CallQualitySurveyRatingViewController: CallQualitySurveySheetViewCon
         let headerLabel = UILabel()
         headerLabel.text = OWSLocalizedString(
             "CALL_QUALITY_SURVEY_RATING_HEADER",
-            comment: "Header text explaining the purpose of the call quality survey"
+            comment: "Header text explaining the purpose of the call quality survey",
         )
         headerLabel.font = .dynamicTypeSubheadline
         headerLabel.textColor = .Signal.secondaryLabel
@@ -45,8 +45,8 @@ final class CallQualitySurveyRatingViewController: CallQualitySurveySheetViewCon
             tintColor: .Signal.red,
             label: OWSLocalizedString(
                 "CALL_QUALITY_SURVEY_HAD_ISSUES_BUTTON",
-                comment: "Button label for indicating the call had issues in the call quality survey"
-            )
+                comment: "Button label for indicating the call had issues in the call quality survey",
+            ),
         ) { [weak sheetNav] in
             sheetNav?.didTapHadIssues()
         }
@@ -55,8 +55,8 @@ final class CallQualitySurveyRatingViewController: CallQualitySurveySheetViewCon
             tintColor: .Signal.ultramarine,
             label: OWSLocalizedString(
                 "CALL_QUALITY_SURVEY_GREAT_BUTTON",
-                comment: "Button label for indicating the call did not have issues in the call quality survey"
-            )
+                comment: "Button label for indicating the call did not have issues in the call quality survey",
+            ),
         ) { [weak sheetNav] in
             // [Call Quality Survey] TODO: Pass selected items
             sheetNav?.doneSelectingIssues()
@@ -81,7 +81,7 @@ final class CallQualitySurveyRatingViewController: CallQualitySurveySheetViewCon
         image: ImageResource,
         tintColor: UIColor,
         label text: String,
-        action: @escaping () -> Void
+        action: @escaping () -> Void,
     ) -> UIView {
         var config = UIButton.Configuration.gray()
         config.cornerStyle = .capsule
@@ -89,7 +89,7 @@ final class CallQualitySurveyRatingViewController: CallQualitySurveySheetViewCon
 
         let button = UIButton(
             configuration: config,
-            primaryAction: .init { _ in action() }
+            primaryAction: .init { _ in action() },
         )
         button.autoSetDimensions(to: .square(72))
 

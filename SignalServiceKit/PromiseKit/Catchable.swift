@@ -11,7 +11,7 @@ public extension Catchable {
     @discardableResult
     func `catch`(
         on scheduler: Scheduler? = nil,
-        _ block: @escaping (Error) -> Void
+        _ block: @escaping (Error) -> Void,
     ) -> Promise<Void> {
         observe(on: scheduler, successBlock: { _ in }, failureBlock: block)
     }
@@ -19,21 +19,21 @@ public extension Catchable {
     @discardableResult
     func recover(
         on scheduler: Scheduler? = nil,
-        _ block: @escaping (Error) -> Guarantee<Value>
+        _ block: @escaping (Error) -> Guarantee<Value>,
     ) -> Guarantee<Value> {
         observe(on: scheduler, successBlock: { $0 }, failureBlock: block)
     }
 
     func recover<T: Thenable>(
         on scheduler: Scheduler? = nil,
-        _ block: @escaping (Error) throws -> T
+        _ block: @escaping (Error) throws -> T,
     ) -> Promise<Value> where T.Value == Value {
         observe(on: scheduler, successBlock: { $0 }, failureBlock: block)
     }
 
     func ensure(
         on scheduler: Scheduler? = nil,
-        _ block: @escaping () -> Void
+        _ block: @escaping () -> Void,
     ) -> Promise<Value> {
         observe(on: scheduler) { value in
             block()
@@ -49,11 +49,11 @@ public extension Catchable {
     func asVoid() -> Promise<Void> { map { _ in } }
 }
 
-fileprivate extension Thenable where Self: Catchable {
+private extension Thenable where Self: Catchable {
     func observe<T>(
         on scheduler: Scheduler?,
         successBlock: @escaping (Value) throws -> T,
-        failureBlock: @escaping (Error) throws -> Void = { _ in }
+        failureBlock: @escaping (Error) throws -> Void = { _ in },
     ) -> Promise<T> {
         let (promise, future) = Promise<T>.pending()
         observe(on: scheduler) { result in
@@ -75,7 +75,7 @@ fileprivate extension Thenable where Self: Catchable {
     func observe(
         on scheduler: Scheduler?,
         successBlock: @escaping (Value) -> Value,
-        failureBlock: @escaping (Error) -> Value
+        failureBlock: @escaping (Error) -> Value,
     ) -> Guarantee<Value> {
         let (guarantee, future) = Guarantee<Value>.pending()
         observe(on: scheduler) { result in
@@ -92,7 +92,7 @@ fileprivate extension Thenable where Self: Catchable {
     func observe(
         on scheduler: Scheduler?,
         successBlock: @escaping (Value) -> Value,
-        failureBlock: @escaping (Error) -> Guarantee<Value>
+        failureBlock: @escaping (Error) -> Guarantee<Value>,
     ) -> Guarantee<Value> {
         let (guarantee, future) = Guarantee<Value>.pending()
         observe(on: scheduler) { result in
@@ -109,7 +109,7 @@ fileprivate extension Thenable where Self: Catchable {
     func observe(
         on scheduler: Scheduler?,
         successBlock: @escaping (Value) throws -> Value,
-        failureBlock: @escaping (Error) throws -> Value
+        failureBlock: @escaping (Error) throws -> Value,
     ) -> Promise<Value> {
         let (promise, future) = Promise<Value>.pending()
         observe(on: scheduler) { result in
@@ -130,7 +130,7 @@ fileprivate extension Thenable where Self: Catchable {
     func observe<T: Thenable>(
         on scheduler: Scheduler?,
         successBlock: @escaping (Value) throws -> Value,
-        failureBlock: @escaping (Error) throws -> T
+        failureBlock: @escaping (Error) throws -> T,
     ) -> Promise<Value> where T.Value == Value {
         let (promise, future) = Promise<Value>.pending()
         observe(on: scheduler) { result in
@@ -153,14 +153,14 @@ public extension Catchable where Value == Void {
     @discardableResult
     func recover(
         on scheduler: Scheduler? = nil,
-        _ block: @escaping (Error) -> Void
+        _ block: @escaping (Error) -> Void,
     ) -> Guarantee<Void> {
         observe(on: scheduler, successBlock: { $0 }, failureBlock: block)
     }
 
     func recover(
         on scheduler: Scheduler? = nil,
-        _ block: @escaping (Error) throws -> Void
+        _ block: @escaping (Error) throws -> Void,
     ) -> Promise<Void> {
         observe(on: scheduler, successBlock: { $0 }, failureBlock: block)
     }

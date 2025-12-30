@@ -55,7 +55,7 @@ struct ConnectionLock {
             observerToken = DarwinNotificationCenter.addObserver(
                 name: .connectionLock(for: self.priority),
                 queue: onInterrupt.queue,
-                block: { _ in onInterrupt.callback() }
+                block: { _ in onInterrupt.callback() },
             )
             // More important processes hold this lock from BEFORE they post a
             // notification until AFTER they've acquired the connection lock. By

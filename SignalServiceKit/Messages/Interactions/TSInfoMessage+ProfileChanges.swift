@@ -9,7 +9,7 @@ public extension TSInfoMessage {
     class func insertProfileChangeMessagesIfNecessary(
         oldProfile: OWSUserProfile,
         newProfile: OWSUserProfile,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) {
         let address: SignalServiceAddress
         switch oldProfile.internalAddress {
@@ -22,7 +22,7 @@ public extension TSInfoMessage {
         let profileChanges = ProfileChanges(
             address: address,
             oldProfile: oldProfile,
-            newProfile: newProfile
+            newProfile: newProfile,
         )
 
         guard profileChanges.hasRenderableChanges else {
@@ -32,7 +32,7 @@ public extension TSInfoMessage {
         func saveProfileUpdateMessage(thread: TSThread) {
             let profileUpdateMessage: TSInfoMessage = .makeForProfileChange(
                 thread: thread,
-                profileChanges: profileChanges
+                profileChanges: profileChanges,
             )
             profileUpdateMessage.anyInsert(transaction: transaction)
         }
@@ -43,7 +43,7 @@ public extension TSInfoMessage {
         }
 
         for groupThread in TSGroupThread.groupThreads(with: address, transaction: transaction) {
-            guard groupThread.groupModel.groupMembership.isLocalUserFullMember && groupThread.shouldThreadBeVisible else {
+            guard groupThread.groupModel.groupMembership.isLocalUserFullMember, groupThread.shouldThreadBeVisible else {
                 continue
             }
             saveProfileUpdateMessage(thread: groupThread)
@@ -53,13 +53,13 @@ public extension TSInfoMessage {
     static func makeForProfileChange(
         thread: TSThread,
         timestamp: UInt64 = MessageTimestampGenerator.sharedInstance.generateTimestamp(),
-        profileChanges: ProfileChanges
+        profileChanges: ProfileChanges,
     ) -> TSInfoMessage {
         let infoMessage = TSInfoMessage(
             thread: thread,
             messageType: .profileUpdate,
             timestamp: timestamp,
-            infoMessageUserInfo: [.profileChanges: profileChanges]
+            infoMessageUserInfo: [.profileChanges: profileChanges],
         )
         infoMessage.wasRead = true
 
@@ -73,7 +73,7 @@ public extension TSInfoMessage {
     @objc
     func profileChangeDescription(transaction tx: DBReadTransaction) -> String {
         guard
-            let profileChanges = profileChanges,
+            let profileChanges,
             let updateDescription = profileChanges.descriptionForUpdate(tx: tx)
         else {
             owsFailDebug("Unexpectedly missing update description for profile change")
@@ -145,7 +145,7 @@ public final class ProfileChanges: NSObject, NSCoding, NSCopying {
         }
     }
 
-    public override var hash: Int {
+    override public var hash: Int {
         var hasher = Hasher()
         hasher.combine(address)
         hasher.combine(newNameComponents)
@@ -155,7 +155,7 @@ public final class ProfileChanges: NSObject, NSCoding, NSCopying {
         return hasher.finalize()
     }
 
-    public override func isEqual(_ object: Any?) -> Bool {
+    override public func isEqual(_ object: Any?) -> Bool {
         guard let object = object as? Self else { return false }
         guard type(of: self) == type(of: object) else { return false }
         guard self.address == object.address else { return false }
@@ -227,7 +227,7 @@ public final class ProfileChanges: NSObject, NSCoding, NSCopying {
     }
 
     func descriptionForUpdate(tx: DBReadTransaction) -> String? {
-        guard let address = address else {
+        guard let address else {
             owsFailDebug("Unexpectedly missing address for profile change")
             return nil
         }
@@ -240,13 +240,13 @@ public final class ProfileChanges: NSObject, NSCoding, NSCopying {
         if let phoneNumber = address.phoneNumber, let systemContactName = SSKEnvironment.shared.contactManagerRef.systemContactName(for: phoneNumber, tx: tx) {
             let formatString = OWSLocalizedString(
                 "PROFILE_NAME_CHANGE_SYSTEM_CONTACT_FORMAT",
-                comment: "The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name}"
+                comment: "The copy rendered in a conversation when someone in your address book changes their profile name. Embeds {contact name}, {old profile name}, {new profile name}",
             )
             return String(format: formatString, systemContactName.resolvedValue(), oldFullName, newFullName)
         } else {
             let formatString = OWSLocalizedString(
                 "PROFILE_NAME_CHANGE_SYSTEM_NONCONTACT_FORMAT",
-                comment: "The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name}"
+                comment: "The copy rendered in a conversation when someone not in your address book changes their profile name. Embeds {old profile name}, {new profile name}",
             )
             return String(format: formatString, oldFullName, newFullName)
         }

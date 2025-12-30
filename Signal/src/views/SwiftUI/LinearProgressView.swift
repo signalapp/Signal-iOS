@@ -28,9 +28,9 @@ struct LinearProgressView<Progress: BinaryFloatingPoint>: View {
 #Preview {
     @Previewable @State var progress: Float = 0.0
     LinearProgressView(progress: progress)
-    // Add this if you want your animation to look the same as the preview
+        // Add this if you want your animation to look the same as the preview
         .animation(.smooth, value: progress)
-    // Simulate progress
+        // Simulate progress
         .task { @MainActor in
             while progress < 1 {
                 progress += 0.011

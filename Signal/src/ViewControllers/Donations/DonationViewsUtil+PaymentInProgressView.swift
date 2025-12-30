@@ -26,7 +26,7 @@ extension DonationViewsUtil {
 
         let progressView = AnimatedProgressView(loadingText: OWSLocalizedString(
             "SUSTAINER_VIEW_PROCESSING_PAYMENT",
-            comment: "Loading indicator on the sustainer view"
+            comment: "Loading indicator on the sustainer view",
         ))
         viewController.view.addSubview(progressView)
         progressView.autoCenterInSuperview()

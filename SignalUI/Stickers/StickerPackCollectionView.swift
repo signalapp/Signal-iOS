@@ -78,7 +78,7 @@ public class StickerPackCollectionView: UICollectionView {
 
     public init(
         placeholderColor: UIColor = .ows_gray45,
-        storyStickerConfiguration: StoryStickerConfiguration = .hide
+        storyStickerConfiguration: StoryStickerConfiguration = .hide,
     ) {
         self.placeholderColor = placeholderColor
         self.storyStickerConfiguration = storyStickerConfiguration
@@ -96,7 +96,7 @@ public class StickerPackCollectionView: UICollectionView {
         addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress)))
     }
 
-    required public init(coder: NSCoder) {
+    public required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
@@ -107,8 +107,10 @@ public class StickerPackCollectionView: UICollectionView {
     }
 
     public func showUninstalledPack(stickerPack: StickerPack) {
-        stickerPackDataSource = TransientStickerPackDataSource(stickerPackInfo: stickerPack.info,
-                                                               shouldDownloadAllStickers: true)
+        stickerPackDataSource = TransientStickerPackDataSource(
+            stickerPackInfo: stickerPack.info,
+            shouldDownloadAllStickers: true,
+        )
     }
 
     public func showRecents() {
@@ -156,16 +158,16 @@ public class StickerPackCollectionView: UICollectionView {
         view.directionalLayoutMargins = .init(margin: 20)
         let titleLabel = UILabel.explanationTextLabel(text: OWSLocalizedString(
             "STICKER_CATEGORY_RECENTS_EMPTY_TITLE",
-            comment: "Title of the helper text displayed when Recent stickers are empty."
+            comment: "Title of the helper text displayed when Recent stickers are empty.",
         ))
         titleLabel.adjustsFontForContentSizeCategory = true
         titleLabel.font = .dynamicTypeHeadline // slightly larger than subtitle
         let subtitleLabel = UILabel.explanationTextLabel(text: OWSLocalizedString(
             "STICKER_CATEGORY_RECENTS_EMPTY_SUBTITLE",
-            comment: "Subtitle of the helper text displayed when Recent stickers are empty."
+            comment: "Subtitle of the helper text displayed when Recent stickers are empty.",
         ))
         subtitleLabel.adjustsFontForContentSizeCategory = true
-        let vStack = UIStackView(arrangedSubviews: [ titleLabel, subtitleLabel ])
+        let vStack = UIStackView(arrangedSubviews: [titleLabel, subtitleLabel])
         vStack.axis = .vertical
         vStack.spacing = 2
         vStack.translatesAutoresizingMaskIntoConstraints = false
@@ -184,14 +186,14 @@ public class StickerPackCollectionView: UICollectionView {
 
         // "Content Unavailable" view is created on demand here.
         if isEmpty, contentUnavailableView == nil {
-            let view  = createContentUnavailableView()
+            let view = createContentUnavailableView()
             view.translatesAutoresizingMaskIntoConstraints = false
             addSubview(view)
             let constraints = EdgeConstraints(
                 top: view.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor),
                 leading: view.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor),
                 bottom: view.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor),
-                trailing: view.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor)
+                trailing: view.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor),
             )
             constraints.update(with: contentInset)
             NSLayoutConstraint.activate(constraints.constraints)
@@ -236,7 +238,7 @@ public class StickerPackCollectionView: UICollectionView {
         }
     }
 
-    public override func reloadData() {
+    override public func reloadData() {
         super.reloadData()
 
         updateEmptyState()
@@ -259,8 +261,9 @@ public class StickerPackCollectionView: UICollectionView {
         // Do nothing if we're not currently pressing on a pack, we'll hide it when we release
         // or update it when the user moves their touch over another pack. This prevents "flashing"
         // as the user moves their finger between packs.
-        guard let indexPath = self.indexPathForItem(at: sender.location(in: self)),
-              !isStoryStickerSection(sectionIndex: indexPath.section) else { return }
+        guard
+            let indexPath = self.indexPathForItem(at: sender.location(in: self)),
+            !isStoryStickerSection(sectionIndex: indexPath.section) else { return }
         guard let stickerInfo = stickerInfos[safe: indexPath.row] else {
             owsFailDebug("Invalid index path: \(indexPath)")
             return
@@ -437,7 +440,7 @@ extension StickerPackCollectionView: UICollectionViewDataSource {
     public func collectionView(
         _ collectionView: UICollectionView,
         viewForSupplementaryElementOfKind kind: String,
-        at indexPath: IndexPath
+        at indexPath: IndexPath,
     ) -> UICollectionReusableView {
         let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: headerReuseIdentifier, for: indexPath)
 
@@ -458,12 +461,12 @@ extension StickerPackCollectionView: UICollectionViewDataSource {
         if section == 0 {
             return OWSLocalizedString(
                 "STICKER_CATEGORY_FEATURED_NAME",
-                comment: "The name for the sticker category 'Featured'"
+                comment: "The name for the sticker category 'Featured'",
             )
         } else {
             return OWSLocalizedString(
                 "STICKER_CATEGORY_RECENTS_NAME",
-                comment: "The name for the sticker category 'Recents'"
+                comment: "The name for the sticker category 'Recents'",
             )
         }
     }
@@ -474,7 +477,7 @@ extension StickerPackCollectionView: UICollectionViewDelegateFlowLayout {
     public func collectionView(
         _ collectionView: UICollectionView,
         layout collectionViewLayout: UICollectionViewLayout,
-        referenceSizeForHeaderInSection section: Int
+        referenceSizeForHeaderInSection section: Int,
     ) -> CGSize {
         guard let headerText = headerText(for: section) else { return .zero }
 

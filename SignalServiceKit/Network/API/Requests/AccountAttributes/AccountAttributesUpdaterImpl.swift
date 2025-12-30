@@ -37,7 +37,7 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
         profileManager: ProfileManager,
         svrLocalStorage: SVRLocalStorage,
         syncManager: SyncManagerProtocol,
-        tsAccountManager: TSAccountManager
+        tsAccountManager: TSAccountManager,
     ) {
         self.accountAttributesGenerator = accountAttributesGenerator
         self.appReadiness = appReadiness
@@ -59,7 +59,7 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
             mustBeRegistered: true,
             mustBeConnected: true,
             operation: { () throws -> Bool in
-                let updateConfig = self.db.read { (tx) -> UpdateConfig? in
+                let updateConfig = self.db.read { tx -> UpdateConfig? in
                     guard let updateConfig = self.updateConfig(tx: tx) else {
                         return nil
                     }
@@ -68,8 +68,8 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
                     // RemoteConfig, DB migrations, etc.), and whenever requested explicitly.
                     let shouldUpdate: Bool = (
                         updateConfig.updateRequestToken != nil
-                        || Date() >= self.cronStore.mostRecentDate(tx: tx).addingTimeInterval(Constants.periodicRefreshInterval)
-                        || updateConfig.capabilities.requestParameters != self.oldCapabilities(tx: tx)
+                            || Date() >= self.cronStore.mostRecentDate(tx: tx).addingTimeInterval(Constants.periodicRefreshInterval)
+                            || updateConfig.capabilities.requestParameters != self.oldCapabilities(tx: tx),
                     )
                     return shouldUpdate ? updateConfig : nil
                 }
@@ -99,7 +99,7 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
     }
 
     public func updateAccountAttributes(authedAccount: AuthedAccount) async throws {
-        let updateConfig = await db.awaitableWrite { (tx) -> UpdateConfig? in
+        let updateConfig = await db.awaitableWrite { tx -> UpdateConfig? in
             self.kvStore.setData(
                 Randomness.generateRandomBytes(16),
                 key: Keys.latestUpdateRequestToken,

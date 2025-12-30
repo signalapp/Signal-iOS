@@ -11,7 +11,7 @@ public class AttachmentDownloadStoreImpl: AttachmentDownloadStore {
     private let dateProvider: DateProvider
 
     public init(
-        dateProvider: @escaping DateProvider
+        dateProvider: @escaping DateProvider,
     ) {
         self.dateProvider = dateProvider
     }
@@ -20,14 +20,14 @@ public class AttachmentDownloadStoreImpl: AttachmentDownloadStore {
 
     public func fetchRecord(
         id: QueuedAttachmentDownloadRecord.IDType,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> QueuedAttachmentDownloadRecord? {
         return try Record.fetchOne(tx.database, key: id)
     }
 
     public func enqueuedDownload(
         for id: Attachment.IDType,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> QueuedAttachmentDownloadRecord? {
         return try Record
             .filter(Column(.attachmentId) == id)
@@ -36,7 +36,7 @@ public class AttachmentDownloadStoreImpl: AttachmentDownloadStore {
 
     public func peek(
         count: UInt,
-        tx: DBReadTransaction
+        tx: DBReadTransaction,
     ) throws -> [QueuedAttachmentDownloadRecord] {
         try Record
             .filter(Column(.minRetryTimestamp) == nil)
@@ -56,7 +56,7 @@ public class AttachmentDownloadStoreImpl: AttachmentDownloadStore {
         withId attachmentId: Attachment.IDType,
         source: QueuedAttachmentDownloadRecord.SourceType,
         priority: AttachmentDownloadPriority,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         // Check for existing enqueued rows.
         let existingRow = try Record
@@ -92,7 +92,7 @@ public class AttachmentDownloadStoreImpl: AttachmentDownloadStore {
         var newRecord = Record.forNewDownload(
             ofAttachmentWithId: attachmentId,
             priority: priority,
-            sourceType: source
+            sourceType: source,
         )
         try newRecord.insert(tx.database)
     }
@@ -100,7 +100,7 @@ public class AttachmentDownloadStoreImpl: AttachmentDownloadStore {
     public func removeAttachmentFromQueue(
         withId attachmentId: Attachment.IDType,
         source: QueuedAttachmentDownloadRecord.SourceType,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         try Record
             .filter(Column(.attachmentId) == attachmentId)
@@ -111,13 +111,13 @@ public class AttachmentDownloadStoreImpl: AttachmentDownloadStore {
     public func markQueuedDownloadFailed(
         withId id: QueuedAttachmentDownloadRecord.IDType,
         minRetryTimestamp: UInt64,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         try Record
             .filter(key: id)
             .updateAll(tx.database, [
                 Column(.minRetryTimestamp).set(to: minRetryTimestamp),
-                Column(.retryAttempts).set(to: Column(.retryAttempts) + 1)
+                Column(.retryAttempts).set(to: Column(.retryAttempts) + 1),
             ])
     }
 
@@ -134,7 +134,7 @@ public class AttachmentDownloadStoreImpl: AttachmentDownloadStore {
     private func updatePriorityIfNeeded(
         _ record: inout Record,
         priority: AttachmentDownloadPriority,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws {
         if record.priority.rawValue < priority.rawValue {
             record.priority = priority

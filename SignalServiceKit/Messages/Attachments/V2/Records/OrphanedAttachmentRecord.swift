@@ -43,13 +43,13 @@ public struct OrphanedAttachmentRecord: Codable, FetchableRecord, MutablePersist
 
     // MARK: - Initializers
 
-    internal init(
+    init(
         sqliteId: IDType? = nil,
         isPendingAttachment: Bool = false,
         localRelativeFilePath: String?,
         localRelativeFilePathThumbnail: String?,
         localRelativeFilePathAudioWaveform: String?,
-        localRelativeFilePathVideoStillFrame: String?
+        localRelativeFilePathVideoStillFrame: String?,
     ) {
         self.sqliteId = sqliteId
         self.isPendingAttachment = isPendingAttachment

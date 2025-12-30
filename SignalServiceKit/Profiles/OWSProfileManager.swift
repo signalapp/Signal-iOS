@@ -76,7 +76,7 @@ public class OWSProfileManager: ProfileManagerProtocol {
 
     // MARK: - Profile Whitelist
 
-    #if USE_DEBUG_UI
+#if USE_DEBUG_UI
 
     public func clearProfileWhitelist() {
         Logger.warn("Clearing the profile whitelist.")
@@ -88,7 +88,7 @@ public class OWSProfileManager: ProfileManagerProtocol {
         }
     }
 
-    #endif
+#endif
 
     public func setLocalProfileKey(_ key: Aes256Key, userProfileWriter: UserProfileWriter, transaction: DBWriteTransaction) {
         let localUserProfile = OWSUserProfile.getOrBuildUserProfileForLocalUser(userProfileWriter: .localUser, tx: transaction)
@@ -301,7 +301,7 @@ public class OWSProfileManager: ProfileManagerProtocol {
 
             NotificationCenter.default.postOnMainThread(name: UserProfileNotifications.profileWhitelistDidChange, object: nil, userInfo: [
                 UserProfileNotifications.profileGroupIdKey: groupId,
-                Self.notificationKeyUserProfileWriter: NSNumber(value: userProfileWriter.rawValue)
+                Self.notificationKeyUserProfileWriter: NSNumber(value: userProfileWriter.rawValue),
             ])
         }
     }
@@ -414,7 +414,7 @@ extension OWSProfileManager: ProfileManager {
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
         return try await profileFetcher.fetchProfile(
             for: tsAccountManager.localIdentifiersWithMaybeSneakyTransaction(authedAccount: authedAccount).aci,
-            authedAccount: authedAccount
+            authedAccount: authedAccount,
         )
     }
 
@@ -426,14 +426,14 @@ extension OWSProfileManager: ProfileManager {
         profileBadges: [OWSUserProfileBadgeInfo],
         lastFetchDate: Date,
         userProfileWriter: UserProfileWriter,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         AssertNotOnMainThread()
 
         let userProfile = OWSUserProfile.getOrBuildUserProfile(
             for: address,
             userProfileWriter: userProfileWriter,
-            tx: tx
+            tx: tx,
         )
 
         var givenNameChange: OptionalChange<String> = .noChange
@@ -478,7 +478,7 @@ extension OWSProfileManager: ProfileManager {
             badges: .setTo(profileBadges),
             isPhoneNumberShared: isPhoneNumberSharedChange,
             userProfileWriter: userProfileWriter,
-            transaction: tx
+            transaction: tx,
         )
     }
 
@@ -500,7 +500,7 @@ extension OWSProfileManager: ProfileManager {
         unsavedRotatedProfileKey: Aes256Key?,
         userProfileWriter: UserProfileWriter,
         authedAccount: AuthedAccount,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) -> Promise<Void> {
         assert(CurrentAppContext().isMainApp)
 
@@ -512,7 +512,7 @@ extension OWSProfileManager: ProfileManager {
             profileAvatarData: profileAvatarData,
             visibleBadgeIds: visibleBadgeIds,
             userProfileWriter: userProfileWriter,
-            tx: tx
+            tx: tx,
         )
 
         let (promise, future) = Promise<Void>.pending()
@@ -520,7 +520,7 @@ extension OWSProfileManager: ProfileManager {
             $0.append(ProfileUpdateRequest(
                 requestId: update.id,
                 requestParameters: .init(profileKey: unsavedRotatedProfileKey, future: future),
-                authedAccount: authedAccount
+                authedAccount: authedAccount,
             ))
         }
         tx.addSyncCompletion {
@@ -536,7 +536,7 @@ extension OWSProfileManager: ProfileManager {
         unsavedRotatedProfileKey: Aes256Key?,
         mustReuploadAvatar: Bool,
         authedAccount: AuthedAccount,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) -> Promise<Void> {
         Logger.info("")
 
@@ -551,7 +551,7 @@ extension OWSProfileManager: ProfileManager {
             unsavedRotatedProfileKey: unsavedRotatedProfileKey,
             userProfileWriter: profileChanges?.userProfileWriter ?? .reupload,
             authedAccount: authedAccount,
-            tx: tx
+            tx: tx,
         )
     }
 
@@ -585,7 +585,7 @@ extension OWSProfileManager: ProfileManager {
 
     // MARK: -
 
-    internal func rotateLocalProfileKeyIfNecessary() {
+    func rotateLocalProfileKeyIfNecessary() {
         DispatchQueue.global().async {
             let tsAccountManager = DependenciesBridge.shared.tsAccountManager
             guard tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegisteredPrimaryDevice else {
@@ -669,7 +669,7 @@ extension OWSProfileManager: ProfileManager {
         return .blocklistChange(.init(
             phoneNumbers: victimPhoneNumbers,
             serviceIds: victimServiceIds,
-            groupIds: victimGroupIds
+            groupIds: victimGroupIds,
         ))
     }
 
@@ -685,7 +685,7 @@ extension OWSProfileManager: ProfileManager {
     @MainActor
     private func rotateProfileKey(
         triggers: [RotateProfileKeyTrigger],
-        authedAccount: AuthedAccount
+        authedAccount: AuthedAccount,
     ) async {
         guard !isRotatingProfileKey else {
             return
@@ -705,7 +705,7 @@ extension OWSProfileManager: ProfileManager {
 
     private func _rotateProfileKey(
         triggers: [RotateProfileKeyTrigger],
-        authedAccount: AuthedAccount
+        authedAccount: AuthedAccount,
     ) async throws -> Bool {
         let tsAccountManager = DependenciesBridge.shared.tsAccountManager
         let registeredState = try tsAccountManager.registeredStateWithMaybeSneakyTransaction()
@@ -735,7 +735,7 @@ extension OWSProfileManager: ProfileManager {
                 unsavedRotatedProfileKey: newProfileKey,
                 mustReuploadAvatar: true,
                 authedAccount: authedAccount,
-                tx: tx
+                tx: tx,
             )
         }
         try await uploadPromise.awaitable()
@@ -748,7 +748,7 @@ extension OWSProfileManager: ProfileManager {
             self.setLocalProfileKey(
                 newProfileKey,
                 userProfileWriter: .localUser,
-                transaction: tx
+                transaction: tx,
             )
 
             // Whenever a user's profile key changes, we need to fetch a new profile
@@ -785,22 +785,22 @@ extension OWSProfileManager: ProfileManager {
 
     private func didRotateProfileKeyFromBlocklistTrigger(
         _ trigger: RotateProfileKeyTrigger.BlocklistChange,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         // It's absolutely essential that these values are persisted in the same transaction
         // in which we persist our new profile key, since storing them is what marks the
         // profile key rotation as "complete" (removing newly blocked users from the whitelist).
         self.whitelistedPhoneNumbersStore.removeValues(
             forKeys: trigger.phoneNumbers,
-            transaction: tx
+            transaction: tx,
         )
         self.whitelistedServiceIdsStore.removeValues(
             forKeys: trigger.serviceIds.map { $0.serviceIdUppercaseString },
-            transaction: tx
+            transaction: tx,
         )
         self.whitelistedGroupsStore.removeValues(
             forKeys: trigger.groupIds.map { self.groupKey(groupId: $0) },
-            transaction: tx
+            transaction: tx,
         )
     }
 
@@ -858,7 +858,7 @@ extension OWSProfileManager: ProfileManager {
             recipient,
             serviceIdStore: whitelistedServiceIdsStore,
             phoneNumberStore: whitelistedPhoneNumbersStore,
-            tx: tx
+            tx: tx,
         )
     }
 
@@ -866,14 +866,14 @@ extension OWSProfileManager: ProfileManager {
         _ recipient: SignalRecipient,
         serviceIdStore: KeyValueStore,
         phoneNumberStore: KeyValueStore,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         // First, we figure out which identifiers are whitelisted.
         let orderedIdentifiers: [(store: KeyValueStore, key: String, isInWhitelist: Bool)] = [
             (serviceIdStore, recipient.aci?.serviceIdUppercaseString),
             (phoneNumberStore, recipient.phoneNumber?.stringValue),
-            (serviceIdStore, recipient.pni?.serviceIdUppercaseString)
-        ].compactMap { (store, key) -> (KeyValueStore, String, Bool)? in
+            (serviceIdStore, recipient.pni?.serviceIdUppercaseString),
+        ].compactMap { store, key -> (KeyValueStore, String, Bool)? in
             guard let key else { return nil }
             return (store, key, store.hasValue(key, transaction: tx))
         }
@@ -917,7 +917,7 @@ extension OWSProfileManager: ProfileManager {
             storageServiceStore.getBool(
                 Self.hasUpdatedStorageServiceKey,
                 defaultValue: false,
-                transaction: transaction
+                transaction: transaction,
             )
         }
 
@@ -938,7 +938,7 @@ extension OWSProfileManager: ProfileManager {
             storageServiceStore.setBool(
                 true,
                 key: Self.hasUpdatedStorageServiceKey,
-                transaction: transaction
+                transaction: transaction,
             )
         }
     }
@@ -957,7 +957,7 @@ extension OWSProfileManager: ProfileManager {
         userProfileWriter: UserProfileWriter,
         localIdentifiers: LocalIdentifiers,
         authedAccount: AuthedAccount,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         let address = OWSUserProfile.insertableAddress(serviceId: serviceId, localIdentifiers: localIdentifiers)
 
@@ -969,7 +969,7 @@ extension OWSProfileManager: ProfileManager {
         let userProfile = OWSUserProfile.getOrBuildUserProfile(
             for: address,
             userProfileWriter: userProfileWriter,
-            tx: tx
+            tx: tx,
         )
 
         if onlyFillInIfMissing, userProfile.profileKey != nil {
@@ -1003,7 +1003,7 @@ extension OWSProfileManager: ProfileManager {
         userProfile.update(
             profileKey: .setTo(profileKey),
             userProfileWriter: userProfileWriter,
-            transaction: tx
+            transaction: tx,
         )
     }
 
@@ -1012,7 +1012,7 @@ extension OWSProfileManager: ProfileManager {
         authoritativeProfileKeys: [Aci: Data],
         userProfileWriter: UserProfileWriter,
         localIdentifiers: LocalIdentifiers,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         for (aci, profileKey) in authoritativeProfileKeys {
             setProfileKeyData(
@@ -1023,7 +1023,7 @@ extension OWSProfileManager: ProfileManager {
                 userProfileWriter: userProfileWriter,
                 localIdentifiers: localIdentifiers,
                 authedAccount: .implicit(),
-                tx: tx
+                tx: tx,
             )
         }
         for (aci, profileKey) in allProfileKeys {
@@ -1038,7 +1038,7 @@ extension OWSProfileManager: ProfileManager {
                 userProfileWriter: userProfileWriter,
                 localIdentifiers: localIdentifiers,
                 authedAccount: .implicit(),
-                tx: tx
+                tx: tx,
             )
         }
     }
@@ -1130,7 +1130,7 @@ extension OWSProfileManager: ProfileManager {
                 try await updateProfileOnService(
                     profileChanges: profileChanges,
                     newProfileKey: parameters?.profileKey,
-                    authedAccount: authedAccount
+                    authedAccount: authedAccount,
                 )
                 DispatchQueue.global().async {
                     parameters?.future.resolve()
@@ -1237,7 +1237,7 @@ extension OWSProfileManager: ProfileManager {
                         unsavedRotatedProfileKey: nil,
                         mustReuploadAvatar: true,
                         authedAccount: authedAccount,
-                        tx: tx
+                        tx: tx,
                     )
                 }
                 try await uploadPromise.awaitable()
@@ -1254,9 +1254,11 @@ extension OWSProfileManager: ProfileManager {
 
     private func avatairRepairAttemptCount(_ transaction: DBReadTransaction) -> Int {
         let store = KeyValueStore(collection: GRDBSchemaMigrator.migrationSideEffectsCollectionName)
-        return store.getInt(GRDBSchemaMigrator.avatarRepairAttemptCount,
-                            defaultValue: Self.maxAvatarRepairAttempts,
-                            transaction: transaction)
+        return store.getInt(
+            GRDBSchemaMigrator.avatarRepairAttemptCount,
+            defaultValue: Self.maxAvatarRepairAttempts,
+            transaction: transaction,
+        )
     }
 
     private func avatarRepairNeeded() -> Bool {
@@ -1279,11 +1281,11 @@ extension OWSProfileManager: ProfileManager {
     private func updateProfileOnService(
         profileChanges: PendingProfileUpdate,
         newProfileKey: Aes256Key?,
-        authedAccount: AuthedAccount
+        authedAccount: AuthedAccount,
     ) async throws {
         do {
             let userProfile = SSKEnvironment.shared.databaseStorageRef.read(
-                block: SSKEnvironment.shared.profileManagerImplRef.localUserProfile(tx:)
+                block: SSKEnvironment.shared.profileManagerImplRef.localUserProfile(tx:),
             )
             guard let userProfile else {
                 throw OWSAssertionError("Can't upload profile without profile.")
@@ -1292,7 +1294,7 @@ extension OWSProfileManager: ProfileManager {
             let avatarUpdate = try await buildAvatarUpdate(
                 avatarChange: profileChanges.profileAvatarData,
                 localUserProfile: userProfile,
-                authedAccount: authedAccount
+                authedAccount: authedAccount,
             )
 
             guard let profileKey = newProfileKey ?? userProfile.profileKey else {
@@ -1315,7 +1317,7 @@ extension OWSProfileManager: ProfileManager {
                 newGivenName = userProfile.givenName.flatMap { OWSUserProfile.NameComponent(truncating: $0) }
             }
             let newFamilyName = profileChanges.profileFamilyName.orExistingValue(
-                userProfile.familyName.flatMap { OWSUserProfile.NameComponent(truncating: $0) }
+                userProfile.familyName.flatMap { OWSUserProfile.NameComponent(truncating: $0) },
             )
             let newBio = profileChanges.profileBio.orExistingValue(userProfile.bio)
             let newBioEmoji = profileChanges.profileBioEmoji.orExistingValue(userProfile.bioEmoji)
@@ -1329,7 +1331,7 @@ extension OWSProfileManager: ProfileManager {
                 profileAvatarMutation: avatarUpdate.remoteMutation,
                 visibleBadgeIds: newVisibleBadgeIds,
                 profileKey: profileKey,
-                authedAccount: authedAccount
+                authedAccount: authedAccount,
             )
             await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
                 self.tryToDequeueProfileChanges(profileChanges, tx: tx)
@@ -1337,7 +1339,7 @@ extension OWSProfileManager: ProfileManager {
                 let userProfile = OWSUserProfile.getOrBuildUserProfile(
                     for: .localUser,
                     userProfileWriter: .localUser,
-                    tx: tx
+                    tx: tx,
                 )
                 userProfile.update(
                     givenName: .setTo(newGivenName?.stringValue.rawValue),
@@ -1347,7 +1349,7 @@ extension OWSProfileManager: ProfileManager {
                     avatarUrlPath: .setTo(versionedUpdate.avatarUrlPath.orExistingValue(userProfile.avatarUrlPath)),
                     avatarFileName: .setTo(avatarUpdate.filenameChange.orExistingValue(userProfile.avatarFileName)),
                     userProfileWriter: profileChanges.userProfileWriter,
-                    transaction: tx
+                    transaction: tx,
                 )
                 // Notify all our devices that the profile has changed.
                 let tsRegistrationState = DependenciesBridge.shared.tsAccountManager.registrationState(tx: tx)
@@ -1385,7 +1387,7 @@ extension OWSProfileManager: ProfileManager {
     private func buildAvatarUpdate(
         avatarChange: OptionalAvatarChange<Data?>,
         localUserProfile: OWSUserProfile,
-        authedAccount: AuthedAccount
+        authedAccount: AuthedAccount,
     ) async throws -> (remoteMutation: VersionedProfileAvatarMutation, filenameChange: OptionalChange<String?>) {
         switch avatarChange {
         case .setTo(let newAvatar):
@@ -1441,7 +1443,7 @@ extension OWSProfileManager: ProfileManager {
         profileAvatarData: OptionalAvatarChange<Data?>,
         visibleBadgeIds: OptionalChange<[String]>,
         userProfileWriter: UserProfileWriter,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) -> PendingProfileUpdate {
         let oldChanges = currentPendingProfileChanges(tx: tx)
         let newChanges = PendingProfileUpdate(
@@ -1459,7 +1461,7 @@ extension OWSProfileManager: ProfileManager {
                 return newValue
             }(),
             visibleBadgeIds: visibleBadgeIds.orElseIfNoChange(oldChanges?.visibleBadgeIds ?? .noChange),
-            userProfileWriter: userProfileWriter
+            userProfileWriter: userProfileWriter,
         )
         settingsStore.setObject(newChanges, key: Self.kPendingProfileUpdateKey, transaction: tx)
         return newChanges
@@ -1532,10 +1534,10 @@ extension OWSProfileManager: ProfileManager {
     private static let deprecated_recipientHidingTriggerTokenKey = "recipientHidingTriggerTimestampKey"
 
     private func triggerToken(tx: DBReadTransaction) -> Data? {
-        return (
+        return
             self.metadataStore.getData(Self.leaveGroupTriggerTokenKey, transaction: tx)
-            ?? self.metadataStore.getData(Self.deprecated_recipientHidingTriggerTokenKey, transaction: tx)
-        )
+                ?? self.metadataStore.getData(Self.deprecated_recipientHidingTriggerTokenKey, transaction: tx)
+
     }
 
     private func setTriggerToken(_ tokenData: Data?, tx: DBWriteTransaction) {
@@ -1552,7 +1554,7 @@ extension OWSProfileManager: ProfileManager {
     public func didSendOrReceiveMessage(
         serviceId: ServiceId,
         localIdentifiers: LocalIdentifiers,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         let userProfileWriter: UserProfileWriter = .metadataUpdate
 
@@ -1568,7 +1570,7 @@ extension OWSProfileManager: ProfileManager {
         let userProfile = OWSUserProfile.getOrBuildUserProfile(
             for: address,
             userProfileWriter: userProfileWriter,
-            tx: tx
+            tx: tx,
         )
 
         // lastMessagingDate is coarse; we don't need to track every single message
@@ -1581,7 +1583,7 @@ extension OWSProfileManager: ProfileManager {
         userProfile.update(
             lastMessagingDate: .setTo(Date()),
             userProfileWriter: userProfileWriter,
-            transaction: tx
+            transaction: tx,
         )
     }
 }
@@ -1607,7 +1609,7 @@ public class PendingProfileUpdate: NSObject, NSSecureCoding {
         profileBioEmoji: OptionalChange<String?>,
         profileAvatarData: OptionalAvatarChange<Data?>,
         visibleBadgeIds: OptionalChange<[String]>,
-        userProfileWriter: UserProfileWriter
+        userProfileWriter: UserProfileWriter,
     ) {
         self.id = UUID()
         self.profileGivenName = profileGivenName
@@ -1709,7 +1711,7 @@ public class PendingProfileUpdate: NSObject, NSSecureCoding {
 
     private static func decodeOptionalNameChange(
         for codingKey: NSCodingKeys,
-        with aDecoder: NSCoder
+        with aDecoder: NSCoder,
     ) -> OptionalChange<OWSUserProfile.NameComponent?> {
         let stringChange = decodeOptionalChange(of: NSString.self, for: codingKey, with: aDecoder)
         switch stringChange {
@@ -1729,7 +1731,7 @@ public class PendingProfileUpdate: NSObject, NSSecureCoding {
 
     private static func decodeRequiredNameChange(
         for codingKey: NSCodingKeys,
-        with aDecoder: NSCoder
+        with aDecoder: NSCoder,
     ) -> OptionalChange<OWSUserProfile.NameComponent> {
         switch decodeOptionalNameChange(for: codingKey, with: aDecoder) {
         case .noChange:
@@ -1816,7 +1818,7 @@ extension OWSProfileManager {
                 newProfile.update(
                     avatarFileName: avatarFilename,
                     userProfileWriter: .avatarDownload,
-                    transaction: tx
+                    transaction: tx,
                 )
                 return (false, true)
             }
@@ -1850,7 +1852,7 @@ extension OWSProfileManager {
     private static func decryptAvatar(
         at encryptedFileUrl: URL,
         to decryptedFileUrl: URL,
-        profileKey: ProfileKey
+        profileKey: ProfileKey,
     ) throws {
         let readHandle = try FileHandle(forReadingFrom: encryptedFileUrl)
         defer {
@@ -1860,7 +1862,7 @@ extension OWSProfileManager {
             FileManager.default.createFile(
                 atPath: decryptedFileUrl.path,
                 contents: nil,
-                attributes: [.protectionKey: FileProtectionType.completeUntilFirstUserAuthentication]
+                attributes: [.protectionKey: FileProtectionType.completeUntilFirstUserAuthentication],
             )
         else {
             throw OWSGenericError("Couldn't create temporary file")

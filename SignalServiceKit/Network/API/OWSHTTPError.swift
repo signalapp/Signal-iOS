@@ -78,17 +78,17 @@ public enum OWSHTTPError: Error, CustomDebugStringConvertible, IsRetryableProvid
         case .invalidRequest, .networkFailure:
             OWSLocalizedString(
                 "ERROR_DESCRIPTION_REQUEST_FAILED",
-                comment: "Error indicating that a socket request failed."
+                comment: "Error indicating that a socket request failed.",
             )
         case .serviceResponse(let serviceResponse) where serviceResponse.responseStatus == 429:
             OWSLocalizedString(
                 "REGISTER_RATE_LIMITING_ERROR",
-                comment: ""
+                comment: "",
             )
         case .wrappedFailure, .serviceResponse:
             OWSLocalizedString(
                 "ERROR_DESCRIPTION_RESPONSE_FAILED",
-                comment: "Error indicating that a socket response failed."
+                comment: "Error indicating that a socket response failed.",
             )
         }
     }
@@ -166,7 +166,7 @@ public enum OWSHTTPError: Error, CustomDebugStringConvertible, IsRetryableProvid
             case .wrappedFailure(let wrappedError):
                 return wrappedError.isNetworkFailure
             }
-        case .serviceResponse(_):
+        case .serviceResponse:
             return false
         }
     }
@@ -184,7 +184,7 @@ public enum OWSHTTPError: Error, CustomDebugStringConvertible, IsRetryableProvid
             case .wrappedFailure(let wrappedError):
                 return wrappedError.isTimeout
             }
-        case .serviceResponse(_):
+        case .serviceResponse:
             return false
         }
     }

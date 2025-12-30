@@ -82,7 +82,7 @@ public enum ContactDiscoveryMode {
     static let allCasesOrderedByRateLimitPriority: [ContactDiscoveryMode] = [
         .oneOffUserRequest,
         .outgoingMessage,
-        .contactIntersection
+        .contactIntersection,
     ]
 }
 
@@ -106,7 +106,7 @@ public final class ContactDiscoveryManagerImpl: ContactDiscoveryManager {
         recipientMerger: RecipientMerger,
         tsAccountManager: TSAccountManager,
         udManager: OWSUDManager,
-        libsignalNet: Net
+        libsignalNet: Net,
     ) {
         self.init(
             contactDiscoveryTaskQueue: ContactDiscoveryTaskQueueImpl(
@@ -117,8 +117,8 @@ public final class ContactDiscoveryManagerImpl: ContactDiscoveryManager {
                 recipientMerger: recipientMerger,
                 tsAccountManager: tsAccountManager,
                 udManager: udManager,
-                libsignalNet: libsignalNet
-            )
+                libsignalNet: libsignalNet,
+            ),
         )
     }
 
@@ -325,7 +325,7 @@ public final class ContactDiscoveryManagerImpl: ContactDiscoveryManager {
 
         func processResults(
             _ signalRecipients: [SignalRecipient],
-            requestedPhoneNumbers: Set<String>
+            requestedPhoneNumbers: Set<String>,
         ) {
             let now = Date()
             let missingPhoneNumbers = requestedPhoneNumbers

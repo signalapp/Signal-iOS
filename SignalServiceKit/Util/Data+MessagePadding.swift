@@ -27,7 +27,8 @@ extension Data {
     public func withoutPadding() -> Data {
         guard
             let lastNonZeroByteIndex = self.lastIndex(where: { $0 != 0 }),
-            self[lastNonZeroByteIndex] == 0x80 else {
+            self[lastNonZeroByteIndex] == 0x80
+        else {
             Logger.warn("Failed to find padding byte, returning unstripped data")
             return self
         }

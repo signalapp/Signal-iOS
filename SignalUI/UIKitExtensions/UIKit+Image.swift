@@ -55,7 +55,7 @@ public extension UIImageView {
     class func withTemplateIcon(
         _ icon: ThemeIcon,
         tintColor: UIColor,
-        constrainedTo size: CGSize? = nil
+        constrainedTo size: CGSize? = nil,
     ) -> UIImageView {
         let imageView = UIImageView()
         imageView.setTemplateImage(Theme.iconImage(icon), tintColor: tintColor)
@@ -93,9 +93,11 @@ public extension UIView {
         let format = UIGraphicsImageRendererFormat()
         format.scale = scale
         format.opaque = opaque
-        let renderer = UIGraphicsImageRenderer(bounds: self.bounds,
-                                               format: format)
-        return renderer.image { (context) in
+        let renderer = UIGraphicsImageRenderer(
+            bounds: self.bounds,
+            format: format,
+        )
+        return renderer.image { context in
             self.layer.render(in: context.cgContext)
         }
     }

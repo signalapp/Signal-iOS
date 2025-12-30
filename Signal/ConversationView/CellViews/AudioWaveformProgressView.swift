@@ -45,31 +45,31 @@ class AudioWaveformProgressView: UIView {
         }
     }
 
-    public var cachedAudioDuration: TimeInterval? {
+    var cachedAudioDuration: TimeInterval? {
         didSet {
             redrawSamples()
         }
     }
 
-    public var canScrub: Bool {
+    var canScrub: Bool {
         return audioWaveform != nil || waveformWaitingTask == nil && cachedAudioDuration != nil
     }
 
-    public override var bounds: CGRect {
+    override var bounds: CGRect {
         didSet {
             guard bounds != oldValue else { return }
             redrawSamples()
         }
     }
 
-    public override var frame: CGRect {
+    override var frame: CGRect {
         didSet {
             guard frame != oldValue else { return }
             redrawSamples()
         }
     }
 
-    public override var center: CGPoint {
+    override var center: CGPoint {
         didSet {
             guard center != oldValue else { return }
             redrawSamples()
@@ -133,7 +133,7 @@ class AudioWaveformProgressView: UIView {
         let amplitudes: [Float]
         if let audioWaveform {
             amplitudes = audioWaveform.normalizedLevelsToDisplay(sampleCount: targetSamplesCount)
-        } else if cachedAudioDuration != nil && waveformWaitingTask == nil {
+        } else if cachedAudioDuration != nil, waveformWaitingTask == nil {
             // Generate a uniform audio waveform for the duration.
             amplitudes = Array(repeating: 0.5, count: targetSamplesCount)
         } else {
@@ -205,7 +205,7 @@ class AudioWaveformProgressView: UIView {
                 x: xPos,
                 y: yPos,
                 width: sampleWidth,
-                height: sampleHeight
+                height: sampleHeight,
             )
 
             path.append(UIBezierPath(roundedRect: sampleFrame, cornerRadius: sampleWidth / 2))

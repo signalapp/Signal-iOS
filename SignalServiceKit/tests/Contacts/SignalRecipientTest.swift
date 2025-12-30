@@ -17,7 +17,7 @@ class SignalRecipientTest: SSKBaseTest {
     private lazy var localIdentifiers = LocalIdentifiers(
         aci: localAci,
         pni: Pni.randomForTesting(),
-        phoneNumber: localPhoneNumber.stringValue
+        phoneNumber: localPhoneNumber.stringValue,
     )
 
     override func setUp() {
@@ -25,7 +25,7 @@ class SignalRecipientTest: SSKBaseTest {
         SSKEnvironment.shared.databaseStorageRef.write { tx in
             (DependenciesBridge.shared.registrationStateChangeManager as! RegistrationStateChangeManagerImpl).registerForTests(
                 localIdentifiers: localIdentifiers,
-                tx: tx
+                tx: tx,
             )
         }
     }
@@ -94,13 +94,13 @@ class SignalRecipientTest: SSKBaseTest {
             let aciProfile = OWSUserProfile.getOrBuildUserProfile(
                 for: .otherUser(aci),
                 userProfileWriter: .tests,
-                tx: transaction
+                tx: transaction,
             )
             aciProfile.anyInsert(transaction: transaction)
             aciProfile.update(
                 isPhoneNumberShared: .setTo(true),
                 userProfileWriter: .tests,
-                transaction: transaction
+                transaction: transaction,
             )
             let recipient = mergeHighTrust(aci: aci, phoneNumber: phoneNumber, transaction: transaction)
             XCTAssertEqual(recipient.aci, aci)
@@ -146,13 +146,13 @@ class SignalRecipientTest: SSKBaseTest {
         write { transaction in
             let oldThread = TSContactThread.getOrCreateThread(
                 withContactAddress: oldAddress,
-                transaction: transaction
+                transaction: transaction,
             )
 
             let messageBuilder: TSIncomingMessageBuilder = .withDefaultValues(
                 thread: oldThread,
                 authorAci: aci,
-                messageBody: AttachmentContentValidatorMock.mockValidatedBody("Test 123")
+                messageBody: AttachmentContentValidatorMock.mockValidatedBody("Test 123"),
             )
             let oldMessage = messageBuilder.build()
             oldMessage.anyInsert(transaction: transaction)
@@ -160,16 +160,16 @@ class SignalRecipientTest: SSKBaseTest {
             let oldPhoneNumberProfile = OWSUserProfile.getOrBuildUserProfile(
                 for: .otherUser(aci),
                 userProfileWriter: .tests,
-                tx: transaction
+                tx: transaction,
             )
             oldPhoneNumberProfile.anyInsert(transaction: transaction)
             oldPhoneNumberProfile.update(
                 isPhoneNumberShared: .setTo(true),
                 userProfileWriter: .tests,
-                transaction: transaction
+                transaction: transaction,
             )
             let newPhoneNumberProfile = OWSUserProfile(
-                address: .otherUser(SignalServiceAddress(phoneNumber: newPhoneNumber.stringValue))
+                address: .otherUser(SignalServiceAddress(phoneNumber: newPhoneNumber.stringValue)),
             )
             newPhoneNumberProfile.anyInsert(transaction: transaction)
 
@@ -183,20 +183,20 @@ class SignalRecipientTest: SSKBaseTest {
 
             let newThread = TSContactThread.getOrCreateThread(
                 withContactAddress: newAddress,
-                transaction: transaction
+                transaction: transaction,
             )
             let newMessage = TSIncomingMessage.anyFetchIncomingMessage(
                 uniqueId: oldMessage.uniqueId,
-                transaction: transaction
+                transaction: transaction,
             )!
             let newProfile = OWSUserProfile.getOrBuildUserProfile(
                 for: .otherUser(aci),
                 userProfileWriter: .tests,
-                tx: transaction
+                tx: transaction,
             )
             let newAccount = SignalAccount.anyFetch(
                 uniqueId: oldAccount.uniqueId,
-                transaction: transaction
+                transaction: transaction,
             )
 
             // We maintain the same thread, profile, interactions, etc.
@@ -233,13 +233,13 @@ class SignalRecipientTest: SSKBaseTest {
         try write { transaction in
             var oldThread = TSContactThread.getOrCreateThread(
                 withContactAddress: oldAddress,
-                transaction: transaction
+                transaction: transaction,
             )
 
             let messageBuilder: TSIncomingMessageBuilder = .withDefaultValues(
                 thread: oldThread,
                 authorAci: oldAci,
-                messageBody: AttachmentContentValidatorMock.mockValidatedBody("Test 123")
+                messageBody: AttachmentContentValidatorMock.mockValidatedBody("Test 123"),
             )
             let oldMessage = messageBuilder.build()
             oldMessage.anyInsert(transaction: transaction)
@@ -249,7 +249,7 @@ class SignalRecipientTest: SSKBaseTest {
             oldProfile.update(
                 isPhoneNumberShared: .setTo(true),
                 userProfileWriter: .tests,
-                transaction: transaction
+                transaction: transaction,
             )
 
             let oldAccount = SignalAccount(phoneNumber: oldAddress.phoneNumber!)
@@ -262,20 +262,20 @@ class SignalRecipientTest: SSKBaseTest {
 
             let newThread = TSContactThread.getOrCreateThread(
                 withContactAddress: newAddress,
-                transaction: transaction
+                transaction: transaction,
             )
             let newMessage = TSIncomingMessage.anyFetchIncomingMessage(
                 uniqueId: oldMessage.uniqueId,
-                transaction: transaction
+                transaction: transaction,
             )!
             let newProfile = OWSUserProfile.getOrBuildUserProfile(
                 for: .otherUser(newAci),
                 userProfileWriter: .tests,
-                tx: transaction
+                tx: transaction,
             )
             let newAccount = SignalAccount.anyFetch(
                 uniqueId: oldAccount.uniqueId,
-                transaction: transaction
+                transaction: transaction,
             )!
 
             // When the UUID changes, we treat it as a new account. Old data
@@ -308,12 +308,12 @@ class SignalRecipientTest: SSKBaseTest {
     }
 
     private func createGroupAndThreads(for addresses: [(aci: Aci?, phoneNumber: E164?)]) -> TSGroupThread {
-        return self.write { (tx) -> TSGroupThread in
+        return self.write { tx -> TSGroupThread in
             // Create a group with all the addresses.
             let groupThread = {
                 return try! GroupManager.createGroupForTests(
                     members: addresses.map { SignalServiceAddress(serviceId: $0.aci, phoneNumber: $0.phoneNumber?.stringValue) },
-                    transaction: tx
+                    transaction: tx,
                 )
             }()
 
@@ -327,16 +327,16 @@ class SignalRecipientTest: SSKBaseTest {
                     address: NormalizedDatabaseRecordAddress(
                         aci: address.aci,
                         phoneNumber: address.phoneNumber?.stringValue,
-                        pni: nil
+                        pni: nil,
                     )!,
                     groupThreadId: groupThread.uniqueId,
-                    lastInteractionTimestamp: NSDate.ows_millisecondTimeStamp()
+                    lastInteractionTimestamp: NSDate.ows_millisecondTimeStamp(),
                 )
                 groupMember.anyInsert(transaction: tx)
 
                 TSContactThread.getOrCreateThread(
                     withContactAddress: SignalServiceAddress(serviceId: address.aci, phoneNumber: address.phoneNumber?.stringValue),
-                    transaction: tx
+                    transaction: tx,
                 )
             }
             return groupThread
@@ -377,7 +377,7 @@ class SignalRecipientTest: SSKBaseTest {
 
         let groupThread = createGroupAndThreads(for: [
             (aci: aci1, phoneNumber: phoneNumber1),
-            (aci: aci2, phoneNumber: phoneNumber2)
+            (aci: aci2, phoneNumber: phoneNumber2),
         ])
 
         write { tx in
@@ -397,7 +397,7 @@ class SignalRecipientTest: SSKBaseTest {
         // We should still have two group members: (u1, p2) and (u2, nil).
         assertEqual(groupMembers: finalGroupMembers, expectedAddresses: [
             (aci: aci1, phoneNumber: nil),
-            (aci: aci2, phoneNumber: nil)
+            (aci: aci2, phoneNumber: nil),
         ])
     }
 
@@ -424,7 +424,7 @@ class SignalRecipientTest: SSKBaseTest {
 
         let groupThread = createGroupAndThreads(for: [
             (aci: aci1, phoneNumber: phoneNumber1),
-            (aci: nil, phoneNumber: phoneNumber2)
+            (aci: nil, phoneNumber: phoneNumber2),
         ])
 
         write { tx in
@@ -443,7 +443,7 @@ class SignalRecipientTest: SSKBaseTest {
 
         // We should now have one group member: (u1, p2).
         assertEqual(groupMembers: finalGroupMembers, expectedAddresses: [
-            (aci: aci1, phoneNumber: nil)
+            (aci: aci1, phoneNumber: nil),
         ])
     }
 
@@ -471,7 +471,7 @@ class SignalRecipientTest: SSKBaseTest {
 
         let groupThread = createGroupAndThreads(for: [
             (aci: aci1, phoneNumber: phoneNumber1),
-            (aci: aci2, phoneNumber: phoneNumber2)
+            (aci: aci2, phoneNumber: phoneNumber2),
         ])
 
         write { tx in
@@ -491,7 +491,7 @@ class SignalRecipientTest: SSKBaseTest {
         // We should still have two group members: (u2, p1) and (u1, nil).
         assertEqual(groupMembers: finalGroupMembers, expectedAddresses: [
             (aci: aci2, phoneNumber: nil),
-            (aci: aci1, phoneNumber: nil)
+            (aci: aci1, phoneNumber: nil),
         ])
     }
 
@@ -518,7 +518,7 @@ class SignalRecipientTest: SSKBaseTest {
 
         let groupThread = createGroupAndThreads(for: [
             (aci: aci1, phoneNumber: phoneNumber1),
-            (aci: aci2, phoneNumber: nil)
+            (aci: aci2, phoneNumber: nil),
         ])
 
         write { tx in
@@ -538,7 +538,7 @@ class SignalRecipientTest: SSKBaseTest {
         // We should now have two group members: (u2, p1), (u1, nil).
         assertEqual(groupMembers: finalGroupMembers, expectedAddresses: [
             (aci: aci1, phoneNumber: nil),
-            (aci: aci2, phoneNumber: nil)
+            (aci: aci2, phoneNumber: nil),
         ])
     }
 
@@ -557,7 +557,7 @@ class SignalRecipientTest: SSKBaseTest {
 
         let groupThread = createGroupAndThreads(for: [
             (aci: aci1, phoneNumber: nil),
-            (aci: nil, phoneNumber: phoneNumber1)
+            (aci: nil, phoneNumber: phoneNumber1),
         ])
 
         write { tx in
@@ -576,7 +576,7 @@ class SignalRecipientTest: SSKBaseTest {
         }
 
         assertEqual(groupMembers: finalGroupMembers, expectedAddresses: [
-            (aci: aci1, phoneNumber: nil)
+            (aci: aci1, phoneNumber: nil),
         ])
     }
 
@@ -592,7 +592,7 @@ class SignalRecipientTest: SSKBaseTest {
 
         let groupThread = createGroupAndThreads(for: [
             (aci: aci1, phoneNumber: nil),
-            (aci: nil, phoneNumber: phoneNumber1)
+            (aci: nil, phoneNumber: phoneNumber1),
         ])
 
         write { tx in
@@ -612,7 +612,7 @@ class SignalRecipientTest: SSKBaseTest {
         }
 
         assertEqual(groupMembers: finalGroupMembers, expectedAddresses: [
-            (aci: aci1, phoneNumber: nil)
+            (aci: aci1, phoneNumber: nil),
         ])
     }
 
@@ -625,7 +625,7 @@ class SignalRecipientTest: SSKBaseTest {
             localIdentifiers: localIdentifiers,
             aci: aci,
             phoneNumber: phoneNumber,
-            tx: tx
+            tx: tx,
         )
     }
 
@@ -743,7 +743,7 @@ final class SignalRecipient2Test: XCTestCase {
         let recipientManager = SignalRecipientManagerImpl(
             phoneNumberVisibilityFetcher: MockPhoneNumberVisibilityFetcher(),
             recipientDatabaseTable: recipientTable,
-            storageServiceManager: FakeStorageServiceManager()
+            storageServiceManager: FakeStorageServiceManager(),
         )
         mockDb.write { tx in
             var recipient = recipientFetcher.fetchOrCreate(serviceId: aci, tx: tx)
@@ -778,7 +778,7 @@ final class SignalRecipient2Test: XCTestCase {
             TestCase(initialDeviceIds: [1, 2], addedDeviceId: 1, expectedDeviceIds: [1, 2]),
             TestCase(initialDeviceIds: [1, 2], addedDeviceId: 2, expectedDeviceIds: [1, 2]),
             TestCase(initialDeviceIds: [1, 2, 3], addedDeviceId: 1, expectedDeviceIds: [1, 2, 3]),
-            TestCase(initialDeviceIds: [1, 2, 3], addedDeviceId: 2, expectedDeviceIds: [1, 2, 3])
+            TestCase(initialDeviceIds: [1, 2, 3], addedDeviceId: 2, expectedDeviceIds: [1, 2, 3]),
         ]
         let mockDb = InMemoryDB()
         let recipientTable = RecipientDatabaseTable()
@@ -789,7 +789,7 @@ final class SignalRecipient2Test: XCTestCase {
         let recipientManager = SignalRecipientManagerImpl(
             phoneNumberVisibilityFetcher: MockPhoneNumberVisibilityFetcher(),
             recipientDatabaseTable: recipientTable,
-            storageServiceManager: FakeStorageServiceManager()
+            storageServiceManager: FakeStorageServiceManager(),
         )
         mockDb.write { tx in
             for testCase in testCases {
@@ -814,7 +814,7 @@ final class SignalRecipient2Test: XCTestCase {
                             ,"recipientUUID" TEXT
                         )
                 ;
-                """
+                """,
             )
             let aci1 = Aci.constantForTesting("00000000-0000-4000-8000-00000000000A")
             let aci2 = Aci.constantForTesting("00000000-0000-4000-8000-00000000000B")

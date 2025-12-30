@@ -26,7 +26,7 @@ public final class CachedBadge: Equatable {
     // should join this chain to know when the shared request has finished.
     private var fetchPromise: Promise<Value>?
 
-    public static func == (lhs: CachedBadge, rhs: CachedBadge) -> Bool {
+    public static func ==(lhs: CachedBadge, rhs: CachedBadge) -> Bool {
         // Cached badges are considered equivalent if the underlying badge has the
         // same level. We expect the resulting ProfileBadge to be the same if the
         // levels match.
@@ -48,7 +48,7 @@ public final class CachedBadge: Equatable {
             // Otherwise, kick off a new fetch.
             let fetchPromise: Promise<Value> = Promise.wrapAsync {
                 try await DonationSubscriptionManager.getOneTimeBadge(level: self.badgeLevel)
-            }.then { (profileBadge) -> Promise<Value> in
+            }.then { profileBadge -> Promise<Value> in
                 switch profileBadge {
                 case .none:
                     return Promise.value(.notFound)
@@ -60,7 +60,7 @@ public final class CachedBadge: Equatable {
                         return .profileBadge(profileBadge)
                     }
                 }
-            }.map { (value) -> Value in
+            }.map { value -> Value in
                 self._cachedValue.set(value)
                 return value
             }.ensure {

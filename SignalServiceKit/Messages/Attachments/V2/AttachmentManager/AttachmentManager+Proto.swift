@@ -13,7 +13,7 @@ extension AttachmentManager {
     public func buildProtoForSending(
         from reference: AttachmentReference,
         pointer: AttachmentTransitPointer,
-        digestSHA256Ciphertext: Data
+        digestSHA256Ciphertext: Data,
     ) -> SSKProtoAttachmentPointer {
         let builder = SSKProtoAttachmentPointer.builder()
 

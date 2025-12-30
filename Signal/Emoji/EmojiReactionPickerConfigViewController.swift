@@ -25,7 +25,7 @@ public class EmojiReactionPickerConfigViewController: UIViewController {
     private let reactionPickerConfigurationListener: ReactionPickerConfigurationListener?
 
     init(
-        reactionPickerConfigurationListener: ReactionPickerConfigurationListener? = nil
+        reactionPickerConfigurationListener: ReactionPickerConfigurationListener? = nil,
     ) {
         self.reactionPickerConfigurationListener = reactionPickerConfigurationListener
         super.init(nibName: nil, bundle: nil)
@@ -35,7 +35,7 @@ public class EmojiReactionPickerConfigViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
 
-    public override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
         title = OWSLocalizedString("CONFIGURE_REACTIONS", comment: "Configure reactions title text")
         view.backgroundColor = .Signal.tertiaryGroupedBackground
@@ -47,12 +47,12 @@ public class EmojiReactionPickerConfigViewController: UIViewController {
         navigationItem.leftBarButtonItem = .button(
             title: OWSLocalizedString(
                 "RESET",
-                comment: "Configure reactions reset button text"
+                comment: "Configure reactions reset button text",
             ),
             style: .plain,
             action: { [weak self] in
                 self?.resetButtonTapped()
-            }
+            },
         )
 
         // Reaction picker
@@ -98,7 +98,7 @@ extension EmojiReactionPickerConfigViewController: MessageReactionPickerDelegate
         }
 
         let picker = EmojiPickerSheet(message: nil, allowReactionConfiguration: false) { [weak self] emoji in
-            guard let self = self else { return }
+            guard let self else { return }
 
             guard let emojiString = emoji?.rawValue else {
                 self.reactionPicker.endReplaceAnimation()

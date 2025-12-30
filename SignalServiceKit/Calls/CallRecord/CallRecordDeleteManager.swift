@@ -28,7 +28,7 @@ public protocol CallRecordDeleteManager {
     func deleteCallRecords(
         _ callRecords: [CallRecord],
         sendSyncMessageOnDelete: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     )
 
     /// Mark the call with the given identifiers, for which we do not have a
@@ -47,7 +47,7 @@ public protocol CallRecordDeleteManager {
     func markCallAsDeleted(
         callId: UInt64,
         conversationId: CallRecord.ConversationID,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     )
 }
 
@@ -65,7 +65,7 @@ final class CallRecordDeleteManagerImpl: CallRecordDeleteManager {
         outgoingCallEventSyncMessageManager: OutgoingCallEventSyncMessageManager,
         deletedCallRecordExpirationJob: DeletedCallRecordExpirationJob,
         deletedCallRecordStore: DeletedCallRecordStore,
-        threadStore: ThreadStore
+        threadStore: ThreadStore,
     ) {
         self.callRecordStore = callRecordStore
         self.outgoingCallEventSyncMessageManager = outgoingCallEventSyncMessageManager
@@ -74,26 +74,26 @@ final class CallRecordDeleteManagerImpl: CallRecordDeleteManager {
         self.threadStore = threadStore
     }
 
-    public func markCallAsDeleted(
+    func markCallAsDeleted(
         callId: UInt64,
         conversationId: CallRecord.ConversationID,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         insertDeletedCallRecords(
             deletedCallRecords: [
                 DeletedCallRecord(
                     callId: callId,
-                    conversationId: conversationId
-                )
+                    conversationId: conversationId,
+                ),
             ],
-            tx: tx
+            tx: tx,
         )
     }
 
-    public func deleteCallRecords(
+    func deleteCallRecords(
         _ callRecords: [CallRecord],
         sendSyncMessageOnDelete: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         callRecordStore.delete(callRecords: callRecords, tx: tx)
 
@@ -101,7 +101,7 @@ final class CallRecordDeleteManagerImpl: CallRecordDeleteManager {
             deletedCallRecords: callRecords.map {
                 DeletedCallRecord(callRecord: $0)
             },
-            tx: tx
+            tx: tx,
         )
 
         if sendSyncMessageOnDelete {
@@ -131,7 +131,7 @@ final class CallRecordDeleteManagerImpl: CallRecordDeleteManager {
                     callRecord: callRecord,
                     callEvent: .callDeleted,
                     callEventTimestamp: callEventTimestamp,
-                    tx: tx
+                    tx: tx,
                 )
             }
         }
@@ -139,7 +139,7 @@ final class CallRecordDeleteManagerImpl: CallRecordDeleteManager {
 
     private func insertDeletedCallRecords(
         deletedCallRecords: [DeletedCallRecord],
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) {
         for deletedCallRecord in deletedCallRecords {
             deletedCallRecordStore.insert(deletedCallRecord: deletedCallRecord, tx: tx)

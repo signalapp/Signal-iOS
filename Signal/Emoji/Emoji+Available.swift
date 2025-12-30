@@ -57,8 +57,10 @@ extension Emoji {
             do {
                 // Use FileManager.createDirectory directly because OWSFileSystem.ensureDirectoryExists
                 // can modify the protection, and this is a system-managed directory.
-                try FileManager.default.createDirectory(at: Self.cacheUrl.deletingLastPathComponent(),
-                                                        withIntermediateDirectories: true)
+                try FileManager.default.createDirectory(
+                    at: Self.cacheUrl.deletingLastPathComponent(),
+                    withIntermediateDirectories: true,
+                )
                 try availableMap.write(to: Self.cacheUrl)
             } catch {
                 Logger.warn("Failed to save emoji availability cache; it will be recomputed next time! \(error)")

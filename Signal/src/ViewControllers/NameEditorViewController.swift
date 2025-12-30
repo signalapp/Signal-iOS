@@ -32,7 +32,7 @@ class NameEditorViewController: OWSTableViewController2 {
         },
         returnPressed: { [unowned self] in
             if hasUnsavedChanges { self.didTapDone() }
-        }
+        },
     )
 
     private let oldName: String
@@ -63,7 +63,7 @@ class NameEditorViewController: OWSTableViewController2 {
         if isPresentedInSheet {
             self.navigationItem.leftBarButtonItem = .cancelButton(
                 dismissingFrom: self,
-                hasUnsavedChanges: { [unowned self] in self.hasUnsavedChanges }
+                hasUnsavedChanges: { [unowned self] in self.hasUnsavedChanges },
             )
         }
         self.navigationItem.rightBarButtonItem = .doneButton { [unowned self] in self.didTapDone() }
@@ -74,7 +74,7 @@ class NameEditorViewController: OWSTableViewController2 {
         self.contents = OWSTableContents(sections: [
             OWSTableSection(items: [.textFieldItem(
                 self.nameField,
-                textColor: UIColor.Signal.label
+                textColor: UIColor.Signal.label,
             )]),
         ])
     }
@@ -137,7 +137,7 @@ class NameEditorViewController: OWSTableViewController2 {
                         self?.handleError(error)
                     }
                 }
-            }
+            },
         )
     }
 
@@ -152,7 +152,7 @@ extension NameEditorViewController: UITextFieldDelegate {
             shouldChangeCharactersInRange: range,
             replacementString: string,
             maxByteCount: Self.nameByteLimit,
-            maxGlyphCount: Self.nameGlyphLimit
+            maxGlyphCount: Self.nameGlyphLimit,
         )
     }
 }

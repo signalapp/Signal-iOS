@@ -4,8 +4,8 @@
 //
 
 import Foundation
-@testable import SignalServiceKit
 import XCTest
+@testable import SignalServiceKit
 
 class FactoryInitializationTests: XCTestCase {
     func testFactoryInitialization_SuccessFromHardcodedData() throws {
@@ -15,7 +15,7 @@ class FactoryInitializationTests: XCTestCase {
             static var recordTypeCodingKey: CodingKeys { .recordType }
 
             static func classToInitialize(
-                forRecordType recordType: UInt
+                forRecordType recordType: UInt,
             ) -> (FactoryInitializableFromRecordType.Type)? {
                 switch recordType {
                 case 1:
@@ -111,7 +111,7 @@ class FactoryInitializationTests: XCTestCase {
             } catch let DecodingError.dataCorrupted(context) {
                 XCTAssertEqual(
                     (context.codingPath.first! as! BaseClassThatMisinterpretsRecordTypes.CodingKeys),
-                    .recordType
+                    .recordType,
                 )
             }
         }
@@ -128,7 +128,7 @@ private class BaseClassThatMisinterpretsRecordTypes: NeedsFactoryInitializationF
     static var recordTypeCodingKey: CodingKeys { .recordType }
 
     static func classToInitialize(
-        forRecordType recordType: UInt
+        forRecordType recordType: UInt,
     ) -> (FactoryInitializableFromRecordType.Type)? {
         switch recordType {
         case 1:

@@ -121,7 +121,7 @@ public class NetworkManager: NetworkManagerProtocol {
 
         public init(
             retryOn: [RetryOn],
-            maxAttempts: Int
+            maxAttempts: Int,
         ) {
             self.retryOn = retryOn
             self.maxAttempts = maxAttempts
@@ -159,7 +159,7 @@ public class NetworkManager: NetworkManagerProtocol {
 
                 return false
             },
-            block: { try await _asyncRequest(request) }
+            block: { try await _asyncRequest(request) },
         )
     }
 
@@ -205,7 +205,8 @@ private struct ProxyConfig {
                     host: proxyConfig[kCFProxyHostNameKey] as! String,
                     port: proxyConfig[kCFProxyPortNumberKey] as! UInt16?,
                     username: proxyConfig[kCFProxyUsernameKey] as! String?,
-                    password: proxyConfig[kCFProxyPasswordKey] as! String?)
+                    password: proxyConfig[kCFProxyPasswordKey] as! String?,
+                )
             case kCFProxyTypeHTTPS:
                 // This seems to mean "HTTP proxy for HTTPS connections" rather than "proxy that itself uses TLS".
                 // Leave room for the latter interpretation if the port number is traditionally HTTPS.
@@ -215,7 +216,8 @@ private struct ProxyConfig {
                     host: proxyConfig[kCFProxyHostNameKey] as! String,
                     port: port,
                     username: proxyConfig[kCFProxyUsernameKey] as! String?,
-                    password: proxyConfig[kCFProxyPasswordKey] as! String?)
+                    password: proxyConfig[kCFProxyPasswordKey] as! String?,
+                )
             case kCFProxyTypeSOCKS:
                 // iOS doesn't distinguish between SOCKS4 and SOCKS5. Defer to libsignal's default.
                 return ProxyConfig(
@@ -223,7 +225,8 @@ private struct ProxyConfig {
                     host: proxyConfig[kCFProxyHostNameKey] as! String,
                     port: proxyConfig[kCFProxyPortNumberKey] as! UInt16?,
                     username: proxyConfig[kCFProxyUsernameKey] as! String?,
-                    password: proxyConfig[kCFProxyPasswordKey] as! String?)
+                    password: proxyConfig[kCFProxyPasswordKey] as! String?,
+                )
             case kCFProxyTypeAutoConfigurationJavaScript, kCFProxyTypeAutoConfigurationURL:
                 // CFNetwork provides ways to execute these, but they're not something that can be done synchronously.
                 // PAC files are rare, though; we can come back to this if it turns out to be used in practice.
@@ -251,7 +254,7 @@ private struct ProxyConfig {
 
 public class OWSFakeNetworkManager: NetworkManager {
 
-    public override func asyncRequestImpl(
+    override public func asyncRequestImpl(
         _ request: TSRequest,
         retryPolicy: RetryPolicy,
     ) async throws -> HTTPResponse {

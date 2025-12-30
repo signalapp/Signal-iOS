@@ -11,7 +11,7 @@ public class SSKBaseTest: XCTestCase {
     private var oldContext: (any AppContext)!
 
     @MainActor
-    public override func setUp() {
+    override public func setUp() {
         DDLog.add(DDTTYLogger.sharedInstance!)
         let setupExpectation = expectation(description: "mock ssk environment setup completed")
         self.oldContext = CurrentAppContext()
@@ -23,7 +23,7 @@ public class SSKBaseTest: XCTestCase {
     }
 
     @MainActor
-    public override func tearDown() {
+    override public func tearDown() {
         MockSSKEnvironment.deactivate(oldContext: self.oldContext)
         super.tearDown()
     }

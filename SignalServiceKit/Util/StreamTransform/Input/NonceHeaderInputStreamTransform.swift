@@ -54,7 +54,7 @@ public class NonceHeaderInputStreamTransform: StreamTransform, BufferedStreamTra
         // decode the next variable length int
         let (dataSize, intLength) = ChunkedInputStreamTransform.decodeVariableLengthInteger(
             buffer: buffer,
-            start: BackupNonce.magicFileSignature.count
+            start: BackupNonce.magicFileSignature.count,
         )
 
         guard dataSize > 0 else {

@@ -81,7 +81,7 @@ public class SpoilerableTextViewAnimator {
         }
     }
 
-    fileprivate var animationContainerView: UIView? {
+    private var animationContainerView: UIView? {
         if let _animationContainerView {
             return _animationContainerView
         }
@@ -124,7 +124,7 @@ extension SpoilerableTextViewAnimator: SpoilerableViewAnimator {
             textStorage: textView.textStorage,
             layoutManager: textView.layoutManager,
             textContainerInsets: textView.textContainerInset,
-            textContainerBounds: textView.bounds.size
+            textContainerBounds: textView.bounds.size,
         )
     }
 
@@ -149,7 +149,7 @@ extension SpoilerableTextViewAnimator: SpoilerableViewAnimator {
         textStorage: NSTextStorage,
         layoutManager: NSLayoutManager,
         textContainerInsets: UIEdgeInsets,
-        textContainerBounds: CGSize
+        textContainerBounds: CGSize,
     ) -> [SpoilerFrame] {
         switch text {
         case .text, .attributedText:
@@ -166,9 +166,9 @@ extension SpoilerableTextViewAnimator: SpoilerableViewAnimator {
                     return .init(
                         frame: rect,
                         color: spoilerRange.color,
-                        style: spoilerRange.isSearchResult ? .highlight : .standard
+                        style: spoilerRange.isSearchResult ? .highlight : .standard,
                     )
-                }
+                },
             )
         }
     }

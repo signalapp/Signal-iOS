@@ -18,10 +18,12 @@ class AudioMessagePresenter: AudioPresenter {
     let threadUniqueId: String
     let audioPlaybackRate: AudioPlaybackRate
 
-    init(isIncoming: Bool,
-         audioAttachment: AudioAttachment,
-         threadUniqueId: String,
-         playbackRate: AudioPlaybackRate) {
+    init(
+        isIncoming: Bool,
+        audioAttachment: AudioAttachment,
+        threadUniqueId: String,
+        playbackRate: AudioPlaybackRate,
+    ) {
         self.threadUniqueId = threadUniqueId
         self.audioPlaybackRate = playbackRate
         self.isIncoming = isIncoming
@@ -30,7 +32,8 @@ class AudioMessagePresenter: AudioPresenter {
             threadUniqueId: threadUniqueId,
             audioAttachment: audioAttachment,
             playbackRate: playbackRate,
-            isIncoming: isIncoming)
+            isIncoming: isIncoming,
+        )
     }
 
     var bottomInnerStackSpacing: CGFloat {
@@ -44,7 +47,7 @@ class AudioMessagePresenter: AudioPresenter {
 
     func playedColor(isIncoming: Bool) -> UIColor {
         return isIncoming ? (Theme.isDarkThemeEnabled ? .ows_gray15 : .ows_gray60)
-        : .ows_white
+            : .ows_white
     }
 
     func unplayedColor(isIncoming: Bool) -> UIColor {
@@ -63,8 +66,10 @@ class AudioMessagePresenter: AudioPresenter {
         ColorValueProvider(thumbColor(isIncoming: isIncoming).lottieColorValue)
     }
 
-    func playedDotAnimationColor(conversationStyle: ConversationStyle,
-                                 isIncoming: Bool) -> ColorValueProvider {
+    func playedDotAnimationColor(
+        conversationStyle: ConversationStyle,
+        isIncoming: Bool,
+    ) -> ColorValueProvider {
         return ColorValueProvider(conversationStyle.bubbleSecondaryTextColor(isIncoming: isIncoming).lottieColorValue)
     }
 
@@ -85,7 +90,7 @@ class AudioMessagePresenter: AudioPresenter {
 
             let playbackTimeLabelConfig = Self.playbackTimeLabelConfig_forMeasurement(
                 audioAttachment: audioAttachment,
-                maxWidth: maxWidth
+                maxWidth: maxWidth,
             )
             let playbackTimeLabelSize = CVText.measureLabel(config: playbackTimeLabelConfig, maxWidth: maxWidth)
 
@@ -94,7 +99,8 @@ class AudioMessagePresenter: AudioPresenter {
             return SubviewConfig(
                 playbackTimeLabelMeasurementInfo: playbackTimeLabelSize.asManualSubviewInfo(hasFixedSize: true),
                 playedDotContainerMeasurementInfo: dotSize.asManualSubviewInfo(hasFixedSize: true),
-                playbackRateViewMeasurementInfo: playbackRateSize.asManualSubviewInfo(hasFixedSize: true))
+                playbackRateViewMeasurementInfo: playbackRateSize.asManualSubviewInfo(hasFixedSize: true),
+            )
         }
         var subviewConfig: SubviewConfig?
         let lazySubviewConfig = { maxWidth in
@@ -110,23 +116,28 @@ class AudioMessagePresenter: AudioPresenter {
             SubviewGenerator(
                 id: "transparentSpacer1",
                 measurementInfo: { _ in CGSize.zero.asManualSubviewInfo(hasFixedWidth: true) },
-                viewGenerator: { UIView.transparentSpacer() }),
+                viewGenerator: { UIView.transparentSpacer() },
+            ),
             SubviewGenerator(
                 id: "playbackTimeLabel",
                 measurementInfo: { lazySubviewConfig($0).playbackTimeLabelMeasurementInfo },
-                viewGenerator: { [unowned self] in self.playbackTimeLabel }),
+                viewGenerator: { [unowned self] in self.playbackTimeLabel },
+            ),
             SubviewGenerator(
                 id: "playedDotContainer",
                 measurementInfo: { lazySubviewConfig($0).playedDotContainerMeasurementInfo },
-                viewGenerator: { [unowned self] in self.playedDotContainer }),
+                viewGenerator: { [unowned self] in self.playedDotContainer },
+            ),
             SubviewGenerator(
                 id: "playbackRateView",
                 measurementInfo: { lazySubviewConfig($0).playbackRateViewMeasurementInfo },
-                viewGenerator: { [unowned self] in self.playbackRateView}),
+                viewGenerator: { [unowned self] in self.playbackRateView },
+            ),
             SubviewGenerator(
                 id: "transparentSpacer2",
                 measurementInfo: { _ in .empty },
-                viewGenerator: { UIView.transparentSpacer() })
+                viewGenerator: { UIView.transparentSpacer() },
+            ),
         ]
     }
 
@@ -146,7 +157,7 @@ class AudioMessagePresenter: AudioPresenter {
         return CVLabelConfig.unstyledText(
             text,
             font: Constants.labelFont,
-            textColor: conversationStyle?.bubbleTextColor(isIncoming: isIncoming) ?? .label
+            textColor: conversationStyle?.bubbleTextColor(isIncoming: isIncoming) ?? .label,
         )
     }
 

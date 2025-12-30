@@ -18,8 +18,10 @@ class StorySlideAnimator: NSObject, UIViewControllerAnimatedTransitioning {
     func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
         let containerView = transitionContext.containerView
 
-        guard let fromVC = transitionContext.viewController(forKey: .from) as? StoryPageViewController,
-              let toVC = transitionContext.viewController(forKey: .to) else {
+        guard
+            let fromVC = transitionContext.viewController(forKey: .from) as? StoryPageViewController,
+            let toVC = transitionContext.viewController(forKey: .to)
+        else {
             owsFailDebug("Missing vcs")
             transitionContext.completeTransition(false)
             return
@@ -79,7 +81,7 @@ class StorySlideAnimator: NSObject, UIViewControllerAnimatedTransitioning {
             UIView.animate(withDuration: transitionDuration(using: transitionContext), animations: {
                 fromVC.currentContextViewController.view.frame = endFrame
                 fromVC.view.backgroundColor = .clear
-            }, completion: { _ in completion()})
+            }, completion: { _ in completion() })
         }
     }
 

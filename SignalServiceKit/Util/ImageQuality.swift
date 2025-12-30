@@ -124,7 +124,7 @@ public enum ImageQualityLevel: UInt, Comparable {
         return min(targetQualityLevel, maximumForCurrentAppContext)
     }
 
-    public static func < (lhs: ImageQualityLevel, rhs: ImageQualityLevel) -> Bool {
+    public static func <(lhs: ImageQualityLevel, rhs: ImageQualityLevel) -> Bool {
         return lhs.rawValue < rhs.rawValue
     }
 }

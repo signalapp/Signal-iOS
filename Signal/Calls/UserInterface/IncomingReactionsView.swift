@@ -55,7 +55,7 @@ class IncomingReactionsView: UIView, ReactionReceiver {
         self.setReactionFrames(
             reactionViewsToLayout: reactionViewsToAdd,
             // Start the views one slot down so that they can animate up
-            bottommostOriginY: self.bounds.maxY
+            bottommostOriginY: self.bounds.maxY,
         )
 
         let uuidsToRemove = changes.reactionsToRemove.map { $0.uuid }
@@ -73,7 +73,7 @@ class IncomingReactionsView: UIView, ReactionReceiver {
             // Adding reactions
             self.setReactionFrames(
                 reactionViewsToLayout: reactionViewsToAdd,
-                bottommostOriginY: self.bounds.maxY - Constants.reactionSpacing - Constants.reactionViewHeight
+                bottommostOriginY: self.bounds.maxY - Constants.reactionSpacing - Constants.reactionViewHeight,
             )
 
             // Moving reactions
@@ -81,7 +81,7 @@ class IncomingReactionsView: UIView, ReactionReceiver {
             if let last = reactionViewsToMove.last {
                 self.setReactionFrames(
                     reactionViewsToLayout: reactionViewsToMove,
-                    bottommostOriginY: last.frame.origin.y - numSlotsToMove*(Constants.reactionSpacing + Constants.reactionViewHeight)
+                    bottommostOriginY: last.frame.origin.y - numSlotsToMove * (Constants.reactionSpacing + Constants.reactionViewHeight),
                 )
             }
 
@@ -107,7 +107,7 @@ class IncomingReactionsView: UIView, ReactionReceiver {
 
     private var isAnimationInProgress = false {
         didSet {
-            if oldValue && !isAnimationInProgress {
+            if oldValue, !isAnimationInProgress {
                 applyLatestSnapshot()
             }
         }
@@ -131,7 +131,7 @@ class IncomingReactionsView: UIView, ReactionReceiver {
     /// - Parameter bottommostOriginY: The target origin y-value of the bottommost `ReactionView`.
     private func setReactionFrames(
         reactionViewsToLayout: [ReactionView],
-        bottommostOriginY: CGFloat
+        bottommostOriginY: CGFloat,
     ) {
         var origin = CGPoint(x: 0, y: bottommostOriginY)
         for view in reactionViewsToLayout.reversed() {
@@ -139,12 +139,12 @@ class IncomingReactionsView: UIView, ReactionReceiver {
                 origin: origin,
                 size: CGSize(
                     width: Constants.viewWidth,
-                    height: Constants.reactionViewHeight
-                )
+                    height: Constants.reactionViewHeight,
+                ),
             )
             origin = CGPoint(
                 x: 0,
-                y: origin.y - Constants.reactionSpacing - Constants.reactionViewHeight
+                y: origin.y - Constants.reactionSpacing - Constants.reactionViewHeight,
             )
         }
     }
@@ -198,7 +198,7 @@ class IncomingReactionsView: UIView, ReactionReceiver {
             label.font = label.font.withSize(Constants.emojiDimension)
             label.translatesAutoresizingMaskIntoConstraints = false
             NSLayoutConstraint.activate([
-                label.heightAnchor.constraint(equalToConstant: Constants.emojiDimension)
+                label.heightAnchor.constraint(equalToConstant: Constants.emojiDimension),
             ])
             return label
         }()
@@ -209,7 +209,7 @@ class IncomingReactionsView: UIView, ReactionReceiver {
             label.translatesAutoresizingMaskIntoConstraints = false
             label.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
             NSLayoutConstraint.activate([
-                label.heightAnchor.constraint(equalToConstant: Constants.nameLabelDimension)
+                label.heightAnchor.constraint(equalToConstant: Constants.nameLabelDimension),
             ])
             return label
         }()
@@ -217,7 +217,7 @@ class IncomingReactionsView: UIView, ReactionReceiver {
         private lazy var nameView: UIView = {
             let view = UIView()
             view.clipsToBounds = true
-            view.layer.cornerRadius =  Constants.nameCornerRadius
+            view.layer.cornerRadius = Constants.nameCornerRadius
             view.translatesAutoresizingMaskIntoConstraints = false
             view.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
 
@@ -236,7 +236,7 @@ class IncomingReactionsView: UIView, ReactionReceiver {
                 view.trailingAnchor.constraint(equalTo: nameLabel.trailingAnchor, constant: Constants.nameViewHInset),
                 view.bottomAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: Constants.nameViewVInset),
                 view.topAnchor.constraint(equalTo: nameLabel.topAnchor, constant: -Constants.nameViewVInset),
-                view.heightAnchor.constraint(equalToConstant: Constants.nameViewDimension)
+                view.heightAnchor.constraint(equalToConstant: Constants.nameViewDimension),
             ])
             return view
         }()
@@ -299,7 +299,7 @@ extension IncomingReactionsView: ReactionBurstAligner {
         let originalPosition = CGPoint(x: 0, y: y)
         return self.convert(
             originalPosition,
-            to: view
+            to: view,
         )
     }
 
@@ -348,7 +348,7 @@ class ReactionsModel {
         var trimmedSnapshot = snapshot
         // Trim the snapshot since we can never show more than `Constants.maxReactionsToDisplay` anyway.
         let excess = trimmedSnapshot.count - Constants.maxReactionsToDisplay
-        if excess > 0  {
+        if excess > 0 {
             trimmedSnapshot = Array(trimmedSnapshot.dropFirst(excess))
         }
         let currSnapshot = trimmedSnapshot
@@ -382,7 +382,7 @@ class ReactionsModel {
             slotsToMove = reactionsToAdd.count
         }
 
-        if reactionsToAdd.isEmpty && (reactionsToMove.isEmpty || slotsToMove == 0) && reactionsToRemove.isEmpty {
+        if reactionsToAdd.isEmpty, reactionsToMove.isEmpty || slotsToMove == 0, reactionsToRemove.isEmpty {
             // No changes
             return nil
         }
@@ -391,7 +391,7 @@ class ReactionsModel {
             reactionsToAdd: reactionsToAdd,
             reactionsToMove: reactionsToMove,
             slotsToMove: slotsToMove,
-            reactionsToRemove: reactionsToRemove
+            reactionsToRemove: reactionsToRemove,
         )
     }
 }
@@ -403,16 +403,4 @@ struct Reaction {
     let timestamp: TimeInterval
 
     let uuid = UUID()
-
-    init(
-        emoji: String,
-        name: String,
-        aci: Aci,
-        timestamp: TimeInterval
-    ) {
-        self.emoji = emoji
-        self.name = name
-        self.aci = aci
-        self.timestamp = timestamp
-    }
 }

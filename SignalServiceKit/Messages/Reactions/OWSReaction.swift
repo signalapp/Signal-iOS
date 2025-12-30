@@ -63,7 +63,7 @@ public final class OWSReaction: NSObject, SDSCodableModel, Decodable, NSSecureCo
         emoji: String,
         reactor: Aci,
         sentAtTimestamp: UInt64,
-        receivedAtTimestamp: UInt64
+        receivedAtTimestamp: UInt64,
     ) {
         self.init(
             uniqueMessageId: uniqueMessageId,
@@ -71,7 +71,7 @@ public final class OWSReaction: NSObject, SDSCodableModel, Decodable, NSSecureCo
             reactorAci: reactor,
             reactorPhoneNumber: nil,
             sentAtTimestamp: sentAtTimestamp,
-            sortOrder: receivedAtTimestamp
+            sortOrder: receivedAtTimestamp,
         )
     }
 
@@ -81,7 +81,7 @@ public final class OWSReaction: NSObject, SDSCodableModel, Decodable, NSSecureCo
         reactorAci: Aci?,
         reactorPhoneNumber: String?,
         sentAtTimestamp: UInt64,
-        sortOrder: UInt64
+        sortOrder: UInt64,
     ) {
         self.uniqueId = UUID().uuidString
         self.uniqueMessageId = uniqueMessageId
@@ -98,15 +98,15 @@ public final class OWSReaction: NSObject, SDSCodableModel, Decodable, NSSecureCo
         emoji: String,
         reactorAci: Aci,
         sentAtTimestamp: UInt64,
-        sortOrder: UInt64
+        sortOrder: UInt64,
     ) -> Self {
-        return Self.init(
+        return Self(
             uniqueMessageId: uniqueMessageId,
             emoji: emoji,
             reactorAci: reactorAci,
             reactorPhoneNumber: nil,
             sentAtTimestamp: sentAtTimestamp,
-            sortOrder: sortOrder
+            sortOrder: sortOrder,
         )
     }
 
@@ -115,7 +115,7 @@ public final class OWSReaction: NSObject, SDSCodableModel, Decodable, NSSecureCo
         emoji: String,
         reactorE164: E164,
         sentAtTimestamp: UInt64,
-        sortOrder: UInt64
+        sortOrder: UInt64,
     ) -> OWSReaction {
         return .init(
             uniqueMessageId: uniqueMessageId,
@@ -123,7 +123,7 @@ public final class OWSReaction: NSObject, SDSCodableModel, Decodable, NSSecureCo
             reactorAci: nil,
             reactorPhoneNumber: reactorE164.stringValue,
             sentAtTimestamp: sentAtTimestamp,
-            sortOrder: sortOrder
+            sortOrder: sortOrder,
         )
     }
 
@@ -138,7 +138,7 @@ public final class OWSReaction: NSObject, SDSCodableModel, Decodable, NSSecureCo
     public static func anyEnumerateObjc(
         transaction: DBReadTransaction,
         batched: Bool,
-        block: @escaping (OWSReaction, UnsafeMutablePointer<ObjCBool>) -> Void
+        block: @escaping (OWSReaction, UnsafeMutablePointer<ObjCBool>) -> Void,
     ) {
         let batchingPreference: BatchingPreference = batched ? .batched() : .unbatched
         anyEnumerate(transaction: transaction, batchingPreference: batchingPreference, block: block)

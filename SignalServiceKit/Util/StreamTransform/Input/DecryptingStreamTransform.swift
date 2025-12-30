@@ -39,7 +39,7 @@ public class DecryptingStreamTransform: StreamTransform, FinalizableStreamTransf
                 algorithm: .aes,
                 options: .pkcs7Padding,
                 key: encryptionKey,
-                iv: iv
+                iv: iv,
             )
             hasInitialized = true
         }

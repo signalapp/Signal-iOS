@@ -32,7 +32,7 @@ public class ReactionManager: NSObject {
         emoji: String,
         isRemoving: Bool,
         isHighPriority: Bool = false,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) -> Promise<Void> {
         let outgoingMessage: TSOutgoingMessage
         do {
@@ -47,7 +47,7 @@ public class ReactionManager: NSObject {
             .promise,
             message: preparedMessage,
             isHighPriority: isHighPriority,
-            transaction: tx
+            transaction: tx,
         )
     }
 
@@ -56,7 +56,7 @@ public class ReactionManager: NSObject {
         to messageUniqueId: String,
         emoji: String,
         isRemoving: Bool,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) throws -> OWSOutgoingReactionMessage {
         assert(emoji.isSingleEmoji)
 
@@ -86,7 +86,7 @@ public class ReactionManager: NSObject {
             // that does not happen.
             expiresInSeconds: dmConfig.durationSeconds,
             expireTimerVersion: NSNumber(value: dmConfig.timerVersion),
-            transaction: tx
+            transaction: tx,
         )
 
         outgoingMessage.previousReaction = message.reaction(for: localAci, tx: tx)
@@ -99,7 +99,7 @@ public class ReactionManager: NSObject {
                 emoji: emoji,
                 sentAtTimestamp: outgoingMessage.timestamp,
                 receivedAtTimestamp: outgoingMessage.timestamp,
-                tx: tx
+                tx: tx,
             )?.newValue
 
             // Always immediately mark outgoing reactions as read.
@@ -125,7 +125,7 @@ public class ReactionManager: NSObject {
         expiresInSeconds: UInt32,
         expireTimerVersion: UInt32?,
         sentTranscript: OWSIncomingSentMessageTranscript?,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) -> ReactionProcessingResult {
         guard let emoji = reaction.emoji.strippedOrNil else {
             owsFailDebug("Received invalid emoji")
@@ -135,26 +135,33 @@ public class ReactionManager: NSObject {
             owsFailDebug("Received invalid emoji")
             return .invalidReaction
         }
-        guard let messageAuthor = Aci.parseFrom(
-            serviceIdBinary: reaction.targetAuthorAciBinary,
-            serviceIdString: reaction.targetAuthorAci,
-        ) else {
+        guard
+            let messageAuthor = Aci.parseFrom(
+                serviceIdBinary: reaction.targetAuthorAciBinary,
+                serviceIdString: reaction.targetAuthorAci,
+            )
+        else {
             owsFailDebug("reaction missing message author")
             return .invalidReaction
         }
 
-        if var message = InteractionFinder.findMessage(
-            withTimestamp: reaction.timestamp,
-            threadId: thread.uniqueId,
-            author: SignalServiceAddress(messageAuthor),
-            transaction: transaction
-        ) {
+        if
+            var message = InteractionFinder.findMessage(
+                withTimestamp: reaction.timestamp,
+                threadId: thread.uniqueId,
+                author: SignalServiceAddress(messageAuthor),
+                transaction: transaction,
+            )
+        {
             if message.editState == .pastRevision {
                 // Reaction targeted an old edit revision, fetch the latest
                 // version to ensure the reaction shows up properly.
-                if let latestEdit = DependenciesBridge.shared.editMessageStore.findMessage(
-                    fromEdit: message,
-                    tx: transaction) {
+                if
+                    let latestEdit = DependenciesBridge.shared.editMessageStore.findMessage(
+                        fromEdit: message,
+                        tx: transaction,
+                    )
+                {
                     message = latestEdit
                 } else {
                     Logger.info("Ignoring reaction for missing edit target.")
@@ -177,7 +184,7 @@ public class ReactionManager: NSObject {
                     emoji: emoji,
                     sentAtTimestamp: timestamp,
                     receivedAtTimestamp: NSDate.ows_millisecondTimeStamp(),
-                    tx: transaction
+                    tx: transaction,
                 )
 
                 // If this is a reaction to a message we sent, notify the user.
@@ -192,17 +199,19 @@ public class ReactionManager: NSObject {
                         forReaction: reaction.newValue,
                         onOutgoingMessage: message,
                         thread: thread,
-                        transaction: transaction
+                        transaction: transaction,
                     )
                 }
             }
 
             return .success
-        } else if let storyMessage = StoryFinder.story(
-            timestamp: reaction.timestamp,
-            author: messageAuthor,
-            transaction: transaction
-        ) {
+        } else if
+            let storyMessage = StoryFinder.story(
+                timestamp: reaction.timestamp,
+                author: messageAuthor,
+                transaction: transaction,
+            )
+        {
             // Reaction to stories show up as normal messages, they
             // are not associated with standard interactions. As such
             // we need to insert an incoming/outgoing message as appropriate.
@@ -239,7 +248,7 @@ public class ReactionManager: NSObject {
                 let builder: TSIncomingMessageBuilder = .withDefaultValues(
                     thread: thread,
                     authorAci: reactor,
-                    serverTimestamp: serverTimestamp
+                    serverTimestamp: serverTimestamp,
                 )
                 populateStoryContext(on: builder)
                 message = builder.build()
@@ -253,7 +262,7 @@ public class ReactionManager: NSObject {
                 outgoingMessage.updateRecipientsFromNonLocalDevice(
                     sentTranscript?.recipientStates ?? [:],
                     isSentUpdate: false,
-                    transaction: transaction
+                    transaction: transaction,
                 )
             }
 
@@ -270,7 +279,7 @@ public class ReactionManager: NSObject {
         uniqueId: String,
         thresholdDate: Date,
         shouldPerformRemove: Bool,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) -> Bool {
         guard let reaction = OWSReaction.anyFetch(uniqueId: uniqueId, transaction: transaction) else {
             // This could just be a race condition, but it should be very unlikely.

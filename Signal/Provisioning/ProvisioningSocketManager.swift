@@ -50,11 +50,11 @@ extension RegistrationProvisioningMessage: DecryptableProvisioningMessage {
 public protocol ProvisioningSocketManagerUIDelegate: AnyObject {
     func provisioningSocketManager(
         _ provisioningSocketManager: ProvisioningSocketManager,
-        didUpdateProvisioningURL url: URL
+        didUpdateProvisioningURL url: URL,
     )
 
     func provisioningSocketManagerDidPauseQRRotation(
-        _ provisioningSocketManager: ProvisioningSocketManager
+        _ provisioningSocketManager: ProvisioningSocketManager,
     )
 }
 
@@ -126,7 +126,7 @@ public class ProvisioningSocketManager: ProvisioningSocketDelegate {
 
     public func provisioningSocket(
         _ provisioningSocket: ProvisioningSocket,
-        didReceiveProvisioningUuid provisioningUuid: String
+        didReceiveProvisioningUuid provisioningUuid: String,
     ) {
         urlCommunicationAttempts.update { attempts in
             let matchingAttemptIndex = attempts.firstIndex {
@@ -146,15 +146,15 @@ public class ProvisioningSocketManager: ProvisioningSocketDelegate {
             fetchParamsContinuation.resume(
                 returning: ProvisioningUrlParams(
                     uuid: provisioningUuid,
-                    cipher: attempts[matchingAttemptIndex].cipher
-                )
+                    cipher: attempts[matchingAttemptIndex].cipher,
+                ),
             )
         }
     }
 
     public func provisioningSocket(
         _ provisioningSocket: ProvisioningSocket,
-        didReceiveEnvelopeData data: Data
+        didReceiveEnvelopeData data: Data,
     ) {
         var cipherForSocket: ProvisioningCipher?
 
@@ -169,7 +169,7 @@ public class ProvisioningSocketManager: ProvisioningSocketDelegate {
             if provisioningSocket.id == attempt.socket.id {
                 owsAssertDebug(
                     cipherForSocket == nil,
-                    "Extracting cipher, but unexpectedly already set from previous match!"
+                    "Extracting cipher, but unexpectedly already set from previous match!",
                 )
 
                 cipherForSocket = attempt.cipher
@@ -224,7 +224,7 @@ public class ProvisioningSocketManager: ProvisioningSocketDelegate {
 
     private static func buildProvisioningUrl(
         type: DeviceProvisioningURL.LinkType,
-        params: ProvisioningUrlParams
+        params: ProvisioningUrlParams,
     ) throws -> URL {
 
         let shouldLinkAndSync: Bool = {
@@ -259,7 +259,7 @@ public class ProvisioningSocketManager: ProvisioningSocketDelegate {
             type: type,
             ephemeralDeviceId: params.uuid,
             publicKey: params.cipher.ourPublicKey,
-            capabilities: capabilities
+            capabilities: capabilities,
         ).buildUrl()
     }
 
@@ -275,7 +275,7 @@ public class ProvisioningSocketManager: ProvisioningSocketDelegate {
             let newAttempt = ProvisioningUrlCommunicationAttempt(
                 socket: ProvisioningSocket(),
                 cipher: ProvisioningCipher(),
-                fetchProvisioningUrlParamsContinuation: paramsContinuation
+                fetchProvisioningUrlParamsContinuation: paramsContinuation,
             )
 
             urlCommunicationAttempts.update { $0.append(newAttempt) }

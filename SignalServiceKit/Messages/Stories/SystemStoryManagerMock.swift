@@ -84,33 +84,33 @@ public class SystemStoryManagerMock: SystemStoryManagerProtocol {
 
 public class OnboardingStoryManagerFilesystemMock: OnboardingStoryManagerFilesystem {
 
-    public override class func fileOrFolderExists(url: URL) -> Bool {
+    override public class func fileOrFolderExists(url: URL) -> Bool {
         return true
     }
 
-    public override class func fileSize(of: URL) throws -> UInt64 {
+    override public class func fileSize(of: URL) throws -> UInt64 {
         return 100
     }
 
-    public override class func deleteFile(url: URL) throws {
+    override public class func deleteFile(url: URL) throws {
         return
     }
 
-    public override class func moveFile(from fromUrl: URL, to toUrl: URL) throws {
+    override public class func moveFile(from fromUrl: URL, to toUrl: URL) throws {
         return
     }
 
-    public override class func isValidImage(at url: URL) -> Bool {
+    override public class func isValidImage(at url: URL) -> Bool {
         return true
     }
 }
 
 public class OnboardingStoryManagerStoryMessageFactoryMock: OnboardingStoryManagerStoryMessageFactory {
 
-    public override class func createFromSystemAuthor(
+    override public class func createFromSystemAuthor(
         attachmentSource: AttachmentDataSource,
         timestamp: UInt64,
-        transaction: DBWriteTransaction
+        transaction: DBWriteTransaction,
     ) throws -> StoryMessage {
         let storyMessage = StoryMessage(
             timestamp: timestamp,
@@ -121,8 +121,8 @@ public class OnboardingStoryManagerStoryMessageFactoryMock: OnboardingStoryManag
                     allowsReplies: false,
                     receivedTimestamp: timestamp,
                     readTimestamp: nil,
-                    viewedTimestamp: nil
-                )
+                    viewedTimestamp: nil,
+                ),
             ),
             attachment: .media,
             replyCount: 0,
@@ -131,9 +131,9 @@ public class OnboardingStoryManagerStoryMessageFactoryMock: OnboardingStoryManag
         return storyMessage
     }
 
-    public override class func validateAttachmentContents(
+    override public class func validateAttachmentContents(
         dataSource: DataSourcePath,
-        mimeType: String
+        mimeType: String,
     ) async throws -> AttachmentDataSource {
         struct FakePendingAttachment: PendingAttachment {
             let blurHash: String? = nil
@@ -161,7 +161,7 @@ public class OnboardingStoryManagerStoryMessageFactoryMock: OnboardingStoryManag
 
         return AttachmentDataSource.pendingAttachment(FakePendingAttachment(
             mimeType: mimeType,
-            sourceFilename: dataSource.sourceFilename
+            sourceFilename: dataSource.sourceFilename,
         ))
     }
 }

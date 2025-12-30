@@ -15,7 +15,7 @@ open class AttachmentContentValidatorMock: AttachmentContentValidator {
         dataSource: DataSourcePath,
         mimeType: String,
         renderingFlag: AttachmentReference.RenderingFlag,
-        sourceFilename: String?
+        sourceFilename: String?,
     ) async throws -> PendingAttachment {
         throw OWSAssertionError("Unimplemented")
     }
@@ -24,7 +24,7 @@ open class AttachmentContentValidatorMock: AttachmentContentValidator {
         data: Data,
         mimeType: String,
         renderingFlag: AttachmentReference.RenderingFlag,
-        sourceFilename: String?
+        sourceFilename: String?,
     ) async throws -> PendingAttachment {
         throw OWSAssertionError("Unimplemented")
     }
@@ -36,7 +36,7 @@ open class AttachmentContentValidatorMock: AttachmentContentValidator {
         integrityCheck: AttachmentIntegrityCheck,
         mimeType: String,
         renderingFlag: AttachmentReference.RenderingFlag,
-        sourceFilename: String?
+        sourceFilename: String?,
     ) async throws -> PendingAttachment {
         throw OWSAssertionError("Unimplemented")
     }
@@ -45,7 +45,7 @@ open class AttachmentContentValidatorMock: AttachmentContentValidator {
         ofEncryptedFileAt fileUrl: URL,
         attachmentKey: AttachmentKey,
         plaintextLength: UInt32,
-        mimeType: String
+        mimeType: String,
     ) async throws -> RevalidatedAttachment {
         throw OWSAssertionError("Unimplemented")
     }
@@ -57,7 +57,7 @@ open class AttachmentContentValidatorMock: AttachmentContentValidator {
         finalAttachmentKey: AttachmentKey,
         mimeType: String,
         renderingFlag: AttachmentReference.RenderingFlag,
-        sourceFilename: String?
+        sourceFilename: String?,
     ) async throws -> any PendingAttachment {
         throw OWSAssertionError("Unimplemented")
     }
@@ -77,7 +77,7 @@ open class AttachmentContentValidatorMock: AttachmentContentValidator {
 
     open func truncatedMessageBodyForInlining(
         _ body: MessageBody,
-        tx: DBWriteTransaction
+        tx: DBWriteTransaction,
     ) -> ValidatedInlineMessageBody {
         return MockValidatedMessageBody(inlinedBody: body)
     }
@@ -97,7 +97,7 @@ open class AttachmentContentValidatorMock: AttachmentContentValidator {
     }
 
     open func prepareQuotedReplyThumbnail(
-        fromOriginalAttachmentStream: AttachmentStream
+        fromOriginalAttachmentStream: AttachmentStream,
     ) async throws -> PendingAttachment {
         throw OWSAssertionError("Unimplemented")
     }

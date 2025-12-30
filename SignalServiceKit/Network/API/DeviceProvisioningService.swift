@@ -56,7 +56,7 @@ public class DeviceProvisioningServiceImpl: DeviceProvisioningService {
     public func provisionDevice(messageBody: Data, ephemeralDeviceId: String) async throws {
         let request = OWSRequestFactory.provisionDevice(
             withMessageBody: messageBody,
-            ephemeralDeviceId: ephemeralDeviceId
+            ephemeralDeviceId: ephemeralDeviceId,
         )
         do {
             _ = try await networkManager.asyncRequest(request)

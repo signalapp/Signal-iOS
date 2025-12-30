@@ -37,8 +37,8 @@ class ConversationBottomPanelView: UIView {
             contentLayoutGuide.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor),
             contentLayoutGuide.bottomAnchor.constraint(
                 equalTo: safeAreaLayoutGuide.bottomAnchor,
-                constant: UIDevice.current.hasIPhoneXNotch ? 0 : -12
-            )
+                constant: UIDevice.current.hasIPhoneXNotch ? 0 : -12,
+            ),
         ])
     }
 

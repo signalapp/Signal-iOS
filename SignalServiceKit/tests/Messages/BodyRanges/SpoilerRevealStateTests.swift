@@ -28,22 +28,22 @@ public class SpoilerRevealStateTests: XCTestCase {
 
         XCTAssertEqual(
             spoilerRevealState.revealedSpoilerIds(interactionIdentifier: identifierA),
-            Set([revealedIdA1])
+            Set([revealedIdA1]),
         )
         XCTAssertEqual(
             spoilerRevealState.revealedSpoilerIds(interactionIdentifier: identifierB),
-            Set([revealedIdB1])
+            Set([revealedIdB1]),
         )
 
         var snapshot = spoilerRevealState.snapshot()
 
         XCTAssertEqual(
             snapshot[identifierA],
-            Set([revealedIdA1])
+            Set([revealedIdA1]),
         )
         XCTAssertEqual(
             snapshot[identifierB],
-            Set([revealedIdB1])
+            Set([revealedIdB1]),
         )
 
         snapshot[identifierA] = Set([revealedIdA1, revealedIdA2])
@@ -52,16 +52,16 @@ public class SpoilerRevealStateTests: XCTestCase {
         // The original should be unchanged despite changes to the snapshot.
         XCTAssertEqual(
             spoilerRevealState.revealedSpoilerIds(interactionIdentifier: identifierA),
-            Set([revealedIdA1])
+            Set([revealedIdA1]),
         )
         XCTAssertEqual(
             spoilerRevealState.revealedSpoilerIds(interactionIdentifier: identifierB),
-            Set([revealedIdB1])
+            Set([revealedIdB1]),
         )
         // Snapshot should be updated though.
         XCTAssertEqual(
             snapshot[identifierA],
-            Set([revealedIdA1, revealedIdA2])
+            Set([revealedIdA1, revealedIdA2]),
         )
         XCTAssertNil(snapshot[identifierB])
 
@@ -70,11 +70,11 @@ public class SpoilerRevealStateTests: XCTestCase {
 
         XCTAssertEqual(
             snapshot[identifierA],
-            Set([revealedIdA1])
+            Set([revealedIdA1]),
         )
         XCTAssertEqual(
             snapshot[identifierB],
-            Set([revealedIdB1])
+            Set([revealedIdB1]),
         )
 
         // Update the original.
@@ -83,16 +83,16 @@ public class SpoilerRevealStateTests: XCTestCase {
         // The original should be updated.
         XCTAssertEqual(
             spoilerRevealState.revealedSpoilerIds(interactionIdentifier: identifierA),
-            Set([revealedIdA1, revealedIdA2])
+            Set([revealedIdA1, revealedIdA2]),
         )
         // The snapshot should be unchanged.
         XCTAssertEqual(
             snapshot[identifierA],
-            Set([revealedIdA1])
+            Set([revealedIdA1]),
         )
         XCTAssertEqual(
             snapshot[identifierB],
-            Set([revealedIdB1])
+            Set([revealedIdB1]),
         )
     }
 }

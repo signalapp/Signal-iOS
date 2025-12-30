@@ -13,7 +13,7 @@ public class CVComponentPoll: CVComponentBase, CVComponent {
 
     init(
         itemModel: CVItemModel,
-        poll: CVComponentState.Poll
+        poll: CVComponentState.Poll,
     ) {
         self.poll = poll
         super.init(itemModel: itemModel)
@@ -26,7 +26,7 @@ public class CVComponentPoll: CVComponentBase, CVComponent {
     public func configureForRendering(
         componentView: any CVComponentView,
         cellMeasurement: SignalUI.CVCellMeasurement,
-        componentDelegate: any CVComponentDelegate
+        componentDelegate: any CVComponentDelegate,
     ) {
         guard let componentViewPoll = componentView as? CVComponentViewPoll else {
             owsFailDebug("Unexpected componentView.")
@@ -39,7 +39,7 @@ public class CVComponentPoll: CVComponentBase, CVComponent {
             previousPollState: poll.prevPollState,
             cellMeasurement: cellMeasurement,
             componentDelegate: componentDelegate,
-            accessibilitySummary: buildAccessibilityLabel()
+            accessibilitySummary: buildAccessibilityLabel(),
         )
     }
 
@@ -60,19 +60,25 @@ public class CVComponentPoll: CVComponentBase, CVComponent {
         var elements = [String]()
         if isIncoming {
             if let accessibilityAuthorName = itemViewState.accessibilityAuthorName {
-                let senderFormat = OWSLocalizedString("CONVERSATION_VIEW_CELL_ACCESSIBILITY_SENDER_FORMAT",
-                                                comment: "Format for sender info for accessibility label for message. Embeds {{ the sender name }}.")
+                let senderFormat = OWSLocalizedString(
+                    "CONVERSATION_VIEW_CELL_ACCESSIBILITY_SENDER_FORMAT",
+                    comment: "Format for sender info for accessibility label for message. Embeds {{ the sender name }}.",
+                )
                 elements.append(String(format: senderFormat, accessibilityAuthorName))
             } else {
                 owsFailDebug("Missing accessibilityAuthorName.")
             }
         } else if isOutgoing {
-            elements.append(OWSLocalizedString("CONVERSATION_VIEW_CELL_ACCESSIBILITY_SENDER_LOCAL_USER",
-                                               comment: "Format for sender info for outgoing messages."))
+            elements.append(OWSLocalizedString(
+                "CONVERSATION_VIEW_CELL_ACCESSIBILITY_SENDER_LOCAL_USER",
+                comment: "Format for sender info for outgoing messages.",
+            ))
         }
 
-        let formatQuestion = OWSLocalizedString("POLL_ACCESSIBILITY_LABEL",
-                                        comment: "Accessibility label for poll message. Embeds {{ poll question }}.")
+        let formatQuestion = OWSLocalizedString(
+            "POLL_ACCESSIBILITY_LABEL",
+            comment: "Accessibility label for poll message. Embeds {{ poll question }}.",
+        )
         elements.append(String(format: formatQuestion, poll.state.poll.question))
 
         let result = elements.joined(separator: " ")

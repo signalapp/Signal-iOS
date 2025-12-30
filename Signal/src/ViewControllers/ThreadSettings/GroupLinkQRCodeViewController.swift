@@ -19,11 +19,13 @@ public class GroupLinkQRCodeViewController: OWSViewController {
 
     // MARK: - View Lifecycle
 
-    public override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
 
-        title = OWSLocalizedString("GROUP_LINK_QR_CODE_VIEW_TITLE",
-                                  comment: "The title for the 'group link QR code' view.")
+        title = OWSLocalizedString(
+            "GROUP_LINK_QR_CODE_VIEW_TITLE",
+            comment: "The title for the 'group link QR code' view.",
+        )
         view.backgroundColor = Theme.backgroundColor
 
         createContents()
@@ -45,21 +47,27 @@ public class GroupLinkQRCodeViewController: OWSViewController {
         }
 
         let descriptionLabel = UILabel()
-        descriptionLabel.text = OWSLocalizedString("GROUP_LINK_QR_CODE_VIEW_DESCRIPTION",
-                                                  comment: "Description text in the 'group link QR code' view.")
+        descriptionLabel.text = OWSLocalizedString(
+            "GROUP_LINK_QR_CODE_VIEW_DESCRIPTION",
+            comment: "Description text in the 'group link QR code' view.",
+        )
         descriptionLabel.textColor = Theme.secondaryTextAndIconColor
         descriptionLabel.font = .dynamicTypeFootnote
         descriptionLabel.textAlignment = .center
         descriptionLabel.numberOfLines = 0
         descriptionLabel.lineBreakMode = .byWordWrapping
 
-        let shareCodeButton = OWSFlatButton.button(title: OWSLocalizedString("GROUP_LINK_QR_CODE_VIEW_SHARE_CODE_BUTTON",
-                                                                            comment: "Label for the 'share code' button in the 'group link QR code' view."),
-                                                   font: UIFont.dynamicTypeHeadline,
-                                                   titleColor: .white,
-                                                   backgroundColor: .ows_accentBlue,
-                                                   target: self,
-                                                   selector: #selector(didTapShareCode))
+        let shareCodeButton = OWSFlatButton.button(
+            title: OWSLocalizedString(
+                "GROUP_LINK_QR_CODE_VIEW_SHARE_CODE_BUTTON",
+                comment: "Label for the 'share code' button in the 'group link QR code' view.",
+            ),
+            font: UIFont.dynamicTypeHeadline,
+            titleColor: .white,
+            backgroundColor: .ows_accentBlue,
+            target: self,
+            selector: #selector(didTapShareCode),
+        )
         shareCodeButton.autoSetHeightUsingFont()
 
         let vSpacer1 = UIView.vStretchingSpacer()
@@ -70,7 +78,7 @@ public class GroupLinkQRCodeViewController: OWSViewController {
             UIView.spacer(withHeight: 24),
             descriptionLabel,
             vSpacer2,
-            shareCodeButton
+            shareCodeButton,
         ])
         stackView.axis = .vertical
         stackView.alignment = .fill
@@ -84,15 +92,17 @@ public class GroupLinkQRCodeViewController: OWSViewController {
     @objc
     private func didTapShareCode(_ sender: UIButton) {
         do {
-            guard let qrCodeImage = QRCodeGenerator().generateQRCode(
-                url: try groupModelV2.groupInviteLinkUrl()
-            ) else {
+            guard
+                let qrCodeImage = QRCodeGenerator().generateQRCode(
+                    url: try groupModelV2.groupInviteLinkUrl(),
+                )
+            else {
                 owsFailDebug("Failed to generate QR code image!")
                 return
             }
 
             let coloredQRCodeImage = qrCodeImage.tintedImage(
-                color: QRCodeColor.blue.foreground
+                color: QRCodeColor.blue.foreground,
             )
 
             guard let imageData = coloredQRCodeImage.pngData() else {

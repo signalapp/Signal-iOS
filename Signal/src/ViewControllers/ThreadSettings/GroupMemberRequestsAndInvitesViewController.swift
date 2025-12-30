@@ -43,11 +43,13 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
 
     // MARK: - View Lifecycle
 
-    public override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
 
-        title = OWSLocalizedString("GROUP_REQUESTS_AND_INVITES_VIEW_TITLE",
-                                  comment: "The title for the 'group requests and invites' view.")
+        title = OWSLocalizedString(
+            "GROUP_REQUESTS_AND_INVITES_VIEW_TITLE",
+            comment: "The title for the 'group requests and invites' view.",
+        )
 
         defaultSeparatorInsetLeading = Self.cellHInnerMargin + CGFloat(AvatarBuilder.smallAvatarSizePoints) + ContactCellView.avatarTextHSpacing
 
@@ -64,7 +66,7 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
             segmentedControl.insertSegment(
                 withTitle: segmentTitle(forMode: mode),
                 at: mode.rawValue,
-                animated: false
+                animated: false,
             )
         }
 
@@ -78,7 +80,7 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
         for mode in Mode.allCases {
             segmentedControl.setTitle(
                 segmentTitle(forMode: mode),
-                forSegmentAt: mode.rawValue
+                forSegmentAt: mode.rawValue,
             )
         }
     }
@@ -91,7 +93,7 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
         case .memberRequests:
             title = OWSLocalizedString(
                 "GROUP_REQUESTS_AND_INVITES_VIEW_MEMBER_REQUESTS_MODE",
-                comment: "Label for the 'member requests' mode of the 'group requests and invites' view."
+                comment: "Label for the 'member requests' mode of the 'group requests and invites' view.",
             )
             if groupMembership.requestingMembers.count > 0 {
                 title.append(" (\(OWSFormat.formatInt(groupMembership.requestingMembers.count)))")
@@ -99,7 +101,7 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
         case .pendingInvites:
             title = OWSLocalizedString(
                 "GROUP_REQUESTS_AND_INVITES_VIEW_PENDING_INVITES_MODE",
-                comment: "Label for the 'pending invites' mode of the 'group requests and invites' view."
+                comment: "Label for the 'pending invites' mode of the 'group requests and invites' view.",
             )
             if groupMembership.invitedMembers.count > 0 {
                 title.append(" (\(OWSFormat.formatInt(groupMembership.invitedMembers.count)))")
@@ -154,7 +156,7 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
         let section = OWSTableSection()
         let footerFormat = OWSLocalizedString(
             "PENDING_GROUP_MEMBERS_SECTION_FOOTER_PENDING_MEMBER_REQUESTS_FORMAT",
-            comment: "Footer for the 'pending member requests' section of the 'member requests and invites' view. Embeds {{ the name of the group }}."
+            comment: "Footer for the 'pending member requests' section of the 'member requests and invites' view. Embeds {{ the name of the group }}.",
         )
         let groupName = SSKEnvironment.shared.databaseStorageRef.read { tx in SSKEnvironment.shared.contactManagerRef.displayName(for: oldGroupThread, transaction: tx) }
         section.footerTitle = String(format: footerFormat, groupName)
@@ -162,7 +164,7 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
         if !requestingMembersSorted.isEmpty {
             for address in requestingMembersSorted {
                 section.add(OWSTableItem(customCellBlock: { [weak self] in
-                    guard let self = self else {
+                    guard let self else {
                         owsFailDebug("Missing self")
                         return OWSTableItem.newCell()
                     }
@@ -192,8 +194,10 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
             }
         } else {
             section.add(OWSTableItem.softCenterLabel(
-                withText: OWSLocalizedString("PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS",
-                                             comment: "Label indicating that a group has no pending member requests.")
+                withText: OWSLocalizedString(
+                    "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBER_REQUESTS",
+                    comment: "Label indicating that a group has no pending member requests.",
+                ),
             ))
         }
         contents.add(section)
@@ -229,16 +233,20 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
         let approveButtonSize = CGSize.square(buttonHeight)
 
         let stackView = ManualStackView(name: "stackView")
-        let stackConfig = CVStackViewConfig(axis: .horizontal,
-                                            alignment: .center,
-                                            spacing: 16,
-                                            layoutMargins: .zero)
-        let stackMeasurement = stackView.configure(config: stackConfig,
-                                                   subviews: [denyWrapper, approveWrapper],
-                                                   subviewInfos: [
-                                                    denyButtonSize.asManualSubviewInfo,
-                                                    approveButtonSize.asManualSubviewInfo
-                                                   ])
+        let stackConfig = CVStackViewConfig(
+            axis: .horizontal,
+            alignment: .center,
+            spacing: 16,
+            layoutMargins: .zero,
+        )
+        let stackMeasurement = stackView.configure(
+            config: stackConfig,
+            subviews: [denyWrapper, approveWrapper],
+            subviewInfos: [
+                denyButtonSize.asManualSubviewInfo,
+                approveButtonSize.asManualSubviewInfo,
+            ],
+        )
         let stackSize = stackMeasurement.measuredSize
         return ContactCellAccessoryView(accessoryView: stackView, size: stackSize)
     }
@@ -321,17 +329,21 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
         // MARK: - Other Users
 
         let otherUsersSection = OWSTableSection()
-        otherUsersSection.headerTitle = OWSLocalizedString("PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS",
-                                                          comment: "Title for the 'invites by other group members' section of the 'member requests and invites' view.")
-        otherUsersSection.footerTitle = OWSLocalizedString("PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS",
-                                                          comment: "Footer for the 'invites by other group members' section of the 'member requests and invites' view.")
+        otherUsersSection.headerTitle = OWSLocalizedString(
+            "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS",
+            comment: "Title for the 'invites by other group members' section of the 'member requests and invites' view.",
+        )
+        otherUsersSection.footerTitle = OWSLocalizedString(
+            "PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS",
+            comment: "Footer for the 'invites by other group members' section of the 'member requests and invites' view.",
+        )
 
         if membersInvitedByOtherUsers.isEmpty {
             otherUsersSection.add(OWSTableItem.softCenterLabel(
                 withText: OWSLocalizedString(
                     "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS",
                     comment: "Label indicating that a group has no pending members.",
-                )
+                ),
             ))
         } else {
             var inviterAddresses = membersInvitedByOtherUsers.keys.map(SignalServiceAddress.init(_:))
@@ -384,11 +396,16 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
         let invalidInvitesCount = groupMembership.invalidInviteUserIds.count
         if canRevokeInvites, invalidInvitesCount > 0 {
             let invalidInvitesSection = OWSTableSection()
-            invalidInvitesSection.headerTitle = OWSLocalizedString("PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES",
-                                                                  comment: "Title for the 'invalid invites' section of the 'member requests and invites' view.")
+            invalidInvitesSection.headerTitle = OWSLocalizedString(
+                "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVALID_INVITES",
+                comment: "Title for the 'invalid invites' section of the 'member requests and invites' view.",
+            )
 
-            let format = OWSLocalizedString("PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_%d", tableName: "PluralAware",
-                                           comment: "Format for 'revoke invalid N invites' item. Embeds {{ the number of invalid invites. }}.")
+            let format = OWSLocalizedString(
+                "PENDING_GROUP_MEMBERS_REVOKE_INVALID_INVITES_%d",
+                tableName: "PluralAware",
+                comment: "Format for 'revoke invalid N invites' item. Embeds {{ the number of invalid invites. }}.",
+            )
             let cellTitle = String.localizedStringWithFormat(format, invalidInvitesCount)
 
             invalidInvitesSection.add(OWSTableItem.disclosureItem(withText: cellTitle) { [weak self] in
@@ -401,16 +418,22 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
     fileprivate func reloadContent() {
         groupMemberRequestsAndInvitesViewControllerDelegate?.requestsAndInvitesViewDidUpdate()
 
-        guard let newModel = { () -> TSGroupModel? in
-            return SSKEnvironment.shared.databaseStorageRef.read { (transaction) -> TSGroupModel? in
-                guard let groupThread = TSGroupThread.fetch(groupId: self.groupModel.groupId,
-                                                            transaction: transaction) else {
-                    owsFailDebug("Missing group thread.")
-                    return nil
+        guard
+            let newModel = { () -> TSGroupModel? in
+                return SSKEnvironment.shared.databaseStorageRef.read { transaction -> TSGroupModel? in
+                    guard
+                        let groupThread = TSGroupThread.fetch(
+                            groupId: self.groupModel.groupId,
+                            transaction: transaction,
+                        )
+                    else {
+                        owsFailDebug("Missing group thread.")
+                        return nil
+                    }
+                    return groupThread.groupModel
                 }
-                return groupThread.groupModel
-            }
-        }() else {
+            }()
+        else {
             navigationController?.popViewController(animated: true)
             return
         }
@@ -423,50 +446,72 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
     private func showRevokePendingInviteFromLocalUserConfirmation(invitedAddress: SignalServiceAddress) {
 
         let invitedName = SSKEnvironment.shared.databaseStorageRef.read { tx in SSKEnvironment.shared.contactManagerRef.displayName(for: invitedAddress, tx: tx).resolvedValue() }
-        let format = OWSLocalizedString("PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT",
-                                       comment: "Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the invited group member. }}.")
+        let format = OWSLocalizedString(
+            "PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT",
+            comment: "Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the invited group member. }}.",
+        )
         let alertTitle = String(format: format, invitedName)
         let actionSheet = ActionSheetController(title: alertTitle)
-        actionSheet.addAction(ActionSheetAction(title: OWSLocalizedString("PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON",
-                                                                         comment: "Title of 'revoke invite' button."),
-                                                style: .destructive) { _ in
-                                                    self.revokePendingInvites(addresses: [invitedAddress])
+        actionSheet.addAction(ActionSheetAction(
+            title: OWSLocalizedString(
+                "PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON",
+                comment: "Title of 'revoke invite' button.",
+            ),
+            style: .destructive,
+        ) { _ in
+            self.revokePendingInvites(addresses: [invitedAddress])
         })
         actionSheet.addAction(OWSActionSheets.cancelAction)
         presentActionSheet(actionSheet)
     }
 
-    private func showRevokePendingInviteFromOtherUserConfirmation(invitedAddresses: [SignalServiceAddress],
-                                                                  inviterAddress: SignalServiceAddress) {
+    private func showRevokePendingInviteFromOtherUserConfirmation(
+        invitedAddresses: [SignalServiceAddress],
+        inviterAddress: SignalServiceAddress,
+    ) {
 
         let inviterName = SSKEnvironment.shared.databaseStorageRef.read { tx in SSKEnvironment.shared.contactManagerRef.displayName(for: inviterAddress, tx: tx).resolvedValue() }
-        let format = OWSLocalizedString("PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_%d", tableName: "PluralAware",
-                                       comment: "Format for title of 'revoke invite' confirmation alert. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member. }}.")
+        let format = OWSLocalizedString(
+            "PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_%d",
+            tableName: "PluralAware",
+            comment: "Format for title of 'revoke invite' confirmation alert. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member. }}.",
+        )
         let alertTitle = String.localizedStringWithFormat(format, invitedAddresses.count, inviterName)
         let actionSheet = ActionSheetController(title: alertTitle)
-        let actionTitle = String.localizedStringWithFormat(OWSLocalizedString("PENDING_GROUP_MEMBERS_REVOKE_INVITE_BUTTON_%d", tableName: "PluralAware",
-                                                                             comment: "Title of 'revoke invites' button."), invitedAddresses.count)
-        actionSheet.addAction(ActionSheetAction(title: actionTitle,
-                                                style: .destructive) { _ in
-                                                    self.revokePendingInvites(addresses: invitedAddresses)
+        let actionTitle = String.localizedStringWithFormat(OWSLocalizedString(
+            "PENDING_GROUP_MEMBERS_REVOKE_INVITE_BUTTON_%d",
+            tableName: "PluralAware",
+            comment: "Title of 'revoke invites' button.",
+        ), invitedAddresses.count)
+        actionSheet.addAction(ActionSheetAction(
+            title: actionTitle,
+            style: .destructive,
+        ) { _ in
+            self.revokePendingInvites(addresses: invitedAddresses)
         })
         actionSheet.addAction(OWSActionSheets.cancelAction)
         presentActionSheet(actionSheet)
     }
 
-    private func inviteFromLocalUserWasTapped(_ address: SignalServiceAddress,
-                                              canRevoke: Bool) {
+    private func inviteFromLocalUserWasTapped(
+        _ address: SignalServiceAddress,
+        canRevoke: Bool,
+    ) {
         if canRevoke {
             self.showRevokePendingInviteFromLocalUserConfirmation(invitedAddress: address)
         }
     }
 
-    private func invitesFromOtherUserWasTapped(invitedAddresses: [SignalServiceAddress],
-                                               inviterAddress: SignalServiceAddress,
-                                               canRevoke: Bool) {
+    private func invitesFromOtherUserWasTapped(
+        invitedAddresses: [SignalServiceAddress],
+        inviterAddress: SignalServiceAddress,
+        canRevoke: Bool,
+    ) {
         if canRevoke {
-            self.showRevokePendingInviteFromOtherUserConfirmation(invitedAddresses: invitedAddresses,
-                                                                  inviterAddress: inviterAddress)
+            self.showRevokePendingInviteFromOtherUserConfirmation(
+                invitedAddresses: invitedAddresses,
+                inviterAddress: inviterAddress,
+            )
         }
     }
 
@@ -474,22 +519,26 @@ public class GroupMemberRequestsAndInvitesViewController: OWSTableViewController
         ProfileSheetSheetCoordinator(
             address: address,
             groupViewHelper: groupViewHelper,
-            spoilerState: spoilerState
+            spoilerState: spoilerState,
         )
         .presentAppropriateSheet(from: self)
     }
 
     private func presentRequestApprovedToast(address: SignalServiceAddress) {
-        let format = OWSLocalizedString("PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT",
-                                       comment: "Message indicating that a request to join the group was successfully approved. Embeds {{ the name of the approved user }}.")
+        let format = OWSLocalizedString(
+            "PENDING_GROUP_MEMBERS_REQUEST_APPROVED_FORMAT",
+            comment: "Message indicating that a request to join the group was successfully approved. Embeds {{ the name of the approved user }}.",
+        )
         let userName = SSKEnvironment.shared.databaseStorageRef.read { tx in SSKEnvironment.shared.contactManagerRef.displayName(for: address, tx: tx).resolvedValue() }
         let text = String(format: format, userName)
         presentToast(text: text)
     }
 
     private func presentRequestDeniedToast(address: SignalServiceAddress) {
-        let format = OWSLocalizedString("PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT",
-                                       comment: "Message indicating that a request to join the group was successfully denied. Embeds {{ the name of the denied user }}.")
+        let format = OWSLocalizedString(
+            "PENDING_GROUP_MEMBERS_REQUEST_DENIED_FORMAT",
+            comment: "Message indicating that a request to join the group was successfully denied. Embeds {{ the name of the denied user }}.",
+        )
         let userName = SSKEnvironment.shared.databaseStorageRef.read { tx in SSKEnvironment.shared.contactManagerRef.displayName(for: address, tx: tx).resolvedValue() }
         let text = String(format: format, userName)
         presentToast(text: text)
@@ -514,7 +563,7 @@ private extension GroupMemberRequestsAndInvitesViewController {
             },
             completion: { [weak self] in
                 self?.reloadContent()
-            }
+            },
         )
     }
 
@@ -531,25 +580,29 @@ private extension GroupMemberRequestsAndInvitesViewController {
             },
             completion: { [weak self] in
                 self?.reloadContent()
-            }
+            },
         )
     }
 }
 
 // MARK: -
 
-fileprivate extension GroupMemberRequestsAndInvitesViewController {
+private extension GroupMemberRequestsAndInvitesViewController {
 
     func showAcceptMemberRequestUI(address: SignalServiceAddress) {
 
         let username = SSKEnvironment.shared.databaseStorageRef.read { tx in SSKEnvironment.shared.contactManagerRef.displayName(for: address, tx: tx).resolvedValue() }
-        let format = OWSLocalizedString("PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_CONFIRMATION_TITLE_FORMAT",
-                                       comment: "Title of 'accept member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}.")
+        let format = OWSLocalizedString(
+            "PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_CONFIRMATION_TITLE_FORMAT",
+            comment: "Title of 'accept member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}.",
+        )
         let alertTitle = String(format: format, username)
         let actionSheet = ActionSheetController(title: alertTitle)
 
-        let actionTitle = OWSLocalizedString("PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON",
-                                            comment: "Title of 'accept member request to join group' button.")
+        let actionTitle = OWSLocalizedString(
+            "PENDING_GROUP_MEMBERS_ACCEPT_REQUEST_BUTTON",
+            comment: "Title of 'accept member request to join group' button.",
+        )
         actionSheet.addAction(ActionSheetAction(title: actionTitle) { _ in
             self.acceptOrDenyMemberRequests(address: address, shouldAccept: true)
         })
@@ -561,13 +614,17 @@ fileprivate extension GroupMemberRequestsAndInvitesViewController {
     func showDenyMemberRequestUI(address: SignalServiceAddress) {
 
         let username = SSKEnvironment.shared.databaseStorageRef.read { tx in SSKEnvironment.shared.contactManagerRef.displayName(for: address, tx: tx).resolvedValue() }
-        let format = OWSLocalizedString("PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT",
-                                       comment: "Title of 'deny member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}.")
+        let format = OWSLocalizedString(
+            "PENDING_GROUP_MEMBERS_DENY_REQUEST_CONFIRMATION_TITLE_FORMAT",
+            comment: "Title of 'deny member request to join group' confirmation alert. Embeds {{ the name of the requesting group member. }}.",
+        )
         let alertTitle = String(format: format, username)
         let actionSheet = ActionSheetController(title: alertTitle)
 
-        let actionTitle = OWSLocalizedString("PENDING_GROUP_MEMBERS_DENY_REQUEST_BUTTON",
-                                            comment: "Title of 'deny member request to join group' button.")
+        let actionTitle = OWSLocalizedString(
+            "PENDING_GROUP_MEMBERS_DENY_REQUEST_BUTTON",
+            comment: "Title of 'deny member request to join group' button.",
+        )
         actionSheet.addAction(ActionSheetAction(title: actionTitle, style: .destructive) { _ in
             self.acceptOrDenyMemberRequests(address: address, shouldAccept: false)
         })
@@ -588,14 +645,14 @@ fileprivate extension GroupMemberRequestsAndInvitesViewController {
                 try await GroupManager.acceptOrDenyMemberRequestsV2(groupModel: groupModelV2, aci: aci, shouldAccept: shouldAccept)
             },
             completion: { [weak self] in
-                guard let self = self else { return }
+                guard let self else { return }
                 if shouldAccept {
                     self.presentRequestApprovedToast(address: address)
                 } else {
                     self.presentRequestDeniedToast(address: address)
                 }
                 self.reloadContent()
-            }
+            },
         )
     }
 }

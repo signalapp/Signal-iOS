@@ -14,7 +14,7 @@ public class ScrubbingLogFormatter: NSObject, DDLogFormatter {
         init(
             pattern: String,
             options: NSRegularExpression.Options = [],
-            replacementTemplate: String
+            replacementTemplate: String,
         ) {
             do {
                 self.regex = try .init(pattern: pattern, options: options)
@@ -47,30 +47,30 @@ public class ScrubbingLogFormatter: NSObject, DDLogFormatter {
 
             return Replacement(
                 pattern: "(^|[^\(base64Leading)])\(prefix)[\(base64Character)]{\(redactedLength)}([\(base64Character)]{\(unredactedLength)}\(paddingCharacter){\(base64Padding)})",
-                replacementTemplate: "$1\(prefix)…$2"
+                replacementTemplate: "$1\(prefix)…$2",
             )
         }
 
         static let callLink: Replacement = Replacement(
             pattern: #"([bcdfghkmnpqrstxz]{4})(-[bcdfghkmnpqrstxz]{4}){7}"#,
-            replacementTemplate: "$1-…-xxxx"
+            replacementTemplate: "$1-…-xxxx",
         )
 
         static let phoneNumber: Replacement = Replacement(
             pattern: #"\+\d{7,12}(\d{3})"#,
-            replacementTemplate: "+x…$1"
+            replacementTemplate: "+x…$1",
         )
 
         static let uuid: Replacement = Replacement(
             pattern: #"[\da-f]{8}\-[\da-f]{4}\-[\da-f]{4}\-[\da-f]{4}\-[\da-f]{9}([\da-f]{3})"#,
             options: .caseInsensitive,
-            replacementTemplate: "xxxx-xx-xx-xxx$1"
+            replacementTemplate: "xxxx-xx-xx-xxx$1",
         )
 
         static let data: Replacement = Replacement(
             pattern: #"<([\da-f]{2})[\da-f]{0,6}( [\da-f]{2,8})*>"#,
             options: .caseInsensitive,
-            replacementTemplate: "<$1…>"
+            replacementTemplate: "<$1…>",
         )
 
         /// On iOS 13, when built with the 13 SDK, NSData's description has changed and needs to be
@@ -80,7 +80,7 @@ public class ScrubbingLogFormatter: NSObject, DDLogFormatter {
         static let iOS13Data: Replacement = Replacement(
             pattern: #"\{length = \d+, bytes = 0x([\da-f]{2})[\.\da-f ]*\}"#,
             options: .caseInsensitive,
-            replacementTemplate: "<$1…>"
+            replacementTemplate: "<$1…>",
         )
 
         /// IPv6 addresses are _hard_.
@@ -88,32 +88,32 @@ public class ScrubbingLogFormatter: NSObject, DDLogFormatter {
         /// This regex was borrowed from RingRTC:
         /// https://github.com/signalapp/ringrtc/blob/1ae8110dfe2693f6e3c05d4d9deb449b9df73d79/src/rust/src/core/util.rs#L184-L198
         static let ipv6Address: Replacement = Replacement(
-            pattern: (
-               "[Ff][Ee]80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|"
-               + "(::)?([0-9a-fA-F]{1,4}:){1,4}:([0-9]{1,3}\\.){3,3}[0-9]{1,3}|"
-               + "([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|"
-               + "([0-9a-fA-F]{1,4}:){1,1}(:[0-9a-fA-F]{1,4}){1,6}|"
-               + "([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|"
-               + "([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|"
-               + "([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|"
-               + "([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|"
-               + "([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|"
-               + "([0-9a-fA-F]{1,4}:){1,7}:|"
-               + "::([fF]{4}(:0{1,4}){0,1}:){0,1}([0-9]{1,3}\\.){3,3}[0-9]{1,3}|"
-               + ":((:[0-9a-fA-F]{1,4}){1,7}|:)"
-            ),
-            replacementTemplate: "[IPV6]"
+            pattern:
+            "[Ff][Ee]80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|"
+                + "(::)?([0-9a-fA-F]{1,4}:){1,4}:([0-9]{1,3}\\.){3,3}[0-9]{1,3}|"
+                + "([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|"
+                + "([0-9a-fA-F]{1,4}:){1,1}(:[0-9a-fA-F]{1,4}){1,6}|"
+                + "([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|"
+                + "([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|"
+                + "([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|"
+                + "([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|"
+                + "([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|"
+                + "([0-9a-fA-F]{1,4}:){1,7}:|"
+                + "::([fF]{4}(:0{1,4}){0,1}:){0,1}([0-9]{1,3}\\.){3,3}[0-9]{1,3}|"
+                + ":((:[0-9a-fA-F]{1,4}){1,7}|:)"
+            ,
+            replacementTemplate: "[IPV6]",
         )
 
         static let ipv4Address: Replacement = Replacement(
             pattern: "\\d+\\.\\d+\\.\\d+\\.(\\d+)",
-            replacementTemplate: "x.x.x.$1"
+            replacementTemplate: "x.x.x.$1",
         )
 
         static let hex: Replacement = Replacement(
             pattern: "[\\da-f]{11,}([\\da-f]{3})",
             options: .caseInsensitive,
-            replacementTemplate: "…$1"
+            replacementTemplate: "…$1",
         )
     }
 
@@ -149,7 +149,7 @@ public class ScrubbingLogFormatter: NSObject, DDLogFormatter {
             logString = replacement.regex.stringByReplacingMatches(
                 in: logString,
                 range: logString.entireRange,
-                withTemplate: replacement.replacementTemplate
+                withTemplate: replacement.replacementTemplate,
             )
         }
 

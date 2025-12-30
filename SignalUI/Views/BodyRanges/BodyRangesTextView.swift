@@ -35,9 +35,9 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate, UITextV
         didSet { updateMentionState() }
     }
 
-    public override var delegate: UITextViewDelegate? {
+    override public var delegate: UITextViewDelegate? {
         didSet {
-            if let delegate = delegate {
+            if let delegate {
                 owsAssertDebug(delegate === self)
             }
         }
@@ -72,7 +72,7 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate, UITextV
         }
     }
 
-    public override var layoutManager: NSLayoutManager {
+    override public var layoutManager: NSLayoutManager {
         return customLayoutManager
     }
 
@@ -80,7 +80,7 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate, UITextV
         pickerView?.removeFromSuperview()
     }
 
-    required public init?(coder: NSCoder) {
+    public required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
@@ -96,7 +96,7 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate, UITextV
         return false
     }
 
-    open override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
+    override open func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
         if
             let iOS15EditMenu,
             let allowAction = iOS15EditMenu.allowAction(action)
@@ -113,7 +113,7 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate, UITextV
         return super.canPerformAction(action, withSender: sender)
     }
 
-    open override func forwardingTarget(for aSelector: Selector!) -> Any? {
+    override open func forwardingTarget(for aSelector: Selector!) -> Any? {
         if
             let iOS15EditMenu,
             iOS15EditMenu.selectorsHandledByThisType.contains(aSelector)
@@ -124,7 +124,7 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate, UITextV
         return super.forwardingTarget(for: aSelector)
     }
 
-    open override func resignFirstResponder() -> Bool {
+    override open func resignFirstResponder() -> Bool {
         if let iOS15EditMenu {
             iOS15EditMenu.reset()
         }
@@ -142,17 +142,17 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate, UITextV
         replaceCharacters(
             in: NSRange(
                 location: range.location - Mention.prefix.count,
-                length: range.length + Mention.prefix.count
+                length: range.length + Mention.prefix.count,
             ),
-            withMentionAddress: address
+            withMentionAddress: address,
         )
     }
 
     public func replaceCharacters(
         in range: NSRange,
-        withMentionAddress mentionAddress: SignalServiceAddress
+        withMentionAddress mentionAddress: SignalServiceAddress,
     ) {
-        guard let bodyRangesDelegate = bodyRangesDelegate else {
+        guard let bodyRangesDelegate else {
             return owsFailDebug("Can't replace characters without delegate")
         }
         guard let mentionAci = mentionAddress.aci else {
@@ -161,12 +161,12 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate, UITextV
 
         let body = MessageBody(
             text: "@",
-            ranges: MessageBodyRanges(mentions: [NSRange(location: 0, length: 1): mentionAci], styles: [])
+            ranges: MessageBodyRanges(mentions: [NSRange(location: 0, length: 1): mentionAci], styles: []),
         )
         let (hydrated, possibleAcis) = DependenciesBridge.shared.db.read { tx in
             return (
                 body.hydrating(mentionHydrator: ContactsMentionHydrator.mentionHydrator(transaction: tx)),
-                bodyRangesDelegate.textViewMentionPickerPossibleAcis(self, tx: tx)
+                bodyRangesDelegate.textViewMentionPickerPossibleAcis(self, tx: tx),
             )
         }
         let hydratedPlaintext = hydrated.asPlaintext()
@@ -193,8 +193,8 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate, UITextV
 
     public var defaultAttributes: [NSAttributedString.Key: Any] {
         var defaultAttributes = [NSAttributedString.Key: Any]()
-        if let font = font { defaultAttributes[.font] = font }
-        if let textColor = textColor { defaultAttributes[.foregroundColor] = textColor }
+        if let font { defaultAttributes[.font] = font }
+        if let textColor { defaultAttributes[.foregroundColor] = textColor }
         return defaultAttributes
     }
 
@@ -207,7 +207,7 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate, UITextV
     }
 
     @available(*, unavailable)
-    public override var text: String! {
+    override public var text: String! {
         get {
             return textStorage.string
         }
@@ -217,7 +217,7 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate, UITextV
     }
 
     @available(*, unavailable)
-    public override var attributedText: NSAttributedString! {
+    override public var attributedText: NSAttributedString! {
         get {
             return textStorage.attributedString()
         }
@@ -226,13 +226,13 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate, UITextV
         }
     }
 
-    public override var textColor: UIColor? {
+    override public var textColor: UIColor? {
         didSet {
             editableBody.didUpdateTheming()
         }
     }
 
-    open override var font: UIFont? {
+    override open var font: UIFont? {
         didSet {
             editableBody.didUpdateTheming()
         }
@@ -279,6 +279,7 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate, UITextV
         case typingMention(range: NSRange)
         case notTypingMention
     }
+
     private var state: State = .notTypingMention {
         didSet {
             switch state {
@@ -288,7 +289,7 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate, UITextV
                 if oldValue == .notTypingMention {
                     didBeginTypingMention()
                 } else {
-                    guard let currentlyTypingMentionText = currentlyTypingMentionText else {
+                    guard let currentlyTypingMentionText else {
                         return owsFailDebug("unexpectedly missing mention text while typing a mention")
                     }
 
@@ -310,8 +311,9 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate, UITextV
             self.pickerView = nil
         }
 
-        guard let pickerReferenceView = bodyRangesDelegate.textViewMentionPickerReferenceView(self),
-              let pickerParentView = bodyRangesDelegate.textViewMentionPickerParentView(self) else { return }
+        guard
+            let pickerReferenceView = bodyRangesDelegate.textViewMentionPickerReferenceView(self),
+            let pickerParentView = bodyRangesDelegate.textViewMentionPickerParentView(self) else { return }
 
         let mentionableAcis = SSKEnvironment.shared.databaseStorageRef.read { tx in
             return bodyRangesDelegate.textViewMentionPickerPossibleAcis(self, tx: tx)
@@ -320,9 +322,10 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate, UITextV
 
         let pickerView = MentionPicker(
             mentionableAcis: mentionableAcis,
-            style: bodyRangesDelegate.mentionPickerStyle(self)) { [weak self] selectedAddress in
-                self?.insertTypedMention(address: selectedAddress)
-            }
+            style: bodyRangesDelegate.mentionPickerStyle(self),
+        ) { [weak self] selectedAddress in
+            self?.insertTypedMention(address: selectedAddress)
+        }
 
         // IS THIS EVEN POSSIBLE?
         guard let currentlyTypingMentionText, pickerView.mentionTextChanged(currentlyTypingMentionText) else {
@@ -387,8 +390,9 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate, UITextV
         } else if
             range.location > 0,
             mentionRanges.first(where: { mentionRange in
-              mentionRange.upperBound == range.location
-            }) != nil {
+                mentionRange.upperBound == range.location
+            }) != nil
+        {
             // If there is a mention to the left, the typing attributes will
             // be the mention's attributes. We don't want that, so we need
             // to reset them here.
@@ -418,7 +422,7 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate, UITextV
 
         while location > 0 {
             let possiblePrefix = editableBody.hydratedPlaintext.substring(
-                withRange: NSRange(location: location - Mention.prefix.count, length: Mention.prefix.count)
+                withRange: NSRange(location: location - Mention.prefix.count, length: Mention.prefix.count),
             )
 
             let mentionRanges = editableBody.mentionRanges
@@ -445,8 +449,8 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate, UITextV
                     let characterPrecedingPrefix: Character = editableBody.hydratedPlaintext.substring(
                         withRange: NSRange(
                             location: location - Mention.prefix.count - 1,
-                            length: 1
-                        )
+                            length: 1,
+                        ),
                     ).first!
 
                     // If it's alphanumeric, keep looking back. We don't want to
@@ -460,7 +464,7 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate, UITextV
                 }
 
                 state = .typingMention(
-                    range: NSRange(location: location, length: selectedRange.location - location)
+                    range: NSRange(location: location, length: selectedRange.location - location),
                 )
                 return
             } else {
@@ -484,7 +488,7 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate, UITextV
         let currentFont = font ?? UIFont.dynamicTypeBody
         let systemDefaultFont = UIFont.preferredFont(
             forTextStyle: .body,
-            compatibleWith: .init(preferredContentSizeCategory: .large)
+            compatibleWith: .init(preferredContentSizeCategory: .large),
         )
         guard systemDefaultFont.pointSize > currentFont.pointSize else {
             textContainerInset = newTextContainerInset
@@ -543,44 +547,44 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate, UITextV
 
     // MARK: - Picker Keyboard Interaction
 
-    open override var keyCommands: [UIKeyCommand]? {
+    override open var keyCommands: [UIKeyCommand]? {
         guard pickerView != nil else { return nil }
 
         return [
             UIKeyCommand(input: UIKeyCommand.inputUpArrow, modifierFlags: [], action: #selector(upArrowPressed(_:))),
             UIKeyCommand(input: UIKeyCommand.inputDownArrow, modifierFlags: [], action: #selector(downArrowPressed(_:))),
             UIKeyCommand(input: "\r", modifierFlags: [], action: #selector(returnPressed(_:))),
-            UIKeyCommand(input: "\t", modifierFlags: [], action: #selector(tabPressed(_:)))
+            UIKeyCommand(input: "\t", modifierFlags: [], action: #selector(tabPressed(_:))),
         ]
     }
 
     @objc
     func upArrowPressed(_ sender: UIKeyCommand) {
-        guard let pickerView = pickerView else { return }
+        guard let pickerView else { return }
         pickerView.didTapUpArrow()
     }
 
     @objc
     func downArrowPressed(_ sender: UIKeyCommand) {
-        guard let pickerView = pickerView else { return }
+        guard let pickerView else { return }
         pickerView.didTapDownArrow()
     }
 
     @objc
     func returnPressed(_ sender: UIKeyCommand) {
-        guard let pickerView = pickerView else { return }
+        guard let pickerView else { return }
         pickerView.didTapReturn()
     }
 
     @objc
     func tabPressed(_ sender: UIKeyCommand) {
-        guard let pickerView = pickerView else { return }
+        guard let pickerView else { return }
         pickerView.didTapTab()
     }
 
     // MARK: - Cut/Copy/Paste
 
-    open override func cut(_ sender: Any?) {
+    override open func cut(_ sender: Any?) {
         let selectedRange = self.selectedRange
         copy(sender)
         editableBody.beginEditing()
@@ -625,7 +629,7 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate, UITextV
     // but the name remains as-is for backwards compatibility.
     public static let pasteboardType = "private.archived-mention-text"
 
-    open override func copy(_ sender: Any?) {
+    override open func copy(_ sender: Any?) {
         let messageBody: MessageBody
         if selectedRange.length > 0 {
             messageBody = editableBody.messageBody(forHydratedTextSubrange: selectedRange)
@@ -635,9 +639,11 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate, UITextV
         Self.copyToPasteboard(messageBody)
     }
 
-    open override func paste(_ sender: Any?) {
-        if let encodedMessageBody = UIPasteboard.general.data(forPasteboardType: Self.pasteboardType),
-            var messageBody = try? NSKeyedUnarchiver.unarchivedObject(ofClass: MessageBody.self, from: encodedMessageBody) {
+    override open func paste(_ sender: Any?) {
+        if
+            let encodedMessageBody = UIPasteboard.general.data(forPasteboardType: Self.pasteboardType),
+            var messageBody = try? NSKeyedUnarchiver.unarchivedObject(ofClass: MessageBody.self, from: encodedMessageBody)
+        {
             editableBody.beginEditing()
             DependenciesBridge.shared.db.read { tx in
                 if let possibleAcis = bodyRangesDelegate?.textViewMentionPickerPossibleAcis(self, tx: tx) {
@@ -659,9 +665,9 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate, UITextV
             // part contains invisible characters. The exact root of the issue is still unclear but the following
             // lines of code work as a workaround.
             DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.1) { [weak self] in
-                if let self = self {
+                if let self {
                     let oldRange = self.selectedRange
-                    self.selectedRange = NSRange.init(location: 0, length: 0)
+                    self.selectedRange = NSRange(location: 0, length: 0)
                     // inserting blank text into the text storage will remove the invisible characters
                     self.textStorage.insert(NSAttributedString(string: ""), at: 0)
                     // setting the range (again) will ensure scrolling to the correct position
@@ -747,7 +753,7 @@ open class BodyRangesTextView: OWSTextView, EditableMessageBodyDelegate, UITextV
     /// Not technically part of `UIEditMenuInteractionDelegate`, but exposed by
     /// `UITextInput` to allow us to configure the `UIEditMenuInteraction` that
     /// comes pre-configured on ourselves as a `UITextView`.
-    open override func editMenu(for textRange: UITextRange, suggestedActions: [UIMenuElement]) -> UIMenu? {
+    override open func editMenu(for textRange: UITextRange, suggestedActions: [UIMenuElement]) -> UIMenu? {
         guard selectedRange.length > 0 else {
             // Only add the format menu if we've got text selected.
             return UIMenu(children: suggestedActions)
@@ -808,37 +814,37 @@ private enum FormatEditMenuItem: CaseIterable {
         case .showFormatMenu:
             OWSLocalizedString(
                 "TEXT_MENU_FORMAT",
-                comment: "Option in selected text edit menu to view text formatting options"
+                comment: "Option in selected text edit menu to view text formatting options",
             )
         case .removeFormatting:
             OWSLocalizedString(
                 "TEXT_MENU_REMOVE_FORMATTING",
-                comment: "Option in selected text edit menu to remove all text formatting in the selected text range"
+                comment: "Option in selected text edit menu to remove all text formatting in the selected text range",
             )
         case .applyBold:
             OWSLocalizedString(
                 "TEXT_MENU_BOLD",
-                comment: "Option in selected text edit menu to make text bold"
+                comment: "Option in selected text edit menu to make text bold",
             )
         case .applyItalic:
             OWSLocalizedString(
                 "TEXT_MENU_ITALIC",
-                comment: "Option in selected text edit menu to make text italic"
+                comment: "Option in selected text edit menu to make text italic",
             )
         case .applyMonospace:
             OWSLocalizedString(
                 "TEXT_MENU_MONOSPACE",
-                comment: "Option in selected text edit menu to make text monospace"
+                comment: "Option in selected text edit menu to make text monospace",
             )
         case .applyStrikethrough:
             OWSLocalizedString(
                 "TEXT_MENU_STRIKETHROUGH",
-                comment: "Option in selected text edit menu to make text strikethrough"
+                comment: "Option in selected text edit menu to make text strikethrough",
             )
         case .applySpoiler:
             OWSLocalizedString(
                 "TEXT_MENU_SPOILER",
-                comment: "Option in selected text edit menu to make text spoiler"
+                comment: "Option in selected text edit menu to make text spoiler",
             )
         }
     }
@@ -945,7 +951,7 @@ private class BodyRangesTextViewIOS15EditMenu {
                 UIMenuItem(
                     title: FormatEditMenuItem.showFormatMenu.title,
                     action: selectorFor(formatEditMenuItem: .showFormatMenu),
-                )
+                ),
             ]
         }
     }

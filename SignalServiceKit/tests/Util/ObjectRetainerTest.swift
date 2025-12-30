@@ -23,7 +23,7 @@ struct ObjectRetainerTest {
 
             ObjectRetainer.retainObject(
                 retained!,
-                forLifetimeOf: retainer!
+                forLifetimeOf: retainer!,
             )
         }
 

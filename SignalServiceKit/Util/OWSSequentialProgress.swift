@@ -81,7 +81,7 @@ public struct OWSSequentialProgress<StepEnum>: Equatable, SomeOWSProgress where 
     /// Create a root sink, taking the single observer block of progress updates.
     /// See class docs of ``OWSProgress`` for usage.
     public static func createSink(
-        _ observer: @escaping (OWSSequentialProgress<StepEnum>) async -> Void
+        _ observer: @escaping (OWSSequentialProgress<StepEnum>) async -> Void,
     ) async -> OWSSequentialProgressRootSink<StepEnum> {
         let sink = OWSProgress.createSink { progress in
             await observer(progress.sequential(StepEnum.self))
@@ -131,7 +131,7 @@ public struct OWSSequentialProgressRootSink<StepEnum: OWSSequentialProgressStep>
 extension OWSProgress {
 
     public func sequential<StepEnum>(
-        _ stepEnum: StepEnum.Type
+        _ stepEnum: StepEnum.Type,
     ) -> OWSSequentialProgress<StepEnum> where StepEnum: CaseIterable, StepEnum: RawRepresentable<String> {
         return .init(progress: self)
     }

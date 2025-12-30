@@ -43,13 +43,13 @@ final class CallLinkViewController: OWSTableViewController2 {
                 return ($0, CallLinkAdminManager(
                     rootKey: callLinkRecord.rootKey,
                     adminPasskey: $0,
-                    callLinkState: callLinkRecord.state
+                    callLinkState: callLinkRecord.state,
                 ))
             },
             canShowDeleteButton: true,
             callLinkRowId: callLinkRecord.id,
             callLinkState: callLinkRecord.state,
-            callRecords: callRecords
+            callRecords: callRecords,
         )
     }
 
@@ -57,7 +57,7 @@ final class CallLinkViewController: OWSTableViewController2 {
         let adminManager = CallLinkAdminManager(
             rootKey: callLink.rootKey,
             adminPasskey: adminPasskey,
-            callLinkState: callLinkState
+            callLinkState: callLinkState,
         )
         let result = CallLinkViewController(
             title: CallStrings.createCallLinkTitle,
@@ -66,7 +66,7 @@ final class CallLinkViewController: OWSTableViewController2 {
             canShowDeleteButton: false,
             callLinkRowId: nil,
             callLinkState: callLinkState,
-            callRecords: []
+            callRecords: [],
         )
         // We need to learn about updates before `persistIfNeeded` is invoked.
         adminManager.didUpdateCallLinkState = { [weak result] callLinkState in
@@ -83,7 +83,7 @@ final class CallLinkViewController: OWSTableViewController2 {
         canShowDeleteButton: Bool,
         callLinkRowId: Int64?,
         callLinkState: CallLinkState?,
-        callRecords: [CallRecord]
+        callRecords: [CallRecord],
     ) {
         self.callLink = callLink
         self.adminPasskey = adminInfo?.adminPasskey
@@ -115,7 +115,7 @@ final class CallLinkViewController: OWSTableViewController2 {
         let view = CallLinkCardView(
             callLink: self.callLink,
             callName: self.callLinkState.localizedName,
-            joinAction: { [unowned self] in self.joinCall() }
+            joinAction: { [unowned self] in self.joinCall() },
         )
         cell.contentView.addSubview(view)
         view.autoPinLeadingToSuperviewMargin()
@@ -134,9 +134,9 @@ final class CallLinkViewController: OWSTableViewController2 {
     private func buildTableContents() -> OWSTableContents {
         let callLinkCardItem = OWSTableItem(
             customCellBlock: { [weak self] in
-                guard let self = self else { return UITableViewCell() }
+                guard let self else { return UITableViewCell() }
                 return self.callLinkCardCell()
-            }
+            },
         )
 
         var settingSection: OWSTableSection?
@@ -148,22 +148,22 @@ final class CallLinkViewController: OWSTableViewController2 {
                 actionBlock: { [unowned self] in
                     EditCallLinkNameViewController(
                         oldName: self.callLinkState?.name ?? "",
-                        setNewName: callLinkAdminManager.updateName(_:)
+                        setNewName: callLinkAdminManager.updateName(_:),
                     ).presentInNavController(from: self)
-                }
+                },
             ))
             settingItems.append(.switch(
                 withText: CallStrings.approveAllMembers,
                 isOn: { [unowned self] in
                     return (
                         self.callLinkState?.requiresAdminApproval
-                        ?? CallLinkState.Constants.defaultRequiresAdminApproval
+                            ?? CallLinkState.Constants.defaultRequiresAdminApproval,
                     )
                 },
                 isEnabled: { [unowned self] in self.callLinkState != nil },
                 actionBlock: { [unowned self] sender in
                     callLinkAdminManager.toggleApproveAllMembersWithActivityIndicator(sender, from: self)
-                }
+                },
             ))
             settingSection = OWSTableSection(items: settingItems)
         }
@@ -172,24 +172,24 @@ final class CallLinkViewController: OWSTableViewController2 {
             .item(
                 icon: .buttonForward,
                 name: CallStrings.shareLinkViaSignal,
-                actionBlock: { [unowned self] in self.shareCallLinkViaSignal() }
+                actionBlock: { [unowned self] in self.shareCallLinkViaSignal() },
             ),
             .item(
                 icon: .buttonCopy,
                 name: CallStrings.copyLinkToClipboard,
-                actionBlock: { [unowned self] in self.copyCallLink() }
+                actionBlock: { [unowned self] in self.copyCallLink() },
             ),
             OWSTableItem(
                 customCellBlock: {
                     let cell = OWSTableItem.buildCell(
                         icon: .buttonShare,
-                        itemName: CallStrings.shareLinkViaSystem
+                        itemName: CallStrings.shareLinkViaSystem,
                     )
                     self.systemShareTableViewCell = cell
                     return cell
                 },
-                actionBlock: { [unowned self] in self.shareCallLinkViaSystem() }
-            )
+                actionBlock: { [unowned self] in self.shareCallLinkViaSystem() },
+            ),
         ])
         sharingSection.separatorInsetLeading = OWSTableViewController2.cellHInnerMargin + OWSTableItem.iconSize + OWSTableItem.iconSpacing
 
@@ -201,7 +201,7 @@ final class CallLinkViewController: OWSTableViewController2 {
                 tintColor: .ows_accentRed,
                 name: OWSLocalizedString(
                     "CALL_LINK_DELETE_ACTION",
-                    comment: "A button to delete a call link that's shown after tapping the (i) info button on an item in the calls tab."
+                    comment: "A button to delete a call link that's shown after tapping the (i) info button on an item in the calls tab.",
                 ),
                 textColor: .ows_accentRed,
                 actionBlock: { [unowned self] in
@@ -211,7 +211,7 @@ final class CallLinkViewController: OWSTableViewController2 {
                                 stateUpdater: AppEnvironment.shared.callService.callLinkStateUpdater,
                                 storageServiceManager: SSKEnvironment.shared.storageServiceManagerRef,
                                 rootKey: rootKey,
-                                adminPasskey: adminPasskey
+                                adminPasskey: adminPasskey,
                             )
                             if let self {
                                 let navigationController = self.navigationController!
@@ -223,7 +223,7 @@ final class CallLinkViewController: OWSTableViewController2 {
                             self?.presentToast(text: CallLinkDeleter.failureText)
                         }
                     }
-                }
+                },
             )
             deleteSection = OWSTableSection(items: [deleteItem])
         }
@@ -234,8 +234,8 @@ final class CallLinkViewController: OWSTableViewController2 {
                 OWSTableSection(items: [callLinkCardItem]),
                 settingSection,
                 sharingSection,
-                deleteSection
-            ].compacted()
+                deleteSection,
+            ].compacted(),
         )
     }
 
@@ -269,7 +269,7 @@ final class CallLinkViewController: OWSTableViewController2 {
             }
 
             CallLinkUpdateMessageSender(
-                messageSenderJobQueue: SSKEnvironment.shared.messageSenderJobQueueRef
+                messageSenderJobQueue: SSKEnvironment.shared.messageSenderJobQueueRef,
             ).sendCallLinkUpdateMessage(rootKey: callLink.rootKey, adminPasskey: adminPasskey, tx: tx)
 
             return callLinkRecord.id
@@ -292,7 +292,7 @@ final class CallLinkViewController: OWSTableViewController2 {
                 // In all other cases, the admin may have changed the details, so we should
                 // check when joining the call.
                 return .fetch
-            }()
+            }(),
         )
     }
 
@@ -306,7 +306,7 @@ final class CallLinkViewController: OWSTableViewController2 {
         self.persistIfNeeded()
         let shareViewController = UIActivityViewController(
             activityItems: [self.callLink.url()],
-            applicationActivities: nil
+            applicationActivities: nil,
         )
         shareViewController.popoverPresentationController?.sourceView = self.systemShareTableViewCell
         self.present(shareViewController, animated: true)
@@ -323,7 +323,7 @@ final class CallLinkViewController: OWSTableViewController2 {
         let sendMessageFlow = SendMessageFlow(
             unapprovedContent: unapprovedContent,
             presentationStyle: .presentFrom(self),
-            delegate: self
+            delegate: self,
         )
         // Retain the flow until it is complete.
         self.sendMessageFlow = sendMessageFlow
@@ -338,8 +338,8 @@ extension CallLinkViewController: DatabaseChangeDelegate {
             let newState = try self.db.read { tx in try callLinkStore.fetch(rowId: callLinkRowId, tx: tx)?.state }
             didChangeVisibleProperty = (
                 (oldState == nil) != (newState == nil)
-                || (oldState?.name != newState?.name)
-                || (oldState?.requiresAdminApproval != newState?.requiresAdminApproval)
+                    || (oldState?.name != newState?.name)
+                    || (oldState?.requiresAdminApproval != newState?.requiresAdminApproval),
             )
             self.callLinkState = newState
         } catch {
@@ -408,7 +408,7 @@ private class CallLinkCardView: UIView {
         let imageView = UIImageView(image: image)
         imageView.autoSetDimensions(to: CGSize(
             width: Constants.circleViewDimension,
-            height: Constants.circleViewDimension
+            height: Constants.circleViewDimension,
         ))
         return imageView
     }()
@@ -473,7 +473,7 @@ private class CallLinkCardView: UIView {
             self.accessibilityLabel = CallStrings.joinCallPillButtonTitle
         }
 
-        override public var bounds: CGRect {
+        override var bounds: CGRect {
             didSet {
                 updateRadius()
             }
@@ -499,7 +499,7 @@ private class CallLinkCardView: UIView {
     init(
         callLink: CallLink,
         callName: String,
-        joinAction: @escaping () -> Void
+        joinAction: @escaping () -> Void,
     ) {
         self.callLink = callLink
         self.callName = callName
@@ -539,7 +539,7 @@ private extension Theme {
         // of the button. Design requested this exception.
         let darkThemeTraits = UITraitCollection(traitsFrom: [
             UITraitCollection(userInterfaceStyle: .dark),
-            UITraitCollection(accessibilityContrast: .high)
+            UITraitCollection(accessibilityContrast: .high),
         ])
         let darkThemeColor = UIColor.Signal.ultramarine.resolvedColor(with: darkThemeTraits)
         let lightThemeColor = UIColor.Signal.ultramarine.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
