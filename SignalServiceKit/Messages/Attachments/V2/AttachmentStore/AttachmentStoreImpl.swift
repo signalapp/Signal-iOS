@@ -416,7 +416,6 @@ public class AttachmentStoreImpl: AttachmentStore {
             )
         }
         newRecord.sqliteId = id
-        try newRecord.checkAllUInt64FieldsFitInInt64()
         try newRecord.update(tx.database)
     }
 
@@ -447,7 +446,6 @@ public class AttachmentStoreImpl: AttachmentStore {
         ))
 
         newRecord.sqliteId = attachment.id
-        try newRecord.checkAllUInt64FieldsFitInInt64()
         try newRecord.update(tx.database)
     }
 
@@ -490,7 +488,6 @@ public class AttachmentStoreImpl: AttachmentStore {
             )
         }
         newRecord.sqliteId = id
-        try newRecord.checkAllUInt64FieldsFitInInt64()
         try newRecord.update(tx.database)
     }
 
@@ -507,7 +504,6 @@ public class AttachmentStoreImpl: AttachmentStore {
             params: .forRemovingMediaTierInfo(attachment: existingAttachment)
         )
         newRecord.sqliteId = id
-        try newRecord.checkAllUInt64FieldsFitInInt64()
         try newRecord.update(tx.database)
     }
 
@@ -524,7 +520,6 @@ public class AttachmentStoreImpl: AttachmentStore {
             params: .forRemovingThumbnailMediaTierInfo(attachment: existingAttachment)
         )
         newRecord.sqliteId = id
-        try newRecord.checkAllUInt64FieldsFitInInt64()
         try newRecord.update(tx.database)
     }
 
@@ -544,7 +539,6 @@ public class AttachmentStoreImpl: AttachmentStore {
             )
         )
         newRecord.sqliteId = attachment.id
-        try newRecord.checkAllUInt64FieldsFitInInt64()
         // NOTE: a sqlite trigger handles updating all attachment reference rows
         // with the new content type.
         try newRecord.update(tx.database)
@@ -700,7 +694,6 @@ public class AttachmentStoreImpl: AttachmentStore {
         }
 
         var attachmentRecord = Attachment.Record(params: attachmentParams)
-        try attachmentRecord.checkAllUInt64FieldsFitInInt64()
 
         // Note that this will fail if we have collisions in medianame (unique constraint)
         // but thats a hash so we just ignore that possibility.
@@ -813,7 +806,6 @@ public class AttachmentStoreImpl: AttachmentStore {
             )
         )
         newRecord.sqliteId = attachment.id
-        try newRecord.checkAllUInt64FieldsFitInInt64()
         try newRecord.update(tx.database)
     }
 }

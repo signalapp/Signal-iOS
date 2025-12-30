@@ -3145,6 +3145,8 @@
 		D9F9A6412C06645F00EF13EC /* DeleteForMeOutgoingSyncMessageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F9A6402C06645F00EF13EC /* DeleteForMeOutgoingSyncMessageManager.swift */; };
 		D9F9A6452C07ADEB00EF13EC /* DeleteForMeOutgoingSyncMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F9A6442C07ADEB00EF13EC /* DeleteForMeOutgoingSyncMessage.swift */; };
 		D9FC1C912C6FE5A50023AB87 /* BackupArchiveTSMessageEditHistoryArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9FC1C902C6FE5A50023AB87 /* BackupArchiveTSMessageEditHistoryArchiver.swift */; };
+		D9FF515C2F03A2B40011982F /* DBUInt64.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9FF515B2F03A2A10011982F /* DBUInt64.swift */; };
+		D9FF515E2F03A6D30011982F /* DBUInt64Test.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9FF515D2F03A6CD0011982F /* DBUInt64Test.swift */; };
 		E1368CBE18A1C36B00109378 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9EB5ABC1884C002007CBB57 /* MessageUI.framework */; };
 		E1447D8F2CCACFFD004D8FA2 /* BackupArchiveCallLinkRecipientArchiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1447D8E2CCACFFA004D8FA2 /* BackupArchiveCallLinkRecipientArchiver.swift */; };
 		E14EDF6E2A71AFDF00F0FD7C /* RecipientContextMenuHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = E14EDF6D2A71AFDF00F0FD7C /* RecipientContextMenuHelper.swift */; };
@@ -7324,6 +7326,8 @@
 		D9F9A6402C06645F00EF13EC /* DeleteForMeOutgoingSyncMessageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteForMeOutgoingSyncMessageManager.swift; sourceTree = "<group>"; };
 		D9F9A6442C07ADEB00EF13EC /* DeleteForMeOutgoingSyncMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeleteForMeOutgoingSyncMessage.swift; sourceTree = "<group>"; };
 		D9FC1C902C6FE5A50023AB87 /* BackupArchiveTSMessageEditHistoryArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupArchiveTSMessageEditHistoryArchiver.swift; sourceTree = "<group>"; };
+		D9FF515B2F03A2A10011982F /* DBUInt64.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DBUInt64.swift; sourceTree = "<group>"; };
+		D9FF515D2F03A6CD0011982F /* DBUInt64Test.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DBUInt64Test.swift; sourceTree = "<group>"; };
 		E1447D8E2CCACFFA004D8FA2 /* BackupArchiveCallLinkRecipientArchiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupArchiveCallLinkRecipientArchiver.swift; sourceTree = "<group>"; };
 		E14EDF6D2A71AFDF00F0FD7C /* RecipientContextMenuHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientContextMenuHelper.swift; sourceTree = "<group>"; };
 		E15066C22CED498600F6F9AF /* RegistrationQuickRestoreQRCodeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationQuickRestoreQRCodeViewController.swift; sourceTree = "<group>"; };
@@ -9808,13 +9812,6 @@
 			path = Registration;
 			sourceTree = "<group>";
 		};
-		66138FAC2982F4A7002E0CFE /* SDSDatabaseStorage */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = SDSDatabaseStorage;
-			sourceTree = "<group>";
-		};
 		66144B3B2BFD22EE00E2C9CD /* Records */ = {
 			isa = PBXGroup;
 			children = (
@@ -10320,13 +10317,6 @@
 				F9426228289B1B5500460798 /* OWSLinkPreviewTest.swift */,
 			);
 			path = LinkPreview;
-			sourceTree = "<group>";
-		};
-		66A1ABDF2C3311800033C5EB /* IncrementalMigrations */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = IncrementalMigrations;
 			sourceTree = "<group>";
 		};
 		66A1DF71298C634500C4E4A7 /* Registration */ = {
@@ -14116,11 +14106,11 @@
 			isa = PBXGroup;
 			children = (
 				D9F6554529DA4216002A330A /* SDSCodableModel */,
-				66138FAC2982F4A7002E0CFE /* SDSDatabaseStorage */,
 				501E4DAC2D13439E00D883C7 /* CompletionSerializerTest.swift */,
 				668A28AE2BF703E100BB29B3 /* CreateV2AttachmentTablesMigrationTest.swift */,
 				F97217FA28DCA36E00113D9F /* DatabaseCorruptionStateTest.swift */,
 				F94D130528C1667600B2C478 /* DatabaseRecoveryTest.swift */,
+				D9FF515D2F03A6CD0011982F /* DBUInt64Test.swift */,
 				F908179528EF107800D31AD5 /* GRDBDatabaseStorageAdapterTest.swift */,
 				F97217FD28DCBC5100113D9F /* GRDBSchemaMigratorTest.swift */,
 				D9B95A9C29E894A600D7CB95 /* ValidatableModel.swift */,
@@ -14822,7 +14812,6 @@
 		F9C5CA31289453B100548EEE /* Database */ = {
 			isa = PBXGroup;
 			children = (
-				66A1ABDF2C3311800033C5EB /* IncrementalMigrations */,
 				F9C5CA35289453B100548EEE /* Records */,
 				D9F6553029D6530B002A330A /* SDSCodableModel */,
 				6673FF83297B666500F96CFD /* SDSDatabaseStorage */,
@@ -14831,6 +14820,7 @@
 				D9F96EDD2D83BEFB00466C6A /* Database+Execute.swift */,
 				F97217F728DC9F3700113D9F /* DatabaseCorruptionState.swift */,
 				F9B652C228D8E3DF006914CA /* DatabaseRecovery.swift */,
+				D9FF515B2F03A2A10011982F /* DBUInt64.swift */,
 				F9C5CA48289453B100548EEE /* DeepCopy.swift */,
 				F9C5CA40289453B100548EEE /* GRDBDatabaseStorageAdapter.swift */,
 				F9C5CA47289453B100548EEE /* GRDBSchemaMigrator.swift */,
@@ -18699,6 +18689,7 @@
 				72345D1F2B9A1FCF000237B3 /* DateUtil.swift in Sources */,
 				6673FF87297B694C00F96CFD /* DB.swift in Sources */,
 				6673FF89297B6AF800F96CFD /* DBTransaction.swift in Sources */,
+				D9FF515C2F03A2B40011982F /* DBUInt64.swift in Sources */,
 				F9C5CDD8289453B400548EEE /* DebouncedEvent.swift in Sources */,
 				668A00DF2C2B5ECF007B8808 /* DebuggerUtils.m in Sources */,
 				7255A4D02B98E2A400E95368 /* DebugLogger.swift in Sources */,
@@ -19667,6 +19658,7 @@
 				724E68642C91FA73002199F3 /* DataHexadecimalTest.swift in Sources */,
 				F9426265289B1B5500460798 /* Date+SSKTest.swift in Sources */,
 				66485EB92CD17D6400B8613F /* DbRollbackTests.swift in Sources */,
+				D9FF515E2F03A6D30011982F /* DBUInt64Test.swift in Sources */,
 				F94C912428FDECC40065DF75 /* DecimalTest.swift in Sources */,
 				D91AC9362B61C79600814975 /* DeletedCallRecordStoreTest.swift in Sources */,
 				D96234702C0E99DE00DAF6CB /* DeleteForMeMostRecentAddressableMessageCursorTest.swift in Sources */,

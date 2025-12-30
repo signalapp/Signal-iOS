@@ -7,13 +7,13 @@ import Foundation
 public import GRDB
 
 extension Attachment {
-    public struct Record: Codable, MutablePersistableRecord, FetchableRecord, Equatable, UInt64SafeRecord {
+    public struct Record: Codable, MutablePersistableRecord, FetchableRecord, Equatable {
 
         public typealias IDType = Int64
 
         var sqliteId: IDType?
         let blurHash: String?
-        var sha256ContentHash: Data?
+        let sha256ContentHash: Data?
         let encryptedByteCount: UInt32?
         let unencryptedByteCount: UInt32?
         let mimeType: String
@@ -22,19 +22,23 @@ extension Attachment {
         let contentType: UInt32?
         let latestTransitCdnNumber: UInt32?
         let latestTransitCdnKey: String?
-        let latestTransitUploadTimestamp: UInt64?
+        @DBUInt64Optional
+        var latestTransitUploadTimestamp: UInt64?
         let latestTransitEncryptionKey: Data?
         let latestTransitUnencryptedByteCount: UInt32?
         let latestTransitDigestSHA256Ciphertext: Data?
-        let latestTransitLastDownloadAttemptTimestamp: UInt64?
+        @DBUInt64Optional
+        var latestTransitLastDownloadAttemptTimestamp: UInt64?
         let mediaName: String?
         let mediaTierCdnNumber: UInt32?
         let mediaTierUnencryptedByteCount: UInt32?
         let mediaTierUploadEra: String?
-        let lastMediaTierDownloadAttemptTimestamp: UInt64?
+        @DBUInt64Optional
+        var lastMediaTierDownloadAttemptTimestamp: UInt64?
         let thumbnailCdnNumber: UInt32?
         let thumbnailUploadEra: String?
-        let lastThumbnailDownloadAttemptTimestamp: UInt64?
+        @DBUInt64Optional
+        var lastThumbnailDownloadAttemptTimestamp: UInt64?
         let localRelativeFilePath: String?
         let localRelativeFilePathThumbnail: String?
         let cachedAudioDurationSeconds: Double?
@@ -48,10 +52,12 @@ extension Attachment {
         let mediaTierIncrementalMacChunkSize: UInt32?
         let latestTransitTierIncrementalMac: Data?
         let latestTransitTierIncrementalMacChunkSize: UInt32?
-        let lastFullscreenViewTimestamp: UInt64?
+        @DBUInt64Optional
+        var lastFullscreenViewTimestamp: UInt64?
         let originalTransitCdnNumber: UInt32?
         let originalTransitCdnKey: String?
-        let originalTransitUploadTimestamp: UInt64?
+        @DBUInt64Optional
+        var originalTransitUploadTimestamp: UInt64?
         let originalTransitUnencryptedByteCount: UInt32?
         let originalTransitDigestSHA256Ciphertext: Data?
         let originalTransitTierIncrementalMac: Data?
@@ -116,21 +122,6 @@ extension Attachment {
             case originalTransitTierIncrementalMacChunkSize
         }
 
-        // MARK: - UInt64SafeRecord
-
-        public static var uint64Fields: [KeyPath<Attachment.Record, UInt64>] { [] }
-
-        public static var uint64OptionalFields: [KeyPath<Self, UInt64?>] {
-            return [
-                \.latestTransitUploadTimestamp,
-                \.latestTransitLastDownloadAttemptTimestamp,
-                \.lastMediaTierDownloadAttemptTimestamp,
-                \.lastThumbnailDownloadAttemptTimestamp,
-                \.lastFullscreenViewTimestamp,
-                \.originalTransitUploadTimestamp,
-            ]
-        }
-
         // MARK: - MutablePersistableRecord
 
         public static let databaseTableName: String = "Attachment"
@@ -140,100 +131,6 @@ extension Attachment {
         }
 
         // MARK: - Initializers
-
-        internal init(
-            sqliteId: IDType? = nil,
-            blurHash: String?,
-            sha256ContentHash: Data?,
-            encryptedByteCount: UInt32?,
-            unencryptedByteCount: UInt32?,
-            mimeType: String,
-            encryptionKey: Data,
-            digestSHA256Ciphertext: Data?,
-            contentType: UInt32?,
-            latestTransitCdnNumber: UInt32?,
-            latestTransitCdnKey: String?,
-            latestTransitUploadTimestamp: UInt64?,
-            latestTransitEncryptionKey: Data?,
-            latestTransitUnencryptedByteCount: UInt32?,
-            latestTransitDigestSHA256Ciphertext: Data?,
-            latestTransitLastDownloadAttemptTimestamp: UInt64?,
-            mediaName: String?,
-            mediaTierCdnNumber: UInt32?,
-            mediaTierUnencryptedByteCount: UInt32?,
-            mediaTierUploadEra: String?,
-            lastMediaTierDownloadAttemptTimestamp: UInt64?,
-            thumbnailCdnNumber: UInt32?,
-            thumbnailUploadEra: String?,
-            lastThumbnailDownloadAttemptTimestamp: UInt64?,
-            localRelativeFilePath: String?,
-            localRelativeFilePathThumbnail: String?,
-            cachedAudioDurationSeconds: Double?,
-            cachedMediaHeightPixels: UInt32?,
-            cachedMediaWidthPixels: UInt32?,
-            cachedVideoDurationSeconds: Double?,
-            audioWaveformRelativeFilePath: String?,
-            videoStillFrameRelativeFilePath: String?,
-            originalAttachmentIdForQuotedReply: Int64?,
-            mediaTierIncrementalMac: Data?,
-            mediaTierIncrementalMacChunkSize: UInt32?,
-            latestTransitTierIncrementalMac: Data?,
-            latestTransitTierIncrementalMacChunkSize: UInt32?,
-            lastFullscreenViewTimestamp: UInt64?,
-            originalTransitCdnNumber: UInt32?,
-            originalTransitCdnKey: String?,
-            originalTransitUploadTimestamp: UInt64?,
-            originalTransitUnencryptedByteCount: UInt32?,
-            originalTransitDigestSHA256Ciphertext: Data?,
-            originalTransitTierIncrementalMac: Data?,
-            originalTransitTierIncrementalMacChunkSize: UInt32?,
-        ) {
-            self.sqliteId = sqliteId
-            self.blurHash = blurHash
-            self.sha256ContentHash = sha256ContentHash
-            self.encryptedByteCount = encryptedByteCount
-            self.unencryptedByteCount = unencryptedByteCount
-            self.mimeType = mimeType
-            self.encryptionKey = encryptionKey
-            self.digestSHA256Ciphertext = digestSHA256Ciphertext
-            self.contentType = contentType
-            self.latestTransitCdnNumber = latestTransitCdnNumber
-            self.latestTransitCdnKey = latestTransitCdnKey
-            self.latestTransitUploadTimestamp = latestTransitUploadTimestamp
-            self.latestTransitEncryptionKey = latestTransitEncryptionKey
-            self.latestTransitUnencryptedByteCount = latestTransitUnencryptedByteCount
-            self.latestTransitDigestSHA256Ciphertext = latestTransitDigestSHA256Ciphertext
-            self.latestTransitLastDownloadAttemptTimestamp = latestTransitLastDownloadAttemptTimestamp
-            self.mediaName = mediaName
-            self.mediaTierCdnNumber = mediaTierCdnNumber
-            self.mediaTierUnencryptedByteCount = mediaTierUnencryptedByteCount
-            self.mediaTierUploadEra = mediaTierUploadEra
-            self.lastMediaTierDownloadAttemptTimestamp = lastMediaTierDownloadAttemptTimestamp
-            self.thumbnailCdnNumber = thumbnailCdnNumber
-            self.thumbnailUploadEra = thumbnailUploadEra
-            self.lastThumbnailDownloadAttemptTimestamp = lastThumbnailDownloadAttemptTimestamp
-            self.localRelativeFilePath = localRelativeFilePath
-            self.localRelativeFilePathThumbnail = localRelativeFilePathThumbnail
-            self.cachedAudioDurationSeconds = cachedAudioDurationSeconds
-            self.cachedMediaHeightPixels = cachedMediaHeightPixels
-            self.cachedMediaWidthPixels = cachedMediaWidthPixels
-            self.cachedVideoDurationSeconds = cachedVideoDurationSeconds
-            self.audioWaveformRelativeFilePath = audioWaveformRelativeFilePath
-            self.videoStillFrameRelativeFilePath = videoStillFrameRelativeFilePath
-            self.originalAttachmentIdForQuotedReply = originalAttachmentIdForQuotedReply
-            self.mediaTierIncrementalMac = mediaTierIncrementalMac
-            self.mediaTierIncrementalMacChunkSize = mediaTierIncrementalMacChunkSize
-            self.latestTransitTierIncrementalMac = latestTransitTierIncrementalMac
-            self.latestTransitTierIncrementalMacChunkSize = latestTransitTierIncrementalMacChunkSize
-            self.lastFullscreenViewTimestamp = lastFullscreenViewTimestamp
-            self.originalTransitCdnNumber = originalTransitCdnNumber
-            self.originalTransitCdnKey = originalTransitCdnKey
-            self.originalTransitUploadTimestamp = originalTransitUploadTimestamp
-            self.originalTransitUnencryptedByteCount = originalTransitUnencryptedByteCount
-            self.originalTransitDigestSHA256Ciphertext = originalTransitDigestSHA256Ciphertext
-            self.originalTransitTierIncrementalMac = originalTransitTierIncrementalMac
-            self.originalTransitTierIncrementalMacChunkSize = originalTransitTierIncrementalMacChunkSize
-        }
 
         internal init(attachment: Attachment) {
             self.init(
@@ -335,7 +232,7 @@ extension Attachment {
             self.contentType = (streamInfo?.contentType.raw.rawValue).map { UInt32($0) }
             self.latestTransitCdnNumber = latestTransitTierInfo?.cdnNumber
             self.latestTransitCdnKey = latestTransitTierInfo?.cdnKey
-            self.latestTransitUploadTimestamp = latestTransitTierInfo?.uploadTimestamp
+            self._latestTransitUploadTimestamp = DBUInt64Optional(wrappedValue: latestTransitTierInfo?.uploadTimestamp)
             self.latestTransitEncryptionKey = latestTransitTierInfo?.encryptionKey
             self.latestTransitUnencryptedByteCount = latestTransitTierInfo?.unencryptedByteCount
             switch latestTransitTierInfo?.integrityCheck {
@@ -346,11 +243,11 @@ extension Attachment {
             }
             self.latestTransitTierIncrementalMac = latestTransitTierInfo?.incrementalMacInfo?.mac
             self.latestTransitTierIncrementalMacChunkSize = latestTransitTierInfo?.incrementalMacInfo?.chunkSize
-            self.latestTransitLastDownloadAttemptTimestamp = latestTransitTierInfo?.lastDownloadAttemptTimestamp
+            self._latestTransitLastDownloadAttemptTimestamp = DBUInt64Optional(wrappedValue: latestTransitTierInfo?.lastDownloadAttemptTimestamp)
 
             self.originalTransitCdnNumber = originalTransitTierInfo?.cdnNumber
             self.originalTransitCdnKey = originalTransitTierInfo?.cdnKey
-            self.originalTransitUploadTimestamp = originalTransitTierInfo?.uploadTimestamp
+            self._originalTransitUploadTimestamp = DBUInt64Optional(wrappedValue: originalTransitTierInfo?.uploadTimestamp)
             self.originalTransitUnencryptedByteCount = originalTransitTierInfo?.unencryptedByteCount
             switch originalTransitTierInfo?.integrityCheck {
             case .digestSHA256Ciphertext(let data):
@@ -367,14 +264,14 @@ extension Attachment {
             self.mediaTierIncrementalMac = mediaTierInfo?.incrementalMacInfo?.mac
             self.mediaTierIncrementalMacChunkSize = mediaTierInfo?.incrementalMacInfo?.chunkSize
             self.mediaTierUploadEra = mediaTierInfo?.uploadEra
-            self.lastMediaTierDownloadAttemptTimestamp = mediaTierInfo?.lastDownloadAttemptTimestamp
+            self._lastMediaTierDownloadAttemptTimestamp = DBUInt64Optional(wrappedValue: mediaTierInfo?.lastDownloadAttemptTimestamp)
             self.thumbnailCdnNumber = thumbnailMediaTierInfo?.cdnNumber
             self.thumbnailUploadEra = thumbnailMediaTierInfo?.uploadEra
-            self.lastThumbnailDownloadAttemptTimestamp = thumbnailMediaTierInfo?.lastDownloadAttemptTimestamp
+            self._lastThumbnailDownloadAttemptTimestamp = DBUInt64Optional(wrappedValue: thumbnailMediaTierInfo?.lastDownloadAttemptTimestamp)
             self.localRelativeFilePath = streamInfo?.localRelativeFilePath
             self.localRelativeFilePathThumbnail = localRelativeFilePathThumbnail
             self.originalAttachmentIdForQuotedReply = originalAttachmentIdForQuotedReply
-            self.lastFullscreenViewTimestamp = lastFullscreenViewTimestamp
+            self._lastFullscreenViewTimestamp = DBUInt64Optional(wrappedValue: lastFullscreenViewTimestamp)
 
             let cachedAudioDurationSeconds: TimeInterval?
             let cachedMediaSizePixels: CGSize?

@@ -1154,21 +1154,35 @@ class AttachmentStoreTests: XCTestCase {
         checkThreadRowId(of: reference3, matches: threadId2)
     }
 
-    // MARK: - UInt64 Field verification
+    // MARK: - UInt64 max values
 
-    func testUInt64RecordFields_Attachment() {
-        testUInt64FieldPresence(
-            sampleInstance: Attachment.Record(params: Attachment.ConstructionParams.mockPointer()),
-            keyPathNames: [
-                \.latestTransitUploadTimestamp: "latestTransitUploadTimestamp",
-                \.latestTransitLastDownloadAttemptTimestamp: "latestTransitLastDownloadAttemptTimestamp",
-                \.lastMediaTierDownloadAttemptTimestamp: "lastMediaTierDownloadAttemptTimestamp",
-                \.lastThumbnailDownloadAttemptTimestamp: "lastThumbnailDownloadAttemptTimestamp",
-                \.lastFullscreenViewTimestamp: "lastFullscreenViewTimestamp",
-                \.originalTransitUploadTimestamp: "originalTransitUploadTimestamp",
-            ]
-        )
+    /// Added as part of the introduction of `DBUInt64` and its first usage in
+    /// `Attachment.Record`. We don't need to implement this for every
+    /// subsequent type that uses `DBUInt64`.
+    func testUInt64MaxValues() throws {
+        try InMemoryDB().write { tx in
+            var attachmentRecord = Attachment.Record(attachment: MockAttachment.mock(
+                transitTierInfo: .mock(
+                    uploadTimestamp: .max,
+                    lastDownloadAttemptTimestamp: .max,
+                ),
+                mediaTierInfo: .mock(
+                    lastDownloadAttemptTimestamp: .max,
+                ),
+                thumbnailInfo: .mock(
+                    lastDownloadAttemptTimestamp: .max,
+                ),
+                lastFullscreenViewTimestamp: .max,
+            ))
+
+            try attachmentRecord.insert(tx.database)
+            let persisted = try Attachment.Record.fetchAll(tx.database)
+            XCTAssertEqual(persisted.count, 1)
+            XCTAssertEqual(persisted[0], attachmentRecord)
+        }
     }
+
+    // MARK: - UInt64 Field verification
 
     func testUInt64RecordFields_MessageAttachmentReference() {
         testUInt64FieldPresence(
