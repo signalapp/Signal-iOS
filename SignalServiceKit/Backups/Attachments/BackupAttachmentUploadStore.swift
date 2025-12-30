@@ -26,7 +26,7 @@ public class BackupAttachmentUploadStore {
         file: StaticString? = #file,
         function: StaticString? = #function,
         line: UInt? = #line
-    ) throws {
+    ) {
         if let file, let function, let line {
             Logger.info("Enqueuing \(attachment.id) fullsize? \(fullsize) from \(file) \(line): \(function)")
         }
@@ -51,10 +51,12 @@ public class BackupAttachmentUploadStore {
             ) ?? .max),
         )
 
-        let existingRecord = try QueuedBackupAttachmentUpload
+        let existingRecordQuery = QueuedBackupAttachmentUpload
             .filter(Column(QueuedBackupAttachmentUpload.CodingKeys.attachmentRowId) == attachment.id)
             .filter(Column(QueuedBackupAttachmentUpload.CodingKeys.isFullsize) == fullsize)
-            .fetchOne(db)
+        let existingRecord = failIfThrows {
+            try existingRecordQuery.fetchOne(db)
+        }
 
         if var existingRecord {
             // Only update if done or the new one has higher priority; otherwise leave untouched.
@@ -65,11 +67,15 @@ public class BackupAttachmentUploadStore {
             if shouldUpdate {
                 existingRecord.highestPriorityOwnerType = newRecord.highestPriorityOwnerType
                 existingRecord.state = newRecord.state
-                try existingRecord.update(db)
+                failIfThrows {
+                    try existingRecord.update(db)
+                }
             }
         } else {
             // If there's no existing record, insert and we're done.
-            try newRecord.insert(db)
+            failIfThrows {
+                try newRecord.insert(db)
+            }
         }
     }
 

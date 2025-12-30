@@ -718,7 +718,7 @@ public class AttachmentManagerImpl: AttachmentManager {
                             tx: tx
                         )
                     {
-                        try backupAttachmentUploadScheduler.enqueueIfNeededWithOwner(
+                        backupAttachmentUploadScheduler.enqueueIfNeededWithOwner(
                             attachment,
                             owner: owner,
                             tx: tx
@@ -825,7 +825,7 @@ public class AttachmentManagerImpl: AttachmentManager {
             // Just hold all refs in memory; there shouldn't in practice be
             // so many pointers to the same attachment.
             var references = [AttachmentReference]()
-            try self.attachmentStore.enumerateAllReferences(
+            self.attachmentStore.enumerateAllReferences(
                 toAttachmentId: attachment.id,
                 tx: tx
             ) { reference, _ in
@@ -1015,7 +1015,7 @@ public class AttachmentManagerImpl: AttachmentManager {
         // and whether to actually upload, but let it know about every new
         // stream created.
         if let newAttachmentOwner {
-            try backupAttachmentUploadScheduler.enqueueIfNeededWithOwner(
+            backupAttachmentUploadScheduler.enqueueIfNeededWithOwner(
                 existingAttachment,
                 owner: newAttachmentOwner,
                 tx: tx

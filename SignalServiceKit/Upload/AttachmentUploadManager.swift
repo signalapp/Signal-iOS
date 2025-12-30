@@ -1167,7 +1167,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         )
 
         do {
-            try self.attachmentStore.enumerateAllReferences(
+            self.attachmentStore.enumerateAllReferences(
                 toAttachmentId: attachmentStream.attachment.id,
                 tx: tx
             ) { attachmentReference, _ in
@@ -1198,8 +1198,6 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                     break
                 }
             }
-        } catch {
-            Logger.error("Failed to enumerate references: \(error)")
         }
     }
 

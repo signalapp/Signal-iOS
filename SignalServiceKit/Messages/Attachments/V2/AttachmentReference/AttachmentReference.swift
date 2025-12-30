@@ -40,7 +40,7 @@ public class AttachmentReference {
         self.attachmentRowId = record.attachmentRowId
         self.sourceFilename = record.sourceFilename
         self.sourceUnencryptedByteCount = record.sourceUnencryptedByteCount
-        self.sourceMediaSizePixels = try Self.buildSourceMediaSizePixels(
+        self.sourceMediaSizePixels = Self.buildSourceMediaSizePixels(
             sourceMediaWidthPixels: record.sourceMediaWidthPixels,
             sourceMediaHeightPixels: record.sourceMediaHeightPixels
         )
@@ -51,7 +51,7 @@ public class AttachmentReference {
         self.attachmentRowId = record.attachmentRowId
         self.sourceFilename = record.sourceFilename
         self.sourceUnencryptedByteCount = record.sourceUnencryptedByteCount
-        self.sourceMediaSizePixels = try Self.buildSourceMediaSizePixels(
+        self.sourceMediaSizePixels = Self.buildSourceMediaSizePixels(
             sourceMediaWidthPixels: record.sourceMediaWidthPixels,
             sourceMediaHeightPixels: record.sourceMediaHeightPixels
         )
@@ -68,7 +68,7 @@ public class AttachmentReference {
     private static func buildSourceMediaSizePixels(
         sourceMediaWidthPixels: UInt32?,
         sourceMediaHeightPixels: UInt32?
-    ) throws -> CGSize? {
+    ) -> CGSize? {
         guard
             let sourceMediaWidthPixels,
             let sourceMediaHeightPixels
@@ -80,13 +80,11 @@ public class AttachmentReference {
             )
             return nil
         }
-        guard
-            let sourceMediaWidthPixels = Int(exactly: sourceMediaWidthPixels),
-            let sourceMediaHeightPixels = Int(exactly: sourceMediaHeightPixels)
-        else {
-            throw OWSAssertionError("Invalid pixel size")
-        }
-        return CGSize(width: sourceMediaWidthPixels, height: sourceMediaHeightPixels)
+        // Safe Int conversion: all UInt32 can be an Int on 64b systems
+        return CGSize(
+            width: Int(sourceMediaWidthPixels),
+            height: Int(sourceMediaHeightPixels),
+        )
     }
 }
 

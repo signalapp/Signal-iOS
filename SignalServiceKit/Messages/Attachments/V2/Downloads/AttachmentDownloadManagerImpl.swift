@@ -933,7 +933,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         ) async -> Bool {
             let installedSticker: InstalledSticker? = db.read { tx in
                 var stickerMetadata: AttachmentReference.Owner.MessageSource.StickerMetadata?
-                try? attachmentStore.enumerateAllReferences(
+                attachmentStore.enumerateAllReferences(
                     toAttachmentId: record.attachmentId,
                     tx: tx,
                     block: { reference, stop in
@@ -1097,7 +1097,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             return db.read { tx in
                 var downloadability: Downloadability?
 
-                try? self.attachmentStore.enumerateAllReferences(
+                self.attachmentStore.enumerateAllReferences(
                     toAttachmentId: record.attachmentId,
                     tx: tx
                 ) { reference, stop in
@@ -2166,7 +2166,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     // Just hold all refs in memory; there shouldn't in practice be
                     // so many pointers to the same attachment.
                     var references = [AttachmentReference]()
-                    try self.attachmentStore.enumerateAllReferences(
+                    self.attachmentStore.enumerateAllReferences(
                         toAttachmentId: attachmentId,
                         tx: tx
                     ) { reference, _ in
@@ -2222,7 +2222,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 }
 
                 var references = [AttachmentReference]()
-                try self.attachmentStore.enumerateAllReferences(
+                self.attachmentStore.enumerateAllReferences(
                     toAttachmentId: attachmentId,
                     tx: tx
                 ) { reference, _ in
@@ -2412,9 +2412,9 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     )
                     .filter({ $0.asStream() == nil })
 
-                let references = try thumbnailAttachments.flatMap { attachment in
+                let references = thumbnailAttachments.flatMap { attachment in
                     var refs = [AttachmentReference]()
-                    try self.attachmentStore.enumerateAllReferences(
+                    self.attachmentStore.enumerateAllReferences(
                         toAttachmentId: attachment.id,
                         tx: tx
                     ) { ref, _ in
@@ -2587,7 +2587,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         }
 
         func touchAllOwners(attachmentId: Attachment.IDType, tx: DBWriteTransaction) {
-            try? self.attachmentStore.enumerateAllReferences(
+            self.attachmentStore.enumerateAllReferences(
                 toAttachmentId: attachmentId,
                 tx: tx
             ) { reference, _ in

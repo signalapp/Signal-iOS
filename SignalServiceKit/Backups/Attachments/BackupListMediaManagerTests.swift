@@ -364,8 +364,8 @@ public class BackupListMediaManagerTests {
         }
 
         if scheduleUpload {
-            try! backupAttachmentUploadStore.enqueue(
-                Attachment(record: attachmentRecord).asStream()!,
+            backupAttachmentUploadStore.enqueue(
+                try! Attachment(record: attachmentRecord).asStream()!,
                 owner: .threadWallpaper,
                 fullsize: true,
                 tx: tx

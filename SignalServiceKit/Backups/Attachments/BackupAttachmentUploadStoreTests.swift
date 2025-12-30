@@ -37,8 +37,8 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
                 timestamp: 1234,
                 tx: tx
             )
-            try store.enqueue(
-                Attachment(record: attachmentRecord).asStream()!,
+            store.enqueue(
+                try Attachment(record: attachmentRecord).asStream()!,
                 owner: reference.owner.asEligibleUploadOwnerType,
                 fullsize: true,
                 tx: tx
@@ -65,8 +65,8 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
                 timestamp: 5678,
                 tx: tx
             )
-            try store.enqueue(
-                Attachment(record: attachmentRecord).asStream()!,
+            store.enqueue(
+                try Attachment(record: attachmentRecord).asStream()!,
                 owner: reference.owner.asEligibleUploadOwnerType,
                 fullsize: true,
                 tx: tx
@@ -169,8 +169,8 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
                         return try AttachmentReference(record: referenceRecord)
                     }
                 }()
-                try store.enqueue(
-                    Attachment(record: attachmentRecord).asStream()!,
+                store.enqueue(
+                    try Attachment(record: attachmentRecord).asStream()!,
                     owner: reference.owner.asEligibleUploadOwnerType,
                     fullsize: true,
                     tx: tx
@@ -260,14 +260,14 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
                     tx: tx
                 )
                 // Enqueue both fullsize and thumbnail
-                try store.enqueue(
-                    Attachment(record: attachmentRecord).asStream()!,
+                store.enqueue(
+                    try Attachment(record: attachmentRecord).asStream()!,
                     owner: reference.owner.asEligibleUploadOwnerType,
                     fullsize: true,
                     tx: tx
                 )
-                try store.enqueue(
-                    Attachment(record: attachmentRecord).asStream()!,
+                store.enqueue(
+                    try Attachment(record: attachmentRecord).asStream()!,
                     owner: reference.owner.asEligibleUploadOwnerType,
                     fullsize: false,
                     tx: tx

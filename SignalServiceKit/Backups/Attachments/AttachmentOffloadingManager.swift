@@ -488,6 +488,8 @@ public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
     }
 }
 
+// MARK: -
+
 extension AttachmentStore {
 
     func fetchMostRecentReference(
@@ -496,7 +498,7 @@ extension AttachmentStore {
     ) throws -> AttachmentReference {
         var mostRecentReference: AttachmentReference?
         var maxMessageTimestamp: UInt64 = 0
-        try self.enumerateAllReferences(
+        self.enumerateAllReferences(
             toAttachmentId: attachmentId,
             tx: tx
         ) { reference, stop in

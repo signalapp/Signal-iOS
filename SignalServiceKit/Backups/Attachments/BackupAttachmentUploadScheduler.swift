@@ -55,7 +55,7 @@ public protocol BackupAttachmentUploadScheduler {
         file: StaticString?,
         function: StaticString?,
         line: UInt?
-    ) throws
+    )
 }
 
 extension BackupAttachmentUploadScheduler {
@@ -85,8 +85,8 @@ extension BackupAttachmentUploadScheduler {
         file: StaticString? = #file,
         function: StaticString? = #function,
         line: UInt? = #line
-    ) throws {
-        try enqueueIfNeededWithOwner(
+    ) {
+        enqueueIfNeededWithOwner(
             attachment,
             owner: owner,
             tx: tx,
@@ -139,7 +139,7 @@ public class BackupAttachmentUploadSchedulerImpl: BackupAttachmentUploadSchedule
             return false
         }
 
-        let highestPriorityEligibleOwner = try? self.highestPriorityEligibleOwner(
+        let highestPriorityEligibleOwner = self.highestPriorityEligibleOwner(
             attachment,
             tx: tx
         )
@@ -153,7 +153,7 @@ public class BackupAttachmentUploadSchedulerImpl: BackupAttachmentUploadSchedule
         file: StaticString? = #file,
         function: StaticString? = #function,
         line: UInt? = #line
-    ) throws {
+    ) {
         // Before we fetch references, check if the attachment is
         // eligible to begin with.
         guard let stream = attachment.asStream() else {
@@ -177,7 +177,7 @@ public class BackupAttachmentUploadSchedulerImpl: BackupAttachmentUploadSchedule
         }
 
         guard
-            let uploadOwnerType = try highestPriorityEligibleOwner(attachment, tx: tx)
+            let uploadOwnerType = highestPriorityEligibleOwner(attachment, tx: tx)
         else {
             if let file, let function, let line {
                 Logger.info("No eligible owners; skipping enqueue of \(attachment.id) from \(file) \(line): \(function)")
@@ -187,7 +187,7 @@ public class BackupAttachmentUploadSchedulerImpl: BackupAttachmentUploadSchedule
 
         if mode != .thumbnailOnly {
             if eligibility.needsUploadFullsize {
-                try backupAttachmentUploadStore.enqueue(
+                backupAttachmentUploadStore.enqueue(
                     stream,
                     owner: uploadOwnerType,
                     fullsize: true,
@@ -202,7 +202,7 @@ public class BackupAttachmentUploadSchedulerImpl: BackupAttachmentUploadSchedule
         }
         if mode != .fullsizeOnly {
             if eligibility.needsUploadThumbnail {
-                try backupAttachmentUploadStore.enqueue(
+                backupAttachmentUploadStore.enqueue(
                     stream,
                     owner: uploadOwnerType,
                     fullsize: false,
@@ -224,7 +224,7 @@ public class BackupAttachmentUploadSchedulerImpl: BackupAttachmentUploadSchedule
         file: StaticString? = #file,
         function: StaticString? = #function,
         line: UInt? = #line
-    ) throws {
+    ) {
         guard let stream = attachment.asStream() else {
             if let file, let function, let line {
                 Logger.info("Skipping enqueue of non-stream \(attachment.id) from \(file) \(line): \(function)")
@@ -260,7 +260,7 @@ public class BackupAttachmentUploadSchedulerImpl: BackupAttachmentUploadSchedule
         }
 
         if eligibility.needsUploadFullsize {
-            try backupAttachmentUploadStore.enqueue(
+            backupAttachmentUploadStore.enqueue(
                 stream,
                 owner: uploadOwnerType,
                 fullsize: true,
@@ -270,7 +270,7 @@ public class BackupAttachmentUploadSchedulerImpl: BackupAttachmentUploadSchedule
             Logger.info("Skipping enqueue of fullsize \(attachment.id) from \(file) \(line): \(function)")
         }
         if eligibility.needsUploadThumbnail {
-            try backupAttachmentUploadStore.enqueue(
+            backupAttachmentUploadStore.enqueue(
                 stream,
                 owner: uploadOwnerType,
                 fullsize: false,
@@ -368,11 +368,11 @@ public class BackupAttachmentUploadSchedulerImpl: BackupAttachmentUploadSchedule
     private func highestPriorityEligibleOwner(
         _ attachment: Attachment,
         tx: DBReadTransaction
-    ) throws -> QueuedBackupAttachmentUpload.OwnerType? {
+    ) -> QueuedBackupAttachmentUpload.OwnerType? {
         // Backup uploads are prioritized by attachment owner. Find the highest
         // priority owner to use.
         var uploadOwnerType: QueuedBackupAttachmentUpload.OwnerType?
-        try attachmentStore.enumerateAllReferences(
+        attachmentStore.enumerateAllReferences(
             toAttachmentId: attachment.id,
             tx: tx
         ) { reference, _ in
@@ -443,7 +443,7 @@ open class BackupAttachmentUploadSchedulerMock: BackupAttachmentUploadScheduler 
         file: StaticString?,
         function: StaticString?,
         line: UInt?
-    ) throws {
+    ) {
         // Do nothing
     }
 }

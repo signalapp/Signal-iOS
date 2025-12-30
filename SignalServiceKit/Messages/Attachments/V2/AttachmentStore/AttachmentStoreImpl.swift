@@ -182,9 +182,9 @@ public class AttachmentStoreImpl: AttachmentStore {
         toAttachmentId attachmentId: Attachment.IDType,
         tx: DBReadTransaction,
         block: (AttachmentReference, _ stop: inout Bool) -> Void
-    ) throws {
-        try AttachmentReference.recordTypes.forEach { recordType in
-            try enumerateReferences(
+    ) {
+        AttachmentReference.recordTypes.forEach { recordType in
+            enumerateReferences(
                 attachmentId: attachmentId,
                 recordType: recordType,
                 tx: tx,
@@ -198,17 +198,26 @@ public class AttachmentStoreImpl: AttachmentStore {
         recordType: RecordType.Type,
         tx: DBReadTransaction,
         block: (AttachmentReference, _ stop: inout Bool) -> Void
-    ) throws {
-        let cursor = try recordType
-            .filter(recordType.attachmentRowIdColumn == attachmentId)
-            .fetchCursor(tx.database)
+    ) {
+        failIfThrows {
+            let cursor = try recordType
+                .filter(recordType.attachmentRowIdColumn == attachmentId)
+                .fetchCursor(tx.database)
 
-        var stop = false
-        while let record = try cursor.next() {
-            let reference = try record.asReference()
-            block(reference, &stop)
-            if stop {
-                break
+            var stop = false
+            while let record = try cursor.next() {
+                let reference: AttachmentReference
+                do {
+                    reference = try record.asReference()
+                } catch {
+                    owsFailDebug("Failed to create AttachmentReference! \(error)")
+                    continue
+                }
+
+                block(reference, &stop)
+                if stop {
+                    break
+                }
             }
         }
     }

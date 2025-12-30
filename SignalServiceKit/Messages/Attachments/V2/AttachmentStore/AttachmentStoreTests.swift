@@ -367,8 +367,8 @@ class AttachmentStoreTests: XCTestCase {
 
         // Check that we enumerate all the ids we created for the original attachment's id.
         var enumeratedCount = 0
-        try db.read { tx in
-            try attachmentStore.enumerateAllReferences(
+        db.read { tx in
+            attachmentStore.enumerateAllReferences(
                 toAttachmentId: attachmentId,
                 tx: tx,
                 block: { reference, _ in
