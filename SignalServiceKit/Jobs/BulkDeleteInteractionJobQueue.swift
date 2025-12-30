@@ -127,12 +127,15 @@ private class BulkDeleteInteractionJobRunner: JobRunner {
 
         logger.info("Attempting to bulk-delete interactions for thread \(threadUniqueId), isFullThreadDelete \(fullThreadDeletionAnchorMessageRowId != nil).")
 
-        let deletedCount = await TimeGatedBatch.processAll(db: db) { tx -> Int in
-            return self.deleteSomeInteractions(
+        var deletedCount = 0
+        await TimeGatedBatch.processAll(db: db) { tx -> TimeGatedBatch.ProcessBatchResult in
+            let batchDeletedCount = self.deleteSomeInteractions(
                 threadUniqueId: threadUniqueId,
                 anchorMessageRowId: anchorMessageRowId,
                 tx: tx
             )
+            deletedCount += batchDeletedCount
+            return batchDeletedCount == 0 ? .done(()) : .more
         }
 
         logger.info("Deleted \(deletedCount) messages for thread \(threadUniqueId), isFullThreadDelete \(fullThreadDeletionAnchorMessageRowId != nil).")

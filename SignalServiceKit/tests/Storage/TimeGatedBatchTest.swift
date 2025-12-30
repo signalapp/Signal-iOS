@@ -80,30 +80,30 @@ class DBTimeBatchingTest: XCTestCase {
         weak var priorTx: DBWriteTransaction?
         var batchCounter = 0
         let expectedResult = 3
-        let actualResult = await TimeGatedBatch.processAll(db: InMemoryDB(), yieldTxAfter: -1) { tx in
+        await TimeGatedBatch.processAll(db: InMemoryDB(), yieldTxAfter: -1) { tx in
             // Every iteration should use a new transaction, so it should never match.
             // In practice, `priorTx` is always `nil`, but this code is right even in
             // situations where some other component retains the transaction.
             XCTAssert(priorTx !== tx)
             priorTx = tx
             batchCounter += 1
-            return batchCounter > expectedResult ? 0 : 1
+            return batchCounter > expectedResult ? .done(()) : .more
         }
-        XCTAssertEqual(actualResult, expectedResult)
+        XCTAssertEqual(batchCounter - 1, expectedResult)
     }
 
     func testProcessSingleTransaction() async {
         weak var priorTx: DBWriteTransaction?
         var batchCounter = 0
         let expectedResult = 3
-        let actualResult = await TimeGatedBatch.processAll(db: InMemoryDB(), yieldTxAfter: .infinity) { tx in
+        await TimeGatedBatch.processAll(db: InMemoryDB(), yieldTxAfter: .infinity) { tx in
             // If we're on the 2nd or later batch, then the tx must match.
             XCTAssert(batchCounter == 0 || priorTx === tx)
             priorTx = tx
             batchCounter += 1
-            return batchCounter > expectedResult ? 0 : 1
+            return batchCounter > expectedResult ? .done(()) : .more
         }
-        XCTAssertEqual(actualResult, expectedResult)
+        XCTAssertEqual(batchCounter - 1, expectedResult)
     }
 
     func testProcessMultipleBatchesMultipleTransactions() async {
@@ -115,7 +115,7 @@ class DBTimeBatchingTest: XCTestCase {
             weak var priorTx: DBWriteTransaction?
             var batchCounter = 0
             var multipleBatchesInOneTx = false
-            let actualResult = await TimeGatedBatch.processAll(db: InMemoryDB(), yieldTxAfter: yieldTxAfter) { tx in
+            await TimeGatedBatch.processAll(db: InMemoryDB(), yieldTxAfter: yieldTxAfter) { tx in
                 batchCounter += 1
                 // If this is the 2nd batch and we're using same transaction, then we've
                 // satisfied the requirement of multiple batches with one transaction.
@@ -127,9 +127,8 @@ class DBTimeBatchingTest: XCTestCase {
                 // transactions if necessary.
                 let isNewTx = batchCounter >= 2 && priorTx !== tx
                 priorTx = tx
-                return isNewTx ? 0 : 1
+                return isNewTx ? .done(()) : .more
             }
-            XCTAssertEqual(actualResult, batchCounter - 1)
             if multipleBatchesInOneTx {
                 return
             }
@@ -150,11 +149,11 @@ class DBTimeBatchingTest: XCTestCase {
         weak var priorTx: DBWriteTransaction?
         var batchCounter = 0
         do {
-            _ = try await TimeGatedBatch.processAll(
+            try await TimeGatedBatch.processAll(
                 db: db,
                 yieldTxAfter: -1,
                 errorTxCompletion: .rollback,
-            ) { tx in
+            ) { tx -> TimeGatedBatch.ProcessBatchResult<Void> in
                 // Every iteration should use a new transaction.
                 // In practice, `priorTx` is always `nil`, but this code is right even in
                 // situations where some other component retains the transaction.
@@ -175,7 +174,7 @@ class DBTimeBatchingTest: XCTestCase {
                     struct SomeError: Error {}
                     throw SomeError()
                 } else {
-                    return 10
+                    return .more
                 }
             }
             XCTFail("Should have thrown an error!")
@@ -201,7 +200,7 @@ class DBTimeBatchingTest: XCTestCase {
             var id = 0
         }
 
-        _ = await TimeGatedBatch.processAll(
+        await TimeGatedBatch.processAll(
             db: InMemoryDB(),
             yieldTxAfter: -1, // Each iteration a new transaction
             buildTxContext: { _ in
@@ -212,7 +211,7 @@ class DBTimeBatchingTest: XCTestCase {
                 XCTAssertEqual(context.id, 0)
                 context.id += 1
                 processBatchCount += 1
-                return processBatchCount == maxBatchCount ? 0 : 1
+                return processBatchCount == maxBatchCount ? .done(()) : .more
             },
             concludeTx: { _, context in
                 XCTAssertEqual(context.id, 1)

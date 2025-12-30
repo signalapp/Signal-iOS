@@ -67,13 +67,18 @@ public enum TimeGatedBatch {
 
     // MARK: -
 
+    public enum ProcessBatchResult<T> {
+        case more
+        case done(T)
+    }
+
     /// Processes all elements in batches bound by time.
     ///
     /// This method invokes `processBatch` repeatedly & in a tight loop. It
-    /// stops when `processBatch` returns zero (indicating an empty batch).
-    /// Callers must ensure `processBatch` eventually returns zero; they likely
-    /// need to delete objects as part of each batch or maintain a cursor to
-    /// avoid processing the same elements multiple times.
+    /// stops when `processBatch` returns `.done` (indicating there's nothing
+    /// left to do). Callers must ensure `processBatch` eventually returns
+    /// `.done`; they likely need to delete objects as part of each batch or
+    /// maintain a cursor to avoid processing the same elements multiple times.
     ///
     /// This method is most useful for "fetch and delete" operations that are
     /// trying to avoid DELETE-ing rows from the database while SELECT-ing them
@@ -93,16 +98,14 @@ public enum TimeGatedBatch {
     /// - Parameter concludeTx: A block run once just before a transaction is
     /// closed, which may be used to commit information about the batches
     /// processed in that transaction.
-    ///
-    /// - Returns: The total number of items processed across all batches.
-    public static func processAll<E: Error, TxContext>(
+    public static func processAll<E: Error, TxContext, DoneResult>(
         db: DB,
         yieldTxAfter maximumDuration: TimeInterval = 0.5,
         errorTxCompletion: GRDB.Database.TransactionCompletion = .commit,
         buildTxContext: (DBWriteTransaction) throws(E) -> TxContext,
-        processBatch: (DBWriteTransaction, inout TxContext) throws(E) -> Int,
+        processBatch: (DBWriteTransaction, inout TxContext) throws(E) -> ProcessBatchResult<DoneResult>,
         concludeTx: (DBWriteTransaction, TxContext) throws(E) -> Void,
-    ) async throws(E) -> Int {
+    ) async throws(E) -> DoneResult {
         return try await _processAll(
             db: db,
             yieldTxAfter: maximumDuration,
@@ -116,12 +119,12 @@ public enum TimeGatedBatch {
     /// Processes all elements in batches bound by time.
     ///
     /// Like `processAll` but without "transaction contexts".
-    public static func processAll<E: Error>(
+    public static func processAll<E: Error, DoneResult>(
         db: DB,
         yieldTxAfter maximumDuration: TimeInterval = 0.5,
         errorTxCompletion: GRDB.Database.TransactionCompletion = .commit,
-        processBatch: (DBWriteTransaction) throws(E) -> Int,
-    ) async throws(E) -> Int {
+        processBatch: (DBWriteTransaction) throws(E) -> ProcessBatchResult<DoneResult>,
+    ) async throws(E) -> DoneResult {
         return try await _processAll(
             db: db,
             yieldTxAfter: maximumDuration,
@@ -133,17 +136,16 @@ public enum TimeGatedBatch {
     }
 
     /// See docs on `processAll`.
-    private static func _processAll<E: Error, TxContext>(
+    private static func _processAll<E: Error, TxContext, DoneResult>(
         db: DB,
         yieldTxAfter maximumDuration: TimeInterval,
         errorTxCompletion: GRDB.Database.TransactionCompletion,
         buildTxContext: (DBWriteTransaction) throws(E) -> TxContext,
-        processBatch: (DBWriteTransaction, inout TxContext) throws(E) -> Int,
+        processBatch: (DBWriteTransaction, inout TxContext) throws(E) -> ProcessBatchResult<DoneResult>,
         concludeTx: (DBWriteTransaction, TxContext) throws(E) -> Void,
-    ) async throws(E) -> Int {
-        var itemCount = 0
+    ) async throws(E) -> DoneResult {
         while true {
-            let txBlock: (DBWriteTransaction) throws(E) -> (txItemCount: Int, mightHaveMore: Bool) = { tx in
+            let txBlock: (DBWriteTransaction) throws(E) -> ProcessBatchResult<DoneResult> = { tx in
                 return try processBatchesInTransaction(
                     maximumDuration: maximumDuration,
                     buildTxContext: buildTxContext,
@@ -153,23 +155,20 @@ public enum TimeGatedBatch {
                 )
             }
 
-            let (txItemCount, mightHaveMore): (Int, Bool) = switch errorTxCompletion {
+            let batchResult = switch errorTxCompletion {
             case .commit:
                 try await db.awaitableWrite(block: txBlock)
             case .rollback:
                 try await db.awaitableWriteWithRollbackIfThrows(block: txBlock)
             }
 
-            itemCount += txItemCount
-
-            if mightHaveMore {
+            switch batchResult {
+            case .more:
                 continue
-            } else {
-                break
+            case .done(let result):
+                return result
             }
         }
-
-        return itemCount
     }
 
     // MARK: -
@@ -178,34 +177,24 @@ public enum TimeGatedBatch {
 
     /// Process as many batches in the given transaction as possible in the
     /// given duration.
-    private static func processBatchesInTransaction<E: Error, TxContext>(
+    private static func processBatchesInTransaction<E: Error, TxContext, DoneResult>(
         maximumDuration: CFTimeInterval,
         buildTxContext: (DBWriteTransaction) throws(E) -> TxContext,
-        processBatch: (DBWriteTransaction, inout TxContext) throws(E) -> Int,
+        processBatch: (DBWriteTransaction, inout TxContext) throws(E) -> ProcessBatchResult<DoneResult>,
         concludeTx: (DBWriteTransaction, TxContext) throws(E) -> Void,
         tx: DBWriteTransaction
-    ) throws(E) -> (txItemCount: Int, mightHaveMore: Bool) {
+    ) throws(E) -> ProcessBatchResult<DoneResult> {
         let yieldDeadline = CACurrentMediaTime() + maximumDuration
-        var itemCount = 0
-        var mightHaveMore: Bool
-
         var txContext = try buildTxContext(tx)
         while true {
-            let batchCount = try autoreleasepool { () throws(E) -> Int in
+            let batchResult = try autoreleasepool { () throws(E) -> ProcessBatchResult in
                 return try processBatch(tx, &txContext)
             }
-            if batchCount == 0 {
-                mightHaveMore = false
-                break
+            if case .more = batchResult, CACurrentMediaTime() <= yieldDeadline {
+                continue
             }
-            itemCount += batchCount
-            if CACurrentMediaTime() > yieldDeadline {
-                mightHaveMore = true
-                break
-            }
+            try concludeTx(tx, txContext)
+            return batchResult
         }
-        try concludeTx(tx, txContext)
-
-        return (itemCount, mightHaveMore)
     }
 }

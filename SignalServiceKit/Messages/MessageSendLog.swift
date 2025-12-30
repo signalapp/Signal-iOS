@@ -362,13 +362,15 @@ public class MessageSendLog {
             .select(Column("payloadId"), as: Int64.self)
             .filter(Column("sentTimestamp") < cutoffTimestamp)
             .limit(Constants.cleanupLimit)
-        let count = try await TimeGatedBatch.processAll(db: db) { tx in
+        var count = 0
+        try await TimeGatedBatch.processAll(db: db) { tx in
             try Task.checkCancellation()
             do {
                 let db = tx.database
                 let payloadIds = try fetchRequest.fetchAll(db)
                 try Payload.filter(keys: payloadIds).deleteAll(db)
-                return payloadIds.count
+                count += payloadIds.count
+                return payloadIds.isEmpty ? .done(()) : .more
             } catch {
                 throw error.grdbErrorForLogging
             }

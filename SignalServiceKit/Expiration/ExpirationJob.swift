@@ -195,10 +195,11 @@ open class ExpirationJob<ExpiringElement> {
     }
 
     private func deleteExpiredElements() async {
-        let deletedCount = await TimeGatedBatch.processAll(db: db) { tx in
+        var deletedCount = 0
+        await TimeGatedBatch.processAll(db: db) { tx in
             if Task.isCancelled {
                 // We're cancelled: we'll get to any remaining elements later.
-                return 0
+                return .done(())
             }
 
             if
@@ -207,10 +208,11 @@ open class ExpirationJob<ExpiringElement> {
             {
                 // Expired element: delete it and keep iterating.
                 deleteExpiredElement(nextExpiringElement, tx: tx)
-                return 1
+                deletedCount += 1
+                return .more
             } else {
                 // Nothing expired to delete: stop iterating.
-                return 0
+                return .done(())
             }
         }
 
