@@ -15,7 +15,7 @@ public import GRDB
 /// In this way we ensure proper download ordering; AttachmentDownloadQueue downloads FIFO,
 /// but we want to download things we see in the backup in LIFO order. This table allows us to
 /// do that reordering after we are done processing the backup in its normal order.
-public struct QueuedBackupAttachmentDownload: Codable, FetchableRecord, MutablePersistableRecord, UInt64SafeRecord {
+public struct QueuedBackupAttachmentDownload: Codable, FetchableRecord, MutablePersistableRecord {
 
     public typealias IDType = Int64
 
@@ -41,7 +41,8 @@ public struct QueuedBackupAttachmentDownload: Codable, FetchableRecord, MutableP
     /// May get out of date with source; if the newest owner for an attachment is deleted we won't
     /// update this value in this table, but that just means the attachment has a higher sort priority
     /// than it otherwise would which is fine.
-    public let maxOwnerTimestamp: UInt64?
+    @DBUInt64Optional
+    public var maxOwnerTimestamp: UInt64?
 
     /// This timestamp should only be used to sort and to compare to the current time.
     /// It should NOT be interpreted as being the timestamp of the attachment or some owning
@@ -53,6 +54,7 @@ public struct QueuedBackupAttachmentDownload: Codable, FetchableRecord, MutableP
     /// older attachments might have a lower value than newer ones, depending
     /// on the enqueue time relative to the attachment's timestamp. This is mostly
     /// fine as we will get to everything eventually and it keeps things simple.
+    @DBUInt64
     public var minRetryTimestamp: UInt64
 
     public var numRetries: UInt8
@@ -90,8 +92,8 @@ public struct QueuedBackupAttachmentDownload: Codable, FetchableRecord, MutableP
         self.attachmentRowId = attachmentRowId
         self.isThumbnail = isThumbnail
         self.canDownloadFromMediaTier = canDownloadFromMediaTier
-        self.maxOwnerTimestamp = maxOwnerTimestamp
-        self.minRetryTimestamp = minRetryTimestamp
+        self._maxOwnerTimestamp = DBUInt64Optional(wrappedValue: maxOwnerTimestamp)
+        self._minRetryTimestamp = DBUInt64(wrappedValue: minRetryTimestamp)
         self.numRetries = 0
         self.state = state
         self.estimatedByteCount = estimatedByteCount
@@ -106,12 +108,6 @@ public struct QueuedBackupAttachmentDownload: Codable, FetchableRecord, MutableP
     public mutating func didInsert(with rowID: Int64, for column: String?) {
         self.id = rowID
     }
-
-    // MARK: - UInt64SafeRecord
-
-    static var uint64Fields: [KeyPath<QueuedBackupAttachmentDownload, UInt64>] = [\.minRetryTimestamp]
-
-    static var uint64OptionalFields: [KeyPath<QueuedBackupAttachmentDownload, UInt64?>] = [\.maxOwnerTimestamp]
 
     // MARK: Codable
 

@@ -294,54 +294,6 @@ class AttachmentStoreTests: XCTestCase {
         try assertEqual(referenceParams2, reference)
     }
 
-    func testInsertOverflowTimestamp() throws {
-        let (threadId, messageId) = insertThreadAndInteraction()
-
-        // Intentionally overflow
-        let receivedAtTimestamp: UInt64 = .max
-
-        OWSAssertionError.test_skipAssertions = true
-        defer { OWSAssertionError.test_skipAssertions = false }
-
-        do {
-            try db.write { tx in
-                let attachmentParams = Attachment.ConstructionParams.mockPointer()
-                let attachmentReferenceParams = AttachmentReference.ConstructionParams.mockMessageBodyAttachmentReference(
-                    messageRowId: messageId,
-                    threadRowId: threadId,
-                    receivedAtTimestamp: receivedAtTimestamp
-                )
-                try attachmentStore.insert(
-                    attachmentParams,
-                    reference: attachmentReferenceParams,
-                    tx: tx
-                )
-            }
-            // We should have failed! not failing is bad!
-            XCTFail("Should throw error on overflowed timestamp")
-        } catch {
-            // We should have failed! success!
-        }
-
-        do {
-            try db.write { tx in
-                let attachmentParams = Attachment.ConstructionParams.mockPointer()
-                let attachmentReferenceParams = AttachmentReference.ConstructionParams.mock(
-                    owner: .thread(.globalThreadWallpaperImage(creationTimestamp: receivedAtTimestamp))
-                )
-                try attachmentStore.insert(
-                    attachmentParams,
-                    reference: attachmentReferenceParams,
-                    tx: tx
-                )
-            }
-            // We should have failed! not failing is bad!
-            XCTFail("Should throw error on overflowed timestamp")
-        } catch {
-            // We should have failed! success!
-        }
-    }
-
     // MARK: - Enumerate
 
     func testEnumerateAttachmentReferences() throws {
@@ -1182,67 +1134,6 @@ class AttachmentStoreTests: XCTestCase {
         }
     }
 
-    // MARK: - UInt64 Field verification
-
-    func testUInt64RecordFields_MessageAttachmentReference() {
-        testUInt64FieldPresence(
-            sampleInstance: AttachmentReference.MessageAttachmentReferenceRecord(
-                ownerType: 1,
-                ownerRowId: 1,
-                attachmentRowId: 1,
-                receivedAtTimestamp: 1,
-                contentType: 1,
-                renderingFlag: 1,
-                idInMessage: nil,
-                orderInMessage: nil,
-                threadRowId: 1,
-                caption: nil,
-                sourceFilename: nil,
-                sourceUnencryptedByteCount: 1,
-                sourceMediaHeightPixels: 1,
-                sourceMediaWidthPixels: 1,
-                stickerPackId: nil,
-                stickerId: 1,
-                isViewOnce: false,
-                ownerIsPastEditRevision: false
-            ),
-            keyPathNames: [
-                \.receivedAtTimestamp: "receivedAtTimestamp"
-            ]
-        )
-    }
-
-    func testUInt64RecordFields_StoryMessageAttachmentReference() {
-        testUInt64FieldPresence(
-            sampleInstance: AttachmentReference.StoryMessageAttachmentReferenceRecord(
-                ownerType: 1,
-                ownerRowId: 1,
-                attachmentRowId: 1,
-                shouldLoop: false,
-                caption: nil,
-                captionBodyRanges: nil,
-                sourceFilename: nil,
-                sourceUnencryptedByteCount: 1,
-                sourceMediaHeightPixels: 1,
-                sourceMediaWidthPixels: 1
-            ),
-            keyPathNames: [:]
-        )
-    }
-
-    func testUInt64RecordFields_ThreadAttachmentReference() {
-        testUInt64FieldPresence(
-            sampleInstance: AttachmentReference.ThreadAttachmentReferenceRecord(
-                ownerRowId: 1,
-                attachmentRowId: 1,
-                creationTimestamp: 1
-            ),
-            keyPathNames: [
-                \.creationTimestamp: "creationTimestamp"
-            ]
-        )
-    }
-
     // MARK: - Helpers
 
     private func insertThreadAndInteraction() -> (threadRowId: Int64, interactionRowId: Int64) {
@@ -1296,36 +1187,6 @@ class AttachmentStoreTests: XCTestCase {
             )
         case (.message, _), (.storyMessage, _), (.thread, _):
             XCTFail("Non matching owner types")
-        }
-    }
-
-    private func testUInt64FieldPresence<T: UInt64SafeRecord>(
-        sampleInstance: T,
-        keyPathNames: [PartialKeyPath<T>: String]
-    ) {
-        var declaredFieldNames = Set<String>()
-        for keyPath in T.uint64Fields {
-            guard let name = keyPathNames[keyPath] else {
-                XCTFail("Unexpected key path!")
-                continue
-            }
-            declaredFieldNames.insert(name)
-        }
-        for keyPath in T.uint64OptionalFields {
-            guard let name = keyPathNames[keyPath] else {
-                XCTFail("Unexpected key path!")
-                continue
-            }
-            declaredFieldNames.insert(name)
-        }
-        for (label, value) in Mirror(reflecting: sampleInstance).children {
-            guard
-                let label,
-                (type(of: value) == UInt64.self) || (type(of: value) == Optional<UInt64>.self)
-            else {
-                continue
-            }
-            XCTAssert(declaredFieldNames.contains(label), "Undeclared uint64 field: \(label)")
         }
     }
 }

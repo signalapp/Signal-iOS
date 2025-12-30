@@ -69,7 +69,6 @@ public class BackupAttachmentUploadStore {
             }
         } else {
             // If there's no existing record, insert and we're done.
-            try newRecord.checkAllUInt64FieldsFitInInt64()
             try newRecord.insert(db)
         }
     }

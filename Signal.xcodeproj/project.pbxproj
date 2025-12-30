@@ -889,7 +889,6 @@
 		663B9CB12C9DF55D0055DC7D /* TaskQueueLoaderTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663B9CAF2C9DF5410055DC7D /* TaskQueueLoaderTest.swift */; };
 		663BA3182A4B8595004B9A43 /* SpoilerRenderState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663BA3172A4B8595004B9A43 /* SpoilerRenderState.swift */; };
 		663BA3202A4CF96B004B9A43 /* MessageBodyDisplayConfigurations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663BA31F2A4CF96B004B9A43 /* MessageBodyDisplayConfigurations.swift */; };
-		663D02DD2C06717900350632 /* UInt64SafeRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663D02DC2C06717900350632 /* UInt64SafeRecord.swift */; };
 		663D02DF2C069AB600350632 /* OrphanedAttachmentCleanerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663D02DE2C069AB600350632 /* OrphanedAttachmentCleanerTest.swift */; };
 		663D02E12C06E2F400350632 /* MockAttachmentReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663D02E02C06E2F400350632 /* MockAttachmentReference.swift */; };
 		663F81D32E789E240033D2AE /* BackupAttachmentCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663F81D22E789E0D0033D2AE /* BackupAttachmentCoordinator.swift */; };
@@ -5043,7 +5042,6 @@
 		663B9CAF2C9DF5410055DC7D /* TaskQueueLoaderTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskQueueLoaderTest.swift; sourceTree = "<group>"; };
 		663BA3172A4B8595004B9A43 /* SpoilerRenderState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerRenderState.swift; sourceTree = "<group>"; };
 		663BA31F2A4CF96B004B9A43 /* MessageBodyDisplayConfigurations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBodyDisplayConfigurations.swift; sourceTree = "<group>"; };
-		663D02DC2C06717900350632 /* UInt64SafeRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UInt64SafeRecord.swift; sourceTree = "<group>"; };
 		663D02DE2C069AB600350632 /* OrphanedAttachmentCleanerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrphanedAttachmentCleanerTest.swift; sourceTree = "<group>"; };
 		663D02E02C06E2F400350632 /* MockAttachmentReference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockAttachmentReference.swift; sourceTree = "<group>"; };
 		663F81D22E789E0D0033D2AE /* BackupAttachmentCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttachmentCoordinator.swift; sourceTree = "<group>"; };
@@ -9820,7 +9818,6 @@
 				6640132D2BFFDC2700F10FC4 /* AttachmentReference+ConstructionParams.swift */,
 				66144B3E2BFD3AA700E2C9CD /* AttachmentReferenceRecord.swift */,
 				6689B2392C055F7C003D5B2F /* OrphanedAttachmentRecord.swift */,
-				663D02DC2C06717900350632 /* UInt64SafeRecord.swift */,
 			);
 			path = Records;
 			sourceTree = "<group>";
@@ -19545,7 +19542,6 @@
 				6649651E2BDF169F00E2DE98 /* UIImage+Attachment.swift in Sources */,
 				F9C5CE1F289453B400548EEE /* UIImage+OWS.swift in Sources */,
 				7203F5332D53B53000639949 /* UInt64+SSK.swift in Sources */,
-				663D02DD2C06717900350632 /* UInt64SafeRecord.swift in Sources */,
 				7255A4CB2B98E04900E95368 /* UIView+OWS.swift in Sources */,
 				726C94222D6F442D00ABF9B9 /* UncooperativeTimeout.swift in Sources */,
 				50D6A93F2AA9167400B7F093 /* UniqueObjectRecipientMerger.swift in Sources */,

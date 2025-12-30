@@ -30,7 +30,7 @@ public import GRDB
 /// This qeue ensures proper upload ordering; AttachmentUploadQueue uploads FIFO,
 /// but we want to upload things we archive in the backup in owner timestamp order (newest first).
 /// This table allows us to do that reordering after we are done processing the backup in its normal order.
-public struct QueuedBackupAttachmentUpload: Codable, FetchableRecord, MutablePersistableRecord, UInt64SafeRecord {
+public struct QueuedBackupAttachmentUpload: Codable, FetchableRecord, MutablePersistableRecord {
 
     public typealias IDType = Int64
 
@@ -62,6 +62,7 @@ public struct QueuedBackupAttachmentUpload: Codable, FetchableRecord, MutablePer
     /// Number of retries (due to e.g. network failures).
     public var numRetries: UInt32
     /// Minimum timestamp at which this upload can be retried (if it failed in the past)
+    @DBUInt64
     public var minRetryTimestamp: UInt64
 
     public var state: State
@@ -71,15 +72,6 @@ public struct QueuedBackupAttachmentUpload: Codable, FetchableRecord, MutablePer
         /// Timestamp of the newest message that owns this attachment.
         /// Used to determine priority of upload (ordering of the pop-off-queue query).
         case message(timestamp: UInt64)
-
-        fileprivate var timestamp: UInt64? {
-            switch self {
-            case .threadWallpaper:
-                return nil
-            case .message(let timestamp):
-                return timestamp
-            }
-        }
     }
 
     public enum State: Int, Codable {
@@ -103,7 +95,7 @@ public struct QueuedBackupAttachmentUpload: Codable, FetchableRecord, MutablePer
         self.isFullsize = isFullsize
         self.estimatedByteCount = estimatedByteCount
         self.numRetries = numRetries
-        self.minRetryTimestamp = minRetryTimestamp
+        self._minRetryTimestamp = DBUInt64(wrappedValue: minRetryTimestamp)
         self.state = state
     }
 
@@ -116,12 +108,6 @@ public struct QueuedBackupAttachmentUpload: Codable, FetchableRecord, MutablePer
     public mutating func didInsert(with rowID: Int64, for column: String?) {
         self.id = rowID
     }
-
-    // MARK: - UInt64SafeRecord
-
-    static var uint64Fields: [KeyPath<QueuedBackupAttachmentUpload, UInt64>] = [\.minRetryTimestamp]
-
-    static var uint64OptionalFields: [KeyPath<QueuedBackupAttachmentUpload, UInt64?>] = [\.highestPriorityOwnerType.timestamp]
 
     // MARK: - Codable
 
@@ -140,7 +126,8 @@ public struct QueuedBackupAttachmentUpload: Codable, FetchableRecord, MutablePer
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.id = try container.decode(Int64.self, forKey: .id)
         self.attachmentRowId = try container.decode(Attachment.IDType.self, forKey: .attachmentRowId)
-        let maxOwnerTimestamp = try container.decodeIfPresent(UInt64.self, forKey: .maxOwnerTimestamp)
+        let maxOwnerTimestamp = try container.decodeIfPresent(Int64.self, forKey: .maxOwnerTimestamp)
+            .map { UInt64(bitPattern: $0) }
         if let maxOwnerTimestamp {
             self.highestPriorityOwnerType = .message(timestamp: maxOwnerTimestamp)
         } else {
@@ -161,7 +148,8 @@ public struct QueuedBackupAttachmentUpload: Codable, FetchableRecord, MutablePer
         case .threadWallpaper:
             try container.encodeNil(forKey: .maxOwnerTimestamp)
         case .message(let timestamp):
-            try container.encode(timestamp, forKey: .maxOwnerTimestamp)
+            let intValue = Int64(bitPattern: timestamp)
+            try container.encode(intValue, forKey: .maxOwnerTimestamp)
         }
         try container.encode(isFullsize, forKey: .isFullsize)
         try container.encode(estimatedByteCount, forKey: .estimatedByteCount)

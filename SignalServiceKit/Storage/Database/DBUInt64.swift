@@ -16,7 +16,7 @@
 /// `Int64.max` will be stored as negative `Int64` values.)
 @propertyWrapper
 public struct DBUInt64: Codable, Equatable {
-    public let wrappedValue: UInt64
+    public var wrappedValue: UInt64
 
     public init(wrappedValue: UInt64) {
         self.wrappedValue = wrappedValue
@@ -39,7 +39,7 @@ public struct DBUInt64: Codable, Equatable {
 /// - SeeAlso ``DBUInt64``
 @propertyWrapper
 public struct DBUInt64Optional: Codable, Equatable {
-    public let wrappedValue: UInt64?
+    public var wrappedValue: UInt64?
 
     public init(wrappedValue: UInt64?) {
         self.wrappedValue = wrappedValue

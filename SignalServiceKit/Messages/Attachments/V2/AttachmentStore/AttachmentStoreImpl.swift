@@ -559,7 +559,6 @@ public class AttachmentStoreImpl: AttachmentStore {
             )
         default:
             let referenceRecord = try referenceParams.buildRecord(attachmentRowId: attachmentRowId)
-            try referenceRecord.checkAllUInt64FieldsFitInInt64()
             try referenceRecord.insert(tx.database)
         }
     }
@@ -742,7 +741,6 @@ public class AttachmentStoreImpl: AttachmentStore {
         guard let newRecord = newRecord as? ThreadAttachmentReferenceRecord else {
             throw OWSAssertionError("Non matching record type")
         }
-        try newRecord.checkAllUInt64FieldsFitInInt64()
 
         if let oldRecord, oldRecord == newRecord {
             // They're the same, no need to do anything.
