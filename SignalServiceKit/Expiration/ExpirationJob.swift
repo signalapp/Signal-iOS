@@ -150,20 +150,17 @@ open class ExpirationJob<ExpiringElement> {
         defer { backgroundTask.end() }
 
         while !Task.isCancelled {
-            await deleteExpiredElements()
-
             let delayValidityToken = state.get().delayValidityToken
-            let nextExpirationDate: Date = db.read { tx in
-                guard let nextExpiringElement = nextExpiringElement(tx: tx) else {
-                    return .distantFuture
-                }
-
-                return expirationDate(ofElement: nextExpiringElement)
+            let nextExpirationDate: Date?
+            do throws(CancellationError) {
+                nextExpirationDate = try await deleteExpiredElements()
+            } catch {
+                break
             }
 
             let nextExpirationDelayTask: Task<Void, Never> = state.update { _state in
                 let now = dateProvider()
-                var nextExpirationDelay = nextExpirationDate.timeIntervalSince(now)
+                var nextExpirationDelay = (nextExpirationDate ?? .distantFuture).timeIntervalSince(now)
 
                 if _state.delayValidityToken != delayValidityToken {
                     // If the token has changed, we can't trust the delay we
@@ -194,30 +191,28 @@ open class ExpirationJob<ExpiringElement> {
         testHooks?.onDidStop(self)
     }
 
-    private func deleteExpiredElements() async {
+    private func deleteExpiredElements() async throws(CancellationError) -> Date? {
         var deletedCount = 0
-        await TimeGatedBatch.processAll(db: db) { tx in
-            if Task.isCancelled {
-                // We're cancelled: we'll get to any remaining elements later.
-                return .done(())
-            }
-
-            if
-                let nextExpiringElement = nextExpiringElement(tx: tx),
-                dateProvider() >= expirationDate(ofElement: nextExpiringElement)
-            {
-                // Expired element: delete it and keep iterating.
-                deleteExpiredElement(nextExpiringElement, tx: tx)
-                deletedCount += 1
-                return .more
-            } else {
-                // Nothing expired to delete: stop iterating.
-                return .done(())
+        defer {
+            if deletedCount > 0 {
+                logger.info("Deleted \(deletedCount) elements.")
             }
         }
+        return try await TimeGatedBatch.processAll(db: db) { tx throws(CancellationError) -> TimeGatedBatch.ProcessBatchResult<Date?> in
+            if Task.isCancelled {
+                // We're cancelled: we'll get to any remaining elements later.
+                throw CancellationError()
+            }
 
-        if deletedCount > 0 {
-            logger.info("Deleted \(deletedCount) elements.")
+            let element = nextExpiringElement(tx: tx)
+            if let element, dateProvider() >= expirationDate(ofElement: element) {
+                // Expired element: delete it and keep iterating.
+                deleteExpiredElement(element, tx: tx)
+                deletedCount += 1
+                return .more
+            }
+            // Nothing expired to delete: stop iterating.
+            return .done(element.map(expirationDate(ofElement:)))
         }
     }
 }
