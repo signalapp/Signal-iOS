@@ -76,20 +76,6 @@ public class OWSProfileManager: ProfileManagerProtocol {
 
     // MARK: - Profile Whitelist
 
-#if USE_DEBUG_UI
-
-    public func clearProfileWhitelist() {
-        Logger.warn("Clearing the profile whitelist.")
-
-        SSKEnvironment.shared.databaseStorageRef.asyncWrite { transaction in
-            self.whitelistedPhoneNumbersStore.removeAll(transaction: transaction)
-            self.whitelistedServiceIdsStore.removeAll(transaction: transaction)
-            self.whitelistedGroupsStore.removeAll(transaction: transaction)
-        }
-    }
-
-#endif
-
     public func setLocalProfileKey(_ key: Aes256Key, userProfileWriter: UserProfileWriter, transaction: DBWriteTransaction) {
         let localUserProfile = OWSUserProfile.getOrBuildUserProfileForLocalUser(userProfileWriter: .localUser, tx: transaction)
 
