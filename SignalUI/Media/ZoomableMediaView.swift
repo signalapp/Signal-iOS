@@ -80,7 +80,7 @@ public class ZoomableMediaView: UIScrollView {
     // MARK: -
 
     public func updateZoomScaleForLayout() {
-        let scrollViewSize = safeAreaLayoutGuide.layoutFrame.size
+        let scrollViewSize = bounds.size
 
         // We want a default layout that...
         //
