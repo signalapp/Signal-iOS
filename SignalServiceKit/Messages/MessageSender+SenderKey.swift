@@ -423,7 +423,6 @@ extension MessageSender {
                         let sentMessages = try await self.performMessageSend(messageSend, sealedSenderParameters: sealedSenderParameters)
                         return (messageSend.serviceId, .success(SentSenderKey(
                             recipient: messageSend.serviceId,
-                            timestamp: messageSend.message.timestamp,
                             messages: sentMessages,
                         )))
                     } catch {

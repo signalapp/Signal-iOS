@@ -214,7 +214,7 @@ final class OWSOutgoingResendResponse: TSOutgoingMessage {
         {
             do {
                 try SSKEnvironment.shared.senderKeyStoreRef.recordSentSenderKeys(
-                    [SentSenderKey(recipient: serviceId, timestamp: self.timestamp, messages: sentMessages)],
+                    [SentSenderKey(recipient: serviceId, messages: sentMessages)],
                     for: originalThread,
                     writeTx: tx,
                 )

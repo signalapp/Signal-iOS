@@ -7,7 +7,6 @@ public import LibSignalClient
 
 struct SentSenderKey {
     var recipient: ServiceId
-    var timestamp: UInt64
     var messages: [SentDeviceMessage]
 }
 
@@ -377,55 +376,6 @@ extension OldSenderKeyStore {
             }
         }
     }
-
-    // MARK: Logging
-
-    private static let logThrottleExpiration = AtomicValue<Date>(.distantPast, lock: .init())
-
-    // This method traverses all groups where `recipient` is a member and logs out information on any sent
-    // sender key distribution messages.
-    public func logSKDMInfo(for recipient: SignalServiceAddress, transaction: DBReadTransaction) {
-        guard let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction)?.aci else { return }
-
-        // To avoid doing too much work for a flood of failed decryptions, we'll only honor an SKDM log
-        // dump request every 10s. That's frequent enough to be captured in a log zip.
-        guard Self.logThrottleExpiration.get().isBeforeNow else {
-            return
-        }
-        Self.logThrottleExpiration.set(Date() + 10.0)
-
-        // We deliberately avoid the cached pathways here and just query the database directly
-        // Locality isn't super useful when we're just iterating over everything. This would just
-        // cache a bunch of memory that we might not end up using later.
-        Logger.info("Logging info about all SKDMs sent to \(recipient)")
-        for commonThread in TSGroupThread.groupThreads(with: recipient, transaction: transaction) {
-            autoreleasepool {
-                let threadId = commonThread.threadUniqueId
-                let distributionIdString = sendingDistributionIdStore.getString(threadId, transaction: transaction)
-                let distributionId = distributionIdString.flatMap { UUID(uuidString: $0) }
-                guard let distributionId else { return }
-
-                // Once we have a distributionId, for a thread, we'll log *something* for the thread
-                let keyId = Self.buildKeyId(authorAci: localAci, distributionId: distributionId)
-                let keyMetadata: KeyMetadata?
-                do {
-                    keyMetadata = try keyMetadataStore.getCodableValue(forKey: keyId, transaction: transaction)
-                } catch {
-                    owsFailDebug("Failed to deserialize key metadata \(error)")
-                    keyMetadata = nil
-                }
-
-                let prefix = "--> Thread \(threadId) with distributionId \(distributionId):   "
-                if let keyMetadata, let sendInfo = keyMetadata.sentKeyInfo[recipient] {
-                    Logger.info("\(prefix) Sent SKDM at timestamp: \(sendInfo.skdmTimestamp) for sender key created at: \(keyMetadata.creationDate)")
-                } else if let keyMetadata {
-                    Logger.info("\(prefix) Have not sent SKDM for sender key created at: \(keyMetadata.creationDate). SKDM sent to \(keyMetadata.sentKeyInfo.count) others")
-                } else {
-                    Logger.info("\(prefix) No recorded key metadata")
-                }
-            }
-        }
-    }
 }
 
 // MARK: - Model
@@ -435,7 +385,6 @@ extension OldSenderKeyStore {
 /// Stores information about a sent SKDM
 /// Currently just tracks the sent timestamp and the recipient.
 private struct SKDMSendInfo: Codable {
-    let skdmTimestamp: UInt64
     let keyRecipient: SenderKeySentToRecipient
 }
 
@@ -544,7 +493,7 @@ private struct KeyMetadata {
         let recipient = SenderKeySentToRecipient(devices: Set(sentSenderKey.messages.map {
             return SenderKeySentToRecipientDevice(deviceId: $0.destinationDeviceId, registrationId: $0.destinationRegistrationId)
         }))
-        let sendInfo = SKDMSendInfo(skdmTimestamp: sentSenderKey.timestamp, keyRecipient: recipient)
+        let sendInfo = SKDMSendInfo(keyRecipient: recipient)
         sentKeyInfo[SignalServiceAddress(sentSenderKey.recipient)] = sendInfo
     }
 }
@@ -599,7 +548,7 @@ extension KeyMetadata: Codable {
         if let sendInfo = try container.decodeIfPresent([SignalServiceAddress: SKDMSendInfo].self, forKey: .sentKeyInfo) {
             sentKeyInfo = sendInfo
         } else if let keyRecipients = try legacyValues.decodeIfPresent([SignalServiceAddress: SenderKeySentToRecipient].self, forKey: .keyRecipients) {
-            sentKeyInfo = keyRecipients.mapValues { SKDMSendInfo(skdmTimestamp: 0, keyRecipient: $0) }
+            sentKeyInfo = keyRecipients.mapValues { SKDMSendInfo(keyRecipient: $0) }
         } else {
             // There's no way to migrate from our V1 storage. That's okay, we can just reset the dictionary. The only
             // consequence here is we'll resend an SKDM that our recipients already have. No big deal.

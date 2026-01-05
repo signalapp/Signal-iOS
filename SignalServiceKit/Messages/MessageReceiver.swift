@@ -1933,8 +1933,6 @@ public final class MessageReceiver {
                 }
             } else {
                 // If we don't have a ratchet key, this was a sender key session message.
-                // Let's log any info about SKDMs that we had sent to the address requesting resend
-                SSKEnvironment.shared.senderKeyStoreRef.logSKDMInfo(for: SignalServiceAddress(sourceAci), transaction: tx)
                 didPerformSessionReset = false
             }
 
