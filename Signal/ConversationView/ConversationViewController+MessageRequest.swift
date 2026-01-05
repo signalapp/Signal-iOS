@@ -263,15 +263,11 @@ private extension ConversationViewController {
             }
 
             if unhideRecipient, let thread = thread as? TSContactThread {
-                do {
-                    try DependenciesBridge.shared.recipientHidingManager.removeHiddenRecipient(
-                        thread.contactAddress,
-                        wasLocallyInitiated: true,
-                        tx: transaction,
-                    )
-                } catch {
-                    owsFailDebug("Couldn't unhide recipient")
-                }
+                DependenciesBridge.shared.recipientHidingManager.removeHiddenRecipient(
+                    thread.contactAddress,
+                    wasLocallyInitiated: true,
+                    tx: transaction,
+                )
             }
 
             /// If we're not in "unblock" mode, we should take "accept message

@@ -76,7 +76,7 @@ public protocol RecipientHidingManager {
         _ recipient: SignalRecipient,
         wasLocallyInitiated: Bool,
         tx: DBWriteTransaction,
-    ) throws
+    )
 }
 
 public extension RecipientHidingManager {
@@ -170,11 +170,8 @@ public final class RecipientHidingManagerImpl: RecipientHidingManager {
         signalRecipient: SignalRecipient,
         tx: DBReadTransaction,
     ) -> HiddenRecipient? {
-        do {
+        return failIfThrows {
             return try HiddenRecipient.fetchOne(tx.database, key: signalRecipient.id)
-        } catch {
-            Logger.warn("Failed to fetch HiddenRecipient: \(error.grdbErrorForLogging)")
-            return nil
         }
     }
 
@@ -276,7 +273,9 @@ public final class RecipientHidingManagerImpl: RecipientHidingManager {
             signalRecipientRowId: recipient.id,
             inKnownMessageRequestState: inKnownMessageRequestState,
         )
-        try record.save(tx.database)
+        failIfThrows {
+            try record.insert(tx.database)
+        }
 
         didSetAsHidden(recipient: recipient, wasLocallyInitiated: wasLocallyInitiated, tx: tx)
     }
@@ -285,14 +284,12 @@ public final class RecipientHidingManagerImpl: RecipientHidingManager {
         _ recipient: SignalRecipient,
         wasLocallyInitiated: Bool,
         tx: DBWriteTransaction,
-    ) throws {
+    ) {
         if isHiddenRecipient(recipient, tx: tx) {
             Logger.info("Unhiding recipient")
-            let sql = """
-                DELETE FROM \(HiddenRecipient.databaseTableName)
-                WHERE \(HiddenRecipient.CodingKeys.signalRecipientRowId.stringValue) = ?
-            """
-            try tx.database.execute(sql: sql, arguments: [recipient.id])
+            failIfThrows {
+                try HiddenRecipient.deleteOne(tx.database, key: recipient.id)
+            }
             didSetAsUnhidden(recipient: recipient, wasLocallyInitiated: wasLocallyInitiated, tx: tx)
         }
     }

@@ -1195,11 +1195,7 @@ extension OWSContactsManager: ContactManager {
             guard phoneNumbers.contains(phoneNumber.stringValue) else {
                 continue // Not in the address book -- no unhiding.
             }
-            try DependenciesBridge.shared.recipientHidingManager.removeHiddenRecipient(
-                hiddenRecipient,
-                wasLocallyInitiated: true,
-                tx: tx,
-            )
+            recipientHidingManager.removeHiddenRecipient(hiddenRecipient, wasLocallyInitiated: true, tx: tx)
         }
     }
 

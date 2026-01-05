@@ -101,7 +101,7 @@ extension RecipientHidingManager {
         _ address: SignalServiceAddress,
         wasLocallyInitiated: Bool,
         tx: DBWriteTransaction,
-    ) throws {
+    ) {
         guard
             let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx)?.aciAddress,
             !localAddress.isEqualToAddress(address)
@@ -110,7 +110,7 @@ extension RecipientHidingManager {
             return
         }
         if let recipient = recipient(from: address, tx: tx) {
-            try removeHiddenRecipient(recipient, wasLocallyInitiated: wasLocallyInitiated, tx: tx)
+            removeHiddenRecipient(recipient, wasLocallyInitiated: wasLocallyInitiated, tx: tx)
         }
     }
 

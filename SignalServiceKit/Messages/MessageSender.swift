@@ -1120,14 +1120,14 @@ public class MessageSender {
     }
 
     private func handleMessageSentLocally(_ message: TSOutgoingMessage) async throws {
-        try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
+        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
             if
                 let thread = message.thread(tx: tx) as? TSContactThread,
                 self.shouldMessageSendUnhideRecipient(message, tx: tx),
                 let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx)?.aciAddress,
                 !localAddress.isEqualToAddress(thread.contactAddress)
             {
-                try DependenciesBridge.shared.recipientHidingManager.removeHiddenRecipient(
+                DependenciesBridge.shared.recipientHidingManager.removeHiddenRecipient(
                     thread.contactAddress,
                     wasLocallyInitiated: true,
                     tx: tx,
