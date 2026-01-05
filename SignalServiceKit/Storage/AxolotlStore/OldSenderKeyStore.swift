@@ -11,7 +11,7 @@ struct SentSenderKey {
     var messages: [SentDeviceMessage]
 }
 
-public class SenderKeyStore {
+public class OldSenderKeyStore {
     public typealias DistributionId = UUID
     fileprivate typealias KeyId = String
     fileprivate static func buildKeyId(authorAci: Aci, distributionId: DistributionId) -> KeyId {
@@ -227,7 +227,7 @@ public class SenderKeyStore {
 
 // MARK: - <LibSignalClient.SenderKeyStore>
 
-extension SenderKeyStore: LibSignalClient.SenderKeyStore {
+extension OldSenderKeyStore: LibSignalClient.SenderKeyStore {
     public func storeSenderKey(
         from sender: ProtocolAddress,
         distributionId: UUID,
@@ -281,7 +281,7 @@ extension SenderKeyStore: LibSignalClient.SenderKeyStore {
 
 // MARK: - Storage
 
-extension SenderKeyStore {
+extension OldSenderKeyStore {
     private static let sendingDistributionIdStore = KeyValueStore(collection: "SenderKeyStore_SendingDistributionId")
     private static let keyMetadataStore = KeyValueStore(collection: "SenderKeyStore_KeyMetadata")
     private var sendingDistributionIdStore: KeyValueStore { Self.sendingDistributionIdStore }
@@ -478,11 +478,11 @@ private struct SenderKeySentToRecipient: Codable {
 
 /// Stores information about a sender key, it's owner, it's distributionId, and all recipients who have been sent the sender key
 private struct KeyMetadata {
-    let distributionId: SenderKeyStore.DistributionId
+    let distributionId: OldSenderKeyStore.DistributionId
     @AciUuid var ownerAci: Aci
     let ownerDeviceId: DeviceId
 
-    var keyId: String { SenderKeyStore.buildKeyId(authorAci: ownerAci, distributionId: distributionId) }
+    var keyId: String { OldSenderKeyStore.buildKeyId(authorAci: ownerAci, distributionId: distributionId) }
 
     private var serializedRecord: Data
     var record: SenderKeyRecord? {
@@ -515,7 +515,7 @@ private struct KeyMetadata {
         senderDeviceId: DeviceId,
         localIdentifiers: LocalIdentifiers,
         localDeviceId: LocalDeviceId,
-        distributionId: SenderKeyStore.DistributionId,
+        distributionId: OldSenderKeyStore.DistributionId,
     ) {
         self.serializedRecord = record.serialize()
         self.distributionId = distributionId
@@ -570,7 +570,7 @@ extension KeyMetadata: Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         let legacyValues = try decoder.container(keyedBy: CodingKeys.LegacyKeys.self)
 
-        distributionId = try container.decode(SenderKeyStore.DistributionId.self, forKey: .distributionId)
+        distributionId = try container.decode(OldSenderKeyStore.DistributionId.self, forKey: .distributionId)
         _ownerAci = try container.decode(AciUuid.self, forKey: .ownerAci)
         ownerDeviceId = try container.decode(DeviceId.self, forKey: .ownerDeviceId)
         creationDate = try container.decode(Date.self, forKey: .creationDate)

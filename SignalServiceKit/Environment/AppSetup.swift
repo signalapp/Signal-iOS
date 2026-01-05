@@ -318,7 +318,7 @@ extension AppSetup.GlobalsContinuation {
         )
 
         let receiptManager = OWSReceiptManager(appReadiness: appReadiness, databaseStorage: databaseStorage, messageSenderJobQueue: messageSenderJobQueue, notificationPresenter: notificationPresenter)
-        let senderKeyStore = SenderKeyStore()
+        let senderKeyStore = OldSenderKeyStore()
         let signalProtocolStoreManager = SignalProtocolStoreManager(
             aciProtocolStore: aciProtocolStore,
             pniProtocolStore: pniProtocolStore,

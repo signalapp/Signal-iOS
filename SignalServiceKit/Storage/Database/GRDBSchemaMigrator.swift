@@ -5187,7 +5187,7 @@ public class GRDBSchemaMigrator {
         }
 
         migrator.registerMigration(.dataMigration_senderKeyStoreKeyIdMigration) { transaction in
-            SenderKeyStore.performKeyIdMigration(transaction: transaction)
+            OldSenderKeyStore.performKeyIdMigration(transaction: transaction)
             return .success(())
         }
 

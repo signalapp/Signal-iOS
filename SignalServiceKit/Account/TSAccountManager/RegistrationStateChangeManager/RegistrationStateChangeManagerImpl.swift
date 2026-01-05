@@ -29,7 +29,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
     private let paymentsEvents: PaymentsEvents
     private let recipientManager: any SignalRecipientManager
     private let recipientMerger: RecipientMerger
-    private let senderKeyStore: SenderKeyStore
+    private let senderKeyStore: OldSenderKeyStore
     private let signalProtocolStoreManager: SignalProtocolStoreManager
     private let storageServiceManager: StorageServiceManager
     private let tsAccountManager: TSAccountManager
@@ -51,7 +51,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         paymentsEvents: PaymentsEvents,
         recipientManager: any SignalRecipientManager,
         recipientMerger: RecipientMerger,
-        senderKeyStore: SenderKeyStore,
+        senderKeyStore: OldSenderKeyStore,
         signalProtocolStoreManager: SignalProtocolStoreManager,
         storageServiceManager: StorageServiceManager,
         tsAccountManager: TSAccountManager,
