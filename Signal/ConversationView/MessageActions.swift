@@ -217,6 +217,10 @@ enum MessageActionBuilder {
             }
         }
 
+        guard itemViewModel.componentState.giftBadge == nil else {
+            return nil
+        }
+
         guard let footerState = itemViewModel.renderItem.itemViewState.footerState else {
             return nil
         }
