@@ -19,7 +19,3 @@ backup-tests-setup:
 .PHONY: fetch-ringrtc
 fetch-ringrtc:
 	$(CURDIR)/Pods/SignalRingRTC/bin/set-up-for-cocoapods
-
-.PHONY: test
-test: dependencies
-	bundle exec fastlane scan --scheme ${SCHEME}
