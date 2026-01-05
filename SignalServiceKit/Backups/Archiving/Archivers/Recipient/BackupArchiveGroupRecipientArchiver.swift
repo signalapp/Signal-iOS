@@ -58,12 +58,7 @@ public class BackupArchiveGroupRecipientArchiver: BackupArchiveProtoStreamWriter
     ) throws(CancellationError) -> ArchiveMultiFrameResult {
         var errors = [ArchiveFrameError]()
 
-        let blockedGroupIds: Set<Data>
-        do {
-            blockedGroupIds = Set(try blockingManager.blockedGroupIds(tx: context.tx))
-        } catch {
-            return .completeFailure(.fatalArchiveError(.blockedGroupFetchError(error)))
-        }
+        let blockedGroupIds = Set(blockingManager.blockedGroupIds(tx: context.tx))
 
         do {
             try context.bencher.wrapEnumeration(

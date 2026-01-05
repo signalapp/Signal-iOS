@@ -7,36 +7,29 @@ import Foundation
 import GRDB
 
 struct BlockedGroupStore {
-    func blockedGroupIds(tx: DBReadTransaction) throws -> [Data] {
-        let db = tx.database
-        do {
-            return try BlockedGroup.fetchAll(db).map(\.groupId)
-        } catch {
-            throw error.grdbErrorForLogging
+    func blockedGroupIds(tx: DBReadTransaction) -> [Data] {
+        return failIfThrows {
+            return try BlockedGroup.fetchAll(tx.database).map(\.groupId)
         }
     }
 
-    func isBlocked(groupId: Data, tx: DBReadTransaction) throws -> Bool {
-        let db = tx.database
-        do {
-            return try BlockedGroup.filter(key: groupId).fetchOne(db) != nil
-        } catch {
-            throw error.grdbErrorForLogging
+    func isBlocked(groupId: Data, tx: DBReadTransaction) -> Bool {
+        return failIfThrows {
+            return try BlockedGroup.filter(key: groupId).fetchOne(tx.database) != nil
         }
     }
 
-    func setBlocked(_ isBlocked: Bool, groupId: Data, tx: DBWriteTransaction) throws {
-        let db = tx.database
-        do {
-            if isBlocked {
-                try BlockedGroup(groupId: groupId).insert(db)
-            } else {
-                try BlockedGroup(groupId: groupId).delete(db)
+    func setBlocked(_ isBlocked: Bool, groupId: Data, tx: DBWriteTransaction) {
+        return failIfThrows {
+            do {
+                if isBlocked {
+                    try BlockedGroup(groupId: groupId).insert(tx.database)
+                } else {
+                    try BlockedGroup(groupId: groupId).delete(tx.database)
+                }
+            } catch DatabaseError.SQLITE_CONSTRAINT {
+                // It's already blocked -- this is fine.
             }
-        } catch DatabaseError.SQLITE_CONSTRAINT {
-            // It's already blocked -- this is fine.
-        } catch {
-            throw error.grdbErrorForLogging
         }
     }
 }

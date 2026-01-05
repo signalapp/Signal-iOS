@@ -195,7 +195,7 @@ class BlockingManagerTests: SSKBaseTest {
                 SignalServiceAddress(newlyBlockedPhoneNumber),
             ]
             XCTAssertEqual(Set(otherBlockedAddresses), Set(expectedBlockedAddresses))
-            let otherBlockedGroupIds = try otherBlockingManager.blockedGroupIds(transaction: readTx)
+            let otherBlockedGroupIds = otherBlockingManager.blockedGroupIds(transaction: readTx)
             let expectedBlockedGroupIds = [
                 try stillBlockedGroupParams.getPublicParams().getGroupIdentifier().serialize(),
                 try newlyBlockedGroupParams.getPublicParams().getGroupIdentifier().serialize(),

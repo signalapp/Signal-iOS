@@ -7,46 +7,35 @@ import Foundation
 import GRDB
 
 struct BlockedRecipientStore {
-    func blockedRecipientIds(tx: DBReadTransaction) throws -> [SignalRecipient.RowId] {
-        let db = tx.database
-        do {
-            return try BlockedRecipient.fetchAll(db).map(\.recipientId)
-        } catch {
-            throw error.grdbErrorForLogging
+    func blockedRecipientIds(tx: DBReadTransaction) -> [SignalRecipient.RowId] {
+        return failIfThrows {
+            return try BlockedRecipient.fetchAll(tx.database).map(\.recipientId)
         }
     }
 
-    func isBlocked(recipientId: SignalRecipient.RowId, tx: DBReadTransaction) throws -> Bool {
-        let db = tx.database
-        do {
-            return try BlockedRecipient.filter(key: recipientId).fetchOne(db) != nil
-        } catch {
-            throw error.grdbErrorForLogging
+    func isBlocked(recipientId: SignalRecipient.RowId, tx: DBReadTransaction) -> Bool {
+        return failIfThrows {
+            return try BlockedRecipient.filter(key: recipientId).fetchOne(tx.database) != nil
         }
     }
 
-    func setBlocked(_ isBlocked: Bool, recipientId: SignalRecipient.RowId, tx: DBWriteTransaction) throws {
-        let db = tx.database
-        do {
-            if isBlocked {
-                try BlockedRecipient(recipientId: recipientId).insert(db)
-            } else {
-                try BlockedRecipient(recipientId: recipientId).delete(db)
+    func setBlocked(_ isBlocked: Bool, recipientId: SignalRecipient.RowId, tx: DBWriteTransaction) {
+        failIfThrows {
+            do {
+                if isBlocked {
+                    try BlockedRecipient(recipientId: recipientId).insert(tx.database)
+                } else {
+                    try BlockedRecipient(recipientId: recipientId).delete(tx.database)
+                }
+            } catch DatabaseError.SQLITE_CONSTRAINT {
+                // It's already blocked -- this is fine.
             }
-        } catch DatabaseError.SQLITE_CONSTRAINT {
-            // It's already blocked -- this is fine.
-        } catch {
-            throw error.grdbErrorForLogging
         }
     }
 
     func mergeRecipientId(_ recipientId: SignalRecipient.RowId, into targetRecipientId: SignalRecipient.RowId, tx: DBWriteTransaction) {
-        do {
-            if try self.isBlocked(recipientId: recipientId, tx: tx) {
-                try self.setBlocked(true, recipientId: targetRecipientId, tx: tx)
-            }
-        } catch {
-            Logger.warn("Couldn't merge BlockedRecipient")
+        if self.isBlocked(recipientId: recipientId, tx: tx) {
+            self.setBlocked(true, recipientId: targetRecipientId, tx: tx)
         }
     }
 }

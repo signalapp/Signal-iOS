@@ -73,12 +73,7 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
     ) throws(CancellationError) -> ArchiveMultiFrameResult {
         let whitelistedAddresses = Set(profileManager.allWhitelistedAddresses(tx: context.tx))
 
-        let blockedRecipientIds: Set<SignalRecipient.RowId>
-        do {
-            blockedRecipientIds = try blockingManager.blockedRecipientIds(tx: context.tx)
-        } catch {
-            return .completeFailure(.fatalArchiveError(.blockedRecipientFetchError(error)))
-        }
+        let blockedRecipientIds = blockingManager.blockedRecipientIds(tx: context.tx)
 
         var errors = [ArchiveFrameError]()
 

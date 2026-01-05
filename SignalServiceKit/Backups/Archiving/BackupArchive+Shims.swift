@@ -51,8 +51,8 @@ extension BackupArchive {
 
 public protocol _MessageBackup_BlockingManagerShim {
 
-    func blockedRecipientIds(tx: DBReadTransaction) throws -> Set<SignalRecipient.RowId>
-    func blockedGroupIds(tx: DBReadTransaction) throws -> [Data]
+    func blockedRecipientIds(tx: DBReadTransaction) -> Set<SignalRecipient.RowId>
+    func blockedGroupIds(tx: DBReadTransaction) -> [Data]
 
     func addBlockedAddress(_ address: SignalServiceAddress, tx: DBWriteTransaction)
     func addBlockedGroupId(_ groupId: Data, tx: DBWriteTransaction)
@@ -66,12 +66,12 @@ public class _MessageBackup_BlockingManagerWrapper: _MessageBackup_BlockingManag
         self.blockingManager = blockingManager
     }
 
-    public func blockedRecipientIds(tx: DBReadTransaction) throws -> Set<SignalRecipient.RowId> {
-        return try blockingManager.blockedRecipientIds(tx: tx)
+    public func blockedRecipientIds(tx: DBReadTransaction) -> Set<SignalRecipient.RowId> {
+        return blockingManager.blockedRecipientIds(tx: tx)
     }
 
-    public func blockedGroupIds(tx: DBReadTransaction) throws -> [Data] {
-        return try blockingManager.blockedGroupIds(transaction: tx)
+    public func blockedGroupIds(tx: DBReadTransaction) -> [Data] {
+        return blockingManager.blockedGroupIds(transaction: tx)
     }
 
     public func addBlockedAddress(_ address: SignalServiceAddress, tx: DBWriteTransaction) {

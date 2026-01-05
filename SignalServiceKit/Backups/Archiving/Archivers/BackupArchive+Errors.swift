@@ -545,9 +545,6 @@ extension BackupArchive {
             /// Error iterating over all ad hoc calls for backup purposes.
             case adHocCallIteratorError(RawError)
 
-            case blockedRecipientFetchError(RawError)
-            case blockedGroupFetchError(RawError)
-
             case oversizedTextCacheFetchError(RawError)
 
             /// These should never happen; it means some invariant in the backup code
