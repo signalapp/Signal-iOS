@@ -882,6 +882,15 @@ class BackupSettingsViewController:
         case is CancellationError:
             return
 
+        case is NotRegisteredError:
+            actionSheet = ActionSheetController(
+                message: OWSLocalizedString(
+                    "BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NOT_REGISTERED",
+                    comment: "Message for an action sheet explaining that you must be registered to make a Backup.",
+                ),
+            )
+            actionSheet.addAction(.okay)
+
         case BackupExportJobError.needsWifi:
             actionSheet = ActionSheetController(
                 title: OWSLocalizedString(
