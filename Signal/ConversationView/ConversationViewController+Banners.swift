@@ -299,7 +299,6 @@ private class ConversationBannerView: UIView {
                 textStack.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: textStackLeadingPadding),
                 textStack.centerYAnchor.constraint(equalTo: container.centerYAnchor),
                 textStack.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -PinnedMessageConstants.pinButtonTrailingPadding),
-                textStack.topAnchor.constraint(equalTo: container.topAnchor, constant: 4),
             ])
             return container
         }
@@ -351,6 +350,7 @@ private class ConversationBannerView: UIView {
                         container.leadingAnchor.constraint(equalTo: leadingAnchor),
                         container.trailingAnchor.constraint(equalTo: trailingAnchor),
                         container.topAnchor.constraint(equalTo: topAnchor),
+                        container.heightAnchor.constraint(equalToConstant: PinnedMessageConstants.bannerHeight),
                     ])
                 }
             } else {
