@@ -777,7 +777,7 @@ struct CVItemModelBuilder: CVItemBuilding {
                 return
             }
             switch infoMessage.messageType {
-            case .verificationStateChange, .typeGroupUpdate, .threadMerge, .sessionSwitchover:
+            case .verificationStateChange, .typeGroupUpdate, .threadMerge, .sessionSwitchover, .typePinnedMessage:
                 return // never collapse
             case .phoneNumberChange:
                 // Only collapse if the previous message was a change number for the same user
