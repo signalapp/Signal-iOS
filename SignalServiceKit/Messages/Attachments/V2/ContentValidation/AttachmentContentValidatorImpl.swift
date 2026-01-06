@@ -290,13 +290,6 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
 
     // MARK: - Private
 
-    private struct RevalidatedAttachmentImpl: RevalidatedAttachment {
-        let validatedContentType: Attachment.ContentType
-        let mimeType: String
-        let blurHash: String?
-        let orphanRecordId: OrphanedAttachmentRecord.RowId
-    }
-
     private struct ValidatedMessageBodyImpl: ValidatedMessageBody {
         let inlinedBody: MessageBody
         let oversizeText: PendingAttachment?
@@ -850,7 +843,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
 
     private func prepareAttachmentContentTypeFiles<Key: Hashable>(
         contentResults: [Key: ContentTypeResult],
-    ) async throws -> [Key: RevalidatedAttachmentImpl] {
+    ) async throws -> [Key: RevalidatedAttachment] {
         let orphanRecordIds = try await commitOrphanRecords(
             contentResults: contentResults.mapValues {
                 return PreparedContentResult(
@@ -860,12 +853,12 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             },
         )
 
-        var results = [Key: RevalidatedAttachmentImpl]()
+        var results = [Key: RevalidatedAttachment]()
         for (key, contentResult) in contentResults {
             guard let orphanRecordId = orphanRecordIds[key] else {
                 throw OWSAssertionError("Missing orphan record!")
             }
-            results[key] = RevalidatedAttachmentImpl(
+            results[key] = RevalidatedAttachment(
                 validatedContentType: contentResult.contentType,
                 mimeType: contentResult.input.mimeType,
                 blurHash: contentResult.blurHash,

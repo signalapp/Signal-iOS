@@ -47,13 +47,13 @@ public struct PendingAttachment {
     }
 }
 
-public protocol RevalidatedAttachment {
-    var validatedContentType: Attachment.ContentType { get }
+public struct RevalidatedAttachment {
+    let validatedContentType: Attachment.ContentType
     /// Revalidation might _change_ the mimeType we report.
-    var mimeType: String { get }
-    var blurHash: String? { get }
+    let mimeType: String
+    let blurHash: String?
     /// Orphan record for any created ancillary files, such as the audio waveform.
-    var orphanRecordId: OrphanedAttachmentRecord.RowId { get }
+    let orphanRecordId: OrphanedAttachmentRecord.RowId
 }
 
 public protocol ValidatedInlineMessageBody {
