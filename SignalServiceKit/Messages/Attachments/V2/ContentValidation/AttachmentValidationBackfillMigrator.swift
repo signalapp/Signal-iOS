@@ -50,7 +50,7 @@ enum ValidationBackfill: Int, CaseIterable {
         /// Filter to both a content and mime type. You cannot filter to just a mime type (that doesn't
         /// really make sense, anyway, all mime types are subscoped to a content type). Takes
         /// advantage of the contentType,mimeType index.
-        case mimeTypes(Attachment.ContentTypeRaw, mimeTypes: [String])
+        case mimeTypes(Attachment.ContentTypeRaw, mimeType: String)
     }
 
     /// Filters _which_ existing attachments should be re-validated by content and optionally mime type.
@@ -121,10 +121,7 @@ public class AttachmentValidationBackfillMigratorImpl: AttachmentValidationBackf
     // MARK: - Public
 
     public func runNextBatch() async throws -> Bool {
-        let didEnqueue = try await enqueueForBackfillIfNeeded()
-        if didEnqueue {
-            return false
-        }
+        await enqueueForBackfillIfNeeded()
         return try await runNextValidationBatch()
     }
 
@@ -135,7 +132,7 @@ public class AttachmentValidationBackfillMigratorImpl: AttachmentValidationBackf
     private func runNextValidationBatch() async throws -> Bool {
         // Pop attachments off the queue, newest first.
         let attachments: [Attachment.IDType: Attachment.Record?] = try databaseStorage.read { tx in
-            let attachmentIds = try store.getNextAttachmentIdBatch(tx: tx)
+            let attachmentIds = store.getNextAttachmentIdBatch(tx: tx)
 
             let attachments = try Attachment.Record.fetchAll(
                 tx.database,
@@ -186,9 +183,9 @@ public class AttachmentValidationBackfillMigratorImpl: AttachmentValidationBackf
         // 1. Remove the enqueued row (including for "skipped" ids)
         // 2. Update the content type everywhere needed to the newly validated type.
         try await databaseStorage.awaitableWrite { tx in
-            try skippedAttachmentIds.forEach { try self.store.dequeue(attachmentId: $0, tx: tx) }
+            skippedAttachmentIds.forEach { self.store.dequeue(attachmentId: $0, tx: tx) }
             try revalidatedAttachmentIds.forEach { attachmentId, revalidatedAttachment in
-                try self.store.dequeue(attachmentId: attachmentId, tx: tx)
+                self.store.dequeue(attachmentId: attachmentId, tx: tx)
                 try self.updateRevalidatedAttachment(
                     revalidatedAttachment,
                     id: attachmentId,
@@ -282,67 +279,53 @@ public class AttachmentValidationBackfillMigratorImpl: AttachmentValidationBackf
     /// we only need to enqueue once per backfill.
     ///
     /// Returns true if anything was enqueued.
-    private func enqueueForBackfillIfNeeded() async throws -> Bool {
-        // Check with a cheap read if we need to do any enqueuing.
-        if databaseStorage.read(block: { tx in self.store.backfillsThatNeedEnqueuing(tx: tx) }).isEmpty {
-            return false
-        }
-
-        return try await databaseStorage.awaitableWrite { tx in
+    private func enqueueForBackfillIfNeeded() async {
+        return await databaseStorage.awaitableWrite { tx in
             let backfillsToEnqueue = self.store.backfillsThatNeedEnqueuing(tx: tx)
             if backfillsToEnqueue.isEmpty {
-                return false
+                return
             }
-            try self.enqueueForBackfill(backfillsToEnqueue, tx: tx)
+            self.enqueueForBackfill(backfillsToEnqueue, tx: tx)
             self.store.setLastEnqueuedBackfill(
                 backfillsToEnqueue.max(by: { $0.rawValue < $1.rawValue })!,
                 tx: tx,
             )
-            return true
         }
     }
 
     /// Given a set of backfills that have yet to have the enqueue pass, enqueues all attachments that need re-validation.
     ///
     /// Filters across all the backfills and enqueues any attachment that passes the filter of _any_ of the backfills.
-    private func enqueueForBackfill(_ backfills: [ValidationBackfill], tx: DBWriteTransaction) throws {
+    private func enqueueForBackfill(_ backfills: [ValidationBackfill], tx: DBWriteTransaction) {
         let contentTypeColumn = Column(Attachment.Record.CodingKeys.contentType)
         let mimeTypeColumn = Column(Attachment.Record.CodingKeys.mimeType)
 
-        // We OR these; we enqueue any attachment that matches any backfill's filters.
-        var perBackfillPredicates: [SQLSpecificExpressible] = []
         for backfill in backfills {
             // We AND these; any given backfill's filters must all match.
             var backfillPredicates = [SQLSpecificExpressible]()
             switch backfill.contentTypeFilter {
             case .none:
-                Logger.warn("Backfilling without any content type filter")
+                break
             case .contentType(let contentType):
                 backfillPredicates.append(contentTypeColumn == contentType.rawValue)
-            case .mimeTypes(let contentType, let mimeTypes):
+            case .mimeTypes(let contentType, let mimeType):
                 backfillPredicates.append(contentTypeColumn == contentType.rawValue)
-                mimeTypes.forEach { mimeType in
-                    backfillPredicates.append(mimeTypeColumn == mimeType)
-                }
+                backfillPredicates.append(mimeTypeColumn == mimeType)
             }
 
             for columnFilter in backfill.columnFilters {
                 backfillPredicates.append(columnFilter.operator(Column(columnFilter.column), columnFilter.value))
             }
 
-            // AND all predicates for this backfill.
-            let backfillPredicate = backfillPredicates.joined(operator: .and)
-            perBackfillPredicates.append(backfillPredicate)
-        }
-
-        let query = Attachment.Record
-            // OR all the predicates across backfills.
-            .filter(perBackfillPredicates.joined(operator: .or))
-            .select(Column(Attachment.Record.CodingKeys.sqliteId))
-        let cursor = try Int64.fetchCursor(tx.database, query)
-
-        while let nextId = try cursor.next() {
-            try self.store.enqueue(attachmentId: nextId, tx: tx)
+            let query = Attachment.Record
+                .filter(backfillPredicates.joined(operator: .and))
+                .select(Column(Attachment.Record.CodingKeys.sqliteId))
+            failIfThrows {
+                let cursor = try Int64.fetchCursor(tx.database, query)
+                while let nextId = try cursor.next() {
+                    self.store.enqueue(attachmentId: nextId, tx: tx)
+                }
+            }
         }
     }
 

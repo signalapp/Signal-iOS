@@ -40,14 +40,9 @@ class AttachmentValidationBackfillRunner: BGProcessingTaskRunner {
 
     func startCondition() -> BGProcessingTaskStartCondition {
         return db.read { tx in
-            do {
-                if try store.needsToRun(tx: tx) {
-                    return .asSoonAsPossible
-                } else {
-                    return .never
-                }
-            } catch let error {
-                Logger.error("Failed to check status \(error)")
+            if store.needsToRun(tx: tx) {
+                return .asSoonAsPossible
+            } else {
                 return .never
             }
         }
