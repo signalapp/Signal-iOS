@@ -250,14 +250,24 @@ public class SignalAttachment: CustomDebugStringConvertible {
     //
     // Image attachments may be converted to another image format before
     // being uploaded.
-    public class var inputImageUTISet: Set<String> {
-        return MimeTypeUtil.supportedInputImageUtiTypes.union(animatedImageUTISet)
-    }
+    public static let inputImageUTISet: Set<String> = {
+        // We support additional types for input images because we can transcode
+        // these to a format that's always supported by the receiver.
+        var additionalTypes = [UTType]()
+        if #available(iOS 18.2, *) {
+            additionalTypes.append(.jpegxl)
+        }
+        additionalTypes.append(.heif)
+        additionalTypes.append(.heic)
+        additionalTypes.append(.webP)
+
+        return outputImageUTISet.union(additionalTypes.map(\.identifier))
+    }()
 
     // Returns the set of UTIs that correspond to valid _output_ image formats
     // for Signal attachments.
     private class var outputImageUTISet: Set<String> {
-        MimeTypeUtil.supportedOutputImageUtiTypes.union(animatedImageUTISet)
+        MimeTypeUtil.supportedImageUtiTypes.union(animatedImageUTISet)
     }
 
     private class var outputVideoUTISet: Set<String> {

@@ -70,17 +70,29 @@ extension AVAsset {
             fileHandle: fileHandle,
         )
 
-        // AVAsset cares about the file extension. It shouldn't, but it does.
-        // If we can map the mime type to a file extension, do so for the
-        // url we give the AVAsset so it reads things correctly.
+        // Prioritize audio extensions; note these mappings differ from the generic
+        // "fileExtensionForMimeType" because reasons.
+        let mimeTypeExtensionOverride: [String: String] = [
+            "audio/3gpp": "3gp",
+            "audio/3gpp2": "3g2",
+            "audio/aac": "m4a",
+            "audio/mp3": "mp3",
+            "audio/mp4": "mp4",
+            "audio/mpeg": "mp3",
+            "audio/x-m4a": "m4a",
+            "audio/x-m4b": "m4b",
+            "audio/x-m4p": "m4p",
+            "audio/x-mp3": "mp3",
+            "audio/x-mpeg": "mp3",
+            "audio/x-mpeg3": "mp3",
+        ]
+
+        // AVAsset cares about the file extension. It shouldn't, but it does. If we
+        // can map the mime type to a file extension, do so for the url we give the
+        // AVAsset so it reads things correctly.
+        let pathExtension = mimeTypeExtensionOverride[mimeType] ?? MimeTypeUtil.fileExtensionForMimeType(mimeType)
         let fileURLWithFakeExtension: URL
-        if
-            let pathExtension =
-            // Prioritize audio extensions; note these mappings differ from the
-            // generic "fileExtensionForMimeType" because reasons.
-            MimeTypeUtil.getSupportedExtensionFromAudioMimeType(mimeType)
-            ?? MimeTypeUtil.fileExtensionForMimeType(mimeType)
-        {
+        if let pathExtension {
             fileURLWithFakeExtension = fileURL.appendingPathExtension(pathExtension)
         } else {
             fileURLWithFakeExtension = fileURL

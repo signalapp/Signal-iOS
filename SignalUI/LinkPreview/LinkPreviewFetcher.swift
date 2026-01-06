@@ -179,6 +179,7 @@ public class LinkPreviewFetcherImpl: LinkPreviewFetcher {
             throw LinkPreviewError.fetchFailure
         }
 
+        // TODO: Add support for HEIC, HEIF, JPEG XL, etc.
         if
             let mimeType = response.headers.value(forHeader: "Content-Type"),
             MimeTypeUtil.isSupportedImageMimeType(mimeType)
