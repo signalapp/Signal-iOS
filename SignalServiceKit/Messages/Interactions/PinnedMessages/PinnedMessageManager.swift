@@ -91,9 +91,10 @@ public class PinnedMessageManager {
                 timestamp: pinMessageProto.targetSentTimestamp,
                 incomingMessageAuthor: targetAuthorAci == localAci ? nil : targetAuthorAci,
                 transaction: transaction,
-            ), let interactionId = targetMessage.grdbId?.int64Value
+            ), let interactionId = targetMessage.grdbId?.int64Value,
+            targetMessage.giftBadge == nil
         else {
-            throw OWSAssertionError("Can't find target pinned message")
+            throw OWSAssertionError("Invalid or missing target pinned message")
         }
 
         var expiresAt: UInt64?
