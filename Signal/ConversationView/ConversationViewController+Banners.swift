@@ -97,7 +97,6 @@ extension ConversationViewController {
             bannersView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
             bannersView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
         ])
-        view.layoutSubviews()
 
         if !hasPriorPinnedMessages, didAddPinnedMessage {
             for banner in bannersView.arrangedSubviews {
