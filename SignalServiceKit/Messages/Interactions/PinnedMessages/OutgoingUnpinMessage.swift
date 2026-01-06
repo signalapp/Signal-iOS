@@ -44,8 +44,8 @@ public class OutgoingUnpinMessage: TSOutgoingMessage {
         return result
     }
 
-    private var targetMessageTimestamp: UInt64 = 0
-    private var targetMessageAuthorAciBinary: Data?
+    public private(set) var targetMessageTimestamp: UInt64 = 0
+    public private(set) var targetMessageAuthorAciBinary: Data?
 
     public init(
         thread: TSThread,

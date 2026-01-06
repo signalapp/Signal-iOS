@@ -90,30 +90,30 @@ public class MessageSenderNoSuchSignalRecipientError: CustomNSError, IsRetryable
 
 // MARK: -
 
-class MessageSenderErrorNoValidRecipients: CustomNSError, IsRetryableProvider, UserErrorDescriptionProvider {
+public class MessageSenderErrorNoValidRecipients: CustomNSError, IsRetryableProvider, UserErrorDescriptionProvider {
     static var asNSError: NSError {
         MessageSenderErrorNoValidRecipients() as Error as NSError
     }
 
     // NSError bridging: the domain of the error.
-    static let errorDomain = OWSError.errorDomain
+    public static let errorDomain = OWSError.errorDomain
 
     // NSError bridging: the error code within the given domain.
-    var errorCode: Int { OWSErrorCode.messageSendNoValidRecipients.rawValue }
+    public var errorCode: Int { OWSErrorCode.messageSendNoValidRecipients.rawValue }
 
     // NSError bridging: the error code within the given domain.
-    var errorUserInfo: [String: Any] {
+    public var errorUserInfo: [String: Any] {
         [NSLocalizedDescriptionKey: self.localizedDescription]
     }
 
-    var localizedDescription: String {
+    public var localizedDescription: String {
         OWSLocalizedString(
             "ERROR_DESCRIPTION_NO_VALID_RECIPIENTS",
             comment: "Error indicating that an outgoing message had no valid recipients.",
         )
     }
 
-    var isRetryableProvider: Bool { false }
+    public var isRetryableProvider: Bool { false }
 }
 
 // MARK: -

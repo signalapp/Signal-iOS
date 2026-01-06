@@ -5,6 +5,7 @@
 
 import AVFAudio
 public import SignalServiceKit
+import LibSignalClient
 import SignalUI
 
 extension ConversationViewController: MessageActionsDelegate {
@@ -291,6 +292,7 @@ extension ConversationViewController: MessageActionsDelegate {
     func sendPinMessageChange(pinMessage: TSOutgoingMessage) async throws {
         let db = DependenciesBridge.shared.db
         let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueueRef
+        let pinnedMessageManager = DependenciesBridge.shared.pinnedMessageManager
 
         let sendPromise = await db.awaitableWrite { tx in
             let preparedMessage = PreparedOutgoingMessage.preprepared(
@@ -304,7 +306,46 @@ extension ConversationViewController: MessageActionsDelegate {
             )
         }
 
-        try await sendPromise.awaitable()
+        do {
+            try await sendPromise.awaitable()
+        } catch is MessageSenderNoSuchSignalRecipientError, is MessageSenderErrorNoValidRecipients {
+            Logger.info("Recipient not found, still showing a pin success locally")
+            db.write { tx in
+                // since message was never sent, use current time as the sent time.
+                let sentTimestamp = Date.ows_millisecondTimestamp()
+
+                if
+                    let _pinMessage = pinMessage as? OutgoingPinMessage,
+                    let aciBinary = _pinMessage.targetMessageAuthorAciBinary,
+                    let targetAuthorAci = try? Aci.parseFrom(serviceIdBinary: aciBinary)
+                {
+                    let expiresAtMs: UInt64? = _pinMessage.pinDurationSeconds > 0 ? Date.ows_millisecondTimestamp() + UInt64(_pinMessage.pinDurationSeconds * 1000) : nil
+
+                    pinnedMessageManager.applyPinMessageChangeToLocalState(
+                        targetTimestamp: _pinMessage.targetMessageTimestamp,
+                        targetAuthorAci: targetAuthorAci,
+                        expiresAt: expiresAtMs,
+                        isPin: true,
+                        sentTimestamp: sentTimestamp,
+                        tx: tx,
+                    )
+                } else if
+                    let _unpinMessage = pinMessage as? OutgoingUnpinMessage,
+                    let aciBinary = _unpinMessage.targetMessageAuthorAciBinary,
+                    let targetAuthorAci = try? Aci.parseFrom(serviceIdBinary: aciBinary)
+                {
+
+                    pinnedMessageManager.applyPinMessageChangeToLocalState(
+                        targetTimestamp: _unpinMessage.targetMessageTimestamp,
+                        targetAuthorAci: targetAuthorAci,
+                        expiresAt: nil,
+                        isPin: false,
+                        sentTimestamp: sentTimestamp,
+                        tx: tx,
+                    )
+                }
+            }
+        }
     }
 
     func queuePinMessageChangeWithModal(

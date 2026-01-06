@@ -54,9 +54,9 @@ public class OutgoingPinMessage: TSOutgoingMessage {
         return result
     }
 
-    private var targetMessageTimestamp: UInt64 = 0
-    private var targetMessageAuthorAciBinary: Data?
-    private var pinDurationSeconds: UInt32 = 0
+    public private(set) var targetMessageTimestamp: UInt64 = 0
+    public private(set) var targetMessageAuthorAciBinary: Data?
+    public private(set) var pinDurationSeconds: UInt32 = 0
     private var pinDurationForever: Bool = false
 
     public init(
