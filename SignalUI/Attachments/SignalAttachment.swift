@@ -402,62 +402,30 @@ public class SignalAttachment: CustomDebugStringConvertible {
     ) throws(SignalAttachmentError) -> (dataSource: DataSourcePath, containerType: ContainerType)? {
         return try autoreleasepool { () throws(SignalAttachmentError) -> (dataSource: DataSourcePath, containerType: ContainerType)? in
             let maxSize = imageUploadQuality.maxEdgeSize
-            let pixelSize = imageMetadata?.pixelSize
-            var imageProperties = [CFString: Any]()
 
             guard let imageSource = cgImageSource(for: dataSource, imageFormat: imageMetadata?.imageFormat) else {
                 throw .couldNotParseImage
             }
 
-            let cgImage: CGImage
-            if pixelSize == nil || pixelSize!.width > maxSize || pixelSize!.height > maxSize {
-                // NOTE: For unknown reasons, resizing images with UIGraphicsBeginImageContext()
-                // crashes reliably in the share extension after screen lock's auth UI has been presented.
-                // Resizing using a CGContext seems to work fine.
+            // NOTE: For unknown reasons, resizing images with UIGraphicsBeginImageContext()
+            // crashes reliably in the share extension after screen lock's auth UI has been presented.
+            // Resizing using a CGContext seems to work fine.
 
-                // Perform downsampling
-                let downsampleOptions = [
-                    kCGImageSourceCreateThumbnailFromImageAlways: true,
-                    kCGImageSourceShouldCacheImmediately: true,
-                    kCGImageSourceCreateThumbnailWithTransform: true,
-                    kCGImageSourceThumbnailMaxPixelSize: maxSize,
-                ] as [CFString: Any] as CFDictionary
-                guard let downsampledImage = CGImageSourceCreateThumbnailAtIndex(imageSource, 0, downsampleOptions) else {
-                    throw .couldNotResizeImage
-                }
-                cgImage = downsampledImage
-            } else {
-                guard
-                    let originalImageProperties = CGImageSourceCopyPropertiesAtIndex(imageSource, 0, [
-                        kCGImageSourceShouldCache: false,
-                    ] as CFDictionary) as? [CFString: Any]
-                else {
-                    throw .couldNotParseImage
-                }
-
-                // Preserve any orientation properties in the final output image.
-                if let tiffOrientation = originalImageProperties[kCGImagePropertyTIFFOrientation] {
-                    imageProperties[kCGImagePropertyTIFFOrientation] = tiffOrientation
-                }
-                if let iptcOrientation = originalImageProperties[kCGImagePropertyIPTCImageOrientation] {
-                    imageProperties[kCGImagePropertyIPTCImageOrientation] = iptcOrientation
-                }
-
-                guard
-                    let image = CGImageSourceCreateImageAtIndex(imageSource, 0, [
-                        kCGImageSourceShouldCacheImmediately: true,
-                    ] as CFDictionary)
-                else {
-                    throw .couldNotParseImage
-                }
-
-                cgImage = image
+            let downsampleOptions = [
+                kCGImageSourceCreateThumbnailFromImageAlways: true,
+                kCGImageSourceShouldCacheImmediately: true,
+                kCGImageSourceCreateThumbnailWithTransform: true,
+                kCGImageSourceThumbnailMaxPixelSize: maxSize,
+            ] as [CFString: Any] as CFDictionary
+            guard let cgImage = CGImageSourceCreateThumbnailAtIndex(imageSource, 0, downsampleOptions) else {
+                throw .couldNotResizeImage
             }
 
             // Write to disk and convert to file based data source,
             // so we can keep the image out of memory.
 
             let containerType: ContainerType
+            var imageProperties = [CFString: Any]()
 
             // We convert everything that's not sticker-like to jpg, because
             // often images with alpha channels don't actually have any
@@ -468,7 +436,9 @@ public class SignalAttachment: CustomDebugStringConvertible {
                 containerType = .png
             } else {
                 containerType = .jpg
-                imageProperties[kCGImageDestinationLossyCompressionQuality] = compressionQuality(for: pixelSize ?? .zero)
+                imageProperties[kCGImageDestinationLossyCompressionQuality] = compressionQuality(
+                    for: CGSize(width: cgImage.width, height: cgImage.height),
+                )
             }
 
             let tempFileUrl = OWSFileSystem.temporaryFileUrl(fileExtension: containerType.fileExtension)
