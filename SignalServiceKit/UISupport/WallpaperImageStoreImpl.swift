@@ -112,8 +112,8 @@ public class WallpaperImageStoreImpl: WallpaperImageStore {
         else {
             throw OWSAssertionError("Failed to get jpg data for wallpaper photo")
         }
-        let pendingAttachment = try await attachmentValidator.validateContents(
-            data: imageData,
+        let pendingAttachment = try await attachmentValidator.validateDataContents(
+            imageData,
             mimeType: mimeType,
             renderingFlag: .default,
             sourceFilename: nil,

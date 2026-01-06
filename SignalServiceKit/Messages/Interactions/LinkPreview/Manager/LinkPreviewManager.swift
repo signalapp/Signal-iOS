@@ -134,8 +134,8 @@ class LinkPreviewManagerImpl: LinkPreviewManager {
             let imageData = draft.imageData,
             let imageMimeType = draft.imageMimeType
         {
-            let pendingAttachment = try await attachmentValidator.validateContents(
-                data: imageData,
+            let pendingAttachment = try await attachmentValidator.validateDataContents(
+                imageData,
                 mimeType: imageMimeType,
                 renderingFlag: .default,
                 sourceFilename: nil,

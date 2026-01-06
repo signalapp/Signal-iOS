@@ -11,8 +11,8 @@ open class AttachmentContentValidatorMock: AttachmentContentValidator {
 
     init() {}
 
-    open func validateContents(
-        dataSource: DataSourcePath,
+    open func validateDataSourceContents(
+        _ dataSource: DataSourcePath,
         mimeType: String,
         renderingFlag: AttachmentReference.RenderingFlag,
         sourceFilename: String?,
@@ -20,8 +20,8 @@ open class AttachmentContentValidatorMock: AttachmentContentValidator {
         throw OWSAssertionError("Unimplemented")
     }
 
-    open func validateContents(
-        data: Data,
+    open func validateDataContents(
+        _ data: Data,
         mimeType: String,
         renderingFlag: AttachmentReference.RenderingFlag,
         sourceFilename: String?,
@@ -50,8 +50,8 @@ open class AttachmentContentValidatorMock: AttachmentContentValidator {
         throw OWSAssertionError("Unimplemented")
     }
 
-    open func validateContents(
-        ofBackupMediaFileAt fileUrl: URL,
+    open func validateBackupMediaFileContents(
+        fileUrl: URL,
         outerDecryptionData: DecryptionMetadata,
         innerDecryptionData: DecryptionMetadata,
         finalAttachmentKey: AttachmentKey,

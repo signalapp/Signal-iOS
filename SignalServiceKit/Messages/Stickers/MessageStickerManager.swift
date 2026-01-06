@@ -96,8 +96,8 @@ class MessageStickerManagerImpl: MessageStickerManager {
     func buildDataSource(
         fromDraft draft: MessageStickerDraft,
     ) async throws -> MessageStickerDataSource {
-        let validatedDataSource = try await attachmentValidator.validateContents(
-            data: draft.stickerData,
+        let validatedDataSource = try await attachmentValidator.validateDataContents(
+            draft.stickerData,
             mimeType: draft.stickerType.mimeType,
             renderingFlag: .default,
             sourceFilename: nil,

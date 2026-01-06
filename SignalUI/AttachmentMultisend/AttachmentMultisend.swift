@@ -159,8 +159,8 @@ public class AttachmentMultisend {
             // No need to segment!
             var results = [SegmentAttachmentResult]()
             for attachment in sendableAttachments {
-                let dataSource: AttachmentDataSource = try await deps.attachmentValidator.validateContents(
-                    sendableAttachment: attachment,
+                let dataSource: AttachmentDataSource = try await deps.attachmentValidator.validateSendableAttachmentContents(
+                    attachment,
                     shouldUseDefaultFilename: false,
                 )
                 try results.append(.init(
@@ -181,8 +181,8 @@ public class AttachmentMultisend {
                 // We need to prepare the original, either because there are no segments
                 // (e.g., it's an image) or because we are sending to a non-story which
                 // doesn't segment.
-                originalDataSource = try await deps.attachmentValidator.validateContents(
-                    sendableAttachment: segmentingResult.original,
+                originalDataSource = try await deps.attachmentValidator.validateSendableAttachmentContents(
+                    segmentingResult.original,
                     shouldUseDefaultFilename: false,
                 )
             } else {
@@ -195,8 +195,8 @@ public class AttachmentMultisend {
                 }
                 var segmentedDataSources = [AttachmentDataSource]()
                 for segment in segments {
-                    let dataSource: AttachmentDataSource = try await deps.attachmentValidator.validateContents(
-                        sendableAttachment: segment,
+                    let dataSource: AttachmentDataSource = try await deps.attachmentValidator.validateSendableAttachmentContents(
+                        segment,
                         shouldUseDefaultFilename: false,
                     )
                     segmentedDataSources.append(dataSource)

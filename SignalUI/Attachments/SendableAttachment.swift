@@ -196,10 +196,7 @@ public struct SendableAttachment {
     }
 
     public func forSending(attachmentContentValidator: any AttachmentContentValidator) async throws -> ForSending {
-        let dataSource = try await attachmentContentValidator.validateContents(
-            sendableAttachment: self,
-            shouldUseDefaultFilename: true,
-        )
+        let dataSource = try await attachmentContentValidator.validateSendableAttachmentContents(self, shouldUseDefaultFilename: true)
         return ForSending(
             dataSource: dataSource,
             renderingFlag: self.renderingFlag,
@@ -208,12 +205,12 @@ public struct SendableAttachment {
 }
 
 extension AttachmentContentValidator {
-    public func validateContents(
-        sendableAttachment: SendableAttachment,
+    public func validateSendableAttachmentContents(
+        _ sendableAttachment: SendableAttachment,
         shouldUseDefaultFilename: Bool,
     ) async throws -> AttachmentDataSource {
-        let pendingAttachment = try await validateContents(
-            dataSource: sendableAttachment.dataSource,
+        let pendingAttachment = try await validateDataSourceContents(
+            sendableAttachment.dataSource,
             mimeType: sendableAttachment.mimeType,
             renderingFlag: sendableAttachment.renderingFlag,
             sourceFilename: sendableAttachment.sourceFilename?.rawValue ?? (shouldUseDefaultFilename ? sendableAttachment.defaultFilename : nil),

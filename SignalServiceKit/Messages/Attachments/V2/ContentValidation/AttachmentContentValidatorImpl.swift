@@ -26,8 +26,8 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         self.orphanedAttachmentCleaner = orphanedAttachmentCleaner
     }
 
-    public func validateContents(
-        dataSource: DataSourcePath,
+    public func validateDataSourceContents(
+        _ dataSource: DataSourcePath,
         mimeType: String,
         renderingFlag: AttachmentReference.RenderingFlag,
         sourceFilename: String?,
@@ -35,22 +35,20 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         let inputType: InputType = .unencryptedFile(dataSource.fileUrl)
         let primaryFilePlaintextHash = try computePlaintextHash(inputType: inputType)
         let attachmentKey = try attachmentKeyToUse(primaryFilePlaintextHash: primaryFilePlaintextHash, inputAttachmentKey: nil)
-        let pendingAttachment = try await validateContents(
-            inputs: ["": Input(
-                type: inputType,
-                primaryFilePlaintextHash: primaryFilePlaintextHash,
-                attachmentKey: attachmentKey,
-                mimeType: mimeType,
-                renderingFlag: renderingFlag,
-                sourceFilename: sourceFilename,
-            )],
-        ).values.first!
+        let pendingAttachment = try await validateContentsAndPrepareAttachmentFiles(input: Input(
+            type: inputType,
+            primaryFilePlaintextHash: primaryFilePlaintextHash,
+            attachmentKey: attachmentKey,
+            mimeType: mimeType,
+            renderingFlag: renderingFlag,
+            sourceFilename: sourceFilename,
+        ))
         try dataSource.consumeAndDeleteIfNecessary()
         return pendingAttachment
     }
 
-    public func validateContents(
-        data: Data,
+    public func validateDataContents(
+        _ data: Data,
         mimeType: String,
         renderingFlag: AttachmentReference.RenderingFlag,
         sourceFilename: String?,
@@ -58,17 +56,14 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         let inputType = InputType.inMemory(data)
         let primaryFilePlaintextHash = try computePlaintextHash(inputType: inputType)
         let attachmentKey = try attachmentKeyToUse(primaryFilePlaintextHash: primaryFilePlaintextHash, inputAttachmentKey: nil)
-        let pendingAttachment = try await validateContents(
-            inputs: ["": Input(
-                type: inputType,
-                primaryFilePlaintextHash: primaryFilePlaintextHash,
-                attachmentKey: attachmentKey,
-                mimeType: mimeType,
-                renderingFlag: renderingFlag,
-                sourceFilename: sourceFilename,
-            )],
-        ).values.first!
-
+        let pendingAttachment = try await validateContentsAndPrepareAttachmentFiles(input: Input(
+            type: inputType,
+            primaryFilePlaintextHash: primaryFilePlaintextHash,
+            attachmentKey: attachmentKey,
+            mimeType: mimeType,
+            renderingFlag: renderingFlag,
+            sourceFilename: sourceFilename,
+        ))
         return pendingAttachment
     }
 
@@ -104,16 +99,14 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             integrityCheck: integrityCheck,
         )
         let primaryFilePlaintextHash = try computePlaintextHash(inputType: inputType)
-        return try await validateContents(
-            inputs: ["": Input(
-                type: inputType,
-                primaryFilePlaintextHash: primaryFilePlaintextHash,
-                attachmentKey: attachmentKeyToUse(primaryFilePlaintextHash: primaryFilePlaintextHash, inputAttachmentKey: inputAttachmentKey),
-                mimeType: mimeType,
-                renderingFlag: renderingFlag,
-                sourceFilename: sourceFilename,
-            )],
-        ).values.first!
+        return try await validateContentsAndPrepareAttachmentFiles(input: Input(
+            type: inputType,
+            primaryFilePlaintextHash: primaryFilePlaintextHash,
+            attachmentKey: attachmentKeyToUse(primaryFilePlaintextHash: primaryFilePlaintextHash, inputAttachmentKey: inputAttachmentKey),
+            mimeType: mimeType,
+            renderingFlag: renderingFlag,
+            sourceFilename: sourceFilename,
+        ))
     }
 
     public func reValidateContents(
@@ -147,8 +140,8 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         ).values.first!
     }
 
-    public func validateContents(
-        ofBackupMediaFileAt fileUrl: URL,
+    public func validateBackupMediaFileContents(
+        fileUrl: URL,
         outerDecryptionData: DecryptionMetadata,
         innerDecryptionData: DecryptionMetadata,
         finalAttachmentKey: AttachmentKey,
@@ -196,16 +189,14 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             inputType = makeInputType(plaintextLength: decryptedLength)
             primaryFilePlaintextHash = Data(sha256.finalize())
         }
-        return try await validateContents(
-            inputs: ["": Input(
-                type: inputType,
-                primaryFilePlaintextHash: primaryFilePlaintextHash,
-                attachmentKey: attachmentKeyToUse(primaryFilePlaintextHash: primaryFilePlaintextHash, inputAttachmentKey: finalAttachmentKey),
-                mimeType: mimeType,
-                renderingFlag: renderingFlag,
-                sourceFilename: sourceFilename,
-            )],
-        ).values.first!
+        return try await validateContentsAndPrepareAttachmentFiles(input: Input(
+            type: inputType,
+            primaryFilePlaintextHash: primaryFilePlaintextHash,
+            attachmentKey: attachmentKeyToUse(primaryFilePlaintextHash: primaryFilePlaintextHash, inputAttachmentKey: finalAttachmentKey),
+            mimeType: mimeType,
+            renderingFlag: renderingFlag,
+            sourceFilename: sourceFilename,
+        ))
     }
 
     public func truncatedMessageBodyForInlining(
@@ -258,9 +249,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             )
         }
 
-        let pendingAttachments = try await self.validateContents(
-            inputs: oversizedTextInputs,
-        )
+        let pendingAttachments = try await self.validateContentsAndPrepareAttachmentFiles(inputs: oversizedTextInputs)
 
         for (key, pendingAttachment) in pendingAttachments {
             guard let truncatedBody = truncatedBodies[key] else {
@@ -385,7 +374,13 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         }
     }
 
-    private func validateContents<Key: Hashable>(
+    private func validateContentsAndPrepareAttachmentFiles(
+        input: Input,
+    ) async throws -> PendingAttachment {
+        return try await validateContentsAndPrepareAttachmentFiles(inputs: ["": input]).values.first!
+    }
+
+    private func validateContentsAndPrepareAttachmentFiles<Key: Hashable>(
         inputs: [Key: Input],
     ) async throws -> [Key: PendingAttachment] {
         let contentTypeResults: [Key: ContentTypeResult] = try inputs.mapValues { input in
@@ -427,8 +422,8 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             renderingFlagForThumbnail = .default
         }
 
-        return try await self.validateContents(
-            data: imageData,
+        return try await self.validateDataContents(
+            imageData,
             mimeType: MimeType.imageJpeg.rawValue,
             renderingFlag: renderingFlagForThumbnail,
             sourceFilename: sourceFilename,

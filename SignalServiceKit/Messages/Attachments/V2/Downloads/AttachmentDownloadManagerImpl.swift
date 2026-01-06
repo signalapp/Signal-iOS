@@ -1937,8 +1937,8 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     mimeType = MimeType.imageWebp
                 }
 
-                return try await attachmentValidator.validateContents(
-                    dataSource: DataSourcePath(fileUrl: stickerDataUrl, ownership: .borrowed),
+                return try await attachmentValidator.validateDataSourceContents(
+                    DataSourcePath(fileUrl: stickerDataUrl, ownership: .borrowed),
                     mimeType: mimeType.rawValue,
                     renderingFlag: .borderless,
                     sourceFilename: nil,
@@ -1969,8 +1969,8 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         return UInt64(safeCast: plaintextLength)
                     }()
 
-                    return try await attachmentValidator.validateContents(
-                        ofBackupMediaFileAt: encryptedFileUrl,
+                    return try await attachmentValidator.validateBackupMediaFileContents(
+                        fileUrl: encryptedFileUrl,
                         outerDecryptionData: DecryptionMetadata(key: outerEncryptionMetadata.attachmentKey()),
                         innerDecryptionData: DecryptionMetadata(
                             key: AttachmentKey(combinedKey: metadata.encryptionKey),
@@ -1983,8 +1983,8 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         sourceFilename: nil,
                     )
                 case .mediaTierThumbnail(_, let outerEncryptionMetadata, let innerEncryptionData):
-                    return try await attachmentValidator.validateContents(
-                        ofBackupMediaFileAt: encryptedFileUrl,
+                    return try await attachmentValidator.validateBackupMediaFileContents(
+                        fileUrl: encryptedFileUrl,
                         outerDecryptionData: DecryptionMetadata(key: outerEncryptionMetadata.attachmentKey()),
                         innerDecryptionData: DecryptionMetadata(key: innerEncryptionData.attachmentKey()),
                         finalAttachmentKey: AttachmentKey(combinedKey: metadata.encryptionKey),

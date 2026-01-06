@@ -66,8 +66,8 @@ public protocol AttachmentContentValidator {
     /// Returns a PendingAttachment with validated contents, ready to be inserted.
     /// Note the content type may be `invalid`; we can still create an Attachment from these.
     /// Errors are thrown if data reading/parsing fails.
-    func validateContents(
-        dataSource: DataSourcePath,
+    func validateDataSourceContents(
+        _ dataSource: DataSourcePath,
         mimeType: String,
         renderingFlag: AttachmentReference.RenderingFlag,
         sourceFilename: String?,
@@ -77,8 +77,8 @@ public protocol AttachmentContentValidator {
     /// Returns a PendingAttachment with validated contents, ready to be inserted.
     /// Note the content type may be `invalid`; we can still create an Attachment from these.
     /// Errors are thrown if data parsing fails.
-    func validateContents(
-        data: Data,
+    func validateDataContents(
+        _ data: Data,
         mimeType: String,
         renderingFlag: AttachmentReference.RenderingFlag,
         sourceFilename: String?,
@@ -131,8 +131,8 @@ public protocol AttachmentContentValidator {
     /// - Parameter innerDecryptionData: The transit tier decryption metadata.
     /// - Parameter finalEncryptionKey: The encryption key used to encrypt the file in it's final destination.  If the finalEncryptionKey
     /// matches the encryption key in `innerEncryptionData`, this re-encryption will be skipped.
-    func validateContents(
-        ofBackupMediaFileAt fileUrl: URL,
+    func validateBackupMediaFileContents(
+        fileUrl: URL,
         outerDecryptionData: DecryptionMetadata,
         innerDecryptionData: DecryptionMetadata,
         finalAttachmentKey: AttachmentKey,
