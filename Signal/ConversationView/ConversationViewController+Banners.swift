@@ -299,6 +299,13 @@ private class ConversationBannerView: UIView {
                 textStack.centerYAnchor.constraint(equalTo: container.centerYAnchor),
                 textStack.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -PinnedMessageConstants.pinButtonTrailingPadding),
             ])
+            textStack.isAccessibilityElement = true
+            let axLabelPrefix = OWSLocalizedString(
+                "PINNED_MESSAGE_BANNER_AX_LABEL",
+                comment: "Accessibility label prefix for banner showing a pinned message",
+            )
+            textStack.accessibilityLabel = axLabelPrefix + title + "," + body.string
+            textStack.accessibilityTraits = .button
             return container
         }
 
