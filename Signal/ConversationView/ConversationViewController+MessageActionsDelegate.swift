@@ -351,10 +351,11 @@ extension ConversationViewController: MessageActionsDelegate {
     func queuePinMessageChangeWithModal(
         message: TSMessage,
         pinMessage: TSOutgoingMessage,
+        modalDelegate: UIViewController,
         completion: (() -> Void)?,
     ) async {
         do {
-            try await ModalActivityIndicatorViewController.presentAndPropagateResult(from: self) {
+            try await ModalActivityIndicatorViewController.presentAndPropagateResult(from: modalDelegate) {
                 try await self.sendPinMessageChange(pinMessage: pinMessage)
             }
         } catch {
@@ -455,6 +456,7 @@ extension ConversationViewController: MessageActionsDelegate {
                                         await self.queuePinMessageChangeWithModal(
                                             message: message,
                                             pinMessage: pinMessage,
+                                            modalDelegate: self,
                                             completion: nil,
                                         )
                                     }
@@ -464,7 +466,7 @@ extension ConversationViewController: MessageActionsDelegate {
                         )
                     } else {
                         Task {
-                            await self.queuePinMessageChangeWithModal(message: message, pinMessage: pinMessage, completion: nil)
+                            await self.queuePinMessageChangeWithModal(message: message, pinMessage: pinMessage, modalDelegate: self, completion: nil)
                         }
                     }
                 }
@@ -498,7 +500,7 @@ extension ConversationViewController: MessageActionsDelegate {
         }
     }
 
-    public func handleActionUnpin(message: TSMessage) {
+    public func handleActionUnpin(message: TSMessage, modalDelegate: UIViewController) {
         let pinnedMessageManager = DependenciesBridge.shared.pinnedMessageManager
         let db = DependenciesBridge.shared.db
 
@@ -518,6 +520,7 @@ extension ConversationViewController: MessageActionsDelegate {
             await queuePinMessageChangeWithModal(
                 message: message,
                 pinMessage: unpinMessage,
+                modalDelegate: modalDelegate,
                 completion: { [weak self] in
                     self?.presentToast(
                         text: OWSLocalizedString(
@@ -549,6 +552,7 @@ extension ConversationViewController: MessageActionsDelegate {
         await queuePinMessageChangeWithModal(
             message: message,
             pinMessage: unpinMessage,
+            modalDelegate: self,
             completion: nil,
         )
     }
@@ -562,6 +566,6 @@ extension ConversationViewController: MessageActionsDelegate {
             handleActionPin(message: message)
             return
         }
-        handleActionUnpin(message: message)
+        handleActionUnpin(message: message, modalDelegate: self)
     }
 }

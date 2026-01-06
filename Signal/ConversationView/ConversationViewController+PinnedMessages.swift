@@ -14,7 +14,7 @@ protocol PinnedMessageInteractionManagerDelegate: AnyObject {
 
     /// Unpins the message specified.
     /// If nil, unpins the message found at pinnedMessageIndex, the current one displayed in the UI banner.
-    func unpinMessage(message: TSMessage?)
+    func unpinMessage(message: TSMessage?, modalDelegate: UIViewController?)
 
     /// Presents the "see all messages" details view.
     func presentSeeAllMessages()
@@ -293,7 +293,10 @@ extension ConversationViewController: UIContextMenuInteractionDelegate {
                 ) { [weak self] _ in
                     guard let self else { return }
                     if threadViewModel.pinnedMessages.indices.contains(pinnedMessageIndex) {
-                        handleActionUnpin(message: threadViewModel.pinnedMessages[pinnedMessageIndex])
+                        handleActionUnpin(
+                            message: threadViewModel.pinnedMessages[pinnedMessageIndex],
+                            modalDelegate: self,
+                        )
                     }
                 },
                 UIAction(
@@ -338,7 +341,7 @@ extension ConversationViewController: PinnedMessageInteractionManagerDelegate {
         )
     }
 
-    func unpinMessage(message: TSMessage?) {
+    func unpinMessage(message: TSMessage?, modalDelegate: UIViewController?) {
         let messageToUnpin: TSMessage
         if let message {
             messageToUnpin = message
@@ -349,7 +352,7 @@ extension ConversationViewController: PinnedMessageInteractionManagerDelegate {
             messageToUnpin = threadViewModel.pinnedMessages[pinnedMessageIndex]
         }
 
-        handleActionUnpin(message: messageToUnpin)
+        handleActionUnpin(message: messageToUnpin, modalDelegate: modalDelegate ?? self)
     }
 
     func presentSeeAllMessages() {

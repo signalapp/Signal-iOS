@@ -476,7 +476,7 @@ private class ConversationBannerView: UIView {
                     ),
                     image: .pinSlash,
                 ) { [weak self] _ in
-                    self?.pinnedMessageInteractionDelegate?.unpinMessage(message: nil)
+                    self?.pinnedMessageInteractionDelegate?.unpinMessage(message: nil, modalDelegate: nil)
                 },
                 UIAction(
                     title: OWSLocalizedString(

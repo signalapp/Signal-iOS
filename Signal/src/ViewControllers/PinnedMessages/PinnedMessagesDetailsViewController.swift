@@ -93,7 +93,6 @@ class PinnedMessagesDetailsViewController: OWSViewController, DatabaseChangeDele
                     cellView.configure(renderItem: dateItem, componentDelegate: self)
                     cellView.isCellVisible = true
                     cellView.autoSetDimension(.height, toSize: dateItem.cellSize.height)
-
                     stack.addArrangedSubview(cellView)
                 }
             }
@@ -110,12 +109,28 @@ class PinnedMessagesDetailsViewController: OWSViewController, DatabaseChangeDele
         scrollView.addSubview(paddedContainerView)
         view.addSubview(scrollView)
 
-        scrollView.autoPinEdgesToSuperviewEdges()
+        scrollView.autoPinEdgesToSuperviewSafeArea()
         paddedContainerView.autoPinEdgesToSuperviewEdges()
 
         stack.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: 16, left: 16, bottom: 64, right: 16))
         paddedContainerView.autoMatch(.width, to: .width, of: scrollView)
 
+        let unpinAllButton = UIButton(
+            configuration: .largeSecondary(title: OWSLocalizedString(
+                "PINNED_MESSAGES_UNPIN_ALL",
+                comment: "Title for a button to unpin all pinned messages.",
+            )),
+            primaryAction: UIAction { [weak self] _ in
+                self?.dismiss(animated: true)
+                self?.delegate?.unpinAllMessages()
+            },
+        )
+        view.addSubview(unpinAllButton)
+        unpinAllButton.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            unpinAllButton.bottomAnchor.constraint(equalTo: contentLayoutGuide.bottomAnchor),
+            unpinAllButton.centerXAnchor.constraint(equalTo: contentLayoutGuide.centerXAnchor),
+        ])
     }
 
     private func updatePinnedMessageState() {
@@ -135,23 +150,6 @@ class PinnedMessagesDetailsViewController: OWSViewController, DatabaseChangeDele
         db.read { tx in
             layoutPinnedMessages(tx: tx)
         }
-
-        let unpinAllButton = UIButton(
-            configuration: .largeSecondary(title: OWSLocalizedString(
-                "PINNED_MESSAGES_UNPIN_ALL",
-                comment: "Title for a button to unpin all pinned messages.",
-            )),
-            primaryAction: UIAction { [weak self] _ in
-                self?.dismiss(animated: true)
-                self?.delegate?.unpinAllMessages()
-            },
-        )
-        view.addSubview(unpinAllButton)
-        unpinAllButton.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            unpinAllButton.bottomAnchor.constraint(equalTo: contentLayoutGuide.bottomAnchor),
-            unpinAllButton.centerXAnchor.constraint(equalTo: contentLayoutGuide.centerXAnchor),
-        ])
     }
 
     private func buildButtonAndCellStack(renderItem: CVRenderItem, message: TSMessage, reversedIndex: Int) -> UIStackView {
@@ -176,7 +174,6 @@ class PinnedMessagesDetailsViewController: OWSViewController, DatabaseChangeDele
         cellView.isCellVisible = true
         cellView.autoSetDimension(.height, toSize: renderItem.cellSize.height)
         cellView.autoSetDimension(.width, toSize: renderItem.cellSize.width)
-
         let uiContextMenuInteraction = UIContextMenuInteraction(delegate: messageLongPressDelegates[reversedIndex])
         cellView.addInteraction(uiContextMenuInteraction)
 
@@ -303,9 +300,14 @@ class PinnedMessagesDetailsViewController: OWSViewController, DatabaseChangeDele
     }
 
     func unpinMessage(itemViewModel: CVItemViewModelImpl) {
-        dismiss(animated: true)
+        // if this is the last message, dismiss then unpin, otherwise, just unpin.
         guard let message = itemViewModel.interaction as? TSMessage else { return }
-        delegate?.unpinMessage(message: message)
+        if pinnedMessages.count <= 1 {
+            dismiss(animated: true)
+            delegate?.unpinMessage(message: message, modalDelegate: nil)
+            return
+        }
+        delegate?.unpinMessage(message: message, modalDelegate: self)
     }
 }
 
