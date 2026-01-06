@@ -7,25 +7,15 @@ import Foundation
 import GRDB
 
 /// Wrapper around OrphanedAttachmentRecord table for reads/writes.
-public protocol OrphanedAttachmentStore {
-
-    func orphanAttachmentExists(
-        with id: OrphanedAttachmentRecord.RowId,
-        tx: DBReadTransaction,
-    ) -> Bool
-}
-
-public class OrphanedAttachmentStoreImpl: OrphanedAttachmentStore {
-
+public struct OrphanedAttachmentStore {
     public init() {}
 
     public func orphanAttachmentExists(
         with id: OrphanedAttachmentRecord.RowId,
         tx: DBReadTransaction,
     ) -> Bool {
-        return (try? OrphanedAttachmentRecord.exists(
-            tx.database,
-            key: id,
-        )) ?? false
+        return failIfThrows {
+            return try OrphanedAttachmentRecord.exists(tx.database, key: id)
+        }
     }
 }

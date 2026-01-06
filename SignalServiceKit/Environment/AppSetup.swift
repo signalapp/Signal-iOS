@@ -531,7 +531,7 @@ extension AppSetup.GlobalsContinuation {
             networkManager: networkManager,
         )
 
-        let orphanedAttachmentStore = OrphanedAttachmentStoreImpl()
+        let orphanedAttachmentStore = OrphanedAttachmentStore()
         let attachmentUploadStore = AttachmentUploadStoreImpl(attachmentStore: attachmentStore)
         let attachmentDownloadStore = AttachmentDownloadStoreImpl(dateProvider: dateProvider)
 
