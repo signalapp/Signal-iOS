@@ -58,12 +58,12 @@ open class AttachmentContentValidatorMock: AttachmentContentValidator {
         mimeType: String,
         renderingFlag: AttachmentReference.RenderingFlag,
         sourceFilename: String?,
-    ) async throws -> any PendingAttachment {
+    ) async throws -> PendingAttachment {
         throw OWSAssertionError("Unimplemented")
     }
 
     struct MockValidatedMessageBody: ValidatedMessageBody {
-        var oversizeText: (any PendingAttachment)? { nil }
+        var oversizeText: PendingAttachment? { nil }
         let inlinedBody: MessageBody
 
         fileprivate init(inlinedBody: MessageBody) {

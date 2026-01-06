@@ -148,7 +148,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         mimeType: String,
         renderingFlag: AttachmentReference.RenderingFlag,
         sourceFilename: String?,
-    ) async throws -> any PendingAttachment {
+    ) async throws -> PendingAttachment {
 
         // This temp file becomes the new attachment source, and will
         // be owned by that part of the process and doesn't need to be
@@ -290,30 +290,6 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
 
     // MARK: - Private
 
-    private struct PendingAttachmentImpl: PendingAttachment {
-        let blurHash: String?
-        let sha256ContentHash: Data
-        let encryptedByteCount: UInt32
-        let unencryptedByteCount: UInt32
-        let mimeType: String
-        let encryptionKey: Data
-        let digestSHA256Ciphertext: Data
-        let localRelativeFilePath: String
-        private(set) var renderingFlag: AttachmentReference.RenderingFlag
-        let sourceFilename: String?
-        let validatedContentType: Attachment.ContentType
-        let orphanRecordId: OrphanedAttachmentRecord.RowId
-
-        mutating func removeBorderlessRenderingFlagIfPresent() {
-            switch renderingFlag {
-            case .borderless:
-                renderingFlag = .default
-            default:
-                return
-            }
-        }
-    }
-
     private struct RevalidatedAttachmentImpl: RevalidatedAttachment {
         let validatedContentType: Attachment.ContentType
         let mimeType: String
@@ -323,7 +299,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
 
     private struct ValidatedMessageBodyImpl: ValidatedMessageBody {
         let inlinedBody: MessageBody
-        let oversizeText: (any PendingAttachment)?
+        let oversizeText: PendingAttachment?
     }
 
     private enum InputType {
@@ -815,7 +791,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
 
     private func prepareAttachmentFiles<Key: Hashable>(
         contentResults: [Key: ContentTypeResult],
-    ) async throws -> [Key: PendingAttachmentImpl] {
+    ) async throws -> [Key: PendingAttachment] {
         // First encrypt the files that need encrypting.
         let preparedContentResults = try contentResults.mapValues { contentResult in
             let (primaryPendingFile, primaryFileMetadata) = try encryptPrimaryFile(
@@ -845,7 +821,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             contentResults: preparedContentResults,
         )
 
-        var pendingAttachments = [Key: PendingAttachmentImpl]()
+        var pendingAttachments = [Key: PendingAttachment]()
         for (key, contentResult) in preparedContentResults {
             guard let primaryFile = contentResult.primaryFile else {
                 throw OWSAssertionError("Missing primary file!")
@@ -854,7 +830,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
                 throw OWSAssertionError("Missing orphan record!")
             }
             let input = contentResult.contentResult.input
-            pendingAttachments[key] = PendingAttachmentImpl(
+            pendingAttachments[key] = PendingAttachment(
                 blurHash: contentResult.contentResult.blurHash,
                 sha256ContentHash: input.primaryFilePlaintextHash,
                 encryptedByteCount: primaryFile.encryptedLength,

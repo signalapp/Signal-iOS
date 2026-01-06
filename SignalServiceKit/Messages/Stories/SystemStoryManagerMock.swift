@@ -135,33 +135,20 @@ public class OnboardingStoryManagerStoryMessageFactoryMock: OnboardingStoryManag
         dataSource: DataSourcePath,
         mimeType: String,
     ) async throws -> AttachmentDataSource {
-        struct FakePendingAttachment: PendingAttachment {
-            let blurHash: String? = nil
-            let sha256ContentHash: Data = Data()
-            let encryptedByteCount: UInt32 = 100
-            let unencryptedByteCount: UInt32 = 100
-            let mimeType: String
-            let encryptionKey: Data = Data()
-            let digestSHA256Ciphertext: Data = Data()
-            let localRelativeFilePath: String = ""
-            var renderingFlag: AttachmentReference.RenderingFlag = .default
-            let sourceFilename: String?
-            let validatedContentType: Attachment.ContentType = .file
-            let orphanRecordId: OrphanedAttachmentRecord.RowId = 1
-
-            mutating func removeBorderlessRenderingFlagIfPresent() {
-                switch renderingFlag {
-                case .borderless:
-                    renderingFlag = .default
-                default:
-                    return
-                }
-            }
-        }
-
-        return AttachmentDataSource.pendingAttachment(FakePendingAttachment(
+        let pendingAttachment = PendingAttachment(
+            blurHash: nil,
+            sha256ContentHash: Data(),
+            encryptedByteCount: 100,
+            unencryptedByteCount: 100,
             mimeType: mimeType,
+            encryptionKey: Data(),
+            digestSHA256Ciphertext: Data(),
+            localRelativeFilePath: "",
+            renderingFlag: .default,
             sourceFilename: dataSource.sourceFilename,
-        ))
+            validatedContentType: .file,
+            orphanRecordId: 1,
+        )
+        return AttachmentDataSource.pendingAttachment(pendingAttachment)
     }
 }

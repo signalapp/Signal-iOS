@@ -23,21 +23,28 @@ public enum AttachmentIntegrityCheck: Equatable {
     }
 }
 
-public protocol PendingAttachment {
-    var blurHash: String? { get }
-    var sha256ContentHash: Data { get }
-    var encryptedByteCount: UInt32 { get }
-    var unencryptedByteCount: UInt32 { get }
-    var mimeType: String { get }
-    var encryptionKey: Data { get }
-    var digestSHA256Ciphertext: Data { get }
-    var localRelativeFilePath: String { get }
-    var renderingFlag: AttachmentReference.RenderingFlag { get }
-    var sourceFilename: String? { get }
-    var validatedContentType: Attachment.ContentType { get }
-    var orphanRecordId: OrphanedAttachmentRecord.RowId { get }
+public struct PendingAttachment {
+    let blurHash: String?
+    let sha256ContentHash: Data
+    let encryptedByteCount: UInt32
+    let unencryptedByteCount: UInt32
+    let mimeType: String
+    let encryptionKey: Data
+    let digestSHA256Ciphertext: Data
+    let localRelativeFilePath: String
+    private(set) var renderingFlag: AttachmentReference.RenderingFlag
+    let sourceFilename: String?
+    let validatedContentType: Attachment.ContentType
+    let orphanRecordId: OrphanedAttachmentRecord.RowId
 
-    mutating func removeBorderlessRenderingFlagIfPresent()
+    mutating func removeBorderlessRenderingFlagIfPresent() {
+        switch renderingFlag {
+        case .borderless:
+            renderingFlag = .default
+        default:
+            return
+        }
+    }
 }
 
 public protocol RevalidatedAttachment {
