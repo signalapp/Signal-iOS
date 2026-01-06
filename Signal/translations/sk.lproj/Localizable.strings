@@ -1361,76 +1361,76 @@
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Zmeškaný hovor, pretože sa zmenilo bezpečnostné číslo volajúceho.";
 
 /* Footer text explaining custom issue descriptions in the call quality survey */
-"CALL_QUALITY_SURVEY_CUSTOM_ISSUE_FOOTER" = "Please include any details relevant to the issue. Anything you share here will be kept private and will only be used to help improve calls in Signal.";
+"CALL_QUALITY_SURVEY_CUSTOM_ISSUE_FOOTER" = "Popíšte svoj problém čo najdetailnejšie. Všetky vami poskytnuté informácie zostanú súkromné a budú použité len na účely zlepšenia kvality hovorov v Signale.";
 
 /* Placeholder text for the custom issue entry in the call quality survey */
-"CALL_QUALITY_SURVEY_CUSTOM_ISSUE_PLACEHOLDER" = "Describe your issue";
+"CALL_QUALITY_SURVEY_CUSTOM_ISSUE_PLACEHOLDER" = "Popíšte problém";
 
 /* Footer text explaining what debug logs contain in the call quality survey */
-"CALL_QUALITY_SURVEY_DEBUG_LOG_FOOTER" = "Debug logs contain low level app information and do not reveal any of your message contents.";
+"CALL_QUALITY_SURVEY_DEBUG_LOG_FOOTER" = "Protokoly ladenia obsahujú informácie o aplikácii na nízkej úrovni a neodhaľujú obsah správ.";
 
 /* Header text explaining the purpose of sharing debug logs in the call quality survey */
-"CALL_QUALITY_SURVEY_DEBUG_LOG_HEADER" = "Sending us your diagnostics info helps us improve call quality.";
+"CALL_QUALITY_SURVEY_DEBUG_LOG_HEADER" = "Odoslaním diagnostických informácií nám pomáhate zlepšiť kvalitu hovorov.";
 
 /* Title for the debug log sharing screen in the call quality survey */
-"CALL_QUALITY_SURVEY_DEBUG_LOG_TITLE" = "Help Us Improve";
+"CALL_QUALITY_SURVEY_DEBUG_LOG_TITLE" = "Pomôžte nám zlepšovať sa";
 
 /* Label for the toggle to share debug log in the call quality survey */
-"CALL_QUALITY_SURVEY_DEBUG_LOG_TOGGLE" = "Share Debug Log";
+"CALL_QUALITY_SURVEY_DEBUG_LOG_TOGGLE" = "Zdieľať protokol ladenia";
 
 /* Button label for indicating the call did not have issues in the call quality survey */
-"CALL_QUALITY_SURVEY_GREAT_BUTTON" = "Great";
+"CALL_QUALITY_SURVEY_GREAT_BUTTON" = "Výborná";
 
 /* Button label for indicating the call had issues in the call quality survey */
-"CALL_QUALITY_SURVEY_HAD_ISSUES_BUTTON" = "Had Issues";
+"CALL_QUALITY_SURVEY_HAD_ISSUES_BUTTON" = "Mal/a som problémy";
 
 /* Label for audio issue option in call quality survey */
-"CALL_QUALITY_SURVEY_ISSUE_AUDIO" = "Audio issue";
+"CALL_QUALITY_SURVEY_ISSUE_AUDIO" = "Problém so zvukom";
 
 /* Label for audio dropout issue option in call quality survey */
-"CALL_QUALITY_SURVEY_ISSUE_AUDIO_DROP" = "Audio Cut Out";
+"CALL_QUALITY_SURVEY_ISSUE_AUDIO_DROP" = "Výpadok zvuku";
 
 /* Label for local echo issue option in call quality survey, indicating the user heard an echo */
-"CALL_QUALITY_SURVEY_ISSUE_AUDIO_LOCAL_ECHO" = "I Heard Echo";
+"CALL_QUALITY_SURVEY_ISSUE_AUDIO_LOCAL_ECHO" = "Počul/a som ozvenu";
 
 /* Label for remote echo issue option in call quality survey, indicating other participants heard an echo */
-"CALL_QUALITY_SURVEY_ISSUE_AUDIO_REMOTE_ECHO" = "Others Heard Echo";
+"CALL_QUALITY_SURVEY_ISSUE_AUDIO_REMOTE_ECHO" = "Iní počuli ozvenu";
 
 /* Label for audio stuttering issue option in call quality survey */
-"CALL_QUALITY_SURVEY_ISSUE_AUDIO_STUTTERING" = "Audio Stuttering";
+"CALL_QUALITY_SURVEY_ISSUE_AUDIO_STUTTERING" = "Zasekávanie zvuku";
 
 /* Label for call dropped issue option in call quality survey */
-"CALL_QUALITY_SURVEY_ISSUE_CALL_DROPPED" = "Call Dropped";
+"CALL_QUALITY_SURVEY_ISSUE_CALL_DROPPED" = "Hovor prerušený";
 
 /* Label for custom issue option in call quality survey */
-"CALL_QUALITY_SURVEY_ISSUE_OTHER" = "Something Else";
+"CALL_QUALITY_SURVEY_ISSUE_OTHER" = "Niečo iné";
 
 /* Label for video issue option in call quality survey */
-"CALL_QUALITY_SURVEY_ISSUE_VIDEO" = "Video Issue";
+"CALL_QUALITY_SURVEY_ISSUE_VIDEO" = "Problém s videom";
 
 /* Label for poor video quality issue option in call quality survey */
-"CALL_QUALITY_SURVEY_ISSUE_VIDEO_LOW_QUALITY" = "Poor Video Quality";
+"CALL_QUALITY_SURVEY_ISSUE_VIDEO_LOW_QUALITY" = "Slabá kvalita videa";
 
 /* Label for low resolution video issue option in call quality survey */
-"CALL_QUALITY_SURVEY_ISSUE_VIDEO_LOW_RESOLUTION" = "Low Resolution";
+"CALL_QUALITY_SURVEY_ISSUE_VIDEO_LOW_RESOLUTION" = "Nízke rozlíšenie";
 
 /* Label for camera not working issue option in call quality survey */
-"CALL_QUALITY_SURVEY_ISSUE_VIDEO_NO_CAMERA" = "Camera Didn't Work";
+"CALL_QUALITY_SURVEY_ISSUE_VIDEO_NO_CAMERA" = "Kamera nefungovala";
 
 /* Header text on the call quality survey issues screen */
-"CALL_QUALITY_SURVEY_ISSUES_HEADER" = "Select all that apply";
+"CALL_QUALITY_SURVEY_ISSUES_HEADER" = "Vyberte všetky relevantné možnosti";
 
 /* Title for the sheet in the call quality survey where issues with the call can be selected */
-"CALL_QUALITY_SURVEY_ISSUES_SHEET_TITLE" = "What Issues Did You Have?";
+"CALL_QUALITY_SURVEY_ISSUES_SHEET_TITLE" = "O aký problém išlo?";
 
 /* Header text explaining the purpose of the call quality survey */
-"CALL_QUALITY_SURVEY_RATING_HEADER" = "This helps us improve calls in Signal. No personally identifiable information will be stored.";
+"CALL_QUALITY_SURVEY_RATING_HEADER" = "Vaša spätná väzba nám pomáha zlepšiť kvalitu hovorov v Signale. Vaše osobné údaje nebudú uložené.";
 
 /* Title for the initial rating screen in the call quality survey */
-"CALL_QUALITY_SURVEY_RATING_TITLE" = "How Was Your Call?";
+"CALL_QUALITY_SURVEY_RATING_TITLE" = "Aká bola kvalita vášho hovoru?";
 
 /* Button text to submit the call quality survey */
-"CALL_QUALITY_SURVEY_SUBMIT_BUTTON" = "Submit";
+"CALL_QUALITY_SURVEY_SUBMIT_BUTTON" = "Potvrdiť";
 
 /* Label on button for raising hand in call. */
 "CALL_RAISE_HAND_BUTTON_LABEL" = "Zdvihnúť ruku";
@@ -2732,7 +2732,7 @@
 "DEVICE_TRANSFER_STATUS_NEW_DEVICE_CONNECTING_MESSAGE" = "Priblížte staré zariadenie a uistite sa, že máte zapnuté Wi-Fi a Bluetooth.";
 
 /* Status message on new device when transfer is starting. */
-"DEVICE_TRANSFER_STATUS_NEW_DEVICE_STARTING" = "Waiting to connect to old device…";
+"DEVICE_TRANSFER_STATUS_NEW_DEVICE_STARTING" = "Čaká sa na pripojenie k starému zariadeniu…";
 
 /* Description in the progress view displayed after failure of device transfer. */
 "DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFER_FAILED_BODY" = "Prenos do nového zariadenia zlyhal. Priblížte staré zariadenie a skúste to znova.";
@@ -2756,10 +2756,10 @@
 "DEVICE_TRANSFER_STATUS_OLD_DEVICE_CONNECTING_MESSAGE" = "Priblížte nové zariadenie a uistite sa, že máte zapnuté Wi-Fi a Bluetooth.";
 
 /* Status message on old device when transfer is starting. */
-"DEVICE_TRANSFER_STATUS_OLD_DEVICE_STARTING" = "Waiting to connect to new device…";
+"DEVICE_TRANSFER_STATUS_OLD_DEVICE_STARTING" = "Čaká sa na pripojenie k novému zariadeniu…";
 
 /* Action asking user to try again after transfer failure. */
-"DEVICE_TRANSFER_TRY_AGAIN_ACTION" = "Try Again";
+"DEVICE_TRANSFER_TRY_AGAIN_ACTION" = "Skúsiť znovu";
 
 /* table cell label in conversation settings */
 "DISAPPEARING_MESSAGES" = "Miznúce správy";
@@ -6566,7 +6566,7 @@
 "PINNED_MESSAGE_CHAT_EVENT_SELF" = "Pripli ste správu";
 
 /* Label for button to pin a message */
-"PINNED_MESSAGE_PIN_ACTION_TITLE" = "Pin";
+"PINNED_MESSAGE_PIN_ACTION_TITLE" = "Pripnúť";
 
 /* Message for an action sheet confirming the user wants to replace oldest pinned message. */
 "PINNED_MESSAGE_REPLACE_OLDEST_BODY" = "Pripnutá správa nahradí tú najstaršiu.";
@@ -6587,25 +6587,25 @@
 "PINNED_MESSAGE_TOAST" = "Správa bola odopnutá";
 
 /* Label for button to unpin a message */
-"PINNED_MESSAGE_UNPIN_ACTION_TITLE" = "Unpin";
+"PINNED_MESSAGE_UNPIN_ACTION_TITLE" = "Odopnúť";
 
 /* Option in pinned message action sheet to pin for 24 hours. */
-"PINNED_MESSAGES_24_HOURS" = "24 Hours";
+"PINNED_MESSAGES_24_HOURS" = "24 hodín";
 
 /* Option in pinned message action sheet to pin for 30 days. */
-"PINNED_MESSAGES_30_DAYS" = "30 Days";
+"PINNED_MESSAGES_30_DAYS" = "30 dní";
 
 /* Option in pinned message action sheet to pin for 7 days. */
-"PINNED_MESSAGES_7_DAYS" = "7 Days";
+"PINNED_MESSAGES_7_DAYS" = "7 dní";
 
 /* Title for Pinned Messages detail view */
 "PINNED_MESSAGES_DETAILS_TITLE" = "Pripnuté správy";
 
 /* Title for an action sheet to indicate how long to keep the pin active */
-"PINNED_MESSAGES_EXPIRY_SHEET_TITLE" = "Keep pinned for...";
+"PINNED_MESSAGES_EXPIRY_SHEET_TITLE" = "Ponechať pripnuté…";
 
 /* Option in pinned message action sheet to pin with no expiry. */
-"PINNED_MESSAGES_FOREVER" = "Forever";
+"PINNED_MESSAGES_FOREVER" = "Navždy";
 
 /* Action menu item to go to a message in the conversation view */
 "PINNED_MESSAGES_GO_TO_MESSAGE" = "Prejsť na správu";
@@ -6614,7 +6614,7 @@
 "PINNED_MESSAGES_SEE_ALL_MESSAGES" = "Zobraziť všetky správy";
 
 /* Action menu item to unpin a message */
-"PINNED_MESSAGES_UNPIN" = "Unpin";
+"PINNED_MESSAGES_UNPIN" = "Odopnúť";
 
 /* The title for pinned conversation section on the conversation list */
 "PINNED_SECTION_TITLE" = "Pripnuté";
@@ -7283,7 +7283,7 @@
 "REGISTRATION_SCAN_QR_CODE_FAILED_TITLE" = "Obnovenie zlyhalo";
 
 /* Title for screen containing QR code that users scan with their old phone when they want to transfer/restore their message history to a new device. */
-"REGISTRATION_SCAN_QR_CODE_TITLE" = "Scan this code with your old device";
+"REGISTRATION_SCAN_QR_CODE_TITLE" = "Naskenujte tento kód pomocou svojho starého zariadenia";
 
 /* Tutorial text describing the first step to scanning the restore/transfer QR code with your old phone: opening Signal */
 "REGISTRATION_SCAN_QR_CODE_TUTORIAL_OPEN_SIGNAL" = "Otvorte Signal na svojom starom zariadení";

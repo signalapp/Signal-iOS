@@ -1361,76 +1361,76 @@
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ મિસ કૉલ કારણ કે કૉલરનો સલામતી નંબર બદલાયો છે.";
 
 /* Footer text explaining custom issue descriptions in the call quality survey */
-"CALL_QUALITY_SURVEY_CUSTOM_ISSUE_FOOTER" = "Please include any details relevant to the issue. Anything you share here will be kept private and will only be used to help improve calls in Signal.";
+"CALL_QUALITY_SURVEY_CUSTOM_ISSUE_FOOTER" = "કૃપા કરીને સમસ્યાને લગતી કોઈ પણ વિગતો શામેલ કરો. તમે અહીં જે કંઈ પણ શેર કરશો તે ખાનગી રાખવામાં આવશે અને તેનો ઉપયોગ ફક્ત Signalમાં કૉલને બહેતર બનાવવામાં મદદ માટે કરવામાં આવશે.";
 
 /* Placeholder text for the custom issue entry in the call quality survey */
-"CALL_QUALITY_SURVEY_CUSTOM_ISSUE_PLACEHOLDER" = "Describe your issue";
+"CALL_QUALITY_SURVEY_CUSTOM_ISSUE_PLACEHOLDER" = "તમારી સમસ્યાનું વર્ણન કરો";
 
 /* Footer text explaining what debug logs contain in the call quality survey */
-"CALL_QUALITY_SURVEY_DEBUG_LOG_FOOTER" = "Debug logs contain low level app information and do not reveal any of your message contents.";
+"CALL_QUALITY_SURVEY_DEBUG_LOG_FOOTER" = "ડીબગ લૉગમાં ઓછા સ્તરની ઍપ માહિતી હોય છે અને તે તમારા મેસેજનું કોઈ પણ કન્ટેન્ટ જાહેર કરતું નથી.";
 
 /* Header text explaining the purpose of sharing debug logs in the call quality survey */
-"CALL_QUALITY_SURVEY_DEBUG_LOG_HEADER" = "Sending us your diagnostics info helps us improve call quality.";
+"CALL_QUALITY_SURVEY_DEBUG_LOG_HEADER" = "અમને તમારી ડાયગ્નોસ્ટિક્સ માહિતી મોકલવાથી અમને કૉલની ગુણવત્તા સુધારવામાં મદદ મળે છે.";
 
 /* Title for the debug log sharing screen in the call quality survey */
-"CALL_QUALITY_SURVEY_DEBUG_LOG_TITLE" = "Help Us Improve";
+"CALL_QUALITY_SURVEY_DEBUG_LOG_TITLE" = "અમને બહેતર બનાવવામાં મદદ કરો";
 
 /* Label for the toggle to share debug log in the call quality survey */
-"CALL_QUALITY_SURVEY_DEBUG_LOG_TOGGLE" = "Share Debug Log";
+"CALL_QUALITY_SURVEY_DEBUG_LOG_TOGGLE" = "ડીબગ લૉગ શેર કરો";
 
 /* Button label for indicating the call did not have issues in the call quality survey */
-"CALL_QUALITY_SURVEY_GREAT_BUTTON" = "Great";
+"CALL_QUALITY_SURVEY_GREAT_BUTTON" = "ખૂબ સરસ";
 
 /* Button label for indicating the call had issues in the call quality survey */
-"CALL_QUALITY_SURVEY_HAD_ISSUES_BUTTON" = "Had Issues";
+"CALL_QUALITY_SURVEY_HAD_ISSUES_BUTTON" = "સમસ્યાઓ હતી";
 
 /* Label for audio issue option in call quality survey */
-"CALL_QUALITY_SURVEY_ISSUE_AUDIO" = "Audio issue";
+"CALL_QUALITY_SURVEY_ISSUE_AUDIO" = "ઓડિયો સમસ્યા";
 
 /* Label for audio dropout issue option in call quality survey */
-"CALL_QUALITY_SURVEY_ISSUE_AUDIO_DROP" = "Audio Cut Out";
+"CALL_QUALITY_SURVEY_ISSUE_AUDIO_DROP" = "ઓડિયો કટ આઉટ";
 
 /* Label for local echo issue option in call quality survey, indicating the user heard an echo */
-"CALL_QUALITY_SURVEY_ISSUE_AUDIO_LOCAL_ECHO" = "I Heard Echo";
+"CALL_QUALITY_SURVEY_ISSUE_AUDIO_LOCAL_ECHO" = "મને પડઘો સંભળાતો હતો";
 
 /* Label for remote echo issue option in call quality survey, indicating other participants heard an echo */
-"CALL_QUALITY_SURVEY_ISSUE_AUDIO_REMOTE_ECHO" = "Others Heard Echo";
+"CALL_QUALITY_SURVEY_ISSUE_AUDIO_REMOTE_ECHO" = "બીજા લોકોએ પડઘો સાંભળ્યો";
 
 /* Label for audio stuttering issue option in call quality survey */
-"CALL_QUALITY_SURVEY_ISSUE_AUDIO_STUTTERING" = "Audio Stuttering";
+"CALL_QUALITY_SURVEY_ISSUE_AUDIO_STUTTERING" = "ઓડિયો સ્ટટરિંગ";
 
 /* Label for call dropped issue option in call quality survey */
-"CALL_QUALITY_SURVEY_ISSUE_CALL_DROPPED" = "Call Dropped";
+"CALL_QUALITY_SURVEY_ISSUE_CALL_DROPPED" = "કૉલ ડ્રોપ થયો";
 
 /* Label for custom issue option in call quality survey */
-"CALL_QUALITY_SURVEY_ISSUE_OTHER" = "Something Else";
+"CALL_QUALITY_SURVEY_ISSUE_OTHER" = "બીજું કંઈક";
 
 /* Label for video issue option in call quality survey */
-"CALL_QUALITY_SURVEY_ISSUE_VIDEO" = "Video Issue";
+"CALL_QUALITY_SURVEY_ISSUE_VIDEO" = "વીડિયો સમસ્યા";
 
 /* Label for poor video quality issue option in call quality survey */
-"CALL_QUALITY_SURVEY_ISSUE_VIDEO_LOW_QUALITY" = "Poor Video Quality";
+"CALL_QUALITY_SURVEY_ISSUE_VIDEO_LOW_QUALITY" = "નબળી વીડિયો ગુણવત્તા";
 
 /* Label for low resolution video issue option in call quality survey */
-"CALL_QUALITY_SURVEY_ISSUE_VIDEO_LOW_RESOLUTION" = "Low Resolution";
+"CALL_QUALITY_SURVEY_ISSUE_VIDEO_LOW_RESOLUTION" = "ઓછું રિઝોલ્યુશન";
 
 /* Label for camera not working issue option in call quality survey */
-"CALL_QUALITY_SURVEY_ISSUE_VIDEO_NO_CAMERA" = "Camera Didn't Work";
+"CALL_QUALITY_SURVEY_ISSUE_VIDEO_NO_CAMERA" = "કેમેરા કામ કરતો ન હતો";
 
 /* Header text on the call quality survey issues screen */
-"CALL_QUALITY_SURVEY_ISSUES_HEADER" = "Select all that apply";
+"CALL_QUALITY_SURVEY_ISSUES_HEADER" = "લાગુ પડતું બધું પસંદ કરો";
 
 /* Title for the sheet in the call quality survey where issues with the call can be selected */
-"CALL_QUALITY_SURVEY_ISSUES_SHEET_TITLE" = "What Issues Did You Have?";
+"CALL_QUALITY_SURVEY_ISSUES_SHEET_TITLE" = "તમને કઈ સમસ્યાઓ હતી?";
 
 /* Header text explaining the purpose of the call quality survey */
-"CALL_QUALITY_SURVEY_RATING_HEADER" = "This helps us improve calls in Signal. No personally identifiable information will be stored.";
+"CALL_QUALITY_SURVEY_RATING_HEADER" = "આ અમને Signalમાં કૉલને બહેતર બનાવવામાં મદદ કરે છે. કોઈ વ્યક્તિગત રીતે ઓળખી શકાય તેવી માહિતી સંગ્રહિત કરવામાં આવશે નહીં.";
 
 /* Title for the initial rating screen in the call quality survey */
-"CALL_QUALITY_SURVEY_RATING_TITLE" = "How Was Your Call?";
+"CALL_QUALITY_SURVEY_RATING_TITLE" = "તમારો કૉલ કેવો રહ્યો?";
 
 /* Button text to submit the call quality survey */
-"CALL_QUALITY_SURVEY_SUBMIT_BUTTON" = "Submit";
+"CALL_QUALITY_SURVEY_SUBMIT_BUTTON" = "સબમિટ કરો";
 
 /* Label on button for raising hand in call. */
 "CALL_RAISE_HAND_BUTTON_LABEL" = "હાથ ઊંચો કરો";
@@ -2732,7 +2732,7 @@
 "DEVICE_TRANSFER_STATUS_NEW_DEVICE_CONNECTING_MESSAGE" = "તમારા જૂના ડિવાઇસને નજીકમાં લાવો અને ખાતરી કરો કે Wi-Fi અને Bluetooth સક્ષમ છે.";
 
 /* Status message on new device when transfer is starting. */
-"DEVICE_TRANSFER_STATUS_NEW_DEVICE_STARTING" = "Waiting to connect to old device…";
+"DEVICE_TRANSFER_STATUS_NEW_DEVICE_STARTING" = "જૂના ડિવાઇસ સાથે કનેક્ટ થવાની રાહ જોઈ રહ્યાં છે…";
 
 /* Description in the progress view displayed after failure of device transfer. */
 "DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFER_FAILED_BODY" = "નવા ડિવાઇસ પર ટ્રાન્સફર કરવાનું નિષ્ફળ થયું. તમારા જૂના ડિવાઇસને નજીકમાં લાવો અને કૃપા કરીને ફરી પ્રયાસ કરો.";
@@ -2756,10 +2756,10 @@
 "DEVICE_TRANSFER_STATUS_OLD_DEVICE_CONNECTING_MESSAGE" = "તમારા નવા ડિવાઇસને નજીકમાં લાવો અને ખાતરી કરો કે Wi-Fi અને Bluetooth સક્ષમ છે.";
 
 /* Status message on old device when transfer is starting. */
-"DEVICE_TRANSFER_STATUS_OLD_DEVICE_STARTING" = "Waiting to connect to new device…";
+"DEVICE_TRANSFER_STATUS_OLD_DEVICE_STARTING" = "નવા ડિવાઇસ સાથે કનેક્ટ થવાની રાહ જોઈ રહ્યાં છે…";
 
 /* Action asking user to try again after transfer failure. */
-"DEVICE_TRANSFER_TRY_AGAIN_ACTION" = "Try Again";
+"DEVICE_TRANSFER_TRY_AGAIN_ACTION" = "ફરીથી પ્રયત્ન કરો";
 
 /* table cell label in conversation settings */
 "DISAPPEARING_MESSAGES" = "અદૃશ્ય થઈ રહેલા મેસેજ";
@@ -6566,7 +6566,7 @@
 "PINNED_MESSAGE_CHAT_EVENT_SELF" = "તમે એક મેસેજને પિન કર્યો";
 
 /* Label for button to pin a message */
-"PINNED_MESSAGE_PIN_ACTION_TITLE" = "Pin";
+"PINNED_MESSAGE_PIN_ACTION_TITLE" = "પિન કરો";
 
 /* Message for an action sheet confirming the user wants to replace oldest pinned message. */
 "PINNED_MESSAGE_REPLACE_OLDEST_BODY" = "મેસેજને પિન કરવાથી સૌથી જૂનો મેસેજ બદલાઈ જશે.";
@@ -6587,25 +6587,25 @@
 "PINNED_MESSAGE_TOAST" = "મેસેજ અનપિન કર્યો";
 
 /* Label for button to unpin a message */
-"PINNED_MESSAGE_UNPIN_ACTION_TITLE" = "Unpin";
+"PINNED_MESSAGE_UNPIN_ACTION_TITLE" = "અનપિન કરો";
 
 /* Option in pinned message action sheet to pin for 24 hours. */
-"PINNED_MESSAGES_24_HOURS" = "24 Hours";
+"PINNED_MESSAGES_24_HOURS" = "24 કલાક";
 
 /* Option in pinned message action sheet to pin for 30 days. */
-"PINNED_MESSAGES_30_DAYS" = "30 Days";
+"PINNED_MESSAGES_30_DAYS" = "30 દિવસ";
 
 /* Option in pinned message action sheet to pin for 7 days. */
-"PINNED_MESSAGES_7_DAYS" = "7 Days";
+"PINNED_MESSAGES_7_DAYS" = "7 દિવસ";
 
 /* Title for Pinned Messages detail view */
 "PINNED_MESSAGES_DETAILS_TITLE" = "પિન કરેલા મેસેજ";
 
 /* Title for an action sheet to indicate how long to keep the pin active */
-"PINNED_MESSAGES_EXPIRY_SHEET_TITLE" = "Keep pinned for...";
+"PINNED_MESSAGES_EXPIRY_SHEET_TITLE" = "આટલા સમય માટે પિન કરેલ રાખો...";
 
 /* Option in pinned message action sheet to pin with no expiry. */
-"PINNED_MESSAGES_FOREVER" = "Forever";
+"PINNED_MESSAGES_FOREVER" = "હંમેશા";
 
 /* Action menu item to go to a message in the conversation view */
 "PINNED_MESSAGES_GO_TO_MESSAGE" = "મેસેજ પર જાઓ";
@@ -6614,7 +6614,7 @@
 "PINNED_MESSAGES_SEE_ALL_MESSAGES" = "બધા મેસેજ જુઓ";
 
 /* Action menu item to unpin a message */
-"PINNED_MESSAGES_UNPIN" = "Unpin";
+"PINNED_MESSAGES_UNPIN" = "અનપિન કરો";
 
 /* The title for pinned conversation section on the conversation list */
 "PINNED_SECTION_TITLE" = "પિન કરેલું";
@@ -7283,7 +7283,7 @@
 "REGISTRATION_SCAN_QR_CODE_FAILED_TITLE" = "રિસ્ટોર નિષ્ફળ થયું";
 
 /* Title for screen containing QR code that users scan with their old phone when they want to transfer/restore their message history to a new device. */
-"REGISTRATION_SCAN_QR_CODE_TITLE" = "Scan this code with your old device";
+"REGISTRATION_SCAN_QR_CODE_TITLE" = "આ કોડને તમારા જૂના ડિવાઇસથી સ્કેન કરો";
 
 /* Tutorial text describing the first step to scanning the restore/transfer QR code with your old phone: opening Signal */
 "REGISTRATION_SCAN_QR_CODE_TUTORIAL_OPEN_SIGNAL" = "તમારા જૂના ડિવાઇસ પર Signal ખોલો";

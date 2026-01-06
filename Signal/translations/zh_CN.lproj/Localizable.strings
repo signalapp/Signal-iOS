@@ -1361,76 +1361,76 @@
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ 未接来电，因为对方的安全码发生了变化。";
 
 /* Footer text explaining custom issue descriptions in the call quality survey */
-"CALL_QUALITY_SURVEY_CUSTOM_ISSUE_FOOTER" = "Please include any details relevant to the issue. Anything you share here will be kept private and will only be used to help improve calls in Signal.";
+"CALL_QUALITY_SURVEY_CUSTOM_ISSUE_FOOTER" = "请提供与问题相关的任何详细信息。您在此分享的任何内容都将保密，并且仅会用于帮助改进 Signal 的通话质量。";
 
 /* Placeholder text for the custom issue entry in the call quality survey */
-"CALL_QUALITY_SURVEY_CUSTOM_ISSUE_PLACEHOLDER" = "Describe your issue";
+"CALL_QUALITY_SURVEY_CUSTOM_ISSUE_PLACEHOLDER" = "请描述您遇到的问题";
 
 /* Footer text explaining what debug logs contain in the call quality survey */
-"CALL_QUALITY_SURVEY_DEBUG_LOG_FOOTER" = "Debug logs contain low level app information and do not reveal any of your message contents.";
+"CALL_QUALITY_SURVEY_DEBUG_LOG_FOOTER" = "调试日志包含低级应用程序信息，不会显示任何消息内容。";
 
 /* Header text explaining the purpose of sharing debug logs in the call quality survey */
-"CALL_QUALITY_SURVEY_DEBUG_LOG_HEADER" = "Sending us your diagnostics info helps us improve call quality.";
+"CALL_QUALITY_SURVEY_DEBUG_LOG_HEADER" = "给我们发送诊断信息有助于我们改进通话质量。";
 
 /* Title for the debug log sharing screen in the call quality survey */
-"CALL_QUALITY_SURVEY_DEBUG_LOG_TITLE" = "Help Us Improve";
+"CALL_QUALITY_SURVEY_DEBUG_LOG_TITLE" = "帮助我们不断改进";
 
 /* Label for the toggle to share debug log in the call quality survey */
-"CALL_QUALITY_SURVEY_DEBUG_LOG_TOGGLE" = "Share Debug Log";
+"CALL_QUALITY_SURVEY_DEBUG_LOG_TOGGLE" = "分享调试日志";
 
 /* Button label for indicating the call did not have issues in the call quality survey */
-"CALL_QUALITY_SURVEY_GREAT_BUTTON" = "Great";
+"CALL_QUALITY_SURVEY_GREAT_BUTTON" = "很好";
 
 /* Button label for indicating the call had issues in the call quality survey */
-"CALL_QUALITY_SURVEY_HAD_ISSUES_BUTTON" = "Had Issues";
+"CALL_QUALITY_SURVEY_HAD_ISSUES_BUTTON" = "有问题";
 
 /* Label for audio issue option in call quality survey */
-"CALL_QUALITY_SURVEY_ISSUE_AUDIO" = "Audio issue";
+"CALL_QUALITY_SURVEY_ISSUE_AUDIO" = "音频问题";
 
 /* Label for audio dropout issue option in call quality survey */
-"CALL_QUALITY_SURVEY_ISSUE_AUDIO_DROP" = "Audio Cut Out";
+"CALL_QUALITY_SURVEY_ISSUE_AUDIO_DROP" = "音频中断";
 
 /* Label for local echo issue option in call quality survey, indicating the user heard an echo */
-"CALL_QUALITY_SURVEY_ISSUE_AUDIO_LOCAL_ECHO" = "I Heard Echo";
+"CALL_QUALITY_SURVEY_ISSUE_AUDIO_LOCAL_ECHO" = "我听到了回声";
 
 /* Label for remote echo issue option in call quality survey, indicating other participants heard an echo */
-"CALL_QUALITY_SURVEY_ISSUE_AUDIO_REMOTE_ECHO" = "Others Heard Echo";
+"CALL_QUALITY_SURVEY_ISSUE_AUDIO_REMOTE_ECHO" = "其他人听到了回声";
 
 /* Label for audio stuttering issue option in call quality survey */
-"CALL_QUALITY_SURVEY_ISSUE_AUDIO_STUTTERING" = "Audio Stuttering";
+"CALL_QUALITY_SURVEY_ISSUE_AUDIO_STUTTERING" = "音频卡顿";
 
 /* Label for call dropped issue option in call quality survey */
-"CALL_QUALITY_SURVEY_ISSUE_CALL_DROPPED" = "Call Dropped";
+"CALL_QUALITY_SURVEY_ISSUE_CALL_DROPPED" = "通话中断";
 
 /* Label for custom issue option in call quality survey */
-"CALL_QUALITY_SURVEY_ISSUE_OTHER" = "Something Else";
+"CALL_QUALITY_SURVEY_ISSUE_OTHER" = "其他";
 
 /* Label for video issue option in call quality survey */
-"CALL_QUALITY_SURVEY_ISSUE_VIDEO" = "Video Issue";
+"CALL_QUALITY_SURVEY_ISSUE_VIDEO" = "视频问题";
 
 /* Label for poor video quality issue option in call quality survey */
-"CALL_QUALITY_SURVEY_ISSUE_VIDEO_LOW_QUALITY" = "Poor Video Quality";
+"CALL_QUALITY_SURVEY_ISSUE_VIDEO_LOW_QUALITY" = "视频质量差";
 
 /* Label for low resolution video issue option in call quality survey */
-"CALL_QUALITY_SURVEY_ISSUE_VIDEO_LOW_RESOLUTION" = "Low Resolution";
+"CALL_QUALITY_SURVEY_ISSUE_VIDEO_LOW_RESOLUTION" = "分辨率低";
 
 /* Label for camera not working issue option in call quality survey */
-"CALL_QUALITY_SURVEY_ISSUE_VIDEO_NO_CAMERA" = "Camera Didn't Work";
+"CALL_QUALITY_SURVEY_ISSUE_VIDEO_NO_CAMERA" = "摄像头无法工作";
 
 /* Header text on the call quality survey issues screen */
-"CALL_QUALITY_SURVEY_ISSUES_HEADER" = "Select all that apply";
+"CALL_QUALITY_SURVEY_ISSUES_HEADER" = "请选择所有适用的选项";
 
 /* Title for the sheet in the call quality survey where issues with the call can be selected */
-"CALL_QUALITY_SURVEY_ISSUES_SHEET_TITLE" = "What Issues Did You Have?";
+"CALL_QUALITY_SURVEY_ISSUES_SHEET_TITLE" = "您遇到了什么问题？";
 
 /* Header text explaining the purpose of the call quality survey */
-"CALL_QUALITY_SURVEY_RATING_HEADER" = "This helps us improve calls in Signal. No personally identifiable information will be stored.";
+"CALL_QUALITY_SURVEY_RATING_HEADER" = "您的反馈有助于我们改进 Signal 的通话质量。我们不会存储任何个人身份信息。";
 
 /* Title for the initial rating screen in the call quality survey */
-"CALL_QUALITY_SURVEY_RATING_TITLE" = "How Was Your Call?";
+"CALL_QUALITY_SURVEY_RATING_TITLE" = "您的通话质量如何？";
 
 /* Button text to submit the call quality survey */
-"CALL_QUALITY_SURVEY_SUBMIT_BUTTON" = "Submit";
+"CALL_QUALITY_SURVEY_SUBMIT_BUTTON" = "提交";
 
 /* Label on button for raising hand in call. */
 "CALL_RAISE_HAND_BUTTON_LABEL" = "举手";
@@ -2732,7 +2732,7 @@
 "DEVICE_TRANSFER_STATUS_NEW_DEVICE_CONNECTING_MESSAGE" = "请将您的旧设备放在附近，并确保已启用 Wi-Fi 和蓝牙。";
 
 /* Status message on new device when transfer is starting. */
-"DEVICE_TRANSFER_STATUS_NEW_DEVICE_STARTING" = "Waiting to connect to old device…";
+"DEVICE_TRANSFER_STATUS_NEW_DEVICE_STARTING" = "正在等待连接到旧设备…";
 
 /* Description in the progress view displayed after failure of device transfer. */
 "DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFER_FAILED_BODY" = "转移到新设备失败。请将您的旧设备放在附近，然后重试。";
@@ -2756,10 +2756,10 @@
 "DEVICE_TRANSFER_STATUS_OLD_DEVICE_CONNECTING_MESSAGE" = "请将您的新设备放在附近，并确保已启用 Wi-Fi 和蓝牙。";
 
 /* Status message on old device when transfer is starting. */
-"DEVICE_TRANSFER_STATUS_OLD_DEVICE_STARTING" = "Waiting to connect to new device…";
+"DEVICE_TRANSFER_STATUS_OLD_DEVICE_STARTING" = "正在等待连接到新设备…";
 
 /* Action asking user to try again after transfer failure. */
-"DEVICE_TRANSFER_TRY_AGAIN_ACTION" = "Try Again";
+"DEVICE_TRANSFER_TRY_AGAIN_ACTION" = "重试";
 
 /* table cell label in conversation settings */
 "DISAPPEARING_MESSAGES" = "阅后即焚";
@@ -6566,7 +6566,7 @@
 "PINNED_MESSAGE_CHAT_EVENT_SELF" = "您置顶了一条消息";
 
 /* Label for button to pin a message */
-"PINNED_MESSAGE_PIN_ACTION_TITLE" = "Pin";
+"PINNED_MESSAGE_PIN_ACTION_TITLE" = "置顶";
 
 /* Message for an action sheet confirming the user wants to replace oldest pinned message. */
 "PINNED_MESSAGE_REPLACE_OLDEST_BODY" = "置顶消息将替换最早的置顶消息。";
@@ -6587,25 +6587,25 @@
 "PINNED_MESSAGE_TOAST" = "消息已取消置顶";
 
 /* Label for button to unpin a message */
-"PINNED_MESSAGE_UNPIN_ACTION_TITLE" = "Unpin";
+"PINNED_MESSAGE_UNPIN_ACTION_TITLE" = "取消置顶";
 
 /* Option in pinned message action sheet to pin for 24 hours. */
-"PINNED_MESSAGES_24_HOURS" = "24 Hours";
+"PINNED_MESSAGES_24_HOURS" = "24 小时";
 
 /* Option in pinned message action sheet to pin for 30 days. */
-"PINNED_MESSAGES_30_DAYS" = "30 Days";
+"PINNED_MESSAGES_30_DAYS" = "30 天";
 
 /* Option in pinned message action sheet to pin for 7 days. */
-"PINNED_MESSAGES_7_DAYS" = "7 Days";
+"PINNED_MESSAGES_7_DAYS" = "7 天";
 
 /* Title for Pinned Messages detail view */
 "PINNED_MESSAGES_DETAILS_TITLE" = "置顶的消息";
 
 /* Title for an action sheet to indicate how long to keep the pin active */
-"PINNED_MESSAGES_EXPIRY_SHEET_TITLE" = "Keep pinned for...";
+"PINNED_MESSAGES_EXPIRY_SHEET_TITLE" = "置顶时长...";
 
 /* Option in pinned message action sheet to pin with no expiry. */
-"PINNED_MESSAGES_FOREVER" = "Forever";
+"PINNED_MESSAGES_FOREVER" = "永久";
 
 /* Action menu item to go to a message in the conversation view */
 "PINNED_MESSAGES_GO_TO_MESSAGE" = "前往消息";
@@ -6614,7 +6614,7 @@
 "PINNED_MESSAGES_SEE_ALL_MESSAGES" = "查看所有消息";
 
 /* Action menu item to unpin a message */
-"PINNED_MESSAGES_UNPIN" = "Unpin";
+"PINNED_MESSAGES_UNPIN" = "取消置顶";
 
 /* The title for pinned conversation section on the conversation list */
 "PINNED_SECTION_TITLE" = "已置顶";
@@ -7283,7 +7283,7 @@
 "REGISTRATION_SCAN_QR_CODE_FAILED_TITLE" = "恢复失败";
 
 /* Title for screen containing QR code that users scan with their old phone when they want to transfer/restore their message history to a new device. */
-"REGISTRATION_SCAN_QR_CODE_TITLE" = "Scan this code with your old device";
+"REGISTRATION_SCAN_QR_CODE_TITLE" = "用您的旧设备扫描此二维码";
 
 /* Tutorial text describing the first step to scanning the restore/transfer QR code with your old phone: opening Signal */
 "REGISTRATION_SCAN_QR_CODE_TUTORIAL_OPEN_SIGNAL" = "在您的旧设备上打开 Signal";

@@ -1361,76 +1361,76 @@
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ تماس برقرار نشد چون شماره امنیتی تماس گیرنده تغییر کرد.";
 
 /* Footer text explaining custom issue descriptions in the call quality survey */
-"CALL_QUALITY_SURVEY_CUSTOM_ISSUE_FOOTER" = "Please include any details relevant to the issue. Anything you share here will be kept private and will only be used to help improve calls in Signal.";
+"CALL_QUALITY_SURVEY_CUSTOM_ISSUE_FOOTER" = "لطفاً هرگونه جزئیات مرتبط با مشکل را ارائه دهید. هرچه که با ما به اشتراک می‌گذارید خصوصی خواهد ماند و فقط برای کمک به بهبود تماس‌ها در سیگنال استفاده خواهد شد.";
 
 /* Placeholder text for the custom issue entry in the call quality survey */
-"CALL_QUALITY_SURVEY_CUSTOM_ISSUE_PLACEHOLDER" = "Describe your issue";
+"CALL_QUALITY_SURVEY_CUSTOM_ISSUE_PLACEHOLDER" = "مشکلتان را شرح دهید";
 
 /* Footer text explaining what debug logs contain in the call quality survey */
-"CALL_QUALITY_SURVEY_DEBUG_LOG_FOOTER" = "Debug logs contain low level app information and do not reveal any of your message contents.";
+"CALL_QUALITY_SURVEY_DEBUG_LOG_FOOTER" = "گزارش‌های عیب‌یابی حاوی اطلاعات سطح پایین برنامه هستند و هیچ‌یک از محتواهای پیام شما را افشا نمی‌کنند.";
 
 /* Header text explaining the purpose of sharing debug logs in the call quality survey */
-"CALL_QUALITY_SURVEY_DEBUG_LOG_HEADER" = "Sending us your diagnostics info helps us improve call quality.";
+"CALL_QUALITY_SURVEY_DEBUG_LOG_HEADER" = "ارسال اطلاعات عیب‌یابی‌تان به ما کمک می‌کند کیفیت تماس‌ها را بهبود دهیم.";
 
 /* Title for the debug log sharing screen in the call quality survey */
-"CALL_QUALITY_SURVEY_DEBUG_LOG_TITLE" = "Help Us Improve";
+"CALL_QUALITY_SURVEY_DEBUG_LOG_TITLE" = "کمک کنید بهتر شویم";
 
 /* Label for the toggle to share debug log in the call quality survey */
-"CALL_QUALITY_SURVEY_DEBUG_LOG_TOGGLE" = "Share Debug Log";
+"CALL_QUALITY_SURVEY_DEBUG_LOG_TOGGLE" = "هم‌رسانی گزارش اشکال‌زدایی";
 
 /* Button label for indicating the call did not have issues in the call quality survey */
-"CALL_QUALITY_SURVEY_GREAT_BUTTON" = "Great";
+"CALL_QUALITY_SURVEY_GREAT_BUTTON" = "عالی بود";
 
 /* Button label for indicating the call had issues in the call quality survey */
-"CALL_QUALITY_SURVEY_HAD_ISSUES_BUTTON" = "Had Issues";
+"CALL_QUALITY_SURVEY_HAD_ISSUES_BUTTON" = "مشکل داشت";
 
 /* Label for audio issue option in call quality survey */
-"CALL_QUALITY_SURVEY_ISSUE_AUDIO" = "Audio issue";
+"CALL_QUALITY_SURVEY_ISSUE_AUDIO" = "مشکل صدا";
 
 /* Label for audio dropout issue option in call quality survey */
-"CALL_QUALITY_SURVEY_ISSUE_AUDIO_DROP" = "Audio Cut Out";
+"CALL_QUALITY_SURVEY_ISSUE_AUDIO_DROP" = "قطع صدا";
 
 /* Label for local echo issue option in call quality survey, indicating the user heard an echo */
-"CALL_QUALITY_SURVEY_ISSUE_AUDIO_LOCAL_ECHO" = "I Heard Echo";
+"CALL_QUALITY_SURVEY_ISSUE_AUDIO_LOCAL_ECHO" = "من انعکاس صدا شنیدم";
 
 /* Label for remote echo issue option in call quality survey, indicating other participants heard an echo */
-"CALL_QUALITY_SURVEY_ISSUE_AUDIO_REMOTE_ECHO" = "Others Heard Echo";
+"CALL_QUALITY_SURVEY_ISSUE_AUDIO_REMOTE_ECHO" = "طرف مقابل انعکاس صدا شنید";
 
 /* Label for audio stuttering issue option in call quality survey */
-"CALL_QUALITY_SURVEY_ISSUE_AUDIO_STUTTERING" = "Audio Stuttering";
+"CALL_QUALITY_SURVEY_ISSUE_AUDIO_STUTTERING" = "قطع و وصل صدا";
 
 /* Label for call dropped issue option in call quality survey */
-"CALL_QUALITY_SURVEY_ISSUE_CALL_DROPPED" = "Call Dropped";
+"CALL_QUALITY_SURVEY_ISSUE_CALL_DROPPED" = "تماس قطع شد";
 
 /* Label for custom issue option in call quality survey */
-"CALL_QUALITY_SURVEY_ISSUE_OTHER" = "Something Else";
+"CALL_QUALITY_SURVEY_ISSUE_OTHER" = "موارد دیگر";
 
 /* Label for video issue option in call quality survey */
-"CALL_QUALITY_SURVEY_ISSUE_VIDEO" = "Video Issue";
+"CALL_QUALITY_SURVEY_ISSUE_VIDEO" = "مشکل ویدیو";
 
 /* Label for poor video quality issue option in call quality survey */
-"CALL_QUALITY_SURVEY_ISSUE_VIDEO_LOW_QUALITY" = "Poor Video Quality";
+"CALL_QUALITY_SURVEY_ISSUE_VIDEO_LOW_QUALITY" = "کیفیت ضعیف ویدیو";
 
 /* Label for low resolution video issue option in call quality survey */
-"CALL_QUALITY_SURVEY_ISSUE_VIDEO_LOW_RESOLUTION" = "Low Resolution";
+"CALL_QUALITY_SURVEY_ISSUE_VIDEO_LOW_RESOLUTION" = "وضوح پایین";
 
 /* Label for camera not working issue option in call quality survey */
-"CALL_QUALITY_SURVEY_ISSUE_VIDEO_NO_CAMERA" = "Camera Didn't Work";
+"CALL_QUALITY_SURVEY_ISSUE_VIDEO_NO_CAMERA" = "دوربین کار نکرد";
 
 /* Header text on the call quality survey issues screen */
-"CALL_QUALITY_SURVEY_ISSUES_HEADER" = "Select all that apply";
+"CALL_QUALITY_SURVEY_ISSUES_HEADER" = "همه مواردی که مصداق دارند را علامت بزنید";
 
 /* Title for the sheet in the call quality survey where issues with the call can be selected */
-"CALL_QUALITY_SURVEY_ISSUES_SHEET_TITLE" = "What Issues Did You Have?";
+"CALL_QUALITY_SURVEY_ISSUES_SHEET_TITLE" = "چه مشکلاتی داشتید؟";
 
 /* Header text explaining the purpose of the call quality survey */
-"CALL_QUALITY_SURVEY_RATING_HEADER" = "This helps us improve calls in Signal. No personally identifiable information will be stored.";
+"CALL_QUALITY_SURVEY_RATING_HEADER" = "این کمک می‌کند تا تماس‌های سیگنال را بهبود دهیم. اطلاعات شخصی قابل‌شناسایی ذخیره نخواهد شد.";
 
 /* Title for the initial rating screen in the call quality survey */
-"CALL_QUALITY_SURVEY_RATING_TITLE" = "How Was Your Call?";
+"CALL_QUALITY_SURVEY_RATING_TITLE" = "تماستان چطور بود؟";
 
 /* Button text to submit the call quality survey */
-"CALL_QUALITY_SURVEY_SUBMIT_BUTTON" = "Submit";
+"CALL_QUALITY_SURVEY_SUBMIT_BUTTON" = "ارسال";
 
 /* Label on button for raising hand in call. */
 "CALL_RAISE_HAND_BUTTON_LABEL" = "بالا بردن دست";
@@ -2732,7 +2732,7 @@
 "DEVICE_TRANSFER_STATUS_NEW_DEVICE_CONNECTING_MESSAGE" = "دستگاه قدیمی‌تان را نزدیک بیاورید و مطمئن شوید که Wi-Fi و بلوتوث فعال باشند.";
 
 /* Status message on new device when transfer is starting. */
-"DEVICE_TRANSFER_STATUS_NEW_DEVICE_STARTING" = "Waiting to connect to old device…";
+"DEVICE_TRANSFER_STATUS_NEW_DEVICE_STARTING" = "در انتظار اتصال به دستگاه قدیمی…";
 
 /* Description in the progress view displayed after failure of device transfer. */
 "DEVICE_TRANSFER_STATUS_NEW_DEVICE_TRANSFER_FAILED_BODY" = "انتقال به دستگاه جدید ناموفق بود. لطفاً دستگاه قدیمی‌تان را نزدیک بیاورید، و دوباره امتحان کنید.";
@@ -2756,10 +2756,10 @@
 "DEVICE_TRANSFER_STATUS_OLD_DEVICE_CONNECTING_MESSAGE" = "دستگاه جدیدتان را نزدیک بیاورید و مطمئن شوید که Wi-Fi و بلوتوث فعال باشند.";
 
 /* Status message on old device when transfer is starting. */
-"DEVICE_TRANSFER_STATUS_OLD_DEVICE_STARTING" = "Waiting to connect to new device…";
+"DEVICE_TRANSFER_STATUS_OLD_DEVICE_STARTING" = "در انتظار اتصال به دستگاه جدید…";
 
 /* Action asking user to try again after transfer failure. */
-"DEVICE_TRANSFER_TRY_AGAIN_ACTION" = "Try Again";
+"DEVICE_TRANSFER_TRY_AGAIN_ACTION" = "دوباره تلاش کنید";
 
 /* table cell label in conversation settings */
 "DISAPPEARING_MESSAGES" = "پیام‌های ناپدید شونده";
@@ -6566,7 +6566,7 @@
 "PINNED_MESSAGE_CHAT_EVENT_SELF" = "شما یک پیام را سنجاق کردید";
 
 /* Label for button to pin a message */
-"PINNED_MESSAGE_PIN_ACTION_TITLE" = "Pin";
+"PINNED_MESSAGE_PIN_ACTION_TITLE" = "پین";
 
 /* Message for an action sheet confirming the user wants to replace oldest pinned message. */
 "PINNED_MESSAGE_REPLACE_OLDEST_BODY" = "پیام سنجاق‌شده جدید جایگزین قدیمی‌ترین سنجاق خواهد شد.";
@@ -6587,25 +6587,25 @@
 "PINNED_MESSAGE_TOAST" = "سنجاق پیام برداشته شد";
 
 /* Label for button to unpin a message */
-"PINNED_MESSAGE_UNPIN_ACTION_TITLE" = "Unpin";
+"PINNED_MESSAGE_UNPIN_ACTION_TITLE" = "برداشتن سنجاق";
 
 /* Option in pinned message action sheet to pin for 24 hours. */
-"PINNED_MESSAGES_24_HOURS" = "24 Hours";
+"PINNED_MESSAGES_24_HOURS" = "۲۴ ساعت";
 
 /* Option in pinned message action sheet to pin for 30 days. */
-"PINNED_MESSAGES_30_DAYS" = "30 Days";
+"PINNED_MESSAGES_30_DAYS" = "۳۰ روز";
 
 /* Option in pinned message action sheet to pin for 7 days. */
-"PINNED_MESSAGES_7_DAYS" = "7 Days";
+"PINNED_MESSAGES_7_DAYS" = "۷ روز";
 
 /* Title for Pinned Messages detail view */
 "PINNED_MESSAGES_DETAILS_TITLE" = "پیام‌های سنجاق‌شده";
 
 /* Title for an action sheet to indicate how long to keep the pin active */
-"PINNED_MESSAGES_EXPIRY_SHEET_TITLE" = "Keep pinned for...";
+"PINNED_MESSAGES_EXPIRY_SHEET_TITLE" = "سنجاق‌شده بماند به‌مدت...";
 
 /* Option in pinned message action sheet to pin with no expiry. */
-"PINNED_MESSAGES_FOREVER" = "Forever";
+"PINNED_MESSAGES_FOREVER" = "برای همیشه";
 
 /* Action menu item to go to a message in the conversation view */
 "PINNED_MESSAGES_GO_TO_MESSAGE" = "رفتن به پیام";
@@ -6614,7 +6614,7 @@
 "PINNED_MESSAGES_SEE_ALL_MESSAGES" = "مشاهده همه پیام‌ها";
 
 /* Action menu item to unpin a message */
-"PINNED_MESSAGES_UNPIN" = "Unpin";
+"PINNED_MESSAGES_UNPIN" = "برداشتن سنجاق";
 
 /* The title for pinned conversation section on the conversation list */
 "PINNED_SECTION_TITLE" = "سنجاق شده";
@@ -7283,7 +7283,7 @@
 "REGISTRATION_SCAN_QR_CODE_FAILED_TITLE" = "بازیابی ناموفق بود";
 
 /* Title for screen containing QR code that users scan with their old phone when they want to transfer/restore their message history to a new device. */
-"REGISTRATION_SCAN_QR_CODE_TITLE" = "Scan this code with your old device";
+"REGISTRATION_SCAN_QR_CODE_TITLE" = "این کد را با دستگاه قدیمی‌تان اسکن کنید";
 
 /* Tutorial text describing the first step to scanning the restore/transfer QR code with your old phone: opening Signal */
 "REGISTRATION_SCAN_QR_CODE_TUTORIAL_OPEN_SIGNAL" = "سیگنال را در دستگاه قدیمی‌تان باز کنید";

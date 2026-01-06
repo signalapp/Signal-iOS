@@ -370,11 +370,11 @@
 			<key>one</key>
 			<string>Ten kolor niestandardowy jest używany w %1$d czacie. Czy chcesz usunąć ten kolor?</string>
 			<key>few</key>
-			<string>Ten kolor niestandardowy jest używany w %1$d czatach. Czy chcesz go usunąć ze wszystkich tych czatów?</string>
+			<string>Ten kolor niestandardowy jest używany w %1$d czatach. Czy chcesz go usunąć ze wszystkich czatów?</string>
 			<key>many</key>
-			<string>Ten kolor niestandardowy jest używany w %1$d czatach. Czy chcesz go usunąć ze wszystkich tych czatów?</string>
+			<string>Ten kolor niestandardowy jest używany w %1$d czatach. Czy chcesz go usunąć ze wszystkich czatów?</string>
 			<key>other</key>
-			<string>Ten kolor niestandardowy jest używany w %1$d czatu. Czy chcesz usunąć ten kolor ze wszystkich tych czatów?</string>
+			<string>Ten kolor niestandardowy jest używany w %1$d czatu. Czy chcesz usunąć ten kolor ze wszystkich czatów?</string>
 		</dict>
 	</dict>
 	<key>CHAT_COLOR_SETTINGS_UPDATE_ALERT_MESSAGE_%d</key>
