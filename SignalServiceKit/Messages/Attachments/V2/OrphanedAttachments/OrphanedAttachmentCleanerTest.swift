@@ -79,15 +79,16 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
     func testDeleteMultiple() async throws {
         let filePaths = (0...5).map { _ in UUID().uuidString }
 
-        try db.write { tx in
-            try filePaths.forEach { filePath in
-                var record = OrphanedAttachmentRecord(
+        db.write { tx in
+            filePaths.forEach { filePath in
+                let record = OrphanedAttachmentRecord.InsertableRecord(
+                    isPendingAttachment: false,
                     localRelativeFilePath: filePath,
                     localRelativeFilePathThumbnail: nil,
                     localRelativeFilePathAudioWaveform: nil,
                     localRelativeFilePathVideoStillFrame: nil,
                 )
-                try record.insert(tx.database)
+                _ = OrphanedAttachmentRecord.insertRecord(record, tx: tx)
             }
         }
 
@@ -117,15 +118,16 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
         let filePath2 = UUID().uuidString
         let url2 = AttachmentStream.absoluteAttachmentFileURL(relativeFilePath: filePath2)
 
-        try db.write { tx in
-            try [filePath1, filePath2].forEach { filePath in
-                var record = OrphanedAttachmentRecord(
+        db.write { tx in
+            [filePath1, filePath2].forEach { filePath in
+                let record = OrphanedAttachmentRecord.InsertableRecord(
+                    isPendingAttachment: false,
                     localRelativeFilePath: filePath,
                     localRelativeFilePathThumbnail: nil,
                     localRelativeFilePathAudioWaveform: nil,
                     localRelativeFilePathVideoStillFrame: nil,
                 )
-                try record.insert(tx.database)
+                _ = OrphanedAttachmentRecord.insertRecord(record, tx: tx)
             }
         }
 
@@ -186,14 +188,15 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
             }
         }
 
-        try db.write { tx in
-            var record = OrphanedAttachmentRecord(
+        db.write { tx in
+            let record = OrphanedAttachmentRecord.InsertableRecord(
+                isPendingAttachment: false,
                 localRelativeFilePath: filePath3,
                 localRelativeFilePathThumbnail: nil,
                 localRelativeFilePathAudioWaveform: nil,
                 localRelativeFilePathVideoStillFrame: nil,
             )
-            try record.insert(tx.database)
+            _ = OrphanedAttachmentRecord.insertRecord(record, tx: tx)
         }
 
         XCTAssertEqual(mockTaskScheduler.tasks.count, 1)
@@ -218,20 +221,19 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
         // GRDB/SQLite if we tried to filter each one in SQL.
         var skippedIds: [Int64] = []
         for _ in 0..<1001 {
-            let record = OrphanedAttachmentRecord(
+            let record = OrphanedAttachmentRecord.InsertableRecord(
+                isPendingAttachment: true,
                 localRelativeFilePath: UUID().uuidString,
                 localRelativeFilePathThumbnail: nil,
                 localRelativeFilePathAudioWaveform: nil,
                 localRelativeFilePathVideoStillFrame: nil,
             )
-            skippedIds.append(
-                try await orphanedAttachmentCleaner
-                    .commitPendingAttachment(record),
-            )
+            skippedIds.append(await orphanedAttachmentCleaner.commitPendingAttachment(record))
         }
 
         // Insert one record we actually want to delete
-        var record = OrphanedAttachmentRecord(
+        let record = OrphanedAttachmentRecord.InsertableRecord(
+            isPendingAttachment: false,
             localRelativeFilePath: UUID().uuidString,
             localRelativeFilePathThumbnail: UUID().uuidString,
             localRelativeFilePathAudioWaveform: UUID().uuidString,
@@ -239,7 +241,7 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
         )
 
         try db.write { tx in
-            try record.insert(tx.database)
+            _ = OrphanedAttachmentRecord.insertRecord(record, tx: tx)
             let count = try OrphanedAttachmentRecord.fetchCount(tx.database)
             XCTAssertEqual(count, skippedIds.count + 1)
         }
@@ -274,15 +276,16 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
     }
 
     func testOrphanRecordFieldCoverage() async throws {
-        var record = OrphanedAttachmentRecord(
+        let record = OrphanedAttachmentRecord.InsertableRecord(
+            isPendingAttachment: false,
             localRelativeFilePath: UUID().uuidString,
             localRelativeFilePathThumbnail: UUID().uuidString,
             localRelativeFilePathAudioWaveform: UUID().uuidString,
             localRelativeFilePathVideoStillFrame: UUID().uuidString,
         )
 
-        try db.write { tx in
-            try record.insert(tx.database)
+        db.write { tx in
+            _ = OrphanedAttachmentRecord.insertRecord(record, tx: tx)
         }
 
         // Should delete all existing rows as soon as we start observing.

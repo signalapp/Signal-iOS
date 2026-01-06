@@ -302,7 +302,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         private(set) var renderingFlag: AttachmentReference.RenderingFlag
         let sourceFilename: String?
         let validatedContentType: Attachment.ContentType
-        let orphanRecordId: OrphanedAttachmentRecord.IDType
+        let orphanRecordId: OrphanedAttachmentRecord.RowId
 
         mutating func removeBorderlessRenderingFlagIfPresent() {
             switch renderingFlag {
@@ -318,7 +318,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
         let validatedContentType: Attachment.ContentType
         let mimeType: String
         let blurHash: String?
-        let orphanRecordId: OrphanedAttachmentRecord.IDType
+        let orphanRecordId: OrphanedAttachmentRecord.RowId
     }
 
     private struct ValidatedMessageBodyImpl: ValidatedMessageBody {
@@ -901,8 +901,8 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
 
     private func commitOrphanRecords<Key: Hashable>(
         contentResults: [Key: PreparedContentResult],
-    ) async throws -> [Key: OrphanedAttachmentRecord.IDType] {
-        var orphanRecords = [Key: OrphanedAttachmentRecord]()
+    ) async throws -> [Key: OrphanedAttachmentRecord.RowId] {
+        var orphanRecords = [Key: OrphanedAttachmentRecord.InsertableRecord]()
         var filesForCopying = [PendingFile]()
         for (key, contentResult) in contentResults {
             let audioWaveformFile = try contentResult.audioWaveformFile?.encryptFileIfNeeded(
@@ -916,7 +916,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
             // This ensures if we exit for _any_ reason before we create their
             // associated Attachment row, the files will be cleaned up.
             // See OrphanedAttachmentCleaner for details.
-            let orphanRecord = OrphanedAttachmentRecord(
+            let orphanRecord = OrphanedAttachmentRecord.InsertableRecord(
                 isPendingAttachment: true,
                 localRelativeFilePath: contentResult.primaryFile?.pendingFile.reservedRelativeFilePath,
                 // We don't pre-generate thumbnails for local attachments.
@@ -935,7 +935,7 @@ public class AttachmentContentValidatorImpl: AttachmentContentValidator {
                 filesForCopying.append(videoStillFrameFile)
             }
         }
-        let orphanRecordIds = try await orphanedAttachmentCleaner.commitPendingAttachments(orphanRecords)
+        let orphanRecordIds = await orphanedAttachmentCleaner.commitPendingAttachments(orphanRecords)
 
         // Now we can copy files.
         for pendingFile in filesForCopying {

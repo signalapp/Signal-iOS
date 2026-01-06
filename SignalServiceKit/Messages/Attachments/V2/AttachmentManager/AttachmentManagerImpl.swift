@@ -868,7 +868,7 @@ public class AttachmentManagerImpl: AttachmentManager {
         pendingAttachmentStreamInfo: Attachment.StreamInfo,
         pendingAttachmentEncryptionKey: Data,
         pendingAttachmentMimeType: String,
-        pendingAttachmentOrphanRecordId: OrphanedAttachmentRecord.IDType?,
+        pendingAttachmentOrphanRecordId: OrphanedAttachmentRecord.RowId?,
         pendingAttachmentLatestTransitTierInfo: Attachment.TransitTierInfo?,
         pendingAttachmentOriginalTransitTierInfo: Attachment.TransitTierInfo?,
         attachmentStore: AttachmentStore,
@@ -926,13 +926,16 @@ public class AttachmentManagerImpl: AttachmentManager {
             // we now use a different encryption key and we don't keep thumbnails
             // when we have a stream, anyway.
             if let thumbnailRelativeFilePath = existingAttachment.localRelativeFilePathThumbnail {
-                var thumbnailOrphanRecord = OrphanedAttachmentRecord(
-                    localRelativeFilePath: nil,
-                    localRelativeFilePathThumbnail: thumbnailRelativeFilePath,
-                    localRelativeFilePathAudioWaveform: nil,
-                    localRelativeFilePathVideoStillFrame: nil,
+                _ = OrphanedAttachmentRecord.insertRecord(
+                    OrphanedAttachmentRecord.InsertableRecord(
+                        isPendingAttachment: false,
+                        localRelativeFilePath: nil,
+                        localRelativeFilePathThumbnail: thumbnailRelativeFilePath,
+                        localRelativeFilePathAudioWaveform: nil,
+                        localRelativeFilePathVideoStillFrame: nil,
+                    ),
+                    tx: tx,
                 )
-                try orphanedAttachmentStore.insert(&thumbnailOrphanRecord, tx: tx)
             }
         }
 

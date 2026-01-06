@@ -8,11 +8,11 @@ public import GRDB
 
 /// Represents "orphaned" files that one belonged to an Attachment that has since been deleted.
 /// Consumers of this table should delete the associate file(s) and _then_ delete the row from this table.
-public struct OrphanedAttachmentRecord: Codable, FetchableRecord, MutablePersistableRecord {
+public struct OrphanedAttachmentRecord: Codable, FetchableRecord, PersistableRecord {
 
-    public typealias IDType = Int64
+    public typealias RowId = Int64
 
-    var sqliteId: IDType?
+    let id: RowId
     /// If true, the files in question are going to be uses for a as-yet-uncreated attachment.
     /// We want to delete these if creation fails, but for these (and only these) we want to
     /// wait a bit to give attachment creation a chance to succeed first.
@@ -25,8 +25,8 @@ public struct OrphanedAttachmentRecord: Codable, FetchableRecord, MutablePersist
     // MARK: - Coding Keys
 
     public enum CodingKeys: String, CodingKey {
-        case sqliteId = "id"
-        case isPendingAttachment = "isPendingAttachment"
+        case id
+        case isPendingAttachment
         case localRelativeFilePath
         case localRelativeFilePathThumbnail
         case localRelativeFilePathAudioWaveform
@@ -37,25 +37,37 @@ public struct OrphanedAttachmentRecord: Codable, FetchableRecord, MutablePersist
 
     public static let databaseTableName: String = "OrphanedAttachment"
 
-    public mutating func didInsert(with rowID: Int64, for column: String?) {
-        self.sqliteId = rowID
+    // MARK: - Insertion
+
+    public struct InsertableRecord {
+        let isPendingAttachment: Bool
+        let localRelativeFilePath: String?
+        let localRelativeFilePathThumbnail: String?
+        let localRelativeFilePathAudioWaveform: String?
+        let localRelativeFilePathVideoStillFrame: String?
     }
 
-    // MARK: - Initializers
-
-    init(
-        sqliteId: IDType? = nil,
-        isPendingAttachment: Bool = false,
-        localRelativeFilePath: String?,
-        localRelativeFilePathThumbnail: String?,
-        localRelativeFilePathAudioWaveform: String?,
-        localRelativeFilePathVideoStillFrame: String?,
-    ) {
-        self.sqliteId = sqliteId
-        self.isPendingAttachment = isPendingAttachment
-        self.localRelativeFilePath = localRelativeFilePath
-        self.localRelativeFilePathThumbnail = localRelativeFilePathThumbnail
-        self.localRelativeFilePathAudioWaveform = localRelativeFilePathAudioWaveform
-        self.localRelativeFilePathVideoStillFrame = localRelativeFilePathVideoStillFrame
+    static func insertRecord(_ insertableRecord: InsertableRecord, tx: DBWriteTransaction) -> Self {
+        return failIfThrows {
+            return try OrphanedAttachmentRecord.fetchOne(
+                tx.database,
+                sql: """
+                INSERT INTO \(Self.databaseTableName) (
+                    \(CodingKeys.isPendingAttachment.rawValue),
+                    \(CodingKeys.localRelativeFilePath.rawValue),
+                    \(CodingKeys.localRelativeFilePathThumbnail.rawValue),
+                    \(CodingKeys.localRelativeFilePathAudioWaveform.rawValue),
+                    \(CodingKeys.localRelativeFilePathVideoStillFrame.rawValue)
+                ) VALUES (?, ?, ?, ?, ?) RETURNING *
+                """,
+                arguments: [
+                    insertableRecord.isPendingAttachment,
+                    insertableRecord.localRelativeFilePath,
+                    insertableRecord.localRelativeFilePathThumbnail,
+                    insertableRecord.localRelativeFilePathAudioWaveform,
+                    insertableRecord.localRelativeFilePathVideoStillFrame,
+                ],
+            )!
+        }
     }
 }

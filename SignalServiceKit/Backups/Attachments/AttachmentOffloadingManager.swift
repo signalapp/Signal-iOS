@@ -283,28 +283,31 @@ public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
                 else {
                     return
                 }
-                var orphanRecord = OrphanedAttachmentRecord(
-                    localRelativeFilePath: attachment.streamInfo?.localRelativeFilePath,
-                    // Don't delete the thumbnail
-                    localRelativeFilePathThumbnail: nil,
-                    localRelativeFilePathAudioWaveform: {
-                        switch attachment.streamInfo?.contentType {
-                        case .audio(_, let waveformRelativeFilePath):
-                            return waveformRelativeFilePath
-                        default:
-                            return nil
-                        }
-                    }(),
-                    localRelativeFilePathVideoStillFrame: {
-                        switch attachment.streamInfo?.contentType {
-                        case .video(_, _, let stillFrameRelativeFilePath):
-                            return stillFrameRelativeFilePath
-                        default:
-                            return nil
-                        }
-                    }(),
+                _ = OrphanedAttachmentRecord.insertRecord(
+                    OrphanedAttachmentRecord.InsertableRecord(
+                        isPendingAttachment: false,
+                        localRelativeFilePath: attachment.streamInfo?.localRelativeFilePath,
+                        // Don't delete the thumbnail
+                        localRelativeFilePathThumbnail: nil,
+                        localRelativeFilePathAudioWaveform: {
+                            switch attachment.streamInfo?.contentType {
+                            case .audio(_, let waveformRelativeFilePath):
+                                return waveformRelativeFilePath
+                            default:
+                                return nil
+                            }
+                        }(),
+                        localRelativeFilePathVideoStillFrame: {
+                            switch attachment.streamInfo?.contentType {
+                            case .video(_, _, let stillFrameRelativeFilePath):
+                                return stillFrameRelativeFilePath
+                            default:
+                                return nil
+                            }
+                        }(),
+                    ),
+                    tx: tx,
                 )
-                try orphanedAttachmentStore.insert(&orphanRecord, tx: tx)
                 let params = Attachment.ConstructionParams.forOffloadingFiles(
                     attachment: attachment,
                     localRelativeFilePathThumbnail: pendingThumbnails[attachment.id]?.reservedRelativeFilePath,
@@ -362,7 +365,7 @@ public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
     private struct PendingThumbnail {
         let attachmentId: Attachment.IDType
         let reservedRelativeFilePath: String
-        let orphanRecordId: OrphanedAttachmentRecord.IDType
+        let orphanRecordId: OrphanedAttachmentRecord.RowId
     }
 
     private struct ThumbnailableAttachment {
@@ -404,10 +407,11 @@ public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
         }
 
         // do the whole batch in one big write.
-        let thumbnailOrphanRecordIds: [Attachment.IDType: OrphanedAttachmentRecord.IDType] = try await orphanedAttachmentCleaner
+        let thumbnailOrphanRecordIds: [Attachment.IDType: OrphanedAttachmentRecord.RowId] = await orphanedAttachmentCleaner
             .commitPendingAttachments(
                 reservedThumbnailFilePaths.mapValues { reservedThumbnailFilePath in
-                    OrphanedAttachmentRecord(
+                    OrphanedAttachmentRecord.InsertableRecord(
+                        isPendingAttachment: true,
                         localRelativeFilePath: nil,
                         localRelativeFilePathThumbnail: reservedThumbnailFilePath,
                         localRelativeFilePathAudioWaveform: nil,

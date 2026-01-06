@@ -147,7 +147,7 @@ public class OnboardingStoryManagerStoryMessageFactoryMock: OnboardingStoryManag
             var renderingFlag: AttachmentReference.RenderingFlag = .default
             let sourceFilename: String?
             let validatedContentType: Attachment.ContentType = .file
-            let orphanRecordId: OrphanedAttachmentRecord.IDType = 1
+            let orphanRecordId: OrphanedAttachmentRecord.RowId = 1
 
             mutating func removeBorderlessRenderingFlagIfPresent() {
                 switch renderingFlag {

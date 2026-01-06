@@ -234,12 +234,13 @@ public class AttachmentValidationBackfillMigratorImpl: AttachmentValidationBackf
 
         // "Ancillary" files (e.g. video still frame) are regenerated on revalidation.
         // Whatever old ancillary files existed before must be orphaned.
-        let oldAncillaryFilesOrphanRecord: OrphanedAttachmentRecord? = {
+        let oldAncillaryFilesOrphanRecord: OrphanedAttachmentRecord.InsertableRecord? = {
             switch attachment.streamInfo?.contentType {
             case nil, .invalid, .file, .image, .animatedImage:
                 return nil
             case .video(_, _, let stillFrameRelativeFilePath):
                 return .init(
+                    isPendingAttachment: false,
                     localRelativeFilePath: nil,
                     localRelativeFilePathThumbnail: nil,
                     localRelativeFilePathAudioWaveform: nil,
@@ -247,6 +248,7 @@ public class AttachmentValidationBackfillMigratorImpl: AttachmentValidationBackf
                 )
             case .audio(_, let waveformRelativeFilePath):
                 return .init(
+                    isPendingAttachment: false,
                     localRelativeFilePath: nil,
                     localRelativeFilePathThumbnail: nil,
                     localRelativeFilePathAudioWaveform: waveformRelativeFilePath,
@@ -269,8 +271,8 @@ public class AttachmentValidationBackfillMigratorImpl: AttachmentValidationBackf
             tx: tx,
         )
         // Insert the orphan record for the _old_ ancillary files.
-        if var oldAncillaryFilesOrphanRecord {
-            try orphanedAttachmentStore.insert(&oldAncillaryFilesOrphanRecord, tx: tx)
+        if let oldAncillaryFilesOrphanRecord {
+            _ = OrphanedAttachmentRecord.insertRecord(oldAncillaryFilesOrphanRecord, tx: tx)
         }
     }
 

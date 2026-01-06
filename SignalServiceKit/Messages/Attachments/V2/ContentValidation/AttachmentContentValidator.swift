@@ -35,7 +35,7 @@ public protocol PendingAttachment {
     var renderingFlag: AttachmentReference.RenderingFlag { get }
     var sourceFilename: String? { get }
     var validatedContentType: Attachment.ContentType { get }
-    var orphanRecordId: OrphanedAttachmentRecord.IDType { get }
+    var orphanRecordId: OrphanedAttachmentRecord.RowId { get }
 
     mutating func removeBorderlessRenderingFlagIfPresent()
 }
@@ -46,7 +46,7 @@ public protocol RevalidatedAttachment {
     var mimeType: String { get }
     var blurHash: String? { get }
     /// Orphan record for any created ancillary files, such as the audio waveform.
-    var orphanRecordId: OrphanedAttachmentRecord.IDType { get }
+    var orphanRecordId: OrphanedAttachmentRecord.RowId { get }
 }
 
 public protocol ValidatedInlineMessageBody {
