@@ -432,12 +432,10 @@ public final class MessageReceiver {
                             legacyPhoneNumber: sent.destinationE164?.nilIfEmpty,
                             cache: SSKEnvironment.shared.signalServiceAddressCacheRef,
                         )
-                        if destinationAddress.isValid {
-                            SSKEnvironment.shared.profileManagerRef.addUser(
-                                toProfileWhitelist: destinationAddress,
-                                userProfileWriter: .localUser,
-                                transaction: tx,
-                            )
+                        let profileManager = SSKEnvironment.shared.profileManagerRef
+                        let recipientFetcher = DependenciesBridge.shared.recipientFetcher
+                        if var recipient = recipientFetcher.fetchOrCreate(address: destinationAddress, tx: tx) {
+                            profileManager.addRecipientToProfileWhitelist(&recipient, userProfileWriter: .localUser, tx: tx)
                         }
                     }
                 }

@@ -925,13 +925,18 @@ extension OWSContactsManager: ContactManager {
                 Logger.info("Updated \(signalAccountChanges.count) SignalAccounts; now have \(newSignalAccountsMap.count) total")
             }
 
+            let profileManager = SSKEnvironment.shared.profileManagerRef
+            let recipientFetcher = DependenciesBridge.shared.recipientFetcher
+
             // Add system contacts to the profile whitelist immediately so that they do
             // not see the "message request" UI.
-            SSKEnvironment.shared.profileManagerRef.addUsers(
-                toProfileWhitelist: newSignalAccountsMap.values.map { $0.recipientAddress },
-                userProfileWriter: .systemContactsFetch,
-                transaction: tx,
-            )
+            for phoneNumber in newSignalAccountsMap.keys {
+                guard let phoneNumberObj = E164(phoneNumber) else {
+                    continue
+                }
+                var recipient = recipientFetcher.fetchOrCreate(phoneNumber: phoneNumberObj, tx: tx)
+                profileManager.addRecipientToProfileWhitelist(&recipient, userProfileWriter: .systemContactsFetch, tx: tx)
+            }
         }
 
         // Once we've persisted new SignalAccount state, we should let
@@ -1185,7 +1190,7 @@ extension OWSContactsManager: ContactManager {
     ) throws {
         let recipientHidingManager = DependenciesBridge.shared.recipientHidingManager
         let phoneNumbers = Set(addressBookPhoneNumbers.lazy.map { $0.rawValue.stringValue })
-        for hiddenRecipient in recipientHidingManager.hiddenRecipients(tx: tx) {
+        for var hiddenRecipient in recipientHidingManager.hiddenRecipients(tx: tx) {
             guard let phoneNumber = hiddenRecipient.phoneNumber else {
                 continue // We can't unhide because of the address book w/o a phone number.
             }
@@ -1195,7 +1200,7 @@ extension OWSContactsManager: ContactManager {
             guard phoneNumbers.contains(phoneNumber.stringValue) else {
                 continue // Not in the address book -- no unhiding.
             }
-            recipientHidingManager.removeHiddenRecipient(hiddenRecipient, wasLocallyInitiated: true, tx: tx)
+            recipientHidingManager.removeHiddenRecipient(&hiddenRecipient, wasLocallyInitiated: true, tx: tx)
         }
     }
 

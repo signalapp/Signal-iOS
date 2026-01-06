@@ -309,27 +309,38 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
             return owsFailDebug("message request response couldn't find thread")
         }
 
+        let blockingManager = SSKEnvironment.shared.blockingManagerRef
+        let hidingManager = DependenciesBridge.shared.recipientHidingManager
+        let profileManager = SSKEnvironment.shared.profileManagerRef
+        let recipientFetcher = DependenciesBridge.shared.recipientFetcher
+
         switch syncMessage.type {
         case .accept:
-            SSKEnvironment.shared.blockingManagerRef.removeBlockedThread(thread, wasLocallyInitiated: false, transaction: transaction)
-            if let thread = thread as? TSContactThread {
-                /// When we accept a message request on a linked device,
-                /// we unhide the message sender. We will eventually also
-                /// learn about the unhide via a StorageService contact sync,
-                /// since the linked device should mark unhidden in
-                /// StorageService. But it doesn't hurt to get ahead of the
-                /// game and unhide here.
-                DependenciesBridge.shared.recipientHidingManager.removeHiddenRecipient(
-                    thread.contactAddress,
-                    wasLocallyInitiated: false,
-                    tx: transaction,
+            blockingManager.removeBlockedThread(thread, wasLocallyInitiated: false, transaction: transaction)
+            switch thread {
+            case let thread as TSGroupThread:
+                // TODO: Fix userProfileWriter.
+                profileManager.addGroupId(
+                    toProfileWhitelist: thread.groupModel.groupId,
+                    userProfileWriter: .localUser,
+                    transaction: transaction,
                 )
+
+            case let thread as TSContactThread:
+                /// When we accept a message request on a linked device, we unhide the
+                /// message sender. We will eventually also learn about the unhide via a
+                /// StorageService contact sync, since the linked device should mark
+                /// unhidden in StorageService. But it doesn't hurt to get ahead of the game
+                /// and unhide here.
+                if var recipient = recipientFetcher.fetchOrCreate(address: thread.contactAddress, tx: transaction) {
+                    hidingManager.removeHiddenRecipient(&recipient, wasLocallyInitiated: false, tx: transaction)
+                    // TODO: Fix userProfileWriter.
+                    profileManager.addRecipientToProfileWhitelist(&recipient, userProfileWriter: .localUser, tx: transaction)
+                }
+
+            default:
+                owsFailDebug("can't accept messages request for \(type(of: thread))")
             }
-            SSKEnvironment.shared.profileManagerRef.addThread(
-                toProfileWhitelist: thread,
-                userProfileWriter: .localUser,
-                transaction: transaction,
-            )
         case .delete:
             DependenciesBridge.shared.threadSoftDeleteManager.softDelete(
                 threads: [thread],

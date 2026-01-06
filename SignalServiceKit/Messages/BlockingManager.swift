@@ -80,7 +80,11 @@ public class BlockingManager {
         guard let recipientId = recipientDatabaseTable.fetchRecipient(address: address, tx: transaction)?.id else {
             return false
         }
-        return blockedRecipientStore.isBlocked(recipientId: recipientId, tx: transaction)
+        return isRecipientBlocked(recipientId: recipientId, tx: transaction)
+    }
+
+    public func isRecipientBlocked(recipientId: SignalRecipient.RowId, tx: DBReadTransaction) -> Bool {
+        return blockedRecipientStore.isBlocked(recipientId: recipientId, tx: tx)
     }
 
     public func isGroupIdBlocked(_ groupId: GroupIdentifier, transaction tx: DBReadTransaction) -> Bool {

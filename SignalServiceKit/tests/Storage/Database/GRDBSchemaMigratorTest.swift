@@ -1284,4 +1284,60 @@ class GRDBSchemaMigratorTest: XCTestCase {
             XCTAssertEqual(sessions[5]["serializedRecord"] as Data?, nil)
         }
     }
+
+    func testMigrateWhitelist() throws {
+        let databaseQueue = DatabaseQueue()
+        try databaseQueue.write { db in
+            try db.execute(sql: """
+            CREATE TABLE "model_SignalRecipient" (
+                "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                "recordType" INTEGER NOT NULL,
+                "uniqueId" TEXT NOT NULL,
+                "recipientPhoneNumber" TEXT UNIQUE,
+                "recipientUUID" TEXT UNIQUE,
+                "pni" TEXT UNIQUE,
+                "devices" BLOB NOT NULL
+            );
+
+            CREATE TABLE "keyvalue" (
+                "collection" TEXT NOT NULL,
+                "key" TEXT NOT NULL,
+                "value" BLOB NOT NULL
+            );
+
+            INSERT INTO "model_SignalRecipient" (
+                "id", "recordType", "uniqueId", "recipientPhoneNumber", "recipientUUID", "pni", "devices"
+            ) VALUES
+                (1, 0, '', '+17635550100', '00000000-0000-4000-A000-000000000000', NULL, X''),
+                (2, 0, '', '+17635550101', NULL, NULL, X''),
+                (3, 0, '', NULL, NULL, 'PNI:00000000-0000-4000-A000-000000000FFF', X'');
+
+            INSERT INTO "keyvalue" (
+                "collection", "key", "value"
+            ) VALUES
+                ('kOWSProfileManager_UserWhitelistCollection', '+17635550100', X''),
+                ('kOWSProfileManager_UserWhitelistCollection', '+17635550102', X''),
+                ('kOWSProfileManager_UserUUIDWhitelistCollection', '00000000-0000-4000-A000-000000000000', X''),
+                ('kOWSProfileManager_UserUUIDWhitelistCollection', '00000000-0000-4000-A000-000000000001', X''),
+                ('kOWSProfileManager_UserUUIDWhitelistCollection', 'PNI:00000000-0000-4000-A000-000000000FFF', X''),
+                ('kOWSProfileManager_UserUUIDWhitelistCollection', 'PNI:00000000-0000-4000-A000-000000000FFE', X'');
+            """)
+
+            do {
+                let tx = DBWriteTransaction(database: db)
+                defer { tx.finalizeTransaction() }
+                try GRDBSchemaMigrator.addRecipientStatus(tx: tx)
+                try GRDBSchemaMigrator.migrateRecipientWhitelist(tx: tx)
+            }
+
+            let recipients = try Row.fetchAll(db, sql: "SELECT * FROM model_SignalRecipient ORDER BY id")
+            XCTAssertEqual(recipients.count, 6)
+            XCTAssertEqual(recipients[0]["status"] as Int64, 1)
+            XCTAssertEqual(recipients[1]["status"] as Int64, 0)
+            XCTAssertEqual(recipients[2]["status"] as Int64, 1)
+            XCTAssertEqual(recipients[3]["status"] as Int64, 1)
+            XCTAssertEqual(recipients[4]["status"] as Int64, 1)
+            XCTAssertEqual(recipients[5]["status"] as Int64, 1)
+        }
+    }
 }

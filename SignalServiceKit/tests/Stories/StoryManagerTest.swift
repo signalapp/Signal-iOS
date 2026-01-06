@@ -34,13 +34,11 @@ class StoryManagerTest: SSKBaseTest {
         profileManager.fakeUserProfiles = [
             SignalServiceAddress(author): OWSUserProfile(address: .otherUser(SignalServiceAddress(author))),
         ]
+        let recipientFetcher = DependenciesBridge.shared.recipientFetcher
 
         try write {
-            SSKEnvironment.shared.profileManagerRef.addUser(
-                toProfileWhitelist: SignalServiceAddress(author),
-                userProfileWriter: .localUser,
-                transaction: $0,
-            )
+            var recipient = recipientFetcher.fetchOrCreate(serviceId: author, tx: $0)
+            profileManager.addRecipientToProfileWhitelist(&recipient, userProfileWriter: .localUser, tx: $0)
 
             try StoryManager.processIncomingStoryMessage(
                 storyMessage,
@@ -92,12 +90,12 @@ class StoryManagerTest: SSKBaseTest {
         let privateStoryMessage = try Self.makePrivateStory()
         let groupStoryMessage = try Self.makeGroupStory()
 
+        let profileManager = SSKEnvironment.shared.profileManagerRef
+        let recipientFetcher = DependenciesBridge.shared.recipientFetcher
+
         try write {
-            SSKEnvironment.shared.profileManagerRef.addUser(
-                toProfileWhitelist: SignalServiceAddress(author),
-                userProfileWriter: .localUser,
-                transaction: $0,
-            )
+            var recipient = recipientFetcher.fetchOrCreate(serviceId: author, tx: $0)
+            profileManager.addRecipientToProfileWhitelist(&recipient, userProfileWriter: .localUser, tx: $0)
 
             SSKEnvironment.shared.blockingManagerRef.addBlockedAddress(
                 SignalServiceAddress(author),
@@ -140,12 +138,12 @@ class StoryManagerTest: SSKBaseTest {
         let groupMasterKey = try GroupMasterKey(contents: storyMessage.group!.masterKey!)
         let groupId = try GroupSecretParams.deriveFromMasterKey(groupMasterKey: groupMasterKey).getPublicParams().getGroupIdentifier().serialize()
 
+        let profileManager = SSKEnvironment.shared.profileManagerRef
+        let recipientFetcher = DependenciesBridge.shared.recipientFetcher
+
         try write {
-            SSKEnvironment.shared.profileManagerRef.addUser(
-                toProfileWhitelist: SignalServiceAddress(author),
-                userProfileWriter: .localUser,
-                transaction: $0,
-            )
+            var recipient = recipientFetcher.fetchOrCreate(serviceId: author, tx: $0)
+            profileManager.addRecipientToProfileWhitelist(&recipient, userProfileWriter: .localUser, tx: $0)
 
             TSGroupThread.forUnitTest(
                 masterKey: groupMasterKey,
@@ -182,12 +180,12 @@ class StoryManagerTest: SSKBaseTest {
 
         let secretParams = try GroupV2ContextInfo.deriveFrom(masterKeyData: storyMessage.group!.masterKey!).groupSecretParams
 
+        let profileManager = SSKEnvironment.shared.profileManagerRef
+        let recipientFetcher = DependenciesBridge.shared.recipientFetcher
+
         try write {
-            SSKEnvironment.shared.profileManagerRef.addUser(
-                toProfileWhitelist: SignalServiceAddress(author),
-                userProfileWriter: .localUser,
-                transaction: $0,
-            )
+            var recipient = recipientFetcher.fetchOrCreate(serviceId: author, tx: $0)
+            profileManager.addRecipientToProfileWhitelist(&recipient, userProfileWriter: .localUser, tx: $0)
 
             try Self.makeGroupThread(secretParams: secretParams, transaction: $0)
 
@@ -217,12 +215,12 @@ class StoryManagerTest: SSKBaseTest {
 
         let secretParams = try GroupV2ContextInfo.deriveFrom(masterKeyData: storyMessage.group!.masterKey!).groupSecretParams
 
+        let profileManager = SSKEnvironment.shared.profileManagerRef
+        let recipientFetcher = DependenciesBridge.shared.recipientFetcher
+
         try write {
-            SSKEnvironment.shared.profileManagerRef.addUser(
-                toProfileWhitelist: SignalServiceAddress(author),
-                userProfileWriter: .localUser,
-                transaction: $0,
-            )
+            var recipient = recipientFetcher.fetchOrCreate(serviceId: author, tx: $0)
+            profileManager.addRecipientToProfileWhitelist(&recipient, userProfileWriter: .localUser, tx: $0)
 
             try Self.makeGroupThread(secretParams: secretParams, announcementOnly: true, members: [author], transaction: $0)
 
@@ -256,13 +254,11 @@ class StoryManagerTest: SSKBaseTest {
         profileManager.fakeUserProfiles = [
             SignalServiceAddress(author): OWSUserProfile(address: .otherUser(SignalServiceAddress(author))),
         ]
+        let recipientFetcher = DependenciesBridge.shared.recipientFetcher
 
         try write {
-            SSKEnvironment.shared.profileManagerRef.addUser(
-                toProfileWhitelist: SignalServiceAddress(author),
-                userProfileWriter: .localUser,
-                transaction: $0,
-            )
+            var recipient = recipientFetcher.fetchOrCreate(serviceId: author, tx: $0)
+            profileManager.addRecipientToProfileWhitelist(&recipient, userProfileWriter: .localUser, tx: $0)
 
             try Self.makeGroupThread(secretParams: secretParams, announcementOnly: true, admins: [author], transaction: $0)
 
@@ -296,13 +292,11 @@ class StoryManagerTest: SSKBaseTest {
         profileManager.fakeUserProfiles = [
             SignalServiceAddress(author): OWSUserProfile(address: .otherUser(SignalServiceAddress(author))),
         ]
+        let recipientFetcher = DependenciesBridge.shared.recipientFetcher
 
         try write {
-            SSKEnvironment.shared.profileManagerRef.addUser(
-                toProfileWhitelist: SignalServiceAddress(author),
-                userProfileWriter: .localUser,
-                transaction: $0,
-            )
+            var recipient = recipientFetcher.fetchOrCreate(serviceId: author, tx: $0)
+            profileManager.addRecipientToProfileWhitelist(&recipient, userProfileWriter: .localUser, tx: $0)
 
             try Self.makeGroupThread(secretParams: secretParams, members: [author], transaction: $0)
 
@@ -334,13 +328,11 @@ class StoryManagerTest: SSKBaseTest {
         profileManager.fakeUserProfiles = [
             SignalServiceAddress(author): OWSUserProfile(address: .otherUser(SignalServiceAddress(author))),
         ]
+        let recipientFetcher = DependenciesBridge.shared.recipientFetcher
 
         try write {
-            SSKEnvironment.shared.profileManagerRef.addUser(
-                toProfileWhitelist: SignalServiceAddress(author),
-                userProfileWriter: .localUser,
-                transaction: $0,
-            )
+            var recipient = recipientFetcher.fetchOrCreate(serviceId: author, tx: $0)
+            profileManager.addRecipientToProfileWhitelist(&recipient, userProfileWriter: .localUser, tx: $0)
 
             try StoryManager.processIncomingStoryMessage(
                 storyMessage,
@@ -365,6 +357,9 @@ class StoryManagerTest: SSKBaseTest {
         let author = Aci.randomForTesting()
         let storyMessage = try Self.makePrivateStory()
 
+        let profileManager = SSKEnvironment.shared.profileManagerRef
+        let recipientFetcher = DependenciesBridge.shared.recipientFetcher
+
         try write {
             try StoryMessage.create(
                 withIncomingStoryMessage: storyMessage,
@@ -374,11 +369,8 @@ class StoryManagerTest: SSKBaseTest {
                 transaction: $0,
             )
 
-            SSKEnvironment.shared.profileManagerRef.addUser(
-                toProfileWhitelist: SignalServiceAddress(author),
-                userProfileWriter: .localUser,
-                transaction: $0,
-            )
+            var recipient = recipientFetcher.fetchOrCreate(serviceId: author, tx: $0)
+            profileManager.addRecipientToProfileWhitelist(&recipient, userProfileWriter: .localUser, tx: $0)
 
             try StoryManager.processIncomingStoryMessage(
                 storyMessage,

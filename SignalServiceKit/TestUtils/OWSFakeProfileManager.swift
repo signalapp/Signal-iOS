@@ -14,8 +14,8 @@ class OWSFakeProfileManager {
     var localProfile: OWSUserProfile?
     var localProfileKey: Aes256Key?
 
-    private var recipientWhitelist: Set<SignalServiceAddress> = []
-    private var threadWhitelist: Set<String> = []
+    private var recipientWhitelist: Set<SignalRecipient.RowId> = []
+    private var groupIdWhitelist: Set<Data> = []
 }
 
 extension OWSFakeProfileManager: ProfileManagerProtocol {
@@ -28,51 +28,30 @@ extension OWSFakeProfileManager: ProfileManagerProtocol {
         return fakeUserProfiles![addressParam]
     }
 
-    func normalizeRecipientInProfileWhitelist(_ recipient: SignalRecipient, tx: DBWriteTransaction) {
+    func addRecipientToProfileWhitelist(_ recipient: inout SignalRecipient, userProfileWriter: UserProfileWriter, tx: DBWriteTransaction) {
+        recipient.status = .whitelisted
+        recipientWhitelist.insert(recipient.id)
     }
 
-    func isUser(inProfileWhitelist address: SignalServiceAddress, transaction: DBReadTransaction) -> Bool {
-        recipientWhitelist.contains(address)
+    func removeRecipientFromProfileWhitelist(_ recipient: inout SignalRecipient, userProfileWriter: UserProfileWriter, tx: DBWriteTransaction) {
+        recipient.status = .unspecified
+        recipientWhitelist.remove(recipient.id)
     }
 
-    func isThread(inProfileWhitelist thread: TSThread, transaction: DBReadTransaction) -> Bool {
-        threadWhitelist.contains(thread.uniqueId)
-    }
-
-    func addUser(toProfileWhitelist address: SignalServiceAddress, userProfileWriter: UserProfileWriter, transaction: DBWriteTransaction) {
-        recipientWhitelist.insert(address)
-    }
-
-    func addUsers(toProfileWhitelist addresses: [SignalServiceAddress], userProfileWriter: UserProfileWriter, transaction: DBWriteTransaction) {
-        recipientWhitelist.formUnion(addresses)
-    }
-
-    func removeUser(fromProfileWhitelist address: SignalServiceAddress) {
-        recipientWhitelist.remove(address)
-    }
-
-    func removeUser(fromProfileWhitelist address: SignalServiceAddress, userProfileWriter: UserProfileWriter, transaction: DBWriteTransaction) {
-        recipientWhitelist.remove(address)
+    func isRecipientInProfileWhitelist(_ recipient: SignalRecipient, tx: DBReadTransaction) -> Bool {
+        return recipientWhitelist.contains(recipient.id)
     }
 
     func isGroupId(inProfileWhitelist groupId: Data, transaction: DBReadTransaction) -> Bool {
-        threadWhitelist.contains(groupId.hexadecimalString)
+        return groupIdWhitelist.contains(groupId)
     }
 
     func addGroupId(toProfileWhitelist groupId: Data, userProfileWriter: UserProfileWriter, transaction: DBWriteTransaction) {
-        threadWhitelist.insert(groupId.hexadecimalString)
+        groupIdWhitelist.insert(groupId)
     }
 
     func removeGroupId(fromProfileWhitelist groupId: Data, userProfileWriter: UserProfileWriter, transaction: DBWriteTransaction) {
-        threadWhitelist.remove(groupId.hexadecimalString)
-    }
-
-    func addThread(toProfileWhitelist thread: TSThread, userProfileWriter: UserProfileWriter, transaction: DBWriteTransaction) {
-        if thread.isGroupThread, let groupThread = thread as? TSGroupThread {
-            addGroupId(toProfileWhitelist: groupThread.groupModel.groupId, userProfileWriter: userProfileWriter, transaction: transaction)
-        } else if !thread.isGroupThread, let contactThread = thread as? TSContactThread {
-            addUser(toProfileWhitelist: contactThread.contactAddress, userProfileWriter: userProfileWriter, transaction: transaction)
-        }
+        groupIdWhitelist.remove(groupId)
     }
 
     func setLocalProfileKey(_ key: Aes256Key, userProfileWriter: UserProfileWriter, transaction: DBWriteTransaction) {

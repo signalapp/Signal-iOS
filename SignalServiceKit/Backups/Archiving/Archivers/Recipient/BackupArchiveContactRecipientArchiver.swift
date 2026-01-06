@@ -204,7 +204,7 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
                 visibility: { () -> BackupProto_Contact.Visibility in
                     guard
                         let hiddenRecipient = self.recipientHidingManager.fetchHiddenRecipient(
-                            signalRecipient: recipient,
+                            recipientId: recipient.id,
                             tx: context.tx,
                         )
                     else {
@@ -669,7 +669,7 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
         }
 
         let recipientProto = recipient
-        let recipient: SignalRecipient
+        var recipient: SignalRecipient
         do throws(GRDB.DatabaseError) {
             recipient = try SignalRecipient.insertRecord(
                 aci: backupContactAddress.aci,
@@ -758,7 +758,7 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
 
         if contactProto.profileSharing {
             // Add to the whitelist.
-            profileManager.addToWhitelist(recipient.address, tx: context.tx)
+            profileManager.addRecipientToProfileWhitelist(&recipient, tx: context.tx)
         }
 
         if contactProto.blocked {
@@ -768,7 +768,7 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
         do {
             func addHiddenRecipient(isHiddenInKnownMessageRequestState: Bool) throws {
                 try recipientHidingManager.addHiddenRecipient(
-                    recipient,
+                    &recipient,
                     inKnownMessageRequestState: isHiddenInKnownMessageRequestState,
                     wasLocallyInitiated: false,
                     tx: context.tx,

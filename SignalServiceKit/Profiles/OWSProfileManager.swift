@@ -17,8 +17,6 @@ public class OWSProfileManager: ProfileManagerProtocol {
     public static let notificationKeyUserProfileWriter = "kNSNotificationKey_UserProfileWriter"
 
     private let metadataStore = KeyValueStore(collection: "kOWSProfileManager_Metadata")
-    private let whitelistedPhoneNumbersStore = KeyValueStore(collection: "kOWSProfileManager_UserWhitelistCollection")
-    private let whitelistedServiceIdsStore = KeyValueStore(collection: "kOWSProfileManager_UserUUIDWhitelistCollection")
     private let whitelistedGroupsStore = KeyValueStore(collection: "kOWSProfileManager_GroupWhitelistCollection")
     private let settingsStore = KeyValueStore(collection: "kOWSProfileManager_SettingsStore")
 
@@ -82,166 +80,83 @@ public class OWSProfileManager: ProfileManagerProtocol {
         localUserProfile.update(profileKey: .setTo(key), userProfileWriter: userProfileWriter, transaction: transaction)
     }
 
-    public func normalizeRecipientInProfileWhitelist(_ recipient: SignalRecipient, tx: DBWriteTransaction) {
-        swift_normalizeRecipientInProfileWhitelist(recipient, tx: tx)
-    }
+    public func addRecipientToProfileWhitelist(
+        _ recipient: inout SignalRecipient,
+        userProfileWriter: UserProfileWriter,
+        tx: DBWriteTransaction,
+    ) {
+        let blockingManager = SSKEnvironment.shared.blockingManagerRef
+        let hidingManager = DependenciesBridge.shared.recipientHidingManager
+        let recipientStore = DependenciesBridge.shared.recipientDatabaseTable
 
-    public func addUser(toProfileWhitelist address: SignalServiceAddress, userProfileWriter: UserProfileWriter, transaction: DBWriteTransaction) {
-        owsAssertDebug(address.isValid)
-        addUsers(toProfileWhitelist: [address], userProfileWriter: userProfileWriter, transaction: transaction)
-    }
-
-    public func addUsers(toProfileWhitelist addresses: [SignalServiceAddress], userProfileWriter: UserProfileWriter, transaction: DBWriteTransaction) {
-        let addressesToAdd = addressesNotBlockedOrInWhitelist(addresses, transaction: transaction)
-        addConfirmedUnwhitelistedAddresses(addressesToAdd, userProfileWriter: userProfileWriter, transaction: transaction)
-    }
-
-    public func removeUser(fromProfileWhitelist address: SignalServiceAddress) {
-        owsAssertDebug(address.isValid)
-
-        removeUsers(fromProfileWhitelist: [address])
-    }
-
-    public func removeUser(fromProfileWhitelist address: SignalServiceAddress, userProfileWriter: UserProfileWriter, transaction: DBWriteTransaction) {
-        owsAssertDebug(address.isValid)
-
-        let addressesToRemove = addressesInWhitelist([address], transaction: transaction)
-        removeConfirmedWhitelistedAddresses(addressesToRemove, userProfileWriter: userProfileWriter, transaction: transaction)
-    }
-
-    // TODO: We could add a userProfileWriter parameter.
-    private func removeUsers(fromProfileWhitelist addresses: [SignalServiceAddress]) {
-        // Try to avoid opening a write transaction.
-        SSKEnvironment.shared.databaseStorageRef.asyncRead { readTransaction in
-            let addressesToRemove = self.addressesInWhitelist(addresses, transaction: readTransaction)
-            if addressesToRemove.isEmpty {
-                return
-            }
-            SSKEnvironment.shared.databaseStorageRef.asyncWrite { writeTransaction in
-                self.removeConfirmedWhitelistedAddresses(addressesToRemove, userProfileWriter: .localUser, transaction: writeTransaction)
-            }
-        }
-    }
-
-    private func addressesNotBlockedOrInWhitelist(_ addresses: [SignalServiceAddress], transaction: DBReadTransaction) -> Set<SignalServiceAddress> {
-        var notBlockedOrInWhitelist = Set<SignalServiceAddress>()
-        for address in addresses {
-            // If the address is blocked, we don't want to include it
-            if SSKEnvironment.shared.blockingManagerRef.isAddressBlocked(address, transaction: transaction) || RecipientHidingManagerObjcBridge.isHiddenAddress(address, tx: transaction) {
-                continue
-            }
-
-            if !isAddressInWhitelist(address, tx: transaction) {
-                notBlockedOrInWhitelist.insert(address)
-            }
-        }
-
-        return notBlockedOrInWhitelist
-    }
-
-    private func addressesInWhitelist(_ addresses: [SignalServiceAddress], transaction: DBReadTransaction) -> Set<SignalServiceAddress> {
-        var whitelistedAddresses = Set<SignalServiceAddress>()
-
-        for address in addresses {
-            if isAddressInWhitelist(address, tx: transaction) {
-                whitelistedAddresses.insert(address)
-            }
-        }
-
-        return whitelistedAddresses
-    }
-
-    private func isAddressInWhitelist(_ address: SignalServiceAddress, tx: DBReadTransaction) -> Bool {
-        if let uppercaseServiceId = address.serviceIdUppercaseString, whitelistedServiceIdsStore.hasValue(uppercaseServiceId, transaction: tx) {
-            return true
-        }
-
-        if let phoneNumber = address.phoneNumber, whitelistedPhoneNumbersStore.hasValue(phoneNumber, transaction: tx) {
-            return true
-        }
-
-        return false
-    }
-
-    private func removeConfirmedWhitelistedAddresses(_ addressesToRemove: Set<SignalServiceAddress>, userProfileWriter: UserProfileWriter, transaction: DBWriteTransaction) {
-        guard !addressesToRemove.isEmpty else {
+        if blockingManager.isRecipientBlocked(recipientId: recipient.id, tx: tx) {
             return
         }
-
-        for address in addressesToRemove {
-            // Historically we put both the ACI and phone number into their respective
-            // stores. We currently save only the best identifier, but we should still
-            // try and remove both to handle these historical cases.
-            if let uppercaseServiceId = address.serviceIdUppercaseString {
-                whitelistedServiceIdsStore.removeValue(forKey: uppercaseServiceId, transaction: transaction)
-            }
-            if let phoneNumber = address.phoneNumber {
-                whitelistedPhoneNumbersStore.removeValue(forKey: phoneNumber, transaction: transaction)
-            }
-
-            if let thread = TSContactThread.getWithContactAddress(address, transaction: transaction) {
-                SSKEnvironment.shared.databaseStorageRef.touch(thread: thread, shouldReindex: false, tx: transaction)
-            }
-        }
-
-        transaction.addSyncCompletion {
-            // Mark the removed whitelisted addresses for update
-            if OWSUserProfile.shouldUpdateStorageServiceForUserProfileWriter(userProfileWriter) {
-                SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(updatedAddresses: Array(addressesToRemove))
-            }
-
-            for address in addressesToRemove {
-                NotificationCenter.default.postOnMainThread(name: UserProfileNotifications.profileWhitelistDidChange, object: nil, userInfo: [
-                    UserProfileNotifications.profileAddressKey: address,
-                    Self.notificationKeyUserProfileWriter: NSNumber(value: userProfileWriter.rawValue),
-                ])
-            }
-        }
-    }
-
-    private func addConfirmedUnwhitelistedAddresses(_ addressesToAdd: Set<SignalServiceAddress>, userProfileWriter: UserProfileWriter, transaction: DBWriteTransaction) {
-        guard !addressesToAdd.isEmpty else {
+        if hidingManager.isHiddenRecipient(recipientId: recipient.id, tx: tx) {
             return
         }
+        switch recipient.status {
+        case .whitelisted:
+            return
+        case .unspecified:
+            break
+        }
+        recipient.status = .whitelisted
+        recipientStore.updateRecipient(recipient, transaction: tx)
+        _didUpdateRecipientInWhitelist(recipient, userProfileWriter: userProfileWriter, tx: tx)
+    }
 
-        for address in addressesToAdd {
-            let serviceId = address.serviceId
-            if let serviceId = serviceId as? Aci {
-                whitelistedServiceIdsStore.setBool(true, key: serviceId.serviceIdUppercaseString, transaction: transaction)
-            } else if let phoneNumber = address.phoneNumber {
-                whitelistedPhoneNumbersStore.setBool(true, key: phoneNumber, transaction: transaction)
-            } else if let serviceId = serviceId as? Pni {
-                whitelistedServiceIdsStore.setBool(true, key: serviceId.serviceIdUppercaseString, transaction: transaction)
-            }
+    public func removeRecipientFromProfileWhitelist(
+        _ recipient: inout SignalRecipient,
+        userProfileWriter: UserProfileWriter,
+        tx: DBWriteTransaction,
+    ) {
+        let recipientStore = DependenciesBridge.shared.recipientDatabaseTable
+        switch recipient.status {
+        case .unspecified:
+            return
+        case .whitelisted:
+            break
+        }
+        recipient.status = .unspecified
+        recipientStore.updateRecipient(recipient, transaction: tx)
+        _didUpdateRecipientInWhitelist(recipient, userProfileWriter: userProfileWriter, tx: tx)
+    }
 
-            if let thread = TSContactThread.getWithContactAddress(address, transaction: transaction) {
-                SSKEnvironment.shared.databaseStorageRef.touch(thread: thread, shouldReindex: false, tx: transaction)
-            }
+    private func _didUpdateRecipientInWhitelist(
+        _ recipient: SignalRecipient,
+        userProfileWriter: UserProfileWriter,
+        tx: DBWriteTransaction,
+    ) {
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        let storageServiceManager = SSKEnvironment.shared.storageServiceManagerRef
+
+        if let thread = TSContactThread.getWithContactAddress(recipient.address, transaction: tx) {
+            databaseStorage.touch(thread: thread, shouldReindex: false, tx: tx)
         }
 
-        transaction.addSyncCompletion {
+        tx.addSyncCompletion {
             // Mark the new whitelisted addresses for update
             if OWSUserProfile.shouldUpdateStorageServiceForUserProfileWriter(userProfileWriter) {
-                SSKEnvironment.shared.storageServiceManagerRef.recordPendingUpdates(updatedAddresses: Array(addressesToAdd))
+                storageServiceManager.recordPendingUpdates(updatedAddresses: [recipient.address])
             }
 
-            for address in addressesToAdd {
-                NotificationCenter.default.postOnMainThread(name: UserProfileNotifications.profileWhitelistDidChange, object: nil, userInfo: [
-                    UserProfileNotifications.profileAddressKey: address,
-                    Self.notificationKeyUserProfileWriter: NSNumber(value: userProfileWriter.rawValue),
-                ])
-            }
+            NotificationCenter.default.postOnMainThread(name: UserProfileNotifications.profileWhitelistDidChange, object: nil, userInfo: [
+                UserProfileNotifications.profileAddressKey: recipient.address,
+                Self.notificationKeyUserProfileWriter: NSNumber(value: userProfileWriter.rawValue),
+            ])
         }
     }
 
-    public func isUser(inProfileWhitelist address: SignalServiceAddress, transaction: DBReadTransaction) -> Bool {
-        owsAssertDebug(address.isValid)
+    public func isRecipientInProfileWhitelist(_ recipient: SignalRecipient, tx: DBReadTransaction) -> Bool {
+        let blockingManager = SSKEnvironment.shared.blockingManagerRef
+        let hidingManager = DependenciesBridge.shared.recipientHidingManager
 
-        if SSKEnvironment.shared.blockingManagerRef.isAddressBlocked(address, transaction: transaction) || RecipientHidingManagerObjcBridge.isHiddenAddress(address, tx: transaction) {
-            return false
-        }
+        return
+            !blockingManager.isRecipientBlocked(recipientId: recipient.id, tx: tx)
+                && !hidingManager.isHiddenRecipient(recipientId: recipient.id, tx: tx)
+                && recipient.status == .whitelisted
 
-        return isAddressInWhitelist(address, tx: transaction)
     }
 
     public func addGroupId(toProfileWhitelist groupId: Data, userProfileWriter: UserProfileWriter, transaction: DBWriteTransaction) {
@@ -303,14 +218,6 @@ public class OWSProfileManager: ProfileManagerProtocol {
         }
     }
 
-    public func addThread(toProfileWhitelist thread: TSThread, userProfileWriter: UserProfileWriter, transaction: DBWriteTransaction) {
-        if thread.isGroupThread, let groupThread = thread as? TSGroupThread {
-            addGroupId(toProfileWhitelist: groupThread.groupModel.groupId, userProfileWriter: userProfileWriter, transaction: transaction)
-        } else if !thread.isGroupThread, let contactThread = thread as? TSContactThread {
-            addUser(toProfileWhitelist: contactThread.contactAddress, userProfileWriter: userProfileWriter, transaction: transaction)
-        }
-    }
-
     public func isGroupId(inProfileWhitelist groupId: Data, transaction: DBReadTransaction) -> Bool {
         owsAssertDebug(!groupId.isEmpty)
         if SSKEnvironment.shared.blockingManagerRef.isGroupIdBlocked_deprecated(groupId, tx: transaction) {
@@ -318,16 +225,6 @@ public class OWSProfileManager: ProfileManagerProtocol {
         }
         let groupIdKey = groupKey(groupId: groupId)
         return whitelistedGroupsStore.hasValue(groupIdKey, transaction: transaction)
-    }
-
-    public func isThread(inProfileWhitelist thread: TSThread, transaction: DBReadTransaction) -> Bool {
-        if thread.isGroupThread, let groupThread = thread as? TSGroupThread {
-            return isGroupId(inProfileWhitelist: groupThread.groupModel.groupId, transaction: transaction)
-        } else if !thread.isGroupThread, let contactThread = thread as? TSContactThread {
-            return isUser(inProfileWhitelist: contactThread.contactAddress, transaction: transaction)
-        } else {
-            return false
-        }
     }
 
     // MARK: Other User's Profiles
@@ -544,29 +441,13 @@ extension OWSProfileManager: ProfileManager {
     // MARK: -
 
     public func allWhitelistedAddresses(tx: DBReadTransaction) -> [SignalServiceAddress] {
-        var addresses = Set<SignalServiceAddress>()
-        for serviceIdString in whitelistedServiceIdsStore.allKeys(transaction: tx) {
-            addresses.insert(SignalServiceAddress(serviceIdString: serviceIdString))
-        }
-        for phoneNumber in whitelistedPhoneNumbersStore.allKeys(transaction: tx) {
-            addresses.insert(SignalServiceAddress.legacyAddress(serviceId: nil, phoneNumber: phoneNumber))
-        }
-
-        return Array(addresses)
+        let recipientStore = DependenciesBridge.shared.recipientDatabaseTable
+        return recipientStore.fetchWhitelistedRecipients(tx: tx).map(\.address)
     }
 
     public func allWhitelistedRegisteredAddresses(tx: DBReadTransaction) -> [SignalServiceAddress] {
-        return allWhitelistedAddresses(tx: tx).lazy.compactMap { address in
-            guard
-                let recipient = DependenciesBridge.shared.recipientDatabaseTable
-                    .fetchRecipient(address: address, tx: tx),
-                recipient.isRegistered
-            else {
-                return nil
-            }
-
-            return recipient.address
-        }
+        let recipientStore = DependenciesBridge.shared.recipientDatabaseTable
+        return recipientStore.fetchWhitelistedRecipients(tx: tx).lazy.filter(\.isRegistered).map(\.address)
     }
 
     // MARK: -
@@ -633,8 +514,7 @@ extension OWSProfileManager: ProfileManager {
         case blocklistChange(BlocklistChange)
 
         struct BlocklistChange {
-            let phoneNumbers: [String]
-            let serviceIds: [ServiceId]
+            let recipientIds: [SignalRecipient.RowId]
             let groupIds: [Data]
         }
 
@@ -644,17 +524,15 @@ extension OWSProfileManager: ProfileManager {
     }
 
     private func blocklistRotationTriggerIfNeeded(tx: DBReadTransaction) -> RotateProfileKeyTrigger? {
-        let victimPhoneNumbers = self.blockedPhoneNumbersInWhitelist(tx: tx)
-        let victimServiceIds = self.blockedServiceIdsInWhitelist(tx: tx)
+        let victimRecipientIds = self.blockedRecipientIdsInWhitelist(tx: tx)
         let victimGroupIds = self.blockedGroupIDsInWhitelist(tx: tx)
 
-        if victimPhoneNumbers.isEmpty, victimServiceIds.isEmpty, victimGroupIds.isEmpty {
+        if victimRecipientIds.isEmpty, victimGroupIds.isEmpty {
             // No need to rotate the profile key.
             return nil
         }
-        return .blocklistChange(.init(
-            phoneNumbers: victimPhoneNumbers,
-            serviceIds: victimServiceIds,
+        return .blocklistChange(RotateProfileKeyTrigger.BlocklistChange(
+            recipientIds: victimRecipientIds,
             groupIds: victimGroupIds,
         ))
     }
@@ -776,14 +654,15 @@ extension OWSProfileManager: ProfileManager {
         // It's absolutely essential that these values are persisted in the same transaction
         // in which we persist our new profile key, since storing them is what marks the
         // profile key rotation as "complete" (removing newly blocked users from the whitelist).
-        self.whitelistedPhoneNumbersStore.removeValues(
-            forKeys: trigger.phoneNumbers,
-            transaction: tx,
-        )
-        self.whitelistedServiceIdsStore.removeValues(
-            forKeys: trigger.serviceIds.map { $0.serviceIdUppercaseString },
-            transaction: tx,
-        )
+        let recipientStore = DependenciesBridge.shared.recipientDatabaseTable
+        trigger.recipientIds.forEach { recipientId in
+            let recipient = recipientStore.fetchRecipient(rowId: recipientId, tx: tx)
+            guard var recipient else {
+                return
+            }
+            recipient.status = .unspecified
+            recipientStore.updateRecipient(recipient, transaction: tx)
+        }
         self.whitelistedGroupsStore.removeValues(
             forKeys: trigger.groupIds.map { self.groupKey(groupId: $0) },
             transaction: tx,
@@ -801,22 +680,12 @@ extension OWSProfileManager: ProfileManager {
         return true
     }
 
-    private func blockedPhoneNumbersInWhitelist(tx: DBReadTransaction) -> [String] {
-        let allWhitelistedNumbers = whitelistedPhoneNumbersStore.allKeys(transaction: tx)
+    private func blockedRecipientIdsInWhitelist(tx: DBReadTransaction) -> [SignalRecipient.RowId] {
+        let blockingManager = SSKEnvironment.shared.blockingManagerRef
+        let recipientStore = DependenciesBridge.shared.recipientDatabaseTable
 
-        return allWhitelistedNumbers.filter { candidate in
-            let address = SignalServiceAddress.legacyAddress(serviceId: nil, phoneNumber: candidate)
-            return SSKEnvironment.shared.blockingManagerRef.isAddressBlocked(address, transaction: tx)
-        }
-    }
-
-    private func blockedServiceIdsInWhitelist(tx: DBReadTransaction) -> [ServiceId] {
-        let allWhitelistedServiceIds = whitelistedServiceIdsStore.allKeys(transaction: tx).compactMap {
-            try? ServiceId.parseFrom(serviceIdString: $0)
-        }
-
-        return allWhitelistedServiceIds.filter { candidate in
-            return SSKEnvironment.shared.blockingManagerRef.isAddressBlocked(SignalServiceAddress(candidate), transaction: tx)
+        return blockingManager.blockedRecipientIds(tx: tx).filter {
+            return recipientStore.fetchRecipient(rowId: $0, tx: tx)!.status == .whitelisted
         }
     }
 
@@ -836,57 +705,6 @@ extension OWSProfileManager: ProfileManager {
         } else {
             owsFailDebug("Parsed group id has unexpected length: \(groupId.hexadecimalString) (\(groupId.count))")
             return nil
-        }
-    }
-
-    func swift_normalizeRecipientInProfileWhitelist(_ recipient: SignalRecipient, tx: DBWriteTransaction) {
-        Self.swift_normalizeRecipientInProfileWhitelist(
-            recipient,
-            serviceIdStore: whitelistedServiceIdsStore,
-            phoneNumberStore: whitelistedPhoneNumbersStore,
-            tx: tx,
-        )
-    }
-
-    public static func swift_normalizeRecipientInProfileWhitelist(
-        _ recipient: SignalRecipient,
-        serviceIdStore: KeyValueStore,
-        phoneNumberStore: KeyValueStore,
-        tx: DBWriteTransaction,
-    ) {
-        // First, we figure out which identifiers are whitelisted.
-        let orderedIdentifiers: [(store: KeyValueStore, key: String, isInWhitelist: Bool)] = [
-            (serviceIdStore, recipient.aci?.serviceIdUppercaseString),
-            (phoneNumberStore, recipient.phoneNumber?.stringValue),
-            (serviceIdStore, recipient.pni?.serviceIdUppercaseString),
-        ].compactMap { store, key -> (KeyValueStore, String, Bool)? in
-            guard let key else { return nil }
-            return (store, key, store.hasValue(key, transaction: tx))
-        }
-
-        guard let preferredIdentifier = orderedIdentifiers.first else {
-            return
-        }
-
-        // If any identifier is in the whitelist, make sure the preferred
-        // identifier is in the whitelist.
-        let isAnyInWhitelist = orderedIdentifiers.contains(where: { $0.isInWhitelist })
-        if isAnyInWhitelist {
-            if !preferredIdentifier.isInWhitelist {
-                preferredIdentifier.store.setBool(true, key: preferredIdentifier.key, transaction: tx)
-            }
-        } else {
-            if preferredIdentifier.isInWhitelist {
-                preferredIdentifier.store.removeValue(forKey: preferredIdentifier.key, transaction: tx)
-            }
-        }
-
-        // Always remove all the other identifiers from the whitelist. If the user
-        // should be in the whitelist, we add the preferred identifier above.
-        for remainingIdentifier in orderedIdentifiers.dropFirst() {
-            if remainingIdentifier.isInWhitelist {
-                remainingIdentifier.store.removeValue(forKey: remainingIdentifier.key, transaction: tx)
-            }
         }
     }
 

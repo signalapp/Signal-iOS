@@ -755,7 +755,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
     ) -> ChangeVerificationStateResult {
         owsAssertDebug(identityKey.count == Constants.storedIdentityKeyLength)
 
-        guard let recipient = recipientDatabaseTable.fetchRecipient(address: address, tx: tx) else {
+        guard var recipient = recipientDatabaseTable.fetchRecipient(address: address, tx: tx) else {
             owsFailDebug("Missing SignalRecipient")
             return .error
         }
@@ -805,11 +805,7 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
                     // to the profile whitelist so they become a "Signal
                     // Connection". (Other devices will learn about this via
                     // Storage Service like normal.)
-                    profileManager.addUser(
-                        toProfileWhitelist: recipient.address,
-                        userProfileWriter: .localUser,
-                        transaction: tx,
-                    )
+                    profileManager.addRecipientToProfileWhitelist(&recipient, userProfileWriter: .localUser, tx: tx)
                 case .noLongerVerified, .implicit:
                     break
                 }

@@ -316,6 +316,7 @@ public class GRDBSchemaMigrator {
         case dropTSAttachment
         case deprecateStoredShouldStartExpireTimer
         case addSession
+        case addRecipientStatus
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -439,7 +440,7 @@ public class GRDBSchemaMigrator {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 138
+    public static let grdbSchemaVersionLatest: UInt = 139
 
     private class DatabaseMigratorWrapper {
         var migrator = DatabaseMigrator()
@@ -4985,6 +4986,12 @@ public class GRDBSchemaMigrator {
             return .success(())
         }
 
+        migrator.registerMigration(.addRecipientStatus) { tx in
+            try addRecipientStatus(tx: tx)
+            try migrateRecipientWhitelist(tx: tx)
+            return .success(())
+        }
+
         // MARK: - Schema Migration Insertion Point
     }
 
@@ -6285,12 +6292,12 @@ public class GRDBSchemaMigrator {
         var outdatedRecipientIds = Set<Int64>()
 
         for blockedAciString in blockedAciStrings {
-            let recipientId = try fetchOrCreateRecipientV1(aciString: blockedAciString, tx: tx)
+            let recipientId = try fetchOrCreateRecipient(.V1, aciString: blockedAciString, tx: tx)
             blockedRecipientIds.insert(recipientId)
         }
 
         for blockedPhoneNumber in blockedPhoneNumbers {
-            let recipientId = try fetchOrCreateRecipientV1(phoneNumber: blockedPhoneNumber, tx: tx)
+            let recipientId = try fetchOrCreateRecipient(.V1, phoneNumber: blockedPhoneNumber, tx: tx)
             if blockedRecipientIds.contains(recipientId) {
                 // They're already blocked by their ACI.
                 continue
@@ -6386,56 +6393,73 @@ public class GRDBSchemaMigrator {
         }
     }
 
-    private static func fetchOrCreateRecipientV1(aciString: String, tx: DBWriteTransaction) throws -> SignalRecipient.RowId {
+    /// The representation of recipients has changed over time. Old migrations
+    /// need to continue writing in the old format; new migrations need to write
+    /// in the new format; when adding a migraton, you may need to define a new
+    /// version if the latest version isn't compatible with the current schema.
+    private enum RecipientVersion {
+        case V1
+        /// See migrateRecipientDeviceIds.
+        case V2
+    }
+
+    private static func fetchOrCreateRecipient(_ version: RecipientVersion, aciString: String, tx: DBWriteTransaction) throws -> SignalRecipient.RowId {
         let db = tx.database
         let existingRecipientId = try Int64.fetchOne(db, sql: "SELECT id FROM model_SignalRecipient WHERE recipientUUID IS ?", arguments: [aciString])
         if let existingRecipientId {
             return existingRecipientId
         }
-        return try createRecipientV1(aciString: aciString, phoneNumber: nil, pniString: nil, tx: tx)
+        return try createRecipient(version, aciString: aciString, phoneNumber: nil, pniString: nil, tx: tx)
     }
 
-    private static func fetchOrCreateRecipientV1(phoneNumber: String, tx: DBWriteTransaction) throws -> SignalRecipient.RowId {
+    private static func fetchOrCreateRecipient(_ version: RecipientVersion, phoneNumber: String, tx: DBWriteTransaction) throws -> SignalRecipient.RowId {
         let db = tx.database
         let existingRecipientId = try Int64.fetchOne(db, sql: "SELECT id FROM model_SignalRecipient WHERE recipientPhoneNumber IS ?", arguments: [phoneNumber])
         if let existingRecipientId {
             return existingRecipientId
         }
-        return try createRecipientV1(aciString: nil, phoneNumber: phoneNumber, pniString: nil, tx: tx)
+        return try createRecipient(version, aciString: nil, phoneNumber: phoneNumber, pniString: nil, tx: tx)
     }
 
-    private static func fetchOrCreateRecipientV1(pniString: String, tx: DBWriteTransaction) throws -> SignalRecipient.RowId {
+    private static func fetchOrCreateRecipient(_ version: RecipientVersion, pniString: String, tx: DBWriteTransaction) throws -> SignalRecipient.RowId {
         let db = tx.database
         let existingRecipientId = try Int64.fetchOne(db, sql: "SELECT id FROM model_SignalRecipient WHERE pni IS ?", arguments: [pniString])
         if let existingRecipientId {
             return existingRecipientId
         }
-        return try createRecipientV1(aciString: nil, phoneNumber: nil, pniString: pniString, tx: tx)
+        return try createRecipient(version, aciString: nil, phoneNumber: nil, pniString: pniString, tx: tx)
     }
 
-    private static func fetchOrCreateRecipientV1(address: FrozenSignalServiceAddress, tx: DBWriteTransaction) throws -> SignalRecipient.RowId? {
+    private static func fetchOrCreateRecipient(_ version: RecipientVersion, address: FrozenSignalServiceAddress, tx: DBWriteTransaction) throws -> SignalRecipient.RowId? {
         if let aci = address.serviceId as? Aci {
             let aciString = aci.serviceIdUppercaseString
-            return try fetchOrCreateRecipientV1(aciString: aciString, tx: tx)
+            return try fetchOrCreateRecipient(version, aciString: aciString, tx: tx)
         }
         if let phoneNumber = address.phoneNumber {
-            return try fetchOrCreateRecipientV1(phoneNumber: phoneNumber, tx: tx)
+            return try fetchOrCreateRecipient(version, phoneNumber: phoneNumber, tx: tx)
         }
         if let pni = address.serviceId as? Pni {
             let pniString = pni.serviceIdUppercaseString
-            return try fetchOrCreateRecipientV1(pniString: pniString, tx: tx)
+            return try fetchOrCreateRecipient(version, pniString: pniString, tx: tx)
         }
         return nil
     }
 
-    private static func createRecipientV1(aciString: String?, phoneNumber: String?, pniString: String?, tx: DBWriteTransaction) throws -> SignalRecipient.RowId {
+    private static func createRecipient(_ version: RecipientVersion, aciString: String?, phoneNumber: String?, pniString: String?, tx: DBWriteTransaction) throws -> SignalRecipient.RowId {
+        let emptyDevices: Data
+        switch version {
+        case .V1:
+            emptyDevices = try NSKeyedArchiver.archivedData(withRootObject: NSOrderedSet(array: [] as [NSNumber]), requiringSecureCoding: true)
+        case .V2:
+            emptyDevices = Data()
+        }
         try tx.database.execute(
             sql: """
             INSERT INTO "model_SignalRecipient" ("recordType", "uniqueId", "devices", "recipientPhoneNumber", "recipientUUID", "pni") VALUES (31, ?, ?, ?, ?, ?)
             """,
             arguments: [
                 UUID().uuidString,
-                NSKeyedArchiver.archivedData(withRootObject: NSOrderedSet(array: [] as [NSNumber]), requiringSecureCoding: true),
+                emptyDevices,
                 phoneNumber,
                 aciString,
                 pniString,
@@ -6992,7 +7016,7 @@ public class GRDBSchemaMigrator {
                 continue
             }
             for address in addresses {
-                guard let recipientId = try fetchOrCreateRecipientV1(address: address, tx: tx) else {
+                guard let recipientId = try fetchOrCreateRecipient(.V1, address: address, tx: tx) else {
                     owsFailDebug("Couldn't include empty story recipient address")
                     continue
                 }
@@ -7402,6 +7426,62 @@ public class GRDBSchemaMigrator {
             "TSStorageManagerPNISessionStoreCollection",
         ]
         for collection in collections {
+            try tx.database.execute(sql: "DELETE FROM keyvalue WHERE collection = ?", arguments: [collection])
+        }
+    }
+
+    static func addRecipientStatus(tx: DBWriteTransaction) throws {
+        try tx.database.alter(table: "model_SignalRecipient") {
+            $0.add(column: "status", .integer).notNull().defaults(to: 0)
+        }
+        // For fetching whitelisted recipients.
+        try tx.database.create(index: "Recipient_Status", on: "model_SignalRecipient", columns: ["status"])
+    }
+
+    static func migrateRecipientWhitelist(tx: DBWriteTransaction) throws {
+        let serviceIdCollection = "kOWSProfileManager_UserUUIDWhitelistCollection"
+        let phoneNumberCollection = "kOWSProfileManager_UserWhitelistCollection"
+
+        var recipientIds = Set<SignalRecipient.RowId>()
+
+        let serviceIdStrings = try String.fetchAll(
+            tx.database,
+            sql: "SELECT key FROM keyvalue WHERE collection = ?",
+            arguments: [serviceIdCollection],
+        )
+        for serviceIdString in serviceIdStrings {
+            guard let serviceId = try? ServiceId.parseFrom(serviceIdString: serviceIdString) else {
+                continue
+            }
+            switch serviceId.concreteType {
+            case .aci(let aci):
+                recipientIds.insert(try fetchOrCreateRecipient(.V2, aciString: aci.serviceIdUppercaseString, tx: tx))
+            case .pni(let pni):
+                recipientIds.insert(try fetchOrCreateRecipient(.V2, pniString: pni.serviceIdUppercaseString, tx: tx))
+            }
+        }
+
+        let phoneNumberStrings = try String.fetchAll(
+            tx.database,
+            sql: "SELECT key FROM keyvalue WHERE collection = ?",
+            arguments: [phoneNumberCollection],
+        )
+        for phoneNumberString in phoneNumberStrings {
+            guard let phoneNumber = E164(phoneNumberString) else {
+                continue
+            }
+            recipientIds.insert(try fetchOrCreateRecipient(.V2, phoneNumber: phoneNumber.stringValue, tx: tx))
+        }
+
+        if !recipientIds.isEmpty {
+            Logger.info("adding \(recipientIds.count) recipients to the whitelist (from \(serviceIdStrings.count) service ids & \(phoneNumberStrings.count) phone numbers)")
+        }
+
+        for recipientId in recipientIds {
+            try tx.database.execute(sql: "UPDATE model_SignalRecipient SET status = 1 WHERE id = ?", arguments: [recipientId])
+        }
+
+        for collection in [serviceIdCollection, phoneNumberCollection] {
             try tx.database.execute(sql: "DELETE FROM keyvalue WHERE collection = ?", arguments: [collection])
         }
     }

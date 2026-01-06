@@ -165,7 +165,6 @@ class RecipientMergerImpl: RecipientMerger {
                 signalServiceAddressCache,
                 AuthorMergeObserver(authorMergeHelper: authorMergeHelper),
                 SignalAccountMergeObserver(),
-                ProfileWhitelistMerger(profileManager: profileManager),
                 UserProfileMerger(userProfileStore: userProfileStore),
             ],
             threadMerger: ThreadMerger(

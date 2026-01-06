@@ -233,7 +233,7 @@ public class ThreadFinder {
                 tx: transaction,
             ),
             let hiddenRecipient = recipientHidingManager.fetchHiddenRecipient(
-                signalRecipient: signalRecipient,
+                recipientId: signalRecipient.id,
                 tx: transaction,
             )
         {

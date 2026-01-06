@@ -43,4 +43,14 @@ public struct RecipientFetcher {
         searchableNameIndexer.insert(result, tx: tx)
         return result
     }
+
+    public func fetchOrCreate(address: SignalServiceAddress, tx: DBWriteTransaction) -> SignalRecipient? {
+        if let serviceId = address.serviceId {
+            return fetchOrCreate(serviceId: serviceId, tx: tx)
+        }
+        if let phoneNumber = address.e164 {
+            return fetchOrCreate(phoneNumber: phoneNumber, tx: tx)
+        }
+        return nil
+    }
 }

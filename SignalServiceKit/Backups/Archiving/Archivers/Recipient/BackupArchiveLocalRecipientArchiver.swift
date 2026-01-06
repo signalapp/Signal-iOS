@@ -95,7 +95,7 @@ public class BackupArchiveLocalRecipientArchiver: BackupArchiveProtoStreamWriter
     ) -> BackupArchive.RestoreLocalRecipientResult {
         context[recipient.recipientId] = .localAddress
 
-        let localSignalRecipient: SignalRecipient
+        var localSignalRecipient: SignalRecipient
         do throws(GRDB.DatabaseError) {
             localSignalRecipient = try SignalRecipient.insertRecord(
                 aci: context.localIdentifiers.aci,
@@ -125,8 +125,8 @@ public class BackupArchiveLocalRecipientArchiver: BackupArchiveProtoStreamWriter
             }
         }
 
-        profileManager.addToWhitelist(
-            context.localIdentifiers.aciAddress,
+        profileManager.addRecipientToProfileWhitelist(
+            &localSignalRecipient,
             tx: context.tx,
         )
 

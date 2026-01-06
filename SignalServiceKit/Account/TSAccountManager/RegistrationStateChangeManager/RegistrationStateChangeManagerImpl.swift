@@ -15,6 +15,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
     private let backupCDNCredentialStore: BackupCDNCredentialStore
     private let backupSubscriptionManager: BackupSubscriptionManager
     private let backupTestFlightEntitlementManager: BackupTestFlightEntitlementManager
+    private let blockedRecipientStore: BlockedRecipientStore
     private var chatConnectionManager: any ChatConnectionManager {
         // TODO: Fix circular dependency.
         return DependenciesBridge.shared.chatConnectionManager
@@ -42,6 +43,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         backupCDNCredentialStore: BackupCDNCredentialStore,
         backupSubscriptionManager: BackupSubscriptionManager,
         backupTestFlightEntitlementManager: BackupTestFlightEntitlementManager,
+        blockedRecipientStore: BlockedRecipientStore,
         cron: Cron,
         db: DB,
         dmConfigurationStore: DisappearingMessagesConfigurationStore,
@@ -63,6 +65,7 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
         self.backupCDNCredentialStore = backupCDNCredentialStore
         self.backupSubscriptionManager = backupSubscriptionManager
         self.backupTestFlightEntitlementManager = backupTestFlightEntitlementManager
+        self.blockedRecipientStore = blockedRecipientStore
         self.cron = cron
         self.db = db
         self.dmConfigurationStore = dmConfigurationStore
@@ -349,6 +352,9 @@ public class RegistrationStateChangeManagerImpl: RegistrationStateChangeManager 
             shouldUpdateStorageService: false,
             tx: tx,
         )
+        // Always make sure we haven't blocked ourselves. (It's logically
+        // impossible to do so, so we set the bit in the database directly.)
+        blockedRecipientStore.setBlocked(false, recipientId: recipient.id, tx: tx)
     }
 
     // MARK: Notifications

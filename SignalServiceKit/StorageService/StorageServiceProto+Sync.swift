@@ -296,7 +296,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         // This could be an ACI or a PNI address.
         let anyAddress = SignalServiceAddress(contact.serviceIds.aciOrElsePni)
 
-        let isInWhitelist = profileManager.isUser(inProfileWhitelist: anyAddress, transaction: tx)
+        let isInWhitelist = profileManager.isRecipientInProfileWhitelist(recipient, tx: tx)
         builder.setWhitelisted(isInWhitelist)
 
         builder.setBlocked(blockingManager.isAddressBlocked(anyAddress, transaction: tx))
@@ -491,7 +491,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
 
         return _mergeRecord(
             record,
-            recipient: recipient,
+            recipient: &recipient,
             serviceIds: serviceIds,
             // If we merge and don't end up with what's in Storage Service, then it
             // probably means that a linked device is wrong or we've hit a race
@@ -509,7 +509,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
 
     private func _mergeRecord(
         _ record: StorageServiceProtoContactRecord,
-        recipient: SignalRecipient,
+        recipient: inout SignalRecipient,
         serviceIds: AtLeastOneServiceId,
         needsUpdate: Bool,
         tx: DBWriteTransaction,
@@ -521,7 +521,7 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         // Gather some local contact state to do comparisons against.
         let localIsBlocked = blockingManager.isAddressBlocked(anyAddress, transaction: tx)
         let localIsHidden = recipientHidingManager.isHiddenAddress(anyAddress, tx: tx)
-        let localIsWhitelisted = profileManager.isUser(inProfileWhitelist: anyAddress, transaction: tx)
+        let localIsWhitelisted = profileManager.isRecipientInProfileWhitelist(recipient, tx: tx)
         let localUserProfile = profileManager.userProfile(for: anyAddress, tx: tx)
 
         // If our local profile key record differs from what's on the service, use the service's value.
@@ -622,17 +622,9 @@ class StorageServiceContactRecordUpdater: StorageServiceRecordUpdater {
         // If our local whitelisted state differs from the service state, use the service's value.
         if record.whitelisted != localIsWhitelisted {
             if record.whitelisted {
-                profileManager.addUser(
-                    toProfileWhitelist: anyAddress,
-                    userProfileWriter: .storageService,
-                    transaction: tx,
-                )
+                profileManager.addRecipientToProfileWhitelist(&recipient, userProfileWriter: .storageService, tx: tx)
             } else {
-                profileManager.removeUser(
-                    fromProfileWhitelist: anyAddress,
-                    userProfileWriter: .storageService,
-                    transaction: tx,
-                )
+                profileManager.removeRecipientFromProfileWhitelist(&recipient, userProfileWriter: .storageService, tx: tx)
             }
         }
 

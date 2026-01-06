@@ -14,14 +14,10 @@ public protocol ProfileManagerProtocol {
     /// Fetch the locally-cached profile for an address.
     func userProfile(for address: SignalServiceAddress, tx: DBReadTransaction) -> OWSUserProfile?
 
-    func isUser(inProfileWhitelist address: SignalServiceAddress, transaction: DBReadTransaction) -> Bool
-    func normalizeRecipientInProfileWhitelist(_ recipient: SignalRecipient, tx: DBWriteTransaction)
-    func isThread(inProfileWhitelist thread: TSThread, transaction: DBReadTransaction) -> Bool
-    func addThread(toProfileWhitelist thread: TSThread, userProfileWriter: UserProfileWriter, transaction: DBWriteTransaction)
-    func addUser(toProfileWhitelist address: SignalServiceAddress, userProfileWriter: UserProfileWriter, transaction: DBWriteTransaction)
-    func addUsers(toProfileWhitelist addresses: [SignalServiceAddress], userProfileWriter: UserProfileWriter, transaction: DBWriteTransaction)
-    func removeUser(fromProfileWhitelist address: SignalServiceAddress)
-    func removeUser(fromProfileWhitelist address: SignalServiceAddress, userProfileWriter: UserProfileWriter, transaction: DBWriteTransaction)
+    func addRecipientToProfileWhitelist(_ recipient: inout SignalRecipient, userProfileWriter: UserProfileWriter, tx: DBWriteTransaction)
+    func removeRecipientFromProfileWhitelist(_ recipient: inout SignalRecipient, userProfileWriter: UserProfileWriter, tx: DBWriteTransaction)
+    func isRecipientInProfileWhitelist(_ recipient: SignalRecipient, tx: DBReadTransaction) -> Bool
+
     func isGroupId(inProfileWhitelist groupId: Data, transaction: DBReadTransaction) -> Bool
     func addGroupId(toProfileWhitelist groupId: Data, userProfileWriter: UserProfileWriter, transaction: DBWriteTransaction)
     func removeGroupId(fromProfileWhitelist groupId: Data, userProfileWriter: UserProfileWriter, transaction: DBWriteTransaction)
@@ -40,4 +36,25 @@ public protocol ProfileManagerProtocol {
     /// this we already determined we need a rotation based on _group+blocked_ state and will
     /// force a rotation independently of whitelist state.
     func forceRotateLocalProfileKeyForGroupDeparture(with transaction: DBWriteTransaction)
+}
+
+extension ProfileManagerProtocol {
+    public func isUser(inProfileWhitelist address: SignalServiceAddress, transaction: DBReadTransaction) -> Bool {
+        owsAssertDebug(address.isValid)
+        let recipientStore = DependenciesBridge.shared.recipientDatabaseTable
+        guard let recipient = recipientStore.fetchRecipient(address: address, tx: transaction) else {
+            return false
+        }
+        return isRecipientInProfileWhitelist(recipient, tx: transaction)
+    }
+
+    public func isThread(inProfileWhitelist thread: TSThread, transaction: DBReadTransaction) -> Bool {
+        if thread.isGroupThread, let groupThread = thread as? TSGroupThread {
+            return isGroupId(inProfileWhitelist: groupThread.groupModel.groupId, transaction: transaction)
+        } else if !thread.isGroupThread, let contactThread = thread as? TSContactThread {
+            return isUser(inProfileWhitelist: contactThread.contactAddress, transaction: transaction)
+        } else {
+            return false
+        }
+    }
 }

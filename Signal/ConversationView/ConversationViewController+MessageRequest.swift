@@ -253,23 +253,23 @@ private extension ConversationViewController {
                 return
             }
         }
-        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
+
+        let blockingManager = SSKEnvironment.shared.blockingManagerRef
+        let hidingManager = DependenciesBridge.shared.recipientHidingManager
+        let profileManager = SSKEnvironment.shared.profileManagerRef
+        let recipientFetcher = DependenciesBridge.shared.recipientFetcher
+
+        func unblockThreadIfNeeded(transaction: DBWriteTransaction) {
             if unblockThread {
-                SSKEnvironment.shared.blockingManagerRef.removeBlockedThread(
+                blockingManager.removeBlockedThread(
                     thread,
                     wasLocallyInitiated: true,
                     transaction: transaction,
                 )
             }
+        }
 
-            if unhideRecipient, let thread = thread as? TSContactThread {
-                DependenciesBridge.shared.recipientHidingManager.removeHiddenRecipient(
-                    thread.contactAddress,
-                    wasLocallyInitiated: true,
-                    tx: transaction,
-                )
-            }
-
+        func acceptMessageRequestIfNeeded(transaction: DBWriteTransaction) {
             /// If we're not in "unblock" mode, we should take "accept message
             /// request" actions. (Bleh.)
             if !unblockThread {
@@ -290,18 +290,36 @@ private extension ConversationViewController {
                     transaction: transaction,
                 )
             }
+        }
 
-            // Whitelist the thread
-            SSKEnvironment.shared.profileManagerRef.addThread(
-                toProfileWhitelist: thread,
-                userProfileWriter: .localUser,
-                transaction: transaction,
-            )
+        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { transaction in
+            switch thread {
+            case let thread as TSGroupThread:
+                unblockThreadIfNeeded(transaction: transaction)
+                acceptMessageRequestIfNeeded(transaction: transaction)
+                profileManager.addGroupId(
+                    toProfileWhitelist: thread.groupModel.groupId,
+                    userProfileWriter: .localUser,
+                    transaction: transaction,
+                )
 
-            if !thread.isGroupThread {
+            case let thread as TSContactThread:
+                unblockThreadIfNeeded(transaction: transaction)
+                // Might be nil if thread.contactAddress isn't valid.
+                var recipient = recipientFetcher.fetchOrCreate(address: thread.contactAddress, tx: transaction)
+                if var innerRecipient = recipient {
+                    if unhideRecipient, !thread.contactAddress.isLocalAddress {
+                        hidingManager.removeHiddenRecipient(&innerRecipient, wasLocallyInitiated: true, tx: transaction)
+                    }
+                    recipient = innerRecipient
+                }
+                acceptMessageRequestIfNeeded(transaction: transaction)
+                if var innerRecipient = recipient {
+                    profileManager.addRecipientToProfileWhitelist(&innerRecipient, userProfileWriter: .localUser, tx: transaction)
+                    recipient = innerRecipient
+                }
                 // If this is a contact thread, we should give the
                 // now-unblocked contact our profile key.
-                let profileManager = SSKEnvironment.shared.profileManagerRef
                 let profileKeyMessage = OWSProfileKeyMessage(
                     thread: thread,
                     profileKey: profileManager.localProfileKey(tx: transaction)!.serialize(),
@@ -311,6 +329,9 @@ private extension ConversationViewController {
                     transientMessageWithoutAttachments: profileKeyMessage,
                 )
                 SSKEnvironment.shared.messageSenderJobQueueRef.add(message: preparedMessage, transaction: transaction)
+
+            default:
+                owsFailDebug("can't accept message request for \(type(of: thread))")
             }
 
             NotificationCenter.default.post(name: ChatListViewController.clearSearch, object: nil)

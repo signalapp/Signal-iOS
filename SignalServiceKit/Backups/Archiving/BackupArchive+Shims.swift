@@ -249,7 +249,7 @@ public protocol _MessageBackup_ProfileManagerShim {
 
     func isGroupId(inProfileWhitelist groupId: Data, tx: DBReadTransaction) -> Bool
 
-    func addToWhitelist(_ address: SignalServiceAddress, tx: DBWriteTransaction)
+    func addRecipientToProfileWhitelist(_ recipient: inout SignalRecipient, tx: DBWriteTransaction)
 
     func addToWhitelist(_ thread: TSGroupThread, tx: DBWriteTransaction)
 
@@ -301,17 +301,17 @@ public class _MessageBackup_ProfileManagerWrapper: _MessageBackup_ProfileManager
         profileManager.isGroupId(inProfileWhitelist: groupId, transaction: tx)
     }
 
-    public func addToWhitelist(_ address: SignalServiceAddress, tx: DBWriteTransaction) {
-        profileManager.addUser(
-            toProfileWhitelist: address,
+    public func addRecipientToProfileWhitelist(_ recipient: inout SignalRecipient, tx: DBWriteTransaction) {
+        profileManager.addRecipientToProfileWhitelist(
+            &recipient,
             userProfileWriter: .backupRestore,
-            transaction: tx,
+            tx: tx,
         )
     }
 
     public func addToWhitelist(_ thread: TSGroupThread, tx: DBWriteTransaction) {
-        profileManager.addThread(
-            toProfileWhitelist: thread,
+        profileManager.addGroupId(
+            toProfileWhitelist: thread.groupModel.groupId,
             userProfileWriter: .backupRestore,
             transaction: tx,
         )

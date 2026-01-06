@@ -183,8 +183,8 @@ public class GroupManager: NSObject {
                 spamReportingMetadata: .createdByLocalAction,
                 transaction: tx,
             )
-            SSKEnvironment.shared.profileManagerRef.addThread(
-                toProfileWhitelist: thread,
+            SSKEnvironment.shared.profileManagerRef.addGroupId(
+                toProfileWhitelist: groupModel.groupId,
                 userProfileWriter: .localUser,
                 transaction: tx,
             )

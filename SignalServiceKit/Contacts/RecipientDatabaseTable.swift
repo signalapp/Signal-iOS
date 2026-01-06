@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import GRDB
 public import LibSignalClient
 
 public struct RecipientDatabaseTable {
@@ -120,6 +121,13 @@ public struct RecipientDatabaseTable {
                 }
             }
         }
+    }
+
+    public func fetchWhitelistedRecipients(tx: DBReadTransaction) -> [SignalRecipient] {
+        let fetchRequest = SignalRecipient.filter(
+            Column(SignalRecipient.CodingKeys.status.rawValue) == SignalRecipient.Status.whitelisted.rawValue,
+        )
+        return failIfThrows { try fetchRequest.fetchAll(tx.database) }
     }
 
     public func fetchAllPhoneNumbers(tx: DBReadTransaction) -> [String: Bool] {

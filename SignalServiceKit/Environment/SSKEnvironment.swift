@@ -294,20 +294,25 @@ public class SSKEnvironment: NSObject {
     /// Pni (a one-time migration), but it also helps ensure that the value is
     /// always consistent with TSAccountManager's values.
     private func fixLocalRecipientIfNeeded(dependenciesBridge: DependenciesBridge) {
-        self.databaseStorageRef.write { tx in
-            guard let localIdentifiers = dependenciesBridge.tsAccountManager.localIdentifiers(tx: tx) else {
+        let blockedRecipientStore = dependenciesBridge.blockedRecipientStore
+        let databaseStorage = self.databaseStorageRef
+        let recipientMerger = dependenciesBridge.recipientMerger
+        let tsAccountManager = dependenciesBridge.tsAccountManager
+
+        databaseStorage.write { tx in
+            guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx) else {
                 return // Not registered yet.
             }
             guard let phoneNumber = E164(localIdentifiers.phoneNumber) else {
                 return // Registered with an invalid phone number.
             }
-            let recipientMerger = dependenciesBridge.recipientMerger
-            _ = recipientMerger.applyMergeForLocalAccount(
+            let localRecipient = recipientMerger.applyMergeForLocalAccount(
                 aci: localIdentifiers.aci,
                 phoneNumber: phoneNumber,
                 pni: localIdentifiers.pni,
                 tx: tx,
             )
+            blockedRecipientStore.setBlocked(false, recipientId: localRecipient.id, tx: tx)
         }
     }
 

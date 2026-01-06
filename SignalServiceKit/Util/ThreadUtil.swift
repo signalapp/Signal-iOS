@@ -282,9 +282,13 @@ extension ThreadUtil {
     public class func addThreadToProfileWhitelistIfEmptyOrPendingRequestAndSetDefaultTimerWithSneakyTransaction(
         _ thread: TSThread,
     ) -> Bool {
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        let profileManager = SSKEnvironment.shared.profileManagerRef
+        let recipientFetcher = DependenciesBridge.shared.recipientFetcher
+
         let threadAsContactThread = thread as? TSContactThread
 
-        let (shouldSetUniversalTimer, shouldAddToProfileWhitelist) = SSKEnvironment.shared.databaseStorageRef.read { tx -> (Bool, Bool) in
+        let (shouldSetUniversalTimer, shouldAddToProfileWhitelist) = databaseStorage.read { tx -> (Bool, Bool) in
             let universalTimer: Bool = {
                 guard let threadAsContactThread else { return false }
                 return Self.shouldSetUniversalTimer(contactThread: threadAsContactThread, tx: tx)
@@ -294,15 +298,28 @@ extension ThreadUtil {
             return (universalTimer, profileWhitelist)
         }
         if shouldSetUniversalTimer, let threadAsContactThread {
-            SSKEnvironment.shared.databaseStorageRef.write { tx in setUniversalTimer(contactThread: threadAsContactThread, tx: tx) }
+            databaseStorage.write { tx in setUniversalTimer(contactThread: threadAsContactThread, tx: tx) }
         }
         if shouldAddToProfileWhitelist {
-            SSKEnvironment.shared.databaseStorageRef.write { tx in
-                SSKEnvironment.shared.profileManagerRef.addThread(
-                    toProfileWhitelist: thread,
-                    userProfileWriter: .localUser,
-                    transaction: tx,
-                )
+            databaseStorage.write { tx in
+                switch thread {
+                case let thread as TSGroupThread:
+                    profileManager.addGroupId(
+                        toProfileWhitelist: thread.groupModel.groupId,
+                        userProfileWriter: .localUser,
+                        transaction: tx,
+                    )
+                case let thread as TSContactThread:
+                    if var recipient = recipientFetcher.fetchOrCreate(address: thread.contactAddress, tx: tx) {
+                        profileManager.addRecipientToProfileWhitelist(
+                            &recipient,
+                            userProfileWriter: .localUser,
+                            tx: tx,
+                        )
+                    }
+                default:
+                    owsFailDebug("can't whitelist \(type(of: thread))")
+                }
             }
         }
         return shouldAddToProfileWhitelist
@@ -314,6 +331,9 @@ extension ThreadUtil {
         setDefaultTimerIfNecessary: Bool,
         tx: DBWriteTransaction,
     ) -> Bool {
+        let profileManager = SSKEnvironment.shared.profileManagerRef
+        let recipientFetcher = DependenciesBridge.shared.recipientFetcher
+
         if
             setDefaultTimerIfNecessary,
             let contactThread = thread as? TSContactThread,
@@ -323,11 +343,24 @@ extension ThreadUtil {
         }
         let shouldAddToProfileWhitelist = shouldAddThreadToProfileWhitelist(thread, tx: tx)
         if shouldAddToProfileWhitelist {
-            SSKEnvironment.shared.profileManagerRef.addThread(
-                toProfileWhitelist: thread,
-                userProfileWriter: .localUser,
-                transaction: tx,
-            )
+            switch thread {
+            case let thread as TSGroupThread:
+                profileManager.addGroupId(
+                    toProfileWhitelist: thread.groupModel.groupId,
+                    userProfileWriter: .localUser,
+                    transaction: tx,
+                )
+            case let thread as TSContactThread:
+                if var recipient = recipientFetcher.fetchOrCreate(address: thread.contactAddress, tx: tx) {
+                    profileManager.addRecipientToProfileWhitelist(
+                        &recipient,
+                        userProfileWriter: .localUser,
+                        tx: tx,
+                    )
+                }
+            default:
+                owsFailDebug("can't whitelist \(type(of: thread))")
+            }
         }
         return shouldAddToProfileWhitelist
     }

@@ -48,7 +48,7 @@ extension RecipientHidingManager {
         guard let recipient = recipient(from: address, tx: tx) else {
             return false
         }
-        return isHiddenRecipient(recipient, tx: tx)
+        return isHiddenRecipient(recipientId: recipient.id, tx: tx)
     }
 
     // MARK: Write
@@ -73,17 +73,15 @@ extension RecipientHidingManager {
             throw RecipientHidingError.cannotHideLocalAddress
         }
         let recipientFetcher = DependenciesBridge.shared.recipientFetcher
-        let recipient = try { () throws -> SignalRecipient in
-            if let serviceId = address.serviceId {
-                return recipientFetcher.fetchOrCreate(serviceId: serviceId, tx: tx)
-            }
-            if let phoneNumber = address.e164 {
-                return recipientFetcher.fetchOrCreate(phoneNumber: phoneNumber, tx: tx)
+        var recipient = try { () throws -> SignalRecipient in
+            let recipient = recipientFetcher.fetchOrCreate(address: address, tx: tx)
+            if let recipient {
+                return recipient
             }
             throw RecipientHidingError.invalidRecipientAddress(address)
         }()
         try addHiddenRecipient(
-            recipient,
+            &recipient,
             inKnownMessageRequestState: inKnownMessageRequestState,
             wasLocallyInitiated: wasLocallyInitiated,
             tx: tx,
@@ -109,8 +107,8 @@ extension RecipientHidingManager {
             owsFailDebug("Cannot unhide the local address")
             return
         }
-        if let recipient = recipient(from: address, tx: tx) {
-            removeHiddenRecipient(recipient, wasLocallyInitiated: wasLocallyInitiated, tx: tx)
+        if var recipient = recipient(from: address, tx: tx) {
+            removeHiddenRecipient(&recipient, wasLocallyInitiated: wasLocallyInitiated, tx: tx)
         }
     }
 
