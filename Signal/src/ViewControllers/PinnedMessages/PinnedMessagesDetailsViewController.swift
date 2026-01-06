@@ -177,6 +177,11 @@ class PinnedMessagesDetailsViewController: OWSViewController, DatabaseChangeDele
         let uiContextMenuInteraction = UIContextMenuInteraction(delegate: messageLongPressDelegates[reversedIndex])
         cellView.addInteraction(uiContextMenuInteraction)
 
+        if let contentMenuContextView = cellView.componentView?.contextMenuContentView?() {
+            let uiContextMenuInteraction = UIContextMenuInteraction(delegate: messageLongPressDelegates[reversedIndex])
+            contentMenuContextView.addInteraction(uiContextMenuInteraction)
+        }
+
         let spacer = UIView()
         spacer.setContentHuggingPriority(.defaultLow, for: .horizontal)
 
