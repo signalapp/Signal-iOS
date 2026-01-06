@@ -172,7 +172,6 @@ public enum MimeTypeUtil {
         MimeType.imageXWindowsBmp.rawValue,
     ]
     public static let supportedInputImageMimeTypes: Set<String> = supportedImageMimeTypes.union([
-        MimeType.imageJpegXl.rawValue,
         MimeType.imageHeic.rawValue,
         MimeType.imageHeif.rawValue,
         MimeType.imageWebp.rawValue,
