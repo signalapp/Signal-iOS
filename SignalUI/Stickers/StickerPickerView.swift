@@ -244,8 +244,11 @@ private class StickerPacksToolbar: UIView {
     }
 
     private var bottomContentMargin: CGFloat {
-        // Use non-zero padding on devices with the home button that doesn't have bottom safe area inset.
-        safeAreaInsets.bottom == 0 ? Metrics.minimumBottomMargin : safeAreaInsets.bottom
+        // Use 8 dp padding on devices with the home button that doesn't have bottom safe area inset.
+        // Use fixed 28 dp padding on devices with a bottom safe area inset. The intent is to
+        // make the toolbar wider than it would have been if we used default safeAreaInsets.bottom (30+ dp) insets.
+        // The width is increased because side margins are made the same as this bottom margin.
+        safeAreaInsets.bottom == 0 ? Metrics.minimumBottomMargin : 28
     }
 
     override func layoutSubviews() {
