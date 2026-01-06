@@ -359,10 +359,14 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
                     query = query
                         .filter(Column(Attachment.Record.CodingKeys.sqliteId) > lastAttachmentId)
                 }
-                let attachments = try query.fetchAll(tx.database)
+                let attachments: [Attachment] = failIfThrows {
+                    // Ignore any attachments that cannot be instantiated:
+                    // there's nothing we can do here to recover them.
+                    try query.fetchAll(tx.database)
+                        .compactMap { try? Attachment(record: $0) }
+                }
 
-                for attachmentRecord in attachments {
-                    let attachment = try Attachment(record: attachmentRecord)
+                for attachment in attachments {
                     guard let fullsizeMediaName = attachment.mediaName else {
                         owsFailDebug("We filtered by mediaName presence, how is it missing")
                         continue
@@ -401,8 +405,8 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
                         tx: tx,
                     )
                 }
-                let lastAttachmentId = attachments.last?.sqliteId
-                if let lastAttachmentId {
+
+                if let lastAttachmentId = attachments.last?.id {
                     kvStore.setInt64(lastAttachmentId, key: Constants.lastEnumeratedAttachmentIdKey, transaction: tx)
                 } else {
                     // We're done
