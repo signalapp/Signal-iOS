@@ -12,14 +12,14 @@ class OrphanedAttachmentCleanerTest: XCTestCase {
 
     private var db: InMemoryDB!
 
-    private var attachmentStore: AttachmentStoreImpl!
+    private var attachmentStore: AttachmentStore!
     private var orphanedAttachmentCleaner: OrphanedAttachmentCleanerImpl!
     private var mockFileSystem: OrphanedAttachmentCleanerImpl.Mocks.OWSFileSystem!
     private var mockTaskScheduler: OrphanedAttachmentCleanerImpl.Mocks.TaskScheduler!
 
     override func setUp() async throws {
         db = InMemoryDB()
-        attachmentStore = AttachmentStoreImpl()
+        attachmentStore = AttachmentStore()
         mockFileSystem = OrphanedAttachmentCleanerImpl.Mocks.OWSFileSystem()
         mockTaskScheduler = OrphanedAttachmentCleanerImpl.Mocks.TaskScheduler()
         orphanedAttachmentCleaner = OrphanedAttachmentCleanerImpl(

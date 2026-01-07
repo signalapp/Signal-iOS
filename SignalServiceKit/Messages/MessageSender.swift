@@ -588,8 +588,8 @@ public class MessageSender {
             return true
         }
         return SSKEnvironment.shared.databaseStorageRef.read { tx in
-            for attachment in message.allAttachments(transaction: tx) {
-                guard attachment.isUploadedToTransitTier else {
+            for referencedAttachment in message.allAttachments(transaction: tx) {
+                guard referencedAttachment.attachment.isUploadedToTransitTier else {
                     return false
                 }
             }

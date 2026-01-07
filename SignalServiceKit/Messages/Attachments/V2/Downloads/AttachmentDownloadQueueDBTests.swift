@@ -17,7 +17,7 @@ class AttachmentDownloadQueueDBTests: XCTestCase {
 
     override func setUp() async throws {
         db = InMemoryDB()
-        attachmentStore = AttachmentStoreImpl()
+        attachmentStore = AttachmentStore()
     }
 
     func testDeleteAttachment() async throws {

@@ -216,7 +216,12 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             owsFailDebug("Downloading attachments for uninserted message!")
             return
         }
-        var ownerTypes = AttachmentReference.MessageOwnerTypeRaw.allCases
+
+        var referencedAttachments = attachmentStore.fetchReferencedAttachmentsOwnedByMessage(
+            messageRowId: messageRowId,
+            tx: tx,
+        )
+
         // Do not enqueue download of the thumbnail for quotes for which
         // we have the target message locally; the thumbnail will be filled in
         // IFF we download the original attachment.
@@ -224,15 +229,14 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             let quotedMessage = message.quotedMessage,
             quotedMessage.bodySource == .local
         {
-            ownerTypes.removeAll(where: { $0 == .quotedReplyAttachment })
+            referencedAttachments.removeAll {
+                switch $0.reference.owner {
+                case .message(.quotedReply): true
+                default: false
+                }
+            }
         }
-        let referencedAttachments = attachmentStore
-            .fetchReferencedAttachments(
-                owners: ownerTypes.map {
-                    $0.with(messageRowId: messageRowId)
-                },
-                tx: tx,
-            )
+
         enqueueDownloadOfAttachments(referencedAttachments, priority: priority, tx: tx)
     }
 
@@ -245,13 +249,10 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             owsFailDebug("Downloading attachments for uninserted message!")
             return
         }
-        let referencedAttachments = attachmentStore
-            .fetchReferencedAttachments(
-                owners: AttachmentReference.StoryMessageOwnerTypeRaw.allCases.map {
-                    $0.with(storyMessageRowId: storyMessageRowId)
-                },
-                tx: tx,
-            )
+        let referencedAttachments = attachmentStore.fetchReferencedAttachmentsOwnedByStory(
+            storyMessageRowId: storyMessageRowId,
+            tx: tx,
+        )
         enqueueDownloadOfAttachments(referencedAttachments, priority: priority, tx: tx)
     }
 
@@ -2325,10 +2326,10 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     self.orphanedAttachmentCleaner.releasePendingAttachment(withId: pendingAttachment.orphanRecordId, tx: tx)
 
                     guard
-                        let attachment = self.attachmentStore.fetchFirst(
-                            owner: referenceParams.owner.id,
+                        let attachment = attachmentStore.fetchAnyReferencedAttachment(
+                            for: referenceParams.owner.id,
                             tx: tx,
-                        )?.asStream()
+                        )?.attachment.asStream()
                     else {
                         throw OWSAssertionError("Missing attachment we just created")
                     }
@@ -2520,14 +2521,14 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     self.orphanedAttachmentCleaner.releasePendingAttachment(withId: pendingThumbnailAttachment.orphanRecordId, tx: tx)
 
                     guard
-                        let attachment = self.attachmentStore.fetchFirst(
-                            owner: referenceParams.owner.id,
+                        let referencedAttachment = attachmentStore.fetchAnyReferencedAttachment(
+                            for: referenceParams.owner.id,
                             tx: tx,
                         )
                     else {
                         throw OWSAssertionError("Missing attachment we just created")
                     }
-                    thumbnailAttachmentId = attachment.id
+                    thumbnailAttachmentId = referencedAttachment.attachment.id
                     alreadyAssignedFirstReference = true
                 } catch let error {
                     let existingAttachmentId: Attachment.IDType

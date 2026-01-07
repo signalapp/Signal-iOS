@@ -50,10 +50,9 @@ class EditManagerTests: SSKBaseTest {
 
         let editMessage = createEditDataMessage { $0.setBody("FOO") }
         let editManager = EditManagerImpl(
-            context:
-            .init(
+            context: EditManagerImpl.Context(
                 attachmentContentValidator: AttachmentContentValidatorMock(),
-                attachmentStore: AttachmentStoreMock(),
+                attachmentStore: AttachmentStore(),
                 editManagerAttachments: MockEditManagerAttachments(),
                 editMessageStore: EditMessageStore(),
                 receiptManagerShim: ReceiptManagerMock(),
@@ -106,7 +105,7 @@ class EditManagerTests: SSKBaseTest {
             context:
             .init(
                 attachmentContentValidator: AttachmentContentValidatorMock(),
-                attachmentStore: AttachmentStoreMock(),
+                attachmentStore: AttachmentStore(),
                 editManagerAttachments: MockEditManagerAttachments(),
                 editMessageStore: EditMessageStore(),
                 receiptManagerShim: ReceiptManagerMock(),
@@ -150,7 +149,7 @@ class EditManagerTests: SSKBaseTest {
             context:
             .init(
                 attachmentContentValidator: AttachmentContentValidatorMock(),
-                attachmentStore: AttachmentStoreMock(),
+                attachmentStore: AttachmentStore(),
                 editManagerAttachments: MockEditManagerAttachments(),
                 editMessageStore: EditMessageStore(),
                 receiptManagerShim: ReceiptManagerMock(),
@@ -192,7 +191,7 @@ class EditManagerTests: SSKBaseTest {
             context:
             .init(
                 attachmentContentValidator: AttachmentContentValidatorMock(),
-                attachmentStore: AttachmentStoreMock(),
+                attachmentStore: AttachmentStore(),
                 editManagerAttachments: MockEditManagerAttachments(),
                 editMessageStore: EditMessageStore(),
                 receiptManagerShim: ReceiptManagerMock(),
@@ -238,7 +237,7 @@ class EditManagerTests: SSKBaseTest {
             context:
             .init(
                 attachmentContentValidator: AttachmentContentValidatorMock(),
-                attachmentStore: AttachmentStoreMock(),
+                attachmentStore: AttachmentStore(),
                 editManagerAttachments: MockEditManagerAttachments(),
                 editMessageStore: EditMessageStore(),
                 receiptManagerShim: ReceiptManagerMock(),

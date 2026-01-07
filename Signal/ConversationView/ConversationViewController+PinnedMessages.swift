@@ -103,7 +103,7 @@ public extension ConversationViewController {
 
         return DependenciesBridge.shared.db.read { tx in
             let attachment = DependenciesBridge.shared.attachmentStore
-                .fetchFirstReferencedAttachment(for: .messageBodyAttachment(messageRowId: messageRowId), tx: tx)
+                .fetchAnyReferencedAttachment(for: .messageBodyAttachment(messageRowId: messageRowId), tx: tx)
 
             var authorAddress: SignalServiceAddress?
             if message.isOutgoing {
@@ -250,7 +250,7 @@ public extension ConversationViewController {
     }
 
     private func mediaAttachmentThumbnail(messageRowId: Int64, tx: DBReadTransaction) -> UIImageView? {
-        let attachment = DependenciesBridge.shared.attachmentStore.fetchFirstReferencedAttachment(
+        let attachment = DependenciesBridge.shared.attachmentStore.fetchAnyReferencedAttachment(
             for: .messageBodyAttachment(messageRowId: messageRowId),
             tx: tx,
         )

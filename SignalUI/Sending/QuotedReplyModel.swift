@@ -259,7 +259,7 @@ public class QuotedReplyModel {
         case .media:
             let referencedAttachment = storyMessage.id.map {
                 return DependenciesBridge.shared.attachmentStore
-                    .fetchFirstReferencedAttachment(
+                    .fetchAnyReferencedAttachment(
                         for: .storyMessageMedia(storyMessageRowId: $0),
                         tx: transaction,
                     )
@@ -384,7 +384,7 @@ public class QuotedReplyModel {
         }
 
         let attachmentReference = DependenciesBridge.shared.attachmentStore.quotedAttachmentReference(
-            for: message,
+            parentMessage: message,
             tx: transaction,
         )
 

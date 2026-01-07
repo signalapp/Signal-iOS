@@ -75,7 +75,6 @@ class BackupArchiveContactAttachmentArchiver: BackupArchiveProtoStreamWriter {
 
         // Returns nil if no avatar; this is both how we check existence and how we archive.
         let avatarResult = attachmentsArchiver.archiveContactShareAvatarAttachment(
-            messageId: uniqueInteractionId,
             messageRowId: messageRowId,
             context: context,
         )

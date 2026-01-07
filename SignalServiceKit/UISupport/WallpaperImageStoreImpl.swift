@@ -76,13 +76,13 @@ public class WallpaperImageStoreImpl: WallpaperImageStore {
         guard let fromRowId = fromThread.sqliteRowId, let toRowId = toThread.sqliteRowId else {
             throw OWSAssertionError("Copying wallpaper for uninserted threads!")
         }
-        guard let fromReference = attachmentStore.fetchFirstReference(owner: .threadWallpaperImage(threadRowId: fromRowId), tx: tx) else {
+        guard let fromReference = attachmentStore.fetchAnyReference(owner: .threadWallpaperImage(threadRowId: fromRowId), tx: tx) else {
             // Nothing to copy.
             return
         }
 
         // If the toThread had a wallpaper, remove it.
-        if let toReference = attachmentStore.fetchFirstReference(owner: .threadWallpaperImage(threadRowId: toRowId), tx: tx) {
+        if let toReference = attachmentStore.fetchAnyReference(owner: .threadWallpaperImage(threadRowId: toRowId), tx: tx) {
             try attachmentStore.removeOwner(reference: toReference, tx: tx)
         }
 
@@ -128,7 +128,7 @@ public class WallpaperImageStoreImpl: WallpaperImageStore {
     ) async throws {
         try await db.awaitableWrite { tx in
             // First remove any existing wallpaper.
-            if let existingReference = self.attachmentStore.fetchFirstReference(owner: owner.id, tx: tx) {
+            if let existingReference = self.attachmentStore.fetchAnyReference(owner: owner.id, tx: tx) {
                 try self.attachmentStore.removeOwner(reference: existingReference, tx: tx)
             }
             // Set the new image if any.
@@ -145,7 +145,7 @@ public class WallpaperImageStoreImpl: WallpaperImageStore {
 
     private func loadWallpaperImage(ownerId: AttachmentReference.OwnerId, tx: DBReadTransaction) -> UIImage? {
         guard
-            let attachment = attachmentStore.fetchFirstReferencedAttachment(
+            let attachment = attachmentStore.fetchAnyReferencedAttachment(
                 for: ownerId,
                 tx: tx,
             )

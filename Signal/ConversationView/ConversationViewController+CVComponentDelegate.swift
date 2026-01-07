@@ -181,8 +181,10 @@ extension ConversationViewController: CVComponentDelegate {
             }
 
             let messageHasAnyEnqueuedBackupDownloads = db.read { tx in
-                let referencedAttachments = attachmentStore
-                    .fetchAllReferencedAttachments(owningMessageRowId: messageRowId, tx: tx)
+                let referencedAttachments = attachmentStore.fetchReferencedAttachmentsOwnedByMessage(
+                    messageRowId: messageRowId,
+                    tx: tx,
+                )
 
                 return referencedAttachments.contains { referencedAttachment in
                     // We only auto-download on appear if we've got a cdn number to try.

@@ -20,7 +20,7 @@ class AttachmentDownloadStoreTests: XCTestCase {
 
     override func setUp() async throws {
         db = InMemoryDB()
-        attachmentStore = AttachmentStoreImpl()
+        attachmentStore = AttachmentStore()
         downloadStore = AttachmentDownloadStoreImpl(
             dateProvider: { [weak self] in
                 return self!.now

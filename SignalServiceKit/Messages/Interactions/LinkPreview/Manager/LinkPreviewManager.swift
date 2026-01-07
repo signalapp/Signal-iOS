@@ -174,7 +174,7 @@ class LinkPreviewManagerImpl: LinkPreviewManager {
         tx: DBReadTransaction,
     ) throws -> SSKProtoPreview {
         let attachmentRef = parentMessage.sqliteRowId.map { rowId in
-            return attachmentStore.fetchFirstReference(
+            return attachmentStore.fetchAnyReference(
                 owner: .messageLinkPreview(messageRowId: rowId),
                 tx: tx,
             )
@@ -192,7 +192,7 @@ class LinkPreviewManagerImpl: LinkPreviewManager {
         tx: DBReadTransaction,
     ) throws -> SSKProtoPreview {
         let attachmentRef = parentStoryMessage.id.map { rowId in
-            return attachmentStore.fetchFirstReference(
+            return attachmentStore.fetchAnyReference(
                 owner: .storyMessageLinkPreview(storyMessageRowId: rowId),
                 tx: tx,
             )

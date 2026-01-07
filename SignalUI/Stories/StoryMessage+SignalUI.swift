@@ -27,7 +27,7 @@ extension StoryMessage {
         case .media:
             guard
                 let rowId = self.id,
-                let attachmentPointer = DependenciesBridge.shared.attachmentStore.fetchFirstReference(
+                let attachmentPointer = DependenciesBridge.shared.attachmentStore.fetchAnyReference(
                     owner: .storyMessageMedia(storyMessageRowId: rowId),
                     tx: transaction,
                 )

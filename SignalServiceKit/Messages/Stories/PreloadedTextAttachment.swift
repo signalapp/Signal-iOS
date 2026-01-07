@@ -29,7 +29,7 @@ public struct PreloadedTextAttachment: Equatable {
     ) -> Self {
         let linkPreviewAttachment: ReferencedAttachment? = storyMessage.id.map { rowId in
             DependenciesBridge.shared.attachmentStore
-                .fetchFirstReferencedAttachment(
+                .fetchAnyReferencedAttachment(
                     for: .storyMessageLinkPreview(storyMessageRowId: rowId),
                     tx: tx,
                 )

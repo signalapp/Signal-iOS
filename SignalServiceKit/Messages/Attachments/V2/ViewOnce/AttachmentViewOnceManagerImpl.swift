@@ -55,7 +55,7 @@ public class AttachmentViewOnceManagerImpl: AttachmentViewOnceManager {
         }
 
         let attachment = db.read { tx in
-            return attachmentStore.fetchFirstReferencedAttachment(
+            return attachmentStore.fetchAnyReferencedAttachment(
                 for: .messageBodyAttachment(messageRowId: messageRowId),
                 tx: tx,
             )

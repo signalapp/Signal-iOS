@@ -421,7 +421,7 @@ public class EditManagerImpl: EditManager {
             throw OWSAssertionError("Edit of message type not supported")
         }
 
-        let firstAttachmentRef = context.attachmentStore.fetchFirstReference(
+        let firstAttachmentRef = context.attachmentStore.fetchAnyReference(
             owner: .messageBodyAttachment(messageRowId: targetMessage.sqliteRowId!),
             tx: tx,
         )

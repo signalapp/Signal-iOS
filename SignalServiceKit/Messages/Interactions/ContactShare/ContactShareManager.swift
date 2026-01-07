@@ -195,7 +195,7 @@ class ContactShareManagerImpl: ContactShareManager {
 
         if
             let parentMessageRowId = parentMessage.sqliteRowId,
-            let avatarAttachment = attachmentStore.fetchFirstReferencedAttachment(
+            let avatarAttachment = attachmentStore.fetchAnyReferencedAttachment(
                 for: .messageContactAvatar(messageRowId: parentMessageRowId),
                 tx: tx,
             ),

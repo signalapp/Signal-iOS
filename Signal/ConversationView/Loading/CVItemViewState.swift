@@ -529,7 +529,7 @@ struct CVItemModelBuilder: CVItemBuilding {
             let nextMessage = nextItem?.interaction as? TSMessage,
             let rowId = nextMessage.sqliteRowId,
             let attachment = DependenciesBridge.shared.attachmentStore
-                .fetchFirstReferencedAttachment(for: .messageBodyAttachment(messageRowId: rowId), tx: transaction),
+                .fetchAnyReferencedAttachment(for: .messageBodyAttachment(messageRowId: rowId), tx: transaction),
             attachment.attachment.asStream()?.contentType.isAudio
             ?? MimeTypeUtil.isSupportedAudioMimeType(attachment.attachment.mimeType)
         {

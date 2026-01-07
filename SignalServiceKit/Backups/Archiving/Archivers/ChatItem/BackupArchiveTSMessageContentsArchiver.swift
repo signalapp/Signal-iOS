@@ -633,7 +633,6 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
         }
 
         let imageResult = attachmentsArchiver.archiveQuotedReplyThumbnailAttachment(
-            messageId: interactionUniqueId,
             messageRowId: messageRowId,
             context: context,
         )
@@ -702,7 +701,6 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
         // Returns nil if no link preview image; this is both how we check presence and how we archive.
         let imageResult = attachmentsArchiver.archiveLinkPreviewAttachment(
             messageRowId: messageRowId,
-            messageId: interactionUniqueId,
             context: context,
         )
         switch imageResult.bubbleUp(Optional<BackupProto_LinkPreview>.self, partialErrors: &partialErrors) {
@@ -781,7 +779,6 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
         messageSticker.emoji.map { stickerProto.emoji = $0 }
 
         let stickerAttachmentResult = attachmentsArchiver.archiveStickerAttachment(
-            messageId: message.uniqueInteractionId,
             messageRowId: messageRowId,
             context: context,
         )

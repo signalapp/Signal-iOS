@@ -92,10 +92,16 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
         // The editTarget's copy of the message has no edits applied.
         let quotedReplyPriorToEdit = editTarget.message.quotedMessage
 
-        let attachmentReferencePriorToEdit = attachmentStore.quotedThumbnailAttachment(
-            for: editTarget.message,
+        let attachmentReferencePriorToEdit: AttachmentReference?
+        switch attachmentStore.quotedAttachmentReference(
+            parentMessage: editTarget.message,
             tx: tx,
-        )
+        ) {
+        case nil, .stub:
+            attachmentReferencePriorToEdit = nil
+        case .thumbnail(let attachmentReference):
+            attachmentReferencePriorToEdit = attachmentReference
+        }
 
         if let quotedReplyPriorToEdit {
             // If we had a quoted reply, always keep it on the prior revision.
@@ -165,7 +171,7 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
         // The editTarget's copy of the message has no edits applied.
         let linkPreviewPriorToEdit = editTarget.message.linkPreview
 
-        let attachmentReferencePriorToEdit = attachmentStore.fetchFirstReference(
+        let attachmentReferencePriorToEdit = attachmentStore.fetchAnyReference(
             owner: .messageLinkPreview(messageRowId: editTarget.message.sqliteRowId!),
             tx: tx,
         )
@@ -271,7 +277,7 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
     ) throws {
         // The editTarget's copy of the message has no edits applied;
         // fetch _its_ attachment.
-        let oversizeTextReferencePriorToEdit = attachmentStore.fetchFirstReference(
+        let oversizeTextReferencePriorToEdit = attachmentStore.fetchAnyReference(
             owner: .messageOversizeText(messageRowId: editTarget.message.sqliteRowId!),
             tx: tx,
         )
@@ -351,7 +357,7 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
         // The editTarget's copy of the message has no edits applied;
         // fetch _its_ attachment(s).
         let attachmentReferencesPriorToEdit = attachmentStore.fetchReferences(
-            owner: .messageBodyAttachment(messageRowId: editTarget.message.sqliteRowId!),
+            owners: [.messageBodyAttachment(messageRowId: editTarget.message.sqliteRowId!)],
             tx: tx,
         )
 

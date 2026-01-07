@@ -16,7 +16,7 @@ class AttachmentStoreTests: XCTestCase {
 
     override func setUp() async throws {
         db = InMemoryDB()
-        attachmentStore = AttachmentStoreImpl()
+        attachmentStore = AttachmentStore()
         attachmentUploadStore = AttachmentUploadStoreImpl(attachmentStore: attachmentStore)
     }
 

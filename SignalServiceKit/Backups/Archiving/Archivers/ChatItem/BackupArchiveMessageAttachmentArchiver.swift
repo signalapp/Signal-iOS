@@ -23,46 +23,6 @@ class BackupArchiveMessageAttachmentArchiver: BackupArchiveProtoStreamWriter {
         self.backupAttachmentDownloadScheduler = backupAttachmentDownloadScheduler
     }
 
-    /// We tend to deal with all attachments for a given message back-to-back, but in separate steps.
-    /// To avoid multiple database round trips, we fetch all attachments for a message at once and cache
-    /// the results until we get a different message row id requested.
-    private var cachedAttachmentsMessageRowId: Int64?
-    private var attachmentsCache = [ReferencedAttachment]()
-
-    private func fetchReferencedAttachments(messageRowId: Int64, tx: DBReadTransaction) -> [ReferencedAttachment] {
-        if let cachedAttachmentsMessageRowId, cachedAttachmentsMessageRowId == messageRowId {
-            return attachmentsCache
-        }
-        let attachments = attachmentStore.fetchAllReferencedAttachments(
-            owningMessageRowId: messageRowId,
-            tx: tx,
-        )
-        cachedAttachmentsMessageRowId = messageRowId
-        attachmentsCache = attachments
-        return attachments
-    }
-
-    private func fetchReferencedAttachments(for ownerId: AttachmentReference.OwnerId, tx: DBReadTransaction) -> [ReferencedAttachment] {
-        let messageRowId: Int64
-        switch ownerId {
-        case
-            .messageBodyAttachment(let rowId),
-            .messageOversizeText(let rowId),
-            .messageLinkPreview(let rowId),
-            .quotedReplyAttachment(let rowId),
-            .messageSticker(let rowId),
-            .messageContactAvatar(let rowId):
-            messageRowId = rowId
-        case .storyMessageMedia, .storyMessageLinkPreview, .threadWallpaperImage, .globalThreadWallpaperImage:
-            owsFailDebug("Invalid type in private method")
-            return []
-        }
-        return fetchReferencedAttachments(messageRowId: messageRowId, tx: tx)
-            .filter { referencedAttachment in
-                referencedAttachment.reference.owner.id == ownerId
-            }
-    }
-
     // MARK: - Archiving
 
     func archiveBodyAttachments(
@@ -70,7 +30,7 @@ class BackupArchiveMessageAttachmentArchiver: BackupArchiveProtoStreamWriter {
         messageRowId: Int64,
         context: BackupArchive.ArchivingContext,
     ) -> BackupArchive.ArchiveInteractionResult<[BackupProto_MessageAttachment]> {
-        let referencedAttachments = self.fetchReferencedAttachments(
+        let referencedAttachments = attachmentStore.fetchReferencedAttachments(
             for: .messageBodyAttachment(messageRowId: messageRowId),
             tx: context.tx,
         )
@@ -116,24 +76,20 @@ class BackupArchiveMessageAttachmentArchiver: BackupArchiveProtoStreamWriter {
 
     func archiveLinkPreviewAttachment(
         messageRowId: Int64,
-        messageId: BackupArchive.InteractionUniqueId,
         context: BackupArchive.ArchivingContext,
     ) -> BackupArchive.ArchiveInteractionResult<BackupProto_FilePointer?> {
         return self.archiveSingleAttachment(
-            ownerType: .linkPreview,
-            messageId: messageId,
-            messageRowId: messageRowId,
+            owner: .messageLinkPreview(messageRowId: messageRowId),
             context: context,
         )
     }
 
     func archiveQuotedReplyThumbnailAttachment(
-        messageId: BackupArchive.InteractionUniqueId,
         messageRowId: Int64,
         context: BackupArchive.ArchivingContext,
     ) -> BackupArchive.ArchiveInteractionResult<BackupProto_MessageAttachment?> {
         guard
-            let referencedAttachment = self.fetchReferencedAttachments(
+            let referencedAttachment = attachmentStore.fetchReferencedAttachments(
                 for: .quotedReplyAttachment(messageRowId: messageRowId),
                 tx: context.tx,
             ).first
@@ -156,27 +112,21 @@ class BackupArchiveMessageAttachmentArchiver: BackupArchiveProtoStreamWriter {
     }
 
     func archiveContactShareAvatarAttachment(
-        messageId: BackupArchive.InteractionUniqueId,
         messageRowId: Int64,
         context: BackupArchive.ArchivingContext,
     ) -> BackupArchive.ArchiveInteractionResult<BackupProto_FilePointer?> {
         return self.archiveSingleAttachment(
-            ownerType: .contactAvatar,
-            messageId: messageId,
-            messageRowId: messageRowId,
+            owner: .messageContactAvatar(messageRowId: messageRowId),
             context: context,
         )
     }
 
     func archiveStickerAttachment(
-        messageId: BackupArchive.InteractionUniqueId,
         messageRowId: Int64,
         context: BackupArchive.ArchivingContext,
     ) -> BackupArchive.ArchiveInteractionResult<BackupProto_FilePointer?> {
         return self.archiveSingleAttachment(
-            ownerType: .sticker,
-            messageId: messageId,
-            messageRowId: messageRowId,
+            owner: .messageSticker(messageRowId: messageRowId),
             context: context,
         )
     }
@@ -399,14 +349,12 @@ class BackupArchiveMessageAttachmentArchiver: BackupArchiveProtoStreamWriter {
     // MARK: Archiving
 
     private func archiveSingleAttachment(
-        ownerType: AttachmentReference.MessageOwnerTypeRaw,
-        messageId: BackupArchive.InteractionUniqueId,
-        messageRowId: Int64,
+        owner: AttachmentReference.OwnerId,
         context: BackupArchive.ArchivingContext,
     ) -> BackupArchive.ArchiveInteractionResult<BackupProto_FilePointer?> {
         guard
-            let referencedAttachment = self.fetchReferencedAttachments(
-                for: ownerType.with(messageRowId: messageRowId),
+            let referencedAttachment = attachmentStore.fetchReferencedAttachments(
+                for: owner,
                 tx: context.tx,
             ).first
         else {

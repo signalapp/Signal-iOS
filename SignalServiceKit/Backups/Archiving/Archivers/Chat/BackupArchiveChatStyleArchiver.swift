@@ -446,7 +446,7 @@ public class BackupArchiveChatStyleArchiver: BackupArchiveProtoStreamWriter {
             owner = .globalThreadWallpaperImage
         }
         guard
-            let referencedAttachment = attachmentStore.fetchFirstReferencedAttachment(
+            let referencedAttachment = attachmentStore.fetchAnyReferencedAttachment(
                 for: owner,
                 tx: context.tx,
             )

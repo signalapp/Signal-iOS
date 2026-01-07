@@ -171,15 +171,6 @@ class _AttachmentUploadManager_BackupRequestManagerMock: BackupRequestManager {
 
 // MARK: - AttachmentStore
 
-class AttachmentStoreMock: AttachmentStoreImpl {
-
-    var mockFetcher: ((Attachment.IDType) -> Attachment)?
-
-    override func fetch(ids: [Attachment.IDType], tx: DBReadTransaction) -> [Attachment] {
-        return ids.map(mockFetcher!)
-    }
-}
-
 class AttachmentUploadStoreMock: AttachmentUploadStoreImpl {
 
     var uploadedAttachments = [AttachmentStream]()

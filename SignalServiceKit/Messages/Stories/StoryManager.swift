@@ -212,7 +212,7 @@ public class StoryManager {
         case .media:
             let attachment = message.id.map { rowId in
                 return DependenciesBridge.shared.attachmentStore
-                    .fetchFirstReferencedAttachment(
+                    .fetchAnyReferencedAttachment(
                         for: .storyMessageMedia(storyMessageRowId: rowId),
                         tx: transaction,
                     )?.attachment

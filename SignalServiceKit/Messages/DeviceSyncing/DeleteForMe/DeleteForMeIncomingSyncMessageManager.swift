@@ -123,7 +123,7 @@ public protocol DeleteForMeIncomingSyncMessageManager {
 final class DeleteForMeIncomingSyncMessageManagerImpl: DeleteForMeIncomingSyncMessageManager {
     private let addressableMessageFinder: any DeleteForMeAddressableMessageFinder
     private let attachmentManager: any AttachmentManager
-    private let attachmentStore: any AttachmentStore
+    private let attachmentStore: AttachmentStore
     private let bulkDeleteInteractionJobQueue: BulkDeleteInteractionJobQueue
     private let interactionDeleteManager: any InteractionDeleteManager
     private let threadSoftDeleteManager: any ThreadSoftDeleteManager
@@ -133,7 +133,7 @@ final class DeleteForMeIncomingSyncMessageManagerImpl: DeleteForMeIncomingSyncMe
     init(
         addressableMessageFinder: any DeleteForMeAddressableMessageFinder,
         attachmentManager: any AttachmentManager,
-        attachmentStore: any AttachmentStore,
+        attachmentStore: AttachmentStore,
         bulkDeleteInteractionJobQueue: BulkDeleteInteractionJobQueue,
         interactionDeleteManager: any InteractionDeleteManager,
         threadSoftDeleteManager: any ThreadSoftDeleteManager,
@@ -236,7 +236,7 @@ final class DeleteForMeIncomingSyncMessageManagerImpl: DeleteForMeIncomingSyncMe
         }
 
         do {
-            try attachmentManager.removeAttachment(
+            try attachmentStore.removeOwner(
                 reference: targetAttachment.reference,
                 tx: tx,
             )

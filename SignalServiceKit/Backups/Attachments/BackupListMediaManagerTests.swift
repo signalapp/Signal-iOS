@@ -12,7 +12,7 @@ import Testing
 public class BackupListMediaManagerTests {
 
     let accountKeyStore: AccountKeyStore
-    let attachmentStore = AttachmentStoreImpl()
+    let attachmentStore = AttachmentStore()
     let backupAttachmentDownloadStore = BackupAttachmentDownloadStore()
     let backupAttachmentUploadScheduler = BackupAttachmentUploadSchedulerMock()
     let backupAttachmentUploadStore = BackupAttachmentUploadStore()

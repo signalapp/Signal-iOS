@@ -454,7 +454,7 @@ class QuotedReplyManagerImpl: QuotedReplyManager {
         if originalMessage.messageSticker != nil {
             guard
                 let originalMessageRowId = originalMessage.sqliteRowId,
-                let attachment = attachmentStore.fetchFirstReferencedAttachment(
+                let attachment = attachmentStore.fetchAnyReferencedAttachment(
                     for: .messageSticker(messageRowId: originalMessageRowId),
                     tx: tx,
                 ),
@@ -634,14 +634,12 @@ class QuotedReplyManagerImpl: QuotedReplyManager {
             let innerContent: DraftQuotedReplyModel.Content = {
                 let messageBody = quotedReply.body.map { MessageBody(text: $0, ranges: quotedReply.bodyRanges ?? .empty) }
                 if
-                    let attachmentInfo = quotedReply.attachmentInfo(),
-                    let attachmentReference = attachmentStore.quotedAttachmentReference(
-                        from: attachmentInfo,
+                    let quotedAttachmentReference = attachmentStore.quotedAttachmentReference(
                         parentMessage: quotedReplyMessage,
                         tx: tx,
                     )
                 {
-                    switch attachmentReference {
+                    switch quotedAttachmentReference {
                     case .thumbnail(let attachmentRef):
                         if let attachment = attachmentStore.fetch(id: attachmentRef.attachmentRowId, tx: tx) {
                             return .attachment(
@@ -935,7 +933,10 @@ class QuotedReplyManagerImpl: QuotedReplyManager {
         tx: DBReadTransaction,
     ) -> SSKProtoDataMessageQuoteQuotedAttachment? {
         guard
-            let reference = attachmentStore.quotedAttachmentReference(for: parentMessage, tx: tx)
+            let reference = attachmentStore.quotedAttachmentReference(
+                parentMessage: parentMessage,
+                tx: tx,
+            )
         else {
             return nil
         }

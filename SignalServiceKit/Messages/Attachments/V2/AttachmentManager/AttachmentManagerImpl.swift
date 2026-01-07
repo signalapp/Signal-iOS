@@ -149,32 +149,6 @@ public class AttachmentManagerImpl: AttachmentManager {
         )
     }
 
-    // MARK: Removing Attachments
-
-    public func removeAttachment(
-        reference: AttachmentReference,
-        tx: DBWriteTransaction,
-    ) throws {
-        try attachmentStore.removeOwner(
-            reference: reference,
-            tx: tx,
-        )
-    }
-
-    public func removeAllAttachments(
-        from owners: [AttachmentReference.OwnerId],
-        tx: DBWriteTransaction,
-    ) throws {
-        try attachmentStore.fetchReferences(owners: owners, tx: tx)
-            .forEach { reference in
-                try attachmentStore.removeAllOwners(
-                    withId: reference.owner.id,
-                    for: reference.attachmentRowId,
-                    tx: tx,
-                )
-            }
-    }
-
     // MARK: - Helpers
 
     private typealias OwnerId = AttachmentReference.OwnerId
@@ -282,7 +256,7 @@ public class AttachmentManagerImpl: AttachmentManager {
             )
             if installedSticker != nil {
                 guard
-                    let newAttachmentReference = attachmentStore.fetchFirstReference(
+                    let newAttachmentReference = attachmentStore.fetchAnyReference(
                         owner: referenceParams.owner.id,
                         tx: tx,
                     )
@@ -1122,7 +1096,7 @@ public class AttachmentManagerImpl: AttachmentManager {
             // so that copy happens ASAP.
             if originalAttachment.asStream() != nil {
                 guard
-                    let newAttachmentReference = attachmentStore.fetchFirstReference(
+                    let newAttachmentReference = attachmentStore.fetchAnyReference(
                         owner: referenceParams.owner.id,
                         tx: tx,
                     )

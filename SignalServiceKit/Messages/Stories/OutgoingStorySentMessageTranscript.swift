@@ -154,7 +154,7 @@ public class OutgoingStorySentMessageTranscript: OWSOutgoingSyncMessage {
         case .media:
             guard
                 let storyMessageRowId = storyMessage.id,
-                let attachment = DependenciesBridge.shared.attachmentStore.fetchFirstReferencedAttachment(
+                let attachment = DependenciesBridge.shared.attachmentStore.fetchAnyReferencedAttachment(
                     for: .storyMessageMedia(storyMessageRowId: storyMessageRowId),
                     tx: transaction,
                 ),

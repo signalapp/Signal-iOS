@@ -501,9 +501,22 @@ class MediaGallery {
             return nil
         }
 
-        guard let message = attachment.reference.fetchOwningMessage(tx: transaction) else {
-            // The item may have just been deleted.
-            Logger.warn("message was unexpectedly nil")
+        let message: TSMessage
+        switch attachment.reference.owner {
+        case .message(let messageSource):
+            if
+                let owningMessage = InteractionFinder.fetch(
+                    rowId: messageSource.messageRowId,
+                    transaction: transaction,
+                ) as? TSMessage
+            {
+                message = owningMessage
+            } else {
+                // The item may have just been deleted.
+                Logger.warn("message was unexpectedly nil")
+                return nil
+            }
+        case .storyMessage, .thread:
             return nil
         }
 
@@ -828,7 +841,7 @@ class MediaGallery {
         initiatedBy: UIViewController,
     ) {
         AssertIsOnMainThread()
-        let attachmentManager = DependenciesBridge.shared.attachmentManager
+        let attachmentStore = DependenciesBridge.shared.attachmentStore
         let db = DependenciesBridge.shared.db
         let deleteForMeOutgoingSyncMessageManager = DependenciesBridge.shared.deleteForMeOutgoingSyncMessageManager
         let interactionDeleteManager = DependenciesBridge.shared.interactionDeleteManager
@@ -859,7 +872,7 @@ class MediaGallery {
                     let message = item.message
                     let referencedAttachment: ReferencedAttachment = item.attachmentStream
 
-                    try attachmentManager.removeAttachment(
+                    try attachmentStore.removeOwner(
                         reference: referencedAttachment.reference,
                         tx: tx,
                     )

@@ -124,7 +124,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
     public func fileAttachment(tx: DBReadTransaction) -> ReferencedAttachment? {
         guard let id else { return nil }
         return DependenciesBridge.shared.attachmentStore
-            .fetchFirstReferencedAttachment(
+            .fetchAnyReferencedAttachment(
                 for: .storyMessageMedia(storyMessageRowId: id),
                 tx: tx,
             )

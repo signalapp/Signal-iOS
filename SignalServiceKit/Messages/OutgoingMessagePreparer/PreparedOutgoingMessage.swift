@@ -166,18 +166,19 @@ public class PreparedOutgoingMessage {
     }
 
     public func attachmentIdsForUpload(tx: DBReadTransaction) -> [Attachment.IDType] {
+        let attachmentStore = DependenciesBridge.shared.attachmentStore
+
         switch messageType {
         case .persisted(let persisted):
-            let attachmentIds = DependenciesBridge.shared.attachmentStore.allAttachments(
-                forMessageWithRowId: persisted.rowId,
+            return attachmentStore.fetchReferencedAttachmentsOwnedByMessage(
+                messageRowId: persisted.rowId,
                 tx: tx,
-            ).map(\.attachmentRowId)
-            return attachmentIds
+            ).map(\.attachment.id)
         case .editMessage(let editMessage):
-            return DependenciesBridge.shared.attachmentStore.allAttachments(
-                forMessageWithRowId: editMessage.editedMessageRowId,
+            return attachmentStore.fetchReferencedAttachmentsOwnedByMessage(
+                messageRowId: editMessage.editedMessageRowId,
                 tx: tx,
-            ).map(\.attachmentRowId)
+            ).map(\.attachment.id)
         case .story(let story):
             guard let storyMessage = StoryMessage.anyFetch(uniqueId: story.message.storyMessageId, transaction: tx) else {
                 return []
@@ -185,14 +186,14 @@ public class PreparedOutgoingMessage {
             switch storyMessage.attachment {
             case .media:
                 return [
-                    DependenciesBridge.shared.attachmentStore.fetchFirstReference(
+                    DependenciesBridge.shared.attachmentStore.fetchAnyReference(
                         owner: .storyMessageMedia(storyMessageRowId: story.storyMessageRowId),
                         tx: tx,
                     )?.attachmentRowId,
                 ].compacted()
             case .text:
                 return [
-                    DependenciesBridge.shared.attachmentStore.fetchFirstReference(
+                    DependenciesBridge.shared.attachmentStore.fetchAnyReference(
                         owner: .storyMessageLinkPreview(storyMessageRowId: story.storyMessageRowId),
                         tx: tx,
                     )?.attachmentRowId,

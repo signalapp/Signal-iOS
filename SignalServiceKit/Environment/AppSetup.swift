@@ -382,7 +382,7 @@ extension AppSetup.GlobalsContinuation {
 
         let audioWaveformManager = AudioWaveformManagerImpl()
 
-        let attachmentStore = AttachmentStoreImpl()
+        let attachmentStore = AttachmentStore()
 
         let orphanedAttachmentCleaner = OrphanedAttachmentCleanerImpl(db: db)
         let attachmentContentValidator = AttachmentContentValidatorImpl(

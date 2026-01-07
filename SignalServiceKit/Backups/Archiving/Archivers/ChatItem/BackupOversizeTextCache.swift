@@ -156,7 +156,7 @@ class BackupArchiveInlinedOversizeTextArchiver {
             text = text.trimToUtf8ByteCount(BackupOversizeTextCache.maxTextLengthBytes)
         }
 
-        let oversizedTextReference = attachmentStore.fetchFirstReference(
+        let oversizedTextReference = attachmentStore.fetchAnyReference(
             owner: .messageOversizeText(messageRowId: messageRowId),
             tx: context.tx,
         )
@@ -353,7 +353,7 @@ class BackupArchiveInlinedOversizeTextArchiver {
         }
 
         // Fetch the attachment reference we just created.
-        let reference = attachmentStore.fetchFirstReference(
+        let reference = attachmentStore.fetchAnyReference(
             owner: .messageOversizeText(messageRowId: messageRowId),
             tx: context.tx,
         )

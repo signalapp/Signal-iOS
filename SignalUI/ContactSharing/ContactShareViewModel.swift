@@ -50,7 +50,7 @@ public class ContactShareViewModel: NSObject {
     ) {
         if
             let parentMessageRowId = parentMessage.sqliteRowId,
-            let avatarAttachment = DependenciesBridge.shared.attachmentStore.fetchFirstReferencedAttachment(
+            let avatarAttachment = DependenciesBridge.shared.attachmentStore.fetchAnyReferencedAttachment(
                 for: .messageContactAvatar(messageRowId: parentMessageRowId),
                 tx: transaction,
             )?.asReferencedStream

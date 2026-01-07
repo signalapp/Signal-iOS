@@ -3,10 +3,22 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import GRDB
 
-public class AttachmentStoreImpl: AttachmentStore {
+public enum AttachmentInsertError: Error {
+    /// An existing attachment was found with the same plaintext hash, making the new
+    /// attachment a duplicate. Callers should instead create a new owner reference to
+    /// the same existing attachment.
+    case duplicatePlaintextHash(existingAttachmentId: Attachment.IDType)
+    /// An existing attachment was found with the same media name, making the new
+    /// attachment a duplicate. Callers should instead create a new owner reference to
+    /// the same existing attachment and possibly update it with any stream info.
+    case duplicateMediaName(existingAttachmentId: Attachment.IDType)
+}
+
+// MARK: -
+
+public struct AttachmentStore {
 
     public init() {}
 
@@ -16,6 +28,28 @@ public class AttachmentStoreImpl: AttachmentStore {
     typealias StoryMessageOwnerTypeRaw = AttachmentReference.StoryMessageOwnerTypeRaw
     typealias ThreadAttachmentReferenceRecord = AttachmentReference.ThreadAttachmentReferenceRecord
 
+    // MARK: -
+
+    public func fetchMaxRowId(tx: DBReadTransaction) throws -> Attachment.IDType? {
+        return try Attachment.Record
+            .select(
+                max(Column(Attachment.Record.CodingKeys.sqliteId)),
+                as: Int64.self,
+            )
+            .fetchOne(tx.database)
+    }
+
+    // MARK: -
+
+    /// Fetch all references for the given owner. Results are unordered.
+    public func fetchReferences(
+        owner: AttachmentReference.OwnerId,
+        tx: DBReadTransaction,
+    ) -> [AttachmentReference] {
+        return fetchReferences(owners: [owner], tx: tx)
+    }
+
+    /// Fetch all references for the given owners. Results are unordered.
     public func fetchReferences(
         owners: [AttachmentReference.OwnerId],
         tx: DBReadTransaction,
@@ -29,23 +63,17 @@ public class AttachmentStoreImpl: AttachmentStore {
         }
     }
 
-    public func fetchAllReferences(
-        owningMessageRowId: Int64,
+    /// Fetch an arbitrary reference for the provided owner.
+    ///
+    /// - Important
+    /// Callers should be sure that they are, in fact, interested in an
+    /// arbitrary reference; for example, if the passed `owner` only allows at
+    /// most one reference.
+    public func fetchAnyReference(
+        owner: AttachmentReference.OwnerId,
         tx: DBReadTransaction,
-    ) -> [AttachmentReference] {
-        do {
-            let statement = try tx.database.cachedStatement(sql: """
-            SELECT *
-            FROM \(MessageAttachmentReferenceRecord.databaseTableName)
-            WHERE \(Column(MessageAttachmentReferenceRecord.CodingKeys.ownerRowId).name) = ?
-            """)
-            return try MessageAttachmentReferenceRecord
-                .fetchAll(statement, arguments: [owningMessageRowId])
-                .map { try AttachmentReference(record: $0) }
-        } catch {
-            owsFailDebug("Failed to fetch attachment references \(error)")
-            return []
-        }
+    ) -> AttachmentReference? {
+        return fetchReferences(owner: owner, tx: tx).first
     }
 
     private func fetchReferences<RecordType: FetchableAttachmentReferenceRecord>(
@@ -100,13 +128,13 @@ public class AttachmentStoreImpl: AttachmentStore {
         }
     }
 
-    public func fetchMaxRowId(tx: DBReadTransaction) throws -> Attachment.IDType? {
-        return try Attachment.Record
-            .select(
-                max(Column(Attachment.Record.CodingKeys.sqliteId)),
-                as: Int64.self,
-            )
-            .fetchOne(tx.database)
+    // MARK: -
+
+    public func fetch(
+        id: Attachment.IDType,
+        tx: DBReadTransaction,
+    ) -> Attachment? {
+        return fetch(ids: [id], tx: tx).first
     }
 
     public func fetch(
@@ -134,6 +162,7 @@ public class AttachmentStoreImpl: AttachmentStore {
         }
     }
 
+    /// Fetch attachment by plaintext hash. There can be only one match.
     public func fetchAttachment(
         sha256ContentHash: Data,
         tx: DBReadTransaction,
@@ -151,6 +180,7 @@ public class AttachmentStoreImpl: AttachmentStore {
             .map(Attachment.init(record:))
     }
 
+    /// Fetch attachment by media name. There can be only one match.
     public func fetchAttachment(
         mediaName: String,
         tx: DBReadTransaction,
@@ -168,6 +198,90 @@ public class AttachmentStoreImpl: AttachmentStore {
             .map(Attachment.init(record:))
     }
 
+    // MARK: -
+
+    public func fetchReferencedAttachments(
+        for owner: AttachmentReference.OwnerId,
+        tx: DBReadTransaction,
+    ) -> [ReferencedAttachment] {
+        return fetchReferencedAttachments(owners: [owner], tx: tx)
+    }
+
+    public func fetchReferencedAttachments(
+        owners: [AttachmentReference.OwnerId],
+        tx: DBReadTransaction,
+    ) -> [ReferencedAttachment] {
+        let references: [AttachmentReference] = fetchReferences(owners: owners, tx: tx)
+
+        var attachmentsByID: [Attachment.IDType: Attachment] = [:]
+        for attachmentID in Set(references.map(\.attachmentRowId)) {
+            attachmentsByID[attachmentID] = fetch(id: attachmentID, tx: tx)
+        }
+
+        return references.map { reference in
+            guard let attachment = attachmentsByID[reference.attachmentRowId] else {
+                owsFail("Missing attachment for reference: foreign-key constraints should have prevented this!")
+            }
+            return ReferencedAttachment(reference: reference, attachment: attachment)
+        }
+    }
+
+    public func fetchReferencedAttachmentsOwnedByMessage(
+        messageRowId: Int64,
+        tx: DBReadTransaction,
+    ) -> [ReferencedAttachment] {
+        let allMessageOwners: [AttachmentReference.OwnerId] = MessageOwnerTypeRaw.allCases.map {
+            switch $0 {
+            case .bodyAttachment: .messageBodyAttachment(messageRowId: messageRowId)
+            case .oversizeText: .messageOversizeText(messageRowId: messageRowId)
+            case .linkPreview: .messageLinkPreview(messageRowId: messageRowId)
+            case .quotedReplyAttachment: .quotedReplyAttachment(messageRowId: messageRowId)
+            case .sticker: .messageSticker(messageRowId: messageRowId)
+            case .contactAvatar: .messageContactAvatar(messageRowId: messageRowId)
+            }
+        }
+
+        return fetchReferencedAttachments(owners: allMessageOwners, tx: tx)
+    }
+
+    public func fetchReferencedAttachmentsOwnedByStory(
+        storyMessageRowId: Int64,
+        tx: DBReadTransaction,
+    ) -> [ReferencedAttachment] {
+        let allStoryOwners: [AttachmentReference.OwnerId] = StoryMessageOwnerTypeRaw.allCases.map {
+            switch $0 {
+            case .media: .storyMessageMedia(storyMessageRowId: storyMessageRowId)
+            case .linkPreview: .storyMessageLinkPreview(storyMessageRowId: storyMessageRowId)
+            }
+        }
+
+        return fetchReferencedAttachments(owners: allStoryOwners, tx: tx)
+    }
+
+    /// Fetch an arbitrary referenced attachment for the provided owner.
+    ///
+    /// - Important
+    /// Callers should be sure that they are, in fact, interested in an
+    /// arbitrary attachment; for example, if the passed `owner` only allows at
+    /// most one reference.
+    public func fetchAnyReferencedAttachment(
+        for owner: AttachmentReference.OwnerId,
+        tx: DBReadTransaction,
+    ) -> ReferencedAttachment? {
+        guard let reference = self.fetchAnyReference(owner: owner, tx: tx) else {
+            return nil
+        }
+        guard let attachment = self.fetch(id: reference.attachmentRowId, tx: tx) else {
+            owsFailDebug("Missing attachment!")
+            return nil
+        }
+        return ReferencedAttachment(reference: reference, attachment: attachment)
+    }
+
+    // MARK: -
+
+    /// Return all attachments that are themselves quoted replies
+    /// of another attachment; provide the original attachment they point to.
     public func allQuotedReplyAttachments(
         forOriginalAttachmentId originalAttachmentId: Attachment.IDType,
         tx: DBReadTransaction,
@@ -178,6 +292,58 @@ public class AttachmentStoreImpl: AttachmentStore {
             .map(Attachment.init(record:))
     }
 
+    public func quotedAttachmentReference(
+        parentMessage: TSMessage,
+        tx: DBReadTransaction,
+    ) -> QuotedMessageAttachmentReference? {
+        guard
+            let messageRowId = parentMessage.sqliteRowId,
+            let info = parentMessage.quotedMessage?.attachmentInfo()
+        else {
+            return nil
+        }
+
+        let reference = self.fetchAnyReference(
+            owner: .quotedReplyAttachment(messageRowId: messageRowId),
+            tx: tx,
+        )
+
+        if let reference {
+            return .thumbnail(reference)
+        } else if let stub = QuotedMessageAttachmentReference.Stub(info) {
+            return .stub(stub)
+        } else {
+            return nil
+        }
+    }
+
+    public func attachmentToUseInQuote(
+        originalMessageRowId: Int64,
+        tx: DBReadTransaction,
+    ) -> AttachmentReference? {
+        let orderedBodyAttachments = fetchReferences(
+            owner: .messageBodyAttachment(messageRowId: originalMessageRowId),
+            tx: tx,
+        ).compactMap { ref -> (orderInMessage: UInt32, ref: AttachmentReference)? in
+            switch ref.owner {
+            case .message(.bodyAttachment(let metadata)):
+                return (metadata.orderInMessage, ref)
+            default:
+                return nil
+            }
+        }.sorted { lhs, rhs in
+            return lhs.orderInMessage < rhs.orderInMessage
+        }.map(\.ref)
+
+        return orderedBodyAttachments.first
+            ?? self.fetchAnyReference(owner: .messageLinkPreview(messageRowId: originalMessageRowId), tx: tx)
+            ?? self.fetchAnyReference(owner: .messageSticker(messageRowId: originalMessageRowId), tx: tx)
+    }
+
+    // MARK: -
+
+    /// Enumerate all references to a given attachment id, calling the block for each one.
+    /// Blocks until all references have been enumerated.
     public func enumerateAllReferences(
         toAttachmentId attachmentId: Attachment.IDType,
         tx: DBReadTransaction,
@@ -222,6 +388,12 @@ public class AttachmentStoreImpl: AttachmentStore {
         }
     }
 
+    // MARK: -
+
+    /// For each unique sticker pack id present in message sticker attachments, return
+    /// the oldest message reference (by message insertion order) to that sticker attachment.
+    ///
+    /// Not very efficient; don't put this query on the hot path for anything.
     public func oldestStickerPackReferences(
         tx: DBReadTransaction,
     ) throws -> [AttachmentReference.Owner.MessageSource.StickerMetadata] {
@@ -250,6 +422,7 @@ public class AttachmentStoreImpl: AttachmentStore {
             }
     }
 
+    /// Return all attachment ids that reference the provided sticker.
     public func allAttachmentIdsForSticker(
         _ stickerInfo: StickerInfo,
         tx: DBReadTransaction,
@@ -270,8 +443,17 @@ public class AttachmentStoreImpl: AttachmentStore {
         )
     }
 
-    // MARK: Writes
+    // MARK: -
 
+    /// Create a new ownership reference, copying properties of an existing reference.
+    ///
+    /// Copies the database row directly, only modifying the owner and isPastEditRevision columns.
+    /// IMPORTANT: also copies the receivedAtTimestamp!
+    ///
+    /// Fails if the provided new owner isn't of the same type as the original
+    /// reference; e.g. trying to duplicate a link preview as a sticker, or if the new
+    /// owner is not in the same thread as the prior owner.
+    /// Those operations require the explicit creation of a new owner.
     public func duplicateExistingMessageOwner(
         _ existingOwnerSource: AttachmentReference.Owner.MessageSource,
         with existingReference: AttachmentReference,
@@ -296,6 +478,10 @@ public class AttachmentStoreImpl: AttachmentStore {
         try newRecord.insert(tx.database)
     }
 
+    /// Create a new ownership reference, copying properties of an existing reference.
+    ///
+    /// Copies the database row directly, only modifying the owner column.
+    /// IMPORTANT: also copies the createdTimestamp!
     public func duplicateExistingThreadOwner(
         _ existingOwnerSource: AttachmentReference.Owner.ThreadSource,
         with existingReference: AttachmentReference,
@@ -310,6 +496,16 @@ public class AttachmentStoreImpl: AttachmentStore {
         try newRecord.insert(tx.database)
     }
 
+    /// Remove all owners of thread types (wallpaper and global wallpaper owners).
+    /// Will also delete any attachments that become unowned, like any other deletion.
+    public func removeAllThreadOwners(tx: DBWriteTransaction) throws {
+        try ThreadAttachmentReferenceRecord.deleteAll(tx.database)
+    }
+
+    // MARK: -
+
+    /// Update the received at timestamp on a reference.
+    /// Used for edits which update the received timestamp on an existing message.
     public func update(
         _ reference: AttachmentReference,
         withReceivedAtTimestamp receivedAtTimestamp: UInt64,
@@ -430,6 +626,10 @@ public class AttachmentStoreImpl: AttachmentStore {
         try newRecord.update(tx.database)
     }
 
+    /// Update an attachment when we have a media name or plaintext hash collision.
+    /// Call this IFF the existing attachment has a media name/plaintext hash but not stream info
+    /// (if it was restored from a backup), but the new copy has stream
+    /// info that we should keep by merging into the existing attachment.
     public func merge(
         streamInfo: Attachment.StreamInfo,
         into attachment: Attachment,
@@ -534,6 +734,7 @@ public class AttachmentStoreImpl: AttachmentStore {
         try newRecord.update(tx.database)
     }
 
+    /// Update an attachment after revalidating.
     public func updateAttachment(
         _ attachment: Attachment,
         revalidatedContentType contentType: Attachment.ContentType,
@@ -555,6 +756,8 @@ public class AttachmentStoreImpl: AttachmentStore {
         try newRecord.update(tx.database)
     }
 
+    // MARK: -
+
     public func addOwner(
         _ referenceParams: AttachmentReference.ConstructionParams,
         for attachmentRowId: Attachment.IDType,
@@ -574,6 +777,11 @@ public class AttachmentStoreImpl: AttachmentStore {
         }
     }
 
+    /// Removes all owner edges to the provided attachment that
+    /// have the provided owner type and id.
+    /// Will delete multiple instances if the same owner has multiple
+    /// edges of the given type to the given attachment (e.g. an image
+    /// appears twice as a body attachment on a given message).
     public func removeAllOwners(
         withId owner: AttachmentReference.OwnerId,
         for attachmentId: Attachment.IDType,
@@ -590,6 +798,10 @@ public class AttachmentStoreImpl: AttachmentStore {
         }
     }
 
+    /// Removes a single owner edge to the provided attachment that
+    /// have the provided owner metadata.
+    /// Will delete only delete the one given edge even if the same owner
+    /// has multiple edges to the same attachment.
     public func removeOwner(
         reference: AttachmentReference,
         tx: DBWriteTransaction,
@@ -674,6 +886,12 @@ public class AttachmentStoreImpl: AttachmentStore {
         )
     }
 
+    // MARK: -
+
+    /// Throws ``AttachmentInsertError.duplicatePlaintextHash`` if an existing
+    /// attachment is found with the same plaintext hash.
+    /// May throw other errors with less strict typing if database operations fail.
+    @discardableResult
     public func insert(
         _ attachmentParams: Attachment.ConstructionParams,
         reference referenceParams: AttachmentReference.ConstructionParams,
@@ -728,6 +946,8 @@ public class AttachmentStoreImpl: AttachmentStore {
 
         return attachmentRowId
     }
+
+    // MARK: -
 
     /// The "global wallpaper" reference is a special case.
     ///
@@ -788,21 +1008,10 @@ public class AttachmentStoreImpl: AttachmentStore {
         }
     }
 
-    public func removeAllThreadOwners(tx: DBWriteTransaction) throws {
-        try ThreadAttachmentReferenceRecord.deleteAll(tx.database)
-    }
+    // MARK: -
 
-    public func updateMessageAttachmentThreadRowIdsForThreadMerge(
-        fromThreadRowId: Int64,
-        intoThreadRowId: Int64,
-        tx: DBWriteTransaction,
-    ) throws {
-        let threadRowIdColumn = GRDB.Column(AttachmentReference.MessageAttachmentReferenceRecord.CodingKeys.threadRowId)
-        try AttachmentReference.MessageAttachmentReferenceRecord
-            .filter(threadRowIdColumn == fromThreadRowId)
-            .updateAll(tx.database, threadRowIdColumn.set(to: intoThreadRowId))
-    }
-
+    /// Call this when viewing an attachment "fullscreen", which really means "anything
+    /// other than scrolling past it in a conversation".
     public func markViewedFullscreen(
         attachment: Attachment,
         timestamp: UInt64,
@@ -816,5 +1025,18 @@ public class AttachmentStoreImpl: AttachmentStore {
         )
         newRecord.sqliteId = attachment.id
         try newRecord.update(tx.database)
+    }
+
+    // MARK: - Thread Merging
+
+    public func updateMessageAttachmentThreadRowIdsForThreadMerge(
+        fromThreadRowId: Int64,
+        intoThreadRowId: Int64,
+        tx: DBWriteTransaction,
+    ) throws {
+        let threadRowIdColumn = GRDB.Column(AttachmentReference.MessageAttachmentReferenceRecord.CodingKeys.threadRowId)
+        try AttachmentReference.MessageAttachmentReferenceRecord
+            .filter(threadRowIdColumn == fromThreadRowId)
+            .updateAll(tx.database, threadRowIdColumn.set(to: intoThreadRowId))
     }
 }

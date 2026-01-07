@@ -15,7 +15,7 @@ class OWSLinkPreviewTest: XCTestCase {
 
         linkPreviewManager = LinkPreviewManagerImpl(
             attachmentManager: AttachmentManagerMock(),
-            attachmentStore: AttachmentStoreMock(),
+            attachmentStore: AttachmentStore(),
             attachmentValidator: AttachmentContentValidatorMock(),
             db: InMemoryDB(),
             linkPreviewSettingStore: LinkPreviewSettingStore.mock(),

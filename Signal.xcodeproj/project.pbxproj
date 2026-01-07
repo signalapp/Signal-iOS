@@ -1199,21 +1199,18 @@
 		66D7B9072B928BD50005C98B /* AttachmentStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D7B9062B928BD50005C98B /* AttachmentStream.swift */; };
 		66D7B9092B9291BD0005C98B /* AttachmentUploadStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D7B9082B9291BD0005C98B /* AttachmentUploadStore.swift */; };
 		66D7B90E2B9798950005C98B /* QuotedMessageAttachmentReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D7B90D2B9798950005C98B /* QuotedMessageAttachmentReference.swift */; };
-		66D7B9192B97A02F0005C98B /* AttachmentStore+QuotedMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D7B9182B97A02F0005C98B /* AttachmentStore+QuotedMessage.swift */; };
 		66D7B91D2B97C5330005C98B /* Attachment+ContentType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D7B91C2B97C5330005C98B /* Attachment+ContentType.swift */; };
 		66D7B92B2B97E5990005C98B /* AttachmentTransitPointer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D7B92A2B97E5990005C98B /* AttachmentTransitPointer.swift */; };
 		66D7B92D2B98DAAD0005C98B /* AttachmentManager+Proto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D7B92C2B98DAAD0005C98B /* AttachmentManager+Proto.swift */; };
 		66D7B9322B9943DB0005C98B /* AttachmentDownloadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D7B9312B9943DB0005C98B /* AttachmentDownloadManager.swift */; };
 		66D7B9342B9945E60005C98B /* AttachmentDownloadManagerImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D7B9332B9945E60005C98B /* AttachmentDownloadManagerImpl.swift */; };
 		66D7B9402B9A67B00005C98B /* AttachmentDownloadPriority.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D7B93F2B9A67B00005C98B /* AttachmentDownloadPriority.swift */; };
-		66D89A332CFE8E260074E510 /* AttachmentReference+SDSFetch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D89A322CFE8E190074E510 /* AttachmentReference+SDSFetch.swift */; };
 		66DA59C62BBB090C00D0EC58 /* AttachmentUpload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66DA59C52BBB090C00D0EC58 /* AttachmentUpload.swift */; };
 		66DA8DF82C910D3B00799E70 /* BGProcessingTaskRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66DA8DF72C910D3B00799E70 /* BGProcessingTaskRunner.swift */; };
 		66DA8DFA2C91125200799E70 /* AttachmentValidationBackfillRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66DA8DF92C91125200799E70 /* AttachmentValidationBackfillRunner.swift */; };
 		66E1AD762B8FD0B700C56B7B /* Attachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E1AD752B8FD0B700C56B7B /* Attachment.swift */; };
 		66E1AD812B8FDA6900C56B7B /* AttachmentReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E1AD802B8FDA6900C56B7B /* AttachmentReference.swift */; };
 		66E1AD832B8FDE2D00C56B7B /* AttachmentReference+Owner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E1AD822B8FDE2D00C56B7B /* AttachmentReference+Owner.swift */; };
-		66E1ADA02B9155C200C56B7B /* AttachmentStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E1AD9F2B9155C200C56B7B /* AttachmentStore.swift */; };
 		66E257032CA3861200100A08 /* BackupAttachmentDownloadQueueRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E257022CA3860B00100A08 /* BackupAttachmentDownloadQueueRunner.swift */; };
 		66E3C8F62994634E00BB38ED /* RegistrationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E3C8F52994634E00BB38ED /* RegistrationCoordinator.swift */; };
 		66E793E52BC0D8A600929E5E /* MessageStickerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E793E42BC0D8A600929E5E /* MessageStickerManager.swift */; };
@@ -5356,21 +5353,18 @@
 		66D7B9062B928BD50005C98B /* AttachmentStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentStream.swift; sourceTree = "<group>"; };
 		66D7B9082B9291BD0005C98B /* AttachmentUploadStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentUploadStore.swift; sourceTree = "<group>"; };
 		66D7B90D2B9798950005C98B /* QuotedMessageAttachmentReference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuotedMessageAttachmentReference.swift; sourceTree = "<group>"; };
-		66D7B9182B97A02F0005C98B /* AttachmentStore+QuotedMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AttachmentStore+QuotedMessage.swift"; sourceTree = "<group>"; };
 		66D7B91C2B97C5330005C98B /* Attachment+ContentType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Attachment+ContentType.swift"; sourceTree = "<group>"; };
 		66D7B92A2B97E5990005C98B /* AttachmentTransitPointer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentTransitPointer.swift; sourceTree = "<group>"; };
 		66D7B92C2B98DAAD0005C98B /* AttachmentManager+Proto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AttachmentManager+Proto.swift"; sourceTree = "<group>"; };
 		66D7B9312B9943DB0005C98B /* AttachmentDownloadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentDownloadManager.swift; sourceTree = "<group>"; };
 		66D7B9332B9945E60005C98B /* AttachmentDownloadManagerImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentDownloadManagerImpl.swift; sourceTree = "<group>"; };
 		66D7B93F2B9A67B00005C98B /* AttachmentDownloadPriority.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentDownloadPriority.swift; sourceTree = "<group>"; };
-		66D89A322CFE8E190074E510 /* AttachmentReference+SDSFetch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AttachmentReference+SDSFetch.swift"; sourceTree = "<group>"; };
 		66DA59C52BBB090C00D0EC58 /* AttachmentUpload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentUpload.swift; sourceTree = "<group>"; };
 		66DA8DF72C910D3B00799E70 /* BGProcessingTaskRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BGProcessingTaskRunner.swift; sourceTree = "<group>"; };
 		66DA8DF92C91125200799E70 /* AttachmentValidationBackfillRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentValidationBackfillRunner.swift; sourceTree = "<group>"; };
 		66E1AD752B8FD0B700C56B7B /* Attachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Attachment.swift; sourceTree = "<group>"; };
 		66E1AD802B8FDA6900C56B7B /* AttachmentReference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentReference.swift; sourceTree = "<group>"; };
 		66E1AD822B8FDE2D00C56B7B /* AttachmentReference+Owner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AttachmentReference+Owner.swift"; sourceTree = "<group>"; };
-		66E1AD9F2B9155C200C56B7B /* AttachmentStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentStore.swift; sourceTree = "<group>"; };
 		66E257022CA3860B00100A08 /* BackupAttachmentDownloadQueueRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAttachmentDownloadQueueRunner.swift; sourceTree = "<group>"; };
 		66E3C8F52994634E00BB38ED /* RegistrationCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationCoordinator.swift; sourceTree = "<group>"; };
 		66E793E42BC0D8A600929E5E /* MessageStickerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageStickerManager.swift; sourceTree = "<group>"; };
@@ -10629,8 +10623,6 @@
 		66E1AD512B8D016000C56B7B /* AttachmentStore */ = {
 			isa = PBXGroup;
 			children = (
-				66D7B9182B97A02F0005C98B /* AttachmentStore+QuotedMessage.swift */,
-				66E1AD9F2B9155C200C56B7B /* AttachmentStore.swift */,
 				66583EFE2B9246C400821D05 /* AttachmentStoreImpl.swift */,
 				6640132F2C00155E00F10FC4 /* AttachmentStoreTests.swift */,
 				66D7B9082B9291BD0005C98B /* AttachmentUploadStore.swift */,
@@ -10644,7 +10636,6 @@
 			children = (
 				66E1AD822B8FDE2D00C56B7B /* AttachmentReference+Owner.swift */,
 				66CA4CE52B9FC761009A5ED8 /* AttachmentReference+RenderingFlag.swift */,
-				66D89A322CFE8E190074E510 /* AttachmentReference+SDSFetch.swift */,
 				66E1AD802B8FDA6900C56B7B /* AttachmentReference.swift */,
 				66EB029A2BAB9F1C004F0580 /* ReferencedAttachment.swift */,
 			);
@@ -18426,12 +18417,9 @@
 				6640132E2BFFDC2700F10FC4 /* AttachmentReference+ConstructionParams.swift in Sources */,
 				66E1AD832B8FDE2D00C56B7B /* AttachmentReference+Owner.swift in Sources */,
 				66CA4CE62B9FC761009A5ED8 /* AttachmentReference+RenderingFlag.swift in Sources */,
-				66D89A332CFE8E260074E510 /* AttachmentReference+SDSFetch.swift in Sources */,
 				66E1AD812B8FDA6900C56B7B /* AttachmentReference.swift in Sources */,
 				667DEE672BC7342900EFF32D /* AttachmentReferenceId.swift in Sources */,
 				66144B3F2BFD3AA700E2C9CD /* AttachmentReferenceRecord.swift in Sources */,
-				66D7B9192B97A02F0005C98B /* AttachmentStore+QuotedMessage.swift in Sources */,
-				66E1ADA02B9155C200C56B7B /* AttachmentStore.swift in Sources */,
 				66583EFF2B9246C400821D05 /* AttachmentStoreImpl.swift in Sources */,
 				66D7B9072B928BD50005C98B /* AttachmentStream.swift in Sources */,
 				669573002C1A37020092B755 /* AttachmentThumbnailQuality.swift in Sources */,

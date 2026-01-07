@@ -346,7 +346,7 @@ class StoryContextViewController: OWSViewController {
         switch message.attachment {
         case .media:
             attachment = message.id.map {
-                return DependenciesBridge.shared.attachmentStore.fetchFirstReferencedAttachment(
+                return DependenciesBridge.shared.attachmentStore.fetchAnyReferencedAttachment(
                     for: .storyMessageMedia(storyMessageRowId: $0),
                     tx: transaction,
                 )

@@ -131,7 +131,7 @@ class MessageStickerManagerImpl: MessageStickerManager {
 
         guard
             let parentMessageRowId = parentMessage.sqliteRowId,
-            let attachment = attachmentStore.fetchFirstReferencedAttachment(
+            let attachment = attachmentStore.fetchAnyReferencedAttachment(
                 for: .messageSticker(messageRowId: parentMessageRowId),
                 tx: tx,
             )

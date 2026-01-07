@@ -481,8 +481,8 @@ public class ConversationFactory {
                 )
                 _ = try! unpreparedMessage.prepare(tx: asyncTransaction)
 
-                for attachment in message.allAttachments(transaction: asyncTransaction) {
-                    guard let stream = attachment.asStream() else {
+                for referencedAttachment in message.allAttachments(transaction: asyncTransaction) {
+                    guard let stream = referencedAttachment.attachment.asStream() else {
                         continue
                     }
                     let transitTierInfo = Attachment.TransitTierInfo(

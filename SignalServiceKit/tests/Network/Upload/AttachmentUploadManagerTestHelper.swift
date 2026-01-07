@@ -79,7 +79,7 @@ class AttachmentUploadManagerMockHelper {
     var mockFileSystem = AttachmentUploadManagerImpl.Mocks.FileSystem()
     var mockInteractionStore = MockInteractionStore()
     var mockStoryStore = StoryStoreImpl()
-    var mockAttachmentStore = AttachmentStoreMock()
+    var mockAttachmentStore = AttachmentStore()
     lazy var mockAttachmentUploadStore = AttachmentUploadStoreMock(attachmentStore: mockAttachmentStore)
     var mockAttachmentThumbnailService = MockAttachmentThumbnailService()
     var mockAttachmentEncrypter = AttachmentUploadManagerImpl.Mocks.AttachmentEncrypter()
@@ -102,8 +102,8 @@ class AttachmentUploadManagerMockHelper {
     // auth set the active location Requests (and the active URL)
     var activeUploadRequestMocks = [MockRequestType]()
 
-    func setup(encryptedSize: UInt32, unencryptedSize: UInt32) {
-        setup(
+    func setup(encryptedSize: UInt32, unencryptedSize: UInt32) -> Attachment.IDType {
+        return setup(
             encryptedUploadSize: encryptedSize,
             mockAttachment: MockAttachmentStream.mock(
                 streamInfo: .mock(
@@ -117,11 +117,7 @@ class AttachmentUploadManagerMockHelper {
     func setup(
         encryptedUploadSize: UInt32,
         mockAttachment: Attachment,
-    ) {
-
-        self.mockAttachmentStore.mockFetcher = { _ in
-            return mockAttachment
-        }
+    ) -> Attachment.IDType {
         self.mockFileSystem.size = Int(clamping: encryptedUploadSize)
 
         mockServiceManager.mockUrlSessionBuilder = { (info: SignalServiceInfo, endpoint: OWSURLSessionEndpoint, config: URLSessionConfiguration?) in
@@ -159,6 +155,16 @@ class AttachmentUploadManagerMockHelper {
             }
             self.capturedRequests.append(.uploadTask(request))
             return try await requestBlock(request, data, progress)
+        }
+
+        return insertMockAttachment(mockAttachment)
+    }
+
+    func insertMockAttachment(_ attachment: Attachment) -> Attachment.IDType {
+        return mockDB.write { tx in
+            var record = Attachment.Record(attachment: attachment)
+            try! record.insert(tx.database)
+            return record.sqliteId!
         }
     }
 

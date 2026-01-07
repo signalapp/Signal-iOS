@@ -35,7 +35,7 @@ class AttachmentUploadManagerTests {
     func testBasicUpload(cdn: CDNEndpoint) async throws {
         let encryptedSize: UInt32 = 20
         let unencryptedSize: UInt32 = 32
-        helper.setup(encryptedSize: encryptedSize, unencryptedSize: unencryptedSize)
+        let attachmentID = helper.setup(encryptedSize: encryptedSize, unencryptedSize: unencryptedSize)
 
         // Indexed to line up with helper.capturedRequests.
         // 0. Mock the form request
@@ -45,7 +45,7 @@ class AttachmentUploadManagerTests {
             helper.addUploadRequestMock(auth: auth, location: resumeLocation, type: .success)
         }
 
-        _ = try await uploadManager.uploadTransitTierAttachment(attachmentId: 1)
+        _ = try await uploadManager.uploadTransitTierAttachment(attachmentId: attachmentID)
 
         switch cdn {
         case .cdn2:
@@ -72,7 +72,7 @@ class AttachmentUploadManagerTests {
         let encryptedSize: UInt32 = 20
         let unencryptedSize: UInt32 = 32
         let firstUpload = 10
-        helper.setup(encryptedSize: encryptedSize, unencryptedSize: unencryptedSize)
+        let attachmentID = helper.setup(encryptedSize: encryptedSize, unencryptedSize: unencryptedSize)
 
         // Indexed to line up with helper.capturedRequests.
         // 0. Mock the form request
@@ -86,7 +86,7 @@ class AttachmentUploadManagerTests {
             helper.addUploadRequestMock(auth: auth, location: location, type: .success)
         }
 
-        try await uploadManager.uploadTransitTierAttachment(attachmentId: 1)
+        try await uploadManager.uploadTransitTierAttachment(attachmentId: attachmentID)
 
         if case let .uploadTask(request) = helper.capturedUploadRequests.last {
             #expect(request.httpMethod == attempt.resumeUploadHttpMethod)
@@ -118,7 +118,7 @@ class AttachmentUploadManagerTests {
         let encryptedSize: Int = chunkSize + 1
         let unencryptedSize = encryptedSize
 
-        helper.setup(encryptedSize: UInt32(encryptedSize), unencryptedSize: UInt32(unencryptedSize))
+        let attachmentID = helper.setup(encryptedSize: UInt32(encryptedSize), unencryptedSize: UInt32(unencryptedSize))
 
         let attempt2 = helper.addUploadFormAndLocationRequestMock(cdn: cdn) { auth, _, location in
             helper.addUploadRequestMock(auth: auth, location: location, type: .success)
@@ -126,7 +126,7 @@ class AttachmentUploadManagerTests {
             helper.addUploadRequestMock(auth: auth, location: location, type: .success)
         }
 
-        try await uploadManager.uploadTransitTierAttachment(attachmentId: 1)
+        try await uploadManager.uploadTransitTierAttachment(attachmentId: attachmentID)
 
         if case let .uploadTask(request) = helper.capturedUploadRequests[0] {
             #expect(request.httpMethod == attempt2.uploadHttpMethod)
@@ -174,7 +174,7 @@ class AttachmentUploadManagerTests {
         let encryptedSize: Int = (chunkSize * 2) + 10
         let unencryptedSize: Int = encryptedSize + 1 // Just to make it different than encrypted size
 
-        helper.setup(encryptedSize: UInt32(encryptedSize), unencryptedSize: UInt32(unencryptedSize))
+        let attachmentID = helper.setup(encryptedSize: UInt32(encryptedSize), unencryptedSize: UInt32(unencryptedSize))
 
         let attempt2 = helper.addUploadFormAndLocationRequestMock(cdn: cdn) { auth, _, location in
             helper.addUploadRequestMock(auth: auth, location: location, type: .success)
@@ -184,7 +184,7 @@ class AttachmentUploadManagerTests {
             helper.addUploadRequestMock(auth: auth, location: location, type: .success)
         }
 
-        try await uploadManager.uploadTransitTierAttachment(attachmentId: 1)
+        try await uploadManager.uploadTransitTierAttachment(attachmentId: attachmentID)
 
         if case let .uploadTask(request) = helper.capturedUploadRequests[0] {
             #expect(request.httpMethod == attempt2.uploadHttpMethod)
@@ -250,7 +250,7 @@ class AttachmentUploadManagerTests {
     func testBadRangePrefixRestartUpload(cdn: CDNEndpoint) async throws {
         let encryptedSize: UInt32 = 20
         let unencryptedSize: UInt32 = 32
-        helper.setup(encryptedSize: encryptedSize, unencryptedSize: unencryptedSize)
+        let attachmentID = helper.setup(encryptedSize: encryptedSize, unencryptedSize: unencryptedSize)
 
         // Indexed to line up with helper.capturedRequests.
         // 0. Mock the form request
@@ -264,7 +264,7 @@ class AttachmentUploadManagerTests {
             helper.addUploadRequestMock(auth: auth, location: location, type: .success)
         }
 
-        try await uploadManager.uploadTransitTierAttachment(attachmentId: 1)
+        try await uploadManager.uploadTransitTierAttachment(attachmentId: attachmentID)
 
         if case let .uploadTask(request) = helper.capturedUploadRequests.last {
             #expect(request.url!.absoluteString == attempt.fetchedUploadLocation)
@@ -279,7 +279,7 @@ class AttachmentUploadManagerTests {
     func testFullRestartUpload(cdn: CDNEndpoint) async throws {
         let encryptedSize: UInt32 = 20
         let unencryptedSize: UInt32 = 32
-        helper.setup(encryptedSize: encryptedSize, unencryptedSize: unencryptedSize)
+        let attachmentID = helper.setup(encryptedSize: encryptedSize, unencryptedSize: unencryptedSize)
 
         // Indexed to line up with helper.capturedRequests.
         // 0. Mock the form request
@@ -298,7 +298,7 @@ class AttachmentUploadManagerTests {
             helper.addUploadRequestMock(auth: auth, location: location, type: .success)
         }
 
-        try await uploadManager.uploadTransitTierAttachment(attachmentId: 1)
+        try await uploadManager.uploadTransitTierAttachment(attachmentId: attachmentID)
 
         if case let .uploadTask(request) = helper.capturedUploadRequests.last {
             #expect(request.url!.absoluteString == attempt2.fetchedUploadLocation)
@@ -313,7 +313,7 @@ class AttachmentUploadManagerTests {
     func testFullRestartSwitchingCDNUpload(cdn: CDNEndpoint) async throws {
         let encryptedSize: UInt32 = 20
         let unencryptedSize: UInt32 = 32
-        helper.setup(encryptedSize: encryptedSize, unencryptedSize: unencryptedSize)
+        let attachmentID = helper.setup(encryptedSize: encryptedSize, unencryptedSize: unencryptedSize)
 
         let startCDN = cdn
         let finishCDN: CDNEndpoint = {
@@ -341,7 +341,7 @@ class AttachmentUploadManagerTests {
             helper.addUploadRequestMock(auth: auth, location: location, type: .success)
         }
 
-        try await uploadManager.uploadTransitTierAttachment(attachmentId: 1)
+        try await uploadManager.uploadTransitTierAttachment(attachmentId: attachmentID)
 
         if case let .uploadTask(request) = helper.capturedUploadRequests.last {
             #expect(request.url!.absoluteString == attempt2.fetchedUploadLocation)
@@ -357,7 +357,7 @@ class AttachmentUploadManagerTests {
     func testFullRestartUploadAfter500ReportingLocalProgress(cdn: CDNEndpoint) async throws {
         let encryptedSize: UInt32 = 20
         let unencryptedSize: UInt32 = 32
-        helper.setup(encryptedSize: encryptedSize, unencryptedSize: unencryptedSize)
+        let attachmentID = helper.setup(encryptedSize: encryptedSize, unencryptedSize: unencryptedSize)
 
         // Indexed to line up with helper.capturedRequests.
         // 0. Mock the form request
@@ -385,7 +385,7 @@ class AttachmentUploadManagerTests {
             helper.addUploadRequestMock(auth: auth, location: location, type: .success, completedCount: 20)
         }
 
-        try await uploadManager.uploadTransitTierAttachment(attachmentId: 1)
+        try await uploadManager.uploadTransitTierAttachment(attachmentId: attachmentID)
 
         #expect(helper.mockSleepTimer.requestedDelays.count == 3)
 
@@ -402,7 +402,7 @@ class AttachmentUploadManagerTests {
     func testNetworkTimeoutResumeUpload(cdn: CDNEndpoint) async throws {
         let encryptedSize: UInt32 = 20
         let unencryptedSize: UInt32 = 32
-        helper.setup(encryptedSize: encryptedSize, unencryptedSize: unencryptedSize)
+        let attachmentID = helper.setup(encryptedSize: encryptedSize, unencryptedSize: unencryptedSize)
 
         // Indexed to line up with helper.capturedRequests.
         // 0. Mock the form request
@@ -430,7 +430,7 @@ class AttachmentUploadManagerTests {
             helper.addUploadRequestMock(auth: auth, location: location, type: .success, completedCount: 20)
         }
 
-        try await uploadManager.uploadTransitTierAttachment(attachmentId: 1)
+        try await uploadManager.uploadTransitTierAttachment(attachmentId: attachmentID)
 
         // Since these are network timeouts, and the remote endpoint is showing progress being made
         // there shouldn't be any backoff timers fired.
@@ -452,17 +452,17 @@ class AttachmentUploadManagerTests {
         helper.mockDate = uploadTimestamp.addingTimeInterval(Upload.Constants.uploadReuseWindow / 2)
 
         // Set up an attachment that isn't a stream.
-        helper.mockAttachmentStore.mockFetcher = { _ in
-            return MockAttachment.mock(
+        let attachmentID = helper.insertMockAttachment(
+            MockAttachment.mock(
                 streamInfo: nil,
                 transitTierInfo: .mock(
                     uploadTimestamp: uploadTimestamp.ows_millisecondsSince1970,
                 ),
-            )
-        }
+            ),
+        )
 
         do {
-            try await uploadManager.uploadTransitTierAttachment(attachmentId: 1)
+            try await uploadManager.uploadTransitTierAttachment(attachmentId: attachmentID)
             Issue.record("Should fail to upload!")
         } catch {
             // Success
@@ -474,15 +474,15 @@ class AttachmentUploadManagerTests {
         // Set up an already uploaded attachment that is still in the time window.
         let uploadTimestamp = Date(timeIntervalSinceNow: -10000)
         helper.mockDate = uploadTimestamp.addingTimeInterval(Upload.Constants.uploadReuseWindow / 2)
-        helper.mockAttachmentStore.mockFetcher = { _ in
-            return MockAttachmentStream.mock(
+        let attachmentID = helper.insertMockAttachment(
+            MockAttachmentStream.mock(
                 transitTierInfo: .mock(
                     uploadTimestamp: uploadTimestamp.ows_millisecondsSince1970,
                 ),
-            ).attachment
-        }
+            ).attachment,
+        )
 
-        try await uploadManager.uploadTransitTierAttachment(attachmentId: 1)
+        try await uploadManager.uploadTransitTierAttachment(attachmentId: attachmentID)
 
         #expect(helper.capturedRequests.isEmpty)
     }
@@ -491,7 +491,7 @@ class AttachmentUploadManagerTests {
     func testUseLocalEncryptionInfo(cdn: CDNEndpoint) async throws {
         // Set up an attachment we've never uploaded so we reuse the local stream info.
         let encryptedSize: UInt32 = 27
-        helper.setup(
+        let attachmentID = helper.setup(
             encryptedUploadSize: encryptedSize,
             mockAttachment: MockAttachmentStream.mock(
                 streamInfo: .mock(encryptedByteCount: encryptedSize),
@@ -508,7 +508,7 @@ class AttachmentUploadManagerTests {
             helper.addUploadRequestMock(auth: auth, location: location, type: .success)
         }
 
-        _ = try await uploadManager.uploadTransitTierAttachment(attachmentId: 1)
+        _ = try await uploadManager.uploadTransitTierAttachment(attachmentId: attachmentID)
 
         switch cdn {
         case .cdn2:
@@ -549,7 +549,7 @@ class AttachmentUploadManagerTests {
             transitTierInfo: transitTierInfo,
             mediaTierInfo: nil,
         ).attachment
-        helper.setup(
+        let attachmentID = helper.setup(
             encryptedUploadSize: encryptedSize,
             mockAttachment: attachment,
         )
@@ -578,7 +578,7 @@ class AttachmentUploadManagerTests {
             helper.addUploadRequestMock(auth: auth, location: location, type: .success)
         }
 
-        _ = try await uploadManager.uploadTransitTierAttachment(attachmentId: 1)
+        _ = try await uploadManager.uploadTransitTierAttachment(attachmentId: attachmentID)
 
         switch cdn {
         case .cdn2:
@@ -615,7 +615,7 @@ class AttachmentUploadManagerTests {
             transitTierInfo: nil,
             mediaTierInfo: .mock(),
         ).attachment
-        helper.setup(
+        let attachmentID = helper.setup(
             encryptedUploadSize: encryptedSize,
             mockAttachment: attachment,
         )
@@ -644,7 +644,7 @@ class AttachmentUploadManagerTests {
             helper.addUploadRequestMock(auth: auth, location: location, type: .success)
         }
 
-        _ = try await uploadManager.uploadTransitTierAttachment(attachmentId: 1)
+        _ = try await uploadManager.uploadTransitTierAttachment(attachmentId: attachmentID)
 
         switch cdn {
         case .cdn2:

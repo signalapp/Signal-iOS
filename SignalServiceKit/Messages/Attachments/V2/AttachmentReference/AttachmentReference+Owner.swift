@@ -576,35 +576,3 @@ extension AttachmentReference.Owner.StoryMessageSource {
         }
     }
 }
-
-extension AttachmentReference.MessageOwnerTypeRaw {
-
-    func with(messageRowId: Int64) -> AttachmentReference.OwnerId {
-        switch self {
-        case .bodyAttachment:
-            return .messageBodyAttachment(messageRowId: messageRowId)
-        case .oversizeText:
-            return .messageOversizeText(messageRowId: messageRowId)
-        case .linkPreview:
-            return .messageLinkPreview(messageRowId: messageRowId)
-        case .quotedReplyAttachment:
-            return .quotedReplyAttachment(messageRowId: messageRowId)
-        case .sticker:
-            return .messageSticker(messageRowId: messageRowId)
-        case .contactAvatar:
-            return .messageContactAvatar(messageRowId: messageRowId)
-        }
-    }
-}
-
-extension AttachmentReference.StoryMessageOwnerTypeRaw {
-
-    func with(storyMessageRowId: Int64) -> AttachmentReference.OwnerId {
-        switch self {
-        case .media:
-            return .storyMessageMedia(storyMessageRowId: storyMessageRowId)
-        case .linkPreview:
-            return .storyMessageLinkPreview(storyMessageRowId: storyMessageRowId)
-        }
-    }
-}

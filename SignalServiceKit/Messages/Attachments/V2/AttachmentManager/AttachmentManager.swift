@@ -67,21 +67,4 @@ public protocol AttachmentManager {
         owningMessageAttachmentBuilder: AttachmentReference.OwnerBuilder.MessageAttachmentBuilder,
         tx: DBWriteTransaction,
     ) throws
-
-    // MARK: - Removing Attachments
-
-    /// Remove an attachment from an owner.
-    /// Will only delete the attachment if this is the last owner.
-    /// Typically because the owner has been deleted.
-    func removeAttachment(
-        reference: AttachmentReference,
-        tx: DBWriteTransaction,
-    ) throws
-
-    /// Removed all attachments of the provided types from the provided owners.
-    /// Will only delete attachments if they are left without any owners.
-    func removeAllAttachments(
-        from owners: [AttachmentReference.OwnerId],
-        tx: DBWriteTransaction,
-    ) throws
 }

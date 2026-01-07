@@ -131,7 +131,7 @@ class ForwardMessageViewController: OWSNavigationController {
             let attachment: ReferencedAttachmentStream? = SSKEnvironment.shared.databaseStorageRef.read { tx in
                 guard
                     let rowId = storyMessage.id,
-                    let referencedStream = DependenciesBridge.shared.attachmentStore.fetchFirstReferencedAttachment(
+                    let referencedStream = DependenciesBridge.shared.attachmentStore.fetchAnyReferencedAttachment(
                         for: .storyMessageMedia(storyMessageRowId: rowId),
                         tx: tx,
                     )?.asReferencedStream
@@ -694,7 +694,7 @@ struct ForwardMessageItem {
         var linkPreviewImage: LinkPreviewImage?
         if
             let parentMessageRowId = parentMessage.sqliteRowId,
-            let imageAttachmentId = DependenciesBridge.shared.attachmentStore.fetchFirstReference(
+            let imageAttachmentId = DependenciesBridge.shared.attachmentStore.fetchAnyReference(
                 owner: .messageLinkPreview(messageRowId: parentMessageRowId),
                 tx: transaction,
             )?.attachmentRowId,

@@ -1403,7 +1403,7 @@ private extension CVComponentState.Builder {
 
         guard
             let rowId = message.sqliteRowId,
-            let attachment = DependenciesBridge.shared.attachmentStore.fetchFirstReferencedAttachment(
+            let attachment = DependenciesBridge.shared.attachmentStore.fetchAnyReferencedAttachment(
                 for: .messageSticker(messageRowId: rowId),
                 tx: transaction,
             )
@@ -1764,7 +1764,7 @@ private extension CVComponentState.Builder {
             let linkPreviewAttachment = { () -> ReferencedAttachment? in
                 guard
                     let rowId = message.sqliteRowId,
-                    let linkPreviewAttachment = DependenciesBridge.shared.attachmentStore.fetchFirstReferencedAttachment(
+                    let linkPreviewAttachment = DependenciesBridge.shared.attachmentStore.fetchAnyReferencedAttachment(
                         for: .messageLinkPreview(messageRowId: rowId),
                         tx: transaction,
                     )
