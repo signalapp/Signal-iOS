@@ -41,7 +41,7 @@ public class BackupAttachmentDownloadSchedulerImpl: BackupAttachmentDownloadSche
     ) {
         let eligibility = BackupAttachmentDownloadEligibility.forAttachment(
             referencedAttachment.attachment,
-            reference: referencedAttachment.reference,
+            mostRecentReference: referencedAttachment.reference,
             currentTimestamp: restoreStartTimestampMs,
             backupPlan: backupPlan,
             remoteConfig: remoteConfig,

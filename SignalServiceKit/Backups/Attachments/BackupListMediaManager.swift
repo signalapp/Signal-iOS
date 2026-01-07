@@ -819,7 +819,7 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
             !isThumbnail,
             let transitTierEligibilityState = BackupAttachmentDownloadEligibility.transitTierFullsizeState(
                 attachment: attachment,
-                attachmentTimestamp: existingDownload.maxOwnerTimestamp,
+                mostRecentReferenceTimestamp: existingDownload.maxOwnerTimestamp,
                 currentTimestamp: dateProvider().ows_millisecondsSince1970,
                 remoteConfig: remoteConfig,
                 backupPlan: currentBackupPlan,
@@ -996,16 +996,10 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
         tx: DBWriteTransaction,
     ) throws {
         let currentTimestamp = dateProvider().ows_millisecondsSince1970
-
-        // We only want to fetch all references if we need to (since its expensive)
-        // but if we do so ensure we only do so once across multiple usage sites.
-        var cachedMostRecentReference: AttachmentReference?
-        func fetchMostRecentReference() throws -> AttachmentReference {
-            if let cachedMostRecentReference { return cachedMostRecentReference }
-            let reference = try self.attachmentStore.fetchMostRecentReference(toAttachmentId: attachment.id, tx: tx)
-            cachedMostRecentReference = reference
-            return reference
-        }
+        let mostRecentReference = try attachmentStore.fetchMostRecentReference(
+            toAttachmentId: attachment.id,
+            tx: tx,
+        )
 
         // We check only media tier eligibility, as that's what may have changed
         // as a result of list media. The attachment may already have been eligible
@@ -1015,11 +1009,11 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
         // so that we don't overwrite existing transit tier state incorrectly.
         let combinedDownloadState: QueuedBackupAttachmentDownload.State?
         if isThumbnail {
-            mediaTierDownloadState = try BackupAttachmentDownloadEligibility.mediaTierThumbnailState(
+            mediaTierDownloadState = BackupAttachmentDownloadEligibility.mediaTierThumbnailState(
                 attachment: attachment,
                 backupPlan: currentBackupPlan,
-                attachmentTimestamp: try {
-                    switch try fetchMostRecentReference().owner {
+                mostRecentReferenceTimestamp: {
+                    switch mostRecentReference.owner {
                     case .message(let messageSource):
                         return messageSource.receivedAtTimestamp
                     case .thread, .storyMessage:
@@ -1030,9 +1024,9 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
             )
             combinedDownloadState = mediaTierDownloadState
         } else {
-            let eligibility = try BackupAttachmentDownloadEligibility.forAttachment(
+            let eligibility = BackupAttachmentDownloadEligibility.forAttachment(
                 attachment,
-                reference: try fetchMostRecentReference(),
+                mostRecentReference: mostRecentReference,
                 currentTimestamp: currentTimestamp,
                 backupPlan: currentBackupPlan,
                 remoteConfig: remoteConfig,
@@ -1066,7 +1060,7 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
 
             backupAttachmentDownloadStore.enqueue(
                 ReferencedAttachment(
-                    reference: try fetchMostRecentReference(),
+                    reference: mostRecentReference,
                     attachment: attachment,
                 ),
                 thumbnail: isThumbnail,
