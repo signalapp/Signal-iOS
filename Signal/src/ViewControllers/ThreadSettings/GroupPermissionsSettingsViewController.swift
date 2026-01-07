@@ -122,10 +122,17 @@ class GroupPermissionsSettingsViewController: OWSTableViewController2 {
             "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS",
             comment: "Label for 'edit attributes access' action in conversation settings view.",
         )
-        accessAttributesSection.footerTitle = OWSLocalizedString(
-            "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER",
-            comment: "Footer for the 'attributes access' section in conversation settings view.",
-        )
+        if BuildFlags.PinnedMessages.send {
+            accessAttributesSection.footerTitle = OWSLocalizedString(
+                "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER_V2",
+                comment: "Footer for the 'attributes access' section in conversation settings view with pinned messages added.",
+            )
+        } else {
+            accessAttributesSection.footerTitle = OWSLocalizedString(
+                "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER",
+                comment: "Footer for the 'attributes access' section in conversation settings view.",
+            )
+        }
 
         accessAttributesSection.add(.init(
             text: OWSLocalizedString(
