@@ -283,22 +283,28 @@ extension ConversationViewController: UIContextMenuInteractionDelegate {
         configurationForMenuAtLocation location: CGPoint,
     ) -> UIContextMenuConfiguration? {
         return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
-            return UIMenu(children: [
-                UIAction(
-                    title: OWSLocalizedString(
-                        "PINNED_MESSAGES_UNPIN",
-                        comment: "Action menu item to unpin a message",
-                    ),
-                    image: .pinSlash,
-                ) { [weak self] _ in
-                    guard let self else { return }
-                    if threadViewModel.pinnedMessages.indices.contains(pinnedMessageIndex) {
-                        handleActionUnpin(
-                            message: threadViewModel.pinnedMessages[pinnedMessageIndex],
-                            modalDelegate: self,
-                        )
-                    }
-                },
+            var actions: [UIAction] = []
+            if BuildFlags.PinnedMessages.send {
+                actions.append(
+                    UIAction(
+                        title: OWSLocalizedString(
+                            "PINNED_MESSAGES_UNPIN",
+                            comment: "Action menu item to unpin a message",
+                        ),
+                        image: .pinSlash,
+                    ) { [weak self] _ in
+                        guard let self else { return }
+                        if threadViewModel.pinnedMessages.indices.contains(pinnedMessageIndex) {
+                            handleActionUnpin(
+                                message: threadViewModel.pinnedMessages[pinnedMessageIndex],
+                                modalDelegate: self,
+                            )
+                        }
+                    },
+                )
+            }
+
+            actions.append(contentsOf: [
                 UIAction(
                     title: OWSLocalizedString(
                         "PINNED_MESSAGES_GO_TO_MESSAGE",
@@ -318,6 +324,7 @@ extension ConversationViewController: UIContextMenuInteractionDelegate {
                     self?.presentSeeAllMessages()
                 },
             ])
+            return UIMenu(children: actions)
         }
     }
 }

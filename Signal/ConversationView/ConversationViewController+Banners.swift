@@ -474,32 +474,39 @@ private class ConversationBannerView: UIView {
         }
 
         private func pinMessageMenu() -> UIMenu {
-            return UIMenu(children: [
-                UIAction(
-                    title: OWSLocalizedString(
-                        "PINNED_MESSAGES_UNPIN",
-                        comment: "Action menu item to unpin a message",
-                    ),
-                    image: .pinSlash,
-                ) { [weak self] _ in
-                    self?.pinnedMessageInteractionDelegate?.unpinMessage(message: nil, modalDelegate: nil)
-                },
-                UIAction(
-                    title: OWSLocalizedString(
-                        "PINNED_MESSAGES_GO_TO_MESSAGE",
-                        comment: "Action menu item to go to a message in the conversation view",
-                    ),
-                    image: .chatArrow,
-                ) { [weak self] _ in
-                    self?.pinnedMessageInteractionDelegate?.goToMessage(message: nil)
-                },
-                UIAction(title: OWSLocalizedString(
-                    "PINNED_MESSAGES_SEE_ALL_MESSAGES",
-                    comment: "Action menu item to see all pinned messages",
-                ), image: .listBullet) { [weak self] _ in
-                    self?.pinnedMessageInteractionDelegate?.presentSeeAllMessages()
-                },
-            ])
+            var actions: [UIAction] = []
+            if BuildFlags.PinnedMessages.send {
+                actions.append(
+                    UIAction(
+                        title: OWSLocalizedString(
+                            "PINNED_MESSAGES_UNPIN",
+                            comment: "Action menu item to unpin a message",
+                        ),
+                        image: .pinSlash,
+                    ) { [weak self] _ in
+                        self?.pinnedMessageInteractionDelegate?.unpinMessage(message: nil, modalDelegate: nil)
+                    },
+                )
+            }
+            actions.append(
+                contentsOf: [
+                    UIAction(
+                        title: OWSLocalizedString(
+                            "PINNED_MESSAGES_GO_TO_MESSAGE",
+                            comment: "Action menu item to go to a message in the conversation view",
+                        ),
+                        image: .chatArrow,
+                    ) { [weak self] _ in
+                        self?.pinnedMessageInteractionDelegate?.goToMessage(message: nil)
+                    },
+                    UIAction(title: OWSLocalizedString(
+                        "PINNED_MESSAGES_SEE_ALL_MESSAGES",
+                        comment: "Action menu item to see all pinned messages",
+                    ), image: .listBullet) { [weak self] _ in
+                        self?.pinnedMessageInteractionDelegate?.presentSeeAllMessages()
+                    },
+                ])
+            return UIMenu(children: actions)
         }
 
         private func animatePinnedMessageTransition(

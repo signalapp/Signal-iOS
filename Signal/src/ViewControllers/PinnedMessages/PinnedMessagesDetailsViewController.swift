@@ -115,22 +115,24 @@ class PinnedMessagesDetailsViewController: OWSViewController, DatabaseChangeDele
         stack.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: 16, left: 16, bottom: 64, right: 16))
         paddedContainerView.autoMatch(.width, to: .width, of: scrollView)
 
-        let unpinAllButton = UIButton(
-            configuration: .largeSecondary(title: OWSLocalizedString(
-                "PINNED_MESSAGES_UNPIN_ALL",
-                comment: "Title for a button to unpin all pinned messages.",
-            )),
-            primaryAction: UIAction { [weak self] _ in
-                self?.dismiss(animated: true)
-                self?.delegate?.unpinAllMessages()
-            },
-        )
-        view.addSubview(unpinAllButton)
-        unpinAllButton.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            unpinAllButton.bottomAnchor.constraint(equalTo: contentLayoutGuide.bottomAnchor),
-            unpinAllButton.centerXAnchor.constraint(equalTo: contentLayoutGuide.centerXAnchor),
-        ])
+        if BuildFlags.PinnedMessages.send {
+            let unpinAllButton = UIButton(
+                configuration: .largeSecondary(title: OWSLocalizedString(
+                    "PINNED_MESSAGES_UNPIN_ALL",
+                    comment: "Title for a button to unpin all pinned messages.",
+                )),
+                primaryAction: UIAction { [weak self] _ in
+                    self?.dismiss(animated: true)
+                    self?.delegate?.unpinAllMessages()
+                },
+            )
+            view.addSubview(unpinAllButton)
+            unpinAllButton.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
+                unpinAllButton.bottomAnchor.constraint(equalTo: contentLayoutGuide.bottomAnchor),
+                unpinAllButton.centerXAnchor.constraint(equalTo: contentLayoutGuide.centerXAnchor),
+            ])
+        }
     }
 
     private func updatePinnedMessageState() {
@@ -369,8 +371,8 @@ private class PinnedMessageLongPressDelegate: NSObject, UIContextMenuInteraction
                         })
                 }
 
-                actions.append(
-                    contentsOf: [
+                if BuildFlags.PinnedMessages.send {
+                    actions.append(
                         UIAction(
                             title: OWSLocalizedString(
                                 "PINNED_MESSAGES_UNPIN",
@@ -381,17 +383,19 @@ private class PinnedMessageLongPressDelegate: NSObject, UIContextMenuInteraction
                             guard let self else { return }
                             actionDelegate?.unpinMessage(itemViewModel: itemViewModel)
                         },
-                        UIAction(
-                            title: OWSLocalizedString(
-                                "CONTEXT_MENU_DELETE_MESSAGE",
-                                comment: "Context menu button title",
-                            ),
-                            image: .trashLight,
-                        ) { [weak self] _ in
-                            guard let self else { return }
-                            actionDelegate?.deleteMessage(itemViewModel: itemViewModel)
-                        },
-                    ],
+                    )
+                }
+                actions.append(
+                    UIAction(
+                        title: OWSLocalizedString(
+                            "CONTEXT_MENU_DELETE_MESSAGE",
+                            comment: "Context menu button title",
+                        ),
+                        image: .trashLight,
+                    ) { [weak self] _ in
+                        guard let self else { return }
+                        actionDelegate?.deleteMessage(itemViewModel: itemViewModel)
+                    },
                 )
 
                 return UIMenu(children: actions)

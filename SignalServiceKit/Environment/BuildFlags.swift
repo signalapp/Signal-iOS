@@ -85,7 +85,7 @@ public enum BuildFlags {
 
     public enum PinnedMessages {
         public static let send = build <= .internal
-        public static let receive = build <= .internal
+        public static let receive = true
     }
 
     public static let useNewAttachmentLimits = false
