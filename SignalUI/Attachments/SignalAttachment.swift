@@ -403,7 +403,8 @@ public class SignalAttachment: CustomDebugStringConvertible {
         return try autoreleasepool { () throws(SignalAttachmentError) -> (dataSource: DataSourcePath, containerType: ContainerType)? in
             let maxSize = imageUploadQuality.maxEdgeSize
 
-            guard let imageSource = cgImageSource(for: dataSource, imageFormat: imageMetadata?.imageFormat) else {
+            let imageSource = CGImageSourceCreateWithURL(dataSource.fileUrl as CFURL, [kCGImageSourceShouldCache: false] as CFDictionary)
+            guard let imageSource else {
                 throw .couldNotParseImage
             }
 
@@ -484,28 +485,6 @@ public class SignalAttachment: CustomDebugStringConvertible {
         // jpeg compression without seeing artifacting
         if pixelSize.largerAxis >= 3072 { return 0.55 }
         return 0.6
-    }
-
-    private class func cgImageSource(for dataSource: DataSourcePath, imageFormat: ImageFormat?) -> CGImageSource? {
-        if imageFormat == .webp {
-            // CGImageSource doesn't know how to handle webp, so we have
-            // to pass it through YYImage. This is costly and we could
-            // perhaps do better, but webp images are usually small.
-            guard let yyImage = UIImage.sd_image(with: try? dataSource.readData()) else {
-                owsFailDebug("Failed to initialized YYImage")
-                return nil
-            }
-            guard let imageData = yyImage.pngData() else {
-                owsFailDebug("Failed to get png data for YYImage")
-                return nil
-            }
-            return CGImageSourceCreateWithData(imageData as CFData, nil)
-        } else {
-            // If we can init with a URL, we prefer to. This way, we can avoid loading
-            // the full image into memory. We need to set kCGImageSourceShouldCache to
-            // false to ensure that CGImageSource doesn't try and read the file immediately.
-            return CGImageSourceCreateWithURL(dataSource.fileUrl as CFURL, [kCGImageSourceShouldCache: false] as CFDictionary)
-        }
     }
 
     private static let preservedMetadata: [CFString] = [
