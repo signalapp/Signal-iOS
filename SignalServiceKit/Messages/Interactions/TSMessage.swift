@@ -98,6 +98,14 @@ public extension TSMessage {
         }
     }
 
+    // MARK: - Pinned Message Deletes
+
+    @objc
+    func unpinMessageIfNeeded(tx: DBWriteTransaction) {
+        let pinnedMessageManager = DependenciesBridge.shared.pinnedMessageManager
+        pinnedMessageManager.deletePinForMessage(interactionId: sqliteRowId!, transaction: tx)
+    }
+
     // MARK: - Mentions
 
     @objc

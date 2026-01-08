@@ -217,7 +217,10 @@ enum MessageActionBuilder {
             }
         }
 
-        guard itemViewModel.componentState.giftBadge == nil else {
+        guard
+            !itemViewModel.wasRemotelyDeleted,
+            itemViewModel.componentState.giftBadge == nil
+        else {
             return nil
         }
 
