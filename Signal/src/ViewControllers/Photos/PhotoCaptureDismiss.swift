@@ -85,7 +85,7 @@ class PhotoCaptureInteractiveDismiss: UIPercentDrivenInteractiveTransition {
         case .ended:
             if shouldCompleteTransition {
                 finish()
-                interactiveDismissDelegate?.interactiveDismiss(self, didFinishWithVelocity: nil)
+                interactiveDismissDelegate?.interactiveDismissDidFinish(self)
             } else {
                 cancel()
                 interactiveDismissDelegate?.interactiveDismissDidCancel(self)

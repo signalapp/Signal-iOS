@@ -1302,7 +1302,7 @@ extension PhotoCaptureViewController: InteractiveDismissDelegate {
         touchOffset: CGPoint,
     ) { }
 
-    func interactiveDismiss(_ interactiveDismiss: UIPercentDrivenInteractiveTransition, didFinishWithVelocity: CGVector?) {
+    func interactiveDismissDidFinish(_ interactiveDismiss: UIPercentDrivenInteractiveTransition) {
         dismiss(animated: true)
     }
 

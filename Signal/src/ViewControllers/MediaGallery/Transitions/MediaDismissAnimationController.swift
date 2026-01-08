@@ -12,7 +12,7 @@ class MediaDismissAnimationController: NSObject {
 
     var transitionView: UIView?
     var fromMediaFrame: CGRect?
-    var pendingCompletion: ((CGVector?) -> Void)?
+    var pendingCompletion: (() -> Void)?
 
     init(galleryItem: MediaGalleryItem, interactionController: MediaInteractiveDismiss) {
         self.item = .gallery(galleryItem)
@@ -35,7 +35,7 @@ extension MediaDismissAnimationController: UIViewControllerAnimatedTransitioning
 
         let containerView = transitionContext.containerView
 
-        // Bunch of check to ensure everything is set up for the animated transition.
+        // Bunch of checks to ensure everything is set up for the animated transition.
         // If there's anything wrong the transition would complete without animation.
 
         guard let fromVC = transitionContext.viewController(forKey: .from) else {
@@ -174,7 +174,7 @@ extension MediaDismissAnimationController: UIViewControllerAnimatedTransitioning
 
         let duration = transitionDuration(using: transitionContext)
 
-        let completion: (CGVector?) -> Void = { velocity in
+        let completion = {
             let destinationFrame: CGRect
             let destinationMediaViewShape: MediaViewShape
             if transitionContext.transitionWasCancelled {
@@ -196,7 +196,6 @@ extension MediaDismissAnimationController: UIViewControllerAnimatedTransitioning
                 duration: duration,
                 springDamping: 1,
                 springResponse: 0.25,
-                initialVelocity: velocity ?? .zero,
             )
             animator.addAnimations {
                 if transitionContext.transitionWasCancelled == false {
@@ -269,11 +268,11 @@ extension MediaDismissAnimationController: UIViewControllerAnimatedTransitioning
                     }
 
                     self.pendingCompletion = nil
-                    pendingCompletion(nil)
+                    pendingCompletion()
                 },
             )
         } else {
-            completion(nil)
+            completion()
         }
     }
 }
@@ -299,13 +298,10 @@ extension MediaDismissAnimationController: InteractiveDismissDelegate {
         transitionView.center = fromMediaFrame.offsetBy(dx: offset.x, dy: offset.y).center
     }
 
-    func interactiveDismiss(
-        _ interactiveDismiss: UIPercentDrivenInteractiveTransition,
-        didFinishWithVelocity velocity: CGVector?,
-    ) {
+    func interactiveDismissDidFinish(_ interactiveDismiss: UIPercentDrivenInteractiveTransition) {
         if let pendingCompletion {
             self.pendingCompletion = nil
-            pendingCompletion(velocity)
+            pendingCompletion()
         }
     }
 
