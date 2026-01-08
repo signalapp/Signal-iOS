@@ -947,7 +947,7 @@ public enum MimeTypeUtil {
         "audio/midi": "midi",
         "audio/mod": "mod",
         "audio/mp4": "m4a",
-        "audio/mpeg": "mpg",
+        "audio/mpeg": "mp3",
         "audio/mpeg3": "mp3",
         "audio/ogg": "oga",
         "audio/s3m": "s3m",
