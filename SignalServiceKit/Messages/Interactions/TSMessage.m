@@ -711,6 +711,8 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
     [self removeAllReactionsWithTransaction:transaction];
 
+    [self unpinMessageIfNeededWithTx:transaction];
+
     [self removeAllRenderableContentWithTransaction:transaction
                                  messageUpdateBlock:^(TSMessage *message) { message.wasRemotelyDeleted = YES; }];
 }

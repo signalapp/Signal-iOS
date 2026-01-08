@@ -92,7 +92,8 @@ public class PinnedMessageManager {
                 incomingMessageAuthor: targetAuthorAci == localAci ? nil : targetAuthorAci,
                 transaction: transaction,
             ), let interactionId = targetMessage.grdbId?.int64Value,
-            targetMessage.giftBadge == nil
+            targetMessage.giftBadge == nil,
+            !targetMessage.wasRemotelyDeleted
         else {
             throw OWSAssertionError("Invalid or missing target pinned message")
         }
@@ -111,7 +112,7 @@ public class PinnedMessageManager {
         }
 
         // If this is a retry of an existing pinned message, delete the old entry so the expiry gets updated.
-        deleteRepeatPinAttempt(interactionId: interactionId, transaction: transaction)
+        deletePinForMessage(interactionId: interactionId, transaction: transaction)
 
         pruneOldestPinnedMessagesIfNecessary(
             threadId: threadId,
@@ -181,7 +182,7 @@ public class PinnedMessageManager {
         return targetMessage
     }
 
-    public func deleteRepeatPinAttempt(
+    public func deletePinForMessage(
         interactionId: Int64,
         transaction: DBWriteTransaction,
     ) {
@@ -285,7 +286,7 @@ public class PinnedMessageManager {
         }
 
         // If this is a retry of an existing pinned message, delete the old entry so the expiry gets updated.
-        deleteRepeatPinAttempt(interactionId: interactionId, transaction: tx)
+        deletePinForMessage(interactionId: interactionId, transaction: tx)
 
         pruneOldestPinnedMessagesIfNecessary(
             threadId: threadId,
