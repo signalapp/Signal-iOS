@@ -43,28 +43,34 @@ extension ConversationViewController {
         }
 
         // Pinned Messages
-        var didAddPinnedMessage = false
+        var newPinnedMessageBanner: ConversationBannerView?
         if let banner = createPinnedMessageBannerIfNecessary() {
             banners.append(banner)
-            didAddPinnedMessage = true
+            newPinnedMessageBanner = banner
         }
 
-        let hasPriorPinnedMessages: Bool
+        var oldPinnedMessageBanner: ConversationBannerView?
         if let bannerStackView {
-            hasPriorPinnedMessages = bannerStackView.arrangedSubviews.contains(where: { pinnedMessageBanner(view: $0) != nil })
-        } else {
-            hasPriorPinnedMessages = false
+            oldPinnedMessageBanner = pinnedMessageBanner(stackView: bannerStackView)
         }
 
-        if hasPriorPinnedMessages, !didAddPinnedMessage, let bannerStackView {
-            for banner in bannerStackView.arrangedSubviews {
-                if let pinnedMessageBanner = pinnedMessageBanner(view: banner) {
-                    pinnedMessageBanner.animateBannerFadeOut(completion: { _ in
-                        bannerStackView.removeFromSuperview()
-                        self.bannerStackView = nil
-                    })
-                    return
+        if let oldPinnedMessageBanner, let bannerStackView {
+            if let newPinnedMessageBanner {
+                // We used to have pinned messages, and still have some.
+                // We might need to set the configuration to trigger the animation.
+                if shouldAnimateNewPinnedMessage(oldPinnedMessageBanner: oldPinnedMessageBanner) {
+                    if let newConfig = newPinnedMessageBanner.contentView.configuration as? ConversationBannerView.ContentConfiguration {
+                        oldPinnedMessageBanner.contentView.configuration = newConfig
+                        return
+                    }
                 }
+            } else {
+                // We used to have pinned messages, and now have none. Fade out the PM banner.
+                oldPinnedMessageBanner.animateBannerFadeOut(completion: { _ in
+                    bannerStackView.removeFromSuperview()
+                    self.bannerStackView = nil
+                })
+                return
             }
         }
 
@@ -98,11 +104,9 @@ extension ConversationViewController {
             bannersView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
         ])
 
-        if !hasPriorPinnedMessages, didAddPinnedMessage {
-            for banner in bannersView.arrangedSubviews {
-                if let pinnedMessageBanner = pinnedMessageBanner(view: banner) {
-                    pinnedMessageBanner.animateBannerFadeIn()
-                }
+        if oldPinnedMessageBanner == nil, newPinnedMessageBanner != nil {
+            if let newPinnedMessageBanner = pinnedMessageBanner(stackView: bannersView) {
+                newPinnedMessageBanner.animateBannerFadeIn()
             }
         }
 
@@ -112,15 +116,26 @@ extension ConversationViewController {
         }
     }
 
-    private func pinnedMessageBanner(view: UIView) -> ConversationBannerView? {
+    private func shouldAnimateNewPinnedMessage(oldPinnedMessageBanner: ConversationBannerView) -> Bool {
         guard
-            let banner = view as? ConversationBannerView,
-            let config = banner.contentView.configuration as? ConversationBannerView.ContentConfiguration,
-            config.isPinnedMessagesBanner
+            let oldConfig = oldPinnedMessageBanner.contentView.configuration as? ConversationBannerView.ContentConfiguration
         else {
-            return nil
+            return false
         }
-        return banner
+        return threadViewModel.pinnedMessages.count > 1 && threadViewModel.pinnedMessages.count > oldConfig.totalPinnedMessageCount
+    }
+
+    /// Returns the pinned message banner if it exists. There should only ever be one.
+    private func pinnedMessageBanner(stackView: UIStackView) -> ConversationBannerView? {
+        return stackView.arrangedSubviews.first { view in
+            guard
+                let banner = view as? ConversationBannerView,
+                let config = banner.contentView.configuration as? ConversationBannerView.ContentConfiguration
+            else {
+                return false
+            }
+            return config.totalPinnedMessageCount > 0
+        } as? ConversationBannerView
     }
 }
 
@@ -183,7 +198,9 @@ private class ConversationBannerView: UIView {
         /// Banner will not be tappable if this is nil.
         var bannerTapAction: (() -> Void)?
 
-        let isPinnedMessagesBanner: Bool
+        /// Total count of pinned messages represented by the banner.
+        /// Should be 0 if this is not a pinned messages banner.
+        let totalPinnedMessageCount: Int
 
         func makeContentView() -> any UIView & UIContentView {
             return ConversationBannerContentView(configuration: self)
@@ -329,7 +346,7 @@ private class ConversationBannerView: UIView {
                 addArrangedSubview(leadingAccessoryContainerView)
             }
 
-            if configuration.isPinnedMessagesBanner, let title = configuration.title {
+            if configuration.totalPinnedMessageCount > 0, let title = configuration.title {
                 // If this is a pinned message and its not first load (no previous title), animate the existing banner off screen.
                 if !titleLabel.text.isEmptyOrNil {
                     animatePinnedMessageTransition(
@@ -425,7 +442,7 @@ private class ConversationBannerView: UIView {
                 directionalLayoutMargins.trailing = 4 // 10 total with button's content padding
             }
 
-            if configuration.isPinnedMessagesBanner {
+            if configuration.totalPinnedMessageCount > 0 {
                 let button: UIButton
                 if #available(iOS 26.0, *) {
                     button = UIButton(configuration: .clearGlass())
@@ -787,7 +804,7 @@ private extension ConversationViewController {
                 self.ensureBannerState()
             },
             leadingAccessoryView: DoubleProfileImageView(primaryImage: avatar1, secondaryImage: avatar2),
-            isPinnedMessagesBanner: false,
+            totalPinnedMessageCount: 0,
         )
 
         return ConversationBannerView(configuration: bannerConfiguration)
@@ -881,7 +898,7 @@ private extension ConversationViewController {
                 )
             },
             leadingAccessoryView: DoubleProfileImageView(primaryImage: avatar1, secondaryImage: avatar2),
-            isPinnedMessagesBanner: false,
+            totalPinnedMessageCount: 0,
         )
 
         return ConversationBannerView(configuration: bannerConfiguration)
@@ -1051,7 +1068,7 @@ private extension ConversationViewController {
                 imageView.setCompressionResistanceHigh()
                 return imageView
             }(),
-            isPinnedMessagesBanner: false,
+            totalPinnedMessageCount: 0,
         )
         return ConversationBannerView(configuration: bannerConfiguration)
     }
@@ -1120,7 +1137,7 @@ private extension ConversationViewController {
                 imageView.setCompressionResistanceHigh()
                 return imageView
             }(),
-            isPinnedMessagesBanner: false,
+            totalPinnedMessageCount: 0,
         )
 
         return ConversationBannerView(configuration: bannerConfiguration)
@@ -1203,7 +1220,7 @@ extension ConversationViewController {
                     self?.handleTappedPinnedMessage()
                 }
             },
-            isPinnedMessagesBanner: true,
+            totalPinnedMessageCount: threadViewModel.pinnedMessages.count,
         )
 
         let banner = ConversationBannerView(configuration: bannerConfiguration)
