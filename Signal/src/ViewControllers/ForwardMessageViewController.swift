@@ -36,7 +36,7 @@ class ForwardMessageViewController: OWSNavigationController {
             ),
         )
 
-        if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
+        if #available(iOS 26, *) {
             self.pickerVC.backgroundStyle = .none
         }
 

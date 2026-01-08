@@ -13,15 +13,11 @@ extension DonateViewController {
             result.backgroundColor = DonationViewsUtil.bubbleBackgroundColor
             result.layer.borderWidth = DonationViewsUtil.bubbleBorderWidth
             result.layer.borderColor = result.backgroundColor?.cgColor
-#if compiler(>=6.2)
             if #available(iOS 26, *) {
                 result.cornerConfiguration = .uniformCorners(radius: 26)
             } else {
                 result.layer.cornerRadius = DonateViewController.cornerRadius
             }
-#else
-            result.layer.cornerRadius = DonateViewController.cornerRadius
-#endif
             return result
         }()
 

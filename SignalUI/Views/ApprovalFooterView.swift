@@ -195,8 +195,7 @@ public class ApprovalFooterView: UIView {
                 contentView = view
             }()
 
-#if compiler(>=6.2)
-        if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
+        if #available(iOS 26, *) {
             let glassEffect = UIGlassEffect(style: .regular)
             glassEffect.isInteractive = true
             let glassEffectView = UIVisualEffectView(effect: glassEffect)
@@ -206,7 +205,6 @@ public class ApprovalFooterView: UIView {
             containerView = glassEffectView
             contentView = glassEffectView.contentView
         }
-#endif
 
         // I am at a loss as to why the text field always shrinks to 0
         // height, but this makes sure there's vertical space for it.

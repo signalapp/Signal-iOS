@@ -381,10 +381,8 @@ struct NewPollView: View {
                     }
                     .accessibilityLabel(MessageStrings.sendButton)
                     .tint(Color.Signal.ultramarine)
-#if compiler(>=6.2)
-                        .buttonStyle(.glassProminent)
-#endif
-                        .opacity(sendButtonEnabled ? 1 : 0.5)
+                    .buttonStyle(.glassProminent)
+                    .opacity(sendButtonEnabled ? 1 : 0.5)
                 } else {
                     Button(MessageStrings.sendButton, action: {
                         sendButtonPressed(sendButtonEnabled: sendButtonEnabled)

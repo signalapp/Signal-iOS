@@ -71,7 +71,7 @@ class MentionPicker: UIView {
 
         case .default:
             useVisualEffectViewBackground = true
-            if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
+            if #available(iOS 26, *) {
                 useGlassBackground = true
             } else {
                 useGlassBackground = false
@@ -79,7 +79,6 @@ class MentionPicker: UIView {
         }
 
         if useVisualEffectViewBackground {
-#if compiler(>=6.2)
             // Glass background, rounded corners, horizontal insets.
             if #available(iOS 26, *), useGlassBackground {
                 let glassEffectView = UIVisualEffectView(effect: backgroundViewVisualEffect())
@@ -94,7 +93,6 @@ class MentionPicker: UIView {
 
                 directionalLayoutMargins = .init(hMargin: OWSTableViewController2.cellHInnerMargin, vMargin: 0)
             }
-#endif
 
             // Blur background.
             if backgroundView == nil {
@@ -181,7 +179,6 @@ class MentionPicker: UIView {
     private var backgroundView: UIVisualEffectView?
 
     private func backgroundViewVisualEffect() -> UIVisualEffect? {
-#if compiler(>=6.2)
         if #available(iOS 26.1, *) {
             let glassEffect = UIGlassEffect(style: .regular)
             // Copy from ConversationInputToolbar.
@@ -198,7 +195,6 @@ class MentionPicker: UIView {
         if #available(iOS 26, *) {
             return UIBlurEffect(style: .systemThinMaterial)
         }
-#endif
 
         guard !UIAccessibility.isReduceTransparencyEnabled else { return nil }
 
@@ -300,7 +296,7 @@ class MentionPicker: UIView {
 
     // Make sure to match parementers in ConversationInputToolbar.StickerLayout.
     private static var animationTransform: CGAffineTransform {
-        guard #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable else { return .identity }
+        guard #available(iOS 26, *) else { return .identity }
         return .scale(0.9)
     }
 
@@ -582,7 +578,7 @@ private class MentionableUserCell: UITableViewCell {
         var configuration = UIBackgroundConfiguration.clear()
         if state.isSelected || state.isHighlighted {
             configuration.backgroundColor = .Signal.primaryFill
-            if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
+            if #available(iOS 26, *) {
                 configuration.backgroundInsets = .init(hMargin: 0.5 * Self.hMargin, vMargin: 0)
                 configuration.cornerRadius = 50
             }

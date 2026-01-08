@@ -439,7 +439,6 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
     }()
 
     private lazy var leadingEdgeControl: UIView = {
-#if compiler(>=6.2)
         guard #unavailable(iOS 26.0) else {
             return Buttons.addAttachmentButton(
                 primaryAction: UIAction { [weak self] _ in
@@ -448,7 +447,6 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
                 accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "attachmentButton"),
             )
         }
-#endif
 
         let button = AttachmentButtonLegacy()
         button.accessibilityLabel = OWSLocalizedString(
@@ -497,7 +495,6 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
     }()
 
     private lazy var trailingEdgeControl: UIView = {
-#if compiler(>=6.2)
         if #available(iOS 26, *) {
             let button = Buttons.sendButton(
                 primaryAction: UIAction { [weak self] _ in
@@ -508,7 +505,6 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
             button.tintColor = conversationStyle.bubbleChatColorOutgoing.asSendButtonTintColor()
             return button
         }
-#endif
 
         let view = RightEdgeControlsView(
             sendButtonAction: UIAction { [weak self] _ in
@@ -2494,7 +2490,6 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
     }()
 
     private lazy var voiceMemoDeleteButton: UIButton = {
-#if compiler(>=6.2)
         guard #unavailable(iOS 26.0) else {
             return Buttons.deleteVoiceMemoDraftButton(
                 primaryAction: UIAction { [weak self] _ in
@@ -2503,7 +2498,6 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
                 accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "stickerButton"),
             )
         }
-#endif
 
         let button = UIButton(
             configuration: .plain(),

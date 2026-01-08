@@ -12,27 +12,19 @@ extension Registration {
     enum UI {
 
         private static func primaryButtonStyle() -> some PrimitiveButtonStyle {
-#if compiler(>=6.2)
             if #available(iOS 26, *) {
                 return GlassProminentButtonStyle.glassProminent
             } else {
                 return BorderedProminentButtonStyle.borderedProminent
             }
-#else
-            return BorderedProminentButtonStyle.borderedProminent
-#endif
         }
 
         private static func secondaryButtonStyle() -> some PrimitiveButtonStyle {
-#if compiler(>=6.2)
             if #available(iOS 26, *) {
                 return GlassProminentButtonStyle.glassProminent
             } else {
                 return PlainButtonStyle.plain
             }
-#else
-            return PlainButtonStyle.plain
-#endif
         }
 
         private static var largeButtonContentPadding: EdgeInsets {

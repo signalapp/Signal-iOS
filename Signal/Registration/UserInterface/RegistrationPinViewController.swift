@@ -254,16 +254,11 @@ class RegistrationPinViewController: OWSViewController {
         result.defaultTextAttributes.updateValue(5, forKey: .kern)
         result.accessibilityIdentifier = "registration.pin.pinTextField"
         result.delegate = self
-#if compiler(>=6.2)
         if #available(iOS 26, *) {
             result.cornerConfiguration = .capsule()
         } else {
             result.layer.cornerRadius = 10
         }
-#else
-        result.layer.cornerRadius = 10
-#endif
-
         return result
     }()
 

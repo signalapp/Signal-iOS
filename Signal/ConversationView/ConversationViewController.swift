@@ -270,7 +270,6 @@ public final class ConversationViewController: OWSViewController {
 
         selectionToolbar = self.buildSelectionToolbar()
 
-#if compiler(>=6.2)
         // Obscures content underneath bottom bar to improve legibility.
         if #available(iOS 26, *) {
             let scrollInteraction = UIScrollEdgeElementContainerInteraction()
@@ -281,7 +280,6 @@ public final class ConversationViewController: OWSViewController {
             }
             searchController.resultsBar.addInteraction(scrollInteraction)
         }
-#endif
 
         // This should kick off the first load.
         owsAssertDebug(!self.hasRenderState)

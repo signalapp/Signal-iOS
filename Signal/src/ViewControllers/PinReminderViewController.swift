@@ -22,7 +22,6 @@ public class PinReminderViewController: OWSViewController {
     private lazy var backgroundView: UIView = {
         let view = UIView()
         view.backgroundColor = .Signal.groupedBackground
-#if compiler(>=6.2)
         if #available(iOS 26, *) {
             view.cornerConfiguration = .corners(
                 topLeftRadius: .containerConcentric(minimum: 40),
@@ -31,7 +30,6 @@ public class PinReminderViewController: OWSViewController {
                 bottomRightRadius: .none,
             )
         }
-#endif
         return view
     }()
 
@@ -48,15 +46,11 @@ public class PinReminderViewController: OWSViewController {
         textField.defaultTextAttributes.updateValue(5, forKey: .kern)
         textField.accessibilityIdentifier = "pinReminder.pinTextField"
         textField.delegate = self
-#if compiler(>=6.2)
         if #available(iOS 26, *) {
             textField.cornerConfiguration = .capsule()
         } else {
             textField.layer.cornerRadius = 10
         }
-#else
-        textField.layer.cornerRadius = 10
-#endif
         let currentPinType = context.db.read { tx in
             context.svr.currentPinType(transaction: tx)
         }
@@ -252,16 +246,12 @@ public class PinReminderViewController: OWSViewController {
                 return .ows_gray15
             }
         })
-#if compiler(>=6.2)
         if #available(iOS 26.0, *) {
             buttonConfiguration = .prominentClearGlass()
             buttonImageColor = .Signal.label
         } else {
             buttonConfiguration = .plain()
         }
-#else
-        buttonConfiguration = .plain()
-#endif
         let dismissButton = UIButton(
             configuration: buttonConfiguration,
             primaryAction: UIAction { [weak self] _ in

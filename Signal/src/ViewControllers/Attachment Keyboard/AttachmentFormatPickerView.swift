@@ -251,12 +251,8 @@ class AttachmentFormatPickerView: UIView {
 
         let button: UIButton = {
             let button: UIButton
-            if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
-#if compiler(>=6.2)
+            if #available(iOS 26, *) {
                 button = UIButton(configuration: .glass())
-#else
-                button = UIButton(configuration: .plain())
-#endif
             } else {
                 button = ShrinkingOnTapButton(configuration: .gray())
                 button.configuration?.background.backgroundColorTransformer = UIConfigurationColorTransformer { [weak button] _ in
@@ -289,7 +285,7 @@ class AttachmentFormatPickerView: UIView {
         private let textLabel: UILabel = {
             let label = UILabel()
             label.font = .dynamicTypeFootnoteClamped.medium()
-            if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
+            if #available(iOS 26, *) {
                 label.textColor = .Signal.label
             } else {
                 label.textColor = .Signal.secondaryLabel

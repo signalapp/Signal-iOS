@@ -308,16 +308,12 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
             if let visualEffectContentView {
                 return visualEffectContentView
             }
-#if compiler(>=6.2)
             let visualEffectContentView: VisualEffectContentView
             if #available(iOS 26.0, *) {
                 visualEffectContentView = ContentViewWithGlassEffect()
             } else {
                 visualEffectContentView = ContentViewWithBlurEffect()
             }
-#else
-            let visualEffectContentView = ContentViewWithBlurEffect()
-#endif
             self.visualEffectContentView = visualEffectContentView
             return visualEffectContentView
         }
@@ -408,7 +404,6 @@ private class ContentViewWithBlurEffect: VisualEffectContentView {
 
 // MARK: -
 
-#if compiler(>=6.2)
 @available(iOS 26.0, *)
 private class ContentViewWithGlassEffect: VisualEffectContentView {
     private let titleLabel = CVLabel()
@@ -445,7 +440,6 @@ private class ContentViewWithGlassEffect: VisualEffectContentView {
         titleLabel.text = nil
     }
 }
-#endif
 
 // MARK: -
 
@@ -461,12 +455,10 @@ private class ContentViewNoVisualEffect {
             return wallpaperBlurView
         }
         let wallpaperBlurView = CVWallpaperBlurView()
-#if compiler(>=6.2)
         if #available(iOS 26.0, *) {
             // Will override `cornerRadius` set in `configure...`.
             wallpaperBlurView.cornerConfiguration = .capsule()
         }
-#endif
         self.wallpaperBlurView = wallpaperBlurView
         return wallpaperBlurView
     }

@@ -21,18 +21,13 @@ public struct ScrollableContentPinnedFooterView<
     }
 
     public var body: some View {
-#if compiler(>=6.2)
         if #available(iOS 26, *) {
             iOS26Body
         } else {
             iOS18Body
         }
-#else
-        iOS18Body
-#endif
     }
 
-#if compiler(>=6.2)
     @available(iOS 26, *)
     private var iOS26Body: some View {
         ScrollView {
@@ -47,7 +42,6 @@ public struct ScrollableContentPinnedFooterView<
         }
         .scrollBounceBehavior(.basedOnSize)
     }
-#endif
 
     private var iOS18Body: some View {
         VStack(spacing: 0) {

@@ -187,7 +187,7 @@ private class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScr
         }
 
         var maxWidth: CGFloat = 250
-        let margin: CGFloat = if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
+        let margin: CGFloat = if #available(iOS 26, *) {
             24
         } else {
             16
@@ -195,7 +195,7 @@ private class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScr
 
         let iconSpacing: CGFloat = 12
         let verticalPadding: CGFloat = 23
-        let iconSize: CGFloat = if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
+        let iconSize: CGFloat = if #available(iOS 26, *) {
             24
         } else {
             20
@@ -299,7 +299,7 @@ private class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScr
             }
             titleFrame.width = titleWidth
 
-            let iconIsToTheRightOfText = if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
+            let iconIsToTheRightOfText = if #available(iOS 26, *) {
                 isRTL
             } else {
                 !isRTL
@@ -352,13 +352,13 @@ private class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScr
         }
     }
 
-    let cornerRadius: CGFloat = if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
+    let cornerRadius: CGFloat = if #available(iOS 26, *) {
         33
     } else {
         12
     }
 
-    let vMargin: CGFloat = if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
+    let vMargin: CGFloat = if #available(iOS 26, *) {
         10
     } else {
         0
@@ -409,8 +409,7 @@ private class ContextMenuActionsView: UIView, UIGestureRecognizerDelegate, UIScr
         addGestureRecognizer(highlightHoverGestureRecognizer)
         self.highlightHoverGestureRecognizer = highlightHoverGestureRecognizer
 
-        if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
-        } else {
+        if #unavailable(iOS 26) {
             layer.cornerRadius = cornerRadius
             layer.shadowRadius = 64
             layer.shadowOffset = CGSize(width: 0, height: 32)

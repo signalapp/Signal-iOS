@@ -28,15 +28,11 @@ class RegistrationPhoneNumberInputView: UIView {
 
         // Background
         let backgroundView = UIView()
-#if compiler(>=6.2)
         if #available(iOS 26, *) {
             backgroundView.cornerConfiguration = .capsule()
         } else {
             backgroundView.layer.cornerRadius = 10
         }
-#else
-        backgroundView.layer.cornerRadius = 10
-#endif
         backgroundView.backgroundColor = .Signal.secondaryBackground
         addSubview(backgroundView)
         backgroundView.translatesAutoresizingMaskIntoConstraints = false

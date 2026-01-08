@@ -60,7 +60,7 @@ class JoinGroupCallPill: UIControl {
         contentStack.isLayoutMarginsRelativeArrangement = true
         contentStack.layoutMargins = .init(hMargin: 12, vMargin: 4)
 
-        if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
+        if #available(iOS 26, *) {
             addSubview(contentStack)
             contentStack.autoPinEdgesToSuperviewEdges()
         } else {
@@ -99,8 +99,7 @@ class JoinGroupCallPill: UIControl {
         callLabel.textColor = isEnabled ? enabledColor : .ows_whiteAlpha40
         callImageView.tintColor = isEnabled ? enabledColor : .ows_whiteAlpha40
 
-        if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
-        } else {
+        if #unavailable(iOS 26) {
             // When we're highlighted, we should unhide the dimming view to darken the pill
             dimmingView.isHidden = !isHighlighted
         }

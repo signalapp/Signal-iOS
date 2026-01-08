@@ -116,7 +116,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
         updateBarButtonItems()
         OWSTableViewController2.removeBackButtonText(viewController: self)
 
-        if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
+        if #available(iOS 26, *) {
             toolbarDeleteButton.image = UIImage(resource: .trash)
             self.toolbarItems = [.flexibleSpace(), toolbarDeleteButton]
         }
@@ -239,7 +239,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     )
 
     private func showToolbar() {
-        if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
+        if #available(iOS 26, *) {
             navigationController?.setToolbarHidden(false, animated: true)
             (tabBarController as? HomeTabBarController)?.setTabBarHidden(true)
             return
@@ -357,7 +357,7 @@ class CallsListViewController: OWSViewController, HomeTabViewController, CallSer
     }
 
     private func hideToolbar() {
-        if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
+        if #available(iOS 26, *) {
             self.navigationController?.setToolbarHidden(true, animated: true)
             (self.tabBarController as? HomeTabBarController)?.setTabBarHidden(false)
             return
@@ -2336,10 +2336,8 @@ private extension CallsListViewController {
 
         private func makeJoinButton(viewModel: CallViewModel) -> UIButton {
             var config = UIButton.Configuration.borderedProminent()
-            if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
-#if compiler(>=6.2)
+            if #available(iOS 26, *) {
                 config = UIButton.Configuration.prominentGlass()
-#endif
             } else {
                 config.cornerStyle = .capsule
             }

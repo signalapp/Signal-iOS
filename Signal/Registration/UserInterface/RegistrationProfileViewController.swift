@@ -116,11 +116,9 @@ class RegistrationProfileViewController: OWSViewController {
         let buttonSize: CGFloat = 28
 
         var buttonConfiguration: UIButton.Configuration?
-#if compiler(>=6.2)
         if #available(iOS 26, *) {
             buttonConfiguration = .prominentClearGlass()
         }
-#endif
         if buttonConfiguration == nil {
             buttonConfiguration = .filled()
             buttonConfiguration?.baseBackgroundColor = .Signal.background
@@ -229,14 +227,7 @@ class RegistrationProfileViewController: OWSViewController {
             // Stack view has a background so horizontal margins are necessary.
             stackView.directionalLayoutMargins = .init(top: 0, leading: 16, bottom: 0, trailing: 8)
             stackView.isLayoutMarginsRelativeArrangement = true
-
-#if compiler(>=6.2)
             stackView.cornerConfiguration = .uniformCorners(radius: 26)
-#else
-            stackView.layer.cornerRadius = 26
-            stackView.layer.masksToBounds = true
-#endif
-
         } else {
             firstTextField.addBottomStroke(color: .Signal.opaqueSeparator, strokeWidth: .hairlineWidth)
             secondTextField.addBottomStroke(color: .Signal.opaqueSeparator, strokeWidth: .hairlineWidth)

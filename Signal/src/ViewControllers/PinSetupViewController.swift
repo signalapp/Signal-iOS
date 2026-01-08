@@ -84,15 +84,11 @@ public class PinSetupViewController: OWSViewController, OWSNavigationChildContro
         textField.isSecureTextEntry = true
         textField.defaultTextAttributes.updateValue(5, forKey: .kern)
         textField.accessibilityIdentifier = "pinCreation.pinTextField"
-#if compiler(>=6.2)
         if #available(iOS 26, *) {
             textField.cornerConfiguration = .capsule()
         } else {
             textField.layer.cornerRadius = 10
         }
-#else
-        textField.layer.cornerRadius = 10
-#endif
         textField.delegate = self
         return textField
     }()

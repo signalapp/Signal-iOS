@@ -98,7 +98,7 @@ class EmojiPickerSectionToolbar: UIView, UICollectionViewDelegate {
             }
             backgroundView.isHidden = !configuration.displayBackgroundView
             imageView.image = Theme.iconImage(configuration.emojiSectionIcon)
-            if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
+            if #available(iOS 26, *) {
                 imageView.tintColor = UIColor.Signal.label
             } else {
                 imageView.tintColor = UIColor.Signal.secondaryLabel
@@ -141,7 +141,6 @@ class EmojiPickerSectionToolbar: UIView, UICollectionViewDelegate {
 
         // Prepare background.
         var backgroundConfigured = false
-#if compiler(>=6.2)
         if #available(iOS 26, *) {
             // Floating glass panel that encapsulates emoji category strip.
             // Insets are carefully configured for best on-screen appearance.
@@ -166,7 +165,6 @@ class EmojiPickerSectionToolbar: UIView, UICollectionViewDelegate {
             ])
             backgroundConfigured = true
         }
-#endif
         if !backgroundConfigured {
             // Background stretches 500 dp below bottom edge of the screen so that there's no gap where bottom safe area is.
             if UIAccessibility.isReduceTransparencyEnabled {

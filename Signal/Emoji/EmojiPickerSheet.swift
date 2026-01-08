@@ -62,7 +62,7 @@ class EmojiPickerSheet: OWSViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
+        if #available(iOS 26, *) {
             view.backgroundColor = nil
         } else {
             view.backgroundColor = .tertiarySystemBackground
@@ -106,7 +106,6 @@ class EmojiPickerSheet: OWSViewController {
             sectionToolbar.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor, constant: -8),
         ])
 
-#if compiler(>=6.2)
         // Obscures content underneath the emoji section toolbar to improve legibility.
         if #available(iOS 26, *) {
             let scrollInteraction = UIScrollEdgeElementContainerInteraction()
@@ -114,7 +113,6 @@ class EmojiPickerSheet: OWSViewController {
             scrollInteraction.edge = .bottom
             sectionToolbar.addInteraction(scrollInteraction)
         }
-#endif
     }
 
     override func viewDidLayoutSubviews() {

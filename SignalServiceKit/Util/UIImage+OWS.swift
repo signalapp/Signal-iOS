@@ -90,17 +90,13 @@ extension UIImage {
         return newImage
     }
 
-#if compiler(>=6.2)
     @concurrent
-#endif
     public func withGaussianBlurAsync(radius: CGFloat, resizeToMaxPixelDimension: CGFloat) async throws -> UIImage {
         AssertNotOnMainThread()
         return UIImage(cgImage: try _cgImageWithGaussianBlur(radius: radius, resizeToMaxPixelDimension: resizeToMaxPixelDimension))
     }
 
-#if compiler(>=6.2)
     @concurrent
-#endif
     public func cgImageWithGaussianBlurAsync(radius: CGFloat, resizeToMaxPixelDimension: CGFloat) async throws -> CGImage {
         AssertNotOnMainThread()
         return try self._cgImageWithGaussianBlur(radius: radius, resizeToMaxPixelDimension: resizeToMaxPixelDimension)

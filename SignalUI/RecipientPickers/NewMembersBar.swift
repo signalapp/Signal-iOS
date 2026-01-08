@@ -178,12 +178,10 @@ private class NewMemberCell: UICollectionViewCell {
         self.layoutMargins = .zero
         contentView.layoutMargins = .zero
 
-        if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
-#if compiler(>=6.2)
+        if #available(iOS 26, *) {
             let glassView = UIVisualEffectView(effect: UIGlassEffect(style: .regular))
             glassView.cornerConfiguration = .capsule()
             backgroundView = glassView
-#endif
         } else {
             contentView.backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray65 : .ows_gray15
         }

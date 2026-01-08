@@ -19,7 +19,6 @@ public class PinConfirmationViewController: OWSViewController {
     private lazy var backgroundView: UIView = {
         let view = UIView()
         view.backgroundColor = .Signal.groupedBackground
-#if compiler(>=6.2)
         if #available(iOS 26, *) {
             view.cornerConfiguration = .corners(
                 topLeftRadius: .containerConcentric(minimum: 40),
@@ -28,7 +27,6 @@ public class PinConfirmationViewController: OWSViewController {
                 bottomRightRadius: .none,
             )
         }
-#endif
         return view
     }()
 
@@ -45,15 +43,11 @@ public class PinConfirmationViewController: OWSViewController {
         textField.defaultTextAttributes.updateValue(5, forKey: .kern)
         textField.accessibilityIdentifier = "pinConfirmation.pinTextField"
         textField.delegate = self
-#if compiler(>=6.2)
         if #available(iOS 26, *) {
             textField.cornerConfiguration = .capsule()
         } else {
             textField.layer.cornerRadius = 10
         }
-#else
-        textField.layer.cornerRadius = 10
-#endif
         let currentPinType = context.db.read { tx in
             context.svr.currentPinType(transaction: tx)
         }

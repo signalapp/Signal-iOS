@@ -1096,15 +1096,11 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
         )
 
         field.layer.borderWidth = DonationViewsUtil.bubbleBorderWidth
-#if compiler(>=6.2)
         if #available(iOS 26, *) {
             field.cornerConfiguration = .capsule()
         } else {
             field.layer.cornerRadius = Self.cornerRadius
         }
-#else
-        field.layer.cornerRadius = Self.cornerRadius
-#endif
 
         let tap = UITapGestureRecognizer(
             target: self,
@@ -1183,15 +1179,11 @@ class DonateViewController: OWSViewController, OWSNavigationChildController {
                 button.enableMultilineLabel()
                 button.clipsToBounds = true
                 button.layer.borderWidth = DonationViewsUtil.bubbleBorderWidth
-#if compiler(>=6.2)
                 if #available(iOS 26, *) {
                     button.cornerConfiguration = .capsule()
                 } else {
                     button.layer.cornerRadius = Self.cornerRadius
                 }
-#else
-                button.layer.cornerRadius = Self.cornerRadius
-#endif
 
                 row.addArrangedSubview(button)
 

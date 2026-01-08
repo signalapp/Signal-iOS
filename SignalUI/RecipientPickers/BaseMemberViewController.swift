@@ -110,10 +110,6 @@ open class BaseMemberViewController: RecipientPickerContainerViewController {
 
         recipientPicker.view.translatesAutoresizingMaskIntoConstraints = false
         topStackView.autoPinEdges(toSuperviewSafeAreaExcludingEdge: .bottom)
-        // Remove this property and just `else` directly once all builds are on Xcode 26
-        var isLayedOut = false
-
-#if compiler(>=6.2)
         if #available(iOS 26, *) {
             // topStackView overlaps the table with an edge effect
             let interaction = UIScrollEdgeElementContainerInteraction()
@@ -127,12 +123,7 @@ open class BaseMemberViewController: RecipientPickerContainerViewController {
                 recipientPicker.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
                 recipientPicker.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             ])
-
-            isLayedOut = true
-        }
-#endif
-
-        if !isLayedOut {
+        } else {
             // topStackView is above the table
             NSLayoutConstraint.activate([
                 recipientPicker.view.topAnchor.constraint(equalTo: topStackView.bottomAnchor),
@@ -140,8 +131,6 @@ open class BaseMemberViewController: RecipientPickerContainerViewController {
                 recipientPicker.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
                 recipientPicker.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             ])
-
-            isLayedOut = true
         }
 
         updateMemberCount()
@@ -496,7 +485,7 @@ extension BaseMemberViewController {
 
 extension BaseMemberViewController: NewMembersBarDelegate {
     public func newMembersBarHeightDidChange(to height: CGFloat) {
-        guard #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable else { return }
+        guard #available(iOS 26, *) else { return }
         let tableView = recipientPicker.tableView
         UIView.animate(withDuration: 0.3) {
             let change = tableView.contentInset.top - height

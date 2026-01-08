@@ -74,7 +74,7 @@ open class InteractiveSheetViewController: OWSViewController {
     /// but still be sure to set it for devices running iOS 18 and older.
     open var placeOnGlassIfAvailable: Bool { false }
     private var isOnGlass: Bool {
-        if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
+        if #available(iOS 26, *) {
             placeOnGlassIfAvailable
         } else {
             false
@@ -213,7 +213,6 @@ open class InteractiveSheetViewController: OWSViewController {
         setupInteractiveSizing()
 
         if #available(iOS 26.0, *), isOnGlass {
-#if compiler(>=6.2)
             sheetContainerView.backgroundColor = .clear
             let glassBackground = UIVisualEffectView(effect: UIGlassEffect(style: .regular))
             sheetContainerView.insertSubview(glassBackground, at: 0)
@@ -227,7 +226,6 @@ open class InteractiveSheetViewController: OWSViewController {
                 topRadius: .fixed(topRadius),
                 bottomRadius: .containerConcentric(minimum: 20),
             )
-#endif
         } else {
             sheetContainerView.backgroundColor = sheetBackgroundColor
         }

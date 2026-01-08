@@ -53,14 +53,6 @@ public enum BuildFlags {
     public static let runTSAttachmentMigrationInMainAppBackground = true
     public static let runTSAttachmentMigrationBlockingOnLaunch = true
 
-/// We are still making Xcode 16 builds as of writing this, and some iOS 26
-/// changes must only be applied if the SDK is also iOS 26.
-#if compiler(>=6.2)
-    public static let iOS26SDKIsAvailable = true
-#else
-    public static let iOS26SDKIsAvailable = false
-#endif
-
     public static let pollSend = true
     public static let pollReceive = true
 

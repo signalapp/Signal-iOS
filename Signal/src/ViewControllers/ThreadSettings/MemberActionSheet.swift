@@ -50,7 +50,7 @@ struct ProfileSheetSheetCoordinator {
 
 class MemberActionSheet: OWSTableSheetViewController {
     override var sheetBackgroundColor: UIColor {
-        if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
+        if #available(iOS 26, *) {
             .clear
         } else {
             super.sheetBackgroundColor

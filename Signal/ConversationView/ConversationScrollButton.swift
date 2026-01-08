@@ -23,14 +23,12 @@ public class ConversationScrollButton: UIButton {
         super.init(frame: .zero)
 
         var configuration: UIButton.Configuration?
-#if compiler(>=6.2)
         if #available(iOS 26, *) {
             configuration = .glass()
             configuration?.imageColorTransformer = UIConfigurationColorTransformer { _ in
                 return .Signal.label
             }
         }
-#endif
         if configuration == nil {
             configuration = .gray()
             configuration?.imageColorTransformer = UIConfigurationColorTransformer { _ in

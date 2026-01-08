@@ -396,11 +396,9 @@ private class QuotedMessageSnippetView: UIView {
         let stripeView = UIView()
         stripeView.backgroundColor = .Signal.quaternaryLabel
         horizonalStack.addArrangedSubview(stripeView)
-#if compiler(>=6.2)
         if #available(iOS 26, *) {
             stripeView.cornerConfiguration = .capsule()
         }
-#endif
 
         let textStack = UIStackView(arrangedSubviews: [quotedAuthorLabel, quotedTextLabel])
         textStack.axis = .vertical

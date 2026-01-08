@@ -29,12 +29,10 @@ class ApplePayButton: UIButton {
 
         addSubview(applePayButton)
 
-#if compiler(>=6.2)
         if #available(iOS 26.0, *) {
             tintColor = .Signal.label
             configuration = .prominentGlass()
         }
-#endif
     }
 
     required init?(coder: NSCoder) {

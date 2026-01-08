@@ -86,7 +86,6 @@ extension ConversationViewController: UIGestureRecognizerDelegate {
     }
 
     public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-#if compiler(>=6.2)
         if
             #available(iOS 26, *),
             otherGestureRecognizer == navigationController?.interactiveContentPopGestureRecognizer,
@@ -96,7 +95,6 @@ extension ConversationViewController: UIGestureRecognizerDelegate {
             // Allow content pop gesture if there is no pan handler
             return true
         }
-#endif
 
         // Support standard long press recognizing for body text cases, and context menu long press recognizing for everything else
         let currentIsLongPressOrTap = (gestureRecognizer == collectionViewLongPressGestureRecognizer || gestureRecognizer == collectionViewContextMenuGestureRecognizer || gestureRecognizer == collectionViewTapGestureRecognizer)

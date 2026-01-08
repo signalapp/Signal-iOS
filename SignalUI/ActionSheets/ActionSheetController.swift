@@ -186,10 +186,7 @@ open class ActionSheetController: OWSViewController {
         scrollView.clipsToBounds = false
         scrollView.showsVerticalScrollIndicator = false
 
-        let insetFromScreenEdge: CGFloat = if
-            #available(iOS 26, *),
-            BuildFlags.iOS26SDKIsAvailable
-        {
+        let insetFromScreenEdge: CGFloat = if #available(iOS 26, *) {
             8
         } else {
             0
@@ -246,7 +243,7 @@ open class ActionSheetController: OWSViewController {
         // We can't mask the content view because the backdrop intentionally extends outside of the content
         // view's bounds. But its two subviews are pinned at same top edge. We can just apply corner
         // radii to each layer individually to get a similar effect.
-        if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
+        if #available(iOS 26, *) {
             // Background container sets corner radius itself
         } else {
             let cornerRadius: CGFloat = 24
@@ -263,8 +260,7 @@ open class ActionSheetController: OWSViewController {
     }
 
     private func createBackgroundView() -> UIView {
-#if compiler(>=6.2)
-        if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
+        if #available(iOS 26, *) {
             let glassEffect = UIGlassEffect(style: .regular)
             glassEffect.tintColor = UIColor.Signal.background.withAlphaComponent(2 / 3)
             let background = UIVisualEffectView(effect: glassEffect)
@@ -272,25 +268,19 @@ open class ActionSheetController: OWSViewController {
         } else {
             return UIVisualEffectView(effect: UIBlurEffect(style: .prominent))
         }
-#else
-        return UIVisualEffectView(effect: UIBlurEffect(style: .prominent))
-#endif
     }
 
     private func updateWidthConstraints() {
         if view.width > maxPreferredWidth + maxWidthWiggleRoom {
             pinWidthConstraints?.forEach { $0.isActive = false }
             widthLimitConstraint?.isActive = true
-#if compiler(>=6.2)
-            if #available(iOS 26.0, *), BuildFlags.iOS26SDKIsAvailable {
+            if #available(iOS 26.0, *) {
                 backgroundView?.cornerConfiguration = .corners(radius: .fixed(24))
             }
-#endif
         } else {
             widthLimitConstraint?.isActive = false
             pinWidthConstraints?.forEach { $0.isActive = true }
-#if compiler(>=6.2)
-            if #available(iOS 26.0, *), BuildFlags.iOS26SDKIsAvailable {
+            if #available(iOS 26.0, *) {
                 let topRadius: CGFloat = if UIDevice.current.hasIPhoneXNotch {
                     40
                 } else {
@@ -301,7 +291,6 @@ open class ActionSheetController: OWSViewController {
                     bottomRadius: .containerConcentric(minimum: 20),
                 )
             }
-#endif
         }
     }
 

@@ -161,15 +161,11 @@ public extension UIButton.Configuration {
 
     private static func basePrimary() -> Self {
         var configuration: UIButton.Configuration
-#if compiler(>=6.2)
         if #available(iOS 26, *) {
             configuration = .prominentGlass()
         } else {
             configuration = .borderedProminent()
         }
-#else
-        configuration = .borderedProminent()
-#endif
         configuration.titleAlignment = .center
         configuration.titleTextAttributesTransformer = .defaultFont(.dynamicTypeHeadlineClamped)
         configuration.baseBackgroundColor = .Signal.accent
@@ -179,7 +175,6 @@ public extension UIButton.Configuration {
 
     private static func baseSecondary() -> Self {
         var configuration: UIButton.Configuration
-#if compiler(>=6.2)
         if #available(iOS 26, *) {
             configuration = .prominentGlass()
             configuration.baseForegroundColor = .Signal.label
@@ -187,10 +182,6 @@ public extension UIButton.Configuration {
             configuration = .plain()
             configuration.baseForegroundColor = .Signal.accent
         }
-#else
-        configuration = .plain()
-        configuration.baseForegroundColor = .Signal.accent
-#endif
         configuration.titleAlignment = .center
         configuration.titleTextAttributesTransformer = .defaultFont(.dynamicTypeHeadlineClamped)
         configuration.baseBackgroundColor = .clear
@@ -484,7 +475,7 @@ public extension UIBarButtonItem {
         animated: Bool = true,
         completion: (() -> Void)? = nil,
     ) -> UIBarButtonItem {
-        let systemItem: SystemItem = if #available(iOS 26, *), BuildFlags.iOS26SDKIsAvailable {
+        let systemItem: SystemItem = if #available(iOS 26, *) {
             .close
         } else {
             .done
