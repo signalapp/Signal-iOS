@@ -53,19 +53,19 @@ class InternalListMediaViewController: OWSTableViewController2 {
             lastListMediaFailure,
             lastListMediaResult,
         ) = DependenciesBridge.shared.db.read { tx in
-            return (
-                try! QueuedBackupAttachmentUpload
+            return failIfThrows { (
+                try QueuedBackupAttachmentUpload
                     .filter(Column(QueuedBackupAttachmentUpload.CodingKeys.state) == QueuedBackupAttachmentUpload.State.ready.rawValue)
                     .filter(Column(QueuedBackupAttachmentUpload.CodingKeys.isFullsize) == true)
                     .fetchCount(tx.database),
-                try! QueuedBackupAttachmentUpload
+                try QueuedBackupAttachmentUpload
                     .filter(Column(QueuedBackupAttachmentUpload.CodingKeys.state) == QueuedBackupAttachmentUpload.State.ready.rawValue)
                     .filter(Column(QueuedBackupAttachmentUpload.CodingKeys.isFullsize) == false)
                     .fetchCount(tx.database),
-                try! OrphanedBackupAttachment.fetchCount(tx.database),
-                try! DependenciesBridge.shared.backupListMediaStore.getLastFailingIntegrityCheckResult(tx: tx),
-                try! DependenciesBridge.shared.backupListMediaStore.getMostRecentIntegrityCheckResult(tx: tx),
-            )
+                try OrphanedBackupAttachment.fetchCount(tx.database),
+                DependenciesBridge.shared.backupListMediaStore.getLastFailingIntegrityCheckResult(tx: tx),
+                DependenciesBridge.shared.backupListMediaStore.getMostRecentIntegrityCheckResult(tx: tx),
+            ) }
         }
 
         let pendingUploadSection = OWSTableSection(title: "Pending upload")

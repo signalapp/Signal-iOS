@@ -1183,9 +1183,9 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
 
         if let integrityCheckResult {
             if integrityCheckResult.hasFailures {
-                try? backupListMediaStore.setLastFailingIntegrityCheckResult(integrityCheckResult, tx: tx)
+                backupListMediaStore.setLastFailingIntegrityCheckResult(integrityCheckResult, tx: tx)
             }
-            try? backupListMediaStore.setMostRecentIntegrityCheckResult(integrityCheckResult, tx: tx)
+            backupListMediaStore.setMostRecentIntegrityCheckResult(integrityCheckResult, tx: tx)
         }
         kvStore.removeValue(forKey: Constants.inProgressIntegrityCheckResultKey, transaction: tx)
 
@@ -1204,8 +1204,8 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
             case .disabled:
                 // Rotate the last integrity check failure when disabled
                 await self.db.awaitableWrite { tx in
-                    try? self.backupListMediaStore.setLastFailingIntegrityCheckResult(nil, tx: tx)
-                    try? self.backupListMediaStore.setMostRecentIntegrityCheckResult(nil, tx: tx)
+                    backupListMediaStore.setLastFailingIntegrityCheckResult(nil, tx: tx)
+                    backupListMediaStore.setMostRecentIntegrityCheckResult(nil, tx: tx)
                 }
             }
         }
@@ -1245,33 +1245,6 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
 }
 
 // MARK: -
-
-#if TESTABLE_BUILD
-
-class MockBackupListMediaManager: BackupListMediaManager {
-
-    func getNeedsQueryListMedia(tx: DBReadTransaction) -> Bool {
-        return false
-    }
-
-    func queryListMediaIfNeeded() async throws {
-        // Nothing
-    }
-
-    func getLastFailingIntegrityCheckResult(tx: DBReadTransaction) throws -> ListMediaIntegrityCheckResult? {
-        nil
-    }
-
-    func getMostRecentIntegrityCheckResult(tx: DBReadTransaction) throws -> ListMediaIntegrityCheckResult? {
-        nil
-    }
-
-    func setManualNeedsListMedia(tx: DBWriteTransaction) {
-        // Nothing
-    }
-}
-
-#endif
 
 private protocol ListMediaIntegrityChecker {
 
