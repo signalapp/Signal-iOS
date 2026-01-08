@@ -153,11 +153,16 @@ public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
                 .fetchCursor(tx.database)
 
             while let record = try cursor.next() {
-                let attachment = try Attachment(record: record)
-                let mostRecentReference = try attachmentStore.fetchMostRecentReference(
-                    toAttachmentId: attachment.id,
-                    tx: tx,
-                )
+                guard
+                    let attachment = try? Attachment(record: record),
+                    let mostRecentReference = attachmentStore.fetchMostRecentReference(
+                        toAttachmentId: attachment.id,
+                        tx: tx,
+                    )
+                else {
+                    // Nothing to do if the attachment is invalid or orphaned.
+                    continue
+                }
 
                 if
                     shouldAttachmentBeOffloaded(
@@ -206,15 +211,14 @@ public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
             for nextAttachment in candidateAttachments {
                 // Refetch the attachment and reference.
                 guard
-                    let attachment = attachmentStore.fetch(id: nextAttachment.id, tx: tx)
+                    let attachment = attachmentStore.fetch(id: nextAttachment.id, tx: tx),
+                    let mostRecentReference = attachmentStore.fetchMostRecentReference(
+                        toAttachmentId: attachment.id,
+                        tx: tx,
+                    )
                 else {
-                    return
+                    continue
                 }
-
-                let mostRecentReference = try attachmentStore.fetchMostRecentReference(
-                    toAttachmentId: attachment.id,
-                    tx: tx,
-                )
 
                 guard
                     shouldAttachmentBeOffloaded(
@@ -482,10 +486,15 @@ public class AttachmentOffloadingManagerImpl: AttachmentOffloadingManager {
 
 extension AttachmentStore {
 
+    /// Fetch the most recent reference to the given attachment.
+    ///
+    /// - Returns
+    /// The reference. A `nil` value indicates no references found, which
+    /// indicates invalid state.
     func fetchMostRecentReference(
         toAttachmentId attachmentId: Attachment.IDType,
         tx: DBReadTransaction,
-    ) throws -> AttachmentReference {
+    ) -> AttachmentReference? {
         var mostRecentReference: AttachmentReference?
         var maxMessageTimestamp: UInt64 = 0
         self.enumerateAllReferences(
@@ -520,9 +529,11 @@ extension AttachmentStore {
                 mostRecentReference = reference
             }
         }
-        guard let mostRecentReference else {
-            throw OWSAssertionError("Attachment without an owner! Was the attachment deleted?")
-        }
+
+        owsAssertDebug(
+            mostRecentReference != nil,
+            "Attachment without an owner! Was the attachment deleted?",
+        )
         return mostRecentReference
     }
 }

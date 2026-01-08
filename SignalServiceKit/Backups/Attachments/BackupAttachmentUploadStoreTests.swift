@@ -205,10 +205,10 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
         // We should have gotten entries in timestamp order
         XCTAssertEqual(dequeuedTimestamps, Array(sortedTimestamps.prefix(sortedTimestamps.count)))
 
-        try db.write { tx in
+        db.write { tx in
             // Finish all but one
-            try dequeuedRecords.prefix(timestamps.count - 1).forEach { record in
-                try store.markUploadDone(
+            dequeuedRecords.prefix(timestamps.count - 1).forEach { record in
+                store.markUploadDone(
                     for: record.attachmentRowId,
                     fullsize: true,
                     tx: tx,
@@ -224,9 +224,9 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
             XCTAssertEqual(1, records.filter({ $0.state == .ready }).count)
         }
 
-        try db.write { tx in
+        db.write { tx in
             // Finish the last one
-            _ = try store.markUploadDone(
+            _ = store.markUploadDone(
                 for: dequeuedRecords.last!.attachmentRowId,
                 fullsize: true,
                 tx: tx,
@@ -301,9 +301,9 @@ class BackupAttachmentUploadStoreTests: XCTestCase {
             index += 1
         }
 
-        try db.write { tx in
-            try dequeuedRecords.forEach { record in
-                try store.markUploadDone(
+        db.write { tx in
+            dequeuedRecords.forEach { record in
+                store.markUploadDone(
                     for: record.attachmentRowId,
                     fullsize: record.isFullsize,
                     tx: tx,

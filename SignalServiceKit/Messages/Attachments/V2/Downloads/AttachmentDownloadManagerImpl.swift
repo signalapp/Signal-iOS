@@ -2110,7 +2110,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                             // really means "copy from transit tier" and since we just downloaded
                             // we shouldn't need to reupload to do that; we just needed to verify
                             // the digest before copying.
-                            try backupAttachmentUploadScheduler.enqueueUsingHighestPriorityOwnerIfNeeded(
+                            backupAttachmentUploadScheduler.enqueueUsingHighestPriorityOwnerIfNeeded(
                                 attachment,
                                 tx: tx,
                             )
@@ -2312,7 +2312,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                                 tx: tx,
                             )
                         {
-                            try backupAttachmentUploadScheduler.enqueueUsingHighestPriorityOwnerIfNeeded(
+                            backupAttachmentUploadScheduler.enqueueUsingHighestPriorityOwnerIfNeeded(
                                 attachment,
                                 tx: tx,
                             )
@@ -2507,7 +2507,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                                 tx: tx,
                             )
                         {
-                            try backupAttachmentUploadScheduler.enqueueUsingHighestPriorityOwnerIfNeeded(
+                            backupAttachmentUploadScheduler.enqueueUsingHighestPriorityOwnerIfNeeded(
                                 attachment,
                                 tx: tx,
                             )
@@ -2590,7 +2590,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
                 if let thumbnailAttachment = attachmentStore.fetch(id: thumbnailAttachmentId, tx: tx)?.asStream() {
                     // Schedule upload, if needed.
-                    try backupAttachmentUploadScheduler.enqueueUsingHighestPriorityOwnerIfNeeded(
+                    backupAttachmentUploadScheduler.enqueueUsingHighestPriorityOwnerIfNeeded(
                         thumbnailAttachment.attachment,
                         tx: tx,
                     )

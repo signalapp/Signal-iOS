@@ -196,24 +196,24 @@ class AttachmentUploadStoreMock: AttachmentUploadStoreImpl {
         mediaTierInfo: Attachment.MediaTierInfo,
         mediaName: String,
         tx: DBWriteTransaction,
-    ) throws {}
+    ) {}
 
     override func markMediaTierUploadExpired(
         attachment: Attachment,
         tx: DBWriteTransaction,
-    ) throws {}
+    ) {}
 
     override func markThumbnailUploadedToMediaTier(
         attachment: Attachment,
         thumbnailMediaTierInfo: Attachment.ThumbnailMediaTierInfo,
         mediaName: String,
         tx: DBWriteTransaction,
-    ) throws {}
+    ) {}
 
     override func markThumbnailMediaTierUploadExpired(
         attachment: Attachment,
         tx: DBWriteTransaction,
-    ) throws {}
+    ) {}
 
     override func upsert(record: AttachmentUploadRecord, tx: DBWriteTransaction) throws { }
 

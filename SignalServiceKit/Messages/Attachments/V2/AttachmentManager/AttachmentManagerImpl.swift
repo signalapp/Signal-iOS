@@ -1000,7 +1000,7 @@ public class AttachmentManagerImpl: AttachmentManager {
                 tx: tx,
             )
         } else {
-            try backupAttachmentUploadScheduler.enqueueUsingHighestPriorityOwnerIfNeeded(
+            backupAttachmentUploadScheduler.enqueueUsingHighestPriorityOwnerIfNeeded(
                 existingAttachment,
                 tx: tx,
             )

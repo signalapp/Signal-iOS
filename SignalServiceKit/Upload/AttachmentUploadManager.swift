@@ -518,7 +518,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                 lastDownloadAttemptTimestamp: nil,
             )
 
-            try self.attachmentUploadStore.markUploadedToMediaTier(
+            attachmentUploadStore.markUploadedToMediaTier(
                 attachment: attachmentStream.attachment,
                 mediaTierInfo: mediaTierInfo,
                 mediaName: attachmentStream.info.mediaName,
@@ -642,7 +642,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
             throw error
         }
 
-        try await db.awaitableWrite { tx in
+        await db.awaitableWrite { tx in
             // Refetch the attachment to ensure other fields are up-to-date.
             guard let attachmentStream = attachmentStore.fetch(id: attachmentStream.id, tx: tx)?.asStream() else {
                 return
@@ -654,7 +654,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                 lastDownloadAttemptTimestamp: nil,
             )
 
-            try self.attachmentUploadStore.markThumbnailUploadedToMediaTier(
+            attachmentUploadStore.markThumbnailUploadedToMediaTier(
                 attachment: attachmentStream.attachment,
                 thumbnailMediaTierInfo: thumbnailInfo,
                 mediaName: attachmentStream.info.mediaName,

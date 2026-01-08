@@ -38,7 +38,7 @@ public protocol BackupAttachmentUploadScheduler {
         file: StaticString?,
         function: StaticString?,
         line: UInt?,
-    ) throws
+    )
 
     /// "Enqueue" an attachment from a backup for upload, if needed and eligible via the provided
     /// owner, otherwise do nothing.
@@ -67,8 +67,8 @@ extension BackupAttachmentUploadScheduler {
         file: StaticString? = #file,
         function: StaticString? = #function,
         line: UInt? = #line,
-    ) throws {
-        try enqueueUsingHighestPriorityOwnerIfNeeded(
+    ) {
+        enqueueUsingHighestPriorityOwnerIfNeeded(
             attachment,
             mode: mode,
             tx: tx,
@@ -432,7 +432,7 @@ open class BackupAttachmentUploadSchedulerMock: BackupAttachmentUploadScheduler 
         file: StaticString?,
         function: StaticString?,
         line: UInt?,
-    ) throws {
+    ) {
         enqueuedAttachmentIds.append(attachment.id)
     }
 

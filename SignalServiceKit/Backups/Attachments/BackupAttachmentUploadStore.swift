@@ -135,17 +135,20 @@ public class BackupAttachmentUploadStore {
         file: StaticString? = #file,
         function: StaticString? = #function,
         line: UInt? = #line,
-    ) throws -> QueuedBackupAttachmentUpload? {
+    ) -> QueuedBackupAttachmentUpload? {
         if let file, let function, let line {
             Logger.info("Marking \(attachmentId) done. fullsize? \(fullsize) from \(file) \(line): \(function)")
         }
-        var record = try QueuedBackupAttachmentUpload
+        let recordQuery = QueuedBackupAttachmentUpload
             .filter(Column(QueuedBackupAttachmentUpload.CodingKeys.attachmentRowId) == attachmentId)
             .filter(Column(QueuedBackupAttachmentUpload.CodingKeys.isFullsize) == fullsize)
-            .fetchOne(tx.database)
-        record?.state = .done
-        try record?.update(tx.database)
-        return record
+
+        return failIfThrows {
+            var record = try recordQuery.fetchOne(tx.database)
+            record?.state = .done
+            try record?.update(tx.database)
+            return record
+        }
     }
 
     public func totalEstimatedFullsizeBytesToUpload(tx: DBReadTransaction) throws -> UInt64 {

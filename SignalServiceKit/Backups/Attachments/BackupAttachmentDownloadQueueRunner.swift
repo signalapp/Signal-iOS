@@ -633,7 +633,7 @@ public class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQu
                     if
                         let stream = attachmentStore.fetch(id: record.record.attachmentRowId, tx: tx)?.asStream()
                     {
-                        try backupAttachmentUploadScheduler.enqueueUsingHighestPriorityOwnerIfNeeded(
+                        backupAttachmentUploadScheduler.enqueueUsingHighestPriorityOwnerIfNeeded(
                             stream.attachment,
                             mode: .fullsizeOnly,
                             tx: tx,
@@ -658,7 +658,7 @@ public class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQu
                         if
                             let stream = attachmentStore.fetch(id: record.record.attachmentRowId, tx: tx)?.asStream()
                         {
-                            try backupAttachmentUploadScheduler.enqueueUsingHighestPriorityOwnerIfNeeded(
+                            backupAttachmentUploadScheduler.enqueueUsingHighestPriorityOwnerIfNeeded(
                                 stream.attachment,
                                 mode: .thumbnailOnly,
                                 tx: tx,
@@ -672,7 +672,7 @@ public class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQu
                         if
                             let stream = attachmentStore.fetch(id: record.record.attachmentRowId, tx: tx)?.asStream()
                         {
-                            try backupAttachmentUploadScheduler.enqueueUsingHighestPriorityOwnerIfNeeded(
+                            backupAttachmentUploadScheduler.enqueueUsingHighestPriorityOwnerIfNeeded(
                                 stream.attachment,
                                 mode: .fullsizeOnly,
                                 tx: tx,

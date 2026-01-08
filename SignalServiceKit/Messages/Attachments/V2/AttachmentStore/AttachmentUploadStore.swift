@@ -28,14 +28,14 @@ public protocol AttachmentUploadStore {
         mediaTierInfo: Attachment.MediaTierInfo,
         mediaName: String,
         tx: DBWriteTransaction,
-    ) throws
+    )
 
     /// Mark the attachment as deleted and/or not uploaded to media tier,
     /// wiping media tier info if set.
     func markMediaTierUploadExpired(
         attachment: Attachment,
         tx: DBWriteTransaction,
-    ) throws
+    )
 
     /// Mark the attachment thumbnail as having been uploaded to the media tier.
     func markThumbnailUploadedToMediaTier(
@@ -43,14 +43,14 @@ public protocol AttachmentUploadStore {
         thumbnailMediaTierInfo: Attachment.ThumbnailMediaTierInfo,
         mediaName: String,
         tx: DBWriteTransaction,
-    ) throws
+    )
 
     /// Mark the attachment's thumbnail as deleted and/or not uploaded to media tier,
     /// wiping media tier info if set.
     func markThumbnailMediaTierUploadExpired(
         attachment: Attachment,
         tx: DBWriteTransaction,
-    ) throws
+    )
 
     func upsert(
         record: AttachmentUploadRecord,

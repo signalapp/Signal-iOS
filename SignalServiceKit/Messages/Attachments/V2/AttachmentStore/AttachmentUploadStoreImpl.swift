@@ -93,7 +93,7 @@ public class AttachmentUploadStoreImpl: AttachmentUploadStore {
         mediaTierInfo: Attachment.MediaTierInfo,
         mediaName: String,
         tx: DBWriteTransaction,
-    ) throws {
+    ) {
         let params = Attachment.ConstructionParams.forUpdatingAsUploadedToMediaTier(
             attachment: attachment,
             mediaTierInfo: mediaTierInfo,
@@ -101,17 +101,21 @@ public class AttachmentUploadStoreImpl: AttachmentUploadStore {
         )
         var record = Attachment.Record(params: params)
         record.sqliteId = attachment.id
-        try record.update(tx.database)
+        failIfThrows {
+            try record.update(tx.database)
+        }
     }
 
     public func markMediaTierUploadExpired(
         attachment: Attachment,
         tx: DBWriteTransaction,
-    ) throws {
+    ) {
         let params = Attachment.ConstructionParams.forRemovingMediaTierInfo(attachment: attachment)
         var record = Attachment.Record(params: params)
         record.sqliteId = attachment.id
-        try record.update(tx.database)
+        failIfThrows {
+            try record.update(tx.database)
+        }
     }
 
     public func markThumbnailUploadedToMediaTier(
@@ -119,7 +123,7 @@ public class AttachmentUploadStoreImpl: AttachmentUploadStore {
         thumbnailMediaTierInfo: Attachment.ThumbnailMediaTierInfo,
         mediaName: String,
         tx: DBWriteTransaction,
-    ) throws {
+    ) {
         let params = Attachment.ConstructionParams.forUpdatingAsUploadedThumbnailToMediaTier(
             attachment: attachment,
             thumbnailMediaTierInfo: thumbnailMediaTierInfo,
@@ -127,17 +131,21 @@ public class AttachmentUploadStoreImpl: AttachmentUploadStore {
         )
         var record = Attachment.Record(params: params)
         record.sqliteId = attachment.id
-        try record.update(tx.database)
+        failIfThrows {
+            try record.update(tx.database)
+        }
     }
 
     public func markThumbnailMediaTierUploadExpired(
         attachment: Attachment,
         tx: DBWriteTransaction,
-    ) throws {
+    ) {
         let params = Attachment.ConstructionParams.forRemovingThumbnailMediaTierInfo(attachment: attachment)
         var record = Attachment.Record(params: params)
         record.sqliteId = attachment.id
-        try record.update(tx.database)
+        failIfThrows {
+            try record.update(tx.database)
+        }
     }
 
     public func upsert(record: AttachmentUploadRecord, tx: DBWriteTransaction) throws {
