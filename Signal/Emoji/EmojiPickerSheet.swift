@@ -51,16 +51,16 @@ class EmojiPickerSheet: OWSViewController {
         sheetPresentationController?.detents = [.medium(), .large()]
         sheetPresentationController?.prefersGrabberVisible = true
         sheetPresentationController?.delegate = self
-
-        if #available(iOS 17.0, *), self.overrideUserInterfaceStyle == .dark {
-            sheetPresentationController?.traitOverrides.userInterfaceStyle = .dark
-        }
     }
 
     // MARK: -
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        if #available(iOS 17.0, *), self.overrideUserInterfaceStyle == .dark {
+            sheetPresentationController?.traitOverrides.userInterfaceStyle = .dark
+        }
 
         if #available(iOS 26, *) {
             view.backgroundColor = nil
