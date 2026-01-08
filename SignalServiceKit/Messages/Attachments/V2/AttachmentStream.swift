@@ -87,13 +87,13 @@ public class AttachmentStream {
     /// will instead be inferred from the file contents) and made url-safe AND user-friendly. If nil, a random file name is used.
     public func makeDecryptedCopy(filename: String?) throws -> URL {
         var pathExtension: String = {
-            if let pathExtension = MimeTypeUtil.fileExtensionForMimeType(mimeType) {
-                return pathExtension
-            } else if
+            if
                 let filename,
                 let filenameUrl = URL(string: filename),
                 let pathExtension = filenameUrl.pathExtension.nilIfEmpty
             {
+                return pathExtension
+            } else if let pathExtension = MimeTypeUtil.fileExtensionForMimeType(mimeType) {
                 return pathExtension
             } else {
                 return "bin"
