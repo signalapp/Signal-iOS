@@ -86,6 +86,7 @@ final class GroupCallViewController: UIViewController {
     private let videoOverflowContainer = UIView()
     private let raisedHandsToastContainer = UIView()
     private lazy var raisedHandsToast = RaisedHandsToast(call: self.groupCall)
+    private lazy var remoteMuteToast = RemoteMuteToast(call: self.groupCall)
 
     private var approvalRequestActionsSubscription: AnyCancellable?
     private lazy var callLinkApprovalViewModel: CallLinkApprovalViewModel = {
@@ -523,6 +524,9 @@ final class GroupCallViewController: UIViewController {
         raisedHandsToast.autoPinEdge(toSuperviewMargin: .leading, relation: .greaterThanOrEqual)
         raisedHandsToast.horizontalPinConstraint = raisedHandsToast.autoPinEdge(toSuperviewMargin: .leading)
         raisedHandsToast.delegate = self
+
+        view.addSubview(remoteMuteToast)
+        remoteMuteToast.autoPinEdgesToSuperviewEdges()
 
         scrollView.addSubview(videoGrid)
         scrollView.addSubview(speakerPage)
@@ -1916,6 +1920,27 @@ extension GroupCallViewController: GroupCallObserver {
             return
         }
         self.raisedHandsToast.raisedHands = raisedHands
+        self.updateCallUI(shouldAnimateViewFrames: true)
+    }
+
+    func groupCallReceivedRemoteMute(_ call: GroupCall, muteSource: Aci) {
+        AssertIsOnMainThread()
+        owsPrecondition(self.groupCall === call)
+        guard self.isReadyToHandleObserver else {
+            return
+        }
+        self.remoteMuteToast.displaySelfMuted(muteSource: muteSource)
+        callService.callUIAdapter.setIsMuted(call: self.call, isMuted: true)
+        self.updateCallUI(shouldAnimateViewFrames: true)
+    }
+
+    func groupCallObservedRemoteMute(_ call: GroupCall, muteSource: Aci, muteTarget: Aci) {
+        AssertIsOnMainThread()
+        owsPrecondition(self.groupCall === call)
+        guard self.isReadyToHandleObserver else {
+            return
+        }
+        self.remoteMuteToast.displayOtherMuted(source: muteSource, target: muteTarget)
         self.updateCallUI(shouldAnimateViewFrames: true)
     }
 

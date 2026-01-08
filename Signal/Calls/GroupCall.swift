@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import LibSignalClient
 import SignalRingRTC
 import SignalServiceKit
 import SignalUI
@@ -23,6 +24,8 @@ protocol GroupCallObserver: AnyObject {
     func groupCallEnded(_ call: GroupCall, reason: CallEndReason)
     func groupCallReceivedReactions(_ call: GroupCall, reactions: [SignalRingRTC.Reaction])
     func groupCallReceivedRaisedHands(_ call: GroupCall, raisedHands: [DemuxId])
+    func groupCallReceivedRemoteMute(_ call: GroupCall, muteSource: Aci)
+    func groupCallObservedRemoteMute(_ call: GroupCall, muteSource: Aci, muteTarget: Aci)
 
     /// Invoked if a call message failed to send because of a safety number change
     /// UI observing call state may choose to alert the user (e.g. presenting a SafetyNumberConfirmationSheet)
@@ -36,6 +39,8 @@ extension GroupCallObserver {
     func groupCallEnded(_ call: GroupCall, reason: CallEndReason) {}
     func groupCallReceivedReactions(_ call: GroupCall, reactions: [SignalRingRTC.Reaction]) {}
     func groupCallReceivedRaisedHands(_ call: GroupCall, raisedHands: [DemuxId]) {}
+    func groupCallReceivedRemoteMute(_ call: GroupCall, muteSource: Aci) {}
+    func groupCallObservedRemoteMute(_ call: GroupCall, muteSource: Aci, muteTarget: Aci) {}
     func handleUntrustedIdentityError(_ call: GroupCall) {}
 }
 
@@ -227,11 +232,36 @@ class GroupCall: SignalRingRTC.GroupCallDelegate {
 
     @MainActor
     func groupCall(onRemoteMuteRequest groupCall: SignalRingRTC.GroupCall, muteSource: UInt32) {
-        // TODO: Implement remote mute request handling for group calls.
+        guard let muteSource = groupCall.remoteDeviceStates[muteSource] else {
+            Logger.warn("Ignoring remote mute request from unknown device \(muteSource)")
+            return
+        }
+        if groupCall.isOutgoingAudioMuted {
+            return
+        }
+        groupCall.setOutgoingAudioRemotelyMuted(muteSource.demuxId)
+        self.groupCall(onLocalDeviceStateChanged: groupCall)
+
+        observers.elements.forEach { $0.groupCallReceivedRemoteMute(self, muteSource: muteSource.aci) }
     }
 
     @MainActor
     func groupCall(onObservedRemoteMute groupCall: SignalRingRTC.GroupCall, muteSource: UInt32, muteTarget: UInt32) {
-        // TODO: Implement remote mute observed handling for group calls.
+        guard let targetAci = groupCall.remoteDeviceStates[muteTarget]?.aci else {
+            Logger.warn("Ignoring observed remote mute request to unknown device \(muteTarget)")
+            return
+        }
+        let sourceAci: Aci
+        if muteSource == groupCall.localDeviceState.demuxId {
+            let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+            sourceAci = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction!.aci
+        } else if let remoteDeviceState = groupCall.remoteDeviceStates[muteSource] {
+            sourceAci = remoteDeviceState.aci
+        } else {
+            Logger.warn("Ignoring observed remote mute from unknown device \(muteSource)")
+            return
+        }
+
+        observers.elements.forEach { $0.groupCallObservedRemoteMute(self, muteSource: sourceAci, muteTarget: targetAci) }
     }
 }
