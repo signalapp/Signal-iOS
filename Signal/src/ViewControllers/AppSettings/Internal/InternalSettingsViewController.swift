@@ -331,6 +331,14 @@ class InternalSettingsViewController: OWSTableViewController2 {
             target: self,
             selector: #selector(spinCheckmarks(_:)),
         ))
+        if #available(iOS 26, *) {
+            otherSection.add(.switch(
+                withText: "Disable Content Tracking in Chat Header",
+                isOn: { self.isChatHeaderContentTrackingDisabled },
+                target: self,
+                selector: #selector(toggleChatHeaderContentTrackingDisabled(sender:)),
+            ))
+        }
         otherSection.add(.disclosureItem(withText: "Show Call Quality Survey") { [weak self] in
             self?.present(CallQualitySurveyNavigationController(), animated: true)
         })
@@ -353,6 +361,22 @@ class InternalSettingsViewController: OWSTableViewController2 {
         }
 
         self.contents = contents
+    }
+}
+
+// MARK: -
+
+private extension InternalSettingsViewController {
+
+    var isChatHeaderContentTrackingDisabled: Bool {
+        CurrentAppContext().appUserDefaults().bool(forKey: "DisableChatHeaderContentTracking")
+    }
+
+    @objc
+    func toggleChatHeaderContentTrackingDisabled(sender: Any) {
+        guard let toggleSwitch = sender as? UISwitch else { return }
+        let isDisabled = toggleSwitch.isOn
+        CurrentAppContext().appUserDefaults().set(isDisabled, forKey: "DisableChatHeaderContentTracking")
     }
 }
 

@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import SignalServiceKit
 import SignalUI
 
 protocol ConversationHeaderViewDelegate: AnyObject {
@@ -114,7 +115,10 @@ class ConversationHeaderView: UIView {
         // automatically. Using newer API for detecting trait collection changes it's now
         // possible to attach a small handler that will force UILabels to have
         // the same light or dark style as the glass view.
-        if #available(iOS 26, *) {
+        if
+            #available(iOS 26, *),
+            CurrentAppContext().appUserDefaults().bool(forKey: "DisableChatHeaderContentTracking") == false
+        {
             let glassTrackingView = UIVisualEffectView(effect: UIGlassEffect(style: .regular))
             rootStack.insertSubview(glassTrackingView, at: 0)
             glassTrackingView.translatesAutoresizingMaskIntoConstraints = false
