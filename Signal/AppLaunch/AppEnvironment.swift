@@ -122,6 +122,9 @@ public class AppEnvironment: NSObject {
         )
 
         self.outgoingDeviceRestorePresenter = OutgoingDeviceRestorePresenter(
+            dateProvider: Date.provider,
+            db: DependenciesBridge.shared.db,
+            backupSettingsStore: BackupSettingsStore(),
             deviceTransferService: deviceTransferServiceRef,
             quickRestoreManager: quickRestoreManager,
         )

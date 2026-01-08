@@ -522,7 +522,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
                                 ),
                                 image: image,
                                 handler: { [weak self] _ in
-                                    SignalApp.shared.showAppSettings(mode: .backups)
+                                    SignalApp.shared.showAppSettings(mode: .backups())
                                     db.write { tx in
                                         backupSettingsStore.setErrorBadgeMuted(target: .chatListMenuItem, tx: tx)
                                     }
@@ -545,7 +545,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
                                 ),
                                 image: image,
                                 handler: { [weak self] _ in
-                                    SignalApp.shared.showAppSettings(mode: .backups)
+                                    SignalApp.shared.showAppSettings(mode: .backups())
                                     db.write { tx in
                                         backupSubscriptionIssueStore.setDidAckIAPSubscriptionAlreadyRedeemedChatListMenuItem(tx: tx)
                                     }
@@ -571,7 +571,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
                                 ),
                                 image: image,
                                 handler: { [weak self] _ in
-                                    SignalApp.shared.showAppSettings(mode: .backups)
+                                    SignalApp.shared.showAppSettings(mode: .backups())
                                     db.write { tx in
                                         backupSubscriptionIssueStore.setDidAckIAPSubscriptionNotFoundLocallyChatListMenuItem(tx: tx)
                                     }
@@ -594,7 +594,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
                                 ),
                                 image: image,
                                 handler: { _ in
-                                    SignalApp.shared.showAppSettings(mode: .backups)
+                                    SignalApp.shared.showAppSettings(mode: .backups())
                                 },
                             ),
                         ]),
@@ -1355,7 +1355,7 @@ extension ChatListViewController {
         case paymentsTransferIn
         case appearance
         case avatarBuilder
-        case backups
+        case backups(onAppearAction: BackupSettingsViewController.OnAppearAction? = nil)
         case corruptedUsernameResolution
         case corruptedUsernameLinkResolution
         case donate(donateMode: DonateViewController.DonateMode)
@@ -1408,10 +1408,13 @@ extension ChatListViewController {
             viewControllers += [profile]
             internalCompletion = { profile.presentAvatarSettingsView() }
 
-        case .backups:
+        case .backups(let onAppearAction):
             viewControllers += [
                 BackupOnboardingCoordinator()
-                    .prepareForPresentation(inNavController: navigationController),
+                    .prepareForPresentation(
+                        inNavController: navigationController,
+                        onAppearAction: onAppearAction,
+                    ),
             ]
 
         case .corruptedUsernameResolution:

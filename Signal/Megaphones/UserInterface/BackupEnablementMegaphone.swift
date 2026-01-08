@@ -33,7 +33,7 @@ class BackupEnablementMegaphone: MegaphoneView {
         )
 
         let primaryButton = MegaphoneView.Button(title: primaryButtonTitle) { [weak self] in
-            SignalApp.shared.showAppSettings(mode: .backups)
+            SignalApp.shared.showAppSettings(mode: .backups())
             self?.markAsSnoozedWithSneakyTransaction()
             self?.dismiss(animated: true)
         }

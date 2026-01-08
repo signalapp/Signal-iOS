@@ -395,7 +395,7 @@ class ChatListFYISheetCoordinator {
         let sheet = BackupSubscriptionExpiredHeroSheet(
             subscriptionType: backupSubscriptionExpired.subscriptionType,
             onManageBackups: {
-                SignalApp.shared.showAppSettings(mode: .backups)
+                SignalApp.shared.showAppSettings(mode: .backups())
             },
         )
         chatListViewController.present(sheet, animated: true) { [self] in
@@ -423,7 +423,7 @@ class ChatListFYISheetCoordinator {
 
         let sheet = BackupSubscriptionFailedToRenewHeroSheet(
             onManageSubscription: {
-                SignalApp.shared.showAppSettings(mode: .backups)
+                SignalApp.shared.showAppSettings(mode: .backups())
             },
         )
         chatListViewController.present(sheet, animated: true) { [self] in

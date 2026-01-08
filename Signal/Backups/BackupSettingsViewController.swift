@@ -15,6 +15,7 @@ class BackupSettingsViewController:
 {
     enum OnAppearAction {
         case presentWelcomeToBackupsSheet
+        case automaticallyStartBackup(completion: ((UIViewController) -> Void)?)
     }
 
     private let accountEntropyPoolManager: AccountEntropyPoolManager
@@ -173,11 +174,13 @@ class BackupSettingsViewController:
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        switch onAppearAction.take() {
+        switch onAppearAction {
         case nil:
             break
         case .presentWelcomeToBackupsSheet:
             presentWelcomeToBackupsSheet()
+        case .automaticallyStartBackup:
+            performManualBackup()
         }
     }
 
@@ -244,7 +247,12 @@ class BackupSettingsViewController:
 
                         switch result {
                         case .success:
-                            break
+                            switch onAppearAction {
+                            case .presentWelcomeToBackupsSheet, nil:
+                                break
+                            case .automaticallyStartBackup(let completion):
+                                completion?(self)
+                            }
                         case .failure(let error):
                             showSheetForBackupExportJobError(error)
                         }

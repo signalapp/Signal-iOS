@@ -17,7 +17,14 @@ extension Notification.Name {
 
 class OutgoingDeviceRestorePresenter: OutgoingDeviceRestoreInitialPresenter {
 
+    private enum Constants {
+        static let lastBackupAgeThreshold: TimeInterval = 30 * .minute
+    }
+
     private let internalNavigationController = OWSNavigationController()
+    private let dateProvider: DateProvider
+    private let db: DB
+    private let backupSettingsStore: BackupSettingsStore
     private let deviceTransferService: DeviceTransferService
     private let quickRestoreManager: QuickRestoreManager
 
@@ -25,9 +32,15 @@ class OutgoingDeviceRestorePresenter: OutgoingDeviceRestoreInitialPresenter {
     private var presentingViewController: UIViewController?
 
     init(
+        dateProvider: @escaping DateProvider,
+        db: DB,
+        backupSettingsStore: BackupSettingsStore,
         deviceTransferService: DeviceTransferService,
         quickRestoreManager: QuickRestoreManager,
     ) {
+        self.dateProvider = dateProvider
+        self.db = db
+        self.backupSettingsStore = backupSettingsStore
         self.deviceTransferService = deviceTransferService
         self.quickRestoreManager = quickRestoreManager
     }
@@ -80,6 +93,44 @@ class OutgoingDeviceRestorePresenter: OutgoingDeviceRestoreInitialPresenter {
             OutgoingDeviceRestoreProgressViewController(viewModel: viewModel.transferStatusViewModel),
             animated: true,
         )
+    }
+
+    @MainActor
+    private func pushBackupPropmtViewController(presentingViewController: UIViewController) async -> Bool {
+
+        let (
+            backupPlan,
+            lastBackupDetails,
+        ) = db.read { (
+            backupSettingsStore.backupPlan(tx: $0),
+            backupSettingsStore.lastBackupDetails(tx: $0),
+        ) }
+
+        switch backupPlan {
+        case .disabled, .disabling: return false
+        case .free, .paid, .paidAsTester, .paidExpiringSoon: break
+        }
+
+        guard let lastBackupDetails else {
+            owsFailDebug("Failed to load last backup details")
+            return false
+        }
+
+        if dateProvider().timeIntervalSince(lastBackupDetails.date) < Constants.lastBackupAgeThreshold {
+            return false
+        }
+
+        return await withCheckedContinuation { continuation in
+            Task {
+                await internalNavigationController.awaitablePush(
+                    OutgoingDeviceRestoreBackupPromptViewController(
+                        lastBackupDetails: lastBackupDetails,
+                        makeBackupCallback: { continuation.resume(returning: $0) },
+                    ),
+                    animated: true,
+                )
+            }
+        }
     }
 
     @MainActor
@@ -155,6 +206,25 @@ class OutgoingDeviceRestorePresenter: OutgoingDeviceRestoreInitialPresenter {
             guard await viewModel.confirmTransfer() else {
                 // Silently fail here. The confirmTransfer UI will notify the user of
                 // success/failure (e.g. FaceID UI)
+                return
+            }
+
+            if await pushBackupPropmtViewController(presentingViewController: presentingViewController) {
+                await internalNavigationController.dismiss(animated: true)
+                Task { @MainActor in
+                    SignalApp.shared.showAppSettings(
+                        mode: .backups(
+                            onAppearAction: .automaticallyStartBackup(
+                                completion: { [weak self] backupSettingsVC in
+                                    guard let self else { return }
+                                    showRestoreReturnSheetAfterBackup(
+                                        presentingViewController: backupSettingsVC,
+                                    )
+                                },
+                            ),
+                        ),
+                    )
+                }
                 return
             }
 
@@ -265,5 +335,40 @@ class OutgoingDeviceRestorePresenter: OutgoingDeviceRestoreInitialPresenter {
         )
         await presentingViewController.awaitableDismiss(animated: true)
         await presentingViewController.awaitablePresent(sheet, animated: true)
+    }
+
+    private func showRestoreReturnSheetAfterBackup(
+        presentingViewController: UIViewController?,
+    ) {
+        let returnSheet = HeroSheetViewController(
+            hero: .image(.transferAccount),
+            title: OWSLocalizedString(
+                "BACKUP_SETTINGS_BACKUP_EXPORT_SUCCEEDED_READY_TO_RESTORE_TITLE",
+                comment: "Title for an action sheet explaining the backup succeeded and a restore can continue.",
+            ),
+            body: OWSLocalizedString(
+                "BACKUP_SETTINGS_BACKUP_EXPORT_SUCCEEDED_READY_TO_RESTORE_BODY",
+                comment: "Body for an action sheet explaining the backup succeeded and a restore can continue.",
+            ),
+            primary: .button(HeroSheetViewController.Button(
+                title: OWSLocalizedString(
+                    "BACKUP_SETTINGS_BACKUP_EXPORT_SUCCEEDED_READY_TO_RESTORE_ACTION_TITLE",
+                    comment: "Title for an action sheet action explaining the user can now scan a QR code to continue the restore.",
+                ),
+                action: { sheet in
+                    sheet.dismiss(animated: true) {
+                        presentingViewController?.dismiss(animated: true) {
+                            SignalApp.shared.showCameraCaptureView()
+                        }
+                    }
+                },
+            )),
+            secondary: .button(.dismissing(
+                title: CommonStrings.cancelButton,
+                style: .secondary,
+            )),
+        )
+
+        presentingViewController?.present(returnSheet, animated: true)
     }
 }

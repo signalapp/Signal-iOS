@@ -376,7 +376,7 @@ public class NotificationActionHandler {
 
     @MainActor
     private class func showBackupsSettings() {
-        SignalApp.shared.showAppSettings(mode: .backups)
+        SignalApp.shared.showAppSettings(mode: .backups())
     }
 
     private struct NotificationMessage {

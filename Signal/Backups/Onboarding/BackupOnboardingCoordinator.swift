@@ -46,15 +46,18 @@ class BackupOnboardingCoordinator {
         self.db = db
     }
 
+    /// - Parameter onAppearAction
+    /// An on-appear action for Backup Settings, if onboarding is not necessary.
     func prepareForPresentation(
         inNavController navController: UINavigationController,
+        onAppearAction: BackupSettingsViewController.OnAppearAction? = nil,
     ) -> UIViewController {
         let haveBackupsEverBeenEnabled = db.read { tx in
             backupSettingsStore.haveBackupsEverBeenEnabled(tx: tx)
         }
 
         if haveBackupsEverBeenEnabled {
-            return BackupSettingsViewController(onAppearAction: nil)
+            return BackupSettingsViewController(onAppearAction: onAppearAction)
         } else {
             // Weakly retain the nav controller, so we can use it throughout
             // onboarding.

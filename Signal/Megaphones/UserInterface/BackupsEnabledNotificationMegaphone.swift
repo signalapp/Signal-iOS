@@ -40,7 +40,7 @@ class BackupsEnabledNotificationMegaphone: MegaphoneView {
             comment: "Action text for backups enabled megaphone taking user to backup settings",
         )
         let primaryButton = MegaphoneView.Button(title: primaryButtonTitle) { [weak self] in
-            SignalApp.shared.showAppSettings(mode: .backups)
+            SignalApp.shared.showAppSettings(mode: .backups())
             self?.markAsViewed()
             self?.dismiss(animated: true)
         }
