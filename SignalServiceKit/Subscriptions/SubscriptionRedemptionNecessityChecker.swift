@@ -142,7 +142,7 @@ struct SubscriptionRedemptionNecessityChecker<RedemptionJobContext> {
             return
         }
 
-        logger.info("Checking if subscription should be redeemed.")
+        logger.info("Checking if subscription should be redeemed. \(subscription.debugDescription)")
 
         /// This "heartbeat" is important to do regularly, as the server will
         /// take cleanup steps on subscriber IDs that haven't had a client
