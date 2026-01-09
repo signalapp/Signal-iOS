@@ -30,12 +30,11 @@ public class AudioWaveform: Equatable {
     }
 
     public func archive() throws -> Data {
-        return try NSKeyedArchiver.archivedData(withRootObject: decibelSamples, requiringSecureCoding: false)
+        return try NSKeyedArchiver.archivedData(withRootObject: decibelSamples, requiringSecureCoding: true)
     }
 
     public func write(toFile filePath: String, atomically: Bool) throws {
-        let archivedData = try NSKeyedArchiver.archivedData(withRootObject: decibelSamples, requiringSecureCoding: false)
-        try archivedData.write(to: URL(fileURLWithPath: filePath), options: atomically ? .atomicWrite : .init())
+        try archive().write(to: URL(fileURLWithPath: filePath), options: atomically ? .atomicWrite : .init())
     }
 
     // MARK: -
