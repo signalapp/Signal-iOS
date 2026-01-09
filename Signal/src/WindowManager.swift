@@ -329,7 +329,6 @@ class WindowManager {
         AssertIsOnMainThread()
 
         guard let callViewController else {
-            owsFailBeta("callViewController == nil")
             return
         }
 

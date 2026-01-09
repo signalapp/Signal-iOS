@@ -2149,7 +2149,6 @@ extension CallsListViewController: CallCellDelegate, NewCallViewControllerDelega
     }
 
     fileprivate func returnToCall(from viewModel: CallViewModel) {
-        guard AppEnvironment.shared.windowManagerRef.hasCall else { return }
         AppEnvironment.shared.windowManagerRef.returnToCallView()
     }
 
