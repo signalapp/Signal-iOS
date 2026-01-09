@@ -150,7 +150,7 @@ struct KeyValueStoreTest {
             #expect(!store.hasValue(key, transaction: transaction))
 
             let date2 = Date()
-            store.setObject(date2, key: key, transaction: transaction)
+            store.setObject(date2 as NSDate, key: key, transaction: transaction)
             #expect(store.hasValue(key, transaction: transaction))
             #expect(date2.timeIntervalSince1970 == store.getDate(key, transaction: transaction)?.timeIntervalSince1970)
 
@@ -254,7 +254,7 @@ struct NewKeyValueStoreTest {
             oldStore.setInt(123, key: "B", transaction: tx)
             oldStore.setString("Hello", key: "C", transaction: tx)
             oldStore.setDate(Date(timeIntervalSince1970: 1234567890.5), key: "D", transaction: tx)
-            oldStore.setObject(Date(timeIntervalSince1970: 1234567890.5), key: "E", transaction: tx)
+            oldStore.setObject(Date(timeIntervalSince1970: 1234567890.5) as NSDate, key: "E", transaction: tx)
 
             try migrator.migrateBool("A", tx: tx)
             try migrator.migrateUInt32("B", tx: tx)

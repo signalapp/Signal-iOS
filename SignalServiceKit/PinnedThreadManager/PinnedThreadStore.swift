@@ -38,6 +38,6 @@ public class PinnedThreadStoreImpl: PinnedThreadStoreWrite {
 
     public func updatePinnedThreadIds(_ pinnedThreadIds: [String], tx: DBWriteTransaction) {
         let pinnedThreadIds: [String] = Array(pinnedThreadIds.prefix(PinnedThreads.maxPinnedThreads))
-        keyValueStore.setObject(pinnedThreadIds, key: Self.pinnedThreadIdsKey, transaction: tx)
+        keyValueStore.setStringArray(pinnedThreadIds, key: Self.pinnedThreadIdsKey, transaction: tx)
     }
 }

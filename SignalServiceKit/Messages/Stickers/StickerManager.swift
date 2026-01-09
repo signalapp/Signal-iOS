@@ -1246,7 +1246,7 @@ private extension KeyValueStore {
         if let maxCount {
             orderedArray = Array(orderedArray.prefix(maxCount))
         }
-        setObject(orderedArray, key: key, transaction: tx)
+        setStringArray(orderedArray, key: key, transaction: tx)
     }
 
     func removeFromOrderedUniqueArray(key: String, value: String, tx: DBWriteTransaction) {
@@ -1258,7 +1258,7 @@ private extension KeyValueStore {
             }
             orderedArray += storedValue.filter { $0 != value }
         }
-        setObject(orderedArray, key: key, transaction: tx)
+        setStringArray(orderedArray, key: key, transaction: tx)
     }
 
     func orderedUniqueArray(forKey key: String, tx: DBReadTransaction) -> [String] {

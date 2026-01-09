@@ -577,12 +577,12 @@ public class OWSIdentityManagerImpl: OWSIdentityManager {
     // MARK: - Sync Messages
 
     private func enqueueSyncMessage(for recipientUniqueId: RecipientUniqueId, tx: DBWriteTransaction) {
-        queuedVerificationStateSyncMessagesKeyValueStore.setObject(true, key: recipientUniqueId, transaction: tx)
+        queuedVerificationStateSyncMessagesKeyValueStore.setBool(true, key: recipientUniqueId, transaction: tx)
         DispatchQueue.main.async { self.tryToSyncQueuedVerificationStates() }
     }
 
     private func clearSyncMessage(for key: String, tx: DBWriteTransaction) {
-        queuedVerificationStateSyncMessagesKeyValueStore.setObject(nil, key: key, transaction: tx)
+        queuedVerificationStateSyncMessagesKeyValueStore.removeValue(forKey: key, transaction: tx)
     }
 
     public func tryToSyncQueuedVerificationStates() {

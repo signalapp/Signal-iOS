@@ -184,7 +184,11 @@ public class AccountAttributesUpdaterImpl: AccountAttributesUpdater {
 
         await db.awaitableWrite { tx in
             self.updateMostRecentDate(tx: tx)
-            self.kvStore.setObject(updateConfig.capabilities.requestParameters, key: Keys.lastUpdateDeviceCapabilities, transaction: tx)
+            self.kvStore.setObject(
+                updateConfig.capabilities.requestParameters as [NSString: NSNumber] as NSDictionary,
+                key: Keys.lastUpdateDeviceCapabilities,
+                transaction: tx,
+            )
             // Clear the update request unless a new update has been requested
             // while this update was in flight.
             if

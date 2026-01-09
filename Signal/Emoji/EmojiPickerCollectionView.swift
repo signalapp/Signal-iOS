@@ -265,7 +265,7 @@ class EmojiPickerCollectionView: UICollectionView {
         // Truncate the recent emoji list to a maximum of 50 stored
         newRecentEmoji = Array(newRecentEmoji[0..<min(50, newRecentEmoji.count)])
 
-        EmojiPickerCollectionView.keyValueStore.setObject(
+        EmojiPickerCollectionView.keyValueStore.setStringArray(
             newRecentEmoji.map { $0.rawValue },
             key: EmojiPickerCollectionView.recentEmojiKey,
             transaction: transaction,
@@ -658,7 +658,7 @@ enum EmojiSearchIndex {
         tx: DBWriteTransaction,
     ) {
         emojiSearchIndexKVS.removeAll(transaction: tx)
-        emojiSearchIndexKVS.setObject(newLocalizations, key: self.emojiSearchIndexAvailableLocalizationsKey, transaction: tx)
+        emojiSearchIndexKVS.setStringArray(newLocalizations, key: self.emojiSearchIndexAvailableLocalizationsKey, transaction: tx)
         emojiSearchIndexKVS.setInt(newVersion, key: self.emojiSearchIndexVersionKey, transaction: tx)
     }
 
@@ -684,7 +684,7 @@ enum EmojiSearchIndex {
         }
 
         await databaseStorage.awaitableWrite { tx in
-            self.emojiSearchIndexKVS.setObject(searchIndex, key: localization, transaction: tx)
+            self.emojiSearchIndexKVS.setObject(searchIndex as [NSString: [NSString]] as NSDictionary, key: localization, transaction: tx)
         }
     }
 

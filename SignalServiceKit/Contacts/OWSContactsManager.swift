@@ -1042,7 +1042,7 @@ extension OWSContactsManager: ContactManager {
     }
 
     private func setPriorIntersectionPhoneNumbers(_ phoneNumbers: Set<String>, tx: DBWriteTransaction) {
-        keyValueStore.setObject(phoneNumbers, key: Constants.lastKnownContactPhoneNumbers, transaction: tx)
+        keyValueStore.setObject(phoneNumbers as Set<NSString> as NSSet, key: Constants.lastKnownContactPhoneNumbers, transaction: tx)
     }
 
     private enum IntersectionMode {

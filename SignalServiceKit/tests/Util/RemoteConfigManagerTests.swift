@@ -117,7 +117,7 @@ struct RemoteConfigStoreTests {
                 "ios.abc": true,
                 "ios.123": false,
             ]
-            self.keyValueStore.setObject(isEnabledFlags, key: "remoteConfigKey", transaction: tx)
+            self.keyValueStore.setObject(isEnabledFlags as [NSString: NSNumber] as NSDictionary, key: "remoteConfigKey", transaction: tx)
         }
         let valueFlags = self.db.read { tx in
             return self.store.loadValueFlags(tx: tx)
@@ -140,9 +140,9 @@ struct RemoteConfigStoreTests {
                 "ios.mno": Date(timeIntervalSince1970: 0),
                 "ios.pqr": Date(timeIntervalSince1970: 1),
             ]
-            self.keyValueStore.setObject(isEnabledFlags, key: "remoteConfigKey", transaction: tx)
-            self.keyValueStore.setObject(valueFlags, key: "remoteConfigValueFlags", transaction: tx)
-            self.keyValueStore.setObject(timeGatedFlags, key: "remoteConfigTimeGatedFlags", transaction: tx)
+            self.keyValueStore.setObject(isEnabledFlags as [NSString: NSNumber] as NSDictionary, key: "remoteConfigKey", transaction: tx)
+            self.keyValueStore.setObject(valueFlags as [NSString: NSString] as NSDictionary, key: "remoteConfigValueFlags", transaction: tx)
+            self.keyValueStore.setObject(timeGatedFlags as [NSString: NSDate] as NSDictionary, key: "remoteConfigTimeGatedFlags", transaction: tx)
         }
         let valueFlags = self.db.read { tx in
             return self.store.loadValueFlags(tx: tx)

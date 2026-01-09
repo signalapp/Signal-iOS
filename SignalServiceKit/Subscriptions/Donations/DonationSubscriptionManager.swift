@@ -553,7 +553,7 @@ extension DonationSubscriptionManager {
 
     public static func setSubscriberID(_ subscriberID: Data?, transaction: DBWriteTransaction) {
         subscriptionKVS.setObject(
-            subscriberID,
+            subscriberID as NSData?,
             key: subscriberIDKey,
             transaction: transaction,
         )
@@ -575,7 +575,7 @@ extension DonationSubscriptionManager {
         _ currencyCode: Currency.Code?,
         transaction: DBWriteTransaction,
     ) {
-        subscriptionKVS.setObject(
+        subscriptionKVS.setString(
             currencyCode,
             key: subscriberCurrencyCodeKey,
             transaction: transaction,
@@ -611,7 +611,7 @@ extension DonationSubscriptionManager {
     // MARK: -
 
     fileprivate static func setKnownUserSubscriptionBadgeIDs(badgeIDs: [String], transaction: DBWriteTransaction) {
-        subscriptionKVS.setObject(badgeIDs, key: knownUserSubscriptionBadgeIDsKey, transaction: transaction)
+        subscriptionKVS.setStringArray(badgeIDs, key: knownUserSubscriptionBadgeIDsKey, transaction: transaction)
     }
 
     fileprivate static func knownUserSubscriptionBadgeIDs(transaction: DBReadTransaction) -> [String] {
@@ -619,7 +619,7 @@ extension DonationSubscriptionManager {
     }
 
     fileprivate static func setKnownUserBoostBadgeIDs(badgeIDs: [String], transaction: DBWriteTransaction) {
-        subscriptionKVS.setObject(badgeIDs, key: knownUserBoostBadgeIDsKey, transaction: transaction)
+        subscriptionKVS.setStringArray(badgeIDs, key: knownUserBoostBadgeIDsKey, transaction: transaction)
     }
 
     fileprivate static func knownUserBoostBadgeIDs(transaction: DBReadTransaction) -> [String] {
@@ -627,7 +627,7 @@ extension DonationSubscriptionManager {
     }
 
     fileprivate static func setKnownUserGiftBadgeIDs(badgeIDs: [String], transaction: DBWriteTransaction) {
-        subscriptionKVS.setObject(badgeIDs, key: knownUserGiftBadgeIDsKey, transaction: transaction)
+        subscriptionKVS.setStringArray(badgeIDs, key: knownUserGiftBadgeIDsKey, transaction: transaction)
     }
 
     fileprivate static func knownUserGiftBadgeIDs(transaction: DBReadTransaction) -> [String] {

@@ -1053,7 +1053,11 @@ private extension KeyValueStore {
     }
 
     func setRemoteConfigValueFlags(_ newValue: [String: String], transaction: DBWriteTransaction) {
-        return setObject(newValue, key: Self.remoteConfigValueFlagsKey, transaction: transaction)
+        return setObject(
+            newValue as [NSString: NSString] as NSDictionary,
+            key: Self.remoteConfigValueFlagsKey,
+            transaction: transaction,
+        )
     }
 
     // MARK: - Remote Config Time Gated Flags

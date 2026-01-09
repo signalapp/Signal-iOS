@@ -23,7 +23,7 @@ public class ReactionManager: NSObject {
     }
 
     public class func setCustomEmojiSet(_ emojis: [String]?, transaction: DBWriteTransaction) {
-        emojiSetKVS.setObject(emojis, key: emojiSetKey, transaction: transaction)
+        emojiSetKVS.setStringArray(emojis, key: emojiSetKey, transaction: transaction)
     }
 
     @discardableResult

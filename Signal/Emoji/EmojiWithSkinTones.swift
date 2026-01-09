@@ -58,7 +58,11 @@ extension Emoji {
 
     func setPreferredSkinTones(_ preferredSkinTonePermutation: [SkinTone]?, transaction: DBWriteTransaction) {
         if let preferredSkinTonePermutation {
-            Self.keyValueStore.setObject(preferredSkinTonePermutation.map { $0.rawValue }, key: rawValue, transaction: transaction)
+            Self.keyValueStore.setStringArray(
+                preferredSkinTonePermutation.map { $0.rawValue },
+                key: rawValue,
+                transaction: transaction,
+            )
         } else {
             Self.keyValueStore.removeValue(forKey: rawValue, transaction: transaction)
         }
