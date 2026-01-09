@@ -147,8 +147,8 @@ public final class DonationReceiptCredentialRedemptionJobRecord: JobRecord, Fact
         ).map { amountData in
             return try LegacySDSSerializer().deserializeLegacySDSData(
                 amountData,
-                propertyName: "amount",
-            )
+                ofClass: NSDecimalNumber.self,
+            ) as Decimal
         }
         currencyCode = try container.decodeIfPresent(String.self, forKey: .currencyCode)
 
@@ -172,7 +172,7 @@ public final class DonationReceiptCredentialRedemptionJobRecord: JobRecord, Fact
         try container.encode(isNewSubscription, forKey: .isNewSubscription)
         try container.encode(isBoost, forKey: .isBoost)
         try container.encodeIfPresent(
-            LegacySDSSerializer().serializeAsLegacySDSData(property: amount),
+            (amount as NSDecimalNumber?).map(LegacySDSSerializer().serializeAsLegacySDSData(_:)),
             forKey: .amount,
         )
         try container.encodeIfPresent(currencyCode, forKey: .currencyCode)

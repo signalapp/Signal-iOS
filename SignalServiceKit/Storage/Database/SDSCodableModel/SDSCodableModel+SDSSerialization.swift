@@ -20,14 +20,17 @@ struct SDSCodableModelLegacySerializer: SDSSerializer {
     /// Serializes the given property in the same way the SDS codegen does.
     ///
     /// For use with complex properties that are stored in a single BLOB column.
-    func serializeAsLegacySDSData(property: Any?) -> Data? {
-        return optionalArchive(property)
+    func serializeAsLegacySDSData<T: NSObject & NSSecureCoding>(_ value: T) -> Data {
+        return try! NSKeyedArchiver.archivedData(withRootObject: value, requiringSecureCoding: true)
     }
 
     /// Deserialize the given data in the same way the SDS codegen does.
     ///
     /// For use with complex properties that are stored in a single BLOB column.
-    func deserializeLegacySDSData<T>(_ data: Data, propertyName: String) throws -> T {
-        return try SDSDeserialization.unarchive(data, name: propertyName)
+    func deserializeLegacySDSData<T: NSObject & NSSecureCoding>(_ encodedValue: Data, ofClass cls: T.Type) throws -> T {
+        guard let result = try? NSKeyedUnarchiver.unarchivedObject(ofClass: cls, from: encodedValue) else {
+            throw SDSError.invalidValue()
+        }
+        return result
     }
 }

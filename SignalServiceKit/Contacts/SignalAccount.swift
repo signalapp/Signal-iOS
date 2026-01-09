@@ -114,10 +114,7 @@ public final class SignalAccount: NSObject, SDSCodableModel, Decodable {
         // result, we must test for whether or not `contact` exists to know if we
         // have a deprecated or modern representation.
         if let deprecatedContactData = try container.decodeIfPresent(Data.self, forKey: .contact) {
-            let deprecatedContact: Contact = try LegacySDSSerializer().deserializeLegacySDSData(
-                deprecatedContactData,
-                propertyName: "contact",
-            )
+            let deprecatedContact = try LegacySDSSerializer().deserializeLegacySDSData(deprecatedContactData, ofClass: Contact.self)
             self.hasDeprecatedRepresentation = true
             self.cnContactId = deprecatedContact.cnContactId
             self.givenName = deprecatedContact.firstName
