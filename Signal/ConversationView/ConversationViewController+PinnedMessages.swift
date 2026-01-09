@@ -216,7 +216,7 @@ public extension ConversationViewController {
 
         // Attachments
         let attachmentIcon = mediaSymbol(attachment: mediaAttachment)
-        let attachmentDescription = mediaAttachment?.previewText(includeEmoji: false)
+        let attachmentDescription = mediaAttachment?.previewText(includeFileName: true, includeEmoji: false)
         if let attachmentDescription = attachmentDescription?.nilIfEmpty {
             if let attachmentIcon {
                 return attachmentIcon + " " + NSAttributedString(string: attachmentDescription)

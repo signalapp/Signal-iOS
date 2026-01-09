@@ -99,7 +99,10 @@ public class ReferencedAttachmentBackupThumbnail: ReferencedAttachment {
 
 extension ReferencedAttachment {
 
-    public func previewText(includeEmoji: Bool = true) -> String {
+    public func previewText(
+        includeFileName: Bool = false,
+        includeEmoji: Bool = true,
+    ) -> String {
         let mimeType = attachment.mimeType
 
         let attachmentString: String
@@ -142,10 +145,14 @@ extension ReferencedAttachment {
                 )
             }
         } else {
-            attachmentString = OWSLocalizedString(
-                "ATTACHMENT_TYPE_FILE",
-                comment: "Short text label for a file attachment, used for thread preview and on the lock screen",
-            )
+            if includeFileName, let filename = reference.sourceFilename {
+                attachmentString = filename.ows_stripped()
+            } else {
+                attachmentString = OWSLocalizedString(
+                    "ATTACHMENT_TYPE_FILE",
+                    comment: "Short text label for a file attachment, used for thread preview and on the lock screen",
+                )
+            }
         }
 
         if includeEmoji {
