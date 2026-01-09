@@ -1188,7 +1188,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
             case .storyMessage(let storyMessageSource):
                 guard
                     let storyMessage = self.storyStore.fetchStoryMessage(
-                        rowId: storyMessageSource.storyMsessageRowId,
+                        rowId: storyMessageSource.storyMessageRowId,
                         tx: tx,
                     )
                 else {

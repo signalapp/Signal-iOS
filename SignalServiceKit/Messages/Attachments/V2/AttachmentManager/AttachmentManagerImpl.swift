@@ -151,15 +151,12 @@ public class AttachmentManagerImpl: AttachmentManager {
 
     // MARK: - Helpers
 
-    private typealias OwnerId = AttachmentReference.OwnerId
-    private typealias OwnerBuilder = AttachmentReference.OwnerBuilder
-
     // MARK: Creating Attachments from source
 
     private func sanitizeOversizeTextOwner(
-        currentOwner: OwnerBuilder,
+        currentOwner: AttachmentReference.OwnerBuilder,
         mimeType: String,
-    ) -> OwnerBuilder {
+    ) -> AttachmentReference.OwnerBuilder {
         if
             mimeType == MimeType.textXSignalPlain.rawValue,
             case .messageBodyAttachment(let metadata) = currentOwner
@@ -177,12 +174,12 @@ public class AttachmentManagerImpl: AttachmentManager {
 
     private func _createAttachmentPointer(
         from proto: SSKProtoAttachmentPointer,
-        owner: OwnerBuilder,
+        owner: AttachmentReference.OwnerBuilder,
         tx: DBWriteTransaction,
     ) throws {
         let transitTierInfo = try self.transitTierInfo(from: proto)
 
-        let knownIdFromProto: OwnerBuilder.KnownIdInOwner = {
+        let knownIdFromProto: AttachmentReference.OwnerBuilder.KnownIdInOwner = {
             if
                 let uuidData = proto.clientUuid,
                 let uuid = UUID(data: uuidData)
@@ -311,7 +308,7 @@ public class AttachmentManagerImpl: AttachmentManager {
         let proto = ownedProto.proto
 
         let knownIdFromProto = ownedProto.clientUUID.map {
-            return OwnerBuilder.KnownIdInOwner.known($0)
+            return AttachmentReference.OwnerBuilder.KnownIdInOwner.known($0)
         } ?? .knownNil
 
         let sourceFilename = proto.fileName.nilIfEmpty
@@ -485,9 +482,9 @@ public class AttachmentManagerImpl: AttachmentManager {
                 // We already have an attachment with the same mediaName (likely from this same
                 // backup). Just point the reference at the existing attachment.
                 do {
-                    try attachmentStore.addOwner(
+                    try attachmentStore.addReference(
                         referenceParams,
-                        for: existingAttachmentId,
+                        attachmentRowId: existingAttachmentId,
                         tx: tx,
                     )
                     return .success(())
@@ -605,9 +602,9 @@ public class AttachmentManagerImpl: AttachmentManager {
                 sourceUnencryptedByteCount: existingAttachmentMetadata.sourceUnencryptedByteCount,
                 sourceMediaSizePixels: existingAttachmentMetadata.sourceMediaSizePixels,
             )
-            try attachmentStore.addOwner(
+            try attachmentStore.addReference(
                 referenceParams,
-                for: existingAttachment.id,
+                attachmentRowId: existingAttachment.id,
                 tx: tx,
             )
         case .pendingAttachment(let pendingAttachment):
@@ -727,9 +724,9 @@ public class AttachmentManagerImpl: AttachmentManager {
                 // Already have an attachment with the same plaintext hash or media name! Create a new reference to it instead.
                 // If this fails and throws, the database won't be in an invalid state even if not rolled
                 // back; the existing attachment just doesn't get its new owner.
-                try attachmentStore.addOwner(
+                try attachmentStore.addReference(
                     referenceParams,
-                    for: existingAttachmentId,
+                    attachmentRowId: existingAttachmentId,
                     tx: tx,
                 )
                 return
@@ -808,7 +805,7 @@ public class AttachmentManagerImpl: AttachmentManager {
                 references.append(reference)
             }
             try references.forEach { reference in
-                try self.attachmentStore.removeOwner(
+                try self.attachmentStore.removeReference(
                     reference: reference,
                     tx: tx,
                 )
@@ -818,9 +815,9 @@ public class AttachmentManagerImpl: AttachmentManager {
                     sourceUnencryptedByteCount: reference.sourceUnencryptedByteCount,
                     sourceMediaSizePixels: reference.sourceMediaSizePixels,
                 )
-                try self.attachmentStore.addOwner(
+                try self.attachmentStore.addReference(
                     newOwnerParams,
-                    for: existingAttachmentId,
+                    attachmentRowId: existingAttachmentId,
                     tx: tx,
                 )
             }

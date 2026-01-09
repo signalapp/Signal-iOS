@@ -276,7 +276,7 @@ public struct MediaGalleryAttachmentFinder {
         let threadIdColumn = Column(RecordType.CodingKeys.threadRowId)
         let renderingFlagColumn = Column(RecordType.CodingKeys.renderingFlag)
         let contentTypeColumn = Column(RecordType.CodingKeys.contentType)
-        let ownerTypeColumn = Column(RecordType.CodingKeys.ownerType)
+        let ownerTypeColumn = Column(RecordType.CodingKeys.ownerTypeRaw)
         let isViewOnceColumn = Column(RecordType.CodingKeys.isViewOnce)
         let isPastEditRevisionColumn = Column(RecordType.CodingKeys.ownerIsPastEditRevision)
 
@@ -284,7 +284,7 @@ public struct MediaGalleryAttachmentFinder {
             // All finders are thread-scoped; filter to this thread.
             .filter(threadIdColumn == self.threadId)
             // Media gallery only shows body attachments; always filter to that owner type.
-            .filter(ownerTypeColumn == AttachmentReference.MessageOwnerTypeRaw.bodyAttachment.rawValue)
+            .filter(ownerTypeColumn == RecordType.OwnerType.bodyAttachment.rawValue)
             // Never show view once media in the gallery
             .filter(isViewOnceColumn == false)
             // Never show past edit revisions in the gallery

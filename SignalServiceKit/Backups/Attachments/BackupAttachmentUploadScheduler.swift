@@ -316,7 +316,7 @@ public class BackupAttachmentUploadSchedulerImpl: BackupAttachmentUploadSchedule
     ) -> QueuedBackupAttachmentUpload.OwnerType? {
         switch owner {
         case .message(let messageSource):
-            switch messageSource.rawMessageOwnerType {
+            switch messageSource {
             case .oversizeText:
                 // We inline oversize text in the backup, and don't back
                 // up the corresponding attachment.
@@ -325,7 +325,7 @@ public class BackupAttachmentUploadSchedulerImpl: BackupAttachmentUploadSchedule
                 .bodyAttachment,
                 .contactAvatar,
                 .linkPreview,
-                .quotedReplyAttachment,
+                .quotedReply,
                 .sticker:
                 break
             }

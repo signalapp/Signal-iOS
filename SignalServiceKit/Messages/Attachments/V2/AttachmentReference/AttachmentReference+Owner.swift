@@ -7,66 +7,78 @@ import Foundation
 
 extension AttachmentReference {
 
-    /// What type of  message "owner" this is, as stored in the sql table column.
-    public enum MessageOwnerTypeRaw: Int, Codable, CaseIterable {
-        case bodyAttachment = 0
-        case oversizeText = 1
-        case linkPreview = 2
-        case quotedReplyAttachment = 3
-        case sticker = 4
-        case contactAvatar = 5
-    }
-
-    /// What type of  message "owner" this is, as stored in the sql table column.
-    public enum StoryMessageOwnerTypeRaw: Int, Codable, CaseIterable {
-        case media = 0
-        case linkPreview = 1
-    }
-
-    /// What "owns" this attachment, as stored in the various sql table columns.
-    public enum OwnerId: Hashable, Equatable {
-        case messageBodyAttachment(messageRowId: Int64)
-        case messageOversizeText(messageRowId: Int64)
-        case messageLinkPreview(messageRowId: Int64)
-        /// Note that the row id is for the parent message containing the quoted reply,
-        /// not the original message being quoted.
-        case quotedReplyAttachment(messageRowId: Int64)
-        case messageSticker(messageRowId: Int64)
-        case messageContactAvatar(messageRowId: Int64)
-        case storyMessageMedia(storyMessageRowId: Int64)
-        case storyMessageLinkPreview(storyMessageRowId: Int64)
-        case threadWallpaperImage(threadRowId: Int64)
-        /// The global default thread wallpaper; a single global owner.
-        /// Has no associated owner in any other table; managed manually.
-        case globalThreadWallpaperImage
-    }
-
-    /// A more friendly in-memory representation of the "owner" of the attachment
-    /// with any associated metadata.
+    /// A friendly representation of the "owner" of this attachment represented
+    /// by this attachment reference.
+    ///
+    /// Note that a given `Attachment` may have multiple "owners", if the same
+    /// attachment is present on this device in multiple contexts.
     public enum Owner {
         case message(MessageSource)
         case storyMessage(StoryMessageSource)
         case thread(ThreadSource)
 
+        // MARK: - ID
+
+        public enum ID: Hashable, Equatable {
+            case messageBodyAttachment(messageRowId: Int64)
+            case messageOversizeText(messageRowId: Int64)
+            case messageLinkPreview(messageRowId: Int64)
+            /// - Note
+            /// The `messageRowId` points to the message containing the quoted
+            /// reply, not the message being quoted.
+            case quotedReplyAttachment(messageRowId: Int64)
+            case messageSticker(messageRowId: Int64)
+            case messageContactAvatar(messageRowId: Int64)
+            case storyMessageMedia(storyMessageRowId: Int64)
+            case storyMessageLinkPreview(storyMessageRowId: Int64)
+            case threadWallpaperImage(threadRowId: Int64)
+            /// The global default thread wallpaper; a single global owner.
+            /// Has no associated owner in any other table; managed manually.
+            case globalThreadWallpaperImage
+        }
+
+        public var id: ID {
+            switch self {
+            case .message(.bodyAttachment(let metadata)): .messageBodyAttachment(messageRowId: metadata.messageRowId)
+            case .message(.oversizeText(let metadata)): .messageOversizeText(messageRowId: metadata.messageRowId)
+            case .message(.linkPreview(let metadata)): .messageLinkPreview(messageRowId: metadata.messageRowId)
+            case .message(.quotedReply(let metadata)): .quotedReplyAttachment(messageRowId: metadata.messageRowId)
+            case .message(.sticker(let metadata)): .messageSticker(messageRowId: metadata.messageRowId)
+            case .message(.contactAvatar(let metadata)): .messageContactAvatar(messageRowId: metadata.messageRowId)
+            case .storyMessage(.media(let metadata)): .storyMessageMedia(storyMessageRowId: metadata.storyMessageRowId)
+            case .storyMessage(.textStoryLinkPreview(let metadata)): .storyMessageLinkPreview(storyMessageRowId: metadata.storyMessageRowId)
+            case .thread(.threadWallpaperImage(let metadata)): .threadWallpaperImage(threadRowId: metadata.threadRowId)
+            case .thread(.globalThreadWallpaperImage): .globalThreadWallpaperImage
+            }
+        }
+
         // MARK: - Message
 
         public enum MessageSource {
             case bodyAttachment(BodyAttachmentMetadata)
-
             /// Always assumed to have a text content type.
             case oversizeText(Metadata)
-
             /// Always assumed to have an image content type.
             case linkPreview(Metadata)
-
             /// Note that the row id is for the parent message containing the quoted reply,
             /// not the original message being quoted.
             case quotedReply(QuotedReplyMetadata)
-
             case sticker(StickerMetadata)
-
             /// Always assumed to have an image content type.
             case contactAvatar(Metadata)
+
+            // MARK: -
+
+            var persistedOwnerType: MessageAttachmentReferenceRecord.OwnerType {
+                switch self {
+                case .bodyAttachment: .bodyAttachment
+                case .oversizeText: .oversizeText
+                case .linkPreview: .linkPreview
+                case .quotedReply: .quotedReplyAttachment
+                case .sticker: .sticker
+                case .contactAvatar: .contactAvatar
+                }
+            }
 
             // MARK: - Message Metadata
 
@@ -211,35 +223,34 @@ extension AttachmentReference {
 
             public var messageRowId: Int64 {
                 switch self {
-                case .bodyAttachment(let metadata):
-                    return metadata.messageRowId
-                case .oversizeText(let metadata):
-                    return metadata.messageRowId
-                case .linkPreview(let metadata):
-                    return metadata.messageRowId
-                case .quotedReply(let metadata):
-                    return metadata.messageRowId
-                case .sticker(let metadata):
-                    return metadata.messageRowId
-                case .contactAvatar(let metadata):
-                    return metadata.messageRowId
+                case .bodyAttachment(let metadata): metadata.messageRowId
+                case .oversizeText(let metadata): metadata.messageRowId
+                case .linkPreview(let metadata): metadata.messageRowId
+                case .quotedReply(let metadata): metadata.messageRowId
+                case .sticker(let metadata): metadata.messageRowId
+                case .contactAvatar(let metadata): metadata.messageRowId
+                }
+            }
+
+            public var idInMessage: UUID? {
+                switch self {
+                case .bodyAttachment(let metadata): metadata.idInOwner
+                case .oversizeText: nil
+                case .linkPreview: nil
+                case .quotedReply: nil
+                case .sticker: nil
+                case .contactAvatar: nil
                 }
             }
 
             public var receivedAtTimestamp: UInt64 {
                 switch self {
-                case .bodyAttachment(let metadata):
-                    return metadata.receivedAtTimestamp
-                case .oversizeText(let metadata):
-                    return metadata.receivedAtTimestamp
-                case .linkPreview(let metadata):
-                    return metadata.receivedAtTimestamp
-                case .quotedReply(let metadata):
-                    return metadata.receivedAtTimestamp
-                case .sticker(let metadata):
-                    return metadata.receivedAtTimestamp
-                case .contactAvatar(let metadata):
-                    return metadata.receivedAtTimestamp
+                case .bodyAttachment(let metadata): metadata.receivedAtTimestamp
+                case .oversizeText(let metadata): metadata.receivedAtTimestamp
+                case .linkPreview(let metadata): metadata.receivedAtTimestamp
+                case .quotedReply(let metadata): metadata.receivedAtTimestamp
+                case .sticker(let metadata): metadata.receivedAtTimestamp
+                case .contactAvatar(let metadata): metadata.receivedAtTimestamp
                 }
             }
         }
@@ -249,6 +260,15 @@ extension AttachmentReference {
         public enum StoryMessageSource {
             case media(MediaMetadata)
             case textStoryLinkPreview(StoryMessageSource.Metadata)
+
+            // MARK: -
+
+            var persistedOwnerType: StoryMessageAttachmentReferenceRecord.OwnerType {
+                switch self {
+                case .media: .media
+                case .textStoryLinkPreview: .linkPreview
+                }
+            }
 
             // MARK: - Story Message Metadata
 
@@ -278,7 +298,7 @@ extension AttachmentReference {
                 }
             }
 
-            public var storyMsessageRowId: Int64 {
+            public var storyMessageRowId: Int64 {
                 switch self {
                 case .media(let metadata):
                     return metadata.storyMessageRowId
@@ -308,6 +328,13 @@ extension AttachmentReference {
                     self.creationTimestamp = creationTimestamp
                 }
             }
+
+            public var threadRowId: Int64? {
+                switch self {
+                case .threadWallpaperImage(let threadMetadata): threadMetadata.threadRowId
+                case .globalThreadWallpaperImage: nil
+                }
+            }
         }
     }
 }
@@ -318,8 +345,9 @@ extension AttachmentReference.Owner {
 
     static func validateAndBuild(record: AttachmentReference.MessageAttachmentReferenceRecord) throws -> AttachmentReference.Owner {
         guard
-            let ownerTypeRaw = Int(exactly: record.ownerType),
-            let ownerType = AttachmentReference.MessageOwnerTypeRaw(rawValue: ownerTypeRaw)
+            let ownerType = AttachmentReference.MessageAttachmentReferenceRecord.OwnerType(
+                rawValue: record.ownerTypeRaw,
+            )
         else {
             throw OWSAssertionError("Invalid owner type")
         }
@@ -397,8 +425,9 @@ extension AttachmentReference.Owner {
         record: AttachmentReference.StoryMessageAttachmentReferenceRecord,
     ) throws -> AttachmentReference.Owner {
         guard
-            let ownerTypeRaw = Int(exactly: record.ownerType),
-            let ownerType = AttachmentReference.StoryMessageOwnerTypeRaw(rawValue: ownerTypeRaw)
+            let ownerType = AttachmentReference.StoryMessageAttachmentReferenceRecord.OwnerType(
+                rawValue: record.ownerTypeRaw,
+            )
         else {
             throw OWSAssertionError("Invalid owner type")
         }
@@ -511,68 +540,6 @@ extension AttachmentReference.Owner {
             case .globalThreadWallpaperImage(let creationTimestamp):
                 return .thread(.globalThreadWallpaperImage(creationTimestamp: creationTimestamp))
             }
-        }
-    }
-}
-
-// MARK: - Converters
-
-extension AttachmentReference.Owner {
-
-    public var id: AttachmentReference.OwnerId {
-        switch self {
-        case .message(.bodyAttachment(let metadata)):
-            return .messageBodyAttachment(messageRowId: metadata.messageRowId)
-        case .message(.oversizeText(let metadata)):
-            return .messageOversizeText(messageRowId: metadata.messageRowId)
-        case .message(.linkPreview(let metadata)):
-            return .messageLinkPreview(messageRowId: metadata.messageRowId)
-        case .message(.quotedReply(let metadata)):
-            return .quotedReplyAttachment(messageRowId: metadata.messageRowId)
-        case .message(.sticker(let metadata)):
-            return .messageSticker(messageRowId: metadata.messageRowId)
-        case .message(.contactAvatar(let metadata)):
-            return .messageContactAvatar(messageRowId: metadata.messageRowId)
-        case .storyMessage(.media(let metadata)):
-            return .storyMessageMedia(storyMessageRowId: metadata.storyMessageRowId)
-        case .storyMessage(.textStoryLinkPreview(let metadata)):
-            return .storyMessageLinkPreview(storyMessageRowId: metadata.storyMessageRowId)
-        case .thread(.threadWallpaperImage(let metadata)):
-            return .threadWallpaperImage(threadRowId: metadata.threadRowId)
-        case .thread(.globalThreadWallpaperImage):
-            return .globalThreadWallpaperImage
-        }
-    }
-}
-
-extension AttachmentReference.Owner.MessageSource {
-
-    var rawMessageOwnerType: AttachmentReference.MessageOwnerTypeRaw {
-        switch self {
-        case .bodyAttachment:
-            return .bodyAttachment
-        case .oversizeText:
-            return .oversizeText
-        case .linkPreview:
-            return .linkPreview
-        case .quotedReply:
-            return .quotedReplyAttachment
-        case .sticker:
-            return .sticker
-        case .contactAvatar:
-            return .contactAvatar
-        }
-    }
-}
-
-extension AttachmentReference.Owner.StoryMessageSource {
-
-    var rawStoryMessageOwnerType: AttachmentReference.StoryMessageOwnerTypeRaw {
-        switch self {
-        case .media:
-            return .media
-        case .textStoryLinkPreview:
-            return .linkPreview
         }
     }
 }

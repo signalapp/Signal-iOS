@@ -236,7 +236,7 @@ final class DeleteForMeIncomingSyncMessageManagerImpl: DeleteForMeIncomingSyncMe
         }
 
         do {
-            try attachmentStore.removeOwner(
+            try attachmentStore.removeReference(
                 reference: targetAttachment.reference,
                 tx: tx,
             )

@@ -439,7 +439,7 @@ public class BackupArchiveChatStyleArchiver: BackupArchiveProtoStreamWriter {
         errorId: IDType,
         context: BackupArchive.ArchivingContext,
     ) -> BackupArchive.ArchiveSingleFrameResult<BackupProto_FilePointer?, IDType> {
-        let owner: AttachmentReference.OwnerId
+        let owner: AttachmentReference.Owner.ID
         if let thread {
             owner = .threadWallpaperImage(threadRowId: thread.threadRowId)
         } else {

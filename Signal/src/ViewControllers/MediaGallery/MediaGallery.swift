@@ -872,7 +872,7 @@ class MediaGallery {
                     let message = item.message
                     let referencedAttachment: ReferencedAttachment = item.attachmentStream
 
-                    try attachmentStore.removeOwner(
+                    try attachmentStore.removeReference(
                         reference: referencedAttachment.reference,
                         tx: tx,
                     )

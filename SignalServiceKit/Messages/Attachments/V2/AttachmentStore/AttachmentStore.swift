@@ -22,11 +22,9 @@ public struct AttachmentStore {
 
     public init() {}
 
-    typealias MessageAttachmentReferenceRecord = AttachmentReference.MessageAttachmentReferenceRecord
-    typealias MessageOwnerTypeRaw = AttachmentReference.MessageOwnerTypeRaw
-    typealias StoryMessageAttachmentReferenceRecord = AttachmentReference.StoryMessageAttachmentReferenceRecord
-    typealias StoryMessageOwnerTypeRaw = AttachmentReference.StoryMessageOwnerTypeRaw
-    typealias ThreadAttachmentReferenceRecord = AttachmentReference.ThreadAttachmentReferenceRecord
+    private typealias MessageAttachmentReferenceRecord = AttachmentReference.MessageAttachmentReferenceRecord
+    private typealias StoryMessageAttachmentReferenceRecord = AttachmentReference.StoryMessageAttachmentReferenceRecord
+    private typealias ThreadAttachmentReferenceRecord = AttachmentReference.ThreadAttachmentReferenceRecord
 
     // MARK: -
 
@@ -41,28 +39,6 @@ public struct AttachmentStore {
 
     // MARK: -
 
-    /// Fetch all references for the given owner. Results are unordered.
-    public func fetchReferences(
-        owner: AttachmentReference.OwnerId,
-        tx: DBReadTransaction,
-    ) -> [AttachmentReference] {
-        return fetchReferences(owners: [owner], tx: tx)
-    }
-
-    /// Fetch all references for the given owners. Results are unordered.
-    public func fetchReferences(
-        owners: [AttachmentReference.OwnerId],
-        tx: DBReadTransaction,
-    ) -> [AttachmentReference] {
-        return AttachmentReference.recordTypes.flatMap { recordType in
-            return fetchReferences(
-                owners: owners,
-                recordType: recordType,
-                tx: tx,
-            )
-        }
-    }
-
     /// Fetch an arbitrary reference for the provided owner.
     ///
     /// - Important
@@ -70,61 +46,110 @@ public struct AttachmentStore {
     /// arbitrary reference; for example, if the passed `owner` only allows at
     /// most one reference.
     public func fetchAnyReference(
-        owner: AttachmentReference.OwnerId,
+        owner: AttachmentReference.Owner.ID,
         tx: DBReadTransaction,
     ) -> AttachmentReference? {
         return fetchReferences(owner: owner, tx: tx).first
     }
 
-    private func fetchReferences<RecordType: FetchableAttachmentReferenceRecord>(
-        owners: [AttachmentReference.OwnerId],
-        recordType: RecordType.Type,
+    /// Fetch all references for the given owner. Results are unordered.
+    public func fetchReferences(
+        owner: AttachmentReference.Owner.ID,
         tx: DBReadTransaction,
     ) -> [AttachmentReference] {
-        var filterClauses = [String]()
-        var arguments = StatementArguments()
-        var numMatchingOwners = 0
-        for owner in owners {
-            switch recordType.columnFilters(for: owner) {
-            case .nonMatchingOwnerType:
-                continue
-            case .nullOwnerRowId:
-                filterClauses.append("\(recordType.ownerRowIdColumn.name) IS NULL")
-            case .ownerRowId(let ownerRowId):
-                filterClauses.append("\(recordType.ownerRowIdColumn.name) = ?")
-                _ = arguments.append(contentsOf: [ownerRowId])
-            case let .ownerTypeAndRowId(ownerRowId, ownerType, ownerTypeColumn):
-                filterClauses.append("(\(ownerTypeColumn.name) = ? AND \(recordType.ownerRowIdColumn.name) = ?)")
-                _ = arguments.append(contentsOf: [ownerType, ownerRowId])
-            }
-            numMatchingOwners += 1
-        }
-        guard numMatchingOwners > 0 else {
-            return []
-        }
-        let sql = "SELECT * FROM \(recordType.databaseTableName) WHERE \(filterClauses.joined(separator: " OR "));"
-        do {
-            let statement = try tx.database.cachedStatement(sql: sql)
-            var results = try RecordType.fetchAll(statement, arguments: arguments)
+        return fetchReferences(owners: [owner], tx: tx)
+    }
 
-            // If we have one owner and are capable of sorting, sort in ascending order.
-            if owners.count == 1, let orderInMessageKey = RecordType.orderInMessageKey {
-                results = results.sorted(by: { lhs, rhs in
-                    return lhs[keyPath: orderInMessageKey] ?? 0 <= rhs[keyPath: orderInMessageKey] ?? 0
-                })
+    /// Fetch all references for the given owners. Results are unordered.
+    public func fetchReferences(
+        owners: [AttachmentReference.Owner.ID],
+        tx: DBReadTransaction,
+    ) -> [AttachmentReference] {
+        return owners.flatMap { owner -> [AttachmentReference] in
+            return switch owner {
+            case .messageBodyAttachment(let messageRowId):
+                fetchMessageAttachmentReferences(ownerType: .bodyAttachment, messageRowId: messageRowId, tx: tx)
+            case .messageOversizeText(let messageRowId):
+                fetchMessageAttachmentReferences(ownerType: .oversizeText, messageRowId: messageRowId, tx: tx)
+            case .messageLinkPreview(let messageRowId):
+                fetchMessageAttachmentReferences(ownerType: .linkPreview, messageRowId: messageRowId, tx: tx)
+            case .quotedReplyAttachment(let messageRowId):
+                fetchMessageAttachmentReferences(ownerType: .quotedReplyAttachment, messageRowId: messageRowId, tx: tx)
+            case .messageSticker(let messageRowId):
+                fetchMessageAttachmentReferences(ownerType: .sticker, messageRowId: messageRowId, tx: tx)
+            case .messageContactAvatar(let messageRowId):
+                fetchMessageAttachmentReferences(ownerType: .contactAvatar, messageRowId: messageRowId, tx: tx)
+            case .storyMessageMedia(let storyMessageRowId):
+                fetchStoryAttachmentReferences(ownerType: .media, storyMessageRowId: storyMessageRowId, tx: tx)
+            case .storyMessageLinkPreview(let storyMessageRowId):
+                fetchStoryAttachmentReferences(ownerType: .linkPreview, storyMessageRowId: storyMessageRowId, tx: tx)
+            case .threadWallpaperImage(let threadRowId):
+                fetchThreadAttachmentReferences(threadRowId: threadRowId, tx: tx)
+            case .globalThreadWallpaperImage:
+                fetchThreadAttachmentReferences(threadRowId: nil, tx: tx)
             }
-            return results.compactMap {
+        }
+    }
+
+    private func fetchMessageAttachmentReferences(
+        ownerType: MessageAttachmentReferenceRecord.OwnerType,
+        messageRowId: Int64,
+        tx: DBReadTransaction,
+    ) -> [AttachmentReference] {
+        let query: QueryInterfaceRequest = MessageAttachmentReferenceRecord
+            .filter(MessageAttachmentReferenceRecord.Columns.ownerType == ownerType.rawValue)
+            .filter(MessageAttachmentReferenceRecord.Columns.ownerRowId == messageRowId)
+            .order(MessageAttachmentReferenceRecord.Columns.orderInMessage.asc)
+
+        return failIfThrows {
+            return try query.fetchAll(tx.database).compactMap { record -> AttachmentReference? in
                 do {
-                    return try $0.asReference()
+                    return try AttachmentReference(record: record)
                 } catch {
-                    // Fail the individual row, not all of them.
-                    owsFailDebug("Failed to parse attachment reference: \(error)")
+                    owsFailDebug("Failed to convert message record to reference! \(error)")
                     return nil
                 }
             }
-        } catch {
-            owsFailDebug("Failed to fetch attachment references \(error)")
-            return []
+        }
+    }
+
+    private func fetchStoryAttachmentReferences(
+        ownerType: StoryMessageAttachmentReferenceRecord.OwnerType,
+        storyMessageRowId: Int64,
+        tx: DBReadTransaction,
+    ) -> [AttachmentReference] {
+        let query: QueryInterfaceRequest = StoryMessageAttachmentReferenceRecord
+            .filter(StoryMessageAttachmentReferenceRecord.Columns.ownerType == ownerType.rawValue)
+            .filter(StoryMessageAttachmentReferenceRecord.Columns.ownerRowId == storyMessageRowId)
+
+        return failIfThrows {
+            return try query.fetchAll(tx.database).compactMap { record -> AttachmentReference? in
+                do {
+                    return try AttachmentReference(record: record)
+                } catch {
+                    owsFailDebug("Failed to convert story record to reference! \(error)")
+                    return nil
+                }
+            }
+        }
+    }
+
+    private func fetchThreadAttachmentReferences(
+        threadRowId: Int64?,
+        tx: DBReadTransaction,
+    ) -> [AttachmentReference] {
+        let query: QueryInterfaceRequest = ThreadAttachmentReferenceRecord
+            .filter(ThreadAttachmentReferenceRecord.Columns.ownerRowId == threadRowId)
+
+        return failIfThrows {
+            try query.fetchAll(tx.database).compactMap { record -> AttachmentReference? in
+                do {
+                    return try AttachmentReference(record: record)
+                } catch {
+                    owsFailDebug("Failed to convert thread record to reference! \(error)")
+                    return nil
+                }
+            }
         }
     }
 
@@ -201,14 +226,14 @@ public struct AttachmentStore {
     // MARK: -
 
     public func fetchReferencedAttachments(
-        for owner: AttachmentReference.OwnerId,
+        for owner: AttachmentReference.Owner.ID,
         tx: DBReadTransaction,
     ) -> [ReferencedAttachment] {
         return fetchReferencedAttachments(owners: [owner], tx: tx)
     }
 
     public func fetchReferencedAttachments(
-        owners: [AttachmentReference.OwnerId],
+        owners: [AttachmentReference.Owner.ID],
         tx: DBReadTransaction,
     ) -> [ReferencedAttachment] {
         let references: [AttachmentReference] = fetchReferences(owners: owners, tx: tx)
@@ -230,7 +255,7 @@ public struct AttachmentStore {
         messageRowId: Int64,
         tx: DBReadTransaction,
     ) -> [ReferencedAttachment] {
-        let allMessageOwners: [AttachmentReference.OwnerId] = MessageOwnerTypeRaw.allCases.map {
+        let allMessageOwners: [AttachmentReference.Owner.ID] = MessageAttachmentReferenceRecord.OwnerType.allCases.map {
             switch $0 {
             case .bodyAttachment: .messageBodyAttachment(messageRowId: messageRowId)
             case .oversizeText: .messageOversizeText(messageRowId: messageRowId)
@@ -248,7 +273,7 @@ public struct AttachmentStore {
         storyMessageRowId: Int64,
         tx: DBReadTransaction,
     ) -> [ReferencedAttachment] {
-        let allStoryOwners: [AttachmentReference.OwnerId] = StoryMessageOwnerTypeRaw.allCases.map {
+        let allStoryOwners: [AttachmentReference.Owner.ID] = StoryMessageAttachmentReferenceRecord.OwnerType.allCases.map {
             switch $0 {
             case .media: .storyMessageMedia(storyMessageRowId: storyMessageRowId)
             case .linkPreview: .storyMessageLinkPreview(storyMessageRowId: storyMessageRowId)
@@ -265,7 +290,7 @@ public struct AttachmentStore {
     /// arbitrary attachment; for example, if the passed `owner` only allows at
     /// most one reference.
     public func fetchAnyReferencedAttachment(
-        for owner: AttachmentReference.OwnerId,
+        for owner: AttachmentReference.Owner.ID,
         tx: DBReadTransaction,
     ) -> ReferencedAttachment? {
         guard let reference = self.fetchAnyReference(owner: owner, tx: tx) else {
@@ -349,41 +374,57 @@ public struct AttachmentStore {
         tx: DBReadTransaction,
         block: (AttachmentReference, _ stop: inout Bool) -> Void,
     ) {
-        AttachmentReference.recordTypes.forEach { recordType in
-            enumerateReferences(
-                attachmentId: attachmentId,
-                recordType: recordType,
-                tx: tx,
-                block: block,
-            )
+        var stop = false
+
+        func enumerateReferenceRecords<Record: FetchableRecord>(
+            fetchRequest: QueryInterfaceRequest<Record>,
+            tx: DBReadTransaction,
+            block: (Record, _ stop: inout Bool) -> Void,
+        ) {
+            if stop { return }
+
+            failIfThrows {
+                let cursor = try fetchRequest.fetchCursor(tx.database)
+                while let record = try cursor.next() {
+                    block(record, &stop)
+                    if stop { break }
+                }
+            }
         }
-    }
 
-    private func enumerateReferences<RecordType: FetchableAttachmentReferenceRecord>(
-        attachmentId: Attachment.IDType,
-        recordType: RecordType.Type,
-        tx: DBReadTransaction,
-        block: (AttachmentReference, _ stop: inout Bool) -> Void,
-    ) {
-        failIfThrows {
-            let cursor = try recordType
-                .filter(recordType.attachmentRowIdColumn == attachmentId)
-                .fetchCursor(tx.database)
+        enumerateReferenceRecords(
+            fetchRequest: MessageAttachmentReferenceRecord
+                .filter(MessageAttachmentReferenceRecord.Columns.attachmentRowId == attachmentId),
+            tx: tx,
+        ) { record, stop in
+            do {
+                block(try AttachmentReference(record: record), &stop)
+            } catch {
+                owsFailDebug("Failed to convert message record to reference! \(error)")
+            }
+        }
 
-            var stop = false
-            while let record = try cursor.next() {
-                let reference: AttachmentReference
-                do {
-                    reference = try record.asReference()
-                } catch {
-                    owsFailDebug("Failed to create AttachmentReference! \(error)")
-                    continue
-                }
+        enumerateReferenceRecords(
+            fetchRequest: StoryMessageAttachmentReferenceRecord
+                .filter(StoryMessageAttachmentReferenceRecord.Columns.attachmentRowId == attachmentId),
+            tx: tx,
+        ) { record, stop in
+            do {
+                block(try AttachmentReference(record: record), &stop)
+            } catch {
+                owsFailDebug("Failed to convert story message record to reference! \(error)")
+            }
+        }
 
-                block(reference, &stop)
-                if stop {
-                    break
-                }
+        enumerateReferenceRecords(
+            fetchRequest: ThreadAttachmentReferenceRecord
+                .filter(ThreadAttachmentReferenceRecord.Columns.attachmentRowId == attachmentId),
+            tx: tx,
+        ) { record, stop in
+            do {
+                block(try AttachmentReference(record: record), &stop)
+            } catch {
+                owsFailDebug("Failed to convert thread record to reference! \(error)")
             }
         }
     }
@@ -489,7 +530,7 @@ public struct AttachmentStore {
         tx: DBWriteTransaction,
     ) throws {
         var newRecord = ThreadAttachmentReferenceRecord(
-            attachmentReference: existingReference,
+            attachmentRowId: existingReference.attachmentRowId,
             threadSource: existingOwnerSource,
         )
         newRecord.ownerRowId = newOwnerThreadRowId
@@ -511,16 +552,12 @@ public struct AttachmentStore {
         withReceivedAtTimestamp receivedAtTimestamp: UInt64,
         tx: DBWriteTransaction,
     ) throws {
-        guard SDS.fitsInInt64(receivedAtTimestamp) else {
-            throw OWSAssertionError("UInt64 doesn't fit in Int64")
-        }
-
         switch reference.owner {
         case .message(let messageSource):
             // GRDB's swift query API can't help us here because MessageAttachmentReferenceRecord
             // lacks a primary id column. Just update the single column with manual SQL.
             let receivedAtTimestampColumn = Column(MessageAttachmentReferenceRecord.CodingKeys.receivedAtTimestamp)
-            let ownerTypeColumn = Column(MessageAttachmentReferenceRecord.CodingKeys.ownerType)
+            let ownerTypeColumn = Column(MessageAttachmentReferenceRecord.CodingKeys.ownerTypeRaw)
             let ownerRowIdColumn = Column(MessageAttachmentReferenceRecord.CodingKeys.ownerRowId)
             try tx.database.execute(
                 sql:
@@ -529,7 +566,7 @@ public struct AttachmentStore {
                     + "WHERE \(ownerTypeColumn.name) = ? AND \(ownerRowIdColumn.name) = ?;",
                 arguments: [
                     receivedAtTimestamp,
-                    messageSource.rawMessageOwnerType.rawValue,
+                    messageSource.persistedOwnerType.rawValue,
                     messageSource.messageRowId,
                 ],
             )
@@ -758,132 +795,139 @@ public struct AttachmentStore {
 
     // MARK: -
 
-    public func addOwner(
+    @discardableResult
+    public func addReference(
         _ referenceParams: AttachmentReference.ConstructionParams,
-        for attachmentRowId: Attachment.IDType,
+        attachmentRowId: Attachment.IDType,
         tx: DBWriteTransaction,
-    ) throws {
+    ) throws -> AttachmentReference {
         switch referenceParams.owner {
-        case .thread(.globalThreadWallpaperImage):
-            // This is a special case; see comment on method.
-            try insertGlobalThreadAttachmentReference(
-                referenceParams: referenceParams,
+        case .thread(let threadSource):
+            let threadReferenceRecord = ThreadAttachmentReferenceRecord(
                 attachmentRowId: attachmentRowId,
-                tx: tx,
+                threadSource: threadSource,
             )
-        default:
-            let referenceRecord = try referenceParams.buildRecord(attachmentRowId: attachmentRowId)
-            try referenceRecord.insert(tx.database)
+            switch threadSource {
+            case .globalThreadWallpaperImage:
+                // This is a special case; see comment on method.
+                try insertGlobalThreadAttachmentReference(
+                    newRecord: threadReferenceRecord,
+                    tx: tx,
+                )
+            default:
+                try threadReferenceRecord.insert(tx.database)
+            }
+            return try AttachmentReference(record: threadReferenceRecord)
+        case .message(let messageSource):
+            let messageReferenceRecord = MessageAttachmentReferenceRecord(
+                attachmentRowId: attachmentRowId,
+                sourceFilename: referenceParams.sourceFilename,
+                sourceUnencryptedByteCount: referenceParams.sourceUnencryptedByteCount,
+                sourceMediaSizePixels: referenceParams.sourceMediaSizePixels,
+                messageSource: messageSource,
+            )
+            try messageReferenceRecord.insert(tx.database)
+            return try AttachmentReference(record: messageReferenceRecord)
+        case .storyMessage(let storyMessageSource):
+            let storyReferenceRecord = try StoryMessageAttachmentReferenceRecord(
+                attachmentRowId: attachmentRowId,
+                sourceFilename: referenceParams.sourceFilename,
+                sourceUnencryptedByteCount: referenceParams.sourceUnencryptedByteCount,
+                sourceMediaSizePixels: referenceParams.sourceMediaSizePixels,
+                storyMessageSource: storyMessageSource,
+            )
+            try storyReferenceRecord.insert(tx.database)
+            return try AttachmentReference(record: storyReferenceRecord)
         }
     }
 
-    /// Removes all owner edges to the provided attachment that
-    /// have the provided owner type and id.
-    /// Will delete multiple instances if the same owner has multiple
-    /// edges of the given type to the given attachment (e.g. an image
-    /// appears twice as a body attachment on a given message).
-    public func removeAllOwners(
-        withId owner: AttachmentReference.OwnerId,
-        for attachmentId: Attachment.IDType,
+    /// Remove all references with the given owner.
+    /// - Returns the number of references removed.
+    public func removeAllReferences(
+        owner: AttachmentReference.Owner.ID,
         tx: DBWriteTransaction,
-    ) throws {
-        try AttachmentReference.recordTypes.forEach { recordType in
-            try removeOwner(
-                owner,
-                idInOwner: nil,
-                for: attachmentId,
-                recordType: recordType,
-                tx: tx,
-            )
+    ) throws -> Int {
+        let references = fetchReferences(owner: owner, tx: tx)
+        for reference in references {
+            try removeReference(reference: reference, tx: tx)
         }
+        return references.count
     }
 
-    /// Removes a single owner edge to the provided attachment that
-    /// have the provided owner metadata.
-    /// Will delete only delete the one given edge even if the same owner
-    /// has multiple edges to the same attachment.
-    public func removeOwner(
+    /// Remove the given reference.
+    ///
+    /// Note that the owner of this reference may have other references to the
+    /// same attachment: for example, a message containing multiple copies of
+    /// the same image.
+    public func removeReference(
         reference: AttachmentReference,
         tx: DBWriteTransaction,
     ) throws {
-        let idInOwner: UUID?
         switch reference.owner {
         case .message(let messageSource):
-            switch messageSource {
-            case .bodyAttachment(let metadata):
-                idInOwner = metadata.idInOwner
-            case
-                .oversizeText,
-                .linkPreview,
-                .quotedReply,
-                .sticker,
-                .contactAvatar:
-                idInOwner = nil
-            }
+            try removeMessageReference(
+                attachmentID: reference.attachmentRowId,
+                ownerType: messageSource.persistedOwnerType,
+                messageRowID: messageSource.messageRowId,
+                idInMessage: messageSource.idInMessage,
+                tx: tx,
+            )
         case .storyMessage(let storyMessageSource):
-            switch storyMessageSource {
-            case
-                .media,
-                .textStoryLinkPreview:
-                idInOwner = nil
-            }
+            try removeStoryMessageReference(
+                attachmentID: reference.attachmentRowId,
+                ownerType: storyMessageSource.persistedOwnerType,
+                storyMessageRowID: storyMessageSource.storyMessageRowId,
+                tx: tx,
+            )
         case .thread(let threadSource):
-            switch threadSource {
-            case
-                .threadWallpaperImage,
-                .globalThreadWallpaperImage:
-                idInOwner = nil
-            }
-        }
-        try AttachmentReference.recordTypes.forEach { recordType in
-            try removeOwner(
-                reference.owner.id,
-                idInOwner: idInOwner,
-                for: reference.attachmentRowId,
-                recordType: recordType,
+            try removeThreadReference(
+                attachmentID: reference.attachmentRowId,
+                threadRowID: threadSource.threadRowId,
                 tx: tx,
             )
         }
     }
 
-    private func removeOwner<RecordType: FetchableAttachmentReferenceRecord>(
-        _ owner: AttachmentReference.OwnerId,
-        idInOwner: UUID?,
-        for attachmentId: Attachment.IDType,
-        recordType: RecordType.Type,
+    private func removeMessageReference(
+        attachmentID: Attachment.IDType,
+        ownerType: MessageAttachmentReferenceRecord.OwnerType,
+        messageRowID: Int64,
+        idInMessage: UUID?,
         tx: DBWriteTransaction,
     ) throws {
-        // GRDB's swift query API can't help us here because the AttachmentReference tables
-        // lack a primary id column. Just use manual SQL.
-        var sql = "DELETE FROM \(recordType.databaseTableName) WHERE "
-        var arguments = StatementArguments()
+        let query = MessageAttachmentReferenceRecord
+            .filter(MessageAttachmentReferenceRecord.Columns.attachmentRowId == attachmentID)
+            .filter(MessageAttachmentReferenceRecord.Columns.ownerType == ownerType.rawValue)
+            .filter(MessageAttachmentReferenceRecord.Columns.ownerRowId == messageRowID)
+            .filter(MessageAttachmentReferenceRecord.Columns.idInMessage == idInMessage?.uuidString)
 
-        sql += "\(recordType.attachmentRowIdColumn.name) = ? "
-        _ = arguments.append(contentsOf: [attachmentId])
+        try query.deleteAll(tx.database)
+    }
 
-        switch recordType.columnFilters(for: owner) {
-        case .nonMatchingOwnerType:
-            return
-        case .nullOwnerRowId:
-            sql += "AND \(recordType.ownerRowIdColumn.name) IS NULL"
-        case .ownerRowId(let ownerRowId):
-            sql += "AND \(recordType.ownerRowIdColumn.name) = ?"
-            _ = arguments.append(contentsOf: [ownerRowId])
-        case let .ownerTypeAndRowId(ownerRowId, ownerType, typeColumn):
-            sql += "AND (\(typeColumn.name) = ? AND \(recordType.ownerRowIdColumn.name) = ?)"
-            _ = arguments.append(contentsOf: [ownerType, ownerRowId])
-        }
+    private func removeStoryMessageReference(
+        attachmentID: Attachment.IDType,
+        ownerType: StoryMessageAttachmentReferenceRecord.OwnerType,
+        storyMessageRowID: Int64,
+        tx: DBWriteTransaction,
+    ) throws {
+        let query = StoryMessageAttachmentReferenceRecord
+            .filter(StoryMessageAttachmentReferenceRecord.Columns.attachmentRowId == attachmentID)
+            .filter(StoryMessageAttachmentReferenceRecord.Columns.ownerType == ownerType.rawValue)
+            .filter(StoryMessageAttachmentReferenceRecord.Columns.ownerRowId == storyMessageRowID)
 
-        if let idInOwner, let idInOwnerColumn = recordType.idInOwnerColumn {
-            sql += " AND \(idInOwnerColumn.name) = ?"
-            _ = arguments.append(contentsOf: [idInOwner.uuidString])
-        }
+        try query.deleteAll(tx.database)
+    }
 
-        sql += ";"
-        try tx.database.execute(
-            sql: sql,
-            arguments: arguments,
-        )
+    private func removeThreadReference(
+        attachmentID: Attachment.IDType,
+        threadRowID: Int64?,
+        tx: DBWriteTransaction,
+    ) throws {
+        let query = ThreadAttachmentReferenceRecord
+            .filter(ThreadAttachmentReferenceRecord.Columns.attachmentRowId == attachmentID)
+            .filter(ThreadAttachmentReferenceRecord.Columns.ownerRowId == threadRowID)
+
+        try query.deleteAll(tx.database)
     }
 
     // MARK: -
@@ -932,9 +976,9 @@ public struct AttachmentStore {
         }
 
         do {
-            try addOwner(
+            try addReference(
                 referenceParams,
-                for: attachmentRowId,
+                attachmentRowId: attachmentRowId,
                 tx: tx,
             )
         } catch let ownerError {
@@ -955,8 +999,7 @@ public struct AttachmentStore {
     /// but UNIQUE doesn't apply to NULL values.
     /// So for this one only we overwrite the existing row if it exists.
     private func insertGlobalThreadAttachmentReference(
-        referenceParams: AttachmentReference.ConstructionParams,
-        attachmentRowId: Attachment.IDType,
+        newRecord: ThreadAttachmentReferenceRecord,
         tx: DBWriteTransaction,
     ) throws {
         let db = tx.database
@@ -967,11 +1010,6 @@ public struct AttachmentStore {
         let oldRecord = try AttachmentReference.ThreadAttachmentReferenceRecord
             .filter(ownerRowIdColumn == nil)
             .fetchOne(db)
-
-        let newRecord = try referenceParams.buildRecord(attachmentRowId: attachmentRowId)
-        guard let newRecord = newRecord as? ThreadAttachmentReferenceRecord else {
-            throw OWSAssertionError("Non matching record type")
-        }
 
         if let oldRecord, oldRecord == newRecord {
             // They're the same, no need to do anything.

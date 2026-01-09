@@ -146,13 +146,13 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
             }
         case .change:
             // Drop the quoted reply on the latest revision.
-            if let attachmentReferencePriorToEdit {
+            if attachmentReferencePriorToEdit != nil {
                 // Break the owner edge from the latest revision.
-                try attachmentStore.removeAllOwners(
-                    withId: .quotedReplyAttachment(messageRowId: latestRevisionRowId),
-                    for: attachmentReferencePriorToEdit.attachmentRowId,
+                let removedCount = try attachmentStore.removeAllReferences(
+                    owner: .quotedReplyAttachment(messageRowId: latestRevisionRowId),
                     tx: tx,
                 )
+                owsAssertDebug(removedCount == 1)
             }
             // No need to touch the TSMessage.quotedReply as it is already nil by default.
         }
@@ -202,11 +202,11 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
 
             // Break the owner edge from the latest revision since we always
             // either drop the link preview or create a new one.
-            try attachmentStore.removeAllOwners(
-                withId: .messageLinkPreview(messageRowId: latestRevisionRowId),
-                for: attachmentReferencePriorToEdit.attachmentRowId,
+            let removedCount = try attachmentStore.removeAllReferences(
+                owner: .messageLinkPreview(messageRowId: latestRevisionRowId),
                 tx: tx,
             )
+            owsAssertDebug(removedCount == 1)
         }
 
         // Create and assign the new link preview.
@@ -304,11 +304,11 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
 
             // Break the owner edge from the latest revision since we always
             // either drop the oversize text or create a new one.
-            try attachmentStore.removeAllOwners(
-                withId: .messageOversizeText(messageRowId: latestRevisionRowId),
-                for: oversizeTextReferencePriorToEdit.attachmentRowId,
+            let removedCount = try attachmentStore.removeAllReferences(
+                owner: .messageOversizeText(messageRowId: latestRevisionRowId),
                 tx: tx,
             )
+            owsAssertDebug(removedCount == 1)
         }
 
         // Create and assign the new oversize text.

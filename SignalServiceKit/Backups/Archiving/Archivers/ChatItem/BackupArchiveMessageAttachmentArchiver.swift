@@ -349,7 +349,7 @@ class BackupArchiveMessageAttachmentArchiver: BackupArchiveProtoStreamWriter {
     // MARK: Archiving
 
     private func archiveSingleAttachment(
-        owner: AttachmentReference.OwnerId,
+        owner: AttachmentReference.Owner.ID,
         context: BackupArchive.ArchivingContext,
     ) -> BackupArchive.ArchiveInteractionResult<BackupProto_FilePointer?> {
         guard

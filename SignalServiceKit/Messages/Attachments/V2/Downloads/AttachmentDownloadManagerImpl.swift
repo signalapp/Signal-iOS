@@ -2184,7 +2184,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         references.append(reference)
                     }
                     try references.forEach { reference in
-                        try self.attachmentStore.removeOwner(
+                        try self.attachmentStore.removeReference(
                             reference: reference,
                             tx: tx,
                         )
@@ -2194,9 +2194,9 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                             sourceUnencryptedByteCount: reference.sourceUnencryptedByteCount,
                             sourceMediaSizePixels: reference.sourceMediaSizePixels,
                         )
-                        try self.attachmentStore.addOwner(
+                        try self.attachmentStore.addReference(
                             newOwnerParams,
-                            for: existingAttachmentId,
+                            attachmentRowId: existingAttachmentId,
                             tx: tx,
                         )
                     }
@@ -2245,7 +2245,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     throw OWSAssertionError("Attachments should never have zero references")
                 }
 
-                try self.attachmentStore.removeOwner(
+                try self.attachmentStore.removeReference(
                     reference: firstReference,
                     tx: tx,
                 )
@@ -2376,7 +2376,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     ? references.suffix(max(references.count - 1, 0))
                     : references
                 try referencesToUpdate.forEach { reference in
-                    try self.attachmentStore.removeOwner(
+                    try self.attachmentStore.removeReference(
                         reference: reference,
                         tx: tx,
                     )
@@ -2386,9 +2386,9 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         sourceUnencryptedByteCount: reference.sourceUnencryptedByteCount,
                         sourceMediaSizePixels: reference.sourceMediaSizePixels,
                     )
-                    try self.attachmentStore.addOwner(
+                    try self.attachmentStore.addReference(
                         newOwnerParams,
-                        for: newAttachment.attachment.id,
+                        attachmentRowId: newAttachment.attachment.id,
                         tx: tx,
                     )
                 }
@@ -2442,7 +2442,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     return
                 }
 
-                try self.attachmentStore.removeOwner(
+                try self.attachmentStore.removeReference(
                     reference: firstReference,
                     tx: tx,
                 )
@@ -2566,7 +2566,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     ? references.suffix(max(references.count - 1, 0))
                     : references
                 try referencesToUpdate.forEach { reference in
-                    try self.attachmentStore.removeOwner(
+                    try self.attachmentStore.removeReference(
                         reference: reference,
                         tx: tx,
                     )
@@ -2576,9 +2576,9 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         sourceUnencryptedByteCount: reference.sourceUnencryptedByteCount,
                         sourceMediaSizePixels: reference.sourceMediaSizePixels,
                     )
-                    try self.attachmentStore.addOwner(
+                    try self.attachmentStore.addReference(
                         newOwnerParams,
-                        for: thumbnailAttachmentId,
+                        attachmentRowId: thumbnailAttachmentId,
                         tx: tx,
                     )
                 }
@@ -2630,7 +2630,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             case .storyMessage(let storyMessageSource):
                 guard
                     let storyMessage = storyStore.fetchStoryMessage(
-                        rowId: storyMessageSource.storyMsessageRowId,
+                        rowId: storyMessageSource.storyMessageRowId,
                         tx: tx,
                     )
                 else {

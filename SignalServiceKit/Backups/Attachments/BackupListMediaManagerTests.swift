@@ -346,15 +346,16 @@ public class BackupListMediaManagerTests {
                 creationTimestamp: 0,
             ))),
         )
-        let referenceRecord = try! referenceParams.buildRecord(
+        let reference = try! attachmentStore.addReference(
+            referenceParams,
             attachmentRowId: attachmentRecord.sqliteId!,
+            tx: tx,
         )
-        try! referenceRecord.insert(tx.database)
 
         if scheduleDownload {
             try! backupAttachmentDownloadStore.enqueue(
                 ReferencedAttachment(
-                    reference: AttachmentReference(record: referenceRecord as! AttachmentReference.ThreadAttachmentReferenceRecord),
+                    reference: reference,
                     attachment: Attachment(record: attachmentRecord),
                 ),
                 thumbnail: false,

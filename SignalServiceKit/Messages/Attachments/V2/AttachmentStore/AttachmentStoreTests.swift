@@ -199,9 +199,9 @@ class AttachmentStoreTests: XCTestCase {
             }
 
             // Try again but insert using explicit owner adding.
-            try attachmentStore.addOwner(
+            try attachmentStore.addReference(
                 attachmentReferenceParams2,
-                for: message1Attachment.id,
+                attachmentRowId: message1Attachment.id,
                 tx: tx,
             )
         }
@@ -316,9 +316,9 @@ class AttachmentStoreTests: XCTestCase {
                         idInOwner: attachmentIdInOwner,
                     )
                     if let attachmentRowId {
-                        try attachmentStore.addOwner(
+                        try attachmentStore.addReference(
                             attachmentReferenceParams,
-                            for: attachmentRowId,
+                            attachmentRowId: attachmentRowId,
                             tx: tx,
                         )
                     } else {
@@ -685,12 +685,12 @@ class AttachmentStoreTests: XCTestCase {
                 tx: tx,
             )
             let attachmentId = tx.database.lastInsertedRowID
-            try attachmentStore.addOwner(
+            try attachmentStore.addReference(
                 AttachmentReference.ConstructionParams.mockMessageBodyAttachmentReference(
                     messageRowId: messageId2,
                     threadRowId: threadId2,
                 ),
-                for: attachmentId,
+                attachmentRowId: attachmentId,
                 tx: tx,
             )
         }
@@ -711,7 +711,7 @@ class AttachmentStoreTests: XCTestCase {
 
         try db.write { tx in
             // Remove the first reference.
-            try attachmentStore.removeOwner(
+            try attachmentStore.removeReference(
                 reference: reference1,
                 tx: tx,
             )
@@ -723,7 +723,7 @@ class AttachmentStoreTests: XCTestCase {
             ).first)
 
             // Remove the second reference.
-            try attachmentStore.removeOwner(
+            try attachmentStore.removeReference(
                 reference: reference2,
                 tx: tx,
             )
@@ -757,14 +757,14 @@ class AttachmentStoreTests: XCTestCase {
                 tx: tx,
             )
             let attachmentId = tx.database.lastInsertedRowID
-            try attachmentStore.addOwner(
+            try attachmentStore.addReference(
                 AttachmentReference.ConstructionParams.mockMessageBodyAttachmentReference(
                     messageRowId: messageId1,
                     threadRowId: threadId1,
                     orderInMessage: 1,
                     idInOwner: referenceUUID2,
                 ),
-                for: attachmentId,
+                attachmentRowId: attachmentId,
                 tx: tx,
             )
         }
@@ -798,7 +798,7 @@ class AttachmentStoreTests: XCTestCase {
 
         try db.write { tx in
             // Remove the first reference.
-            try attachmentStore.removeOwner(
+            try attachmentStore.removeReference(
                 reference: reference1,
                 tx: tx,
             )
@@ -1165,26 +1165,41 @@ class AttachmentStoreTests: XCTestCase {
     private func assertEqual(_ params: AttachmentReference.ConstructionParams, _ reference: AttachmentReference) throws {
         switch (params.owner, reference.owner) {
         case (.message, .message(let messageSource)):
-            XCTAssertEqual(
-                try params.buildRecord(attachmentRowId: reference.attachmentRowId)
-                    as! AttachmentReference.MessageAttachmentReferenceRecord,
-                AttachmentReference.MessageAttachmentReferenceRecord(attachmentReference: reference, messageSource: messageSource),
+            let paramsRecord = AttachmentReference.MessageAttachmentReferenceRecord(
+                attachmentRowId: reference.attachmentRowId,
+                sourceFilename: params.sourceFilename,
+                sourceUnencryptedByteCount: params.sourceUnencryptedByteCount,
+                sourceMediaSizePixels: params.sourceMediaSizePixels,
+                messageSource: messageSource,
             )
+            let referenceRecord = AttachmentReference.MessageAttachmentReferenceRecord(
+                attachmentReference: reference,
+                messageSource: messageSource,
+            )
+            XCTAssertEqual(paramsRecord, referenceRecord)
         case (.storyMessage, .storyMessage(let storyMessageSource)):
-            XCTAssertEqual(
-                try params.buildRecord(attachmentRowId: reference.attachmentRowId)
-                    as! AttachmentReference.StoryMessageAttachmentReferenceRecord,
-                try AttachmentReference.StoryMessageAttachmentReferenceRecord(
-                    attachmentReference: reference,
-                    storyMessageSource: storyMessageSource,
-                ),
+            let paramsRecord = try AttachmentReference.StoryMessageAttachmentReferenceRecord(
+                attachmentRowId: reference.attachmentRowId,
+                sourceFilename: params.sourceFilename,
+                sourceUnencryptedByteCount: params.sourceUnencryptedByteCount,
+                sourceMediaSizePixels: params.sourceMediaSizePixels,
+                storyMessageSource: storyMessageSource,
             )
+            let referenceRecord = try AttachmentReference.StoryMessageAttachmentReferenceRecord(
+                attachmentReference: reference,
+                storyMessageSource: storyMessageSource,
+            )
+            XCTAssertEqual(paramsRecord, referenceRecord)
         case (.thread, .thread(let threadSource)):
-            XCTAssertEqual(
-                try params.buildRecord(attachmentRowId: reference.attachmentRowId)
-                    as! AttachmentReference.ThreadAttachmentReferenceRecord,
-                AttachmentReference.ThreadAttachmentReferenceRecord(attachmentReference: reference, threadSource: threadSource),
+            let paramsRecord = AttachmentReference.ThreadAttachmentReferenceRecord(
+                attachmentRowId: reference.attachmentRowId,
+                threadSource: threadSource,
             )
+            let referenceRecord = AttachmentReference.ThreadAttachmentReferenceRecord(
+                attachmentRowId: reference.attachmentRowId,
+                threadSource: threadSource,
+            )
+            XCTAssertEqual(paramsRecord, referenceRecord)
         case (.message, _), (.storyMessage, _), (.thread, _):
             XCTFail("Non matching owner types")
         }

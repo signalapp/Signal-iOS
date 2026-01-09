@@ -3,57 +3,21 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
-import GRDB
+public import GRDB
 
 extension AttachmentReference {
 
-    enum FetchableRecordColumnFilter {
-        /// The provided owner did not match the record type; don't fetch from this record's table.
-        case nonMatchingOwnerType
-        /// Filter to rows where `ownerRowIdColumn` is NULL.
-        case nullOwnerRowId
-        /// Filter to rows where `ownerRowIdColumn` equals the provided value.
-        case ownerRowId(Int64)
-        /// Filter to rows where `ownerRowIdColumn` equals the provided value AND typeColumn equals the provided value.
-        case ownerTypeAndRowId(rowId: Int64, type: Int, typeColumn: Column)
-    }
-}
+    public struct MessageAttachmentReferenceRecord: Codable, PersistableRecord, FetchableRecord, Equatable {
+        public enum OwnerType: UInt32, CaseIterable {
+            case bodyAttachment = 0
+            case oversizeText = 1
+            case linkPreview = 2
+            case quotedReplyAttachment = 3
+            case sticker = 4
+            case contactAvatar = 5
+        }
 
-protocol FetchableAttachmentReferenceRecord: Codable, PersistableRecord, FetchableRecord, Equatable {
-
-    static var ownerRowIdColumn: Column { get }
-
-    static var idInOwnerColumn: Column? { get }
-
-    static var attachmentRowIdColumn: Column { get }
-
-    static var orderInMessageKey: KeyPath<Self, UInt32?>? { get }
-
-    /// Filters to apply when querying the table for rows matching the provided row id.
-    /// If returns `nonMatchingOwnerType`, the record's table should not be queried at all.
-    static func columnFilters(for ownerId: AttachmentReference.OwnerId) -> AttachmentReference.FetchableRecordColumnFilter
-
-    func asReference() throws -> AttachmentReference
-}
-
-extension FetchableAttachmentReferenceRecord {
-    static var orderInMessageKey: KeyPath<Self, UInt32?>? { nil }
-}
-
-extension AttachmentReference {
-
-    static var recordTypes: [any FetchableAttachmentReferenceRecord.Type] {
-        return [
-            MessageAttachmentReferenceRecord.self,
-            StoryMessageAttachmentReferenceRecord.self,
-            ThreadAttachmentReferenceRecord.self,
-        ]
-    }
-
-    public struct MessageAttachmentReferenceRecord: FetchableAttachmentReferenceRecord {
-
-        let ownerType: UInt32
+        let ownerTypeRaw: UInt32
         var ownerRowId: Int64
         let attachmentRowId: Int64
         @DBUInt64
@@ -76,7 +40,7 @@ extension AttachmentReference {
         // MARK: - Coding Keys
 
         public enum CodingKeys: String, CodingKey {
-            case ownerType
+            case ownerTypeRaw = "ownerType"
             case ownerRowId
             case attachmentRowId
             case receivedAtTimestamp
@@ -96,92 +60,21 @@ extension AttachmentReference {
             case ownerIsPastEditRevision
         }
 
+        // MARK: - Columns
+
+        enum Columns {
+            static let ownerType = Column(CodingKeys.ownerTypeRaw)
+            static let ownerRowId = Column(CodingKeys.ownerRowId)
+            static let orderInMessage = Column(CodingKeys.orderInMessage)
+            static let attachmentRowId = Column(CodingKeys.attachmentRowId)
+            static let idInMessage = Column(CodingKeys.idInMessage)
+        }
+
         // MARK: - PersistableRecord
 
         public static let databaseTableName: String = "MessageAttachmentReference"
 
-        // MARK: FetchableAttachmentReferenceRecord
-
-        static var ownerRowIdColumn: Column { Column(CodingKeys.ownerRowId) }
-
-        static var idInOwnerColumn: Column? { Column(CodingKeys.idInMessage) }
-
-        static var attachmentRowIdColumn: Column { Column(CodingKeys.attachmentRowId) }
-
-        static var orderInMessageKey: KeyPath<Self, UInt32?>? { \.orderInMessage }
-
-        static func columnFilters(for ownerId: AttachmentReference.OwnerId) -> FetchableRecordColumnFilter {
-            func ownerTypeAndRowId(_ messageRowId: Int64, _ ownerType: MessageOwnerTypeRaw) -> FetchableRecordColumnFilter {
-                return .ownerTypeAndRowId(rowId: messageRowId, type: ownerType.rawValue, typeColumn: Column(CodingKeys.ownerType))
-            }
-
-            switch ownerId {
-            case .messageBodyAttachment(let messageRowId):
-                return ownerTypeAndRowId(messageRowId, .bodyAttachment)
-            case .messageOversizeText(let messageRowId):
-                return ownerTypeAndRowId(messageRowId, .oversizeText)
-            case .messageLinkPreview(let messageRowId):
-                return ownerTypeAndRowId(messageRowId, .linkPreview)
-            case .quotedReplyAttachment(let messageRowId):
-                return ownerTypeAndRowId(messageRowId, .quotedReplyAttachment)
-            case .messageSticker(let messageRowId):
-                return ownerTypeAndRowId(messageRowId, .sticker)
-            case .messageContactAvatar(let messageRowId):
-                return ownerTypeAndRowId(messageRowId, .contactAvatar)
-            case
-                .storyMessageMedia,
-                .storyMessageLinkPreview,
-                .threadWallpaperImage,
-                .globalThreadWallpaperImage:
-                return .nonMatchingOwnerType
-            }
-        }
-
-        func asReference() throws -> AttachmentReference {
-            return try AttachmentReference(record: self)
-        }
-
         // MARK: - Initializers
-
-        init(
-            ownerType: UInt32,
-            ownerRowId: Int64,
-            attachmentRowId: Int64,
-            receivedAtTimestamp: UInt64,
-            contentType: UInt32?,
-            renderingFlag: UInt32,
-            idInMessage: String?,
-            orderInMessage: UInt32?,
-            threadRowId: Int64,
-            caption: String?,
-            sourceFilename: String?,
-            sourceUnencryptedByteCount: UInt32?,
-            sourceMediaHeightPixels: UInt32?,
-            sourceMediaWidthPixels: UInt32?,
-            stickerPackId: Data?,
-            stickerId: UInt32?,
-            isViewOnce: Bool,
-            ownerIsPastEditRevision: Bool,
-        ) {
-            self.ownerType = ownerType
-            self.ownerRowId = ownerRowId
-            self.attachmentRowId = attachmentRowId
-            self._receivedAtTimestamp = DBUInt64(wrappedValue: receivedAtTimestamp)
-            self.contentType = contentType
-            self.renderingFlag = renderingFlag
-            self.idInMessage = idInMessage
-            self.orderInMessage = orderInMessage
-            self.threadRowId = threadRowId
-            self.caption = caption
-            self.sourceFilename = sourceFilename
-            self.sourceUnencryptedByteCount = sourceUnencryptedByteCount
-            self.sourceMediaHeightPixels = sourceMediaHeightPixels
-            self.sourceMediaWidthPixels = sourceMediaWidthPixels
-            self.stickerPackId = stickerPackId
-            self.stickerId = stickerId
-            self.isViewOnce = isViewOnce
-            self.ownerIsPastEditRevision = ownerIsPastEditRevision
-        }
 
         init(
             attachmentReference: AttachmentReference,
@@ -203,7 +96,7 @@ extension AttachmentReference {
             sourceMediaSizePixels: CGSize?,
             messageSource: AttachmentReference.Owner.MessageSource,
         ) {
-            self.ownerType = UInt32(messageSource.rawMessageOwnerType.rawValue)
+            self.ownerTypeRaw = messageSource.persistedOwnerType.rawValue
             self.attachmentRowId = attachmentRowId
             self.sourceFilename = sourceFilename
             self.sourceUnencryptedByteCount = sourceUnencryptedByteCount
@@ -303,9 +196,13 @@ extension AttachmentReference {
         }
     }
 
-    public struct StoryMessageAttachmentReferenceRecord: FetchableAttachmentReferenceRecord {
+    public struct StoryMessageAttachmentReferenceRecord: Codable, PersistableRecord, FetchableRecord, Equatable {
+        public enum OwnerType: UInt32, CaseIterable {
+            case media = 0
+            case linkPreview = 1
+        }
 
-        let ownerType: UInt32
+        let ownerTypeRaw: UInt32
         let ownerRowId: Int64
         let attachmentRowId: Int64
         let shouldLoop: Bool
@@ -319,7 +216,7 @@ extension AttachmentReference {
         // MARK: - Coding Keys
 
         public enum CodingKeys: String, CodingKey {
-            case ownerType
+            case ownerTypeRaw = "ownerType"
             case ownerRowId
             case attachmentRowId
             case shouldLoop
@@ -331,70 +228,19 @@ extension AttachmentReference {
             case sourceMediaWidthPixels
         }
 
+        // MARK: - Columns
+
+        enum Columns {
+            static let ownerType = Column(CodingKeys.ownerTypeRaw)
+            static let ownerRowId = Column(CodingKeys.ownerRowId)
+            static let attachmentRowId = Column(CodingKeys.attachmentRowId)
+        }
+
         // MARK: - PersistableRecord
 
         public static let databaseTableName: String = "StoryMessageAttachmentReference"
 
-        // MARK: FetchableAttachmentReferenceRecord
-
-        static var ownerRowIdColumn: Column { Column(CodingKeys.ownerRowId) }
-
-        static var idInOwnerColumn: Column? { nil }
-
-        static var attachmentRowIdColumn: Column { Column(CodingKeys.attachmentRowId) }
-
-        static func columnFilters(for ownerId: AttachmentReference.OwnerId) -> FetchableRecordColumnFilter {
-            func ownerTypeAndRowId(_ storyMessageRowId: Int64, _ ownerType: StoryMessageOwnerTypeRaw) -> FetchableRecordColumnFilter {
-                return .ownerTypeAndRowId(rowId: storyMessageRowId, type: ownerType.rawValue, typeColumn: Column(CodingKeys.ownerType))
-            }
-
-            switch ownerId {
-            case .storyMessageMedia(let storyMessageRowId):
-                return ownerTypeAndRowId(storyMessageRowId, .media)
-            case .storyMessageLinkPreview(let storyMessageRowId):
-                return ownerTypeAndRowId(storyMessageRowId, .linkPreview)
-            case
-                .messageBodyAttachment,
-                .messageOversizeText,
-                .messageLinkPreview,
-                .quotedReplyAttachment,
-                .messageSticker,
-                .messageContactAvatar,
-                .threadWallpaperImage,
-                .globalThreadWallpaperImage:
-                return .nonMatchingOwnerType
-            }
-        }
-
-        func asReference() throws -> AttachmentReference {
-            return try AttachmentReference(record: self)
-        }
-
         // MARK: - Initializers
-
-        init(
-            ownerType: UInt32,
-            ownerRowId: Int64,
-            attachmentRowId: Int64,
-            shouldLoop: Bool,
-            caption: String?,
-            captionBodyRanges: Data?,
-            sourceFilename: String?,
-            sourceUnencryptedByteCount: UInt32?,
-            sourceMediaHeightPixels: UInt32?,
-            sourceMediaWidthPixels: UInt32?,
-        ) {
-            self.ownerType = ownerType
-            self.ownerRowId = ownerRowId
-            self.attachmentRowId = attachmentRowId
-            self.shouldLoop = shouldLoop
-            self.caption = caption
-            self.captionBodyRanges = captionBodyRanges
-            self.sourceFilename = sourceFilename
-            self.sourceUnencryptedByteCount = sourceUnencryptedByteCount
-            self.sourceMediaHeightPixels = sourceMediaHeightPixels
-            self.sourceMediaWidthPixels = sourceMediaWidthPixels
-        }
 
         init(
             attachmentReference: AttachmentReference,
@@ -416,7 +262,7 @@ extension AttachmentReference {
             sourceMediaSizePixels: CGSize?,
             storyMessageSource: AttachmentReference.Owner.StoryMessageSource,
         ) throws {
-            self.ownerType = UInt32(storyMessageSource.rawStoryMessageOwnerType.rawValue)
+            self.ownerTypeRaw = storyMessageSource.persistedOwnerType.rawValue
             self.attachmentRowId = attachmentRowId
             self.sourceFilename = sourceFilename
             self.sourceUnencryptedByteCount = sourceUnencryptedByteCount
@@ -450,8 +296,7 @@ extension AttachmentReference {
         }
     }
 
-    public struct ThreadAttachmentReferenceRecord: FetchableAttachmentReferenceRecord {
-
+    public struct ThreadAttachmentReferenceRecord: Codable, PersistableRecord, FetchableRecord, Equatable {
         var ownerRowId: Int64?
         let attachmentRowId: Int64
         @DBUInt64
@@ -465,63 +310,18 @@ extension AttachmentReference {
             case creationTimestamp
         }
 
+        // MARK: - Columns
+
+        enum Columns {
+            static let ownerRowId = Column(CodingKeys.ownerRowId)
+            static let attachmentRowId = Column(CodingKeys.attachmentRowId)
+        }
+
         // MARK: - PersistableRecord
 
         public static let databaseTableName: String = "ThreadAttachmentReference"
 
-        // MARK: FetchableAttachmentReferenceRecord
-
-        static var ownerRowIdColumn: Column { Column(CodingKeys.ownerRowId) }
-
-        static var idInOwnerColumn: Column? { nil }
-
-        static var attachmentRowIdColumn: Column { Column(CodingKeys.attachmentRowId) }
-
-        static func columnFilters(for ownerId: AttachmentReference.OwnerId) -> FetchableRecordColumnFilter {
-
-            switch ownerId {
-            case .threadWallpaperImage(let threadRowId):
-                return .ownerRowId(threadRowId)
-            case .globalThreadWallpaperImage:
-                return .nullOwnerRowId
-            case
-                .messageBodyAttachment,
-                .messageOversizeText,
-                .messageLinkPreview,
-                .quotedReplyAttachment,
-                .messageSticker,
-                .messageContactAvatar,
-                .storyMessageMedia,
-                .storyMessageLinkPreview:
-                return .nonMatchingOwnerType
-            }
-        }
-
-        func asReference() throws -> AttachmentReference {
-            return try AttachmentReference(record: self)
-        }
-
         // MARK: - Initializers
-
-        init(
-            ownerRowId: Int64?,
-            attachmentRowId: Int64,
-            creationTimestamp: UInt64,
-        ) {
-            self.ownerRowId = ownerRowId
-            self.attachmentRowId = attachmentRowId
-            self._creationTimestamp = DBUInt64(wrappedValue: creationTimestamp)
-        }
-
-        init(
-            attachmentReference: AttachmentReference,
-            threadSource: AttachmentReference.Owner.ThreadSource,
-        ) {
-            self.init(
-                attachmentRowId: attachmentReference.attachmentRowId,
-                threadSource: threadSource,
-            )
-        }
 
         init(
             attachmentRowId: Attachment.IDType,

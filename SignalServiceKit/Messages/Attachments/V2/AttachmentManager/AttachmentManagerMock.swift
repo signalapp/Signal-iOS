@@ -57,7 +57,7 @@ open class AttachmentManagerMock: AttachmentManager {
     }
 
     open func removeAllAttachments(
-        from owners: [AttachmentReference.OwnerId],
+        from owners: [AttachmentReference.Owner.ID],
         tx: DBWriteTransaction,
     ) throws {
         // Do nothing

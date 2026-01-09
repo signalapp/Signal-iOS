@@ -10,6 +10,7 @@ import XCTest
 
 class MediaGalleryAttachmentFinderTest: XCTestCase {
 
+    private let attachmentStore = AttachmentStore()
     private var db: InMemoryDB!
 
     override func setUp() async throws {
@@ -314,8 +315,11 @@ class MediaGalleryAttachmentFinderTest: XCTestCase {
 
         try db.write { tx in
             try attachmentRecord.insert(tx.database)
-            let referenceRecord = try referenceParams.buildRecord(attachmentRowId: attachmentRecord.sqliteId!)
-            try referenceRecord.insert(tx.database)
+            try attachmentStore.addReference(
+                referenceParams,
+                attachmentRowId: attachmentRecord.sqliteId!,
+                tx: tx,
+            )
         }
 
         return attachmentRecord.sqliteId!

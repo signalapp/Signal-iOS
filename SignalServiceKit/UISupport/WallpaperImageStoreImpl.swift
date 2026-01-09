@@ -83,7 +83,7 @@ public class WallpaperImageStoreImpl: WallpaperImageStore {
 
         // If the toThread had a wallpaper, remove it.
         if let toReference = attachmentStore.fetchAnyReference(owner: .threadWallpaperImage(threadRowId: toRowId), tx: tx) {
-            try attachmentStore.removeOwner(reference: toReference, tx: tx)
+            try attachmentStore.removeReference(reference: toReference, tx: tx)
         }
 
         switch fromReference.owner {
@@ -129,7 +129,7 @@ public class WallpaperImageStoreImpl: WallpaperImageStore {
         try await db.awaitableWrite { tx in
             // First remove any existing wallpaper.
             if let existingReference = self.attachmentStore.fetchAnyReference(owner: owner.id, tx: tx) {
-                try self.attachmentStore.removeOwner(reference: existingReference, tx: tx)
+                try self.attachmentStore.removeReference(reference: existingReference, tx: tx)
             }
             // Set the new image if any.
             if let dataSource {
@@ -143,7 +143,7 @@ public class WallpaperImageStoreImpl: WallpaperImageStore {
         }
     }
 
-    private func loadWallpaperImage(ownerId: AttachmentReference.OwnerId, tx: DBReadTransaction) -> UIImage? {
+    private func loadWallpaperImage(ownerId: AttachmentReference.Owner.ID, tx: DBReadTransaction) -> UIImage? {
         guard
             let attachment = attachmentStore.fetchAnyReferencedAttachment(
                 for: ownerId,

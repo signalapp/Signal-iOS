@@ -259,38 +259,12 @@ extension AttachmentReference {
             self.sourceUnencryptedByteCount = sourceUnencryptedByteCount
             self.sourceMediaSizePixels = sourceMediaSizePixels
         }
-
-        func buildRecord(attachmentRowId: Attachment.IDType) throws -> any FetchableAttachmentReferenceRecord {
-            switch owner {
-            case .message(let messageSource):
-                return MessageAttachmentReferenceRecord(
-                    attachmentRowId: attachmentRowId,
-                    sourceFilename: sourceFilename,
-                    sourceUnencryptedByteCount: sourceUnencryptedByteCount,
-                    sourceMediaSizePixels: sourceMediaSizePixels,
-                    messageSource: messageSource,
-                )
-            case .storyMessage(let storyMessageSource):
-                return try StoryMessageAttachmentReferenceRecord(
-                    attachmentRowId: attachmentRowId,
-                    sourceFilename: sourceFilename,
-                    sourceUnencryptedByteCount: sourceUnencryptedByteCount,
-                    sourceMediaSizePixels: sourceMediaSizePixels,
-                    storyMessageSource: storyMessageSource,
-                )
-            case .thread(let threadSource):
-                return ThreadAttachmentReferenceRecord(
-                    attachmentRowId: attachmentRowId,
-                    threadSource: threadSource,
-                )
-            }
-        }
     }
 }
 
 extension AttachmentReference.OwnerBuilder {
 
-    var id: AttachmentReference.OwnerId {
+    var id: AttachmentReference.Owner.ID {
         switch self {
         case .messageBodyAttachment(let bodyOwnerBuilder):
             return .messageBodyAttachment(messageRowId: bodyOwnerBuilder.messageRowId)

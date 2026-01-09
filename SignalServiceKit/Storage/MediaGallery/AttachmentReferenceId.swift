@@ -7,7 +7,7 @@ import Foundation
 
 /// Uniquely and stably identifies an ``AttachmentReference``
 public struct AttachmentReferenceId: Equatable, Hashable {
-    public let ownerId: AttachmentReference.OwnerId
+    public let ownerId: AttachmentReference.Owner.ID
 
     /// Body media attachments on the same message share an owner id.
     ///
