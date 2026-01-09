@@ -697,21 +697,16 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
             tx: tx,
         )
 
-        // Otherwise we either don't have a local cdn number,
-        // or we prefer the cdn number listed. In either case,
-        // uplate our local attachment with listed cdn info.
-        if matchedListedMedia.cdnNumber != localCdnNumber {
-            updateWithListedCdn(
-                attachment,
-                listedMedia: matchedListedMedia,
-                isThumbnail: isThumbnail,
-                fullsizeMediaName: fullsizeMediaName,
-                uploadEraAtStartOfListMedia: uploadEraAtStartOfListMedia,
-                currentBackupPlan: currentBackupPlan,
-                remoteConfig: remoteConfig,
-                tx: tx,
-            )
-        }
+        updateWithListedCdn(
+            attachment,
+            listedMedia: matchedListedMedia,
+            isThumbnail: isThumbnail,
+            fullsizeMediaName: fullsizeMediaName,
+            uploadEraAtStartOfListMedia: uploadEraAtStartOfListMedia,
+            currentBackupPlan: currentBackupPlan,
+            remoteConfig: remoteConfig,
+            tx: tx,
+        )
 
         // Clear out the matched listed media row so we don't
         // mark the upload for deletion later.
