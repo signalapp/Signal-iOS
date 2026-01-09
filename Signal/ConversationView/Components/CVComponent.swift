@@ -261,9 +261,7 @@ public class CVComponentBase: NSObject {
         maskCornerRadius: CGFloat,
         componentDelegate: CVComponentDelegate,
     ) {
-        if componentDelegate.isConversationPreview {
-            wallpaperBlurView.configureForPreview(maskCornerRadius: maskCornerRadius)
-        } else if let wallpaperBlurProvider = componentDelegate.wallpaperBlurProvider {
+        if let wallpaperBlurProvider = componentDelegate.wallpaperBlurProvider {
             wallpaperBlurView.configure(
                 provider: wallpaperBlurProvider,
                 maskCornerRadius: maskCornerRadius,

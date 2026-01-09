@@ -560,8 +560,6 @@ extension PinnedMessagesDetailsViewController: CVComponentDelegate {
         return {}
     }
 
-    var isConversationPreview: Bool { false }
-
     var wallpaperBlurProvider: WallpaperBlurProvider? { nil }
 
     var selectionState: CVSelectionState { CVSelectionState() }

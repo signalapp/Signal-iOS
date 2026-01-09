@@ -426,8 +426,6 @@ extension MockConversationView: CVComponentDelegate {
 
     var view: UIView! { self }
 
-    var isConversationPreview: Bool { true }
-
     var wallpaperBlurProvider: WallpaperBlurProvider? { nil }
 
     var spoilerState: SpoilerRenderState { return SpoilerRenderState() }

@@ -232,6 +232,7 @@ class EditHistoryTableSheetViewController: OWSTableSheetViewController {
                 for: thread,
                 tx: tx,
             ),
+            isStandaloneRenderItem: true,
         )
 
         let itemDate = Date(millisecondsSince1970: interaction.timestamp)
@@ -442,8 +443,6 @@ extension EditHistoryTableSheetViewController: CVComponentDelegate {
     func beginCellAnimation(maximumDuration: TimeInterval) -> EndCellAnimation {
         return {}
     }
-
-    var isConversationPreview: Bool { true }
 
     var wallpaperBlurProvider: WallpaperBlurProvider? { nil }
 

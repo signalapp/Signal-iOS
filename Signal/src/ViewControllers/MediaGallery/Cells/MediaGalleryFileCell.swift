@@ -454,8 +454,6 @@ extension MediaGalleryFileCell: CVComponentDelegate {
         return {}
     }
 
-    var isConversationPreview: Bool { true }
-
     var wallpaperBlurProvider: WallpaperBlurProvider? { nil }
 
     var selectionState: CVSelectionState { CVSelectionState() }

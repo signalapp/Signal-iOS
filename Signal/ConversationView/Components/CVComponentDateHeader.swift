@@ -104,11 +104,7 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
         let doubleContentWrapper = componentView.doubleContentWrapper
 
         let blurBackgroundColor: UIColor = {
-            if componentDelegate.isConversationPreview {
-                return isDarkThemeEnabled ? .ows_blackAlpha40 : .ows_whiteAlpha60
-            } else {
-                return isDarkThemeEnabled ? UIColor(rgbHex: 0x1B1B1B) : UIColor(rgbHex: 0xFAFAFA)
-            }
+            return isDarkThemeEnabled ? UIColor(rgbHex: 0x1B1B1B) : UIColor(rgbHex: 0xFAFAFA)
         }()
 
         if isReusing {
@@ -166,9 +162,7 @@ public class CVComponentDateHeader: CVComponentBase, CVRootComponent {
                 let isStandaloneRenderItem = conversationStyle.isStandaloneRenderItem
 
                 // On iOS 26 always use `visual effect` content view for the sticky header.
-                if componentDelegate.isConversationPreview {
-                    return buildVisualEffectContentView()
-                } else if hasWallpaper, #unavailable(iOS 26) {
+                if hasWallpaper, #unavailable(iOS 26) {
                     return buildPlainContentView()
                 } else if isStandaloneRenderItem {
                     return buildPlainContentView()

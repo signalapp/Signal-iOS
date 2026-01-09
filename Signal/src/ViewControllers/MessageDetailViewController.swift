@@ -1228,8 +1228,6 @@ extension MessageDetailViewController: CVComponentDelegate {
         return {}
     }
 
-    var isConversationPreview: Bool { true }
-
     var wallpaperBlurProvider: WallpaperBlurProvider? { nil }
 
     // MARK: - Selection

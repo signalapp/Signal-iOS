@@ -164,8 +164,6 @@ public protocol CVComponentDelegate: AnyObject, AudioMessageViewDelegate, CVPoll
 
     var view: UIView! { get }
 
-    var isConversationPreview: Bool { get }
-
     var wallpaperBlurProvider: WallpaperBlurProvider? { get }
 
     var spoilerState: SpoilerRenderState { get }
