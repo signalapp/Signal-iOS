@@ -290,14 +290,13 @@ extension HttpHeaders {
             return date
         } else if let retryAfterTimeInterval {
             return Date().addingTimeInterval(retryAfterTimeInterval)
+        } else {
+            owsAssertDebug(
+                CurrentAppContext().isRunningTests,
+                "Failed to parse retry-after string: \(String(describing: retryAfterStringValue))",
+            )
+            return nil
         }
-
-        if !CurrentAppContext().isRunningTests {
-            owsFailDebug("Failed to parse retry-after string: \(String(describing: retryAfterStringValue))")
-        }
-
-        // Historically, if we failed to parse here we returned a +60s date.
-        return Date().addingTimeInterval(.minute)
     }
 
     private var retryAfterStringValue: String? {

@@ -94,13 +94,6 @@ class HttpHeadersTest: XCTestCase {
             ("   86400.000    ", now + 86400),
             (" \t  \t86400.000\t  \t  ", now + 86400),
 
-            // Invalid values (these used a default of 60)
-            ("8/11/1994 01:02:03", now + 60),
-            ("blahhh", now + 60),
-            ("one", now + 60),
-            ("soon", now + 60),
-            ("later", now + 60),
-
             // Absent values (these use nil)
             ("", nil),
             ("      ", nil),

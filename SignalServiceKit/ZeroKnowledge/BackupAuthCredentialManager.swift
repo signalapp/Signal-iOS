@@ -244,12 +244,30 @@ class BackupAuthCredentialManagerImpl: BackupAuthCredentialManager {
         switch dependency {
         case .registerBackupId(let localAci, let auth):
             label = "registerBackupId"
-            block = {
+            block = { [dateProvider] in
                 // We can't fetch Backup auth credentials without having registered
                 // our Backup ID. Normally this will have already happened, making
                 // this call a no-op; however, it's possible it never succeeded or
                 // we need to run it again.
-                try await self.backupIdService.registerBackupIDIfNecessary(localAci: localAci, auth: auth)
+                //
+                // It's also a particularly tightly rate-limited operation. If
+                // we fail because of rate limits we want to be sure that we
+                // respect the Retry-After at least enough to mitigate a
+                // thundering horde, since this is downstream of a potentially
+                // large volume of requests.
+                try await Retry.performWithBackoff(
+                    maxAttempts: 3,
+                    preferredBackoffBlock: { error in
+                        return error.httpRetryAfterDate?.timeIntervalSince(dateProvider())
+                    },
+                    isRetryable: { $0.httpRetryAfterDate != nil },
+                    block: {
+                        try await self.backupIdService.registerBackupIDIfNecessary(
+                            localAci: localAci,
+                            auth: auth,
+                        )
+                    },
+                )
             }
         case .redeemBackupSubscriptionViaIAP:
             label = "redeemBackupSubscription"

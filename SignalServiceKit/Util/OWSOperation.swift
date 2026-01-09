@@ -3,7 +3,12 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
+public enum ExponentialBackoff {
+    public enum Defaults {
+        public static let minAverageBackoff: TimeInterval = 2
+        public static let maxAverageBackoff: TimeInterval = .infinity
+    }
+}
 
 public enum OWSOperation {
     /// Computes an exponential retry delay with jitter.
@@ -27,8 +32,8 @@ public enum OWSOperation {
     ///   balanced by retries that wait 30 hours.)
     public static func retryIntervalForExponentialBackoff(
         failureCount: some FixedWidthInteger,
-        minAverageBackoff: TimeInterval = 2,
-        maxAverageBackoff: TimeInterval = .infinity,
+        minAverageBackoff: TimeInterval = ExponentialBackoff.Defaults.minAverageBackoff,
+        maxAverageBackoff: TimeInterval = ExponentialBackoff.Defaults.maxAverageBackoff,
     ) -> TimeInterval {
         let averageBackoff = min(maxAverageBackoff, pow(2, Double(failureCount)) * minAverageBackoff / 2)
         return averageBackoff * Double.random(in: 0.75..<1.25)

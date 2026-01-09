@@ -230,8 +230,8 @@ public class Cron {
     public func scheduleFrequently<T, E>(
         mustBeRegistered: Bool,
         mustBeConnected: Bool,
-        minAverageBackoff: TimeInterval = 2,
-        maxAverageBackoff: TimeInterval = .infinity,
+        minAverageBackoff: TimeInterval = ExponentialBackoff.Defaults.minAverageBackoff,
+        maxAverageBackoff: TimeInterval = ExponentialBackoff.Defaults.maxAverageBackoff,
         isRetryable: @escaping (E) -> Bool = { $0.isRetryable },
         operation: @escaping () async throws(E) -> T,
         handleResult: @escaping (Result<T, any Error>) async -> Void,
