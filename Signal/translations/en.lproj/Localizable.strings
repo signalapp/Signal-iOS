@@ -1381,6 +1381,9 @@
 /* notification body */
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Missed call because the caller's safety number changed.";
 
+/* Title for toast which appears after submitting a call quality survey */
+"CALL_QUALITY_SURVEY_COMPLETION_TOAST" = "Thanks for your feedback!";
+
 /* Footer text explaining custom issue descriptions in the call quality survey */
 "CALL_QUALITY_SURVEY_CUSTOM_ISSUE_FOOTER" = "Please include any details relevant to the issue. Anything you share here will be kept private and will only be used to help improve calls in Signal.";
 

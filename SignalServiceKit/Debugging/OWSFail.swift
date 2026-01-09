@@ -9,14 +9,15 @@ import Foundation
 @inlinable
 public func owsFailBeta(
     _ logMessage: String,
+    logger: PrefixedLogger = .empty(),
     file: String = #fileID,
     function: String = #function,
     line: Int = #line,
 ) {
     if BuildFlags.isPrerelease {
-        owsFail(logMessage, file: file, function: function, line: line)
+        owsFail(logMessage, logger: logger, file: file, function: function, line: line)
     } else {
-        owsFailDebug(logMessage, file: file, function: function, line: line)
+        owsFailDebug(logMessage, logger: logger, file: file, function: function, line: line)
     }
 }
 

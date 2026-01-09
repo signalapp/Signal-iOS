@@ -15,7 +15,19 @@ final class SurveyDebugLogViewController: CallQualitySurveySheetViewController {
 
     private let tableViewController = OWSTableViewController2()
 
-    private var shouldSubmitDebugLog = false
+    private var shouldSubmitDebugLogs = false
+
+    private let rating: CallQualitySurvey.Rating
+
+    init(rating: CallQualitySurvey.Rating) {
+        self.rating = rating
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    @MainActor
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -63,10 +75,10 @@ final class SurveyDebugLogViewController: CallQualitySurveySheetViewController {
                         comment: "Label for the toggle to share debug log in the call quality survey",
                     ),
                     isOn: { [weak self] in
-                        self?.shouldSubmitDebugLog ?? false
+                        self?.shouldSubmitDebugLogs ?? false
                     },
                     actionBlock: { [weak self] control in
-                        self?.shouldSubmitDebugLog = control.isOn
+                        self?.shouldSubmitDebugLogs = control.isOn
                     },
                 ),
             ],
@@ -87,8 +99,7 @@ final class SurveyDebugLogViewController: CallQualitySurveySheetViewController {
         bottomStackView.autoPinEdges(toSuperviewMarginsExcludingEdge: .top)
 
         let continueButton = UIButton(primaryAction: .init { [weak self] _ in
-            // [Call Quality Survey] TODO: Implement
-            self?.dismiss(animated: true)
+            self?.submit()
         })
         continueButton.configuration = .largePrimary(title: OWSLocalizedString(
             "CALL_QUALITY_SURVEY_SUBMIT_BUTTON",
@@ -113,5 +124,12 @@ final class SurveyDebugLogViewController: CallQualitySurveySheetViewController {
         let collectionViewHeight = tableViewController.tableView.contentSize.height + tableViewController.tableView.contentInset.totalHeight
         let bottomStackHeight = bottomStackView.height
         return headerHeight + collectionViewHeight + bottomStackHeight
+    }
+
+    private func submit() {
+        sheetNav?.submit(
+            rating: self.rating,
+            shouldSubmitDebugLogs: self.shouldSubmitDebugLogs,
+        )
     }
 }

@@ -9,7 +9,10 @@ import SignalUI
 // MARK: - CallQualitySurveyNavigationController
 
 final class CallQualitySurveyNavigationController: UINavigationController {
-    init() {
+    private let callQualitySurveyManager: CallQualitySurveyManager
+
+    init(callQualitySurveyManager: CallQualitySurveyManager) {
+        self.callQualitySurveyManager = callQualitySurveyManager
         let vc = CallQualitySurveyRatingViewController()
         super.init(rootViewController: vc)
         vc.navigationItem.rightBarButtonItem = .cancelButton(dismissingFrom: self)
@@ -71,13 +74,26 @@ final class CallQualitySurveyNavigationController: UINavigationController {
         pushViewController(vc, animated: false)
     }
 
-    // [Call Quality Survey] TODO: Pass state through
-    func doneSelectingIssues() {
-        let vc = SurveyDebugLogViewController()
+    func doneSelectingIssues(rating: CallQualitySurvey.Rating) {
+        let vc = SurveyDebugLogViewController(rating: rating)
         vc.navigationItem.rightBarButtonItem = .cancelButton(dismissingFrom: self)
         vc.navigationItem.leftBarButtonItem = makeBackButton()
         addFadeTransition()
         pushViewController(vc, animated: false)
+    }
+
+    func submit(rating: CallQualitySurvey.Rating, shouldSubmitDebugLogs: Bool) {
+        callQualitySurveyManager.submit(
+            rating: rating,
+            shouldSubmitDebugLogs: shouldSubmitDebugLogs,
+        )
+        let host = presentingViewController
+        dismiss(animated: true) {
+            host?.presentToast(text: OWSLocalizedString(
+                "CALL_QUALITY_SURVEY_COMPLETION_TOAST",
+                comment: "Title for toast which appears after submitting a call quality survey",
+            ))
+        }
     }
 
     private func makeBackButton() -> UIBarButtonItem {

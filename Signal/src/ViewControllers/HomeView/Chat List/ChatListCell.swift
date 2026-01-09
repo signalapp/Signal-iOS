@@ -673,7 +673,7 @@ class ChatListCell: UITableViewCell, ReusableTableViewCell {
         messageStatusIconView.image = token.image.withRenderingMode(.alwaysTemplate)
         messageStatusIconView.tintColor = token.tintColor
 
-        if token.shouldAnimateStatusIcon || SpinningCheckmarks.shouldSpin {
+        if token.shouldAnimateStatusIcon || InMemorySettings.spinningCheckmarks {
             messageStatusIconView.startSpinning()
         } else {
             messageStatusIconView.stopSpinning()

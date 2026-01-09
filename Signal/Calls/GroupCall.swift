@@ -221,7 +221,21 @@ class GroupCall: SignalRingRTC.GroupCallDelegate {
     func groupCall(onEnded groupCall: SignalRingRTC.GroupCall, reason: CallEndReason, summary: CallSummary) {
         self.hasInvokedConnectMethod = false
 
-        // TODO: Handle the call summary.
+        CallQualitySurveyManager(
+            callSummary: summary,
+            callType: {
+                switch groupCall.kind {
+                case .signalGroup: .group
+                case .callLink: .link
+                }
+            }(),
+            deps: .init(
+                db: DependenciesBridge.shared.db,
+                accountManager: DependenciesBridge.shared.tsAccountManager,
+                networkManager: SSKEnvironment.shared.networkManagerRef,
+            ),
+        ).showIfNeeded()
+
         observers.elements.forEach { $0.groupCallEnded(self, reason: reason) }
     }
 

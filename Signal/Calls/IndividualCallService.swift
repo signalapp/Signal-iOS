@@ -458,7 +458,20 @@ final class IndividualCallService: CallServiceStateObserver {
     func callManager(_ callManager: CallService.CallManagerType, onCallEnded call: SignalCall, callId: UInt64, reason: CallEndReason, summary: CallSummary) {
         Logger.info("call: \(call), onCallEnded: \(reason)")
 
-        // TODO: Handle the call summary.
+        CallQualitySurveyManager(
+            callSummary: summary,
+            callType: {
+                switch call.individualCall.offerMediaType {
+                case .audio: .individualAudio
+                case .video: .individualVideo
+                }
+            }(),
+            deps: .init(
+                db: DependenciesBridge.shared.db,
+                accountManager: tsAccountManager,
+                networkManager: networkManager,
+            ),
+        ).showIfNeeded()
 
         switch reason {
         case .localHangup:

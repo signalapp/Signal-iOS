@@ -1720,12 +1720,14 @@
 		B95967842D52976A00F9A800 /* NavigationPreviewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95967832D52976A00F9A800 /* NavigationPreviewController.swift */; };
 		B95A765C2B76C5BB00AA7E97 /* AvatarViewPresentationContextProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95A765B2B76C5BB00AA7E97 /* AvatarViewPresentationContextProvider.swift */; };
 		B95A765E2B76E93500AA7E97 /* FindByUsernameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B95A765D2B76E93500AA7E97 /* FindByUsernameViewController.swift */; };
+		B965716E2F0DC91900690CE9 /* CallQualitySurvey.swift in Sources */ = {isa = PBXBuildFile; fileRef = B965716C2F0CAA3600690CE9 /* CallQualitySurvey.swift */; };
 		B96D6D792B9F83270039EB99 /* SignalSymbols-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = B96D6D782B9F83270039EB99 /* SignalSymbols-Regular.otf */; };
 		B9754F542C73AD49000000E4 /* ConversationAvatarView+SwiftUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9754F532C73AD49000000E4 /* ConversationAvatarView+SwiftUI.swift */; };
 		B97803012DD65B0A00E9FC82 /* LinearProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B97803002DD65B0A00E9FC82 /* LinearProgressView.swift */; };
 		B982ACFF2BA8FD2A00AD7E81 /* SignalSymbols-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = B982ACFE2BA8FD2A00AD7E81 /* SignalSymbols-Bold.otf */; };
 		B982AD012BA8FD3200AD7E81 /* SignalSymbols-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = B982AD002BA8FD3100AD7E81 /* SignalSymbols-Light.otf */; };
 		B985D29A2EE7E58700E3BF5F /* CallQualitySurveyCustomIssueViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B985D2992EE7E58700E3BF5F /* CallQualitySurveyCustomIssueViewController.swift */; };
+		B985D29E2EEA913000E3BF5F /* CallQualitySurvey.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = B985D29D2EEA913000E3BF5F /* CallQualitySurvey.pb.swift */; };
 		B9921F882CC6FDB200AB667F /* HeroSheetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9921F872CC6FDB200AB667F /* HeroSheetViewController.swift */; };
 		B99287FB2CF0FE8D000D62C4 /* LinkedDevicesEducationSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99287FA2CF0FE8D000D62C4 /* LinkedDevicesEducationSheet.swift */; };
 		B99288002CF124AC000D62C4 /* Text+Links.swift in Sources */ = {isa = PBXBuildFile; fileRef = B99287FF2CF124AC000D62C4 /* Text+Links.swift */; };
@@ -5909,6 +5911,7 @@
 		B95A765B2B76C5BB00AA7E97 /* AvatarViewPresentationContextProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarViewPresentationContextProvider.swift; sourceTree = "<group>"; };
 		B95A765D2B76E93500AA7E97 /* FindByUsernameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindByUsernameViewController.swift; sourceTree = "<group>"; };
 		B95BBAC12BB36025009EFB4A /* ProfileName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileName.swift; sourceTree = "<group>"; };
+		B965716C2F0CAA3600690CE9 /* CallQualitySurvey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallQualitySurvey.swift; sourceTree = "<group>"; };
 		B96D6D782B9F83270039EB99 /* SignalSymbols-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SignalSymbols-Regular.otf"; sourceTree = "<group>"; };
 		B96FEE2E2CDC297500836191 /* User.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = User.xcconfig; sourceTree = "<group>"; };
 		B9754F532C73AD49000000E4 /* ConversationAvatarView+SwiftUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationAvatarView+SwiftUI.swift"; sourceTree = "<group>"; };
@@ -5916,6 +5919,8 @@
 		B982ACFE2BA8FD2A00AD7E81 /* SignalSymbols-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SignalSymbols-Bold.otf"; sourceTree = "<group>"; };
 		B982AD002BA8FD3100AD7E81 /* SignalSymbols-Light.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SignalSymbols-Light.otf"; sourceTree = "<group>"; };
 		B985D2992EE7E58700E3BF5F /* CallQualitySurveyCustomIssueViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallQualitySurveyCustomIssueViewController.swift; sourceTree = "<group>"; };
+		B985D29C2EEA8FE700E3BF5F /* CallQualitySurvey.proto */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.protobuf; path = CallQualitySurvey.proto; sourceTree = "<group>"; };
+		B985D29D2EEA913000E3BF5F /* CallQualitySurvey.pb.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallQualitySurvey.pb.swift; sourceTree = "<group>"; };
 		B9921F872CC6FDB200AB667F /* HeroSheetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeroSheetViewController.swift; sourceTree = "<group>"; };
 		B99287FA2CF0FE8D000D62C4 /* LinkedDevicesEducationSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkedDevicesEducationSheet.swift; sourceTree = "<group>"; };
 		B99287FF2CF124AC000D62C4 /* Text+Links.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Text+Links.swift"; sourceTree = "<group>"; };
@@ -13636,6 +13641,7 @@
 		D9D321792A8FEA7A004FC110 /* Specifications */ = {
 			isa = PBXGroup;
 			children = (
+				B985D29C2EEA8FE700E3BF5F /* CallQualitySurvey.proto */,
 				D9D3217C2A8FEA9B004FC110 /* DeviceTransfer.proto */,
 				D9D3217D2A8FEA9C004FC110 /* Fingerprint.proto */,
 				D9D3217B2A8FEA9B004FC110 /* Groups.proto */,
@@ -13757,6 +13763,7 @@
 				D9E43BCC2CC194140001536E /* CallLinkManager.swift */,
 				D9E43BCD2CC194140001536E /* CallLinkStateUpdater.swift */,
 				D9E43BCE2CC194140001536E /* CallLinkUpdateMessageSender.swift */,
+				B965716C2F0CAA3600690CE9 /* CallQualitySurvey.swift */,
 				D9E43BCF2CC194140001536E /* CallRecordLoader.swift */,
 				D9E43BD02CC194140001536E /* CallService.swift */,
 				D9E43BD12CC194140001536E /* CallServiceState.swift */,
@@ -14715,6 +14722,7 @@
 		F9C5C9A2289453B100548EEE /* Generated */ = {
 			isa = PBXGroup;
 			children = (
+				B985D29D2EEA913000E3BF5F /* CallQualitySurvey.pb.swift */,
 				F9C5C9A9289453B100548EEE /* DeviceTransfer.pb.swift */,
 				F9C5C9B5289453B100548EEE /* DeviceTransferProto.swift */,
 				F9C5C9A6289453B100548EEE /* Fingerprint.pb.swift */,
@@ -17799,6 +17807,7 @@
 				D9E43BF32CC194140001536E /* CallMemberVideoView.swift in Sources */,
 				D9E43BF42CC194140001536E /* CallMemberView.swift in Sources */,
 				D9E43BF52CC194140001536E /* CallMemberWaitingAndErrorView.swift in Sources */,
+				B965716E2F0DC91900690CE9 /* CallQualitySurvey.swift in Sources */,
 				B985D29A2EE7E58700E3BF5F /* CallQualitySurveyCustomIssueViewController.swift in Sources */,
 				B924DFAC2EE7C8E000B88147 /* CallQualitySurveyDebugLogViewController.swift in Sources */,
 				B924DFAA2EE7C6F900B88147 /* CallQualitySurveyIssuesViewController.swift in Sources */,
@@ -18742,6 +18751,7 @@
 				50C831762BAA3A8000BEBF25 /* CallMessageHandler.swift in Sources */,
 				72C9058E2B9AC8E600E586B8 /* CallMessageRelay.swift in Sources */,
 				5021B0332C0106470028AC87 /* CallOfferHandler.swift in Sources */,
+				B985D29E2EEA913000E3BF5F /* CallQualitySurvey.pb.swift in Sources */,
 				D9C544292B8578B50036F274 /* CallRecord+CallStatus.swift in Sources */,
 				D9E7C8772B9A4A9C005BD3B9 /* CallRecord+Sorting.swift in Sources */,
 				D99A2A852AAB9AB9003388D1 /* CallRecord.swift in Sources */,

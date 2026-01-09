@@ -16,8 +16,8 @@ final class CallQualitySurveyIssuesViewController: CallQualitySurveySheetViewCon
     private let bottomStackView = UIStackView()
     private lazy var continueButton = UIButton(
         configuration: .largePrimary(title: CommonStrings.continueButton),
-        primaryAction: .init { [weak sheetNav] _ in
-            sheetNav?.doneSelectingIssues()
+        primaryAction: .init { [weak self] _ in
+            self?.submit()
         },
     )
     private lazy var customIssueEntry = UIButton(
@@ -36,7 +36,7 @@ final class CallQualitySurveyIssuesViewController: CallQualitySurveySheetViewCon
         return UICollectionView(frame: .zero, collectionViewLayout: layout)
     }()
 
-    private var dataSource: UICollectionViewDiffableDataSource<Section, Item>?
+    private var dataSource: DataSource?
 
     private var selectedItems = Set<Item>()
     private var customIssue: String? {
@@ -115,11 +115,10 @@ final class CallQualitySurveyIssuesViewController: CallQualitySurveySheetViewCon
         }
 
         let cellRegistration = UICollectionView.CellRegistration<CapsuleCell, Item> { cell, _, item in
-            // TODO: Account for selected icons
             cell.configure(title: item.title, image: item.image)
         }
 
-        dataSource = UICollectionViewDiffableDataSource<Section, Item>(collectionView: collectionView) { collectionView, indexPath, itemIdentifier in
+        dataSource = DataSource(collectionView: collectionView) { collectionView, indexPath, itemIdentifier in
             collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: itemIdentifier)
         }
 
@@ -135,15 +134,14 @@ final class CallQualitySurveyIssuesViewController: CallQualitySurveySheetViewCon
     }
 
     private func loadInitialSnapshot() {
-        // TODO: Typealiases?
-        var snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
+        var snapshot = Snapshot()
         snapshot.appendSections([.main])
         snapshot.appendItems([.audio, .video, .callDropped, .other])
         dataSource?.apply(snapshot, animatingDifferences: false)
     }
 
     private func updateSnapshot() {
-        var snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
+        var snapshot = Snapshot()
         snapshot.appendSections([.main])
 
         // Audio
@@ -233,95 +231,94 @@ final class CallQualitySurveyIssuesViewController: CallQualitySurveySheetViewCon
         present(OWSNavigationController(rootViewController: vc), animated: true)
     }
 
-    private enum Item: Hashable {
-        case audio
-        case audioStuttering
-        case audioLocalEcho
-        case audioRemoteEcho
-        case audioDrop
-        case video
-        case videoNoCamera
-        case videoLowQuality
-        case videoLowResolution
-        case callDropped
-        case other
-
-        var title: String {
-            switch self {
-            case .audio:
-                OWSLocalizedString(
-                    "CALL_QUALITY_SURVEY_ISSUE_AUDIO",
-                    comment: "Label for audio issue option in call quality survey",
-                )
-            case .audioStuttering:
-                OWSLocalizedString(
-                    "CALL_QUALITY_SURVEY_ISSUE_AUDIO_STUTTERING",
-                    comment: "Label for audio stuttering issue option in call quality survey",
-                )
-            case .audioLocalEcho:
-                OWSLocalizedString(
-                    "CALL_QUALITY_SURVEY_ISSUE_AUDIO_LOCAL_ECHO",
-                    comment: "Label for local echo issue option in call quality survey, indicating the user heard an echo",
-                )
-            case .audioRemoteEcho:
-                OWSLocalizedString(
-                    "CALL_QUALITY_SURVEY_ISSUE_AUDIO_REMOTE_ECHO",
-                    comment: "Label for remote echo issue option in call quality survey, indicating other participants heard an echo",
-                )
-            case .audioDrop:
-                OWSLocalizedString(
-                    "CALL_QUALITY_SURVEY_ISSUE_AUDIO_DROP",
-                    comment: "Label for audio dropout issue option in call quality survey",
-                )
-            case .video:
-                OWSLocalizedString(
-                    "CALL_QUALITY_SURVEY_ISSUE_VIDEO",
-                    comment: "Label for video issue option in call quality survey",
-                )
-            case .videoNoCamera:
-                OWSLocalizedString(
-                    "CALL_QUALITY_SURVEY_ISSUE_VIDEO_NO_CAMERA",
-                    comment: "Label for camera not working issue option in call quality survey",
-                )
-            case .videoLowQuality:
-                OWSLocalizedString(
-                    "CALL_QUALITY_SURVEY_ISSUE_VIDEO_LOW_QUALITY",
-                    comment: "Label for poor video quality issue option in call quality survey",
-                )
-            case .videoLowResolution:
-                OWSLocalizedString(
-                    "CALL_QUALITY_SURVEY_ISSUE_VIDEO_LOW_RESOLUTION",
-                    comment: "Label for low resolution video issue option in call quality survey",
-                )
-            case .callDropped:
-                OWSLocalizedString(
-                    "CALL_QUALITY_SURVEY_ISSUE_CALL_DROPPED",
-                    comment: "Label for call dropped issue option in call quality survey",
-                )
-            case .other:
-                OWSLocalizedString(
-                    "CALL_QUALITY_SURVEY_ISSUE_OTHER",
-                    comment: "Label for custom issue option in call quality survey",
-                )
-            }
-        }
-
-        var image: ImageResource {
-            switch self {
-            case .audio, .audioStuttering, .audioLocalEcho, .audioRemoteEcho, .audioDrop:
-                .speaker
-            case .video, .videoNoCamera, .videoLowQuality, .videoLowResolution:
-                .video
-            case .callDropped:
-                .xCircle
-            case .other:
-                .errorCircle
-            }
-        }
+    private func submit() {
+        sheetNav?.doneSelectingIssues(
+            rating: .hadIssues(selectedItems, customIssue: customIssue),
+        )
     }
+
+    private typealias DataSource = UICollectionViewDiffableDataSource<Section, Item>
+    private typealias Snapshot = NSDiffableDataSourceSnapshot<Section, Item>
+
+    private typealias Item = CallQualitySurvey.Issue
 
     private enum Section: Hashable {
         case main
+    }
+}
+
+private extension CallQualitySurvey.Issue {
+    var title: String {
+        switch self {
+        case .audio:
+            OWSLocalizedString(
+                "CALL_QUALITY_SURVEY_ISSUE_AUDIO",
+                comment: "Label for audio issue option in call quality survey",
+            )
+        case .audioStuttering:
+            OWSLocalizedString(
+                "CALL_QUALITY_SURVEY_ISSUE_AUDIO_STUTTERING",
+                comment: "Label for audio stuttering issue option in call quality survey",
+            )
+        case .audioLocalEcho:
+            OWSLocalizedString(
+                "CALL_QUALITY_SURVEY_ISSUE_AUDIO_LOCAL_ECHO",
+                comment: "Label for local echo issue option in call quality survey, indicating the user heard an echo",
+            )
+        case .audioRemoteEcho:
+            OWSLocalizedString(
+                "CALL_QUALITY_SURVEY_ISSUE_AUDIO_REMOTE_ECHO",
+                comment: "Label for remote echo issue option in call quality survey, indicating other participants heard an echo",
+            )
+        case .audioDrop:
+            OWSLocalizedString(
+                "CALL_QUALITY_SURVEY_ISSUE_AUDIO_DROP",
+                comment: "Label for audio dropout issue option in call quality survey",
+            )
+        case .video:
+            OWSLocalizedString(
+                "CALL_QUALITY_SURVEY_ISSUE_VIDEO",
+                comment: "Label for video issue option in call quality survey",
+            )
+        case .videoNoCamera:
+            OWSLocalizedString(
+                "CALL_QUALITY_SURVEY_ISSUE_VIDEO_NO_CAMERA",
+                comment: "Label for camera not working issue option in call quality survey",
+            )
+        case .videoLowQuality:
+            OWSLocalizedString(
+                "CALL_QUALITY_SURVEY_ISSUE_VIDEO_LOW_QUALITY",
+                comment: "Label for poor video quality issue option in call quality survey",
+            )
+        case .videoLowResolution:
+            OWSLocalizedString(
+                "CALL_QUALITY_SURVEY_ISSUE_VIDEO_LOW_RESOLUTION",
+                comment: "Label for low resolution video issue option in call quality survey",
+            )
+        case .callDropped:
+            OWSLocalizedString(
+                "CALL_QUALITY_SURVEY_ISSUE_CALL_DROPPED",
+                comment: "Label for call dropped issue option in call quality survey",
+            )
+        case .other:
+            OWSLocalizedString(
+                "CALL_QUALITY_SURVEY_ISSUE_OTHER",
+                comment: "Label for custom issue option in call quality survey",
+            )
+        }
+    }
+
+    var image: ImageResource {
+        switch self {
+        case .audio, .audioStuttering, .audioLocalEcho, .audioRemoteEcho, .audioDrop:
+            .speaker
+        case .video, .videoNoCamera, .videoLowQuality, .videoLowResolution:
+            .video
+        case .callDropped:
+            .xCircle
+        case .other:
+            .errorCircle
+        }
     }
 }
 

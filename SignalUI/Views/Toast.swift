@@ -208,7 +208,11 @@ class ToastView: UIView {
         label = UILabel()
         super.init(frame: frame)
 
-        self.layer.cornerRadius = 12
+        if #available(iOS 26, *) {
+            self.cornerConfiguration = .capsule()
+        } else {
+            self.layer.cornerRadius = 12
+        }
         self.clipsToBounds = true
         self.layoutMargins = UIEdgeInsets(top: 12, left: 12, bottom: 12, right: 12)
 

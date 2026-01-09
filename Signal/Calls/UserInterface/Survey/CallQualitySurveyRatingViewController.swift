@@ -58,8 +58,7 @@ final class CallQualitySurveyRatingViewController: CallQualitySurveySheetViewCon
                 comment: "Button label for indicating the call did not have issues in the call quality survey",
             ),
         ) { [weak sheetNav] in
-            // [Call Quality Survey] TODO: Pass selected items
-            sheetNav?.doneSelectingIssues()
+            sheetNav?.doneSelectingIssues(rating: .satisfied)
         }
 
         // Zero-width spacer views with .equalSpacing distribution makes the

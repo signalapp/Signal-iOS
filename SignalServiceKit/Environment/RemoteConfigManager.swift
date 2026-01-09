@@ -253,6 +253,20 @@ public class RemoteConfig {
         return TimeInterval(intervalMs) / 1000
     }
 
+    /// How many successful calls per million should show a call quality survey for the user's region
+    public func callQualitySurveyPPM(localIdentifiers: LocalIdentifiers) -> UInt64 {
+        let defaultValue: UInt64 = 10_000
+        let string = Self.countryCodeBucketValue(
+            csvString: getStringConvertibleValue(
+                forFlag: .callQualitySurveyPPM,
+                defaultValue: "*:\(defaultValue)",
+            ),
+            localIdentifiers: localIdentifiers,
+        )
+        guard let string else { return defaultValue }
+        return UInt64(string) ?? defaultValue
+    }
+
     public var mediaTierFallbackCdnNumber: UInt32 {
         getUInt32Value(forFlag: .mediaTierFallbackCdnNumber, defaultValue: 3)
     }
@@ -386,16 +400,23 @@ public class RemoteConfig {
 
     // MARK: - Country code buckets
 
+    private static func countryCodeBucketValue(csvString: String, localIdentifiers: LocalIdentifiers) -> String? {
+        let phoneNumberUtil = SSKEnvironment.shared.phoneNumberUtilRef
+        let callingCode = phoneNumberUtil.parseE164(localIdentifiers.phoneNumber)?.getCallingCode()
+        return countryCodeValue(csvString: csvString, callingCode: callingCode)
+    }
+
     /// Determine if a country-code-dependent flag is enabled for the current
     /// user, given a country-code CSV and key.
     ///
     /// - Parameter csvString: a CSV containing `<country-code>:<parts-per-million>` pairs
     /// - Parameter key: a key to use as part of bucketing
     static func isCountryCodeBucketEnabled(csvString: String, key: String, localIdentifiers: LocalIdentifiers) -> Bool {
-        let phoneNumberUtil = SSKEnvironment.shared.phoneNumberUtilRef
-        let callingCode = phoneNumberUtil.parseE164(localIdentifiers.phoneNumber)?.getCallingCode()
         guard
-            let countryCodeValue = countryCodeValue(csvString: csvString, callingCode: callingCode),
+            let countryCodeValue = countryCodeBucketValue(
+                csvString: csvString,
+                localIdentifiers: localIdentifiers,
+            ),
             let countEnabled = UInt64(countryCodeValue)
         else {
             return false
@@ -557,6 +578,7 @@ private enum ValueFlag: String, FlagType {
     case attachmentMaxEncryptedBytes = "global.attachments.maxBytes"
     case automaticSessionResetAttemptInterval = "ios.automaticSessionResetAttemptInterval"
     case backgroundRefreshInterval = "ios.backgroundRefreshInterval"
+    case callQualitySurveyPPM = "ios.callQualitySurveyPPM"
     case cdsSyncInterval = "cds.syncInterval.seconds"
     case clientExpiration = "ios.clientExpiration"
     case creditAndDebitCardDisabledRegions = "global.donations.ccDisabledRegions"
@@ -591,6 +613,7 @@ private enum ValueFlag: String, FlagType {
         case .attachmentMaxEncryptedBytes: false
         case .automaticSessionResetAttemptInterval: true
         case .backgroundRefreshInterval: true
+        case .callQualitySurveyPPM: true
         case .cdsSyncInterval: false
         case .clientExpiration: true
         case .creditAndDebitCardDisabledRegions: true

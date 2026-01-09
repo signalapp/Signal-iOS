@@ -327,9 +327,16 @@ class InternalSettingsViewController: OWSTableViewController2 {
         otherSection.add(.copyableItem(label: "Audio Category", value: AVAudioSession.sharedInstance().category.rawValue.replacingOccurrences(of: "AVAudioSessionCategory", with: "")))
         otherSection.add(.switch(
             withText: "Spinning checkmarks",
-            isOn: { SpinningCheckmarks.shouldSpin },
+            isOn: { InMemorySettings.spinningCheckmarks },
             target: self,
             selector: #selector(spinCheckmarks(_:)),
+        ))
+        otherSection.add(.switch(
+            withText: "Force call quality survey",
+            isOn: { InMemorySettings.forceCallQualitySurvey },
+            actionBlock: { _ in
+                InMemorySettings.forceCallQualitySurvey.toggle()
+            },
         ))
         if #available(iOS 26, *) {
             otherSection.add(.switch(
@@ -339,9 +346,6 @@ class InternalSettingsViewController: OWSTableViewController2 {
                 selector: #selector(toggleChatHeaderContentTrackingDisabled(sender:)),
             ))
         }
-        otherSection.add(.disclosureItem(withText: "Show Call Quality Survey") { [weak self] in
-            self?.present(CallQualitySurveyNavigationController(), animated: true)
-        })
         contents.add(otherSection)
 
         if mode != .registration {
@@ -366,6 +370,11 @@ class InternalSettingsViewController: OWSTableViewController2 {
 
 // MARK: -
 
+public enum InMemorySettings {
+    static var spinningCheckmarks = false
+    static var forceCallQualitySurvey = false
+}
+
 private extension InternalSettingsViewController {
 
     var isChatHeaderContentTrackingDisabled: Bool {
@@ -380,17 +389,11 @@ private extension InternalSettingsViewController {
     }
 }
 
-// MARK: -
-
-public enum SpinningCheckmarks {
-    static var shouldSpin = false
-}
-
 private extension InternalSettingsViewController {
 
     @objc
     func spinCheckmarks(_ sender: Any) {
-        let wasSpinning = SpinningCheckmarks.shouldSpin
+        let wasSpinning = InMemorySettings.spinningCheckmarks
         if let view = sender as? UIView {
             if wasSpinning {
                 view.layer.removeAnimation(forKey: "spin")
@@ -403,7 +406,7 @@ private extension InternalSettingsViewController {
                 view.layer.add(animation, forKey: "spin")
             }
         }
-        SpinningCheckmarks.shouldSpin = !wasSpinning
+        InMemorySettings.spinningCheckmarks = !wasSpinning
     }
 
     func exportMessageBackupProto() async {
