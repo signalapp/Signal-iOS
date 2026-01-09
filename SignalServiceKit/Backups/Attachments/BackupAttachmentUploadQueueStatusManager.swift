@@ -321,8 +321,8 @@ public class BackupAttachmentUploadQueueStatusManagerImpl: BackupAttachmentUploa
 
         let (isFullsizeQueueEmpty, isThumbnailQueueEmpty) = db.read { tx in
             return (
-                ((try? backupAttachmentUploadStore.fetchNextUploads(count: 1, isFullsize: true, tx: tx)) ?? []).isEmpty,
-                ((try? backupAttachmentUploadStore.fetchNextUploads(count: 1, isFullsize: false, tx: tx)) ?? []).isEmpty,
+                backupAttachmentUploadStore.fetchNextUploads(count: 1, isFullsize: true, tx: tx).isEmpty,
+                backupAttachmentUploadStore.fetchNextUploads(count: 1, isFullsize: false, tx: tx).isEmpty,
             )
         }
         state.isFullsizeQueueEmpty = isFullsizeQueueEmpty

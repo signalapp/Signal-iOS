@@ -475,7 +475,7 @@ class BackupSettingsViewController:
     ) -> UInt64? {
         let hasConsumedMediaTierCapacity = backupSettingsStore.hasConsumedMediaTierCapacity(tx: tx)
         if hasConsumedMediaTierCapacity {
-            return (try? backupAttachmentUploadStore.totalEstimatedFullsizeBytesToUpload(tx: tx)) ?? 0
+            return backupAttachmentUploadStore.totalEstimatedFullsizeBytesToUpload(tx: tx)
         } else {
             return nil
         }

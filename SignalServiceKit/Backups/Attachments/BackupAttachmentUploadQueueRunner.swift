@@ -747,15 +747,19 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
             self.backupAttachmentUploadStore = backupAttachmentUploadStore
         }
 
-        func peek(count: UInt, tx: DBReadTransaction) throws -> [TaskRecord] {
+        func peek(count: UInt, tx: DBReadTransaction) -> [TaskRecord] {
             let forFullsizeUploads = switch mode {
             case .fullsize:
                 true
             case .thumbnail:
                 false
             }
-            return try backupAttachmentUploadStore.fetchNextUploads(count: count, isFullsize: forFullsizeUploads, tx: tx).map {
-                return .init(id: $0.id!, record: $0)
+            return backupAttachmentUploadStore.fetchNextUploads(
+                count: count,
+                isFullsize: forFullsizeUploads,
+                tx: tx,
+            ).map {
+                return TaskRecord(id: $0.id!, record: $0)
             }
         }
 

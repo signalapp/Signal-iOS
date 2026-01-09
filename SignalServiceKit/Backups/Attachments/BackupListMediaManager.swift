@@ -1387,7 +1387,7 @@ private class ListMediaIntegrityCheckerImpl: ListMediaIntegrityChecker {
                 return
             } else {
                 // We've discovered this upload on the media tier.
-                let enqueuedUpload = try? backupAttachmentUploadStore.getEnqueuedUpload(
+                let enqueuedUpload = backupAttachmentUploadStore.getEnqueuedUpload(
                     for: attachment.id,
                     fullsize: isFullsize,
                     tx: tx,
@@ -1450,7 +1450,7 @@ private class ListMediaIntegrityCheckerImpl: ListMediaIntegrityChecker {
         }
 
         // Check if enqueued for upload.
-        let enqueuedUpload = try? backupAttachmentUploadStore.getEnqueuedUpload(
+        let enqueuedUpload = backupAttachmentUploadStore.getEnqueuedUpload(
             for: attachment.id,
             fullsize: isFullsize,
             tx: tx,
