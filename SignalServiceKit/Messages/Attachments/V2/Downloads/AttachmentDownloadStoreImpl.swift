@@ -3,10 +3,9 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import GRDB
 
-public class AttachmentDownloadStoreImpl: AttachmentDownloadStore {
+public struct AttachmentDownloadStore {
 
     private let dateProvider: DateProvider
 
@@ -16,73 +15,105 @@ public class AttachmentDownloadStoreImpl: AttachmentDownloadStore {
         self.dateProvider = dateProvider
     }
 
-    public typealias Record = QueuedAttachmentDownloadRecord
+    private typealias Record = QueuedAttachmentDownloadRecord
 
     public func fetchRecord(
         id: QueuedAttachmentDownloadRecord.IDType,
         tx: DBReadTransaction,
-    ) throws -> QueuedAttachmentDownloadRecord? {
-        return try Record.fetchOne(tx.database, key: id)
+    ) -> QueuedAttachmentDownloadRecord? {
+        return failIfThrows {
+            try QueuedAttachmentDownloadRecord.fetchOne(tx.database, key: id)
+        }
     }
 
     public func enqueuedDownload(
         for id: Attachment.IDType,
         tx: DBReadTransaction,
-    ) throws -> QueuedAttachmentDownloadRecord? {
-        return try Record
+    ) -> QueuedAttachmentDownloadRecord? {
+        let query = QueuedAttachmentDownloadRecord
             .filter(Column(.attachmentId) == id)
-            .fetchOne(tx.database)
+
+        return failIfThrows {
+            try query.fetchOne(tx.database)
+        }
     }
 
+    /// Fetch the next N highest priority downloads off the queue in FIFO order.
     public func peek(
         count: UInt,
         tx: DBReadTransaction,
-    ) throws -> [QueuedAttachmentDownloadRecord] {
-        try Record
+    ) -> [QueuedAttachmentDownloadRecord] {
+        let query = QueuedAttachmentDownloadRecord
             .filter(Column(.minRetryTimestamp) == nil)
             .order([Column(.priority).desc, Column(.id).asc])
             .limit(Int(count))
-            .fetchAll(tx.database)
+
+        return failIfThrows {
+            try query.fetchAll(tx.database)
+        }
     }
 
-    public func nextRetryTimestamp(tx: DBReadTransaction) throws -> UInt64? {
-        try Record
+    /// Return the lowest non-nil `minRetryTimestamp`.
+    public func nextRetryTimestamp(tx: DBReadTransaction) -> UInt64? {
+        let query = QueuedAttachmentDownloadRecord
             .filter(Column(.minRetryTimestamp) != nil)
             .select([min(Column(.minRetryTimestamp))], as: UInt64.self)
-            .fetchOne(tx.database)
+
+        return failIfThrows {
+            try query.fetchOne(tx.database)
+        }
     }
 
+    /// Enqueues a target attachment (with a given source) for download at a given priority.
+    ///
+    /// If the attachment+source pair is already enqueued:
+    /// * Does nothing if the existing one is at the same or higher priority
+    /// * Replaces the existing one if the new one is at higher priority.
+    ///
+    /// Only allows 50 `default` priority attachments at a time; any more
+    /// and it will remove existing ones from the queue (in FIFO order).
+    ///
+    /// Simply enqueues; wake up AttachmentDownloadManager to actually download off the queue.
     public func enqueueDownloadOfAttachment(
         withId attachmentId: Attachment.IDType,
         source: QueuedAttachmentDownloadRecord.SourceType,
         priority: AttachmentDownloadPriority,
         tx: DBWriteTransaction,
-    ) throws {
+    ) {
         // Check for existing enqueued rows.
-        let existingRow = try Record
+        let existingRowQuery = QueuedAttachmentDownloadRecord
             .filter(Column(.attachmentId) == attachmentId)
             .filter(Column(.sourceType) == source.rawValue)
-            .fetchOne(tx.database)
+        let existingRow = failIfThrows {
+            try existingRowQuery.fetchOne(tx.database)
+        }
         if var existingRow {
-            try self.updatePriorityIfNeeded(&existingRow, priority: priority, tx: tx)
+            updatePriorityIfNeeded(&existingRow, priority: priority, tx: tx)
             return
         }
 
         switch priority {
         case .default:
             // Only allow a max amount of default enqueued rows.
-            let defaultPriorityEnqueuedCount = try Record
+            let defaultPriorityEnqueuedCountQuery = QueuedAttachmentDownloadRecord
                 .filter(Column(.priority) == priority.rawValue)
-                .fetchCount(tx.database)
+            let defaultPriorityEnqueuedCount = failIfThrows {
+                try defaultPriorityEnqueuedCountQuery.fetchCount(tx.database)
+            }
 
             if defaultPriorityEnqueuedCount >= Constants.maxEnqueuedCountDefaultPriority {
                 // Remove the first ones sorted by insertion order.
-                try Record
+                let excessDefaultPriorityDownloadsQuery = QueuedAttachmentDownloadRecord
                     .filter(Column(.priority) == priority.rawValue)
                     .order(Column(.id).asc)
                     .limit(1 + defaultPriorityEnqueuedCount - Constants.maxEnqueuedCountDefaultPriority)
-                    .fetchAll(tx.database)
-                    .forEach { try $0.delete(tx.database) }
+
+                failIfThrows {
+                    let excessDownloads = try excessDefaultPriorityDownloadsQuery.fetchAll(tx.database)
+                    for download in excessDownloads {
+                        try download.delete(tx.database)
+                    }
+                }
             }
 
         case .userInitiated, .localClone, .backupRestore:
@@ -94,55 +125,72 @@ public class AttachmentDownloadStoreImpl: AttachmentDownloadStore {
             priority: priority,
             sourceType: source,
         )
-        try newRecord.insert(tx.database)
+        failIfThrows {
+            try newRecord.insert(tx.database)
+        }
     }
 
+    /// - SeeAlso ``markQueuedDownloadFailed(withId:minRetryTimestamp:tx:)``
     public func removeAttachmentFromQueue(
         withId attachmentId: Attachment.IDType,
         source: QueuedAttachmentDownloadRecord.SourceType,
         tx: DBWriteTransaction,
-    ) throws {
-        try Record
+    ) {
+        let query = QueuedAttachmentDownloadRecord
             .filter(Column(.attachmentId) == attachmentId)
             .filter(Column(.sourceType) == source.rawValue)
-            .deleteAll(tx.database)
+
+        failIfThrows {
+            try query.deleteAll(tx.database)
+        }
     }
 
+    /// If the failure is permanent (no retry), use `removeAttachmentFromQueue` instead.
     public func markQueuedDownloadFailed(
         withId id: QueuedAttachmentDownloadRecord.IDType,
         minRetryTimestamp: UInt64,
         tx: DBWriteTransaction,
-    ) throws {
-        try Record
+    ) {
+        let query = QueuedAttachmentDownloadRecord
             .filter(key: id)
-            .updateAll(tx.database, [
+
+        failIfThrows {
+            try query.updateAll(tx.database, [
                 Column(.minRetryTimestamp).set(to: minRetryTimestamp),
                 Column(.retryAttempts).set(to: Column(.retryAttempts) + 1),
             ])
+        }
     }
 
-    public func updateRetryableDownloads(tx: DBWriteTransaction) throws {
-        try Record
+    /// Update all downloads with`minRetryTimestamp` past the current timestamp,
+    /// marking them retryable.
+    public func updateRetryableDownloads(tx: DBWriteTransaction) {
+        let query = QueuedAttachmentDownloadRecord
             .filter(Column(.minRetryTimestamp) != nil)
             .filter(Column(.minRetryTimestamp) <= dateProvider().ows_millisecondsSince1970)
-            .updateAll(tx.database, Column(.minRetryTimestamp).set(to: nil))
+
+        failIfThrows {
+            try query.updateAll(tx.database, Column(.minRetryTimestamp).set(to: nil))
+        }
     }
 
     // MARK: - Private
 
     /// If the current priority is lower than the provided priority, updates with the new priority and makes retryable.
     private func updatePriorityIfNeeded(
-        _ record: inout Record,
+        _ record: inout QueuedAttachmentDownloadRecord,
         priority: AttachmentDownloadPriority,
         tx: DBWriteTransaction,
-    ) throws {
+    ) {
         if record.priority.rawValue < priority.rawValue {
             record.priority = priority
             record.minRetryTimestamp = nil
-            try record.update(tx.database)
         } else if priority.rawValue >= AttachmentDownloadPriority.userInitiated.rawValue {
             // If we re-bump with user-initiated priority, mark it as needing retry.
             record.minRetryTimestamp = nil
+        }
+
+        failIfThrows {
             try record.update(tx.database)
         }
     }

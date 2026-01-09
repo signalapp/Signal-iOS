@@ -70,7 +70,7 @@ public class AttachmentPointer {
         }
         do {
             if
-                let record = try DependenciesBridge.shared.attachmentDownloadStore.enqueuedDownload(
+                let record = DependenciesBridge.shared.attachmentDownloadStore.enqueuedDownload(
                     for: attachment.id,
                     tx: tx,
                 ),
@@ -78,9 +78,6 @@ public class AttachmentPointer {
             {
                 return .enqueuedOrDownloading
             }
-        } catch {
-            owsFailDebug("Failed to look up download queue")
-            return .none
         }
         if lastDownloadAttemptTimestamp != nil {
             return .failed

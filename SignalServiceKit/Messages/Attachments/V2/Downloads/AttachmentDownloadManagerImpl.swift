@@ -316,7 +316,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             switch downloadability {
             case .downloadable:
                 didEnqueueAnyDownloads = true
-                try? attachmentDownloadStore.enqueueDownloadOfAttachment(
+                attachmentDownloadStore.enqueueDownloadOfAttachment(
                     withId: referencedAttachment.reference.attachmentRowId,
                     source: sourceToUse,
                     priority: priority,
@@ -355,7 +355,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             return
         }
 
-        try? attachmentDownloadStore.enqueueDownloadOfAttachment(
+        attachmentDownloadStore.enqueueDownloadOfAttachment(
             withId: id,
             source: source,
             priority: priority,
@@ -389,8 +389,8 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         }
 
         do {
-            try await db.awaitableWriteWithRollbackIfThrows { tx in
-                try self.attachmentDownloadStore.enqueueDownloadOfAttachment(
+            await db.awaitableWrite { tx in
+                self.attachmentDownloadStore.enqueueDownloadOfAttachment(
                     withId: id,
                     source: source,
                     priority: priority,
@@ -425,7 +425,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
     public func cancelDownload(for attachmentId: Attachment.IDType, tx: DBWriteTransaction) {
         progressStates.markDownloadCancelled(for: attachmentId)
         QueuedAttachmentDownloadRecord.SourceType.allCases.forEach { source in
-            try? attachmentDownloadStore.removeAttachmentFromQueue(
+            attachmentDownloadStore.removeAttachmentFromQueue(
                 withId: attachmentId,
                 source: source,
                 tx: tx,
@@ -453,14 +453,14 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             self.store = store
         }
 
-        func peek(count: UInt, tx: DBReadTransaction) throws -> [DownloadTaskRecord] {
-            return try store.peek(count: count, tx: tx).map {
+        func peek(count: UInt, tx: DBReadTransaction) -> [DownloadTaskRecord] {
+            return store.peek(count: count, tx: tx).map {
                 return .init(id: $0.id!, record: $0)
             }
         }
 
-        func removeRecord(_ record: DownloadTaskRecord, tx: DBWriteTransaction) throws {
-            try store.removeAttachmentFromQueue(
+        func removeRecord(_ record: DownloadTaskRecord, tx: DBWriteTransaction) {
+            store.removeAttachmentFromQueue(
                 withId: record.record.attachmentId,
                 source: record.record.sourceType,
                 tx: tx,
@@ -556,7 +556,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             Logger.error("Failed download of attachment \(record.attachmentId) from \(record.sourceType)")
             if isRetryable, let retryTime = self.retryTime(for: record) {
                 // Don't update observers; they'll be updated when the retry succeeds.
-                try? self.attachmentDownloadStore.markQueuedDownloadFailed(
+                attachmentDownloadStore.markQueuedDownloadFailed(
                     withId: record.id!,
                     minRetryTimestamp: retryTime,
                     tx: tx,
@@ -573,7 +573,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                         && record.priority != .backupRestore
 
                 // Not retrying; just delete the enqueued download
-                try? self.attachmentDownloadStore.removeAttachmentFromQueue(
+                attachmentDownloadStore.removeAttachmentFromQueue(
                     withId: record.attachmentId,
                     source: record.sourceType,
                     tx: tx,
@@ -597,7 +597,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     )
                 }
                 if shouldReEnqueueAsTransitTier {
-                    try? self.attachmentDownloadStore.enqueueDownloadOfAttachment(
+                    attachmentDownloadStore.enqueueDownloadOfAttachment(
                         withId: record.attachmentId,
                         source: .transitTier,
                         priority: record.priority,

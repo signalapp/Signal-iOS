@@ -869,7 +869,6 @@
 		662590CB2B5994D2001FDCDD /* BackupArchiveGroupUpdateProtoToSwiftConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662590CA2B5994D2001FDCDD /* BackupArchiveGroupUpdateProtoToSwiftConverter.swift */; };
 		662590CD2B5994DC001FDCDD /* BackupArchiveGroupUpdateSwiftToProtoConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662590CC2B5994DC001FDCDD /* BackupArchiveGroupUpdateSwiftToProtoConverter.swift */; };
 		662590D12B5B525E001FDCDD /* BackupArchive+Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662590D02B5B525E001FDCDD /* BackupArchive+Errors.swift */; };
-		66278A4A2C1CB821006123E9 /* AttachmentDownloadStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66278A492C1CB820006123E9 /* AttachmentDownloadStore.swift */; };
 		66278A4C2C1CDDD9006123E9 /* AttachmentDownloadStoreImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66278A4B2C1CDDD9006123E9 /* AttachmentDownloadStoreImpl.swift */; };
 		662AC9252A460477009E2D5F /* FingerprintViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662AC9242A460477009E2D5F /* FingerprintViewController.swift */; };
 		662AC9272A4A32BF009E2D5F /* SpoilerRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662AC9262A4A32BF009E2D5F /* SpoilerRenderer.swift */; };
@@ -5019,7 +5018,6 @@
 		662590CA2B5994D2001FDCDD /* BackupArchiveGroupUpdateProtoToSwiftConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupArchiveGroupUpdateProtoToSwiftConverter.swift; sourceTree = "<group>"; };
 		662590CC2B5994DC001FDCDD /* BackupArchiveGroupUpdateSwiftToProtoConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupArchiveGroupUpdateSwiftToProtoConverter.swift; sourceTree = "<group>"; };
 		662590D02B5B525E001FDCDD /* BackupArchive+Errors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BackupArchive+Errors.swift"; sourceTree = "<group>"; };
-		66278A492C1CB820006123E9 /* AttachmentDownloadStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentDownloadStore.swift; sourceTree = "<group>"; };
 		66278A4B2C1CDDD9006123E9 /* AttachmentDownloadStoreImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentDownloadStoreImpl.swift; sourceTree = "<group>"; };
 		662AC9242A460477009E2D5F /* FingerprintViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FingerprintViewController.swift; sourceTree = "<group>"; };
 		662AC9262A4A32BF009E2D5F /* SpoilerRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpoilerRenderer.swift; sourceTree = "<group>"; };
@@ -10613,7 +10611,6 @@
 				66D7B93F2B9A67B00005C98B /* AttachmentDownloadPriority.swift */,
 				669573052C1B9E360092B755 /* AttachmentDownloadQueueDBTests.swift */,
 				664E8D932BD86AFB00C4968A /* AttachmentDownloadState.swift */,
-				66278A492C1CB820006123E9 /* AttachmentDownloadStore.swift */,
 				66278A4B2C1CDDD9006123E9 /* AttachmentDownloadStoreImpl.swift */,
 				66BE13CA2C1D026A0081A1ED /* AttachmentDownloadStoreTests.swift */,
 				669573012C1B77C00092B755 /* QueuedAttachmentDownloadRecord.swift */,
@@ -18418,7 +18415,6 @@
 				66BED7EC2B9B9A8B00236BAD /* AttachmentDownloadManagerMock.swift in Sources */,
 				66D7B9402B9A67B00005C98B /* AttachmentDownloadPriority.swift in Sources */,
 				664E8D942BD86AFB00C4968A /* AttachmentDownloadState.swift in Sources */,
-				66278A4A2C1CB821006123E9 /* AttachmentDownloadStore.swift in Sources */,
 				66278A4C2C1CDDD9006123E9 /* AttachmentDownloadStoreImpl.swift in Sources */,
 				66D7B92D2B98DAAD0005C98B /* AttachmentManager+Proto.swift in Sources */,
 				66D7B8FF2B9287F00005C98B /* AttachmentManager.swift in Sources */,

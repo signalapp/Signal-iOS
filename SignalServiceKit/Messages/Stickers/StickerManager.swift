@@ -705,8 +705,8 @@ public class StickerManager: NSObject {
                     stickerInfo,
                     tx: transaction,
                 )
-                try attachmentIds.forEach { attachmentId in
-                    try DependenciesBridge.shared.attachmentDownloadStore.enqueueDownloadOfAttachment(
+                attachmentIds.forEach { attachmentId in
+                    DependenciesBridge.shared.attachmentDownloadStore.enqueueDownloadOfAttachment(
                         withId: attachmentId,
                         // source is irrelevant with localClone priority
                         source: .transitTier,
