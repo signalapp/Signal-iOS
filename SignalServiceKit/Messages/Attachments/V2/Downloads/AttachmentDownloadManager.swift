@@ -129,12 +129,12 @@ public protocol AttachmentDownloadManager {
     func downloadBackup(
         metadata: BackupReadCredential,
         progress: OWSProgressSink?,
-    ) -> Promise<URL>
+    ) async throws -> URL
 
     func downloadTransientAttachment(
         metadata: AttachmentDownloads.DownloadMetadata,
         progress: OWSProgressSink?,
-    ) -> Promise<URL>
+    ) async throws -> URL
 
     func enqueueDownloadOfAttachmentsForMessage(
         _ message: TSMessage,
@@ -179,11 +179,8 @@ extension AttachmentDownloadManager {
 
     public func downloadTransientAttachment(
         metadata: AttachmentDownloads.DownloadMetadata,
-    ) -> Promise<URL> {
-        return downloadTransientAttachment(
-            metadata: metadata,
-            progress: nil,
-        )
+    ) async throws -> URL {
+        return try await downloadTransientAttachment(metadata: metadata, progress: nil)
     }
 
     public func enqueueDownloadOfAttachmentsForMessage(

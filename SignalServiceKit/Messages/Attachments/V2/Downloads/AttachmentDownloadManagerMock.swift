@@ -21,15 +21,17 @@ open class AttachmentDownloadManagerMock: AttachmentDownloadManager {
     public func downloadBackup(
         metadata: BackupReadCredential,
         progress: OWSProgressSink?,
-    ) -> Promise<URL> {
-        return .pending().0
+    ) async throws -> URL {
+        try! await Task.sleep(nanoseconds: TimeInterval.infinity.clampedNanoseconds)
+        fatalError()
     }
 
     public func downloadTransientAttachment(
         metadata: AttachmentDownloads.DownloadMetadata,
         progress: OWSProgressSink?,
-    ) -> Promise<URL> {
-        return .pending().0
+    ) async throws -> URL {
+        try! await Task.sleep(nanoseconds: TimeInterval.infinity.clampedNanoseconds)
+        fatalError()
     }
 
     open func enqueueDownloadOfAttachmentsForMessage(

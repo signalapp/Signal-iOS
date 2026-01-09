@@ -688,7 +688,7 @@ public class LinkAndSyncManagerImpl: LinkAndSyncManager {
                     source: .linkNSyncBackup(cdnKey: cdnKey),
                 ),
                 progress: progress,
-            ).awaitable()
+            )
         } catch {
             if error is CancellationError {
                 throw SecondaryLinkNSyncError.cancelled

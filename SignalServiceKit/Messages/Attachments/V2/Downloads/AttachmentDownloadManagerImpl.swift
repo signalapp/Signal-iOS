@@ -135,18 +135,16 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
     public func downloadBackup(
         metadata: BackupReadCredential,
         progress: OWSProgressSink?,
-    ) -> Promise<URL> {
+    ) async throws -> URL {
         let uuid = UUID()
         let downloadState = DownloadState(type: .backup(metadata: metadata, uuid: uuid))
-        return Promise.wrapAsync {
-            let maxDownloadSize = BackupArchive.Constants.maxDownloadSizeBytes
-            return try await self.downloadQueue.enqueueDownload(
-                downloadState: downloadState,
-                maxDownloadSizeBytes: maxDownloadSize,
-                expectedDownloadSize: .useHeadRequest,
-                progress: progress,
-            )
-        }
+        let maxDownloadSize = BackupArchive.Constants.maxDownloadSizeBytes
+        return try await self.downloadQueue.enqueueDownload(
+            downloadState: downloadState,
+            maxDownloadSizeBytes: maxDownloadSize,
+            expectedDownloadSize: .useHeadRequest,
+            progress: progress,
+        )
     }
 
     public func backupCdnInfo(
@@ -185,25 +183,22 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
     public func downloadTransientAttachment(
         metadata: AttachmentDownloads.DownloadMetadata,
         progress: OWSProgressSink?,
-    ) -> Promise<URL> {
-        return Promise.wrapAsync {
-            // We want to avoid large downloads from a compromised or buggy service.
-            let maxDownloadSize = RemoteConfig.current.attachmentMaxEncryptedReceiveBytes
-            let downloadState = DownloadState(type: .transientAttachment(metadata, uuid: UUID()))
+    ) async throws -> URL {
+        // We want to avoid large downloads from a compromised or buggy service.
+        let maxDownloadSize = RemoteConfig.current.attachmentMaxEncryptedReceiveBytes
+        let downloadState = DownloadState(type: .transientAttachment(metadata, uuid: UUID()))
 
-            let encryptedFileUrl = try await self.downloadQueue.enqueueDownload(
-                downloadState: downloadState,
-                maxDownloadSizeBytes: maxDownloadSize,
-                expectedDownloadSize: metadata.plaintextLength.map({ .estimatedSizeBytes(UInt($0)) })
-                    ?? .useHeadRequest,
-                progress: progress,
-            )
-            switch metadata.source {
-            case .linkNSyncBackup:
-                return encryptedFileUrl
-            default:
-                return try await self.decrypter.decryptTransientAttachment(encryptedFileUrl: encryptedFileUrl, metadata: metadata)
-            }
+        let encryptedFileUrl = try await self.downloadQueue.enqueueDownload(
+            downloadState: downloadState,
+            maxDownloadSizeBytes: maxDownloadSize,
+            expectedDownloadSize: metadata.plaintextLength.map({ .estimatedSizeBytes(UInt($0)) }) ?? .useHeadRequest,
+            progress: progress,
+        )
+        switch metadata.source {
+        case .linkNSyncBackup:
+            return encryptedFileUrl
+        default:
+            return try await self.decrypter.decryptTransientAttachment(encryptedFileUrl: encryptedFileUrl, metadata: metadata)
         }
     }
 

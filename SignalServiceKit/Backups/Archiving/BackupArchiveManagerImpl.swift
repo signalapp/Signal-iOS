@@ -164,7 +164,7 @@ public class BackupArchiveManagerImpl: BackupArchiveManager {
         let tmpFileUrl = try await attachmentDownloadManager.downloadBackup(
             metadata: metadata,
             progress: progress,
-        ).awaitable()
+        )
 
         // Once protos calm down, this can be enabled to warn/error on failed validation
         // try await validateBackup(localIdentifiers: localIdentifiers, fileUrl: tmpFileUrl)
