@@ -748,12 +748,12 @@ public class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQu
             self.mode = mode
         }
 
-        func peek(count: UInt, tx: DBReadTransaction) throws -> [TaskRecord] {
+        func peek(count: UInt, tx: DBReadTransaction) -> [TaskRecord] {
             let forThumbnailDownloads = switch mode {
             case .thumbnail: true
             case .fullsize: false
             }
-            return try backupAttachmentDownloadStore.peek(
+            return backupAttachmentDownloadStore.peek(
                 count: count,
                 isThumbnail: forThumbnailDownloads,
                 tx: tx,

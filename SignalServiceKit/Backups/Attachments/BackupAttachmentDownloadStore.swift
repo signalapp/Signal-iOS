@@ -136,7 +136,7 @@ public class BackupAttachmentDownloadStore {
         count: UInt,
         isThumbnail: Bool,
         tx: DBReadTransaction,
-    ) throws -> [QueuedBackupAttachmentDownload] {
+    ) -> [QueuedBackupAttachmentDownload] {
         let query = QueuedBackupAttachmentDownload
             .filter(
                 Column(QueuedBackupAttachmentDownload.CodingKeys.state)
