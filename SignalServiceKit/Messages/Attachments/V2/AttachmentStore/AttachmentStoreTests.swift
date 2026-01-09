@@ -12,12 +12,12 @@ class AttachmentStoreTests: XCTestCase {
     private var db: InMemoryDB!
 
     private var attachmentStore: AttachmentStore!
-    private var attachmentUploadStore: AttachmentUploadStoreImpl!
+    private var attachmentUploadStore: AttachmentUploadStore!
 
     override func setUp() async throws {
         db = InMemoryDB()
         attachmentStore = AttachmentStore()
-        attachmentUploadStore = AttachmentUploadStoreImpl(attachmentStore: attachmentStore)
+        attachmentUploadStore = AttachmentUploadStore(attachmentStore: attachmentStore)
     }
 
     // MARK: - Inserts
@@ -652,8 +652,8 @@ class AttachmentStoreTests: XCTestCase {
         )
 
         // Mark it as uploaded.
-        try db.write { tx in
-            try attachmentUploadStore.markUploadedToTransitTier(
+        db.write { tx in
+            attachmentUploadStore.markUploadedToTransitTier(
                 attachmentStream: stream,
                 info: transitTierInfo,
                 tx: tx,

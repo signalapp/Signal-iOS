@@ -680,7 +680,7 @@ public class BackupAttachmentDownloadQueueRunnerImpl: BackupAttachmentDownloadQu
                         }
                     case .transitTier(let transitTierInfo):
                         if let attachment = attachmentStore.fetch(id: record.record.attachmentRowId, tx: tx) {
-                            try attachmentUploadStore.markTransitTierUploadExpired(
+                            attachmentUploadStore.markTransitTierUploadExpired(
                                 attachment: attachment,
                                 info: transitTierInfo,
                                 tx: tx,

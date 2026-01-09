@@ -35,7 +35,7 @@ public class BackupListMediaManagerTests {
         self.listMediaManager = BackupListMediaManagerImpl(
             accountKeyStore: accountKeyStore,
             attachmentStore: attachmentStore,
-            attachmentUploadStore: AttachmentUploadStoreImpl(
+            attachmentUploadStore: AttachmentUploadStore(
                 attachmentStore: attachmentStore,
             ),
             backupAttachmentDownloadProgress: BackupAttachmentDownloadProgressMock(),

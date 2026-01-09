@@ -581,7 +581,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 if let error = error as? TransitTierExpiredError {
                     Logger.info("Expiring transit tier due to failed download")
                     if let attachment = attachmentStore.fetch(id: record.attachmentId, tx: tx) {
-                        try? self.attachmentUploadStore.markTransitTierUploadExpired(
+                        attachmentUploadStore.markTransitTierUploadExpired(
                             attachment: attachment,
                             info: error.transitTierInfo,
                             tx: tx,

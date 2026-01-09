@@ -455,66 +455,6 @@ public class IncomingMessageFactory: Factory {
     }
 }
 
-public class ConversationFactory {
-
-    public init() {}
-
-    @discardableResult
-    public func createSentMessage(
-        bodyAttachmentDataSources: [AttachmentDataSource],
-        transaction: DBWriteTransaction,
-    ) -> TSOutgoingMessage {
-        let outgoingFactory = OutgoingMessageFactory()
-        outgoingFactory.threadCreator = threadCreator
-        let message = outgoingFactory.create(transaction: transaction)
-
-        Task {
-            let messageBody = try! await DependenciesBridge.shared.attachmentContentValidator.prepareOversizeTextIfNeeded(
-                MessageBody(text: outgoingFactory.messageBodyBuilder(), ranges: outgoingFactory.bodyRangesBuilder()),
-            )
-
-            await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { asyncTransaction in
-                let unpreparedMessage = UnpreparedOutgoingMessage.forMessage(
-                    message,
-                    body: messageBody,
-                    unsavedBodyMediaAttachments: bodyAttachmentDataSources,
-                )
-                _ = try! unpreparedMessage.prepare(tx: asyncTransaction)
-
-                for referencedAttachment in message.allAttachments(transaction: asyncTransaction) {
-                    guard let stream = referencedAttachment.attachment.asStream() else {
-                        continue
-                    }
-                    let transitTierInfo = Attachment.TransitTierInfo(
-                        cdnNumber: 3,
-                        cdnKey: "1234",
-                        uploadTimestamp: 1,
-                        encryptionKey: Randomness.generateRandomBytes(16),
-                        unencryptedByteCount: 16,
-                        integrityCheck: .digestSHA256Ciphertext(Randomness.generateRandomBytes(16)),
-                        // TODO: [Attachment Streaming] support incremental mac
-                        incrementalMacInfo: nil,
-                        lastDownloadAttemptTimestamp: nil,
-                    )
-                    try! (DependenciesBridge.shared.attachmentStore as? AttachmentUploadStore)?.markUploadedToTransitTier(
-                        attachmentStream: stream,
-                        info: transitTierInfo,
-                        tx: asyncTransaction,
-                    )
-                }
-
-                message.updateWithFakeMessageState(.sent, tx: asyncTransaction)
-            }
-        }
-
-        return message
-    }
-
-    public var threadCreator: (DBWriteTransaction) -> TSThread = { transaction in
-        ContactThreadFactory().create(transaction: transaction)
-    }
-}
-
 public class CommonGenerator {
 
     public static func e164() -> String {

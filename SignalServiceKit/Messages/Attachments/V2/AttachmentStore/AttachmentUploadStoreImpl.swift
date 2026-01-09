@@ -5,7 +5,7 @@
 
 import GRDB
 
-public class AttachmentUploadStoreImpl: AttachmentUploadStore {
+public class AttachmentUploadStore {
 
     private let attachmentStore: AttachmentStore
 
@@ -19,7 +19,7 @@ public class AttachmentUploadStoreImpl: AttachmentUploadStore {
         attachmentStream: AttachmentStream,
         info transitTierInfo: Attachment.TransitTierInfo,
         tx: DBWriteTransaction,
-    ) throws {
+    ) {
         let latestTransitTierInfo = transitTierInfo
 
         // After we upload, we set the original transit tier info if the
@@ -53,14 +53,16 @@ public class AttachmentUploadStoreImpl: AttachmentUploadStore {
         )
         var record = Attachment.Record(params: params)
         record.sqliteId = attachmentStream.id
-        try record.update(tx.database)
+        failIfThrows {
+            try record.update(tx.database)
+        }
     }
 
     public func markTransitTierUploadExpired(
         attachment: Attachment,
         info: Attachment.TransitTierInfo,
         tx: DBWriteTransaction,
-    ) throws {
+    ) {
         // Refetch the attachment in case the passed in transit tier
         // info is obsolete.
         guard
@@ -85,7 +87,9 @@ public class AttachmentUploadStoreImpl: AttachmentUploadStore {
         )
         var record = Attachment.Record(params: params)
         record.sqliteId = attachment.id
-        try record.update(tx.database)
+        failIfThrows {
+            try record.update(tx.database)
+        }
     }
 
     public func markUploadedToMediaTier(
@@ -148,7 +152,7 @@ public class AttachmentUploadStoreImpl: AttachmentUploadStore {
         }
     }
 
-    public func upsert(record: AttachmentUploadRecord, tx: DBWriteTransaction) throws {
+    public func upsert(record: AttachmentUploadRecord, tx: DBWriteTransaction) {
         var newRecord = AttachmentUploadRecord(sourceType: record.sourceType, attachmentId: record.attachmentId)
         newRecord.sqliteId = record.sqliteId
         newRecord.uploadForm = record.uploadForm
@@ -156,28 +160,36 @@ public class AttachmentUploadStoreImpl: AttachmentUploadStore {
         newRecord.localMetadata = record.localMetadata
         newRecord.uploadSessionUrl = record.uploadSessionUrl
         newRecord.attempt = record.attempt
-        try newRecord.save(tx.database)
+        failIfThrows {
+            try newRecord.save(tx.database)
+        }
     }
 
     public func removeRecord(
         for attachmentId: Attachment.IDType,
         sourceType: AttachmentUploadRecord.SourceType,
         tx: DBWriteTransaction,
-    ) throws {
-        try AttachmentUploadRecord
+    ) {
+        let query = AttachmentUploadRecord
             .filter(Column(AttachmentUploadRecord.CodingKeys.attachmentId) == attachmentId)
             .filter(Column(AttachmentUploadRecord.CodingKeys.sourceType) == sourceType.rawValue)
-            .deleteAll(tx.database)
+
+        failIfThrows {
+            try query.deleteAll(tx.database)
+        }
     }
 
     public func fetchAttachmentUploadRecord(
         for attachmentId: Attachment.IDType,
         sourceType: AttachmentUploadRecord.SourceType,
         tx: DBReadTransaction,
-    ) throws -> AttachmentUploadRecord? {
-        return try AttachmentUploadRecord
+    ) -> AttachmentUploadRecord? {
+        let query = AttachmentUploadRecord
             .filter(Column(AttachmentUploadRecord.CodingKeys.attachmentId) == attachmentId)
             .filter(Column(AttachmentUploadRecord.CodingKeys.sourceType) == sourceType.rawValue)
-            .fetchOne(tx.database)
+
+        return failIfThrows {
+            try query.fetchOne(tx.database)
+        }
     }
 }

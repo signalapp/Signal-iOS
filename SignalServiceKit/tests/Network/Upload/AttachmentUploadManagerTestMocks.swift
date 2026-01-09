@@ -171,7 +171,7 @@ class _AttachmentUploadManager_BackupRequestManagerMock: BackupRequestManager {
 
 // MARK: - AttachmentStore
 
-class AttachmentUploadStoreMock: AttachmentUploadStoreImpl {
+class AttachmentUploadStoreMock: AttachmentUploadStore {
 
     var uploadedAttachments = [AttachmentStream]()
 
@@ -179,7 +179,7 @@ class AttachmentUploadStoreMock: AttachmentUploadStoreImpl {
         attachmentStream: AttachmentStream,
         info: Attachment.TransitTierInfo,
         tx: SignalServiceKit.DBWriteTransaction,
-    ) throws {
+    ) {
         uploadedAttachments.append(attachmentStream)
     }
 
@@ -187,7 +187,7 @@ class AttachmentUploadStoreMock: AttachmentUploadStoreImpl {
         attachment: Attachment,
         info: Attachment.TransitTierInfo,
         tx: DBWriteTransaction,
-    ) throws {
+    ) {
         // Do nothing
     }
 
@@ -215,25 +215,19 @@ class AttachmentUploadStoreMock: AttachmentUploadStoreImpl {
         tx: DBWriteTransaction,
     ) {}
 
-    override func upsert(record: AttachmentUploadRecord, tx: DBWriteTransaction) throws { }
-
-    func removeRecord(for attachmentId: Attachment.IDType, tx: DBWriteTransaction) throws {}
-
-    func fetchAttachmentUploadRecord(for attachmentId: Attachment.IDType, tx: DBReadTransaction) throws -> AttachmentUploadRecord? {
-        return nil
-    }
+    override func upsert(record: AttachmentUploadRecord, tx: DBWriteTransaction) { }
 
     override func removeRecord(
         for attachmentId: Attachment.IDType,
         sourceType: AttachmentUploadRecord.SourceType,
         tx: DBWriteTransaction,
-    ) throws { }
+    ) { }
 
     override func fetchAttachmentUploadRecord(
         for attachmentId: Attachment.IDType,
         sourceType: AttachmentUploadRecord.SourceType,
         tx: DBReadTransaction,
-    ) throws -> AttachmentUploadRecord? {
+    ) -> AttachmentUploadRecord? {
         return nil
     }
 }

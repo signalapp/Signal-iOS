@@ -455,7 +455,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                     fileMissingOrEmpty = true
                 }
 
-                try await db.awaitableWrite { tx in
+                await db.awaitableWrite { tx in
                     // Clean up the upload record; if we failed to copy
                     // we want to start an upload fresh next time.
                     self.cleanup(record: record, logger: logger, tx: tx)
@@ -473,7 +473,9 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                         )
                         var newRecord = Attachment.Record(params: params)
                         newRecord.sqliteId = attachment.id
-                        try newRecord.update(tx.database)
+                        failIfThrows {
+                            try newRecord.update(tx.database)
+                        }
                     }
 
                     if
@@ -487,7 +489,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                             return
                         }
 
-                        try self.attachmentUploadStore.markTransitTierUploadExpired(
+                        attachmentUploadStore.markTransitTierUploadExpired(
                             attachment: attachment,
                             info: transitTierInfo,
                             tx: tx,
@@ -502,7 +504,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
             throw error
         }
 
-        try await db.awaitableWrite { tx in
+        await db.awaitableWrite { tx in
             // Refetch the attachment to ensure other fields are up-to-date.
             guard let attachmentStream = attachmentStore.fetch(id: attachmentStream.id, tx: tx)?.asStream() else {
                 return
@@ -575,7 +577,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                 )
                 // Refetch so we get the updated media tier info from above.
                 if let attachmentStream = attachmentStore.fetch(id: attachmentStream.id, tx: tx)?.asStream() {
-                    try self.attachmentUploadStore.markUploadedToTransitTier(
+                    attachmentUploadStore.markUploadedToTransitTier(
                         attachmentStream: attachmentStream,
                         info: transitTierInfo,
                         tx: tx,
@@ -735,7 +737,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
 
         // Fetch the record if it exists, or create a new one.
         // Note this record isn't persisted in this method, so it will need to be saved later.
-        var attachmentUploadRecord = try self.fetchOrCreateAttachmentRecord(
+        var attachmentUploadRecord = fetchOrCreateAttachmentRecord(
             for: attachmentId,
             sourceType: type.sourceType,
             db: db,
@@ -837,9 +839,9 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
             // The upload record has modified the metadata, upload form,
             // or upload session URL, so persist it before beginning the upload.
             if updateRecord || attachmentUploadRecord.uploadSessionUrl == nil {
-                try await db.awaitableWrite { tx in
+                await db.awaitableWrite { tx in
                     attachmentUploadRecord.uploadSessionUrl = attempt.uploadLocation
-                    try self.attachmentUploadStore.upsert(record: attachmentUploadRecord, tx: tx)
+                    attachmentUploadStore.upsert(record: attachmentUploadRecord, tx: tx)
                 }
             }
 
@@ -896,8 +898,8 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                 attachmentUploadRecord.uploadForm = nil
                 attachmentUploadRecord.uploadSessionUrl = nil
 
-                try await db.awaitableWrite { tx in
-                    try self.attachmentUploadStore.upsert(record: attachmentUploadRecord, tx: tx)
+                await db.awaitableWrite { tx in
+                    attachmentUploadStore.upsert(record: attachmentUploadRecord, tx: tx)
                 }
                 return try await upload(
                     attachment: attachment,
@@ -924,7 +926,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                         try newRecord.update(tx.database)
                     }
                     // Delete the upload record; whatever the state was we need to start over next time.
-                    try self.attachmentUploadStore.removeRecord(
+                    attachmentUploadStore.removeRecord(
                         for: attachmentUploadRecord.attachmentId,
                         sourceType: attachmentUploadRecord.sourceType,
                         tx: tx,
@@ -941,8 +943,8 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
                     logger.warn("Upload cancelled")
                 } else {
                     attachmentUploadRecord.attempt += 1
-                    try await db.awaitableWrite { tx in
-                        try self.attachmentUploadStore.upsert(record: attachmentUploadRecord, tx: tx)
+                    await db.awaitableWrite { tx in
+                        attachmentUploadStore.upsert(record: attachmentUploadRecord, tx: tx)
                     }
                     if let statusCode = error.httpStatusCode {
                         logger.warn("Unexpected upload error [status: \(statusCode)]")
@@ -961,11 +963,11 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
         for attachmentId: Attachment.IDType,
         sourceType: AttachmentUploadRecord.SourceType,
         db: any DB,
-    ) throws -> AttachmentUploadRecord {
+    ) -> AttachmentUploadRecord {
         var attachmentUploadRecord: AttachmentUploadRecord
         if
-            let record = try db.read(block: { tx in
-                try self.attachmentUploadStore.fetchAttachmentUploadRecord(for: attachmentId, sourceType: sourceType, tx: tx)
+            let record = db.read(block: { tx in
+                attachmentUploadStore.fetchAttachmentUploadRecord(for: attachmentId, sourceType: sourceType, tx: tx)
             })
         {
             attachmentUploadRecord = record
@@ -1134,11 +1136,7 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
     }
 
     private func cleanup(record: AttachmentUploadRecord, logger: PrefixedLogger, tx: DBWriteTransaction) {
-        do {
-            try self.attachmentUploadStore.removeRecord(for: record.attachmentId, sourceType: record.sourceType, tx: tx)
-        } catch {
-            logger.warn("Failed to clean existing upload record for (\(record.attachmentId))")
-        }
+        attachmentUploadStore.removeRecord(for: record.attachmentId, sourceType: record.sourceType, tx: tx)
     }
 
     // Update all the necessary places once the upload succeeds
@@ -1165,43 +1163,41 @@ public actor AttachmentUploadManagerImpl: AttachmentUploadManager {
             lastDownloadAttemptTimestamp: nil,
         )
 
-        try self.attachmentUploadStore.markUploadedToTransitTier(
+        attachmentUploadStore.markUploadedToTransitTier(
             attachmentStream: attachmentStream,
             info: transitTierInfo,
             tx: tx,
         )
 
-        do {
-            self.attachmentStore.enumerateAllReferences(
-                toAttachmentId: attachmentStream.attachment.id,
-                tx: tx,
-            ) { attachmentReference, _ in
-                switch attachmentReference.owner {
-                case .message(let messageSource):
-                    guard
-                        let interaction = self.interactionStore.fetchInteraction(
-                            rowId: messageSource.messageRowId,
-                            tx: tx,
-                        )
-                    else {
-                        logger.warn("Missing interaction.")
-                        return
-                    }
-                    self.db.touch(interaction: interaction, shouldReindex: false, tx: tx)
-                case .storyMessage(let storyMessageSource):
-                    guard
-                        let storyMessage = self.storyStore.fetchStoryMessage(
-                            rowId: storyMessageSource.storyMsessageRowId,
-                            tx: tx,
-                        )
-                    else {
-                        logger.warn("Missing story message.")
-                        return
-                    }
-                    self.db.touch(storyMessage: storyMessage, tx: tx)
-                case .thread:
-                    break
+        attachmentStore.enumerateAllReferences(
+            toAttachmentId: attachmentStream.attachment.id,
+            tx: tx,
+        ) { attachmentReference, _ in
+            switch attachmentReference.owner {
+            case .message(let messageSource):
+                guard
+                    let interaction = self.interactionStore.fetchInteraction(
+                        rowId: messageSource.messageRowId,
+                        tx: tx,
+                    )
+                else {
+                    logger.warn("Missing interaction.")
+                    return
                 }
+                self.db.touch(interaction: interaction, shouldReindex: false, tx: tx)
+            case .storyMessage(let storyMessageSource):
+                guard
+                    let storyMessage = self.storyStore.fetchStoryMessage(
+                        rowId: storyMessageSource.storyMsessageRowId,
+                        tx: tx,
+                    )
+                else {
+                    logger.warn("Missing story message.")
+                    return
+                }
+                self.db.touch(storyMessage: storyMessage, tx: tx)
+            case .thread:
+                break
             }
         }
     }
