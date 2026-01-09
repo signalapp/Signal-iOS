@@ -106,7 +106,7 @@ public enum CVAttachment: Equatable {
     }
 }
 
-public class CVComponentState: Equatable {
+public struct CVComponentState: Equatable {
     let messageCellType: CVMessageCellType
 
     struct SenderName: Equatable {
@@ -719,15 +719,15 @@ public class CVComponentState: Equatable {
 
         // MARK: -
 
-        lazy var isIncoming: Bool = {
+        var isIncoming: Bool {
             interaction is TSIncomingMessage
-        }()
+        }
 
-        lazy var isOutgoing: Bool = {
+        var isOutgoing: Bool {
             interaction is TSOutgoingMessage
-        }()
+        }
 
-        lazy var messageCellType: CVMessageCellType = {
+        var messageCellType: CVMessageCellType {
             if dateHeader != nil {
                 return .dateHeader
             }
@@ -791,19 +791,17 @@ public class CVComponentState: Equatable {
 
             owsFailDebug("Unknown state.")
             return .unknown
-        }()
+        }
     }
 
     // MARK: - Convenience
 
-    lazy var shouldRenderAsSticker: Bool = {
+    var shouldRenderAsSticker: Bool {
         sticker != nil
-    }()
+    }
 
-    lazy var activeComponentStateKeys: Set<CVComponentKey> = {
-
+    var activeComponentStateKeys: Set<CVComponentKey> {
         var result = Set<CVComponentKey>()
-
         if senderName != nil {
             result.insert(.senderName)
         }
@@ -886,9 +884,9 @@ public class CVComponentState: Equatable {
             result.insert(.poll)
         }
         return result
-    }()
+    }
 
-    lazy var isTextOnlyMessage: Bool = {
+    var isTextOnlyMessage: Bool {
         let validKeys: [CVComponentKey] = [
             .senderName,
             .senderAvatar,
@@ -898,13 +896,13 @@ public class CVComponentState: Equatable {
             .sendFailureBadge,
         ]
         return activeComponentStateKeys.isSubset(of: Set(validKeys))
-    }()
+    }
 
-    lazy var isBorderlessJumbomojiMessage: Bool = {
+    var isBorderlessJumbomojiMessage: Bool {
         isTextOnlyMessage && (bodyText?.isJumbomojiMessage == true)
-    }()
+    }
 
-    lazy var isBodyMediaOnlyMessage: Bool = {
+    var isBodyMediaOnlyMessage: Bool {
         let validKeys: [CVComponentKey] = [
             .senderName,
             .senderAvatar,
@@ -914,9 +912,9 @@ public class CVComponentState: Equatable {
             .sendFailureBadge,
         ]
         return activeComponentStateKeys.isSubset(of: Set(validKeys))
-    }()
+    }
 
-    lazy var isBorderlessBodyMediaMessage: Bool = {
+    var isBorderlessBodyMediaMessage: Bool {
         if
             isBodyMediaOnlyMessage,
             let bodyMedia,
@@ -927,12 +925,9 @@ public class CVComponentState: Equatable {
             return true
         }
         return false
-    }()
-}
+    }
 
-// MARK: -
-
-extension CVComponentState {
+    // MARK: -
 
     static func buildDateHeader(
         interaction: TSInteraction,
@@ -967,6 +962,111 @@ extension CVComponentState {
             itemBuildingContext: itemBuildingContext,
         )
         return try builder.populateAndBuild()
+    }
+
+    // MARK: -
+
+    var hasPrimaryAndSecondaryContentForSelection: Bool {
+        var hasPrimaryContent = false
+
+        // Search for a component that qualifies as "non-body text primary".
+        for key in activeComponentStateKeys {
+            switch key {
+            case .bodyText, .linkPreview:
+                // "Primary" content is not body text.
+                // A link preview is associated with the body text.
+                break
+            case .bodyMedia, .sticker, .audioAttachment, .genericAttachment, .contactShare:
+                hasPrimaryContent = true
+            case .senderName, .senderAvatar, .footer, .reactions, .bottomButtons, .bottomLabel, .sendFailureBadge, .dateHeader, .unreadIndicator, .typingIndicator, .threadDetails, .failedOrPendingDownloads, .unknownThreadWarning, .defaultDisappearingMessageTimer, .messageRoot:
+                // "Primary" content is not just metadata / UI.
+                break
+            case .giftBadge:
+                // Gift badges can't be forwarded.
+                break
+            case .viewOnce:
+                // We should never forward view-once messages.
+                break
+            case .systemMessage:
+                // We should never forward system messages.
+                break
+            case .quotedReply:
+                // Quoted replies are never forwarded.
+                break
+            case .paymentAttachment, .archivedPaymentAttachment:
+                // Payments can't be forwarded.
+                break
+            case .poll:
+                break
+            case .undownloadableAttachment:
+                break
+            }
+        }
+
+        let hasSecondaryContent = bodyText != nil
+
+        return hasPrimaryContent && hasSecondaryContent
+    }
+
+    // MARK: -
+
+    static func displayableQuotedText(
+        text: String,
+        ranges: MessageBodyRanges?,
+        interaction: TSInteraction,
+        revealedSpoilerIdsSnapshot: Set<StyleIdType>,
+        transaction: DBReadTransaction,
+    ) -> DisplayableText {
+        return DisplayableText.displayableText(
+            withMessageBody: MessageBody(text: text, ranges: ranges ?? .empty),
+            transaction: transaction,
+        )
+    }
+
+    static func displayableCaption(
+        text: String,
+        transaction: DBReadTransaction,
+    ) -> DisplayableText {
+        return DisplayableText.displayableText(
+            withMessageBody: MessageBody(text: text, ranges: .empty),
+            transaction: transaction,
+        )
+    }
+
+    // MARK: - DisplayableText
+
+    static func displayableBodyText(
+        text: String,
+        ranges: MessageBodyRanges?,
+        interaction: TSInteraction,
+        transaction: DBReadTransaction,
+    ) -> DisplayableText {
+        return DisplayableText.displayableText(
+            withMessageBody: MessageBody(text: text, ranges: ranges ?? .empty),
+            transaction: transaction,
+        )
+    }
+
+    static func displayableBodyText(
+        oversizeTextAttachment attachmentStream: AttachmentStream,
+        ranges: MessageBodyRanges?,
+        interaction: TSInteraction,
+        transaction: DBReadTransaction,
+    ) -> DisplayableText {
+
+        let text = { () -> String in
+            do {
+                return try attachmentStream.decryptedLongText()
+            } catch {
+                owsFailDebug("Couldn't load oversize text: \(error).")
+                return ""
+            }
+        }()
+
+        return DisplayableText.displayableText(
+            withMessageBody: MessageBody(text: text, ranges: ranges ?? .empty),
+            transaction: transaction,
+        )
     }
 }
 
@@ -1235,11 +1335,6 @@ private extension CVComponentState.Builder {
         }
         return result
     }
-}
-
-// MARK: -
-
-private extension CVComponentState.Builder {
 
     mutating func buildThreadDetails() -> ThreadDetails {
         owsAssertDebug(interaction is ThreadDetailsInteraction)
@@ -1882,118 +1977,5 @@ private extension CVComponentState.Builder {
         }
 
         return build()
-    }
-}
-
-// MARK: - DisplayableText
-
-public extension CVComponentState {
-
-    static func displayableBodyText(
-        text: String,
-        ranges: MessageBodyRanges?,
-        interaction: TSInteraction,
-        transaction: DBReadTransaction,
-    ) -> DisplayableText {
-        return DisplayableText.displayableText(
-            withMessageBody: MessageBody(text: text, ranges: ranges ?? .empty),
-            transaction: transaction,
-        )
-    }
-
-    static func displayableBodyText(
-        oversizeTextAttachment attachmentStream: AttachmentStream,
-        ranges: MessageBodyRanges?,
-        interaction: TSInteraction,
-        transaction: DBReadTransaction,
-    ) -> DisplayableText {
-
-        let text = { () -> String in
-            do {
-                return try attachmentStream.decryptedLongText()
-            } catch {
-                owsFailDebug("Couldn't load oversize text: \(error).")
-                return ""
-            }
-        }()
-
-        return DisplayableText.displayableText(
-            withMessageBody: MessageBody(text: text, ranges: ranges ?? .empty),
-            transaction: transaction,
-        )
-    }
-}
-
-// MARK: -
-
-private extension CVComponentState {
-
-    static func displayableQuotedText(
-        text: String,
-        ranges: MessageBodyRanges?,
-        interaction: TSInteraction,
-        revealedSpoilerIdsSnapshot: Set<StyleIdType>,
-        transaction: DBReadTransaction,
-    ) -> DisplayableText {
-        return DisplayableText.displayableText(
-            withMessageBody: MessageBody(text: text, ranges: ranges ?? .empty),
-            transaction: transaction,
-        )
-    }
-
-    static func displayableCaption(
-        text: String,
-        transaction: DBReadTransaction,
-    ) -> DisplayableText {
-        return DisplayableText.displayableText(
-            withMessageBody: MessageBody(text: text, ranges: .empty),
-            transaction: transaction,
-        )
-    }
-}
-
-// MARK: -
-
-public extension CVComponentState {
-    var hasPrimaryAndSecondaryContentForSelection: Bool {
-        var hasPrimaryContent = false
-
-        // Search for a component that qualifies as "non-body text primary".
-        for key in activeComponentStateKeys {
-            switch key {
-            case .bodyText, .linkPreview:
-                // "Primary" content is not body text.
-                // A link preview is associated with the body text.
-                break
-            case .bodyMedia, .sticker, .audioAttachment, .genericAttachment, .contactShare:
-                hasPrimaryContent = true
-            case .senderName, .senderAvatar, .footer, .reactions, .bottomButtons, .bottomLabel, .sendFailureBadge, .dateHeader, .unreadIndicator, .typingIndicator, .threadDetails, .failedOrPendingDownloads, .unknownThreadWarning, .defaultDisappearingMessageTimer, .messageRoot:
-                // "Primary" content is not just metadata / UI.
-                break
-            case .giftBadge:
-                // Gift badges can't be forwarded.
-                break
-            case .viewOnce:
-                // We should never forward view-once messages.
-                break
-            case .systemMessage:
-                // We should never forward system messages.
-                break
-            case .quotedReply:
-                // Quoted replies are never forwarded.
-                break
-            case .paymentAttachment, .archivedPaymentAttachment:
-                // Payments can't be forwarded.
-                break
-            case .poll:
-                break
-            case .undownloadableAttachment:
-                break
-            }
-        }
-
-        let hasSecondaryContent = bodyText != nil
-
-        return hasPrimaryContent && hasSecondaryContent
     }
 }
