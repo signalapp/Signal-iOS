@@ -130,16 +130,14 @@ public class PinnedMessageManager {
             )
         }
 
-        let dmConfig = disappearingMessagesConfigurationStore.fetchOrBuildDefault(for: .thread(thread), tx: transaction)
-
         insertInfoMessageForPinnedMessage(
             timestamp: MessageTimestampGenerator.sharedInstance.generateTimestamp(),
             thread: thread,
             targetMessageTimestamp: pinMessageProto.targetSentTimestamp,
             targetMessageAuthor: targetAuthorAci,
             pinAuthor: pinAuthor,
-            expireTimer: dmConfig.durationSeconds,
-            expireTimerVersion: dmConfig.timerVersion,
+            expireTimer: expireTimer,
+            expireTimerVersion: expireTimerVersion,
             tx: transaction,
         )
 
