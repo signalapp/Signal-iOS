@@ -207,22 +207,22 @@ class BackupAttachmentDownloadStoreTests: XCTestCase {
             }
         }
 
-        try db.read { tx in
+        db.read { tx in
             XCTAssertEqual(
                 thumbnailTimestamps.count + fullsizeTimestamps.count + 10,
-                try QueuedBackupAttachmentDownload.fetchCount(tx.database),
+                try! QueuedBackupAttachmentDownload.fetchCount(tx.database),
             )
         }
 
-        let thumbnailRecords = try db.read { tx in
-            try store.peek(
+        let thumbnailRecords = db.read { tx in
+            store.peek(
                 count: 7,
                 isThumbnail: true,
                 tx: tx,
             )
         }
-        let fullsizeRecords = try db.read { tx in
-            try store.peek(
+        let fullsizeRecords = db.read { tx in
+            store.peek(
                 count: 7,
                 isThumbnail: false,
                 tx: tx,
