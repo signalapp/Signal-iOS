@@ -33,7 +33,7 @@ public protocol OrphanedBackupAttachmentScheduler {
     func orphanExistingMediaTierUploads(
         of attachment: Attachment,
         tx: DBWriteTransaction,
-    ) throws
+    )
 }
 
 public class OrphanedBackupAttachmentSchedulerImpl: OrphanedBackupAttachmentScheduler {
@@ -83,7 +83,7 @@ public class OrphanedBackupAttachmentSchedulerImpl: OrphanedBackupAttachmentSche
     public func orphanExistingMediaTierUploads(
         of attachment: Attachment,
         tx: DBWriteTransaction,
-    ) throws {
+    ) {
         guard let mediaName = attachment.mediaName else {
             // If we didn't have a mediaName assigned,
             // there's no uploads to orphan (that we know of locally).
@@ -98,7 +98,7 @@ public class OrphanedBackupAttachmentSchedulerImpl: OrphanedBackupAttachmentSche
                 mediaName: mediaName,
                 type: .fullsize,
             )
-            try orphanedBackupAttachmentStore.insert(&fullsizeOrphanRecord, tx: tx)
+            orphanedBackupAttachmentStore.insert(&fullsizeOrphanRecord, tx: tx)
         }
         if
             let thumbnailMediaTierInfo = attachment.thumbnailMediaTierInfo,
@@ -111,7 +111,7 @@ public class OrphanedBackupAttachmentSchedulerImpl: OrphanedBackupAttachmentSche
                 ),
                 type: .thumbnail,
             )
-            try orphanedBackupAttachmentStore.insert(&fullsizeOrphanRecord, tx: tx)
+            orphanedBackupAttachmentStore.insert(&fullsizeOrphanRecord, tx: tx)
         }
     }
 }
@@ -132,7 +132,7 @@ open class OrphanedBackupAttachmentSchedulerMock: OrphanedBackupAttachmentSchedu
     open func orphanExistingMediaTierUploads(
         of attachment: Attachment,
         tx: DBWriteTransaction,
-    ) throws {
+    ) {
         // Do nothing
     }
 }

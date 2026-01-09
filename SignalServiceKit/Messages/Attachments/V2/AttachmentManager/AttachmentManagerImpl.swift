@@ -891,7 +891,7 @@ public class AttachmentManagerImpl: AttachmentManager {
 
             // Orphan the existing remote upload, both fullsize and thumbnail.
             // We're using a new encryption key now which means a new mediaName.
-            try orphanedBackupAttachmentScheduler.orphanExistingMediaTierUploads(
+            orphanedBackupAttachmentScheduler.orphanExistingMediaTierUploads(
                 of: existingAttachment,
                 tx: tx,
             )

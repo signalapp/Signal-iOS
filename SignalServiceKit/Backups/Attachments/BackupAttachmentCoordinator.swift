@@ -449,7 +449,7 @@ public actor BackupAttachmentCoordinatorImpl: BackupAttachmentCoordinator {
             if canRunDeleteOrphans(), needsToRun(.deleteOrphans) {
 
                 let orphanCount = db.read { tx in
-                    (try? orphanStore.peek(count: 1, tx: tx))?.count ?? 1
+                    orphanStore.peek(count: 1, tx: tx).count
                 }
                 if orphanCount > 0 {
                     self.runOperation(.deleteOrphans)

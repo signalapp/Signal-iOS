@@ -385,7 +385,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
                             // Doesn't matter what we use, we just want the mediaId
                             type: .outerLayerFullsizeOrThumbnail,
                         ).mediaId
-                        try orphanedBackupAttachmentStore.removeFullsize(
+                        orphanedBackupAttachmentStore.removeFullsize(
                             mediaName: mediaName,
                             fullsizeMediaId: mediaId,
                             tx: tx,
@@ -396,7 +396,7 @@ class BackupAttachmentUploadQueueRunnerImpl: BackupAttachmentUploadQueueRunner {
                             // Doesn't matter what we use, we just want the mediaId
                             type: .outerLayerFullsizeOrThumbnail,
                         ).mediaId
-                        try orphanedBackupAttachmentStore.removeThumbnail(
+                        orphanedBackupAttachmentStore.removeThumbnail(
                             fullsizeMediaName: mediaName,
                             thumbnailMediaId: mediaId,
                             tx: tx,

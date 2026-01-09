@@ -1119,9 +1119,7 @@ public class BackupListMediaManagerImpl: BackupListMediaManager {
             cdnNumber: listedMedia.cdnNumber,
             mediaId: listedMedia.mediaId,
         )
-        failIfThrows {
-            try orphanedBackupAttachmentStore.insert(&orphanRecord, tx: tx)
-        }
+        orphanedBackupAttachmentStore.insert(&orphanRecord, tx: tx)
     }
 
     // MARK: State
@@ -1483,13 +1481,13 @@ private class ListMediaIntegrityCheckerImpl: ListMediaIntegrityChecker {
         }
 
         // First try and match by mediaId.
-        if (try? orphanedBackupAttachmentStore.hasPendingDelete(forMediaId: mediaId, tx: tx)) == true {
+        if orphanedBackupAttachmentStore.hasPendingDelete(forMediaId: mediaId, tx: tx) {
             // Its an orphan, but one we know about. skip.
             return
         }
         // Now check mediaNames we have pending delete, map them to mediaId, and try to match.
         var foundMatch = false
-        try? orphanedBackupAttachmentStore.enumerateMediaNamesPendingDelete(tx: tx) { mediaName, stop in
+        orphanedBackupAttachmentStore.enumerateMediaNamesPendingDelete(tx: tx) { mediaName, stop in
             let foundMediaId = try? backupKey.deriveMediaId(mediaName)
             if foundMediaId == mediaId {
                 foundMatch = true

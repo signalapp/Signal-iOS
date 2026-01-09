@@ -19,7 +19,7 @@ public class BackupListMediaManagerTests {
     private let backupRequestManager = BackupRequestManagerMock()
     let backupSettingsStore = BackupSettingsStore()
     let db = InMemoryDB()
-    let orphanedBackupAttachmentStore = OrphanedBackupAttachmentStoreImpl()
+    let orphanedBackupAttachmentStore = OrphanedBackupAttachmentStore()
     let remoteConfigManager = StubbableRemoteConfigManager()
     let tsAccountManager = MockTSAccountManager()
 

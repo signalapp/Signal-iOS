@@ -264,14 +264,14 @@ public class OrphanedBackupAttachmentQueueRunnerImpl: OrphanedBackupAttachmentQu
             self.orphanedBackupAttachmentStore = orphanedBackupAttachmentStore
         }
 
-        func peek(count: UInt, tx: DBReadTransaction) throws -> [TaskRecord] {
-            return try orphanedBackupAttachmentStore.peek(count: count, tx: tx).map { record in
+        func peek(count: UInt, tx: DBReadTransaction) -> [TaskRecord] {
+            return orphanedBackupAttachmentStore.peek(count: count, tx: tx).map { record in
                 return TaskRecord(id: record.id!, record: record)
             }
         }
 
-        func removeRecord(_ record: TaskRecord, tx: DBWriteTransaction) throws {
-            try orphanedBackupAttachmentStore.remove(record.record, tx: tx)
+        func removeRecord(_ record: TaskRecord, tx: DBWriteTransaction) {
+            orphanedBackupAttachmentStore.remove(record.record, tx: tx)
         }
     }
 

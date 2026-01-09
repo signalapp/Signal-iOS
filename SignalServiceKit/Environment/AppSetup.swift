@@ -535,7 +535,7 @@ extension AppSetup.GlobalsContinuation {
         let attachmentUploadStore = AttachmentUploadStore(attachmentStore: attachmentStore)
         let attachmentDownloadStore = AttachmentDownloadStore(dateProvider: dateProvider)
 
-        let orphanedBackupAttachmentStore = OrphanedBackupAttachmentStoreImpl()
+        let orphanedBackupAttachmentStore = OrphanedBackupAttachmentStore()
         let orphanedBackupAttachmentScheduler = OrphanedBackupAttachmentSchedulerImpl(
             accountKeyStore: accountKeyStore,
             orphanedBackupAttachmentStore: orphanedBackupAttachmentStore,
