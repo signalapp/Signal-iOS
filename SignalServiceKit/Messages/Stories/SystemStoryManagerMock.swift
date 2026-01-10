@@ -5,6 +5,8 @@
 
 import Foundation
 
+#if TESTABLE_BUILD
+
 public class SystemStoryManagerMock: SystemStoryManagerProtocol {
 
     /// In tests, set some other handler to this to return different results when the system under test calls enqueueOnboardingStoryDownload
@@ -152,3 +154,5 @@ public class OnboardingStoryManagerStoryMessageFactoryMock: OnboardingStoryManag
         return AttachmentDataSource.pendingAttachment(pendingAttachment)
     }
 }
+
+#endif
