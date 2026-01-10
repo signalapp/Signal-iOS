@@ -1449,9 +1449,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             self.signalService = signalService
         }
 
-        private let maxConcurrentDownloads = 4
-        private var concurrentDownloads = 0
-        private var queue = [CheckedContinuation<Void, Error>]()
+        private let queue = ConcurrentTaskQueue(concurrentLimit: 4)
 
         /// Non-transient attachments have an in-memory disconnect from the downloadQueue and the actual job runner;
         /// they are enqueued to disk and then read off disk to be downloaded. In order to get an in-memory object
@@ -1621,35 +1619,17 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                     ),
             ).compacted()
 
-            try Task.checkCancellation()
-
-            try await withCheckedThrowingContinuation { continuation in
-                queue.append(continuation)
-                runNextQueuedDownloadIfPossible()
+            return try await queue.run {
+                return try await performDownloadAttempt(
+                    downloadState: downloadState,
+                    progresses: progresses,
+                    progressSources: nil,
+                    maxDownloadSizeBytes: maxDownloadSizeBytes,
+                    expectedDownloadSize: expectedDownloadSize,
+                    resumeData: nil,
+                    attemptCount: 0,
+                )
             }
-
-            defer {
-                concurrentDownloads -= 1
-                runNextQueuedDownloadIfPossible()
-            }
-            try Task.checkCancellation()
-            return try await performDownloadAttempt(
-                downloadState: downloadState,
-                progresses: progresses,
-                progressSources: nil,
-                maxDownloadSizeBytes: maxDownloadSizeBytes,
-                expectedDownloadSize: expectedDownloadSize,
-                resumeData: nil,
-                attemptCount: 0,
-            )
-        }
-
-        private func runNextQueuedDownloadIfPossible() {
-            if queue.isEmpty || concurrentDownloads >= maxConcurrentDownloads { return }
-
-            concurrentDownloads += 1
-            let continuation = queue.removeFirst()
-            continuation.resume()
         }
 
         enum DownloadSizeSource {
