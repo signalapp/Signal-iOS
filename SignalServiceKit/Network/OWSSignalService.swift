@@ -194,7 +194,7 @@ public class OWSSignalService: OWSSignalServiceProtocol {
         for signalServiceInfo: SignalServiceInfo,
         endpoint: OWSURLSessionEndpoint,
         configuration: URLSessionConfiguration?,
-        maxResponseSize: Int?,
+        maxResponseSize: UInt64?,
     ) -> OWSURLSessionProtocol {
         return buildUrlSession(
             endpoint: endpoint,
@@ -208,7 +208,7 @@ public class OWSSignalService: OWSSignalServiceProtocol {
     private func buildUrlSession(
         endpoint: OWSURLSessionEndpoint,
         configuration: URLSessionConfiguration?,
-        maxResponseSize: Int?,
+        maxResponseSize: UInt64?,
         shouldHandleRemoteDeprecation: Bool,
         onFailureCallback: ((any Error) -> Void)?,
     ) -> OWSURLSessionProtocol {
@@ -228,7 +228,7 @@ public class OWSSignalService: OWSSignalServiceProtocol {
     private actor CDNSessionCache {
         struct Key: Hashable {
             let cdnNumber: UInt32
-            let maxResponseSize: UInt?
+            let maxResponseSize: UInt64?
             let ccParams: CensorshipConfigurationParams?
         }
 
@@ -259,7 +259,7 @@ public class OWSSignalService: OWSSignalServiceProtocol {
 
     public func sharedUrlSessionForCdn(
         cdnNumber: UInt32,
-        maxResponseSize: UInt?,
+        maxResponseSize: UInt64?,
     ) async -> OWSURLSessionProtocol {
         let ccParams = self.censorshipConfigurationParamsWithMaybeSneakyTransaction(
             censorshipCircumventionSupportedForService: true,
@@ -302,7 +302,7 @@ public class OWSSignalService: OWSSignalServiceProtocol {
                         shouldUseSignalCertificate: true,
                     ),
                     configuration: urlSessionConfiguration,
-                    maxResponseSize: maxResponseSize.map(Int.init(clamping:)),
+                    maxResponseSize: maxResponseSize,
                     shouldHandleRemoteDeprecation: false,
                     onFailureCallback: { [weak self] error in
                         Task {

@@ -220,7 +220,7 @@ public class LinkPreviewFetcherImpl: LinkPreviewFetcher {
 
     // MARK: - Private, Constants
 
-    private static let maxFetchedContentSize = 2 * 1024 * 1024
+    private static let maxFetchedContentSize: UInt64 = 2 * 1024 * 1024
 
     // MARK: - Preview Thumbnails
 

@@ -24,12 +24,12 @@ public protocol OWSSignalServiceProtocol: AnyObject {
         for signalServiceInfo: SignalServiceInfo,
         endpoint: OWSURLSessionEndpoint,
         configuration: URLSessionConfiguration?,
-        maxResponseSize: Int?,
+        maxResponseSize: UInt64?,
     ) -> OWSURLSessionProtocol
 
     func sharedUrlSessionForCdn(
         cdnNumber: UInt32,
-        maxResponseSize: UInt?,
+        maxResponseSize: UInt64?,
     ) async -> OWSURLSessionProtocol
 }
 
@@ -48,7 +48,7 @@ public extension OWSSignalServiceProtocol {
     private func buildUrlSession(
         for signalServiceType: SignalServiceType,
         configuration: URLSessionConfiguration? = nil,
-        maxResponseSize: Int? = nil,
+        maxResponseSize: UInt64? = nil,
     ) -> OWSURLSessionProtocol {
         let signalServiceInfo = signalServiceType.signalServiceInfo()
         return buildUrlSession(

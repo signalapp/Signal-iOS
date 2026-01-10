@@ -115,7 +115,7 @@ public protocol OWSURLSessionProtocol: AnyObject {
     init(
         endpoint: OWSURLSessionEndpoint,
         configuration: URLSessionConfiguration,
-        maxResponseSize: Int?,
+        maxResponseSize: UInt64?,
         canUseSignalProxy: Bool,
         onFailureCallback: ((any Error) -> Void)?,
     )
@@ -164,7 +164,7 @@ extension OWSURLSessionProtocol {
     init(
         endpoint: OWSURLSessionEndpoint,
         configuration: URLSessionConfiguration,
-        maxResponseSize: Int? = nil,
+        maxResponseSize: UInt64? = nil,
         canUseSignalProxy: Bool = false,
     ) {
         self.init(

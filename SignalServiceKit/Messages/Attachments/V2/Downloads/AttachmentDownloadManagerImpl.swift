@@ -185,9 +185,8 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
         progress: OWSProgressSink?,
     ) async throws -> URL {
         // We want to avoid large downloads from a compromised or buggy service.
-        let maxDownloadSize = RemoteConfig.current.attachmentMaxEncryptedReceiveBytes
+        let maxDownloadSize = UInt64(safeCast: RemoteConfig.current.attachmentMaxEncryptedReceiveBytes)
         let downloadState = DownloadState(type: .transientAttachment(metadata, uuid: UUID()))
-
         let encryptedFileUrl = try await self.downloadQueue.enqueueDownload(
             downloadState: downloadState,
             maxDownloadSizeBytes: maxDownloadSize,
@@ -853,7 +852,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             do {
                 downloadedFileUrl = try await downloadQueue.enqueueDownload(
                     downloadState: .init(type: .attachment(downloadMetadata, id: attachment.id)),
-                    maxDownloadSizeBytes: RemoteConfig.current.attachmentMaxEncryptedReceiveBytes,
+                    maxDownloadSizeBytes: UInt64(safeCast: RemoteConfig.current.attachmentMaxEncryptedReceiveBytes),
                     expectedDownloadSize: downloadSizeSource,
                     progress: nil,
                 )
@@ -1606,7 +1605,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
 
         func enqueueDownload(
             downloadState: DownloadState,
-            maxDownloadSizeBytes: UInt,
+            maxDownloadSizeBytes: UInt64,
             expectedDownloadSize: DownloadSizeSource,
             progress: OWSProgressSink?,
         ) async throws -> URL {
@@ -1641,7 +1640,7 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             downloadState: DownloadState,
             progresses: [OWSProgressSink],
             progressSources inputProgressSources: [OWSProgressSource]?,
-            maxDownloadSizeBytes: UInt,
+            maxDownloadSizeBytes: UInt64,
             expectedDownloadSize: DownloadSizeSource,
             resumeData: Data?,
             attemptCount: UInt,

@@ -8,8 +8,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-const NSUInteger kMaxEncryptedAvatarSize = 3 * 1024 * 1024;
-const NSUInteger kMaxAvatarSize = (kMaxEncryptedAvatarSize
+const uint64_t kMaxEncryptedAvatarSize = 3 * 1024 * 1024;
+const uint64_t kMaxAvatarSize = (kMaxEncryptedAvatarSize
     /* The length of the padding. See GroupSecretParams:encrypt_blob_with_padding in LibSignal. */
     - sizeof(uint32_t)
     /* Overhead from GroupAttributeBlob (protobuf) via GroupV2Params.encryptGroupAvatar(_:). */

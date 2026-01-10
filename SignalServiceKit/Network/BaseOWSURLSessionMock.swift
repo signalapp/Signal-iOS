@@ -40,12 +40,12 @@ public class BaseOWSURLSessionMock: OWSURLSessionProtocol {
     // MARK: Initializers
 
     private let configuration: URLSessionConfiguration
-    private let maxResponseSize: Int?
+    private let maxResponseSize: UInt64?
 
     public required init(
         endpoint: OWSURLSessionEndpoint,
         configuration: URLSessionConfiguration,
-        maxResponseSize: Int?,
+        maxResponseSize: UInt64?,
         canUseSignalProxy: Bool,
         onFailureCallback: ((any Error) -> Void)?,
     ) {

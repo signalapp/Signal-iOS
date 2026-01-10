@@ -94,7 +94,7 @@ public class OWSURLSession: OWSURLSessionProtocol {
     public required init(
         endpoint: OWSURLSessionEndpoint,
         configuration: URLSessionConfiguration,
-        maxResponseSize: Int?,
+        maxResponseSize: UInt64?,
         canUseSignalProxy: Bool,
         onFailureCallback: ((any Error) -> Void)?,
     ) {
@@ -134,7 +134,7 @@ public class OWSURLSession: OWSURLSessionProtocol {
         securityPolicy: HttpSecurityPolicy,
         configuration: URLSessionConfiguration,
         extraHeaders: HttpHeaders = HttpHeaders(),
-        maxResponseSize: Int? = nil,
+        maxResponseSize: UInt64? = nil,
         canUseSignalProxy: Bool = false,
     ) {
         self.init(
@@ -263,7 +263,7 @@ public class OWSURLSession: OWSURLSessionProtocol {
         }!
     }
 
-    private let maxResponseSize: Int?
+    private let maxResponseSize: UInt64?
 
     private let canUseSignalProxy: Bool
 

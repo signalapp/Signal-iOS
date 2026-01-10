@@ -9,16 +9,16 @@ enum CDNDownloadOperation {
 
     // MARK: - Dependencies
 
-    private static func buildUrlSession(maxResponseSize: UInt) async -> OWSURLSessionProtocol {
+    private static func buildUrlSession(maxResponseSize: UInt64) async -> OWSURLSessionProtocol {
         await SSKEnvironment.shared.signalServiceRef.sharedUrlSessionForCdn(cdnNumber: 0, maxResponseSize: maxResponseSize)
     }
 
     // MARK: -
 
-    static let kMaxStickerDataDownloadSize: UInt = 1000 * 1000
-    static let kMaxStickerPackDownloadSize: UInt = 1000 * 1000
+    static let kMaxStickerDataDownloadSize: UInt64 = 1000 * 1000
+    static let kMaxStickerPackDownloadSize: UInt64 = 1000 * 1000
 
-    static func tryToDownload(urlPath: String, maxDownloadSize: UInt) async throws -> URL {
+    static func tryToDownload(urlPath: String, maxDownloadSize: UInt64) async throws -> URL {
         guard !isCorrupt(urlPath: urlPath) else {
             Logger.warn("Skipping download of corrupt data.")
             throw StickerError.corruptData
@@ -45,7 +45,7 @@ enum CDNDownloadOperation {
         }
     }
 
-    static func tryToDownload(urlPath: String, maxDownloadSize: UInt) async throws -> Data {
+    static func tryToDownload(urlPath: String, maxDownloadSize: UInt64) async throws -> Data {
         let downloadUrl: URL = try await tryToDownload(urlPath: urlPath, maxDownloadSize: maxDownloadSize)
         do {
             let data = try Data(contentsOf: downloadUrl)
