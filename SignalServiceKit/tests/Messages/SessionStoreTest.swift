@@ -10,7 +10,8 @@ import XCTest
 
 class SessionStoreTest2: XCTestCase {
     func testMaxUnacknowledgedSessionAge() throws {
-        let bob_address = try ProtocolAddress(name: "+14155550100", deviceId: 1)
+        let bob_aci = Aci.constantForTesting("00000000-0000-4000-8000-000000000000")
+        let bob_address = ProtocolAddress(bob_aci, deviceId: 1)
 
         let alice_store = InMemorySignalProtocolStore()
         let bob_store = InMemorySignalProtocolStore()
