@@ -187,12 +187,22 @@ extension OWSImageSource {
             // TODO: We currently treat all GIFs as animated. We could reflect the actual image content.
             isAnimated = true
         case .webp:
-            let webpMetadata = metadataForWebp
-            guard webpMetadata.isValid else {
+            let webpMetadata = loadWebPMetadata()
+            guard let webpMetadata else {
                 Logger.warn("Image does not have valid webpMetadata.")
                 return .invalid
             }
-            isAnimated = webpMetadata.frameCount > 1
+            let imageSize = CGSize(width: webpMetadata.canvasWidth, height: webpMetadata.canvasHeight)
+            guard isImageSizeValid(imageSize, depthBytes: 1) else {
+                Logger.warn("Image does not have valid dimensions: \(imageSize)")
+                return .invalid
+            }
+            return .valid(ImageMetadata(
+                imageFormat: imageFormat,
+                pixelSize: imageSize,
+                hasAlpha: true,
+                isAnimated: webpMetadata.frameCount > 1,
+            ))
         case .png:
             guard let isAnimatedPng = isAnimatedPng() else {
                 Logger.warn("Could not determine if png is animated.")
@@ -213,30 +223,20 @@ extension OWSImageSource {
             }
         }
 
-        let metadata = imageMetadata(withIsAnimated: isAnimated, imageFormat: imageFormat)
-
+        guard let imageSource = try? self.cgImageSource() else {
+            Logger.warn("Could not build imageSource.")
+            return .invalid
+        }
+        let metadata = imageMetadataWithImageSource(
+            imageSource,
+            imageFormat: imageFormat,
+            isAnimated: isAnimated,
+        )
         guard let metadata else {
             return .invalid
         }
 
         return .valid(metadata)
-    }
-
-    private func imageMetadata(withIsAnimated isAnimated: Bool, imageFormat: ImageFormat) -> ImageMetadata? {
-        if imageFormat == .webp {
-            let imageSize = sizeForWebpData
-            guard isImageSizeValid(imageSize, depthBytes: 1, isAnimated: isAnimated) else {
-                Logger.warn("Image does not have valid dimensions: \(imageSize)")
-                return nil
-            }
-            return .init(imageFormat: imageFormat, pixelSize: imageSize, hasAlpha: true, isAnimated: isAnimated)
-        }
-
-        guard let imageSource = try? self.cgImageSource() else {
-            Logger.warn("Could not build imageSource.")
-            return nil
-        }
-        return imageMetadataWithImageSource(imageSource, imageFormat: imageFormat, isAnimated: isAnimated)
     }
 
     // MARK: - WEBP
@@ -246,38 +246,23 @@ extension OWSImageSource {
             owsFailDebug("Invalid webp image.")
             return nil
         }
-
         guard let data = try? self.readIntoMemory() else {
             return nil
         }
-
         return UIImage.sd_image(with: data)
     }
 
-    private var sizeForWebpData: CGSize {
-        let webpMetadata = metadataForWebp
-        guard webpMetadata.isValid else {
-            return .zero
-        }
-        return .init(width: CGFloat(webpMetadata.canvasWidth), height: CGFloat(webpMetadata.canvasHeight))
-    }
-
-    private var metadataForWebp: WebpMetadata {
+    private func loadWebPMetadata() -> WebpMetadata? {
         guard let data = try? self.readIntoMemory() else {
-            return WebpMetadata(isValid: false, canvasWidth: 0, canvasHeight: 0, frameCount: 0)
+            return nil
         }
         guard let image = SDAnimatedImage(data: data) else {
-            return WebpMetadata(isValid: false, canvasWidth: 0, canvasHeight: 0, frameCount: 0)
+            return nil
         }
-
-        let count = image.sd_imageFrameCount
-        let height = image.pixelHeight
-        let width = image.pixelWidth
         return WebpMetadata(
-            isValid: width > 0 && height > 0 && count > 0,
-            canvasWidth: UInt32(width),
-            canvasHeight: UInt32(height),
-            frameCount: UInt32(count),
+            canvasWidth: image.pixelWidth,
+            canvasHeight: image.pixelHeight,
+            frameCount: image.sd_imageFrameCount,
         )
     }
 }
@@ -293,7 +278,7 @@ private func applyImageOrientation(_ orientation: CGImagePropertyOrientation, to
     }
 }
 
-private func isImageSizeValid(_ imageSize: CGSize, depthBytes: CGFloat, isAnimated: Bool) -> Bool {
+private func isImageSizeValid(_ imageSize: CGSize, depthBytes: CGFloat) -> Bool {
     if imageSize.width < 1 || imageSize.height < 1 || depthBytes < 1 {
         // Invalid metadata.
         return false
@@ -305,7 +290,7 @@ private func isImageSizeValid(_ imageSize: CGSize, depthBytes: CGFloat, isAnimat
     let actualBytes = imageSize.width * imageSize.height * bytesPerPixel
 
     let expectedBytesPerPixel: CGFloat = 4
-    let maxValidImageDimension = CGFloat(isAnimated ? OWSMediaUtils.kMaxAnimatedImageDimensions : OWSMediaUtils.kMaxStillImageDimensions)
+    let maxValidImageDimension = OWSMediaUtils.kMaxImageDimensions
     let maxBytes = maxValidImageDimension * maxValidImageDimension * expectedBytesPerPixel
 
     if actualBytes > maxBytes {
@@ -362,10 +347,25 @@ private func imageMetadataWithImageSource(_ imageSource: CGImageSource, imageFor
         return nil
     }
 
-    guard isImageSizeValid(pixelSize, depthBytes: depthBytes, isAnimated: isAnimated) else {
+    guard isImageSizeValid(pixelSize, depthBytes: depthBytes) else {
         Logger.warn("Image does not have valid dimensions: \(pixelSize).")
         return nil
     }
 
     return .init(imageFormat: imageFormat, pixelSize: pixelSize, hasAlpha: hasAlpha.boolValue, isAnimated: isAnimated)
+}
+
+private struct WebpMetadata {
+    let canvasWidth: Int
+    let canvasHeight: Int
+    let frameCount: UInt
+
+    init?(canvasWidth: Int, canvasHeight: Int, frameCount: UInt) {
+        guard canvasWidth > 0, canvasHeight > 0, frameCount > 0 else {
+            return nil
+        }
+        self.canvasWidth = canvasWidth
+        self.canvasHeight = canvasHeight
+        self.frameCount = frameCount
+    }
 }

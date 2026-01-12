@@ -160,8 +160,7 @@ public enum OWSMediaUtils {
     public static let kMaxAttachmentUploadSizeBytes: UInt64 = 100_000_000
 
     public static let kMaxVideoDimensions: CGFloat = 4096 // 4k video width
-    public static let kMaxAnimatedImageDimensions: UInt = 12 * 1024
-    public static let kMaxStillImageDimensions: UInt = 12 * 1024
+    public static let kMaxImageDimensions: CGFloat = 12 * 1024
 
     /// Text past this size on send (excluding forwarding) is truncated to this length and the rest
     /// is sent as an oversize text attachment.

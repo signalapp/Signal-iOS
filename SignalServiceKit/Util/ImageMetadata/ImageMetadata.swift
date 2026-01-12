@@ -84,13 +84,6 @@ public struct ImageMetadata {
     }
 }
 
-struct WebpMetadata {
-    let isValid: Bool
-    let canvasWidth: UInt32
-    let canvasHeight: UInt32
-    let frameCount: UInt32
-}
-
 public enum ImageMetadataResult {
     /// Source data exceeded size limit for all attachments;
     /// as a precaution no validation was performed.
