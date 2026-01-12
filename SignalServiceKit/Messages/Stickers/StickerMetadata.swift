@@ -122,7 +122,7 @@ public class DecryptedStickerMetadata: StickerMetadata {
     }
 
     public func readStickerData() throws -> Data {
-        return try Data(contentsOf: stickerDataUrl)
+        return try Data(contentsOf: stickerDataUrl, options: [.mappedIfSafe])
     }
 
     public static func ==(lhs: DecryptedStickerMetadata, rhs: DecryptedStickerMetadata) -> Bool {
