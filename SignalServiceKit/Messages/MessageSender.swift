@@ -620,18 +620,22 @@ public class MessageSender {
         try await waitForPreKeyRotationIfNeeded()
         let udManager = SSKEnvironment.shared.udManagerRef
         let senderCertificates = try await udManager.fetchSenderCertificates()
+        let registeredState = try tsAccountManager.registeredStateWithMaybeSneakyTransaction()
         // Send the message.
         let sendResult = await Result(catching: {
             return try await sendPreparedMessage(
                 message,
                 recoveryState: OuterRecoveryState(),
                 senderCertificates: senderCertificates,
+                localIdentifiers: registeredState.localIdentifiers,
             )
         })
         // Send the sync message if it succeeded overall or for any recipient.
         let syncResult: Result<Void, any Error>?
         if sendResult.isSuccess || message.wasSentToAnyRecipient {
-            syncResult = await Result(catching: { try await handleMessageSentLocally(message) })
+            syncResult = await Result(catching: {
+                try await handleMessageSentLocally(message, localIdentifiers: registeredState.localIdentifiers)
+            })
         } else {
             syncResult = nil
         }
@@ -690,6 +694,7 @@ public class MessageSender {
         _ message: TSOutgoingMessage,
         recoveryState: OuterRecoveryState,
         senderCertificates: SenderCertificates,
+        localIdentifiers: LocalIdentifiers,
     ) async throws -> SendMessageFailure? {
         let nextAction = try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx -> SendMessageNextAction? in
             guard let thread = message.thread(tx: tx) else {
@@ -716,11 +721,6 @@ public class MessageSender {
                 }
                 // Pretend to succeed for non-visible messages like read receipts, etc.
                 return nil
-            }
-
-            let tsAccountManager = DependenciesBridge.shared.tsAccountManager
-            guard let localIdentifiers = tsAccountManager.localIdentifiers(tx: tx) else {
-                throw OWSAssertionError("Not registered.")
             }
 
             let proposedAddresses = try self.unsentRecipients(of: message, in: thread, localIdentifiers: localIdentifiers, tx: tx)
@@ -901,6 +901,7 @@ public class MessageSender {
             message,
             recoveryState: retryRecoveryState,
             senderCertificates: senderCertificates,
+            localIdentifiers: localIdentifiers,
         )
     }
 
@@ -1115,13 +1116,15 @@ public class MessageSender {
         return false
     }
 
-    private func handleMessageSentLocally(_ message: TSOutgoingMessage) async throws {
+    private func handleMessageSentLocally(
+        _ message: TSOutgoingMessage,
+        localIdentifiers: LocalIdentifiers,
+    ) async throws {
         await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
             if
                 let thread = message.thread(tx: tx) as? TSContactThread,
                 self.shouldMessageSendUnhideRecipient(message, tx: tx),
-                let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx)?.aciAddress,
-                !localAddress.isEqualToAddress(thread.contactAddress)
+                !localIdentifiers.aciAddress.isEqualToAddress(thread.contactAddress)
             {
                 DependenciesBridge.shared.recipientHidingManager.removeHiddenRecipient(
                     thread.contactAddress,
@@ -1139,7 +1142,7 @@ public class MessageSender {
             }
         }
 
-        try await sendSyncTranscriptIfNeeded(forMessage: message)
+        try await sendSyncTranscriptIfNeeded(forMessage: message, localIdentifiers: localIdentifiers)
 
         // Don't mark self-sent messages as read (or sent) until the sync
         // transcript is sent.
@@ -1149,7 +1152,7 @@ public class MessageSender {
             return
         }
         let thread = SSKEnvironment.shared.databaseStorageRef.read { tx in message.thread(tx: tx) }
-        guard let contactThread = thread as? TSContactThread, contactThread.contactAddress.isLocalAddress else {
+        guard let contactThread = thread as? TSContactThread, contactThread.contactAddress == localIdentifiers.aciAddress else {
             return
         }
         owsAssertDebug(message.recipientAddresses().count == 1)
@@ -1177,27 +1180,27 @@ public class MessageSender {
         }
     }
 
-    private func sendSyncTranscriptIfNeeded(forMessage message: TSOutgoingMessage) async throws {
+    private func sendSyncTranscriptIfNeeded(
+        forMessage message: TSOutgoingMessage,
+        localIdentifiers: LocalIdentifiers,
+    ) async throws {
         guard message.shouldSyncTranscript() else {
             return
         }
-        try await sendSyncTranscript(forMessage: message)
+        try await sendSyncTranscript(forMessage: message, localIdentifiers: localIdentifiers)
         let databaseStorage = SSKEnvironment.shared.databaseStorageRef
         await databaseStorage.awaitableWrite { tx in
             message.update(withHasSyncedTranscript: true, transaction: tx)
         }
     }
 
-    private func sendSyncTranscript(forMessage message: TSOutgoingMessage) async throws {
+    private func sendSyncTranscript(
+        forMessage message: TSOutgoingMessage,
+        localIdentifiers: LocalIdentifiers,
+    ) async throws {
         let databaseStorage = SSKEnvironment.shared.databaseStorageRef
         let messageSend = try await databaseStorage.awaitableWrite { tx in
-            guard let localThread = TSContactThread.getOrCreateLocalThread(transaction: tx) else {
-                throw OWSAssertionError("Missing local thread")
-            }
-
-            guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx) else {
-                throw OWSAssertionError("Missing localIdentifiers.")
-            }
+            let localThread = TSContactThread.getOrCreateThread(withContactAddress: localIdentifiers.aciAddress, transaction: tx)
 
             guard let transcript = message.buildTranscriptSyncMessage(localThread: localThread, transaction: tx) else {
                 throw OWSAssertionError("Failed to build transcript")
