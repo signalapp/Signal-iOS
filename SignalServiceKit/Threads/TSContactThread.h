@@ -22,8 +22,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithUniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
 
-- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
-
 - (instancetype)initWithContactUUID:(nullable NSString *)contactUUID
                  contactPhoneNumber:(nullable NSString *)contactPhoneNumber NS_DESIGNATED_INITIALIZER;
 
@@ -99,9 +97,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNa
 
 + (nullable SignalServiceAddress *)contactAddressFromThreadId:(NSString *)threadId
                                                   transaction:(DBReadTransaction *)transaction;
-
-// This is only ever used from migration from a pre-UUID world to a UUID world
-+ (nullable NSString *)legacyContactPhoneNumberFromThreadId:(NSString *)threadId;
 
 @end
 

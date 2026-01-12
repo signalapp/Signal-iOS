@@ -67,7 +67,9 @@ public class OWSLinkPreviewDraft: Equatable {
 // MARK: - OWSLinkPreview
 
 @objc
-public final class OWSLinkPreview: NSObject, NSCoding, NSCopying, Codable {
+public final class OWSLinkPreview: NSObject, NSSecureCoding, NSCopying, Codable {
+    public static var supportsSecureCoding: Bool { true }
+
     public init?(coder: NSCoder) {
         self.date = coder.decodeObject(of: NSDate.self, forKey: "date") as Date?
         self.previewDescription = coder.decodeObject(of: NSString.self, forKey: "previewDescription") as String?

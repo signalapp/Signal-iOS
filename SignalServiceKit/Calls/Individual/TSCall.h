@@ -67,7 +67,7 @@ NSString *NSStringFromCallType(RPRecentCallType callType);
                      timestamp:(uint64_t)timestamp
                 uniqueThreadId:(NSString *)uniqueThreadId NS_UNAVAILABLE;
 
-- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;
 
 - (instancetype)initWithCallType:(RPRecentCallType)callType
                        offerType:(TSRecentCallOfferType)offerType

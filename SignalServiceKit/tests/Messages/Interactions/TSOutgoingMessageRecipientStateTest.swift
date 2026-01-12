@@ -86,7 +86,6 @@ final class TSOutgoingMessageRecipientStateTest: XCTestCase {
             let state = try NSKeyedUnarchiver.unarchivedObject(
                 ofClass: TSOutgoingMessageRecipientState.self,
                 from: testCase.data,
-                requiringSecureCoding: false,
             )
 
             guard let state else {

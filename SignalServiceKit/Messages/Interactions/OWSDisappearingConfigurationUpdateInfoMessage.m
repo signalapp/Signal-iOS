@@ -24,35 +24,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSDisappearingConfigurationUpdateInfoMessage
 
-- (void)encodeWithCoder:(NSCoder *)coder
-{
-    [super encodeWithCoder:coder];
-    [coder encodeObject:[self valueForKey:@"configurationDurationSeconds"] forKey:@"configurationDurationSeconds"];
-    [coder encodeObject:[self valueForKey:@"configurationIsEnabled"] forKey:@"configurationIsEnabled"];
-    NSString *createdByRemoteName = self.createdByRemoteName;
-    if (createdByRemoteName != nil) {
-        [coder encodeObject:createdByRemoteName forKey:@"createdByRemoteName"];
-    }
-    [coder encodeObject:[self valueForKey:@"createdInExistingGroup"] forKey:@"createdInExistingGroup"];
-}
-
-- (nullable instancetype)initWithCoder:(NSCoder *)coder
-{
-    self = [super initWithCoder:coder];
-    if (!self) {
-        return self;
-    }
-    self->_configurationDurationSeconds =
-        [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
-                                         forKey:@"configurationDurationSeconds"] unsignedIntValue];
-    self->_configurationIsEnabled = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
-                                                                     forKey:@"configurationIsEnabled"] boolValue];
-    self->_createdByRemoteName = [coder decodeObjectOfClass:[NSString class] forKey:@"createdByRemoteName"];
-    self->_createdInExistingGroup = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
-                                                                     forKey:@"createdInExistingGroup"] boolValue];
-    return self;
-}
-
 - (NSUInteger)hash
 {
     NSUInteger result = [super hash];

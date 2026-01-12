@@ -27,36 +27,6 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (void)encodeWithCoder:(NSCoder *)coder
-{
-    [super encodeWithCoder:coder];
-    NSData *paymentCancellation = self.paymentCancellation;
-    if (paymentCancellation != nil) {
-        [coder encodeObject:paymentCancellation forKey:@"paymentCancellation"];
-    }
-    TSPaymentNotification *paymentNotification = self.paymentNotification;
-    if (paymentNotification != nil) {
-        [coder encodeObject:paymentNotification forKey:@"paymentNotification"];
-    }
-    NSData *paymentRequest = self.paymentRequest;
-    if (paymentRequest != nil) {
-        [coder encodeObject:paymentRequest forKey:@"paymentRequest"];
-    }
-}
-
-- (nullable instancetype)initWithCoder:(NSCoder *)coder
-{
-    self = [super initWithCoder:coder];
-    if (!self) {
-        return self;
-    }
-    self->_paymentCancellation = [coder decodeObjectOfClass:[NSData class] forKey:@"paymentCancellation"];
-    self->_paymentNotification = [coder decodeObjectOfClass:[TSPaymentNotification class]
-                                                     forKey:@"paymentNotification"];
-    self->_paymentRequest = [coder decodeObjectOfClass:[NSData class] forKey:@"paymentRequest"];
-    return self;
-}
-
 - (NSUInteger)hash
 {
     NSUInteger result = [super hash];

@@ -6,7 +6,7 @@
 /// Represents a call event that occurred on this device that we want to
 /// communicate to our linked devices.
 @objc(OutgoingCallEvent)
-class OutgoingCallEvent: NSObject, NSCoding {
+class OutgoingCallEvent: NSObject, NSSecureCoding {
     enum CallType: UInt {
         case audio
         case video
@@ -49,7 +49,7 @@ class OutgoingCallEvent: NSObject, NSCoding {
         self.eventType = eventType
     }
 
-    // MARK: NSCoding
+    // MARK: NSSecureCoding
 
     private enum Keys {
         static let timestamp = "timestamp"
@@ -59,6 +59,8 @@ class OutgoingCallEvent: NSObject, NSCoding {
         static let eventDirection = "direction"
         static let eventType = "event"
     }
+
+    static var supportsSecureCoding: Bool { true }
 
     func encode(with coder: NSCoder) {
         coder.encode(NSNumber(value: timestamp), forKey: Keys.timestamp)
@@ -71,14 +73,14 @@ class OutgoingCallEvent: NSObject, NSCoding {
 
     required init?(coder: NSCoder) {
         guard
-            let timestamp = coder.decodeObject(of: NSNumber.self, forKey: Keys.timestamp) as? UInt64,
+            let timestamp = coder.decodeObject(of: NSNumber.self, forKey: Keys.timestamp)?.uint64Value,
             let conversationId = coder.decodeObject(of: NSData.self, forKey: Keys.conversationId) as Data?,
-            let callId = coder.decodeObject(of: NSNumber.self, forKey: Keys.callId) as? UInt64,
-            let callTypeRaw = coder.decodeObject(of: NSNumber.self, forKey: Keys.callType) as? UInt,
+            let callId = coder.decodeObject(of: NSNumber.self, forKey: Keys.callId)?.uint64Value,
+            let callTypeRaw = coder.decodeObject(of: NSNumber.self, forKey: Keys.callType)?.uintValue,
             let callType = CallType(rawValue: callTypeRaw),
-            let eventDirectionRaw = coder.decodeObject(of: NSNumber.self, forKey: Keys.eventDirection) as? UInt,
+            let eventDirectionRaw = coder.decodeObject(of: NSNumber.self, forKey: Keys.eventDirection)?.uintValue,
             let eventDirection = EventDirection(rawValue: eventDirectionRaw),
-            let eventTypeRaw = coder.decodeObject(of: NSNumber.self, forKey: Keys.eventType) as? UInt,
+            let eventTypeRaw = coder.decodeObject(of: NSNumber.self, forKey: Keys.eventType)?.uintValue,
             let eventType = EventType(rawValue: eventTypeRaw)
         else {
             owsFailDebug("Missing or unrecognized fields!")
@@ -102,6 +104,8 @@ class OutgoingCallEvent: NSObject, NSCoding {
 /// - SeeAlso ``IncomingCallEventSyncMessageManager``
 @objc(OutgoingCallEventSyncMessage)
 public class OutgoingCallEventSyncMessage: OWSOutgoingSyncMessage {
+    override public class var supportsSecureCoding: Bool { true }
+
     public required init?(coder: NSCoder) {
         self.callEvent = coder.decodeObject(of: OutgoingCallEvent.self, forKey: "event")
         super.init(coder: coder)

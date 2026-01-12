@@ -65,7 +65,7 @@ typedef NS_ENUM(NSInteger, EncryptionStyle) {
 
 #pragma mark -
 
-@interface TSOutgoingMessage : TSMessage
+@interface TSOutgoingMessage : TSMessage <NSSecureCoding>
 
 - (instancetype)initMessageWithBuilder:(TSMessageBuilder *)messageBuilder NS_UNAVAILABLE;
 

@@ -141,9 +141,9 @@ extension TSPaymentModel {
             let mcTransactionData: Data? = SDSDeserialization.optionalData(record.mcTransactionData, name: "mcTransactionData")
             let memoMessage: String? = record.memoMessage
             let mobileCoinSerialized: Data? = record.mobileCoin
-            let mobileCoin: MobileCoinPayment? = try SDSDeserialization.optionalUnarchive(mobileCoinSerialized, name: "mobileCoin")
+            let mobileCoin: MobileCoinPayment? = try mobileCoinSerialized.map({ try SDSDeserialization.unarchivedObject(ofClass: MobileCoinPayment.self, from: $0) })
             let paymentAmountSerialized: Data? = record.paymentAmount
-            let paymentAmount: TSPaymentAmount? = try SDSDeserialization.optionalUnarchive(paymentAmountSerialized, name: "paymentAmount")
+            let paymentAmount: TSPaymentAmount? = try paymentAmountSerialized.map({ try SDSDeserialization.unarchivedObject(ofClass: TSPaymentAmount.self, from: $0) })
             guard let paymentFailure: TSPaymentFailure = record.paymentFailure else {
                throw SDSError.missingRequiredField()
             }

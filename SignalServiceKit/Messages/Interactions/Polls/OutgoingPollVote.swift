@@ -7,11 +7,13 @@ import Foundation
 public import LibSignalClient
 
 public class OutgoingPollVoteMessage: TSOutgoingMessage {
+    override public class var supportsSecureCoding: Bool { true }
+
     public required init?(coder: NSCoder) {
         self.targetPollAuthorAciBinary = coder.decodeObject(of: NSData.self, forKey: "targetPollAuthorAciBinary") as Data?
         self.targetPollTimestamp = coder.decodeObject(of: NSNumber.self, forKey: "targetPollTimestamp")?.uint64Value ?? 0
         self.voteCount = coder.decodeObject(of: NSNumber.self, forKey: "voteCount")?.uint32Value ?? 0
-        self.voteOptionIndexes = coder.decodeObject(of: [NSArray.self, NSNumber.self], forKey: "voteOptionIndexes") as? [UInt32] ?? []
+        self.voteOptionIndexes = coder.decodeArrayOfObjects(ofClass: NSNumber.self, forKey: "voteOptionIndexes").map({ $0.map(\.uint32Value) })
         super.init(coder: coder)
     }
 

@@ -180,7 +180,7 @@ extension TSThread {
             let mentionNotificationMode: TSThreadMentionNotificationMode = TSThreadMentionNotificationMode(rawValue: record.mentionNotificationMode) ?? .default
             let messageDraft: String? = record.messageDraft
             let messageDraftBodyRangesSerialized: Data? = record.messageDraftBodyRanges
-            let messageDraftBodyRanges: MessageBodyRanges? = try SDSDeserialization.optionalUnarchive(messageDraftBodyRangesSerialized, name: "messageDraftBodyRanges")
+            let messageDraftBodyRanges: MessageBodyRanges? = try messageDraftBodyRangesSerialized.map({ try SDSDeserialization.unarchivedObject(ofClass: MessageBodyRanges.self, from: $0) })
             let mutedUntilDateObsoleteInterval: Double? = record.mutedUntilDate
             let mutedUntilDateObsolete: Date? = SDSDeserialization.optionalDoubleAsDate(mutedUntilDateObsoleteInterval, name: "mutedUntilDateObsolete")
             let mutedUntilTimestampObsolete: UInt64 = record.mutedUntilTimestamp
@@ -232,14 +232,14 @@ extension TSThread {
             let mentionNotificationMode: TSThreadMentionNotificationMode = TSThreadMentionNotificationMode(rawValue: record.mentionNotificationMode) ?? .default
             let messageDraft: String? = record.messageDraft
             let messageDraftBodyRangesSerialized: Data? = record.messageDraftBodyRanges
-            let messageDraftBodyRanges: MessageBodyRanges? = try SDSDeserialization.optionalUnarchive(messageDraftBodyRangesSerialized, name: "messageDraftBodyRanges")
+            let messageDraftBodyRanges: MessageBodyRanges? = try messageDraftBodyRangesSerialized.map({ try SDSDeserialization.unarchivedObject(ofClass: MessageBodyRanges.self, from: $0) })
             let mutedUntilDateObsoleteInterval: Double? = record.mutedUntilDate
             let mutedUntilDateObsolete: Date? = SDSDeserialization.optionalDoubleAsDate(mutedUntilDateObsoleteInterval, name: "mutedUntilDateObsolete")
             let mutedUntilTimestampObsolete: UInt64 = record.mutedUntilTimestamp
             let shouldThreadBeVisible: Bool = record.shouldThreadBeVisible
             let storyViewMode: TSThreadStoryViewMode = TSThreadStoryViewMode(rawValue: record.storyViewMode) ?? .default
-            let groupModelSerialized: Data? = record.groupModel
-            let groupModel: TSGroupModel = try SDSDeserialization.unarchive(groupModelSerialized, name: "groupModel")
+            let groupModelSerialized: Data = try record.groupModel ?? { () -> Data in throw SDSError.missingRequiredField(fieldName: "groupModel") }()
+            let groupModel: TSGroupModel = try SDSDeserialization.unarchivedObject(ofClass: TSGroupModel.self, from: groupModelSerialized)
 
             return TSGroupThread(grdbId: recordId,
                                  uniqueId: uniqueId,
@@ -281,7 +281,7 @@ extension TSThread {
             let mentionNotificationMode: TSThreadMentionNotificationMode = TSThreadMentionNotificationMode(rawValue: record.mentionNotificationMode) ?? .default
             let messageDraft: String? = record.messageDraft
             let messageDraftBodyRangesSerialized: Data? = record.messageDraftBodyRanges
-            let messageDraftBodyRanges: MessageBodyRanges? = try SDSDeserialization.optionalUnarchive(messageDraftBodyRangesSerialized, name: "messageDraftBodyRanges")
+            let messageDraftBodyRanges: MessageBodyRanges? = try messageDraftBodyRangesSerialized.map({ try SDSDeserialization.unarchivedObject(ofClass: MessageBodyRanges.self, from: $0) })
             let mutedUntilDateObsoleteInterval: Double? = record.mutedUntilDate
             let mutedUntilDateObsolete: Date? = SDSDeserialization.optionalDoubleAsDate(mutedUntilDateObsoleteInterval, name: "mutedUntilDateObsolete")
             let mutedUntilTimestampObsolete: UInt64 = record.mutedUntilTimestamp
@@ -333,7 +333,7 @@ extension TSThread {
             let mentionNotificationMode: TSThreadMentionNotificationMode = TSThreadMentionNotificationMode(rawValue: record.mentionNotificationMode) ?? .default
             let messageDraft: String? = record.messageDraft
             let messageDraftBodyRangesSerialized: Data? = record.messageDraftBodyRanges
-            let messageDraftBodyRanges: MessageBodyRanges? = try SDSDeserialization.optionalUnarchive(messageDraftBodyRangesSerialized, name: "messageDraftBodyRanges")
+            let messageDraftBodyRanges: MessageBodyRanges? = try messageDraftBodyRangesSerialized.map({ try SDSDeserialization.unarchivedObject(ofClass: MessageBodyRanges.self, from: $0) })
             let mutedUntilDateObsoleteInterval: Double? = record.mutedUntilDate
             let mutedUntilDateObsolete: Date? = SDSDeserialization.optionalDoubleAsDate(mutedUntilDateObsoleteInterval, name: "mutedUntilDateObsolete")
             let mutedUntilTimestampObsolete: UInt64 = record.mutedUntilTimestamp

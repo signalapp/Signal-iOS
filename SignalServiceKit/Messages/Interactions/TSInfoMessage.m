@@ -39,13 +39,9 @@ const InfoMessageUserInfoKey InfoMessageUserInfoKeyUsernameDisplayNameBeforeLear
 const InfoMessageUserInfoKey InfoMessageUserInfoKeyEndPoll = @"InfoMessageUserInfoKeyEndPoll";
 const InfoMessageUserInfoKey InfoMessageUserInfoKeyPinnedMessage = @"InfoMessageUserInfoKeyPinnedMessage";
 
-NSUInteger TSInfoMessageSchemaVersion = 2;
-
 @interface TSInfoMessage ()
 
 @property (nonatomic, getter=wasRead) BOOL read;
-
-@property (nonatomic, readonly) NSUInteger infoMessageSchemaVersion;
 
 @end
 
@@ -53,41 +49,9 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
 
 @implementation TSInfoMessage
 
-- (void)encodeWithCoder:(NSCoder *)coder
++ (NSArray<Class> *)infoMessageUserInfoObjectClasses
 {
-    [super encodeWithCoder:coder];
-    NSString *customMessage = self.customMessage;
-    if (customMessage != nil) {
-        [coder encodeObject:customMessage forKey:@"customMessage"];
-    }
-    [coder encodeObject:[self valueForKey:@"infoMessageSchemaVersion"] forKey:@"infoMessageSchemaVersion"];
-    NSDictionary *infoMessageUserInfo = self.infoMessageUserInfo;
-    if (infoMessageUserInfo != nil) {
-        [coder encodeObject:infoMessageUserInfo forKey:@"infoMessageUserInfo"];
-    }
-    [coder encodeObject:[self valueForKey:@"messageType"] forKey:@"messageType"];
-    [coder encodeObject:[self valueForKey:@"read"] forKey:@"read"];
-    NSString *serverGuid = self.serverGuid;
-    if (serverGuid != nil) {
-        [coder encodeObject:serverGuid forKey:@"serverGuid"];
-    }
-    SignalServiceAddress *unregisteredAddress = self.unregisteredAddress;
-    if (unregisteredAddress != nil) {
-        [coder encodeObject:unregisteredAddress forKey:@"unregisteredAddress"];
-    }
-}
-
-- (nullable instancetype)initWithCoder:(NSCoder *)coder
-{
-    self = [super initWithCoder:coder];
-    if (!self) {
-        return self;
-    }
-    self->_customMessage = [coder decodeObjectOfClass:[NSString class] forKey:@"customMessage"];
-    self->_infoMessageSchemaVersion =
-        [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
-                                         forKey:@"infoMessageSchemaVersion"] unsignedIntegerValue];
-    self->_infoMessageUserInfo = [coder decodeObjectOfClasses:[NSSet setWithArray:@[
+    return @[
         [DisappearingMessageToken class],
         [NSDictionary class],
         [NSNull class],
@@ -100,38 +64,13 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
         [TSGroupModel class],
         [TSInfoMessageUpdateMessages class],
         [TSInfoMessageUpdateMessagesV2 class]
-    ]]
-                                                       forKey:@"infoMessageUserInfo"];
-    self->_messageType = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class] forKey:@"messageType"] integerValue];
-    self->_read = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class] forKey:@"read"] boolValue];
-    self->_serverGuid = [coder decodeObjectOfClass:[NSString class] forKey:@"serverGuid"];
-    self->_unregisteredAddress = [coder decodeObjectOfClass:[SignalServiceAddress class] forKey:@"unregisteredAddress"];
-
-    if (self.infoMessageSchemaVersion < 1) {
-        _read = YES;
-    }
-
-    if (self.infoMessageSchemaVersion < 2) {
-        NSString *_Nullable phoneNumber = [coder decodeObjectForKey:@"unregisteredRecipientId"];
-        if (phoneNumber) {
-            _unregisteredAddress = [SignalServiceAddress legacyAddressWithServiceIdString:nil phoneNumber:phoneNumber];
-        }
-    }
-
-    _infoMessageSchemaVersion = TSInfoMessageSchemaVersion;
-
-    if (self.isDynamicInteraction) {
-        self.read = YES;
-    }
-
-    return self;
+    ];
 }
 
 - (NSUInteger)hash
 {
     NSUInteger result = [super hash];
     result ^= self.customMessage.hash;
-    result ^= self.infoMessageSchemaVersion;
     result ^= self.infoMessageUserInfo.hash;
     result ^= (NSUInteger)self.messageType;
     result ^= self.read;
@@ -147,9 +86,6 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
     }
     TSInfoMessage *typedOther = (TSInfoMessage *)other;
     if (![NSObject isObject:self.customMessage equalToObject:typedOther.customMessage]) {
-        return NO;
-    }
-    if (self.infoMessageSchemaVersion != typedOther.infoMessageSchemaVersion) {
         return NO;
     }
     if (![NSObject isObject:self.infoMessageUserInfo equalToObject:typedOther.infoMessageUserInfo]) {
@@ -174,7 +110,6 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
 {
     TSInfoMessage *result = [super copyWithZone:zone];
     result->_customMessage = self.customMessage;
-    result->_infoMessageSchemaVersion = self.infoMessageSchemaVersion;
     result->_infoMessageUserInfo = self.infoMessageUserInfo;
     result->_messageType = self.messageType;
     result->_read = self.read;
@@ -211,7 +146,6 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
     _serverGuid = serverGuid;
     _messageType = messageType;
     _infoMessageUserInfo = infoMessageUserInfo;
-    _infoMessageSchemaVersion = TSInfoMessageSchemaVersion;
 
     if (self.isDynamicInteraction) {
         self.read = YES;

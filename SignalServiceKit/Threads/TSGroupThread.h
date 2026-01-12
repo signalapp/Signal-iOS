@@ -22,8 +22,6 @@ extern NSString *const TSGroupThread_NotificationKey_UniqueId;
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithUniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
 
-- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
-
 - (instancetype)initWithGroupModel:(TSGroupModelV2 *)groupModel NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithGrdbId:(int64_t)grdbId

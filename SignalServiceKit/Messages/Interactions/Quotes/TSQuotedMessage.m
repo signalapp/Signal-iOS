@@ -42,7 +42,6 @@ NS_ASSUME_NONNULL_BEGIN
 {
     self = [super init];
     if (self) {
-        _schemaVersion = self.class.currentSchemaVersion;
         _contentType = originalAttachmentMimeType;
         _sourceFilename = originalAttachmentSourceFilename;
     }
@@ -60,6 +59,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 // MARK: -
 
++ (BOOL)supportsSecureCoding
+{
+    return YES;
+}
+
 - (void)encodeWithCoder:(NSCoder *)coder
 {
     NSString *attachmentId = self.attachmentId;
@@ -70,7 +74,6 @@ NS_ASSUME_NONNULL_BEGIN
     if (contentType != nil) {
         [coder encodeObject:contentType forKey:@"contentType"];
     }
-    [coder encodeObject:[self valueForKey:@"schemaVersion"] forKey:@"schemaVersion"];
     NSString *sourceFilename = self.sourceFilename;
     if (sourceFilename != nil) {
         [coder encodeObject:sourceFilename forKey:@"sourceFilename"];
@@ -85,10 +88,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
     self->_attachmentId = [coder decodeObjectOfClass:[NSString class] forKey:@"attachmentId"];
     self->_contentType = [coder decodeObjectOfClass:[NSString class] forKey:@"contentType"];
-    self->_schemaVersion = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
-                                                            forKey:@"schemaVersion"] unsignedIntegerValue];
     self->_sourceFilename = [coder decodeObjectOfClass:[NSString class] forKey:@"sourceFilename"];
-    _schemaVersion = self.class.currentSchemaVersion;
     return self;
 }
 
@@ -97,7 +97,6 @@ NS_ASSUME_NONNULL_BEGIN
     NSUInteger result = 0;
     result ^= self.attachmentId.hash;
     result ^= self.contentType.hash;
-    result ^= self.schemaVersion;
     result ^= self.sourceFilename.hash;
     return result;
 }
@@ -114,9 +113,6 @@ NS_ASSUME_NONNULL_BEGIN
     if (![NSObject isObject:self.contentType equalToObject:typedOther.contentType]) {
         return NO;
     }
-    if (self.schemaVersion != typedOther.schemaVersion) {
-        return NO;
-    }
     if (![NSObject isObject:self.sourceFilename equalToObject:typedOther.sourceFilename]) {
         return NO;
     }
@@ -128,7 +124,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAttachmentInfo *result = [[[self class] allocWithZone:zone] init];
     result->_attachmentId = self.attachmentId;
     result->_contentType = self.contentType;
-    result->_schemaVersion = self.schemaVersion;
     result->_sourceFilename = self.sourceFilename;
     return result;
 }
@@ -205,6 +200,11 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
++ (BOOL)supportsSecureCoding
+{
+    return YES;
+}
+
 - (void)encodeWithCoder:(NSCoder *)coder
 {
     SignalServiceAddress *authorAddress = self.authorAddress;
@@ -250,7 +250,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                         forKey:@"timestamp"] unsignedLongLongValue];
 
     if (_authorAddress == nil) {
-        NSString *phoneNumber = [coder decodeObjectForKey:@"authorId"];
+        NSString *phoneNumber = [coder decodeObjectOfClass:[NSString class] forKey:@"authorId"];
         _authorAddress = [SignalServiceAddress legacyAddressWithServiceIdString:nil phoneNumber:phoneNumber];
         OWSAssertDebug(_authorAddress.isValid);
     }

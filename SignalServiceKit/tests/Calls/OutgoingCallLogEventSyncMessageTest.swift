@@ -16,7 +16,6 @@ final class OutgoingCallLogEventSyncMessageTest: XCTestCase {
             let deserializedSyncMessageEvent = try NSKeyedUnarchiver.unarchivedObject(
                 ofClass: OutgoingCallLogEventSyncMessage.CallLogEvent.self,
                 from: archivedData,
-                requiringSecureCoding: false,
             )
         else {
             XCTFail("Got nil while archiving!")
@@ -47,14 +46,13 @@ final class OutgoingCallLogEventSyncMessageTest: XCTestCase {
             for syncMessageEvent in syncMessageEvents {
                 let archivedData = try NSKeyedArchiver.archivedData(
                     withRootObject: syncMessageEvent,
-                    requiringSecureCoding: false,
+                    requiringSecureCoding: true,
                 )
 
                 guard
                     let deserializedSyncMessageEvent = try NSKeyedUnarchiver.unarchivedObject(
                         ofClass: OutgoingCallLogEventSyncMessage.CallLogEvent.self,
                         from: archivedData,
-                        requiringSecureCoding: false,
                     )
                 else {
                     XCTFail("Got nil when unarchiving!")

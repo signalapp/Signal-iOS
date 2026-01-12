@@ -8,14 +8,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSUInteger const OWSUnknownProtocolVersionMessageSchemaVersion = 1;
-
 @interface OWSUnknownProtocolVersionMessage ()
 
 @property (nonatomic) NSUInteger protocolVersion;
 // If nil, the invalid message was sent by a linked device.
 @property (nonatomic, nullable) SignalServiceAddress *sender;
-@property (nonatomic, readonly) NSUInteger unknownProtocolVersionMessageSchemaVersion;
 
 @end
 
@@ -43,45 +40,7 @@ NSUInteger const OWSUnknownProtocolVersionMessageSchemaVersion = 1;
 
         _protocolVersion = protocolVersion;
         _sender = sender;
-        _unknownProtocolVersionMessageSchemaVersion = OWSUnknownProtocolVersionMessageSchemaVersion;
     }
-
-    return self;
-}
-
-- (void)encodeWithCoder:(NSCoder *)coder
-{
-    [super encodeWithCoder:coder];
-    [coder encodeObject:[self valueForKey:@"protocolVersion"] forKey:@"protocolVersion"];
-    SignalServiceAddress *sender = self.sender;
-    if (sender != nil) {
-        [coder encodeObject:sender forKey:@"sender"];
-    }
-    [coder encodeObject:[self valueForKey:@"unknownProtocolVersionMessageSchemaVersion"]
-                 forKey:@"unknownProtocolVersionMessageSchemaVersion"];
-}
-
-- (nullable instancetype)initWithCoder:(NSCoder *)coder
-{
-    self = [super initWithCoder:coder];
-    if (!self) {
-        return self;
-    }
-    self->_protocolVersion = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
-                                                              forKey:@"protocolVersion"] unsignedIntegerValue];
-    self->_sender = [coder decodeObjectOfClass:[SignalServiceAddress class] forKey:@"sender"];
-    self->_unknownProtocolVersionMessageSchemaVersion =
-        [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
-                                         forKey:@"unknownProtocolVersionMessageSchemaVersion"] unsignedIntegerValue];
-
-    if (_unknownProtocolVersionMessageSchemaVersion < 1) {
-        NSString *_Nullable phoneNumber = [coder decodeObjectForKey:@"senderId"];
-        if (phoneNumber) {
-            _sender = [SignalServiceAddress legacyAddressWithServiceIdString:nil phoneNumber:phoneNumber];
-        }
-    }
-
-    _unknownProtocolVersionMessageSchemaVersion = OWSUnknownProtocolVersionMessageSchemaVersion;
 
     return self;
 }
@@ -91,7 +50,6 @@ NSUInteger const OWSUnknownProtocolVersionMessageSchemaVersion = 1;
     NSUInteger result = [super hash];
     result ^= self.protocolVersion;
     result ^= self.sender.hash;
-    result ^= self.unknownProtocolVersionMessageSchemaVersion;
     return result;
 }
 
@@ -107,9 +65,6 @@ NSUInteger const OWSUnknownProtocolVersionMessageSchemaVersion = 1;
     if (![NSObject isObject:self.sender equalToObject:typedOther.sender]) {
         return NO;
     }
-    if (self.unknownProtocolVersionMessageSchemaVersion != typedOther.unknownProtocolVersionMessageSchemaVersion) {
-        return NO;
-    }
     return YES;
 }
 
@@ -118,7 +73,6 @@ NSUInteger const OWSUnknownProtocolVersionMessageSchemaVersion = 1;
     OWSUnknownProtocolVersionMessage *result = [super copyWithZone:zone];
     result->_protocolVersion = self.protocolVersion;
     result->_sender = self.sender;
-    result->_unknownProtocolVersionMessageSchemaVersion = self.unknownProtocolVersionMessageSchemaVersion;
     return result;
 }
 

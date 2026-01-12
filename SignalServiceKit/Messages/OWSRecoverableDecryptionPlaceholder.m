@@ -41,11 +41,6 @@ NS_ASSUME_NONNULL_BEGIN
     return [super initErrorMessageWithBuilder:builder];
 }
 
-- (nullable instancetype)initWithCoder:(NSCoder *)coder
-{
-    return [super initWithCoder:coder];
-}
-
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                           uniqueId:(NSString *)uniqueId
                receivedAtTimestamp:(uint64_t)receivedAtTimestamp

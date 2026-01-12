@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class DBReadTransaction;
 @class SignalServiceAddress;
 
-@interface OWSLinkedDeviceViewedReceipt : NSObject <NSCoding, NSCopying>
+@interface OWSLinkedDeviceViewedReceipt : NSObject <NSSecureCoding, NSCopying>
 
 @property (nonatomic, readonly) SignalServiceAddress *senderAddress;
 @property (nonatomic, readonly, nullable) NSString *messageUniqueId; // Only nil if decoding old values

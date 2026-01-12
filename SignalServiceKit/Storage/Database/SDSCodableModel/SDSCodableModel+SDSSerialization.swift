@@ -28,7 +28,14 @@ struct SDSCodableModelLegacySerializer: SDSSerializer {
     ///
     /// For use with complex properties that are stored in a single BLOB column.
     func deserializeLegacySDSData<T: NSObject & NSSecureCoding>(_ encodedValue: Data, ofClass cls: T.Type) throws -> T {
-        guard let result = try? NSKeyedUnarchiver.unarchivedObject(ofClass: cls, from: encodedValue) else {
+        let result: T?
+        do {
+            result = try NSKeyedUnarchiver.unarchivedObject(ofClass: cls, from: encodedValue)
+        } catch {
+            Logger.warn("couldn't decode legacy data: \(error)")
+            throw SDSError.invalidValue()
+        }
+        guard let result else {
             throw SDSError.invalidValue()
         }
         return result

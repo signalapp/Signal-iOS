@@ -9,11 +9,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation TSInvalidIdentityKeyErrorMessage
 
-- (nullable instancetype)initWithCoder:(NSCoder *)coder
-{
-    return [super initWithCoder:coder];
-}
-
 - (SignalServiceAddress *)theirSignalAddress
 {
     OWSAbstractMethod();

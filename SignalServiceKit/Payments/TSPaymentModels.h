@@ -94,7 +94,7 @@ NSString *NSStringFromTSPaymentFailure(TSPaymentFailure value);
 
 #pragma mark -
 
-@interface TSPaymentAmount : NSObject <NSCoding, NSCopying>
+@interface TSPaymentAmount : NSObject <NSSecureCoding, NSCopying>
 
 @property (nonatomic, readonly) TSPaymentCurrency currency;
 @property (nonatomic, readonly) uint64_t picoMob;
@@ -105,7 +105,7 @@ NSString *NSStringFromTSPaymentFailure(TSPaymentFailure value);
 
 #pragma mark -
 
-@interface TSPaymentAddress : NSObject <NSCoding, NSCopying>
+@interface TSPaymentAddress : NSObject <NSCopying>
 
 @property (nonatomic, readonly) TSPaymentCurrency currency;
 @property (nonatomic, readonly) NSData *mobileCoinPublicAddressData;
@@ -117,7 +117,7 @@ NSString *NSStringFromTSPaymentFailure(TSPaymentFailure value);
 
 #pragma mark -
 
-@interface TSPaymentNotification : NSObject <NSCoding, NSCopying>
+@interface TSPaymentNotification : NSObject <NSSecureCoding, NSCopying>
 
 @property (nonatomic, readonly, nullable) NSString *memoMessage;
 @property (nonatomic, readonly) NSData *mcReceiptData;
@@ -128,7 +128,7 @@ NSString *NSStringFromTSPaymentFailure(TSPaymentFailure value);
 
 #pragma mark -
 
-@interface TSArchivedPaymentInfo : NSObject <NSCoding, NSCopying>
+@interface TSArchivedPaymentInfo : NSObject <NSSecureCoding, NSCopying>
 
 @property (nonatomic, readonly, nullable) NSString *amount;
 @property (nonatomic, readonly, nullable) NSString *fee;

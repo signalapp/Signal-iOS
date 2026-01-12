@@ -17,8 +17,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) NSString *messageId;
 
-- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
-
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                           uniqueId:(NSString *)uniqueId
                receivedAtTimestamp:(uint64_t)receivedAtTimestamp

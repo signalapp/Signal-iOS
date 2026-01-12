@@ -9,6 +9,8 @@
 /// - SeeAlso ``IncomingCallLogEventSyncMessageManager``
 @objc(OutgoingCallLogEventSyncMessage)
 public class OutgoingCallLogEventSyncMessage: OWSOutgoingSyncMessage {
+    override public class var supportsSecureCoding: Bool { true }
+
     public required init?(coder: NSCoder) {
         self.callLogEvent = coder.decodeObject(of: CallLogEvent.self, forKey: "callLogEvent")
         super.init(coder: coder)
@@ -79,7 +81,7 @@ public class OutgoingCallLogEventSyncMessage: OWSOutgoingSyncMessage {
 
 public extension OutgoingCallLogEventSyncMessage {
     @objc(OutgoingCallLogEvent)
-    class CallLogEvent: NSObject, NSCoding {
+    class CallLogEvent: NSObject, NSSecureCoding {
         public enum EventType: UInt, CaseIterable {
             /// Indicates we cleared our call log in its entirety.
             ///
@@ -116,7 +118,7 @@ public extension OutgoingCallLogEventSyncMessage {
             self.timestamp = timestamp
         }
 
-        // MARK: NSCoding
+        // MARK: NSSecureCoding
 
         private enum Keys {
             static let eventType = "eventType"
@@ -125,11 +127,13 @@ public extension OutgoingCallLogEventSyncMessage {
             static let conversationId = "conversationId"
         }
 
+        public static var supportsSecureCoding: Bool { true }
+
         public required init?(coder: NSCoder) {
             guard
-                let eventTypeRaw = coder.decodeObject(of: NSNumber.self, forKey: Keys.eventType) as? UInt,
+                let eventTypeRaw = coder.decodeObject(of: NSNumber.self, forKey: Keys.eventType)?.uintValue,
                 let eventType = EventType(rawValue: eventTypeRaw),
-                let timestamp = coder.decodeObject(of: NSNumber.self, forKey: Keys.timestamp) as? UInt64
+                let timestamp = coder.decodeObject(of: NSNumber.self, forKey: Keys.timestamp)?.uint64Value
             else {
                 owsFailDebug("Missing or unrecognized fields!")
                 return nil
@@ -139,7 +143,7 @@ public extension OutgoingCallLogEventSyncMessage {
             self.timestamp = timestamp
 
             if
-                let callId = coder.decodeObject(of: NSNumber.self, forKey: Keys.callId) as? UInt64,
+                let callId = coder.decodeObject(of: NSNumber.self, forKey: Keys.callId)?.uint64Value,
                 let conversationId = coder.decodeObject(of: NSData.self, forKey: Keys.conversationId) as Data?
             {
                 self.callId = callId

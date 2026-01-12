@@ -98,16 +98,12 @@ class InfoMessageGroupUpdateMigratorTest: SignalBaseTest {
     private func encode(_ infoMessageUserInfo: [InfoMessageUserInfoKey: Any]) -> Data {
         return try! NSKeyedArchiver.archivedData(
             withRootObject: infoMessageUserInfo,
-            requiringSecureCoding: false,
+            requiringSecureCoding: true,
         )
     }
 
-    private func decode(_ data: Data) -> [InfoMessageUserInfoKey: Any] {
-        return try! NSKeyedUnarchiver.unarchivedObject(
-            ofClass: NSDictionary.self,
-            from: data,
-            requiringSecureCoding: false,
-        ) as! [InfoMessageUserInfoKey: Any]
+    private func decode(_ data: Data) -> [InfoMessageUserInfoKey: AnyObject] {
+        return try! SDSDeserialization.unarchivedInfoDictionary(from: data)
     }
 }
 

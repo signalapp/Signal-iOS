@@ -37,35 +37,6 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (void)encodeWithCoder:(NSCoder *)coder
-{
-    [super encodeWithCoder:coder];
-    [coder encodeObject:[self valueForKey:@"isLocalChange"] forKey:@"isLocalChange"];
-    SignalServiceAddress *recipientAddress = self.recipientAddress;
-    if (recipientAddress != nil) {
-        [coder encodeObject:recipientAddress forKey:@"recipientAddress"];
-    }
-    [coder encodeObject:[self valueForKey:@"verificationState"] forKey:@"verificationState"];
-}
-
-- (nullable instancetype)initWithCoder:(NSCoder *)coder
-{
-    self = [super initWithCoder:coder];
-    if (!self) {
-        return self;
-    }
-    self->_isLocalChange = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class] forKey:@"isLocalChange"] boolValue];
-    self->_recipientAddress = [coder decodeObjectOfClass:[SignalServiceAddress class] forKey:@"recipientAddress"];
-    self->_verificationState = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
-                                                                forKey:@"verificationState"] unsignedLongLongValue];
-    if (_recipientAddress == nil) {
-        NSString *_Nullable phoneNumber = [coder decodeObjectForKey:@"recipientId"];
-        _recipientAddress = [SignalServiceAddress legacyAddressWithServiceIdString:nil phoneNumber:phoneNumber];
-        OWSAssertDebug(_recipientAddress.isValid);
-    }
-    return self;
-}
-
 - (NSUInteger)hash
 {
     NSUInteger result = [super hash];

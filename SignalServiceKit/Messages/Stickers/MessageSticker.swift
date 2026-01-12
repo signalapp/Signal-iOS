@@ -39,7 +39,9 @@ public class MessageStickerDraft {
 // MARK: - MessageSticker
 
 @objc
-public final class MessageSticker: NSObject, NSCoding, NSCopying {
+public final class MessageSticker: NSObject, NSSecureCoding, NSCopying {
+    public static var supportsSecureCoding: Bool { true }
+
     public init?(coder: NSCoder) {
         self.emoji = coder.decodeObject(of: NSString.self, forKey: "emoji") as String?
         self.info = coder.decodeObject(of: StickerInfo.self, forKey: "info") ?? .defaultValue

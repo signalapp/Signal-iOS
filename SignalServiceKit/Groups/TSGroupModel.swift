@@ -9,6 +9,8 @@ public import LibSignalClient
 
 @objc
 public final class TSGroupModelV2: TSGroupModel {
+    override public class var supportsSecureCoding: Bool { true }
+
     public required init?(coder: NSCoder) {
         self.access = coder.decodeObject(of: GroupAccess.self, forKey: "access") ?? .defaultForV2
         self.avatarDataFailedToFetchFromCDN = coder.decodeObject(of: NSNumber.self, forKey: "avatarDataFailedToFetchFromCDN")?.boolValue ?? false

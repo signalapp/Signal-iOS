@@ -12,11 +12,11 @@ public import LibSignalClient
 ///
 /// This object must be further applied to NSAttributedString to actually display mentions and styles.
 @objc
-public class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
+public final class MessageBodyRanges: NSObject, NSCopying, NSSecureCoding {
     // Limit to up to 250 ranges per message.
     public static let maxRangesPerMessage = 250
 
-    public static var supportsSecureCoding = true
+    public static var supportsSecureCoding: Bool { true }
     public static var empty: MessageBodyRanges { MessageBodyRanges(mentions: [:], styles: []) }
 
     // Styles are kept separate from mentions; mentions are not allowed to overlap,

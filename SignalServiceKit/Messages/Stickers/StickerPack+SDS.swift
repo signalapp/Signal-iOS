@@ -113,14 +113,14 @@ extension StickerPack {
             let uniqueId: String = record.uniqueId
             let author: String? = record.author
             let coverSerialized: Data = record.cover
-            let cover: StickerPackItem = try SDSDeserialization.unarchive(coverSerialized, name: "cover")
+            let cover: StickerPackItem = try SDSDeserialization.unarchivedObject(ofClass: StickerPackItem.self, from: coverSerialized)
             let dateCreatedInterval: Double = record.dateCreated
             let dateCreated: Date = SDSDeserialization.requiredDoubleAsDate(dateCreatedInterval, name: "dateCreated")
             let infoSerialized: Data = record.info
-            let info: StickerPackInfo = try SDSDeserialization.unarchive(infoSerialized, name: "info")
+            let info: StickerPackInfo = try SDSDeserialization.unarchivedObject(ofClass: StickerPackInfo.self, from: infoSerialized)
             let isInstalled: Bool = record.isInstalled
             let itemsSerialized: Data = record.items
-            let items: [StickerPackItem] = try SDSDeserialization.unarchive(itemsSerialized, name: "items")
+            let items: [StickerPackItem] = try SDSDeserialization.unarchivedArrayOfObjects(ofClass: StickerPackItem.self, from: itemsSerialized)
             let title: String? = record.title
 
             return StickerPack(grdbId: recordId,

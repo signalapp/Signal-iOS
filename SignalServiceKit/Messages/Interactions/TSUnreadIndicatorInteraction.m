@@ -24,11 +24,6 @@ NS_ASSUME_NONNULL_BEGIN
                   uniqueThreadId:uniqueThreadId];
 }
 
-- (nullable instancetype)initWithCoder:(NSCoder *)coder
-{
-    return [super initWithCoder:coder];
-}
-
 - (BOOL)shouldUseReceiptDateForSorting
 {
     // Use the timestamp, not the "received at" timestamp to sort,

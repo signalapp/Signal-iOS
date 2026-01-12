@@ -20,32 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 @implementation TSInvalidIdentityKeyReceivingErrorMessage {
-    // Not using a property declaration in order to exclude from DB serialization
     SSKProtoEnvelope *_Nullable _envelope;
-}
-
-- (void)encodeWithCoder:(NSCoder *)coder
-{
-    [super encodeWithCoder:coder];
-    NSString *authorId = self.authorId;
-    if (authorId != nil) {
-        [coder encodeObject:authorId forKey:@"authorId"];
-    }
-    NSData *envelopeData = self.envelopeData;
-    if (envelopeData != nil) {
-        [coder encodeObject:envelopeData forKey:@"envelopeData"];
-    }
-}
-
-- (nullable instancetype)initWithCoder:(NSCoder *)coder
-{
-    self = [super initWithCoder:coder];
-    if (!self) {
-        return self;
-    }
-    self->_authorId = [coder decodeObjectOfClass:[NSString class] forKey:@"authorId"];
-    self->_envelopeData = [coder decodeObjectOfClass:[NSData class] forKey:@"envelopeData"];
-    return self;
 }
 
 - (NSUInteger)hash

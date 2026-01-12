@@ -7,6 +7,8 @@
 /// should refresh their list of linked devices.
 @objc(OutgoingDeviceNameChangeSyncMessage)
 public class OutgoingDeviceNameChangeSyncMessage: OWSOutgoingSyncMessage {
+    override public class var supportsSecureCoding: Bool { true }
+
     public required init?(coder: NSCoder) {
         self.deviceId = coder.decodeObject(of: NSNumber.self, forKey: "deviceId")
         super.init(coder: coder)

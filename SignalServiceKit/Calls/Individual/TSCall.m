@@ -41,11 +41,7 @@ NSString *NSStringFromCallType(RPRecentCallType callType)
     }
 }
 
-NSUInteger TSCallCurrentSchemaVersion = 1;
-
 @interface TSCall ()
-
-@property (nonatomic, readonly) NSUInteger callSchemaVersion;
 
 @property (nonatomic) TSRecentCallOfferType offerType;
 
@@ -68,7 +64,6 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
         return self;
     }
 
-    _callSchemaVersion = TSCallCurrentSchemaVersion;
     _callType = callType;
     _offerType = offerType;
 
@@ -127,43 +122,9 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
 
 // --- CODE GENERATION MARKER
 
-- (void)encodeWithCoder:(NSCoder *)coder
-{
-    [super encodeWithCoder:coder];
-    [coder encodeObject:[self valueForKey:@"callSchemaVersion"] forKey:@"callSchemaVersion"];
-    [coder encodeObject:[self valueForKey:@"callType"] forKey:@"callType"];
-    [coder encodeObject:[self valueForKey:@"offerType"] forKey:@"offerType"];
-    [coder encodeObject:[self valueForKey:@"read"] forKey:@"read"];
-}
-
-- (nullable instancetype)initWithCoder:(NSCoder *)coder
-{
-    self = [super initWithCoder:coder];
-    if (!self) {
-        return self;
-    }
-    self->_callSchemaVersion = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
-                                                                forKey:@"callSchemaVersion"] unsignedIntegerValue];
-    self->_callType = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
-                                                       forKey:@"callType"] unsignedIntegerValue];
-    self->_offerType = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
-                                                        forKey:@"offerType"] unsignedIntegerValue];
-    self->_read = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class] forKey:@"read"] boolValue];
-
-    if (self.callSchemaVersion < 1) {
-        // Assume user has already seen any call that predate read-tracking
-        _read = YES;
-    }
-
-    _callSchemaVersion = TSCallCurrentSchemaVersion;
-
-    return self;
-}
-
 - (NSUInteger)hash
 {
     NSUInteger result = [super hash];
-    result ^= self.callSchemaVersion;
     result ^= self.callType;
     result ^= self.offerType;
     result ^= self.read;
@@ -176,9 +137,6 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
         return NO;
     }
     TSCall *typedOther = (TSCall *)other;
-    if (self.callSchemaVersion != typedOther.callSchemaVersion) {
-        return NO;
-    }
     if (self.callType != typedOther.callType) {
         return NO;
     }
@@ -194,7 +152,6 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
 - (id)copyWithZone:(nullable NSZone *)zone
 {
     TSCall *result = [super copyWithZone:zone];
-    result->_callSchemaVersion = self.callSchemaVersion;
     result->_callType = self.callType;
     result->_offerType = self.offerType;
     result->_read = self.read;

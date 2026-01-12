@@ -137,7 +137,7 @@ class GroupModelsTest: SSKBaseTest {
 
         let encodedData = Data.data(fromHex: hexData)!
 
-        let groupModel = try XCTUnwrap(NSKeyedUnarchiver.unarchivedObject(ofClass: TSGroupModel.self, from: encodedData, requiringSecureCoding: false))
+        let groupModel = try XCTUnwrap(NSKeyedUnarchiver.unarchivedObject(ofClass: TSGroupModel.self, from: encodedData))
         XCTAssertEqual(groupModel.groupId, expectedGroupId)
     }
 
@@ -174,7 +174,7 @@ class GroupModelsTest: SSKBaseTest {
 
             return try! NSKeyedArchiver.archivedData(
                 withRootObject: model,
-                requiringSecureCoding: false,
+                requiringSecureCoding: true,
             ).hexadecimalString
         }
 
@@ -206,7 +206,6 @@ class GroupModelsTest: SSKBaseTest {
             let groupModel = try XCTUnwrap(NSKeyedUnarchiver.unarchivedObject(
                 ofClass: TSGroupModelV2.self,
                 from: encodedData,
-                requiringSecureCoding: false,
             ))
 
             XCTAssertEqual(groupModel.groupId, expectedGroupId)

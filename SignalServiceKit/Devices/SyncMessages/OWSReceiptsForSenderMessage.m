@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSReceiptsForSenderMessage ()
 
 @property (nonatomic, readonly, nullable) NSSet<NSString *> *messageUniqueIds;
-@property (nonatomic, readonly) NSArray<NSNumber *> *messageTimestamps;
+@property (nonatomic, readonly) NSSet<NSNumber *> *messageTimestamps;
 @property (nonatomic, readonly) SSKProtoReceiptMessageType receiptType;
 
 @end
@@ -72,10 +72,15 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
++ (BOOL)supportsSecureCoding
+{
+    return YES;
+}
+
 - (void)encodeWithCoder:(NSCoder *)coder
 {
     [super encodeWithCoder:coder];
-    NSArray *messageTimestamps = self.messageTimestamps;
+    NSSet *messageTimestamps = self.messageTimestamps;
     if (messageTimestamps != nil) {
         [coder encodeObject:messageTimestamps forKey:@"messageTimestamps"];
     }
@@ -92,7 +97,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (!self) {
         return self;
     }
-    self->_messageTimestamps = [coder decodeObjectOfClasses:[NSSet setWithArray:@[ [NSArray class], [NSNumber class] ]]
+    self->_messageTimestamps = [coder decodeObjectOfClasses:[NSSet setWithArray:@[ [NSSet class], [NSNumber class] ]]
                                                      forKey:@"messageTimestamps"];
     self->_messageUniqueIds = [coder decodeObjectOfClasses:[NSSet setWithArray:@[ [NSSet class], [NSString class] ]]
                                                     forKey:@"messageUniqueIds"];

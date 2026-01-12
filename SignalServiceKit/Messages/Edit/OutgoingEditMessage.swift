@@ -8,6 +8,8 @@ import Foundation
 // This needs to reflect the edit as represented (and sourced) from the db.
 @objc
 public final class OutgoingEditMessage: TSOutgoingMessage {
+    override public class var supportsSecureCoding: Bool { true }
+
     public required init?(coder: NSCoder) {
         self.editedMessage = coder.decodeObject(of: TSOutgoingMessage.self, forKey: "editedMessage")
         self.targetMessageTimestamp = coder.decodeObject(of: NSNumber.self, forKey: "targetMessageTimestamp")?.uint64Value ?? 0

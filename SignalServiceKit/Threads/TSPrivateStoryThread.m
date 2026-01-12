@@ -22,32 +22,6 @@
     return self;
 }
 
-- (void)encodeWithCoder:(NSCoder *)coder
-{
-    [super encodeWithCoder:coder];
-    NSData *addresses = self.addresses;
-    if (addresses != nil) {
-        [coder encodeObject:addresses forKey:@"addresses"];
-    }
-    [coder encodeObject:[self valueForKey:@"allowsReplies"] forKey:@"allowsReplies"];
-    NSString *name = self.name;
-    if (name != nil) {
-        [coder encodeObject:name forKey:@"name"];
-    }
-}
-
-- (nullable instancetype)initWithCoder:(NSCoder *)coder
-{
-    self = [super initWithCoder:coder];
-    if (!self) {
-        return self;
-    }
-    self->_addresses = [coder decodeObjectOfClass:[NSData class] forKey:@"addresses"];
-    self->_allowsReplies = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class] forKey:@"allowsReplies"] boolValue];
-    self->_name = [coder decodeObjectOfClass:[NSString class] forKey:@"name"];
-    return self;
-}
-
 - (NSUInteger)hash
 {
     NSUInteger result = [super hash];

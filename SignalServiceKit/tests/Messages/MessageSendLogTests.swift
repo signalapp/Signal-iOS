@@ -531,10 +531,6 @@ class MessageSendLogTests: SSKBaseTest {
             fatalError("init(coder:) has not been implemented")
         }
 
-        required init(dictionary dictionaryValue: [String: Any]!) throws {
-            fatalError("init(dictionary:) has not been implemented")
-        }
-
         var _contentHint: SealedSenderContentHint = .resendable
         override var contentHint: SealedSenderContentHint { _contentHint }
 

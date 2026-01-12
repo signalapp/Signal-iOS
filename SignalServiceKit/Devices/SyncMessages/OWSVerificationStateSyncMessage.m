@@ -50,6 +50,11 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
++ (BOOL)supportsSecureCoding
+{
+    return YES;
+}
+
 - (void)encodeWithCoder:(NSCoder *)coder
 {
     [super encodeWithCoder:coder];
@@ -80,7 +85,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                 forKey:@"verificationState"] unsignedLongLongValue];
 
     if (_verificationForRecipientAddress == nil) {
-        NSString *phoneNumber = [coder decodeObjectForKey:@"verificationForRecipientId"];
+        NSString *phoneNumber = [coder decodeObjectOfClass:[NSString class] forKey:@"verificationForRecipientId"];
         _verificationForRecipientAddress = [SignalServiceAddress legacyAddressWithServiceIdString:nil
                                                                                       phoneNumber:phoneNumber];
         OWSAssertDebug(_verificationForRecipientAddress.isValid);

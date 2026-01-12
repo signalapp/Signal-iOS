@@ -59,7 +59,7 @@ NS_ASSUME_NONNULL_BEGIN
                      timestamp:(uint64_t)timestamp
                 uniqueThreadId:(NSString *)uniqueThreadId NS_UNAVAILABLE;
 
-- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;
 
 - (instancetype)initWithJoinedMemberAcis:(NSArray<AciObjC *> *)joinedMemberAcis
                               creatorAci:(nullable AciObjC *)creatorAci

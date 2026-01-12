@@ -731,7 +731,6 @@
 		507B69122C5044F800F1C6D7 /* LinkPreviewGroupLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A95517271B510400B05242 /* LinkPreviewGroupLink.swift */; };
 		507C6AF52ED10BD900A7C74C /* RegisteredState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 507C6AF42ED10BD900A7C74C /* RegisteredState.swift */; };
 		507CD5E529660D5100E47DAC /* ServiceId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 507CD5E429660D5100E47DAC /* ServiceId.swift */; };
-		507E1BDF2A0E13B100650611 /* NSKeyedUnarchiver+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 507E1BDE2A0E13B100650611 /* NSKeyedUnarchiver+SSK.swift */; };
 		508622AD2D026F5200931BF9 /* CanonicalPhoneNumberTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508622AC2D026F5200931BF9 /* CanonicalPhoneNumberTest.swift */; };
 		508C72242C2DFCB2000811F3 /* OWSOutgoingResendResponseTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508C72232C2DFCB2000811F3 /* OWSOutgoingResendResponseTest.swift */; };
 		508F0346296F72F4001D88D0 /* CustomCellBackgroundColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508F0345296F72F4001D88D0 /* CustomCellBackgroundColor.swift */; };
@@ -4918,7 +4917,6 @@
 		507D614B2BE433EE00DA7BA3 /* be */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = be; path = translations/be.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		507D614C2BE433EE00DA7BA3 /* be */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = be; path = translations/be.lproj/Localizable.strings; sourceTree = "<group>"; };
 		507D614D2BE433EE00DA7BA3 /* be */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; name = be; path = translations/be.lproj/PluralAware.stringsdict; sourceTree = "<group>"; };
-		507E1BDE2A0E13B100650611 /* NSKeyedUnarchiver+SSK.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSKeyedUnarchiver+SSK.swift"; sourceTree = "<group>"; };
 		508347052AABBF9900DD2EC0 /* ProfileManagerTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileManagerTest.swift; sourceTree = "<group>"; };
 		508622AC2D026F5200931BF9 /* CanonicalPhoneNumberTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanonicalPhoneNumberTest.swift; sourceTree = "<group>"; };
 		508C72232C2DFCB2000811F3 /* OWSOutgoingResendResponseTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSOutgoingResendResponseTest.swift; sourceTree = "<group>"; };
@@ -15191,7 +15189,6 @@
 				721BC7EB2BC8253600648981 /* MimeTypeUtil.swift */,
 				F9C5CB57289453B200548EEE /* ModelReadCache.swift */,
 				D9C7CECE28ECC043001E87B6 /* NSAttributedString+SSK.swift */,
-				507E1BDE2A0E13B100650611 /* NSKeyedUnarchiver+SSK.swift */,
 				F9C5CB39289453B200548EEE /* NSNotificationCenter+OWS.swift */,
 				50502C7B2EF1D2B1007A64EB /* NSObject+SSK.swift */,
 				F9C5CB1F289453B200548EEE /* NSRegularExpression+SSK.swift */,
@@ -19118,7 +19115,6 @@
 				664657412AC4FB720099DE1C /* NotificationPresenter.swift in Sources */,
 				725465612BA033E200EABFD2 /* NotificationPresenterImpl.swift in Sources */,
 				D9C7CECF28ECC043001E87B6 /* NSAttributedString+SSK.swift in Sources */,
-				507E1BDF2A0E13B100650611 /* NSKeyedUnarchiver+SSK.swift in Sources */,
 				F9C5CE0B289453B400548EEE /* NSNotificationCenter+OWS.swift in Sources */,
 				50502C7C2EF1D2B1007A64EB /* NSObject+SSK.swift in Sources */,
 				66F2CE212A3CBE4A00519342 /* NSRangedValue.swift in Sources */,

@@ -14,8 +14,6 @@ NS_ASSUME_NONNULL_BEGIN
 // around to honor their old behavior.
 /* DEPRECATED */ @interface TSInvalidIdentityKeyReceivingErrorMessage : TSInvalidIdentityKeyErrorMessage
 
-- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
-
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                           uniqueId:(NSString *)uniqueId
                receivedAtTimestamp:(uint64_t)receivedAtTimestamp

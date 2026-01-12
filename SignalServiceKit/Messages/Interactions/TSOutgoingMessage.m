@@ -166,6 +166,11 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 
 // --- CODE GENERATION MARKER
 
++ (BOOL)supportsSecureCoding
+{
+    return YES;
+}
+
 - (void)encodeWithCoder:(NSCoder *)coder
 {
     [super encodeWithCoder:coder];

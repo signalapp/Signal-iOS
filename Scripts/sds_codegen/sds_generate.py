@@ -511,34 +511,82 @@ class TypeInfo:
             )
         elif self.should_use_blob:
             blob_name = "%sSerialized" % (str(value_name),)
-            if is_optional or did_force_optional:
+            if is_optional:
                 serialized_statement = "let %s: Data? = %s" % (
                     blob_name,
                     value_expr,
                 )
+            elif did_force_optional:
+                serialized_statement = f'let {blob_name}: Data = try {value_expr} ?? {{ () -> Data in throw SDSError.missingRequiredField(fieldName: "{value_name}") }}()'
             else:
                 serialized_statement = "let %s: Data = %s" % (
                     blob_name,
                     value_expr,
                 )
+            from_name = "$0" if is_optional else blob_name
+            swift_type = self._swift_type
+            if swift_type == "[InfoMessageUserInfoKey: AnyObject]":
+                decode_statement = (
+                    'try SDSDeserialization.unarchivedInfoDictionary(from: %s)'
+                    % (
+                        from_name,
+                    )
+                )
+            elif ": " in swift_type:
+                assert swift_type.startswith("[")
+                assert swift_type.endswith("]")
+                divider_index = swift_type.index(": ")
+                key_type = swift_type[1:divider_index]
+                value_type = swift_type[divider_index + 2:-1]
+                decode_statement = (
+                    'try SDSDeserialization.unarchivedDictionary(ofKeyClass: %s.self, objectClass: %s.self, from: %s)'
+                    % (
+                        key_type,
+                        value_type,
+                        from_name,
+                    )
+                )
+            elif swift_type.startswith("["):
+                assert swift_type.endswith("]")
+                array_type = self._swift_type[1:-1]
+                objc_types = {
+                    "String": "NSString",
+                }
+                objc_type = objc_types.get(array_type, array_type)
+                decode_statement = (
+                    'try SDSDeserialization.unarchivedArrayOfObjects(ofClass: %s.self, from: %s)'
+                    % (
+                        objc_type,
+                        from_name,
+                    )
+                )
+                if array_type in objc_types:
+                    decode_statement += ' as ' + self._swift_type
+            else:
+                decode_statement = (
+                    'try SDSDeserialization.unarchivedObject(ofClass: %s.self, from: %s)'
+                    % (
+                        self._swift_type,
+                        from_name,
+                    )
+                )
             if is_optional:
                 value_statement = (
-                    'let %s: %s? = try SDSDeserialization.optionalUnarchive(%s, name: "%s")'
+                    'let %s: %s? = try %s.map({ %s })'
                     % (
                         value_name,
                         self._swift_type,
                         blob_name,
-                        value_name,
+                        decode_statement,
                     )
                 )
             else:
                 value_statement = (
-                    'let %s: %s = try SDSDeserialization.unarchive(%s, name: "%s")'
+                    'let %s: %s = %s'
                     % (
                         value_name,
                         self._swift_type,
-                        blob_name,
-                        value_name,
+                        decode_statement,
                     )
                 )
             return [

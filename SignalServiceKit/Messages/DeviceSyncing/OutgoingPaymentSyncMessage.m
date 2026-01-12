@@ -46,6 +46,11 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
++ (BOOL)supportsSecureCoding
+{
+    return YES;
+}
+
 - (void)encodeWithCoder:(NSCoder *)coder
 {
     [coder encodeObject:[self valueForKey:@"amountPicoMob"] forKey:@"amountPicoMob"];
@@ -213,6 +218,11 @@ NS_ASSUME_NONNULL_BEGIN
     _mobileCoin = mobileCoin;
 
     return self;
+}
+
++ (BOOL)supportsSecureCoding
+{
+    return YES;
 }
 
 - (void)encodeWithCoder:(NSCoder *)coder

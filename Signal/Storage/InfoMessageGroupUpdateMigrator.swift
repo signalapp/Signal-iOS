@@ -112,11 +112,7 @@ struct InfoMessageGroupUpdateMigrator {
 
                 guard
                     let infoMessageUserInfoBlob = infoMessage.infoMessageUserInfoBlob,
-                    let infoMessageUserInfo = try? NSKeyedUnarchiver.unarchivedObject(
-                        ofClass: NSDictionary.self,
-                        from: infoMessageUserInfoBlob,
-                        requiringSecureCoding: false,
-                    ) as? [InfoMessageUserInfoKey: Any]
+                    let infoMessageUserInfo = try? SDSDeserialization.unarchivedInfoDictionary(from: infoMessageUserInfoBlob)
                 else {
                     // Missing or failed-to-unarchive infoMessageUserInfo: skip
                     // this interaction.
@@ -149,7 +145,7 @@ struct InfoMessageGroupUpdateMigrator {
                 ]
                 let newInfoMessageUserInfoBlob = try! NSKeyedArchiver.archivedData(
                     withRootObject: newInfoMessageUserInfo,
-                    requiringSecureCoding: false,
+                    requiringSecureCoding: true,
                 )
 
                 try? tx.database.execute(

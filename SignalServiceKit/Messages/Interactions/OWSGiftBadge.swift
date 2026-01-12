@@ -20,7 +20,9 @@ public enum OWSGiftBadgeRedemptionState: Int {
 }
 
 @objc
-public final class OWSGiftBadge: NSObject, NSCoding, NSCopying {
+public final class OWSGiftBadge: NSObject, NSSecureCoding, NSCopying {
+    public static var supportsSecureCoding: Bool { true }
+
     public init?(coder: NSCoder) {
         self.redemptionCredential = coder.decodeObject(of: NSData.self, forKey: "redemptionCredential") as Data?
         self.redemptionState = (coder.decodeObject(of: NSNumber.self, forKey: "redemptionState")?.intValue).flatMap(OWSGiftBadgeRedemptionState.init(rawValue:)) ?? .pending

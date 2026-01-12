@@ -6,7 +6,9 @@
 public import Contacts
 
 @objc(OWSContactPhoneNumber)
-public final class OWSContactPhoneNumber: NSObject, NSCoding, NSCopying, OWSContactField {
+public final class OWSContactPhoneNumber: NSObject, NSSecureCoding, NSCopying, OWSContactField {
+    public static var supportsSecureCoding: Bool { true }
+
     public init?(coder: NSCoder) {
         self.label = coder.decodeObject(of: NSString.self, forKey: "label") as String?
         self.phoneNumber = coder.decodeObject(of: NSString.self, forKey: "phoneNumber") as String? ?? ""

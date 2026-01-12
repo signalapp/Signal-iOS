@@ -130,7 +130,7 @@ private enum GroupMemberState: Equatable, Codable, CustomStringConvertible {
 // MARK: -
 
 @objc
-public class GroupMembership: NSObject, NSCoding {
+public class GroupMembership: NSObject, NSSecureCoding {
 
     // MARK: Types
 
@@ -161,16 +161,17 @@ public class GroupMembership: NSObject, NSCoding {
         super.init()
     }
 
-    @objc
-    public required init?(coder aDecoder: NSCoder) {
-        if let invalidInviteMap = aDecoder.decodeObject(forKey: Self.invalidInviteMapKey) as? InvalidInviteMap {
-            self.invalidInviteMap = invalidInviteMap
-        } else {
-            // invalidInviteMap is optional.
-            self.invalidInviteMap = [:]
-        }
+    public static var supportsSecureCoding: Bool { true }
 
-        if let memberStatesData = aDecoder.decodeObject(forKey: Self.memberStatesKey) as? Data {
+    @objc
+    public required init?(coder: NSCoder) {
+        self.invalidInviteMap = coder.decodeDictionary(
+            withKeyClass: NSData.self,
+            objectClass: InvalidInviteModel.self,
+            forKey: Self.invalidInviteMapKey,
+        ) as [Data: InvalidInviteModel]? ?? [:]
+
+        if let memberStatesData = coder.decodeObject(of: NSData.self, forKey: Self.memberStatesKey) as Data? {
             let decoder = JSONDecoder()
             do {
                 self.memberStates = try decoder.decode(MemberStateMap.self, from: memberStatesData)
@@ -178,14 +179,26 @@ public class GroupMembership: NSObject, NSCoding {
                 owsFailDebug("Could not decode member states: \(error)")
                 return nil
             }
-        } else if let legacyMemberStateMap = aDecoder.decodeObject(forKey: Self.legacyMemberStatesKey) as? LegacyMemberStateMap {
+        } else if
+            let legacyMemberStateMap = coder.decodeDictionary(
+                withKeyClass: SignalServiceAddress.self,
+                objectClass: LegacyMemberState.self,
+                forKey: Self.legacyMemberStatesKey,
+            ) as LegacyMemberStateMap?
+        {
             self.memberStates = Self.convertLegacyMemberStateMap(legacyMemberStateMap)
         } else {
             owsFailDebug("Could not decode legacy member states.")
             return nil
         }
 
-        if let bannedMembers = aDecoder.decodeObject(forKey: Self.bannedMembersKey) as? [UUID: BannedAtTimestampMillis] {
+        if
+            let bannedMembers = coder.decodeDictionary(
+                withKeyClass: NSUUID.self,
+                objectClass: NSNumber.self,
+                forKey: Self.bannedMembersKey,
+            ) as [UUID: NSNumber]? as? [UUID: UInt64]
+        {
             self.bannedMembers = bannedMembers.mapKeys(injectiveTransform: { Aci(fromUUID: $0) })
         } else {
             // TODO: (Group Abuse) we should debug assert here eventually.
@@ -871,7 +884,9 @@ public class GroupMembership: NSObject, NSCoding {
 // MARK: - InvalidInviteModel
 
 @objc(GroupMembershipInvalidInviteModel)
-private final class InvalidInviteModel: NSObject, NSCoding, NSCopying {
+private final class InvalidInviteModel: NSObject, NSSecureCoding, NSCopying {
+    static var supportsSecureCoding: Bool { true }
+
     init?(coder: NSCoder) {
         self.addedByUserId = coder.decodeObject(of: NSData.self, forKey: "addedByUserId") as Data?
         self.userId = coder.decodeObject(of: NSData.self, forKey: "userId") as Data?
@@ -917,7 +932,9 @@ private final class InvalidInviteModel: NSObject, NSCoding, NSCopying {
 // MARK: - LegacyMemberState
 
 @objc(_TtCC16SignalServiceKit15GroupMembership11MemberState)
-private final class LegacyMemberState: NSObject, NSCoding, NSCopying {
+private final class LegacyMemberState: NSObject, NSSecureCoding, NSCopying {
+    static var supportsSecureCoding: Bool { true }
+
     init?(coder: NSCoder) {
         self.addedByUuid = coder.decodeObject(of: NSUUID.self, forKey: "addedByUuid") as UUID?
         self.isPending = coder.decodeObject(of: NSNumber.self, forKey: "isPending")?.boolValue ?? false

@@ -64,8 +64,6 @@ NS_ASSUME_NONNULL_BEGIN
                         serverGuid:(nullable NSString *)serverGuid
                unregisteredAddress:(nullable SignalServiceAddress *)unregisteredAddress NS_UNAVAILABLE;
 
-- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
-
 /// Create a new disappearing-timer-update info message.
 ///
 /// - Parameter timestamp

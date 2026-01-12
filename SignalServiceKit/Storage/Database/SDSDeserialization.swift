@@ -60,34 +60,48 @@ public class SDSDeserialization {
 
     // MARK: - Blob
 
-    public class func optionalUnarchive<T: Any>(_ encoded: Data?, name: String) throws -> T? {
-        guard let encoded else {
-            return nil
+    public class func unarchivedObject<T: NSObject & NSSecureCoding>(
+        ofClass cls: T.Type,
+        from encodedValue: Data,
+    ) throws -> T {
+        let decodedValue = try NSKeyedUnarchiver.unarchivedObject(ofClass: cls, from: encodedValue)
+        guard let decodedValue else {
+            throw SDSError.invalidValue()
         }
-        return try unarchive(encoded, name: name)
+        return decodedValue
     }
 
-    public class func unarchive<T: Any>(
-        _ encoded: Data?,
-        name: String,
-        _ file: StaticString = #file,
-        _ function: StaticString = #function,
-        _ line: UInt = #line,
-    ) throws -> T {
-        guard let encoded else {
-            owsFailDebug("Missing required field: \(name).")
-            throw SDSError.missingRequiredField(file, function, line)
+    public class func unarchivedArrayOfObjects<T: NSObject & NSSecureCoding>(
+        ofClass cls: T.Type,
+        from encodedValue: Data,
+    ) throws -> [T] {
+        let decodedValue = try NSKeyedUnarchiver.unarchivedArrayOfObjects(ofClass: cls, from: encodedValue)
+        guard let decodedValue else {
+            throw SDSError.invalidValue()
         }
+        return decodedValue
+    }
 
-        do {
-            guard let decoded = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(encoded) as? T else {
-                owsFailDebug("Invalid value: \(name).")
-                throw SDSError.invalidValue(file, function, line)
-            }
-            return decoded
-        } catch {
-            owsFailDebug("Read failed[\(name)]: \(error).")
-            throw SDSError.invalidValue(file, function, line)
+    public class func unarchivedDictionary<K: NSObject & NSSecureCoding & NSCopying, V: NSObject & NSSecureCoding>(
+        ofKeyClass keyClass: K.Type,
+        objectClass: V.Type,
+        from encodedValue: Data,
+    ) throws -> [K: V] {
+        let decodedValue = try NSKeyedUnarchiver.unarchivedDictionary(ofKeyClass: keyClass, objectClass: objectClass, from: encodedValue)
+        guard let decodedValue else {
+            throw SDSError.invalidValue()
         }
+        return decodedValue
+    }
+
+    public class func unarchivedInfoDictionary(from encodedValue: Data) throws -> [InfoMessageUserInfoKey: AnyObject] {
+        let decodedValue = try NSKeyedUnarchiver.unarchivedObject(
+            ofClasses: [NSDictionary.self, NSString.self] + TSInfoMessage.infoMessageUserInfoObjectClasses(),
+            from: encodedValue,
+        ) as? [InfoMessageUserInfoKey: AnyObject]
+        guard let decodedValue else {
+            throw SDSError.invalidValue()
+        }
+        return decodedValue
     }
 }

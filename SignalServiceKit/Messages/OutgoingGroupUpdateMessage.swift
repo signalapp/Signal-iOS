@@ -8,6 +8,8 @@ import LibSignalClient
 
 /// An outgoing group v2 update.
 final class OutgoingGroupUpdateMessage: TSOutgoingMessage {
+    override class var supportsSecureCoding: Bool { true }
+
     required init?(coder: NSCoder) {
         self.isDeletingAccount = coder.decodeObject(of: NSNumber.self, forKey: "isDeletingAccount")?.boolValue ?? false
         self.isUpdateUrgent = coder.decodeObject(of: NSNumber.self, forKey: "isUpdateUrgent")?.boolValue ?? false

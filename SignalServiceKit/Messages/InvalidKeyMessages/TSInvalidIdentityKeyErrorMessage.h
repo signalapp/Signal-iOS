@@ -11,8 +11,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TSInvalidIdentityKeyErrorMessage : TSErrorMessage
 
-- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
-
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                           uniqueId:(NSString *)uniqueId
                receivedAtTimestamp:(uint64_t)receivedAtTimestamp

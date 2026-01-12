@@ -35,6 +35,11 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
++ (BOOL)supportsSecureCoding
+{
+    return YES;
+}
+
 - (void)encodeWithCoder:(NSCoder *)coder
 {
     [super encodeWithCoder:coder];
@@ -64,7 +69,7 @@ NS_ASSUME_NONNULL_BEGIN
     self->_senderAddress = [coder decodeObjectOfClass:[SignalServiceAddress class] forKey:@"senderAddress"];
 
     if (_senderAddress == nil) {
-        NSString *phoneNumber = [coder decodeObjectForKey:@"senderId"];
+        NSString *phoneNumber = [coder decodeObjectOfClass:[NSString class] forKey:@"senderId"];
         _senderAddress = [SignalServiceAddress legacyAddressWithServiceIdString:nil phoneNumber:phoneNumber];
         OWSAssertDebug(_senderAddress.isValid);
     }

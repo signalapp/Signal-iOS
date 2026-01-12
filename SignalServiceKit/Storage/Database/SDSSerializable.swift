@@ -48,11 +48,19 @@ public extension SDSSerializer {
 
     // MARK: - Blob
 
-    func optionalArchive(_ value: Any?) -> Data? {
+    func optionalArchive<T: NSObject & NSSecureCoding>(_ value: T?) -> Data? {
         guard let value else {
             return nil
         }
         return requiredArchive(value)
+    }
+
+    func optionalArchive(_ value: [SignalServiceAddress: TSOutgoingMessageRecipientState]?) -> Data? {
+        return optionalArchive(value as NSDictionary?)
+    }
+
+    func optionalArchive(_ value: [InfoMessageUserInfoKey: Any]?) -> Data? {
+        return optionalArchive(value as NSDictionary?)
     }
 
     /// Avoid the cost of actually archiving empty string arrays that are
@@ -61,7 +69,7 @@ public extension SDSSerializer {
         guard let value, !value.isEmpty else {
             return nil
         }
-        return requiredArchive(value)
+        return requiredArchive(value as [NSString] as NSArray)
     }
 
     /// Avoide the cost of actually archiving empty message body range objects.
@@ -72,7 +80,11 @@ public extension SDSSerializer {
         return requiredArchive(value)
     }
 
-    func requiredArchive(_ value: Any) -> Data {
-        return try! NSKeyedArchiver.archivedData(withRootObject: value, requiringSecureCoding: false)
+    func requiredArchive<T: NSObject & NSSecureCoding>(_ value: [T]) -> Data {
+        return requiredArchive(value as NSArray)
+    }
+
+    func requiredArchive<T: NSObject & NSSecureCoding>(_ value: T) -> Data {
+        return try! NSKeyedArchiver.archivedData(withRootObject: value, requiringSecureCoding: true)
     }
 }

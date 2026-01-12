@@ -25,7 +25,7 @@ class MessageStickerSerializationTest: XCTestCase {
             for (idx, (constant, _)) in MessageSticker.constants.enumerated() {
                 let serializedArchiver = try! NSKeyedArchiver.archivedData(
                     withRootObject: constant,
-                    requiringSecureCoding: false,
+                    requiringSecureCoding: true,
                 )
                 print("\(Self.self) constant \(idx) keyed archiver: \(serializedArchiver.base64EncodedString())")
             }
@@ -36,7 +36,6 @@ class MessageStickerSerializationTest: XCTestCase {
                     let deserialized = try NSKeyedUnarchiver.unarchivedObject(
                         ofClass: MessageSticker.self,
                         from: archiverData,
-                        requiringSecureCoding: false,
                     )!
                     try deserialized.validate(against: constant)
                 } catch ValidatableModelError.failedToValidate {

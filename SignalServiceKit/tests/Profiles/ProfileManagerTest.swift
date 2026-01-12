@@ -87,7 +87,7 @@ class ProfileManagerTest: XCTestCase {
     }
 
     private static func serialize(_ pendingProfileUpdate: PendingProfileUpdate) throws -> Data {
-        try NSKeyedArchiver.archivedData(withRootObject: pendingProfileUpdate, requiringSecureCoding: false)
+        try NSKeyedArchiver.archivedData(withRootObject: pendingProfileUpdate, requiringSecureCoding: true)
     }
 
     private static func deserialize(data: Data) throws -> PendingProfileUpdate {

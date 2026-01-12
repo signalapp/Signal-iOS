@@ -36,14 +36,13 @@ final class OutgoingGroupCallUpdateMessageSerializationTest: SSKBaseTest {
 
         let archivedData = try NSKeyedArchiver.archivedData(
             withRootObject: updateMessage,
-            requiringSecureCoding: false,
+            requiringSecureCoding: true,
         )
 
         guard
             let deserializedMessage = try NSKeyedUnarchiver.unarchivedObject(
                 ofClass: OutgoingGroupCallUpdateMessage.self,
                 from: archivedData,
-                requiringSecureCoding: false,
             )
         else {
             XCTFail("Failed to deserialize!")
@@ -71,7 +70,6 @@ final class OutgoingGroupCallUpdateMessageSerializationTest: SSKBaseTest {
             let updateMessage = try NSKeyedUnarchiver.unarchivedObject(
                 ofClass: OutgoingGroupCallUpdateMessage.self,
                 from: hardcodedObjcInstanceData,
-                requiringSecureCoding: false,
             )
         else {
             XCTFail("Failed to unarchive!")

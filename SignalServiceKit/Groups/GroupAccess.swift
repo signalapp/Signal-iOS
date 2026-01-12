@@ -65,7 +65,9 @@ public enum GroupV2Access: UInt, Codable, CustomStringConvertible {
 
 // This class is immutable.
 @objc
-public final class GroupAccess: NSObject, NSCoding, NSCopying {
+public final class GroupAccess: NSObject, NSSecureCoding, NSCopying {
+    public static var supportsSecureCoding: Bool { true }
+
     public init?(coder: NSCoder) {
         self.addFromInviteLink = (coder.decodeObject(of: NSNumber.self, forKey: "addFromInviteLink")?.uintValue).flatMap(GroupV2Access.init(rawValue:)) ?? .unknown
         self.attributes = (coder.decodeObject(of: NSNumber.self, forKey: "attributes")?.uintValue).flatMap(GroupV2Access.init(rawValue:)) ?? .unknown

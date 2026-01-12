@@ -13,6 +13,8 @@ public enum TypingIndicatorAction: Int {
 
 @objc(OWSTypingIndicatorMessage)
 public final class TypingIndicatorMessage: TSOutgoingMessage {
+    override public class var supportsSecureCoding: Bool { true }
+
     public required init?(coder: NSCoder) {
         self.action = (coder.decodeObject(of: NSNumber.self, forKey: "action")?.intValue).flatMap(TypingIndicatorAction.init(rawValue:)) ?? .started
         super.init(coder: coder)

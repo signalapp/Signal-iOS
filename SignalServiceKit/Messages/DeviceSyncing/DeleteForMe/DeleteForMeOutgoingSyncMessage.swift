@@ -11,6 +11,8 @@ import LibSignalClient
 /// - SeeAlso ``DeleteForMeOutgoingSyncMessageManager``
 @objc(DeleteForMeOutgoingSyncMessage)
 class DeleteForMeOutgoingSyncMessage: OWSOutgoingSyncMessage {
+    override class var supportsSecureCoding: Bool { true }
+
     required init?(coder: NSCoder) {
         self.contents = coder.decodeObject(of: NSData.self, forKey: "contents") as Data?
         super.init(coder: coder)

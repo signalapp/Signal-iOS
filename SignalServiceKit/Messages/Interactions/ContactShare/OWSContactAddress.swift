@@ -6,7 +6,9 @@
 public import Contacts
 
 @objc(OWSContactAddress)
-public final class OWSContactAddress: NSObject, NSCoding, NSCopying, OWSContactField {
+public final class OWSContactAddress: NSObject, NSSecureCoding, NSCopying, OWSContactField {
+    public static var supportsSecureCoding: Bool { true }
+
     public init?(coder: NSCoder) {
         self.type = (coder.decodeObject(of: NSNumber.self, forKey: "addressType")?.intValue).flatMap(`Type`.init(rawValue:)) ?? .home
         self.city = coder.decodeObject(of: NSString.self, forKey: "city") as String?

@@ -301,7 +301,7 @@ public struct TypedItemProvider {
         overrideTypeIdentifier: String? = nil,
         cannotLoadError: ItemProviderError,
         failedLoadError: ItemProviderError,
-    ) async throws -> T where T: NSItemProviderReading, T: NSCoding, T: NSObject {
+    ) async throws -> T where T: NSItemProviderReading, T: NSSecureCoding, T: NSObject {
         do {
             guard itemProvider.canLoadObject(ofClass: T.self) else {
                 throw cannotLoadError

@@ -9,6 +9,8 @@
 /// Not to be confused with an ``OWSGroupCallMessage``.
 @objc(OWSOutgoingGroupCallMessage)
 public final class OutgoingGroupCallUpdateMessage: TSOutgoingMessage {
+    override public class var supportsSecureCoding: Bool { true }
+
     public required init?(coder: NSCoder) {
         self.eraId = coder.decodeObject(of: NSString.self, forKey: "eraId") as String?
         super.init(coder: coder)

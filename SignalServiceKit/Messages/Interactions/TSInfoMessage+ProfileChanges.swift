@@ -118,7 +118,9 @@ public extension TSInfoMessage {
 // MARK: -
 
 /// Represents a profile change for in-chat messages.
-public final class ProfileChanges: NSObject, NSCoding, NSCopying {
+public final class ProfileChanges: NSObject, NSSecureCoding, NSCopying {
+    public static var supportsSecureCoding: Bool { true }
+
     public init?(coder: NSCoder) {
         self.address = coder.decodeObject(of: SignalServiceAddress.self, forKey: "address")
         self.newNameComponents = coder.decodeObject(of: NSPersonNameComponents.self, forKey: "newNameComponents") as PersonNameComponents?

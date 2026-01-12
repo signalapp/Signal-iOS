@@ -7,6 +7,8 @@ import Foundation
 public import LibSignalClient
 
 public class OutgoingPinMessage: TSOutgoingMessage {
+    override public class var supportsSecureCoding: Bool { true }
+
     public required init?(coder: NSCoder) {
         self.pinDurationForever = coder.decodeObject(of: NSNumber.self, forKey: "pinDurationForever")?.boolValue ?? false
         self.pinDurationSeconds = coder.decodeObject(of: NSNumber.self, forKey: "pinDurationSeconds")?.uint32Value ?? 0

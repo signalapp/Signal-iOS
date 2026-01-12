@@ -185,11 +185,7 @@ public final class MessageSenderJobRecord: JobRecord, FactoryInitializableFromRe
             forKey: .transientMessage,
         ).flatMap { invisibleMessageData -> TSOutgoingMessage? in
             do {
-                let result = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(invisibleMessageData) as? TSOutgoingMessage
-                guard let result else {
-                    throw SDSError.invalidValue()
-                }
-                return result
+                return try LegacySDSSerializer().deserializeLegacySDSData(invisibleMessageData, ofClass: TSOutgoingMessage.self)
             } catch {
                 owsFailDebug("couldn't decode transient message: \(error)")
                 return nil
@@ -211,7 +207,7 @@ public final class MessageSenderJobRecord: JobRecord, FactoryInitializableFromRe
         try container.encodeIfPresent(threadId, forKey: .threadId)
         try container.encode(useMediaQueue, forKey: .useMediaQueue)
         try container.encodeIfPresent(
-            transientMessage.map { try! NSKeyedArchiver.archivedData(withRootObject: $0, requiringSecureCoding: false) },
+            transientMessage.map { LegacySDSSerializer().serializeAsLegacySDSData($0) },
             forKey: .transientMessage,
         )
         try container.encode(removeMessageAfterSending, forKey: .removeMessageAfterSending)

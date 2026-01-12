@@ -4,7 +4,7 @@
 //
 
 @objc(TSOutgoingMessageRecipientState)
-public final class TSOutgoingMessageRecipientState: NSObject, NSCoding, NSCopying {
+public final class TSOutgoingMessageRecipientState: NSObject, NSSecureCoding, NSCopying {
     /// The status of the outgoing message send to this recipient.
     public private(set) var status: OWSOutgoingMessageRecipientStatus
 
@@ -88,7 +88,7 @@ public final class TSOutgoingMessageRecipientState: NSObject, NSCoding, NSCopyin
         }
     }
 
-    // MARK: - NSCoding
+    // MARK: - NSSecureCoding
 
     fileprivate enum CoderKeys: String {
         case status = "state"
@@ -97,9 +97,11 @@ public final class TSOutgoingMessageRecipientState: NSObject, NSCoding, NSCopyin
         case errorCode
     }
 
+    public static var supportsSecureCoding: Bool { true }
+
     public required init?(coder: NSCoder) {
         guard
-            let statusRawValue = coder.decodeObject(of: NSNumber.self, forCoderKey: .status) as? UInt,
+            let statusRawValue = coder.decodeObject(of: NSNumber.self, forCoderKey: .status)?.uintValue,
             let status = OWSOutgoingMessageRecipientStatus(rawValue: statusRawValue)
         else {
             owsFailDebug("Missing or unrecognized fields!")
@@ -170,14 +172,14 @@ public final class TSOutgoingMessageRecipientState: NSObject, NSCoding, NSCopyin
 // MARK: -
 
 private extension NSCoder {
-    func decodeObject<DecodedObjectType: NSObject & NSCoding>(
+    func decodeObject<DecodedObjectType: NSObject & NSSecureCoding>(
         of cls: DecodedObjectType.Type,
         forCoderKey key: TSOutgoingMessageRecipientState.CoderKeys,
     ) -> DecodedObjectType? {
         return decodeObject(of: cls, forKey: key.rawValue)
     }
 
-    func encode<EncodedObjectType: NSObject & NSCoding>(
+    func encode<EncodedObjectType: NSObject & NSSecureCoding>(
         _ object: EncodedObjectType,
         forCoderKey key: TSOutgoingMessageRecipientState.CoderKeys,
     ) {

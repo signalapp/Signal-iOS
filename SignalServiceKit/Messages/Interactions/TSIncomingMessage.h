@@ -64,7 +64,7 @@ NS_ASSUME_NONNULL_BEGIN
                     storyTimestamp:(nullable NSNumber *)storyTimestamp
                 wasRemotelyDeleted:(BOOL)wasRemotelyDeleted NS_UNAVAILABLE;
 
-- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;
 
 - (instancetype)initIncomingMessageWithBuilder:(TSIncomingMessageBuilder *)incomingMessageBuilder
     NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(incomingMessageWithBuilder:));

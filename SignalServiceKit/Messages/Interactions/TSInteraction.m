@@ -155,9 +155,9 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
     if (_receivedAtTimestamp == 0) {
         // Upgrade from the older "TSMessage.receivedAtDate" and "TSMessage.receivedAt" properties if
         // necessary.
-        NSDate *receivedAtDate = [coder decodeObjectForKey:@"receivedAtDate"];
+        NSDate *receivedAtDate = [coder decodeObjectOfClass:[NSDate class] forKey:@"receivedAtDate"];
         if (!receivedAtDate) {
-            receivedAtDate = [coder decodeObjectForKey:@"receivedAt"];
+            receivedAtDate = [coder decodeObjectOfClass:[NSDate class] forKey:@"receivedAt"];
         }
 
         if (receivedAtDate) {

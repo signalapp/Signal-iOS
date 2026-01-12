@@ -9,7 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class StickerPackInfo;
 
-@interface StickerInfo : NSObject <NSCoding, NSCopying>
+@interface StickerInfo : NSObject <NSSecureCoding, NSCopying>
 
 @property (nonatomic, readonly) NSData *packId;
 @property (nonatomic, readonly) NSData *packKey;

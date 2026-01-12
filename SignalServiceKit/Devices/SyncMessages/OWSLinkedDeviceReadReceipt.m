@@ -42,6 +42,11 @@ NSUInteger const OWSLinkedDeviceReadReceiptSchemaVersion = 1;
     return self;
 }
 
++ (BOOL)supportsSecureCoding
+{
+    return YES;
+}
+
 - (void)encodeWithCoder:(NSCoder *)coder
 {
     [coder encodeObject:[self valueForKey:@"linkedDeviceReadReceiptSchemaVersion"]
@@ -81,7 +86,8 @@ NSUInteger const OWSLinkedDeviceReadReceiptSchemaVersion = 1;
 
     // renamed timestamp -> messageIdTimestamp
     if (!_messageIdTimestamp) {
-        NSNumber *_Nullable legacyTimestamp = (NSNumber *)[coder decodeObjectForKey:@"timestamp"];
+        NSNumber *_Nullable legacyTimestamp = (NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
+                                                                              forKey:@"timestamp"];
         OWSAssertDebug(legacyTimestamp.unsignedLongLongValue > 0);
         _messageIdTimestamp = legacyTimestamp.unsignedLongLongValue;
     }
@@ -95,7 +101,7 @@ NSUInteger const OWSLinkedDeviceReadReceiptSchemaVersion = 1;
     }
 
     if (_linkedDeviceReadReceiptSchemaVersion < 1) {
-        _senderPhoneNumber = [coder decodeObjectForKey:@"senderId"];
+        _senderPhoneNumber = [coder decodeObjectOfClass:[NSString class] forKey:@"senderId"];
         OWSAssertDebug(_senderPhoneNumber);
     }
 

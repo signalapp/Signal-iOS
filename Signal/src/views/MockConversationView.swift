@@ -227,10 +227,6 @@ private class MockIncomingMessage: TSIncomingMessage {
         super.init(incomingMessageWithBuilder: builder)
     }
 
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
     override var shouldBeSaved: Bool {
         return false
     }

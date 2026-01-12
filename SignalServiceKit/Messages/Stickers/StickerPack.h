@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class DBWriteTransaction;
 @class StickerPack;
 
-@interface StickerPackItem : NSObject <NSCoding, NSCopying>
+@interface StickerPackItem : NSObject <NSSecureCoding, NSCopying>
 
 @property (nonatomic, readonly) UInt32 stickerId;
 @property (nonatomic, readonly) NSString *emojiString;

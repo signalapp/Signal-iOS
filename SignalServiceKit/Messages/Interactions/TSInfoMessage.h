@@ -86,6 +86,7 @@ extern InfoMessageUserInfoKey const InfoMessageUserInfoKeyPinnedMessage;
 @property (nonatomic, readonly, nullable) SignalServiceAddress *unregisteredAddress;
 @property (nonatomic, readonly, nullable) NSString *serverGuid;
 
++ (NSArray<Class> *)infoMessageUserInfoObjectClasses;
 @property (nonatomic, nullable) NSDictionary<InfoMessageUserInfoKey, id> *infoMessageUserInfo;
 
 - (instancetype)initMessageWithBuilder:(TSMessageBuilder *)messageBuilder NS_UNAVAILABLE;
@@ -120,7 +121,7 @@ extern InfoMessageUserInfoKey const InfoMessageUserInfoKeyPinnedMessage;
                     storyTimestamp:(nullable NSNumber *)storyTimestamp
                 wasRemotelyDeleted:(BOOL)wasRemotelyDeleted NS_UNAVAILABLE;
 
-- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;
 
 - (instancetype)initWithThread:(TSThread *)thread
                      timestamp:(uint64_t)timestamp

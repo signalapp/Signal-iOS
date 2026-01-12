@@ -1433,7 +1433,7 @@ public class PendingProfileUpdate: NSObject, NSSecureCoding {
         return avatarData.map { $0?.nilIfEmpty }
     }
 
-    // MARK: - NSCoding
+    // MARK: - NSSecureCoding
 
     public class var supportsSecureCoding: Bool { true }
 

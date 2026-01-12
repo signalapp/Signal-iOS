@@ -80,40 +80,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 // --- CODE GENERATION MARKER
 
-- (void)encodeWithCoder:(NSCoder *)coder
-{
-    [super encodeWithCoder:coder];
-    NSString *creatorUuid = self.creatorUuid;
-    if (creatorUuid != nil) {
-        [coder encodeObject:creatorUuid forKey:@"creatorUuid"];
-    }
-    NSString *eraId = self.eraId;
-    if (eraId != nil) {
-        [coder encodeObject:eraId forKey:@"eraId"];
-    }
-    [coder encodeObject:[self valueForKey:@"hasEnded"] forKey:@"hasEnded"];
-    NSArray *joinedMemberUuids = self.joinedMemberUuids;
-    if (joinedMemberUuids != nil) {
-        [coder encodeObject:joinedMemberUuids forKey:@"joinedMemberUuids"];
-    }
-    [coder encodeObject:[self valueForKey:@"read"] forKey:@"read"];
-}
-
-- (nullable instancetype)initWithCoder:(NSCoder *)coder
-{
-    self = [super initWithCoder:coder];
-    if (!self) {
-        return self;
-    }
-    self->_creatorUuid = [coder decodeObjectOfClass:[NSString class] forKey:@"creatorUuid"];
-    self->_eraId = [coder decodeObjectOfClass:[NSString class] forKey:@"eraId"];
-    self->_hasEnded = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class] forKey:@"hasEnded"] boolValue];
-    self->_joinedMemberUuids = [coder decodeObjectOfClasses:[NSSet setWithArray:@[ [NSArray class], [NSString class] ]]
-                                                     forKey:@"joinedMemberUuids"];
-    self->_read = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class] forKey:@"read"] boolValue];
-    return self;
-}
-
 - (NSUInteger)hash
 {
     NSUInteger result = [super hash];

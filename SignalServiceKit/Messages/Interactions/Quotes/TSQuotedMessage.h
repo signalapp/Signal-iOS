@@ -30,9 +30,8 @@ typedef NS_ENUM(NSUInteger, TSQuotedMessageContentSource) {
     TSQuotedMessageContentSourceStory
 };
 
-@interface OWSAttachmentInfo : NSObject <NSCoding, NSCopying>
+@interface OWSAttachmentInfo : NSObject <NSSecureCoding, NSCopying>
 @property (class, nonatomic, readonly) NSUInteger currentSchemaVersion;
-@property (nonatomic, readonly) NSUInteger schemaVersion;
 
 @property (nonatomic, readonly, nullable) NSString *attachmentId;
 
@@ -77,7 +76,7 @@ typedef NS_ENUM(NSUInteger, TSQuotedMessageContentSource) {
 @end
 
 
-@interface TSQuotedMessage : NSObject <NSCoding, NSCopying>
+@interface TSQuotedMessage : NSObject <NSSecureCoding, NSCopying>
 
 @property (nullable, nonatomic, readonly) NSNumber *timestampValue;
 @property (nonatomic, readonly) SignalServiceAddress *authorAddress;

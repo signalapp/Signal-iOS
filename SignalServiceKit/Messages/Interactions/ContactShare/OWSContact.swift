@@ -13,12 +13,14 @@ public protocol OWSContactField: AnyObject {
 // MARK: - OWSContact
 
 @objc(OWSContact)
-public final class OWSContact: NSObject, NSCoding, NSCopying {
+public final class OWSContact: NSObject, NSSecureCoding, NSCopying {
+    public static var supportsSecureCoding: Bool { true }
+
     public init?(coder: NSCoder) {
-        self.addresses = coder.decodeObject(of: [NSArray.self, OWSContactAddress.self], forKey: "addresses") as? [OWSContactAddress] ?? []
-        self.emails = coder.decodeObject(of: [NSArray.self, OWSContactEmail.self], forKey: "emails") as? [OWSContactEmail] ?? []
+        self.addresses = coder.decodeArrayOfObjects(ofClass: OWSContactAddress.self, forKey: "addresses") ?? []
+        self.emails = coder.decodeArrayOfObjects(ofClass: OWSContactEmail.self, forKey: "emails") ?? []
         self.name = coder.decodeObject(of: OWSContactName.self, forKey: "name") ?? OWSContactName()
-        self.phoneNumbers = coder.decodeObject(of: [NSArray.self, OWSContactPhoneNumber.self], forKey: "phoneNumbers") as? [OWSContactPhoneNumber] ?? []
+        self.phoneNumbers = coder.decodeArrayOfObjects(ofClass: OWSContactPhoneNumber.self, forKey: "phoneNumbers") ?? []
     }
 
     public func encode(with coder: NSCoder) {

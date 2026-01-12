@@ -122,6 +122,11 @@ NSString *NSStringFromTSPaymentFailure(TSPaymentFailure value)
     return self;
 }
 
++ (BOOL)supportsSecureCoding
+{
+    return YES;
+}
+
 - (void)encodeWithCoder:(NSCoder *)coder
 {
     [coder encodeObject:[self valueForKey:@"currency"] forKey:@"currency"];
@@ -194,28 +199,6 @@ NSString *NSStringFromTSPaymentFailure(TSPaymentFailure value)
     return self;
 }
 
-- (void)encodeWithCoder:(NSCoder *)coder
-{
-    [coder encodeObject:[self valueForKey:@"currency"] forKey:@"currency"];
-    NSData *mobileCoinPublicAddressData = self.mobileCoinPublicAddressData;
-    if (mobileCoinPublicAddressData != nil) {
-        [coder encodeObject:mobileCoinPublicAddressData forKey:@"mobileCoinPublicAddressData"];
-    }
-}
-
-- (nullable instancetype)initWithCoder:(NSCoder *)coder
-{
-    self = [super init];
-    if (!self) {
-        return self;
-    }
-    self->_currency = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
-                                                       forKey:@"currency"] unsignedIntegerValue];
-    self->_mobileCoinPublicAddressData = [coder decodeObjectOfClass:[NSData class]
-                                                             forKey:@"mobileCoinPublicAddressData"];
-    return self;
-}
-
 - (NSUInteger)hash
 {
     NSUInteger result = 0;
@@ -267,6 +250,11 @@ NSString *NSStringFromTSPaymentFailure(TSPaymentFailure value)
     OWSAssertDebug(self.isValid);
 
     return self;
+}
+
++ (BOOL)supportsSecureCoding
+{
+    return YES;
 }
 
 - (void)encodeWithCoder:(NSCoder *)coder
@@ -342,6 +330,11 @@ NSString *NSStringFromTSPaymentFailure(TSPaymentFailure value)
     _note = note;
 
     return self;
+}
+
++ (BOOL)supportsSecureCoding
+{
+    return YES;
 }
 
 - (void)encodeWithCoder:(NSCoder *)coder

@@ -9,15 +9,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSUInteger TSErrorMessageSchemaVersion = 2;
-
 #pragma mark -
 
 @interface TSErrorMessage ()
 
 @property (nonatomic, getter=wasRead) BOOL read;
-
-@property (nonatomic, readonly) NSUInteger errorMessageSchemaVersion;
 
 @end
 
@@ -25,64 +21,9 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
 
 @implementation TSErrorMessage
 
-- (void)encodeWithCoder:(NSCoder *)coder
-{
-    [super encodeWithCoder:coder];
-    [coder encodeObject:[self valueForKey:@"errorMessageSchemaVersion"] forKey:@"errorMessageSchemaVersion"];
-    [coder encodeObject:[self valueForKey:@"errorType"] forKey:@"errorType"];
-    [coder encodeObject:[self valueForKey:@"read"] forKey:@"read"];
-    SignalServiceAddress *recipientAddress = self.recipientAddress;
-    if (recipientAddress != nil) {
-        [coder encodeObject:recipientAddress forKey:@"recipientAddress"];
-    }
-    SignalServiceAddress *sender = self.sender;
-    if (sender != nil) {
-        [coder encodeObject:sender forKey:@"sender"];
-    }
-    [coder encodeObject:[self valueForKey:@"wasIdentityVerified"] forKey:@"wasIdentityVerified"];
-}
-
-- (nullable instancetype)initWithCoder:(NSCoder *)coder
-{
-    self = [super initWithCoder:coder];
-    if (!self) {
-        return self;
-    }
-    self->_errorMessageSchemaVersion =
-        [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
-                                         forKey:@"errorMessageSchemaVersion"] unsignedIntegerValue];
-    self->_errorType = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class] forKey:@"errorType"] intValue];
-    self->_read = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class] forKey:@"read"] boolValue];
-    self->_recipientAddress = [coder decodeObjectOfClass:[SignalServiceAddress class] forKey:@"recipientAddress"];
-    self->_sender = [coder decodeObjectOfClass:[SignalServiceAddress class] forKey:@"sender"];
-    self->_wasIdentityVerified = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
-                                                                  forKey:@"wasIdentityVerified"] boolValue];
-
-    if (self.errorMessageSchemaVersion < 1) {
-        _read = YES;
-    }
-
-    if (self.errorMessageSchemaVersion == 1) {
-        NSString *_Nullable phoneNumber = [coder decodeObjectForKey:@"recipientId"];
-        if (phoneNumber) {
-            _recipientAddress = [SignalServiceAddress legacyAddressWithServiceIdString:nil phoneNumber:phoneNumber];
-            OWSAssertDebug(_recipientAddress.isValid);
-        }
-    }
-
-    _errorMessageSchemaVersion = TSErrorMessageSchemaVersion;
-
-    if (self.isDynamicInteraction) {
-        self.read = YES;
-    }
-
-    return self;
-}
-
 - (NSUInteger)hash
 {
     NSUInteger result = [super hash];
-    result ^= self.errorMessageSchemaVersion;
     result ^= (NSUInteger)self.errorType;
     result ^= self.read;
     result ^= self.recipientAddress.hash;
@@ -97,9 +38,6 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
         return NO;
     }
     TSErrorMessage *typedOther = (TSErrorMessage *)other;
-    if (self.errorMessageSchemaVersion != typedOther.errorMessageSchemaVersion) {
-        return NO;
-    }
     if (self.errorType != typedOther.errorType) {
         return NO;
     }
@@ -121,7 +59,6 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
 - (id)copyWithZone:(nullable NSZone *)zone
 {
     TSErrorMessage *result = [super copyWithZone:zone];
-    result->_errorMessageSchemaVersion = self.errorMessageSchemaVersion;
     result->_errorType = self.errorType;
     result->_read = self.read;
     result->_recipientAddress = self.recipientAddress;
@@ -141,7 +78,6 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
     _errorType = errorMessageBuilder.errorType;
     _sender = errorMessageBuilder.senderAddress;
     _recipientAddress = errorMessageBuilder.recipientAddress;
-    _errorMessageSchemaVersion = TSErrorMessageSchemaVersion;
     _wasIdentityVerified = errorMessageBuilder.wasIdentityVerified;
 
     if (self.isDynamicInteraction) {

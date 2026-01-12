@@ -7,6 +7,8 @@ import Foundation
 public import LibSignalClient
 
 public class OutgoingStorySentMessageTranscript: OWSOutgoingSyncMessage {
+    override public class var supportsSecureCoding: Bool { true }
+
     public required init?(coder: NSCoder) {
         self.isRecipientUpdate = coder.decodeObject(of: NSNumber.self, forKey: "isRecipientUpdate")
         self.storyEncodedRecipientStates = coder.decodeObject(of: NSData.self, forKey: "storyEncodedRecipientStates") as Data?

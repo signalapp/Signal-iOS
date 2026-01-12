@@ -15,11 +15,6 @@ public class UnknownThreadWarningInteraction: TSInteraction {
         .unknownThreadWarning
     }
 
-    @available(*, unavailable, message: "use other constructor instead.")
-    public required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
     public init(thread: TSThread, timestamp: UInt64) {
         // Include timestamp in uniqueId to ensure invariant that
         // interactions don't move in the chat history ordering.

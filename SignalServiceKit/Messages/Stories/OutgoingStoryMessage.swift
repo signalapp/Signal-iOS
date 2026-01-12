@@ -7,6 +7,8 @@ import Foundation
 import LibSignalClient
 
 public class OutgoingStoryMessage: TSOutgoingMessage {
+    override public class var supportsSecureCoding: Bool { true }
+
     public required init?(coder: NSCoder) {
         self._storyMessageRowId = coder.decodeObject(of: NSNumber.self, forKey: "_storyMessageRowId")
         self.isPrivateStorySend = coder.decodeObject(of: NSNumber.self, forKey: "isPrivateStorySend")

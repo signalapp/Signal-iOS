@@ -102,7 +102,7 @@ extension InstalledSticker {
             let contentType: String? = record.contentType
             let emojiString: String? = record.emojiString
             let infoSerialized: Data = record.info
-            let info: StickerInfo = try SDSDeserialization.unarchive(infoSerialized, name: "info")
+            let info: StickerInfo = try SDSDeserialization.unarchivedObject(ofClass: StickerInfo.self, from: infoSerialized)
 
             return InstalledSticker(grdbId: recordId,
                                     uniqueId: uniqueId,

@@ -6,6 +6,8 @@
 import Foundation
 
 class OutgoingPollTerminateMessage: TSOutgoingMessage {
+    override class var supportsSecureCoding: Bool { true }
+
     required init?(coder: NSCoder) {
         self.targetPollTimestamp = coder.decodeObject(of: NSNumber.self, forKey: "targetPollTimestamp")?.uint64Value ?? 0
         super.init(coder: coder)

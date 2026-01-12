@@ -20,6 +20,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSDisappearingMessagesConfiguration
 
++ (BOOL)supportsSecureCoding
+{
+    return YES;
+}
+
 - (void)encodeWithCoder:(NSCoder *)coder
 {
     [self encodeIdsWithCoder:coder];

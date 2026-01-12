@@ -13,7 +13,9 @@ import Foundation
 /// with an attached version that, at time of writing, used by 1:1 conversations (TSContactThread)
 /// which are subject to races in setting their DM timer config.
 @objc
-public final class DisappearingMessageToken: NSObject, NSCoding, NSCopying {
+public final class DisappearingMessageToken: NSObject, NSSecureCoding, NSCopying {
+    public static var supportsSecureCoding: Bool { true }
+
     public init?(coder: NSCoder) {
         self.durationSeconds = coder.decodeObject(of: NSNumber.self, forKey: "durationSeconds")?.uint32Value ?? 0
     }

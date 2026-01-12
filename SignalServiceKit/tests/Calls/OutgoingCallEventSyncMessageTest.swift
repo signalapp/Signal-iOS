@@ -36,7 +36,6 @@ final class OutgoingCallEventSyncMessageSerializationTest: SSKBaseTest {
             let syncMessage = try NSKeyedUnarchiver.unarchivedObject(
                 ofClass: OutgoingCallEventSyncMessage.self,
                 from: archivedObjCCallEventSyncMessage,
-                requiringSecureCoding: false,
             )
         else {
             XCTFail("Failed to decode sync message!")
@@ -86,14 +85,13 @@ final class OutgoingCallEventSyncMessageSerializationTest: SSKBaseTest {
 
         let archivedData = try NSKeyedArchiver.archivedData(
             withRootObject: syncMessage,
-            requiringSecureCoding: false,
+            requiringSecureCoding: true,
         )
 
         guard
             let deserializedSyncMessage = try NSKeyedUnarchiver.unarchivedObject(
                 ofClass: OutgoingCallEventSyncMessage.self,
                 from: archivedData,
-                requiringSecureCoding: false,
             )
         else {
             XCTFail("Got nil when unarchiving!")

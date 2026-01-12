@@ -8,6 +8,8 @@ public import SignalRingRTC
 
 @objc(OutgoingCallLinkUpdateMessage)
 public class OutgoingCallLinkUpdateMessage: OWSOutgoingSyncMessage {
+    override public class var supportsSecureCoding: Bool { true }
+
     public required init?(coder: NSCoder) {
         self.adminPasskey = coder.decodeObject(of: NSData.self, forKey: "adminPasskey") as Data?
         self.rootKey = coder.decodeObject(of: NSData.self, forKey: "rootKey") as Data?

@@ -93,77 +93,6 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (void)encodeWithCoder:(NSCoder *)coder
-{
-    [self encodeIdsWithCoder:coder];
-    NSString *addressUuidString = self.addressUuidString;
-    if (addressUuidString != nil) {
-        [coder encodeObject:addressUuidString forKey:@"addressUuidString"];
-    }
-    [coder encodeObject:[self valueForKey:@"createdTimestamp"] forKey:@"createdTimestamp"];
-    NSString *interactionUniqueId = self.interactionUniqueId;
-    if (interactionUniqueId != nil) {
-        [coder encodeObject:interactionUniqueId forKey:@"interactionUniqueId"];
-    }
-    [coder encodeObject:[self valueForKey:@"isUnread"] forKey:@"isUnread"];
-    [coder encodeObject:[self valueForKey:@"mcLedgerBlockIndex"] forKey:@"mcLedgerBlockIndex"];
-    NSData *mcReceiptData = self.mcReceiptData;
-    if (mcReceiptData != nil) {
-        [coder encodeObject:mcReceiptData forKey:@"mcReceiptData"];
-    }
-    NSData *mcTransactionData = self.mcTransactionData;
-    if (mcTransactionData != nil) {
-        [coder encodeObject:mcTransactionData forKey:@"mcTransactionData"];
-    }
-    NSString *memoMessage = self.memoMessage;
-    if (memoMessage != nil) {
-        [coder encodeObject:memoMessage forKey:@"memoMessage"];
-    }
-    MobileCoinPayment *mobileCoin = self.mobileCoin;
-    if (mobileCoin != nil) {
-        [coder encodeObject:mobileCoin forKey:@"mobileCoin"];
-    }
-    TSPaymentAmount *paymentAmount = self.paymentAmount;
-    if (paymentAmount != nil) {
-        [coder encodeObject:paymentAmount forKey:@"paymentAmount"];
-    }
-    [coder encodeObject:[self valueForKey:@"paymentFailure"] forKey:@"paymentFailure"];
-    [coder encodeObject:[self valueForKey:@"paymentState"] forKey:@"paymentState"];
-    [coder encodeObject:[self valueForKey:@"paymentType"] forKey:@"paymentType"];
-    NSString *requestUuidString = self.requestUuidString;
-    if (requestUuidString != nil) {
-        [coder encodeObject:requestUuidString forKey:@"requestUuidString"];
-    }
-}
-
-- (nullable instancetype)initWithCoder:(NSCoder *)coder
-{
-    self = [super initWithCoder:coder];
-    if (!self) {
-        return self;
-    }
-    self->_addressUuidString = [coder decodeObjectOfClass:[NSString class] forKey:@"addressUuidString"];
-    self->_createdTimestamp = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
-                                                               forKey:@"createdTimestamp"] unsignedLongLongValue];
-    self->_interactionUniqueId = [coder decodeObjectOfClass:[NSString class] forKey:@"interactionUniqueId"];
-    self->_isUnread = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class] forKey:@"isUnread"] boolValue];
-    self->_mcLedgerBlockIndex = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
-                                                                 forKey:@"mcLedgerBlockIndex"] unsignedLongLongValue];
-    self->_mcReceiptData = [coder decodeObjectOfClass:[NSData class] forKey:@"mcReceiptData"];
-    self->_mcTransactionData = [coder decodeObjectOfClass:[NSData class] forKey:@"mcTransactionData"];
-    self->_memoMessage = [coder decodeObjectOfClass:[NSString class] forKey:@"memoMessage"];
-    self->_mobileCoin = [coder decodeObjectOfClass:[MobileCoinPayment class] forKey:@"mobileCoin"];
-    self->_paymentAmount = [coder decodeObjectOfClass:[TSPaymentAmount class] forKey:@"paymentAmount"];
-    self->_paymentFailure = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
-                                                             forKey:@"paymentFailure"] unsignedIntegerValue];
-    self->_paymentState = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
-                                                           forKey:@"paymentState"] unsignedIntegerValue];
-    self->_paymentType = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
-                                                          forKey:@"paymentType"] unsignedIntegerValue];
-    self->_requestUuidString = [coder decodeObjectOfClass:[NSString class] forKey:@"requestUuidString"];
-    return self;
-}
-
 - (NSUInteger)hash
 {
     NSUInteger result = [super hash];
@@ -479,6 +408,11 @@ NS_ASSUME_NONNULL_BEGIN
     _feeAmount = feeAmount;
 
     return self;
+}
+
++ (BOOL)supportsSecureCoding
+{
+    return YES;
 }
 
 - (void)encodeWithCoder:(NSCoder *)coder

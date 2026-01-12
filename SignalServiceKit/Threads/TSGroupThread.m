@@ -78,25 +78,6 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
 
 // --- CODE GENERATION MARKER
 
-- (void)encodeWithCoder:(NSCoder *)coder
-{
-    [super encodeWithCoder:coder];
-    TSGroupModel *groupModel = self.groupModel;
-    if (groupModel != nil) {
-        [coder encodeObject:groupModel forKey:@"groupModel"];
-    }
-}
-
-- (nullable instancetype)initWithCoder:(NSCoder *)coder
-{
-    self = [super initWithCoder:coder];
-    if (!self) {
-        return self;
-    }
-    self->_groupModel = [coder decodeObjectOfClass:[TSGroupModel class] forKey:@"groupModel"];
-    return self;
-}
-
 - (NSUInteger)hash
 {
     NSUInteger result = [super hash];

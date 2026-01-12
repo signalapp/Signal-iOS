@@ -16,11 +16,6 @@ public class TypingIndicatorInteraction: TSInteraction {
         .typingIndicator
     }
 
-    @available(*, unavailable, message: "use other constructor instead.")
-    public required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
     public let address: SignalServiceAddress
 
     public init(thread: TSThread, timestamp: UInt64, address: SignalServiceAddress) {

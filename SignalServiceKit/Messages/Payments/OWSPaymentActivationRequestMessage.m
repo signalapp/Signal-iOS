@@ -10,6 +10,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSPaymentActivationRequestMessage
 
++ (BOOL)supportsSecureCoding
+{
+    return YES;
+}
+
 - (instancetype)initWithThread:(TSThread *)thread transaction:(DBReadTransaction *)transaction
 {
     TSOutgoingMessageBuilder *messageBuilder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];

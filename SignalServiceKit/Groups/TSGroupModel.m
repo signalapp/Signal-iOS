@@ -72,6 +72,11 @@ NSUInteger const TSGroupModelSchemaVersion = 2;
     return self;
 }
 
++ (BOOL)supportsSecureCoding
+{
+    return YES;
+}
+
 - (void)encodeWithCoder:(NSCoder *)coder
 {
     SignalServiceAddress *addedByAddress = self.addedByAddress;
@@ -124,7 +129,9 @@ NSUInteger const TSGroupModelSchemaVersion = 2;
     OWSAssertDebug([GroupManager isValidGroupId:self.groupId groupsVersion:self.groupsVersion]);
 
     if (_groupModelSchemaVersion < 1) {
-        NSArray<NSString *> *_Nullable memberE164s = [coder decodeObjectForKey:@"groupMemberIds"];
+        NSArray<NSString *> *_Nullable memberE164s =
+            [coder decodeObjectOfClasses:[NSSet setWithArray:@[ [NSArray class], [NSString class] ]]
+                                  forKey:@"groupMemberIds"];
         if (memberE164s) {
             NSMutableArray<SignalServiceAddress *> *memberAddresses = [NSMutableArray new];
             for (NSString *phoneNumber in memberE164s) {
@@ -138,7 +145,7 @@ NSUInteger const TSGroupModelSchemaVersion = 2;
     }
 
     if (_groupModelSchemaVersion < 2) {
-        _legacyAvatarData = [coder decodeObjectForKey:@"groupAvatarData"];
+        _legacyAvatarData = [coder decodeObjectOfClass:[NSData class] forKey:@"groupAvatarData"];
     }
 
     _groupModelSchemaVersion = TSGroupModelSchemaVersion;

@@ -691,7 +691,6 @@ class SignalServiceAddress2Test: SSKBaseTest {
                 let decodedValue = try NSKeyedUnarchiver.unarchivedObject(
                     ofClass: SignalServiceAddress.self,
                     from: encodedValue,
-                    requiringSecureCoding: true,
                 )!
                 XCTAssertEqual(decodedValue.serviceId, testCase.decodedServiceId)
                 XCTAssertEqual(decodedValue.phoneNumber, testCase.decodedPhoneNumber)
@@ -751,7 +750,6 @@ class SignalServiceAddress2Test: SSKBaseTest {
                 let decodedValue = try NSKeyedUnarchiver.unarchivedObject(
                     ofClass: SignalServiceAddress.self,
                     from: Data(base64Encoded: testCase.keyedArchiverValue)!,
-                    requiringSecureCoding: true,
                 )!
                 XCTAssertEqual(decodedValue.serviceId, testCase.decodedServiceId)
                 XCTAssertEqual(decodedValue.phoneNumber, testCase.decodedPhoneNumber)

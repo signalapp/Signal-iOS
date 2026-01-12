@@ -6,7 +6,9 @@
 public import Contacts
 
 @objc(OWSContactEmail)
-public final class OWSContactEmail: NSObject, NSCoding, NSCopying, OWSContactField {
+public final class OWSContactEmail: NSObject, NSSecureCoding, NSCopying, OWSContactField {
+    public static var supportsSecureCoding: Bool { true }
+
     public init?(coder: NSCoder) {
         self.email = coder.decodeObject(of: NSString.self, forKey: "email") as String? ?? ""
         self.type = (coder.decodeObject(of: NSNumber.self, forKey: "emailType")?.intValue).flatMap(`Type`.init(rawValue:)) ?? .home

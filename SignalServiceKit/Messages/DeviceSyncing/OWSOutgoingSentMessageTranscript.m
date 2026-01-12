@@ -69,41 +69,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)encodeWithCoder:(NSCoder *)coder
 {
     [super encodeWithCoder:coder];
-    [coder encodeObject:[self valueForKey:@"isRecipientUpdate"] forKey:@"isRecipientUpdate"];
-    TSOutgoingMessage *message = self.message;
-    if (message != nil) {
-        [coder encodeObject:message forKey:@"message"];
-    }
-    TSThread *messageThread = self.messageThread;
-    if (messageThread != nil) {
-        [coder encodeObject:messageThread forKey:@"messageThread"];
-    }
-    SignalServiceAddress *sentRecipientAddress = self.sentRecipientAddress;
-    if (sentRecipientAddress != nil) {
-        [coder encodeObject:sentRecipientAddress forKey:@"sentRecipientAddress"];
-    }
 }
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
     self = [super initWithCoder:coder];
-    if (!self) {
-        return self;
-    }
-    self->_isRecipientUpdate = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
-                                                                forKey:@"isRecipientUpdate"] boolValue];
-    self->_message = [coder decodeObjectOfClass:[TSOutgoingMessage class] forKey:@"message"];
-    self->_messageThread = [coder decodeObjectOfClass:[TSThread class] forKey:@"messageThread"];
-    self->_sentRecipientAddress = [coder decodeObjectOfClass:[SignalServiceAddress class]
-                                                      forKey:@"sentRecipientAddress"];
-
-    if (_sentRecipientAddress == nil) {
-        NSString *phoneNumber = [coder decodeObjectForKey:@"sentRecipientId"];
-        _sentRecipientAddress = [SignalServiceAddress legacyAddressWithServiceIdString:nil phoneNumber:phoneNumber];
-        OWSAssertDebug(_sentRecipientAddress.isValid);
-    }
-
-    return self;
+    return nil;
 }
 
 - (NSUInteger)hash

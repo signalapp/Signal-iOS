@@ -53,8 +53,6 @@ NS_ASSUME_NONNULL_BEGIN
                                         untrustedGroupId:(nullable NSData *)untrustedGroupId
                                              transaction:(DBWriteTransaction *)writeTx NS_DESIGNATED_INITIALIZER;
 
-- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
-
 @property (assign, nonatomic, readonly) BOOL supportsReplacement;
 
 // --- CODE GENERATION MARKER

@@ -6,7 +6,9 @@
 import Foundation
 
 @objc(StickerPackInfo)
-public final class StickerPackInfo: NSObject, NSCoding, NSCopying {
+public final class StickerPackInfo: NSObject, NSSecureCoding, NSCopying {
+    public static var supportsSecureCoding: Bool { true }
+
     public init?(coder: NSCoder) {
         self.packId = coder.decodeObject(of: NSData.self, forKey: "packId") as Data?
         self.packKey = coder.decodeObject(of: NSData.self, forKey: "packKey") as Data?

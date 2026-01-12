@@ -8,15 +8,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const TSContactThreadLegacyPrefix = @"c";
-NSUInteger const TSContactThreadSchemaVersion = 1;
-
-@interface TSContactThread ()
-
-@property (nonatomic, readonly) NSUInteger contactThreadSchemaVersion;
-
-@end
-
 #pragma mark -
 
 @implementation TSContactThread
@@ -97,49 +88,10 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
 
 // --- CODE GENERATION MARKER
 
-- (void)encodeWithCoder:(NSCoder *)coder
-{
-    [super encodeWithCoder:coder];
-    NSString *contactPhoneNumber = self.contactPhoneNumber;
-    if (contactPhoneNumber != nil) {
-        [coder encodeObject:contactPhoneNumber forKey:@"contactPhoneNumber"];
-    }
-    [coder encodeObject:[self valueForKey:@"contactThreadSchemaVersion"] forKey:@"contactThreadSchemaVersion"];
-    NSString *contactUUID = self.contactUUID;
-    if (contactUUID != nil) {
-        [coder encodeObject:contactUUID forKey:@"contactUUID"];
-    }
-    [coder encodeObject:[self valueForKey:@"hasDismissedOffers"] forKey:@"hasDismissedOffers"];
-}
-
-- (nullable instancetype)initWithCoder:(NSCoder *)coder
-{
-    self = [super initWithCoder:coder];
-    if (!self) {
-        return self;
-    }
-    self->_contactPhoneNumber = [coder decodeObjectOfClass:[NSString class] forKey:@"contactPhoneNumber"];
-    self->_contactThreadSchemaVersion =
-        [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
-                                         forKey:@"contactThreadSchemaVersion"] unsignedIntegerValue];
-    self->_contactUUID = [coder decodeObjectOfClass:[NSString class] forKey:@"contactUUID"];
-    self->_hasDismissedOffers = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class]
-                                                                 forKey:@"hasDismissedOffers"] boolValue];
-
-    // Migrate legacy threads to store phone number and UUID
-    if (_contactThreadSchemaVersion < 1) {
-        _contactPhoneNumber = [[self class] legacyContactPhoneNumberFromThreadId:self.uniqueId];
-    }
-    _contactThreadSchemaVersion = TSContactThreadSchemaVersion;
-
-    return self;
-}
-
 - (NSUInteger)hash
 {
     NSUInteger result = [super hash];
     result ^= self.contactPhoneNumber.hash;
-    result ^= self.contactThreadSchemaVersion;
     result ^= self.contactUUID.hash;
     result ^= self.hasDismissedOffers;
     return result;
@@ -152,9 +104,6 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
     }
     TSContactThread *typedOther = (TSContactThread *)other;
     if (![NSObject isObject:self.contactPhoneNumber equalToObject:typedOther.contactPhoneNumber]) {
-        return NO;
-    }
-    if (self.contactThreadSchemaVersion != typedOther.contactThreadSchemaVersion) {
         return NO;
     }
     if (![NSObject isObject:self.contactUUID equalToObject:typedOther.contactUUID]) {
@@ -170,7 +119,6 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
 {
     TSContactThread *result = [super copyWithZone:zone];
     result->_contactPhoneNumber = self.contactPhoneNumber;
-    result->_contactThreadSchemaVersion = self.contactThreadSchemaVersion;
     result->_contactUUID = self.contactUUID;
     result->_hasDismissedOffers = self.hasDismissedOffers;
     return result;
@@ -184,7 +132,6 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
     if (self = [super initWithUniqueId:uniqueId]) {
         _contactUUID = [contactUUID copy];
         _contactPhoneNumber = [contactPhoneNumber copy];
-        _contactThreadSchemaVersion = TSContactThreadSchemaVersion;
     }
 
     return self;
@@ -245,16 +192,6 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
     return self.contactAddress.isLocalAddress;
 }
 
-- (NSString *)colorSeed
-{
-    NSString *_Nullable phoneNumber = self.contactAddress.phoneNumber;
-    if (!phoneNumber) {
-        phoneNumber = [[self class] legacyContactPhoneNumberFromThreadId:self.uniqueId];
-    }
-
-    return phoneNumber ?: self.uniqueId;
-}
-
 - (BOOL)hasSafetyNumbers
 {
     return [OWSIdentityManagerObjCBridge identityKeyForAddress:self.contactAddress] != nil;
@@ -264,15 +201,6 @@ lastVisibleSortIdOnScreenPercentageObsolete:lastVisibleSortIdOnScreenPercentageO
                                                   transaction:(DBReadTransaction *)transaction
 {
     return [TSContactThread anyFetchContactThreadWithUniqueId:threadId transaction:transaction].contactAddress;
-}
-
-+ (nullable NSString *)legacyContactPhoneNumberFromThreadId:(NSString *)threadId
-{
-    if (![threadId hasPrefix:TSContactThreadLegacyPrefix]) {
-        return nil;
-    }
-
-    return [threadId substringWithRange:NSMakeRange(1, threadId.length - 1)];
 }
 
 - (void)anyDidInsertWithTransaction:(DBWriteTransaction *)transaction

@@ -300,7 +300,9 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     if (_schemaVersion < 2) {
         // renamed _attachments to _attachmentIds
         if (!_deprecated_attachmentIds) {
-            _deprecated_attachmentIds = [coder decodeObjectForKey:@"attachments"];
+            _deprecated_attachmentIds =
+                [coder decodeObjectOfClasses:[NSSet setWithArray:@[ [NSArray class], [NSString class] ]]
+                                      forKey:@"attachments"];
         }
     }
 
@@ -340,11 +342,12 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     //       per-message expiration was never released to
     //       production.
     NSNumber *_Nullable perMessageExpirationDurationSeconds =
-        [coder decodeObjectForKey:@"perMessageExpirationDurationSeconds"];
+        [coder decodeObjectOfClass:[NSNumber class] forKey:@"perMessageExpirationDurationSeconds"];
     if (perMessageExpirationDurationSeconds.unsignedIntegerValue > 0) {
         _isViewOnceMessage = YES;
     }
-    NSNumber *_Nullable perMessageExpirationHasExpired = [coder decodeObjectForKey:@"perMessageExpirationHasExpired"];
+    NSNumber *_Nullable perMessageExpirationHasExpired = [coder decodeObjectOfClass:[NSNumber class]
+                                                                             forKey:@"perMessageExpirationHasExpired"];
     if (perMessageExpirationHasExpired.boolValue > 0) {
         _isViewOnceComplete = YES;
     }

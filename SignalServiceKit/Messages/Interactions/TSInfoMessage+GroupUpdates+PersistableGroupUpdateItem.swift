@@ -27,23 +27,23 @@ extension TSInfoMessage {
 
         private static let messagesKey = "messagesKey"
 
-        public func encode(with aCoder: NSCoder) {
+        public func encode(with coder: NSCoder) {
             let jsonEncoder = JSONEncoder()
             do {
                 let messagesData = try jsonEncoder.encode(updateItems)
-                aCoder.encode(messagesData, forKey: Self.messagesKey)
+                coder.encode(messagesData, forKey: Self.messagesKey)
             } catch let error {
                 owsFailDebug("Failed to encode updateItems data: \(error)")
                 return
             }
         }
 
-        public required init?(coder aDecoder: NSCoder) {
+        public required init?(coder: NSCoder) {
             guard
-                let updateItemsData = aDecoder.decodeObject(
+                let updateItemsData = coder.decodeObject(
                     of: NSData.self,
                     forKey: Self.messagesKey,
-                )
+                ) as Data?
             else {
                 owsFailDebug("Failed to decode updateItems data")
                 return nil
@@ -53,7 +53,7 @@ extension TSInfoMessage {
             do {
                 updateItems = try jsonDecoder.decode(
                     [LegacyPersistableGroupUpdateItem].self,
-                    from: updateItemsData as Data,
+                    from: updateItemsData,
                 )
             } catch let error {
                 owsFailDebug("Failed to decode updateItems data: \(error)")
@@ -84,23 +84,23 @@ extension TSInfoMessage {
 
         private static let messagesKey = "messagesKey"
 
-        public func encode(with aCoder: NSCoder) {
+        public func encode(with coder: NSCoder) {
             let jsonEncoder = JSONEncoder()
             do {
                 let messagesData = try jsonEncoder.encode(updateItems)
-                aCoder.encode(messagesData, forKey: Self.messagesKey)
+                coder.encode(messagesData, forKey: Self.messagesKey)
             } catch let error {
                 owsFailDebug("Failed to encode updateItems data: \(error)")
                 return
             }
         }
 
-        public required init?(coder aDecoder: NSCoder) {
+        public required init?(coder: NSCoder) {
             guard
-                let updateItemsData = aDecoder.decodeObject(
+                let updateItemsData = coder.decodeObject(
                     of: NSData.self,
                     forKey: Self.messagesKey,
-                )
+                ) as Data?
             else {
                 owsFailDebug("Failed to decode updateItems data")
                 return nil
@@ -110,7 +110,7 @@ extension TSInfoMessage {
             do {
                 updateItems = try jsonDecoder.decode(
                     [PersistableGroupUpdateItem].self,
-                    from: updateItemsData as Data,
+                    from: updateItemsData,
                 )
             } catch let error {
                 owsFailDebug("Failed to decode updateItems data: \(error)")

@@ -10,6 +10,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSEndSessionMessage
 
++ (BOOL)supportsSecureCoding
+{
+    return YES;
+}
+
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
     return [super initWithCoder:coder];

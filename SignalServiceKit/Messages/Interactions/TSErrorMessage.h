@@ -90,7 +90,7 @@ extern NSUInteger TSErrorMessageSchemaVersion;
 - (instancetype)initErrorMessageWithBuilder:(TSErrorMessageBuilder *)errorMessageBuilder NS_DESIGNATED_INITIALIZER
     NS_SWIFT_NAME(init(errorMessageWithBuilder:));
 
-- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;
 
 // --- CODE GENERATION MARKER
 

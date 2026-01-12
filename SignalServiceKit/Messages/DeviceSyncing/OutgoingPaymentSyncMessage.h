@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class AciObjC;
 
-@interface OutgoingPaymentMobileCoin : NSObject <NSCoding, NSCopying>
+@interface OutgoingPaymentMobileCoin : NSObject <NSSecureCoding, NSCopying>
 
 @property (nonatomic, readonly, nullable) AciObjC *recipientAci;
 @property (nonatomic, readonly, nullable) NSData *recipientAddress;

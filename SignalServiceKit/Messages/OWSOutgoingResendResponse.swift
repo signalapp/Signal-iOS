@@ -8,6 +8,8 @@ import LibSignalClient
 
 @objc(OWSOutgoingResendResponse)
 final class OWSOutgoingResendResponse: TSOutgoingMessage {
+    override class var supportsSecureCoding: Bool { true }
+
     required init?(coder: NSCoder) {
         self.derivedContentHint = (coder.decodeObject(of: NSNumber.self, forKey: "derivedContentHint")?.intValue).flatMap(SealedSenderContentHint.init(rawValue:)) ?? .default
         self.didAppendSKDM = coder.decodeObject(of: NSNumber.self, forKey: "didAppendSKDM")?.boolValue ?? false

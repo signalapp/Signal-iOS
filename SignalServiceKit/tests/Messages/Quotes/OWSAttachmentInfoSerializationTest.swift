@@ -25,7 +25,7 @@ class OWSAttachmentInfoSerializationTest: XCTestCase {
             for (idx, (constant, _)) in OWSAttachmentInfo.constants.enumerated() {
                 let serializedArchiver = try! NSKeyedArchiver.archivedData(
                     withRootObject: constant,
-                    requiringSecureCoding: false,
+                    requiringSecureCoding: true,
                 )
                 print("\(Self.self) constant \(idx) keyed archiver: \(serializedArchiver.base64EncodedString())")
             }
@@ -36,7 +36,6 @@ class OWSAttachmentInfoSerializationTest: XCTestCase {
                     let deserialized = try NSKeyedUnarchiver.unarchivedObject(
                         ofClass: OWSAttachmentInfo.self,
                         from: archiverData,
-                        requiringSecureCoding: false,
                     )!
                     try deserialized.validate(against: constant)
                 } catch ValidatableModelError.failedToValidate {
