@@ -1619,14 +1619,11 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             ).compacted()
 
             return try await queue.run {
-                return try await performDownloadAttempt(
+                return try await performDownload(
                     downloadState: downloadState,
                     progresses: progresses,
-                    progressSources: nil,
                     maxDownloadSizeBytes: maxDownloadSizeBytes,
                     expectedDownloadSize: expectedDownloadSize,
-                    resumeData: nil,
-                    attemptCount: 0,
                 )
             }
         }
@@ -1636,23 +1633,12 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             case estimatedSizeBytes(UInt)
         }
 
-        private nonisolated func performDownloadAttempt(
+        private nonisolated func performDownload(
             downloadState: DownloadState,
             progresses: [OWSProgressSink],
-            progressSources inputProgressSources: [OWSProgressSource]?,
             maxDownloadSizeBytes: UInt64,
             expectedDownloadSize: DownloadSizeSource,
-            resumeData: Data?,
-            attemptCount: UInt,
         ) async throws -> URL {
-            guard downloadState.isExpired().negated else {
-                throw AttachmentDownloads.Error.expiredCredentials
-            }
-
-            let urlSession = await self.signalService.sharedUrlSessionForCdn(
-                cdnNumber: downloadState.cdnNumber(),
-                maxResponseSize: maxDownloadSizeBytes,
-            )
             let urlPath = try downloadState.urlPath()
             var headers = downloadState.additionalHeaders()
             headers["Content-Type"] = MimeType.applicationOctetStream.rawValue
@@ -1663,6 +1649,10 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 attachmentId = nil
             case .attachment(_, let id):
                 attachmentId = id
+            }
+
+            if downloadState.isExpired() {
+                throw AttachmentDownloads.Error.expiredCredentials
             }
 
             let expectedDownloadSizeBytes: UInt
@@ -1676,20 +1666,25 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
             }
 
             var progressSources: [OWSProgressSource] = []
+            for progress in progresses {
+                progressSources.append(await progress.addSource(
+                    withLabel: AttachmentDownloads.downloadProgressLabel,
+                    unitCount: UInt64(expectedDownloadSizeBytes),
+                ))
+            }
 
-            do {
-                var downloadTask: Task<OWSUrlDownloadResponse, Error>?
-
-                if let inputProgressSources {
-                    progressSources = inputProgressSources
-                } else {
-                    for progress in progresses {
-                        progressSources.append(await progress.addSource(
-                            withLabel: AttachmentDownloads.downloadProgressLabel,
-                            unitCount: UInt64(expectedDownloadSizeBytes),
-                        ))
-                    }
+            var resumeData: Data?
+            return try await Retry.performRepeatedly {
+                if downloadState.isExpired() {
+                    throw AttachmentDownloads.Error.expiredCredentials
                 }
+
+                let urlSession = await self.signalService.sharedUrlSessionForCdn(
+                    cdnNumber: downloadState.cdnNumber(),
+                    maxResponseSize: maxDownloadSizeBytes,
+                )
+
+                var downloadTask: Task<OWSUrlDownloadResponse, Error>?
 
                 let wrappedProgressID = await latestProgressID(downloadKey: DownloadQueue.downloadKey(state: downloadState))
                 let wrappedProgress = OWSProgress.createSink { [weak self] progressValue in
@@ -1765,34 +1760,18 @@ public class AttachmentDownloadManagerImpl: AttachmentDownloadManager {
                 let tmpFile = OWSFileSystem.temporaryFileUrl()
                 try OWSFileSystem.copyFile(from: downloadUrl, to: tmpFile)
                 return tmpFile
-            } catch let error {
+            } onError: { error, attemptCount in
                 Logger.warn("Error: \(error)")
 
                 let maxAttemptCount = 16
-                guard
-                    error.isNetworkFailureOrTimeout,
-                    attemptCount < maxAttemptCount
-                else {
+                guard attemptCount < maxAttemptCount, error.isNetworkFailureOrTimeout else {
                     throw error
                 }
 
                 // Wait briefly before retrying.
                 try await Task.sleep(nanoseconds: 250 * NSEC_PER_MSEC)
 
-                let newResumeData = (error as NSError)
-                    .userInfo[NSURLSessionDownloadTaskResumeData]
-                    .map { $0 as? Data }
-                    .map(\.?.nilIfEmpty)
-                    ?? nil
-                return try await self.performDownloadAttempt(
-                    downloadState: downloadState,
-                    progresses: progresses,
-                    progressSources: progressSources,
-                    maxDownloadSizeBytes: maxDownloadSizeBytes,
-                    expectedDownloadSize: .estimatedSizeBytes(expectedDownloadSizeBytes),
-                    resumeData: newResumeData,
-                    attemptCount: attemptCount + 1,
-                )
+                resumeData = ((error as NSError).userInfo[NSURLSessionDownloadTaskResumeData] as? Data)?.nilIfEmpty
             }
         }
 
