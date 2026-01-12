@@ -770,7 +770,6 @@ public class MessageSender {
 
             let udAccessMap = self.fetchSealedSenderAccess(
                 for: serviceIds.compactMap { $0 as? Aci },
-                message: message,
                 senderCertificate: senderCertificate,
                 localIdentifiers: localIdentifiers,
                 tx: tx,
@@ -965,7 +964,6 @@ public class MessageSender {
 
     private func fetchSealedSenderAccess(
         for acis: [Aci],
-        message: TSOutgoingMessage,
         senderCertificate: SenderCertificate,
         localIdentifiers: LocalIdentifiers,
         tx: DBReadTransaction,

@@ -201,7 +201,6 @@ extension MessageSender {
                 failedRecipients += await self.sendPreparedSenderKeyDistributionMessages(
                     preparedDistributionMessages.senderKeyDistributionMessageSends,
                     in: thread,
-                    onBehalfOf: message,
                 )
                 failedRecipients += await self.sendSenderKeyMessage(
                     to: eligibleRecipients.subtracting(failedRecipients.map(\.0)),
@@ -411,7 +410,6 @@ extension MessageSender {
     private func sendPreparedSenderKeyDistributionMessages(
         _ senderKeyDistributionMessageSends: [(OWSMessageSend, SealedSenderParameters?)],
         in thread: TSThread,
-        onBehalfOf originalMessage: TSOutgoingMessage,
     ) async -> [(ServiceId, any Error)] {
         let distributionResults = await withTaskGroup(
             of: (ServiceId, Result<SentSenderKey, any Error>).self,
