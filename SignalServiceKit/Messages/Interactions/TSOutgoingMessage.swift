@@ -822,35 +822,3 @@ extension TSOutgoingMessage {
         messageSendLog.sendComplete(message: self, tx: tx)
     }
 }
-
-// MARK: - Transcripts
-
-public extension TSOutgoingMessage {
-    func sendSyncTranscript() async throws {
-        let messageSend = try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
-            guard let localThread = TSContactThread.getOrCreateLocalThread(transaction: tx) else {
-                throw OWSAssertionError("Missing local thread")
-            }
-
-            guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx) else {
-                throw OWSAssertionError("Missing localIdentifiers.")
-            }
-
-            guard let transcript = self.buildTranscriptSyncMessage(localThread: localThread, transaction: tx) else {
-                throw OWSAssertionError("Failed to build transcript")
-            }
-
-            let serializedMessage = try SSKEnvironment.shared.messageSenderRef.buildAndRecordMessage(transcript, in: localThread, tx: tx)
-
-            return OWSMessageSend(
-                message: transcript,
-                plaintextContent: serializedMessage.plaintextData,
-                plaintextPayloadId: serializedMessage.payloadId,
-                thread: localThread,
-                serviceId: localIdentifiers.aci,
-                localIdentifiers: localIdentifiers,
-            )
-        }
-        try await SSKEnvironment.shared.messageSenderRef.performMessageSend(messageSend, sealedSenderParameters: nil)
-    }
-}

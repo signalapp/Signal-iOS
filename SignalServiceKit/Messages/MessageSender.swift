@@ -1139,7 +1139,7 @@ public class MessageSender {
             }
         }
 
-        try await sendSyncTranscriptIfNeeded(for: message)
+        try await sendSyncTranscriptIfNeeded(forMessage: message)
 
         // Don't mark self-sent messages as read (or sent) until the sync
         // transcript is sent.
@@ -1177,14 +1177,44 @@ public class MessageSender {
         }
     }
 
-    private func sendSyncTranscriptIfNeeded(for message: TSOutgoingMessage) async throws {
+    private func sendSyncTranscriptIfNeeded(forMessage message: TSOutgoingMessage) async throws {
         guard message.shouldSyncTranscript() else {
             return
         }
-        try await message.sendSyncTranscript()
-        await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
+        try await sendSyncTranscript(forMessage: message)
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        await databaseStorage.awaitableWrite { tx in
             message.update(withHasSyncedTranscript: true, transaction: tx)
         }
+    }
+
+    private func sendSyncTranscript(forMessage message: TSOutgoingMessage) async throws {
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        let messageSend = try await databaseStorage.awaitableWrite { tx in
+            guard let localThread = TSContactThread.getOrCreateLocalThread(transaction: tx) else {
+                throw OWSAssertionError("Missing local thread")
+            }
+
+            guard let localIdentifiers = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: tx) else {
+                throw OWSAssertionError("Missing localIdentifiers.")
+            }
+
+            guard let transcript = message.buildTranscriptSyncMessage(localThread: localThread, transaction: tx) else {
+                throw OWSAssertionError("Failed to build transcript")
+            }
+
+            let serializedMessage = try buildAndRecordMessage(transcript, in: localThread, tx: tx)
+
+            return OWSMessageSend(
+                message: transcript,
+                plaintextContent: serializedMessage.plaintextData,
+                plaintextPayloadId: serializedMessage.payloadId,
+                thread: localThread,
+                serviceId: localIdentifiers.aci,
+                localIdentifiers: localIdentifiers,
+            )
+        }
+        try await performMessageSend(messageSend, sealedSenderParameters: nil)
     }
 
     // MARK: - Performing Message Sends
