@@ -25,10 +25,6 @@ public class OnboardingStoryManagerFilesystem {
     public class func moveFile(from fromUrl: URL, to toUrl: URL) throws {
         try OWSFileSystem.moveFile(from: fromUrl, to: toUrl)
     }
-
-    public class func isValidImage(at url: URL) -> Bool {
-        return (try? DataImageSource.forPath(url.path))?.ows_isValidImage ?? false
-    }
 }
 
 // TODO: Support stubbing out StoryMessage init more generally.
@@ -46,7 +42,7 @@ public class OnboardingStoryManagerStoryMessageFactory {
         )
     }
 
-    public class func validateAttachmentContents(
+    public class func validateOnboardingImageAttachment(
         dataSource: DataSourcePath,
         mimeType: String,
     ) async throws -> AttachmentDataSource {
@@ -57,6 +53,9 @@ public class OnboardingStoryManagerStoryMessageFactory {
             renderingFlag: .default,
             sourceFilename: nil,
         )
+        guard case .image = pendingAttachment.validatedContentType else {
+            throw OWSAssertionError("onboarding story isn't valid")
+        }
         return .pendingAttachment(pendingAttachment)
     }
 }
@@ -545,14 +544,11 @@ public class SystemStoryManager: SystemStoryManagerProtocol {
         guard fileSystem.fileOrFolderExists(url: resultUrl) else {
             throw OWSAssertionError("Onboarding story url missing")
         }
-        guard fileSystem.isValidImage(at: resultUrl) else {
-            throw OWSAssertionError("Invalid onboarding asset")
-        }
         let dataSource = DataSourcePath(
             fileUrl: resultUrl,
             ownership: CurrentAppContext().isRunningTests ? .borrowed : .owned,
         )
-        return try await storyMessageFactory.validateAttachmentContents(
+        return try await storyMessageFactory.validateOnboardingImageAttachment(
             dataSource: dataSource,
             mimeType: Constants.imageMimeType,
         )

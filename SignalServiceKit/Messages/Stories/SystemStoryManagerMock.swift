@@ -101,10 +101,6 @@ public class OnboardingStoryManagerFilesystemMock: OnboardingStoryManagerFilesys
     override public class func moveFile(from fromUrl: URL, to toUrl: URL) throws {
         return
     }
-
-    override public class func isValidImage(at url: URL) -> Bool {
-        return true
-    }
 }
 
 public class OnboardingStoryManagerStoryMessageFactoryMock: OnboardingStoryManagerStoryMessageFactory {
@@ -133,7 +129,7 @@ public class OnboardingStoryManagerStoryMessageFactoryMock: OnboardingStoryManag
         return storyMessage
     }
 
-    override public class func validateAttachmentContents(
+    override public class func validateOnboardingImageAttachment(
         dataSource: DataSourcePath,
         mimeType: String,
     ) async throws -> AttachmentDataSource {
