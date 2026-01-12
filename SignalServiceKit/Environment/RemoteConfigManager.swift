@@ -232,7 +232,7 @@ public class RemoteConfig {
         if BuildFlags.useNewAttachmentLimits {
             return PaddingBucket.forEncryptedSizeLimit(UInt64(safeCast: self.attachmentMaxEncryptedBytes)).plaintextSize
         } else {
-            return UInt64(safeCast: OWSMediaUtils.kMaxFileSizeVideo)
+            return OWSMediaUtils.kMaxFileSizeVideo
         }
     }
 

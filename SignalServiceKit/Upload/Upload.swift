@@ -136,8 +136,8 @@ public enum Upload {
 
         /// We don't enforce a size limit locally for backups; we let the server
         /// enforce the limit and fail the upload if we surpass it.
-        public static var maxUploadSizeBytes: UInt { .max }
-        public static var maxPlaintextSizeBytes: UInt { .max }
+        public static var maxUploadSizeBytes: UInt64 { .max }
+        public static var maxPlaintextSizeBytes: UInt64 { .max }
     }
 
     public struct LocalUploadMetadata: AttachmentUploadMetadata, Codable {
@@ -158,8 +158,8 @@ public enum Upload {
 
         public var isReusedTransitTierUpload: Bool { false }
 
-        public static var maxUploadSizeBytes: UInt { OWSMediaUtils.kMaxAttachmentUploadSizeBytes }
-        public static var maxPlaintextSizeBytes: UInt { OWSMediaUtils.kMaxFileSizeGeneric }
+        public static var maxUploadSizeBytes: UInt64 { OWSMediaUtils.kMaxAttachmentUploadSizeBytes }
+        public static var maxPlaintextSizeBytes: UInt64 { OWSMediaUtils.kMaxFileSizeGeneric }
     }
 
     public struct LinkNSyncUploadMetadata: UploadMetadata {
@@ -170,8 +170,8 @@ public enum Upload {
 
         /// We don't enforce a size limit locally for backups; we let the server
         /// enforce the limit and fail the upload if we surpass it.
-        public static var maxUploadSizeBytes: UInt { .max }
-        public static var maxPlaintextSizeBytes: UInt { .max }
+        public static var maxUploadSizeBytes: UInt64 { .max }
+        public static var maxPlaintextSizeBytes: UInt64 { .max }
     }
 
     public struct ReusedUploadMetadata: AttachmentUploadMetadata {
@@ -193,8 +193,8 @@ public enum Upload {
 
         public var isReusedTransitTierUpload: Bool { true }
 
-        public static var maxUploadSizeBytes: UInt { OWSMediaUtils.kMaxAttachmentUploadSizeBytes }
-        public static var maxPlaintextSizeBytes: UInt { OWSMediaUtils.kMaxFileSizeGeneric }
+        public static var maxUploadSizeBytes: UInt64 { OWSMediaUtils.kMaxAttachmentUploadSizeBytes }
+        public static var maxPlaintextSizeBytes: UInt64 { OWSMediaUtils.kMaxFileSizeGeneric }
     }
 
     public struct Result<Metadata: UploadMetadata> {

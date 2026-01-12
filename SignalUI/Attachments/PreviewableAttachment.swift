@@ -309,7 +309,7 @@ public struct PreviewableAttachment {
         dataSource: DataSourcePath,
         dataUTI: String,
         validUTISet: Set<String>?,
-        maxFileSize: UInt,
+        maxFileSize: UInt64,
     ) throws(SignalAttachmentError) -> Self {
         assert(!dataUTI.isEmpty)
 
