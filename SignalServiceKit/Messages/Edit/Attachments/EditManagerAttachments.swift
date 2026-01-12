@@ -21,7 +21,7 @@ extension MessageEdits {
 public protocol EditManagerAttachments {
 
     /// Given...
-    /// 1. an edit target (the state of the edited message prior to the current round of edits)
+    /// 1. an edit target, without edits applied
     /// 2. the latest revision
     ///   * assumed to have the same row id as the edit target
     ///   * assumed to have empty fields for attachment-releated objects, e.g. ``TSMessage.quotedReply``.
@@ -31,8 +31,8 @@ public protocol EditManagerAttachments {
     /// 4. the attachment-related new values to apply
     ///
     /// ...applies the changes appropriately to both the prior and latest revision.
-    func reconcileAttachments<EditTarget: EditMessageWrapper>(
-        editTarget: EditTarget,
+    func reconcileAttachments(
+        uneditedTargetMessage: TSMessage,
         latestRevision: TSMessage,
         latestRevisionRowId: Int64,
         priorRevision: TSMessage,

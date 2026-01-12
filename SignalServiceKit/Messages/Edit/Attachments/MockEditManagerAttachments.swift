@@ -11,8 +11,8 @@ public class MockEditManagerAttachments: EditManagerAttachments {
 
     public init() {}
 
-    public func reconcileAttachments<EditTarget: EditMessageWrapper>(
-        editTarget: EditTarget,
+    public func reconcileAttachments(
+        uneditedTargetMessage: TSMessage,
         latestRevision: TSMessage,
         latestRevisionRowId: Int64,
         priorRevision: TSMessage,
@@ -22,7 +22,7 @@ public class MockEditManagerAttachments: EditManagerAttachments {
         newLinkPreview: MessageEdits.LinkPreviewSource?,
         quotedReplyEdit: MessageEdits.Edit<Void>,
         tx: DBWriteTransaction,
-    ) throws {
+    ) {
         // Do nothing
     }
 }

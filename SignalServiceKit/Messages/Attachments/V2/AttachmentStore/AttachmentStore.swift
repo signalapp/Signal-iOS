@@ -486,37 +486,23 @@ public struct AttachmentStore {
 
     // MARK: -
 
-    /// Create a new ownership reference, copying properties of an existing reference.
-    ///
-    /// Copies the database row directly, only modifying the owner and isPastEditRevision columns.
-    /// IMPORTANT: also copies the receivedAtTimestamp!
-    ///
-    /// Fails if the provided new owner isn't of the same type as the original
-    /// reference; e.g. trying to duplicate a link preview as a sticker, or if the new
-    /// owner is not in the same thread as the prior owner.
-    /// Those operations require the explicit creation of a new owner.
-    public func duplicateExistingMessageOwner(
-        _ existingOwnerSource: AttachmentReference.Owner.MessageSource,
-        with existingReference: AttachmentReference,
-        newOwnerMessageRowId: Int64,
-        newOwnerThreadRowId: Int64,
-        newOwnerIsPastEditRevision: Bool,
+    /// Add a attachment reference for a new past-edit revision message, cloning
+    /// the existing reference with a new owner.
+    public func cloneMessageOwnerForNewPastEditRevision(
+        existingReference: AttachmentReference,
+        existingOwnerSource: AttachmentReference.Owner.MessageSource,
+        newPastRevisionRowId: Int64,
         tx: DBWriteTransaction,
-    ) throws {
+    ) {
         var newRecord = MessageAttachmentReferenceRecord(
             attachmentReference: existingReference,
             messageSource: existingOwnerSource,
         )
-        // Check that the thread id on the record we just duplicated
-        // (the thread id of the original owner) matches the new thread id.
-        guard newRecord.threadRowId == newOwnerThreadRowId else {
-            // We could easily update the thread id to the new one, but this is
-            // a canary to tell us when this method is being used not as intended.
-            throw OWSAssertionError("Copying reference to a message on another thread!")
+        newRecord.ownerRowId = newPastRevisionRowId
+        newRecord.ownerIsPastEditRevision = true
+        failIfThrows {
+            try newRecord.insert(tx.database)
         }
-        newRecord.ownerRowId = newOwnerMessageRowId
-        newRecord.ownerIsPastEditRevision = newOwnerIsPastEditRevision
-        try newRecord.insert(tx.database)
     }
 
     /// Create a new ownership reference, copying properties of an existing reference.
@@ -839,19 +825,6 @@ public struct AttachmentStore {
             try storyReferenceRecord.insert(tx.database)
             return try AttachmentReference(record: storyReferenceRecord)
         }
-    }
-
-    /// Remove all references with the given owner.
-    /// - Returns the number of references removed.
-    public func removeAllReferences(
-        owner: AttachmentReference.Owner.ID,
-        tx: DBWriteTransaction,
-    ) throws -> Int {
-        let references = fetchReferences(owner: owner, tx: tx)
-        for reference in references {
-            try removeReference(reference: reference, tx: tx)
-        }
-        return references.count
     }
 
     /// Remove the given reference.

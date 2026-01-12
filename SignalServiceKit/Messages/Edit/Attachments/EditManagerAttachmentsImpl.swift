@@ -24,8 +24,8 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
         self.linkPreviewManager = linkPreviewManager
     }
 
-    public func reconcileAttachments<EditTarget: EditMessageWrapper>(
-        editTarget: EditTarget,
+    public func reconcileAttachments(
+        uneditedTargetMessage: TSMessage,
         latestRevision: TSMessage,
         latestRevisionRowId: Int64,
         priorRevision: TSMessage,
@@ -37,7 +37,7 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
         tx: DBWriteTransaction,
     ) throws {
         try reconcileQuotedReply(
-            editTarget: editTarget,
+            uneditedTargetMessage: uneditedTargetMessage,
             latestRevision: latestRevision,
             latestRevisionRowId: latestRevisionRowId,
             priorRevision: priorRevision,
@@ -47,7 +47,7 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
             tx: tx,
         )
         try reconcileLinkPreview(
-            editTarget: editTarget,
+            uneditedTargetMessage: uneditedTargetMessage,
             latestRevision: latestRevision,
             latestRevisionRowId: latestRevisionRowId,
             priorRevision: priorRevision,
@@ -57,7 +57,7 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
             tx: tx,
         )
         try reconcileOversizeText(
-            editTarget: editTarget,
+            uneditedTargetMessage: uneditedTargetMessage,
             latestRevision: latestRevision,
             latestRevisionRowId: latestRevisionRowId,
             priorRevision: priorRevision,
@@ -67,7 +67,7 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
             tx: tx,
         )
         try reconcileBodyMediaAttachments(
-            editTarget: editTarget,
+            uneditedTargetMessage: uneditedTargetMessage,
             latestRevision: latestRevision,
             latestRevisionRowId: latestRevisionRowId,
             priorRevision: priorRevision,
@@ -79,8 +79,8 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
 
     // MARK: - Attachments
 
-    private func reconcileQuotedReply<EditTarget: EditMessageWrapper>(
-        editTarget: EditTarget,
+    private func reconcileQuotedReply(
+        uneditedTargetMessage: TSMessage,
         latestRevision: TSMessage,
         latestRevisionRowId: Int64,
         priorRevision: TSMessage,
@@ -89,77 +89,64 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
         quotedReplyEdit: MessageEdits.Edit<Void>,
         tx: DBWriteTransaction,
     ) throws {
-        // The editTarget's copy of the message has no edits applied.
-        let quotedReplyPriorToEdit = editTarget.message.quotedMessage
-
-        let attachmentReferencePriorToEdit: AttachmentReference?
-        switch attachmentStore.quotedAttachmentReference(
-            parentMessage: editTarget.message,
-            tx: tx,
-        ) {
-        case nil, .stub:
-            attachmentReferencePriorToEdit = nil
-        case .thumbnail(let attachmentReference):
-            attachmentReferencePriorToEdit = attachmentReference
-        }
-
-        if let quotedReplyPriorToEdit {
+        if let quotedReplyPriorToEdit = uneditedTargetMessage.quotedMessage {
             // If we had a quoted reply, always keep it on the prior revision.
             priorRevision.update(with: quotedReplyPriorToEdit, transaction: tx)
-        }
-        if let attachmentReferencePriorToEdit {
-            // IMPORTANT: we MUST assign the prior revision owner BEFORE removing
-            // the new revision as owner; otherwise the removal could delete the attachment
-            // before we get the chance to reassign!
 
-            switch attachmentReferencePriorToEdit.owner {
-            case .message(let messageSource):
-                // Always assign the prior revision as an owner of the existing attachment.
-                try attachmentStore.duplicateExistingMessageOwner(
-                    messageSource,
-                    with: attachmentReferencePriorToEdit,
-                    newOwnerMessageRowId: priorRevisionRowId,
-                    newOwnerThreadRowId: threadRowId,
-                    newOwnerIsPastEditRevision: true,
-                    tx: tx,
-                )
-            default:
+            switch quotedReplyEdit {
+            case .keep:
+                latestRevision.update(with: quotedReplyPriorToEdit, transaction: tx)
+            case .change:
+                break
+            }
+        }
+
+        // The latest revision owns all the pre-edit attachments, because it
+        // claimed the edit target's row ID.
+        if
+            let latestRevisionAttachmentReference = attachmentStore.fetchAnyReference(
+                owner: .quotedReplyAttachment(messageRowId: latestRevisionRowId),
+                tx: tx,
+            )
+        {
+            let messageSource: AttachmentReference.Owner.MessageSource
+            switch latestRevisionAttachmentReference.owner {
+            case .message(let _messageSource):
+                messageSource = _messageSource
+            case .storyMessage, .thread:
                 throw OWSAssertionError("Invalid attachment reference type!")
             }
-        }
 
-        switch quotedReplyEdit {
-        case .keep:
-            if let quotedReplyPriorToEdit {
-                // The latest revision keeps the prior revision's quoted reply.
-                latestRevision.update(with: quotedReplyPriorToEdit, transaction: tx)
-            }
+            // Add the prior revision as an owner of the attachment. This must
+            // happen before we potentially remove the reference from the latest
+            // revision, to ensure the attachment refcount never hits zero.
+            attachmentStore.cloneMessageOwnerForNewPastEditRevision(
+                existingReference: latestRevisionAttachmentReference,
+                existingOwnerSource: messageSource,
+                newPastRevisionRowId: priorRevisionRowId,
+                tx: tx,
+            )
 
-            if let attachmentReferencePriorToEdit {
-                // The latest revision message is already an owner because it maintained the original's row id.
-                // Just update the timestamp.
+            switch quotedReplyEdit {
+            case .keep:
+                // Update the reference's timestamp to match the latest revision.
                 try attachmentStore.update(
-                    attachmentReferencePriorToEdit,
+                    latestRevisionAttachmentReference,
                     withReceivedAtTimestamp: latestRevision.receivedAtTimestamp,
                     tx: tx,
                 )
-            }
-        case .change:
-            // Drop the quoted reply on the latest revision.
-            if attachmentReferencePriorToEdit != nil {
-                // Break the owner edge from the latest revision.
-                let removedCount = try attachmentStore.removeAllReferences(
-                    owner: .quotedReplyAttachment(messageRowId: latestRevisionRowId),
+            case .change:
+                // Drop the reference.
+                try attachmentStore.removeReference(
+                    reference: latestRevisionAttachmentReference,
                     tx: tx,
                 )
-                owsAssertDebug(removedCount == 1)
             }
-            // No need to touch the TSMessage.quotedReply as it is already nil by default.
         }
     }
 
-    private func reconcileLinkPreview<EditTarget: EditMessageWrapper>(
-        editTarget: EditTarget,
+    private func reconcileLinkPreview(
+        uneditedTargetMessage: TSMessage,
         latestRevision: TSMessage,
         latestRevisionRowId: Int64,
         priorRevision: TSMessage,
@@ -168,45 +155,43 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
         newLinkPreview: MessageEdits.LinkPreviewSource?,
         tx: DBWriteTransaction,
     ) throws {
-        // The editTarget's copy of the message has no edits applied.
-        let linkPreviewPriorToEdit = editTarget.message.linkPreview
-
-        let attachmentReferencePriorToEdit = attachmentStore.fetchAnyReference(
-            owner: .messageLinkPreview(messageRowId: editTarget.message.sqliteRowId!),
-            tx: tx,
-        )
-
-        if let linkPreviewPriorToEdit {
+        if let linkPreviewPriorToEdit = uneditedTargetMessage.linkPreview {
             // If we had a link preview, always keep it on the prior revision.
             priorRevision.update(with: linkPreviewPriorToEdit, transaction: tx)
         }
-        if let attachmentReferencePriorToEdit {
-            // IMPORTANT: we MUST assign the prior revision owner BEFORE removing
-            // the new revision as owner; otherwise the removal could delete the attachment
-            // before we get the chance to reassign!
 
-            switch attachmentReferencePriorToEdit.owner {
-            case .message(let messageSource):
-                // Always assign the prior revision as an owner of the existing attachment.
-                try attachmentStore.duplicateExistingMessageOwner(
-                    messageSource,
-                    with: attachmentReferencePriorToEdit,
-                    newOwnerMessageRowId: priorRevisionRowId,
-                    newOwnerThreadRowId: threadRowId,
-                    newOwnerIsPastEditRevision: true,
-                    tx: tx,
-                )
-            default:
-                throw OWSAssertionError("Invalid attachment reference type!")
-            }
-
-            // Break the owner edge from the latest revision since we always
-            // either drop the link preview or create a new one.
-            let removedCount = try attachmentStore.removeAllReferences(
+        // The latest revision owns all the pre-edit attachments, because it
+        // claimed the edit target's row ID.
+        if
+            let latestRevisionAttachmentReference = attachmentStore.fetchAnyReference(
                 owner: .messageLinkPreview(messageRowId: latestRevisionRowId),
                 tx: tx,
             )
-            owsAssertDebug(removedCount == 1)
+        {
+            let messageSource: AttachmentReference.Owner.MessageSource
+            switch latestRevisionAttachmentReference.owner {
+            case .message(let _messageSource):
+                messageSource = _messageSource
+            case .storyMessage, .thread:
+                throw OWSAssertionError("Invalid attachment reference type!")
+            }
+
+            // Add the prior revision as an owner of the attachment. This must
+            // happen before we potentially remove the reference from the latest
+            // revision, to ensure the attachment refcount never hits zero.
+            attachmentStore.cloneMessageOwnerForNewPastEditRevision(
+                existingReference: latestRevisionAttachmentReference,
+                existingOwnerSource: messageSource,
+                newPastRevisionRowId: priorRevisionRowId,
+                tx: tx,
+            )
+
+            // Remove the latest revision reference, since it's either been
+            // edited out or we'll create a new one below.
+            try attachmentStore.removeReference(
+                reference: latestRevisionAttachmentReference,
+                tx: tx,
+            )
         }
 
         // Create and assign the new link preview.
@@ -265,8 +250,8 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
         }
     }
 
-    private func reconcileOversizeText<EditTarget: EditMessageWrapper>(
-        editTarget: EditTarget,
+    private func reconcileOversizeText(
+        uneditedTargetMessage: TSMessage,
         latestRevision: TSMessage,
         latestRevisionRowId: Int64,
         priorRevision: TSMessage,
@@ -275,40 +260,38 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
         newOversizeText: MessageEdits.OversizeTextSource?,
         tx: DBWriteTransaction,
     ) throws {
-        // The editTarget's copy of the message has no edits applied;
-        // fetch _its_ attachment.
-        let oversizeTextReferencePriorToEdit = attachmentStore.fetchAnyReference(
-            owner: .messageOversizeText(messageRowId: editTarget.message.sqliteRowId!),
-            tx: tx,
-        )
-
-        if let oversizeTextReferencePriorToEdit {
-            // IMPORTANT: we MUST assign the prior revision owner BEFORE removing
-            // the new revision as owner; otherwise the removal could delete the attachment
-            // before we get the chance to reassign!
-
-            switch oversizeTextReferencePriorToEdit.owner {
-            case .message(let messageSource):
-                // If we had oversize text, always keep it on the prior revision.
-                try attachmentStore.duplicateExistingMessageOwner(
-                    messageSource,
-                    with: oversizeTextReferencePriorToEdit,
-                    newOwnerMessageRowId: priorRevisionRowId,
-                    newOwnerThreadRowId: threadRowId,
-                    newOwnerIsPastEditRevision: true,
-                    tx: tx,
-                )
-            default:
-                throw OWSAssertionError("Invalid attachment reference type!")
-            }
-
-            // Break the owner edge from the latest revision since we always
-            // either drop the oversize text or create a new one.
-            let removedCount = try attachmentStore.removeAllReferences(
+        // The latest revision owns all the pre-edit attachments, because it
+        // claimed the edit target's row ID.
+        if
+            let latestRevisionAttachmentReference = attachmentStore.fetchAnyReference(
                 owner: .messageOversizeText(messageRowId: latestRevisionRowId),
                 tx: tx,
             )
-            owsAssertDebug(removedCount == 1)
+        {
+            let messageSource: AttachmentReference.Owner.MessageSource
+            switch latestRevisionAttachmentReference.owner {
+            case .message(let _messageSource):
+                messageSource = _messageSource
+            case .storyMessage, .thread:
+                throw OWSAssertionError("Invalid attachment reference type!")
+            }
+
+            // Add the prior revision as an owner of the attachment. This must
+            // happen before we potentially remove the reference from the latest
+            // revision, to ensure the attachment refcount never hits zero.
+            attachmentStore.cloneMessageOwnerForNewPastEditRevision(
+                existingReference: latestRevisionAttachmentReference,
+                existingOwnerSource: messageSource,
+                newPastRevisionRowId: priorRevisionRowId,
+                tx: tx,
+            )
+
+            // Remove the latest revision reference, since it's either been
+            // edited out or we'll create a new one below.
+            try attachmentStore.removeReference(
+                reference: latestRevisionAttachmentReference,
+                tx: tx,
+            )
         }
 
         // Create and assign the new oversize text.
@@ -345,8 +328,8 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
         }
     }
 
-    private func reconcileBodyMediaAttachments<EditTarget: EditMessageWrapper>(
-        editTarget: EditTarget,
+    private func reconcileBodyMediaAttachments(
+        uneditedTargetMessage: TSMessage,
         latestRevision: TSMessage,
         latestRevisionRowId: Int64,
         priorRevision: TSMessage,
@@ -354,32 +337,37 @@ public class EditManagerAttachmentsImpl: EditManagerAttachments {
         threadRowId: Int64,
         tx: DBWriteTransaction,
     ) throws {
-        // The editTarget's copy of the message has no edits applied;
-        // fetch _its_ attachment(s).
-        let attachmentReferencesPriorToEdit = attachmentStore.fetchReferences(
-            owners: [.messageBodyAttachment(messageRowId: editTarget.message.sqliteRowId!)],
+        // The latest revision owns all the pre-edit attachments, because it
+        // claimed the edit target's row ID.
+        let latestRevisionAttachmentReferences = attachmentStore.fetchReferences(
+            owners: [.messageBodyAttachment(messageRowId: latestRevisionRowId)],
             tx: tx,
         )
 
-        for attachmentReference in attachmentReferencesPriorToEdit {
-            switch attachmentReference.owner {
-            case .message(let messageSource):
-                // Always assign the prior revision as a new owner of the existing attachment.
-                try attachmentStore.duplicateExistingMessageOwner(
-                    messageSource,
-                    with: attachmentReference,
-                    newOwnerMessageRowId: priorRevisionRowId,
-                    newOwnerThreadRowId: threadRowId,
-                    newOwnerIsPastEditRevision: true,
-                    tx: tx,
-                )
-            default:
+        for latestRevisionAttachmentReference in latestRevisionAttachmentReferences {
+            let messageSource: AttachmentReference.Owner.MessageSource
+            switch latestRevisionAttachmentReference.owner {
+            case .message(let _messageSource):
+                messageSource = _messageSource
+            case .storyMessage, .thread:
                 throw OWSAssertionError("Invalid attachment reference type!")
             }
 
-            // The latest revision stays an owner; just update the timestamp.
+            // Add the prior revision as an owner of the attachment. This must
+            // happen before we potentially remove the reference from the latest
+            // revision, to ensure the attachment refcount never hits zero.
+            attachmentStore.cloneMessageOwnerForNewPastEditRevision(
+                existingReference: latestRevisionAttachmentReference,
+                existingOwnerSource: messageSource,
+                newPastRevisionRowId: priorRevisionRowId,
+                tx: tx,
+            )
+
+            // Body attachments can't be edited, so the latest revision remains
+            // an owner. Update the reference's timestamp to match the latest
+            // revision.
             try attachmentStore.update(
-                attachmentReference,
+                latestRevisionAttachmentReference,
                 withReceivedAtTimestamp: latestRevision.receivedAtTimestamp,
                 tx: tx,
             )

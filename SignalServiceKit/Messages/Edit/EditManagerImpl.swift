@@ -269,12 +269,25 @@ public class EditManagerImpl: EditManager {
     ) throws -> EditTarget.MessageType {
         /// Create and insert a clone of the existing message, with edits
         /// applied.
-        let latestRevisionMessage: EditTarget.MessageType = createEditedMessage(
-            editTargetWrapper: editTargetWrapper,
-            edits: editsToApply,
-            tx: tx,
-        )
-        latestRevisionMessage.anyOverwritingUpdate(transaction: tx)
+        let latestRevisionMessage = {
+            let editedMessageBuilder = editTargetWrapper.cloneAsBuilderWithoutAttachments(
+                applying: editsToApply,
+                isLatestRevision: true,
+                attachmentContentValidator: context.attachmentContentValidator,
+                tx: tx,
+            )
+            let editedMessage = EditTarget.build(editedMessageBuilder, tx: tx)
+
+            // Swap in the IDs from the original message, so we overwrite it.
+            editedMessage.replaceRowId(
+                editTargetWrapper.message.sqliteRowId!,
+                uniqueId: editTargetWrapper.message.uniqueId,
+            )
+            editedMessage.replaceSortId(editTargetWrapper.message.sortId)
+
+            editedMessage.anyOverwritingUpdate(transaction: tx)
+            return editedMessage
+        }()
         let latestRevisionRowId = latestRevisionMessage.sqliteRowId!
 
         /// Create and insert a clone of the original message, preserving all
@@ -296,7 +309,7 @@ public class EditManagerImpl: EditManager {
         let priorRevisionRowId = priorRevisionMessage.sqliteRowId!
 
         try context.editManagerAttachments.reconcileAttachments(
-            editTarget: editTargetWrapper,
+            uneditedTargetMessage: editTargetWrapper.message,
             latestRevision: latestRevisionMessage,
             latestRevisionRowId: latestRevisionRowId,
             priorRevision: priorRevisionMessage,
@@ -327,49 +340,6 @@ public class EditManagerImpl: EditManager {
         }
 
         return latestRevisionMessage
-    }
-
-    /// Creates a new message with the following steps:
-    ///     1. Create a MessageBuilder based on the original message
-    ///     2. Update the fields on the builder targeted by the edit
-    ///     3. Build a new copy of the message.  This message will have a new grdbId/uniqueId
-    ///     4. Swap the grdbId/uniqueId of the original message into this new copy.
-    ///
-    /// Using a MesageBuilder in this way allows creating an updated version of an existing
-    /// message, while preserving the readonly behavior of the TSMessage
-    private func createEditedMessage<EditTarget: EditMessageWrapper>(
-        editTargetWrapper editTarget: EditTarget,
-        edits: MessageEdits,
-        tx: DBWriteTransaction,
-    ) -> EditTarget.MessageType {
-
-        let editedMessageBuilder = editTarget.cloneAsBuilderWithoutAttachments(
-            applying: edits,
-            isLatestRevision: true,
-            attachmentContentValidator: context.attachmentContentValidator,
-            tx: tx,
-        )
-
-        let editedMessage = EditTarget.build(
-            editedMessageBuilder,
-            tx: tx,
-        )
-
-        // Swap out the newly created grdbId/uniqueId with the
-        // one from the original message
-        // This prevents needing to expose things like uniqueID as
-        // writeable on the base model objects.
-        if let rowId = editTarget.message.grdbId {
-            editedMessage.replaceRowId(
-                rowId.int64Value,
-                uniqueId: editTarget.message.uniqueId,
-            )
-            editedMessage.replaceSortId(editTarget.message.sortId)
-        } else {
-            owsFailDebug("Missing edit target rowID")
-        }
-
-        return editedMessage
     }
 
     // MARK: - Incoming Edit Validation
