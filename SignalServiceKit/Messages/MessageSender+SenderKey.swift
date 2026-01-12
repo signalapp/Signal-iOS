@@ -378,8 +378,11 @@ extension MessageSender {
             )
             skdmMessage.configureAsSentOnBehalfOf(originalMessage, in: thread)
 
-            guard let serializedMessage = self.buildAndRecordMessage(skdmMessage, in: contactThread, tx: writeTx) else {
-                result.failedRecipients.append((serviceId, OWSAssertionError("Couldn't build message.")))
+            let serializedMessage: SerializedMessage
+            do {
+                serializedMessage = try self.buildAndRecordMessage(skdmMessage, in: contactThread, tx: writeTx)
+            } catch {
+                result.failedRecipients.append((serviceId, error))
                 continue
             }
 

@@ -840,9 +840,7 @@ public extension TSOutgoingMessage {
                 throw OWSAssertionError("Failed to build transcript")
             }
 
-            guard let serializedMessage = SSKEnvironment.shared.messageSenderRef.buildAndRecordMessage(transcript, in: localThread, tx: tx) else {
-                throw OWSAssertionError("Couldn't serialize message.")
-            }
+            let serializedMessage = try SSKEnvironment.shared.messageSenderRef.buildAndRecordMessage(transcript, in: localThread, tx: tx)
 
             return OWSMessageSend(
                 message: transcript,

@@ -755,9 +755,7 @@ public class MessageSender {
                 return nil
             }
 
-            guard let serializedMessage = self.buildAndRecordMessage(message, in: thread, tx: tx) else {
-                throw OWSAssertionError("Couldn't build message.")
-            }
+            let serializedMessage = try self.buildAndRecordMessage(message, in: thread, tx: tx)
 
             let senderCertificate: SenderCertificate = {
                 switch SSKEnvironment.shared.udManagerRef.phoneNumberSharingMode(tx: tx).orDefault {
@@ -1200,9 +1198,9 @@ public class MessageSender {
         _ message: TSOutgoingMessage,
         in thread: TSThread,
         tx: DBWriteTransaction,
-    ) -> SerializedMessage? {
+    ) throws -> SerializedMessage {
         guard let plaintextData = message.buildPlainTextData(thread, transaction: tx) else {
-            return nil
+            throw OWSAssertionError("couldn't serialize message")
         }
         let messageSendLog = SSKEnvironment.shared.messageSendLogRef
         let payloadId = messageSendLog.recordPayload(plaintextData, for: message, tx: tx)
