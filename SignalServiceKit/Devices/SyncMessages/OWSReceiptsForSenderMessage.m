@@ -79,30 +79,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)encodeWithCoder:(NSCoder *)coder
 {
-    [super encodeWithCoder:coder];
-    NSSet *messageTimestamps = self.messageTimestamps;
-    if (messageTimestamps != nil) {
-        [coder encodeObject:messageTimestamps forKey:@"messageTimestamps"];
-    }
-    NSSet *messageUniqueIds = self.messageUniqueIds;
-    if (messageUniqueIds != nil) {
-        [coder encodeObject:messageUniqueIds forKey:@"messageUniqueIds"];
-    }
-    [coder encodeObject:[self valueForKey:@"receiptType"] forKey:@"receiptType"];
+    OWSFail(@"Doesn't support serialization.");
 }
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
     self = [super initWithCoder:coder];
-    if (!self) {
-        return self;
-    }
-    self->_messageTimestamps = [coder decodeObjectOfClasses:[NSSet setWithArray:@[ [NSSet class], [NSNumber class] ]]
-                                                     forKey:@"messageTimestamps"];
-    self->_messageUniqueIds = [coder decodeObjectOfClasses:[NSSet setWithArray:@[ [NSSet class], [NSString class] ]]
-                                                    forKey:@"messageUniqueIds"];
-    self->_receiptType = [(NSNumber *)[coder decodeObjectOfClass:[NSNumber class] forKey:@"receiptType"] intValue];
-    return self;
+    // Doesn't support serialization.
+    return nil;
 }
 
 - (NSUInteger)hash

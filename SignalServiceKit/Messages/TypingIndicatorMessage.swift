@@ -5,24 +5,21 @@
 
 import Foundation
 
-@objc(OWSTypingIndicatorAction)
-public enum TypingIndicatorAction: Int {
+public enum TypingIndicatorAction {
     case started
     case stopped
 }
 
-@objc(OWSTypingIndicatorMessage)
 public final class TypingIndicatorMessage: TSOutgoingMessage {
     override public class var supportsSecureCoding: Bool { true }
 
     public required init?(coder: NSCoder) {
-        self.action = (coder.decodeObject(of: NSNumber.self, forKey: "action")?.intValue).flatMap(TypingIndicatorAction.init(rawValue:)) ?? .started
-        super.init(coder: coder)
+        // Doesn't support serialization.
+        return nil
     }
 
     override public func encode(with coder: NSCoder) {
-        super.encode(with: coder)
-        coder.encode(NSNumber(value: self.action.rawValue), forKey: "action")
+        owsFail("Doesn't support serialization.")
     }
 
     override public var hash: Int {
@@ -49,7 +46,6 @@ public final class TypingIndicatorMessage: TSOutgoingMessage {
 
     // MARK: Initializers
 
-    @objc
     public init(
         thread: TSThread,
         action: TypingIndicatorAction,

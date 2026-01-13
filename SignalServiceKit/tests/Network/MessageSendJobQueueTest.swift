@@ -78,7 +78,12 @@ class MessageSenderJobQueueTest: SSKBaseTest {
             let preparedMessage = PreparedOutgoingMessage.preprepared(
                 transientMessageWithoutAttachments: message,
             )
-            let promise = jobQueue.add(.promise, message: preparedMessage, transaction: tx)
+            let promise = jobQueue.add(
+                .promise,
+                message: preparedMessage,
+                limitToCurrentProcessLifetime: true,
+                transaction: tx,
+            )
             return (message, promise)
         }
         try await promise.awaitable()

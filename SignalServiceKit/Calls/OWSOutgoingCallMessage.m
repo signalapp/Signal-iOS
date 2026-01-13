@@ -35,53 +35,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)encodeWithCoder:(NSCoder *)coder
 {
-    [super encodeWithCoder:coder];
-    SSKProtoCallMessageAnswer *answerMessage = self.answerMessage;
-    if (answerMessage != nil) {
-        [coder encodeObject:answerMessage forKey:@"answerMessage"];
-    }
-    SSKProtoCallMessageBusy *busyMessage = self.busyMessage;
-    if (busyMessage != nil) {
-        [coder encodeObject:busyMessage forKey:@"busyMessage"];
-    }
-    NSNumber *destinationDeviceId = self.destinationDeviceId;
-    if (destinationDeviceId != nil) {
-        [coder encodeObject:destinationDeviceId forKey:@"destinationDeviceId"];
-    }
-    SSKProtoCallMessageHangup *hangupMessage = self.hangupMessage;
-    if (hangupMessage != nil) {
-        [coder encodeObject:hangupMessage forKey:@"hangupMessage"];
-    }
-    NSArray *iceUpdateMessages = self.iceUpdateMessages;
-    if (iceUpdateMessages != nil) {
-        [coder encodeObject:iceUpdateMessages forKey:@"iceUpdateMessages"];
-    }
-    SSKProtoCallMessageOffer *offerMessage = self.offerMessage;
-    if (offerMessage != nil) {
-        [coder encodeObject:offerMessage forKey:@"offerMessage"];
-    }
-    SSKProtoCallMessageOpaque *opaqueMessage = self.opaqueMessage;
-    if (opaqueMessage != nil) {
-        [coder encodeObject:opaqueMessage forKey:@"opaqueMessage"];
-    }
+    OWSFail(@"Doesn't support serialization.");
 }
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
     self = [super initWithCoder:coder];
-    if (!self) {
-        return self;
-    }
-    self->_answerMessage = [coder decodeObjectOfClass:[SSKProtoCallMessageAnswer class] forKey:@"answerMessage"];
-    self->_busyMessage = [coder decodeObjectOfClass:[SSKProtoCallMessageBusy class] forKey:@"busyMessage"];
-    self->_destinationDeviceId = [coder decodeObjectOfClass:[NSNumber class] forKey:@"destinationDeviceId"];
-    self->_hangupMessage = [coder decodeObjectOfClass:[SSKProtoCallMessageHangup class] forKey:@"hangupMessage"];
-    self->_iceUpdateMessages =
-        [coder decodeObjectOfClasses:[NSSet setWithArray:@[ [NSArray class], [SSKProtoCallMessageIceUpdate class] ]]
-                              forKey:@"iceUpdateMessages"];
-    self->_offerMessage = [coder decodeObjectOfClass:[SSKProtoCallMessageOffer class] forKey:@"offerMessage"];
-    self->_opaqueMessage = [coder decodeObjectOfClass:[SSKProtoCallMessageOpaque class] forKey:@"opaqueMessage"];
-    return self;
+    // Doesn't support serialization.
+    return nil;
 }
 
 - (NSUInteger)hash
