@@ -289,15 +289,12 @@ public class ReceiptSender: NSObject {
                 )
 
                 let thread = TSContactThread.getOrCreateThread(withContactAddress: SignalServiceAddress(aci), transaction: tx)
-                let message: OWSReceiptsForSenderMessage
-                switch receiptType {
-                case .delivery:
-                    message = .deliveryReceiptsForSenderMessage(with: thread, receiptSet: batchToSend, transaction: tx)
-                case .read:
-                    message = .readReceiptsForSenderMessage(with: thread, receiptSet: batchToSend, transaction: tx)
-                case .viewed:
-                    message = .viewedReceiptsForSenderMessage(with: thread, receiptSet: batchToSend, transaction: tx)
-                }
+                let message = ReceiptMessage(
+                    thread: thread,
+                    receiptSet: batchToSend,
+                    receiptType: receiptType.asProto,
+                    tx: tx,
+                )
 
                 let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueueRef
                 let preparedMessage = PreparedOutgoingMessage.preprepared(
@@ -354,6 +351,14 @@ public class ReceiptSender: NSObject {
         case delivery
         case read
         case viewed
+
+        var asProto: SSKProtoReceiptMessageType {
+            switch self {
+            case .delivery: .delivery
+            case .read: .read
+            case .viewed: .viewed
+            }
+        }
     }
 
     private func dequeueReceipts(for receiptBatch: ReceiptBatch, receiptType: ReceiptType) async {

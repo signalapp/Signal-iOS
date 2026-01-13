@@ -264,21 +264,21 @@ public class OutgoingMessageFactory: Factory {
 
     // MARK: Delivery Receipts
 
-    public func buildDeliveryReceipt() -> OWSReceiptsForSenderMessage {
-        var item: OWSReceiptsForSenderMessage!
+    func buildDeliveryReceipt() -> ReceiptMessage {
+        var item: ReceiptMessage!
         write { transaction in
             item = self.buildDeliveryReceipt(transaction: transaction)
         }
         return item
     }
 
-    public func buildDeliveryReceipt(transaction: DBWriteTransaction) -> OWSReceiptsForSenderMessage {
-        let item = OWSReceiptsForSenderMessage.deliveryReceiptsForSenderMessage(
-            with: threadCreator(transaction),
+    func buildDeliveryReceipt(transaction: DBWriteTransaction) -> ReceiptMessage {
+        return ReceiptMessage(
+            thread: threadCreator(transaction),
             receiptSet: receiptSetBuilder(),
-            transaction: transaction,
+            receiptType: .delivery,
+            tx: transaction,
         )
-        return item
     }
 
     var receiptSetBuilder: () -> MessageReceiptSet = {
