@@ -1101,11 +1101,11 @@ public class StickerManager: NSObject {
             withContactAddress: registeredState.localIdentifiers.aciAddress,
             transaction: transaction,
         )
-        let message = OWSStickerPackSyncMessage(
+        let message = StickerPackSyncMessage(
             localThread: thread,
             packs: packs,
             operationType: operationType,
-            transaction: transaction,
+            tx: transaction,
         )
         // The sync message doesn't include the actual stickers on it as attachments.
         let preparedMessage = PreparedOutgoingMessage.preprepared(
