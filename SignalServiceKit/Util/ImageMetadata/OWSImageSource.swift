@@ -246,6 +246,9 @@ extension OWSImageSource {
             owsFailDebug("Invalid webp image.")
             return nil
         }
+        guard byteLength <= OWSMediaUtils.kMaxFileSizeAnimatedImage else {
+            return nil
+        }
         guard let data = try? self.readIntoMemory() else {
             return nil
         }
@@ -253,6 +256,9 @@ extension OWSImageSource {
     }
 
     private func loadWebPMetadata() -> WebpMetadata? {
+        guard byteLength <= OWSMediaUtils.kMaxFileSizeAnimatedImage else {
+            return nil
+        }
         guard let data = try? self.readIntoMemory() else {
             return nil
         }
