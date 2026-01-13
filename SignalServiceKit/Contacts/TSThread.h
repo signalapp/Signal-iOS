@@ -131,8 +131,9 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNa
 
 - (BOOL)hasSafetyNumbers;
 
-- (nullable TSInteraction *)lastInteractionForInboxWithTransaction:(DBReadTransaction *)transaction
-    NS_SWIFT_NAME(lastInteractionForInbox(transaction:));
+- (nullable TSInteraction *)lastInteractionForInboxForChatListSorting:(BOOL)isForSorting
+                                                          transaction:(DBReadTransaction *)transaction
+    NS_SWIFT_NAME(lastInteractionForInbox(forChatListSorting:transaction:));
 
 - (nullable TSInteraction *)firstInteractionAtOrAroundSortId:(uint64_t)sortId
                                                  transaction:(DBReadTransaction *)transaction

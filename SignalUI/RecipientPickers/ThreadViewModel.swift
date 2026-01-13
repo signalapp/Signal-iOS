@@ -92,7 +92,7 @@ public class ThreadViewModel: NSObject {
         self.hasUnreadMessages = associatedData.isMarkedUnread || unreadCount > 0
         self.hasPendingMessageRequest = thread.hasPendingMessageRequest(transaction: transaction)
 
-        self.lastMessageForInbox = thread.lastInteractionForInbox(transaction: transaction)
+        self.lastMessageForInbox = thread.lastInteractionForInbox(forChatListSorting: false, transaction: transaction)
 
         if forChatList {
             chatListInfo = ChatListInfo(

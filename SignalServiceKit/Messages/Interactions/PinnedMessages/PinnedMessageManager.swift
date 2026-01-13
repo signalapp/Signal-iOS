@@ -72,7 +72,7 @@ public class PinnedMessageManager {
         expireTimer: UInt32?,
         expireTimerVersion: UInt32?,
         transaction: DBWriteTransaction,
-    ) throws -> TSInteraction {
+    ) throws {
         let pinReceivedAtTimestamp = dateProvider().ows_millisecondsSince1970
 
         guard let localAci = accountManager.localIdentifiers(tx: transaction)?.aci else {
@@ -142,8 +142,6 @@ public class PinnedMessageManager {
         )
 
         expirationJob.restart()
-
-        return targetMessage
     }
 
     public func unpinMessage(

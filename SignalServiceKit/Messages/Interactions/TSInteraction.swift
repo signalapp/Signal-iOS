@@ -117,8 +117,27 @@ extension TSInteraction {
 
 extension TSInteraction {
 
-    /// Returns whether the given interaction should pull a conversation to the top of the list and
-    /// marked unread.
+    /// Returns whether the given interaction should pull a conversation to the top of the list
+    ///
+    /// In most cases, this is equivalent to checking shouldAppearInInbox. But in some cases, we may want to show
+    /// a message in the chat list but not bump the thread to the top.
+
+    @objc
+    public func shouldBumpThreadToTopOfChatList(transaction: DBReadTransaction) -> Bool {
+        switch self {
+        case let infoMessage as TSInfoMessage:
+            switch infoMessage.messageType {
+            case .typePinnedMessage:
+                return false
+            default:
+                return shouldAppearInInbox(transaction: transaction)
+            }
+        default:
+            return shouldAppearInInbox(transaction: transaction)
+        }
+    }
+
+    /// Returns whether the given interaction should appear in the chat list preview.
     ///
     /// This operation necessarily happens after the interaction has been pulled out of the
     /// database. If possible, they should also be filtered as part of the database queries in the
@@ -140,8 +159,7 @@ extension TSInteraction {
         })
     }
 
-    /// Returns whether the given interaction should pull a conversation to the top of the list and
-    /// marked unread.
+    /// Returns whether the given interaction should show in the chat list preview
     ///
     /// - parameter groupUpdateItemsBuilder: If the message is a group update info message,
     /// a block that builds the PersistableGroupUpdateItems for the message, which is run synchronously

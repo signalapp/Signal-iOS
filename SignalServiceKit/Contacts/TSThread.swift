@@ -127,6 +127,7 @@ extension TSThread {
         )
         let needsToUpdateLastInteractionRowId = interactionRowId > lastInteractionRowId
         let needsToClearIsMarkedUnread = threadAssociatedData.isMarkedUnread && wasInteractionInserted
+        let needsUpdatedRowId = interaction.shouldBumpThreadToTopOfChatList(transaction: tx)
 
         if
             needsToMarkAsVisible
@@ -137,7 +138,9 @@ extension TSThread {
         {
             anyUpdate(transaction: tx) { thread in
                 thread.shouldThreadBeVisible = true
-                thread.lastInteractionRowId = max(thread.lastInteractionRowId, interactionRowId)
+                if needsUpdatedRowId {
+                    thread.lastInteractionRowId = max(thread.lastInteractionRowId, interactionRowId)
+                }
             }
 
             threadAssociatedData.clear(
@@ -282,7 +285,7 @@ extension TSThread {
         if needsToUpdateLastInteractionRowId || needsToUpdateLastVisibleSortId {
             anyUpdate(transaction: tx) { thread in
                 if needsToUpdateLastInteractionRowId {
-                    let lastInteraction = thread.lastInteractionForInbox(transaction: tx)
+                    let lastInteraction = thread.lastInteractionForInbox(forChatListSorting: true, transaction: tx)
                     thread.lastInteractionRowId = lastInteraction?.sortId ?? 0
                 }
             }

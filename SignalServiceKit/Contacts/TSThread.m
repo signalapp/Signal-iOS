@@ -293,11 +293,13 @@ lastVisibleSortIdOnScreenPercentageObsolete:(double)lastVisibleSortIdOnScreenPer
 
 #pragma mark - Interactions
 
-- (nullable TSInteraction *)lastInteractionForInboxWithTransaction:(DBReadTransaction *)transaction
+- (nullable TSInteraction *)lastInteractionForInboxForChatListSorting:(BOOL)isForSorting
+                                                          transaction:(DBReadTransaction *)transaction
 {
     OWSAssertDebug(transaction);
     return [[[InteractionFinder alloc] initWithThreadUniqueId:self.uniqueId]
-        mostRecentInteractionForInboxWithTransaction:transaction];
+        mostRecentInteractionForInboxForChatListSorting:isForSorting
+                                            transaction:transaction];
 }
 
 - (nullable TSInteraction *)firstInteractionAtOrAroundSortId:(uint64_t)sortId

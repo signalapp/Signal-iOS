@@ -578,18 +578,27 @@ public class InteractionFinder: NSObject {
 
     @objc
     public func mostRecentInteractionForInbox(
+        forChatListSorting: Bool,
         transaction: DBReadTransaction,
     ) -> TSInteraction? {
         guard let firstInteraction = mostRecentInteraction(transaction: transaction) else {
             return nil
         }
 
-        // We can't exclude specific group updates in the query.
+        // We can't exclude specific updates in the query.
         // In the (mildly) rare case that the most recent message
-        // is a group update that shouldn't be shown,
+        // is a chat event that shouldn't be shown,
         // we iterate backward until we find a good interaction.
-        if firstInteraction.shouldAppearInInbox(transaction: transaction) {
-            return firstInteraction
+        // The qualifications for whether an interaction appears change
+        // depending on if the result will be used for chat list sorting.
+        if forChatListSorting {
+            if firstInteraction.shouldBumpThreadToTopOfChatList(transaction: transaction) {
+                return firstInteraction
+            }
+        } else {
+            if firstInteraction.shouldAppearInInbox(transaction: transaction) {
+                return firstInteraction
+            }
         }
         do {
             let (sql, args) = mostRecentInteractionSqlAndArgs
@@ -599,8 +608,14 @@ public class InteractionFinder: NSObject {
                 transaction: transaction,
             )
             while let interaction = try cursor.next() {
-                if interaction.shouldAppearInInbox(transaction: transaction) {
-                    return interaction
+                if forChatListSorting {
+                    if interaction.shouldBumpThreadToTopOfChatList(transaction: transaction) {
+                        return interaction
+                    }
+                } else {
+                    if interaction.shouldAppearInInbox(transaction: transaction) {
+                        return interaction
+                    }
                 }
             }
             return nil

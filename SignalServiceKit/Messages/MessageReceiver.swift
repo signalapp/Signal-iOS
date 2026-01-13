@@ -578,7 +578,7 @@ public final class MessageReceiver {
                         return
                     }
                     do {
-                        let targetMessage = try DependenciesBridge.shared.pinnedMessageManager.pinMessage(
+                        try DependenciesBridge.shared.pinnedMessageManager.pinMessage(
                             pinMessageProto: pinMessage,
                             pinAuthor: localIdentifiers.aci,
                             thread: thread,
@@ -587,7 +587,7 @@ public final class MessageReceiver {
                             expireTimerVersion: dataMessage.expireTimerVersion,
                             transaction: tx,
                         )
-                        SSKEnvironment.shared.databaseStorageRef.touch(interaction: targetMessage, shouldReindex: false, tx: tx)
+                        SSKEnvironment.shared.databaseStorageRef.touch(thread: thread, shouldReindex: false, shouldUpdateChatListUi: true, tx: tx)
                     } catch {
                         owsFailDebug("Could not pin message \(error)")
                         return
@@ -1389,7 +1389,7 @@ public final class MessageReceiver {
         {
             if let pinMessage = dataMessage.pinMessage {
                 do {
-                    let targetMessage = try DependenciesBridge.shared.pinnedMessageManager.pinMessage(
+                    try DependenciesBridge.shared.pinnedMessageManager.pinMessage(
                         pinMessageProto: pinMessage,
                         pinAuthor: envelope.sourceAci,
                         thread: thread,
@@ -1399,7 +1399,7 @@ public final class MessageReceiver {
                         transaction: tx,
                     )
 
-                    SSKEnvironment.shared.databaseStorageRef.touch(interaction: targetMessage, shouldReindex: false, tx: tx)
+                    SSKEnvironment.shared.databaseStorageRef.touch(thread: thread, shouldReindex: false, shouldUpdateChatListUi: true, tx: tx)
 
                     return nil
                 } catch {
