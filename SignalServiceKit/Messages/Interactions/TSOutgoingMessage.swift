@@ -407,6 +407,23 @@ public extension TSOutgoingMessage {
     @objc
     var isStorySend: Bool { isGroupStoryReply }
 
+    @objc
+    func _buildTranscriptSyncMessage(localThread: TSContactThread, tx: DBWriteTransaction) -> OWSOutgoingSyncMessage? {
+        owsAssertDebug(self.shouldSyncTranscript())
+
+        guard let messageThread = self.thread(tx: tx) else {
+            return nil
+        }
+
+        return OutgoingSentMessageTranscript(
+            localThread: localThread,
+            messageThread: messageThread,
+            message: self,
+            isRecipientUpdate: self.hasSyncedTranscript,
+            tx: tx,
+        )
+    }
+
     @objc(buildPniSignatureMessageIfNeededWithTransaction:)
     func buildPniSignatureMessageIfNeeded(transaction tx: DBReadTransaction) -> SSKProtoPniSignatureMessage? {
         guard recipientAddressStates?.count == 1 else {

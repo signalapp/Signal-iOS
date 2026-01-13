@@ -147,9 +147,9 @@ public final class OutgoingEditMessage: TSOutgoingMessage {
         let transcript = OutgoingEditMessageSyncTranscript(
             localThread: localThread,
             messageThread: thread,
-            outgoingMessage: self,
+            message: self,
             isRecipientUpdate: false,
-            transaction: transaction,
+            tx: transaction,
         )
         return transcript
     }
