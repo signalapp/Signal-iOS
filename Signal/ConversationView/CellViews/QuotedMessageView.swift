@@ -406,13 +406,13 @@ public class QuotedMessageView: ManualStackViewWithLayer {
             let text: String
             if quotedReplyModel.originalMessageAuthorAddress.isLocalAddress {
                 text = OWSLocalizedString(
-                    "QUOTED_REPLY_REACTION_TO_OWN_STORY",
-                    comment: "Header label that appears above quoted messages when the quoted content was includes a reaction to your own story.",
+                    "QUOTED_REPLY_REACTION_TO_STORY_FORMAT_THIRD_PERSON",
+                    comment: "Label explaining that the content of a quoted message includes someone reacting to your story.",
                 )
             } else {
                 let formatText = OWSLocalizedString(
-                    "QUOTED_REPLY_REACTION_TO_STORY_FORMAT",
-                    comment: "Header label that appears above quoted messages when the quoted content was includes a reaction to a story. Embeds {{ story author name }}",
+                    "QUOTED_REPLY_REACTION_TO_STORY_FORMAT_SECOND_PERSON",
+                    comment: "Label explaining that the content of a quoted message includes you reacting to someone's story. Embeds {{ %1$@ the story author }}.",
                 )
                 text = String(format: formatText, quotedAuthorName)
             }

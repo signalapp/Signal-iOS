@@ -583,8 +583,8 @@ public extension TSMessage {
             {
                 return .storyReactionEmoji(String(
                     format: OWSLocalizedString(
-                        "STORY_REACTION_LOCAL_AUTHOR_PREVIEW_FORMAT",
-                        comment: "inbox and notification text for a reaction to a story authored by the local user. Embeds {{reaction emoji}}",
+                        "STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON",
+                        comment: "Text explaining that someone reacted to your story. Embeds {{ %1$@ reaction emoji }}.",
                     ),
                     storyReactionEmoji,
                 ))
@@ -592,8 +592,8 @@ public extension TSMessage {
                 let storyAuthorName = contactManager.displayName(for: SignalServiceAddress(storyAuthorAci), tx: tx)
                 return .storyReactionEmoji(String(
                     format: OWSLocalizedString(
-                        "STORY_REACTION_REMOTE_AUTHOR_PREVIEW_FORMAT",
-                        comment: "inbox and notification text for a reaction to a story authored by another user. Embeds {{ %1$@ reaction emoji, %2$@ story author name }}",
+                        "STORY_REACTION_PREVIEW_FORMAT_SECOND_PERSON",
+                        comment: "Text explaining that you reacted to someone else's story. Embeds {{ %1$@ reaction emoji, %2$@ story author name }}.",
                     ),
                     storyReactionEmoji,
                     storyAuthorName.resolvedValue(useShortNameIfAvailable: true),
