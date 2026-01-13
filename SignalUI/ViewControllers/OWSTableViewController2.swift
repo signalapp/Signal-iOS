@@ -169,6 +169,7 @@ open class OWSTableViewController2: OWSViewController {
 
     public enum BackgroundStyle {
         case `default`
+        case clear
         case none
     }
 
@@ -191,6 +192,8 @@ open class OWSTableViewController2: OWSViewController {
         switch backgroundStyle {
         case .default:
             tableView.backgroundColor = self.tableBackgroundColor
+        case .clear:
+            tableView.backgroundColor = nil
         case .none:
             break
         }
@@ -310,6 +313,11 @@ open class OWSTableViewController2: OWSViewController {
         tableView.tableFooterView = UIView()
 
         hasViewAppeared = true
+    }
+
+    override open func viewIsAppearing(_ animated: Bool) {
+        super.viewIsAppearing(animated)
+        self.updateTableMargins()
     }
 
     private func section(for index: Int) -> OWSTableSection? {
@@ -682,6 +690,8 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
         switch backgroundStyle {
         case .default:
             textView.backgroundColor = self.tableBackgroundColor
+        case .clear:
+            textView.backgroundColor = .clear
         case .none:
             break
         }
@@ -1114,7 +1124,8 @@ extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, O
     }
 
     override open func viewSafeAreaInsetsDidChange() {
-        applyContents()
+        super.viewSafeAreaInsetsDidChange()
+        updateTableMargins()
     }
 
     public func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {

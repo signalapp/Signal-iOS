@@ -79,7 +79,7 @@ class MemberActionSheet: OWSTableSheetViewController {
         if #available(iOS 26.0, *) {
             super.init(visualEffect: UIGlassEffect())
             self.topCornerRadius = 40
-            self.tableViewController.backgroundStyle = .none
+            self.tableViewController.backgroundStyle = .clear
         } else {
             super.init()
         }
