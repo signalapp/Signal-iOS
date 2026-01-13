@@ -218,13 +218,13 @@
 "APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "ڈیٹا بیس لوڈ نہیں ہو سکتا";
 
 /* Message for an action sheet explaining that Signal can't launch because the database is corrupted. */
-"APP_LAUNCH_FAILURE_DATABASE_CORRUPTED_MESSAGE" = "Signal can't launch because the database is corrupted. There has been no impact to the security of your account or messages.";
+"APP_LAUNCH_FAILURE_DATABASE_CORRUPTED_MESSAGE" = "Signal لانچ نہیں کیا جا سکتا کیونکہ ڈیٹا بیس کرپٹ ہو گیا ہے۔ آپ کے اکاؤنٹ یا میسجز کی سکیورٹی پر کوئی اثر نہیں پڑا۔";
 
 /* Title for an action sheet explaining that Signal can't launch because the database is corrupted. */
-"APP_LAUNCH_FAILURE_DATABASE_CORRUPTED_TITLE" = "Database Corrupted";
+"APP_LAUNCH_FAILURE_DATABASE_CORRUPTED_TITLE" = "ڈیٹا بیس کرپٹ ہو گیا";
 
 /* Action in an action sheet offering to attempt recovery of a corrupted database. */
-"APP_LAUNCH_FAILURE_DATABASE_RECOVERY_ACTION_TITLE" = "Repair";
+"APP_LAUNCH_FAILURE_DATABASE_RECOVERY_ACTION_TITLE" = "ٹھیک کریں";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "براہ کرم Signal کے جدید ورژن کو اپ گریڈ کریں۔";
@@ -689,7 +689,7 @@
 "BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NETWORK_ERROR" = "آپ کا بیک اپ تخلیق کرنے میں کچھ غلط ہو گیا۔ اپنا انٹرنیٹ کنکشن چیک کریں اور دوبارہ کوشش کریں۔";
 
 /* Message for an action sheet explaining that you must be registered to make a Backup. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NOT_REGISTERED" = "You must be registered to create a backup.";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NOT_REGISTERED" = "بیک اپ تخلیق کرنے کے لیے آپ کا رجسٹر ہونا ضروری ہے۔";
 
 /* Description for a progress bar tracking the optimizing of Backup media. */
 "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_OPTIMIZING_MEDIA" = "میڈیا کو بہتر کیا جا رہا ہے...";
@@ -2219,7 +2219,7 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "منتخب کریں کہ کون گروپ کے نام ، تصویر ، وضاحت اور غائب پیغامات کے ٹائمر میں ترمیم کرسکتا ہے۔";
 
 /* Footer for the 'attributes access' section in conversation settings view with pinned messages added. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER_V2" = "Choose who can edit the group name, photo, description, disappearing messages timer, and pinned messages.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER_V2" = "منتخب کریں کہ کون گروپ کا نام، تصویر، وضاحت، غائب ہونے والے میسجز کا ٹائمر، اور پِن شدہ میسجز میں ترمیم کر سکتا ہے۔";
 
 /* Footer string for a contact's badges in conversation settings */
 "CONVERSATION_SETTINGS_BADGES_FOOTER" = "Signal کی معاونت کرنے کے ذریعے اپنی پروفائل کے لیے بیجز حاصل کریں۔ مزید جاننے کے لیے بیج ہر ٹیپ کریں۔";
@@ -2480,7 +2480,7 @@
 "DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_DESCRIPTION" = "آپ کی کچھ میسج ہسٹری خراب ہو سکتی ہے۔ آپ کے اکاؤنٹ یا میسجز کی سکیورٹی پر کوئی اثر نہیں پڑا۔ اپنا ڈیٹا بحال کرنے کے لیے \"جاری رکھیں\" پر ٹیپ کریں۔";
 
 /* In some cases, the user's message history can become corrupted, and a recovery interface is shown. This is the title on the first screen of this interface, which gives them some information and asks them to continue. */
-"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "Repair";
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "ٹھیک کریں";
 
 /* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the text on the button to bypass the warning. */
 "DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_CONTINUE_ANYWAY" = "بہر صورت جاری رکھیں";
@@ -6563,7 +6563,7 @@
 "PINNED_CONVERSATION_LIMIT" = "آپ صرف 4 تک چیٹس پِن کر سکتے ہیں۔";
 
 /* Accessibility label prefix for banner showing a pinned message */
-"PINNED_MESSAGE_BANNER_AX_LABEL" = "Pinned Message:";
+"PINNED_MESSAGE_BANNER_AX_LABEL" = "پِن کردہ میسج:";
 
 /* Shown when another user pins a message. Embeds {{ another user }}. */
 "PINNED_MESSAGE_CHAT_EVENT_OTHER" = "%1$@ نے ایک میسج پِن کیا ہے";
@@ -6572,7 +6572,7 @@
 "PINNED_MESSAGE_CHAT_EVENT_SELF" = "آپ نے ایک میسج پِن کیا ہے";
 
 /* Accessibility label for pin message button */
-"PINNED_MESSAGE_MENU_ACCESSIBILITY_LABEL" = "Pinned message menu";
+"PINNED_MESSAGE_MENU_ACCESSIBILITY_LABEL" = "پِن کردہ میسج کا مینو";
 
 /* Label for button to pin a message */
 "PINNED_MESSAGE_PIN_ACTION_TITLE" = "Pin";
@@ -6626,7 +6626,7 @@
 "PINNED_MESSAGES_UNPIN" = "Unpin";
 
 /* Title for a button to unpin all pinned messages. */
-"PINNED_MESSAGES_UNPIN_ALL" = "Unpin All";
+"PINNED_MESSAGES_UNPIN_ALL" = "سب کو ان پِن کریں";
 
 /* The title for pinned conversation section on the conversation list */
 "PINNED_SECTION_TITLE" = "پن لگا ہوا";

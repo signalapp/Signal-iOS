@@ -218,13 +218,13 @@
 "APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "Không thể tải cơ sở dữ liệu";
 
 /* Message for an action sheet explaining that Signal can't launch because the database is corrupted. */
-"APP_LAUNCH_FAILURE_DATABASE_CORRUPTED_MESSAGE" = "Signal can't launch because the database is corrupted. There has been no impact to the security of your account or messages.";
+"APP_LAUNCH_FAILURE_DATABASE_CORRUPTED_MESSAGE" = "Signal không thể chạy vì cơ sở dữ liệu bị hỏng. Tính bảo mật hay tin nhắn của bạn không bị ảnh hưởng.";
 
 /* Title for an action sheet explaining that Signal can't launch because the database is corrupted. */
-"APP_LAUNCH_FAILURE_DATABASE_CORRUPTED_TITLE" = "Database Corrupted";
+"APP_LAUNCH_FAILURE_DATABASE_CORRUPTED_TITLE" = "Cơ sở dữ liệu bị hỏng";
 
 /* Action in an action sheet offering to attempt recovery of a corrupted database. */
-"APP_LAUNCH_FAILURE_DATABASE_RECOVERY_ACTION_TITLE" = "Repair";
+"APP_LAUNCH_FAILURE_DATABASE_RECOVERY_ACTION_TITLE" = "Sửa";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "Vui lòng cập nhật phiên bản mới nhất của Signal.";
@@ -689,7 +689,7 @@
 "BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NETWORK_ERROR" = "Đã xảy ra lỗi khi tạo bản sao lưu. Kiểm tra kết nối internet của bạn và thử lại.";
 
 /* Message for an action sheet explaining that you must be registered to make a Backup. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NOT_REGISTERED" = "You must be registered to create a backup.";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NOT_REGISTERED" = "Bạn phải đăng ký để tạo bản sao lưu.";
 
 /* Description for a progress bar tracking the optimizing of Backup media. */
 "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_OPTIMIZING_MEDIA" = "Đang tối ưu hóa tập tin đa phương tiện…";
@@ -2219,7 +2219,7 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Chọn ai có thể chỉnh sửa tên nhóm, ảnh, miêu tả, và đồng hồ biến mất tin nhắn.";
 
 /* Footer for the 'attributes access' section in conversation settings view with pinned messages added. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER_V2" = "Choose who can edit the group name, photo, description, disappearing messages timer, and pinned messages.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER_V2" = "Chọn ai có thể chỉnh sửa tên nhóm, ảnh, miêu tả, và đồng hồ đếm tin nhắn tự xóa và tin nhắn ghim.";
 
 /* Footer string for a contact's badges in conversation settings */
 "CONVERSATION_SETTINGS_BADGES_FOOTER" = "Hãy thu thập nhiều huy hiệu đính trên hồ sơ của bạn bằng cách hổ trở cho Signal. Bấm vào \"huy hiệu\" để biết thêm chi tiết.";
@@ -2480,7 +2480,7 @@
 "DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_DESCRIPTION" = "Một phần lịch sử tin nhắn của bạn có thể đã bị hỏng. Tính bảo mật hay tin nhắn của bạn không bị ảnh hưởng. Nhấn \"Tiếp tục\" để khôi phục dữ liệu.";
 
 /* In some cases, the user's message history can become corrupted, and a recovery interface is shown. This is the title on the first screen of this interface, which gives them some information and asks them to continue. */
-"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "Repair";
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "Sửa";
 
 /* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the text on the button to bypass the warning. */
 "DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_CONTINUE_ANYWAY" = "Tiếp tục";
@@ -6563,7 +6563,7 @@
 "PINNED_CONVERSATION_LIMIT" = "Bạn chỉ có thể ghim tối đa 4 cuộc trò chuyện.";
 
 /* Accessibility label prefix for banner showing a pinned message */
-"PINNED_MESSAGE_BANNER_AX_LABEL" = "Pinned Message:";
+"PINNED_MESSAGE_BANNER_AX_LABEL" = "Tin nhắn đã ghim:";
 
 /* Shown when another user pins a message. Embeds {{ another user }}. */
 "PINNED_MESSAGE_CHAT_EVENT_OTHER" = "%1$@ đã ghim một tin nhắn";
@@ -6572,7 +6572,7 @@
 "PINNED_MESSAGE_CHAT_EVENT_SELF" = "Bạn đã ghim một tin nhắn";
 
 /* Accessibility label for pin message button */
-"PINNED_MESSAGE_MENU_ACCESSIBILITY_LABEL" = "Pinned message menu";
+"PINNED_MESSAGE_MENU_ACCESSIBILITY_LABEL" = "Menu tin nhắn đã ghim";
 
 /* Label for button to pin a message */
 "PINNED_MESSAGE_PIN_ACTION_TITLE" = "Ghim";
@@ -6626,7 +6626,7 @@
 "PINNED_MESSAGES_UNPIN" = "Bỏ ghim";
 
 /* Title for a button to unpin all pinned messages. */
-"PINNED_MESSAGES_UNPIN_ALL" = "Unpin All";
+"PINNED_MESSAGES_UNPIN_ALL" = "Bỏ ghim tất cả";
 
 /* The title for pinned conversation section on the conversation list */
 "PINNED_SECTION_TITLE" = "Đã ghim";

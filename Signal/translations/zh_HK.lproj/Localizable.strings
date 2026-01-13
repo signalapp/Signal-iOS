@@ -218,13 +218,13 @@
 "APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "無法載入資料庫";
 
 /* Message for an action sheet explaining that Signal can't launch because the database is corrupted. */
-"APP_LAUNCH_FAILURE_DATABASE_CORRUPTED_MESSAGE" = "Signal can't launch because the database is corrupted. There has been no impact to the security of your account or messages.";
+"APP_LAUNCH_FAILURE_DATABASE_CORRUPTED_MESSAGE" = "Signal 無法啟動，因為資料庫已損毀。你帳戶或訊息的安全性並無受到影響。";
 
 /* Title for an action sheet explaining that Signal can't launch because the database is corrupted. */
-"APP_LAUNCH_FAILURE_DATABASE_CORRUPTED_TITLE" = "Database Corrupted";
+"APP_LAUNCH_FAILURE_DATABASE_CORRUPTED_TITLE" = "資料庫損毀";
 
 /* Action in an action sheet offering to attempt recovery of a corrupted database. */
-"APP_LAUNCH_FAILURE_DATABASE_RECOVERY_ACTION_TITLE" = "Repair";
+"APP_LAUNCH_FAILURE_DATABASE_RECOVERY_ACTION_TITLE" = "修復";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "請更新至最新版的 Signal。";
@@ -689,7 +689,7 @@
 "BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NETWORK_ERROR" = "建立備份時發生錯誤。請檢查你的網路連線，然後重試。";
 
 /* Message for an action sheet explaining that you must be registered to make a Backup. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NOT_REGISTERED" = "You must be registered to create a backup.";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NOT_REGISTERED" = "你必須登記才能建立備份。";
 
 /* Description for a progress bar tracking the optimizing of Backup media. */
 "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_OPTIMIZING_MEDIA" = "優化媒體中...";
@@ -2219,7 +2219,7 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "選擇誰可以編輯群組名稱、照片、描述和限時訊息計時器。";
 
 /* Footer for the 'attributes access' section in conversation settings view with pinned messages added. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER_V2" = "Choose who can edit the group name, photo, description, disappearing messages timer, and pinned messages.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER_V2" = "選擇誰可以編輯群組名稱、相片、描述、自動銷毀訊息計時器和已釘選訊息。";
 
 /* Footer string for a contact's badges in conversation settings */
 "CONVERSATION_SETTINGS_BADGES_FOOTER" = "撐起 Signal 並在您的個人資料中獲贈徽章。輕觸徽章以了解詳情。";
@@ -2480,7 +2480,7 @@
 "DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_DESCRIPTION" = "部分訊息紀錄可能已經損毀。你帳戶或訊息的安全性並無受到影響。點按「繼續」以恢復你的資料。";
 
 /* In some cases, the user's message history can become corrupted, and a recovery interface is shown. This is the title on the first screen of this interface, which gives them some information and asks them to continue. */
-"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "Repair";
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "修復";
 
 /* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the text on the button to bypass the warning. */
 "DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_CONTINUE_ANYWAY" = "仍要繼續";
@@ -6563,7 +6563,7 @@
 "PINNED_CONVERSATION_LIMIT" = "您最多只能釘選 4 個聊天。";
 
 /* Accessibility label prefix for banner showing a pinned message */
-"PINNED_MESSAGE_BANNER_AX_LABEL" = "Pinned Message:";
+"PINNED_MESSAGE_BANNER_AX_LABEL" = "已釘選的訊息：";
 
 /* Shown when another user pins a message. Embeds {{ another user }}. */
 "PINNED_MESSAGE_CHAT_EVENT_OTHER" = "%1$@已釘選訊息";
@@ -6572,7 +6572,7 @@
 "PINNED_MESSAGE_CHAT_EVENT_SELF" = "你已釘選訊息";
 
 /* Accessibility label for pin message button */
-"PINNED_MESSAGE_MENU_ACCESSIBILITY_LABEL" = "Pinned message menu";
+"PINNED_MESSAGE_MENU_ACCESSIBILITY_LABEL" = "已釘選訊息選單";
 
 /* Label for button to pin a message */
 "PINNED_MESSAGE_PIN_ACTION_TITLE" = "釘選";
@@ -6626,7 +6626,7 @@
 "PINNED_MESSAGES_UNPIN" = "取消釘選";
 
 /* Title for a button to unpin all pinned messages. */
-"PINNED_MESSAGES_UNPIN_ALL" = "Unpin All";
+"PINNED_MESSAGES_UNPIN_ALL" = "全部取消釘選";
 
 /* The title for pinned conversation section on the conversation list */
 "PINNED_SECTION_TITLE" = "已釘選";

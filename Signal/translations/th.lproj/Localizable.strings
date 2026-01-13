@@ -218,13 +218,13 @@
 "APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "ไม่สามารถเรียกฐานข้อมูลได้";
 
 /* Message for an action sheet explaining that Signal can't launch because the database is corrupted. */
-"APP_LAUNCH_FAILURE_DATABASE_CORRUPTED_MESSAGE" = "Signal can't launch because the database is corrupted. There has been no impact to the security of your account or messages.";
+"APP_LAUNCH_FAILURE_DATABASE_CORRUPTED_MESSAGE" = "ไม่สามารถเปิด Signal ได้เนื่องจากฐานข้อมูลได้รับความเสียหาย กรณีเช่นนี้ไม่มีผลกระทบต่อความปลอดภัยในบัญชีหรือข้อความของคุณ";
 
 /* Title for an action sheet explaining that Signal can't launch because the database is corrupted. */
-"APP_LAUNCH_FAILURE_DATABASE_CORRUPTED_TITLE" = "Database Corrupted";
+"APP_LAUNCH_FAILURE_DATABASE_CORRUPTED_TITLE" = "ฐานข้อมูลได้รับความเสียหาย";
 
 /* Action in an action sheet offering to attempt recovery of a corrupted database. */
-"APP_LAUNCH_FAILURE_DATABASE_RECOVERY_ACTION_TITLE" = "Repair";
+"APP_LAUNCH_FAILURE_DATABASE_RECOVERY_ACTION_TITLE" = "ซ่อมแซม";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "กรุณาปรับรุ่นไปใช้ Signal รุ่นล่าสุด";
@@ -689,7 +689,7 @@
 "BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NETWORK_ERROR" = "เกิดข้อผิดพลาดในระหว่างการสร้างข้อมูลสำรองของคุณ โปรดตรวจสอบการเชื่อมต่ออินเทอร์เน็ตแล้วลองอีกครั้ง";
 
 /* Message for an action sheet explaining that you must be registered to make a Backup. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NOT_REGISTERED" = "You must be registered to create a backup.";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NOT_REGISTERED" = "คุณจะต้องลงทะเบียนเพื่อสร้างข้อมูลสำรอง";
 
 /* Description for a progress bar tracking the optimizing of Backup media. */
 "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_OPTIMIZING_MEDIA" = "กำลังจัดระเบียบไฟล์สื่อ...";
@@ -2219,7 +2219,7 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "เลือกว่าใครสามารถแก้ไขชื่อกลุ่ม รูปภาพ คำอธิบาย และตั้งเวลาให้ข้อความหายไป";
 
 /* Footer for the 'attributes access' section in conversation settings view with pinned messages added. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER_V2" = "Choose who can edit the group name, photo, description, disappearing messages timer, and pinned messages.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER_V2" = "เลือกว่าใครสามารถแก้ไขชื่อกลุ่ม รูปภาพ คำอธิบาย รวมถึงตั้งเวลาให้ข้อความหายไปและข้อความที่ปักหมุดไว้";
 
 /* Footer string for a contact's badges in conversation settings */
 "CONVERSATION_SETTINGS_BADGES_FOOTER" = "รับโล่สำหรับโปรไฟล์คุณด้วยการสนับสนุน Signal แตะที่โล่เพื่อดูข้อมูลเพิ่มเติม";
@@ -2480,7 +2480,7 @@
 "DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_DESCRIPTION" = "ประวัติการส่งข้อความบางส่วนของคุณอาจได้รับความเสียหาย ไม่พบผลกระทบต่อความปลอดภัยในบัญชีหรือข้อความของคุณ แตะ “ดำเนินการต่อ” เพื่อกู้คืนข้อมูล";
 
 /* In some cases, the user's message history can become corrupted, and a recovery interface is shown. This is the title on the first screen of this interface, which gives them some information and asks them to continue. */
-"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "Repair";
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "ซ่อมแซม";
 
 /* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the text on the button to bypass the warning. */
 "DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_CONTINUE_ANYWAY" = "ยืนยันที่จะดำเนินการต่อ";
@@ -6563,7 +6563,7 @@
 "PINNED_CONVERSATION_LIMIT" = "คุณปักหมุดแชทได้ 4 รายการเท่านั้น";
 
 /* Accessibility label prefix for banner showing a pinned message */
-"PINNED_MESSAGE_BANNER_AX_LABEL" = "Pinned Message:";
+"PINNED_MESSAGE_BANNER_AX_LABEL" = "ข้อความที่ปักหมุด:";
 
 /* Shown when another user pins a message. Embeds {{ another user }}. */
 "PINNED_MESSAGE_CHAT_EVENT_OTHER" = "%1$@ ปักหมุดข้อความ";
@@ -6572,7 +6572,7 @@
 "PINNED_MESSAGE_CHAT_EVENT_SELF" = "คุณปักหมุดข้อความ";
 
 /* Accessibility label for pin message button */
-"PINNED_MESSAGE_MENU_ACCESSIBILITY_LABEL" = "Pinned message menu";
+"PINNED_MESSAGE_MENU_ACCESSIBILITY_LABEL" = "เมนูข้อความที่ปักหมุด";
 
 /* Label for button to pin a message */
 "PINNED_MESSAGE_PIN_ACTION_TITLE" = "ปักหมุด";
@@ -6626,7 +6626,7 @@
 "PINNED_MESSAGES_UNPIN" = "เลิกปักหมุด";
 
 /* Title for a button to unpin all pinned messages. */
-"PINNED_MESSAGES_UNPIN_ALL" = "Unpin All";
+"PINNED_MESSAGES_UNPIN_ALL" = "เลิกปักหมุดทั้งหมด";
 
 /* The title for pinned conversation section on the conversation list */
 "PINNED_SECTION_TITLE" = "ปักหมุด";

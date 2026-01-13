@@ -218,13 +218,13 @@
 "APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "데이터베이스를 불러올 수 없음";
 
 /* Message for an action sheet explaining that Signal can't launch because the database is corrupted. */
-"APP_LAUNCH_FAILURE_DATABASE_CORRUPTED_MESSAGE" = "Signal can't launch because the database is corrupted. There has been no impact to the security of your account or messages.";
+"APP_LAUNCH_FAILURE_DATABASE_CORRUPTED_MESSAGE" = "데이터베이스가 손상되어 Signal을 시작할 수 없습니다. 계정이나 메시지 보안에는 영향이 없습니다.";
 
 /* Title for an action sheet explaining that Signal can't launch because the database is corrupted. */
-"APP_LAUNCH_FAILURE_DATABASE_CORRUPTED_TITLE" = "Database Corrupted";
+"APP_LAUNCH_FAILURE_DATABASE_CORRUPTED_TITLE" = "데이터베이스 손상";
 
 /* Action in an action sheet offering to attempt recovery of a corrupted database. */
-"APP_LAUNCH_FAILURE_DATABASE_RECOVERY_ACTION_TITLE" = "Repair";
+"APP_LAUNCH_FAILURE_DATABASE_RECOVERY_ACTION_TITLE" = "복구";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "최신 버전의 Signal로 업그레이드해 주세요.";
@@ -689,7 +689,7 @@
 "BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NETWORK_ERROR" = "백업을 만드는 중 오류가 발생했습니다. 인터넷 연결을 확인하고 다시 시도하세요.";
 
 /* Message for an action sheet explaining that you must be registered to make a Backup. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NOT_REGISTERED" = "You must be registered to create a backup.";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NOT_REGISTERED" = "백업을 만들려면 먼저 등록을 완료해야 합니다.";
 
 /* Description for a progress bar tracking the optimizing of Backup media. */
 "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_OPTIMIZING_MEDIA" = "미디어 최적화 중...";
@@ -2219,7 +2219,7 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "그룹 이름, 사진, 설명 및 사라지는 메시지 타이머를 편집할 수 있는 사용자를 선택하세요.";
 
 /* Footer for the 'attributes access' section in conversation settings view with pinned messages added. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER_V2" = "Choose who can edit the group name, photo, description, disappearing messages timer, and pinned messages.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER_V2" = "그룹 이름, 사진, 설명, 자동 삭제 메시지 시간, 고정 메시지를 수정할 수 있는 사람을 선택하세요.";
 
 /* Footer string for a contact's badges in conversation settings */
 "CONVERSATION_SETTINGS_BADGES_FOOTER" = "Signal을 지원하고 배지를 받으세요. 배지를 탭하여 자세히 알아보세요.";
@@ -2480,7 +2480,7 @@
 "DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_DESCRIPTION" = "내 메시지 기록 중 일부가 손상됐을 수 있습니다. 계정이나 메시지 보안에는 영향이 없습니다. '계속'을 탭하여 데이터를 복구하세요.";
 
 /* In some cases, the user's message history can become corrupted, and a recovery interface is shown. This is the title on the first screen of this interface, which gives them some information and asks them to continue. */
-"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "Repair";
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "복구";
 
 /* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the text on the button to bypass the warning. */
 "DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_CONTINUE_ANYWAY" = "무시하고 계속";
@@ -6563,7 +6563,7 @@
 "PINNED_CONVERSATION_LIMIT" = "대화는 4개까지만 고정할 수 있습니다.";
 
 /* Accessibility label prefix for banner showing a pinned message */
-"PINNED_MESSAGE_BANNER_AX_LABEL" = "Pinned Message:";
+"PINNED_MESSAGE_BANNER_AX_LABEL" = "고정 메시지:";
 
 /* Shown when another user pins a message. Embeds {{ another user }}. */
 "PINNED_MESSAGE_CHAT_EVENT_OTHER" = "%1$@ 님이 메시지를 고정했습니다";
@@ -6572,7 +6572,7 @@
 "PINNED_MESSAGE_CHAT_EVENT_SELF" = "메시지를 고정했습니다";
 
 /* Accessibility label for pin message button */
-"PINNED_MESSAGE_MENU_ACCESSIBILITY_LABEL" = "Pinned message menu";
+"PINNED_MESSAGE_MENU_ACCESSIBILITY_LABEL" = "고정 메시지 메뉴";
 
 /* Label for button to pin a message */
 "PINNED_MESSAGE_PIN_ACTION_TITLE" = "고정";
@@ -6626,7 +6626,7 @@
 "PINNED_MESSAGES_UNPIN" = "고정 해제";
 
 /* Title for a button to unpin all pinned messages. */
-"PINNED_MESSAGES_UNPIN_ALL" = "Unpin All";
+"PINNED_MESSAGES_UNPIN_ALL" = "모두 고정 해제";
 
 /* The title for pinned conversation section on the conversation list */
 "PINNED_SECTION_TITLE" = "고정됨";

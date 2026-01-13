@@ -218,13 +218,13 @@
 "APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "No se ha podido cargar la base de datos";
 
 /* Message for an action sheet explaining that Signal can't launch because the database is corrupted. */
-"APP_LAUNCH_FAILURE_DATABASE_CORRUPTED_MESSAGE" = "Signal can't launch because the database is corrupted. There has been no impact to the security of your account or messages.";
+"APP_LAUNCH_FAILURE_DATABASE_CORRUPTED_MESSAGE" = "Signal no puede iniciarse porque la base de datos está dañada. Esto no ha afectado a la seguridad de tu cuenta ni de tus mensajes.";
 
 /* Title for an action sheet explaining that Signal can't launch because the database is corrupted. */
-"APP_LAUNCH_FAILURE_DATABASE_CORRUPTED_TITLE" = "Database Corrupted";
+"APP_LAUNCH_FAILURE_DATABASE_CORRUPTED_TITLE" = "Base de datos dañada";
 
 /* Action in an action sheet offering to attempt recovery of a corrupted database. */
-"APP_LAUNCH_FAILURE_DATABASE_RECOVERY_ACTION_TITLE" = "Repair";
+"APP_LAUNCH_FAILURE_DATABASE_RECOVERY_ACTION_TITLE" = "Reparar";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "Actualiza a la versión más reciente de Signal.";
@@ -689,7 +689,7 @@
 "BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NETWORK_ERROR" = "No se ha podido crear tu copia de seguridad. Comprueba tu conexión a Internet e inténtalo de nuevo.";
 
 /* Message for an action sheet explaining that you must be registered to make a Backup. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NOT_REGISTERED" = "You must be registered to create a backup.";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NOT_REGISTERED" = "Debes registrarte para poder crear una copia de seguridad.";
 
 /* Description for a progress bar tracking the optimizing of Backup media. */
 "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_OPTIMIZING_MEDIA" = "Optimizando archivos…";
@@ -797,7 +797,7 @@
 "BACKUP_SETTINGS_BETA_NOTICE_HEADER" = "Esta es una función beta que seguiremos mejorando.";
 
 /* Message shown in an action sheet when the user tries to create a new Recovery Key, but is not registered. */
-"BACKUP_SETTINGS_CREATE_NEW_KEY_ERROR_NOT_REGISTERED" = "Debes registrarte para crear una nueva clave de recuperación.";
+"BACKUP_SETTINGS_CREATE_NEW_KEY_ERROR_NOT_REGISTERED" = "Debes registrarte para poder crear una nueva clave de recuperación.";
 
 /* Explanation text for a sheet warning users they've reached a rate limit for creating Recovery Key. {{ Embeds 1: the preformatted time they must wait before enabling backups, such as \"1 week\" or \"6 hours\". }} */
 "BACKUP_SETTINGS_CREATE_NEW_KEY_LIMIT_REACHED_WARNING_SHEET_BODY" = "Si creas una nueva clave de recuperación, deberás esperar %1$@ antes de poder activar las copias de seguridad. El número de claves que puedes crear está limitado para evitar usos indebidos.";
@@ -848,7 +848,7 @@
 "BACKUP_SETTINGS_DISABLING_ERROR_GENERIC_ERROR_ACTION_SHEET_TITLE" = "No se ha podido eliminar tu copia de seguridad";
 
 /* Message shown in an action sheet when the user tries to disable Backups, but is not registered. */
-"BACKUP_SETTINGS_DISABLING_ERROR_NOT_REGISTERED" = "Tu dispositivo debe estar registrado para poder deshabilitar las copias de seguridad.";
+"BACKUP_SETTINGS_DISABLING_ERROR_NOT_REGISTERED" = "Debes registrarte para poder deshabilitar las copias de seguridad.";
 
 /* Button for an action sheet shown when the user disables Backups, letting them manage their subscription. */
 "BACKUP_SETTINGS_DISABLING_SUBSCRIPTION_CANCEL_ACTION_SHEET_MANAGE_SUBSCRIPTION_BUTTON" = "Gestionar suscripción";
@@ -1799,7 +1799,7 @@
 "CHOOSE_BACKUP_PLAN_BULLET_STORAGE_AMOUNT" = "%1$@ de almacenamiento";
 
 /* Message shown in an action sheet when the user tries to confirm a plan selection, but is not registered. */
-"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NOT_REGISTERED" = "Debes haberte registrado para poder habilitar las copias de seguridad.";
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_NOT_REGISTERED" = "Debes registrarte para poder habilitar las copias de seguridad.";
 
 /* Message shown in an action sheet when the user tries to confirm selecting the paid plan, but encountered an error from Apple while purchasing. */
 "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE" = "Se ha producido un error. Inténtalo de nuevo.";
@@ -2219,7 +2219,7 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Elige quién puede modificar el nombre, descripción e imagen del grupo y la duración de los mensajes temporales.";
 
 /* Footer for the 'attributes access' section in conversation settings view with pinned messages added. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER_V2" = "Choose who can edit the group name, photo, description, disappearing messages timer, and pinned messages.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER_V2" = "Elige quién puede modificar el nombre, la descripción y la imagen del grupo, la duración de los mensajes temporales y los mensajes fijados.";
 
 /* Footer string for a contact's badges in conversation settings */
 "CONVERSATION_SETTINGS_BADGES_FOOTER" = "Apoya a Signal y consigue insignias para mostrar en tu perfil. Toca sobre una insignia para obtener más información.";
@@ -2480,7 +2480,7 @@
 "DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_DESCRIPTION" = "Es posible que parte de tu historial de mensajes esté dañado. Esto no ha afectado a la seguridad de tu cuenta ni de tus mensajes. Toca \"Continuar\" para recuperar tus datos.";
 
 /* In some cases, the user's message history can become corrupted, and a recovery interface is shown. This is the title on the first screen of this interface, which gives them some information and asks them to continue. */
-"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "Repair";
+"DATABASE_RECOVERY_AWAITING_USER_CONFIRMATION_TITLE" = "Reparación";
 
 /* On the database recovery screen, if the user's device storage is nearly full, Signal will not be able to recover the database. A warning screen, which can be bypassed if the user wishes, will be shown. This is the text on the button to bypass the warning. */
 "DATABASE_RECOVERY_MORE_STORAGE_SPACE_NEEDED_CONTINUE_ANYWAY" = "Continuar de todos modos";
@@ -6563,7 +6563,7 @@
 "PINNED_CONVERSATION_LIMIT" = "Solo puedes fijar un máximo de 4 chats.";
 
 /* Accessibility label prefix for banner showing a pinned message */
-"PINNED_MESSAGE_BANNER_AX_LABEL" = "Pinned Message:";
+"PINNED_MESSAGE_BANNER_AX_LABEL" = "Mensaje fijado:";
 
 /* Shown when another user pins a message. Embeds {{ another user }}. */
 "PINNED_MESSAGE_CHAT_EVENT_OTHER" = "%1$@ ha fijado un mensaje";
@@ -6572,7 +6572,7 @@
 "PINNED_MESSAGE_CHAT_EVENT_SELF" = "Has fijado un mensaje";
 
 /* Accessibility label for pin message button */
-"PINNED_MESSAGE_MENU_ACCESSIBILITY_LABEL" = "Pinned message menu";
+"PINNED_MESSAGE_MENU_ACCESSIBILITY_LABEL" = "Menú de mensajes fijados";
 
 /* Label for button to pin a message */
 "PINNED_MESSAGE_PIN_ACTION_TITLE" = "Fijar";
@@ -6626,7 +6626,7 @@
 "PINNED_MESSAGES_UNPIN" = "Desfijar";
 
 /* Title for a button to unpin all pinned messages. */
-"PINNED_MESSAGES_UNPIN_ALL" = "Unpin All";
+"PINNED_MESSAGES_UNPIN_ALL" = "Desfijar todo";
 
 /* The title for pinned conversation section on the conversation list */
 "PINNED_SECTION_TITLE" = "Fijados";
