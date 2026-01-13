@@ -456,40 +456,6 @@ public class SDSDatabaseStorage: NSObject, DB {
         }
     }
 
-    // MARK: - Obj-C Bridge
-
-    /// NOTE: Do NOT call these methods directly. See SDSDatabaseStorage+Objc.h.
-    @available(*, deprecated, message: "Use DatabaseStorageWrite() instead")
-    @objc
-    func __private_objc_write(
-        file: String,
-        function: String,
-        line: Int,
-        block: (DBWriteTransaction) -> Void,
-    ) {
-        _writeWithTxCompletionIfThrows(
-            file: file,
-            function: function,
-            line: line,
-            isAwaitableWrite: false,
-            // The block can't throw: always commit.
-            completionIfThrows: .commit,
-            block: block,
-        )
-    }
-
-    /// NOTE: Do NOT call these methods directly. See SDSDatabaseStorage+Objc.h.
-    @available(*, deprecated, message: "Use DatabaseStorageAsyncWrite() instead")
-    @objc
-    func __private_objc_asyncWrite(
-        file: String,
-        function: String,
-        line: Int,
-        block: @escaping (DBWriteTransaction) -> Void,
-    ) {
-        asyncWrite(file: file, function: function, line: line, block: block, completion: nil)
-    }
-
     private static func owsFormatLogMessage(file: String = #file, function: String = #function, line: Int = #line) -> String {
         let filename = (file as NSString).lastPathComponent
         // We format the filename & line number in a format compatible
