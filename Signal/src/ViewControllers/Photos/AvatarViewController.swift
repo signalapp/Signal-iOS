@@ -7,7 +7,7 @@ import SignalServiceKit
 import SignalUI
 import UIKit
 
-class AvatarViewController: UIViewController, InteractivelyDismissableViewController {
+class AvatarViewController: OWSViewController, InteractivelyDismissableViewController {
     private lazy var interactiveDismissal = MediaInteractiveDismiss(targetViewController: self)
     let avatarImage: UIImage
 
@@ -28,6 +28,16 @@ class AvatarViewController: UIViewController, InteractivelyDismissableViewContro
 
     private var navigationBarTopLayoutConstraint: NSLayoutConstraint?
 
+    private var backgroundColor: UIColor {
+        // Not using UIColor.Signal.background here because this VC is presented modally
+        // but we need `base` background color and not `elevated`.
+        UIColor { traitCollection in
+            traitCollection.userInterfaceStyle == .dark
+                ? Theme.darkThemeBackgroundColor
+                : Theme.lightThemeBackgroundColor
+        }
+    }
+
     init?(thread: TSThread, renderLocalUserAsNoteToSelf: Bool, readTx: DBReadTransaction) {
         let localUserDisplayMode: LocalUserDisplayMode = (renderLocalUserAsNoteToSelf
             ? .noteToSelf
@@ -41,7 +51,7 @@ class AvatarViewController: UIViewController, InteractivelyDismissableViewContro
             ) else { return nil }
 
         self.avatarImage = avatarImage
-        super.init(nibName: nil, bundle: nil)
+        super.init()
 
         modalPresentationStyle = .custom
         transitioningDelegate = self
@@ -59,7 +69,7 @@ class AvatarViewController: UIViewController, InteractivelyDismissableViewContro
         }
 
         self.avatarImage = avatarImage
-        super.init(nibName: nil, bundle: nil)
+        super.init()
 
         modalPresentationStyle = .custom
         transitioningDelegate = self
@@ -68,36 +78,50 @@ class AvatarViewController: UIViewController, InteractivelyDismissableViewContro
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = Theme.darkThemeBackgroundColor
-
-        circleView.clipsToBounds = true
-        view.addSubview(circleView)
-        circleView.autoCenterInSuperview()
-        circleView.autoPinToSquareAspectRatio()
-        NSLayoutConstraint.autoSetPriority(.defaultHigh) {
-            circleView.autoMatch(.width, to: .width, of: view, withOffset: -48)
-            circleView.autoMatch(.height, to: .height, of: view, withOffset: -48)
-        }
-        circleView.autoMatch(.width, to: .width, of: view, withOffset: -48, relation: .lessThanOrEqual)
-        circleView.autoMatch(.height, to: .height, of: view, withOffset: -48, relation: .lessThanOrEqual)
+        view.backgroundColor = backgroundColor
 
         imageView.image = avatarImage
         circleView.addSubview(imageView)
-        imageView.autoPinEdgesToSuperviewEdges()
+        circleView.clipsToBounds = true
+        circleView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(circleView)
+        NSLayoutConstraint.activate([
+            imageView.topAnchor.constraint(equalTo: circleView.topAnchor),
+            imageView.leadingAnchor.constraint(equalTo: circleView.leadingAnchor),
+            imageView.trailingAnchor.constraint(equalTo: circleView.trailingAnchor),
+            imageView.bottomAnchor.constraint(equalTo: circleView.bottomAnchor),
+
+            circleView.widthAnchor.constraint(equalTo: circleView.heightAnchor),
+
+            circleView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            circleView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+
+            circleView.widthAnchor.constraint(lessThanOrEqualTo: view.widthAnchor, constant: -48),
+            circleView.heightAnchor.constraint(lessThanOrEqualTo: view.heightAnchor, constant: -48),
+        ])
+        let highPriorityConstraints = [
+            circleView.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -48),
+            circleView.heightAnchor.constraint(equalTo: view.heightAnchor, constant: -48),
+        ]
+        highPriorityConstraints.forEach { $0.priority = .defaultHigh }
+        NSLayoutConstraint.activate(highPriorityConstraints)
 
         // Use UINavigationBar so that close button X on the left has a standard position in all cases.
         let navigationBar = UINavigationBar()
-        navigationBar.tintColor = Theme.darkThemeNavbarIconColor
         let appearance = UINavigationBarAppearance()
         appearance.configureWithTransparentBackground()
         navigationBar.standardAppearance = appearance
         navigationBar.compactAppearance = appearance
         navigationBar.scrollEdgeAppearance = appearance
-        navigationBar.overrideUserInterfaceStyle = .dark
+        navigationBar.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(navigationBar)
-        navigationBar.autoPinWidthToSuperview()
-        navigationBarTopLayoutConstraint = navigationBar.autoPinEdge(toSuperviewEdge: .top)
-        navigationBar.autoPinEdge(toSuperviewEdge: .bottom)
+        navigationBarTopLayoutConstraint = navigationBar.topAnchor.constraint(equalTo: view.topAnchor)
+        NSLayoutConstraint.activate([
+            navigationBarTopLayoutConstraint!,
+            navigationBar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            navigationBar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+        ])
 
         let navigationItem = UINavigationItem(title: "")
         navigationItem.leftBarButtonItem = UIBarButtonItem(
@@ -105,9 +129,13 @@ class AvatarViewController: UIViewController, InteractivelyDismissableViewContro
             style: .plain,
             target: self,
             action: #selector(didTapClose),
-            accessibilityIdentifier: "close",
         )
         navigationBar.setItems([navigationItem], animated: false)
+
+        if #unavailable(iOS 26) {
+            overrideUserInterfaceStyle = .dark
+            navigationBar.tintColor = Theme.darkThemeNavbarIconColor
+        }
 
         interactiveDismissal.addGestureRecognizer(to: view)
     }
@@ -115,13 +143,30 @@ class AvatarViewController: UIViewController, InteractivelyDismissableViewContro
     override func viewSafeAreaInsetsDidChange() {
         super.viewSafeAreaInsetsDidChange()
         if let navigationBarTopLayoutConstraint {
+            //
+            // Copied from MediaPageViewController.
+            //
+
             // On iPhones with a Dynamic Island standard position of a navigation bar is bottom of the status bar,
-            // which is ~5 dp smaller than the top safe area (https://useyourloaf.com/blog/iphone-14-screen-sizes/) .
+            // which is ~5 dp smaller than the top safe area inset (https://useyourloaf.com/blog/iphone-14-screen-sizes/) .
             // Since it is not possible to constrain top edge of our manually maintained navigation bar to that position
-            // the workaround is to detect exactly safe area of 59 points and decrease it.
+            // the workaround is to detect when top safe area inset is larger than the status bar height and adjust as needed.
             var topInset = view.safeAreaInsets.top
-            if topInset == 59 {
-                topInset -= 5 + .hairlineWidth
+            if
+                #unavailable(iOS 26),
+                let statusBarHeight = view.window?.windowScene?.statusBarManager?.statusBarFrame.height,
+                statusBarHeight < topInset
+            {
+                topInset = statusBarHeight
+                if #available(iOS 18, *) {
+                    topInset += (2 + .hairlineWidth)
+                } else if #available(iOS 16, *) {
+                    topInset -= .hairlineWidth
+                }
+            }
+            // On iOS 26 in landscape the navigation bar is offset 24 dp from the screen top edge.
+            if #available(iOS 26, *), topInset.isZero {
+                topInset = 24
             }
             navigationBarTopLayoutConstraint.constant = topInset
         }
@@ -143,11 +188,31 @@ class AvatarViewController: UIViewController, InteractivelyDismissableViewContro
 
 extension AvatarViewController: MediaPresentationContextProvider {
     func mediaPresentationContext(item: Media, in coordinateSpace: UICoordinateSpace) -> MediaPresentationContext? {
+        view.layoutIfNeeded()
+
+        let backgroundColor: UIColor = if #available(iOS 26, *) { backgroundColor } else { .black }
         return MediaPresentationContext(
             mediaView: circleView,
             presentationFrame: circleView.frame,
+            backgroundColor: backgroundColor,
             mediaViewShape: .circle,
         )
+    }
+
+    func mediaWillPresent(toContext: MediaPresentationContext) {
+        view.backgroundColor = .clear
+    }
+
+    func mediaDidPresent(toContext: MediaPresentationContext) {
+        view.backgroundColor = backgroundColor
+    }
+
+    func mediaWillDismiss(fromContext: MediaPresentationContext) {
+        view.backgroundColor = .clear
+    }
+
+    func mediaDidDismiss(fromContext: MediaPresentationContext) {
+        view.backgroundColor = backgroundColor
     }
 }
 
