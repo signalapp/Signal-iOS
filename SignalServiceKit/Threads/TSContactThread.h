@@ -85,16 +85,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNa
 @property (nonatomic, readonly) SignalServiceAddress *contactAddress;
 @property (nonatomic) BOOL hasDismissedOffers; // deprecated
 
-+ (instancetype)getOrCreateThreadWithContactAddress:(SignalServiceAddress *)contactAddress
-    NS_SWIFT_NAME(getOrCreateThread(contactAddress:));
-
-+ (instancetype)getOrCreateThreadWithContactAddress:(SignalServiceAddress *)contactAddress
-                                        transaction:(DBWriteTransaction *)transaction;
-
-// Unlike getOrCreateThreadWithContactAddress, this will _NOT_ create a thread if one does not already exist.
-+ (nullable instancetype)getThreadWithContactAddress:(SignalServiceAddress *)contactAddress
-                                         transaction:(DBReadTransaction *)transaction;
-
 + (nullable SignalServiceAddress *)contactAddressFromThreadId:(NSString *)threadId
                                                   transaction:(DBReadTransaction *)transaction;
 

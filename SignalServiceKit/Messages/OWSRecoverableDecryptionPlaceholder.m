@@ -28,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSAssertDebug(thread);
     }
     if (!thread) {
-        thread = [TSContactThread getThreadWithContactAddress:sender transaction:writeTx];
+        thread = [TSContactThread getWithContactAddress:sender transaction:writeTx];
         OWSAssertDebug(thread);
     }
     if (!thread) {

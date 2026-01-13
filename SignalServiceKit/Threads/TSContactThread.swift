@@ -45,4 +45,46 @@ extension TSContactThread {
             return getOrCreateLocalThread(transaction: transaction)
         }
     }
+
+    @objc
+    public static func getOrCreateThread(
+        withContactAddress contactAddress: SignalServiceAddress,
+        transaction: DBWriteTransaction,
+    ) -> TSContactThread {
+        owsAssertDebug(contactAddress.isValid)
+
+        let existingThread = ContactThreadFinder().contactThread(for: contactAddress, tx: transaction)
+        if let existingThread {
+            return existingThread
+        }
+
+        let insertedThread = TSContactThread(contactAddress: contactAddress)
+        insertedThread.anyInsert(transaction: transaction)
+        return insertedThread
+    }
+
+    public static func getOrCreateThread(contactAddress: SignalServiceAddress) -> TSContactThread {
+        owsAssertDebug(contactAddress.isValid)
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+
+        let existingThread = databaseStorage.read { tx in
+            return ContactThreadFinder().contactThread(for: contactAddress, tx: tx)
+        }
+        if let existingThread {
+            return existingThread
+        }
+
+        return databaseStorage.write { tx in
+            return self.getOrCreateThread(withContactAddress: contactAddress, transaction: tx)
+        }
+    }
+
+    // Unlike getOrCreateThreadWithContactAddress, this will _NOT_ create a thread if one does not already exist.
+    @objc
+    public static func getWithContactAddress(
+        _ contactAddress: SignalServiceAddress,
+        transaction: DBReadTransaction,
+    ) -> TSContactThread? {
+        return ContactThreadFinder().contactThread(for: contactAddress, tx: transaction)
+    }
 }

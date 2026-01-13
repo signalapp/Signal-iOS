@@ -334,7 +334,7 @@ class SignalRecipientTest: SSKBaseTest {
                 )
                 groupMember.anyInsert(transaction: tx)
 
-                TSContactThread.getOrCreateThread(
+                _ = TSContactThread.getOrCreateThread(
                     withContactAddress: SignalServiceAddress(serviceId: address.aci, phoneNumber: address.phoneNumber?.stringValue),
                     transaction: tx,
                 )
