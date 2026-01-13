@@ -21,7 +21,7 @@ private extension TSOutgoingMessage {
 
     var canSendToLocalAddress: Bool {
         return isSyncMessage ||
-            self is OWSOutgoingCallMessage ||
+            self is OutgoingCallMessage ||
             self is OWSOutgoingResendRequest ||
             self is OWSOutgoingResendResponse
     }
@@ -711,7 +711,7 @@ public class MessageSender {
                             && message.insertedMessageHasRenderableContent(rowId: message.sqliteRowId!, tx: tx)
                     )
                         || message is OutgoingGroupCallUpdateMessage
-                        || message is OWSOutgoingCallMessage,
+                        || message is OutgoingCallMessage,
                 )
                 return isChatMessage ? thread.canSendChatMessagesToThread() : thread.canSendNonChatMessagesToThread
             }()
@@ -1103,13 +1103,13 @@ public class MessageSender {
             return true
         }
         if
-            let message = message as? OWSOutgoingCallMessage,
+            let message = message as? OutgoingCallMessage,
             /// OWSOutgoingCallMessages include not only calling
             /// someone (ie, an "offer message"), but also sending
             /// hangup messages, busy messages, and other kinds of
             /// call-related "messages" that do not indicate the
             /// sender's intent to resume association with a recipient.
-            message.offerMessage != nil
+            case .offerMessage = message.messageType
         {
             return true
         }

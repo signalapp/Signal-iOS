@@ -1137,11 +1137,10 @@ extension CallService: CallManagerDelegate {
                     withContactAddress: SignalServiceAddress(recipientAci),
                     transaction: transaction,
                 )
-                let callMessage = OWSOutgoingCallMessage(
+                let callMessage = OutgoingCallMessage(
                     thread: thread,
-                    opaqueMessage: opaqueMessage,
-                    overrideRecipients: nil,
-                    transaction: transaction,
+                    messageType: .opaqueMessage(opaqueMessage),
+                    tx: transaction,
                 )
                 let preparedMessage = PreparedOutgoingMessage.preprepared(
                     transientMessageWithoutAttachments: callMessage,
@@ -1203,14 +1202,11 @@ extension CallService: CallManagerDelegate {
                 guard let thread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
                     throw OWSAssertionError("tried to send call message to unknown group")
                 }
-                let overrideRecipients = overrideRecipients.map {
-                    return AciObjC(Aci(fromUUID: $0))
-                }
-                let callMessage = OWSOutgoingCallMessage(
+                let callMessage = OutgoingCallMessage(
                     thread: thread,
-                    opaqueMessage: opaqueMessage,
-                    overrideRecipients: overrideRecipients.isEmpty ? nil : overrideRecipients,
-                    transaction: transaction,
+                    messageType: .opaqueMessage(opaqueMessage),
+                    overrideRecipients: overrideRecipients.map(Aci.init(fromUUID:)),
+                    tx: transaction,
                 )
                 let preparedMessage = PreparedOutgoingMessage.preprepared(
                     transientMessageWithoutAttachments: callMessage,

@@ -604,6 +604,7 @@
 		500BAD802C519F2D00B4CD7F /* MessageTimestampGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500BAD7E2C519F2D00B4CD7F /* MessageTimestampGenerator.swift */; };
 		500BAD822C519F3600B4CD7F /* MessageTimestampGeneratorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500BAD7F2C519F2D00B4CD7F /* MessageTimestampGeneratorTest.swift */; };
 		500CC1E72F15C20B001A86F7 /* ReceiptMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500CC1E62F15C20B001A86F7 /* ReceiptMessage.swift */; };
+		500CC1E92F15C8A7001A86F7 /* OutgoingCallMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500CC1E82F15C8A7001A86F7 /* OutgoingCallMessage.swift */; };
 		500FB6182915B86D00257951 /* UITableView+ReusableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500FB6172915B86D00257951 /* UITableView+ReusableCell.swift */; };
 		500FE4E0288A11B000FA090C /* ConversationViewController+GiftBadges.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500FE4DF288A11AF00FA090C /* ConversationViewController+GiftBadges.swift */; };
 		500FE4E2288A373100FA090C /* BadgeGiftingAlreadyRedeemedSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500FE4E1288A373100FA090C /* BadgeGiftingAlreadyRedeemedSheet.swift */; };
@@ -3619,7 +3620,6 @@
 		F9C5CC2A289453B300548EEE /* TSInvalidIdentityKeySendingErrorMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C939289453B100548EEE /* TSInvalidIdentityKeySendingErrorMessage.m */; };
 		F9C5CC2B289453B300548EEE /* TSInvalidIdentityKeyReceivingErrorMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C93A289453B100548EEE /* TSInvalidIdentityKeyReceivingErrorMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CC2C289453B300548EEE /* OWSIdentityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C93B289453B100548EEE /* OWSIdentityManager.swift */; };
-		F9C5CC2D289453B300548EEE /* OWSOutgoingCallMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C93C289453B100548EEE /* OWSOutgoingCallMessage.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CC31289453B300548EEE /* BlockingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C940289453B100548EEE /* BlockingManager.swift */; };
 		F9C5CC32289453B300548EEE /* OWSProfileKeyMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C941289453B100548EEE /* OWSProfileKeyMessage.m */; };
 		F9C5CC34289453B300548EEE /* DeliveryReceiptContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C943289453B100548EEE /* DeliveryReceiptContext.swift */; };
@@ -3656,7 +3656,6 @@
 		F9C5CC5C289453B300548EEE /* TSCall+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C96E289453B100548EEE /* TSCall+SDS.swift */; };
 		F9C5CC5D289453B300548EEE /* TSCall.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C96F289453B100548EEE /* TSCall.m */; };
 		F9C5CC61289453B300548EEE /* OWSMessageSend.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C973289453B100548EEE /* OWSMessageSend.swift */; };
-		F9C5CC62289453B300548EEE /* OWSOutgoingCallMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C974289453B100548EEE /* OWSOutgoingCallMessage.m */; };
 		F9C5CC63289453B300548EEE /* MessageProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C975289453B100548EEE /* MessageProcessor.swift */; };
 		F9C5CC64289453B300548EEE /* MessageSendLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C976289453B100548EEE /* MessageSendLog.swift */; };
 		F9C5CC67289453B300548EEE /* OWSAddToContactsOfferMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C979289453B100548EEE /* OWSAddToContactsOfferMessage.m */; };
@@ -4780,6 +4779,7 @@
 		500BAD7E2C519F2D00B4CD7F /* MessageTimestampGenerator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageTimestampGenerator.swift; sourceTree = "<group>"; };
 		500BAD7F2C519F2D00B4CD7F /* MessageTimestampGeneratorTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageTimestampGeneratorTest.swift; sourceTree = "<group>"; };
 		500CC1E62F15C20B001A86F7 /* ReceiptMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiptMessage.swift; sourceTree = "<group>"; };
+		500CC1E82F15C8A7001A86F7 /* OutgoingCallMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingCallMessage.swift; sourceTree = "<group>"; };
 		500FB6172915B86D00257951 /* UITableView+ReusableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableView+ReusableCell.swift"; sourceTree = "<group>"; };
 		500FE48E2886148800FA090C /* CachedBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CachedBadge.swift; sourceTree = "<group>"; };
 		500FE4DF288A11AF00FA090C /* ConversationViewController+GiftBadges.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+GiftBadges.swift"; sourceTree = "<group>"; };
@@ -7848,7 +7848,6 @@
 		F9C5C939289453B100548EEE /* TSInvalidIdentityKeySendingErrorMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSInvalidIdentityKeySendingErrorMessage.m; sourceTree = "<group>"; };
 		F9C5C93A289453B100548EEE /* TSInvalidIdentityKeyReceivingErrorMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSInvalidIdentityKeyReceivingErrorMessage.h; sourceTree = "<group>"; };
 		F9C5C93B289453B100548EEE /* OWSIdentityManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSIdentityManager.swift; sourceTree = "<group>"; };
-		F9C5C93C289453B100548EEE /* OWSOutgoingCallMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSOutgoingCallMessage.h; sourceTree = "<group>"; };
 		F9C5C940289453B100548EEE /* BlockingManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlockingManager.swift; sourceTree = "<group>"; };
 		F9C5C941289453B100548EEE /* OWSProfileKeyMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSProfileKeyMessage.m; sourceTree = "<group>"; };
 		F9C5C943289453B100548EEE /* DeliveryReceiptContext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeliveryReceiptContext.swift; sourceTree = "<group>"; };
@@ -7885,7 +7884,6 @@
 		F9C5C96E289453B100548EEE /* TSCall+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TSCall+SDS.swift"; sourceTree = "<group>"; };
 		F9C5C96F289453B100548EEE /* TSCall.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSCall.m; sourceTree = "<group>"; };
 		F9C5C973289453B100548EEE /* OWSMessageSend.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSMessageSend.swift; sourceTree = "<group>"; };
-		F9C5C974289453B100548EEE /* OWSOutgoingCallMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSOutgoingCallMessage.m; sourceTree = "<group>"; };
 		F9C5C975289453B100548EEE /* MessageProcessor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageProcessor.swift; sourceTree = "<group>"; };
 		F9C5C976289453B100548EEE /* MessageSendLog.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageSendLog.swift; sourceTree = "<group>"; };
 		F9C5C979289453B100548EEE /* OWSAddToContactsOfferMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSAddToContactsOfferMessage.m; sourceTree = "<group>"; };
@@ -14168,8 +14166,7 @@
 				6640639D294D20A900997E0B /* OutgoingCallEventSyncMessage.swift */,
 				5060EBB92C7D211A00DF77AD /* OutgoingCallLinkUpdateMessage.swift */,
 				D9DB37F22B71B037007B16C8 /* OutgoingCallLogEventSyncMessage.swift */,
-				F9C5C93C289453B100548EEE /* OWSOutgoingCallMessage.h */,
-				F9C5C974289453B100548EEE /* OWSOutgoingCallMessage.m */,
+				500CC1E82F15C8A7001A86F7 /* OutgoingCallMessage.swift */,
 				F945FE492984796D00C835C7 /* RingrtcFieldTrials.swift */,
 			);
 			path = Calls;
@@ -15380,7 +15377,6 @@
 				F9C5CD02289453B300548EEE /* OWSLinkedDeviceReadReceipt.h in Headers */,
 				668A01082C2B5FE0007B8808 /* OWSLogs.h in Headers */,
 				C190F8F52C1B47E100D1EAC9 /* OWSOutgoingArchivedPaymentMessage.h in Headers */,
-				F9C5CC2D289453B300548EEE /* OWSOutgoingCallMessage.h in Headers */,
 				F9C5CC6A289453B300548EEE /* OWSOutgoingNullMessage.h in Headers */,
 				F9C5CC05289453B300548EEE /* OWSOutgoingPaymentMessage.h in Headers */,
 				F9C5CC39289453B300548EEE /* OWSOutgoingReactionMessage.h in Headers */,
@@ -19135,6 +19131,7 @@
 				D979CC292AD3933B006AAC49 /* OutgoingCallEventSyncMessageManager.swift in Sources */,
 				5060EBBA2C7D211A00DF77AD /* OutgoingCallLinkUpdateMessage.swift in Sources */,
 				D9DB37F32B71B037007B16C8 /* OutgoingCallLogEventSyncMessage.swift in Sources */,
+				500CC1E92F15C8A7001A86F7 /* OutgoingCallMessage.swift in Sources */,
 				D9AA7D6E2D11F08A0014137C /* OutgoingDeviceNameChangeSyncMessage.swift in Sources */,
 				C13B9BB62A1819C7007F74C4 /* OutgoingEditMessage.swift in Sources */,
 				C1EAECDF2A1EFC21008A3D58 /* OutgoingEditMessageSyncTranscript.swift in Sources */,
@@ -19218,7 +19215,6 @@
 				F9C5CDDC289453B400548EEE /* OWSOperation.swift in Sources */,
 				C13341132C221DAD00C26ED5 /* OWSOutgoingArchivedPaymentMessage+SDS.swift in Sources */,
 				C190F8F42C1B47E100D1EAC9 /* OWSOutgoingArchivedPaymentMessage.m in Sources */,
-				F9C5CC62289453B300548EEE /* OWSOutgoingCallMessage.m in Sources */,
 				F9C5CC37289453B300548EEE /* OWSOutgoingNullMessage.m in Sources */,
 				F9C5CC06289453B300548EEE /* OWSOutgoingPaymentMessage+SDS.swift in Sources */,
 				F9C5CC07289453B300548EEE /* OWSOutgoingPaymentMessage.m in Sources */,

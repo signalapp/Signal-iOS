@@ -852,11 +852,11 @@ final class IndividualCallService: CallServiceStateObserver {
                 case .videoCall: offerBuilder.setType(.offerVideoCall)
                 }
                 let sendPromise = try await self.databaseStorage.awaitableWrite { tx -> Promise<Void> in
-                    let callMessage = OWSOutgoingCallMessage(
+                    let callMessage = OutgoingCallMessage(
                         thread: call.individualCall.thread,
-                        offerMessage: try offerBuilder.build(),
-                        destinationDeviceId: NSNumber(value: destinationDeviceId),
-                        transaction: tx,
+                        messageType: .offerMessage(try offerBuilder.build()),
+                        destinationDeviceId: destinationDeviceId,
+                        tx: tx,
                     )
                     let preparedMessage = PreparedOutgoingMessage.preprepared(
                         transientMessageWithoutAttachments: callMessage,
@@ -887,11 +887,11 @@ final class IndividualCallService: CallServiceStateObserver {
                 let answerBuilder = SSKProtoCallMessageAnswer.builder(id: callId)
                 answerBuilder.setOpaque(opaque)
                 let sendPromise = try await self.databaseStorage.awaitableWrite { tx -> Promise<Void> in
-                    let callMessage = OWSOutgoingCallMessage(
+                    let callMessage = OutgoingCallMessage(
                         thread: call.individualCall.thread,
-                        answerMessage: try answerBuilder.build(),
-                        destinationDeviceId: NSNumber(value: destinationDeviceId),
-                        transaction: tx,
+                        messageType: .answerMessage(try answerBuilder.build()),
+                        destinationDeviceId: destinationDeviceId,
+                        tx: tx,
                     )
                     let preparedMessage = PreparedOutgoingMessage.preprepared(
                         transientMessageWithoutAttachments: callMessage,
@@ -935,11 +935,11 @@ final class IndividualCallService: CallServiceStateObserver {
                 }
 
                 let sendPromise = await self.databaseStorage.awaitableWrite { tx -> Promise<Void> in
-                    let callMessage = OWSOutgoingCallMessage(
+                    let callMessage = OutgoingCallMessage(
                         thread: call.individualCall.thread,
-                        iceUpdateMessages: iceUpdateProtos,
-                        destinationDeviceId: NSNumber(value: destinationDeviceId),
-                        transaction: tx,
+                        messageType: .iceUpdateMessages(iceUpdateProtos),
+                        destinationDeviceId: destinationDeviceId,
+                        tx: tx,
                     )
                     let preparedMessage = PreparedOutgoingMessage.preprepared(
                         transientMessageWithoutAttachments: callMessage,
@@ -1007,11 +1007,11 @@ final class IndividualCallService: CallServiceStateObserver {
                 let busyBuilder = SSKProtoCallMessageBusy.builder(id: callId)
 
                 let sendPromise = try await self.databaseStorage.awaitableWrite { tx -> Promise<Void> in
-                    let callMessage = OWSOutgoingCallMessage(
+                    let callMessage = OutgoingCallMessage(
                         thread: call.individualCall.thread,
-                        busyMessage: try busyBuilder.build(),
-                        destinationDeviceId: NSNumber(value: destinationDeviceId),
-                        transaction: tx,
+                        messageType: .busyMessage(try busyBuilder.build()),
+                        destinationDeviceId: destinationDeviceId,
+                        tx: tx,
                     )
                     let preparedMessage = PreparedOutgoingMessage.preprepared(
                         transientMessageWithoutAttachments: callMessage,

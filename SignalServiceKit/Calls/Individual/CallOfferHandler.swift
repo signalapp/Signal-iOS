@@ -229,11 +229,11 @@ public enum CallHangupSender {
             return Promise(error: error)
         }
 
-        let callMessage = OWSOutgoingCallMessage(
+        let callMessage = OutgoingCallMessage(
             thread: thread,
-            hangupMessage: hangupMessage,
-            destinationDeviceId: remoteDeviceId.map(NSNumber.init(value:)),
-            transaction: tx,
+            messageType: .hangupMessage(hangupMessage),
+            destinationDeviceId: remoteDeviceId,
+            tx: tx,
         )
         let preparedMessage = PreparedOutgoingMessage.preprepared(
             transientMessageWithoutAttachments: callMessage,

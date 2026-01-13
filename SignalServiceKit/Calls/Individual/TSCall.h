@@ -40,7 +40,7 @@ NSString *NSStringFromCallType(RPRecentCallType callType);
 /// bridge between "call IDs" used to identify this call across devices and
 /// ``TSCall`` instances local to this device.
 ///
-/// Not to be confused with an ``OWSOutgoingCallMessage``.
+/// Not to be confused with an ``OutgoingCallMessage``.
 @interface TSCall : TSInteraction <OWSPreviewText>
 
 /// Encodes both what kind of call it is, and the state of that call (pending, answered, missed, etc.)
