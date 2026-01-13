@@ -333,11 +333,11 @@ public class OWSMessageDecrypter {
         failedEnvelopeGroupId: Data?,
         transaction: DBWriteTransaction,
     ) {
-        let resendRequest = OWSOutgoingResendRequest(
+        let resendRequest = OutgoingResendRequest(
             errorMessageBytes: errorMessageBytes,
-            sourceAci: AciObjC(sourceAci),
+            sourceAci: sourceAci,
             failedEnvelopeGroupId: failedEnvelopeGroupId,
-            transaction: transaction,
+            tx: transaction,
         )
         let preparedMessage = PreparedOutgoingMessage.preprepared(
             transientMessageWithoutAttachments: resendRequest,

@@ -812,7 +812,7 @@ extension TSOutgoingMessage {
     var shouldRecordSendLog: Bool { true }
 
     /// Used in MessageSender to signal how a message should be encrypted before sending
-    /// Currently only overridden by OWSOutgoingResendRequest (this is asserted in the MessageSender implementation)
+    /// Currently only overridden by OutgoingResendRequest (this is asserted in the MessageSender implementation)
     @objc
     var encryptionStyle: EncryptionStyle { .whisper }
 

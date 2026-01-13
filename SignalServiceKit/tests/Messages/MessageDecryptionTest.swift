@@ -276,7 +276,7 @@ class MessageDecryptionTest: SSKBaseTest {
 
         fakeMessageSender.stubbedFailingErrors = [nil]
         fakeMessageSender.sendMessageWasCalledBlock = { message in
-            guard let resendRequest = message as? OWSOutgoingResendRequest else {
+            guard let resendRequest = message as? OutgoingResendRequest else {
                 return
             }
             self.fakeMessageSender.sendMessageWasCalledBlock = nil

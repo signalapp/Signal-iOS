@@ -33,7 +33,6 @@ FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 #import <SignalServiceKit/OWSOutgoingNullMessage.h>
 #import <SignalServiceKit/OWSOutgoingPaymentMessage.h>
 #import <SignalServiceKit/OWSOutgoingReactionMessage.h>
-#import <SignalServiceKit/OWSOutgoingResendRequest.h>
 #import <SignalServiceKit/OWSOutgoingSenderKeyDistributionMessage.h>
 #import <SignalServiceKit/OWSOutgoingSyncMessage.h>
 #import <SignalServiceKit/OWSPaymentActivationRequestFinishedMessage.h>
