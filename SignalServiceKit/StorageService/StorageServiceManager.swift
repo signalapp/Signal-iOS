@@ -141,35 +141,36 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
 
         SwiftSingletons.register(self)
 
-        if CurrentAppContext().hasUI {
+        if CurrentAppContext().isMainApp {
             appReadiness.runNowOrWhenAppWillBecomeReady {
                 self.cleanUpUnknownData()
             }
 
-            appReadiness.runNowOrWhenAppDidBecomeReadySync {
+            appReadiness.runNowOrWhenAppDidBecomeReadySync { [self] in
                 NotificationCenter.default.addObserver(
                     self,
                     selector: #selector(self.willResignActive),
                     name: .OWSApplicationWillResignActive,
                     object: nil,
                 )
-
+                NotificationCenter.default.addObserver(
+                    self,
+                    selector: #selector(self.didBecomeActive),
+                    name: .OWSApplicationDidBecomeActive,
+                    object: nil,
+                )
                 NotificationCenter.default.addObserver(
                     self,
                     selector: #selector(self.backupPlanDidChange),
                     name: .backupPlanChanged,
                     object: nil,
                 )
-            }
 
-            appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
-                guard DependenciesBridge.shared.tsAccountManager.registrationStateWithMaybeSneakyTransaction.isRegistered else { return }
+                // On first launch, back up any pending changes from previous
+                // launches. For the remainder of this launch we're covered by
+                // the willResignActive and didBecomeActive listeners.
+                backupPendingChanges(authedDevice: .implicit)
 
-                // If we have any pending changes since we last launch, back them up now.
-                self.backupPendingChanges(authedDevice: .implicit)
-            }
-
-            appReadiness.runNowOrWhenMainAppDidBecomeReadyAsync {
                 Task { await self.cleanUpDeletedCallLinks() }
             }
         }
@@ -205,6 +206,14 @@ public class StorageServiceManagerImpl: NSObject, StorageServiceManager {
         // to try and make sure the service doesn't get stale. If for
         // some reason we aren't able to successfully complete this backup
         // while in the background we'll try again on the next app launch.
+        backupPendingChanges(authedDevice: .implicit)
+    }
+
+    @objc
+    private func didBecomeActive() {
+        // We may have pending changes from before we resigned active that we
+        // should back up as soon as we can, rather than waiting for a full app
+        // launch.
         backupPendingChanges(authedDevice: .implicit)
     }
 
