@@ -93,6 +93,7 @@ enum PasteboardAttachment {
 
     /// Returns an attachment from the pasteboard, or nil if no attachment
     /// can be found.
+    @MainActor
     static func loadPreviewableAttachments() async throws -> [PreviewableAttachment]? {
         guard
             UIPasteboard.general.numberOfItems >= 1,
@@ -136,6 +137,7 @@ enum PasteboardAttachment {
         return attachment.isVisualMedia && !attachment.rawValue.isBorderless
     }
 
+    @MainActor
     private static func loadPreviewableAttachment(atIndex index: IndexSet, pasteboardUTIs: [String], retrySinglePixelImages: Bool) async throws -> PreviewableAttachment? {
         var pasteboardUTISet = Set<String>(filterDynamicUTITypes(pasteboardUTIs))
         guard pasteboardUTISet.count > 0 else {
