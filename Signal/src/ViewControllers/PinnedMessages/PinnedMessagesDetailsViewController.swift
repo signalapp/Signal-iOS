@@ -16,6 +16,8 @@ class PinnedMessagesDetailsViewController: OWSViewController, DatabaseChangeDele
 
     private weak var delegate: PinnedMessageInteractionManagerDelegate?
 
+    private var lastKnownWidth: CGFloat = 0
+
     init(
         pinnedMessages: [TSMessage],
         threadViewModel: ThreadViewModel,
@@ -129,7 +131,7 @@ class PinnedMessagesDetailsViewController: OWSViewController, DatabaseChangeDele
             view.addSubview(unpinAllButton)
             unpinAllButton.translatesAutoresizingMaskIntoConstraints = false
             NSLayoutConstraint.activate([
-                unpinAllButton.bottomAnchor.constraint(equalTo: contentLayoutGuide.bottomAnchor),
+                unpinAllButton.bottomAnchor.constraint(equalTo: contentLayoutGuide.bottomAnchor, constant: -16),
                 unpinAllButton.centerXAnchor.constraint(equalTo: contentLayoutGuide.centerXAnchor),
             ])
         }
@@ -146,9 +148,12 @@ class PinnedMessagesDetailsViewController: OWSViewController, DatabaseChangeDele
         view.layoutIfNeeded()
     }
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
 
+        let currentWidth = view.bounds.width
+        guard currentWidth != lastKnownWidth else { return }
+        lastKnownWidth = currentWidth
         db.read { tx in
             layoutPinnedMessages(tx: tx)
         }
@@ -208,7 +213,7 @@ class PinnedMessagesDetailsViewController: OWSViewController, DatabaseChangeDele
         let conversationStyle = ConversationStyle(
             type: .messageDetails,
             thread: threadViewModel.threadRecord,
-            viewWidth: view.frame.size.width,
+            viewWidth: view.safeAreaLayoutGuide.layoutFrame.width,
             hasWallpaper: false,
             isWallpaperPhoto: false,
             chatColor: DependenciesBridge.shared.chatColorSettingStore.resolvedChatColor(
@@ -238,7 +243,7 @@ class PinnedMessagesDetailsViewController: OWSViewController, DatabaseChangeDele
         let conversationStyle = ConversationStyle(
             type: .messageDetails,
             thread: thread,
-            viewWidth: view.width,
+            viewWidth: view.safeAreaLayoutGuide.layoutFrame.width,
             hasWallpaper: false,
             isWallpaperPhoto: false,
             chatColor: DependenciesBridge.shared.chatColorSettingStore.resolvedChatColor(
