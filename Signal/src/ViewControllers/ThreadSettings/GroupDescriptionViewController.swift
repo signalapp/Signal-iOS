@@ -21,10 +21,13 @@ class GroupDescriptionViewController: OWSTableViewController2 {
         let rawValue: Int
 
         static let updateImmediately = Options(rawValue: 1 << 0)
-        static let editable = Options(rawValue: 1 << 1)
+        /// The view should present itself already in edit mode
+        static let editImmediately = Options(rawValue: 1 << 1)
+        /// The view should give the user the option to enter edit mode
+        static let canEdit = Options(rawValue: 1 << 2)
     }
 
-    var isEditable: Bool { options.contains(.editable) }
+    private var isInEditMode: Bool
 
     convenience init(
         groupModel: TSGroupModel,
@@ -45,6 +48,7 @@ class GroupDescriptionViewController: OWSTableViewController2 {
     ) {
         self.helper = helper
         self.options = options
+        self.isInEditMode = options.contains(.editImmediately)
 
         if let groupDescriptionCurrent {
             self.helper.groupDescriptionOriginal = groupDescriptionCurrent
@@ -66,7 +70,6 @@ class GroupDescriptionViewController: OWSTableViewController2 {
         helper.delegate = self
         helper.buildContents()
 
-        updateNavigation()
         updateTableContents()
         helper.descriptionTextView.linkTextAttributes = [
             .foregroundColor: UIColor.Signal.link,
@@ -89,10 +92,15 @@ class GroupDescriptionViewController: OWSTableViewController2 {
     }
 
     private func updateNavigation() {
+        updateNavigationTitle()
+        updateNavigationItems()
+    }
+
+    private func updateNavigationTitle() {
         let currentGlyphCount = (helper.groupDescriptionCurrent ?? "").glyphCount
         let remainingGlyphCount = max(0, GroupManager.maxGroupDescriptionGlyphCount - currentGlyphCount)
 
-        if !isEditable, let groupName = helper.groupNameCurrent {
+        if !isInEditMode, let groupName = helper.groupNameCurrent {
             if self.providedCurrentDescription {
                 // don't assume the current group title applies
                 // if a group description was directly provided.
@@ -100,7 +108,7 @@ class GroupDescriptionViewController: OWSTableViewController2 {
             } else {
                 title = groupName
             }
-        } else if isEditable, remainingGlyphCount <= 100 {
+        } else if isInEditMode, remainingGlyphCount <= 100 {
             let titleFormat = OWSLocalizedString(
                 "GROUP_DESCRIPTION_VIEW_TITLE_FORMAT",
                 comment: "Title for the group description view. Embeds {{ the number of characters that can be added to the description without hitting the length limit }}.",
@@ -112,8 +120,10 @@ class GroupDescriptionViewController: OWSTableViewController2 {
                 comment: "Title for the group description view.",
             )
         }
+    }
 
-        if isEditable {
+    private func updateNavigationItems() {
+        if isInEditMode {
             navigationItem.leftBarButtonItem = .cancelButton(
                 dismissingFrom: self,
                 hasUnsavedChanges: { [weak self] in self?.helper.hasUnsavedChanges },
@@ -130,10 +140,22 @@ class GroupDescriptionViewController: OWSTableViewController2 {
 
             navigationItem.rightBarButtonItem?.isEnabled = helper.hasUnsavedChanges
         } else {
-            navigationItem.rightBarButtonItem = .setButton { [weak self] in
-                self?.didTapDone()
+            let isEditable = options.contains(.canEdit) || options.contains(.editImmediately)
+            if isEditable {
+                navigationItem.leftBarButtonItem = .systemItem(.edit) { [weak self] in
+                    guard let self else { return }
+                    self.isInEditMode = true
+                    self.updateTableContents()
+                    UIView.animate(withDuration: 0.3) {
+                        self.updateNavigationItems()
+                    } completion: { _ in
+                        self.updateNavigationTitle()
+                        self.helper.descriptionTextView.becomeFirstResponder()
+                    }
+                }
             }
-            navigationItem.rightBarButtonItem = nil
+
+            navigationItem.rightBarButtonItem = .doneButton(dismissingFrom: self)
         }
     }
 
@@ -142,7 +164,7 @@ class GroupDescriptionViewController: OWSTableViewController2 {
 
         updateNavigation()
 
-        if isEditable {
+        if isInEditMode {
             helper.descriptionTextView.becomeFirstResponder()
         }
     }
@@ -153,14 +175,14 @@ class GroupDescriptionViewController: OWSTableViewController2 {
         let descriptionTextView = helper.descriptionTextView
 
         let section = OWSTableSection()
-        descriptionTextView.isEditable = self.isEditable
+        descriptionTextView.isEditable = self.isInEditMode
         section.add(self.textViewItem(
             descriptionTextView,
-            minimumHeight: self.isEditable ? 74 : nil,
-            dataDetectorTypes: self.isEditable ? [] : .all,
+            minimumHeight: self.isInEditMode ? 74 : nil,
+            dataDetectorTypes: self.isInEditMode ? [] : .all,
         ))
 
-        if isEditable {
+        if isInEditMode {
             section.footerTitle = OWSLocalizedString(
                 "GROUP_DESCRIPTION_VIEW_EDIT_FOOTER",
                 comment: "Footer text when editing the group description",
@@ -179,7 +201,7 @@ class GroupDescriptionViewController: OWSTableViewController2 {
     }
 
     private func didTapSet() {
-        guard isEditable, helper.hasUnsavedChanges else {
+        guard isInEditMode, helper.hasUnsavedChanges else {
             return owsFailDebug("Unexpectedly trying to set")
         }
 

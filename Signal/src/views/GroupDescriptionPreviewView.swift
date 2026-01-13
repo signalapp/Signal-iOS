@@ -13,6 +13,10 @@ class GroupDescriptionPreviewView: ManualLayoutView {
     var groupName: String?
     private static let viewFullDescriptionURL = URL(string: "view-full-description")!
 
+    private let groupThread: TSGroupThread?
+
+    weak var delegate: GroupDescriptionViewControllerDelegate?
+
     var font: UIFont? {
         get { textView.font }
         set { textView.font = newValue }
@@ -48,14 +52,30 @@ class GroupDescriptionPreviewView: ManualLayoutView {
         }
     }
 
-    init(shouldDeactivateConstraints: Bool = false) {
+    private init(
+        groupThread: TSGroupThread?,
+        shouldDeactivateConstraints: Bool,
+    ) {
+        self.groupThread = groupThread
+
         super.init(name: "GroupDescriptionPreview")
         self.shouldDeactivateConstraints = shouldDeactivateConstraints
+        self.setup()
+    }
 
+    convenience init(shouldDeactivateConstraints: Bool = false) {
+        self.init(groupThread: nil, shouldDeactivateConstraints: shouldDeactivateConstraints)
+    }
+
+    convenience init(editableGroupThread groupThread: TSGroupThread) {
+        self.init(groupThread: groupThread, shouldDeactivateConstraints: false)
+    }
+
+    private func setup() {
         textView.delegate = self
 
         addSubview(textView) { [weak self] view in
-            if shouldDeactivateConstraints {
+            if self?.shouldDeactivateConstraints == true {
                 self?.textView.frame = view.bounds
             }
             self?.truncateVisibleTextIfNecessary()
@@ -170,15 +190,26 @@ extension GroupDescriptionPreviewView: UITextViewDelegate {
     func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
         guard URL == Self.viewFullDescriptionURL else { return true }
 
-        let vc = GroupDescriptionViewController(
-            helper: GroupAttributesEditorHelper(
-                groupId: Data(),
-                groupNameOriginal: groupName,
-                groupDescriptionOriginal: descriptionText,
-                avatarOriginalData: nil,
-                iconViewSize: 0,
-            ),
-        )
+        let vc: GroupDescriptionViewController
+
+        if let groupThread {
+            vc = GroupDescriptionViewController(
+                groupModel: groupThread.groupModel,
+                options: [.canEdit, .updateImmediately],
+            )
+            vc.descriptionDelegate = self.delegate
+        } else {
+            vc = GroupDescriptionViewController(
+                helper: GroupAttributesEditorHelper(
+                    groupId: Data(),
+                    groupNameOriginal: groupName,
+                    groupDescriptionOriginal: descriptionText,
+                    avatarOriginalData: nil,
+                    iconViewSize: 0,
+                ),
+            )
+        }
+
         UIApplication.shared.frontmostViewController?.presentFormSheet(
             OWSNavigationController(rootViewController: vc),
             animated: true,

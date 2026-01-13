@@ -461,6 +461,7 @@ extension MemberActionSheet: ConversationHeaderDelegate {
 
     func didTapAddGroupDescription() {}
     var canEditConversationAttributes: Bool { false }
+    var groupDescriptionDelegate: GroupDescriptionViewControllerDelegate? { nil }
 
     var canTapThreadName: Bool { true }
 

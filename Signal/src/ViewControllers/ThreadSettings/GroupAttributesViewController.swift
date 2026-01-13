@@ -112,7 +112,7 @@ class GroupAttributesViewController: OWSTableViewController2 {
                 let vc = GroupDescriptionViewController(
                     groupModel: self.groupThread.groupModel,
                     groupDescriptionCurrent: self.helper.groupDescriptionCurrent,
-                    options: .editable,
+                    options: .editImmediately,
                 )
                 vc.descriptionDelegate = self
                 self.presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)

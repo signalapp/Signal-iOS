@@ -1021,14 +1021,7 @@ extension ConversationViewController: CVComponentDelegate {
 
     public func didTapViewGroupDescription(newGroupDescription: String) {
         AssertIsOnMainThread()
-
-        func getGroupModel() -> TSGroupModel? {
-            if let groupThread = thread as? TSGroupThread {
-                return groupThread.groupModel
-            }
-            return nil
-        }
-        guard let groupModel = getGroupModel() else {
+        guard let groupModel = (thread as? TSGroupThread)?.groupModel else {
             owsFailDebug("Unexpectedly missing group model.")
             return
         }

@@ -374,7 +374,16 @@ struct ConversationHeaderBuilder {
     }
 
     mutating func addGroupDescriptionPreview(text: String) {
-        let previewView = GroupDescriptionPreviewView()
+        let previewView: GroupDescriptionPreviewView
+        if
+            let groupThread = delegate.thread as? TSGroupThread,
+            delegate.canEditConversationAttributes
+        {
+            previewView = GroupDescriptionPreviewView(editableGroupThread: groupThread)
+            previewView.delegate = delegate.groupDescriptionDelegate
+        } else {
+            previewView = GroupDescriptionPreviewView()
+        }
         previewView.descriptionText = text
         previewView.groupName = delegate.threadName(
             renderLocalUserAsNoteToSelf: true,
@@ -559,6 +568,7 @@ protocol ConversationHeaderDelegate: UIViewController, ConversationAvatarViewDel
 
     var isGroupV1Thread: Bool { get }
     var canEditConversationAttributes: Bool { get }
+    var groupDescriptionDelegate: GroupDescriptionViewControllerDelegate? { get }
 
     func updateTableContents(shouldReload: Bool)
     func tappedConversationSearch()
@@ -686,13 +696,15 @@ extension ConversationSettingsViewController: ConversationHeaderDelegate {
         )
     }
 
+    var groupDescriptionDelegate: GroupDescriptionViewControllerDelegate? { self }
+
     func tappedButton() {}
 
     func didTapAddGroupDescription() {
         guard let groupThread = thread as? TSGroupThread else { return }
         let vc = GroupDescriptionViewController(
             groupModel: groupThread.groupModel,
-            options: [.editable, .updateImmediately],
+            options: [.editImmediately, .updateImmediately],
         )
         vc.descriptionDelegate = self
         presentFormSheet(OWSNavigationController(rootViewController: vc), animated: true)
