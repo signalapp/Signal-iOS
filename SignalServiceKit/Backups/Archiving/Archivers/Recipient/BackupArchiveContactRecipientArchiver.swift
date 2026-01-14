@@ -184,16 +184,23 @@ public class BackupArchiveContactRecipientArchiver: BackupArchiveProtoStreamWrit
                 return
             }
 
-            let contact = self.buildContactRecipient(
-                aci: contactAddress.aci,
-                pni: contactAddress.pni,
-                e164: contactAddress.e164,
-                username: recipient.aci.flatMap { aci in
+            let username: String? = recipient.aci
+                .flatMap { aci in
                     self.usernameLookupManager.fetchUsername(
                         forAci: aci,
                         transaction: context.tx,
                     )
-                },
+                }
+                .flatMap { username in
+                    // Pass through LibSignal to validate the username
+                    try? Username(username).value
+                }
+
+            let contact = self.buildContactRecipient(
+                aci: contactAddress.aci,
+                pni: contactAddress.pni,
+                e164: contactAddress.e164,
+                username: username,
                 nicknameRecord: self.nicknameManager.fetchNickname(
                     for: recipient,
                     tx: context.tx,
