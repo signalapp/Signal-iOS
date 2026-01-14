@@ -522,11 +522,11 @@ class QuotedReplyManagerImpl: QuotedReplyManager {
 
         if
             let originalMessageRowId = originalMessage.sqliteRowId,
-            let attachmentRef = attachmentStore.attachmentToUseInQuote(originalMessageRowId: originalMessageRowId, tx: tx)
-        {
+            let attachmentRef = attachmentStore.attachmentToUseInQuote(originalMessageRowId: originalMessageRowId, tx: tx),
             let attachment = attachmentStore.fetch(id: attachmentRef.attachmentRowId, tx: tx)
+        {
             if
-                let stream = attachment?.asStream(),
+                let stream = attachment.asStream(),
                 stream.contentType.isVisualMedia,
                 let thumbnailImage = stream.thumbnailImageSync(quality: .small)
             {
@@ -546,11 +546,11 @@ class QuotedReplyManagerImpl: QuotedReplyManager {
                     attachment: stream.attachment,
                     thumbnailImage: resizedThumbnailImage,
                 ))
-            } else if attachment?.mimeType == MimeType.textXSignalPlain.rawValue {
+            } else if attachment.mimeType == MimeType.textXSignalPlain.rawValue {
                 // If the attachment is "oversize text", try the quote as a reply to text, not as
                 // a reply to an attachment.
                 if
-                    let oversizeTextData = try? attachment?.asStream()?.decryptedRawData(),
+                    let oversizeTextData = try? attachment.asStream()?.decryptedRawData(),
                     let oversizeText = String(data: oversizeTextData, encoding: .utf8)
                 {
                     // We don't need to include the entire text body of the message, just enough
@@ -564,25 +564,24 @@ class QuotedReplyManagerImpl: QuotedReplyManager {
                 } else {
                     return createTextDraftReplyOrNil()
                 }
-            } else if let attachment, MimeTypeUtil.isSupportedVisualMediaMimeType(attachment.mimeType) {
+            } else if MimeTypeUtil.isSupportedVisualMediaMimeType(attachment.mimeType) {
                 return createDraftReply(content: .attachment(
                     originalMessageBody(),
                     attachmentRef: attachmentRef,
                     attachment: attachment,
                     thumbnailImage: attachment.blurHash.flatMap(BlurHash.image(for:)),
                 ))
-            } else if
+            } else {
                 let stub = QuotedMessageAttachmentReference.Stub(
-                    mimeType: attachment?.mimeType,
+                    mimeType: attachment.mimeType,
                     sourceFilename: attachmentRef.sourceFilename,
+                    renderingFlag: attachmentRef.renderingFlag,
                 )
-            {
+
                 return createDraftReply(content: .attachmentStub(
                     originalMessageBody(),
                     stub,
                 ))
-            } else {
-                return createTextDraftReplyOrNil()
             }
         }
 
@@ -739,7 +738,11 @@ class QuotedReplyManagerImpl: QuotedReplyManager {
             }()
             guard isVisualMedia, let originalAttachmentStream = originalAttachment.asStream() else {
                 // Just return a stub for non-visual or undownloaded media.
-                return .stub(.init(mimeType: originalAttachment.mimeType, sourceFilename: originalAttachmentReference.sourceFilename))
+                return .stub(QuotedMessageAttachmentReference.Stub(
+                    mimeType: originalAttachment.mimeType,
+                    sourceFilename: originalAttachmentReference.sourceFilename,
+                    renderingFlag: originalAttachmentReference.renderingFlag,
+                ))
             }
             do {
                 let dataSource = try await attachmentValidator.prepareQuotedReplyThumbnail(
@@ -752,7 +755,11 @@ class QuotedReplyManagerImpl: QuotedReplyManager {
                 )
             } catch {
                 // If we experience errors, just fall back to a stub.
-                return .stub(.init(mimeType: originalAttachment.mimeType, sourceFilename: originalAttachmentReference.sourceFilename))
+                return .stub(QuotedMessageAttachmentReference.Stub(
+                    mimeType: originalAttachment.mimeType,
+                    sourceFilename: originalAttachmentReference.sourceFilename,
+                    renderingFlag: originalAttachmentReference.renderingFlag,
+                ))
             }
         }()
 

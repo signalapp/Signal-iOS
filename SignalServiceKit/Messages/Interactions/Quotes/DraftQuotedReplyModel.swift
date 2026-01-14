@@ -33,7 +33,7 @@ public class DraftQuotedReplyModel {
         case contactShare(OWSContact)
         /// The original message is a story reaction emoji
         case storyReactionEmoji(String)
-
+        /// The original message was a poll.
         case poll(String)
 
         // MARK: - Attachment types
@@ -104,17 +104,6 @@ public class DraftQuotedReplyModel {
                 return quotedMessage.bodySource == .remote
             default:
                 return false
-            }
-        }
-
-        public var renderingFlag: AttachmentReference.RenderingFlag {
-            switch self {
-            case .attachment(_, let attachmentRef, _, _):
-                return attachmentRef.renderingFlag
-            case .edit(_, _, let content):
-                return content.renderingFlag
-            default:
-                return .default
             }
         }
     }

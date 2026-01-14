@@ -245,6 +245,15 @@ private class QuotedMessageSnippetView: UIView {
             } else {
                 owsFailDebug("Unable to build spoiler animator")
             }
+        } else if
+            case .attachmentStub(_, let stub) = quotedMessage.content,
+            stub.renderingFlag == .voiceMessage
+        {
+            let iconPrefix = SignalSymbol.audioSquare.attributedString(dynamicTypeBaseSize: Layout.fileTypeFont.pointSize)
+            attributedText = iconPrefix + " " + OWSLocalizedString(
+                "QUOTED_REPLY_TYPE_VOICE_MESSAGE",
+                comment: "Indicates this message is a quoted reply to a voice message.",
+            )
         } else if let fileTypeForSnippet {
             attributedText = NSAttributedString(
                 string: fileTypeForSnippet,
@@ -495,8 +504,13 @@ private class QuotedMessageSnippetView: UIView {
         case let .attachment(_, _, attachment, thumbnailImage):
             thumbnailView = createAttachmentView(attachment, thumbnailImage: thumbnailImage)
 
-        case .attachmentStub:
-            thumbnailView = createStubAttachmentView()
+        case .attachmentStub(_, let stub):
+            switch stub.renderingFlag {
+            case .voiceMessage:
+                break
+            case .default, .borderless, .shouldLoop:
+                thumbnailView = createStubAttachmentView()
+            }
 
         case let .edit(_, _, content):
             createContentView(for: content, in: stackView)
@@ -579,8 +593,7 @@ private class QuotedMessageSnippetView: UIView {
 
     // Return generic attachment image centered in a container view.
     private func createStubAttachmentView() -> UIView {
-        // TODO: Should we overlay the file extension like we do with CVComponentGenericAttachment?
-        let imageView = buildImageView(image: UIImage(imageLiteralResourceName: "generic-attachment"))
+        let imageView = buildImageView(image: .genericAttachment)
         imageView.contentMode = .scaleAspectFit
 
         let containerView = UIView.container()
@@ -601,21 +614,27 @@ private class QuotedMessageSnippetView: UIView {
 
     // MARK: -
 
-    private func mimeTypeAndIsLooping(_ content: DraftQuotedReplyModel.Content) -> (String, Bool)? {
+    private func mimeTypeAndRenderingFlag(
+        _ content: DraftQuotedReplyModel.Content,
+    ) -> (String, AttachmentReference.RenderingFlag)? {
         switch content {
-        case .attachmentStub(_, let stub) where stub.mimeType != nil:
-            return (stub.mimeType!, false)
+        case .attachmentStub(_, let stub):
+            if let mimeType = stub.mimeType {
+                return (mimeType, stub.renderingFlag)
+            } else {
+                return nil
+            }
         case .attachment(_, let reference, let attachment, _):
-            return (attachment.mimeType, reference.renderingFlag == .shouldLoop)
+            return (attachment.mimeType, reference.renderingFlag)
         case .edit(_, _, let innerContent):
-            return mimeTypeAndIsLooping(innerContent)
-        case .giftBadge, .text, .payment, .attachmentStub, .viewOnce, .contactShare, .storyReactionEmoji, .poll:
+            return mimeTypeAndRenderingFlag(innerContent)
+        case .giftBadge, .text, .payment, .viewOnce, .contactShare, .storyReactionEmoji, .poll:
             return nil
         }
     }
 
     private var fileTypeForSnippet: String? {
-        guard let (mimeType, isLoopingVideo) = mimeTypeAndIsLooping(quotedMessage.content) else {
+        guard let (mimeType, renderingFlag) = mimeTypeAndRenderingFlag(quotedMessage.content) else {
             return nil
         }
 
@@ -636,16 +655,18 @@ private class QuotedMessageSnippetView: UIView {
                     comment: "Indicates this message is a quoted reply to an image file.",
                 )
             }
-        } else if isLoopingVideo, MimeTypeUtil.isSupportedVideoMimeType(mimeType) {
-            return NSLocalizedString(
-                "QUOTED_REPLY_TYPE_GIF",
-                comment: "Indicates this message is a quoted reply to animated GIF file.",
-            )
         } else if MimeTypeUtil.isSupportedVideoMimeType(mimeType) {
-            return NSLocalizedString(
-                "QUOTED_REPLY_TYPE_VIDEO",
-                comment: "Indicates this message is a quoted reply to a video file.",
-            )
+            if renderingFlag == .shouldLoop {
+                return NSLocalizedString(
+                    "QUOTED_REPLY_TYPE_GIF",
+                    comment: "Indicates this message is a quoted reply to animated GIF file.",
+                )
+            } else {
+                return NSLocalizedString(
+                    "QUOTED_REPLY_TYPE_VIDEO",
+                    comment: "Indicates this message is a quoted reply to a video file.",
+                )
+            }
         } else if MimeTypeUtil.isSupportedImageMimeType(mimeType) {
             return NSLocalizedString(
                 "QUOTED_REPLY_TYPE_PHOTO",
