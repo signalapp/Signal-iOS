@@ -715,10 +715,7 @@ extension ExperienceUpgradeManifest {
         tsAccountManager: TSAccountManager,
         transaction: DBReadTransaction,
     ) -> Bool {
-        guard
-            BuildFlags.Backups.showMegaphones,
-            tsAccountManager.registrationState(tx: transaction).isRegisteredPrimaryDevice
-        else {
+        guard tsAccountManager.registrationState(tx: transaction).isRegisteredPrimaryDevice else {
             return false
         }
 
@@ -735,7 +732,7 @@ extension ExperienceUpgradeManifest {
 
         let lastReminderDate = backupSettingsStore.lastRecoveryKeyReminderDate(tx: transaction)
 
-        let fourteenDaysAgo = Date().addingTimeInterval(-14 * 24 * 60 * 60)
+        let fourteenDaysAgo = Date().addingTimeInterval(-14 * .day)
         guard let lastReminderDate else {
             // Return true if the first backup happened over 2 weeks ago
             // and we haven't shown a reminder yet.
@@ -743,16 +740,17 @@ extension ExperienceUpgradeManifest {
         }
 
         // Return true if there's been no reminder within 6 months.
-        return lastReminderDate < Date().addingTimeInterval(-180 * 24 * 60 * 60)
+        return lastReminderDate < Date().addingTimeInterval(-6 * .month)
     }
 
     public static func checkPreconditionsForBackupEnablementReminder(
         backupSettingsStore: BackupSettingsStore,
+        remoteConfigProvider: RemoteConfigProvider,
         tsAccountManager: TSAccountManager,
         transaction: DBReadTransaction,
     ) -> Bool {
         guard
-            BuildFlags.Backups.showMegaphones,
+            remoteConfigProvider.currentConfig().backupsMegaphone,
             tsAccountManager.registrationState(tx: transaction).isRegisteredPrimaryDevice
         else {
             return false

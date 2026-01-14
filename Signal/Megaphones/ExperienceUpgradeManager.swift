@@ -89,6 +89,7 @@ class ExperienceUpgradeManager {
                         return ExperienceUpgradeManifest
                             .checkPreconditionsForBackupEnablementReminder(
                                 backupSettingsStore: BackupSettingsStore(),
+                                remoteConfigProvider: SSKEnvironment.shared.remoteConfigManagerRef,
                                 tsAccountManager: DependenciesBridge.shared.tsAccountManager,
                                 transaction: transaction,
                             )

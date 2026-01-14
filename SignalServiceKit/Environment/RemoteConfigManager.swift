@@ -297,6 +297,14 @@ public class RemoteConfig {
         return UInt64(messageQueueTime * Double(MSEC_PER_SEC))
     }
 
+    public var backupsMegaphone: Bool {
+        if BuildFlags.Backups.showMegaphones, !CurrentAppContext().isRunningTests {
+            return true
+        }
+
+        return isEnabled(.backupsMegaphone)
+    }
+
     public var ringrtcNwPathMonitorTrial: Bool {
         return !isEnabled(.ringrtcNwPathMonitorTrialKillSwitch, defaultValue: false)
     }
@@ -518,6 +526,7 @@ private enum IsEnabledFlag: String, FlagType {
     case applePayMonthlyDonationKillSwitch = "ios.applePayMonthlyDonationKillSwitch"
     case applePayOneTimeDonationKillSwitch = "ios.applePayOneTimeDonationKillSwitch"
     case automaticSessionResetKillSwitch = "ios.automaticSessionResetKillSwitch"
+    case backupsMegaphone = "ios.backupsMegaphone"
     case cardGiftDonationKillSwitch = "ios.cardGiftDonationKillSwitch"
     case cardMonthlyDonationKillSwitch = "ios.cardMonthlyDonationKillSwitch"
     case cardOneTimeDonationKillSwitch = "ios.cardOneTimeDonationKillSwitch"
@@ -544,6 +553,7 @@ private enum IsEnabledFlag: String, FlagType {
         case .applePayMonthlyDonationKillSwitch: false
         case .applePayOneTimeDonationKillSwitch: false
         case .automaticSessionResetKillSwitch: false
+        case .backupsMegaphone: true
         case .cardGiftDonationKillSwitch: false
         case .cardMonthlyDonationKillSwitch: false
         case .cardOneTimeDonationKillSwitch: false

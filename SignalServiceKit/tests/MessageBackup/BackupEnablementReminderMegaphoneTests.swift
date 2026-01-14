@@ -3,33 +3,28 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import Foundation
 import GRDB
 import LibSignalClient
-import XCTest
+import Testing
 
 @testable import SignalServiceKit
 
-class BackupEnablementReminderMegaphoneTests: XCTestCase {
-    private let db: DB = InMemoryDB()
-    private let backupSettingsStore: BackupSettingsStore = BackupSettingsStore()
-    private let tsAccountManager: TSAccountManager = MockTSAccountManager()
+struct BackupEnablementReminderMegaphoneTests {
+    private let backupSettingsStore = BackupSettingsStore()
+    private let tsAccountManager = MockTSAccountManager()
 
-    private var contactThread: TSContactThread!
-    private var experienceUpgrade: ExperienceUpgrade!
+    private let remoteConfigProvider: MockRemoteConfigProvider = {
+        let provider = MockRemoteConfigProvider()
+        provider._currentConfig = RemoteConfig(clockSkew: 0, valueFlags: ["ios.backupsMegaphone": "true"])
+        return provider
+    }()
 
-    override func setUp() {
-        super.setUp()
-        let testPhone = E164("+16505550101")!
-        let testPNI = Pni.constantForTesting("PNI:00000000-0000-4000-8000-0000000000b1")
-
-        contactThread = TSContactThread(contactAddress: SignalServiceAddress(
-            serviceId: testPNI,
-            phoneNumber: testPhone.stringValue,
-            cache: SignalServiceAddressCache(),
-        ))
-        experienceUpgrade = ExperienceUpgrade.makeNew(withManifest: ExperienceUpgradeManifest.enableBackupsReminder)
-    }
+    private let contactThread = TSContactThread(contactAddress: SignalServiceAddress(
+        serviceId: Pni.randomForTesting(),
+        phoneNumber: "+16505550101",
+        cache: SignalServiceAddressCache(),
+    ))
+    private let experienceUpgrade = ExperienceUpgrade.makeNew(withManifest: ExperienceUpgradeManifest.enableBackupsReminder)
 
     private func insertInteraction(thread: TSThread, db: Database) {
         let interaction = TSInteraction(timestamp: 0, receivedAtTimestamp: 0, thread: thread)
@@ -39,40 +34,74 @@ class BackupEnablementReminderMegaphoneTests: XCTestCase {
     private func checkPreconditions(tx: DBReadTransaction) -> Bool {
         return ExperienceUpgradeManifest.checkPreconditionsForBackupEnablementReminder(
             backupSettingsStore: backupSettingsStore,
+            remoteConfigProvider: remoteConfigProvider,
             tsAccountManager: tsAccountManager,
             transaction: tx,
         )
     }
 
-    func testPreconditionsForRecoveryKeyMegaphone_backupsEnabled() throws {
+    // MARK: -
+
+    @Test
+    func testBackupsEnabled() {
+        let db = InMemoryDB()
+
         db.write { tx in
             backupSettingsStore.setBackupPlan(.free, tx: tx)
         }
 
         db.read { tx in
             let shouldShowBackupEnablementReminder = checkPreconditions(tx: tx)
-            XCTAssertFalse(shouldShowBackupEnablementReminder, "Don't show reminder if backups is enabled")
+            #expect(!shouldShowBackupEnablementReminder, "Don't show reminder if backups is enabled")
         }
     }
 
-    func testPreconditionsForRecoveryKeyMegaphone_lessThanRequiredMessages() throws {
+    @Test
+    func testRemoteConfigDisabled() {
+        let db = InMemoryDB()
+
+        for i in 0..<2000 {
+            let outgoingMessage = TSOutgoingMessage(in: contactThread, messageBody: "good heavens + \(i)")
+            db.write { tx in
+                let db = tx.database
+                try! outgoingMessage.asRecord().insert(db)
+            }
+        }
+
+        db.read { tx in
+            #expect(checkPreconditions(tx: tx), "Megaphone should be allowed!")
+        }
+
+        remoteConfigProvider._currentConfig = RemoteConfig(clockSkew: 0, valueFlags: [:])
+
+        db.read { tx in
+            #expect(!checkPreconditions(tx: tx), "Megaphone should be disallowed by remote config.")
+        }
+    }
+
+    @Test
+    func testLessThanRequiredMessages() {
+        let db = InMemoryDB()
+
         db.write { tx in
             backupSettingsStore.setBackupPlan(.disabled, tx: tx)
         }
 
         db.read { tx in
-            XCTAssertFalse(checkPreconditions(tx: tx), "Don't show reminder if user doesn't have enough messages")
+            #expect(!checkPreconditions(tx: tx), "Don't show reminder if user doesn't have enough messages")
         }
     }
 
-    func testPreconditionsForRecoveryKeyMegaphone_hasRequiredMessages() throws {
+    func testHasRequiredMessages() {
+        let db = InMemoryDB()
+
         db.write { tx in
             let db = tx.database
-            try! contactThread!.asRecord().insert(db)
+            try! contactThread.asRecord().insert(db)
         }
 
         for i in 0..<2000 {
-            let outgoingMessage = TSOutgoingMessage(in: contactThread!, messageBody: "good heavens + \(i)")
+            let outgoingMessage = TSOutgoingMessage(in: contactThread, messageBody: "good heavens + \(i)")
             db.write { tx in
                 let db = tx.database
                 try! outgoingMessage.asRecord().insert(db)
@@ -81,11 +110,12 @@ class BackupEnablementReminderMegaphoneTests: XCTestCase {
 
         db.read { tx in
             let shouldShowBackupEnablementReminder = checkPreconditions(tx: tx)
-            XCTAssertTrue(shouldShowBackupEnablementReminder, "Should show reminder if user has enough messages")
+            #expect(shouldShowBackupEnablementReminder, "Should show reminder if user has enough messages")
         }
     }
 
-    func testPreconditionsForRecoveryKeyMegaphone_backupsHasPreviouslyBeenEnabled() throws {
+    func testBackupsHasPreviouslyBeenEnabled() {
+        let db = InMemoryDB()
 
         // Enable then disable backups
         db.write { tx in backupSettingsStore.setBackupPlan(.free, tx: tx) }
@@ -93,11 +123,11 @@ class BackupEnablementReminderMegaphoneTests: XCTestCase {
 
         db.write { tx in
             let db = tx.database
-            try! contactThread!.asRecord().insert(db)
+            try! contactThread.asRecord().insert(db)
         }
 
         for i in 0..<2000 {
-            let outgoingMessage = TSOutgoingMessage(in: contactThread!, messageBody: "good heavens + \(i)")
+            let outgoingMessage = TSOutgoingMessage(in: contactThread, messageBody: "good heavens + \(i)")
             db.write { tx in
                 let db = tx.database
                 try! outgoingMessage.asRecord().insert(db)
@@ -106,25 +136,25 @@ class BackupEnablementReminderMegaphoneTests: XCTestCase {
 
         db.read { tx in
             let shouldShowBackupEnablementReminder = checkPreconditions(tx: tx)
-            XCTAssertFalse(shouldShowBackupEnablementReminder, "Should not show reminder if user has enabled then disabled backups, even if they have enough messages")
+            #expect(!shouldShowBackupEnablementReminder, "Should not show reminder if user has enabled then disabled backups, even if they have enough messages")
         }
     }
 
-    func testPreconditionsForRecoveryKeyMegaphone_snoozed() throws {
+    func testSnoozed() throws {
         experienceUpgrade.snoozeCount = 1
 
         experienceUpgrade.lastSnoozedTimestamp = Date().addingTimeInterval(-25 * TimeInterval.day).timeIntervalSince1970
-        XCTAssertTrue(experienceUpgrade.isSnoozed, "should still be snoozed if last snooze was recent")
+        #expect(experienceUpgrade.isSnoozed, "should still be snoozed if last snooze was recent")
 
         experienceUpgrade.lastSnoozedTimestamp = Date().addingTimeInterval(-31 * TimeInterval.day).timeIntervalSince1970
-        XCTAssertFalse(experienceUpgrade.isSnoozed, "should not be snoozed if last snooze was long enough ago")
+        #expect(!experienceUpgrade.isSnoozed, "should not be snoozed if last snooze was long enough ago")
 
         experienceUpgrade.snoozeCount = 2
         experienceUpgrade.lastSnoozedTimestamp = Date().addingTimeInterval(-31 * TimeInterval.day).timeIntervalSince1970
-        XCTAssertTrue(experienceUpgrade.isSnoozed, "should still be snoozed if last snooze was recent")
+        #expect(experienceUpgrade.isSnoozed, "should still be snoozed if last snooze was recent")
 
         experienceUpgrade.lastSnoozedTimestamp = Date().addingTimeInterval(-91 * TimeInterval.day).timeIntervalSince1970
-        XCTAssertFalse(experienceUpgrade.isSnoozed, "should not still be snoozed if last snooze was long enough ago")
+        #expect(!experienceUpgrade.isSnoozed, "should not still be snoozed if last snooze was long enough ago")
     }
 }
 

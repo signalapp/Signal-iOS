@@ -36,7 +36,10 @@ public enum BuildFlags {
     public static let shouldUseTestIntervals = build <= .beta
 
     public enum Backups {
-        public static let showMegaphones = build <= .internal
+        /// This is also controlled via remote-config.
+        /// - SeeAlso ``RemoteConfig/backupsMegaphone``.
+        public static let showMegaphones = build <= .beta
+
         public static let showOptimizeMedia = build <= .dev
 
         public static let restoreFailOnAnyError = build <= .beta
