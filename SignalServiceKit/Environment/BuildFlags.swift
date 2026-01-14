@@ -59,6 +59,8 @@ public enum BuildFlags {
     public static let pollSend = true
     public static let pollReceive = true
 
+    public static let callQualitySurvey = build <= .internal
+
     static let netBuildVariant: Net.BuildVariant = build <= .beta ? .beta : .production
 
     // Turn this off after all still-registered clients have run this

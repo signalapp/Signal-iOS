@@ -67,6 +67,7 @@ class CallQualitySurveyManager {
     }
 
     func showIfNeeded() {
+        guard BuildFlags.callQualitySurvey else { return }
         guard deps.db.read(block: shouldShowSurvey(tx:)) else { return }
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
