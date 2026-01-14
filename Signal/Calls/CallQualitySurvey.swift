@@ -124,21 +124,15 @@ class CallQualitySurveyManager {
             return false
         }
 
-        let startDate = Date(millisecondsSince1970: callSummary.startTime)
-        let endDate = Date(millisecondsSince1970: callSummary.endTime)
-        let callWasShort = startDate.addingTimeInterval(.minute) > endDate
-        let callWasLong = startDate.addingTimeInterval(25 * .minute) < endDate
-        let callLengthWasOutsideNormalRange = callWasShort || callWasLong
-
         guard let localIdentifiers = deps.accountManager.localIdentifiers(tx: tx) else {
             owsFailBeta("No local identifiers", logger: logger)
-            return callLengthWasOutsideNormalRange
+            return false
         }
 
         let odds = RemoteConfig.current.callQualitySurveyPPM(localIdentifiers: localIdentifiers)
         let passedRNGCheck = UInt32.random(in: 0..<1_000_000) < odds
 
-        return callLengthWasOutsideNormalRange || passedRNGCheck
+        return passedRNGCheck
     }
 
     func submit(rating: CallQualitySurvey.Rating, shouldSubmitDebugLogs: Bool) {
