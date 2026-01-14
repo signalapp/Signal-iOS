@@ -12,8 +12,9 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
 
     struct StatusIndicator: Equatable {
         let imageName: String
-        let imageSize: CGSize
         let isAnimated: Bool
+
+        static var size: CGSize { .init(width: 18, height: 12) }
     }
 
     public enum TapForMoreState {
@@ -198,13 +199,28 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
             innerViews.append(smsLockIconView)
         }
 
-        if let statusIndicator = self.statusIndicator {
+        if let statusIndicator {
             if let icon = UIImage(named: statusIndicator.imageName) {
+                let iconSize = icon.size
+                let statusIndicatorAreaSize = StatusIndicator.size
+
+                owsAssertDebug(iconSize.width <= statusIndicatorAreaSize.width)
+                owsAssertDebug(iconSize.height == statusIndicatorAreaSize.height)
+
                 let statusIndicatorImageView = componentView.statusIndicatorImageView
-                owsAssertDebug(icon.size == statusIndicator.imageSize)
                 statusIndicatorImageView.image = icon.withRenderingMode(.alwaysTemplate)
                 statusIndicatorImageView.tintColor = textColor
-                innerViews.append(statusIndicatorImageView)
+
+                // We need exactly the same amount of space for all status indicator images.
+                // Can't bake the space into icons because some icons are animated.
+                // The solution is to use a container view.
+                let statusIndicatorImageViewContainer = UIView(frame: CGRect(origin: .zero, size: statusIndicatorAreaSize))
+                statusIndicatorImageViewContainer.addSubview(statusIndicatorImageView)
+                statusIndicatorImageView.frame = CGRect(origin: .zero, size: iconSize)
+                if CurrentAppContext().isRTL {
+                    statusIndicatorImageView.frame.origin.x = statusIndicatorAreaSize.width - iconSize.width
+                }
+                innerViews.append(statusIndicatorImageViewContainer)
 
                 if statusIndicator.isAnimated {
                     componentView.animateSpinningIcon()
@@ -331,31 +347,26 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
             case .uploading, .sending:
                 statusIndicator = StatusIndicator(
                     imageName: "message_status_sending",
-                    imageSize: .square(12),
                     isAnimated: true,
                 )
             case .pending:
                 statusIndicator = StatusIndicator(
                     imageName: "message_status_sending",
-                    imageSize: .square(12),
                     isAnimated: false,
                 )
             case .sent, .skipped:
                 statusIndicator = StatusIndicator(
                     imageName: "message_status_sent",
-                    imageSize: .square(12),
                     isAnimated: false,
                 )
             case .delivered:
                 statusIndicator = StatusIndicator(
                     imageName: "message_status_delivered",
-                    imageSize: .init(width: 18, height: 12),
                     isAnimated: false,
                 )
             case .read, .viewed:
                 statusIndicator = StatusIndicator(
                     imageName: "message_status_read",
-                    imageSize: .init(width: 18, height: 12),
                     isAnimated: false,
                 )
             case .failed:
@@ -442,31 +453,26 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
             case .uploading, .sending:
                 statusIndicator = StatusIndicator(
                     imageName: "message_status_sending",
-                    imageSize: .square(12),
                     isAnimated: true,
                 )
             case .pending:
                 statusIndicator = StatusIndicator(
                     imageName: "message_status_sending",
-                    imageSize: .square(12),
                     isAnimated: false,
                 )
             case .sent, .skipped:
                 statusIndicator = StatusIndicator(
                     imageName: "message_status_sent",
-                    imageSize: .square(12),
                     isAnimated: false,
                 )
             case .delivered:
                 statusIndicator = StatusIndicator(
                     imageName: "message_status_delivered",
-                    imageSize: .init(width: 18, height: 12),
                     isAnimated: false,
                 )
             case .read, .viewed:
                 statusIndicator = StatusIndicator(
                     imageName: "message_status_read",
-                    imageSize: .init(width: 18, height: 12),
                     isAnimated: false,
                 )
             case .failed:
@@ -670,8 +676,8 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
             innerSubviewInfos.append(lockIconSize.asManualSubviewInfo(hasFixedWidth: true))
         }
 
-        if let statusIndicator = self.statusIndicator {
-            let statusSize = statusIndicator.imageSize
+        if statusIndicator != nil {
+            let statusSize = StatusIndicator.size
             innerSubviewInfos.append(statusSize.asManualSubviewInfo(hasFixedWidth: true))
         }
 
