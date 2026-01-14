@@ -1,6 +1,6 @@
-Signal ialah aplikasi pemesejan yang mementingkan privasi. Ia percuma dan mudah digunakan, dengan penyulitan hujung ke hujung yang kukuh bagi memastikan komunikasi anda benar-benar peribadi.
+Signal ialah aplikasi pemesejan yang mengutamakan privasi. Ia percuma dan mudah digunakan, dengan penyulitan hujung ke hujung yang kukuh bagi memastikan komunikasi anda benar-benar peribadi.
 
-• Hantar teks, mesej suara, foto, video, GIF dan fail secara percuma. Signal menggunakan sambungan data telefon anda, jadi anda mengelakkan bayaran SMS dan MMS.
+• Hantar teks, mesej suara, foto, video, GIF dan fail secara percuma. Signal menggunakan sambungan data telefon anda, jadi anda boleh mengelakkan caj SMS dan MMS.
 
 • Hubungi rakan anda dengan panggilan suara dan video yang disulitkan dengan jelas. Panggilan kumpulan disokong untuk sehingga 50 orang.
 
@@ -12,7 +12,7 @@ Signal ialah aplikasi pemesejan yang mementingkan privasi. Ia percuma dan mudah 
 
 • Signal adalah bebas dan bukan untuk keuntungan; jenis teknologi yang berbeza daripada jenis organisasi yang berbeza. Sebagai organisasi bukan berasaskan keuntungan 501c3, kami disokong oleh derma anda, bukan oleh pengiklan atau pelabur. 
 
-• Untuk mendapatkan sokongan, soalan atau maklumat lanjut sila lawati https://support.signal.org/
+• Untuk sokongan, pertanyaan atau maklumat lanjut sila lawati https://support.signal.org/
 
 Untuk menyemak kod sumber kami, lawati https://github.com/signalapp 
 
