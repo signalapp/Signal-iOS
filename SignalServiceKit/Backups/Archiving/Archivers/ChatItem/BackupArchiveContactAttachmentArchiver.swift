@@ -62,7 +62,7 @@ class BackupArchiveContactAttachmentArchiver: BackupArchiveProtoStreamWriter {
         for address in contact.addresses {
             switch archiveContactAddress(address).bubbleUp(resultType, partialErrors: &partialErrors) {
             case .continue(let addressProto):
-                addressProtos.append(addressProto)
+                addressProto.flatMap { addressProtos.append($0) }
             case .bubbleUpError(let errorResult):
                 return errorResult
             }
@@ -174,31 +174,43 @@ class BackupArchiveContactAttachmentArchiver: BackupArchiveProtoStreamWriter {
 
     private func archiveContactAddress(
         _ contactAddress: OWSContactAddress,
-    ) -> BackupArchive.ArchiveInteractionResult<BackupProto_ContactAttachment.PostalAddress> {
+    ) -> BackupArchive.ArchiveInteractionResult<BackupProto_ContactAttachment.PostalAddress?> {
         var addressProto = BackupProto_ContactAttachment.PostalAddress()
+        var isValid = false
         if let label = contactAddress.label {
+            isValid = true
             addressProto.label = label
         }
         if let street = contactAddress.street {
+            isValid = true
             addressProto.street = street
         }
         if let pobox = contactAddress.pobox {
+            isValid = true
             addressProto.pobox = pobox
         }
         if let neighborhood = contactAddress.neighborhood {
+            isValid = true
             addressProto.neighborhood = neighborhood
         }
         if let city = contactAddress.city {
+            isValid = true
             addressProto.city = city
         }
         if let region = contactAddress.region {
+            isValid = true
             addressProto.region = region
         }
         if let postcode = contactAddress.postcode {
+            isValid = true
             addressProto.postcode = postcode
         }
         if let country = contactAddress.country {
+            isValid = true
             addressProto.country = country
+        }
+        guard isValid else {
+            return .success(nil)
         }
         addressProto.type = switch contactAddress.type {
         case .home:
