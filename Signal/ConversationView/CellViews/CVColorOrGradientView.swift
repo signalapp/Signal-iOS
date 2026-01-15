@@ -351,25 +351,13 @@ public class CVColorOrGradientView: ManualLayoutViewWithLayer {
 
         dimmerLayer.removeAllAnimations()
 
-        // Animate fade-in.
-        let fadeIn = CABasicAnimation(keyPath: #keyPath(CALayer.opacity))
-        fadeIn.fromValue = 0
-        fadeIn.toValue = 1
-        fadeIn.duration = stepDuration
-        fadeIn.fillMode = .forwards
-        fadeIn.isRemovedOnCompletion = false
-        dimmerLayer.add(fadeIn, forKey: "fadeIn")
-
-        // Schedule fade-out after delay.
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2 * stepDuration) {
-            let fadeOut = CABasicAnimation(keyPath: #keyPath(CALayer.opacity))
-            fadeOut.fromValue = 1
-            fadeOut.toValue = 0
-            fadeOut.duration = stepDuration
-            fadeOut.fillMode = .forwards
-            fadeOut.isRemovedOnCompletion = false
-            dimmerLayer.add(fadeOut, forKey: "fadeOut")
-        }
+        let animation = CAKeyframeAnimation(keyPath: #keyPath(CALayer.opacity))
+        animation.values = [0, 1, 1, 0]
+        animation.keyTimes = [0, 1.0 / 3.0, 2.0 / 3.0, 1].map { NSNumber(value: $0) }
+        animation.duration = stepDuration * 3
+        animation.fillMode = .forwards
+        animation.isRemovedOnCompletion = false
+        dimmerLayer.add(animation, forKey: "dimming")
     }
 }
 
