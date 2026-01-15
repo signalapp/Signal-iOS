@@ -237,36 +237,42 @@ public struct AttachmentStore {
         tx: DBReadTransaction,
     ) -> [ReferencedAttachment] {
         let references: [AttachmentReference] = fetchReferences(owners: owners, tx: tx)
-
-        var attachmentsByID: [Attachment.IDType: Attachment] = [:]
-        for attachmentID in Set(references.map(\.attachmentRowId)) {
-            attachmentsByID[attachmentID] = fetch(id: attachmentID, tx: tx)
-        }
-
-        return references.map { reference in
-            guard let attachment = attachmentsByID[reference.attachmentRowId] else {
-                owsFail("Missing attachment for reference: foreign-key constraints should have prevented this!")
-            }
-            return ReferencedAttachment(reference: reference, attachment: attachment)
-        }
+        return fetchReferencedAttachments(references: references, tx: tx)
     }
 
     public func fetchReferencedAttachmentsOwnedByMessage(
         messageRowId: Int64,
         tx: DBReadTransaction,
     ) -> [ReferencedAttachment] {
-        let allMessageOwners: [AttachmentReference.Owner.ID] = MessageAttachmentReferenceRecord.OwnerType.allCases.map {
-            switch $0 {
-            case .bodyAttachment: .messageBodyAttachment(messageRowId: messageRowId)
-            case .oversizeText: .messageOversizeText(messageRowId: messageRowId)
-            case .linkPreview: .messageLinkPreview(messageRowId: messageRowId)
-            case .quotedReplyAttachment: .quotedReplyAttachment(messageRowId: messageRowId)
-            case .sticker: .messageSticker(messageRowId: messageRowId)
-            case .contactAvatar: .messageContactAvatar(messageRowId: messageRowId)
+        // We call this method for every interaction when doing a Backup export,
+        // and we've found in practice that optimizations here matter. For
+        // example, making sure it's a single query, and using a cached SQLite
+        // statement.
+
+        let sql = """
+            SELECT *
+            FROM \(MessageAttachmentReferenceRecord.databaseTableName)
+            WHERE \(Column(MessageAttachmentReferenceRecord.CodingKeys.ownerRowId).name) = ?
+        """
+
+        let referenceRecords = failIfThrows {
+            let statement = try tx.database.cachedStatement(sql: sql)
+            return try MessageAttachmentReferenceRecord.fetchAll(
+                statement,
+                arguments: [messageRowId],
+            )
+        }
+
+        let references = referenceRecords.compactMap { messageReferenceRecord in
+            do {
+                return try AttachmentReference(record: messageReferenceRecord)
+            } catch {
+                owsFailDebug("Failed to convert message record to reference! \(error)")
+                return nil
             }
         }
 
-        return fetchReferencedAttachments(owners: allMessageOwners, tx: tx)
+        return fetchReferencedAttachments(references: references, tx: tx)
     }
 
     public func fetchReferencedAttachmentsOwnedByStory(
@@ -301,6 +307,23 @@ public struct AttachmentStore {
             return nil
         }
         return ReferencedAttachment(reference: reference, attachment: attachment)
+    }
+
+    private func fetchReferencedAttachments(
+        references: [AttachmentReference],
+        tx: DBReadTransaction,
+    ) -> [ReferencedAttachment] {
+        var attachmentsByID: [Attachment.IDType: Attachment] = [:]
+        for attachmentID in Set(references.map(\.attachmentRowId)) {
+            attachmentsByID[attachmentID] = fetch(id: attachmentID, tx: tx)
+        }
+
+        return references.map { reference in
+            guard let attachment = attachmentsByID[reference.attachmentRowId] else {
+                owsFail("Missing attachment for reference: foreign-key constraints should have prevented this!")
+            }
+            return ReferencedAttachment(reference: reference, attachment: attachment)
+        }
     }
 
     // MARK: -
