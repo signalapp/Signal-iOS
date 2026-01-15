@@ -43,7 +43,7 @@ class BackupArchiveMessageAttachmentArchiver: BackupArchiveProtoStreamWriter {
     }
 
     private func fetchReferencedAttachments(
-        for ownerId: AttachmentReference.Owner.ID,
+        for ownerId: AttachmentReference.OwnerId,
         tx: DBReadTransaction,
     ) -> [ReferencedAttachment] {
         let messageRowId: Int64
