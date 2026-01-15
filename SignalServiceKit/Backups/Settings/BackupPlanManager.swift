@@ -76,15 +76,32 @@ class BackupPlanManagerImpl: BackupPlanManager {
             return
         }
 
+        let oldBackupPlan = backupPlan(tx: tx)
+
+        let newBackupPlan: BackupPlan
         switch backupLevel {
         case nil:
-            backupSettingsStore.setBackupPlan(.disabled, tx: tx)
-            configureDownloadsForDisablingBackups(tx: tx)
+            newBackupPlan = .disabled
         case .free:
-            backupSettingsStore.setBackupPlan(.free, tx: tx)
+            newBackupPlan = .free
         case .paid:
             // Linked devices don't support optimizeLocalStorage; default off.
-            backupSettingsStore.setBackupPlan(.paid(optimizeLocalStorage: false), tx: tx)
+            newBackupPlan = .paid(optimizeLocalStorage: false)
+        }
+
+        guard oldBackupPlan != newBackupPlan else {
+            return
+        }
+
+        logger.info("Setting BackupPlan via Storage Service! \(oldBackupPlan) -> \(newBackupPlan)")
+
+        backupSettingsStore.setBackupPlan(newBackupPlan, tx: tx)
+
+        switch backupLevel {
+        case nil:
+            configureDownloadsForDisablingBackups(tx: tx)
+        case .free, .paid:
+            break
         }
     }
 
@@ -92,6 +109,11 @@ class BackupPlanManagerImpl: BackupPlanManager {
 
     func setBackupPlan(_ newBackupPlan: BackupPlan, tx: DBWriteTransaction) {
         let oldBackupPlan = backupPlan(tx: tx)
+
+        guard oldBackupPlan != newBackupPlan else {
+            logger.warn("Attempting to set BackupPlan to existing value: aborting. \(oldBackupPlan)")
+            return
+        }
 
         logger.info("Setting BackupPlan! \(oldBackupPlan) -> \(newBackupPlan)")
 
@@ -183,7 +205,6 @@ class BackupPlanManagerImpl: BackupPlanManager {
             // While in free tier, we may have been continuing downloads
             // from when you were previously paid tier. But that was nice
             // to have; now that we're disabling backups cancel them all.
-            Logger.info("Configuring downloads for disabling free backups")
             backupAttachmentDownloadStore.markAllReadyIneligible(tx: tx)
             backupAttachmentDownloadStore.deleteAllDone(tx: tx)
 
@@ -191,7 +212,6 @@ class BackupPlanManagerImpl: BackupPlanManager {
             let (.paid(optimizeLocalStorage), .disabling),
             let (.paidExpiringSoon(optimizeLocalStorage), .disabling),
             let (.paidAsTester(optimizeLocalStorage), .disabling):
-            Logger.info("Configuring downloads for disabling paid backups")
             backupAttachmentDownloadStore.deleteAllDone(tx: tx)
             // Unsuspend; this is the user opt-in to trigger downloads.
             backupSettingsStore.setIsBackupDownloadQueueSuspended(false, tx: tx)
@@ -273,7 +293,6 @@ class BackupPlanManagerImpl: BackupPlanManager {
     }
 
     private func configureDownloadsForDisablingBackups(tx: DBWriteTransaction) {
-        Logger.info("Configuring downloads for disabled backups")
         // When we disable, we mark everything ineligible and delete all
         // done rows. If we ever re-enable, we will mark those rows
         // ready again.
@@ -285,7 +304,6 @@ class BackupPlanManagerImpl: BackupPlanManager {
     }
 
     private func configureDownloadsForDidEnableOptimizeStorage(tx: DBWriteTransaction) {
-        Logger.info("Configuring downloads for optimize enabled")
         // When we turn on optimization, make all media tier fullsize downloads
         // from the queue that are past the optimization threshold ineligible.
         // If we downloaded them we'd offload them immediately anyway.
@@ -305,7 +323,6 @@ class BackupPlanManagerImpl: BackupPlanManager {
     }
 
     private func configureDownloadsForDidDisableOptimizeStorage(tx: DBWriteTransaction) {
-        Logger.info("Configuring downloads for optimize disabled")
         // When we turn _off_ optimization, we want to make ready all the media tier downloads,
         // but suspend the queue so we don't immediately start downloading.
         backupAttachmentDownloadStore.markAllIneligibleReady(tx: tx)

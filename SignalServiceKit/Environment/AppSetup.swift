@@ -1403,7 +1403,7 @@ extension AppSetup.GlobalsContinuation {
         let backupArchiveManager = BackupArchiveManagerImpl(
             accountDataArchiver: BackupArchiveAccountDataArchiver(
                 backupAttachmentUploadEraStore: backupAttachmentUploadEraStore,
-                backupPlanManager: backupPlanManager,
+                backupSettingsStore: backupSettingsStore,
                 backupSubscriptionManager: backupSubscriptionManager,
                 callServiceSettingsStore: CallServiceSettingsStore(),
                 chatStyleArchiver: backupChatStyleArchiver,

@@ -51,7 +51,7 @@ extension BackupArchive {
 /// Archives the ``BackupProto_AccountData`` frame.
 public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
     private let backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore
-    private let backupPlanManager: BackupPlanManager
+    private let backupSettingsStore: BackupSettingsStore
     private let backupSubscriptionManager: BackupSubscriptionManager
     private let callServiceSettingsStore: CallServiceSettingsStore
     private let chatStyleArchiver: BackupArchiveChatStyleArchiver
@@ -60,6 +60,7 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
     private let imageQuality: BackupArchive.Shims.ImageQuality
     private let linkPreviewSettingStore: LinkPreviewSettingStore
     private let localUsernameManager: LocalUsernameManager
+    private let logger: PrefixedLogger
     private let mediaBandwidthPreferenceStore: MediaBandwidthPreferenceStore
     private let ows2FAManager: BackupArchive.Shims.OWS2FAManager
     private let phoneNumberDiscoverabilityManager: PhoneNumberDiscoverabilityManager
@@ -78,7 +79,7 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
 
     public init(
         backupAttachmentUploadEraStore: BackupAttachmentUploadEraStore,
-        backupPlanManager: BackupPlanManager,
+        backupSettingsStore: BackupSettingsStore,
         backupSubscriptionManager: BackupSubscriptionManager,
         callServiceSettingsStore: CallServiceSettingsStore,
         chatStyleArchiver: BackupArchiveChatStyleArchiver,
@@ -104,7 +105,7 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
         usernameEducationManager: UsernameEducationManager,
     ) {
         self.backupAttachmentUploadEraStore = backupAttachmentUploadEraStore
-        self.backupPlanManager = backupPlanManager
+        self.backupSettingsStore = backupSettingsStore
         self.backupSubscriptionManager = backupSubscriptionManager
         self.callServiceSettingsStore = callServiceSettingsStore
         self.chatStyleArchiver = chatStyleArchiver
@@ -113,6 +114,7 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
         self.imageQuality = imageQuality
         self.linkPreviewSettingStore = linkPreviewSettingStore
         self.localUsernameManager = localUsernameManager
+        self.logger = PrefixedLogger(prefix: "[Backups]")
         self.mediaBandwidthPreferenceStore = mediaBandwidthPreferenceStore
         self.ows2FAManager = ows2FAManager
         self.phoneNumberDiscoverabilityManager = phoneNumberDiscoverabilityManager
@@ -277,7 +279,7 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
         accountSettings.preferredReactionEmoji = reactionManager.customEmojiSet(tx: context.tx) ?? []
         accountSettings.storyViewReceiptsEnabled = storyManager.areViewReceiptsEnabled(tx: context.tx)
         accountSettings.pinReminders = hasPinReminders
-        switch backupPlanManager.backupPlan(tx: context.tx) {
+        switch backupSettingsStore.backupPlan(tx: context.tx) {
         case .disabling, .disabled:
             accountSettings.clearBackupTier()
             accountSettings.optimizeOnDeviceStorage = false
@@ -464,7 +466,8 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
             uploadEra = backupAttachmentUploadEraStore.currentUploadEra(tx: context.tx)
             backupPlan = .disabled
         }
-        backupPlanManager.setBackupPlan(backupPlan, tx: context.tx)
+        logger.info("Setting BackupPlan during restore: \(backupPlan)")
+        backupSettingsStore.setBackupPlan(backupPlan, tx: context.tx)
 
         // These MUST get set before we restore custom chat colors/wallpapers.
         context.uploadEra = uploadEra
