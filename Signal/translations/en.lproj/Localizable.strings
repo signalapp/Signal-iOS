@@ -5933,7 +5933,7 @@
 "OUTGOING_DEVICE_REGISTRATION_UNKNOWN_ERROR_TITLE" = "Unknown error";
 
 /* Action button to backup before continuing. */
-"OUTGOING_DEVICE_RESTORE_BACKUP_PROMPT_BACKUP_ACTION" = "Backup Up Now";
+"OUTGOING_DEVICE_RESTORE_BACKUP_PROMPT_BACKUP_ACTION" = "Back Up Now";
 
 /* Body text describing the outgoing transfer. */
 "OUTGOING_DEVICE_RESTORE_BACKUP_PROMPT_INITIAL_VIEW_BODY" = "Back up now before transferring. You may have received messages that haven’t been backed up yet.";
