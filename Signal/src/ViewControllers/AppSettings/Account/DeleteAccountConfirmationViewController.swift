@@ -284,7 +284,7 @@ class DeleteAccountConfirmationViewController: OWSTableViewController2 {
                 comment: "Title for the action sheet confirmation title of the 'delete account confirmation' view controller.",
             ),
             message: OWSLocalizedString(
-                "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE",
+                "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEET_MESSAGE",
                 comment: "Title for the action sheet message of the 'delete account confirmation' view controller.",
             ),
             proceedTitle: OWSLocalizedString(
