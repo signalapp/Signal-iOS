@@ -1481,12 +1481,15 @@ private class PhotoCapture {
     let avCaptureOutput = AVCapturePhotoOutput()
 
     var flashMode: AVCaptureDevice.FlashMode = .off
-
-    init() {
+init() {
         avCaptureOutput.isLivePhotoCaptureEnabled = false
         avCaptureOutput.isHighResolutionCaptureEnabled = true
-    }
+        
+        if #available(iOS 13.0, *) {
 
+            avCaptureOutput.maxPhotoQualityPrioritization = .quality
+        }
+    }
     private var photoProcessors: [Int64: PhotoProcessor] = [:]
 
     func takePhoto(delegate: PhotoCaptureDelegate, captureOrientation: AVCaptureVideoOrientation, captureRect: CGRect) {
@@ -1497,9 +1500,18 @@ private class PhotoCapture {
 
         avCaptureConnection.videoOrientation = captureOrientation
 
-        let photoSettings = AVCapturePhotoSettings()
+    let photoSettings = AVCapturePhotoSettings()
         photoSettings.flashMode = flashMode
         photoSettings.isHighResolutionPhotoEnabled = true
+
+        if #available(iOS 13.0, *) {
+
+            photoSettings.photoQualityPrioritization = .quality
+        }
+
+        if avCaptureOutput.isAutoRedEyeReductionSupported {
+            photoSettings.isAutoRedEyeReductionEnabled = true
+        }
 
         let photoProcessor = PhotoProcessor(delegate: delegate, captureRect: captureRect) { [weak self] in
             self?.photoProcessors[photoSettings.uniqueID] = nil
