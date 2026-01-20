@@ -86,6 +86,8 @@ public class PinnedMessageManager {
             throw OWSAssertionError("Target author ACI not present")
         }
 
+        var targetMessageInteractionId: Int64
+        var targetMessageTimestamp: UInt64
         guard
             let targetMessage = try interactionStore.fetchMessage(
                 timestamp: pinMessageProto.targetSentTimestamp,
@@ -96,6 +98,24 @@ public class PinnedMessageManager {
             !targetMessage.wasRemotelyDeleted
         else {
             throw OWSAssertionError("Invalid or missing target pinned message")
+        }
+
+        targetMessageInteractionId = interactionId
+        targetMessageTimestamp = targetMessage.timestamp
+        if targetMessage.editState == .pastRevision {
+            // Pin targeted an old edit revision, fetch the latest
+            // version to ensure the pin shows up properly.
+            if
+                let latestEdit = DependenciesBridge.shared.editMessageStore.findMessage(
+                    fromEdit: targetMessage,
+                    tx: transaction,
+                )
+            {
+                targetMessageInteractionId = latestEdit.sqliteRowId!
+                targetMessageTimestamp = latestEdit.timestamp
+            } else {
+                throw OWSAssertionError("Can't find latest edit for pinned message")
+            }
         }
 
         var expiresAt: UInt64?
@@ -112,7 +132,7 @@ public class PinnedMessageManager {
         }
 
         // If this is a retry of an existing pinned message, delete the old entry so the expiry gets updated.
-        deletePinForMessage(interactionId: interactionId, transaction: transaction)
+        deletePinForMessage(interactionId: targetMessageInteractionId, transaction: transaction)
 
         pruneOldestPinnedMessagesIfNecessary(
             threadId: threadId,
@@ -121,7 +141,7 @@ public class PinnedMessageManager {
 
         failIfThrows {
             _ = try PinnedMessageRecord.insertRecord(
-                interactionId: interactionId,
+                interactionId: targetMessageInteractionId,
                 threadId: threadId,
                 expiresAt: expiresAt,
                 sentTimestamp: pinSentAtTimestamp,
@@ -133,7 +153,7 @@ public class PinnedMessageManager {
         insertInfoMessageForPinnedMessage(
             timestamp: MessageTimestampGenerator.sharedInstance.generateTimestamp(),
             thread: thread,
-            targetMessageTimestamp: pinMessageProto.targetSentTimestamp,
+            targetMessageTimestamp: targetMessageTimestamp,
             targetMessageAuthor: targetAuthorAci,
             pinAuthor: pinAuthor,
             expireTimer: expireTimer,
@@ -159,6 +179,7 @@ public class PinnedMessageManager {
             throw OWSAssertionError("Target author ACI not present")
         }
 
+        var targetMessageInteractionId: Int64
         guard
             let targetMessage = try interactionStore.fetchMessage(
                 timestamp: unpinMessageProto.targetSentTimestamp,
@@ -169,9 +190,25 @@ public class PinnedMessageManager {
             throw OWSAssertionError("Can't find target pinned message")
         }
 
+        targetMessageInteractionId = interactionId
+        if targetMessage.editState == .pastRevision {
+            // Pin targeted an old edit revision, fetch the latest
+            // version to ensure the pin shows up properly.
+            if
+                let latestEdit = DependenciesBridge.shared.editMessageStore.findMessage(
+                    fromEdit: targetMessage,
+                    tx: transaction,
+                )
+            {
+                targetMessageInteractionId = latestEdit.sqliteRowId!
+            } else {
+                throw OWSAssertionError("Can't find latest edit for pinned message")
+            }
+        }
+
         failIfThrows {
             _ = try PinnedMessageRecord
-                .filter(PinnedMessageRecord.Columns.interactionId == interactionId)
+                .filter(PinnedMessageRecord.Columns.interactionId == targetMessageInteractionId)
                 .deleteAll(transaction.database)
         }
 

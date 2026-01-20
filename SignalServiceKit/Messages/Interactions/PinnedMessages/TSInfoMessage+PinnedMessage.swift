@@ -60,16 +60,32 @@ extension TSInfoMessage {
             return nil
         }
 
-        do {
-            return try DependenciesBridge.shared.interactionStore.fetchMessage(
+        guard
+            let message = try? DependenciesBridge.shared.interactionStore.fetchMessage(
                 timestamp: UInt64(pinnedMessageItem.timestamp),
                 incomingMessageAuthor: localAci == pinnedMessageItem.originalMessageAuthorAci ? nil : pinnedMessageItem.originalMessageAuthorAci,
                 transaction: transaction,
-            )?.uniqueId
-        } catch {
-            Logger.info("Unable to get target pinned message \(error)")
+            )
+        else {
+            Logger.error("Can't find target message")
             return nil
         }
+
+        if message.editState == .pastRevision {
+            // Pin targeted an old edit revision, fetch the latest
+            // version to ensure the view button goes to the right place.
+            if
+                let latestEdit = DependenciesBridge.shared.editMessageStore.findMessage(
+                    fromEdit: message,
+                    tx: transaction,
+                )
+            {
+                return latestEdit.uniqueId
+            }
+            Logger.error("Can't find past revision")
+            return nil
+        }
+        return message.uniqueId
     }
 
     @objc
