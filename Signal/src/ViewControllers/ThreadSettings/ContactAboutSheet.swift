@@ -268,7 +268,7 @@ class ContactAboutSheet: StackSheetViewController {
         }
 
         switch displayName {
-        case .nickname:
+        case .nickname, .systemContactName:
             guard
                 let profile = SSKEnvironment.shared.profileManagerRef.fetchUserProfiles(
                     for: [thread.contactAddress],
@@ -282,7 +282,7 @@ class ContactAboutSheet: StackSheetViewController {
                 fallthrough
             }
             self.secondaryName = profileName
-        case .systemContactName, .profileName, .phoneNumber, .username, .deletedAccount, .unknown:
+        case .profileName, .phoneNumber, .username, .deletedAccount, .unknown:
             self.secondaryName = nil
         }
     }
