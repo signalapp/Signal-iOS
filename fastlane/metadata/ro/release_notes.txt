@@ -1,2 +1,2 @@
-• We fixed a bug with the emoji selection sheet background color during voice and video calls. Now you don't need to search for the rage emoji when a bright background appears during a dark-themed (or thematically mysterious) group call.
-• We also updated and improved the text that appears in various second-person and third-person story reply scenarios. If you can't remember what "second person" looks like, this sentence is your latest example.
+• Am remediat un bug legată de culoarea de fundal a foii de selecție a emoji-urilor în timpul apelurilor vocale și video. Acum nu mai trebuie să cauți emoji-ul cu furie atunci când apare un fundal luminos în timpul unui apel de grup cu tematică întunecată (sau misterioasă din punct de vedere tematic).
+• De asemenea, am actualizat și îmbunătățit textul care apare în diverse scenarii de răspuns la persoana a doua și a treia. Dacă nu îți amintești cum arată „persoana a doua”, această propoziție este cel mai recent exemplu.

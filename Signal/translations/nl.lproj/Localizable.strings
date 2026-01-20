@@ -701,13 +701,13 @@
 "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_PROCESSING_MEDIA" = "Media verwerken…";
 
 /* Title for an action sheet action explaining the user can now scan a QR code to continue the restore. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_SUCCEEDED_READY_TO_RESTORE_ACTION_TITLE" = "Scan QR Code";
+"BACKUP_SETTINGS_BACKUP_EXPORT_SUCCEEDED_READY_TO_RESTORE_ACTION_TITLE" = "QR-code scannen";
 
 /* Body for an action sheet explaining the backup succeeded and a restore can continue. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_SUCCEEDED_READY_TO_RESTORE_BODY" = "Use this device to scan the QR code on the device you want to transfer to";
+"BACKUP_SETTINGS_BACKUP_EXPORT_SUCCEEDED_READY_TO_RESTORE_BODY" = "Gebruik dit apparaat om de QR-code te scannen die wordt weergegeven op het apparaat waarnaar je wilt overzetten";
 
 /* Title for an action sheet explaining the backup succeeded and a restore can continue. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_SUCCEEDED_READY_TO_RESTORE_TITLE" = "Ready to Transfer";
+"BACKUP_SETTINGS_BACKUP_EXPORT_SUCCEEDED_READY_TO_RESTORE_TITLE" = "Klaar om over te zetten";
 
 /* Message describing to the user that the last backup failed. */
 "BACKUP_SETTINGS_BACKUP_FAILED_MESSAGE" = "De laatste back-up kon niet worden voltooid. Tik op ‘Nu back-up maken’ om het opnieuw te proberen.";
@@ -1382,7 +1382,7 @@
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Oproep gemist omdat het veiligheidsnummer van de beller veranderde.";
 
 /* Title for toast which appears after submitting a call quality survey */
-"CALL_QUALITY_SURVEY_COMPLETION_TOAST" = "Thanks for your feedback!";
+"CALL_QUALITY_SURVEY_COMPLETION_TOAST" = "Bedankt voor je feedback!";
 
 /* Footer text explaining custom issue descriptions in the call quality survey */
 "CALL_QUALITY_SURVEY_CUSTOM_ISSUE_FOOTER" = "Vermeld alle details die relevant zijn voor het probleem. Alles wat je hier deelt, blijft vertrouwelijk en wordt uitsluitend gebruikt om oproepen in Signal te verbeteren.";
@@ -4199,10 +4199,10 @@
 "GROUP_STORY_NAME_FORMAT" = "%1$@ naar %2$@";
 
 /* Text indicating you reacted to a group story (the header on the bubble says \"You\") */
-"GROUP_STORY_REPLY_REACTION_SECOND_PERSON" = "Reacted to the story";
+"GROUP_STORY_REPLY_REACTION_SECOND_PERSON" = "Reageerde op dit verhaal";
 
 /* Text indicating someone else reacted to a group story (the header on the bubble says their name, e.g. \"Bob\") */
-"GROUP_STORY_REPLY_REACTION_THIRD_PERSON" = "Reacted to the story";
+"GROUP_STORY_REPLY_REACTION_THIRD_PERSON" = "Reageerde op dit verhaal";
 
 /* Button to delete the story on the 'group story settings' view */
 "GROUP_STORY_SETTINGS_DELETE_BUTTON" = "Groepsverhaal verwijderen";
@@ -5933,19 +5933,19 @@
 "OUTGOING_DEVICE_REGISTRATION_UNKNOWN_ERROR_TITLE" = "Onbekende fout";
 
 /* Action button to backup before continuing. */
-"OUTGOING_DEVICE_RESTORE_BACKUP_PROMPT_BACKUP_ACTION" = "Backup Up Now";
+"OUTGOING_DEVICE_RESTORE_BACKUP_PROMPT_BACKUP_ACTION" = "Nu back-up maken";
 
 /* Body text describing the outgoing transfer. */
-"OUTGOING_DEVICE_RESTORE_BACKUP_PROMPT_INITIAL_VIEW_BODY" = "Back up now before transferring. You may have received messages that haven’t been backed up yet.";
+"OUTGOING_DEVICE_RESTORE_BACKUP_PROMPT_INITIAL_VIEW_BODY" = "Maak nu eerst een back-up voordat je gaat overzetten. Je hebt misschien berichten ontvangen waarvan nog geen back-up is gemaakt.";
 
 /* Title text describing the outgoing transfer. */
-"OUTGOING_DEVICE_RESTORE_BACKUP_PROMPT_INITIAL_VIEW_TITLE" = "Getting Your Device Ready";
+"OUTGOING_DEVICE_RESTORE_BACKUP_PROMPT_INITIAL_VIEW_TITLE" = "Je apparaat klaarmaken";
 
 /* Action button to skip backup and continue. */
-"OUTGOING_DEVICE_RESTORE_BACKUP_PROMPT_SKIP_ACTION" = "Skip and Continue";
+"OUTGOING_DEVICE_RESTORE_BACKUP_PROMPT_SKIP_ACTION" = "Overslaan en doorgaan";
 
 /* Description for form confirming restore from backup without size detail. */
-"OUTGOING_DEVICE_RESTORE_BACKUP_RESTORE_DESCRIPTION" = "Your last backup was made on %1$@ at %2$@.";
+"OUTGOING_DEVICE_RESTORE_BACKUP_RESTORE_DESCRIPTION" = "De laatste back-up is gemaakt op %1$@ om %2$@.";
 
 /* Body of prompt notifying device restore started on the new device. */
 "OUTGOING_DEVICE_RESTORE_COMPLETE_BODY" = "Je Signal-account en berichten worden overgezet naar je andere apparaat. Signal is nu inactief op dit apparaat.";
@@ -6992,10 +6992,10 @@
 "QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "Oorspronkelijk bericht niet gevonden.";
 
 /* Label explaining that the content of a quoted message includes you reacting to someone's story. Embeds {{ %1$@ the story author }}. */
-"QUOTED_REPLY_REACTION_TO_STORY_FORMAT_SECOND_PERSON" = "Reacted to %1$@’s story";
+"QUOTED_REPLY_REACTION_TO_STORY_FORMAT_SECOND_PERSON" = "Reageerde op een verhaal van %1$@";
 
 /* Label explaining that the content of a quoted message includes someone reacting to your story. */
-"QUOTED_REPLY_REACTION_TO_STORY_FORMAT_THIRD_PERSON" = "Reacted to your story";
+"QUOTED_REPLY_REACTION_TO_STORY_FORMAT_THIRD_PERSON" = "Reageerde op je verhaal";
 
 /* Message header when you are quoting a story. Embeds {{ story author name }} */
 "QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "Verhaal van %1$@";
@@ -7019,7 +7019,7 @@
 "QUOTED_REPLY_TYPE_VIDEO" = "Video";
 
 /* Indicates this message is a quoted reply to a voice message. */
-"QUOTED_REPLY_TYPE_VOICE_MESSAGE" = "Voice Message";
+"QUOTED_REPLY_TYPE_VOICE_MESSAGE" = "Spraakbericht";
 
 /* Label for a button to lower your raised hand in a call. */
 "RAISED_HANDS_LOWER_HAND_BUTTON" = "Omlaag doen";
@@ -7394,16 +7394,16 @@
 "REMINDER_VIEW_USERNAME_LINK_CORRUPTED_WARNING" = "Er is iets misgegaan met je QR-code en gebruikersnaamlink, deze zijn niet langer geldig. Maak een nieuwe link om met anderen te delen.";
 
 /* A message that displays when one person in a call remotely muted another participant. Embeds {{name}} {{name}} */
-"REMOTE_MUTE_TOAST_A_MUTED_B" = "%1$@ muted %2$@.";
+"REMOTE_MUTE_TOAST_A_MUTED_B" = "%1$@ heeft %2$@ gedempt.";
 
 /* A message that displays when your microphone is remotely muted by another call participant. Embeds {{name}} */
-"REMOTE_MUTE_TOAST_SOMEONE_MUTED_YOU" = "%1$@ muted you.";
+"REMOTE_MUTE_TOAST_SOMEONE_MUTED_YOU" = "%1$@ heeft jou gedempt.";
 
 /* A message that displays when you remotely muted another call participant's microphone. Embeds {{name}} */
-"REMOTE_MUTE_TOAST_YOU_MUTED_SOMEONE" = "You muted %1$@.";
+"REMOTE_MUTE_TOAST_YOU_MUTED_SOMEONE" = "Je hebt %1$@ gedempt.";
 
 /* A message that displays when you joined a call on two devices and mute one from the other. */
-"REMOTE_MUTE_TOAST_YOU_MUTED_YOURSELF" = "You muted yourself from another device.";
+"REMOTE_MUTE_TOAST_YOU_MUTED_YOURSELF" = "Je hebt jezelf vanaf een ander apparaat gedempt.";
 
 /* Accessibility label for a button that removes the preview from a drafted message. */
 "REMOVE_PREVIEW" = "Voorbeeld verwijderen";
@@ -9074,10 +9074,10 @@
 "STORY_PRIVACY_TITLE" = "Verhaalprivacy";
 
 /* Text explaining that you reacted to someone else's story. Embeds {{ %1$@ reaction emoji, %2$@ story author name }}. */
-"STORY_REACTION_PREVIEW_FORMAT_SECOND_PERSON" = "You reacted %1$@ to %2$@’s story";
+"STORY_REACTION_PREVIEW_FORMAT_SECOND_PERSON" = "Je reageerde met %1$@ op een verhaal van %2$@";
 
 /* Text explaining that someone reacted to your story. Embeds {{ %1$@ reaction emoji }}. */
-"STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON" = "Reacted %1$@ to your story";
+"STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON" = "Reageerde met %1$@ op je verhaal";
 
 /* quote text for a reaction to a story by the user (the header on the bubble says \"You\"). Embeds {{reaction emoji}} */
 "STORY_REACTION_QUOTE_FORMAT_SECOND_PERSON" = "Reageerde met %1$@ op een verhaal";

@@ -1,2 +1,2 @@
-• We fixed a bug with the emoji selection sheet background color during voice and video calls. Now you don't need to search for the rage emoji when a bright background appears during a dark-themed (or thematically mysterious) group call.
-• We also updated and improved the text that appears in various second-person and third-person story reply scenarios. If you can't remember what "second person" looks like, this sentence is your latest example.
+• 음성 및 화상 통화 중 이모지 선택 화면의 배경색 관련 버그를 수정했습니다. 이제 다크 테마(또는 미스터리한 분위기의) 그룹 통화 중에 갑자기 화면이 밝아질 일은 없을 거예요.
+• 스토리 답장 알림 문구도 조금 더 명확하게 수정했습니다.

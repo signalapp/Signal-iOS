@@ -1,2 +1,2 @@
-• We fixed a bug with the emoji selection sheet background color during voice and video calls. Now you don't need to search for the rage emoji when a bright background appears during a dark-themed (or thematically mysterious) group call.
-• We also updated and improved the text that appears in various second-person and third-person story reply scenarios. If you can't remember what "second person" looks like, this sentence is your latest example.
+• Wir haben einen Fehler bezüglich der Hintergrundfarbe des Emoji-Auswahlfensters bei Sprach- und Videoanrufen behoben. Jetzt musst du nicht mehr nach dem Wut-Emoji suchen, wenn bei einem Gruppenanruf mit dunklem (oder geheimnisvollem) Hintergrund plötzlich ein heller Hintergrund angezeigt wird.
+• Wir haben auch den Benachrichtigungstext für Story-Antworten aktualisiert und verbessert. Das betrifft besonders die verschiedenen Story-Antwortszenarien in der zweiten und dritten Person. 

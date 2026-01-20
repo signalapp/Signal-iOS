@@ -701,13 +701,13 @@
 "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_PROCESSING_MEDIA" = "Spracúvajú sa médiá...";
 
 /* Title for an action sheet action explaining the user can now scan a QR code to continue the restore. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_SUCCEEDED_READY_TO_RESTORE_ACTION_TITLE" = "Scan QR Code";
+"BACKUP_SETTINGS_BACKUP_EXPORT_SUCCEEDED_READY_TO_RESTORE_ACTION_TITLE" = "Skenovať QR kód";
 
 /* Body for an action sheet explaining the backup succeeded and a restore can continue. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_SUCCEEDED_READY_TO_RESTORE_BODY" = "Use this device to scan the QR code on the device you want to transfer to";
+"BACKUP_SETTINGS_BACKUP_EXPORT_SUCCEEDED_READY_TO_RESTORE_BODY" = "Pomocou tohto zariadenia naskenujte QR kód na zariadení, do ktorého chcete preniesť údaje";
 
 /* Title for an action sheet explaining the backup succeeded and a restore can continue. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_SUCCEEDED_READY_TO_RESTORE_TITLE" = "Ready to Transfer";
+"BACKUP_SETTINGS_BACKUP_EXPORT_SUCCEEDED_READY_TO_RESTORE_TITLE" = "Pripravené na prenos";
 
 /* Message describing to the user that the last backup failed. */
 "BACKUP_SETTINGS_BACKUP_FAILED_MESSAGE" = "Vašu poslednú zálohu sa nepodarilo dokončiť. Skúste to znova ťuknutím na možnosť „Zálohovať teraz“.";
@@ -1382,7 +1382,7 @@
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Zmeškaný hovor, pretože sa zmenilo bezpečnostné číslo volajúceho.";
 
 /* Title for toast which appears after submitting a call quality survey */
-"CALL_QUALITY_SURVEY_COMPLETION_TOAST" = "Thanks for your feedback!";
+"CALL_QUALITY_SURVEY_COMPLETION_TOAST" = "Ďakujeme za vašu spätnú väzbu!";
 
 /* Footer text explaining custom issue descriptions in the call quality survey */
 "CALL_QUALITY_SURVEY_CUSTOM_ISSUE_FOOTER" = "Popíšte svoj problém čo najdetailnejšie. Všetky vami poskytnuté informácie zostanú súkromné a budú použité len na účely zlepšenia kvality hovorov v Signale.";
@@ -4199,10 +4199,10 @@
 "GROUP_STORY_NAME_FORMAT" = "%1$@ až %2$@";
 
 /* Text indicating you reacted to a group story (the header on the bubble says \"You\") */
-"GROUP_STORY_REPLY_REACTION_SECOND_PERSON" = "Reacted to the story";
+"GROUP_STORY_REPLY_REACTION_SECOND_PERSON" = "Reagovali ste na príbeh";
 
 /* Text indicating someone else reacted to a group story (the header on the bubble says their name, e.g. \"Bob\") */
-"GROUP_STORY_REPLY_REACTION_THIRD_PERSON" = "Reacted to the story";
+"GROUP_STORY_REPLY_REACTION_THIRD_PERSON" = "Reagoval/a na príbeh";
 
 /* Button to delete the story on the 'group story settings' view */
 "GROUP_STORY_SETTINGS_DELETE_BUTTON" = "Odstrániť skupinový príbeh";
@@ -5933,19 +5933,19 @@
 "OUTGOING_DEVICE_REGISTRATION_UNKNOWN_ERROR_TITLE" = "Neznáma chyba";
 
 /* Action button to backup before continuing. */
-"OUTGOING_DEVICE_RESTORE_BACKUP_PROMPT_BACKUP_ACTION" = "Backup Up Now";
+"OUTGOING_DEVICE_RESTORE_BACKUP_PROMPT_BACKUP_ACTION" = "Zálohovať teraz";
 
 /* Body text describing the outgoing transfer. */
-"OUTGOING_DEVICE_RESTORE_BACKUP_PROMPT_INITIAL_VIEW_BODY" = "Back up now before transferring. You may have received messages that haven’t been backed up yet.";
+"OUTGOING_DEVICE_RESTORE_BACKUP_PROMPT_INITIAL_VIEW_BODY" = "Pred vykonaním prenosu si zálohujte údaje. Mohli ste dostať nové správy, ktoré ešte neboli zálohované.";
 
 /* Title text describing the outgoing transfer. */
-"OUTGOING_DEVICE_RESTORE_BACKUP_PROMPT_INITIAL_VIEW_TITLE" = "Getting Your Device Ready";
+"OUTGOING_DEVICE_RESTORE_BACKUP_PROMPT_INITIAL_VIEW_TITLE" = "Pripravuje sa zariadenie";
 
 /* Action button to skip backup and continue. */
-"OUTGOING_DEVICE_RESTORE_BACKUP_PROMPT_SKIP_ACTION" = "Skip and Continue";
+"OUTGOING_DEVICE_RESTORE_BACKUP_PROMPT_SKIP_ACTION" = "Preskočiť a pokračovať";
 
 /* Description for form confirming restore from backup without size detail. */
-"OUTGOING_DEVICE_RESTORE_BACKUP_RESTORE_DESCRIPTION" = "Your last backup was made on %1$@ at %2$@.";
+"OUTGOING_DEVICE_RESTORE_BACKUP_RESTORE_DESCRIPTION" = "Vaša posledná záloha bola vytvorená %1$@ o %2$@.";
 
 /* Body of prompt notifying device restore started on the new device. */
 "OUTGOING_DEVICE_RESTORE_COMPLETE_BODY" = "Váš Signal účet a správy sa začali prenášať do vášho druhého zariadenia. Signal je teraz na tomto zariadení neaktívny.";
@@ -6992,10 +6992,10 @@
 "QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "Pôvodná správa sa nenašla.";
 
 /* Label explaining that the content of a quoted message includes you reacting to someone's story. Embeds {{ %1$@ the story author }}. */
-"QUOTED_REPLY_REACTION_TO_STORY_FORMAT_SECOND_PERSON" = "Reacted to %1$@’s story";
+"QUOTED_REPLY_REACTION_TO_STORY_FORMAT_SECOND_PERSON" = "Reagovali ste na príbeh používateľa %1$@";
 
 /* Label explaining that the content of a quoted message includes someone reacting to your story. */
-"QUOTED_REPLY_REACTION_TO_STORY_FORMAT_THIRD_PERSON" = "Reacted to your story";
+"QUOTED_REPLY_REACTION_TO_STORY_FORMAT_THIRD_PERSON" = "Reagoval/a na váš príbeh";
 
 /* Message header when you are quoting a story. Embeds {{ story author name }} */
 "QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%1$@ · Príbeh";
@@ -7019,7 +7019,7 @@
 "QUOTED_REPLY_TYPE_VIDEO" = "Video";
 
 /* Indicates this message is a quoted reply to a voice message. */
-"QUOTED_REPLY_TYPE_VOICE_MESSAGE" = "Voice Message";
+"QUOTED_REPLY_TYPE_VOICE_MESSAGE" = "Hlasová správa";
 
 /* Label for a button to lower your raised hand in a call. */
 "RAISED_HANDS_LOWER_HAND_BUTTON" = "Znížiť";
@@ -7394,16 +7394,16 @@
 "REMINDER_VIEW_USERNAME_LINK_CORRUPTED_WARNING" = "Vyskytol sa problém s QR kódom a odkazom na vaše používateľské meno, už nie sú platné. Vytvorte nový odkaz a zdieľajte ho s ostatnými.";
 
 /* A message that displays when one person in a call remotely muted another participant. Embeds {{name}} {{name}} */
-"REMOTE_MUTE_TOAST_A_MUTED_B" = "%1$@ muted %2$@.";
+"REMOTE_MUTE_TOAST_A_MUTED_B" = "Používateľ %1$@ stlmil zvuk používateľa %2$@.";
 
 /* A message that displays when your microphone is remotely muted by another call participant. Embeds {{name}} */
-"REMOTE_MUTE_TOAST_SOMEONE_MUTED_YOU" = "%1$@ muted you.";
+"REMOTE_MUTE_TOAST_SOMEONE_MUTED_YOU" = "Používateľ %1$@ vám stlmil zvuk.";
 
 /* A message that displays when you remotely muted another call participant's microphone. Embeds {{name}} */
-"REMOTE_MUTE_TOAST_YOU_MUTED_SOMEONE" = "You muted %1$@.";
+"REMOTE_MUTE_TOAST_YOU_MUTED_SOMEONE" = "Stlmili ste zvuk používateľa %1$@.";
 
 /* A message that displays when you joined a call on two devices and mute one from the other. */
-"REMOTE_MUTE_TOAST_YOU_MUTED_YOURSELF" = "You muted yourself from another device.";
+"REMOTE_MUTE_TOAST_YOU_MUTED_YOURSELF" = "Stlmili ste si zvuk na inom zariadení.";
 
 /* Accessibility label for a button that removes the preview from a drafted message. */
 "REMOVE_PREVIEW" = "Odstrániť náhľad";
@@ -9074,10 +9074,10 @@
 "STORY_PRIVACY_TITLE" = "Súkromie príbehu";
 
 /* Text explaining that you reacted to someone else's story. Embeds {{ %1$@ reaction emoji, %2$@ story author name }}. */
-"STORY_REACTION_PREVIEW_FORMAT_SECOND_PERSON" = "You reacted %1$@ to %2$@’s story";
+"STORY_REACTION_PREVIEW_FORMAT_SECOND_PERSON" = "Reagovali ste %1$@ na príbeh používateľa %2$@";
 
 /* Text explaining that someone reacted to your story. Embeds {{ %1$@ reaction emoji }}. */
-"STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON" = "Reacted %1$@ to your story";
+"STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON" = "Reagoval/a %1$@ na váš príbeh";
 
 /* quote text for a reaction to a story by the user (the header on the bubble says \"You\"). Embeds {{reaction emoji}} */
 "STORY_REACTION_QUOTE_FORMAT_SECOND_PERSON" = "Reagovali ste na príbeh %1$@";

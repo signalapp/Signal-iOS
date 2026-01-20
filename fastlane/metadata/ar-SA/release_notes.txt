@@ -1,2 +1,2 @@
-• We fixed a bug with the emoji selection sheet background color during voice and video calls. Now you don't need to search for the rage emoji when a bright background appears during a dark-themed (or thematically mysterious) group call.
-• We also updated and improved the text that appears in various second-person and third-person story reply scenarios. If you can't remember what "second person" looks like, this sentence is your latest example.
+• أصلحنا خطًأ في لون خلفية لوحة اختيار الرموز التعبيرية أثناء مكالمات الفيديو. الآن لن تحتاج إلى البحث عن رمز الغضب التعبيري عندما تظهر خلفية ساطعة فجأة أثناء مكالمة جماعية بالوضع الداكن (أو ذات طابع غامض).
+• قمنا أيضًا بتحديث وتحسين نص إشعارات الردود على القصص. إذا نسيت كيف تبدو صيغة المخاطَب، فهذه الجملة هي أحدث مثال عليها.

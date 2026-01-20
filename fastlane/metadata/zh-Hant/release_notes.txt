@@ -1,2 +1,2 @@
-• We fixed a bug with the emoji selection sheet background color during voice and video calls. Now you don't need to search for the rage emoji when a bright background appears during a dark-themed (or thematically mysterious) group call.
-• We also updated and improved the text that appears in various second-person and third-person story reply scenarios. If you can't remember what "second person" looks like, this sentence is your latest example.
+• 我們修正了在語音和視訊通話進行中表情符號選單背景顏色的錯誤。現在當深色主題（或風格神秘）的群組通話中出現亮色背景時，你就不需再費力尋找憤怒表情符號了。
+• 我們也更新並改進了各種第二和第三人稱限時動態回覆情境中出現的文字。從此不用怕分不清「你、我、他」。

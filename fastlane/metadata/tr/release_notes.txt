@@ -1,2 +1,2 @@
-• We fixed a bug with the emoji selection sheet background color during voice and video calls. Now you don't need to search for the rage emoji when a bright background appears during a dark-themed (or thematically mysterious) group call.
-• We also updated and improved the text that appears in various second-person and third-person story reply scenarios. If you can't remember what "second person" looks like, this sentence is your latest example.
+• Sesli ve görüntülü aramalar sırasında, emoji seçim sayfası arka plan rengiyle ilgili bir hatayı düzelttik. Artık bir iş görüşmesi sırasında parlak bir arka plan belirdiğinde, öfke emojisini aramana gerek yok!
+• Hikaye yanıtlarının bildirim metnini de güncelledik ve geliştirdik. Yanıtlar artık çok daha açık ve anlaşılır olacak.

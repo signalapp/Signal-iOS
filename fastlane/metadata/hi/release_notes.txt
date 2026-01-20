@@ -1,2 +1,2 @@
-• We fixed a bug with the emoji selection sheet background color during voice and video calls. Now you don't need to search for the rage emoji when a bright background appears during a dark-themed (or thematically mysterious) group call.
-• We also updated and improved the text that appears in various second-person and third-person story reply scenarios. If you can't remember what "second person" looks like, this sentence is your latest example.
+• हमने वॉइस और वीडियो कॉल के दौरान इमोजी सिलेक्शन शीट के बैकग्राउंड कलर से जुड़ी एक गड़बड़ी को ठीक कर दिया है। अब डार्क थीम वाले (या रहस्यमय थीम के) ग्रुप कॉल में अचानक चमकीला बैकग्राउंड दिखने पर आपको गुस्से वाला इमोजी ढूंढने की ज़रूरत नहीं पड़ेगी।
+• हमने स्टोरी का रिप्लाई करने से जुड़े टेक्स्ट में सुधार कर उन्हें अपडेट किया है, ताकि सेकंड-पर्सन और थर्ड-पर्सन वाले मैसेज अब और भी बेहतर तरीके से दिखाई दें। अगर आपको समझ नहीं आ रहा है कि 'सेकंड पर्सन' क्या होता है, तो यह वाक्य अपने-आप में उसका ताज़ा नमूना है।

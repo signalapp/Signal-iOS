@@ -572,7 +572,7 @@
 "BACKUP_ONBOARDING_CANCEL_SHEET_ACTION" = "Salir de ajustes";
 
 /* Message for action sheet when attempting to cancel backup onboarding */
-"BACKUP_ONBOARDING_CANCEL_SHEET_MESSAGE" = "No has terminado de configurar tus copias de seguridad y no se ha creado ninguna copia de seguridad. Puedes activar las copias de seguridad en Ajustes.";
+"BACKUP_ONBOARDING_CANCEL_SHEET_MESSAGE" = "No has terminado de configurar tus copias de seguridad y no se ha creado ninguna copia de seguridad. Puedes habilitar las copias de seguridad en Ajustes.";
 
 /* Title for action sheet when attempting to cancel backup onboarding */
 "BACKUP_ONBOARDING_CANCEL_SHEET_TITLE" = "¿Salir de los ajustes de las copias de seguridad?";
@@ -602,7 +602,7 @@
 "BACKUP_ONBOARDING_INTRO_BULLET_3" = "Copias de seguridad que puedes eliminar en cualquier momento";
 
 /* A toast shown when 'Not Now' is tapped from the Backups onboarding intro. */
-"BACKUP_ONBOARDING_INTRO_NOT_NOW_TOAST" = "Puedes activar las copias de seguridad en Ajustes.";
+"BACKUP_ONBOARDING_INTRO_NOT_NOW_TOAST" = "Puedes habilitar las copias de seguridad en Ajustes.";
 
 /* Subtitle for a view introducing Backups during an onboarding flow. */
 "BACKUP_ONBOARDING_INTRO_SUBTITLE" = "Haz una copia de seguridad de tus mensajes y archivos multimedia utilizando el servicio de almacenamiento seguro y cifrado de extremo a extremo de Signal. No perderás ningún mensaje si cambias de teléfono o vuelves a instalar Signal.";
@@ -701,13 +701,13 @@
 "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_PROCESSING_MEDIA" = "Procesando archivos…";
 
 /* Title for an action sheet action explaining the user can now scan a QR code to continue the restore. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_SUCCEEDED_READY_TO_RESTORE_ACTION_TITLE" = "Scan QR Code";
+"BACKUP_SETTINGS_BACKUP_EXPORT_SUCCEEDED_READY_TO_RESTORE_ACTION_TITLE" = "Escanear código QR";
 
 /* Body for an action sheet explaining the backup succeeded and a restore can continue. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_SUCCEEDED_READY_TO_RESTORE_BODY" = "Use this device to scan the QR code on the device you want to transfer to";
+"BACKUP_SETTINGS_BACKUP_EXPORT_SUCCEEDED_READY_TO_RESTORE_BODY" = "Usa este dispositivo para escanear el código QR que se muestra en el dispositivo al que quieres transferir tus datos.";
 
 /* Title for an action sheet explaining the backup succeeded and a restore can continue. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_SUCCEEDED_READY_TO_RESTORE_TITLE" = "Ready to Transfer";
+"BACKUP_SETTINGS_BACKUP_EXPORT_SUCCEEDED_READY_TO_RESTORE_TITLE" = "Todo listo para la transferencia";
 
 /* Message describing to the user that the last backup failed. */
 "BACKUP_SETTINGS_BACKUP_FAILED_MESSAGE" = "No se ha podido completar tu última copia de seguridad. Toca \"Iniciar copia\" para volver a intentarlo.";
@@ -809,7 +809,7 @@
 "BACKUP_SETTINGS_CREATE_NEW_KEY_ERROR_NOT_REGISTERED" = "Debes registrarte para poder crear una nueva clave de recuperación.";
 
 /* Explanation text for a sheet warning users they've reached a rate limit for creating Recovery Key. {{ Embeds 1: the preformatted time they must wait before enabling backups, such as \"1 week\" or \"6 hours\". }} */
-"BACKUP_SETTINGS_CREATE_NEW_KEY_LIMIT_REACHED_WARNING_SHEET_BODY" = "Si creas una nueva clave de recuperación, deberás esperar %1$@ antes de poder activar las copias de seguridad. El número de claves que puedes crear está limitado para evitar usos indebidos.";
+"BACKUP_SETTINGS_CREATE_NEW_KEY_LIMIT_REACHED_WARNING_SHEET_BODY" = "Si creas una nueva clave de recuperación, deberás esperar %1$@ para poder habilitar las copias de seguridad. El número de claves que puedes crear está limitado para evitar usos indebidos.";
 
 /* Action in an action sheet allowing to continue to rotate their key */
 "BACKUP_SETTINGS_CREATE_NEW_KEY_LIMIT_REACHED_WARNING_SHEET_CONTINUE_ACTION" = "Crear nueva clave";
@@ -923,7 +923,7 @@
 "BACKUP_SETTINGS_ENABLED_VIEW_BACKUP_KEY_LABEL" = "Ver clave de recuperación";
 
 /* Body for a sheet explaining that the user's Backups subscription was not found on this device. */
-"BACKUP_SETTINGS_IAP_NOT_FOUND_LOCALLY_SHEET_BODY" = "No se ha podido restaurar tu suscripción en este dispositivo. Esto puede ocurrir si has iniciado sesión en la App Store con otra cuenta de Apple o si has transferido tu cuenta desde un teléfono Android.\n\nSi tienes una suscripción activa en tu teléfono anterior, quizá quieras cancelarla antes de que se renueve.";
+"BACKUP_SETTINGS_IAP_NOT_FOUND_LOCALLY_SHEET_BODY" = "No se ha podido restaurar tu suscripción en este dispositivo. Esto puede ocurrir si has iniciado sesión en el App Store con otra cuenta de Apple o si has transferido tu cuenta desde un teléfono Android.\n\nSi tienes una suscripción activa en tu teléfono anterior, quizá quieras cancelarla antes de que se renueve.";
 
 /* Button for a sheet explaining that the user's Backups subscription was not found on this device. */
 "BACKUP_SETTINGS_IAP_NOT_FOUND_LOCALLY_SHEET_GOT_IT_BUTTON" = "Entendido";
@@ -1382,7 +1382,7 @@
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Llamada perdida debido a cambios en el número de seguridad.";
 
 /* Title for toast which appears after submitting a call quality survey */
-"CALL_QUALITY_SURVEY_COMPLETION_TOAST" = "Thanks for your feedback!";
+"CALL_QUALITY_SURVEY_COMPLETION_TOAST" = "¡Gracias por tus comentarios!";
 
 /* Footer text explaining custom issue descriptions in the call quality survey */
 "CALL_QUALITY_SURVEY_CUSTOM_ISSUE_FOOTER" = "Incluye cualquier detalle relevante sobre el problema. Garantizamos la privacidad de toda la información que compartas aquí. Solo se usará para ayudarnos a mejorar las llamadas en Signal.";
@@ -1412,7 +1412,7 @@
 "CALL_QUALITY_SURVEY_ISSUE_AUDIO" = "Problema de audio";
 
 /* Label for audio dropout issue option in call quality survey */
-"CALL_QUALITY_SURVEY_ISSUE_AUDIO_DROP" = "El audio se cortaba";
+"CALL_QUALITY_SURVEY_ISSUE_AUDIO_DROP" = "El audio se detuvo";
 
 /* Label for local echo issue option in call quality survey, indicating the user heard an echo */
 "CALL_QUALITY_SURVEY_ISSUE_AUDIO_LOCAL_ECHO" = "Oía un eco";
@@ -1820,7 +1820,7 @@
 "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_PURCHASE_REDEMPTION" = "No se ha podido validar tu compra. Contacta con el equipo de Asistencia.";
 
 /* Message shown in an action sheet when the user tries to confirm a plan selection, but encounters a rate limit. They should wait the requested amount of time and try again. */
-"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_RATE_LIMITED" = "Has alcanzado tu límite de creación de claves de recuperación. Para evitar usos inadecuados, deberás esperar %1$@ antes de poder activar las copias de seguridad. Espera %1$@ y vuelve a intentarlo.";
+"CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_RATE_LIMITED" = "Has alcanzado tu límite de creación de claves de recuperación. Para evitar usos inadecuados, deberás esperar %1$@ antes de poder habilitar las copias de seguridad. Espera %1$@ y vuelve a intentarlo.";
 
 /* Message shown in an action sheet when the user tries to confirm a plan selection, but encounters a rate limit. They should wait the requested amount of time and try again. {{ Embeds 1 & 2: the preformatted time they must wait before enabling backups, such as \"1 week\" or \"6 hours\". }} */
 "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_RATE_LIMITED_TITLE" = "No se han podido habilitar las copias de seguridad";
@@ -4199,10 +4199,10 @@
 "GROUP_STORY_NAME_FORMAT" = "%1$@ para \"%2$@\"";
 
 /* Text indicating you reacted to a group story (the header on the bubble says \"You\") */
-"GROUP_STORY_REPLY_REACTION_SECOND_PERSON" = "Reacted to the story";
+"GROUP_STORY_REPLY_REACTION_SECOND_PERSON" = "Has reaccionado a la historia";
 
 /* Text indicating someone else reacted to a group story (the header on the bubble says their name, e.g. \"Bob\") */
-"GROUP_STORY_REPLY_REACTION_THIRD_PERSON" = "Reacted to the story";
+"GROUP_STORY_REPLY_REACTION_THIRD_PERSON" = "Ha reaccionado a la historia";
 
 /* Button to delete the story on the 'group story settings' view */
 "GROUP_STORY_SETTINGS_DELETE_BUTTON" = "Eliminar historia de grupo";
@@ -5933,19 +5933,19 @@
 "OUTGOING_DEVICE_REGISTRATION_UNKNOWN_ERROR_TITLE" = "Error desconocido";
 
 /* Action button to backup before continuing. */
-"OUTGOING_DEVICE_RESTORE_BACKUP_PROMPT_BACKUP_ACTION" = "Backup Up Now";
+"OUTGOING_DEVICE_RESTORE_BACKUP_PROMPT_BACKUP_ACTION" = "Iniciar copia";
 
 /* Body text describing the outgoing transfer. */
-"OUTGOING_DEVICE_RESTORE_BACKUP_PROMPT_INITIAL_VIEW_BODY" = "Back up now before transferring. You may have received messages that haven’t been backed up yet.";
+"OUTGOING_DEVICE_RESTORE_BACKUP_PROMPT_INITIAL_VIEW_BODY" = "Haz una copia de seguridad ahora antes de comenzar la transferencia. Puede que hayas recibido mensajes de los que aún no tengas copia de seguridad.";
 
 /* Title text describing the outgoing transfer. */
-"OUTGOING_DEVICE_RESTORE_BACKUP_PROMPT_INITIAL_VIEW_TITLE" = "Getting Your Device Ready";
+"OUTGOING_DEVICE_RESTORE_BACKUP_PROMPT_INITIAL_VIEW_TITLE" = "Preparando tu dispositivo";
 
 /* Action button to skip backup and continue. */
-"OUTGOING_DEVICE_RESTORE_BACKUP_PROMPT_SKIP_ACTION" = "Skip and Continue";
+"OUTGOING_DEVICE_RESTORE_BACKUP_PROMPT_SKIP_ACTION" = "Omitir y continuar";
 
 /* Description for form confirming restore from backup without size detail. */
-"OUTGOING_DEVICE_RESTORE_BACKUP_RESTORE_DESCRIPTION" = "Your last backup was made on %1$@ at %2$@.";
+"OUTGOING_DEVICE_RESTORE_BACKUP_RESTORE_DESCRIPTION" = "Última copia de seguridad: %2$@ del %1$@.";
 
 /* Body of prompt notifying device restore started on the new device. */
 "OUTGOING_DEVICE_RESTORE_COMPLETE_BODY" = "Se ha iniciado la transferencia de tu cuenta y tus mensajes de Signal a tu otro dispositivo. Signal ahora está inactivo en este dispositivo.";
@@ -6992,10 +6992,10 @@
 "QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "No se ha encontrado el mensaje original.";
 
 /* Label explaining that the content of a quoted message includes you reacting to someone's story. Embeds {{ %1$@ the story author }}. */
-"QUOTED_REPLY_REACTION_TO_STORY_FORMAT_SECOND_PERSON" = "Reacted to %1$@’s story";
+"QUOTED_REPLY_REACTION_TO_STORY_FORMAT_SECOND_PERSON" = "Has reaccionado a la historia de %1$@";
 
 /* Label explaining that the content of a quoted message includes someone reacting to your story. */
-"QUOTED_REPLY_REACTION_TO_STORY_FORMAT_THIRD_PERSON" = "Reacted to your story";
+"QUOTED_REPLY_REACTION_TO_STORY_FORMAT_THIRD_PERSON" = "Ha reaccionado a tu historia";
 
 /* Message header when you are quoting a story. Embeds {{ story author name }} */
 "QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "Historia de %1$@";
@@ -7019,7 +7019,7 @@
 "QUOTED_REPLY_TYPE_VIDEO" = "Vídeo";
 
 /* Indicates this message is a quoted reply to a voice message. */
-"QUOTED_REPLY_TYPE_VOICE_MESSAGE" = "Voice Message";
+"QUOTED_REPLY_TYPE_VOICE_MESSAGE" = "Mensaje de voz";
 
 /* Label for a button to lower your raised hand in a call. */
 "RAISED_HANDS_LOWER_HAND_BUTTON" = "Bajar";
@@ -7394,16 +7394,16 @@
 "REMINDER_VIEW_USERNAME_LINK_CORRUPTED_WARNING" = "Ha habido un problema con el código QR y el enlace de tu alias, por lo que ya no son válidos. Crea un nuevo enlace para compartir con otras personas.";
 
 /* A message that displays when one person in a call remotely muted another participant. Embeds {{name}} {{name}} */
-"REMOTE_MUTE_TOAST_A_MUTED_B" = "%1$@ muted %2$@.";
+"REMOTE_MUTE_TOAST_A_MUTED_B" = "%1$@ ha silenciado a %2$@.";
 
 /* A message that displays when your microphone is remotely muted by another call participant. Embeds {{name}} */
-"REMOTE_MUTE_TOAST_SOMEONE_MUTED_YOU" = "%1$@ muted you.";
+"REMOTE_MUTE_TOAST_SOMEONE_MUTED_YOU" = "%1$@ te ha silenciado.";
 
 /* A message that displays when you remotely muted another call participant's microphone. Embeds {{name}} */
-"REMOTE_MUTE_TOAST_YOU_MUTED_SOMEONE" = "You muted %1$@.";
+"REMOTE_MUTE_TOAST_YOU_MUTED_SOMEONE" = "Has silenciado a %1$@.";
 
 /* A message that displays when you joined a call on two devices and mute one from the other. */
-"REMOTE_MUTE_TOAST_YOU_MUTED_YOURSELF" = "You muted yourself from another device.";
+"REMOTE_MUTE_TOAST_YOU_MUTED_YOURSELF" = "Te has silenciado desde otro dispositivo.";
 
 /* Accessibility label for a button that removes the preview from a drafted message. */
 "REMOVE_PREVIEW" = "Eliminar vista previa";
@@ -7424,7 +7424,7 @@
 "RESET" = "Restablecer";
 
 /* Body for a sheet allowing users to cancel an in-progress media restore. */
-"RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_1_BODY" = "La restauración de tus archivos multimedia aún no se ha completado. Si decides cancelarla, podrás iniciarla de nuevo volviendo a sincronizar este dispositivo.";
+"RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_1_BODY" = "La restauración de tus archivos multimedia aún no se ha completado. Si decides cancelarla, podrás iniciarla de nuevo volviendo a vincular este dispositivo.";
 
 /* Button for a sheet allowing users to cancel an in-progress media restore. */
 "RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_1_PRIMARY_BUTTON" = "Continuar restauración";
@@ -7436,7 +7436,7 @@
 "RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_1_TITLE" = "Tus archivos se están restaurando";
 
 /* Message for a sheet allowing users to cancel an in-progress media restore. */
-"RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_2_MESSAGE" = "La restauración de tus archivos multimedia aún no se ha completado. Si decides cancelarla, podrás iniciarla de nuevo volviendo a sincronizar este dispositivo.";
+"RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_2_MESSAGE" = "La restauración de tus archivos multimedia aún no se ha completado. Si decides cancelarla, podrás iniciarla de nuevo volviendo a vincular este dispositivo.";
 
 /* Button for a sheet allowing users to cancel an in-progress media restore. */
 "RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_2_PRIMARY_BUTTON" = "Continuar restauración";
@@ -8864,7 +8864,7 @@
 "STICKER_CATEGORY_FEATURED_NAME" = "Destacados";
 
 /* Subtitle of the helper text displayed when Recent stickers are empty. */
-"STICKER_CATEGORY_RECENTS_EMPTY_SUBTITLE" = "Envía un sticker y aparecerá aquí.";
+"STICKER_CATEGORY_RECENTS_EMPTY_SUBTITLE" = "Los stickers que envíes aparecerán aquí.";
 
 /* Title of the helper text displayed when Recent stickers are empty. */
 "STICKER_CATEGORY_RECENTS_EMPTY_TITLE" = "No hay stickers recientes";
@@ -9074,10 +9074,10 @@
 "STORY_PRIVACY_TITLE" = "Privacidad de mis historias";
 
 /* Text explaining that you reacted to someone else's story. Embeds {{ %1$@ reaction emoji, %2$@ story author name }}. */
-"STORY_REACTION_PREVIEW_FORMAT_SECOND_PERSON" = "You reacted %1$@ to %2$@’s story";
+"STORY_REACTION_PREVIEW_FORMAT_SECOND_PERSON" = "Has reaccionado con %1$@ a la historia de %2$@";
 
 /* Text explaining that someone reacted to your story. Embeds {{ %1$@ reaction emoji }}. */
-"STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON" = "Reacted %1$@ to your story";
+"STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON" = "Ha reaccionado con %1$@ a tu historia";
 
 /* quote text for a reaction to a story by the user (the header on the bubble says \"You\"). Embeds {{reaction emoji}} */
 "STORY_REACTION_QUOTE_FORMAT_SECOND_PERSON" = "Has reaccionado con %1$@ a una historia";
@@ -9320,7 +9320,7 @@
 "TEXT_MENU_MONOSPACE" = "Monoespaciado";
 
 /* Option in selected text edit menu to remove all text formatting in the selected text range */
-"TEXT_MENU_REMOVE_FORMATTING" = "Eliminar formato";
+"TEXT_MENU_REMOVE_FORMATTING" = "Quitar formato";
 
 /* Option in selected text edit menu to make text spoiler */
 "TEXT_MENU_SPOILER" = "Spoiler";

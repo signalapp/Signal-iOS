@@ -701,13 +701,13 @@
 "BACKUP_SETTINGS_BACKUP_EXPORT_PROGRESS_DESCRIPTION_PROCESSING_MEDIA" = "મીડિયા પર પ્રક્રિયા કરી રહ્યું છે...";
 
 /* Title for an action sheet action explaining the user can now scan a QR code to continue the restore. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_SUCCEEDED_READY_TO_RESTORE_ACTION_TITLE" = "Scan QR Code";
+"BACKUP_SETTINGS_BACKUP_EXPORT_SUCCEEDED_READY_TO_RESTORE_ACTION_TITLE" = "QR કોડ સ્કેન કરો";
 
 /* Body for an action sheet explaining the backup succeeded and a restore can continue. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_SUCCEEDED_READY_TO_RESTORE_BODY" = "Use this device to scan the QR code on the device you want to transfer to";
+"BACKUP_SETTINGS_BACKUP_EXPORT_SUCCEEDED_READY_TO_RESTORE_BODY" = "તમે જે ડિવાઇસ પર ટ્રાન્સફર કરવા માંગો છો તેના પર QR કોડને સ્કેન કરવા માટે આ ડિવાઇસનો ઉપયોગ કરો";
 
 /* Title for an action sheet explaining the backup succeeded and a restore can continue. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_SUCCEEDED_READY_TO_RESTORE_TITLE" = "Ready to Transfer";
+"BACKUP_SETTINGS_BACKUP_EXPORT_SUCCEEDED_READY_TO_RESTORE_TITLE" = "ટ્રાન્સફર માટે તૈયાર";
 
 /* Message describing to the user that the last backup failed. */
 "BACKUP_SETTINGS_BACKUP_FAILED_MESSAGE" = "તમારું છેલ્લું બેકઅપ પૂર્ણ કરી શકાયું નથી. ફરી પ્રયાસ કરવા માટે \"હમણાં બેકઅપ લો\" પર ટેપ કરો.";
@@ -1382,7 +1382,7 @@
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ મિસ કૉલ કારણ કે કૉલરનો સલામતી નંબર બદલાયો છે.";
 
 /* Title for toast which appears after submitting a call quality survey */
-"CALL_QUALITY_SURVEY_COMPLETION_TOAST" = "Thanks for your feedback!";
+"CALL_QUALITY_SURVEY_COMPLETION_TOAST" = "તમારા પ્રતિભાવ બદલ આભાર!";
 
 /* Footer text explaining custom issue descriptions in the call quality survey */
 "CALL_QUALITY_SURVEY_CUSTOM_ISSUE_FOOTER" = "કૃપા કરીને સમસ્યાને લગતી કોઈ પણ વિગતો શામેલ કરો. તમે અહીં જે કંઈ પણ શેર કરશો તે ખાનગી રાખવામાં આવશે અને તેનો ઉપયોગ ફક્ત Signalમાં કૉલને બહેતર બનાવવામાં મદદ માટે કરવામાં આવશે.";
@@ -4199,10 +4199,10 @@
 "GROUP_STORY_NAME_FORMAT" = "%1$@, %2$@ પર";
 
 /* Text indicating you reacted to a group story (the header on the bubble says \"You\") */
-"GROUP_STORY_REPLY_REACTION_SECOND_PERSON" = "Reacted to the story";
+"GROUP_STORY_REPLY_REACTION_SECOND_PERSON" = "સ્ટોરી પર પ્રતિક્રિયા આપી";
 
 /* Text indicating someone else reacted to a group story (the header on the bubble says their name, e.g. \"Bob\") */
-"GROUP_STORY_REPLY_REACTION_THIRD_PERSON" = "Reacted to the story";
+"GROUP_STORY_REPLY_REACTION_THIRD_PERSON" = "સ્ટોરી પર પ્રતિક્રિયા આપી";
 
 /* Button to delete the story on the 'group story settings' view */
 "GROUP_STORY_SETTINGS_DELETE_BUTTON" = "ગ્રુપ સ્ટોરી દૂર કરો";
@@ -5933,19 +5933,19 @@
 "OUTGOING_DEVICE_REGISTRATION_UNKNOWN_ERROR_TITLE" = "અજ્ઞાત ભૂલ";
 
 /* Action button to backup before continuing. */
-"OUTGOING_DEVICE_RESTORE_BACKUP_PROMPT_BACKUP_ACTION" = "Backup Up Now";
+"OUTGOING_DEVICE_RESTORE_BACKUP_PROMPT_BACKUP_ACTION" = "હમણાં બેકઅપ લો";
 
 /* Body text describing the outgoing transfer. */
-"OUTGOING_DEVICE_RESTORE_BACKUP_PROMPT_INITIAL_VIEW_BODY" = "Back up now before transferring. You may have received messages that haven’t been backed up yet.";
+"OUTGOING_DEVICE_RESTORE_BACKUP_PROMPT_INITIAL_VIEW_BODY" = "ટ્રાન્સફર કરતા પહેલાં હમણાં બેકઅપ લો. તમને એવા મેસેજ મળ્યા હોઈ શકે જેનો બેકઅપ હજુ સુધી લેવામાં આવ્યો નથી.";
 
 /* Title text describing the outgoing transfer. */
-"OUTGOING_DEVICE_RESTORE_BACKUP_PROMPT_INITIAL_VIEW_TITLE" = "Getting Your Device Ready";
+"OUTGOING_DEVICE_RESTORE_BACKUP_PROMPT_INITIAL_VIEW_TITLE" = "તમારા ડિવાઇસને તૈયાર કરી રહ્યા છીએ";
 
 /* Action button to skip backup and continue. */
-"OUTGOING_DEVICE_RESTORE_BACKUP_PROMPT_SKIP_ACTION" = "Skip and Continue";
+"OUTGOING_DEVICE_RESTORE_BACKUP_PROMPT_SKIP_ACTION" = "છોડો અને ચાલુ રાખો";
 
 /* Description for form confirming restore from backup without size detail. */
-"OUTGOING_DEVICE_RESTORE_BACKUP_RESTORE_DESCRIPTION" = "Your last backup was made on %1$@ at %2$@.";
+"OUTGOING_DEVICE_RESTORE_BACKUP_RESTORE_DESCRIPTION" = "તમારું છેલ્લું બેકઅપ %1$@ના રોજ %2$@ વાગ્યે લેવામાં આવ્યું હતું.";
 
 /* Body of prompt notifying device restore started on the new device. */
 "OUTGOING_DEVICE_RESTORE_COMPLETE_BODY" = "તમારું Signal એકાઉન્ટ અને મેસેજ તમારા અન્ય ડિવાઇસ પર ટ્રાન્સફર કરવાનું શરૂ થઈ ગયું છે. Signal હવે આ ડિવાઇસ પર નિષ્ક્રિય છે.";
@@ -6992,10 +6992,10 @@
 "QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "અસલ મેસેજ મળ્યો નથી.";
 
 /* Label explaining that the content of a quoted message includes you reacting to someone's story. Embeds {{ %1$@ the story author }}. */
-"QUOTED_REPLY_REACTION_TO_STORY_FORMAT_SECOND_PERSON" = "Reacted to %1$@’s story";
+"QUOTED_REPLY_REACTION_TO_STORY_FORMAT_SECOND_PERSON" = "%1$@ની સ્ટોરી પર પ્રતિક્રિયા આપી";
 
 /* Label explaining that the content of a quoted message includes someone reacting to your story. */
-"QUOTED_REPLY_REACTION_TO_STORY_FORMAT_THIRD_PERSON" = "Reacted to your story";
+"QUOTED_REPLY_REACTION_TO_STORY_FORMAT_THIRD_PERSON" = "તમારી સ્ટોરી પર પ્રતિક્રિયા આપી";
 
 /* Message header when you are quoting a story. Embeds {{ story author name }} */
 "QUOTED_REPLY_STORY_AUTHOR_INDICATOR_FORMAT" = "%1$@ · સ્ટોરી";
@@ -7019,7 +7019,7 @@
 "QUOTED_REPLY_TYPE_VIDEO" = "વિડિયો";
 
 /* Indicates this message is a quoted reply to a voice message. */
-"QUOTED_REPLY_TYPE_VOICE_MESSAGE" = "Voice Message";
+"QUOTED_REPLY_TYPE_VOICE_MESSAGE" = "વોઇસ મેસેજ";
 
 /* Label for a button to lower your raised hand in a call. */
 "RAISED_HANDS_LOWER_HAND_BUTTON" = "નીચે કરો";
@@ -7394,16 +7394,16 @@
 "REMINDER_VIEW_USERNAME_LINK_CORRUPTED_WARNING" = "તમારા યુઝરનેમ QR કોડ અને લિંક સાથે કંઈક ખોટું થયું છે, તે હવે માન્ય નથી. અન્ય લોકો સાથે શેર કરવા માટે નવી લિંક બનાવો.";
 
 /* A message that displays when one person in a call remotely muted another participant. Embeds {{name}} {{name}} */
-"REMOTE_MUTE_TOAST_A_MUTED_B" = "%1$@ muted %2$@.";
+"REMOTE_MUTE_TOAST_A_MUTED_B" = "%1$@એ %2$@ને મ્યૂટ કર્યા.";
 
 /* A message that displays when your microphone is remotely muted by another call participant. Embeds {{name}} */
-"REMOTE_MUTE_TOAST_SOMEONE_MUTED_YOU" = "%1$@ muted you.";
+"REMOTE_MUTE_TOAST_SOMEONE_MUTED_YOU" = "%1$@એ તમને મ્યૂટ કર્યા.";
 
 /* A message that displays when you remotely muted another call participant's microphone. Embeds {{name}} */
-"REMOTE_MUTE_TOAST_YOU_MUTED_SOMEONE" = "You muted %1$@.";
+"REMOTE_MUTE_TOAST_YOU_MUTED_SOMEONE" = "તમે %1$@ને મ્યૂટ કર્યા.";
 
 /* A message that displays when you joined a call on two devices and mute one from the other. */
-"REMOTE_MUTE_TOAST_YOU_MUTED_YOURSELF" = "You muted yourself from another device.";
+"REMOTE_MUTE_TOAST_YOU_MUTED_YOURSELF" = "તમે બીજા ડિવાઇસ પરથી પોતાને મ્યૂટ કર્યા.";
 
 /* Accessibility label for a button that removes the preview from a drafted message. */
 "REMOVE_PREVIEW" = "પ્રિવ્યૂ દૂર કરો";
@@ -9074,10 +9074,10 @@
 "STORY_PRIVACY_TITLE" = "સ્ટોરીની પ્રાઇવસી";
 
 /* Text explaining that you reacted to someone else's story. Embeds {{ %1$@ reaction emoji, %2$@ story author name }}. */
-"STORY_REACTION_PREVIEW_FORMAT_SECOND_PERSON" = "You reacted %1$@ to %2$@’s story";
+"STORY_REACTION_PREVIEW_FORMAT_SECOND_PERSON" = "તમે %2$@ની સ્ટોરી પર %1$@ પ્રતિક્રિયા આપી";
 
 /* Text explaining that someone reacted to your story. Embeds {{ %1$@ reaction emoji }}. */
-"STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON" = "Reacted %1$@ to your story";
+"STORY_REACTION_PREVIEW_FORMAT_THIRD_PERSON" = "તમારી સ્ટોરી પર %1$@ પ્રતિક્રિયા આપી";
 
 /* quote text for a reaction to a story by the user (the header on the bubble says \"You\"). Embeds {{reaction emoji}} */
 "STORY_REACTION_QUOTE_FORMAT_SECOND_PERSON" = "એક સ્ટોરી પર %1$@ પ્રતિક્રિયા આપી";
