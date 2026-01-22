@@ -59,7 +59,7 @@ public enum BuildFlags {
     public static let pollSend = true
     public static let pollReceive = true
 
-    public static let callQualitySurvey = build <= .beta
+    public static let callQualitySurvey = true
 
     static let netBuildVariant: Net.BuildVariant = build <= .beta ? .beta : .production
 
