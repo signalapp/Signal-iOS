@@ -318,9 +318,10 @@ public struct AttachmentStore {
             attachmentsByID[attachmentID] = fetch(id: attachmentID, tx: tx)
         }
 
-        return references.map { reference in
+        return references.compactMap { reference in
             guard let attachment = attachmentsByID[reference.attachmentRowId] else {
-                owsFail("Missing attachment for reference: foreign-key constraints should have prevented this!")
+                owsFailDebug("Missing attachment \(reference.attachmentRowId) for reference!")
+                return nil
             }
             return ReferencedAttachment(reference: reference, attachment: attachment)
         }
