@@ -18,6 +18,8 @@ class PinnedMessagesDetailsViewController: OWSViewController, DatabaseChangeDele
 
     private var lastKnownWidth: CGFloat = 0
 
+    static let goToMessageButtonSize: CGFloat = 36
+
     init(
         pinnedMessages: [TSMessage],
         threadViewModel: ThreadViewModel,
@@ -202,8 +204,8 @@ class PinnedMessagesDetailsViewController: OWSViewController, DatabaseChangeDele
             cellHStack.addArrangedSubview(spacer)
         }
         NSLayoutConstraint.activate([
-            goToMessageButton.heightAnchor.constraint(equalToConstant: 36),
-            goToMessageButton.widthAnchor.constraint(equalToConstant: 36),
+            goToMessageButton.heightAnchor.constraint(equalToConstant: Self.goToMessageButtonSize),
+            goToMessageButton.widthAnchor.constraint(equalToConstant: Self.goToMessageButtonSize),
         ])
 
         return cellHStack
@@ -243,7 +245,7 @@ class PinnedMessagesDetailsViewController: OWSViewController, DatabaseChangeDele
         let conversationStyle = ConversationStyle(
             type: .messageDetails,
             thread: thread,
-            viewWidth: view.safeAreaLayoutGuide.layoutFrame.width,
+            viewWidth: view.safeAreaLayoutGuide.layoutFrame.width - Self.goToMessageButtonSize,
             hasWallpaper: false,
             isWallpaperPhoto: false,
             chatColor: DependenciesBridge.shared.chatColorSettingStore.resolvedChatColor(
