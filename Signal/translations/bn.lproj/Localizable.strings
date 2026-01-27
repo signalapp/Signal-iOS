@@ -203,10 +203,10 @@
 "APN_Message" = "আপনার কাছে নতুন বার্তা থাকতে পারে";
 
 /* Shown in place of the text input box in a conversation when the app has expired and the user is no longer allowed to send messages. The embedded value is 'Update now' (translated via APP_EXPIRED_BOTTOM_UPDATE), and it will be formatted as a tappable link. */
-"APP_EXPIRED_BOTTOM" = "This version of Signal has expired. %1$@ to send and receive messages.";
+"APP_EXPIRED_BOTTOM" = "Signal-এর এই সংস্করণটির মেয়াদ শেষ হয়ে গেছে। মেসেজ পাঠাতে ও গ্রহণ করতে %1$@।";
 
 /* Shown in place of the text input box in a conversation when the app has expired and the user is no longer allowed to send messages. This value is a tappable link embedded in a larger sentence. */
-"APP_EXPIRED_BOTTOM_UPDATE" = "Update now";
+"APP_EXPIRED_BOTTOM_UPDATE" = "এখনই আপডেট করুন";
 
 /* Default message for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal চালু করা যাবে না। অনুগ্রহ করে একটি ডিবাগ লগ support@signal.org এই ইমেইলে পাঠান যাতে আমরা এই সমস্যাটি সমাধান করতে পারি।";
@@ -1388,13 +1388,13 @@
 "CALL_QUALITY_SURVEY_CUSTOM_ISSUE_PLACEHOLDER" = "আপনার সমস্যাটি বর্ণনা করুন";
 
 /* Footer text explaining what debug logs contain in the call quality survey */
-"CALL_QUALITY_SURVEY_DEBUG_LOG_FOOTER" = "Information shared with us contains low level app information and does not include the contents of your calls.";
+"CALL_QUALITY_SURVEY_DEBUG_LOG_FOOTER" = "আমাদের সাথে শেয়ার করা তথ্যে অ্যাপ সংক্রান্ত খুব সাধারণ কিছু তথ্য রয়েছে এবং এতে আপনার কলের কোনো কন্টেন্ট অন্তর্ভুক্ত থাকে না।";
 
 /* Header text explaining the purpose of sharing debug logs in the call quality survey */
-"CALL_QUALITY_SURVEY_DEBUG_LOG_HEADER" = "Submitting will share your feedback along with diagnostic information about your call. You can optionally share a debug log to help us improve call quality.";
+"CALL_QUALITY_SURVEY_DEBUG_LOG_HEADER" = "জমা দিলে আপনার কল সম্পর্কে ডায়াগনস্টিক তথ্যের পাশাপাশি আপনার প্রতিক্রিয়াও শেয়ার করা হবে। কলের মান উন্নত করতে আমাদের সাহায্য করার জন্য ইচ্ছা হলে আপনি একটি ডিবাগ লগ শেয়ার করতে পারেন।";
 
 /* Link text to open a preview of debug logs in the call quality survey. Appended to CALL_QUALITY_SURVEY_DEBUG_LOG_FOOTER */
-"CALL_QUALITY_SURVEY_DEBUG_LOG_PREVIEW_LINK" = "View debug log";
+"CALL_QUALITY_SURVEY_DEBUG_LOG_PREVIEW_LINK" = "ডিবাগ লগ দেখুন";
 
 /* Title for the debug log sharing screen in the call quality survey */
 "CALL_QUALITY_SURVEY_DEBUG_LOG_TITLE" = "আমাদের উন্নতি করতে সাহায্য করুন";
@@ -2291,7 +2291,7 @@
 "CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "অনুরোধ ও আমন্ত্রণ";
 
 /* Label for 'member label' action in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBER_TAG" = "Member Label";
+"CONVERSATION_SETTINGS_MEMBER_TAG" = "সদস্য লেবেল";
 
 /* label for 'always' option for mention notifications in conversation settings */
 "CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "সবসময় জানান";
@@ -2585,10 +2585,10 @@
 "DEBUG_LOG_INFO_BUTTON" = "ডিবাগ লগ সম্পর্কিত তথ্য";
 
 /* Header text displayed above the debug log preview */
-"DEBUG_LOG_PREVIEW_HEADER" = "When submitted, your log will be posted online for 30 days at a unique, unpublished URL.";
+"DEBUG_LOG_PREVIEW_HEADER" = "জমা দিলে, আপনার লগটি 30 দিনের জন্য একটি বিশেষ, অপ্রকাশিত URL আকারে অনলাইনে পোস্ট করা হবে।";
 
 /* Title for the debug log preview screen */
-"DEBUG_LOG_PREVIEW_TITLE" = "Debug Log";
+"DEBUG_LOG_PREVIEW_TITLE" = "ডিবাগ লগ";
 
 /* info message text in conversation view */
 "DECLINED_VIDEO_CALL" = "আপনি একটি ভিডিও কল প্রত্যাখ্যান করেছেন";
@@ -4994,22 +4994,22 @@
 "MEGAPHONE_WILL_REMIND_LATER" = "আমরা আপনাকে পরে মনে করিয়ে দেব।";
 
 /* Label for an action to add a member label */
-"MEMBER_LABEL_ADD" = "Add a Member Label";
+"MEMBER_LABEL_ADD" = "একটি সদস্য লেবেল যোগ করুন";
 
 /* Heading shown above the preview of a message bubble with the edited member label. */
-"MEMBER_LABEL_PREVIEW_HEADING" = "Preview";
+"MEMBER_LABEL_PREVIEW_HEADING" = "প্রিভিউ";
 
 /* Text shown in the preview message bubble when a user is editing their member label. */
-"MEMBER_LABEL_VIEW_MESSAGE_PREVIEW_TEXT" = "Hello!";
+"MEMBER_LABEL_VIEW_MESSAGE_PREVIEW_TEXT" = "হ্যালো!";
 
 /* Placeholder text in text field where user can edit their member label. */
-"MEMBER_LABEL_VIEW_PLACEHOLDER_TEXT" = "Add your label";
+"MEMBER_LABEL_VIEW_PLACEHOLDER_TEXT" = "আপনার লেবেল যোগ করুন";
 
 /* Subtitle for a view where users can edit and preview their member label. */
-"MEMBER_LABEL_VIEW_SUBTITLE" = "Set a member label to describe yourself or your role in this group. Member labels are only visible within this group.";
+"MEMBER_LABEL_VIEW_SUBTITLE" = "এই গ্রুপে নিজেকে বা আপনার ভূমিকা বর্ণনা করার জন্য একটি সদস্য লেবেল নির্ধারণ করুন। সদস্য লেবেল শুধুমাত্র এই গ্রুপের মধ্যেই দৃশ্যমান।";
 
 /* Title for a view where users can edit and preview their member label. */
-"MEMBER_LABEL_VIEW_TITLE" = "Member Label";
+"MEMBER_LABEL_VIEW_TITLE" = "সদস্য লেবেল";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "বার্তার লেখা অনুলিপি করুন";
@@ -5609,16 +5609,16 @@
 "NO_OTHER_GROUPS_IN_COMMON" = "একই রকমের আর কোনও গ্রুপ নেই";
 
 /* Shown in place of the text input box in a conversation when the user is no longer registered can't send messages. The embedded value is 'Re-link' (translated via NOT_LINKED_BOTTOM_RELINK), and it will be formatted as a tappable link. */
-"NOT_LINKED_BOTTOM" = "This device is no longer linked. %1$@ to continue using Signal on this device.";
+"NOT_LINKED_BOTTOM" = "এই ডিভাইসটি আর সংযুক্ত নয়। এই ডিভাইসে Signal ব্যবহার চালিয়ে যেতে %1$@।";
 
 /* Shown in place of the text input box in a conversation when the user is no longer registered can't send messages. This value is a tappable link embedded in a larger sentence. */
-"NOT_LINKED_BOTTOM_RELINK" = "Re-link";
+"NOT_LINKED_BOTTOM_RELINK" = "পুনরায় লিংক করুন";
 
 /* Shown in place of the text input box in a conversation when the user is no longer registered can't send messages. The embedded value is 'Re-register' (translated via NOT_REGISTERED_BOTTOM_REREGISTER), and it will be formatted as a tappable link. */
-"NOT_REGISTERED_BOTTOM" = "This device is no longer registered. %1$@ to continue using Signal.";
+"NOT_REGISTERED_BOTTOM" = "এই ডিভাইসটি আর নিবন্ধিত নয়। Signal ব্যবহার চালিয়ে যেতে %1$@।";
 
 /* Shown in place of the text input box in a conversation when the user is no longer registered can't send messages. This value is a tappable link embedded in a larger sentence. */
-"NOT_REGISTERED_BOTTOM_REREGISTER" = "Re-register";
+"NOT_REGISTERED_BOTTOM_REREGISTER" = "পুনরায় নিবন্ধন করুন";
 
 /* Label for 1:1 conversation with yourself. */
 "NOTE_TO_SELF" = "নিজের জন্য নোট";

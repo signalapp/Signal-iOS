@@ -203,10 +203,10 @@
 "APN_Message" = "Bạn có thể có tin nhắn mới";
 
 /* Shown in place of the text input box in a conversation when the app has expired and the user is no longer allowed to send messages. The embedded value is 'Update now' (translated via APP_EXPIRED_BOTTOM_UPDATE), and it will be formatted as a tappable link. */
-"APP_EXPIRED_BOTTOM" = "This version of Signal has expired. %1$@ to send and receive messages.";
+"APP_EXPIRED_BOTTOM" = "Phiên bản này của Signal đã hết hạn. %1$@ để gửi và nhận tin nhắn.";
 
 /* Shown in place of the text input box in a conversation when the app has expired and the user is no longer allowed to send messages. This value is a tappable link embedded in a larger sentence. */
-"APP_EXPIRED_BOTTOM_UPDATE" = "Update now";
+"APP_EXPIRED_BOTTOM_UPDATE" = "Cập nhật ngay";
 
 /* Default message for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Không thể chạy Signal. Vui lòng gửi nhật kí lỗi đến support@signal.org để chúng tôi có thể xử lí vấn đề này.";
@@ -1388,13 +1388,13 @@
 "CALL_QUALITY_SURVEY_CUSTOM_ISSUE_PLACEHOLDER" = "Mô tả vấn đề của bạn";
 
 /* Footer text explaining what debug logs contain in the call quality survey */
-"CALL_QUALITY_SURVEY_DEBUG_LOG_FOOTER" = "Information shared with us contains low level app information and does not include the contents of your calls.";
+"CALL_QUALITY_SURVEY_DEBUG_LOG_FOOTER" = "Thông tin được chia sẻ với chúng tôi chứa thông tin ứng dụng ở mức thấp và không bao gồm nội dung cuộc gọi của bạn.";
 
 /* Header text explaining the purpose of sharing debug logs in the call quality survey */
-"CALL_QUALITY_SURVEY_DEBUG_LOG_HEADER" = "Submitting will share your feedback along with diagnostic information about your call. You can optionally share a debug log to help us improve call quality.";
+"CALL_QUALITY_SURVEY_DEBUG_LOG_HEADER" = "Khi gửi, bạn sẽ chia sẻ phản hồi cùng thông tin chẩn đoán về cuộc gọi của bạn. Bạn có thể chia sẻ (không bắt buộc) nhật ký gỡ lỗi để giúp chúng tôi tăng chất lượng cuộc gọi.";
 
 /* Link text to open a preview of debug logs in the call quality survey. Appended to CALL_QUALITY_SURVEY_DEBUG_LOG_FOOTER */
-"CALL_QUALITY_SURVEY_DEBUG_LOG_PREVIEW_LINK" = "View debug log";
+"CALL_QUALITY_SURVEY_DEBUG_LOG_PREVIEW_LINK" = "Xem nhật ký gỡ lỗi";
 
 /* Title for the debug log sharing screen in the call quality survey */
 "CALL_QUALITY_SURVEY_DEBUG_LOG_TITLE" = "Giúp chúng tôi cải thiện";
@@ -2291,7 +2291,7 @@
 "CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Yêu cầu & Lời mời";
 
 /* Label for 'member label' action in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBER_TAG" = "Member Label";
+"CONVERSATION_SETTINGS_MEMBER_TAG" = "Nhãn thành viên";
 
 /* label for 'always' option for mention notifications in conversation settings */
 "CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Luôn luôn Thông báo";
@@ -2585,10 +2585,10 @@
 "DEBUG_LOG_INFO_BUTTON" = "Thông tin về các ghi chú lỗi";
 
 /* Header text displayed above the debug log preview */
-"DEBUG_LOG_PREVIEW_HEADER" = "When submitted, your log will be posted online for 30 days at a unique, unpublished URL.";
+"DEBUG_LOG_PREVIEW_HEADER" = "Khi gửi, nhật ký của bạn sẽ được đăng trực tuyến trong 30 ngày và sẽ có URL riêng biệt, không công khai.";
 
 /* Title for the debug log preview screen */
-"DEBUG_LOG_PREVIEW_TITLE" = "Debug Log";
+"DEBUG_LOG_PREVIEW_TITLE" = "Nhật ký Gỡ lỗi";
 
 /* info message text in conversation view */
 "DECLINED_VIDEO_CALL" = "Bạn đã từ chối cuộc gọi video";
@@ -4994,22 +4994,22 @@
 "MEGAPHONE_WILL_REMIND_LATER" = "Chúng tôi sẽ nhắc bạn sau.";
 
 /* Label for an action to add a member label */
-"MEMBER_LABEL_ADD" = "Add a Member Label";
+"MEMBER_LABEL_ADD" = "Thêm Nhãn thành viên";
 
 /* Heading shown above the preview of a message bubble with the edited member label. */
-"MEMBER_LABEL_PREVIEW_HEADING" = "Preview";
+"MEMBER_LABEL_PREVIEW_HEADING" = "Xem trước";
 
 /* Text shown in the preview message bubble when a user is editing their member label. */
-"MEMBER_LABEL_VIEW_MESSAGE_PREVIEW_TEXT" = "Hello!";
+"MEMBER_LABEL_VIEW_MESSAGE_PREVIEW_TEXT" = "Xin chào!";
 
 /* Placeholder text in text field where user can edit their member label. */
-"MEMBER_LABEL_VIEW_PLACEHOLDER_TEXT" = "Add your label";
+"MEMBER_LABEL_VIEW_PLACEHOLDER_TEXT" = "Thêm nhãn của bạn";
 
 /* Subtitle for a view where users can edit and preview their member label. */
-"MEMBER_LABEL_VIEW_SUBTITLE" = "Set a member label to describe yourself or your role in this group. Member labels are only visible within this group.";
+"MEMBER_LABEL_VIEW_SUBTITLE" = "Đặt nhãn thành viên để mô tả bản thân hoặc vai trò của bạn trong nhóm này. Nhãn thành viên chỉ hiển thị trong nhóm này.";
 
 /* Title for a view where users can edit and preview their member label. */
-"MEMBER_LABEL_VIEW_TITLE" = "Member Label";
+"MEMBER_LABEL_VIEW_TITLE" = "Nhãn thành viên";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "Sao chép Nội dung Tin nhắn";
@@ -5609,16 +5609,16 @@
 "NO_OTHER_GROUPS_IN_COMMON" = "Không có nhóm chung nào khác.";
 
 /* Shown in place of the text input box in a conversation when the user is no longer registered can't send messages. The embedded value is 'Re-link' (translated via NOT_LINKED_BOTTOM_RELINK), and it will be formatted as a tappable link. */
-"NOT_LINKED_BOTTOM" = "This device is no longer linked. %1$@ to continue using Signal on this device.";
+"NOT_LINKED_BOTTOM" = "Thiết bị này không còn được liên kết. %1$@ để tiếp tục sử dụng Signal trên thiết bị này.";
 
 /* Shown in place of the text input box in a conversation when the user is no longer registered can't send messages. This value is a tappable link embedded in a larger sentence. */
-"NOT_LINKED_BOTTOM_RELINK" = "Re-link";
+"NOT_LINKED_BOTTOM_RELINK" = "Liên kết lại";
 
 /* Shown in place of the text input box in a conversation when the user is no longer registered can't send messages. The embedded value is 'Re-register' (translated via NOT_REGISTERED_BOTTOM_REREGISTER), and it will be formatted as a tappable link. */
-"NOT_REGISTERED_BOTTOM" = "This device is no longer registered. %1$@ to continue using Signal.";
+"NOT_REGISTERED_BOTTOM" = "Thiết bị này không còn được đăng ký. %1$@ để tiếp tục sử dụng Signal.";
 
 /* Shown in place of the text input box in a conversation when the user is no longer registered can't send messages. This value is a tappable link embedded in a larger sentence. */
-"NOT_REGISTERED_BOTTOM_REREGISTER" = "Re-register";
+"NOT_REGISTERED_BOTTOM_REREGISTER" = "Đăng ký lại";
 
 /* Label for 1:1 conversation with yourself. */
 "NOTE_TO_SELF" = "Ghi chú";

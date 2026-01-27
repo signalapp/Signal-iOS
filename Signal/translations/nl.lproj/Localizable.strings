@@ -203,10 +203,10 @@
 "APN_Message" = "Je hebt mogelijk nieuwe berichten";
 
 /* Shown in place of the text input box in a conversation when the app has expired and the user is no longer allowed to send messages. The embedded value is 'Update now' (translated via APP_EXPIRED_BOTTOM_UPDATE), and it will be formatted as a tappable link. */
-"APP_EXPIRED_BOTTOM" = "This version of Signal has expired. %1$@ to send and receive messages.";
+"APP_EXPIRED_BOTTOM" = "Deze versie van Signal is verlopen. %1$@ om berichten te verzenden en ontvangen.";
 
 /* Shown in place of the text input box in a conversation when the app has expired and the user is no longer allowed to send messages. This value is a tappable link embedded in a larger sentence. */
-"APP_EXPIRED_BOTTOM_UPDATE" = "Update now";
+"APP_EXPIRED_BOTTOM_UPDATE" = "Werk nu bij";
 
 /* Default message for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal kan niet opstarten. Stuur alsjeblieft een foutopsporingslog naar support@signal.org zodat we dit probleem kunnen oplossen.";
@@ -1388,13 +1388,13 @@
 "CALL_QUALITY_SURVEY_CUSTOM_ISSUE_PLACEHOLDER" = "Beschrijf het probleem";
 
 /* Footer text explaining what debug logs contain in the call quality survey */
-"CALL_QUALITY_SURVEY_DEBUG_LOG_FOOTER" = "Information shared with us contains low level app information and does not include the contents of your calls.";
+"CALL_QUALITY_SURVEY_DEBUG_LOG_FOOTER" = "De gegevens die je met ons deelt, bevatten app-informatie op laag niveau en geven geen informatie over de inhoud van je oproepen.";
 
 /* Header text explaining the purpose of sharing debug logs in the call quality survey */
-"CALL_QUALITY_SURVEY_DEBUG_LOG_HEADER" = "Submitting will share your feedback along with diagnostic information about your call. You can optionally share a debug log to help us improve call quality.";
+"CALL_QUALITY_SURVEY_DEBUG_LOG_HEADER" = "Door te versturen ontvangen we jouw feedback samen met diagnostische informatie over je oproep. Optioneel kun je een foutopsporingslog delen om ons te helpen de gesprekskwaliteit te verbeteren.";
 
 /* Link text to open a preview of debug logs in the call quality survey. Appended to CALL_QUALITY_SURVEY_DEBUG_LOG_FOOTER */
-"CALL_QUALITY_SURVEY_DEBUG_LOG_PREVIEW_LINK" = "View debug log";
+"CALL_QUALITY_SURVEY_DEBUG_LOG_PREVIEW_LINK" = "Foutopsporingslog bekijken";
 
 /* Title for the debug log sharing screen in the call quality survey */
 "CALL_QUALITY_SURVEY_DEBUG_LOG_TITLE" = "Help ons te verbeteren";
@@ -2291,7 +2291,7 @@
 "CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Verzoeken & uitnodigingen";
 
 /* Label for 'member label' action in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBER_TAG" = "Member Label";
+"CONVERSATION_SETTINGS_MEMBER_TAG" = "Ledenlabel";
 
 /* label for 'always' option for mention notifications in conversation settings */
 "CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Geef me altijd een melding";
@@ -2585,10 +2585,10 @@
 "DEBUG_LOG_INFO_BUTTON" = "Informatie over foutopsporingslogs";
 
 /* Header text displayed above the debug log preview */
-"DEBUG_LOG_PREVIEW_HEADER" = "When submitted, your log will be posted online for 30 days at a unique, unpublished URL.";
+"DEBUG_LOG_PREVIEW_HEADER" = "Na indienen wordt dit log 30 dagen lang online beschikbaar gesteld op een unieke, nergens onthulde URL.";
 
 /* Title for the debug log preview screen */
-"DEBUG_LOG_PREVIEW_TITLE" = "Debug Log";
+"DEBUG_LOG_PREVIEW_TITLE" = "Foutopsporingslog";
 
 /* info message text in conversation view */
 "DECLINED_VIDEO_CALL" = "Je hebt een video-oproep geweigerd";
@@ -4994,22 +4994,22 @@
 "MEGAPHONE_WILL_REMIND_LATER" = "We zullen je er later aan herinneren.";
 
 /* Label for an action to add a member label */
-"MEMBER_LABEL_ADD" = "Add a Member Label";
+"MEMBER_LABEL_ADD" = "Ledenlabel toevoegen";
 
 /* Heading shown above the preview of a message bubble with the edited member label. */
-"MEMBER_LABEL_PREVIEW_HEADING" = "Preview";
+"MEMBER_LABEL_PREVIEW_HEADING" = "Voorbeeld";
 
 /* Text shown in the preview message bubble when a user is editing their member label. */
-"MEMBER_LABEL_VIEW_MESSAGE_PREVIEW_TEXT" = "Hello!";
+"MEMBER_LABEL_VIEW_MESSAGE_PREVIEW_TEXT" = "Hallo!";
 
 /* Placeholder text in text field where user can edit their member label. */
-"MEMBER_LABEL_VIEW_PLACEHOLDER_TEXT" = "Add your label";
+"MEMBER_LABEL_VIEW_PLACEHOLDER_TEXT" = "Voeg je label toe";
 
 /* Subtitle for a view where users can edit and preview their member label. */
-"MEMBER_LABEL_VIEW_SUBTITLE" = "Set a member label to describe yourself or your role in this group. Member labels are only visible within this group.";
+"MEMBER_LABEL_VIEW_SUBTITLE" = "Maak een label aan waarmee je iets over jezelf zegt of je rol in deze groep. Labels zijn alleen zichtbaar in deze groep.";
 
 /* Title for a view where users can edit and preview their member label. */
-"MEMBER_LABEL_VIEW_TITLE" = "Member Label";
+"MEMBER_LABEL_VIEW_TITLE" = "Ledenlabel";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "Berichttekst kopiëren";
@@ -5609,16 +5609,16 @@
 "NO_OTHER_GROUPS_IN_COMMON" = "Geen andere gemeenschappelijke groepen.";
 
 /* Shown in place of the text input box in a conversation when the user is no longer registered can't send messages. The embedded value is 'Re-link' (translated via NOT_LINKED_BOTTOM_RELINK), and it will be formatted as a tappable link. */
-"NOT_LINKED_BOTTOM" = "This device is no longer linked. %1$@ to continue using Signal on this device.";
+"NOT_LINKED_BOTTOM" = "Dit apparaat is niet meer gekoppeld. %1$@ om Signal op dit apparaat te blijven gebruiken.";
 
 /* Shown in place of the text input box in a conversation when the user is no longer registered can't send messages. This value is a tappable link embedded in a larger sentence. */
-"NOT_LINKED_BOTTOM_RELINK" = "Re-link";
+"NOT_LINKED_BOTTOM_RELINK" = "Koppel opnieuw";
 
 /* Shown in place of the text input box in a conversation when the user is no longer registered can't send messages. The embedded value is 'Re-register' (translated via NOT_REGISTERED_BOTTOM_REREGISTER), and it will be formatted as a tappable link. */
-"NOT_REGISTERED_BOTTOM" = "This device is no longer registered. %1$@ to continue using Signal.";
+"NOT_REGISTERED_BOTTOM" = "Dit apparaat is niet meer geregistreerd. %1$@ om Signal te blijven gebruiken.";
 
 /* Shown in place of the text input box in a conversation when the user is no longer registered can't send messages. This value is a tappable link embedded in a larger sentence. */
-"NOT_REGISTERED_BOTTOM_REREGISTER" = "Re-register";
+"NOT_REGISTERED_BOTTOM_REREGISTER" = "Registreer opnieuw";
 
 /* Label for 1:1 conversation with yourself. */
 "NOTE_TO_SELF" = "Notitie aan mezelf";

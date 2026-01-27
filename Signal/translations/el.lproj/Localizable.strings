@@ -203,10 +203,10 @@
 "APN_Message" = "Ίσως έχεις νέα μηνύματα";
 
 /* Shown in place of the text input box in a conversation when the app has expired and the user is no longer allowed to send messages. The embedded value is 'Update now' (translated via APP_EXPIRED_BOTTOM_UPDATE), and it will be formatted as a tappable link. */
-"APP_EXPIRED_BOTTOM" = "This version of Signal has expired. %1$@ to send and receive messages.";
+"APP_EXPIRED_BOTTOM" = "Αυτή η έκδοση Signal έχει λήξει. %1$@ για να στείλεις και να λάβεις μηνύματα.";
 
 /* Shown in place of the text input box in a conversation when the app has expired and the user is no longer allowed to send messages. This value is a tappable link embedded in a larger sentence. */
-"APP_EXPIRED_BOTTOM_UPDATE" = "Update now";
+"APP_EXPIRED_BOTTOM_UPDATE" = "Αναβάθμιση τώρα";
 
 /* Default message for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Το Signal δεν μπορεί να ανοίξει. Παρακαλώ στείλε ένα αρχείο καταγραφής σφαλμάτων στη διεύθυνση support@signal.org για να μπορέσουμε να λύσουμε το πρόβλημα.";
@@ -1388,13 +1388,13 @@
 "CALL_QUALITY_SURVEY_CUSTOM_ISSUE_PLACEHOLDER" = "Περίγραψε το πρόβλημά σου";
 
 /* Footer text explaining what debug logs contain in the call quality survey */
-"CALL_QUALITY_SURVEY_DEBUG_LOG_FOOTER" = "Information shared with us contains low level app information and does not include the contents of your calls.";
+"CALL_QUALITY_SURVEY_DEBUG_LOG_FOOTER" = "Οι πληροφορίες που κοινοποιούνται σε εμάς περιέχουν πληροφορίες χαμηλού επιπέδου της εφαρμογής και δεν περιλαμβάνουν το περιεχόμενο των κλήσεών σου.";
 
 /* Header text explaining the purpose of sharing debug logs in the call quality survey */
-"CALL_QUALITY_SURVEY_DEBUG_LOG_HEADER" = "Submitting will share your feedback along with diagnostic information about your call. You can optionally share a debug log to help us improve call quality.";
+"CALL_QUALITY_SURVEY_DEBUG_LOG_HEADER" = "Με την υποβολή θα μοιραστείς τα σχόλιά σου μαζί με διαγνωστικές πληροφορίες σχετικά με την κλήση σου. Μπορείς προαιρετικά να κοινοποιήσεις ένα αρχείο καταγραφής αποσφαλμάτωσης για να μας βοηθήσεις να βελτιώσουμε την ποιότητα των κλήσεων.";
 
 /* Link text to open a preview of debug logs in the call quality survey. Appended to CALL_QUALITY_SURVEY_DEBUG_LOG_FOOTER */
-"CALL_QUALITY_SURVEY_DEBUG_LOG_PREVIEW_LINK" = "View debug log";
+"CALL_QUALITY_SURVEY_DEBUG_LOG_PREVIEW_LINK" = "Προβολή αρχείου καταγραφής αποσφαλμάτωσης";
 
 /* Title for the debug log sharing screen in the call quality survey */
 "CALL_QUALITY_SURVEY_DEBUG_LOG_TITLE" = "Βοήθησέ μας να βελτιωθούμε";
@@ -2291,7 +2291,7 @@
 "CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Αιτήματα & Προσκλήσεις";
 
 /* Label for 'member label' action in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBER_TAG" = "Member Label";
+"CONVERSATION_SETTINGS_MEMBER_TAG" = "Ετικέτα μέλους";
 
 /* label for 'always' option for mention notifications in conversation settings */
 "CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Να ειδοποιούμαι πάντα";
@@ -2585,10 +2585,10 @@
 "DEBUG_LOG_INFO_BUTTON" = "Πληροφορίες για αρχείο καταγραφής εντοπισμού σφαλμάτων";
 
 /* Header text displayed above the debug log preview */
-"DEBUG_LOG_PREVIEW_HEADER" = "When submitted, your log will be posted online for 30 days at a unique, unpublished URL.";
+"DEBUG_LOG_PREVIEW_HEADER" = "Όταν υποβληθεί, το αρχείο καταγραφής θα αναρτηθεί στο διαδίκτυο για 30 ημέρες, σε ένα μοναδικό και μη δημοσιευμένο σύνδεσμο URL.";
 
 /* Title for the debug log preview screen */
-"DEBUG_LOG_PREVIEW_TITLE" = "Debug Log";
+"DEBUG_LOG_PREVIEW_TITLE" = "Αρχείο καταγραφής αποσφαλμάτωσης";
 
 /* info message text in conversation view */
 "DECLINED_VIDEO_CALL" = "Απέρριψες μια βιντεοκλήση";
@@ -4994,22 +4994,22 @@
 "MEGAPHONE_WILL_REMIND_LATER" = "Θα στο θυμίσουμε αργότερα.";
 
 /* Label for an action to add a member label */
-"MEMBER_LABEL_ADD" = "Add a Member Label";
+"MEMBER_LABEL_ADD" = "Προσθήκη ετικέτας μέλους";
 
 /* Heading shown above the preview of a message bubble with the edited member label. */
-"MEMBER_LABEL_PREVIEW_HEADING" = "Preview";
+"MEMBER_LABEL_PREVIEW_HEADING" = "Προεπισκόπηση";
 
 /* Text shown in the preview message bubble when a user is editing their member label. */
-"MEMBER_LABEL_VIEW_MESSAGE_PREVIEW_TEXT" = "Hello!";
+"MEMBER_LABEL_VIEW_MESSAGE_PREVIEW_TEXT" = "Γεια σου!";
 
 /* Placeholder text in text field where user can edit their member label. */
-"MEMBER_LABEL_VIEW_PLACEHOLDER_TEXT" = "Add your label";
+"MEMBER_LABEL_VIEW_PLACEHOLDER_TEXT" = "Πρόσθεσε την ετικέτα σου";
 
 /* Subtitle for a view where users can edit and preview their member label. */
-"MEMBER_LABEL_VIEW_SUBTITLE" = "Set a member label to describe yourself or your role in this group. Member labels are only visible within this group.";
+"MEMBER_LABEL_VIEW_SUBTITLE" = "Όρισε μια ετικέτα μέλους για να περιγράψεις τον εαυτό σου ή τον ρόλο σου σε αυτήν την ομάδα. Οι ετικέτες μέλους είναι ορατές μόνο εντός αυτής της ομάδας.";
 
 /* Title for a view where users can edit and preview their member label. */
-"MEMBER_LABEL_VIEW_TITLE" = "Member Label";
+"MEMBER_LABEL_VIEW_TITLE" = "Ετικέτα μέλους";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "Αντιγραφή κειμένου μηνύματος";
@@ -5609,16 +5609,16 @@
 "NO_OTHER_GROUPS_IN_COMMON" = "Καμμία άλλη κοινή ομάδα";
 
 /* Shown in place of the text input box in a conversation when the user is no longer registered can't send messages. The embedded value is 'Re-link' (translated via NOT_LINKED_BOTTOM_RELINK), and it will be formatted as a tappable link. */
-"NOT_LINKED_BOTTOM" = "This device is no longer linked. %1$@ to continue using Signal on this device.";
+"NOT_LINKED_BOTTOM" = "Αυτή η συσκευή δεν είναι πια συνδεδεμένη. %1$@ για να συνεχίσεις να χρησιμοποιείς το Signal σε αυτήν τη συσκευή.";
 
 /* Shown in place of the text input box in a conversation when the user is no longer registered can't send messages. This value is a tappable link embedded in a larger sentence. */
-"NOT_LINKED_BOTTOM_RELINK" = "Re-link";
+"NOT_LINKED_BOTTOM_RELINK" = "Επανασύνδεση";
 
 /* Shown in place of the text input box in a conversation when the user is no longer registered can't send messages. The embedded value is 'Re-register' (translated via NOT_REGISTERED_BOTTOM_REREGISTER), and it will be formatted as a tappable link. */
-"NOT_REGISTERED_BOTTOM" = "This device is no longer registered. %1$@ to continue using Signal.";
+"NOT_REGISTERED_BOTTOM" = "Αυτή η συσκευή δεν είναι πλέον καταχωρημένη. %1$@ για να συνεχίσεις να χρησιμοποιείς το Signal.";
 
 /* Shown in place of the text input box in a conversation when the user is no longer registered can't send messages. This value is a tappable link embedded in a larger sentence. */
-"NOT_REGISTERED_BOTTOM_REREGISTER" = "Re-register";
+"NOT_REGISTERED_BOTTOM_REREGISTER" = "Επανεγγραφή";
 
 /* Label for 1:1 conversation with yourself. */
 "NOTE_TO_SELF" = "Μήνυμα σε μένα";

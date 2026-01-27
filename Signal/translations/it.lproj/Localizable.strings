@@ -203,10 +203,10 @@
 "APN_Message" = "Potresti avere nuovi messaggi";
 
 /* Shown in place of the text input box in a conversation when the app has expired and the user is no longer allowed to send messages. The embedded value is 'Update now' (translated via APP_EXPIRED_BOTTOM_UPDATE), and it will be formatted as a tappable link. */
-"APP_EXPIRED_BOTTOM" = "This version of Signal has expired. %1$@ to send and receive messages.";
+"APP_EXPIRED_BOTTOM" = "Questa versione di Signal è scaduta. %1$@ per inviare e ricevere messaggi.";
 
 /* Shown in place of the text input box in a conversation when the app has expired and the user is no longer allowed to send messages. This value is a tappable link embedded in a larger sentence. */
-"APP_EXPIRED_BOTTOM_UPDATE" = "Update now";
+"APP_EXPIRED_BOTTOM_UPDATE" = "Aggiorna ora";
 
 /* Default message for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal non riesce ad avviarsi. Invia il log di debug a support@signal.org così da permetterci di risolvere il problema.";
@@ -584,7 +584,7 @@
 "BACKUP_ONBOARDING_CONFIRM_KEY_SEE_KEY_AGAIN_BUTTON_TITLE" = "Mostra di nuovo la chiave";
 
 /* Subtitle for a view asking users to confirm their 'Recovery Key'. */
-"BACKUP_ONBOARDING_CONFIRM_KEY_SUBTITLE" = "Inserisci la chiave di ripristino che hai appena registrato";
+"BACKUP_ONBOARDING_CONFIRM_KEY_SUBTITLE" = "Inserisci la chiave di ripristino che hai appena salvato";
 
 /* Title for a view asking users to confirm their 'Recovery Key'. */
 "BACKUP_ONBOARDING_CONFIRM_KEY_TITLE" = "Conferma la tua chiave di ripristino";
@@ -644,7 +644,7 @@
 "BACKUP_RECORD_KEY_SUBTITLE" = "Questa chiave ti servirà per recuperare il tuo account e i tuoi dati. Salvala in un posto sicuro. Se la perdi, non potremo aiutarti a ripristinare il tuo account.";
 
 /* Title for a view allowing users to record their 'Recovery Key'. */
-"BACKUP_RECORD_KEY_TITLE" = "Registra la tua chiave di ripristino";
+"BACKUP_RECORD_KEY_TITLE" = "Salva la tua chiave di ripristino";
 
 /* Subtitle for a progress spinner on a modal tracking active downloading. Embeds 1:{{ the amount downloaded as a file size, e.g. 100 MB }}; 2:{{ the total amount to download as a file size, e.g. 1 GB }}; 3:{{ the amount downloaded as a percentage, e.g. 10% }}. */
 "BACKUP_RESTORE_MODAL_DOWNLOAD_PROGRESS_SUBTITLE" = "%1$@ di %2$@ (%3$@)";
@@ -758,7 +758,7 @@
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_ACTION_BUTTON_TITLE" = "Gestisci il tuo piano";
 
 /* Text describing that the user's backup plan is paid, but free for them as a tester. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_DESCRIPTION" = "Pagato (gratis per gli utenti di TestFlight)";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_FREE_FOR_TESTERS_DESCRIPTION" = "A pagamento (gratis per gli utenti di TestFlight)";
 
 /* Title for a button allowing users to renew their backup subscription on this device. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_IAP_NOT_FOUND_LOCALLY_ACTION_BUTTON_TITLE" = "Rinnova";
@@ -1388,13 +1388,13 @@
 "CALL_QUALITY_SURVEY_CUSTOM_ISSUE_PLACEHOLDER" = "Descrivi il tuo problema";
 
 /* Footer text explaining what debug logs contain in the call quality survey */
-"CALL_QUALITY_SURVEY_DEBUG_LOG_FOOTER" = "Information shared with us contains low level app information and does not include the contents of your calls.";
+"CALL_QUALITY_SURVEY_DEBUG_LOG_FOOTER" = "Le informazioni condivise con noi contengono dati di basso livello sull'app e non includono il contenuto delle tue chiamate.";
 
 /* Header text explaining the purpose of sharing debug logs in the call quality survey */
-"CALL_QUALITY_SURVEY_DEBUG_LOG_HEADER" = "Submitting will share your feedback along with diagnostic information about your call. You can optionally share a debug log to help us improve call quality.";
+"CALL_QUALITY_SURVEY_DEBUG_LOG_HEADER" = "Se procedi con l'invio, il tuo feedback verrà condiviso insieme ai dati diagnostici relativi alla tua chiamata. Se lo desideri, puoi condividere un log di debug per aiutarci a migliorare la qualità delle chiamate.";
 
 /* Link text to open a preview of debug logs in the call quality survey. Appended to CALL_QUALITY_SURVEY_DEBUG_LOG_FOOTER */
-"CALL_QUALITY_SURVEY_DEBUG_LOG_PREVIEW_LINK" = "View debug log";
+"CALL_QUALITY_SURVEY_DEBUG_LOG_PREVIEW_LINK" = "Vedi il log di debug";
 
 /* Title for the debug log sharing screen in the call quality survey */
 "CALL_QUALITY_SURVEY_DEBUG_LOG_TITLE" = "Aiutaci a migliorare";
@@ -2192,7 +2192,7 @@
 "CONVERSATION_MUTE_CONFIRMATION_OPTION_ALWAYS" = "Sempre";
 
 /* Message indicating that only administrators can send message to an announcement-only group. */
-"CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "Solo gli amministratori possono inviare messaggi a questo gruppo.";
+"CONVERSATION_PICKER_BLOCKED_BY_ANNOUNCEMENT_ONLY" = "Solo gli admin possono inviare messaggi a questo gruppo.";
 
 /* table section header for section containing groups */
 "CONVERSATION_PICKER_SECTION_GROUPS" = "Gruppi";
@@ -2228,7 +2228,7 @@
 "CONVERSATION_SETTINGS_ALL_MEDIA_HEADER" = "Tutti i media";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Scegli chi può modificare il nome del gruppo, la foto, la descrizione e il timer dei messaggi a scomparsa.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Scegli chi può modificare il nome del gruppo, la foto, la descrizione e il timer dei messaggi temporanei.";
 
 /* Footer for the 'attributes access' section in conversation settings view with pinned messages added. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER_V2" = "Scegli chi può modificare il nome del gruppo, la foto, la descrizione, i messaggi in evidenza e il timer dei messaggi temporanei.";
@@ -2240,7 +2240,7 @@
 "CONVERSATION_SETTINGS_BADGES_HEADER" = "Badge";
 
 /* Label for 'block group' action in conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_GROUP" = "Blocca gruppo";
+"CONVERSATION_SETTINGS_BLOCK_GROUP" = "Blocca il gruppo";
 
 /* Label for 'block user' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_USER" = "Blocca utente";
@@ -2267,7 +2267,7 @@
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Modifica informazioni gruppo";
 
 /* Label for button that sets 'group attributes access' to 'administrators-only'. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Solo gli amministratori";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Solo gli admin";
 
 /* Label for button that sets 'group attributes access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "Tutti i membri";
@@ -2282,7 +2282,7 @@
 "CONVERSATION_SETTINGS_GROUP_LINK" = "Link del gruppo";
 
 /* Label for 'make group admin' button in conversation settings view. */
-"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Rendi amministratore";
+"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Rendi admin";
 
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%1$@ potrà modificare questo gruppo e i suoi membri.";
@@ -2291,7 +2291,7 @@
 "CONVERSATION_SETTINGS_MEMBER_REQUESTS_AND_INVITES" = "Richieste e inviti";
 
 /* Label for 'member label' action in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBER_TAG" = "Member Label";
+"CONVERSATION_SETTINGS_MEMBER_TAG" = "Ruolo dell'utente";
 
 /* label for 'always' option for mention notifications in conversation settings */
 "CONVERSATION_SETTINGS_MENTION_MODE_AlWAYS" = "Notifica sempre";
@@ -2369,7 +2369,7 @@
 "CONVERSATION_SETTINGS_REPORT_SPAM" = "Segnala come spam";
 
 /* Label for 'revoke group admin' button in conversation settings view. */
-"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "Rimuovi dal ruolo di amministratore";
+"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "Rimuovi dal ruolo di admin";
 
 /* Format for title for 'revoke group admin' confirmation alert. Embeds {user to revoke admin status from}. */
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "Rimuovere %1$@ dal ruolo di admin del gruppo?";
@@ -2387,7 +2387,7 @@
 "CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_HEADER" = "Inviare messaggi";
 
 /* Label for button that sets 'send messages permission' for a group to 'administrators only'. */
-"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ONLY_ADMINS" = "Solo gli amministratori";
+"CONVERSATION_SETTINGS_SEND_MESSAGES_SECTION_ONLY_ADMINS" = "Solo gli admin";
 
 /* Label for 'unblock group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "Sblocca il gruppo";
@@ -2585,10 +2585,10 @@
 "DEBUG_LOG_INFO_BUTTON" = "Informazioni riguardo i log di debug";
 
 /* Header text displayed above the debug log preview */
-"DEBUG_LOG_PREVIEW_HEADER" = "When submitted, your log will be posted online for 30 days at a unique, unpublished URL.";
+"DEBUG_LOG_PREVIEW_HEADER" = "Una volta inviato, il tuo log verrà postato online per 30 giorni su un URL univoco e non pubblicato.";
 
 /* Title for the debug log preview screen */
-"DEBUG_LOG_PREVIEW_TITLE" = "Debug Log";
+"DEBUG_LOG_PREVIEW_TITLE" = "Log di debug";
 
 /* info message text in conversation view */
 "DECLINED_VIDEO_CALL" = "Hai rifiutato una videochiamata";
@@ -2786,7 +2786,7 @@
 "DEVICE_TRANSFER_TRY_AGAIN_ACTION" = "Riprova";
 
 /* table cell label in conversation settings */
-"DISAPPEARING_MESSAGES" = "Messaggi a scomparsa";
+"DISAPPEARING_MESSAGES" = "Messaggi temporanei";
 
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
 "DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "I messaggi in questa chat scompariranno dopo %1$@.";
@@ -3005,7 +3005,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_CONFIRMATION_SCREEN_TITLE" = "Conferma la donazione";
 
 /* When users make donations on a friend's behalf, a message is sent. This text tells senders that their message will disappear, if the conversation has disappearing messages enabled. Embeds {{duration}}, such as \"1 week\". */
-"DONATION_ON_BEHALF_OF_A_FRIEND_DISAPPEARING_MESSAGES_NOTICE_FORMAT" = "I messaggi a scomparsa sono stati attivati per questa chat. Il tuo messaggio legato alla donazione scomparirà tra %1$@.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_DISAPPEARING_MESSAGES_NOTICE_FORMAT" = "I messaggi temporanei sono stati attivati per questa chat. Il tuo messaggio legato alla donazione scomparirà tra %1$@.";
 
 /* Users can donate on a friend's behalf. This tells users that this will be a one-time donation. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_DESCRIPTION" = "Donazione unica";
@@ -3596,7 +3596,7 @@
 "GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "Le informazioni del gruppo possono essere cambiate da “%1$@”.";
 
 /* Description of the 'admins only' access level. */
-"GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "Solo gli amministratori";
+"GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "Solo gli admin";
 
 /* Description of the 'all users' access level. */
 "GROUP_ACCESS_LEVEL_ANY" = "Qualsiasi utente";
@@ -3620,7 +3620,7 @@
 "GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "L'appartenenza al gruppo può essere modificata da “%1$@”.";
 
 /* Message indicating that a feature can only be used by group admins. */
-"GROUP_ADMIN_ONLY_WARNING" = "Solo gli amministratori possono cambiare questa opzione.";
+"GROUP_ADMIN_ONLY_WARNING" = "Solo gli admin possono cambiare questa opzione.";
 
 /* Message body for alert explaining that a group call participant is blocked */
 "GROUP_CALL_BLOCKED_ALERT_MESSAGE" = "Non riceverai il loro audio o video e loro non riceveranno il tuo.";
@@ -3629,7 +3629,7 @@
 "GROUP_CALL_BLOCKED_ALERT_TITLE_FORMAT" = "L'utente %1$@ è bloccato";
 
 /* Message for error alert indicating that only group administrators can start calls in announcement-only groups. */
-"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE" = "Solo gli amministratori di questo gruppo possono iniziare una chiamata.";
+"GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_MESSAGE" = "Solo gli admin di questo gruppo possono iniziare una chiamata.";
 
 /* Title for error alert indicating that only group administrators can start calls in announcement-only groups. */
 "GROUP_CALL_BLOCKED_BY_ANNOUNCEMENT_ONLY_TITLE" = "Impossibile iniziare una chiamata di gruppo";
@@ -3830,22 +3830,22 @@
 "GROUP_INVITE_LINK_DISABLED_BY_REMOTE_USER_FORMAT" = "%1$@ ha disattivato il link del gruppo.";
 
 /* Message indicating that the group invite link was enabled. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "Il link del gruppo è stato attivato con l'approvazione degli amministratori.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL" = "Il link del gruppo è stato attivato con l'approvazione degli admin.";
 
 /* Message indicating that the group invite link was enabled by the local user. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "Hai attivato il link del gruppo con l'approvazione degli amministratori.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_LOCAL_USER" = "Hai attivato il link del gruppo con l'approvazione degli admin.";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%1$@ ha attivato il link del gruppo con l'approvazione degli amministratori.";
+"GROUP_INVITE_LINK_ENABLED_WITH_APPROVAL_BY_REMOTE_USER_FORMAT" = "%1$@ ha attivato il link del gruppo con l'approvazione degli admin.";
 
 /* Message indicating that the group invite link was enabled. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "Il link del gruppo è stato attivato senza l'approvazione degli amministratori.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL" = "Il link del gruppo è stato attivato senza l'approvazione degli admin.";
 
 /* Message indicating that the group invite link was enabled by the local user. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "Hai attivato il link del gruppo senza l'approvazione degli amministratori.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_LOCAL_USER" = "Hai attivato il link del gruppo senza l'approvazione degli admin.";
 
 /* Message indicating that the group invite link was enabled by a remote user. Embeds {{ user who enabled the group invite link }}. */
-"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%1$@ ha attivato il link del gruppo senza l'approvazione degli amministratori.";
+"GROUP_INVITE_LINK_ENABLED_WITHOUT_APPROVAL_BY_REMOTE_USER_FORMAT" = "%1$@ ha attivato il link del gruppo senza l'approvazione degli admin.";
 
 /* Message indicating that the group invite link was reset. */
 "GROUP_INVITE_LINK_RESET" = " Il link del gruppo è stato reimpostato.";
@@ -3857,22 +3857,22 @@
 "GROUP_INVITE_LINK_RESET_BY_REMOTE_USER_FORMAT" = "%1$@ ha reimpostato il link del gruppo.";
 
 /* Message indicating that the group invite link was set to not require approval. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "L'approvazione degli amministratori è stata disattivata per il link del gruppo.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL" = "L'approvazione degli admin è stata disattivata per il link del gruppo.";
 
 /* Message indicating that the group invite link was set to not require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Hai disattivato l'approvazione degli amministratori per il link del gruppo.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Hai disattivato l'approvazione degli admin per il link del gruppo.";
 
 /* Message indicating that the group invite link was set to not require approval by a remote user. Embeds {{ user who set the group invite link to not require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%1$@ ha disattivato l'approvazione degli amministratori per il link del gruppo.";
+"GROUP_INVITE_LINK_SET_TO_NOT_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%1$@ ha disattivato l'approvazione degli admin per il link del gruppo.";
 
 /* Message indicating that the group invite link was set to require approval. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "L'approvazione degli amministratori è stata attivata per il link del gruppo.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL" = "L'approvazione degli admin è stata attivata per il link del gruppo.";
 
 /* Message indicating that the group invite link was set to require approval by the local user. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Hai attivato l'approvazione degli amministratori per il link del gruppo.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_LOCAL_USER" = "Hai attivato l'approvazione degli admin per il link del gruppo.";
 
 /* Message indicating that the group invite link was set to require approval by a remote user. Embeds {{ user who set the group invite link to require approval }}. */
-"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%1$@ ha attivato l'approvazione degli amministratori per il link del gruppo.";
+"GROUP_INVITE_LINK_SET_TO_REQUIRE_APPROVAL_BY_REMOTE_USER_FORMAT" = "%1$@ ha attivato l'approvazione degli admin per il link del gruppo.";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the name of the member. }} */
 "GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%1$@ non possono essere aggiunti automaticamente a questo gruppo da te. Sono stati invitati a partecipare e non vedranno alcun messaggio del gruppo fino a quando non accetteranno.";
@@ -3890,13 +3890,13 @@
 "GROUP_IS_ANNOUNCEMENT_ONLY_DISABLED_BY_REMOTE_USER_FORMAT" = "%1$@ ha modificato le impostazioni del gruppo per consentire a tutti i membri di inviare messaggi.";
 
 /* Message indicating that 'announcement-only' mode was enabled. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED" = "Le impostazioni del gruppo sono state modificate per consentire solo agli amministratori di inviare messaggi.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED" = "Le impostazioni del gruppo sono state modificate per consentire solo agli admin di inviare messaggi.";
 
 /* Message indicating that 'announcement-only' mode was enabled by the local user. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_LOCAL_USER" = "Hai modificato le impostazioni del gruppo per consentire solo agli amministratori di inviare messaggi.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_LOCAL_USER" = "Hai modificato le impostazioni del gruppo per consentire solo agli admin di inviare messaggi.";
 
 /* Message indicating that 'announcement-only' mode was enabled by a remote user. Embeds {{ user who enabled 'announcement-only' mode }}. */
-"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%1$@ ha modificato le impostazioni del gruppo per consentire solo agli amministratori di inviare messaggi.";
+"GROUP_IS_ANNOUNCEMENT_ONLY_ENABLED_BY_REMOTE_USER_FORMAT" = "%1$@ ha modificato le impostazioni del gruppo per consentire solo agli admin di inviare messaggi.";
 
 /* Message text for the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_JOIN_MESSAGE" = "Vuoi unirti a questo gruppo e condividere il tuo nome e foto con le persone presenti?";
@@ -3938,7 +3938,7 @@
 "GROUP_LINK_INVALID_GROUP_INVITE_LINK_ERROR_TITLE" = "Link non valido";
 
 /* Explanation of the 'approve new group members' switch. */
-"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION" = "Richiedi a un admin di approvare i nuovi membri che si uniscono tramite il link del gruppo.";
+"GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_EXPLANATION" = "Richiedi a un admin di approvare le nuove persone che si uniscono tramite il link del gruppo.";
 
 /* Label for the 'approve new group members' switch. */
 "GROUP_LINK_PROMOTION_ALERT_APPROVE_NEW_MEMBERS_SWITCH" = "Richiedi l'approvazione dell'admin";
@@ -3959,7 +3959,7 @@
 "GROUP_LINK_PROMOTION_UPDATE" = "Invita gli amici al tuo gruppo tramite il link del gruppo";
 
 /* Description text in the 'group link QR code' view. */
-"GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "Le persone che scansioneranno questo codice potranno unirsi al tuo gruppo. Gli amministratori dovranno comunque approvare i nuovi membri se questa impostazione è attiva.";
+"GROUP_LINK_QR_CODE_VIEW_DESCRIPTION" = "Le persone che scansioneranno questo codice potranno unirsi al tuo gruppo. Gli admin dovranno comunque approvare le nuove persone se questa impostazione è attiva.";
 
 /* Label for the 'share code' button in the 'group link QR code' view. */
 "GROUP_LINK_QR_CODE_VIEW_SHARE_CODE_BUTTON" = "Condividi codice";
@@ -3977,7 +3977,7 @@
 "GROUP_LINK_VIEW_ENABLE_GROUP_LINK_SWITCH" = "Link del gruppo";
 
 /* Footer for the 'member requests' section of the 'group link' view. */
-"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "Richiedi a un admin di approvare i nuovi membri che si uniscono tramite il link del gruppo.";
+"GROUP_LINK_VIEW_MEMBER_REQUESTS_SECTION_FOOTER" = "Richiedi a un admin di approvare le nuove persone che si uniscono tramite il link del gruppo.";
 
 /* Label for the 'reset link' button in the 'group link' view. */
 "GROUP_LINK_VIEW_RESET_LINK" = "Reimposta link";
@@ -4007,10 +4007,10 @@
 "GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ ti ha aggiunto al gruppo.";
 
 /* Message indicating that the local user was granted administrator role. */
-"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR" = "Ora sei un amministratore.";
+"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR" = "Ora sei un admin.";
 
 /* Message indicating that the local user was granted administrator role by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ ti ha reso un amministratore.";
+"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ ti ha reso un admin.";
 
 /* Message indicating that the local user accepted an invite to the group. */
 "GROUP_LOCAL_USER_INVITE_ACCEPTED" = "Hai accettato un invito al gruppo.";
@@ -4064,16 +4064,16 @@
 "GROUP_LOCAL_USER_REQUESTED_TO_JOIN_TO_THE_GROUP" = "Hai inviato una richiesta di unirti al gruppo.";
 
 /* Message indicating that the local user had their administrator role revoked. */
-"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR" = "I tuoi privilegi di amministrazione sono stati revocati.";
+"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR" = "I tuoi privilegi di admin sono stati revocati.";
 
 /* Message indicating that the local user had their administrator role revoked by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ ha revocato i tuoi privilegi di amministrazione.";
+"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ ha revocato i tuoi privilegi di admin.";
 
 /* Message indicating that the local user was added to the group. */
 "GROUP_LOCAL_USER_WAS_ADDED_TO_THE_GROUP" = "Un membro ti ha aggiunto al gruppo.";
 
 /* Label indicating that a group member is an admin. */
-"GROUP_MEMBER_ADMIN_INDICATOR" = "Amministratore";
+"GROUP_MEMBER_ADMIN_INDICATOR" = "Admin";
 
 /* Label indicating that a new group has no other members. */
 "GROUP_MEMBERS_NO_OTHER_MEMBERS" = "Puoi aggiungere o invitare amici dopo aver creato questo gruppo.";
@@ -4130,13 +4130,13 @@
 "GROUP_REMOTE_USER_DECLINED_INVITE_FROM_LOCAL_USER_FORMAT" = "%1$@ ha rifiutato il tuo invito al gruppo.";
 
 /* Message indicating that a remote user was granted administrator role. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR" = "%1$@ è ora un amministratore";
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR" = "%1$@ è ora un admin";
 
 /* Message indicating that a remote user was granted administrator role by local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_LOCAL_USER" = "Hai reso %1$@ un amministratore.";
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_LOCAL_USER" = "Hai reso %1$@ un admin.";
 
 /* Message indicating that a remote user was granted administrator role by another user. Embeds {{ %1$@ user who granted, %2$@ user who was granted administrator role}}. */
-"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ ha reso %2$@ un amministratore.";
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ ha reso %2$@ un admin.";
 
 /* Message indicating that a remote user's invite was revoked by the local user. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_INVITE_REVOKED_BY_LOCAL_USER_FORMAT" = "L'invito al gruppo è stato revocato per %1$@.";
@@ -4187,13 +4187,13 @@
 "GROUP_REMOTE_USER_REQUESTED_TO_JOIN_THE_GROUP_FORMAT" = "%1$@ ha richiesto di unirsi tramite il link del gruppo.";
 
 /* Message indicating that a remote user had their administrator role revoked. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "A %1$@ sono stati revocati i privilegi di amministrazione.";
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "A %1$@ sono stati revocati i privilegi di admin.";
 
 /* Message indicating that a remote user had their administrator role revoked by local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_LOCAL_USER" = "Hai revocato i privilegi di amministrazione a %1$@.";
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_LOCAL_USER" = "Hai revocato i privilegi di admin a %1$@.";
 
 /* Message indicating that a remote user had their administrator role revoked by another user. Embeds {{ %1$@ user who revoked, %2$@ user who was granted administrator role}}. */
-"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ ha revocato i privilegi di amministrazione a %2$@.";
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ ha revocato i privilegi di admin a %2$@.";
 
 /* Label for the 'member requests' mode of the 'group requests and invites' view. */
 "GROUP_REQUESTS_AND_INVITES_VIEW_MEMBER_REQUESTS_MODE" = "Richieste";
@@ -4298,13 +4298,13 @@
 "GROUP_YOU_LEFT" = "Hai abbandonato il gruppo.";
 
 /* Label for group administrators in the 'announcement-only' group UI. */
-"GROUPS_ANNOUNCEMENT_ONLY_ADMINISTRATORS" = "amministratori";
+"GROUPS_ANNOUNCEMENT_ONLY_ADMINISTRATORS" = "admin";
 
 /* Format for indicator that only group administrators can starts a group call and sends messages to an 'announcement-only' group. Embeds {{ a \"admins\" link. }}. */
 "GROUPS_ANNOUNCEMENT_ONLY_BLOCKING_SEND_OR_CALL_FORMAT" = "Solo gli %1$@ possono inviare messaggi";
 
 /* Label indicating the user can contact a group administrators of an 'announcement-only' group. */
-"GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN" = "Invia un messaggio a un amministratore";
+"GROUPS_ANNOUNCEMENT_ONLY_CONTACT_ADMIN" = "Invia un messaggio a un admin";
 
 /* Label for button that lets the user block a request to join the group. */
 "GROUPS_BLOCK_REQUEST_BUTTON" = "Blocca richiesta";
@@ -4328,10 +4328,10 @@
 "GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "Impossibile accettare l'invito.";
 
 /* Label for 'block group' button in group invite view. */
-"GROUPS_INVITE_BLOCK_GROUP" = "Blocca gruppo";
+"GROUPS_INVITE_BLOCK_GROUP" = "Blocca il gruppo";
 
 /* Label for 'block group and inviter' button in group invite view. Embeds {{name of user who invited you}}. */
-"GROUPS_INVITE_BLOCK_GROUP_AND_INVITER_FORMAT" = "Blocca gruppo e %1$@";
+"GROUPS_INVITE_BLOCK_GROUP_AND_INVITER_FORMAT" = "Blocca il gruppo e %1$@";
 
 /* Label for 'block inviter' button in group invite view. Embeds {{name of user who invited you}}. */
 "GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "Blocca %1$@";
@@ -4346,10 +4346,10 @@
 "GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "Prima di abbandonarlo, scegli un nuovo admin per questo gruppo.";
 
 /* Title for the 'replace group admin' alert. */
-"GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "Scegli nuovo amministratore";
+"GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "Scegli un nuovo admin";
 
 /* Label for the 'replace group admin' button. */
-"GROUPS_REPLACE_ADMIN_BUTTON" = "Scegli un nuovo amministratore";
+"GROUPS_REPLACE_ADMIN_BUTTON" = "Scegli un nuovo admin";
 
 /* Title for alert warning the user that they've reached the recommended limit on how many members can be in a group. */
 "GROUPS_TOO_MANY_MEMBERS_ALERT_TITLE" = "Limite di membri consigliato raggiunto";
@@ -4712,7 +4712,7 @@
 "LEGACY_GROUP_UNSUPPORTED_MESSAGE" = "Questo è un Gruppo Legacy e non è più supportato. Per proseguire questa conversazione, devi creare un nuovo gruppo. %1$@";
 
 /* Text in a sheet explaining details about 'New Groups'. */
-"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_BODY" = "I Nuovi Gruppi hanno funzionalità come @menzioni e amministratori del gruppo e supporteranno più funzionalità in futuro.\n\nTutta la cronologia dei messaggi e i contenuti multimediali sono stati conservati da prima dell'aggiornamento.";
+"LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_BODY" = "I Nuovi Gruppi hanno funzioni come @menzioni e admin del gruppo e supporteranno più funzioni in futuro.\n\nTutta la cronologia dei messaggi e i contenuti multimediali sono stati conservati da prima dell'aggiornamento.";
 
 /* Title for a sheet explaining details about 'New Groups'. */
 "LEGACY_GROUP_WHAT_ARE_NEW_GROUPS_TITLE" = "Cosa sono i Nuovi Gruppi?";
@@ -4994,22 +4994,22 @@
 "MEGAPHONE_WILL_REMIND_LATER" = "Te lo ricorderemo più tardi.";
 
 /* Label for an action to add a member label */
-"MEMBER_LABEL_ADD" = "Add a Member Label";
+"MEMBER_LABEL_ADD" = "Aggiungi un ruolo dell'utente";
 
 /* Heading shown above the preview of a message bubble with the edited member label. */
-"MEMBER_LABEL_PREVIEW_HEADING" = "Preview";
+"MEMBER_LABEL_PREVIEW_HEADING" = "Anteprima";
 
 /* Text shown in the preview message bubble when a user is editing their member label. */
-"MEMBER_LABEL_VIEW_MESSAGE_PREVIEW_TEXT" = "Hello!";
+"MEMBER_LABEL_VIEW_MESSAGE_PREVIEW_TEXT" = "Ciao!";
 
 /* Placeholder text in text field where user can edit their member label. */
-"MEMBER_LABEL_VIEW_PLACEHOLDER_TEXT" = "Add your label";
+"MEMBER_LABEL_VIEW_PLACEHOLDER_TEXT" = "Aggiungi un ruolo";
 
 /* Subtitle for a view where users can edit and preview their member label. */
-"MEMBER_LABEL_VIEW_SUBTITLE" = "Set a member label to describe yourself or your role in this group. Member labels are only visible within this group.";
+"MEMBER_LABEL_VIEW_SUBTITLE" = "Imposta un ruolo dell'utente per descriverti o specificare il tuo ruolo in questo gruppo. I ruoli sono visibili solo all'interno di questo gruppo.";
 
 /* Title for a view where users can edit and preview their member label. */
-"MEMBER_LABEL_VIEW_TITLE" = "Member Label";
+"MEMBER_LABEL_VIEW_TITLE" = "Ruolo dell'utente";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "Copia testo del messaggio";
@@ -5303,7 +5303,7 @@
 "MESSAGE_REQUESTS_CANCEL_REQUEST_CONFIRM_TITLE" = "Vuoi annullare la tua richiesta di unirti al gruppo?";
 
 /* Indicator that you have requested to join this group. */
-"MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "La tua richiesta di unirti è stata inviata agli amministratori del gruppo. Riceverai una notifica quando interverranno.";
+"MESSAGE_REQUESTS_CONVERSATION_REQUEST_INDICATOR" = "La tua richiesta di unirti è stata inviata agli admin del gruppo. Riceverai una notifica quando interverranno.";
 
 /* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "Consegnato";
@@ -5609,16 +5609,16 @@
 "NO_OTHER_GROUPS_IN_COMMON" = "Nessun altro gruppo in comune.";
 
 /* Shown in place of the text input box in a conversation when the user is no longer registered can't send messages. The embedded value is 'Re-link' (translated via NOT_LINKED_BOTTOM_RELINK), and it will be formatted as a tappable link. */
-"NOT_LINKED_BOTTOM" = "This device is no longer linked. %1$@ to continue using Signal on this device.";
+"NOT_LINKED_BOTTOM" = "Questo dispositivo non è più associato. %1$@ per continuare a usare Signal su questo dispositivo.";
 
 /* Shown in place of the text input box in a conversation when the user is no longer registered can't send messages. This value is a tappable link embedded in a larger sentence. */
-"NOT_LINKED_BOTTOM_RELINK" = "Re-link";
+"NOT_LINKED_BOTTOM_RELINK" = "Riassocia";
 
 /* Shown in place of the text input box in a conversation when the user is no longer registered can't send messages. The embedded value is 'Re-register' (translated via NOT_REGISTERED_BOTTOM_REREGISTER), and it will be formatted as a tappable link. */
-"NOT_REGISTERED_BOTTOM" = "This device is no longer registered. %1$@ to continue using Signal.";
+"NOT_REGISTERED_BOTTOM" = "Questo dispositivo non è più registrato. %1$@ per continuare a usare Signal.";
 
 /* Shown in place of the text input box in a conversation when the user is no longer registered can't send messages. This value is a tappable link embedded in a larger sentence. */
-"NOT_REGISTERED_BOTTOM_REREGISTER" = "Re-register";
+"NOT_REGISTERED_BOTTOM_REREGISTER" = "Registra di nuovo";
 
 /* Label for 1:1 conversation with yourself. */
 "NOTE_TO_SELF" = "Note personali";
@@ -6698,7 +6698,7 @@
 "PINNED_MESSAGES_UNPIN" = "Rimuovi elemento in evidenza";
 
 /* Title for a button to unpin all pinned messages. */
-"PINNED_MESSAGES_UNPIN_ALL" = "RImuovi tutti i messaggi in evidenza";
+"PINNED_MESSAGES_UNPIN_ALL" = "RImuovi i messaggi in evidenza";
 
 /* The title for pinned conversation section on the conversation list */
 "PINNED_SECTION_TITLE" = "In evidenza";
@@ -7253,7 +7253,7 @@
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "Prefisso telefonico internazionale";
 
 /* Description for the screen that allows users to enter their recovery key. */
-"REGISTRATION_ENTER_BACKUP_KEY_DESCRIPTION" = "La chiave di backup è un codice di 64 caratteri che ti consente di ripristinare il tuo account e i relativi dati.";
+"REGISTRATION_ENTER_BACKUP_KEY_DESCRIPTION" = "La tua chiave di ripristino è un codice di 64 caratteri necessario per ripristinare il tuo account e i relativi dati.";
 
 /* Title for the screen that allows users to enter their recovery key. */
 "REGISTRATION_ENTER_BACKUP_KEY_TITLE" = "Inserisci la tua chiave di ripristino";
@@ -7448,7 +7448,7 @@
 "REMOVE_PREVIEW" = "Rimuovi anteprima";
 
 /* The title for the 'replace group admin' view. */
-"REPLACE_ADMIN_VIEW_TITLE" = "Scegli nuovo amministratore";
+"REPLACE_ADMIN_VIEW_TITLE" = "Scegli un nuovo admin";
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "Registra nuovamente le notifiche push";
@@ -8075,7 +8075,7 @@
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_SECONDARY_TITLE" = "Confermi di voler eliminare tutta la cronologia delle chat?";
 
 /* Label for the 'disappearing messages' privacy settings. */
-"SETTINGS_DISAPPEARING_MESSAGES" = "Messaggi a scomparsa";
+"SETTINGS_DISAPPEARING_MESSAGES" = "Messaggi temporanei";
 
 /* Explanation for the 'disappearing messages' privacy settings. */
 "SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Imposta un timer predefinito per la scomparsa dei messaggi per tutte le nuove chat avviate da te.";
@@ -9530,7 +9530,7 @@
 "UNKNOWN_USER" = "Sconosciuto";
 
 /* Info Message when an unknown user disabled disappearing messages. */
-"UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "I messaggi a scomparsa sono stati disabilitati.";
+"UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "I messaggi temporanei sono stati disabilitati.";
 
 /* Info Message when an unknown user enabled disappearing messages. Embeds {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
 "UNKNOWN_USER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Il tempo di scomparsa dei messaggi è stato impostato a %1$@.";
@@ -9566,7 +9566,7 @@
 "UNPINNED_SECTION_TITLE" = "Chat";
 
 /* Pressing this button marks a thread as unread */
-"UNREAD_ACTION" = "Non letta";
+"UNREAD_ACTION" = "Da leggere";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_ATTACHMENT" = "Ricevuto un tipo di allegato non supportato.";
