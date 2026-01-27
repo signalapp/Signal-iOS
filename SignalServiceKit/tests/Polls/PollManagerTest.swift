@@ -353,22 +353,6 @@ struct PollManagerTest {
             #expect(pancakesOption!.acis.contains(voterAci))
         }
 
-        // Voting with multiple options should fail to update votes
-        let pollVoteProtoMultiple = buildPollVoteProto(
-            pollAuthor: pollAuthorAci,
-            targetSentTimestamp: outgoingMessage.timestamp,
-            optionIndexes: [0, 1],
-            voteCount: 3,
-        )
-
-        _ = try db.write { tx in
-            try pollMessageManager.processIncomingPollVote(
-                voteAuthor: voterAci,
-                pollVoteProto: pollVoteProtoMultiple,
-                transaction: tx,
-            )
-        }
-
         try db.read { tx in
             let owsPoll = try pollMessageManager.buildPoll(message: outgoingMessage, transaction: tx)
             let wafflesOption = owsPoll!.optionForIndex(optionIndex: 1)
@@ -484,22 +468,6 @@ struct PollManagerTest {
             let wafflesOption = owsPoll!.optionForIndex(optionIndex: 1)
             #expect(wafflesOption!.acis.contains(waffleVoterAci))
             #expect(wafflesOption!.acis.contains(pancakeVoterAci))
-        }
-
-        // Voting with multiple options should fail to update votes
-        let pollVoteProtoMultiple = buildPollVoteProto(
-            pollAuthor: pollAuthorAci,
-            targetSentTimestamp: incomingMessage.timestamp,
-            optionIndexes: [0, 1],
-            voteCount: 3,
-        )
-
-        _ = try db.write { tx in
-            try pollMessageManager.processIncomingPollVote(
-                voteAuthor: pancakeVoterAci,
-                pollVoteProto: pollVoteProtoMultiple,
-                transaction: tx,
-            )
         }
 
         try db.read { tx in
@@ -948,12 +916,14 @@ struct PollManagerTest {
             voteCount: 1,
         )
 
-        _ = try db.write { tx in
-            try pollMessageManager.processIncomingPollVote(
-                voteAuthor: aci,
-                pollVoteProto: proto,
-                transaction: tx,
-            )
+        #expect(throws: OWSGenericError.self) {
+            _ = try db.write { tx in
+                try pollMessageManager.processIncomingPollVote(
+                    voteAuthor: aci,
+                    pollVoteProto: proto,
+                    transaction: tx,
+                )
+            }
         }
 
         try db.read { tx in

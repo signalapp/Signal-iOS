@@ -183,6 +183,7 @@ public class PollStore {
             try checkValidVote(
                 poll: poll,
                 optionsVoted: optionsVoted,
+                voteCount: voteCount,
                 transaction: transaction,
             )
         else {
@@ -254,16 +255,20 @@ public class PollStore {
     private func checkValidVote(
         poll: PollRecord,
         optionsVoted: [OWSPoll.OptionIndex],
+        voteCount: UInt32,
         transaction: DBReadTransaction,
     ) throws -> Bool {
         guard !poll.isEnded else {
             Logger.error("Poll has ended, dropping vote")
-            return false
+            throw OWSGenericError("Poll has ended, dropping vote")
         }
 
         guard optionsVoted.count <= 1 || poll.allowsMultiSelect else {
-            Logger.error("Poll doesn't support multi-select but multiple options were voted for")
-            return false
+            throw OWSAssertionError("Poll doesn't support multi-select but multiple options were voted for")
+        }
+
+        if voteCount > Int32.max {
+            throw OWSAssertionError("Vote count does not fit in Int32!")
         }
 
         return true
