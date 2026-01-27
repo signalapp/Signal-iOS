@@ -64,6 +64,18 @@ public class PinnedMessageManager {
         }
     }
 
+    private func validateInputsForPinMessage(
+        pinMessageProto: SSKProtoDataMessagePinMessage,
+    ) throws {
+        guard SDS.fitsInInt64(pinMessageProto.targetSentTimestamp) else {
+            throw OWSAssertionError("Invalid timestamp.")
+        }
+
+        guard pinMessageProto.pinDurationSeconds < Int32.max else {
+            throw OWSAssertionError("Invalid timestamp.")
+        }
+    }
+
     public func pinMessage(
         pinMessageProto: SSKProtoDataMessagePinMessage,
         pinAuthor: Aci,
@@ -73,6 +85,8 @@ public class PinnedMessageManager {
         expireTimerVersion: UInt32?,
         transaction: DBWriteTransaction,
     ) throws {
+        try validateInputsForPinMessage(pinMessageProto: pinMessageProto)
+
         let pinReceivedAtTimestamp = dateProvider().ows_millisecondsSince1970
 
         guard let localAci = accountManager.localIdentifiers(tx: transaction)?.aci else {
@@ -168,6 +182,10 @@ public class PinnedMessageManager {
         unpinMessageProto: SSKProtoDataMessageUnpinMessage,
         transaction: DBWriteTransaction,
     ) throws -> TSInteraction {
+        guard SDS.fitsInInt64(unpinMessageProto.targetSentTimestamp) else {
+            throw OWSAssertionError("Invalid timestamp.")
+        }
+
         guard let localAci = accountManager.localIdentifiers(tx: transaction)?.aci else {
             throw OWSAssertionError("User not registered")
         }
