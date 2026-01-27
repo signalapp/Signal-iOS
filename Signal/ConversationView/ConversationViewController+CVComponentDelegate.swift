@@ -1375,9 +1375,14 @@ extension ConversationViewController: CVComponentDelegate {
     }
 
     public func didTapVoteOnPoll(poll: OWSPoll, optionIndex: UInt32, isUnvote: Bool) {
-        guard let groupThread = self.thread as? TSGroupThread else {
+        guard
+            let groupThread = self.thread as? TSGroupThread,
+            !threadViewModel.hasPendingMessageRequest,
+            groupThread.groupModel.groupMembership.isLocalUserFullMember
+        else {
             return
         }
+
         do {
             try DependenciesBridge.shared.db.write { tx in
                 let targetPoll = DependenciesBridge.shared.interactionStore.fetchInteraction(

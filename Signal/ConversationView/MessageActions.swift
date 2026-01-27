@@ -202,19 +202,17 @@ enum MessageActionBuilder {
         itemViewModel: CVItemViewModelImpl,
         delegate: MessageActionsDelegate,
     ) -> MessageAction? {
+        let db = DependenciesBridge.shared.db
+
         guard BuildFlags.PinnedMessages.send else {
             return nil
         }
 
-        if
-            let groupThread = itemViewModel.thread as? TSGroupThread,
-            let groupModel = groupThread.groupModel as? TSGroupModelV2,
-            let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci
-        {
-            if groupModel.access.attributes == .administrator, !groupThread.groupModel.groupMembership.isFullMemberAndAdministrator(localAci) {
-                Logger.info("Sender does not have permissions to pin/unpin message in group")
-                return nil
-            }
+        guard
+            let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci,
+            db.read(block: { tx in itemViewModel.thread.canUserEditPinnedMessages(aci: localAci, tx: tx) })
+        else {
+            return nil
         }
 
         guard

@@ -326,15 +326,31 @@ extension TSThread {
         }
     }
 
-    public func canUserEditPinnedMessages(aci: Aci) -> Bool {
+    public func canUserEditPinnedMessages(aci: Aci, tx: DBReadTransaction) -> Bool {
+        guard !hasPendingMessageRequest(transaction: tx) else {
+            return false
+        }
+
         guard
-            let groupThread = self as? TSGroupThread,
-            let groupModel = groupThread.groupModel as? TSGroupModelV2
+            let groupThread = self as? TSGroupThread
         else {
-            // Not a group thread, so no access to check.
+            // Not a group thread, so no additional access to check.
             return true
         }
 
-        return groupModel.access.attributes != .administrator || groupThread.groupModel.groupMembership.isFullMemberAndAdministrator(aci)
+        guard
+            groupThread.groupModel.groupMembership.isFullMember(aci),
+            let groupModel = groupThread.groupModel as? TSGroupModelV2
+        else {
+            return false
+        }
+
+        // Admins are good to pin.
+        if groupModel.groupMembership.isFullMemberAndAdministrator(aci) {
+            return true
+        }
+
+        // User is not an admin. Can't pin if its announcements-only group, or edit group is admin only.
+        return groupModel.access.attributes != .administrator && !groupModel.isAnnouncementsOnly
     }
 }

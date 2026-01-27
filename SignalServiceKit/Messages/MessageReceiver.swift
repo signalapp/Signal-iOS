@@ -1385,7 +1385,7 @@ public final class MessageReceiver {
 
         if
             BuildFlags.PinnedMessages.receive,
-            thread.canUserEditPinnedMessages(aci: envelope.sourceAci)
+            thread.canUserEditPinnedMessages(aci: envelope.sourceAci, tx: tx)
         {
             if let pinMessage = dataMessage.pinMessage {
                 do {
