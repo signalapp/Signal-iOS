@@ -197,7 +197,17 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
             let referencedAttachments = attachmentStore.fetchReferencedAttachmentsOwnedByMessage(
                 messageRowId: messageRowId,
                 tx: context.tx,
-            )
+            ).filter {
+                // There was a bug that resulted in invalid quoted-reply attachments being created
+                // with the voiceMessage rendering flag. Filter them out.
+                if
+                    case .quotedReplyAttachment = $0.reference.owner.id,
+                    $0.reference.renderingFlag == .voiceMessage
+                {
+                    return false
+                }
+                return true
+            }
 
             let grouped = Dictionary(grouping: referencedAttachments, by: \.reference.owner.id)
 

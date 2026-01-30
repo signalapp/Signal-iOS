@@ -289,7 +289,10 @@ public class SentMessageTranscriptReceiverImpl: SentMessageTranscriptReceiver {
                     )
                 }
 
-                if let quotedReplyAttachmentDataSource = messageParams.validatedQuotedReply?.thumbnailDataSource {
+                if
+                    let quotedReplyAttachmentDataSource = messageParams.validatedQuotedReply?.thumbnailDataSource,
+                    MimeTypeUtil.isSupportedVisualMediaMimeType(quotedReplyAttachmentDataSource.originalAttachmentMimeType)
+                {
                     try attachmentManager.createQuotedReplyMessageThumbnail(
                         from: quotedReplyAttachmentDataSource,
                         owningMessageAttachmentBuilder: .init(
