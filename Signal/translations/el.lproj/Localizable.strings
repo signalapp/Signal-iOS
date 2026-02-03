@@ -2,7 +2,7 @@
 "AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Όχι τώρα";
 
 /* Footer for the 'about' help section. For non-English languages, exclude the word '501c3'. */
-"ABOUT_SECTION_FOOTER" = "Copyright Signal Messenger\nLicensed under the AGPLv3\nSignal is a 501c3 nonprofit";
+"ABOUT_SECTION_FOOTER" = "Πνευματική ιδιοκτησία Signal Messenger\nΥπό την άδεια AGPLv3\nΤο Signal είναι ένας μη κερδοσκοπικός οργανισμός.";
 
 /* Title for the 'about' help section */
 "ABOUT_SECTION_TITLE" = "Σχετικά με το Signal";
@@ -1394,7 +1394,7 @@
 "CALL_QUALITY_SURVEY_DEBUG_LOG_FOOTER" = "Οι πληροφορίες που κοινοποιούνται σε εμάς περιέχουν πληροφορίες χαμηλού επιπέδου της εφαρμογής και δεν περιλαμβάνουν το περιεχόμενο των κλήσεών σου.";
 
 /* Header text explaining the purpose of sharing debug logs in the call quality survey. The text inside the <link> tags is tappable for viewing the diagnostic information. */
-"CALL_QUALITY_SURVEY_DEBUG_LOG_HEADER" = "Submitting will share your feedback along with <link>diagnostic information about your call</link>. You can optionally share a debug log to help us improve call quality.";
+"CALL_QUALITY_SURVEY_DEBUG_LOG_HEADER" = "Με την υποβολή θα μοιραστείς τα σχόλιά σου μαζί με <link>διαγνωστικές πληροφορίες σχετικά με την κλήση σου</link>. Μπορείς προαιρετικά να κοινοποιήσεις ένα αρχείο καταγραφής αποσφαλμάτωσης για να μας βοηθήσεις να βελτιώσουμε την ποιότητα των κλήσεων.";
 
 /* Link text to open a preview of debug logs in the call quality survey. Appended to CALL_QUALITY_SURVEY_DEBUG_LOG_FOOTER */
 "CALL_QUALITY_SURVEY_DEBUG_LOG_PREVIEW_LINK" = "Προβολή αρχείου καταγραφής αποσφαλμάτωσης";
@@ -1406,7 +1406,7 @@
 "CALL_QUALITY_SURVEY_DEBUG_LOG_TOGGLE" = "Κοινή χρήση αρχείου καταγραφής αποσφαλμάτωσης";
 
 /* Title for preview of the call diagnostic info that will be sent with the survey */
-"CALL_QUALITY_SURVEY_DIAGNOSTICS_TITLE" = "Diagnostic Information";
+"CALL_QUALITY_SURVEY_DIAGNOSTICS_TITLE" = "Πληροφορίες διαγνωστικών";
 
 /* Button label for indicating the call did not have issues in the call quality survey */
 "CALL_QUALITY_SURVEY_GREAT_BUTTON" = "Τέλεια";
@@ -3071,16 +3071,16 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_YOU_RECEIVED_A_BADGE_FORMAT" = "Ο/Η %1$@ έκανε δωρεά στη Signal εκ μέρους σου! Δείξε την υποστήριξή σου για τη Signal στο προφίλ σου.";
 
 /* Body text for a sheet discussing donating to Signal. */
-"DONATION_READ_MORE_SHEET_BODY" = "As an independent nonprofit, Signal is committed to private messaging and calls. No ads, no trackers, no surveillance. Donate today to support Signal.";
+"DONATION_READ_MORE_SHEET_BODY" = "Ως ανεξάρτητος μη κερδοσκοπικός οργανισμός, το Signal έχει δεσμευτεί για ιδιωτικά μηνύματα και κλήσεις. Χωρίς διαφημίσεις, παρακολούθηση, επιτήρηση. Κάνε σήμερα μια δωρεά για να στηρίξεις το Signal.";
 
 /* Bullet point for a sheet discussing donating to Signal. */
-"DONATION_READ_MORE_SHEET_BULLET_1" = "Get an optional badge on your profile when you donate";
+"DONATION_READ_MORE_SHEET_BULLET_1" = "Απόκτησε ένα προαιρετικό σήμα στο προφίλ σου όταν κάνεις δωρεά";
 
 /* Bullet point for a sheet discussing donating to Signal. */
-"DONATION_READ_MORE_SHEET_BULLET_2" = "Your privacy is our mission";
+"DONATION_READ_MORE_SHEET_BULLET_2" = "Η ιδιωτικότητά σου είναι η αποστολή μας";
 
 /* Bullet point for a sheet discussing donating to Signal. For non-English languages, skip the word 501c3, and skip the language about US donations being tax deductible. */
-"DONATION_READ_MORE_SHEET_BULLET_3" = "Signal is a 501c3 nonprofit. US donations are tax deductible.";
+"DONATION_READ_MORE_SHEET_BULLET_3" = "Το Signal είναι ένας μη κερδοσκοπικός οργανισμός.";
 
 /* Section title for donation amount on receipts */
 "DONATION_RECEIPT_AMOUNT" = "Ποσό";
@@ -3131,13 +3131,13 @@
 "DONATION_SCREEN_DONATE_BUTTON" = "Δωρεά";
 
 /* On donation screens, a small amount of information text is shown. This is the subtitle for that text. */
-"DONATION_SCREENS_HEADER_DESCRIPTION" = "Donate to support private messaging. Keep Signal independent and ad-free.";
+"DONATION_SCREENS_HEADER_DESCRIPTION" = "Κάνε μια δωρεά για να υποστηρίξεις την ιδιωτική ανταλλαγή μηνυμάτων. Βοήθησε να διατηρήσουμε το Signal ανεξάρτητο και χωρίς διαφημίσεις.";
 
 /* On donation screens, a small amount of information text is shown. Users can click this link to learn more information. */
 "DONATION_SCREENS_HEADER_READ_MORE" = "Δες περισσότερα";
 
 /* On donation screens, a small amount of information text is shown. This is the title for that text. */
-"DONATION_SCREENS_HEADER_TITLE" = "Proudly Nonprofit";
+"DONATION_SCREENS_HEADER_TITLE" = "Με υπερηφάνεια, μη κερδοσκοπικός οργανισμός";
 
 /* Button title confirming the user wants to begin a new donation. */
 "DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_DONATE_ACTION" = "Δωρεά";
@@ -3548,19 +3548,19 @@
 "GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "Νέο μήνυμα!";
 
 /* Title for the 'Get Started' banner */
-"GET_STARTED_BANNER_TITLE" = "Get Started";
+"GET_STARTED_BANNER_TITLE" = "Ξεκίνα";
 
 /* 'Get Started' button direction users to avatar builder */
 "GET_STARTED_CARD_AVATAR_BUILDER" = "Βάλε φώτο";
 
 /* 'Get Started' button directing users to Chat Color settings */
-"GET_STARTED_CARD_CHAT_COLOR" = "Chat Color";
+"GET_STARTED_CARD_CHAT_COLOR" = "Χρώμα συνομιλίας";
 
 /* 'Get Started' button directing users to invite friends */
-"GET_STARTED_CARD_INVITE_FRIENDS" = "Invite Friends";
+"GET_STARTED_CARD_INVITE_FRIENDS" = "Πρόσκληση φίλων";
 
 /* 'Get Started' button directing users to create a group */
-"GET_STARTED_CARD_NEW_GROUP" = "New Group";
+"GET_STARTED_CARD_NEW_GROUP" = "Νέα ομάδα";
 
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "Αποτυχία λήψης του ζητούμενου GIF. Έλεγξε τη σύνδεση στο διαδίκτυο.";
@@ -5867,7 +5867,7 @@
 "ONBOARDING_SPLASH_HAVE_OLD_DEVICE_TITLE" = "Έχω το παλιό μου τηλέφωνο";
 
 /* Text indicating Signal is a nonprofit on the 'onboarding splash' view. For non-English languages, exclude the word '501c3'. */
-"ONBOARDING_SPLASH_NONPROFIT" = "Signal is a 501c3 nonprofit";
+"ONBOARDING_SPLASH_NONPROFIT" = "Το Signal είναι ένας μη κερδοσκοπικός οργανισμός";
 
 /* Button for restoring or transferring account in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_RESTORE_OR_TRANSFER_BUTTON_TITLE" = "Επαναφορά ή μεταφορά λογαριασμού";

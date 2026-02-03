@@ -2,7 +2,7 @@
 "AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "나중에";
 
 /* Footer for the 'about' help section. For non-English languages, exclude the word '501c3'. */
-"ABOUT_SECTION_FOOTER" = "Copyright Signal Messenger\nLicensed under the AGPLv3\nSignal is a 501c3 nonprofit";
+"ABOUT_SECTION_FOOTER" = "Signal Messenger 저작권\nAGPLv3 라이선스로 공개\nSignal은 비영리 단체입니다";
 
 /* Title for the 'about' help section */
 "ABOUT_SECTION_TITLE" = "Signal 소개";
@@ -146,10 +146,10 @@
 "ALERT_SAVE" = "저장";
 
 /* Message for UI warning about an unknown contact thread. */
-"ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE" = "해당 사용자와 공유하는 그룹이 없습니다. 원치 않는 메시지를 피하기 위해 수락하기 전에 요청을 주의 깊게 검토하세요.";
+"ALERT_UNKNOWN_THREAD_WARNING_CONTACT_MESSAGE" = "이 사용자와 함께 소속된 그룹이 없습니다. 원치 않는 메시지를 받지 않도록, 수락하기 전에 요청 내용을 꼼꼼히 확인하세요.";
 
 /* Message for UI warning about an unknown group thread. */
-"ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE" = "이 그룹과 공통된 멤버가 없습니다. 원치 않는 메시지를 피하기 위해 수락하기 전에 요청을 주의 깊게 검토하세요.";
+"ALERT_UNKNOWN_THREAD_WARNING_GROUP_MESSAGE" = "이 그룹에는 공통으로 알고 있는 멤버가 없습니다. 원치 않는 메시지를 받지 않도록, 수락하기 전에 요청 내용을 꼼꼼히 확인하세요.";
 
 /* Label for button to learn more about message requests. */
 "ALERT_UNKNOWN_THREAD_WARNING_LEARN_MORE" = "메시지 요청 정보";
@@ -212,7 +212,7 @@
 "APP_EXPIRED_BOTTOM_UPDATE" = "지금 업데이트";
 
 /* Default message for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal 시작에 실패했습니다. 문제 해결을 위해 디버그 로그를 support@signal.org로 보내주세요.";
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal을 시작할 수 없습니다. 문제 해결을 위해 디버그 로그를 support@signal.org로 보내주세요.";
 
 /* Button to try launching the app even though the last launch failed */
 "APP_LAUNCH_FAILURE_CONTINUE" = "대신 Signal 열기";
@@ -1394,7 +1394,7 @@
 "CALL_QUALITY_SURVEY_DEBUG_LOG_FOOTER" = "Signal에 공유되는 정보는 앱의 기본적인 사용 정보에 한하며, 통화 내용은 수집되지 않습니다.";
 
 /* Header text explaining the purpose of sharing debug logs in the call quality survey. The text inside the <link> tags is tappable for viewing the diagnostic information. */
-"CALL_QUALITY_SURVEY_DEBUG_LOG_HEADER" = "Submitting will share your feedback along with <link>diagnostic information about your call</link>. You can optionally share a debug log to help us improve call quality.";
+"CALL_QUALITY_SURVEY_DEBUG_LOG_HEADER" = "피드백을 제출하면 <link>통화에 대한 진단 정보</link>가 함께 공유됩니다. 원하는 경우 통화 품질 개선을 위해 디버그 로그를 함께 공유할 수도 있습니다.";
 
 /* Link text to open a preview of debug logs in the call quality survey. Appended to CALL_QUALITY_SURVEY_DEBUG_LOG_FOOTER */
 "CALL_QUALITY_SURVEY_DEBUG_LOG_PREVIEW_LINK" = "디버그 로그 보기";
@@ -1406,7 +1406,7 @@
 "CALL_QUALITY_SURVEY_DEBUG_LOG_TOGGLE" = "디버그 로그 공유";
 
 /* Title for preview of the call diagnostic info that will be sent with the survey */
-"CALL_QUALITY_SURVEY_DIAGNOSTICS_TITLE" = "Diagnostic Information";
+"CALL_QUALITY_SURVEY_DIAGNOSTICS_TITLE" = "진단 정보";
 
 /* Button label for indicating the call did not have issues in the call quality survey */
 "CALL_QUALITY_SURVEY_GREAT_BUTTON" = "좋았음";
@@ -1727,7 +1727,7 @@
 "CARD_DONATION_EXPIRATION_DATE_PLACEHOLDER" = "MM/YY";
 
 /* Users can choose to learn more about their credit/debit card donations, which will open a sheet with additional information. This is the body text of that sheet. */
-"CARD_DONATION_READ_MORE_SHEET_BODY" = "Signal은 기부할 때 사용자의 개인 정보를 수집하거나 저장하지 않습니다.\n\nSignal은 기부를 받을 때 Stripe를 결제 처리자로 사용합니다. Signal은 사용자가 Stripe에 제공하는 어떠한 정보에도 액세스하지 않으며, 이를 보관하거나 저장하지 않습니다.\n\nSignal은 사용자의 기부를 Signal 계정에 연결하거나 연결을 시도하지 않습니다.\n\nSignal을 지지해 주셔서 감사합니다!";
+"CARD_DONATION_READ_MORE_SHEET_BODY" = "기부금 처리 과정에서 Signal은 어떠한 개인정보도 수집하거나 저장하지 않습니다.\n\n기부금 결제는 Stripe를 통해 처리되며, Signal은 Stripe에 제공된 정보에 접근하지 않고 이를 저장하거나 보관하지도 않습니다.\n\n또한 기부 내역을 Signal 계정과 연결할 수 없으며, 실제로도 연결되지 않습니다.\n\nSignal을 지지해 주셔서 감사합니다!";
 
 /* Users can choose to learn more about their credit/debit card donations, which will open a sheet with additional information. This is the title of that sheet. */
 "CARD_DONATION_READ_MORE_SHEET_TITLE" = "개인 정보는 비공개로 유지됩니다.";
@@ -1745,7 +1745,7 @@
 "CHANGE_AVATAR_BUTTON_LABEL" = "사진 편집";
 
 /* Error indicating that the user's old and new phone numbers are identical. */
-"CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "새 번호는 이전 번호와 같을 수 없습니다. 새 전화번호를 입력하여 번호를 변경하세요.";
+"CHANGE_PHONE_NUMBER_IDENTICAL_PHONE_NUMBERS_ALERT_MESSAGE" = "새 번호는 이전 번호와 같을 수 없습니다. 번호를 변경하려면 새 전화번호를 입력해 주세요.";
 
 /* Error indicating that the user's old phone number was not entered correctly. */
 "CHANGE_PHONE_NUMBER_INCORRECT_OLD_PHONE_NUMBER_ALERT_MESSAGE" = "입력한 전화번호가 계정의 전화번호와 일치하지 않습니다.";
@@ -2855,10 +2855,10 @@
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "검열 우회 위치";
 
 /* Users can donate to Signal with a credit or debit card. This is the heading on that screen, telling them how much they'll donate. Embeds {{formatted amount of money}}, such as \"$20\". */
-"DONATE_BUTTON" = "%1$@ 기부";
+"DONATE_BUTTON" = "%1$@ 후원";
 
 /* Users can donate to Signal with a credit or debit card. This is the heading on that screen, telling them how much they'll donate every month. Embeds {{formatted amount of money}}, such as \"$20\". */
-"DONATE_BUTTON_MONTHLY" = "월 %1$@ 기부";
+"DONATE_BUTTON_MONTHLY" = "월 %1$@ 후원";
 
 /* When users make donations, they can choose which payment method they want to use. This is the text on the button that lets them choose to pay with bank transfer. */
 "DONATE_CHOOSE_BANK_TRANSFER_AS_PAYMENT_METHOD" = "송금";
@@ -2876,13 +2876,13 @@
 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_SUBTITLE_FOR_ONE_TIME_DONATION" = "30일 동안 %1$@ 배지를 받으세요";
 
 /* When users make donations on a friend's behalf, they see a sheet that lets them pick a payment method. This is the title on that sheet. Embeds {{amount of money}}, such as \"$5\". */
-"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "Signal에 %1$@ 기부";
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "Signal에 %1$@ 후원";
 
 /* When users make monthly donations, they see a sheet that lets them pick a payment method. This is the title on that sheet. Embeds {{amount of money per month}}, such as \"$5/month\". */
-"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_MONTHLY_DONATION" = "Signal에 %1$@ 기부";
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_MONTHLY_DONATION" = "Signal에 %1$@ 후원";
 
 /* When users make one-time donations, they see a sheet that lets them pick a payment method. This is the title on that sheet. Embeds {{amount of money}}, such as \"$5\". */
-"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_ONE_TIME_DONATION" = "Signal에 %1$@ 기부";
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_ONE_TIME_DONATION" = "Signal에 %1$@ 후원";
 
 /* Users can donate on a friend's behalf and can optionally add a message. This is tells users about that optional message. */
 "DONATE_ON_BEHALF_OF_A_FRIEND_ADDITIONAL_MESSAGE_INFO" = "받는 사람에게 1대1 메시지로 후원 알림이 발송됩니다. 아래에 나만의 메시지를 추가하세요.";
@@ -2906,7 +2906,7 @@
 "DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_AWAITING_AUTHORIZATION" = "iDEAL 기부를 아직 처리 중입니다. 다른 기부를 하기 전에 은행 앱을 확인하여 결제를 승인하세요.";
 
 /* Message in an alert presented when the user tries to make a donation, but already has a donation that is currently processing via bank payment. */
-"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "은행 송금을 처리하는 데 영업일 기준 1~14일이 걸릴 수 있습니다. 이 기부가 완료될 때까지 기다렸다가 더 기부해 주세요.";
+"DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "은행 송금을 처리하는 데 영업일 기준 1~14일이 걸릴 수 있습니다. 완료될 때까지 기다리신 후, 추가 후원을 진행해 주세요.";
 
 /* Message in an alert presented when the user tries to update their recurring donation, but already has a recurring donation that is currently processing via bank payment. */
 "DONATE_SCREEN_ERROR_MESSAGE_BANK_PAYMENT_PLEASE_WAIT_BEFORE_UPDATING_YOUR_SUBSCRIPTION" = "은행 송금을 처리하는 데 영업일 기준 1~14일이 걸릴 수 있습니다. 이 기부가 완료될 때까지 기다렸다가 구독을 업데이트해 주세요.";
@@ -2915,16 +2915,16 @@
 "DONATE_SCREEN_ERROR_MESSAGE_FORMAT_BANK_TRANSFER_AMOUNT_TOO_LARGE" = "은행 송금을 통해 보낼 수 있는 최대 금액은 %1$@입니다. 다른 금액이나 다른 결제 방법으로 시도해 주세요.";
 
 /* Message in an alert presented when the user tries to make a donation, but already has a donation that is currently processing via non-bank payment. */
-"DONATE_SCREEN_ERROR_MESSAGE_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "기부를 아직 처리하는 중입니다. 연결에 따라 몇 분이 소요될 수 있습니다. 이 기부가 완료될 때까지 기다렸다가 더 기부해 주세요.";
+"DONATE_SCREEN_ERROR_MESSAGE_PLEASE_WAIT_BEFORE_MAKING_ANOTHER_DONATION" = "현재 기부가 처리되고 있습니다. 연결 상태에 따라 몇 분이 소요될 수 있습니다. 완료될 때까지 잠시 기다리신 후, 추가 후원을 진행해 주세요.";
 
 /* Message in an alert presented when the user tries to update their recurring donation, but already has a recurring donation that is currently processing via non-bank payment. */
 "DONATE_SCREEN_ERROR_MESSAGE_PLEASE_WAIT_BEFORE_UPDATING_YOUR_SUBSCRIPTION" = "기부를 아직 처리하는 중입니다. 연결에 따라 몇 분이 소요될 수 있습니다. 이 기부가 완료될 때까지 기다렸다가 구독을 업데이트해 주세요.";
 
 /* If the user tries to donate to Signal but no amount is selected, this error message is shown. */
-"DONATE_SCREEN_ERROR_NO_AMOUNT_SELECTED" = "기부할 금액을 선택하세요.";
+"DONATE_SCREEN_ERROR_NO_AMOUNT_SELECTED" = "후원할 금액을 선택하세요.";
 
 /* If the user tries to donate to Signal but they've entered an amount that's too small, this error message is shown. Embeds {{currency string}}, such as \"$5\". */
-"DONATE_SCREEN_ERROR_SELECT_A_LARGER_AMOUNT_FORMAT" = "기부할 수 있는 최소 금액은 %1$@입니다.";
+"DONATE_SCREEN_ERROR_SELECT_A_LARGER_AMOUNT_FORMAT" = "후원할 수 있는 최소 금액은 %1$@입니다.";
 
 /* Title for an alert presented when the user tries to make a donation, but already has a donation that is currently awaiting authorization. */
 "DONATE_SCREEN_ERROR_TITLE_BANK_PAYMENT_AWAITING_AUTHORIZATION" = "기부 승인 대기 중";
@@ -2984,13 +2984,13 @@
 "DONATION_FOR_A_FRIEND_ROW_DURATION" = "지속 기간: %1$@";
 
 /* Someone donated on your behalf and you got a badge, which expired. A sheet appears to tell you about this. This is the text on that sheet. */
-"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_BODY" = "기부가 만료되어 더 이상 프로필에 표시되지 않습니다.";
+"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_BODY" = "후원이 만료되어 더 이상 프로필에 표시되지 않습니다.";
 
 /* Someone donated on your behalf and you got a badge, which expired. A sheet appears to tell you about this. This is the title on that sheet. */
-"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_TITLE" = "기부가 만료되었습니다.";
+"DONATION_FROM_A_FRIEND_BADGE_EXPIRED_TITLE" = "후원이 만료되었어요";
 
 /* Someone donated on your behalf and you got a badge, which expired before you could redeem it. A sheet appears to tell you about this. This is the text on that sheet. Embeds {{contact name}}. */
-"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_BODY_FORMAT" = "%1$@ 님의 기부가 만료되어 더 이상 사용할 수 없습니다.";
+"DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_BODY_FORMAT" = "%1$@ 님의 후원이 만료되어 더 이상 사용할 수 없습니다.";
 
 /* Someone donated on your behalf and you got a badge, which expired before you could redeem it. A sheet appears to tell you about this. This is the title on that sheet. */
 "DONATION_FROM_A_FRIEND_BADGE_NOT_REDEEMED_TITLE" = "기부가 만료되었습니다.";
@@ -3011,7 +3011,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_CONFIRMATION_SCREEN_TITLE" = "기부를 확인해 주세요.";
 
 /* When users make donations on a friend's behalf, a message is sent. This text tells senders that their message will disappear, if the conversation has disappearing messages enabled. Embeds {{duration}}, such as \"1 week\". */
-"DONATION_ON_BEHALF_OF_A_FRIEND_DISAPPEARING_MESSAGES_NOTICE_FORMAT" = "이 대화에서 메시지 자동 삭제를 사용합니다. %1$@ 후 기부 메시지가 사라집니다.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_DISAPPEARING_MESSAGES_NOTICE_FORMAT" = "이 대화에 메시지 자동 삭제 기능이 켜져 있습니다. %1$@ 후 후원 알림 메시지가 사라집니다.";
 
 /* Users can donate on a friend's behalf. This tells users that this will be a one-time donation. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_DESCRIPTION" = "일회성 기부";
@@ -3023,10 +3023,10 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_FAILED_ERROR_TITLE" = "결제에 실패했습니다.";
 
 /* Users can donate on a friend's behalf. If the payment was processed but the donation failed to send, this error message will be shown. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_SUCCEEDED_BUT_MESSAGE_FAILED_ERROR_BODY" = "결제를 처리했으나 Signal에서 귀하의 기부 메시지를 보내지 못했습니다. 고객 지원팀으로 문의하세요.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_SUCCEEDED_BUT_MESSAGE_FAILED_ERROR_BODY" = "결제를 처리했으나 Signal에서 후원 알림 메시지를 보내지 못했습니다. 고객 지원팀으로 문의해 주세요.";
 
 /* Users can donate on a friend's behalf. If the payment was processed but the donation failed to send, an error dialog will be shown. This is the title of that dialog. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_SUCCEEDED_BUT_MESSAGE_FAILED_ERROR_TITLE" = "기부에 실패했습니다.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_SUCCEEDED_BUT_MESSAGE_FAILED_ERROR_TITLE" = "후원 처리 오류";
 
 /* A friend has donated on your behalf. This text is shown in the list of chats, when the most recent message is one of these donations. Embeds {friend's short display name}. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_PREVIEW_INCOMING" = "✨ %1$@ 님이 나를 대신해 후원했어요";
@@ -3041,7 +3041,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_IS_BLOCKED_ERROR_BODY" = "이 사용자를 대신해 후원하려면 차단을 해제해 주세요.";
 
 /* Users can donate on a friend's behalf. This is the title for an error message that appears if the try to do this, but the recipient is blocked. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_IS_BLOCKED_ERROR_TITLE" = "기부를 완료할 수 없습니다.";
+"DONATION_ON_BEHALF_OF_A_FRIEND_RECIPIENT_IS_BLOCKED_ERROR_TITLE" = "후원을 완료할 수 없습니다.";
 
 /* Label for a button used to redeem a badge that was received as a donation on your behalf. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE" = "사용";
@@ -3053,7 +3053,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_REDEEM_BADGE_TITLE_FORMAT" = "%1$@ 님이 나를 대신해 후원했어요";
 
 /* Shown when you're replying to a donation message. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_REPLY" = "기부";
+"DONATION_ON_BEHALF_OF_A_FRIEND_REPLY" = "후원";
 
 /* You sent a donation to a friend. This is the title of that message in the chat. Embeds {{short contact name}}. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_SENT_TITLE_FORMAT" = "%1$@ 님을 대신해 후원했어요";
@@ -3062,7 +3062,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_BODY_FORMAT" = "%1$@ 님을 대신해 Signal에 후원금을 보냈어요. 해당 사용자는 Signal 후원 사실을 프로필 배지로 표시할 수 있어요.";
 
 /* When you donate on behalf of a friend, a thank-you sheet will appear. This is the title on that sheet. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_TITLE" = "지지와 성원에 감사드립니다!";
+"DONATION_ON_BEHALF_OF_A_FRIEND_THANKS_TITLE" = "후원에 감사드립니다!";
 
 /* A button shown on a donation message you send, to view additional details about the badge that was sent. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_VIEW" = "보기";
@@ -3071,16 +3071,16 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_YOU_RECEIVED_A_BADGE_FORMAT" = "%1$@ 님이 나를 대신해 Signal에 후원해 주셨어요! Signal에 대한 응원의 마음을 프로필에 표시해 보세요.";
 
 /* Body text for a sheet discussing donating to Signal. */
-"DONATION_READ_MORE_SHEET_BODY" = "As an independent nonprofit, Signal is committed to private messaging and calls. No ads, no trackers, no surveillance. Donate today to support Signal.";
+"DONATION_READ_MORE_SHEET_BODY" = "Signal은 독립적인 비영리단체로, 메시지와 통화의 프라이버시 보호를 핵심 가치로 삼고 있습니다. 광고도, 추적도, 감시도 없습니다. Signal의 사명을 지지하신다면 지금 후원해 보세요.";
 
 /* Bullet point for a sheet discussing donating to Signal. */
-"DONATION_READ_MORE_SHEET_BULLET_1" = "Get an optional badge on your profile when you donate";
+"DONATION_READ_MORE_SHEET_BULLET_1" = "후원하면 프로필에 표시되는 배지를 받을 수 있어요";
 
 /* Bullet point for a sheet discussing donating to Signal. */
-"DONATION_READ_MORE_SHEET_BULLET_2" = "Your privacy is our mission";
+"DONATION_READ_MORE_SHEET_BULLET_2" = "개인정보 보호는 Signal의 사명입니다";
 
 /* Bullet point for a sheet discussing donating to Signal. For non-English languages, skip the word 501c3, and skip the language about US donations being tax deductible. */
-"DONATION_READ_MORE_SHEET_BULLET_3" = "Signal is a 501c3 nonprofit. US donations are tax deductible.";
+"DONATION_READ_MORE_SHEET_BULLET_3" = "Signal은 비영리단체입니다";
 
 /* Section title for donation amount on receipts */
 "DONATION_RECEIPT_AMOUNT" = "금액";
@@ -3128,16 +3128,16 @@
 "DONATION_REDIRECT_ERROR_PAYMENT_DENIED_MESSAGE" = "결제가 거부되었습니다. 다시 시도해 주세요.";
 
 /* On the donation settings screen, tapping this button will take the user to a screen where they can donate. */
-"DONATION_SCREEN_DONATE_BUTTON" = "기부";
+"DONATION_SCREEN_DONATE_BUTTON" = "후원하기";
 
 /* On donation screens, a small amount of information text is shown. This is the subtitle for that text. */
-"DONATION_SCREENS_HEADER_DESCRIPTION" = "Donate to support private messaging. Keep Signal independent and ad-free.";
+"DONATION_SCREENS_HEADER_DESCRIPTION" = "후원을 통해 개인정보를 보호하는 Signal 메시지 서비스를 지지하고, 독립적인 운영과 광고 없는 환경을 유지할 수 있도록 도와주세요.";
 
 /* On donation screens, a small amount of information text is shown. Users can click this link to learn more information. */
 "DONATION_SCREENS_HEADER_READ_MORE" = "더 보기";
 
 /* On donation screens, a small amount of information text is shown. This is the title for that text. */
-"DONATION_SCREENS_HEADER_TITLE" = "Proudly Nonprofit";
+"DONATION_SCREENS_HEADER_TITLE" = "비영리의 원칙을 지킵니다";
 
 /* Button title confirming the user wants to begin a new donation. */
 "DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_DONATE_ACTION" = "기부";
@@ -3548,19 +3548,19 @@
 "GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "새 메시지";
 
 /* Title for the 'Get Started' banner */
-"GET_STARTED_BANNER_TITLE" = "Get Started";
+"GET_STARTED_BANNER_TITLE" = "시작하기";
 
 /* 'Get Started' button direction users to avatar builder */
 "GET_STARTED_CARD_AVATAR_BUILDER" = "사진 추가";
 
 /* 'Get Started' button directing users to Chat Color settings */
-"GET_STARTED_CARD_CHAT_COLOR" = "Chat Color";
+"GET_STARTED_CARD_CHAT_COLOR" = "대화창 색";
 
 /* 'Get Started' button directing users to invite friends */
-"GET_STARTED_CARD_INVITE_FRIENDS" = "Invite Friends";
+"GET_STARTED_CARD_INVITE_FRIENDS" = "친구 초대";
 
 /* 'Get Started' button directing users to create a group */
-"GET_STARTED_CARD_NEW_GROUP" = "New Group";
+"GET_STARTED_CARD_NEW_GROUP" = "새 그룹";
 
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "요청한 GIF를 불러오지 못했습니다. 인터넷에 연결되어 있는지 확인해 주세요.";
@@ -5174,7 +5174,7 @@
 "MESSAGE_METADATA_VIEW_TITLE" = "메시지 세부 정보";
 
 /* Context menu message preview accessibility label */
-"MESSAGE_PREVIEW" = "메시지 미리 보기";
+"MESSAGE_PREVIEW" = "메시지 미리보기";
 
 /* Sheet option for blocking a chat. In this case, the sheet appears when the user taps a button attached to a 'message request accepted' info message in-chat. */
 "MESSAGE_REQUEST_ACCEPTED_INFO_MESSAGE_SHEET_OPTION_BLOCK" = "차단";
@@ -5228,7 +5228,7 @@
 "MESSAGE_REQUEST_NAME_COLLISION_BANNER_LABEL" = "이 사람의 이름이 연락처의 다른 사람과 이름이 같습니다.";
 
 /* A header string informing the user about name collisions in a message request */
-"MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "요청을 보낸 사람이 누군지 모르겠다면 아래 연락처를 검토하고 작업을 수행하세요.";
+"MESSAGE_REQUEST_NAME_COLLISON_HEADER" = "요청을 보낸 사람이 누군지 모르겠다면 아래 연락처 목록을 살펴본 후 진행해 주세요.";
 
 /* A title string for a view that allows a user to review name collisions for an incoming message request */
 "MESSAGE_REQUEST_NAME_COLLISON_TITLE" = "요청 검토";
@@ -5867,7 +5867,7 @@
 "ONBOARDING_SPLASH_HAVE_OLD_DEVICE_TITLE" = "이전 휴대폰을 가지고 있음";
 
 /* Text indicating Signal is a nonprofit on the 'onboarding splash' view. For non-English languages, exclude the word '501c3'. */
-"ONBOARDING_SPLASH_NONPROFIT" = "Signal is a 501c3 nonprofit";
+"ONBOARDING_SPLASH_NONPROFIT" = "Signal은 비영리단체입니다";
 
 /* Button for restoring or transferring account in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_RESTORE_OR_TRANSFER_BUTTON_TITLE" = "계정 복원 또는 전송";
@@ -8108,7 +8108,7 @@
 "SETTINGS_LINK_PREVIEWS" = "링크 미리보기 생성";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "보내는 메시지에 포함된 웹사이트의 링크 미리보기를 함께 첨부합니다.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "보내는 메시지에 포함된 링크의 미리보기를 해당 웹사이트에서 직접 가져옵니다.";
 
 /* Label for the 'never' media attachment download behavior in the media download settings. */
 "SETTINGS_MEDIA_DOWNLOAD_CONDITION_NEVER" = "없음";

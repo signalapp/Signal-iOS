@@ -2,7 +2,7 @@
 "AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "ابھی نہیں";
 
 /* Footer for the 'about' help section. For non-English languages, exclude the word '501c3'. */
-"ABOUT_SECTION_FOOTER" = "Copyright Signal Messenger\nLicensed under the AGPLv3\nSignal is a 501c3 nonprofit";
+"ABOUT_SECTION_FOOTER" = "کاپی رائٹ Signal میسنجر\nAGPLv3 کے تحت لائسنس شدہ\nSignal ایک غیر منافع بخش ایپ ہے";
 
 /* Title for the 'about' help section */
 "ABOUT_SECTION_TITLE" = "Signal کے بارے میں";
@@ -1394,7 +1394,7 @@
 "CALL_QUALITY_SURVEY_DEBUG_LOG_FOOTER" = "ہمارے ساتھ شیئر کی گئی معلومات میں ایپ کی بنیادی سطح کی تفصیلات شامل ہیں اور اس میں آپ کی کالز کا مواد شامل نہیں ہے۔";
 
 /* Header text explaining the purpose of sharing debug logs in the call quality survey. The text inside the <link> tags is tappable for viewing the diagnostic information. */
-"CALL_QUALITY_SURVEY_DEBUG_LOG_HEADER" = "Submitting will share your feedback along with <link>diagnostic information about your call</link>. You can optionally share a debug log to help us improve call quality.";
+"CALL_QUALITY_SURVEY_DEBUG_LOG_HEADER" = "جمع کروانے پر <link>آپ کی کال کے بارے میں تشخیصی معلومات</link> کے علاوہ آپ کی رائے بھی شیئر کی جائے گی۔ آپ اختیاری طور پر ڈی بگ لاگ شیئر کر سکتے ہیں تاکہ ہمیں کال کے معیار کو بہتر بنانے میں مدد مل سکے۔";
 
 /* Link text to open a preview of debug logs in the call quality survey. Appended to CALL_QUALITY_SURVEY_DEBUG_LOG_FOOTER */
 "CALL_QUALITY_SURVEY_DEBUG_LOG_PREVIEW_LINK" = "ڈی بگ لاگ دیکھیں";
@@ -1406,7 +1406,7 @@
 "CALL_QUALITY_SURVEY_DEBUG_LOG_TOGGLE" = "ڈی بگ لاگ شیئر کریں";
 
 /* Title for preview of the call diagnostic info that will be sent with the survey */
-"CALL_QUALITY_SURVEY_DIAGNOSTICS_TITLE" = "Diagnostic Information";
+"CALL_QUALITY_SURVEY_DIAGNOSTICS_TITLE" = "تشخیصی معلومات";
 
 /* Button label for indicating the call did not have issues in the call quality survey */
 "CALL_QUALITY_SURVEY_GREAT_BUTTON" = "بہترین";
@@ -3071,16 +3071,16 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_YOU_RECEIVED_A_BADGE_FORMAT" = "%1$@ نے آپ کی جانب سے Signal کو عطیہ کیا ہے! اپنی پروفائل پر Signal کے لیے سپورٹ ظاہر کریں۔";
 
 /* Body text for a sheet discussing donating to Signal. */
-"DONATION_READ_MORE_SHEET_BODY" = "As an independent nonprofit, Signal is committed to private messaging and calls. No ads, no trackers, no surveillance. Donate today to support Signal.";
+"DONATION_READ_MORE_SHEET_BODY" = "ایک خود مختار غیر منافع بخش ایپ کے طور پر، Signal نجی میسجنگ اور کالز کی فراہمی کے لیے پُرعزم ہے۔ کوئی اشتہارات، کوئی ٹریکرز، کوئی نگرانی نہیں۔ Signal کو سپورٹ کرنے کے لیے ابھی عطیہ کریں۔";
 
 /* Bullet point for a sheet discussing donating to Signal. */
-"DONATION_READ_MORE_SHEET_BULLET_1" = "Get an optional badge on your profile when you donate";
+"DONATION_READ_MORE_SHEET_BULLET_1" = "عطیہ کرنے پر اپنی پروفائل پر ایک اختیاری بیج حاصل کریں";
 
 /* Bullet point for a sheet discussing donating to Signal. */
-"DONATION_READ_MORE_SHEET_BULLET_2" = "Your privacy is our mission";
+"DONATION_READ_MORE_SHEET_BULLET_2" = "آپ کی پرائیویسی ہمارا مشن ہے";
 
 /* Bullet point for a sheet discussing donating to Signal. For non-English languages, skip the word 501c3, and skip the language about US donations being tax deductible. */
-"DONATION_READ_MORE_SHEET_BULLET_3" = "Signal is a 501c3 nonprofit. US donations are tax deductible.";
+"DONATION_READ_MORE_SHEET_BULLET_3" = "Signal ایک غیر منافع بخش ایپ ہے۔";
 
 /* Section title for donation amount on receipts */
 "DONATION_RECEIPT_AMOUNT" = "رقم";
@@ -3131,13 +3131,13 @@
 "DONATION_SCREEN_DONATE_BUTTON" = "عطیہ کریں";
 
 /* On donation screens, a small amount of information text is shown. This is the subtitle for that text. */
-"DONATION_SCREENS_HEADER_DESCRIPTION" = "Donate to support private messaging. Keep Signal independent and ad-free.";
+"DONATION_SCREENS_HEADER_DESCRIPTION" = "نجی میسجنگ کو سپورٹ کرنے کے لیے عطیہ کریں۔ Signal کو خود مختار اور اشتہارات سے پاک رکھیں۔";
 
 /* On donation screens, a small amount of information text is shown. Users can click this link to learn more information. */
 "DONATION_SCREENS_HEADER_READ_MORE" = "مزید پڑھیں";
 
 /* On donation screens, a small amount of information text is shown. This is the title for that text. */
-"DONATION_SCREENS_HEADER_TITLE" = "Proudly Nonprofit";
+"DONATION_SCREENS_HEADER_TITLE" = "فخر کے ساتھ غیر منافع بخش";
 
 /* Button title confirming the user wants to begin a new donation. */
 "DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_DONATE_ACTION" = "عطیہ کریں";
@@ -3548,19 +3548,19 @@
 "GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "نیا پیغام!";
 
 /* Title for the 'Get Started' banner */
-"GET_STARTED_BANNER_TITLE" = "Get Started";
+"GET_STARTED_BANNER_TITLE" = "شروع کریں";
 
 /* 'Get Started' button direction users to avatar builder */
 "GET_STARTED_CARD_AVATAR_BUILDER" = "تصویر لگائیں";
 
 /* 'Get Started' button directing users to Chat Color settings */
-"GET_STARTED_CARD_CHAT_COLOR" = "Chat Color";
+"GET_STARTED_CARD_CHAT_COLOR" = "چیٹ کا رنگ";
 
 /* 'Get Started' button directing users to invite friends */
-"GET_STARTED_CARD_INVITE_FRIENDS" = "Invite Friends";
+"GET_STARTED_CARD_INVITE_FRIENDS" = "دوستوں کو دعوت دیں";
 
 /* 'Get Started' button directing users to create a group */
-"GET_STARTED_CARD_NEW_GROUP" = "New Group";
+"GET_STARTED_CARD_NEW_GROUP" = "نیا گروپ";
 
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "GIF کی درخواست حاصل کرنے میں ناکامی۔براہ کرم تصدیق کریں کہ آپ آن لائن ہیں۔";
@@ -5867,7 +5867,7 @@
 "ONBOARDING_SPLASH_HAVE_OLD_DEVICE_TITLE" = "میرے پاس اپنا پرانا فون موجود ہے";
 
 /* Text indicating Signal is a nonprofit on the 'onboarding splash' view. For non-English languages, exclude the word '501c3'. */
-"ONBOARDING_SPLASH_NONPROFIT" = "Signal is a 501c3 nonprofit";
+"ONBOARDING_SPLASH_NONPROFIT" = "Signal ایک غیر منافع بخش ایپ ہے";
 
 /* Button for restoring or transferring account in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_RESTORE_OR_TRANSFER_BUTTON_TITLE" = "ری اسٹور کریں یا اکاؤنٹ ٹرانسفر کریں";

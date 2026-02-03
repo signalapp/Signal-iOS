@@ -2,7 +2,7 @@
 "AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "遲啲先啦";
 
 /* Footer for the 'about' help section. For non-English languages, exclude the word '501c3'. */
-"ABOUT_SECTION_FOOTER" = "Copyright Signal Messenger\nLicensed under the AGPLv3\nSignal is a 501c3 nonprofit";
+"ABOUT_SECTION_FOOTER" = "Signal Messenger 版權所有\n AGPLv3 許可\n認證 Signal 為非牟利機構";
 
 /* Title for the 'about' help section */
 "ABOUT_SECTION_TITLE" = "關於 Signal";
@@ -1394,7 +1394,7 @@
 "CALL_QUALITY_SURVEY_DEBUG_LOG_FOOTER" = "分享俾我哋嘅資料只會包括基礎 APP 資訊，同埋唔會包括你嘅通話內容。";
 
 /* Header text explaining the purpose of sharing debug logs in the call quality survey. The text inside the <link> tags is tappable for viewing the diagnostic information. */
-"CALL_QUALITY_SURVEY_DEBUG_LOG_HEADER" = "Submitting will share your feedback along with <link>diagnostic information about your call</link>. You can optionally share a debug log to help us improve call quality.";
+"CALL_QUALITY_SURVEY_DEBUG_LOG_HEADER" = "提交將你嘅意見，同埋<link>關於你通話嘅診斷資訊分享俾我哋</link>。你可以選擇分享除錯記錄，幫我哋提高通話品質。";
 
 /* Link text to open a preview of debug logs in the call quality survey. Appended to CALL_QUALITY_SURVEY_DEBUG_LOG_FOOTER */
 "CALL_QUALITY_SURVEY_DEBUG_LOG_PREVIEW_LINK" = "睇下除錯記錄";
@@ -1406,7 +1406,7 @@
 "CALL_QUALITY_SURVEY_DEBUG_LOG_TOGGLE" = "分享除錯記錄";
 
 /* Title for preview of the call diagnostic info that will be sent with the survey */
-"CALL_QUALITY_SURVEY_DIAGNOSTICS_TITLE" = "Diagnostic Information";
+"CALL_QUALITY_SURVEY_DIAGNOSTICS_TITLE" = "診斷資訊";
 
 /* Button label for indicating the call did not have issues in the call quality survey */
 "CALL_QUALITY_SURVEY_GREAT_BUTTON" = "無得頂";
@@ -3071,16 +3071,16 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_YOU_RECEIVED_A_BADGE_FORMAT" = "%1$@ 代表你向 Signal 作出咗捐款！喺你嘅個人檔案度展示你對 Signal 嘅支持。";
 
 /* Body text for a sheet discussing donating to Signal. */
-"DONATION_READ_MORE_SHEET_BODY" = "As an independent nonprofit, Signal is committed to private messaging and calls. No ads, no trackers, no surveillance. Donate today to support Signal.";
+"DONATION_READ_MORE_SHEET_BODY" = "作為一個獨立嘅非牟利機構， Signal 致力提供私密訊息同通話。冇廣告、冇追蹤、冇監控。請即刻捐款支持 Signal。";
 
 /* Bullet point for a sheet discussing donating to Signal. */
-"DONATION_READ_MORE_SHEET_BULLET_1" = "Get an optional badge on your profile when you donate";
+"DONATION_READ_MORE_SHEET_BULLET_1" = "捐款之後你就會獲得徽章，仲可以選揀喺你嘅個人檔案度展示";
 
 /* Bullet point for a sheet discussing donating to Signal. */
-"DONATION_READ_MORE_SHEET_BULLET_2" = "Your privacy is our mission";
+"DONATION_READ_MORE_SHEET_BULLET_2" = "保障你嘅私隱係我哋嘅使命";
 
 /* Bullet point for a sheet discussing donating to Signal. For non-English languages, skip the word 501c3, and skip the language about US donations being tax deductible. */
-"DONATION_READ_MORE_SHEET_BULLET_3" = "Signal is a 501c3 nonprofit. US donations are tax deductible.";
+"DONATION_READ_MORE_SHEET_BULLET_3" = "Signal 係一間非牟利機構。";
 
 /* Section title for donation amount on receipts */
 "DONATION_RECEIPT_AMOUNT" = "金額";
@@ -3131,13 +3131,13 @@
 "DONATION_SCREEN_DONATE_BUTTON" = "課金";
 
 /* On donation screens, a small amount of information text is shown. This is the subtitle for that text. */
-"DONATION_SCREENS_HEADER_DESCRIPTION" = "Donate to support private messaging. Keep Signal independent and ad-free.";
+"DONATION_SCREENS_HEADER_DESCRIPTION" = "捐款支持私密通訊。令 Signal 保持獨立營運同埋冇廣告。";
 
 /* On donation screens, a small amount of information text is shown. Users can click this link to learn more information. */
 "DONATION_SCREENS_HEADER_READ_MORE" = "睇晒全文";
 
 /* On donation screens, a small amount of information text is shown. This is the title for that text. */
-"DONATION_SCREENS_HEADER_TITLE" = "Proudly Nonprofit";
+"DONATION_SCREENS_HEADER_TITLE" = "堅守非牟利宗旨";
 
 /* Button title confirming the user wants to begin a new donation. */
 "DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_DONATE_ACTION" = "課金";
@@ -3548,19 +3548,19 @@
 "GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "有新訊息！";
 
 /* Title for the 'Get Started' banner */
-"GET_STARTED_BANNER_TITLE" = "Get Started";
+"GET_STARTED_BANNER_TITLE" = "開始使用";
 
 /* 'Get Started' button direction users to avatar builder */
 "GET_STARTED_CARD_AVATAR_BUILDER" = "加張相";
 
 /* 'Get Started' button directing users to Chat Color settings */
-"GET_STARTED_CARD_CHAT_COLOR" = "Chat Color";
+"GET_STARTED_CARD_CHAT_COLOR" = "聊天顏色";
 
 /* 'Get Started' button directing users to invite friends */
-"GET_STARTED_CARD_INVITE_FRIENDS" = "Invite Friends";
+"GET_STARTED_CARD_INVITE_FRIENDS" = "誠邀好友";
 
 /* 'Get Started' button directing users to create a group */
-"GET_STARTED_CARD_NEW_GROUP" = "New Group";
+"GET_STARTED_CARD_NEW_GROUP" = "開個新谷";
 
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "攞唔到要求嘅 GIF。請查驗您係咪已經連咗上網。";
@@ -5867,7 +5867,7 @@
 "ONBOARDING_SPLASH_HAVE_OLD_DEVICE_TITLE" = "部舊手機喺我手上";
 
 /* Text indicating Signal is a nonprofit on the 'onboarding splash' view. For non-English languages, exclude the word '501c3'. */
-"ONBOARDING_SPLASH_NONPROFIT" = "Signal is a 501c3 nonprofit";
+"ONBOARDING_SPLASH_NONPROFIT" = "Signal 係一間非牟利機構";
 
 /* Button for restoring or transferring account in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_RESTORE_OR_TRANSFER_BUTTON_TITLE" = "還原或者轉移帳戶";

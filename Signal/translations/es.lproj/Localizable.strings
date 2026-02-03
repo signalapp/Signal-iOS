@@ -2,7 +2,7 @@
 "AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Ahora no";
 
 /* Footer for the 'about' help section. For non-English languages, exclude the word '501c3'. */
-"ABOUT_SECTION_FOOTER" = "Copyright Signal Messenger\nLicensed under the AGPLv3\nSignal is a 501c3 nonprofit";
+"ABOUT_SECTION_FOOTER" = "Copyright Signal Messenger\nLicencia AGPLv3\nSignal es una organización sin ánimo de lucro";
 
 /* Title for the 'about' help section */
 "ABOUT_SECTION_TITLE" = "Acerca de Signal";
@@ -605,7 +605,7 @@
 "BACKUP_ONBOARDING_INTRO_NOT_NOW_TOAST" = "Puedes habilitar las copias de seguridad en Ajustes.";
 
 /* Subtitle for a view introducing Backups during an onboarding flow. */
-"BACKUP_ONBOARDING_INTRO_SUBTITLE" = "Haz una copia de seguridad de tus mensajes y archivos multimedia utilizando el servicio de almacenamiento seguro y cifrado de extremo a extremo de Signal. No perderás ningún mensaje si cambias de teléfono o vuelves a instalar Signal.";
+"BACKUP_ONBOARDING_INTRO_SUBTITLE" = "Haz una copia de seguridad de tus mensajes y archivos multimedia con el servicio de almacenamiento seguro y cifrado de extremo a extremo de Signal. No perderás ningún mensaje si cambias de teléfono o vuelves a instalar Signal.";
 
 /* Title for a view introducing Backups during an onboarding flow. */
 "BACKUP_ONBOARDING_INTRO_TITLE" = "Copias Seguras de Signal";
@@ -962,7 +962,7 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_AVAILABLE_FOR_TESTERS" = "Los archivos multimedia que no uses se eliminarán del dispositivo, pero podrás descargarlos desde tu copia de seguridad en cualquier momento mientras sigas usando TestFlight.";
 
 /* Footer for a toggle allowing users to change the Optimize Local Storage setting, if the toggle is unavailable. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_UNAVAILABLE" = "La optimización de almacenamiento solo se puede utilizar con el nivel de pago de las copias de seguridad de Signal. Actualiza tu plan de copias de seguridad para empezar a usar esta función.";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_FOOTER_UNAVAILABLE" = "La optimización de almacenamiento solo se puede usar con el nivel de pago de las copias de seguridad de Signal. Actualiza tu plan de copias de seguridad para empezar a usar esta función.";
 
 /* Title for a toggle allowing users to change the Optimize Local Storage setting. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TOGGLE_TITLE" = "Optimizar almacenamiento en el dispositivo";
@@ -1394,7 +1394,7 @@
 "CALL_QUALITY_SURVEY_DEBUG_LOG_FOOTER" = "La información que compartes con nosotros contiene únicamente datos técnicos de la aplicación y nunca incluye el contenido de tus llamadas.";
 
 /* Header text explaining the purpose of sharing debug logs in the call quality survey. The text inside the <link> tags is tappable for viewing the diagnostic information. */
-"CALL_QUALITY_SURVEY_DEBUG_LOG_HEADER" = "Submitting will share your feedback along with <link>diagnostic information about your call</link>. You can optionally share a debug log to help us improve call quality.";
+"CALL_QUALITY_SURVEY_DEBUG_LOG_HEADER" = "Si seleccionas Enviar, se compartirán tus comentarios junto con la <link>información de diagnóstico de tu llamada</link>. De manera opcional, puedes compartir tu registro de depuración para ayudarnos a mejorar la calidad de las llamadas.";
 
 /* Link text to open a preview of debug logs in the call quality survey. Appended to CALL_QUALITY_SURVEY_DEBUG_LOG_FOOTER */
 "CALL_QUALITY_SURVEY_DEBUG_LOG_PREVIEW_LINK" = "Ver registro de depuración";
@@ -1406,7 +1406,7 @@
 "CALL_QUALITY_SURVEY_DEBUG_LOG_TOGGLE" = "Compartir registro de depuración";
 
 /* Title for preview of the call diagnostic info that will be sent with the survey */
-"CALL_QUALITY_SURVEY_DIAGNOSTICS_TITLE" = "Diagnostic Information";
+"CALL_QUALITY_SURVEY_DIAGNOSTICS_TITLE" = "Información de diagnóstico";
 
 /* Button label for indicating the call did not have issues in the call quality survey */
 "CALL_QUALITY_SURVEY_GREAT_BUTTON" = "Ha ido genial";
@@ -2681,7 +2681,7 @@
 "DEREGISTRATION_REREGISTER_PROMPT_TITLE" = "¿Quieres volver a registrar este número?";
 
 /* Label warning the user that they have been de-registered. */
-"DEREGISTRATION_WARNING" = "Este dispositivo ya no está registrado. Probablemente se deba a que has registrado tu número de teléfono en Signal con un dispositivo diferente.";
+"DEREGISTRATION_WARNING" = "Este dispositivo ya no está registrado. Es probable que hayas registrado tu número de teléfono en Signal con un dispositivo diferente.";
 
 /* If the user has been deregistered, they'll see a warning. This is This is the call to action on that warning. */
 "DEREGISTRATION_WARNING_ACTION_TITLE" = "Volver a registrar dispositivo";
@@ -3071,16 +3071,16 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_YOU_RECEIVED_A_BADGE_FORMAT" = "¡%1$@ ha hecho una donación a Signal en tu nombre! Muestra tu insignia de apoyo a Signal en tu perfil.";
 
 /* Body text for a sheet discussing donating to Signal. */
-"DONATION_READ_MORE_SHEET_BODY" = "As an independent nonprofit, Signal is committed to private messaging and calls. No ads, no trackers, no surveillance. Donate today to support Signal.";
+"DONATION_READ_MORE_SHEET_BODY" = "Como organización independiente sin ánimo de lucro, Signal tiene el firme compromiso de proteger la privacidad del contenido de todos tus mensajes y llamadas. Sin anuncios, sin seguimiento, sin vigilancia. Haz una donación hoy para apoyar a Signal.";
 
 /* Bullet point for a sheet discussing donating to Signal. */
-"DONATION_READ_MORE_SHEET_BULLET_1" = "Get an optional badge on your profile when you donate";
+"DONATION_READ_MORE_SHEET_BULLET_1" = "Con tu donación consigues una insignia que puedes mostrar en tu perfil";
 
 /* Bullet point for a sheet discussing donating to Signal. */
-"DONATION_READ_MORE_SHEET_BULLET_2" = "Your privacy is our mission";
+"DONATION_READ_MORE_SHEET_BULLET_2" = "Tu privacidad es nuestra misión";
 
 /* Bullet point for a sheet discussing donating to Signal. For non-English languages, skip the word 501c3, and skip the language about US donations being tax deductible. */
-"DONATION_READ_MORE_SHEET_BULLET_3" = "Signal is a 501c3 nonprofit. US donations are tax deductible.";
+"DONATION_READ_MORE_SHEET_BULLET_3" = "Signal es una organización sin ánimo de lucro";
 
 /* Section title for donation amount on receipts */
 "DONATION_RECEIPT_AMOUNT" = "Importe";
@@ -3131,13 +3131,13 @@
 "DONATION_SCREEN_DONATE_BUTTON" = "Donar";
 
 /* On donation screens, a small amount of information text is shown. This is the subtitle for that text. */
-"DONATION_SCREENS_HEADER_DESCRIPTION" = "Donate to support private messaging. Keep Signal independent and ad-free.";
+"DONATION_SCREENS_HEADER_DESCRIPTION" = "Haz una donación para apoyar la mensajería privada. Ayuda a Signal a seguir siendo independiente y sin anuncios.";
 
 /* On donation screens, a small amount of information text is shown. Users can click this link to learn more information. */
 "DONATION_SCREENS_HEADER_READ_MORE" = "Más información";
 
 /* On donation screens, a small amount of information text is shown. This is the title for that text. */
-"DONATION_SCREENS_HEADER_TITLE" = "Proudly Nonprofit";
+"DONATION_SCREENS_HEADER_TITLE" = "Orgullosamente sin ánimo de lucro";
 
 /* Button title confirming the user wants to begin a new donation. */
 "DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_DONATE_ACTION" = "Donar";
@@ -3548,19 +3548,19 @@
 "GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "Nuevo mensaje";
 
 /* Title for the 'Get Started' banner */
-"GET_STARTED_BANNER_TITLE" = "Get Started";
+"GET_STARTED_BANNER_TITLE" = "Primeros pasos";
 
 /* 'Get Started' button direction users to avatar builder */
 "GET_STARTED_CARD_AVATAR_BUILDER" = "Añadir foto";
 
 /* 'Get Started' button directing users to Chat Color settings */
-"GET_STARTED_CARD_CHAT_COLOR" = "Chat Color";
+"GET_STARTED_CARD_CHAT_COLOR" = "Color del chat";
 
 /* 'Get Started' button directing users to invite friends */
-"GET_STARTED_CARD_INVITE_FRIENDS" = "Invite Friends";
+"GET_STARTED_CARD_INVITE_FRIENDS" = "Invitar personas";
 
 /* 'Get Started' button directing users to create a group */
-"GET_STARTED_CARD_NEW_GROUP" = "New Group";
+"GET_STARTED_CARD_NEW_GROUP" = "Nuevo grupo";
 
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "No se ha podido descargar el GIF solicitado. Comprueba que tienes conexión.";
@@ -5867,7 +5867,7 @@
 "ONBOARDING_SPLASH_HAVE_OLD_DEVICE_TITLE" = "Tengo mi teléfono anterior";
 
 /* Text indicating Signal is a nonprofit on the 'onboarding splash' view. For non-English languages, exclude the word '501c3'. */
-"ONBOARDING_SPLASH_NONPROFIT" = "Signal is a 501c3 nonprofit";
+"ONBOARDING_SPLASH_NONPROFIT" = "Signal es una organización sin ánimo de lucro";
 
 /* Button for restoring or transferring account in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_RESTORE_OR_TRANSFER_BUTTON_TITLE" = "Restaurar o transferir cuenta";
@@ -6836,10 +6836,10 @@
 "PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Todos los chats entre dos personas en Signal tienen un número de seguridad único. Vuelve a verificar que el número que muestra %1$@ coincida con el de tu chat con esta persona.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "Estás utilizando una versión anterior de Signal. Debes actualizar la app para poder hacer la verificación.";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "Estás usando una versión anterior de Signal. Debes actualizar la app para poder hacer la verificación.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "Esta persona está utilizando una versión anterior de Signal. Debe actualizar la app para que puedas hacer la verificación.";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "Esta persona está usando una versión anterior de Signal. Debe actualizar la app para que puedas hacer la verificación.";
 
 /* alert body */
 "PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "El código escaneado no parece un código de número de seguridad. ¿Ambos dispositivos tienen una versión actualizada de Signal?";

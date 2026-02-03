@@ -10,10 +10,10 @@ Signal es una aplicación de mensajería diseñada para proteger tu privacidad. 
 
 • Signal está diseñada para proteger tu privacidad. No sabemos nada sobre ti ni con quién hablas. El protocolo de código abierto de Signal garantiza que no podemos leer tus mensajes ni escuchar tus llamadas. Ni nosotros ni nadie más. Sin puertas traseras, sin recopilación de datos, sin concesiones. 
 
-• Signal es una entidad independiente y sin fines de lucro; una tecnología diferente impulsada por una organización diferente. Al ser una organización sin ánimo de lucro 501(c)(3), Signal se financia con donaciones de personas como tú. No dependemos de anunciantes ni inversores. 
+• Signal es una entidad independiente y sin fines de lucro; una tecnología diferente impulsada por una organización diferente. Al ser una organización sin ánimo de lucro, Signal se financia gracias a donaciones de personas como tú. No dependemos de anunciantes ni inversores. 
 
 • Si tienes alguna pregunta, necesitas asistencia o buscas más información, visita https://support.signal.org/
 
 Para consultar nuestro código fuente, visita https://github.com/signalapp 
 
-Síguenos en Twitter @signalapp e Instagram @signal_app
+Síguenos en nuestro perfil de Twitter @signalapp e Instagram @signal_app

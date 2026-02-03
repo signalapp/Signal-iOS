@@ -2,7 +2,7 @@
 "AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Не зараз";
 
 /* Footer for the 'about' help section. For non-English languages, exclude the word '501c3'. */
-"ABOUT_SECTION_FOOTER" = "Copyright Signal Messenger\nLicensed under the AGPLv3\nSignal is a 501c3 nonprofit";
+"ABOUT_SECTION_FOOTER" = "Аўтарскія правы Signal Messenger\nЛіцэнзія AGPLv3\nSignal — гэта некамерцыйная арганізацыя";
 
 /* Title for the 'about' help section */
 "ABOUT_SECTION_TITLE" = "Пра Signal";
@@ -1058,7 +1058,7 @@
 "BADGE_CONFIGURATION_TITLE" = "Значкі";
 
 /* When viewing someone else's badge, you'll see a sheet. If they got the badge by donating, a \"Donate to Signal\" button will be shown. This is the text in that button. */
-"BADGE_DETAILS_DONATE_TO_SIGNAL" = "Зрабіць ахвяраванне";
+"BADGE_DETAILS_DONATE_TO_SIGNAL" = "Ахвяраваць зараз";
 
 /* When viewing someone else's donor badge, you'll see a sheet. This is the title on that sheet. Embeds {badge owner's short name} */
 "BADGE_DETAILS_TITLE_FOR_SUPPORTER" = "%1$@ падтрымлівае Signal";
@@ -1073,7 +1073,7 @@
 "BADGE_EXPIRED_BOOST_TITLE" = "Тэрмін дзеяння значка скончыўся";
 
 /* Button text when a badge expires, asking users to donate */
-"BADGE_EXPIRED_DONATE_BUTTON" = "Зрабіць ахвяраванне";
+"BADGE_EXPIRED_DONATE_BUTTON" = "Ахвяраваць";
 
 /* Text for the 'learn more' link in a sheet explaining there's been an issue with your badge. */
 "BADGE_EXPIRED_LEARN_MORE_LINK" = "Даведацца больш.";
@@ -1394,7 +1394,7 @@
 "CALL_QUALITY_SURVEY_DEBUG_LOG_FOOTER" = "Інфармацыя, якую мы атрымліваем, датычыцца толькі інфармацыі нізкага ўзроўню адносна праграмы і не закранае змест вашых званкоў.";
 
 /* Header text explaining the purpose of sharing debug logs in the call quality survey. The text inside the <link> tags is tappable for viewing the diagnostic information. */
-"CALL_QUALITY_SURVEY_DEBUG_LOG_HEADER" = "Submitting will share your feedback along with <link>diagnostic information about your call</link>. You can optionally share a debug log to help us improve call quality.";
+"CALL_QUALITY_SURVEY_DEBUG_LOG_HEADER" = "Калі вы дасылаеце водгук, мы атрымліваем <link>інфармацыю аб дыягностыцы адносна вашага званка</link>. Па жаданні вы можаце даслаць нам журнал адладкі, каб мы маглі палепшыць якасць званкоў.";
 
 /* Link text to open a preview of debug logs in the call quality survey. Appended to CALL_QUALITY_SURVEY_DEBUG_LOG_FOOTER */
 "CALL_QUALITY_SURVEY_DEBUG_LOG_PREVIEW_LINK" = "Прагледзець журнал адладкі";
@@ -1406,7 +1406,7 @@
 "CALL_QUALITY_SURVEY_DEBUG_LOG_TOGGLE" = "Адправіць журнал адладкі";
 
 /* Title for preview of the call diagnostic info that will be sent with the survey */
-"CALL_QUALITY_SURVEY_DIAGNOSTICS_TITLE" = "Diagnostic Information";
+"CALL_QUALITY_SURVEY_DIAGNOSTICS_TITLE" = "Інфармацыя аб дыягностыцы";
 
 /* Button label for indicating the call did not have issues in the call quality survey */
 "CALL_QUALITY_SURVEY_GREAT_BUTTON" = "Выдатна";
@@ -2855,10 +2855,10 @@
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Краіна для абыходу цэнзуры";
 
 /* Users can donate to Signal with a credit or debit card. This is the heading on that screen, telling them how much they'll donate. Embeds {{formatted amount of money}}, such as \"$20\". */
-"DONATE_BUTTON" = "Зрабіць ахвяраванне %1$@";
+"DONATE_BUTTON" = "Ахвяраваць %1$@";
 
 /* Users can donate to Signal with a credit or debit card. This is the heading on that screen, telling them how much they'll donate every month. Embeds {{formatted amount of money}}, such as \"$20\". */
-"DONATE_BUTTON_MONTHLY" = "Зрабіць ахвяраванне %1$@/месяц";
+"DONATE_BUTTON_MONTHLY" = "Ахвяраваць %1$@/месяц";
 
 /* When users make donations, they can choose which payment method they want to use. This is the text on the button that lets them choose to pay with bank transfer. */
 "DONATE_CHOOSE_BANK_TRANSFER_AS_PAYMENT_METHOD" = "Банкаўскі перавод";
@@ -2879,10 +2879,10 @@
 "DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "Ахвяраванне %1$@ для Signal";
 
 /* When users make monthly donations, they see a sheet that lets them pick a payment method. This is the title on that sheet. Embeds {{amount of money per month}}, such as \"$5/month\". */
-"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_MONTHLY_DONATION" = "Зрабіць ахвяраванне %1$@ для Signal";
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_MONTHLY_DONATION" = "Ахвяраваць %1$@ для Signal";
 
 /* When users make one-time donations, they see a sheet that lets them pick a payment method. This is the title on that sheet. Embeds {{amount of money}}, such as \"$5\". */
-"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_ONE_TIME_DONATION" = "Зрабіць ахвяраванне %1$@ для Signal";
+"DONATE_CHOOSE_PAYMENT_METHOD_SHEET_TITLE_FOR_ONE_TIME_DONATION" = "Ахвяраваць %1$@ для Signal";
 
 /* Users can donate on a friend's behalf and can optionally add a message. This is tells users about that optional message. */
 "DONATE_ON_BEHALF_OF_A_FRIEND_ADDITIONAL_MESSAGE_INFO" = "Атрымальнік будзе апавешчаны аб ахвяраванні ў індывідуальным паведамленні. Дадайце сваё паведамленне ніжэй.";
@@ -3002,7 +3002,7 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_DESCRIPTION" = "Зрабіце ахвяраванне ад імя сябра або члена сям'і, карыстальнікаў Signal, каб падтрымаць Signal. Гэты карыстальнік, калі пажадае, зможа прадэманстраваць сваю падтрымку ў яго профілі.";
 
 /* Users can donate on behalf of a friend, and the friend will receive a badge. This is the title on the screen where users choose the badge their friend will receive. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_TITLE" = "Зрабіць ахвяраванне для сябра";
+"DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_BADGE_TITLE" = "Ахвяраваць для сябра";
 
 /* Title on the screen where you choose who you're going to donate on behalf of. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_CHOOSE_RECIPIENT_TITLE" = "Выбраць атрымальніка";
@@ -3029,10 +3029,10 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_PAYMENT_SUCCEEDED_BUT_MESSAGE_FAILED_ERROR_TITLE" = "Зрабіць ахвяраванне не атрымалася";
 
 /* A friend has donated on your behalf. This text is shown in the list of chats, when the most recent message is one of these donations. Embeds {friend's short display name}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_PREVIEW_INCOMING" = "✨ %1$@ зрабіў(-ла) ахвяраванне для вас";
+"DONATION_ON_BEHALF_OF_A_FRIEND_PREVIEW_INCOMING" = "✨ %1$@ ахвяраваў(-ла) вам";
 
 /* You have a made a donation on a friend's behalf. This text is shown in the list of chats, when the most recent message is one of these donations. Embeds {friend's short display name}. */
-"DONATION_ON_BEHALF_OF_A_FRIEND_PREVIEW_OUTGOING" = "✨ Вы зрабілі ахвяраванне для %1$@";
+"DONATION_ON_BEHALF_OF_A_FRIEND_PREVIEW_OUTGOING" = "✨ Вы ахвяравалі для %1$@";
 
 /* You received a donation from a friend. This is the title of that message in the chat. Embeds {{short contact name}}. */
 "DONATION_ON_BEHALF_OF_A_FRIEND_RECEIVED_TITLE_FORMAT" = "%1$@ ахвяравана для Signal ад вашага імя";
@@ -3071,16 +3071,16 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_YOU_RECEIVED_A_BADGE_FORMAT" = "%1$@ зрабіў(-ла) ахвяраванне для Signal ад вашага імя! Прадэманструйце сваю падтрымку Signal у вашым профілі.";
 
 /* Body text for a sheet discussing donating to Signal. */
-"DONATION_READ_MORE_SHEET_BODY" = "As an independent nonprofit, Signal is committed to private messaging and calls. No ads, no trackers, no surveillance. Donate today to support Signal.";
+"DONATION_READ_MORE_SHEET_BODY" = "Як незалежная некамерцыйная арганізацыя, Signal захоўвае канфідэнцыйнасць паведамленняў і званкоў. Без рэкламы, без трэкераў, без сачэння. Зрабіце ахвяраванне сёння, каб падтрымаць Signal.";
 
 /* Bullet point for a sheet discussing donating to Signal. */
-"DONATION_READ_MORE_SHEET_BULLET_1" = "Get an optional badge on your profile when you donate";
+"DONATION_READ_MORE_SHEET_BULLET_1" = "Вы атрымаеце дадатковы значок у сваім профілі, калі зробіце ахвяраванне";
 
 /* Bullet point for a sheet discussing donating to Signal. */
-"DONATION_READ_MORE_SHEET_BULLET_2" = "Your privacy is our mission";
+"DONATION_READ_MORE_SHEET_BULLET_2" = "Ваша канфідэнцыйнасць — наша місія";
 
 /* Bullet point for a sheet discussing donating to Signal. For non-English languages, skip the word 501c3, and skip the language about US donations being tax deductible. */
-"DONATION_READ_MORE_SHEET_BULLET_3" = "Signal is a 501c3 nonprofit. US donations are tax deductible.";
+"DONATION_READ_MORE_SHEET_BULLET_3" = "Signal — некамерцыйная арганізацыя";
 
 /* Section title for donation amount on receipts */
 "DONATION_RECEIPT_AMOUNT" = "Сума";
@@ -3128,19 +3128,19 @@
 "DONATION_REDIRECT_ERROR_PAYMENT_DENIED_MESSAGE" = "У аплаце адмоўлена. Паўтарыце спробу.";
 
 /* On the donation settings screen, tapping this button will take the user to a screen where they can donate. */
-"DONATION_SCREEN_DONATE_BUTTON" = "Зрабіць ахвяраванне";
+"DONATION_SCREEN_DONATE_BUTTON" = "Ахвяраваць";
 
 /* On donation screens, a small amount of information text is shown. This is the subtitle for that text. */
-"DONATION_SCREENS_HEADER_DESCRIPTION" = "Donate to support private messaging. Keep Signal independent and ad-free.";
+"DONATION_SCREENS_HEADER_DESCRIPTION" = "Рабіце ахвяравання, каб падтрымаць канфідэнцыйнасць паведамленняў. Дапамагайце, каб Signal заставаўся незалежным і без рэкламы.";
 
 /* On donation screens, a small amount of information text is shown. Users can click this link to learn more information. */
 "DONATION_SCREENS_HEADER_READ_MORE" = "Чытаць далей";
 
 /* On donation screens, a small amount of information text is shown. This is the title for that text. */
-"DONATION_SCREENS_HEADER_TITLE" = "Proudly Nonprofit";
+"DONATION_SCREENS_HEADER_TITLE" = "З гонарам кажам: мы некамерцыйная арганізацыя";
 
 /* Button title confirming the user wants to begin a new donation. */
-"DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_DONATE_ACTION" = "Зрабіць ахвяраванне";
+"DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_DONATE_ACTION" = "Ахвяраваць";
 
 /* Prompt confirming the user wants to abandon the current donation flow and start a new donation. */
 "DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_MESSAGE" = "Калі вы будзеце працягваць, гэта скасуе ваша апошняе ахвяраванне. С вас не будуць спісаны сродкі, але вы, магчыма, будзеце бачыць запыт на аплату ў сваёй банкаўскай праграме, пакуль не прымеце рашэнне. Вы ўпэўнены, што жадаеце зрабіць новае ахвяраванне?";
@@ -3206,7 +3206,7 @@
 "DONATION_SETTINGS_ONE_TIME_AMOUNT_FORMAT" = "%1$@ разава";
 
 /* Title for the \"donate for a friend\" button on the donation view. */
-"DONATION_VIEW_DONATE_ON_BEHALF_OF_A_FRIEND" = "Зрабіць ахвяраванне для сябра";
+"DONATION_VIEW_DONATE_ON_BEHALF_OF_A_FRIEND" = "Ахвяраваць для сябра";
 
 /* Text describing to the user that they're going to pay a donation to Signal */
 "DONATION_VIEW_DONATION_TO_SIGNAL" = "Ахвяраванне для Signal";
@@ -3227,7 +3227,7 @@
 "DONATION_VIEW_MY_SUPPORT_TITLE" = "Мая падтрымка";
 
 /* Title on the 'Donate to Signal' screen */
-"DONATION_VIEW_TITLE" = "Зрабіце ахвяраванне для Signal";
+"DONATION_VIEW_TITLE" = "Ахвяраваць для Signal";
 
 /* Label for the currency picker button in donation views */
 "DONATIONS_CURRENCY_PICKER_LABEL" = "Валюта";
@@ -3548,19 +3548,19 @@
 "GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "Новае паведамленне!";
 
 /* Title for the 'Get Started' banner */
-"GET_STARTED_BANNER_TITLE" = "Get Started";
+"GET_STARTED_BANNER_TITLE" = "Пачаць";
 
 /* 'Get Started' button direction users to avatar builder */
 "GET_STARTED_CARD_AVATAR_BUILDER" = "Дадаць фота";
 
 /* 'Get Started' button directing users to Chat Color settings */
-"GET_STARTED_CARD_CHAT_COLOR" = "Chat Color";
+"GET_STARTED_CARD_CHAT_COLOR" = "Колер чата";
 
 /* 'Get Started' button directing users to invite friends */
-"GET_STARTED_CARD_INVITE_FRIENDS" = "Invite Friends";
+"GET_STARTED_CARD_INVITE_FRIENDS" = "Запрасіць сяброў";
 
 /* 'Get Started' button directing users to create a group */
-"GET_STARTED_CARD_NEW_GROUP" = "New Group";
+"GET_STARTED_CARD_NEW_GROUP" = "Новая група";
 
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "Запытаны GIF-файл не атрыманы. Праверце падключэнне да інтэрнэту.";
@@ -5867,7 +5867,7 @@
 "ONBOARDING_SPLASH_HAVE_OLD_DEVICE_TITLE" = "Я маю стары тэлефон";
 
 /* Text indicating Signal is a nonprofit on the 'onboarding splash' view. For non-English languages, exclude the word '501c3'. */
-"ONBOARDING_SPLASH_NONPROFIT" = "Signal is a 501c3 nonprofit";
+"ONBOARDING_SPLASH_NONPROFIT" = "Signal — некамерцыйная арганізацыя";
 
 /* Button for restoring or transferring account in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_RESTORE_OR_TRANSFER_BUTTON_TITLE" = "Аднавіць або перанесці ўліковы запіс";
@@ -8081,7 +8081,7 @@
 "SETTINGS_DISAPPEARING_MESSAGES_FOOTER" = "Наладзьце таймер для знікнення паведамленняў па змоўчванні для ўсіх новых чатаў, што вы раней распачалі.";
 
 /* Title for the 'donate to signal' link in settings. */
-"SETTINGS_DONATE" = "Зрабіць ахвяраванне для Signal";
+"SETTINGS_DONATE" = "Ахвяраваць для Signal";
 
 /* Title for help button and help pages in app settings. */
 "SETTINGS_HELP" = "Дапамога";

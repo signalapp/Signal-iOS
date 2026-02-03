@@ -2,7 +2,7 @@
 "AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Jangan sekarang";
 
 /* Footer for the 'about' help section. For non-English languages, exclude the word '501c3'. */
-"ABOUT_SECTION_FOOTER" = "Copyright Signal Messenger\nLicensed under the AGPLv3\nSignal is a 501c3 nonprofit";
+"ABOUT_SECTION_FOOTER" = "Hak Cipta Signal Messenger\nBerlisensi AGPLv3\nSignal berstatus nirlaba";
 
 /* Title for the 'about' help section */
 "ABOUT_SECTION_TITLE" = "Tentang Signal";
@@ -206,10 +206,10 @@
 "APN_Message" = "Anda mungkin memiliki pesan baru";
 
 /* Shown in place of the text input box in a conversation when the app has expired and the user is no longer allowed to send messages. The embedded value is 'Update now' (translated via APP_EXPIRED_BOTTOM_UPDATE), and it will be formatted as a tappable link. */
-"APP_EXPIRED_BOTTOM" = "Versi Signal ini kedaluwarsa. %1$@ untuk mengirim dan menerima pesan.";
+"APP_EXPIRED_BOTTOM" = "Versi Signal ini kedaluwarsa. %1$@ agar dapat mengirim dan menerima pesan.";
 
 /* Shown in place of the text input box in a conversation when the app has expired and the user is no longer allowed to send messages. This value is a tappable link embedded in a larger sentence. */
-"APP_EXPIRED_BOTTOM_UPDATE" = "Perbarui sekarang";
+"APP_EXPIRED_BOTTOM_UPDATE" = "Mohon diperbarui";
 
 /* Default message for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal tidak dapat dibuka. Mohon kirimkan log debug ke support@signal.org agar kami bisa mengatasi masalah ini.";
@@ -1394,7 +1394,7 @@
 "CALL_QUALITY_SURVEY_DEBUG_LOG_FOOTER" = "Informasi yang dibagikan kepada kami berisi informasi aplikasi tingkat rendah dan tidak mencakup isi panggilan Anda.";
 
 /* Header text explaining the purpose of sharing debug logs in the call quality survey. The text inside the <link> tags is tappable for viewing the diagnostic information. */
-"CALL_QUALITY_SURVEY_DEBUG_LOG_HEADER" = "Submitting will share your feedback along with <link>diagnostic information about your call</link>. You can optionally share a debug log to help us improve call quality.";
+"CALL_QUALITY_SURVEY_DEBUG_LOG_HEADER" = "Dengan mengirim ini, Anda akan memberikan masukan lengkap dengan <link>informasi diagnostik terkait panggilan Anda</link>. Anda bebas menentukan apakah ingin berbagi catatan debug atau tidak, yang akan membantu kami meningkatkan kualitas panggilan.";
 
 /* Link text to open a preview of debug logs in the call quality survey. Appended to CALL_QUALITY_SURVEY_DEBUG_LOG_FOOTER */
 "CALL_QUALITY_SURVEY_DEBUG_LOG_PREVIEW_LINK" = "Lihat catatan debug";
@@ -1406,7 +1406,7 @@
 "CALL_QUALITY_SURVEY_DEBUG_LOG_TOGGLE" = "Bagikan Catatan Debug";
 
 /* Title for preview of the call diagnostic info that will be sent with the survey */
-"CALL_QUALITY_SURVEY_DIAGNOSTICS_TITLE" = "Diagnostic Information";
+"CALL_QUALITY_SURVEY_DIAGNOSTICS_TITLE" = "Informasi Diagnostik";
 
 /* Button label for indicating the call did not have issues in the call quality survey */
 "CALL_QUALITY_SURVEY_GREAT_BUTTON" = "Aman";
@@ -3071,16 +3071,16 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_YOU_RECEIVED_A_BADGE_FORMAT" = "%1$@ memberikan donasi ke Signal atas nama Anda! Tunjukkan dukungan untuk Signal di profil Anda.";
 
 /* Body text for a sheet discussing donating to Signal. */
-"DONATION_READ_MORE_SHEET_BODY" = "As an independent nonprofit, Signal is committed to private messaging and calls. No ads, no trackers, no surveillance. Donate today to support Signal.";
+"DONATION_READ_MORE_SHEET_BODY" = "Dengan status nirlaba dan independen, Signal berkomitmen menyediakan layanan perpesanan dan panggilan privat. Tanpa iklan, tanpa pelacak, tanpa pengawasan. Beri donasi sekarang untuk mendukung Signal.";
 
 /* Bullet point for a sheet discussing donating to Signal. */
-"DONATION_READ_MORE_SHEET_BULLET_1" = "Get an optional badge on your profile when you donate";
+"DONATION_READ_MORE_SHEET_BULLET_1" = "Dapatkan lencana opsional di profil setelah berdonasi";
 
 /* Bullet point for a sheet discussing donating to Signal. */
-"DONATION_READ_MORE_SHEET_BULLET_2" = "Your privacy is our mission";
+"DONATION_READ_MORE_SHEET_BULLET_2" = "Privasi Anda adalah misi kami";
 
 /* Bullet point for a sheet discussing donating to Signal. For non-English languages, skip the word 501c3, and skip the language about US donations being tax deductible. */
-"DONATION_READ_MORE_SHEET_BULLET_3" = "Signal is a 501c3 nonprofit. US donations are tax deductible.";
+"DONATION_READ_MORE_SHEET_BULLET_3" = "Signal berstatus nirlaba.";
 
 /* Section title for donation amount on receipts */
 "DONATION_RECEIPT_AMOUNT" = "Jumlah";
@@ -3131,13 +3131,13 @@
 "DONATION_SCREEN_DONATE_BUTTON" = "Donasi";
 
 /* On donation screens, a small amount of information text is shown. This is the subtitle for that text. */
-"DONATION_SCREENS_HEADER_DESCRIPTION" = "Donate to support private messaging. Keep Signal independent and ad-free.";
+"DONATION_SCREENS_HEADER_DESCRIPTION" = "Beri donasi untuk mendukung perpesanan privat. Pastikan Signal tetap independen dan bebas iklan.";
 
 /* On donation screens, a small amount of information text is shown. Users can click this link to learn more information. */
 "DONATION_SCREENS_HEADER_READ_MORE" = "Baca lebih lanjut";
 
 /* On donation screens, a small amount of information text is shown. This is the title for that text. */
-"DONATION_SCREENS_HEADER_TITLE" = "Proudly Nonprofit";
+"DONATION_SCREENS_HEADER_TITLE" = "Bangga Berstatus Nirlaba";
 
 /* Button title confirming the user wants to begin a new donation. */
 "DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_DONATE_ACTION" = "Donasi";
@@ -3548,19 +3548,19 @@
 "GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "Pesan Baru!";
 
 /* Title for the 'Get Started' banner */
-"GET_STARTED_BANNER_TITLE" = "Get Started";
+"GET_STARTED_BANNER_TITLE" = "Mulai";
 
 /* 'Get Started' button direction users to avatar builder */
 "GET_STARTED_CARD_AVATAR_BUILDER" = "Tambah Foto";
 
 /* 'Get Started' button directing users to Chat Color settings */
-"GET_STARTED_CARD_CHAT_COLOR" = "Chat Color";
+"GET_STARTED_CARD_CHAT_COLOR" = "Warna Chat";
 
 /* 'Get Started' button directing users to invite friends */
-"GET_STARTED_CARD_INVITE_FRIENDS" = "Invite Friends";
+"GET_STARTED_CARD_INVITE_FRIENDS" = "Undang Teman";
 
 /* 'Get Started' button directing users to create a group */
-"GET_STARTED_CARD_NEW_GROUP" = "New Group";
+"GET_STARTED_CARD_NEW_GROUP" = "Grup Baru";
 
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "Gagal untuk menghadirkan GIF yang diinginkan. Mohon verifikasi Anda daring.";
@@ -4790,7 +4790,7 @@
 "LINK_NEW_DEVICE_SYNC_PROGRESS_PERCENT" = "%1$@ selesai";
 
 /* Title for a progress modal that would be indicating the sync progress while it's cancelling that sync */
-"LINK_NEW_DEVICE_SYNC_PROGRESS_TILE_CANCELLING" = "Membatalkan…";
+"LINK_NEW_DEVICE_SYNC_PROGRESS_TILE_CANCELLING" = "Membatalkan …";
 
 /* Title for a progress modal indicating the sync progress */
 "LINK_NEW_DEVICE_SYNC_PROGRESS_TITLE" = "Menyinkronkan Pesan …";
@@ -5867,7 +5867,7 @@
 "ONBOARDING_SPLASH_HAVE_OLD_DEVICE_TITLE" = "Ponsel lama saya masih ada";
 
 /* Text indicating Signal is a nonprofit on the 'onboarding splash' view. For non-English languages, exclude the word '501c3'. */
-"ONBOARDING_SPLASH_NONPROFIT" = "Signal is a 501c3 nonprofit";
+"ONBOARDING_SPLASH_NONPROFIT" = "Signal berstatus nirlaba";
 
 /* Button for restoring or transferring account in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_RESTORE_OR_TRANSFER_BUTTON_TITLE" = "Pulihkan atau Transfer Akun";

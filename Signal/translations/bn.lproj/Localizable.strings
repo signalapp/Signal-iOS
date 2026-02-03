@@ -2,7 +2,7 @@
 "AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "এখন নয়";
 
 /* Footer for the 'about' help section. For non-English languages, exclude the word '501c3'. */
-"ABOUT_SECTION_FOOTER" = "Copyright Signal Messenger\nLicensed under the AGPLv3\nSignal is a 501c3 nonprofit";
+"ABOUT_SECTION_FOOTER" = "কপিরাইট Signal মেসেঞ্জার\n AGPLv3-এর অধীনে লাইসেন্সপ্রাপ্ত\n Signal একটি অলাভজনক প্রতিষ্ঠান";
 
 /* Title for the 'about' help section */
 "ABOUT_SECTION_TITLE" = "Signal সম্পর্কে";
@@ -1394,7 +1394,7 @@
 "CALL_QUALITY_SURVEY_DEBUG_LOG_FOOTER" = "আমাদের সাথে শেয়ার করা তথ্যে অ্যাপ সংক্রান্ত খুব সাধারণ কিছু তথ্য রয়েছে এবং এতে আপনার কলের কোনো কন্টেন্ট অন্তর্ভুক্ত থাকে না।";
 
 /* Header text explaining the purpose of sharing debug logs in the call quality survey. The text inside the <link> tags is tappable for viewing the diagnostic information. */
-"CALL_QUALITY_SURVEY_DEBUG_LOG_HEADER" = "Submitting will share your feedback along with <link>diagnostic information about your call</link>. You can optionally share a debug log to help us improve call quality.";
+"CALL_QUALITY_SURVEY_DEBUG_LOG_HEADER" = "জমা দিলে আপনার <link>কল সম্পর্কে ডায়াগনস্টিক তথ্যের</link> পাশাপাশি আপনার প্রতিক্রিয়াও শেয়ার করা হবে। কলের মান উন্নত করতে আমাদের সাহায্য করার জন্য ইচ্ছা হলে আপনি একটি ডিবাগ লগ শেয়ার করতে পারেন।";
 
 /* Link text to open a preview of debug logs in the call quality survey. Appended to CALL_QUALITY_SURVEY_DEBUG_LOG_FOOTER */
 "CALL_QUALITY_SURVEY_DEBUG_LOG_PREVIEW_LINK" = "ডিবাগ লগ দেখুন";
@@ -1406,7 +1406,7 @@
 "CALL_QUALITY_SURVEY_DEBUG_LOG_TOGGLE" = "ডিবাগ লগ শেয়ার করুন";
 
 /* Title for preview of the call diagnostic info that will be sent with the survey */
-"CALL_QUALITY_SURVEY_DIAGNOSTICS_TITLE" = "Diagnostic Information";
+"CALL_QUALITY_SURVEY_DIAGNOSTICS_TITLE" = "ডায়াগনস্টিক তথ্য";
 
 /* Button label for indicating the call did not have issues in the call quality survey */
 "CALL_QUALITY_SURVEY_GREAT_BUTTON" = "দারুণ";
@@ -3071,16 +3071,16 @@
 "DONATION_ON_BEHALF_OF_A_FRIEND_YOU_RECEIVED_A_BADGE_FORMAT" = "%1$@ আপনার পক্ষ হয়ে Signal-এ একটি ডোনেশন দিয়েছেন! আপনার প্রোফাইলে Signal-এর জন্য আপনার সমর্থন প্রদর্শন করুন।";
 
 /* Body text for a sheet discussing donating to Signal. */
-"DONATION_READ_MORE_SHEET_BODY" = "As an independent nonprofit, Signal is committed to private messaging and calls. No ads, no trackers, no surveillance. Donate today to support Signal.";
+"DONATION_READ_MORE_SHEET_BODY" = "একটি স্বাধীন অলাভজনক প্রতিষ্ঠান হিসেবে, Signal ব্যক্তিগত মেসেজ ও কলের সার্ভিস প্রদানের জন্য প্রতিশ্রুতিবদ্ধ। নেই কোনো বিজ্ঞাপন, নেই কোনো ট্র্যাকার, নেই কোনো নজরদারি। Signal-কে সহায়তা করার জন্য আজই ডোনেট করুন।";
 
 /* Bullet point for a sheet discussing donating to Signal. */
-"DONATION_READ_MORE_SHEET_BULLET_1" = "Get an optional badge on your profile when you donate";
+"DONATION_READ_MORE_SHEET_BULLET_1" = "ডোনেট করার ফলে ইচ্ছা হলে আপনার প্রোফাইলের জন্য একটি ব্যাজ নিতে পারেন";
 
 /* Bullet point for a sheet discussing donating to Signal. */
-"DONATION_READ_MORE_SHEET_BULLET_2" = "Your privacy is our mission";
+"DONATION_READ_MORE_SHEET_BULLET_2" = "আপনার গোপনীয়তা রক্ষাই আমাদের লক্ষ্য";
 
 /* Bullet point for a sheet discussing donating to Signal. For non-English languages, skip the word 501c3, and skip the language about US donations being tax deductible. */
-"DONATION_READ_MORE_SHEET_BULLET_3" = "Signal is a 501c3 nonprofit. US donations are tax deductible.";
+"DONATION_READ_MORE_SHEET_BULLET_3" = "Signal একটি অলাভজনক প্রতিষ্ঠান। মার্কিন যুক্তরাষ্ট্রে ডোনেশনের ক্ষেত্রে কর ছাড় পাওয়া যায়।";
 
 /* Section title for donation amount on receipts */
 "DONATION_RECEIPT_AMOUNT" = "পরিমাণ";
@@ -3131,13 +3131,13 @@
 "DONATION_SCREEN_DONATE_BUTTON" = "ডোনেট করুন";
 
 /* On donation screens, a small amount of information text is shown. This is the subtitle for that text. */
-"DONATION_SCREENS_HEADER_DESCRIPTION" = "Donate to support private messaging. Keep Signal independent and ad-free.";
+"DONATION_SCREENS_HEADER_DESCRIPTION" = "ব্যক্তিগত মেসেজ পাঠানো চালিয়ে যাওয়া সমর্থন করতে ডোনেট করুন। Signal-কে স্বাধীন ও বিজ্ঞাপনমুক্ত রাখুন।";
 
 /* On donation screens, a small amount of information text is shown. Users can click this link to learn more information. */
 "DONATION_SCREENS_HEADER_READ_MORE" = "আরও পড়ুন";
 
 /* On donation screens, a small amount of information text is shown. This is the title for that text. */
-"DONATION_SCREENS_HEADER_TITLE" = "Proudly Nonprofit";
+"DONATION_SCREENS_HEADER_TITLE" = "গর্বিত অলাভজনক প্রতিষ্ঠান";
 
 /* Button title confirming the user wants to begin a new donation. */
 "DONATION_SETTINGS_CANCEL_DONATION_AWAITING_AUTHORIZATION_DONATE_ACTION" = "ডোনেট করুন";
@@ -3548,19 +3548,19 @@
 "GENERIC_INCOMING_MESSAGE_NOTIFICATION" = "নতুন বার্তা!";
 
 /* Title for the 'Get Started' banner */
-"GET_STARTED_BANNER_TITLE" = "Get Started";
+"GET_STARTED_BANNER_TITLE" = "শুরু করা যাক";
 
 /* 'Get Started' button direction users to avatar builder */
 "GET_STARTED_CARD_AVATAR_BUILDER" = "ছবি যোগ করুন";
 
 /* 'Get Started' button directing users to Chat Color settings */
-"GET_STARTED_CARD_CHAT_COLOR" = "Chat Color";
+"GET_STARTED_CARD_CHAT_COLOR" = "চ্যাটের রং";
 
 /* 'Get Started' button directing users to invite friends */
-"GET_STARTED_CARD_INVITE_FRIENDS" = "Invite Friends";
+"GET_STARTED_CARD_INVITE_FRIENDS" = "বন্ধুদের আমন্ত্রণ জানান";
 
 /* 'Get Started' button directing users to create a group */
-"GET_STARTED_CARD_NEW_GROUP" = "New Group";
+"GET_STARTED_CARD_NEW_GROUP" = "নতুন গ্রুপ";
 
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "অনুরোধ করা জিফ আনতে ব্যর্থ। আপনি অনলাইনে যুক্ত আছেন কিনা দয়া করে যাচাই করুন।";
@@ -5867,7 +5867,7 @@
 "ONBOARDING_SPLASH_HAVE_OLD_DEVICE_TITLE" = "আমার পুরানো ফোন আছে";
 
 /* Text indicating Signal is a nonprofit on the 'onboarding splash' view. For non-English languages, exclude the word '501c3'. */
-"ONBOARDING_SPLASH_NONPROFIT" = "Signal is a 501c3 nonprofit";
+"ONBOARDING_SPLASH_NONPROFIT" = "Signal একটি অলাভজনক প্রতিষ্ঠান";
 
 /* Button for restoring or transferring account in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_RESTORE_OR_TRANSFER_BUTTON_TITLE" = "অ্যাকাউন্ট পুনর্বহাল বা ট্রান্সফার করুন";
