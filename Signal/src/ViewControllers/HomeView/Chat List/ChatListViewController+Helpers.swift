@@ -195,6 +195,7 @@ extension ChatListViewController {
                 threadViewModel: threadViewModel,
                 action: .none,
                 focusMessageId: nil,
+                scrollToNewestMessages: true,
                 tx: tx,
             )
         }

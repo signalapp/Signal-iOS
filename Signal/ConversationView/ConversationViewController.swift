@@ -67,6 +67,7 @@ public final class ConversationViewController: OWSViewController {
         threadViewModel: ThreadViewModel,
         action: ConversationViewAction,
         focusMessageId: String?,
+        scrollToNewestMessages: Bool = false,
         tx: DBReadTransaction,
     ) -> ConversationViewController {
         let thread = threadViewModel.threadRecord
@@ -82,6 +83,12 @@ public final class ConversationViewController: OWSViewController {
         if let focusMessageId {
             loadAroundMessageId = focusMessageId
             scrollToMessageId = focusMessageId
+        } else if scrollToNewestMessages {
+            // When scrollToNewestMessages is true, load and scroll to the most recent
+            // messages instead of the first unread message. This is useful for 3D Touch
+            // previews where users want to see the current conversation state.
+            loadAroundMessageId = nil
+            scrollToMessageId = nil
         } else if let oldestUnreadMessage {
             loadAroundMessageId = oldestUnreadMessage.uniqueId
             // Set this to `nil` so that we scroll to the unread divider.
