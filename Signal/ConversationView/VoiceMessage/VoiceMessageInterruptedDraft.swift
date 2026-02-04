@@ -25,10 +25,16 @@ final class VoiceMessageInterruptedDraft: VoiceMessageSendableDraft {
     private let threadUniqueId: String
     private let audioFileUrl: URL
     private let waveformFileUrl: URL
+    private let recordingFormatFileUrl: URL
+    private let recordingFormat: VoiceMessageRecordingFormat
 
     init(threadUniqueId: String, directoryUrl: URL) {
         self.threadUniqueId = threadUniqueId
-        self.audioFileUrl = URL(fileURLWithPath: Constants.audioFilename, relativeTo: directoryUrl)
+        self.recordingFormatFileUrl = URL(fileURLWithPath: Constants.recordingFormatFilename, relativeTo: directoryUrl)
+        let detectedFormat = VoiceMessageInterruptedDraft.loadRecordingFormat(from: recordingFormatFileUrl) ?? .m4a
+        self.recordingFormat = detectedFormat
+        let audioFilename = detectedFormat == .wav ? Constants.wavAudioFilename : Constants.audioFilename
+        self.audioFileUrl = URL(fileURLWithPath: audioFilename, relativeTo: directoryUrl)
         self.waveformFileUrl = URL(fileURLWithPath: Constants.waveformFilename, relativeTo: directoryUrl)
     }
 
@@ -70,9 +76,33 @@ final class VoiceMessageInterruptedDraft: VoiceMessageSendableDraft {
 
     // MARK: -
 
+    var voiceMessageRecordingFormat: VoiceMessageRecordingFormat {
+        recordingFormat
+    }
+
     func prepareForSending() throws -> URL {
-        let temporaryAudioFileUrl = OWSFileSystem.temporaryFileUrl()
+        let temporaryAudioFileUrl = OWSFileSystem.temporaryFileUrl(
+            fileExtension: voiceMessageRecordingFormat.fileExtension,
+        )
         try FileManager.default.copyItem(at: audioFileUrl, to: temporaryAudioFileUrl)
         return temporaryAudioFileUrl
+    }
+
+    static func storeRecordingFormat(_ recordingFormat: VoiceMessageRecordingFormat, in directoryUrl: URL) {
+        let formatFileUrl = URL(
+            fileURLWithPath: Constants.recordingFormatFilename,
+            relativeTo: directoryUrl,
+        )
+        do {
+            try recordingFormat.rawValue.data(using: .utf8)?.write(to: formatFileUrl, options: .atomic)
+        } catch {
+            owsFailDebug("Failed to store voice memo format \(error)")
+        }
+    }
+
+    private static func loadRecordingFormat(from formatFileUrl: URL) -> VoiceMessageRecordingFormat? {
+        guard let data = try? Data(contentsOf: formatFileUrl) else { return nil }
+        guard let stringValue = String(data: data, encoding: .utf8) else { return nil }
+        return VoiceMessageRecordingFormat(rawValue: stringValue.trimmingCharacters(in: .whitespacesAndNewlines))
     }
 }

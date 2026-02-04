@@ -212,6 +212,9 @@ public class SignalAttachment: CustomDebugStringConvertible {
             // around this.
             //
             // TODO: Remove this Nov. 2016 or after.
+            if dataUTI == UTType.wav.identifier {
+                return "audio/wav"
+            }
             return "audio/aac"
         }
         return MimeTypeUtil.mimeTypeForDataSource(dataSource, dataUTI: dataUTI)

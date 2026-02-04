@@ -2822,6 +2822,9 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
 
     @objc
     private func handleVoiceMemoLongPress(gesture: UILongPressGestureRecognizer) {
+        if gesture.state == .began {
+            pendingVoiceMemoRecordingFormat = .m4a
+        }
         handleVoiceMemoGesture(gesture: gesture)
     }
 
@@ -2833,6 +2836,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         // Only allow starting a recording during the secret window.
         if gesture.state == .began {
             isSecretVoiceMemoGestureInProgress = true
+            pendingVoiceMemoRecordingFormat = .wav
             disarmSecretVoiceMemoWindow()
         }
         if gesture.state == .ended || gesture.state == .cancelled || gesture.state == .failed {
@@ -3144,6 +3148,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
     private var secretVoiceMemoArmedUntil: Date?
     private var secretVoiceMemoDisarmWorkItem: DispatchWorkItem?
     private var isSecretVoiceMemoGestureInProgress = false
+    private var pendingVoiceMemoRecordingFormat: VoiceMessageRecordingFormat = .m4a
 
     private var isSecretVoiceMemoWindowActive: Bool {
         guard let secretVoiceMemoArmedUntil else { return false }
@@ -3179,6 +3184,12 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         guard secretVoiceMemoArmedUntil.timeIntervalSinceNow <= 0 else { return }
         disarmSecretVoiceMemoWindow()
         disableSecretVoiceMemoGestureIfPossible()
+    }
+
+    func consumeVoiceMemoRecordingFormat() -> VoiceMessageRecordingFormat {
+        let format = pendingVoiceMemoRecordingFormat
+        pendingVoiceMemoRecordingFormat = .m4a
+        return format
     }
 
     @objc

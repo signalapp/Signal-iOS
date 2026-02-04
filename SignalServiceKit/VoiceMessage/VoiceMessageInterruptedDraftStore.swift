@@ -20,7 +20,9 @@ public class VoiceMessageInterruptedDraftStore {
 
     public enum Constants {
         public static let audioFilename = "voice-memo.\(VoiceMessageConstants.fileExtension)"
+        public static let wavAudioFilename = "voice-memo.wav"
         public static let waveformFilename = "waveform.dat"
+        public static let recordingFormatFilename = "format.txt"
     }
 
     // MARK: -
@@ -59,7 +61,9 @@ public class VoiceMessageInterruptedDraftStore {
             }
             return [
                 directoryPath.appendingPathComponent(Constants.audioFilename),
+                directoryPath.appendingPathComponent(Constants.wavAudioFilename),
                 directoryPath.appendingPathComponent(Constants.waveformFilename),
+                directoryPath.appendingPathComponent(Constants.recordingFormatFilename),
             ]
         }.reduce([], +))
     }
@@ -79,13 +83,18 @@ public class VoiceMessageInterruptedDraftStore {
         keyValueStore.removeValue(forKey: threadUniqueId, transaction: transaction)
     }
 
-    public static func saveDraft(audioFileUrl: URL, threadUniqueId: String, transaction: DBWriteTransaction) -> URL {
+    public static func saveDraft(
+        audioFileUrl: URL,
+        threadUniqueId: String,
+        transaction: DBWriteTransaction,
+        audioFilename: String = Constants.audioFilename,
+    ) -> URL {
         let relativeDirectoryPath = UUID().uuidString
         keyValueStore.setString(relativeDirectoryPath, key: threadUniqueId, transaction: transaction)
         let directoryUrl = directoryUrl(relativePath: relativeDirectoryPath)
         do {
             OWSFileSystem.ensureDirectoryExists(directoryUrl.path)
-            try OWSFileSystem.moveFile(from: audioFileUrl, to: directoryUrl.appendingPathComponent(Constants.audioFilename))
+            try OWSFileSystem.moveFile(from: audioFileUrl, to: directoryUrl.appendingPathComponent(audioFilename))
         } catch {
             owsFailDebug("Failed to move voice memo draft")
         }

@@ -23,13 +23,20 @@ final class VoiceMessageInProgressDraft: VoiceMessageSendableDraft {
     private let audioActivity: AudioActivity
     private let audioSession: AudioSession
     private let sleepManager: any DeviceSleepManager
+    private let recordingFormat: VoiceMessageRecordingFormat
 
-    init(thread: TSThread, audioSession: AudioSession, sleepManager: any DeviceSleepManager) {
+    init(
+        thread: TSThread,
+        audioSession: AudioSession,
+        sleepManager: any DeviceSleepManager,
+        recordingFormat: VoiceMessageRecordingFormat = .m4a,
+    ) {
         self.threadUniqueId = thread.uniqueId
-        self.audioFileUrl = OWSFileSystem.temporaryFileUrl(fileExtension: "m4a")
+        self.audioFileUrl = OWSFileSystem.temporaryFileUrl(fileExtension: recordingFormat.fileExtension)
         self.audioActivity = AudioActivity(audioDescription: "Voice Message Recording", behavior: .playAndRecord)
         self.audioSession = audioSession
         self.sleepManager = sleepManager
+        self.recordingFormat = recordingFormat
     }
 
     deinit {
@@ -43,6 +50,8 @@ final class VoiceMessageInProgressDraft: VoiceMessageSendableDraft {
     private var audioRecorder: AVAudioRecorder?
 
     var isRecording: Bool { audioRecorder?.isRecording ?? false }
+
+    var voiceMessageRecordingFormat: VoiceMessageRecordingFormat { recordingFormat }
 
     func startRecording() throws {
         AssertIsOnMainThread()
@@ -59,12 +68,7 @@ final class VoiceMessageInProgressDraft: VoiceMessageSendableDraft {
         do {
             audioRecorder = try AVAudioRecorder(
                 url: audioFileUrl,
-                settings: [
-                    AVFormatIDKey: kAudioFormatMPEG4AAC,
-                    AVSampleRateKey: 44100,
-                    AVNumberOfChannelsKey: 1,
-                    AVEncoderBitRateKey: 32000,
-                ],
+                settings: recordingFormat.recorderSettings,
             )
             self.audioRecorder = audioRecorder
         } catch {
@@ -129,11 +133,21 @@ final class VoiceMessageInProgressDraft: VoiceMessageSendableDraft {
     private(set) var duration: TimeInterval?
 
     func convertToDraft(transaction: DBWriteTransaction) -> VoiceMessageInterruptedDraft {
+        let audioFilename = recordingFormat == .wav
+            ? VoiceMessageInterruptedDraftStore.Constants.wavAudioFilename
+            : VoiceMessageInterruptedDraftStore.Constants.audioFilename
         let directoryUrl = VoiceMessageInterruptedDraftStore.saveDraft(
             audioFileUrl: audioFileUrl,
             threadUniqueId: threadUniqueId,
             transaction: transaction,
+            audioFilename: audioFilename,
         )
+        if recordingFormat != .m4a {
+            VoiceMessageInterruptedDraft.storeRecordingFormat(
+                recordingFormat,
+                in: directoryUrl,
+            )
+        }
         return VoiceMessageInterruptedDraft(threadUniqueId: threadUniqueId, directoryUrl: directoryUrl)
     }
 

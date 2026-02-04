@@ -14,10 +14,12 @@ extension ConversationViewController {
         // Cancel any ongoing audio playback.
         AppEnvironment.shared.cvAudioPlayerRef.stopAll()
 
+        let recordingFormat = inputToolbar?.consumeVoiceMemoRecordingFormat() ?? .m4a
         let inProgressVoiceMessage = VoiceMessageInProgressDraft(
             thread: thread,
             audioSession: SUIEnvironment.shared.audioSessionRef,
             sleepManager: DependenciesBridge.shared.deviceSleepManager!,
+            recordingFormat: recordingFormat,
         )
         viewState.inProgressVoiceMessage = inProgressVoiceMessage
 

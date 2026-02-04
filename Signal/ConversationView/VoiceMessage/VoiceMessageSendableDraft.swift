@@ -8,8 +8,54 @@ import Foundation
 import SignalServiceKit
 import SignalUI
 import UniformTypeIdentifiers
+import AVFoundation
+
+enum VoiceMessageRecordingFormat: String {
+    case m4a
+    case wav
+
+    var fileExtension: String {
+        switch self {
+        case .m4a:
+            return "m4a"
+        case .wav:
+            return "wav"
+        }
+    }
+
+    var dataUTI: String {
+        switch self {
+        case .m4a:
+            return UTType.mpeg4Audio.identifier
+        case .wav:
+            return UTType.wav.identifier
+        }
+    }
+
+    var recorderSettings: [String: Any] {
+        switch self {
+        case .m4a:
+            return [
+                AVFormatIDKey: kAudioFormatMPEG4AAC,
+                AVSampleRateKey: 44100,
+                AVNumberOfChannelsKey: 1,
+                AVEncoderBitRateKey: 32000,
+            ]
+        case .wav:
+            return [
+                AVFormatIDKey: kAudioFormatLinearPCM,
+                AVSampleRateKey: 44100,
+                AVNumberOfChannelsKey: 1,
+                AVLinearPCMBitDepthKey: 16,
+                AVLinearPCMIsFloatKey: false,
+                AVLinearPCMIsBigEndianKey: false,
+            ]
+        }
+    }
+}
 
 protocol VoiceMessageSendableDraft {
+    var voiceMessageRecordingFormat: VoiceMessageRecordingFormat { get }
     func prepareForSending() throws -> URL
 }
 
@@ -21,7 +67,7 @@ extension VoiceMessageSendableDraft {
         return String(
             format: "signal-%@.%@",
             dateString,
-            VoiceMessageConstants.fileExtension,
+            voiceMessageRecordingFormat.fileExtension,
         )
     }
 
@@ -33,7 +79,7 @@ extension VoiceMessageSendableDraft {
 
         return try PreviewableAttachment.voiceMessageAttachment(
             dataSource: dataSource,
-            dataUTI: UTType.mpeg4Audio.identifier,
+            dataUTI: voiceMessageRecordingFormat.dataUTI,
             attachmentLimits: attachmentLimits,
         )
     }
