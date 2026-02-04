@@ -462,12 +462,16 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         return button
     }()
 
-    private lazy var stickerButton = Buttons.stickerButton(
-        primaryAction: UIAction { [weak self] _ in
-            self?.stickerButtonPressed()
-        },
-        accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "stickerButton"),
-    )
+    private lazy var stickerButton: UIButton = {
+        let button = Buttons.stickerButton(
+            primaryAction: UIAction { [weak self] _ in
+                self?.stickerButtonPressed()
+            },
+            accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "stickerButton"),
+        )
+        button.addGestureRecognizer(secretVoiceMemoLongPressGesture)
+        return button
+    }()
 
     private lazy var keyboardButton = Buttons.keyboardButton(
         primaryAction: UIAction { [weak self] _ in
@@ -492,6 +496,17 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         longPressGestureRecognizer.minimumPressDuration = 0
         button.addGestureRecognizer(longPressGestureRecognizer)
         return button
+    }()
+
+    private lazy var secretVoiceMemoLongPressGesture: UILongPressGestureRecognizer = {
+        let longPressGestureRecognizer = UILongPressGestureRecognizer(
+            target: self,
+            action: #selector(handleSecretVoiceMemoLongPress(gesture:)),
+        )
+        longPressGestureRecognizer.minimumPressDuration = 0.5
+        longPressGestureRecognizer.cancelsTouchesInView = true
+        longPressGestureRecognizer.isEnabled = false
+        return longPressGestureRecognizer
     }()
 
     private lazy var trailingEdgeControl: UIView = {
@@ -2807,6 +2822,27 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
 
     @objc
     private func handleVoiceMemoLongPress(gesture: UILongPressGestureRecognizer) {
+        handleVoiceMemoGesture(gesture: gesture)
+    }
+
+    @objc
+    private func handleSecretVoiceMemoLongPress(gesture: UILongPressGestureRecognizer) {
+        let isArmedOrActive = isSecretVoiceMemoWindowActive || isSecretVoiceMemoGestureInProgress
+        guard isArmedOrActive else { return }
+
+        // Only allow starting a recording during the secret window.
+        if gesture.state == .began {
+            isSecretVoiceMemoGestureInProgress = true
+            disarmSecretVoiceMemoWindow()
+        }
+        if gesture.state == .ended || gesture.state == .cancelled || gesture.state == .failed {
+            isSecretVoiceMemoGestureInProgress = false
+            disableSecretVoiceMemoGestureIfPossible()
+        }
+        handleVoiceMemoGesture(gesture: gesture)
+    }
+
+    private func handleVoiceMemoGesture(gesture: UILongPressGestureRecognizer) {
         switch gesture.state {
 
         case .possible, .cancelled, .failed:
@@ -3105,6 +3141,46 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
 
     private lazy var textInputViewTapGesture = UITapGestureRecognizer(target: self, action: #selector(textInputViewTapped))
 
+    private var secretVoiceMemoArmedUntil: Date?
+    private var secretVoiceMemoDisarmWorkItem: DispatchWorkItem?
+    private var isSecretVoiceMemoGestureInProgress = false
+
+    private var isSecretVoiceMemoWindowActive: Bool {
+        guard let secretVoiceMemoArmedUntil else { return false }
+        return secretVoiceMemoArmedUntil.timeIntervalSinceNow > 0
+    }
+
+    private func armSecretVoiceMemoWindow() {
+        secretVoiceMemoArmedUntil = Date().addingTimeInterval(3)
+        secretVoiceMemoLongPressGesture.isEnabled = true
+
+        secretVoiceMemoDisarmWorkItem?.cancel()
+        let workItem = DispatchWorkItem { [weak self] in
+            self?.disarmSecretVoiceMemoWindowIfExpired()
+        }
+        secretVoiceMemoDisarmWorkItem = workItem
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3, execute: workItem)
+    }
+
+    private func disarmSecretVoiceMemoWindow() {
+        secretVoiceMemoArmedUntil = nil
+        secretVoiceMemoDisarmWorkItem?.cancel()
+        secretVoiceMemoDisarmWorkItem = nil
+        disableSecretVoiceMemoGestureIfPossible()
+    }
+
+    private func disableSecretVoiceMemoGestureIfPossible() {
+        guard secretVoiceMemoLongPressGesture.state == .possible else { return }
+        secretVoiceMemoLongPressGesture.isEnabled = false
+    }
+
+    private func disarmSecretVoiceMemoWindowIfExpired() {
+        guard let secretVoiceMemoArmedUntil else { return }
+        guard secretVoiceMemoArmedUntil.timeIntervalSinceNow <= 0 else { return }
+        disarmSecretVoiceMemoWindow()
+        disableSecretVoiceMemoGestureIfPossible()
+    }
+
     @objc
     private func textInputViewTapped() {
         clearDesiredKeyboard()
@@ -3131,7 +3207,9 @@ extension ConversationInputToolbar {
             editTarget = nil
             quotedReplyDraft = nil
             clearTextMessage(animated: true)
+            disarmSecretVoiceMemoWindow()
         } else {
+            armSecretVoiceMemoWindow()
             toggleKeyboardType(.attachment, animated: true)
         }
     }
@@ -3159,6 +3237,7 @@ extension ConversationInputToolbar {
 
     private func stickerButtonPressed() {
         ImpactHapticFeedback.impactOccurred(style: .light)
+        disarmSecretVoiceMemoWindow()
 
         var hasInstalledStickerPacks: Bool = false
         SSKEnvironment.shared.databaseStorageRef.read { transaction in
