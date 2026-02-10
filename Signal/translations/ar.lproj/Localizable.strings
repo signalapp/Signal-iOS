@@ -3095,7 +3095,7 @@
 "DONATION_RECEIPT_EXPORT_RECEIPT_BUTTON" = "مشاركة الإيصال";
 
 /* Footer text at the bottom of donation receipts */
-"DONATION_RECEIPT_FOOTER" = "نشكرك على دعم سيجنال. تُمكِّننا مساهمتك من الالتزام بمهمة تطوير تقنية خصوصية مفتوحة المصدر تحمي حرية التعبير وتتيح اتصالًا عالميًا آمنًا للملايين عبر العالم. إذا كُنتَ من المقيمين بالولايات المتحدة الأمريكية، يُرجى الاحتفاظ بهذا الإيصال لتقديمه إلى مصلحة الضرائب. مؤسسة تكنولوجيا سيجنال‬ مؤسسة خيرية عمومية وغير ربحية، أُحدِثَت بالولايات المتحدة اﻷمريكية، وهي معفية من الضرائب بموجب الفقرة 501c3 من قانون الإيرادات الداخلية. مُعرِّفنا الضريبي هو ‎82-4506840.‎";
+"DONATION_RECEIPT_FOOTER" = "نشكرك على دعم سيجنال. تُمكِّننا مساهمتك من الالتزام بمهمة تطوير تقنية خصوصية مفتوحة المصدر تحمي حرية التعبير وتتيح اتصالًا عالميًا آمنًا للملايين عبر العالم. إذا كُنتَ من المقيمين بالولايات المتحدة الأمريكية، يُرجى الاحتفاظ بهذا الإيصال لتقديمه إلى مصلحة الضرائب. مؤسسة تكنولوجيا سيجنال‬ مؤسسة خيرية عمومية وغير ربحية، أُحدِثَت بالولايات المتحدة اﻷمريكية، وهي معفية من الضرائب. مُعرِّفنا الضريبي هو ‎82-4506840.‎";
 
 /* Title for receipts for donations given on a friend's behalf */
 "DONATION_RECEIPT_FOR_DONATION_ON_BEHALF_OF_A_FRIEND" = "التبرُّع لصديق";
@@ -4997,7 +4997,7 @@
 "MEMBER_LABEL_ADD" = "أضِف دور للعضو";
 
 /* Accessibility prefix for member labels. */
-"MEMBER_LABEL_AX_PREFIX" = "Member label: ";
+"MEMBER_LABEL_AX_PREFIX" = "دور العضو: ";
 
 /* Heading shown above the preview of a message bubble with the edited member label. */
 "MEMBER_LABEL_PREVIEW_HEADING" = "مُعاينة";
@@ -7586,40 +7586,40 @@
 "SAFETY_NUMBER_SHARE_FORMAT" = "رقم أمان سيجنال الخاص بنا:\n%1$@";
 
 /* Title for a button offering automatic key verification. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_BUTTON_VERIFY" = "Verify Automatically";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_BUTTON_VERIFY" = "التحقُّق تلقائيًا";
 
 /* Title for a button when automatic key verification fails. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_BUTTON_VERIFY_FAILURE" = "Auto-Verification Unavailable";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_BUTTON_VERIFY_FAILURE" = "التحقُّق التلقائي غير متوفر";
 
 /* Title for a button when automatic key verification succeeds. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_BUTTON_VERIFY_SUCCESS" = "Encryption Verified";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_BUTTON_VERIFY_SUCCESS" = "تمَّ التحقُّق من التشفير";
 
 /* Title for a button while automatic key verification is ongoing. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_BUTTON_VERIFYING" = "Verifying Encryption…";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_BUTTON_VERIFYING" = "جارٍ التحقُّق من التشفير…";
 
 /* Body for a sheet explaining that encryption auto-verification did not succeed. Embeds {{ 1: the contact's name }}. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "Signal can no longer automatically verify the encryption for this chat. This is likely because %1$@ changed their phone number. Verify end-to-end encryption manually by comparing the numbers on the previous screen or scanning the code on their device.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "لم يعد سيجنال قادرًا على التحقُّق تلقائيًا من التشفير لهذه الدردشة. هذا على الأرجح لأن %1$@ غيَّر رقم هاتفه. التحقُّق من التشفير من طرف لطرف يدويًا عن طريق مقارنة الأرقام على الشاشة السابقة أو مسح الكود على جهازه(ا).";
 
 /* Title for a sheet explaining that encryption auto-verification did not succeed. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_TITLE" = "Auto-verification is no longer available for this chat";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_TITLE" = "التحقُّق التلقائي غير متوفِّر لهذه الدردشة.";
 
 /* Footer explaining that automatic verification is not available for all chats */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FOOTER" = "Auto-verification is not available for all chats.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FOOTER" = "التحقُّق التلقائي غير متوفر لكل الدردشات.";
 
 /* Header for automatic key verification */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_HEADER" = "Automatic Key Verification";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_HEADER" = "التحقُّق التلقائي من المفاتيح";
 
 /* Body for a sheet explaining that encryption auto-verification is not available. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_NOT_AVAILABLE_SHEET_BODY" = "Signal can only automatically verify the encryption in chats where you’re connected to someone via a phone number. If the chat was started with a username or a group in common, verify end-to-end encryption by comparing the numbers on the previous screen or scanning the code on their device.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_NOT_AVAILABLE_SHEET_BODY" = "يمكن لسيجنال التحقُّق تلقائيًا من التشفير في الدردشات التي تكون متصلًا فيها بشخص ما عبر رقم الهاتف. إذا تمَّ بدء الدردشة باسم مُستخدِم أو مجموعة مشتركة، تحقَّق من التشفير من طرف لطرف من خلال مقارنة الأرقام على الشاشة السابقة أو مسح الكود على جهازه(ا).";
 
 /* Title for a sheet explaining that encryption auto-verification is not available. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_NOT_AVAILABLE_SHEET_TITLE" = "Auto-verification not available for this chat";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_NOT_AVAILABLE_SHEET_TITLE" = "التحقُّق التلقائي غير متوفِّر لهذه الدردشة.";
 
 /* Body for a sheet explaining that encryption auto-verification succeeded. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_SUCCESS_SHEET_BODY" = "For contacts you’re connected to by phone number, Signal can automatically confirm whether the connection is secure using a process called key transparency. For added security, verify end-to-end encryption manually by comparing the numbers on the previous screen or scanning the code on their device.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_SUCCESS_SHEET_BODY" = "بالنسبة لجهات الاتصال المرتبطين بك عبر رقم الهاتف، يمكن لتطبيق سيجنال التحقُّق تلقائيًا من أمان الاتصال باستخدام عملية تُسمّى شفافية المفاتيح. للمزيد من الأمان، تحقَّق من التشفير من طرف لطرف يدويًا من خلال مقارنة الأرقام على الشاشة السابقة أو مسح الكود على جهازه(ا).";
 
 /* Title for a sheet explaining that encryption auto-verification succeeded. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_SUCCESS_SHEET_TITLE" = "Encryption was auto-verified for this chat";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_SUCCESS_SHEET_TITLE" = "تمَّ التحقُّق من التشفير تلقائيًا لهذه الدردشة.";
 
 /* Title for Safety Tips button in thread details. */
 "SAFETY_TIPS_BUTTON_ACTION_TITLE" = "نصائح السلامة";

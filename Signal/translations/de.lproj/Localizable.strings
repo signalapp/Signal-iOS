@@ -4997,7 +4997,7 @@
 "MEMBER_LABEL_ADD" = "Mitgliedslabel hinzufügen";
 
 /* Accessibility prefix for member labels. */
-"MEMBER_LABEL_AX_PREFIX" = "Member label: ";
+"MEMBER_LABEL_AX_PREFIX" = "Mitgliedslabel: ";
 
 /* Heading shown above the preview of a message bubble with the edited member label. */
 "MEMBER_LABEL_PREVIEW_HEADING" = "Vorschau";
@@ -7586,40 +7586,40 @@
 "SAFETY_NUMBER_SHARE_FORMAT" = "Unsere Signal-Sicherheitsnummer:\n%1$@";
 
 /* Title for a button offering automatic key verification. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_BUTTON_VERIFY" = "Verify Automatically";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_BUTTON_VERIFY" = "Automatisch verifizieren";
 
 /* Title for a button when automatic key verification fails. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_BUTTON_VERIFY_FAILURE" = "Auto-Verification Unavailable";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_BUTTON_VERIFY_FAILURE" = "Automatische Verifizierung nicht verfügbar";
 
 /* Title for a button when automatic key verification succeeds. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_BUTTON_VERIFY_SUCCESS" = "Encryption Verified";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_BUTTON_VERIFY_SUCCESS" = "Verschlüsselung verifiziert";
 
 /* Title for a button while automatic key verification is ongoing. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_BUTTON_VERIFYING" = "Verifying Encryption…";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_BUTTON_VERIFYING" = "Verschlüsselung wird verifiziert…";
 
 /* Body for a sheet explaining that encryption auto-verification did not succeed. Embeds {{ 1: the contact's name }}. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "Signal can no longer automatically verify the encryption for this chat. This is likely because %1$@ changed their phone number. Verify end-to-end encryption manually by comparing the numbers on the previous screen or scanning the code on their device.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "Signal kann die Verschlüsselung für diesen Chat nicht mehr automatisch verifizieren. Das liegt wahrscheinlich daran, dass sich die Telefonnummer von %1$@ geändert hat. Verifiziere die Ende-zu-Ende-Verschlüsselung manuell, indem du die Zahlen auf dem vorherigen Bildschirm vergleichst oder den Code auf dem Gerät scannst.";
 
 /* Title for a sheet explaining that encryption auto-verification did not succeed. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_TITLE" = "Auto-verification is no longer available for this chat";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_TITLE" = "Die automatische Verifizierung ist für diesen Chat nicht mehr verfügbar";
 
 /* Footer explaining that automatic verification is not available for all chats */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FOOTER" = "Auto-verification is not available for all chats.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FOOTER" = "Eine automatische Verifizierung ist nicht für alle Chats verfügbar.";
 
 /* Header for automatic key verification */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_HEADER" = "Automatic Key Verification";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_HEADER" = "Automatische Schlüssel-Verifizierung";
 
 /* Body for a sheet explaining that encryption auto-verification is not available. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_NOT_AVAILABLE_SHEET_BODY" = "Signal can only automatically verify the encryption in chats where you’re connected to someone via a phone number. If the chat was started with a username or a group in common, verify end-to-end encryption by comparing the numbers on the previous screen or scanning the code on their device.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_NOT_AVAILABLE_SHEET_BODY" = "Signal kann die Verschlüsselung in Chats nur automatisch verifizieren, wenn du mit jemandem über eine Telefonnummer verbunden bist. Wenn der Chat mit einem Nutzernamen oder einer gemeinsamen Gruppe begonnen wurde, verifiziere die Ende-zu-Ende-Verschlüsselung, indem du die Zahlen auf dem vorherigen Bildschirm vergleichst oder den Code auf dem Gerät scannst.";
 
 /* Title for a sheet explaining that encryption auto-verification is not available. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_NOT_AVAILABLE_SHEET_TITLE" = "Auto-verification not available for this chat";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_NOT_AVAILABLE_SHEET_TITLE" = "Die automatische Verifizierung ist für diesen Chat nicht verfügbar";
 
 /* Body for a sheet explaining that encryption auto-verification succeeded. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_SUCCESS_SHEET_BODY" = "For contacts you’re connected to by phone number, Signal can automatically confirm whether the connection is secure using a process called key transparency. For added security, verify end-to-end encryption manually by comparing the numbers on the previous screen or scanning the code on their device.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_SUCCESS_SHEET_BODY" = "Bei Kontakten, mit denen du über eine Telefonnummer verbunden bist, überprüft Signal mithilfe eines Verfahrens namens »Schlüssel-Transparenz« automatisch, ob die Verbindung sicher ist. Für zusätzliche Sicherheit kannst zu die Ende-zu-Ende-Verschlüsselung manuell verifizieren, indem du die Zahlen auf dem vorherigen Bildschirm vergleichst oder den Code auf dem Gerät scannst.";
 
 /* Title for a sheet explaining that encryption auto-verification succeeded. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_SUCCESS_SHEET_TITLE" = "Encryption was auto-verified for this chat";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_SUCCESS_SHEET_TITLE" = "Die Verschlüsselung wurde für diesen Chat automatisch verifiziert";
 
 /* Title for Safety Tips button in thread details. */
 "SAFETY_TIPS_BUTTON_ACTION_TITLE" = "Sicherheitstipps";

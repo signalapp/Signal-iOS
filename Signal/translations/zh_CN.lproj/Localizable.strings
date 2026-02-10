@@ -4997,7 +4997,7 @@
 "MEMBER_LABEL_ADD" = "添加成员标签";
 
 /* Accessibility prefix for member labels. */
-"MEMBER_LABEL_AX_PREFIX" = "Member label: ";
+"MEMBER_LABEL_AX_PREFIX" = "成员标签： ";
 
 /* Heading shown above the preview of a message bubble with the edited member label. */
 "MEMBER_LABEL_PREVIEW_HEADING" = "预览";
@@ -7586,40 +7586,40 @@
 "SAFETY_NUMBER_SHARE_FORMAT" = "我们的 Signal 安全码:\n%1$@";
 
 /* Title for a button offering automatic key verification. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_BUTTON_VERIFY" = "Verify Automatically";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_BUTTON_VERIFY" = "自动验证";
 
 /* Title for a button when automatic key verification fails. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_BUTTON_VERIFY_FAILURE" = "Auto-Verification Unavailable";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_BUTTON_VERIFY_FAILURE" = "自动验证不可用";
 
 /* Title for a button when automatic key verification succeeds. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_BUTTON_VERIFY_SUCCESS" = "Encryption Verified";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_BUTTON_VERIFY_SUCCESS" = "加密已验证";
 
 /* Title for a button while automatic key verification is ongoing. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_BUTTON_VERIFYING" = "Verifying Encryption…";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_BUTTON_VERIFYING" = "正在验证加密…";
 
 /* Body for a sheet explaining that encryption auto-verification did not succeed. Embeds {{ 1: the contact's name }}. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "Signal can no longer automatically verify the encryption for this chat. This is likely because %1$@ changed their phone number. Verify end-to-end encryption manually by comparing the numbers on the previous screen or scanning the code on their device.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "Signal 已无法自动验证此聊天的加密。这可能是因为 %1$@ 更改了手机号码。请通过比对前一个屏幕上的数字或扫描对方设备上的二维码手动验证端对端加密。";
 
 /* Title for a sheet explaining that encryption auto-verification did not succeed. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_TITLE" = "Auto-verification is no longer available for this chat";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_TITLE" = "此聊天已无法使用自动验证";
 
 /* Footer explaining that automatic verification is not available for all chats */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FOOTER" = "Auto-verification is not available for all chats.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FOOTER" = "自动验证并非对所有聊天均可用。";
 
 /* Header for automatic key verification */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_HEADER" = "Automatic Key Verification";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_HEADER" = "自动密钥验证";
 
 /* Body for a sheet explaining that encryption auto-verification is not available. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_NOT_AVAILABLE_SHEET_BODY" = "Signal can only automatically verify the encryption in chats where you’re connected to someone via a phone number. If the chat was started with a username or a group in common, verify end-to-end encryption by comparing the numbers on the previous screen or scanning the code on their device.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_NOT_AVAILABLE_SHEET_BODY" = "Signal 只能对通过手机号码连接的联系人的聊天进行自动加密验证。如果使用用户名或在共同群组中发起聊天，请通过比对前一个屏幕上的数字或扫描对方设备上的二维码验证端对端加密。";
 
 /* Title for a sheet explaining that encryption auto-verification is not available. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_NOT_AVAILABLE_SHEET_TITLE" = "Auto-verification not available for this chat";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_NOT_AVAILABLE_SHEET_TITLE" = "此聊天无法使用自动验证";
 
 /* Body for a sheet explaining that encryption auto-verification succeeded. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_SUCCESS_SHEET_BODY" = "For contacts you’re connected to by phone number, Signal can automatically confirm whether the connection is secure using a process called key transparency. For added security, verify end-to-end encryption manually by comparing the numbers on the previous screen or scanning the code on their device.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_SUCCESS_SHEET_BODY" = "对于通过手机号码连接的联系人，Signal 可以使用一个名为“密钥透明度”的流程自动确认连接是否安全。如要提高安全性，您可以比对前一个屏幕上的数字或扫描对方设备上的二维码以手动验证端对端加密。";
 
 /* Title for a sheet explaining that encryption auto-verification succeeded. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_SUCCESS_SHEET_TITLE" = "Encryption was auto-verified for this chat";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_SUCCESS_SHEET_TITLE" = "此聊天加密已自动验证";
 
 /* Title for Safety Tips button in thread details. */
 "SAFETY_TIPS_BUTTON_ACTION_TITLE" = "安全提示";

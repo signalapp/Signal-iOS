@@ -10,7 +10,7 @@
 
 • Signal ist für deine Privatsphäre gemacht. Wir wissen nichts über dich oder mit wem du sprichst. Unser Open Source-Signal Protokoll bedeutet, dass wir deine Nachrichten nicht lesen und deine Anrufe nicht mithören können. Ebenso wenig wie alle anderen. Keine Hintertüren, keine Datensammlung, keine Kompromisse. 
 
-• Signal ist unabhängig und nicht auf Gewinn ausgerichtet – eine andere Art von Technologie von einer anderen Art von Organisation. Als 501c3 Non-Profit-Organisation werden wir durch deine Spenden unterstützt, nicht durch Werbekunden oder Investoren. 
+• Signal ist unabhängig und nicht auf Gewinn ausgerichtet – eine andere Art von Technologie von einer anderen Art von Organisation. Als Non-Profit-Organisation werden wir durch deine Spenden unterstützt, nicht durch Werbekunden oder Investoren. 
 
 • Für Support, Fragen oder weitere Informationen besuche bitte https://support.signal.org/
 

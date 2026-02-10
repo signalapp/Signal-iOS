@@ -203,7 +203,7 @@
 "ALL_SIGNAL_CONNECTIONS_TITLE" = "모든 커넥션";
 
 /* notification body */
-"APN_Message" = "새 메시지가 있을 수 있음";
+"APN_Message" = "새 메시지가 있을 수 있어요";
 
 /* Shown in place of the text input box in a conversation when the app has expired and the user is no longer allowed to send messages. The embedded value is 'Update now' (translated via APP_EXPIRED_BOTTOM_UPDATE), and it will be formatted as a tappable link. */
 "APP_EXPIRED_BOTTOM" = "이 Signal 버전은 만료되었습니다. 메시지를 주고받으려면 %1$@하세요.";
@@ -266,7 +266,7 @@
 "APP_LAUNCH_FAILURE_WIPE_APP_DATA_CONFIRMATION_MESSAGE" = "모든 앱 데이터가 영구 삭제됩니다. 이 작업은 앱을 실행할 수 없는 경우에만 필요합니다.";
 
 /* Title for an action sheet confirming the user wants to wipe all app data. */
-"APP_LAUNCH_FAILURE_WIPE_APP_DATA_CONFIRMATION_TITLE" = "모든 앱 데이터를 초기화하시겠습니까?";
+"APP_LAUNCH_FAILURE_WIPE_APP_DATA_CONFIRMATION_TITLE" = "모든 앱 데이터를 초기화할까요?";
 
 /* Text prompting user to edit their profile name. */
 "APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "이름을 입력해주세요";
@@ -575,7 +575,7 @@
 "BACKUP_ONBOARDING_CANCEL_SHEET_MESSAGE" = "백업 설정을 완료하지 않았으며 백업이 생성되지 않았습니다. 설정에서 백업을 활성화할 수 있습니다.";
 
 /* Title for action sheet when attempting to cancel backup onboarding */
-"BACKUP_ONBOARDING_CANCEL_SHEET_TITLE" = "백업 설정을 종료하시겠습니까?";
+"BACKUP_ONBOARDING_CANCEL_SHEET_TITLE" = "백업 설정을 종료할까요?";
 
 /* Body for a sheet warning users to their 'Recovery Key' safe. */
 "BACKUP_ONBOARDING_CONFIRM_KEY_KEEP_KEY_SAFE_SHEET_BODY" = "키를 분실할 경우 Signal은 백업을 복원하도록 도와드릴 수 없습니다. 안전한 곳에 키를 보관해 두고, 다른 사람과 공유하지 마세요.";
@@ -683,7 +683,7 @@
 "BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_MESSAGE" = "셀룰러 데이터를 사용하여 백업할 경우 데이터 요금이 발생할 수 있습니다. WiFi 네트워크에 연결하거나, 셀룰러 데이터를 통한 백업을 허용할 수 있습니다.";
 
 /* Title for an action sheet explaining that performing a backup failed because WiFi is required. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_TITLE" = "백업에서 셀룰러 데이터를 사용하도록 허용하시겠습니까?";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_TITLE" = "백업 시 셀룰러 데이터 사용을 허락할까요?";
 
 /* Message for an action sheet explaining that performing a backup failed with a network error. */
 "BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NETWORK_ERROR" = "백업을 만드는 중 오류가 발생했습니다. 인터넷 연결을 확인하고 다시 시도하세요.";
@@ -947,7 +947,7 @@
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_DOWNLOAD_SHEET_NOW_ACTION" = "지금 다운로드";
 
 /* Title for an action sheet allowing users to download their offloaded media. */
-"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_DOWNLOAD_SHEET_TITLE" = "오프로드된 미디어를 다운로드하시겠습니까?";
+"BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_DOWNLOAD_SHEET_TITLE" = "오프로드된 미디어를 다운로드할까요?";
 
 /* Message for an action sheet warning users who are testers about the Optimize Local Storage feature. */
 "BACKUP_SETTINGS_OPTIMIZE_LOCAL_STORAGE_TESTER_WARNING_SHEET_MESSAGE" = "오프로드된 미디어는 TestFlight를 사용하는 한 계속 사용할 수 있습니다. 테스트 프로그램을 종료하기 전에 모든 미디어 파일을 다운로드하세요.";
@@ -983,7 +983,7 @@
 "BACKUP_SETTINGS_SKIP_DOWNLOADS_WARNING_SHEET_MESSAGE" = "이 기기에 없는 백업 데이터가 있습니다. 유료 구독을 하지 않으면 미디어와 첨부 파일이 영구 삭제됩니다.";
 
 /* Title for a sheet warning the user about skipping downloads. */
-"BACKUP_SETTINGS_SKIP_DOWNLOADS_WARNING_SHEET_TITLE" = "다운로드를 건너뛰시겠습니까?";
+"BACKUP_SETTINGS_SKIP_DOWNLOADS_WARNING_SHEET_TITLE" = "다운로드를 건너뛸까요?";
 
 /* Title for detail button in notice that the user's Backups subscription couldn't be redeemed. */
 "BACKUP_SETTINGS_SUBSCRIPTION_ALREADY_REDEEMED_NOTICE_DETAIL_BUTTON" = "세부 정보";
@@ -1274,7 +1274,7 @@
 "CALL_AUDIO_MISSED_WEEK_NOTIFICATION_BODY_FORMAT" = "📞 %1$@ 부재중 음성 통화";
 
 /* Alert message when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_MESSAGE" = "Signal에서 전화 또는 음성 메시지를 녹음하려면 iOS 설정 앱에서 마이크 접근 권한을 허용해야 합니다.";
+"CALL_AUDIO_PERMISSION_MESSAGE" = "Signal에서 통화하거나 음성 메시지를 녹음하려면 iOS 설정 앱에서 마이크 접근 권한을 허용해야 합니다.";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "마이크 접근 권한 필요";
@@ -1520,7 +1520,7 @@
 "CALL_VIEW_MUTE_LABEL" = "알림 끄기";
 
 /* Error displayed on the 'call' view when the callee needs to grant permission before we can call them. Embeds {callee short name}. */
-"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%1$@ 님이 메시지 요청을 받게 됩니다. 메시지 요청이 수락된 후 전화를 걸 수 있습니다.";
+"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%1$@ 님께 메시지 요청이 전송됩니다. 메시지 요청이 수락되면 통화를 시작할 수 있습니다.";
 
 /* Accessibility label to toggle front- vs. rear-facing camera */
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "카메라 방향 전환";
@@ -1841,7 +1841,7 @@
 "CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_PROCEED_BUTTON" = "플랜 변경";
 
 /* Title for an action sheet confirming the user wants to downgrade their Backup plan. */
-"CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_TITLE" = "무료로 다운그레이드하시겠습니까?";
+"CHOOSE_BACKUP_PLAN_DOWNGRADE_CONFIRMATION_ACTION_SHEET_TITLE" = "무료 버전으로 다운그레이드하시겠어요?";
 
 /* Title for the free plan option, when choosing a Backup plan. */
 "CHOOSE_BACKUP_PLAN_FREE_PLAN_TITLE" = "무료";
@@ -1916,16 +1916,16 @@
 "CONFIRM_DELETE_DATA_TEXT" = "이 작업을 수행하면 메시지가 삭제되며 앱이 초기화됩니다. 완료되면 앱이 종료됩니다.";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_DATA_TITLE" = "모든 데이터를 삭제하시겠습니까?";
+"CONFIRM_DELETE_DATA_TITLE" = "정말 모든 데이터를 삭제하시겠어요?";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_LINKED_DATA_TEXT" = "이 기기에서 모든 메시지를 삭제하여 애플리케이션을 초기화합니다. 언제든 휴대전화를 다시 연결할 수 있으나 삭제한 메시지는 복원할 수 없습니다. 프로세스가 완료되면 앱이 자동으로 종료됩니다.";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TITLE" = "모든 데이터를 삭제하시겠습니까?";
+"CONFIRM_DELETE_LINKED_DATA_TITLE" = "정말 모든 데이터를 삭제하시겠어요?";
 
 /* Alert body */
-"CONFIRM_LEAVE_GROUP_DESCRIPTION" = "이 그룹에서 메시지를 보내거나 받을 수 없게 됩니다.";
+"CONFIRM_LEAVE_GROUP_DESCRIPTION" = "이 그룹에서 메시지를 주고받을 수 없게 됩니다.";
 
 /* Alert title */
 "CONFIRM_LEAVE_GROUP_TITLE" = "이 그룹에서 나가시겠어요?";
@@ -2312,7 +2312,7 @@
 "CONVERSATION_SETTINGS_MENTIONS_LABEL" = "멘션";
 
 /* Button to message the chat */
-"CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "메세지";
+"CONVERSATION_SETTINGS_MESSAGE_BUTTON" = "메시지";
 
 /* Title for the mute action sheet */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "다음 기간 동안 이 대화 알림 끄기…";
@@ -2366,19 +2366,19 @@
 "CONVERSATION_SETTINGS_PERMISSIONS" = "권한";
 
 /* Label for 'remove from group' button in conversation settings view. */
-"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON" = "그룹에서 제거";
+"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON" = "그룹에서 내보내기";
 
 /* Format for title for 'remove from group' confirmation alert. Embeds {user to remove from the group}. */
-"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "%1$@ 님을 그룹에서 제거하시겠습니까?";
+"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "%1$@ 님을 그룹에서 내보낼까요?";
 
 /* Label for 'report spam' action in conversation settings view. */
 "CONVERSATION_SETTINGS_REPORT_SPAM" = "스팸 신고";
 
 /* Label for 'revoke group admin' button in conversation settings view. */
-"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "관리자 권한으로 제거";
+"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "관리자 권한 해제";
 
 /* Format for title for 'revoke group admin' confirmation alert. Embeds {user to revoke admin status from}. */
-"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "%1$@ 님을 그룹 관리자 권한으로 제거하시겠습니까?";
+"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "%1$@ 님의 그룹 관리자 권한을 해제할까요?";
 
 /* Button to search the chat */
 "CONVERSATION_SETTINGS_SEARCH_BUTTON" = "검색";
@@ -2429,7 +2429,7 @@
 "CONVERSATION_VIEW_JOIN_CALL" = "통화 참여하기";
 
 /* Indicates that the app is loading more messages in this conversation. */
-"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "메시지 더 가져오는 중…";
+"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "메시지 더 불러오는 중…";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "더 보기";
@@ -2609,7 +2609,7 @@
 "DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_MESSAGE" = "이후 Signal 계정이 삭제되고 애플리케이션이 재설정됩니다. 프로세스가 완료되면 앱이 닫힙니다.";
 
 /* Title for the action sheet confirmation title of the 'delete account confirmation' view controller. */
-"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "계정을 삭제하시겠습니까?";
+"DELETE_ACCOUNT_CONFIRMATION_ACTION_SHEEET_TITLE" = "정말 계정을 삭제하시겠어요?";
 
 /* Title for the 'country code' row of the 'delete account confirmation' view controller. */
 "DELETE_ACCOUNT_CONFIRMATION_COUNTRY_CODE_TITLE" = "국가 코드";
@@ -2651,19 +2651,19 @@
 "DELETE_CONTACT_ACTION_SHEET_EXPLANATION" = "이 사용자를 내 휴대폰 연락처에서 삭제합니다. 검색 시 이 사용자가 표시되지 않습니다. 향후 해당 사용자가 메시지를 보내는 경우 메시지 요청이 수신됩니다.";
 
 /* Title of action sheet confirming the user wants to delete a system contact. */
-"DELETE_CONTACT_ACTION_SHEET_TITLE" = "연락처를 삭제하고 목록에서 제거할까요?";
+"DELETE_CONTACT_ACTION_SHEET_TITLE" = "연락처를 삭제하고 목록에서 내보낼까요?";
 
 /* Title of button for deleting system contact. */
 "DELETE_CONTACT_BUTTON" = "연락처 삭제";
 
 /* Toast message confirming the system contact was deleted. Embeds {{The name of the user who was deleted.}}. */
-"DELETE_CONTACT_CONFIRMATION_TOAST" = "내 연락처에서 %1$@ 님을 삭제하고 제거했습니다.";
+"DELETE_CONTACT_CONFIRMATION_TOAST" = "내 연락처에서 %1$@ 님을 삭제했습니다.";
 
 /* Title for an action sheet button explaining that a message will be deleted. */
 "DELETE_FOR_ME_NOTE_TO_SELF_ACTION_SHEET_BUTTON_TITLE" = "삭제";
 
 /* Header text for an action sheet confirming deleting a message in Note to Self. */
-"DELETE_FOR_ME_NOTE_TO_SELF_ACTION_SHEET_HEADER" = "메시지를 삭제하시겠습니까?";
+"DELETE_FOR_ME_NOTE_TO_SELF_ACTION_SHEET_HEADER" = "메시지를 삭제할까요?";
 
 /* Subheader for an action sheet explaining that a Note to Self deleted on this device will be deleted on the user's other devices as well. */
 "DELETE_FOR_ME_NOTE_TO_SELF_LINKED_DEVICES_PRESENT_ACTION_SHEET_SUBHEADER" = "모든 기기에서 이 메시지를 삭제합니다.";
@@ -2678,7 +2678,7 @@
 "DEREGISTRATION_REREGISTER_BUTTON" = "재등록";
 
 /* Title for prompt that lets users re-register using the same phone number. */
-"DEREGISTRATION_REREGISTER_PROMPT_TITLE" = "이 전화번호를 다시 등록하시겠습니까?";
+"DEREGISTRATION_REREGISTER_PROMPT_TITLE" = "이 전화번호를 다시 등록할까요?";
 
 /* Label warning the user that they have been de-registered. */
 "DEREGISTRATION_WARNING" = "이 기기의 등록이 해제됐습니다. 다른 기기에서 Signal에 전화번호를 등록했기 때문일 가능성이 높습니다.";
@@ -2726,7 +2726,7 @@
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "새 기기로 추가";
 
 /* The title for the device transfer 'choice' view */
-"DEVICE_TRANSFER_CHOICE_TITLE" = "계정 및 메시지 이동";
+"DEVICE_TRANSFER_CHOICE_TITLE" = "계정 및 메시지 이전";
 
 /* The body for the device transfer 'choice' view 'transfer' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "이전 iOS 기기에서 계정과 메시지 기록 이동하기";
@@ -2792,7 +2792,7 @@
 "DEVICE_TRANSFER_TRY_AGAIN_ACTION" = "다시 시도";
 
 /* table cell label in conversation settings */
-"DISAPPEARING_MESSAGES" = "사라지는 메시지";
+"DISAPPEARING_MESSAGES" = "자동 삭제 메시지";
 
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
 "DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "%1$@ 뒤 이 대화의 메시지가 사라집니다.";
@@ -2813,13 +2813,13 @@
 "DISAPPEARING_MESSAGES_DESCRIPTION" = "이 기능을 켤 경우, 대화에서 주고받는 새 메시지는 확인 후 자동 삭제됩니다.";
 
 /* Accessibility hint that contains current timeout information */
-"DISAPPEARING_MESSAGES_HINT" = "현재 메시지가 %1$@ 후 사라지도록 설정됨";
+"DISAPPEARING_MESSAGES_HINT" = "메시지가 %1$@ 후 자동 삭제되도록 설정되어 있습니다";
 
 /* The unit for a number of hours */
 "DISAPPEARING_MESSAGES_HOURS" = "시간";
 
 /* Accessibility label for disappearing messages */
-"DISAPPEARING_MESSAGES_LABEL" = "사라지는 메시지 설정";
+"DISAPPEARING_MESSAGES_LABEL" = "자동 삭제 메시지 설정";
 
 /* The unit for a number of minutes */
 "DISAPPEARING_MESSAGES_MINUTES" = "분";
@@ -2828,7 +2828,7 @@
 "DISAPPEARING_MESSAGES_SECONDS" = "초";
 
 /* subheading in privacy settings */
-"DISAPPEARING_MESSAGES_UNIVERSAL_DESCRIPTION" = "활성화하면 내가 시작한 새 대화에서 주고받은 새 메시지는 본 후에 사라집니다.";
+"DISAPPEARING_MESSAGES_UNIVERSAL_DESCRIPTION" = "이 기능을 활성화하면 내가 시작한 새 대화에서 주고받은 메시지는 확인 후 자동으로 사라집니다.";
 
 /* The unit for a number of weeks */
 "DISAPPEARING_MESSAGES_WEEKS" = "주";
@@ -2849,7 +2849,7 @@
 "DISPLAY_BADGES_ON_PROFILE_SETTING" = "프로필에 배지 표시";
 
 /* Title for the proxy confirmation */
-"DO_YOU_WANT_TO_USE_PROXY" = "이 프록시 주소를 사용하시겠습니까?";
+"DO_YOU_WANT_TO_USE_PROXY" = "이 프록시 주소를 사용하시겠어요?";
 
 /* Section title for the 'domain fronting country' view. */
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "검열 우회 위치";
@@ -3131,7 +3131,7 @@
 "DONATION_SCREEN_DONATE_BUTTON" = "후원하기";
 
 /* On donation screens, a small amount of information text is shown. This is the subtitle for that text. */
-"DONATION_SCREENS_HEADER_DESCRIPTION" = "후원을 통해 개인정보를 보호하는 Signal 메시지 서비스를 지지하고, 독립적인 운영과 광고 없는 환경을 유지할 수 있도록 도와주세요.";
+"DONATION_SCREENS_HEADER_DESCRIPTION" = "후원을 통해 Signal의 개인정보 보호 메시지 서비스를 지지하고, 독립적인 운영과 광고 없는 환경을 유지할 수 있도록 도와주세요.";
 
 /* On donation screens, a small amount of information text is shown. Users can click this link to learn more information. */
 "DONATION_SCREENS_HEADER_READ_MORE" = "더 보기";
@@ -3380,7 +3380,7 @@
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "서버에서 오류가 발생했습니다. 나중에 다시 시도해 주세요.";
 
 /* Description for errors returned from the server due to suspected spam. */
-"ERROR_DESCRIPTION_SUSPECTED_SPAM" = "서버에서는 메시지를 보내기 전에 사용자 확인이 필요합니다.";
+"ERROR_DESCRIPTION_SUSPECTED_SPAM" = "메시지를 보내기 전에 서버에서 사용자 확인이 필요합니다.";
 
 /* Worst case generic error message */
 "ERROR_DESCRIPTION_UNKNOWN_ERROR" = "알 수 없는 오류가 발생했습니다.";
@@ -3392,10 +3392,10 @@
 "ERROR_MESSAGE_ATTACHMENT_UPLOAD_FAILED" = "첨부 파일 업로드에 실패했습니다.";
 
 /* Error message for a decryption failure. Embeds {{sender short name}}. */
-"ERROR_MESSAGE_DECRYPTION_FAILURE" = "%1$@ 님이 보낸 메시지를 받지 못했습니다.";
+"ERROR_MESSAGE_DECRYPTION_FAILURE" = "%1$@ 님이 보낸 메시지가 전송되지 못했습니다.";
 
 /* Error message for a decryption failure. */
-"ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER" = "메시지를 받지 못했습니다.";
+"ERROR_MESSAGE_DECRYPTION_FAILURE_UNKNOWN_SENDER" = "메시지 전송 실패";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "중복된 메시지를 받았습니다.";
@@ -3728,16 +3728,16 @@
 "GROUP_CALL_REMOVE_MEMBER_CONFIRMATION_ACTION_SHEET_BLOCK_ACTION" = "통화에서 차단";
 
 /* Label for the button to confirm removing a member from a group call. */
-"GROUP_CALL_REMOVE_MEMBER_CONFIRMATION_ACTION_SHEET_REMOVE_ACTION" = "제거";
+"GROUP_CALL_REMOVE_MEMBER_CONFIRMATION_ACTION_SHEET_REMOVE_ACTION" = "내보내기";
 
 /* Title for action sheet confirming removal of a member from a group call. embeds {{ name }} */
-"GROUP_CALL_REMOVE_MEMBER_CONFIRMATION_ACTION_SHEET_TITLE" = "%1$@ 님을 통화에서 제거할까요?";
+"GROUP_CALL_REMOVE_MEMBER_CONFIRMATION_ACTION_SHEET_TITLE" = "%1$@ 님을 통화 그룹에서 내보낼까요?";
 
 /* The title of an alert when you've been removed from a group call. */
-"GROUP_CALL_REMOVED" = "통화에서 제거됨";
+"GROUP_CALL_REMOVED" = "통화 참가 제한";
 
 /* The message of an alert when you've been removed from a group call. */
-"GROUP_CALL_REMOVED_MESSAGE" = "통화에서 제거됐습니다.";
+"GROUP_CALL_REMOVED_MESSAGE" = "통화 그룹에서 제외되었습니다.";
 
 /* The title of an alert when tried to join a call using a link but the admin rejected your request. */
 "GROUP_CALL_REQUEST_DENIED" = "참여 요청 거부됨";
@@ -3905,7 +3905,7 @@
 "GROUP_LINK_ACTION_SHEET_JOIN_MESSAGE_W_REQUEST" = "가입을 요청하면 이름과 사진이 이 그룹의 멤버들과 공유됩니다. 관리자가 요청을 승인해야 합니다.";
 
 /* Subtitle indicating that the local user has been blocked from joining the group */
-"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "관리자가 귀하를 제거했기 때문에 그룹 링크를 통해 그룹에 참가할 수 없습니다. 관리자에게 그룹에 다시 추가해 달라고 요청하세요.";
+"GROUP_LINK_ACTION_SHEET_VIEW_BLOCKED_FROM_JOINING_SUBTITLE" = "관리자에 의해 그룹에서 제외되어, 그룹 링크를 사용할 수 없습니다. 그룹에 다시 참가하려면 관리자에게 문의해 주세요.";
 
 /* Title indicating that you cannot join a group in the 'group invite link' action sheet. */
 "GROUP_LINK_ACTION_SHEET_VIEW_CANNOT_JOIN_GROUP_TITLE" = "그룹에 참가할 수 없음";
@@ -4043,10 +4043,10 @@
 "GROUP_LOCAL_USER_JOINED_THE_GROUP_VIA_GROUP_INVITE_LINK" = "내가 그룹 링크로 그룹에 참가했습니다.";
 
 /* Message indicating that the local user was removed from the group by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ 님이 나를 제거했습니다.";
+"GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ 님이 나를 그룹에서 내보냈습니다.";
 
 /* Message indicating that the local user was removed from the group by an unknown user. */
-"GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "그룹에서 제거되었습니다.";
+"GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "그룹에서 내보내기 처리되었습니다.";
 
 /* Message indicating that the local user's request to join the group was approved. */
 "GROUP_LOCAL_USER_REQUEST_APPROVED" = "그룹에 대한 참가 요청이 승인되었습니다.";
@@ -4154,13 +4154,13 @@
 "GROUP_REMOTE_USER_LEFT_GROUP_FORMAT" = "%1$@ 님이 그룹에서 나갔습니다.";
 
 /* Message indicating that a remote user was removed from the group by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REMOVED_BY_LOCAL_USER_FORMAT" = "%1$@ 님을 제거했습니다.";
+"GROUP_REMOTE_USER_REMOVED_BY_LOCAL_USER_FORMAT" = "%1$@ 님을 내보냈습니다.";
 
 /* Message indicating that a remote user was removed from the group by an unknown user. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_REMOVED_BY_UNKNOWN_USER_FORMAT" = "%1$@ 님은 더 이상 그룹에 있지 않습니다.";
 
 /* Message indicating that the remote user was removed from the group. Embeds {{ %1$@ user who removed the user, %2$@ user who was removed}}. */
-"GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ 님이 %2$@ 님을 제거했습니다.";
+"GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ 님이 %2$@ 님을 내보냈습니다.";
 
 /* Message indicating that a remote user's request to join the group was approved by the local user. Embeds {{requesting user name}}. */
 "GROUP_REMOTE_USER_REQUEST_APPROVED_BY_LOCAL_USER_FORMAT" = "%1$@ 님의 그룹 참가 요청을 승인했습니다.";
@@ -4217,7 +4217,7 @@
 "GROUP_STORY_SETTINGS_DELETE_BUTTON" = "그룹 스토리 삭제";
 
 /* Action sheet title confirming deletion of a group story on the 'group story settings' view. Embeds {{ group name }} */
-"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "'%1$@'을(를) 제거할까요?";
+"GROUP_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "'%1$@' 스토리를 제거할까요?";
 
 /* Section footer for the 'viewers' section on the 'group story settings' view. Embeds {{ group name }} */
 "GROUP_STORY_SETTINGS_WHO_CAN_VIEW_THIS_FOOTER_FORMAT" = "'%1$@' 그룹 대화 멤버는 이 스토리를 보고 여기에 답장할 수 있습니다. 그룹에서 이 대화에 대한 멤버십을 업데이트할 수 있습니다.";
@@ -4229,10 +4229,10 @@
 "GROUP_UPDATED" = "그룹 업데이트됨.";
 
 /* Message indicating that the group's avatar was removed. */
-"GROUP_UPDATED_AVATAR_REMOVED" = "그룹 사진을 제거했습니다.";
+"GROUP_UPDATED_AVATAR_REMOVED" = "그룹 사진이 삭제되었습니다.";
 
 /* Message indicating that the group's avatar was removed. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "내가 사진을 제거했습니다.";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "사진을 삭제했습니다.";
 
 /* Message indicating that the group's avatar was removed by a remote user. Embeds {{user who removed the avatar}}. */
 "GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ 님이 사진을 제거했습니다.";
@@ -4253,13 +4253,13 @@
 "GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ 님이 그룹을 업데이트했습니다.";
 
 /* Message indicating that the group's description was removed. */
-"GROUP_UPDATED_DESCRIPTION_REMOVED" = "그룹 설명이 제거되었습니다.";
+"GROUP_UPDATED_DESCRIPTION_REMOVED" = "그룹 설명이 삭제되었습니다.";
 
 /* Message indicating that the group's description was removed by the local user. */
-"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_LOCAL_USER" = "그룹 설명을 제거했습니다.";
+"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_LOCAL_USER" = "그룹 설명을 삭제했습니다.";
 
 /* Message indicating that the group's description was removed by a remote user. Embeds {{user who removed the name}}. */
-"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ 님이 그룹 설명을 제거했습니다.";
+"GROUP_UPDATED_DESCRIPTION_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ 님이 그룹 설명을 삭제했습니다.";
 
 /* Message indicating that the group's description was changed. */
 "GROUP_UPDATED_DESCRIPTION_UPDATED" = "그룹 설명이 변경되었습니다.";
@@ -4271,13 +4271,13 @@
 "GROUP_UPDATED_DESCRIPTION_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ 님이 그룹 설명을 변경했습니다.";
 
 /* Message indicating that the group's name was removed. */
-"GROUP_UPDATED_NAME_REMOVED" = "그룹 이름이 제거되었습니다.";
+"GROUP_UPDATED_NAME_REMOVED" = "그룹 이름이 삭제되었습니다.";
 
 /* Message indicating that the group's name was removed by the local user. */
-"GROUP_UPDATED_NAME_REMOVED_BY_LOCAL_USER" = "그룹 이름을 제거했습니다.";
+"GROUP_UPDATED_NAME_REMOVED_BY_LOCAL_USER" = "그룹 이름을 삭제했습니다.";
 
 /* Message indicating that the group's name was removed by a remote user. Embeds {{user who removed the name}}. */
-"GROUP_UPDATED_NAME_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ 님이 그룹 이름을 제거했습니다.";
+"GROUP_UPDATED_NAME_REMOVED_BY_REMOTE_USER_FORMAT" = "%1$@ 님이 그룹 이름을 삭제했습니다.";
 
 /* Message indicating that the group's name was changed by the local user. Embeds {{new group name}}. */
 "GROUP_UPDATED_NAME_UPDATED_BY_LOCAL_USER_FORMAT" = "그룹 이름을 '%1$@'(으)로 변경했습니다.";
@@ -4370,28 +4370,28 @@
 "HELP_SUPPORT_CENTER" = "고객 지원";
 
 /* A format for the 'remove user' action sheet title. Embeds {{the removed user's name or phone number}}. */
-"HIDE_RECIPIENT_ACTION_SHEET_TITLE_FORMAT" = "%1$@ 님을 제거할까요?";
+"HIDE_RECIPIENT_ACTION_SHEET_TITLE_FORMAT" = "%1$@ 님을 내보낼까요?";
 
 /* An explanation of the consequences of removing a user. */
 "HIDE_RECIPIENT_BEHAVIOR_EXPLANATION" = "검색 시 이 사용자가 표시되지 않습니다. 향후 해당 사용자가 메시지를 보내는 경우 메시지 요청이 수신됩니다.";
 
 /* Button label for the 'remove' button */
-"HIDE_RECIPIENT_BUTTON" = "제거";
+"HIDE_RECIPIENT_BUTTON" = "삭제하기";
 
 /* Toast message confirming the recipient was removed. Embeds {{The name of the user who was removed.}}.. */
-"HIDE_RECIPIENT_CONFIRMATION_TOAST" = "%1$@ 님을 제거했습니다.";
+"HIDE_RECIPIENT_CONFIRMATION_TOAST" = "%1$@ 님을 삭제했습니다.";
 
 /* An explanation of why a user was not successfully removed and what to do. */
 "HIDE_RECIPIENT_ERROR_ACTION_SHEET_EXPLANATION" = "연결을 확인하고 다시 시도하세요.";
 
 /* Title for an action sheet indicating that the user was not successfully removed. Embeds {{name of user we attempted to hide}}. */
-"HIDE_RECIPIENT_ERROR_ACTION_SHEET_TITLE_FORMAT" = "%1$@ 님을 제거할 수 없습니다.";
+"HIDE_RECIPIENT_ERROR_ACTION_SHEET_TITLE_FORMAT" = "%1$@ 님을 삭제할 수 없습니다";
 
 /* An explanation of why the user cannot be removed. */
-"HIDE_RECIPIENT_IMPASS_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_EXPLANATION" = "이 사용자는 내 장치 연락처에 저장되어 있습니다. 이 목록에서 제거하려면 내 연락처에서 먼저 제거하세요.";
+"HIDE_RECIPIENT_IMPASS_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_EXPLANATION" = "이 사용자는 내 장치 연락처에 저장되어 있습니다. 이 목록에서 삭제하려면 내 연락처에서 먼저 삭제하세요.";
 
 /* A format for the 'unable to remove user' action sheet title. Embeds {{the removed user's name or phone number}}. */
-"HIDE_RECIPIENT_IMPASS_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_TITLE" = "%1$@ 님을 제거할 수 없습니다.";
+"HIDE_RECIPIENT_IMPASS_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_TITLE" = "%1$@ 님을 삭제할 수 없습니다";
 
 /* An explanation of why the user cannot be removed on a linked device. */
 "HIDE_RECIPIENT_IMPOSSIBLE_BECAUSE_SYSTEM_CONTACT_ACTION_SHEET_EXPLANATION" = "귀하의 휴대폰 연락처에 저장된 사용자입니다. 휴대폰 연락처에서 제거한 다음 다시 시도하세요.";
@@ -4997,7 +4997,7 @@
 "MEMBER_LABEL_ADD" = "멤버 라벨 추가";
 
 /* Accessibility prefix for member labels. */
-"MEMBER_LABEL_AX_PREFIX" = "Member label: ";
+"MEMBER_LABEL_AX_PREFIX" = "멤버 라벨: ";
 
 /* Heading shown above the preview of a message bubble with the edited member label. */
 "MEMBER_LABEL_PREVIEW_HEADING" = "미리보기";
@@ -5024,7 +5024,7 @@
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "이 대화에 참여하고 최신 버전 Signal을 설치한 모든 기기에서 이 메시지를 삭제합니다. 다른 사용자는 내가 메시지를 삭제했다는 것을 볼 수 있습니다.";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
-"MESSAGE_ACTION_DELETE_FOR_TITLE" = "이 메시지를 누구에게서 삭제하시겠습니까?";
+"MESSAGE_ACTION_DELETE_FOR_TITLE" = "이 메시지를 누구에게서 삭제할까요?";
 
 /* The title for the action that deletes a message for the local user only. */
 "MESSAGE_ACTION_DELETE_FOR_YOU" = "나에게서 삭제";
@@ -5225,7 +5225,7 @@
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "이 그룹에서 나가게 되며, 내 모든 기기에서 이 그룹이 삭제됩니다.";
 
 /* Action sheet title to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "그룹을 삭제하고 나가시겠습니까?";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "그룹을 삭제하고 나가시겠어요?";
 
 /* Banner label notifying user that a new message is from a user with the same name as an existing contact */
 "MESSAGE_REQUEST_NAME_COLLISION_BANNER_LABEL" = "이 사람의 이름이 연락처의 다른 사람과 이름이 같습니다.";
@@ -6377,7 +6377,7 @@
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "초대 취소";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the invited group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "'%1$@' 님에게 보낸 그룹 초대를 취소하시겠습니까?";
+"PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "'%1$@' 님에게 보낸 그룹 초대를 취소할까요?";
 
 /* Footer for the 'invites by other group members' section of the 'member requests and invites' view. */
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "다른 그룹 멤버들이 초대한 사람들의 세부정보는 표시되지 않습니다. 초대된 사람이 그룹에 참가한다면 해당인의 정보가 그룹에 즉시 공유됩니다. 초대된 사람은 참가할 때까지 그룹 내 메시지를 볼 수 없습니다.";
@@ -6662,7 +6662,7 @@
 "PINNED_MESSAGE_REPLACE_OLDEST_BUTTON" = "바꾸기";
 
 /* Title for an action sheet confirming the user wants to replace oldest pinned message. */
-"PINNED_MESSAGE_REPLACE_OLDEST_TITLE" = "가장 오래된 고정 항목을 교체하시겠습니까?";
+"PINNED_MESSAGE_REPLACE_OLDEST_TITLE" = "가장 오래된 고정 메시지를 대체할까요?";
 
 /* Body for error sheet shown if the pinned message failed to send */
 "PINNED_MESSAGE_SEND_ERROR_SHEET_BODY" = "연결을 확인하고 다시 시도하세요.";
@@ -6863,13 +6863,13 @@
 "PRIVATE_STORY_SETTINGS_DELETE_CONFIRMATION_FORMAT" = "'%1$@'을(를) 삭제할까요? 이 스토리에 공유한 업데이트도 삭제합니다.";
 
 /* Action sheet button to remove a viewer from a story on the 'private story settings' view. */
-"PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "제거";
+"PRIVATE_STORY_SETTINGS_REMOVE_BUTTON" = "삭제하기";
 
 /* Action sheet description prompting to remove a viewer from a story on the 'private story settings' view. */
 "PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_DESCRIPTION" = "이 사용자가 더 이상 이 스토리를 볼 수 없습니다.";
 
 /* Action sheet title prompting to remove a viewer from a story on the 'private story settings' view. Embeds {{ viewer name }} */
-"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_TITLE_FORMAT" = "%1$@ 님을 제거할까요?";
+"PRIVATE_STORY_SETTINGS_REMOVE_VIEWER_TITLE_FORMAT" = "%1$@ 님을 삭제할까요?";
 
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "진행";
@@ -6941,7 +6941,7 @@
 "PROFILE_SETTINGS_USERNAME_CORRUPTED_RESOLUTION_FIX_ACTION_TITLE" = "지금 해결";
 
 /* A message asking the user if they are sure they want to remove their username and explaining what will happen. Embeds {{ the user's current username }}. */
-"PROFILE_SETTINGS_USERNAME_DELETION_CONFIRMATION_ALERT_MESSAGE_FORMAT" = "사용자 이름이 제거되고 QR 코드와 링크를 사용할 수 없게 되며, '%1$@'을(를) 다른 사용자가 사용할 수 있게 됩니다. 계속할까요?";
+"PROFILE_SETTINGS_USERNAME_DELETION_CONFIRMATION_ALERT_MESSAGE_FORMAT" = "사용자 이름이 삭제되고 QR 코드와 링크가 비활성화됩니다. '%1$@' 이름은 다른 사용자가 사용할 수 있게 됩니다. 계속할까요?";
 
 /* The title of an action sheet button that will delete a user's username. */
 "PROFILE_SETTINGS_USERNAME_DELETION_USERNAME_ACTION_TITLE" = "사용자 이름 삭제";
@@ -7124,7 +7124,7 @@
 "RECIPIENT_CONTEXT_MENU_BLOCK_TITLE" = "차단";
 
 /* The title for a context menu item that removes a recipient from your recipient picker list. */
-"RECIPIENT_CONTEXT_MENU_REMOVE_TITLE" = "제거";
+"RECIPIENT_CONTEXT_MENU_REMOVE_TITLE" = "삭제하기";
 
 /* Error message indicating that a user can't be selected. */
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "사용자를 선택할 수 없습니다.";
@@ -7181,7 +7181,7 @@
 "REGISTRATION_BACKUP_RESTORE_ERROR_CONTACT_SUPPORT_BODY" = "디버그 로그를 보내 문제 해결에 도움을 주실 수 있습니다. 로그 보내기는 선택 사항입니다.";
 
 /* Title for a sheet informing users about contacting support due to an error during backup restore. */
-"REGISTRATION_BACKUP_RESTORE_ERROR_CONTACT_SUPPORT_TITLE" = "디버그 로그를 보내시겠습니까?";
+"REGISTRATION_BACKUP_RESTORE_ERROR_CONTACT_SUPPORT_TITLE" = "디버그 로그를 제출할까요?";
 
 /* Label for action to contact support with logs. */
 "REGISTRATION_BACKUP_RESTORE_ERROR_CONTACT_SUPPORT_WITH_LOGS_ACTION" = "디버그 로그와 함께 보내기";
@@ -7451,7 +7451,7 @@
 "REMOTE_MUTE_TOAST_YOU_MUTED_YOURSELF" = "다른 기기에서 내 알림을 껐습니다.";
 
 /* Accessibility label for a button that removes the preview from a drafted message. */
-"REMOVE_PREVIEW" = "미리 보기 제거";
+"REMOVE_PREVIEW" = "미리보기 삭제하기";
 
 /* The title for the 'replace group admin' view. */
 "REPLACE_ADMIN_VIEW_TITLE" = "새 관리자 선택";
@@ -7490,7 +7490,7 @@
 "RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_2_SECONDARY_BUTTON" = "복구 취소";
 
 /* Title for a sheet allowing users to cancel an in-progress media restore. */
-"RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_2_TITLE" = "미디어 복구를 취소하시겠습니까?";
+"RESTORING_MEDIA_BANNER_CANCEL_RESTORE_SHEET_2_TITLE" = "미디어 복구를 취소할까요?";
 
 /* Button title shown on chat list banner for restoring media from a backup when paused because the device has insufficient disk space, to see a bottom sheet with more details about next steps. */
 "RESTORING_MEDIA_BANNER_DISK_SPACE_BUTTON" = "세부 정보";
@@ -7544,7 +7544,7 @@
 "RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_SKIP_BUTTON" = "다운로드 건너뛰기";
 
 /* Title shown on a bottom sheet to skip restoring media from a backup when paused because the device has insufficient disk space. */
-"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_TITLE" = "다운로드를 건너뛰시겠습니까?";
+"RESTORING_MEDIA_DISK_SPACE_SKIP_SHEET_TITLE" = "다운로드를 건너뛸까요?";
 
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "재시도";
@@ -7586,40 +7586,40 @@
 "SAFETY_NUMBER_SHARE_FORMAT" = "Signal 안전 번호:\n%1$@";
 
 /* Title for a button offering automatic key verification. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_BUTTON_VERIFY" = "Verify Automatically";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_BUTTON_VERIFY" = "자동으로 인증하기";
 
 /* Title for a button when automatic key verification fails. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_BUTTON_VERIFY_FAILURE" = "Auto-Verification Unavailable";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_BUTTON_VERIFY_FAILURE" = "자동 인증을 사용할 수 없음";
 
 /* Title for a button when automatic key verification succeeds. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_BUTTON_VERIFY_SUCCESS" = "Encryption Verified";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_BUTTON_VERIFY_SUCCESS" = "암호화 인증 완료";
 
 /* Title for a button while automatic key verification is ongoing. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_BUTTON_VERIFYING" = "Verifying Encryption…";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_BUTTON_VERIFYING" = "암호화 인증 중…";
 
 /* Body for a sheet explaining that encryption auto-verification did not succeed. Embeds {{ 1: the contact's name }}. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "Signal can no longer automatically verify the encryption for this chat. This is likely because %1$@ changed their phone number. Verify end-to-end encryption manually by comparing the numbers on the previous screen or scanning the code on their device.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "Signal이 더 이상 이 채팅에 자동으로 암호화를 인증할 수 없습니다. 이 문제는 %1$@ 님이 전화번호를 변경하여 발생했을 수 있습니다. 이전 화면의 숫자를 대조하거나, 해당 사용자의 기기로 코드를 스캔하여 엔드투엔드 암호화를 수동으로 인증해 주세요.";
 
 /* Title for a sheet explaining that encryption auto-verification did not succeed. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_TITLE" = "Auto-verification is no longer available for this chat";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_TITLE" = "이 채팅에 더 이상 자동 인증을 사용할 수 없습니다";
 
 /* Footer explaining that automatic verification is not available for all chats */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FOOTER" = "Auto-verification is not available for all chats.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FOOTER" = "모든 채팅에 자동 인증을 사용할 수 없습니다.";
 
 /* Header for automatic key verification */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_HEADER" = "Automatic Key Verification";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_HEADER" = "자동 키 인증";
 
 /* Body for a sheet explaining that encryption auto-verification is not available. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_NOT_AVAILABLE_SHEET_BODY" = "Signal can only automatically verify the encryption in chats where you’re connected to someone via a phone number. If the chat was started with a username or a group in common, verify end-to-end encryption by comparing the numbers on the previous screen or scanning the code on their device.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_NOT_AVAILABLE_SHEET_BODY" = "Signal은 상대방과 전화번호를 통해 연결한 채팅에서만 자동으로 암호화를 인증할 수 있습니다. 사용자 이름이나 공통으로 속한 그룹을 통해 채팅을 시작한 경우, 이전 화면의 숫자를 대조하거나 해당 사용자의 기기로 코드를 스캔하여 엔드투엔드 암호화를 인증해 주세요.";
 
 /* Title for a sheet explaining that encryption auto-verification is not available. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_NOT_AVAILABLE_SHEET_TITLE" = "Auto-verification not available for this chat";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_NOT_AVAILABLE_SHEET_TITLE" = "이 채팅에 자동 인증을 사용할 수 없습니다";
 
 /* Body for a sheet explaining that encryption auto-verification succeeded. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_SUCCESS_SHEET_BODY" = "For contacts you’re connected to by phone number, Signal can automatically confirm whether the connection is secure using a process called key transparency. For added security, verify end-to-end encryption manually by comparing the numbers on the previous screen or scanning the code on their device.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_SUCCESS_SHEET_BODY" = "전화번호를 통해 연결된 연락처의 경우, Signal은 키 투명성이라는 프로세스를 사용하여 연결이 안전한지 자동으로 확인할 수 있습니다. 보안을 강화하려면 이전 화면의 숫자를 대조하거나, 해당 사용자의 기기로 코드를 스캔하여 엔드투엔드 암호화를 수동으로 확인하세요.";
 
 /* Title for a sheet explaining that encryption auto-verification succeeded. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_SUCCESS_SHEET_TITLE" = "Encryption was auto-verified for this chat";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_SUCCESS_SHEET_TITLE" = "이 채팅에 대한 암호화가 자동 인증되었습니다";
 
 /* Title for Safety Tips button in thread details. */
 "SAFETY_TIPS_BUTTON_ACTION_TITLE" = "안전 팁";
@@ -8102,7 +8102,7 @@
 "SETTINGS_DELETE_DATA_BUTTON" = "모든 데이터 삭제";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "모든 기기에서 모든 대화 기록(메시지, 미디어, 통화 등)을 삭제하시겠습니까? 이 작업은 취소할 수 없습니다.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "모든 기기에서 모든 대화 기록(메시지, 미디어, 통화 등)을 삭제하시겠어요? 이 작업은 취소할 수 없습니다.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "모두 삭제";
@@ -8171,7 +8171,7 @@
 "SETTINGS_MEDIA_DOWNLOAD_TYPE_VIDEO" = "동영상";
 
 /* Explanation for the 'messaging' privacy settings. */
-"SETTINGS_MESSAGING_FOOTER" = "메시지를 읽고 입력할 때 확인하고 공유하세요. 비활성화하면 다른 사용자의 읽음 확인 또는 입력 표시기가 표시되지 않습니다.";
+"SETTINGS_MESSAGING_FOOTER" = "메시지 읽음 상태와 입력 중 표시를 서로 확인하고 공유합니다.  이 기능을 끄면 다른 사용자의 메시지 읽음 상태와 입력 중 표시를 확인할 수 없습니다.";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "설정";
@@ -8180,7 +8180,7 @@
 "SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "알림을 끈 대화 포함";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "배지 숫자";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "배지 카운트";
 
 /* table section footer */
 "SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "휴대전화가 잠겨 있는 동안 통화 및 메시지 알림이 나타날 수 있습니다.";
@@ -8213,7 +8213,7 @@
 "SETTINGS_PAYMENTS_ADD_MONEY" = "자금 추가";
 
 /* Explanation of the process for adding money in the 'add money' settings view. */
-"SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION" = "자금을 추가하려면 MobileCoin을 지갑 주소로 보내세요. MobileCoin을 지원하는 거래소의 계정에서 거래를 시작한 다음 QR 코드를 스캔하거나 지갑 주소를 복사하세요.";
+"SETTINGS_PAYMENTS_ADD_MONEY_DESCRIPTION" = "자금을 추가하려면 나의 지갑 주소로 MobileCoin을 보내세요. MobileCoin을 지원하는 거래소의 계정에서 거래를 시작한 다음 QR 코드를 스캔하거나 지갑 주소를 복사하세요.";
 
 /* Indicator that the payments wallet address has been copied to the pasteboard. */
 "SETTINGS_PAYMENTS_ADD_MONEY_WALLET_ADDRESS_COPIED" = "지갑 주소 복사됨";
@@ -8837,7 +8837,7 @@
 "SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Signal에 전화번호를 다시 등록하려면 Signal PIN이 필요합니다.";
 
 /* Label for the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS" = "입력 안내";
+"SETTINGS_TYPING_INDICATORS" = "메시지 입력 중 표시";
 
 /* table section label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "발신자 암호화";
