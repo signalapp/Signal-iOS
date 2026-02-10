@@ -189,13 +189,28 @@ extension DeviceTransferService {
             return
         }
 
+        // Initialize checkpoint for resume capability
+        initializeCheckpoint(for: manifest, isIncoming: true)
+
+        // Get any files already transferred from a previous session
+        let alreadyTransferredFileIds = Array(getAlreadyTransferredFileIds())
+        let alreadySkippedFileIds = Array(getAlreadySkippedFileIds())
+
         let progress = Progress(totalUnitCount: Int64(manifest.estimatedTotalSize))
+
+        // Include previously transferred files in the state
+        var receivedFileIds = [DeviceTransferService.manifestIdentifier]
+        receivedFileIds.append(contentsOf: alreadyTransferredFileIds)
+
+        if !alreadyTransferredFileIds.isEmpty {
+            Logger.info("Resuming incoming transfer with \(alreadyTransferredFileIds.count) already-received files")
+        }
 
         transferState = .incoming(
             oldDevicePeerId: peerId,
             manifest: manifest,
-            receivedFileIds: [DeviceTransferService.manifestIdentifier],
-            skippedFileIds: [],
+            receivedFileIds: receivedFileIds,
+            skippedFileIds: alreadySkippedFileIds,
             progress: progress,
         )
 

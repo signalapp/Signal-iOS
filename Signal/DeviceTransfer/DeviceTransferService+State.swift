@@ -15,6 +15,7 @@ extension DeviceTransferService {
         case modeMismatch
         case notEnoughSpace
         case unsupportedVersion
+        case connectionLost
     }
 
     enum TransferState {

@@ -52,6 +52,8 @@ extension DeviceTransferService: MCSessionDelegate {
 
                 switch state {
                 case .connected:
+                    // Reset retry count on successful connection
+                    self.resetConnectionRetryCount()
                     self.notifyObservers { $0.deviceTransferServiceDidStartTransfer(progress: progress) }
 
                     // Only send the files if we haven't yet sent the manifest.
@@ -69,7 +71,12 @@ extension DeviceTransferService: MCSessionDelegate {
                 case .connecting:
                     break
                 case .notConnected:
-                    self.failTransfer(.assertion, "Lost connection to new device")
+                    // Attempt to retry the connection before failing
+                    if self.attemptConnectionRetry(to: newDevicePeerId, isOutgoing: true) {
+                        Logger.info("Connection lost, attempting retry...")
+                    } else {
+                        self.failTransfer(.connectionLost, "Lost connection to new device after \(DeviceTransferService.maxConnectionRetries) retries")
+                    }
                 @unknown default:
                     self.failTransfer(.assertion, "Unexpected connection state: \(state.rawValue)")
                 }
@@ -77,7 +84,22 @@ extension DeviceTransferService: MCSessionDelegate {
                 // We only care about state changes for the device we're receiving from.
                 guard peerId == oldDevicePeerId else { return }
 
-                if state == .notConnected { self.failTransfer(.assertion, "Lost connection to old device") }
+                switch state {
+                case .connected:
+                    // Reset retry count on successful connection
+                    self.resetConnectionRetryCount()
+                case .connecting:
+                    break
+                case .notConnected:
+                    // Attempt to retry the connection before failing
+                    if self.attemptConnectionRetry(to: oldDevicePeerId, isOutgoing: false) {
+                        Logger.info("Connection lost, waiting for peer to reconnect...")
+                    } else {
+                        self.failTransfer(.connectionLost, "Lost connection to old device after \(DeviceTransferService.maxConnectionRetries) retries")
+                    }
+                @unknown default:
+                    self.failTransfer(.assertion, "Unexpected connection state: \(state.rawValue)")
+                }
             case .idle:
                 break
             }
@@ -97,11 +119,20 @@ extension DeviceTransferService: MCSessionDelegate {
             switch data {
             case DeviceTransferService.backgroundAppMessage:
                 return failTransfer(.backgroundedDevice, "Received terminate message")
+            case DeviceTransferService.backgroundWarningMessage:
+                Logger.warn("Peer device entered background - transfer may be interrupted")
+                return
+            case DeviceTransferService.foregroundReturnMessage:
+                Logger.info("Peer device returned to foreground - transfer continuing")
+                return
             case DeviceTransferService.doneMessage:
                 break
             default:
                 return failTransfer(.assertion, "Received unexpected data")
             }
+
+            // Transfer completed successfully, clear the checkpoint
+            clearCheckpoint()
 
             // Notify the UI that the transfer completed successfully.
             notifyObservers { $0.deviceTransferServiceDidEndTransfer(error: nil) }
@@ -124,6 +155,12 @@ extension DeviceTransferService: MCSessionDelegate {
             switch data {
             case DeviceTransferService.backgroundAppMessage:
                 return failTransfer(.backgroundedDevice, "Received backgrounded message")
+            case DeviceTransferService.backgroundWarningMessage:
+                Logger.warn("Peer device entered background - transfer may be interrupted")
+                return
+            case DeviceTransferService.foregroundReturnMessage:
+                Logger.info("Peer device returned to foreground - transfer continuing")
+                return
             case DeviceTransferService.doneMessage:
                 break
             default:
@@ -163,6 +200,9 @@ extension DeviceTransferService: MCSessionDelegate {
             } catch {
                 owsFailDebug("Failed to send done message to old device \(error)")
             }
+
+            // Transfer completed successfully, clear the checkpoint
+            clearCheckpoint()
 
             // Notify the UI that the transfer completed successfully.
             notifyObservers { $0.deviceTransferServiceDidEndTransfer(error: nil) }
@@ -312,6 +352,7 @@ extension DeviceTransferService: MCSessionDelegate {
                 guard computedHash != DeviceTransferService.missingFileHash else {
                     Logger.warn("Received notification of missing file: \(file.identifier), skipping.")
                     transferState = transferState.appendingSkippedFileId(file.identifier)
+                    updateCheckpointWithSkippedFile(file.identifier)
                     return
                 }
 
@@ -330,6 +371,9 @@ extension DeviceTransferService: MCSessionDelegate {
 
                 Logger.info("Received file: \(file.identifier)")
                 transferState = transferState.appendingFileId(file.identifier)
+
+                // Save checkpoint for resume capability
+                updateCheckpointWithTransferredFile(file.identifier)
             } else {
                 owsFailDebug("Unexpectedly completed transfer of resource with no URL or error")
             }

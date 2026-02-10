@@ -95,6 +95,9 @@ class DeviceTransferOperation: NSObject {
 
         Logger.info("Transferring file \(self.file.identifier) complete")
         AppEnvironment.shared.deviceTransferServiceRef.transferState = AppEnvironment.shared.deviceTransferServiceRef.transferState.appendingFileId(self.file.identifier)
+
+        // Save checkpoint for resume capability
+        AppEnvironment.shared.deviceTransferServiceRef.updateCheckpointWithTransferredFile(self.file.identifier)
     }
 
     private var lastWholeNumberProgress = 0

@@ -100,6 +100,23 @@ class DeviceTransferService: NSObject, DeviceTransferServiceProtocol {
 
     private let sleepBlockObject = DeviceSleepBlockObject(blockReason: "device transfer")
 
+    // MARK: - Background Handling
+
+    private var backgroundTask: UIBackgroundTaskIdentifier = .invalid
+    private var backgroundGraceTimer: Timer?
+    private static let backgroundGracePeriodSeconds: TimeInterval = 30
+
+    // MARK: - Connection Retry
+
+    private(set) var connectionRetryCount: Int = 0
+    private var connectionRetryTask: Task<Void, Never>?
+    static let maxConnectionRetries: Int = 3
+    static let baseRetryDelaySeconds: TimeInterval = 2
+
+    // MARK: - Checkpoint for Resume
+
+    private(set) var currentCheckpoint: DeviceTransferCheckpoint.CheckpointData?
+
     private(set) var identity: SecIdentity?
     private(set) var session: MCSession?
     private(set) lazy var peerId = MCPeerID(displayName: UUID().uuidString)
@@ -142,6 +159,13 @@ class DeviceTransferService: NSObject, DeviceTransferServiceProtocol {
             self,
             selector: #selector(didEnterBackground),
             name: .OWSApplicationDidEnterBackground,
+            object: nil,
+        )
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(willEnterForeground),
+            name: .OWSApplicationWillEnterForeground,
             object: nil,
         )
     }
@@ -214,6 +238,10 @@ class DeviceTransferService: NSObject, DeviceTransferServiceProtocol {
         }
 
         let manifest = try buildManifest()
+
+        // Initialize checkpoint for resume capability
+        initializeCheckpoint(for: manifest, isIncoming: false)
+
         let progress = Progress(totalUnitCount: Int64(manifest.estimatedTotalSize))
 
         // We don't actually need to generate an identity for the old device, the new device
@@ -237,7 +265,8 @@ class DeviceTransferService: NSObject, DeviceTransferServiceProtocol {
             progress: progress,
         )
 
-        newDeviceServiceBrowser.invitePeer(peerId, to: session, withContext: nil, timeout: 30)
+        // Use 120 second timeout to allow for slow connection establishment
+        newDeviceServiceBrowser.invitePeer(peerId, to: session, withContext: nil, timeout: 120)
     }
 
     func cancelTransferToNewDevice() {
@@ -285,6 +314,10 @@ class DeviceTransferService: NSObject, DeviceTransferServiceProtocol {
             break
         }
 
+        cancelBackgroundGracePeriod()
+        cancelConnectionRetry()
+        resetConnectionRetryCount()
+
         session?.disconnect()
         session = nil
         identity = nil
@@ -316,9 +349,57 @@ class DeviceTransferService: NSObject, DeviceTransferServiceProtocol {
 
     @objc
     private func didEnterBackground() {
-        // MCSession automatically disconnects when the app is backgrounded.
-        // Send an explicit message to the peer (if connected) telling them
-        // that's what happened.
+        // MCSession may disconnect when the app is backgrounded.
+        // Instead of immediately terminating, we start a background task
+        // and give a grace period for the user to return to the app.
+        switch transferState {
+        case .idle:
+            return
+        case .incoming(let oldDevicePeerId, _, _, _, _):
+            try? sendBackgroundWarningMessage(to: oldDevicePeerId)
+        case .outgoing(let newDevicePeerId, _, _, _, _):
+            try? sendBackgroundWarningMessage(to: newDevicePeerId)
+        }
+
+        // Start a background task to extend our runtime
+        backgroundTask = UIApplication.shared.beginBackgroundTask { [weak self] in
+            self?.handleBackgroundExpiration()
+        }
+
+        // Schedule termination after grace period if not foregrounded
+        backgroundGraceTimer = Timer.scheduledTimer(
+            withTimeInterval: Self.backgroundGracePeriodSeconds,
+            repeats: false
+        ) { [weak self] _ in
+            self?.handleBackgroundExpiration()
+        }
+
+        Logger.info("Device transfer entered background, starting \(Self.backgroundGracePeriodSeconds)s grace period")
+    }
+
+    @objc
+    private func willEnterForeground() {
+        // Cancel the pending termination if we return to foreground
+        if backgroundTask != .invalid || backgroundGraceTimer != nil {
+            Logger.info("Device transfer returned to foreground, cancelling background termination")
+            cancelBackgroundGracePeriod()
+
+            // Notify peer that we're back
+            switch transferState {
+            case .idle:
+                break
+            case .incoming(let oldDevicePeerId, _, _, _, _):
+                try? sendForegroundReturnMessage(to: oldDevicePeerId)
+            case .outgoing(let newDevicePeerId, _, _, _, _):
+                try? sendForegroundReturnMessage(to: newDevicePeerId)
+            }
+        }
+    }
+
+    private func handleBackgroundExpiration() {
+        Logger.warn("Device transfer background grace period expired, terminating transfer")
+        cancelBackgroundGracePeriod()
+
         switch transferState {
         case .idle:
             break
@@ -330,6 +411,141 @@ class DeviceTransferService: NSObject, DeviceTransferServiceProtocol {
             notifyObservers { $0.deviceTransferServiceDidEndTransfer(error: .backgroundedDevice) }
         }
         stopTransfer()
+    }
+
+    private func cancelBackgroundGracePeriod() {
+        backgroundGraceTimer?.invalidate()
+        backgroundGraceTimer = nil
+
+        if backgroundTask != .invalid {
+            UIApplication.shared.endBackgroundTask(backgroundTask)
+            backgroundTask = .invalid
+        }
+    }
+
+    // MARK: - Connection Retry Methods
+
+    func resetConnectionRetryCount() {
+        connectionRetryCount = 0
+        connectionRetryTask?.cancel()
+        connectionRetryTask = nil
+    }
+
+    func attemptConnectionRetry(to peerId: MCPeerID, isOutgoing: Bool) -> Bool {
+        guard connectionRetryCount < Self.maxConnectionRetries else {
+            Logger.warn("Connection retry limit reached (\(Self.maxConnectionRetries)), failing transfer")
+            return false
+        }
+
+        connectionRetryCount += 1
+        let retryDelay = Self.baseRetryDelaySeconds * pow(2.0, Double(connectionRetryCount - 1))
+
+        Logger.info("Attempting connection retry \(connectionRetryCount)/\(Self.maxConnectionRetries) in \(retryDelay)s")
+
+        connectionRetryTask = Task { @MainActor [weak self] in
+            do {
+                try await Task.sleep(nanoseconds: UInt64(retryDelay * 1_000_000_000))
+            } catch {
+                return // Task was cancelled
+            }
+
+            guard let self else { return }
+
+            // Check if we're still in a transfer state
+            switch self.transferState {
+            case .idle:
+                return
+            case .outgoing, .incoming:
+                break
+            }
+
+            guard let session = self.session else {
+                Logger.warn("No session available for retry")
+                self.failTransfer(.assertion, "No session available for connection retry")
+                return
+            }
+
+            if isOutgoing {
+                // For outgoing transfers, we need to re-invite the peer
+                Logger.info("Re-inviting peer for connection retry")
+                self.newDeviceServiceBrowser.invitePeer(peerId, to: session, withContext: nil, timeout: 120)
+            } else {
+                // For incoming transfers, we can only wait for the old device to reconnect
+                // The old device should also be attempting to retry
+                Logger.info("Waiting for peer to reconnect (incoming transfer)")
+            }
+        }
+
+        return true
+    }
+
+    func cancelConnectionRetry() {
+        connectionRetryTask?.cancel()
+        connectionRetryTask = nil
+    }
+
+    // MARK: - Checkpoint Methods
+
+    func computeManifestHash(_ manifest: DeviceTransferProtoManifest) -> Data? {
+        guard let manifestData = try? manifest.serializedData() else {
+            return nil
+        }
+        return Data(SHA256.hash(data: manifestData))
+    }
+
+    func initializeCheckpoint(for manifest: DeviceTransferProtoManifest, isIncoming: Bool) {
+        guard let manifestHash = computeManifestHash(manifest) else {
+            Logger.warn("Could not compute manifest hash, checkpoint disabled for this transfer")
+            currentCheckpoint = nil
+            return
+        }
+
+        // Check for existing checkpoint
+        if DeviceTransferCheckpoint.hasValidCheckpoint(for: manifestHash, isIncoming: isIncoming),
+           let existingCheckpoint = DeviceTransferCheckpoint.load() {
+            Logger.info("Resuming transfer with existing checkpoint: \(existingCheckpoint.transferredFileIds.count) files already transferred")
+            currentCheckpoint = existingCheckpoint
+        } else {
+            // Create new checkpoint
+            if isIncoming {
+                currentCheckpoint = DeviceTransferCheckpoint.createForIncomingTransfer(
+                    manifest: manifest,
+                    manifestHash: manifestHash
+                )
+            } else {
+                currentCheckpoint = DeviceTransferCheckpoint.createForOutgoingTransfer(
+                    manifest: manifest,
+                    manifestHash: manifestHash
+                )
+            }
+            DeviceTransferCheckpoint.save(currentCheckpoint!)
+            Logger.info("Created new transfer checkpoint")
+        }
+    }
+
+    func updateCheckpointWithTransferredFile(_ fileId: String) {
+        guard var checkpoint = currentCheckpoint else { return }
+        DeviceTransferCheckpoint.markFileTransferred(fileId, in: &checkpoint)
+        currentCheckpoint = checkpoint
+    }
+
+    func updateCheckpointWithSkippedFile(_ fileId: String) {
+        guard var checkpoint = currentCheckpoint else { return }
+        DeviceTransferCheckpoint.markFileSkipped(fileId, in: &checkpoint)
+        currentCheckpoint = checkpoint
+    }
+
+    func clearCheckpoint() {
+        DeviceTransferCheckpoint.clear()
+        currentCheckpoint = nil
+    }
+
+    func getAlreadyTransferredFileIds() -> Set<String> {
+        return currentCheckpoint?.transferredFileIds ?? []
+    }
+
+    func getAlreadySkippedFileIds() -> Set<String> {
+        return currentCheckpoint?.skippedFileIds ?? []
     }
 
     // MARK: - Sending
@@ -362,32 +578,57 @@ class DeviceTransferService: NSObject, DeviceTransferServiceProtocol {
             let wal: DeviceTransferProtoFile
         }
 
+        // Get files already transferred from checkpoint (for resume)
+        let alreadyTransferred = self.getAlreadyTransferredFileIds()
+        if !alreadyTransferred.isEmpty {
+            Logger.info("Resuming transfer, skipping \(alreadyTransferred.count) already-transferred files")
+        }
+
         try await withThrowingTaskGroup(of: Void.self) { taskGroup in
-            taskGroup.addTask {
-                // Make a copy of the database files within a write transaction so we can be confident
-                // they aren't mutated during the copy. We then transfer these copies.
-                let dbCopy = try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { _ in
-                    do {
-                        let dbCopy = try Self.makeLocalCopy(databaseFile: database.database)
-                        let walCopy = try Self.makeLocalCopy(databaseFile: database.wal)
-                        return DatabaseCopy(db: dbCopy, wal: walCopy)
-                    } catch {
-                        Logger.error("Failed to copy database files!")
-                        throw error
-                    }
-                }
-                defer {
-                    for databaseFile in [dbCopy.db, dbCopy.wal] {
-                        if let copyUrl = try? Self.urlForCopy(databaseFile: databaseFile) {
-                            try? OWSFileSystem.deleteFile(url: copyUrl)
+            // Check if database files need to be transferred
+            let dbAlreadyTransferred = alreadyTransferred.contains(DeviceTransferService.databaseIdentifier)
+            let walAlreadyTransferred = alreadyTransferred.contains(DeviceTransferService.databaseWALIdentifier)
+
+            if !dbAlreadyTransferred || !walAlreadyTransferred {
+                taskGroup.addTask {
+                    // Make a copy of the database files within a write transaction so we can be confident
+                    // they aren't mutated during the copy. We then transfer these copies.
+                    let dbCopy = try await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { _ in
+                        do {
+                            let dbCopy = try Self.makeLocalCopy(databaseFile: database.database)
+                            let walCopy = try Self.makeLocalCopy(databaseFile: database.wal)
+                            return DatabaseCopy(db: dbCopy, wal: walCopy)
+                        } catch {
+                            Logger.error("Failed to copy database files!")
+                            throw error
                         }
                     }
+                    defer {
+                        for databaseFile in [dbCopy.db, dbCopy.wal] {
+                            if let copyUrl = try? Self.urlForCopy(databaseFile: databaseFile) {
+                                try? OWSFileSystem.deleteFile(url: copyUrl)
+                            }
+                        }
+                    }
+                    for databaseFile in [dbCopy.db, dbCopy.wal] {
+                        // Skip if already transferred in a previous session
+                        if alreadyTransferred.contains(databaseFile.identifier) {
+                            Logger.info("Skipping already-transferred database file: \(databaseFile.identifier)")
+                            continue
+                        }
+                        try await DeviceTransferOperation(file: databaseFile).run()
+                    }
                 }
-                for databaseFile in [dbCopy.db, dbCopy.wal] {
-                    try await DeviceTransferOperation(file: databaseFile).run()
-                }
+            } else {
+                Logger.info("Skipping database files - already transferred in previous session")
             }
+
             for (index, file) in manifest.files.enumerated() {
+                // Skip files already transferred in a previous session
+                if alreadyTransferred.contains(file.identifier) {
+                    continue
+                }
+
                 if index >= 10 {
                     // If we've already kicked off 10, wait for one to finish before starting the next.
                     try await taskGroup.next()
@@ -475,6 +716,28 @@ class DeviceTransferService: NSObject, DeviceTransferServiceProtocol {
         }
 
         try session.send(DeviceTransferService.backgroundAppMessage, toPeers: [peerId], with: .unreliable)
+    }
+
+    static let backgroundWarningMessage = Data("App backgrounded warning".utf8)
+    func sendBackgroundWarningMessage(to peerId: MCPeerID) throws {
+        Logger.info("Sending background warning message")
+
+        guard let session else {
+            throw OWSAssertionError("attempted to send background warning message without an available session")
+        }
+
+        try session.send(DeviceTransferService.backgroundWarningMessage, toPeers: [peerId], with: .unreliable)
+    }
+
+    static let foregroundReturnMessage = Data("App returned to foreground".utf8)
+    func sendForegroundReturnMessage(to peerId: MCPeerID) throws {
+        Logger.info("Sending foreground return message")
+
+        guard let session else {
+            throw OWSAssertionError("attempted to send foreground return message without an available session")
+        }
+
+        try session.send(DeviceTransferService.foregroundReturnMessage, toPeers: [peerId], with: .unreliable)
     }
 
     // MARK: - Throughput
