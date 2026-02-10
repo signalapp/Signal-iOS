@@ -75,7 +75,7 @@ extension DeviceTransferService: MCSessionDelegate {
                     if self.attemptConnectionRetry(to: newDevicePeerId, isOutgoing: true) {
                         Logger.info("Connection lost, attempting retry...")
                     } else {
-                        self.failTransfer(.connectionLost, "Lost connection to new device after \(DeviceTransferService.maxConnectionRetries) retries")
+                        self.failTransfer(.connectionLost, "Lost connection to new device after \(self.connectionRetryManager.configuration.maxRetries) retries")
                     }
                 @unknown default:
                     self.failTransfer(.assertion, "Unexpected connection state: \(state.rawValue)")
@@ -95,7 +95,7 @@ extension DeviceTransferService: MCSessionDelegate {
                     if self.attemptConnectionRetry(to: oldDevicePeerId, isOutgoing: false) {
                         Logger.info("Connection lost, waiting for peer to reconnect...")
                     } else {
-                        self.failTransfer(.connectionLost, "Lost connection to old device after \(DeviceTransferService.maxConnectionRetries) retries")
+                        self.failTransfer(.connectionLost, "Lost connection to old device after \(self.connectionRetryManager.configuration.maxRetries) retries")
                     }
                 @unknown default:
                     self.failTransfer(.assertion, "Unexpected connection state: \(state.rawValue)")

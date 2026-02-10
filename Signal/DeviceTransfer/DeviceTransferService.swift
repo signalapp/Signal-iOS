@@ -108,10 +108,7 @@ class DeviceTransferService: NSObject, DeviceTransferServiceProtocol {
 
     // MARK: - Connection Retry
 
-    private(set) var connectionRetryCount: Int = 0
-    private var connectionRetryTask: Task<Void, Never>?
-    static let maxConnectionRetries: Int = 3
-    static let baseRetryDelaySeconds: TimeInterval = 2
+    private(set) var connectionRetryManager = ConnectionRetryManager()
 
     // MARK: - Checkpoint for Resume
 
@@ -426,29 +423,12 @@ class DeviceTransferService: NSObject, DeviceTransferServiceProtocol {
     // MARK: - Connection Retry Methods
 
     func resetConnectionRetryCount() {
-        connectionRetryCount = 0
-        connectionRetryTask?.cancel()
-        connectionRetryTask = nil
+        connectionRetryManager.reset()
     }
 
     func attemptConnectionRetry(to peerId: MCPeerID, isOutgoing: Bool) -> Bool {
-        guard connectionRetryCount < Self.maxConnectionRetries else {
-            Logger.warn("Connection retry limit reached (\(Self.maxConnectionRetries)), failing transfer")
-            return false
-        }
-
-        connectionRetryCount += 1
-        let retryDelay = Self.baseRetryDelaySeconds * pow(2.0, Double(connectionRetryCount - 1))
-
-        Logger.info("Attempting connection retry \(connectionRetryCount)/\(Self.maxConnectionRetries) in \(retryDelay)s")
-
-        connectionRetryTask = Task { @MainActor [weak self] in
-            do {
-                try await Task.sleep(nanoseconds: UInt64(retryDelay * 1_000_000_000))
-            } catch {
-                return // Task was cancelled
-            }
-
+        // Configure the retry callback
+        connectionRetryManager.onRetry = { [weak self] _ in
             guard let self else { return }
 
             // Check if we're still in a transfer state
@@ -476,12 +456,15 @@ class DeviceTransferService: NSObject, DeviceTransferServiceProtocol {
             }
         }
 
-        return true
+        return connectionRetryManager.attemptRetry()
     }
 
     func cancelConnectionRetry() {
-        connectionRetryTask?.cancel()
-        connectionRetryTask = nil
+        connectionRetryManager.cancelPendingRetry()
+    }
+
+    var connectionRetryCount: Int {
+        return connectionRetryManager.retryCount
     }
 
     // MARK: - Checkpoint Methods

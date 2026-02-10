@@ -128,11 +128,11 @@ CHECKOUT OPTIONS:
     :tag: v4.6.1-f_barrierfsync
 
 SPEC CHECKSUMS:
-  blurhash: f588a9d659f4c742a325bbbbd438d1ef3c34af19
+  blurhash: 4b3b2b8909cf41ab59fa349788654b8387284ff4
   BonMot: fb2b6a2209cb3149aca37b7131d49c051c04ae86
   CocoaLumberjack: 543c79c114dadc3b1aba95641d8738b06b05b646
   GRDB.swift: 1395cb3556df6b16ed69dfc74c3886abc75d2825
-  LibMobileCoin: 8503f567fa32184a5be7bc038fbd727747dd9991
+  LibMobileCoin: 4c76066a0aa8c614099da08e38562fd7b4b2d246
   libPhoneNumber-iOS: 1a34106b49dc6e12a7f37eb9aee7c64011509547
   LibSignalClient: 5956940330b65c1b0269a820ee8c8d56e346b138
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
