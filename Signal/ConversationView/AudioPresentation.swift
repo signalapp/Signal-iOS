@@ -103,7 +103,7 @@ extension AudioPresenter {
         return CVLabelConfig.unstyledText(
             text,
             font: UIFont.dynamicTypeCaption1Clamped,
-            textColor: conversationStyle?.bubbleSecondaryTextColor ?? Theme.secondaryTextAndIconColor,
+            textColor: conversationStyle?.bubbleSecondaryTextColor(isIncoming: isIncoming) ?? .label,
         )
     }
 }

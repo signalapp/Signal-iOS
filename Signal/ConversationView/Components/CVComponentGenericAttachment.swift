@@ -103,7 +103,7 @@ public class CVComponentGenericAttachment: CVComponentBase, CVComponent {
         ).applyForRendering(label: topLabel)
         Self.bottomLabelConfig(
             genericAttachment: genericAttachment,
-            textColor: conversationStyle.bubbleSecondaryTextColor,
+            textColor: conversationStyle.bubbleSecondaryTextColor(isIncoming: isIncoming),
         ).applyForRendering(label: bottomLabel)
 
         let vSubviews = [

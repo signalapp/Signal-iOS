@@ -118,7 +118,7 @@ class GiftBadgeView: ManualStackView {
 
     private let timeRemainingLabel = CVLabel()
     private static func timeRemainingLabelConfig(for state: State) -> CVLabelConfig {
-        let textColor = state.conversationStyle.bubbleSecondaryTextColor
+        let textColor = state.conversationStyle.bubbleSecondaryTextColor(isIncoming: state.isIncoming)
         return CVLabelConfig.unstyledText(
             state.timeRemainingText,
             font: .dynamicTypeSubheadline,

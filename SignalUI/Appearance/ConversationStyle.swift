@@ -275,8 +275,16 @@ public struct ConversationStyle {
         Self.bubbleTextColorIncomingThemed.color(isDarkThemeEnabled: isDarkThemeEnabled)
     }
 
+    public var bubbleSecondaryTextColorIncoming: UIColor {
+        isDarkThemeEnabled ? Theme.darkThemeSecondaryTextAndIconColor : Theme.lightThemeSecondaryTextAndIconColor
+    }
+
     public var bubbleTextColorOutgoing: UIColor {
         Self.bubbleTextColorOutgoingThemed.color(isDarkThemeEnabled: isDarkThemeEnabled)
+    }
+
+    public var bubbleSecondaryTextColorOutgoing: UIColor {
+        isDarkThemeEnabled ? .ows_whiteAlpha60 : .ows_whiteAlpha80
     }
 
     public func bubbleTextColor(message: TSMessage) -> UIColor {
@@ -311,8 +319,12 @@ public struct ConversationStyle {
         }
     }
 
-    public var bubbleSecondaryTextColor: UIColor {
-        isDarkThemeEnabled ? Theme.darkThemeSecondaryTextAndIconColor : Theme.lightThemeSecondaryTextAndIconColor
+    public func bubbleSecondaryTextColor(isIncoming: Bool) -> UIColor {
+        if isIncoming {
+            return bubbleSecondaryTextColorIncoming
+        } else {
+            return bubbleSecondaryTextColorOutgoing
+        }
     }
 
     /// - Returns: Stroke configuration to use on regular bubbles in chat for the theme provided.

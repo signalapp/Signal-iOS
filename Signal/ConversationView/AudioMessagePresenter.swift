@@ -70,7 +70,7 @@ class AudioMessagePresenter: AudioPresenter {
         conversationStyle: ConversationStyle,
         isIncoming: Bool,
     ) -> ColorValueProvider {
-        return ColorValueProvider(conversationStyle.bubbleSecondaryTextColor.lottieColorValue)
+        return ColorValueProvider(conversationStyle.bubbleSecondaryTextColor(isIncoming: isIncoming).lottieColorValue)
     }
 
     func configureForRendering(conversationStyle: ConversationStyle) {
