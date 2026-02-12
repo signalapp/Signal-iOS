@@ -100,12 +100,6 @@ public class CVWallpaperBlurView: ManualLayoutViewWithLayer, CVDimmableView {
         cornerConfig: BubbleCornerConfiguration?,
         strokeConfig: BubbleStrokeConfiguration?,
     ) {
-        if hasPillRounding {
-            owsAssertDebug(cornerConfig == nil, "Did you mean to specify both hasPillRounding and cornerConfig?")
-        } else {
-            owsAssertDebug(cornerConfig != nil, "Did you forget to specify cornerConfig?")
-        }
-
         resetContentAndConfiguration()
 
         self.isPreview = (provider == nil)
