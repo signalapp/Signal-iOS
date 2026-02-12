@@ -1583,6 +1583,22 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
         editTarget = nil
         setMessageBody(nil, animated: animated)
         inputTextView.undoManager?.removeAllActions()
+        resetKeyboardLayout()
+    }
+
+    /// Resets the iOS keyboard from the symbols/numbers pane back to the
+    /// default alphabetic layout by toggling ``keyboardType``. Each
+    /// reload is required — the first forces the keyboard to tear down
+    /// its current layout, and the second rebuilds it in the default
+    /// alpha state. Does not affect the user's selected language.
+    private func resetKeyboardLayout() {
+        guard inputTextView.inputView == nil, inputTextView.isFirstResponder else { return }
+
+        let original = inputTextView.keyboardType
+        inputTextView.keyboardType = (original == .default) ? .emailAddress : .default
+        inputTextView.reloadInputViews()
+        inputTextView.keyboardType = original
+        inputTextView.reloadInputViews()
     }
 
     // MARK: Content Size Change Handling
