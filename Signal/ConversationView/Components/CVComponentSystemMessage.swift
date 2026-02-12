@@ -668,6 +668,12 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
                 messageTimerView.prepareForReuse()
                 messageTimerView.removeFromSuperview()
 
+                wallpaperBlurView?.removeFromSuperview()
+                wallpaperBlurView = nil
+
+                backgroundView?.removeFromSuperview()
+                backgroundView = nil
+
                 hasWallpaper = false
                 isDarkThemeEnabled = false
                 isFirstInCluster = false
@@ -676,12 +682,6 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
                 wasShowingSelectionUI = false
                 hasActionButton = false
             }
-
-            wallpaperBlurView?.removeFromSuperview()
-            wallpaperBlurView = nil
-
-            backgroundView?.removeFromSuperview()
-            backgroundView = nil
 
             button?.removeFromSuperview()
             button = nil
