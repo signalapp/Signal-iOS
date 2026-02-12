@@ -553,6 +553,7 @@ class OWSChatConnectionUsingLibSignal<Connection: ChatConnection & Sendable>: OW
     private func signalProxyConfigDidChange(_ notification: NSNotification) {
         // The libsignal connection needs to be recreated whether the proxy is going up,
         // changing, or going down.
+        Logger.info("\(logPrefix) signal proxy config changed; cycling socket")
         cycleSocket()
     }
 
@@ -602,6 +603,7 @@ class OWSChatConnectionUsingLibSignal<Connection: ChatConnection & Sendable>: OW
             }
 
             do {
+                Logger.info("\(self.logPrefix): starting chat connect (signalProxyEnabled: \(SignalProxy.isEnabled), signalProxyReady: \(SignalProxy.isEnabledAndReady))")
                 let chatService = try await self.connectChatService(token: token)
                 if type == .identified {
                     self.didConnectIdentified()

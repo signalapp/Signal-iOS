@@ -146,12 +146,16 @@ public class SignalProxy: NSObject {
         let networkManager = SSKEnvironment.shared.networkManagerRef
         if isEnabled {
             if let (proxyHost, proxyPort) = host.flatMap({ ProxyClient.parseHost($0) }) {
-                do {
-                    try networkManager.libsignalNet?.setProxy(host: proxyHost, port: proxyPort)
-                } catch {
-                    owsFailDebug("failed to set proxy on libsignal-net (need better validation)")
-                    // This will poison the Net instance, failing all new connections,
-                    // until a valid proxy is set or cleared.
+                if let libsignalNet = networkManager.libsignalNet {
+                    Logger.info("Applying signal proxy settings to libsignal Net.")
+                    do {
+                        try libsignalNet.setProxy(host: proxyHost, port: proxyPort)
+                        Logger.info("Applied signal proxy settings to libsignal Net.")
+                    } catch {
+                        owsFailDebug("failed to set proxy on libsignal-net (need better validation)")
+                        // This will poison the Net instance, failing all new connections,
+                        // until a valid proxy is set or cleared.
+                    }
                 }
             } else {
                 // We can't print the invalid host in the logs, because that's private!

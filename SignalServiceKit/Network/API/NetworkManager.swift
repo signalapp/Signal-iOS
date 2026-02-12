@@ -54,6 +54,7 @@ public class NetworkManager: NetworkManagerProtocol {
             }
 
             self.resetLibsignalNetProxySettings()
+            Logger.info("Initialized libsignal Net and reset proxy settings (signalProxyEnabled: \(SignalProxy.isEnabled)).")
             appReadiness.runNowOrWhenAppDidBecomeReadyAsync {
                 // We did this once already, but doing it properly depends on RemoteConfig.
                 self.resetLibsignalNetProxySettings()
