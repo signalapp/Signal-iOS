@@ -15,20 +15,22 @@ public class TSConstants {
         case staging
     }
 
-    private static let environment: Environment = {
-// You can set "USE_STAGING=1" in your Xcode Scheme. This allows you to
-// prepare a series of commits without accidentally committing the change
-// to the environment.
-#if DEBUG
-        if ProcessInfo.processInfo.environment["USE_STAGING"] == "1" {
+    private static func computeEnvironment(processEnvironment: [String: String]) -> Environment {
+        // You can set "USE_STAGING=1" in your Xcode Scheme. This allows you to
+        // prepare a series of commits without accidentally committing the change
+        // to the environment.
+        if processEnvironment["USE_STAGING"] == "1" {
             return .staging
         }
-#endif
 
         // If you do want to make a build that will always connect to staging,
         // change this value. (Scheme environment variables are only set when
         // launching via Xcode, so this approach is still quite useful.)
         return .production
+    }
+
+    private static let environment: Environment = {
+        computeEnvironment(processEnvironment: ProcessInfo.processInfo.environment)
     }()
 
     public static var isUsingProductionService: Bool {
@@ -167,7 +169,8 @@ public class TSConstantsProduction: TSConstantsProtocol {
     public let challengeCaptchaURL = "https://signalcaptchas.org/challenge/generate.html"
     public let kUDTrustRoots = ["BXu6QIKVz5MA8gstzfOgRQGqyLqOwNKHL6INkv3IHWMF", "BUkY0I+9+oPgDCn4+Ac6Iu813yvqkDr/ga8DzLxFxuk6"]
     public let updatesURL = "https://updates.signal.org"
-    public let updates2URL = "https://updates2.signal.org"
+    // Custom updates2 host (served via beforeve CDN / MinIO).
+    public let updates2URL = "https://cdn.beforeve.com"
 
     public let censorshipFReflectorHost = "reflector-signal.global.ssl.fastly.net"
     public let censorshipGReflectorHost = "reflector-nrgwuv7kwq-uc.a.run.app"
@@ -221,7 +224,8 @@ public class TSConstantsStaging: TSConstantsProtocol {
     public let kUDTrustRoots = ["BbqY1DzohE4NUZoVF+L18oUPrK3kILllLEJh2UnPSsEx", "BYhU6tPjqP46KGZEzRs1OL4U39V5dlPJ/X09ha4rErkm"]
     // There's no separate updates endpoint for staging.
     public let updatesURL = "https://updates.signal.org"
-    public let updates2URL = "https://updates2.signal.org"
+    // Custom updates2 host (served via beforeve CDN / MinIO).
+    public let updates2URL = "https://cdn.beforeve.com"
 
     public let censorshipFReflectorHost = "reflector-staging-signal.global.ssl.fastly.net"
     public let censorshipGReflectorHost = "reflector-nrgwuv7kwq-uc.a.run.app"
@@ -257,6 +261,12 @@ public class TSConstantsStaging: TSConstantsProtocol {
 }
 
 #if TESTABLE_BUILD
+
+public extension TSConstants {
+    static func isStagingEnvironmentForTests(processEnvironment: [String: String]) -> Bool {
+        computeEnvironment(processEnvironment: processEnvironment) == .staging
+    }
+}
 
 public class TSConstantsMock: TSConstantsProtocol {
 

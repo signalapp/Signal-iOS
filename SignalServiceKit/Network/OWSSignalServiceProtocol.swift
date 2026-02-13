@@ -123,7 +123,8 @@ extension SignalServiceType {
                 baseUrl: URL(string: TSConstants.updates2URL)!,
                 censorshipCircumventionSupported: false,
                 censorshipCircumventionPathPrefix: "unimplemented", // BADGES TODO
-                shouldUseSignalCertificate: true,
+                // updates2 can be served by a custom CDN domain; do not require Signal's pinned certificate.
+                shouldUseSignalCertificate: false,
                 shouldHandleRemoteDeprecation: false,
                 type: self,
             )
