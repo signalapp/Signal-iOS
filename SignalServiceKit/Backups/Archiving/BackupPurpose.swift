@@ -246,7 +246,7 @@ extension BackupImportSource {
                     libsignalNet: libsignalNet,
                     nonceStore: nonceStore,
                 )
-            case .connectionFailed, .connectionTimeoutError, .ioError:
+            case .connectionFailed, .connectionTimeoutError, .ioError, .webSocketError:
                 // Network-level failures mostly end up in these buckets;
                 // these can be retried automatically.
                 throw .retryableAutomatically
@@ -437,7 +437,7 @@ extension BackupExportPurpose {
                     libsignalNet: libsignalNet,
                     nonceStore: nonceStore,
                 )
-            case .connectionFailed, .connectionTimeoutError, .ioError:
+            case .connectionFailed, .connectionTimeoutError, .ioError, .webSocketError:
                 // Network-level failures mostly end up in these buckets;
                 // these can be retried automatically.
                 throw .retryableAutomatically
