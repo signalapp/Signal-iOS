@@ -22,7 +22,7 @@ class DebugUIPrompts: DebugUIPage {
         items += [
             OWSTableItem(title: "Reenable KT first-time education", actionBlock: {
                 db.write { tx in
-                    keyTransparencyStore.setHasShownFirstTimeEducation(false, tx: tx)
+                    keyTransparencyStore.setShouldShowFirstTimeEducation(true, tx: tx)
                 }
             }),
 

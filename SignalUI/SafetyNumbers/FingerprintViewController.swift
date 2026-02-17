@@ -121,7 +121,7 @@ public class FingerprintViewController: OWSViewController, OWSNavigationChildCon
         if keyTransparencyShouldShowEducation {
             let educationSheet = KeyTransparencyFirstTimeEducationHeroSheet {
                 db.write { tx in
-                    keyTransparencyStore.setHasShownFirstTimeEducation(true, tx: tx)
+                    keyTransparencyStore.setShouldShowFirstTimeEducation(false, tx: tx)
                 }
 
                 viewController.present(navigationController, animated: true)
