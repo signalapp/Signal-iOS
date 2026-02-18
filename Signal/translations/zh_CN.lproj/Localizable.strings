@@ -1808,7 +1808,7 @@
 "CHAT_LIST_UNREAD_FILTER_NO_CHATS" = "没有未读的聊天记录";
 
 /* Message indicating a user should check connection and try again. */
-"CHECK_YOUR_CONNECTION_TRY_AGAIN_WARNING" = "Check your internet connection and try again.";
+"CHECK_YOUR_CONNECTION_TRY_AGAIN_WARNING" = "请检查您的网络连接并重试。";
 
 /* Text for a bullet point in a list of Backup features, describing that all media is included. */
 "CHOOSE_BACKUP_PLAN_BULLET_FULL_MEDIA_BACKUP" = "备份所有媒体";
@@ -2240,7 +2240,7 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER_V2" = "请选择谁可以编辑群组名称、图片、描述、限时消息定时器和置顶消息。";
 
 /* Footer for the 'attributes access' section in conversation settings view with member labels added. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER_V3" = "Choose who can edit the group name, photo, description, disappearing messages timer, pinned messages, and add member labels.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER_V3" = "请选择谁可以编辑群组名称、头像、描述、限时消息定时器、置顶消息，以及添加成员标签。";
 
 /* Footer string for a contact's badges in conversation settings */
 "CONVERSATION_SETTINGS_BADGES_FOOTER" = "支持 Signal，为您的个人资料添加徽章吧。点击徽章了解详情。";
@@ -4694,16 +4694,16 @@
 "KEY_COMMAND_UNARCHIVE" = "激活聊天";
 
 /* Body for a sheet shown when a Key Transparency self-check fails. */
-"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_BODY" = "Debug logs helps us diagnose and fix the issue and do not contain identifying information.";
+"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_BODY" = "调试日志能帮助我们诊断和解决问题，并且不包含任何识别身份的信息。";
 
 /* Title for the primary button in a sheet shown when a Key Transparency self-check fails. */
-"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_PRIMARY_BUTTON_TITLE" = "Submit";
+"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_PRIMARY_BUTTON_TITLE" = "提交";
 
 /* Title for the secondary button in a sheet shown when a Key Transparency self-check fails. */
-"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_SECONDARY_BUTTON_TITLE" = "No Thanks";
+"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_SECONDARY_BUTTON_TITLE" = "不，谢谢。";
 
 /* Title for a sheet shown when a Key Transparency self-check fails. */
-"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_TITLE" = "Automatic Key Verification is currently unavailable for your device. Submit debug log?";
+"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_TITLE" = "您的设备目前无法使用自动密钥验证功能。要提交调试日志吗？";
 
 /* Label for the 'learn more' button. */
 "LEARN_MORE" = "了解更多";
@@ -5015,37 +5015,37 @@
 "MEMBER_LABEL_AX_PREFIX" = "成员标签： ";
 
 /* Button label on action sheet when attempting to change the group attributes access to 'administrator' and then continue */
-"MEMBER_LABEL_CLEAR_CHANGE_PERMISSION_CONTINUE" = "Change Permission";
+"MEMBER_LABEL_CLEAR_CHANGE_PERMISSION_CONTINUE" = "更改权限";
 
 /* Body for action sheet when attempting to change the group attributes access to 'administrator' */
-"MEMBER_LABEL_CLEAR_WARNING_BODY" = "Changing this permission to “Only Admins” will clear member labels set by non-admins in this group.";
+"MEMBER_LABEL_CLEAR_WARNING_BODY" = "将此权限更改为“仅限管理员”将会清除此群组中由非管理员设置的成员标签。";
 
 /* Title for action sheet when attempting to change the group attributes access to 'administrator' */
-"MEMBER_LABEL_CLEAR_WARNING_TITLE" = "Member Labels Will be Cleared";
+"MEMBER_LABEL_CLEAR_WARNING_TITLE" = "成员标签将会被清除";
 
 /* Text for a button to set a member label */
-"MEMBER_LABEL_EDIT" = "Edit Your Label";
+"MEMBER_LABEL_EDIT" = "编辑您的标签";
 
 /* Error indicating member label could not save. */
-"MEMBER_LABEL_FAIL_TO_SAVE" = "Couldn't Save Member Label";
+"MEMBER_LABEL_FAIL_TO_SAVE" = "无法保存成员标签";
 
 /* Body for a sheet shown if a user will show their member label over their About message in a group. */
-"MEMBER_LABEL_HERO_SHEET_ABOUT_OVERRIDE_BODY" = "In this group, your Member Label will be displayed beside your photo in place of your About.";
+"MEMBER_LABEL_HERO_SHEET_ABOUT_OVERRIDE_BODY" = "在此群组中，您的成员标签将会取代“关于”显示在您的头像旁。";
 
 /* Title for a sheet shown if a user will show their member label over their About message in a group. */
-"MEMBER_LABEL_HERO_SHEET_ABOUT_OVERRIDE_TITLE" = "Member Label Display";
+"MEMBER_LABEL_HERO_SHEET_ABOUT_OVERRIDE_TITLE" = "成员标签显示";
 
 /* Body for a sheet shown if a user taps on someone else's member label. */
-"MEMBER_LABEL_HERO_SHEET_EDUCATION_BODY" = "Use a member label to describe yourself or your role in this group. Member labels are only visible within this group.";
+"MEMBER_LABEL_HERO_SHEET_EDUCATION_BODY" = "您可以设置成员标签来描述您自己或您在此群组中的角色。成员标签仅在此群组内可见。";
 
 /* Title for a sheet shown if a user taps on someone else's member label. */
-"MEMBER_LABEL_HERO_SHEET_EDUCATION_TITLE" = "Member Labels";
+"MEMBER_LABEL_HERO_SHEET_EDUCATION_TITLE" = "成员标签";
 
 /* Heading shown above the preview of a message bubble with the edited member label. */
 "MEMBER_LABEL_PREVIEW_HEADING" = "预览";
 
 /* Text for a button to edit an existing member label */
-"MEMBER_LABEL_SET" = "Set a Member Label";
+"MEMBER_LABEL_SET" = "设置成员标签";
 
 /* Text shown in the preview message bubble when a user is editing their member label. */
 "MEMBER_LABEL_VIEW_MESSAGE_PREVIEW_TEXT" = "你好！";
@@ -7643,10 +7643,10 @@
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_BUTTON_VERIFYING" = "正在验证加密…";
 
 /* Body for a sheet introducing Key Transparency. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_BODY" = "For contacts you’re connected to by phone number, Signal can automatically confirm whether the connection is secure using a process called key transparency. For added security, you can still verify connections manually using a QR code or by comparing safety numbers.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_BODY" = "对于通过手机号码连接的联系人，Signal 可以使用一个名为“密钥透明度”的流程自动确认连接是否安全。如要提高安全性，您还可以使用二维码或比对安全码手动验证连接。";
 
 /* Title for a sheet introducing Key Transparency. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_TITLE" = "Signal can now automatically verify encryption";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_TITLE" = "Signal 现在可以自动验证加密";
 
 /* Body for a sheet explaining that encryption auto-verification did not succeed. Embeds {{ 1: the contact's name }}. */
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "Signal 已无法自动验证此聊天的加密。这可能是因为 %1$@ 更改了手机号码。请通过比对前一个屏幕上的数字或扫描对方设备上的二维码手动验证端对端加密。";
@@ -8192,10 +8192,10 @@
 "SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "继续存档静音聊天";
 
 /* Footer for settings section describing Key Transparency. */
-"SETTINGS_KEY_TRANSPARENCY_OPT_OUT_FOOTER" = "When enabled, Signal will attempt to automatically verify the encryption of 1:1 chats.";
+"SETTINGS_KEY_TRANSPARENCY_OPT_OUT_FOOTER" = "如果启用此功能，Signal 会尝试自动验证一对一聊天加密。";
 
 /* Title for for a settings option describing that Key Transparency is enabled. */
-"SETTINGS_KEY_TRANSPARENCY_OPT_OUT_SWITCH_TITLE" = "Automatic Key Verification";
+"SETTINGS_KEY_TRANSPARENCY_OPT_OUT_SWITCH_TITLE" = "自动密钥验证";
 
 /* No comment provided by engineer. */
 "SETTINGS_LEGAL_TERMS_CELL" = "条款和隐私政策";

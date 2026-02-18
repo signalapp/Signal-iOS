@@ -1808,7 +1808,7 @@
 "CHAT_LIST_UNREAD_FILTER_NO_CHATS" = "Keine ungelesenen Chats";
 
 /* Message indicating a user should check connection and try again. */
-"CHECK_YOUR_CONNECTION_TRY_AGAIN_WARNING" = "Check your internet connection and try again.";
+"CHECK_YOUR_CONNECTION_TRY_AGAIN_WARNING" = "Überprüfe deine Internetverbindung und versuche es erneut.";
 
 /* Text for a bullet point in a list of Backup features, describing that all media is included. */
 "CHOOSE_BACKUP_PLAN_BULLET_FULL_MEDIA_BACKUP" = "Vollständige Sicherung von Medien";
@@ -2240,7 +2240,7 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER_V2" = "Wähle aus, wer Name, Foto und Beschreibung der Gruppe, die Ablaufzeit für »Verschwindende Nachrichten« sowie »Fixierte Nachrichten« bearbeiten kann.";
 
 /* Footer for the 'attributes access' section in conversation settings view with member labels added. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER_V3" = "Choose who can edit the group name, photo, description, disappearing messages timer, pinned messages, and add member labels.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER_V3" = "Wähle aus, wer Name, Foto und Beschreibung der Gruppe, die Ablaufzeit für »Verschwindende Nachrichten« sowie »Fixierte Nachrichten« bearbeiten und Mitgliedslabels hinzufügen darf.";
 
 /* Footer string for a contact's badges in conversation settings */
 "CONVERSATION_SETTINGS_BADGES_FOOTER" = "Unterstütze Signal und erhalte Abzeichen für dein Profil. Tippe auf ein Abzeichen, um mehr zu erfahren.";
@@ -4694,16 +4694,16 @@
 "KEY_COMMAND_UNARCHIVE" = "Chat dearchivieren";
 
 /* Body for a sheet shown when a Key Transparency self-check fails. */
-"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_BODY" = "Debug logs helps us diagnose and fix the issue and do not contain identifying information.";
+"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_BODY" = "Diagnoseprotokolle helfen uns, das Problem zu erkennen und zu beheben; sie enthalten keine persönlichen Informationen.";
 
 /* Title for the primary button in a sheet shown when a Key Transparency self-check fails. */
-"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_PRIMARY_BUTTON_TITLE" = "Submit";
+"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_PRIMARY_BUTTON_TITLE" = "Übermitteln";
 
 /* Title for the secondary button in a sheet shown when a Key Transparency self-check fails. */
-"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_SECONDARY_BUTTON_TITLE" = "No Thanks";
+"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_SECONDARY_BUTTON_TITLE" = "Nein danke";
 
 /* Title for a sheet shown when a Key Transparency self-check fails. */
-"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_TITLE" = "Automatic Key Verification is currently unavailable for your device. Submit debug log?";
+"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_TITLE" = "Automatische Schlüssel-Verifizierung ist für dein Gerät momentan nicht verfügbar. Diagnoseprotokoll übermitteln?";
 
 /* Label for the 'learn more' button. */
 "LEARN_MORE" = "Mehr erfahren";
@@ -5015,37 +5015,37 @@
 "MEMBER_LABEL_AX_PREFIX" = "Mitgliedslabel: ";
 
 /* Button label on action sheet when attempting to change the group attributes access to 'administrator' and then continue */
-"MEMBER_LABEL_CLEAR_CHANGE_PERMISSION_CONTINUE" = "Change Permission";
+"MEMBER_LABEL_CLEAR_CHANGE_PERMISSION_CONTINUE" = "Berechtigung ändern";
 
 /* Body for action sheet when attempting to change the group attributes access to 'administrator' */
-"MEMBER_LABEL_CLEAR_WARNING_BODY" = "Changing this permission to “Only Admins” will clear member labels set by non-admins in this group.";
+"MEMBER_LABEL_CLEAR_WARNING_BODY" = "Wenn du diese Berechtigung auf »Nur Administratoren« änderst, werden die von anderen Mitgliedern dieser Gruppe festgelegten Mitgliedslabels gelöscht.";
 
 /* Title for action sheet when attempting to change the group attributes access to 'administrator' */
-"MEMBER_LABEL_CLEAR_WARNING_TITLE" = "Member Labels Will be Cleared";
+"MEMBER_LABEL_CLEAR_WARNING_TITLE" = "Mitgliedslabels werden gelöscht";
 
 /* Text for a button to set a member label */
-"MEMBER_LABEL_EDIT" = "Edit Your Label";
+"MEMBER_LABEL_EDIT" = "Bearbeite dein Label";
 
 /* Error indicating member label could not save. */
-"MEMBER_LABEL_FAIL_TO_SAVE" = "Couldn't Save Member Label";
+"MEMBER_LABEL_FAIL_TO_SAVE" = "Mitgliedslabel konnte nicht gespeichert werden";
 
 /* Body for a sheet shown if a user will show their member label over their About message in a group. */
-"MEMBER_LABEL_HERO_SHEET_ABOUT_OVERRIDE_BODY" = "In this group, your Member Label will be displayed beside your photo in place of your About.";
+"MEMBER_LABEL_HERO_SHEET_ABOUT_OVERRIDE_BODY" = "In dieser Gruppe wird dein Mitgliedslabel anstelle deiner »Über mich«-Info neben deinem Foto angezeigt.";
 
 /* Title for a sheet shown if a user will show their member label over their About message in a group. */
-"MEMBER_LABEL_HERO_SHEET_ABOUT_OVERRIDE_TITLE" = "Member Label Display";
+"MEMBER_LABEL_HERO_SHEET_ABOUT_OVERRIDE_TITLE" = "Mitgliedslabel-Anzeige";
 
 /* Body for a sheet shown if a user taps on someone else's member label. */
-"MEMBER_LABEL_HERO_SHEET_EDUCATION_BODY" = "Use a member label to describe yourself or your role in this group. Member labels are only visible within this group.";
+"MEMBER_LABEL_HERO_SHEET_EDUCATION_BODY" = "Verwende ein Mitgliedslabel, um dich selbst oder deine Funktion in dieser Gruppe zu beschreiben. Mitgliedslabels sind nur innerhalb dieser Gruppe sichtbar.";
 
 /* Title for a sheet shown if a user taps on someone else's member label. */
-"MEMBER_LABEL_HERO_SHEET_EDUCATION_TITLE" = "Member Labels";
+"MEMBER_LABEL_HERO_SHEET_EDUCATION_TITLE" = "Mitgliedslabels";
 
 /* Heading shown above the preview of a message bubble with the edited member label. */
 "MEMBER_LABEL_PREVIEW_HEADING" = "Vorschau";
 
 /* Text for a button to edit an existing member label */
-"MEMBER_LABEL_SET" = "Set a Member Label";
+"MEMBER_LABEL_SET" = "Mitgliedslabel festlegen";
 
 /* Text shown in the preview message bubble when a user is editing their member label. */
 "MEMBER_LABEL_VIEW_MESSAGE_PREVIEW_TEXT" = "Hallo!";
@@ -7643,10 +7643,10 @@
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_BUTTON_VERIFYING" = "Verschlüsselung wird verifiziert…";
 
 /* Body for a sheet introducing Key Transparency. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_BODY" = "For contacts you’re connected to by phone number, Signal can automatically confirm whether the connection is secure using a process called key transparency. For added security, you can still verify connections manually using a QR code or by comparing safety numbers.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_BODY" = "Bei Kontakten, mit denen du über eine Telefonnummer verbunden bist, überprüft Signal mithilfe eines Verfahrens namens »Schlüssel-Transparenz« automatisch, ob die Verbindung sicher ist. Für mehr Sicherheit kannst du Verbindungen auch weiterhin manuell mit einem QR-Code oder durch Vergleichen der Sicherheitsnummern verifizieren.";
 
 /* Title for a sheet introducing Key Transparency. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_TITLE" = "Signal can now automatically verify encryption";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_TITLE" = "Signal kann die Verschlüsselung jetzt automatisch verifizieren";
 
 /* Body for a sheet explaining that encryption auto-verification did not succeed. Embeds {{ 1: the contact's name }}. */
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "Signal kann die Verschlüsselung für diesen Chat nicht mehr automatisch verifizieren. Das liegt wahrscheinlich daran, dass sich die Telefonnummer von %1$@ geändert hat. Verifiziere die Ende-zu-Ende-Verschlüsselung manuell, indem du die Zahlen auf dem vorherigen Bildschirm vergleichst oder den Code auf dem Gerät scannst.";
@@ -8192,10 +8192,10 @@
 "SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Stummgeschaltete Chats archiviert lassen";
 
 /* Footer for settings section describing Key Transparency. */
-"SETTINGS_KEY_TRANSPARENCY_OPT_OUT_FOOTER" = "When enabled, Signal will attempt to automatically verify the encryption of 1:1 chats.";
+"SETTINGS_KEY_TRANSPARENCY_OPT_OUT_FOOTER" = "Wenn diese Option aktiviert ist, versucht Signal, die Verschlüsselung von Einzelchats automatisch zu verifizieren.";
 
 /* Title for for a settings option describing that Key Transparency is enabled. */
-"SETTINGS_KEY_TRANSPARENCY_OPT_OUT_SWITCH_TITLE" = "Automatic Key Verification";
+"SETTINGS_KEY_TRANSPARENCY_OPT_OUT_SWITCH_TITLE" = "Automatische Schlüssel-Verifizierung";
 
 /* No comment provided by engineer. */
 "SETTINGS_LEGAL_TERMS_CELL" = "Bedingungen & Datenschutzerklärung";

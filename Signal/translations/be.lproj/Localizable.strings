@@ -1808,7 +1808,7 @@
 "CHAT_LIST_UNREAD_FILTER_NO_CHATS" = "Няма непрачытаных чатаў";
 
 /* Message indicating a user should check connection and try again. */
-"CHECK_YOUR_CONNECTION_TRY_AGAIN_WARNING" = "Check your internet connection and try again.";
+"CHECK_YOUR_CONNECTION_TRY_AGAIN_WARNING" = "Праверце падключэнне да інтэрнэту і паўтарыце спробу.";
 
 /* Text for a bullet point in a list of Backup features, describing that all media is included. */
 "CHOOSE_BACKUP_PLAN_BULLET_FULL_MEDIA_BACKUP" = "Поўнае рэзервовае капіраванне медыяфайлаў";
@@ -2240,7 +2240,7 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER_V2" = "Выберыце таго, хто зможа рэдагаваць назву групы, фота, апісанне, таймер знікнення паведамленняў і прымацаваныя паведамленні.";
 
 /* Footer for the 'attributes access' section in conversation settings view with member labels added. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER_V3" = "Choose who can edit the group name, photo, description, disappearing messages timer, pinned messages, and add member labels.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER_V3" = "Выберыце таго, хто зможа рэдагаваць назву групы, фота, апісанне, таймер знікнення паведамленняў, прымацаваныя паведамленні і дадаваць меткі ўдзельнікаў.";
 
 /* Footer string for a contact's badges in conversation settings */
 "CONVERSATION_SETTINGS_BADGES_FOOTER" = "Падтрымлівайце Signal і атрымлівайце значкі для свайго профілю. Націсніце на значок, каб даведацца больш.";
@@ -4694,16 +4694,16 @@
 "KEY_COMMAND_UNARCHIVE" = "Разархіваваць чат";
 
 /* Body for a sheet shown when a Key Transparency self-check fails. */
-"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_BODY" = "Debug logs helps us diagnose and fix the issue and do not contain identifying information.";
+"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_BODY" = "Журналы адладкі дапамагаюць нам дыягнаставаць і выправіць праблему і не змяшчаюць ідэнтыфікацыйнай інфармацыі.";
 
 /* Title for the primary button in a sheet shown when a Key Transparency self-check fails. */
-"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_PRIMARY_BUTTON_TITLE" = "Submit";
+"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_PRIMARY_BUTTON_TITLE" = "Адправіць";
 
 /* Title for the secondary button in a sheet shown when a Key Transparency self-check fails. */
-"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_SECONDARY_BUTTON_TITLE" = "No Thanks";
+"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_SECONDARY_BUTTON_TITLE" = "Не, дзякуй";
 
 /* Title for a sheet shown when a Key Transparency self-check fails. */
-"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_TITLE" = "Automatic Key Verification is currently unavailable for your device. Submit debug log?";
+"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_TITLE" = "Аўтаматычная праверка шыфравання ключоў зараз недаступная для вашай прылады. Адправіць журнал адладкі?";
 
 /* Label for the 'learn more' button. */
 "LEARN_MORE" = "Даведацца больш";
@@ -5015,37 +5015,37 @@
 "MEMBER_LABEL_AX_PREFIX" = "Метка ўдзельніка: ";
 
 /* Button label on action sheet when attempting to change the group attributes access to 'administrator' and then continue */
-"MEMBER_LABEL_CLEAR_CHANGE_PERMISSION_CONTINUE" = "Change Permission";
+"MEMBER_LABEL_CLEAR_CHANGE_PERMISSION_CONTINUE" = "Змяніць дазвол";
 
 /* Body for action sheet when attempting to change the group attributes access to 'administrator' */
-"MEMBER_LABEL_CLEAR_WARNING_BODY" = "Changing this permission to “Only Admins” will clear member labels set by non-admins in this group.";
+"MEMBER_LABEL_CLEAR_WARNING_BODY" = "Калі вы зменіце гэты дазвол на «Толькі адміністратары», меткі ўдзельнікаў, што былі ўсталяваны не адміністратарамі ў гэтай групе, будуць прыбраны.";
 
 /* Title for action sheet when attempting to change the group attributes access to 'administrator' */
-"MEMBER_LABEL_CLEAR_WARNING_TITLE" = "Member Labels Will be Cleared";
+"MEMBER_LABEL_CLEAR_WARNING_TITLE" = "Меткі ўдзельнікаў будуць прыбраны";
 
 /* Text for a button to set a member label */
-"MEMBER_LABEL_EDIT" = "Edit Your Label";
+"MEMBER_LABEL_EDIT" = "Рэдагаваць сваю метку";
 
 /* Error indicating member label could not save. */
-"MEMBER_LABEL_FAIL_TO_SAVE" = "Couldn't Save Member Label";
+"MEMBER_LABEL_FAIL_TO_SAVE" = "Не атрымалася захаваць метку ўдзельніка";
 
 /* Body for a sheet shown if a user will show their member label over their About message in a group. */
-"MEMBER_LABEL_HERO_SHEET_ABOUT_OVERRIDE_BODY" = "In this group, your Member Label will be displayed beside your photo in place of your About.";
+"MEMBER_LABEL_HERO_SHEET_ABOUT_OVERRIDE_BODY" = "У гэтай групе ваша метка ўдзельніка будзе паказана побач з вашым фота замест раздзела «Аб кантакце».";
 
 /* Title for a sheet shown if a user will show their member label over their About message in a group. */
-"MEMBER_LABEL_HERO_SHEET_ABOUT_OVERRIDE_TITLE" = "Member Label Display";
+"MEMBER_LABEL_HERO_SHEET_ABOUT_OVERRIDE_TITLE" = "Паказ меткі ўдзельніка";
 
 /* Body for a sheet shown if a user taps on someone else's member label. */
-"MEMBER_LABEL_HERO_SHEET_EDUCATION_BODY" = "Use a member label to describe yourself or your role in this group. Member labels are only visible within this group.";
+"MEMBER_LABEL_HERO_SHEET_EDUCATION_BODY" = "Выкарыстоўвайце метку ўдзельніка, каб апісаць сябе або сваю ролю ў гэтай групе. Меткі ўдзельнікаў бачныя толькі для гэтай групы.";
 
 /* Title for a sheet shown if a user taps on someone else's member label. */
-"MEMBER_LABEL_HERO_SHEET_EDUCATION_TITLE" = "Member Labels";
+"MEMBER_LABEL_HERO_SHEET_EDUCATION_TITLE" = "Меткі ўдзельнікаў";
 
 /* Heading shown above the preview of a message bubble with the edited member label. */
 "MEMBER_LABEL_PREVIEW_HEADING" = "Папярэдні прагляд";
 
 /* Text for a button to edit an existing member label */
-"MEMBER_LABEL_SET" = "Set a Member Label";
+"MEMBER_LABEL_SET" = "Усталяваць метку ўдзельніка";
 
 /* Text shown in the preview message bubble when a user is editing their member label. */
 "MEMBER_LABEL_VIEW_MESSAGE_PREVIEW_TEXT" = "Прывітанне!";
@@ -7643,10 +7643,10 @@
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_BUTTON_VERIFYING" = "Праверка шыфравання…";
 
 /* Body for a sheet introducing Key Transparency. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_BODY" = "For contacts you’re connected to by phone number, Signal can automatically confirm whether the connection is secure using a process called key transparency. For added security, you can still verify connections manually using a QR code or by comparing safety numbers.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_BODY" = "Адносна кантактаў, з якімі вы звязаны па нумары тэлефона, Signal можа аўтаматычна пацвердзіць надзейнасць злучэння з дапамогай механізма празрыстасці ключоў. Для большай надзейнасці вы па-ранейшаму можаце праверыць злучэнне ўручную з дапамогай QR-кода або параўнаннем кодаў бяспекі.";
 
 /* Title for a sheet introducing Key Transparency. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_TITLE" = "Signal can now automatically verify encryption";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_TITLE" = "Цяпер Signal можа аўтаматычна правяраць шыфраванне";
 
 /* Body for a sheet explaining that encryption auto-verification did not succeed. Embeds {{ 1: the contact's name }}. */
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "Signal больш не можа аўтаматычна правяраць шыфраванне для гэтага чата. Гэта адбываецца таму, што %1$@ змяніў(-ла) свой нумар тэлефона. Каб праверыць скразное шыфраванне ўручную, трэба параўнаць лічбы на папярэднім экране або прасканаваць код на прыладзе суразмоўцы.";
@@ -8192,10 +8192,10 @@
 "SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "Трымайце чаты з адключанымі апавяшчэннямі архіваванымі";
 
 /* Footer for settings section describing Key Transparency. */
-"SETTINGS_KEY_TRANSPARENCY_OPT_OUT_FOOTER" = "When enabled, Signal will attempt to automatically verify the encryption of 1:1 chats.";
+"SETTINGS_KEY_TRANSPARENCY_OPT_OUT_FOOTER" = "Калі гэта функцыя ўключана, Signal будзе спрабаваць аўтаматычна правяраць шыфраванне прыватных чатаў.";
 
 /* Title for for a settings option describing that Key Transparency is enabled. */
-"SETTINGS_KEY_TRANSPARENCY_OPT_OUT_SWITCH_TITLE" = "Automatic Key Verification";
+"SETTINGS_KEY_TRANSPARENCY_OPT_OUT_SWITCH_TITLE" = "Аўтаматычная праверка кода";
 
 /* No comment provided by engineer. */
 "SETTINGS_LEGAL_TERMS_CELL" = "Умовы & Палітыка канфідэнцыйнасці";

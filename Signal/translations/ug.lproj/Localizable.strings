@@ -1808,7 +1808,7 @@
 "CHAT_LIST_UNREAD_FILTER_NO_CHATS" = "ئوقۇلمىغان پاراڭ يوق";
 
 /* Message indicating a user should check connection and try again. */
-"CHECK_YOUR_CONNECTION_TRY_AGAIN_WARNING" = "Check your internet connection and try again.";
+"CHECK_YOUR_CONNECTION_TRY_AGAIN_WARNING" = "تور ئۇلىنىشىڭىزنى تەكشۈرۈپ قايتا سىناپ بېقىڭ.";
 
 /* Text for a bullet point in a list of Backup features, describing that all media is included. */
 "CHOOSE_BACKUP_PLAN_BULLET_FULL_MEDIA_BACKUP" = "تولۇق مېدىيانى زاپاسلاش";
@@ -2240,7 +2240,7 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER_V2" = "گۇرۇپپا نامى، رەسىم، چۈشەندۈرۈش، غايىب بولغان ئۇچۇرلار ۋاقىت خاتىرلىگۈچى ۋە مىخلانغان ئۇچۇرلارنى كىمنىڭ تەھرىرلىيەلەيدىغانلىقىنى تاللاڭ.";
 
 /* Footer for the 'attributes access' section in conversation settings view with member labels added. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER_V3" = "Choose who can edit the group name, photo, description, disappearing messages timer, pinned messages, and add member labels.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER_V3" = "گۇرۇپپا نامى، رەسىم، چۈشەندۈرۈش، غايىب بولىدىغان ئۇچۇرلار ۋاقىت خاتىرلىگۈچى، مىخلانغان ئۇچۇرلار ۋە ئەزا بەلگدلىرى قوشۇشنى كىمنىڭ تەھرىرلەيدىغانلىقىنى تاللاڭ.";
 
 /* Footer string for a contact's badges in conversation settings */
 "CONVERSATION_SETTINGS_BADGES_FOOTER" = "Signal نى قوللاپ، ئارخىپىڭىزدا ئىزنەكلەرگە ئېرىشىڭ. تەپسىلاتى ئۈچۈن خالىغان ئىزنەكنى چېكىڭ.";
@@ -4694,16 +4694,16 @@
 "KEY_COMMAND_UNARCHIVE" = "پاراڭنى ئارخىپتىن چىقىرىش";
 
 /* Body for a sheet shown when a Key Transparency self-check fails. */
-"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_BODY" = "Debug logs helps us diagnose and fix the issue and do not contain identifying information.";
+"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_BODY" = "كاشىلا ھەل قىلىش خاتىرىلىرى بىزنىڭ مەسىلىگە دىئاگنوز قويۇشىمىز ۋە ھەل قىلىشىمىزغا ياردەم بېرىدۇ، ھەمدە بۇ سىز ھەققىدىكى تونىتىش ئۇچۇرلىرىنى ئۆز ئىچىگە ئالمايدۇ.";
 
 /* Title for the primary button in a sheet shown when a Key Transparency self-check fails. */
-"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_PRIMARY_BUTTON_TITLE" = "Submit";
+"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_PRIMARY_BUTTON_TITLE" = "تاپشۇر";
 
 /* Title for the secondary button in a sheet shown when a Key Transparency self-check fails. */
-"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_SECONDARY_BUTTON_TITLE" = "No Thanks";
+"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_SECONDARY_BUTTON_TITLE" = "ياق، رەھمەت";
 
 /* Title for a sheet shown when a Key Transparency self-check fails. */
-"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_TITLE" = "Automatic Key Verification is currently unavailable for your device. Submit debug log?";
+"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_TITLE" = "ئاپتوماتىك ئاچقۇچ دەلىللەشنى ھازىرچە ئۈسكۈنىڭىزدە ئىشلەتكىلى بولمايدۇ. كاشىلا ھەل قىلىش خاتىرىسىنى يوللامسىز؟";
 
 /* Label for the 'learn more' button. */
 "LEARN_MORE" = "تېخىمۇ كۆپ بىلدۈرگۈ";
@@ -5015,37 +5015,37 @@
 "MEMBER_LABEL_AX_PREFIX" = "ئەزا بەلگىسى: ";
 
 /* Button label on action sheet when attempting to change the group attributes access to 'administrator' and then continue */
-"MEMBER_LABEL_CLEAR_CHANGE_PERMISSION_CONTINUE" = "Change Permission";
+"MEMBER_LABEL_CLEAR_CHANGE_PERMISSION_CONTINUE" = "رۇخسەتنى ئۆزگەرتىش";
 
 /* Body for action sheet when attempting to change the group attributes access to 'administrator' */
-"MEMBER_LABEL_CLEAR_WARNING_BODY" = "Changing this permission to “Only Admins” will clear member labels set by non-admins in this group.";
+"MEMBER_LABEL_CLEAR_WARNING_BODY" = "بۇ ئىجازەتنى «پەقەت باشقۇرغۇچىلارلا» قىلىپ ئۆزگەرتسىڭىز، بۇ گۇرۇپپىدىكى باشقۇرغۇچى ئەمەس كىشىلەر تەرىپىدىن تەڭشەلگەن ئەزا بەلگىلىرى ئۆچۈرۈلىدۇ.";
 
 /* Title for action sheet when attempting to change the group attributes access to 'administrator' */
-"MEMBER_LABEL_CLEAR_WARNING_TITLE" = "Member Labels Will be Cleared";
+"MEMBER_LABEL_CLEAR_WARNING_TITLE" = "ئەزا بەلگىلىرى ئۆچۈرۈلىدۇ";
 
 /* Text for a button to set a member label */
-"MEMBER_LABEL_EDIT" = "Edit Your Label";
+"MEMBER_LABEL_EDIT" = "بەلگىڭىزنى تەھرىرلەڭ";
 
 /* Error indicating member label could not save. */
-"MEMBER_LABEL_FAIL_TO_SAVE" = "Couldn't Save Member Label";
+"MEMBER_LABEL_FAIL_TO_SAVE" = "ئەزا بەلگىسىنى ساقلىغىلى بولمىدى";
 
 /* Body for a sheet shown if a user will show their member label over their About message in a group. */
-"MEMBER_LABEL_HERO_SHEET_ABOUT_OVERRIDE_BODY" = "In this group, your Member Label will be displayed beside your photo in place of your About.";
+"MEMBER_LABEL_HERO_SHEET_ABOUT_OVERRIDE_BODY" = "بۇ گۇرۇپپىدا، ئەزا بەلگىڭىز رەسىمىڭىزنىڭ يېنىدا سىز ھەققىدىكى «About» تا كۆرسىتىلىدۇ.";
 
 /* Title for a sheet shown if a user will show their member label over their About message in a group. */
-"MEMBER_LABEL_HERO_SHEET_ABOUT_OVERRIDE_TITLE" = "Member Label Display";
+"MEMBER_LABEL_HERO_SHEET_ABOUT_OVERRIDE_TITLE" = "ئەزا بەلگىسى كۆرۈنۈشى";
 
 /* Body for a sheet shown if a user taps on someone else's member label. */
-"MEMBER_LABEL_HERO_SHEET_EDUCATION_BODY" = "Use a member label to describe yourself or your role in this group. Member labels are only visible within this group.";
+"MEMBER_LABEL_HERO_SHEET_EDUCATION_BODY" = "بۇ گۇرۇپپىدا ئۆزىڭىزنى ياكى رولىڭىزنى تەسۋىرلەش ئۈچۈن ئەزا بەلگىسىنى تەڭشەڭ. ئەزا بەلگىلىرى پەقەت بۇ گۇرۇپپىدىلا كۆرۈنىدۇ.";
 
 /* Title for a sheet shown if a user taps on someone else's member label. */
-"MEMBER_LABEL_HERO_SHEET_EDUCATION_TITLE" = "Member Labels";
+"MEMBER_LABEL_HERO_SHEET_EDUCATION_TITLE" = "ئەزا بەلگىلىرى";
 
 /* Heading shown above the preview of a message bubble with the edited member label. */
 "MEMBER_LABEL_PREVIEW_HEADING" = "ئالدىن كۆر";
 
 /* Text for a button to edit an existing member label */
-"MEMBER_LABEL_SET" = "Set a Member Label";
+"MEMBER_LABEL_SET" = "بىر ئەزا بەلگىسى تەڭشەڭ";
 
 /* Text shown in the preview message bubble when a user is editing their member label. */
 "MEMBER_LABEL_VIEW_MESSAGE_PREVIEW_TEXT" = "ياخشىمۇسىز!";
@@ -7643,10 +7643,10 @@
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_BUTTON_VERIFYING" = "شىفىرلاشتۇرۇش دەلىللەنمەكتە…";
 
 /* Body for a sheet introducing Key Transparency. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_BODY" = "For contacts you’re connected to by phone number, Signal can automatically confirm whether the connection is secure using a process called key transparency. For added security, you can still verify connections manually using a QR code or by comparing safety numbers.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_BODY" = "تېلېفون نومۇرى ئارقىلىق باغلانغان ئالاقىلاشقۇچىلىرىڭىز ئۈچۈن، Signal، ئاچقۇچ ئاشكارىلىقى دەپ ئاتىلىدىغان جەريان ئارقىلىق ئۇلىنىشنىڭ بىخەتەر ياكى ئەمەسلىكىنى ئاپتوماتىك جەزملەشتۈرەلەيدۇ. بىخەتەرلىكنى ئاشۇرۇش ئۈچۈن، سىز يەنىلا QR كودى ياكى بىخەتەرلىك نومۇرلىرىنى سېلىشتۇرۇش ئارقىلىق ئۇلىنىشلارنى قولدا دەلىللىيەلەيسىز.";
 
 /* Title for a sheet introducing Key Transparency. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_TITLE" = "Signal can now automatically verify encryption";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_TITLE" = "Signal ھازىر شىفىرلاشتۇرۇشنى ئاپتوماتىك دەلىللىيەلەيدۇ";
 
 /* Body for a sheet explaining that encryption auto-verification did not succeed. Embeds {{ 1: the contact's name }}. */
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "Signal ئەمدى بۇ سۆھبەتنىڭ شىفىرلاشتۇرۇلىشىنى ئاپتوماتىك دەلىللىيەلمەيدۇ. بۇنىڭ سەۋەبى %1$@ نىڭ تېلېفون نومۇرىنى ئۆزگەرتكەنلىكى بولۇشى مۇمكىن. ئالدىنقى ئېكراندىكى نۇمۇرلارنى سېلىشتۇرۇش ياكى ئۈسكۈنىدىكى كودنى سىكانىرلاش ئارقىلىق ئاخىرغىچە شىفىرلاشتۇرۇشنى قولدا دەلىللەڭ.";
@@ -8192,10 +8192,10 @@
 "SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "ئۈنسىزلەنگەن پاراڭلارنى ئارخىپتا ساقلاش";
 
 /* Footer for settings section describing Key Transparency. */
-"SETTINGS_KEY_TRANSPARENCY_OPT_OUT_FOOTER" = "When enabled, Signal will attempt to automatically verify the encryption of 1:1 chats.";
+"SETTINGS_KEY_TRANSPARENCY_OPT_OUT_FOOTER" = "قوزغىتىلغاندا، Signal، ئىككى كىشى ئوتتۇرىسىدىكى(1:1) سۆھبەتلىرىنىڭ شىفىرلىنىشىنى ئاپتوماتىك دەلىللەشنى سىنايدۇ.";
 
 /* Title for for a settings option describing that Key Transparency is enabled. */
-"SETTINGS_KEY_TRANSPARENCY_OPT_OUT_SWITCH_TITLE" = "Automatic Key Verification";
+"SETTINGS_KEY_TRANSPARENCY_OPT_OUT_SWITCH_TITLE" = "ئاپتوماتىك ئاچقۇچ دەلىللەش";
 
 /* No comment provided by engineer. */
 "SETTINGS_LEGAL_TERMS_CELL" = "شەرتلەر &  مەخپىيەتلىك تۈزۈمى";

@@ -1808,7 +1808,7 @@
 "CHAT_LIST_UNREAD_FILTER_NO_CHATS" = "કોઈ વાંચ્યા વગરની ચેટ નથી";
 
 /* Message indicating a user should check connection and try again. */
-"CHECK_YOUR_CONNECTION_TRY_AGAIN_WARNING" = "Check your internet connection and try again.";
+"CHECK_YOUR_CONNECTION_TRY_AGAIN_WARNING" = "તમારું ઇન્ટરનેટ તપાસો અને ફરી પ્રયાસ કરો.";
 
 /* Text for a bullet point in a list of Backup features, describing that all media is included. */
 "CHOOSE_BACKUP_PLAN_BULLET_FULL_MEDIA_BACKUP" = "સંપૂર્ણ મીડિયા બેકઅપ";
@@ -2240,7 +2240,7 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER_V2" = "ગ્રૂપનું નામ, ફોટો, વર્ણન, ગાયબ થતાં મેસેજ ટાઇમર અને પિન કરેલા મેસેજમાં કોણ ફેરફાર કરી શકે તે પસંદ કરો.";
 
 /* Footer for the 'attributes access' section in conversation settings view with member labels added. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER_V3" = "Choose who can edit the group name, photo, description, disappearing messages timer, pinned messages, and add member labels.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER_V3" = "ગ્રૂપનું નામ, ફોટો, વર્ણન, ગાયબ થતાં મેસેજ ટાઇમર, પિન કરેલા મેસેજમાં કોણ ફેરફાર કરી શકે છે અને સભ્યના લેબલ કોણ ઉમેરી શકે છે તે પસંદ કરો.";
 
 /* Footer string for a contact's badges in conversation settings */
 "CONVERSATION_SETTINGS_BADGES_FOOTER" = "Signalને સમર્થન આપીને તમારી પ્રોફાઇલ માટે બૅજ મેળવો. વધુ જાણવા માટે બૅજ પર ટૅપ કરો.";
@@ -4694,16 +4694,16 @@
 "KEY_COMMAND_UNARCHIVE" = "ચેટને અનઆર્કાઇવ કરો";
 
 /* Body for a sheet shown when a Key Transparency self-check fails. */
-"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_BODY" = "Debug logs helps us diagnose and fix the issue and do not contain identifying information.";
+"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_BODY" = "ડીબગ લૉગ અમને સમસ્યાનું નિદાન કરવામાં અને તેને ઠીક કરવામાં મદદ કરે છે અને તેમાં ઓળખ થઈ શકે તેવી માહિતી શામેલ હોતી નથી.";
 
 /* Title for the primary button in a sheet shown when a Key Transparency self-check fails. */
-"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_PRIMARY_BUTTON_TITLE" = "Submit";
+"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_PRIMARY_BUTTON_TITLE" = "સબમિટ કરો";
 
 /* Title for the secondary button in a sheet shown when a Key Transparency self-check fails. */
-"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_SECONDARY_BUTTON_TITLE" = "No Thanks";
+"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_SECONDARY_BUTTON_TITLE" = "ના, આભાર";
 
 /* Title for a sheet shown when a Key Transparency self-check fails. */
-"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_TITLE" = "Automatic Key Verification is currently unavailable for your device. Submit debug log?";
+"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_TITLE" = "તમારા ડિવાઇસ માટે હાલમાં ઓટોમેટિક કી વેરિફિકેશન ઉપલબ્ધ નથી. ડીબગ લૉગ સબમિટ કરવો છે?";
 
 /* Label for the 'learn more' button. */
 "LEARN_MORE" = "વધુ શીખો";
@@ -5015,37 +5015,37 @@
 "MEMBER_LABEL_AX_PREFIX" = "સભ્યનું લેબલ: ";
 
 /* Button label on action sheet when attempting to change the group attributes access to 'administrator' and then continue */
-"MEMBER_LABEL_CLEAR_CHANGE_PERMISSION_CONTINUE" = "Change Permission";
+"MEMBER_LABEL_CLEAR_CHANGE_PERMISSION_CONTINUE" = "પરવાનગી બદલો";
 
 /* Body for action sheet when attempting to change the group attributes access to 'administrator' */
-"MEMBER_LABEL_CLEAR_WARNING_BODY" = "Changing this permission to “Only Admins” will clear member labels set by non-admins in this group.";
+"MEMBER_LABEL_CLEAR_WARNING_BODY" = "આ પરવાનગીને \"ફક્ત એડમિન\"માં બદલવાથી આ ગ્રૂપમાં બિન-એડમિન દ્વારા સેટ કરાયેલ સભ્યના લેબલ સાફ થઈ જશે.";
 
 /* Title for action sheet when attempting to change the group attributes access to 'administrator' */
-"MEMBER_LABEL_CLEAR_WARNING_TITLE" = "Member Labels Will be Cleared";
+"MEMBER_LABEL_CLEAR_WARNING_TITLE" = "સભ્યના લેબલ સાફ કરવામાં આવશે";
 
 /* Text for a button to set a member label */
-"MEMBER_LABEL_EDIT" = "Edit Your Label";
+"MEMBER_LABEL_EDIT" = "તમારા લેબલમાં ફેરફાર કરો";
 
 /* Error indicating member label could not save. */
-"MEMBER_LABEL_FAIL_TO_SAVE" = "Couldn't Save Member Label";
+"MEMBER_LABEL_FAIL_TO_SAVE" = "સભ્યનું લેબલ સેવ કરી શકાયું નથી";
 
 /* Body for a sheet shown if a user will show their member label over their About message in a group. */
-"MEMBER_LABEL_HERO_SHEET_ABOUT_OVERRIDE_BODY" = "In this group, your Member Label will be displayed beside your photo in place of your About.";
+"MEMBER_LABEL_HERO_SHEET_ABOUT_OVERRIDE_BODY" = "આ ગ્રૂપમાં, તમારા વિશેની જગ્યાએ તમારા સભ્યનું લેબલ તમારા ફોટાની બાજુમાં પ્રદર્શિત થશે.";
 
 /* Title for a sheet shown if a user will show their member label over their About message in a group. */
-"MEMBER_LABEL_HERO_SHEET_ABOUT_OVERRIDE_TITLE" = "Member Label Display";
+"MEMBER_LABEL_HERO_SHEET_ABOUT_OVERRIDE_TITLE" = "સભ્યનું લેબલ ડિસ્પ્લે";
 
 /* Body for a sheet shown if a user taps on someone else's member label. */
-"MEMBER_LABEL_HERO_SHEET_EDUCATION_BODY" = "Use a member label to describe yourself or your role in this group. Member labels are only visible within this group.";
+"MEMBER_LABEL_HERO_SHEET_EDUCATION_BODY" = "આ ગ્રૂપમાં તમારું અથવા તમારી ભૂમિકાનું વર્ણન કરવા માટે સભ્ય લેબલનો ઉપયોગ કરો. સભ્ય લેબલ ફક્ત આ ગ્રૂપમાં જ દેખાય છે.";
 
 /* Title for a sheet shown if a user taps on someone else's member label. */
-"MEMBER_LABEL_HERO_SHEET_EDUCATION_TITLE" = "Member Labels";
+"MEMBER_LABEL_HERO_SHEET_EDUCATION_TITLE" = "સભ્યના લેબલ";
 
 /* Heading shown above the preview of a message bubble with the edited member label. */
 "MEMBER_LABEL_PREVIEW_HEADING" = "પ્રિવ્યૂ કરો";
 
 /* Text for a button to edit an existing member label */
-"MEMBER_LABEL_SET" = "Set a Member Label";
+"MEMBER_LABEL_SET" = "સભ્યનું લેબલ સેટ કરો";
 
 /* Text shown in the preview message bubble when a user is editing their member label. */
 "MEMBER_LABEL_VIEW_MESSAGE_PREVIEW_TEXT" = "નમસ્તે!";
@@ -7643,10 +7643,10 @@
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_BUTTON_VERIFYING" = "એન્ક્રિપ્શન વેરિફાય કરી રહ્યા છે…";
 
 /* Body for a sheet introducing Key Transparency. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_BODY" = "For contacts you’re connected to by phone number, Signal can automatically confirm whether the connection is secure using a process called key transparency. For added security, you can still verify connections manually using a QR code or by comparing safety numbers.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_BODY" = "ફોન નંબર દ્વારા તમે જે સંપર્કો સાથે જોડાયેલા છો, તેમના માટે Signal કી ટ્રાન્સપરન્સી નામની પ્રક્રિયાનો ઉપયોગ કરીને કનેક્શન સુરક્ષિત છે કે નહીં તેની ખાતરી આપમેળે કરી શકે છે. વધુ સુરક્ષા માટે, તમે હજી પણ QR કોડનો ઉપયોગ કરીને અથવા સેફ્ટી નંબરની તુલના કરીને કનેક્શનને વેરિફાય કરી શકો છો.";
 
 /* Title for a sheet introducing Key Transparency. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_TITLE" = "Signal can now automatically verify encryption";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_TITLE" = "Signal હવે એન્ક્રિપ્શનને આપમેળે વેરિફાય કરી શકે છે";
 
 /* Body for a sheet explaining that encryption auto-verification did not succeed. Embeds {{ 1: the contact's name }}. */
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "Signal હવે આ ચેટ માટે એન્ક્રિપ્શન આપમેળે વેરિફાય કરી શકતું નથી. આ કદાચ એટલા માટે છે કારણ કે %1$@ એ તેમનો ફોન નંબર બદલ્યો છે. પાછલી સ્ક્રીન પરના નંબરોની તુલના કરીને અથવા તેમના ડિવાઇસ પર કોડ સ્કેન કરીને એન્ડ-ટુ-એન્ડ એન્ક્રિપ્શન મેન્યુઅલી વેરિફાય કરો.";
@@ -8192,10 +8192,10 @@
 "SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "મ્યૂટ કરેલી ચેટને આર્કાઇવ રાખો";
 
 /* Footer for settings section describing Key Transparency. */
-"SETTINGS_KEY_TRANSPARENCY_OPT_OUT_FOOTER" = "When enabled, Signal will attempt to automatically verify the encryption of 1:1 chats.";
+"SETTINGS_KEY_TRANSPARENCY_OPT_OUT_FOOTER" = "જ્યારે સક્ષમ હશે, ત્યારે Signal 1:1 ચેટના એન્ક્રિપ્શનને આપમેળે વેરિફાય કરવાનો પ્રયાસ કરશે.";
 
 /* Title for for a settings option describing that Key Transparency is enabled. */
-"SETTINGS_KEY_TRANSPARENCY_OPT_OUT_SWITCH_TITLE" = "Automatic Key Verification";
+"SETTINGS_KEY_TRANSPARENCY_OPT_OUT_SWITCH_TITLE" = "ઓટોમેટિક કી વેરિફિકેશન";
 
 /* No comment provided by engineer. */
 "SETTINGS_LEGAL_TERMS_CELL" = "શરતો અને ગોપનીયતા નીતિ";

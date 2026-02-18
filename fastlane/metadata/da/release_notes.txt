@@ -1,3 +1,3 @@
-• Make privacy stick with five new official sticker packs in the Signal Artist Series: "Chug the Mouse" by Amanda Cotan, "Cozy Season" by Miguel Ángel Camprubí, "Croco's Feelings" by Tiffany Beucher, "My Daily Life 2" by Plastic Thing, and "Rocky Talk" by Lexi Vay.
-• This update includes the next wave of design improvements for iOS 26 and iPadOS 26. Take an optimistic look at the new message bubbles floating in front of your favorite chat wallpaper in a Liquid Glass cup that's more than half-full.
-• We also synchronized the colors of names in group chats to match other platforms, so now you'll see the same hue for the crew as you do on Signal Desktop too.
+• Gør privatlivet mere synligt med fem nye officielle klistermærkepakker i Signal Artist Series: "Chug the Mouse" af Amanda Cotan, "Cozy Season" af Miguel Ángel Camprubí, "Croco's Feelings" af Tiffany Beucher, "My Daily Life 2" af Plastic Thing og "Rocky Talk" af Lexi Vay.
+• Denne opdatering indeholder den næste bølge af designforbedringer til iOS 26 og iPadOS 26. Se optimistisk på de nye beskedbobler, der svæver foran dit yndlingschatbaggrund, i et halvfyldt Liquid Glass-krus.
+• Vi har også synkroniseret farverne på navnene i gruppechats, så de matcher andre platforme, så du nu ser den samme farvetone for crewet, som du også gør på Signal Desktop.

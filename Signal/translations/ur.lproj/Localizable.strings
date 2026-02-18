@@ -1808,7 +1808,7 @@
 "CHAT_LIST_UNREAD_FILTER_NO_CHATS" = "کوئی بغیر پڑھی ہوئی چیٹس نہیں";
 
 /* Message indicating a user should check connection and try again. */
-"CHECK_YOUR_CONNECTION_TRY_AGAIN_WARNING" = "Check your internet connection and try again.";
+"CHECK_YOUR_CONNECTION_TRY_AGAIN_WARNING" = "اپنا انٹرنیٹ کنکشن چیک کریں اور دوبارہ کوشش کریں۔";
 
 /* Text for a bullet point in a list of Backup features, describing that all media is included. */
 "CHOOSE_BACKUP_PLAN_BULLET_FULL_MEDIA_BACKUP" = "مکمل میڈیا بیک اپ";
@@ -2240,7 +2240,7 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER_V2" = "منتخب کریں کہ کون گروپ کا نام، تصویر، وضاحت، غائب ہونے والے میسجز کا ٹائمر، اور پِن شدہ میسجز میں ترمیم کر سکتا ہے۔";
 
 /* Footer for the 'attributes access' section in conversation settings view with member labels added. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER_V3" = "Choose who can edit the group name, photo, description, disappearing messages timer, pinned messages, and add member labels.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER_V3" = "منتخب کریں کہ کون گروپ کا نام، تصویر، وضاحت، غائب ہونے والے میسج کا ٹائمر، پن شدہ میسجز اور ممبر لیبلز شامل کریں میں ترمیم کر سکتا ہے۔";
 
 /* Footer string for a contact's badges in conversation settings */
 "CONVERSATION_SETTINGS_BADGES_FOOTER" = "Signal کی معاونت کرنے کے ذریعے اپنی پروفائل کے لیے بیجز حاصل کریں۔ مزید جاننے کے لیے بیج ہر ٹیپ کریں۔";
@@ -4694,16 +4694,16 @@
 "KEY_COMMAND_UNARCHIVE" = "چیٹ کو اَن آرکائیو کریں";
 
 /* Body for a sheet shown when a Key Transparency self-check fails. */
-"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_BODY" = "Debug logs helps us diagnose and fix the issue and do not contain identifying information.";
+"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_BODY" = "ڈی بگ لاگز مسئلے کی نشاندہی کرنے اور اسے حل کرنے میں ہماری مدد کرتے ہیں، اور اس میں شناخت کرنے والی معلومات شامل نہیں ہوتیں۔";
 
 /* Title for the primary button in a sheet shown when a Key Transparency self-check fails. */
-"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_PRIMARY_BUTTON_TITLE" = "Submit";
+"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_PRIMARY_BUTTON_TITLE" = "جمح کریں";
 
 /* Title for the secondary button in a sheet shown when a Key Transparency self-check fails. */
-"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_SECONDARY_BUTTON_TITLE" = "No Thanks";
+"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_SECONDARY_BUTTON_TITLE" = "نہیں شکریہ";
 
 /* Title for a sheet shown when a Key Transparency self-check fails. */
-"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_TITLE" = "Automatic Key Verification is currently unavailable for your device. Submit debug log?";
+"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_TITLE" = "آپ کی ڈیوائس پر خودکار کیی کی تصدیق فی الحال دستیاب نہیں ہے۔ ڈی بگ لاگ جمع کروائیں؟";
 
 /* Label for the 'learn more' button. */
 "LEARN_MORE" = "مزید جانیں";
@@ -5015,37 +5015,37 @@
 "MEMBER_LABEL_AX_PREFIX" = "ممبر لیبل: ";
 
 /* Button label on action sheet when attempting to change the group attributes access to 'administrator' and then continue */
-"MEMBER_LABEL_CLEAR_CHANGE_PERMISSION_CONTINUE" = "Change Permission";
+"MEMBER_LABEL_CLEAR_CHANGE_PERMISSION_CONTINUE" = "اجازت تبدیل کریں";
 
 /* Body for action sheet when attempting to change the group attributes access to 'administrator' */
-"MEMBER_LABEL_CLEAR_WARNING_BODY" = "Changing this permission to “Only Admins” will clear member labels set by non-admins in this group.";
+"MEMBER_LABEL_CLEAR_WARNING_BODY" = "اجازت کو \"صرف ایڈمنز\" پر تبدیل کرنے سے اس گروپ میں غیر ایڈمن افراد کی جانب سے سیٹ کردہ ممبر لیبلز ہٹ جائیں گے۔";
 
 /* Title for action sheet when attempting to change the group attributes access to 'administrator' */
-"MEMBER_LABEL_CLEAR_WARNING_TITLE" = "Member Labels Will be Cleared";
+"MEMBER_LABEL_CLEAR_WARNING_TITLE" = "ممبر لیبلز کو صاف کر دیا جائے گا";
 
 /* Text for a button to set a member label */
-"MEMBER_LABEL_EDIT" = "Edit Your Label";
+"MEMBER_LABEL_EDIT" = "اپنے لیبل میں ترمیم کریں";
 
 /* Error indicating member label could not save. */
-"MEMBER_LABEL_FAIL_TO_SAVE" = "Couldn't Save Member Label";
+"MEMBER_LABEL_FAIL_TO_SAVE" = "ممبر لیبل کو محفوظ نہیں کیا جا سکا";
 
 /* Body for a sheet shown if a user will show their member label over their About message in a group. */
-"MEMBER_LABEL_HERO_SHEET_ABOUT_OVERRIDE_BODY" = "In this group, your Member Label will be displayed beside your photo in place of your About.";
+"MEMBER_LABEL_HERO_SHEET_ABOUT_OVERRIDE_BODY" = "اس گروپ میں، آپ کا ممبر لیبل آپ کی تصویر کے ساتھ آپ کے تعارف (About) کی جگہ ڈسپلے ہو گا۔";
 
 /* Title for a sheet shown if a user will show their member label over their About message in a group. */
-"MEMBER_LABEL_HERO_SHEET_ABOUT_OVERRIDE_TITLE" = "Member Label Display";
+"MEMBER_LABEL_HERO_SHEET_ABOUT_OVERRIDE_TITLE" = "ممبر لیبل کا ڈسپلے";
 
 /* Body for a sheet shown if a user taps on someone else's member label. */
-"MEMBER_LABEL_HERO_SHEET_EDUCATION_BODY" = "Use a member label to describe yourself or your role in this group. Member labels are only visible within this group.";
+"MEMBER_LABEL_HERO_SHEET_EDUCATION_BODY" = "اس گروپ میں خود کو یا اپنے کردار کو بیان کرنے کے لیے ایک ممبر لیبل استعمال کریں۔ ممبر لیبلز صرف اس گروپ میں ہی نظر آتے ہیں۔";
 
 /* Title for a sheet shown if a user taps on someone else's member label. */
-"MEMBER_LABEL_HERO_SHEET_EDUCATION_TITLE" = "Member Labels";
+"MEMBER_LABEL_HERO_SHEET_EDUCATION_TITLE" = "ممبر لیبلز";
 
 /* Heading shown above the preview of a message bubble with the edited member label. */
 "MEMBER_LABEL_PREVIEW_HEADING" = "پیش نظارہ";
 
 /* Text for a button to edit an existing member label */
-"MEMBER_LABEL_SET" = "Set a Member Label";
+"MEMBER_LABEL_SET" = "ایک ممبر لیبل سیٹ کریں";
 
 /* Text shown in the preview message bubble when a user is editing their member label. */
 "MEMBER_LABEL_VIEW_MESSAGE_PREVIEW_TEXT" = "ہیلو!";
@@ -7643,10 +7643,10 @@
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_BUTTON_VERIFYING" = "انکرپشن کی تصدیق ہو رہی ہے…";
 
 /* Body for a sheet introducing Key Transparency. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_BODY" = "For contacts you’re connected to by phone number, Signal can automatically confirm whether the connection is secure using a process called key transparency. For added security, you can still verify connections manually using a QR code or by comparing safety numbers.";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_BODY" = "ان رابطوں کے لیے جن کے ساتھ آپ فون نمبر کے ذریعے مربوط ہیں، Signal خود کار طور پر کیی ٹرانسپیرینسی نامی طریقہ کار استعمال کرتے ہوئے یہ تصدیق کر سکتا ہے کہ آیا کنیکشن محفوظ ہے۔ اضافی تحفظ کے لیے، آپ اب بھی کنیکشنز کی دستی طور پر QR کوڈ یا حفاظتی نمبر کا موازنہ کر کے تصدیق کر سکتے ہیں۔";
 
 /* Title for a sheet introducing Key Transparency. */
-"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_TITLE" = "Signal can now automatically verify encryption";
+"SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_EDUCATION_SHEET_TITLE" = "اب Signal خود کار طور پر انکرپشن کی تصدیق کر سکتا ہے";
 
 /* Body for a sheet explaining that encryption auto-verification did not succeed. Embeds {{ 1: the contact's name }}. */
 "SAFETY_NUMBERS_AUTOMATIC_VERIFICATION_FAILURE_SHEET_BODY_FORMAT" = "Signal اب اس چیٹ کے لیے انکرپشن کی خودکار تصدیق نہیں کر سکتا۔ ایسا اس لیے ہے کیونکہ %1$@ نے اپنا فون نمبر تبدیل کر لیا ہے۔ پچھلی اسکرین پر موجود نمبرز کا موازنہ کر کے یا ان کی ڈیوائس پر کوڈ اسکین کر کے دستی طور پر آخر سے آخر تک انکرپشن کی تصدیق کریں۔";
@@ -8192,10 +8192,10 @@
 "SETTINGS_KEEP_MUTED_ARCHIVED_LABEL" = "خاموش کردہ چیٹس کو آرکائیو کردہ رکھیں";
 
 /* Footer for settings section describing Key Transparency. */
-"SETTINGS_KEY_TRANSPARENCY_OPT_OUT_FOOTER" = "When enabled, Signal will attempt to automatically verify the encryption of 1:1 chats.";
+"SETTINGS_KEY_TRANSPARENCY_OPT_OUT_FOOTER" = "فعال ہونے پر، Signal خودکار طور پر 1:1 چیٹس کی انکرپشن کی تصدیق کرنے کی کوشش کرے گا۔";
 
 /* Title for for a settings option describing that Key Transparency is enabled. */
-"SETTINGS_KEY_TRANSPARENCY_OPT_OUT_SWITCH_TITLE" = "Automatic Key Verification";
+"SETTINGS_KEY_TRANSPARENCY_OPT_OUT_SWITCH_TITLE" = "خودکار کیی کی تصدیق";
 
 /* No comment provided by engineer. */
 "SETTINGS_LEGAL_TERMS_CELL" = "شرائط & رازداری کی پالیسی";
