@@ -145,8 +145,14 @@ public struct BubbleConfiguration {
     /// Designed to allow callers to configure masking layers that match bubble shape..
     public func bubblePath(for rect: CGRect) -> UIBezierPath {
         switch corners.style {
-        case .uniform(let radius):
-            return UIBezierPath(roundedRect: rect, cornerRadius: radius)
+        case .uniform:
+            let cornerRadius = corners.radius(for: .topLeft, in: rect)
+            return UIBezierPath(cgPath: CGPath(
+                roundedRect: rect,
+                cornerWidth: cornerRadius,
+                cornerHeight: cornerRadius,
+                transform: nil,
+            ))
 
         case .segmented(let sharpCorners, let sharpCornerRadius, let wideCornerRadius):
             return UIBezierPath.roundedRect(
@@ -169,21 +175,6 @@ public struct BubbleConfiguration {
     public func strokePath(for rect: CGRect) -> UIBezierPath? {
         guard stroke != nil else { return nil }
 
-        switch corners.style {
-        case .uniform(let radius):
-            return UIBezierPath(roundedRect: rect, cornerRadius: radius)
-
-        case .segmented(let sharpCorners, let sharpCornerRadius, let wideCornerRadius):
-            return UIBezierPath.roundedRect(
-                rect,
-                sharpCorners: sharpCorners,
-                sharpCornerRadius: sharpCornerRadius,
-                wideCornerRadius: wideCornerRadius,
-            )
-
-        case .capsule:
-            let cornerRadius = corners.radius(for: .topLeft, in: rect)
-            return UIBezierPath(roundedRect: rect, cornerRadius: cornerRadius)
-        }
+        return bubblePath(for: rect)
     }
 }
