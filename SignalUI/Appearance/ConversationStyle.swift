@@ -344,6 +344,10 @@ public struct ConversationStyle {
 
     // MARK: - Misc colors
 
+    public var systemMessageTextColor: UIColor {
+        hasWallpaper ? Theme.primaryTextColor : Theme.secondaryTextAndIconColor
+    }
+
     public func bubbleReadMoreTextColor(message: TSMessage) -> UIColor {
         if message is TSIncomingMessage {
             return isDarkThemeEnabled ? .ows_whiteAlpha90 : .ows_accentBlue

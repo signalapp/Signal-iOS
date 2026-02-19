@@ -363,8 +363,7 @@ public struct CVComponentState: Equatable {
         typealias ReferencedUser = CVTextLabel.ReferencedUserItem
 
         let title: NSAttributedString
-        let titleColor: UIColor
-        let titleSelectionBackgroundColor: UIColor
+        let titleColorOverride: UIColor?
         let action: CVMessageAction?
 
         struct Expiration: Equatable {
@@ -380,8 +379,7 @@ public struct CVComponentState: Equatable {
 
         init(
             title: NSAttributedString,
-            titleColor: UIColor,
-            titleSelectionBackgroundColor: UIColor,
+            titleColorOverride: UIColor?,
             action: CVMessageAction?,
             expiration: Expiration?,
         ) {
@@ -391,9 +389,7 @@ public struct CVComponentState: Equatable {
                 range: NSRange(location: 0, length: mutableTitle.length),
             )
             self.title = NSAttributedString(attributedString: mutableTitle)
-
-            self.titleColor = titleColor
-            self.titleSelectionBackgroundColor = titleSelectionBackgroundColor
+            self.titleColorOverride = titleColorOverride
             self.action = action
             self.expiration = expiration
 

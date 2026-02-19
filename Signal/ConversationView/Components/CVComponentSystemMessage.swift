@@ -164,7 +164,10 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
 
         // Configuring the text label should happen in both reuse and non-reuse
         // scenarios
-        textLabel.configureForRendering(config: textLabelConfig, spoilerAnimationManager: componentDelegate.spoilerState.animationManager)
+        textLabel.configureForRendering(
+            config: textLabelConfig,
+            spoilerAnimationManager: componentDelegate.spoilerState.animationManager,
+        )
         componentView.innerHStack.accessibilityLabel = textLabelConfig.text.accessibilityDescription
         componentView.innerHStack.isAccessibilityElement = true
 
@@ -172,7 +175,7 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
             messageTimerView.configure(
                 expirationTimestampMs: expiration.expirationTimestamp,
                 disappearingMessageInterval: expiration.expiresInSeconds,
-                tintColor: systemMessage.titleColor,
+                tintColor: textColor,
             )
         }
 
@@ -394,19 +397,20 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
 
     private var textLabelConfig: CVTextLabel.Config {
         let selectionStyling: [NSAttributedString.Key: Any] = [
-            .backgroundColor: systemMessage.titleSelectionBackgroundColor,
+            .backgroundColor: Theme.isDarkThemeEnabled ? UIColor.ows_gray80 : UIColor.ows_gray05,
         ]
+        let textColor = textColor
 
         return CVTextLabel.Config(
             text: .attributedText(systemMessage.title),
-            displayConfig: .forUnstyledText(font: Self.textLabelFont, textColor: systemMessage.titleColor),
+            displayConfig: .forUnstyledText(font: Self.textLabelFont, textColor: textColor),
             font: Self.textLabelFont,
-            textColor: systemMessage.titleColor,
+            textColor: textColor,
             selectionStyling: selectionStyling,
             textAlignment: .center,
             lineBreakMode: .byWordWrapping,
             items: systemMessage.namesInTitle.map { .referencedUser(referencedUserItem: $0) },
-            linkifyStyle: .underlined(bodyTextColor: systemMessage.titleColor),
+            linkifyStyle: .underlined(bodyTextColor: textColor),
         )
     }
 
@@ -431,6 +435,10 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
 
     private static var textLabelFont: UIFont {
         UIFont.dynamicTypeFootnote
+    }
+
+    private var textColor: UIColor {
+        systemMessage.titleColorOverride ?? conversationStyle.systemMessageTextColor
     }
 
     private static let measurementKey_innerHStack = "CVComponentSystemMessage.measurementKey_innerHStack"
@@ -686,13 +694,11 @@ extension CVComponentSystemMessage {
         title: NSAttributedString,
         action: Action?,
         expiration: CVComponentState.SystemMessage.Expiration?,
-        titleColor: UIColor? = nil,
-        titleSelectionBackgroundColor: UIColor? = nil,
+        titleColorOverride: UIColor? = nil,
     ) -> CVComponentState.SystemMessage {
         return CVComponentState.SystemMessage(
             title: title,
-            titleColor: titleColor ?? defaultTextColor,
-            titleSelectionBackgroundColor: titleSelectionBackgroundColor ?? defaultSelectionBackgroundColor,
+            titleColorOverride: titleColorOverride,
             action: action,
             expiration: expiration,
         )
@@ -706,7 +712,7 @@ extension CVComponentSystemMessage {
     ) -> CVComponentState.SystemMessage {
 
         let title = Self.title(forInteraction: interaction, transaction: transaction)
-        let maybeOverrideTitleColor = Self.overrideTextColor(forInteraction: interaction)
+        let titleColorOverride = Self.titleColorOverride(forInteraction: interaction)
         let action = Self.action(
             forInteraction: interaction,
             threadViewModel: threadViewModel,
@@ -715,7 +721,12 @@ extension CVComponentSystemMessage {
         )
         let expiration = Self.expiration(forInteraction: interaction, transaction: transaction)
 
-        return buildComponentState(title: title, action: action, expiration: expiration, titleColor: maybeOverrideTitleColor)
+        return buildComponentState(
+            title: title,
+            action: action,
+            expiration: expiration,
+            titleColorOverride: titleColorOverride,
+        )
     }
 
     private static func title(
@@ -839,13 +850,7 @@ extension CVComponentSystemMessage {
         }
     }
 
-    private static var defaultTextColor: UIColor { Theme.primaryTextColor }
-
-    private static var defaultSelectionBackgroundColor: UIColor {
-        Theme.isDarkThemeEnabled ? .ows_gray80 : .ows_gray05
-    }
-
-    private static func overrideTextColor(forInteraction interaction: TSInteraction) -> UIColor? {
+    private static func titleColorOverride(forInteraction interaction: TSInteraction) -> UIColor? {
         guard let call = interaction as? TSCall else { return nil }
 
         switch call.callType {
