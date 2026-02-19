@@ -328,6 +328,7 @@ public class CVComponentSystemMessage: CVComponentBase, CVRootComponent {
             } else {
                 let backgroundView = UIView()
                 backgroundView.backgroundColor = Theme.backgroundColor
+                backgroundView.layer.cornerRadius = 12
                 componentView.backgroundView = backgroundView
                 bubbleView = backgroundView
             }
