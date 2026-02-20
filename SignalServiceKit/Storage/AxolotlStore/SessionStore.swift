@@ -103,13 +103,21 @@ struct SessionStore {
         localIdentity: OWSIdentity,
         deviceId: DeviceId,
         tx: DBReadTransaction,
-    ) throws -> LibSignalClient.SessionRecord? {
-        return try (fetchSessionRecords(
+    ) -> LibSignalClient.SessionRecord? {
+        let sessionRecords = fetchSessionRecords(
             forRecipientId: recipientId,
             localIdentity: localIdentity,
             deviceId: deviceId,
             tx: tx,
-        ).first?.serializedRecord).map(LibSignalClient.SessionRecord.init(bytes:))
+        )
+        do {
+            return try (sessionRecords.first?.serializedRecord).map(LibSignalClient.SessionRecord.init(bytes:))
+        } catch {
+            // If we can't decode the session, it's likely due to database corruption,
+            // and we continue as if it doesn't exist (to create a new one).
+            Logger.warn("couldn't decode session, continuing without it: \(error)")
+            return nil
+        }
     }
 
     func archiveSessions(
@@ -276,7 +284,7 @@ public class SessionManagerForIdentity: LibSignalClient.SessionStore {
         case .none:
             return nil
         case .some(.success(let recipientId)):
-            return try self.sessionStore.fetchSession(
+            return self.sessionStore.fetchSession(
                 forRecipientId: recipientId,
                 localIdentity: self.identity,
                 deviceId: deviceId,
