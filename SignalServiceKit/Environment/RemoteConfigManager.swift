@@ -543,7 +543,7 @@ private enum IsEnabledFlag: String, FlagType {
     case applePayMonthlyDonationKillSwitch = "ios.applePayMonthlyDonationKillSwitch"
     case applePayOneTimeDonationKillSwitch = "ios.applePayOneTimeDonationKillSwitch"
     case automaticSessionResetKillSwitch = "ios.automaticSessionResetKillSwitch"
-    case backupsMegaphone = "ios.backupsMegaphone"
+    case backupsMegaphone = "ios.backupsMegaphone2"
     case cardGiftDonationKillSwitch = "ios.cardGiftDonationKillSwitch"
     case cardMonthlyDonationKillSwitch = "ios.cardMonthlyDonationKillSwitch"
     case cardOneTimeDonationKillSwitch = "ios.cardOneTimeDonationKillSwitch"
