@@ -44,7 +44,7 @@ public class CVWallpaperBlurView: ManualLayoutViewWithLayer, CVDimmableView {
     }
 
     public func applyLayout() {
-        guard bounds.size.isNonEmpty, maskFrame.size.isNonEmpty else { return }
+        guard bounds.size.isNonEmpty else { return }
 
         UIView.performWithoutAnimation {
             imageView.frame = imageViewFrame
