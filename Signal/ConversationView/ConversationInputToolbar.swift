@@ -191,7 +191,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
     func update(conversationStyle: ConversationStyle) {
         self.conversationStyle = conversationStyle
         if #available(iOS 26, *), let sendButton = trailingEdgeControl as? UIButton {
-            sendButton.tintColor = conversationStyle.chatColorValue.asLiquidGlassTintColor()
+            sendButton.tintColor = conversationStyle.chatColorValue.asChatUIElementTintColor()
         }
     }
 
@@ -489,7 +489,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
                 },
                 accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "sendButton"),
             )
-            button.tintColor = conversationStyle.bubbleChatColorOutgoing.asLiquidGlassTintColor()
+            button.tintColor = conversationStyle.bubbleChatColorOutgoing.asChatUIElementTintColor()
             return button
         }
 

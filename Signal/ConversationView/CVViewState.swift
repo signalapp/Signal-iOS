@@ -184,8 +184,9 @@ extension ConversationViewController {
         set {
             viewState.conversationStyle = newValue
             if #available(iOS 26, *) {
-                viewState.scrollDownButton.tintColor = newValue.chatColorValue.asLiquidGlassTintColor()
-                viewState.scrollToNextMentionButton.tintColor = newValue.chatColorValue.asLiquidGlassTintColor()
+                let tintColor = newValue.chatColorValue.asChatUIElementTintColor()
+                viewState.scrollDownButton.badgeTintColor = tintColor
+                viewState.scrollToNextMentionButton.badgeTintColor = tintColor
             }
         }
     }

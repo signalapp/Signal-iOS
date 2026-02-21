@@ -115,7 +115,7 @@ public extension UIColor {
 @available(iOS 26, *)
 public extension ColorOrGradientValue {
 
-    func asLiquidGlassTintColor() -> UIColor {
+    func asChatUIElementTintColor() -> UIColor {
         let bubbleColor: UIColor = {
             switch self {
             case .transparent, .blur:
