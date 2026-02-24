@@ -647,13 +647,13 @@
 "BACKUP_RECORD_KEY_TITLE" = "Guarde a sua chave de recuperação";
 
 /* Title for a button offering help if the user has forgotten their recovery key. */
-"BACKUP_RECOVERY_KEY_REMINDER_FORGOT_KEY_BUTTON" = "Forgot Key?";
+"BACKUP_RECOVERY_KEY_REMINDER_FORGOT_KEY_BUTTON" = "Esqueceu-se da chave?";
 
 /* Subtitle for a screen asking users to enter their recovery key, for reminder purposes. */
-"BACKUP_RECOVERY_KEY_REMINDER_SUBTITLE" = "Your recovery key is a 64-character code required to recover your account and data.";
+"BACKUP_RECOVERY_KEY_REMINDER_SUBTITLE" = "A sua chave de recuperação é um código de 64 caracteres necessário para recuperar a sua conta e os seus dados.";
 
 /* Title for a screen asking users to enter their recovery key, for reminder purposes. */
-"BACKUP_RECOVERY_KEY_REMINDER_TITLE" = "Enter Your Recovery Key";
+"BACKUP_RECOVERY_KEY_REMINDER_TITLE" = "Introduza a sua chave de recuperação";
 
 /* Subtitle for a progress spinner on a modal tracking active downloading. Embeds 1:{{ the amount downloaded as a file size, e.g. 100 MB }}; 2:{{ the total amount to download as a file size, e.g. 1 GB }}; 3:{{ the amount downloaded as a percentage, e.g. 10% }}. */
 "BACKUP_RESTORE_MODAL_DOWNLOAD_PROGRESS_SUBTITLE" = "%1$@ de %2$@ (%3$@)";
@@ -1022,7 +1022,7 @@
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_RUNNING" = "A carregar: %1$@ de %2$@ (%3$@)";
 
 /* Subtitle for a progress bar tracking active uploading. */
-"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_RUNNING_GENERIC" = "Uploading…";
+"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_RUNNING_GENERIC" = "A carregar…";
 
 /* Message for a sheet shown after the user enables backups. */
 "BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "Dependendo do tamanho da sua cópia de segurança, isto pode demorar algum tempo. Pode usar o Signal normalmente enquanto a cópia de segurança é efetuada.";
@@ -1040,10 +1040,10 @@
 "BACKUP_SUBSCRIPTION_FAILED_TO_RENEW_SHEET_TITLE" = "A renovação da sua subscrição de cópias de segurança falhou";
 
 /* Body for system notification when we detect an issue with Backup media. */
-"BACKUPS_MEDIA_ERROR_NOTIFICATION_BODY" = "Something unexpected happened related to your media backup. Please submit debug logs to help us resolve the issue.";
+"BACKUPS_MEDIA_ERROR_NOTIFICATION_BODY" = "Ocorreu algo inesperado relacionado com a sua cópia de segurança de ficheiros multimédia. Envie os registos de depuração para nos ajudar a resolver o problema.";
 
 /* Title for system notification when we detect an issue with Backup media. */
-"BACKUPS_MEDIA_ERROR_NOTIFICATION_TITLE" = "Backups Media Error";
+"BACKUPS_MEDIA_ERROR_NOTIFICATION_TITLE" = "Erro na cópia de segurança de ficheiros multimédia";
 
 /* Title for the 'Backup' settings menu. */
 "BACKUPS_SETTINGS_TITLE" = "Cópias de segurança protegidas";
@@ -1796,70 +1796,70 @@
 "CHAT_COLORS_AUTO_TOOLTIP" = "Faz corresponder automaticamente a cor com o fundo de ecrã";
 
 /* Message shown in an action sheet when the user tries to cancel a backup. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_BACKUP_CANCEL_CONFIRMATION_MESSAGE" = "Canceling your backup will not delete your backup. You can resume your backup at any time from Backup Settings.";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_BACKUP_CANCEL_CONFIRMATION_MESSAGE" = "Cancelar a sua cópia de segurança não eliminará a sua cópia de segurança. Pode retomar a sua cópia de segurança a qualquer altura nas Definições das Cópias de Segurança.";
 
 /* Title for the action sheet shown when the user tries to cancel a backup. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_BACKUP_CANCEL_CONFIRMATION_TITLE" = "Cancel Backup?";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_BACKUP_CANCEL_CONFIRMATION_TITLE" = "Cancelar cópia de segurança?";
 
 /* Toast shown after the user cancels the backup. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_BACKUP_CANCELED_TOAST" = "Backup canceled";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_BACKUP_CANCELED_TOAST" = "Cópia de segurança cancelada";
 
 /* Title label shown in the chat list backup progress view when the backup is complete. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_BACKUP_COMPLETE_TITLE" = "Backup complete";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_BACKUP_COMPLETE_TITLE" = "Cópia de segurança completa";
 
 /* Title label shown in the chat list backup progress view when the backup is paused. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_BACKUP_PAUSED_TITLE" = "Backup paused";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_BACKUP_PAUSED_TITLE" = "Cópia de segurança pausada";
 
 /* Button in the cancel backup action sheet that confirms cancellation. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_CANCEL_BACKUP_BUTTON" = "Cancel Backup";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_CANCEL_BACKUP_BUTTON" = "Cancelar cópia de segurança";
 
 /* Title for the context menu action that cancels the backup. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_CANCEL_BACKUP_CONTEXT_MENU_ACTION" = "Cancel backup";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_CANCEL_BACKUP_CONTEXT_MENU_ACTION" = "Cancelar cópia de segurança";
 
 /* Button in the cancel backup action sheet that dismisses the sheet and continues the backup. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_CONTINUE_BACKUP_BUTTON" = "Continue Backup";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_CONTINUE_BACKUP_BUTTON" = "Continuar cópia de segurança";
 
 /* Title for the context menu action that hides the backup progress view. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_HIDE_CONTEXT_MENU_ACTION" = "Hide";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_HIDE_CONTEXT_MENU_ACTION" = "Ocultar";
 
 /* Toast shown after the user hides the backup progress view. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_HIDE_TOAST" = "View backup progress in Backup Settings";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_HIDE_TOAST" = "Ver o progresso da cópia de segurança nas Definições de cópia de segurança";
 
 /* Button in the action sheet to dismiss and resume backup later on Wi-Fi. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_LATER_ON_WIFI_BUTTON" = "Later on Wi-Fi";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_LATER_ON_WIFI_BUTTON" = "Mais tarde por Wi-Fi";
 
 /* Trailing accessory label shown when backup is paused due to low battery. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_LOW_BATTERY_LABEL" = "Low Battery…";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_LOW_BATTERY_LABEL" = "Pouca bateria…";
 
 /* Trailing accessory label shown when backup is paused due to Low Power Mode. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_LOW_POWER_MODE_LABEL" = "Low Power Mode…";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_LOW_POWER_MODE_LABEL" = "Modo de baixo consumo…";
 
 /* Trailing accessory label shown when backup is paused due to no internet connection. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_NO_INTERNET_LABEL" = "No Internet…";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_NO_INTERNET_LABEL" = "Sem internet…";
 
 /* Title label shown in the chat list backup progress view while the backup file is being prepared. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_PREPARING_BACKUP_TITLE" = "Preparing backup";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_PREPARING_BACKUP_TITLE" = "A preparar cópia de segurança";
 
 /* Button in the action sheet to resume backup using cellular data. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_RESUME_CELLULAR_DATA_BUTTON" = "Resume";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_RESUME_CELLULAR_DATA_BUTTON" = "Retomar";
 
 /* Message shown in an action sheet when the user tries to resume backup using cellular data. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_RESUME_CELLULAR_DATA_MESSAGE" = "Backing up your media using cellular data may result in data charges. Your backup may take a long time to upload, keep Signal open to avoid interruptions.";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_RESUME_CELLULAR_DATA_MESSAGE" = "Fazer a cópia de segurança dos seus ficheiros multimédia através de dados móveis pode resultar na cobrança de dados. Isto pode demorar muito tempo a ser transferido, mantenha o Signal aberto para evitar interrupções.";
 
 /* Title for the action sheet shown when the user tries to resume backup using cellular data. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_RESUME_CELLULAR_DATA_TITLE" = "Resume Using Cellular Data?";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_RESUME_CELLULAR_DATA_TITLE" = "Retomar com dados móveis?";
 
 /* Button shown in the backup progress view trailing accessory to resume uploading over Wi-Fi. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_RESUME_WIFI_BUTTON" = "Resume";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_RESUME_WIFI_BUTTON" = "Retomar";
 
 /* Progress label showing the amount uploaded out of the total. Embeds {{ %1$@ bytes uploaded, %2$@ total bytes to upload }}. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_UPLOAD_PROGRESS_FORMAT" = "%1$@ of %2$@";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_UPLOAD_PROGRESS_FORMAT" = "%1$@ de %2$@";
 
 /* Title label shown in the chat list backup progress view while backup attachments are being uploaded. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_UPLOADING_BACKUP_TITLE" = "Uploading backup";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_UPLOADING_BACKUP_TITLE" = "A carregar cópia de segurança";
 
 /* Title label shown in the chat list backup progress view when waiting for Wi-Fi. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_WAITING_FOR_WIFI_TITLE" = "Waiting for Wi-Fi";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_WAITING_FOR_WIFI_TITLE" = "À espera de Wi-Fi…";
 
 /* Title for context menu action to disable chat list filter (e.g., Filter by Unread) */
 "CHAT_LIST_CLEAR_FILTER_MENU_ACTION" = "Limpar filtro não lido";
@@ -2453,7 +2453,7 @@
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "Remover como administrador";
 
 /* Message for 'revoke group admin' confirmation alert. */
-"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_MESSAGE" = "This will also clear their member label.";
+"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_MESSAGE" = "Isto também irá eliminar a etiqueta de membro";
 
 /* Format for title for 'revoke group admin' confirmation alert. Embeds {user to revoke admin status from}. */
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "Remover %1$@ de administrador do grupo?";
@@ -5087,10 +5087,10 @@
 "MEMBER_LABEL_ADD" = "Adicionar uma etiqueta de membro";
 
 /* Label that shows up under a local user's row in contacts prompting them to add a member label */
-"MEMBER_LABEL_ADD_CSVC" = "Add Member Label";
+"MEMBER_LABEL_ADD_CSVC" = "Adicionar etiqueta de membro";
 
 /* Toast indicating that only admins can set a member label. */
-"MEMBER_LABEL_ADMIN_ONLY_WARNING_TOAST" = "Only admins can set member labels in this group";
+"MEMBER_LABEL_ADMIN_ONLY_WARNING_TOAST" = "Apenas os administradores podem definir etiquetas de membros neste grupo";
 
 /* Accessibility prefix for member labels. */
 "MEMBER_LABEL_AX_PREFIX" = "Etiqueta de membro: ";
@@ -5111,7 +5111,7 @@
 "MEMBER_LABEL_FAIL_TO_SAVE" = "Não foi possível guardar a etiqueta de membro";
 
 /* Section header for a list of group member labels */
-"MEMBER_LABEL_GROUP_LABELS_SECTION_TITLE" = "Labels in This Group";
+"MEMBER_LABEL_GROUP_LABELS_SECTION_TITLE" = "Etiquetas neste grupo";
 
 /* Body for a sheet shown if a user will show their member label over their About message in a group. */
 "MEMBER_LABEL_HERO_SHEET_ABOUT_OVERRIDE_BODY" = "Neste grupo, a sua etiqueta de membro será apresentada ao lado da sua fotografia em vez do seu \"Sobre\".";
@@ -5129,7 +5129,7 @@
 "MEMBER_LABEL_PREVIEW_HEADING" = "Pré-visualização";
 
 /* Text for a button to edit an existing member label */
-"MEMBER_LABEL_SET" = "Set Your Member Label";
+"MEMBER_LABEL_SET" = "Definir a sua etiqueta de membro";
 
 /* Text shown in the preview message bubble when a user is editing their member label. */
 "MEMBER_LABEL_VIEW_MESSAGE_PREVIEW_TEXT" = "Olá!";

@@ -125,13 +125,13 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "સમજાઈ ગયું";
 
 /* Format string for delivery issue sheet message. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "આ ચેટમાં %1$@ તરફથી તમને મેસેજ, સ્ટીકર, પ્રતિક્રિયા, વંચાયાની ખાતરી અથવા મીડિયા ડિલિવર થઈ શક્યું નહીં.";
+"ALERT_DELIVERY_ISSUE_MESSAGE_FORMAT" = "આ ચેટમાં %1$@ તરફથી તમને મેસેજ, સ્ટિકર, પ્રતિક્રિયા, વંચાયાની ખાતરી અથવા મીડિયા ડિલિવર થઈ શક્યું નહીં.";
 
 /* Title for delivery issue sheet */
 "ALERT_DELIVERY_ISSUE_TITLE" = "ડિલિવરી સમસ્યા";
 
 /* Format string for delivery issue sheet message where the original thread is unknown. Embeds {{ sender name }}. */
-"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "આ ચેટમાં %1$@ તરફથી તમને મેસેજ, સ્ટીકર, પ્રતિક્રિયા, વંચાયાની ખાતરી અથવા મીડિયા મોકલી શકાયું નહીં. તેઓએ તમને સીધા જ અથવા ગ્રૂપમાં મોકલવાનો પ્રયાસ કર્યો હોઈ શકે છે.";
+"ALERT_DELIVERY_ISSUE_UNKNOWN_THREAD_MESSAGE_FORMAT" = "આ ચેટમાં %1$@ તરફથી તમને મેસેજ, સ્ટિકર, પ્રતિક્રિયા, વંચાયાની ખાતરી અથવા મીડિયા મોકલી શકાયું નહીં. તેમણે તમને સીધા જ અથવા ગ્રૂપમાં મોકલવાનો પ્રયાસ કર્યો હોઈ શકે છે.";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "કાઢી નાખો";
@@ -215,7 +215,7 @@
 "APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal લોન્ચ કરી શકાતું નથી. કૃપા કરીને support@signal.org પર ડિબગ લૉગ મોકલો જેથી અમે આ સમસ્યાને નિવારણ કરી શકીએ.";
 
 /* Button to try launching the app even though the last launch failed */
-"APP_LAUNCH_FAILURE_CONTINUE" = "તેના બદલે Signal ઓપન કરો";
+"APP_LAUNCH_FAILURE_CONTINUE" = "તેના બદલે Signal ખોલો";
 
 /* Message for an error indicating that the app couldn't launch because some unexpected error happened with the user's registration status. */
 "APP_LAUNCH_FAILURE_CORRUPT_REGISTRATION_MESSAGE" = "કૃપા કરીને support@signal.org પર ડિબગ લૉગ મોકલો જેથી અમે આ સમસ્યાનું નિવારણ કરી શકીએ.";
@@ -647,13 +647,13 @@
 "BACKUP_RECORD_KEY_TITLE" = "તમારી રિકવરી કી રેકોર્ડ કરો";
 
 /* Title for a button offering help if the user has forgotten their recovery key. */
-"BACKUP_RECOVERY_KEY_REMINDER_FORGOT_KEY_BUTTON" = "Forgot Key?";
+"BACKUP_RECOVERY_KEY_REMINDER_FORGOT_KEY_BUTTON" = "કી ભૂલી ગયા?";
 
 /* Subtitle for a screen asking users to enter their recovery key, for reminder purposes. */
-"BACKUP_RECOVERY_KEY_REMINDER_SUBTITLE" = "Your recovery key is a 64-character code required to recover your account and data.";
+"BACKUP_RECOVERY_KEY_REMINDER_SUBTITLE" = "તમારી રિકવરી કી એ તમારા એકાઉન્ટ અને ડેટાને રિકવર કરવા માટેનો જરૂરી 64-અક્ષરનો કોડ છે.";
 
 /* Title for a screen asking users to enter their recovery key, for reminder purposes. */
-"BACKUP_RECOVERY_KEY_REMINDER_TITLE" = "Enter Your Recovery Key";
+"BACKUP_RECOVERY_KEY_REMINDER_TITLE" = "તમારી રિકવરી કી દાખલ કરો";
 
 /* Subtitle for a progress spinner on a modal tracking active downloading. Embeds 1:{{ the amount downloaded as a file size, e.g. 100 MB }}; 2:{{ the total amount to download as a file size, e.g. 1 GB }}; 3:{{ the amount downloaded as a percentage, e.g. 10% }}. */
 "BACKUP_RESTORE_MODAL_DOWNLOAD_PROGRESS_SUBTITLE" = "%2$@ માંથી %1$@ (%3$@)";
@@ -1022,7 +1022,7 @@
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_RUNNING" = "અપલોડ થાય છે %2$@માંથી %1$@ (%3$@) ";
 
 /* Subtitle for a progress bar tracking active uploading. */
-"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_RUNNING_GENERIC" = "Uploading…";
+"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_RUNNING_GENERIC" = "અપલોડ થઈ રહ્યુ છે…";
 
 /* Message for a sheet shown after the user enables backups. */
 "BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "તમારા બેકઅપની સાઇઝના આધારે, આમાં વધુ સમય લાગી શકે છે. જ્યારે બેકઅપ લેવામાં આવે ત્યારે તમે સામાન્ય રીતે કરતા હો, તેમ Signalનો ઉપયોગ કરી શકો છો.";
@@ -1040,10 +1040,10 @@
 "BACKUP_SUBSCRIPTION_FAILED_TO_RENEW_SHEET_TITLE" = "તમારા બેકઅપ સબ્સ્ક્રિપ્શનને રિન્યૂ કરવાનું નિષ્ફળ થયું";
 
 /* Body for system notification when we detect an issue with Backup media. */
-"BACKUPS_MEDIA_ERROR_NOTIFICATION_BODY" = "Something unexpected happened related to your media backup. Please submit debug logs to help us resolve the issue.";
+"BACKUPS_MEDIA_ERROR_NOTIFICATION_BODY" = "તમારા મીડિયા બેકઅપ સંબંધિત કંઈક અણધાર્યું બન્યું. સમસ્યા ઉકેલવામાં અમારી સહાય માટે કૃપા કરીને ડીબગ લૉગ સબમિટ કરો.";
 
 /* Title for system notification when we detect an issue with Backup media. */
-"BACKUPS_MEDIA_ERROR_NOTIFICATION_TITLE" = "Backups Media Error";
+"BACKUPS_MEDIA_ERROR_NOTIFICATION_TITLE" = "બેકઅપ મીડિયા એરર";
 
 /* Title for the 'Backup' settings menu. */
 "BACKUPS_SETTINGS_TITLE" = "સુરક્ષિત બેકઅપ";
@@ -1796,70 +1796,70 @@
 "CHAT_COLORS_AUTO_TOOLTIP" = "વૉલપેપર સાથે રંગને આપમેળે મેળ ખાતો કરે છે";
 
 /* Message shown in an action sheet when the user tries to cancel a backup. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_BACKUP_CANCEL_CONFIRMATION_MESSAGE" = "Canceling your backup will not delete your backup. You can resume your backup at any time from Backup Settings.";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_BACKUP_CANCEL_CONFIRMATION_MESSAGE" = "તમારા બેકઅપને રદ કરવાથી તમારો બેકઅપ ડિલીટ થશે નહીં. તમે બેકઅપ સેટિંગ્સમાંથી કોઈ પણ સમયે તમારું બેકઅપ ફરી શરૂ કરી શકો છો.";
 
 /* Title for the action sheet shown when the user tries to cancel a backup. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_BACKUP_CANCEL_CONFIRMATION_TITLE" = "Cancel Backup?";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_BACKUP_CANCEL_CONFIRMATION_TITLE" = "બેકઅપ રદ કરીએ?";
 
 /* Toast shown after the user cancels the backup. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_BACKUP_CANCELED_TOAST" = "Backup canceled";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_BACKUP_CANCELED_TOAST" = "બેકઅપ રદ કર્યું";
 
 /* Title label shown in the chat list backup progress view when the backup is complete. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_BACKUP_COMPLETE_TITLE" = "Backup complete";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_BACKUP_COMPLETE_TITLE" = "બેકઅપ પૂર્ણ થયું";
 
 /* Title label shown in the chat list backup progress view when the backup is paused. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_BACKUP_PAUSED_TITLE" = "Backup paused";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_BACKUP_PAUSED_TITLE" = "બેકઅપ થોભાવ્યું";
 
 /* Button in the cancel backup action sheet that confirms cancellation. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_CANCEL_BACKUP_BUTTON" = "Cancel Backup";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_CANCEL_BACKUP_BUTTON" = "બેકઅપ રદ કરો";
 
 /* Title for the context menu action that cancels the backup. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_CANCEL_BACKUP_CONTEXT_MENU_ACTION" = "Cancel backup";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_CANCEL_BACKUP_CONTEXT_MENU_ACTION" = "બેકઅપ રદ કરો";
 
 /* Button in the cancel backup action sheet that dismisses the sheet and continues the backup. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_CONTINUE_BACKUP_BUTTON" = "Continue Backup";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_CONTINUE_BACKUP_BUTTON" = "બેકઅપ ચાલુ રાખો";
 
 /* Title for the context menu action that hides the backup progress view. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_HIDE_CONTEXT_MENU_ACTION" = "Hide";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_HIDE_CONTEXT_MENU_ACTION" = "છુપાવો";
 
 /* Toast shown after the user hides the backup progress view. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_HIDE_TOAST" = "View backup progress in Backup Settings";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_HIDE_TOAST" = "બેકઅપ સેટિંગ્સમાં બેકઅપની પ્રગતિ જુઓ";
 
 /* Button in the action sheet to dismiss and resume backup later on Wi-Fi. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_LATER_ON_WIFI_BUTTON" = "Later on Wi-Fi";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_LATER_ON_WIFI_BUTTON" = "પછીથી Wi-Fi પર";
 
 /* Trailing accessory label shown when backup is paused due to low battery. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_LOW_BATTERY_LABEL" = "Low Battery…";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_LOW_BATTERY_LABEL" = "બેટરી ઓછી છે…";
 
 /* Trailing accessory label shown when backup is paused due to Low Power Mode. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_LOW_POWER_MODE_LABEL" = "Low Power Mode…";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_LOW_POWER_MODE_LABEL" = "લૉ પાવર મોડ…";
 
 /* Trailing accessory label shown when backup is paused due to no internet connection. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_NO_INTERNET_LABEL" = "No Internet…";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_NO_INTERNET_LABEL" = "ઇન્ટરનેટ નથી…";
 
 /* Title label shown in the chat list backup progress view while the backup file is being prepared. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_PREPARING_BACKUP_TITLE" = "Preparing backup";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_PREPARING_BACKUP_TITLE" = "બેકઅપ તૈયાર કરી રહ્યાં છીએ";
 
 /* Button in the action sheet to resume backup using cellular data. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_RESUME_CELLULAR_DATA_BUTTON" = "Resume";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_RESUME_CELLULAR_DATA_BUTTON" = "ફરી શરૂ કરો";
 
 /* Message shown in an action sheet when the user tries to resume backup using cellular data. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_RESUME_CELLULAR_DATA_MESSAGE" = "Backing up your media using cellular data may result in data charges. Your backup may take a long time to upload, keep Signal open to avoid interruptions.";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_RESUME_CELLULAR_DATA_MESSAGE" = "સેલ્યુલર ડેટાનો ઉપયોગ કરીને તમારા મીડિયાનો બેકઅપ લેવાથી ડેટા શુલ્ક લાગી શકે છે. તમારા બેકઅપને ડાઉનલોડ થવામાં ઘણો સમય લાગી શકે છે, વિક્ષેપો ટાળવા માટે Signal ખુલ્લું રાખો.";
 
 /* Title for the action sheet shown when the user tries to resume backup using cellular data. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_RESUME_CELLULAR_DATA_TITLE" = "Resume Using Cellular Data?";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_RESUME_CELLULAR_DATA_TITLE" = "સેલ્યુલર ડેટાનો ઉપયોગ ફરી શરૂ કરવો છે?";
 
 /* Button shown in the backup progress view trailing accessory to resume uploading over Wi-Fi. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_RESUME_WIFI_BUTTON" = "Resume";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_RESUME_WIFI_BUTTON" = "ફરી શરૂ કરો";
 
 /* Progress label showing the amount uploaded out of the total. Embeds {{ %1$@ bytes uploaded, %2$@ total bytes to upload }}. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_UPLOAD_PROGRESS_FORMAT" = "%1$@ of %2$@";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_UPLOAD_PROGRESS_FORMAT" = "%2$@માંથી %1$@";
 
 /* Title label shown in the chat list backup progress view while backup attachments are being uploaded. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_UPLOADING_BACKUP_TITLE" = "Uploading backup";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_UPLOADING_BACKUP_TITLE" = "બેકઅપ અપલોડ કરી રહ્યું છે";
 
 /* Title label shown in the chat list backup progress view when waiting for Wi-Fi. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_WAITING_FOR_WIFI_TITLE" = "Waiting for Wi-Fi";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_WAITING_FOR_WIFI_TITLE" = "વાઇ-ફાઇની રાહ જોઈ રહ્યાં છીએ";
 
 /* Title for context menu action to disable chat list filter (e.g., Filter by Unread) */
 "CHAT_LIST_CLEAR_FILTER_MENU_ACTION" = "ન વાંચેલ ફિલ્ટર દૂર કરો";
@@ -2453,7 +2453,7 @@
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "એડમિન તરીકેથી દૂર કરો";
 
 /* Message for 'revoke group admin' confirmation alert. */
-"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_MESSAGE" = "This will also clear their member label.";
+"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_MESSAGE" = "આનાથી તેમનું સભ્યનું લેબલ પણ સાફ થઈ જશે.";
 
 /* Format for title for 'revoke group admin' confirmation alert. Embeds {user to revoke admin status from}. */
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "ગ્રુપ એડમિન તરીકે %1$@ને દૂર કરીએ?";
@@ -5087,10 +5087,10 @@
 "MEMBER_LABEL_ADD" = "સભ્ય લેબલ ઉમેરો";
 
 /* Label that shows up under a local user's row in contacts prompting them to add a member label */
-"MEMBER_LABEL_ADD_CSVC" = "Add Member Label";
+"MEMBER_LABEL_ADD_CSVC" = "સભ્યનું લેબલ ઉમેરો";
 
 /* Toast indicating that only admins can set a member label. */
-"MEMBER_LABEL_ADMIN_ONLY_WARNING_TOAST" = "Only admins can set member labels in this group";
+"MEMBER_LABEL_ADMIN_ONLY_WARNING_TOAST" = "આ ગ્રૂપમાં ફક્ત એડમિન જ સભ્યના લેબલ સેટ કરી શકે છે";
 
 /* Accessibility prefix for member labels. */
 "MEMBER_LABEL_AX_PREFIX" = "સભ્યનું લેબલ: ";
@@ -5111,7 +5111,7 @@
 "MEMBER_LABEL_FAIL_TO_SAVE" = "સભ્યનું લેબલ સેવ કરી શકાયું નથી";
 
 /* Section header for a list of group member labels */
-"MEMBER_LABEL_GROUP_LABELS_SECTION_TITLE" = "Labels in This Group";
+"MEMBER_LABEL_GROUP_LABELS_SECTION_TITLE" = "લેબલ સાથેના ગ્રૂપના સભ્યો";
 
 /* Body for a sheet shown if a user will show their member label over their About message in a group. */
 "MEMBER_LABEL_HERO_SHEET_ABOUT_OVERRIDE_BODY" = "આ ગ્રૂપમાં, તમારા વિશેની જગ્યાએ તમારા સભ્યનું લેબલ તમારા ફોટાની બાજુમાં પ્રદર્શિત થશે.";
@@ -5129,7 +5129,7 @@
 "MEMBER_LABEL_PREVIEW_HEADING" = "પ્રિવ્યૂ કરો";
 
 /* Text for a button to edit an existing member label */
-"MEMBER_LABEL_SET" = "Set Your Member Label";
+"MEMBER_LABEL_SET" = "તમારું સભ્યનું લેબલ સેટ કરો";
 
 /* Text shown in the preview message bubble when a user is editing their member label. */
 "MEMBER_LABEL_VIEW_MESSAGE_PREVIEW_TEXT" = "નમસ્તે!";

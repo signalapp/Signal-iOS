@@ -857,7 +857,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>%1$d명의 멤버를 새 그룹에 추가할 수 없었으며 가입하도록 초대되었습니다.</string>
+			<string>%1$d명의 멤버를 새 그룹에 바로 추가할 수 없어 초대를 보냈습니다.</string>
 		</dict>
 	</dict>
 	<key>IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_%d</key>
@@ -899,7 +899,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>텍스트 메시지와 지난 %1$d일간의 미디어를 전송합니다.</string>
+			<string>텍스트 메시지와 지난 %1$d일간의 미디어를 이전합니다.</string>
 		</dict>
 	</dict>
 	<key>MANY_GROUPS_IN_COMMON_%d</key>
@@ -1389,7 +1389,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>이 기기를 연결했을 때 이 음성 메시지가 휴대폰에서 전송되지 않았습니다. 기기 연결 시점에 %1$d일보다 더 오래된 미디어와 파일은 동기화할 수 없습니다.</string>
+			<string>이 음성 메시지는 기기 연결 시 이전되지 않았습니다. 연결일 기준 %1$d일 이상 지난 미디어 및 파일은 동기화 대상에서 제외됩니다.</string>
 		</dict>
 	</dict>
 	<key>UNAVAILABLE_ATTACHMENT_FILE_SHEET_MESSAGE_%d</key>
@@ -1403,7 +1403,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>이 기기를 연결했을 때 이 파일이 휴대폰에서 전송되지 않았습니다. 기기 연결 시점에 %1$d일보다 더 오래된 미디어와 파일은 동기화할 수 없습니다.</string>
+			<string>이 파일은 기기 연결 시 이전되지 않았습니다. 연결일 기준 %1$d일 이상 지난 미디어 및 파일은 동기화 대상에서 제외됩니다.</string>
 		</dict>
 	</dict>
 	<key>UNAVAILABLE_ATTACHMENT_OVERSIZE_TEXT_SHEET_MESSAGE_%d</key>
@@ -1417,7 +1417,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>이 기기를 연결했을 때 이 메시지의 전체 텍스트가 휴대폰에서 전송되지 않았습니다. 기기 연결 시점에 %1$d일보다 더 오래된 미디오와 파일은 동기화할 수 없습니다.</string>
+			<string>이 메시지의 전체 텍스트는 기기 연결 시 이전되지 않았습니다. 연결일 기준 %1$d일 이상 지난 미디어 및 파일은 동기화 대상에서 제외됩니다.</string>
 		</dict>
 	</dict>
 	<key>UNAVAILABLE_ATTACHMENT_STICKER_SHEET_MESSAGE_%d</key>
@@ -1431,7 +1431,7 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>other</key>
-			<string>이 기기를 연결했을 때 이 스티커가 휴대폰에서 전송되지 않았습니다. 기기 연결 시점에 %1$d일보다 더 오래된 미디어와 파일은 동기화할 수 없습니다.</string>
+			<string>이 스티커는 기기 연결 시 이전되지 않았습니다. 연결일 기준 %1$d일 이상 지난 미디어 및 파일은 동기화 대상에서 제외됩니다.</string>
 		</dict>
 	</dict>
 	<key>USERNAME_SELECTION_TOO_SHORT_ERROR_MESSAGE_%d</key>

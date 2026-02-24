@@ -647,13 +647,13 @@
 "BACKUP_RECORD_KEY_TITLE" = "Je herstelsleutel vastleggen";
 
 /* Title for a button offering help if the user has forgotten their recovery key. */
-"BACKUP_RECOVERY_KEY_REMINDER_FORGOT_KEY_BUTTON" = "Forgot Key?";
+"BACKUP_RECOVERY_KEY_REMINDER_FORGOT_KEY_BUTTON" = "Sleutel vergeten?";
 
 /* Subtitle for a screen asking users to enter their recovery key, for reminder purposes. */
-"BACKUP_RECOVERY_KEY_REMINDER_SUBTITLE" = "Your recovery key is a 64-character code required to recover your account and data.";
+"BACKUP_RECOVERY_KEY_REMINDER_SUBTITLE" = "Je herstelsleutel is een code van 64 tekens die je nodig hebt om je account en gegevens te herstellen.";
 
 /* Title for a screen asking users to enter their recovery key, for reminder purposes. */
-"BACKUP_RECOVERY_KEY_REMINDER_TITLE" = "Enter Your Recovery Key";
+"BACKUP_RECOVERY_KEY_REMINDER_TITLE" = "Voer je herstelsleutel in";
 
 /* Subtitle for a progress spinner on a modal tracking active downloading. Embeds 1:{{ the amount downloaded as a file size, e.g. 100 MB }}; 2:{{ the total amount to download as a file size, e.g. 1 GB }}; 3:{{ the amount downloaded as a percentage, e.g. 10% }}. */
 "BACKUP_RESTORE_MODAL_DOWNLOAD_PROGRESS_SUBTITLE" = "%1$@ van %2$@ (%3$@)";
@@ -686,7 +686,7 @@
 "BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_ACTION" = "Back-ups maken via mobiel netwerk toestaan";
 
 /* Message for an action sheet explaining that performing a backup failed because WiFi is required. */
-"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_MESSAGE" = "Als je je back-up herstelt via mobiele data, kunnen er kosten voor datagebruik in rekening worden gebracht door je mobiele provider. Je kunt verbinding maken met een wifi-netwerk of het gebruik van mobiele data voor het maken van back-ups toestaan.";
+"BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_MESSAGE" = "Als je je back-up maakt via mobiele data, kunnen er kosten voor datagebruik in rekening worden gebracht door je mobiele provider. Je kunt verbinding maken met een wifi-netwerk of het gebruik van mobiele data voor het maken van back-ups toestaan.";
 
 /* Title for an action sheet explaining that performing a backup failed because WiFi is required. */
 "BACKUP_SETTINGS_BACKUP_EXPORT_ERROR_SHEET_NEED_WIFI_TITLE" = "Back-ups maken via mobiel netwerk toestaan?";
@@ -1022,7 +1022,7 @@
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_RUNNING" = "%1$@ van %2$@ (%3$@) aan het uploaden";
 
 /* Subtitle for a progress bar tracking active uploading. */
-"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_RUNNING_GENERIC" = "Uploading…";
+"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_RUNNING_GENERIC" = "Aan het uploaden…";
 
 /* Message for a sheet shown after the user enables backups. */
 "BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "Afhankelijk van de grootte van je back-up kan dit even duren. Tijdens het maken van de back-up kun je Signal gebruiken zoals je normaal doet.";
@@ -1040,10 +1040,10 @@
 "BACKUP_SUBSCRIPTION_FAILED_TO_RENEW_SHEET_TITLE" = "Je back-upabonnement kon niet worden verlengd";
 
 /* Body for system notification when we detect an issue with Backup media. */
-"BACKUPS_MEDIA_ERROR_NOTIFICATION_BODY" = "Something unexpected happened related to your media backup. Please submit debug logs to help us resolve the issue.";
+"BACKUPS_MEDIA_ERROR_NOTIFICATION_BODY" = "Er ging iets mis bij de back-up van je media. Stuur ons foutopsporingslogs om het probleem op te lossen.";
 
 /* Title for system notification when we detect an issue with Backup media. */
-"BACKUPS_MEDIA_ERROR_NOTIFICATION_TITLE" = "Backups Media Error";
+"BACKUPS_MEDIA_ERROR_NOTIFICATION_TITLE" = "Fout bij back-up van media";
 
 /* Title for the 'Backup' settings menu. */
 "BACKUPS_SETTINGS_TITLE" = "Signal Secure Backups";
@@ -1796,70 +1796,70 @@
 "CHAT_COLORS_AUTO_TOOLTIP" = "‘Auto’ betekent dat er automatisch een kleur wordt gekozen die past bij de achtergrond";
 
 /* Message shown in an action sheet when the user tries to cancel a backup. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_BACKUP_CANCEL_CONFIRMATION_MESSAGE" = "Canceling your backup will not delete your backup. You can resume your backup at any time from Backup Settings.";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_BACKUP_CANCEL_CONFIRMATION_MESSAGE" = "Als je je back-up annuleert, wordt deze niet verwijderd. Je kunt je back-up op elk moment hervatten vanuit de back-upinstellingen.";
 
 /* Title for the action sheet shown when the user tries to cancel a backup. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_BACKUP_CANCEL_CONFIRMATION_TITLE" = "Cancel Backup?";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_BACKUP_CANCEL_CONFIRMATION_TITLE" = "Back-up annuleren?";
 
 /* Toast shown after the user cancels the backup. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_BACKUP_CANCELED_TOAST" = "Backup canceled";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_BACKUP_CANCELED_TOAST" = "Back-up geannuleerd";
 
 /* Title label shown in the chat list backup progress view when the backup is complete. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_BACKUP_COMPLETE_TITLE" = "Backup complete";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_BACKUP_COMPLETE_TITLE" = "Back-up voltooid";
 
 /* Title label shown in the chat list backup progress view when the backup is paused. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_BACKUP_PAUSED_TITLE" = "Backup paused";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_BACKUP_PAUSED_TITLE" = "Back-up gepauzeerd";
 
 /* Button in the cancel backup action sheet that confirms cancellation. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_CANCEL_BACKUP_BUTTON" = "Cancel Backup";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_CANCEL_BACKUP_BUTTON" = "Back-up annuleren";
 
 /* Title for the context menu action that cancels the backup. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_CANCEL_BACKUP_CONTEXT_MENU_ACTION" = "Cancel backup";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_CANCEL_BACKUP_CONTEXT_MENU_ACTION" = "Back-up annuleren";
 
 /* Button in the cancel backup action sheet that dismisses the sheet and continues the backup. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_CONTINUE_BACKUP_BUTTON" = "Continue Backup";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_CONTINUE_BACKUP_BUTTON" = "Doorgaan met back-up";
 
 /* Title for the context menu action that hides the backup progress view. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_HIDE_CONTEXT_MENU_ACTION" = "Hide";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_HIDE_CONTEXT_MENU_ACTION" = "Verbergen";
 
 /* Toast shown after the user hides the backup progress view. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_HIDE_TOAST" = "View backup progress in Backup Settings";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_HIDE_TOAST" = "Bekijk de back-upvoortgang in de back-upinstellingen";
 
 /* Button in the action sheet to dismiss and resume backup later on Wi-Fi. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_LATER_ON_WIFI_BUTTON" = "Later on Wi-Fi";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_LATER_ON_WIFI_BUTTON" = "Later via wifi";
 
 /* Trailing accessory label shown when backup is paused due to low battery. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_LOW_BATTERY_LABEL" = "Low Battery…";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_LOW_BATTERY_LABEL" = "Batterij bijna leeg…";
 
 /* Trailing accessory label shown when backup is paused due to Low Power Mode. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_LOW_POWER_MODE_LABEL" = "Low Power Mode…";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_LOW_POWER_MODE_LABEL" = "Energiebesparingsmodus…";
 
 /* Trailing accessory label shown when backup is paused due to no internet connection. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_NO_INTERNET_LABEL" = "No Internet…";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_NO_INTERNET_LABEL" = "Geen internet…";
 
 /* Title label shown in the chat list backup progress view while the backup file is being prepared. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_PREPARING_BACKUP_TITLE" = "Preparing backup";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_PREPARING_BACKUP_TITLE" = "Back-up aan het voorbereiden";
 
 /* Button in the action sheet to resume backup using cellular data. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_RESUME_CELLULAR_DATA_BUTTON" = "Resume";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_RESUME_CELLULAR_DATA_BUTTON" = "Hervatten";
 
 /* Message shown in an action sheet when the user tries to resume backup using cellular data. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_RESUME_CELLULAR_DATA_MESSAGE" = "Backing up your media using cellular data may result in data charges. Your backup may take a long time to upload, keep Signal open to avoid interruptions.";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_RESUME_CELLULAR_DATA_MESSAGE" = "Als je een back-up van je media maakt via mobiele data kunnen er kosten voor datagebruik in rekening worden gebracht door je mobiele provider. Het uploaden van je back-up kan lang duren, houd Signal open om onderbrekingen te voorkomen.";
 
 /* Title for the action sheet shown when the user tries to resume backup using cellular data. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_RESUME_CELLULAR_DATA_TITLE" = "Resume Using Cellular Data?";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_RESUME_CELLULAR_DATA_TITLE" = "Hervatten via mobiel netwerk?";
 
 /* Button shown in the backup progress view trailing accessory to resume uploading over Wi-Fi. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_RESUME_WIFI_BUTTON" = "Resume";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_RESUME_WIFI_BUTTON" = "Hervatten";
 
 /* Progress label showing the amount uploaded out of the total. Embeds {{ %1$@ bytes uploaded, %2$@ total bytes to upload }}. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_UPLOAD_PROGRESS_FORMAT" = "%1$@ of %2$@";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_UPLOAD_PROGRESS_FORMAT" = "%1$@ van %2$@";
 
 /* Title label shown in the chat list backup progress view while backup attachments are being uploaded. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_UPLOADING_BACKUP_TITLE" = "Uploading backup";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_UPLOADING_BACKUP_TITLE" = "Back-up uploaden";
 
 /* Title label shown in the chat list backup progress view when waiting for Wi-Fi. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_WAITING_FOR_WIFI_TITLE" = "Waiting for Wi-Fi";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_WAITING_FOR_WIFI_TITLE" = "Wachten op wifi…";
 
 /* Title for context menu action to disable chat list filter (e.g., Filter by Unread) */
 "CHAT_LIST_CLEAR_FILTER_MENU_ACTION" = "Ongelezen filter verwijderen";
@@ -2453,7 +2453,7 @@
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "Beheerdersbevoegdheden intrekken";
 
 /* Message for 'revoke group admin' confirmation alert. */
-"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_MESSAGE" = "This will also clear their member label.";
+"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_MESSAGE" = "Het ledenlabel wordt hiermee ook verwijderd.";
 
 /* Format for title for 'revoke group admin' confirmation alert. Embeds {user to revoke admin status from}. */
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "De beheerdersbevoegdheden van %1$@ intrekken?";
@@ -5087,10 +5087,10 @@
 "MEMBER_LABEL_ADD" = "Ledenlabel toevoegen";
 
 /* Label that shows up under a local user's row in contacts prompting them to add a member label */
-"MEMBER_LABEL_ADD_CSVC" = "Add Member Label";
+"MEMBER_LABEL_ADD_CSVC" = "Ledenlabel toevoegen";
 
 /* Toast indicating that only admins can set a member label. */
-"MEMBER_LABEL_ADMIN_ONLY_WARNING_TOAST" = "Only admins can set member labels in this group";
+"MEMBER_LABEL_ADMIN_ONLY_WARNING_TOAST" = "Alleen beheerders kunnen ledenlabels aanmaken in deze groep.";
 
 /* Accessibility prefix for member labels. */
 "MEMBER_LABEL_AX_PREFIX" = "Ledenlabel: ";
@@ -5111,7 +5111,7 @@
 "MEMBER_LABEL_FAIL_TO_SAVE" = "Kan ledenlabel niet opslaan";
 
 /* Section header for a list of group member labels */
-"MEMBER_LABEL_GROUP_LABELS_SECTION_TITLE" = "Labels in This Group";
+"MEMBER_LABEL_GROUP_LABELS_SECTION_TITLE" = "Labels in deze groep";
 
 /* Body for a sheet shown if a user will show their member label over their About message in a group. */
 "MEMBER_LABEL_HERO_SHEET_ABOUT_OVERRIDE_BODY" = "In deze groep wordt je ledenlabel naast je profielfoto weergegeven in plaats van je ‘Over mij’.";
@@ -5129,7 +5129,7 @@
 "MEMBER_LABEL_PREVIEW_HEADING" = "Voorbeeld";
 
 /* Text for a button to edit an existing member label */
-"MEMBER_LABEL_SET" = "Set Your Member Label";
+"MEMBER_LABEL_SET" = "Maak een label aan";
 
 /* Text shown in the preview message bubble when a user is editing their member label. */
 "MEMBER_LABEL_VIEW_MESSAGE_PREVIEW_TEXT" = "Hallo!";

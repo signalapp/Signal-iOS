@@ -647,13 +647,13 @@
 "BACKUP_RECORD_KEY_TITLE" = "記錄你的恢復金鑰";
 
 /* Title for a button offering help if the user has forgotten their recovery key. */
-"BACKUP_RECOVERY_KEY_REMINDER_FORGOT_KEY_BUTTON" = "Forgot Key?";
+"BACKUP_RECOVERY_KEY_REMINDER_FORGOT_KEY_BUTTON" = "忘記了備份金鑰？";
 
 /* Subtitle for a screen asking users to enter their recovery key, for reminder purposes. */
-"BACKUP_RECOVERY_KEY_REMINDER_SUBTITLE" = "Your recovery key is a 64-character code required to recover your account and data.";
+"BACKUP_RECOVERY_KEY_REMINDER_SUBTITLE" = "你的恢復金鑰是恢復你帳戶和資料所需的一組 64 個字元的代碼。";
 
 /* Title for a screen asking users to enter their recovery key, for reminder purposes. */
-"BACKUP_RECOVERY_KEY_REMINDER_TITLE" = "Enter Your Recovery Key";
+"BACKUP_RECOVERY_KEY_REMINDER_TITLE" = "輸入你的恢復金鑰";
 
 /* Subtitle for a progress spinner on a modal tracking active downloading. Embeds 1:{{ the amount downloaded as a file size, e.g. 100 MB }}; 2:{{ the total amount to download as a file size, e.g. 1 GB }}; 3:{{ the amount downloaded as a percentage, e.g. 10% }}. */
 "BACKUP_RESTORE_MODAL_DOWNLOAD_PROGRESS_SUBTITLE" = "共 %2$@ 中的 %1$@ ( %3$@ )";
@@ -1022,7 +1022,7 @@
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_RUNNING" = "正在上載：%2$@ 中的 %1$@ (%3$@)";
 
 /* Subtitle for a progress bar tracking active uploading. */
-"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_RUNNING_GENERIC" = "Uploading…";
+"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_RUNNING_GENERIC" = "正在上載……";
 
 /* Message for a sheet shown after the user enables backups. */
 "BACKUP_SETTINGS_WELCOME_TO_BACKUPS_SHEET_MESSAGE" = "視備份的大小而定，這可能需要一段較長的時間。備份期間，你可以如常使用 Signal。";
@@ -1040,10 +1040,10 @@
 "BACKUP_SUBSCRIPTION_FAILED_TO_RENEW_SHEET_TITLE" = "你的備份定期贊助無法續訂";
 
 /* Body for system notification when we detect an issue with Backup media. */
-"BACKUPS_MEDIA_ERROR_NOTIFICATION_BODY" = "Something unexpected happened related to your media backup. Please submit debug logs to help us resolve the issue.";
+"BACKUPS_MEDIA_ERROR_NOTIFICATION_BODY" = "處理你的媒體備份時發生了一些預料之外的情況。請提交除錯日誌，以協助我們解決問題。";
 
 /* Title for system notification when we detect an issue with Backup media. */
-"BACKUPS_MEDIA_ERROR_NOTIFICATION_TITLE" = "Backups Media Error";
+"BACKUPS_MEDIA_ERROR_NOTIFICATION_TITLE" = "備份媒體錯誤";
 
 /* Title for the 'Backup' settings menu. */
 "BACKUPS_SETTINGS_TITLE" = "安全備份";
@@ -1796,70 +1796,70 @@
 "CHAT_COLORS_AUTO_TOOLTIP" = "自動按背景配選色彩";
 
 /* Message shown in an action sheet when the user tries to cancel a backup. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_BACKUP_CANCEL_CONFIRMATION_MESSAGE" = "Canceling your backup will not delete your backup. You can resume your backup at any time from Backup Settings.";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_BACKUP_CANCEL_CONFIRMATION_MESSAGE" = "取消備份不會刪除你的備份。你可以隨時從「備份設定」中恢復備份。";
 
 /* Title for the action sheet shown when the user tries to cancel a backup. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_BACKUP_CANCEL_CONFIRMATION_TITLE" = "Cancel Backup?";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_BACKUP_CANCEL_CONFIRMATION_TITLE" = "要取消備份嗎？";
 
 /* Toast shown after the user cancels the backup. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_BACKUP_CANCELED_TOAST" = "Backup canceled";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_BACKUP_CANCELED_TOAST" = "已取消備份";
 
 /* Title label shown in the chat list backup progress view when the backup is complete. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_BACKUP_COMPLETE_TITLE" = "Backup complete";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_BACKUP_COMPLETE_TITLE" = "備份完成";
 
 /* Title label shown in the chat list backup progress view when the backup is paused. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_BACKUP_PAUSED_TITLE" = "Backup paused";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_BACKUP_PAUSED_TITLE" = "備份暫停";
 
 /* Button in the cancel backup action sheet that confirms cancellation. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_CANCEL_BACKUP_BUTTON" = "Cancel Backup";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_CANCEL_BACKUP_BUTTON" = "取消備份";
 
 /* Title for the context menu action that cancels the backup. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_CANCEL_BACKUP_CONTEXT_MENU_ACTION" = "Cancel backup";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_CANCEL_BACKUP_CONTEXT_MENU_ACTION" = "取消備份";
 
 /* Button in the cancel backup action sheet that dismisses the sheet and continues the backup. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_CONTINUE_BACKUP_BUTTON" = "Continue Backup";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_CONTINUE_BACKUP_BUTTON" = "繼續備份";
 
 /* Title for the context menu action that hides the backup progress view. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_HIDE_CONTEXT_MENU_ACTION" = "Hide";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_HIDE_CONTEXT_MENU_ACTION" = "隱藏";
 
 /* Toast shown after the user hides the backup progress view. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_HIDE_TOAST" = "View backup progress in Backup Settings";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_HIDE_TOAST" = "在「備份設定」中檢視備份進度";
 
 /* Button in the action sheet to dismiss and resume backup later on Wi-Fi. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_LATER_ON_WIFI_BUTTON" = "Later on Wi-Fi";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_LATER_ON_WIFI_BUTTON" = "稍後在 Wi-Fi 上";
 
 /* Trailing accessory label shown when backup is paused due to low battery. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_LOW_BATTERY_LABEL" = "Low Battery…";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_LOW_BATTERY_LABEL" = "低電量…";
 
 /* Trailing accessory label shown when backup is paused due to Low Power Mode. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_LOW_POWER_MODE_LABEL" = "Low Power Mode…";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_LOW_POWER_MODE_LABEL" = "低電量模式…";
 
 /* Trailing accessory label shown when backup is paused due to no internet connection. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_NO_INTERNET_LABEL" = "No Internet…";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_NO_INTERNET_LABEL" = "沒有網路連線…";
 
 /* Title label shown in the chat list backup progress view while the backup file is being prepared. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_PREPARING_BACKUP_TITLE" = "Preparing backup";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_PREPARING_BACKUP_TITLE" = "正在準備進行備份";
 
 /* Button in the action sheet to resume backup using cellular data. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_RESUME_CELLULAR_DATA_BUTTON" = "Resume";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_RESUME_CELLULAR_DATA_BUTTON" = "恢復";
 
 /* Message shown in an action sheet when the user tries to resume backup using cellular data. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_RESUME_CELLULAR_DATA_MESSAGE" = "Backing up your media using cellular data may result in data charges. Your backup may take a long time to upload, keep Signal open to avoid interruptions.";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_RESUME_CELLULAR_DATA_MESSAGE" = "使用行動數據備份媒體可能會產生數據費用。備份上載可能需要很長時間，請保持 Signal 開啟以避免中斷。";
 
 /* Title for the action sheet shown when the user tries to resume backup using cellular data. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_RESUME_CELLULAR_DATA_TITLE" = "Resume Using Cellular Data?";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_RESUME_CELLULAR_DATA_TITLE" = "要恢復使用行動數據嗎？";
 
 /* Button shown in the backup progress view trailing accessory to resume uploading over Wi-Fi. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_RESUME_WIFI_BUTTON" = "Resume";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_RESUME_WIFI_BUTTON" = "恢復";
 
 /* Progress label showing the amount uploaded out of the total. Embeds {{ %1$@ bytes uploaded, %2$@ total bytes to upload }}. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_UPLOAD_PROGRESS_FORMAT" = "%1$@ of %2$@";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_UPLOAD_PROGRESS_FORMAT" = "第 %1$@ 個，共 %2$@ 個";
 
 /* Title label shown in the chat list backup progress view while backup attachments are being uploaded. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_UPLOADING_BACKUP_TITLE" = "Uploading backup";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_UPLOADING_BACKUP_TITLE" = "正在上載備份";
 
 /* Title label shown in the chat list backup progress view when waiting for Wi-Fi. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_WAITING_FOR_WIFI_TITLE" = "Waiting for Wi-Fi";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_WAITING_FOR_WIFI_TITLE" = "等待 Wi-Fi";
 
 /* Title for context menu action to disable chat list filter (e.g., Filter by Unread) */
 "CHAT_LIST_CLEAR_FILTER_MENU_ACTION" = "清除未讀篩選條件";
@@ -2453,7 +2453,7 @@
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "撤銷管理員身份";
 
 /* Message for 'revoke group admin' confirmation alert. */
-"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_MESSAGE" = "This will also clear their member label.";
+"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_MESSAGE" = "這也會清除他們的成員標籤。";
 
 /* Format for title for 'revoke group admin' confirmation alert. Embeds {user to revoke admin status from}. */
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "要撤銷%1$@的管理員身份嗎？";
@@ -4775,7 +4775,7 @@
 "KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_PRIMARY_BUTTON_TITLE" = "提交";
 
 /* Title for the secondary button in a sheet shown when a Key Transparency self-check fails. */
-"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_SECONDARY_BUTTON_TITLE" = "不必了";
+"KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_SECONDARY_BUTTON_TITLE" = "不用了";
 
 /* Title for a sheet shown when a Key Transparency self-check fails. */
 "KEY_TRANSPARENCY_SELF_CHECK_FAILED_SHEET_TITLE" = "你的裝置目前無法使用「自動金鑰驗證」。要提交除錯日誌嗎？";
@@ -5087,10 +5087,10 @@
 "MEMBER_LABEL_ADD" = "新增成員標籤";
 
 /* Label that shows up under a local user's row in contacts prompting them to add a member label */
-"MEMBER_LABEL_ADD_CSVC" = "Add Member Label";
+"MEMBER_LABEL_ADD_CSVC" = "新增成員標籤";
 
 /* Toast indicating that only admins can set a member label. */
-"MEMBER_LABEL_ADMIN_ONLY_WARNING_TOAST" = "Only admins can set member labels in this group";
+"MEMBER_LABEL_ADMIN_ONLY_WARNING_TOAST" = "只有管理員可以在此群組設定成員標籤";
 
 /* Accessibility prefix for member labels. */
 "MEMBER_LABEL_AX_PREFIX" = "成員標籤： ";
@@ -5111,7 +5111,7 @@
 "MEMBER_LABEL_FAIL_TO_SAVE" = "無法儲存成員標籤";
 
 /* Section header for a list of group member labels */
-"MEMBER_LABEL_GROUP_LABELS_SECTION_TITLE" = "Labels in This Group";
+"MEMBER_LABEL_GROUP_LABELS_SECTION_TITLE" = "此群組的標籤";
 
 /* Body for a sheet shown if a user will show their member label over their About message in a group. */
 "MEMBER_LABEL_HERO_SHEET_ABOUT_OVERRIDE_BODY" = "在這個群組中，你的成員標籤將顯示在相片旁邊，取代「關於」的位置。";
@@ -5129,7 +5129,7 @@
 "MEMBER_LABEL_PREVIEW_HEADING" = "預覽";
 
 /* Text for a button to edit an existing member label */
-"MEMBER_LABEL_SET" = "Set Your Member Label";
+"MEMBER_LABEL_SET" = "設定你的成員標籤";
 
 /* Text shown in the preview message bubble when a user is editing their member label. */
 "MEMBER_LABEL_VIEW_MESSAGE_PREVIEW_TEXT" = "你好！";

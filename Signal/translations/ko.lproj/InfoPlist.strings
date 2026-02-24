@@ -6,4 +6,4 @@ NSLocationWhenInUseUsageDescription = "Signal에서 현재 위치를 공유하�
 NSMicrophoneUsageDescription = "Signal은 음성 통화를 하고 음성 메시지를 녹음하기 위해 마이크 접근 권한이 필요합니다.";
 NSPhotoLibraryAddUsageDescription = "Signal이 나의 라이브러리에 사진을 저장합니다.";
 NSPhotoLibraryUsageDescription = "Signal이 보낼 사진을 라이브러리에서 선택하도록 합니다.";
-NSLocalNetworkUsageDescription = "Signal은 로컬 네트워크를 사용하여 새 휴대전화로 사용자 계정을 전송합니다. 사용자가 명시적으로 새 기기로 전송 시작을 선택하지 않는 한 이 기능은 사용되지 않습니다.";
+NSLocalNetworkUsageDescription = "Signal은 계정을 새 기기로 직접 이전하기 위해 로컬 네트워크를 사용합니다. 해당 권한은 사용자가 기기 이전을 선택한 경우에만 활성화되며, 그 외에는 사용되지 않습니다.";

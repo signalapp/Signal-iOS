@@ -1,2 +1,2 @@
-• Signal secure backups are here! Now you can choose to enable automatic end-to-end encrypted backups so you'll never lose a message when you get a new phone or reinstall Signal. You can back up all of your messages and the last 45 days of media for free, or you can pay a small monthly fee to get 100 GB of storage to back up every attachment. Tap on backups in your Signal settings to get started. Thanks to everyone who helped test this feature during the beta period!
+• Signal 안전 백업을 지금 만나보세요! 이제 엔드투엔드 자동 암호화 백업을 사용하여, 휴대폰을 새로 구매하거나 Signal을 다시 설치할 경우 메시지가 손실되는 상황을 방지할 수 있습니다. 모든 메시지와 지난 45일간의 미디어를 무료로 백업하거나, 소액의 월 사용료를 지불하고 100GB 저장 공간에 모든 첨부 파일을 백업하세요. 백업은 Signal 설정에서 백업을 탭하여 시작할 수 있습니다. 베타 기간 동안 이 기능을 테스트하는 데 도움을 주신 모든 분들께 감사드립니다.
 
