@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import SignalRingRTC
 import SignalServiceKit
 import SignalUI
 import UIKit
@@ -18,7 +19,7 @@ class CreateCallLinkViewController: InteractiveSheetViewController {
 
     // MARK: -
 
-    init(callLink: CallLink, adminPasskey: Data, callLinkState: CallLinkState) {
+    init(callLink: CallLink, adminPasskey: Data, callLinkState: SignalServiceKit.CallLinkState) {
         self._callLinkViewController = CallLinkViewController.forJustCreated(
             callLink: callLink,
             adminPasskey: adminPasskey,
@@ -77,9 +78,10 @@ class CreateCallLinkViewController: InteractiveSheetViewController {
                     let callLink = CallLink.generate()
                     let callService = AppEnvironment.shared.callService!
                     let createResult = try await callService.callLinkManager.createCallLink(rootKey: callLink.rootKey)
+                    let coercedToV0Link = try CallLink(rootKey: CallLinkRootKey(Data(callLink.rootKey.bytes.prefix(16))))
                     modal.dismissIfNotCanceled {
                         viewController.present(CreateCallLinkViewController(
-                            callLink: callLink,
+                            callLink: coercedToV0Link,
                             adminPasskey: createResult.adminPasskey,
                             callLinkState: createResult.callLinkState,
                         ), animated: true)
