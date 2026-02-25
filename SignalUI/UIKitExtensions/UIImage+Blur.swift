@@ -55,7 +55,13 @@ public extension UIImage {
         colorOverlays overlays: [(UIColor, CompositingMode)] = [],
         vibrancy: CGFloat = 0,
     ) throws -> UIImage {
-        return UIImage(cgImage: try _cgImageWithGaussianBlur(radius: radius, colorOverlays: overlays))
+        return UIImage(
+            cgImage: try _cgImageWithGaussianBlur(
+                radius: radius,
+                colorOverlays: overlays,
+                vibrancy: vibrancy,
+            ),
+        )
     }
 
     private func _cgImageWithGaussianBlur(
