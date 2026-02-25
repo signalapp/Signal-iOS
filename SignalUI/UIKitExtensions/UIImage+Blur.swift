@@ -54,12 +54,14 @@ public extension UIImage {
         radius: CGFloat,
         colorOverlays overlays: [(UIColor, CompositingMode)] = [],
         vibrancy: CGFloat = 0,
+        exposureAdjustment: CGFloat = 0,
     ) throws -> UIImage {
         return UIImage(
             cgImage: try _cgImageWithGaussianBlur(
                 radius: radius,
                 colorOverlays: overlays,
                 vibrancy: vibrancy,
+                exposureAdjustment: exposureAdjustment,
             ),
         )
     }
@@ -68,6 +70,7 @@ public extension UIImage {
         radius: CGFloat,
         colorOverlays overlays: [(UIColor, CompositingMode)] = [],
         vibrancy: CGFloat = 0,
+        exposureAdjustment: CGFloat = 0,
     ) throws -> CGImage {
 
         guard let cgImage else {
@@ -159,7 +162,25 @@ public extension UIImage {
             outputImage = vibrantImage
         }
 
-        // 5. Convert to CGImage.
+        // 5. Exposure adjust.
+
+        if
+            exposureAdjustment != 0,
+            let exposureAdjustFilter = CIFilter(
+                name: "CIExposureAdjust",
+                parameters: [
+                    kCIInputImageKey: outputImage,
+                    kCIInputEVKey: exposureAdjustment,
+                ],
+            )
+        {
+            guard let exposureAdjustedImage = exposureAdjustFilter.outputImage else {
+                throw OWSAssertionError("Could not create exposureAdjustedImage.")
+            }
+            outputImage = exposureAdjustedImage
+        }
+
+        // 6. Convert to CGImage.
         let context = CIContext(options: nil)
         guard let result = context.createCGImage(outputImage, from: inputImage.extent) else {
             throw OWSAssertionError("Failed to create CGImage from blurred output")

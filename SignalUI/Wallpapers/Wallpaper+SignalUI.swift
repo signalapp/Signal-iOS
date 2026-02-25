@@ -238,6 +238,7 @@ public class WallpaperBlurProviderImpl: NSObject, WallpaperBlurProvider {
                 radius: blurRadius,
                 colorOverlays: colorOverlays,
                 vibrancy: 0.2,
+                exposureAdjustment: 0.4,
             )
             let state = WallpaperBlurState(
                 image: blurredImage,
