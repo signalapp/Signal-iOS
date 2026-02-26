@@ -223,12 +223,16 @@ public class Preferences {
 
     // MARK: Calls
 
-    public func isSystemCallLogEnabled(tx: DBReadTransaction) -> Bool {
-        return keyValueStore.getBool(Key.systemCallLogEnabled.rawValue, defaultValue: true, transaction: tx)
+    public func isSystemCallLogEnabled(tx: DBReadTransaction) -> Bool? {
+        return keyValueStore.getBool(Key.systemCallLogEnabled.rawValue, transaction: tx)
     }
 
-    public func setIsSystemCallLogEnabled(_ value: Bool) {
-        setBool(value, forKey: .systemCallLogEnabled)
+    public func isSystemCallLogEnabledOrDefault(tx: DBReadTransaction) -> Bool {
+        return keyValueStore.getBool(Key.systemCallLogEnabled.rawValue, transaction: tx) ?? true
+    }
+
+    public func setIsSystemCallLogEnabled(_ value: Bool, tx: DBWriteTransaction) {
+        setBool(value, forKey: .systemCallLogEnabled, tx: tx)
     }
 
     // Allow callers to connect directly, when desirable, vs. enforcing TURN only proxy connectivity

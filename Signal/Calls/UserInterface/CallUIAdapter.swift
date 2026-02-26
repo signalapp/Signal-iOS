@@ -74,7 +74,7 @@ public class CallUIAdapter: NSObject {
         let (showNames, useSystemCallLog) = SSKEnvironment.shared.databaseStorageRef.read { tx in
             return (
                 SSKEnvironment.shared.preferencesRef.notificationPreviewType(tx: tx) != .noNameNoPreview,
-                SSKEnvironment.shared.preferencesRef.isSystemCallLogEnabled(tx: tx),
+                SSKEnvironment.shared.preferencesRef.isSystemCallLogEnabledOrDefault(tx: tx),
             )
         }
         return callUIAdapteeType.init(

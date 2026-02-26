@@ -234,7 +234,9 @@ class PrivacySettingsViewController: OWSTableViewController2 {
                 comment: "Short table cell label",
             ),
             isOn: {
-                return SSKEnvironment.shared.databaseStorageRef.read(block: SSKEnvironment.shared.preferencesRef.isSystemCallLogEnabled(tx:))
+                return SSKEnvironment.shared.databaseStorageRef.read { tx in
+                    SSKEnvironment.shared.preferencesRef.isSystemCallLogEnabledOrDefault(tx: tx)
+                }
             },
             target: self,
             selector: #selector(didToggleEnableSystemCallLogSwitch),
@@ -339,9 +341,15 @@ class PrivacySettingsViewController: OWSTableViewController2 {
 
     @objc
     private func didToggleEnableSystemCallLogSwitch(_ sender: UISwitch) {
-        SSKEnvironment.shared.preferencesRef.setIsSystemCallLogEnabled(sender.isOn)
+        let callService = AppEnvironment.shared.callService!
+        let db = DependenciesBridge.shared.db
+        let preferences = SSKEnvironment.shared.preferencesRef
+
+        db.write { tx in
+            preferences.setIsSystemCallLogEnabled(sender.isOn, tx: tx)
+        }
 
         // rebuild callUIAdapter since CallKit configuration changed.
-        AppEnvironment.shared.callService.rebuildCallUIAdapter()
+        callService.rebuildCallUIAdapter()
     }
 }

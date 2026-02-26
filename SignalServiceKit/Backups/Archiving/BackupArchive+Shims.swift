@@ -218,6 +218,8 @@ public class _MessageBackup_OWS2FAManagerWrapper: _MessageBackup_OWS2FAManagerSh
 public protocol _MessageBackup_PreferencesShim {
     func shouldShowUnidentifiedDeliveryIndicators(tx: DBReadTransaction) -> Bool
     func setShouldShowUnidentifiedDeliveryIndicators(value: Bool, tx: DBWriteTransaction)
+    func isSystemCallLogEnabled(tx: DBReadTransaction) -> Bool?
+    func setIsSystemCallLogEnabled(_ value: Bool, tx: DBWriteTransaction)
 }
 
 public class _MessageBackup_PreferencesWrapper: _MessageBackup_PreferencesShim {
@@ -232,6 +234,14 @@ public class _MessageBackup_PreferencesWrapper: _MessageBackup_PreferencesShim {
 
     public func setShouldShowUnidentifiedDeliveryIndicators(value: Bool, tx: DBWriteTransaction) {
         preferences.setShouldShowUnidentifiedDeliveryIndicators(value, transaction: tx)
+    }
+
+    public func isSystemCallLogEnabled(tx: DBReadTransaction) -> Bool? {
+        preferences.isSystemCallLogEnabled(tx: tx)
+    }
+
+    public func setIsSystemCallLogEnabled(_ value: Bool, tx: DBWriteTransaction) {
+        preferences.setIsSystemCallLogEnabled(value, tx: tx)
     }
 }
 

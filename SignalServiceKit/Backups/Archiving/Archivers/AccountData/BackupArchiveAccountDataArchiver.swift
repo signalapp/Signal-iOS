@@ -209,6 +209,12 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
                 accountData.keyTransparencyData = keyTransparencyBlob
             }
 
+            if let isSystemCallLogEnabled = preferences.isSystemCallLogEnabled(tx: context.tx) {
+                var iosSpecificSettings = BackupProto_AccountData.IOSSpecificSettings()
+                iosSpecificSettings.isSystemCallLogEnabled = isSystemCallLogEnabled
+                accountData.iosSpecificSettings = iosSpecificSettings
+            }
+
             let error = Self.writeFrameToStream(
                 stream,
                 objectId: BackupArchive.AccountDataId.localUser,
@@ -680,6 +686,13 @@ public class BackupArchiveAccountDataArchiver: BackupArchiveProtoStreamWriter {
             keyTransparencyStore.setKeyTransparencyBlob(
                 accountData.keyTransparencyData,
                 aci: context.localIdentifiers.aci,
+                tx: context.tx,
+            )
+        }
+
+        if accountData.hasIosSpecificSettings {
+            preferences.setIsSystemCallLogEnabled(
+                accountData.iosSpecificSettings.isSystemCallLogEnabled,
                 tx: context.tx,
             )
         }

@@ -172,6 +172,10 @@ message AccountData {
     NavigationBarSize navigationBarSize = 3; // If unset, treat the same as "Unknown" case
   }
 
+  message IOSSpecificSettings {
+    bool isSystemCallLogEnabled = 1;
+  }
+
   bytes profileKey = 1;
   optional string username = 2;
   UsernameLink usernameLink = 3;
@@ -188,6 +192,7 @@ message AccountData {
   string bioEmoji = 14;
   // Opaque blob containing key transparency data for the account
   optional bytes keyTransparencyData = 15;
+  IOSSpecificSettings iosSpecificSettings = 16;
 }
 
 message Recipient {
