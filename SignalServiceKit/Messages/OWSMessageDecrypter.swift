@@ -171,7 +171,7 @@ public class OWSMessageDecrypter {
             )
         }
 
-        Logger.error(logString)
+        Logger.warn(logString)
 
         let wrappedError: Error
         if (error as NSError).domain == OWSError.errorDomain {

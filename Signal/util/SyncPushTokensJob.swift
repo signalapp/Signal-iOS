@@ -60,11 +60,10 @@ class SyncPushTokensJob: NSObject {
         } else if !Self.hasUploadedTokensOnce.get() {
             reason = "launched"
         } else {
-            Logger.info("No reason to upload pushToken: \(redact(pushToken))")
             return
         }
 
-        Logger.warn("Uploading push token; reason: \(reason), pushToken: \(redact(pushToken))")
+        Logger.info("uploading push token; reason: \(reason), pushToken: \(redact(pushToken))")
         try await self.updatePushTokens(pushToken: pushToken)
 
         await recordPushTokensLocally(pushToken: pushToken)
@@ -86,10 +85,8 @@ class SyncPushTokensJob: NSObject {
         assert(!Thread.isMainThread)
 
         await SSKEnvironment.shared.databaseStorageRef.awaitableWrite { tx in
-            Logger.warn("Recording push tokens locally. pushToken: \(redact(pushToken))")
-
             if pushToken != SSKEnvironment.shared.preferencesRef.getPushToken(tx: tx) {
-                Logger.info("Recording new plain push token")
+                Logger.info("saved new push token: \(redact(pushToken))")
                 SSKEnvironment.shared.preferencesRef.setPushToken(pushToken, tx: tx)
             }
         }

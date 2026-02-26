@@ -455,15 +455,11 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
     }
 
     private func _syncContacts(mode: ContactSyncMode) async throws {
-        let logger = PrefixedLogger(prefix: "ContactSync:\(mode)")
-
         // Don't bother sending sync messages with the same data as the last
         // successfully sent contact sync message.
         let opportunistic = mode == .allSignalAccountsIfChanged
 
         if CurrentAppContext().isNSE {
-            logger.warn("Skipping: in NSE.")
-
             // If a full sync is specifically requested in the NSE, mark it so that the
             // main app can send that request the next time in runs.
             if mode == .allSignalAccounts {
@@ -487,7 +483,6 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
         // Don't bother building the message if nobody will receive it. If a new
         // device is linked, they will request a re-send.
         guard hasAnyLinkedDevice else {
-            logger.warn("Skipping: no linked devices.")
             return
         }
 
@@ -497,7 +492,6 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
 
         let result = try SSKEnvironment.shared.databaseStorageRef.read { tx in try buildContactSyncMessage(in: thread, mode: mode, tx: tx) }
         guard let result else {
-            logger.warn("Skipping: no buildContactSyncMessageResult.")
             return
         }
 
@@ -513,8 +507,6 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
         // we should send that request since we've been given a strong signal that
         // someone is waiting to receive this message.
         if opportunistic, result.fullSyncRequestId == nil, messageHash == result.previousMessageHash {
-            // Ignore redundant contacts sync message.
-            logger.warn("Skipping: redundant.")
             return
         }
 
@@ -539,8 +531,6 @@ extension OWSSyncManager: SyncManagerProtocol, SyncManagerProtocolSwift {
             Self.keyValueStore.setData(messageHash, key: Constants.lastContactSyncKey, transaction: tx)
             self.clearFullSyncRequestId(ifMatches: result.fullSyncRequestId, tx: tx)
         }
-
-        logger.info("Sent!")
     }
 
     private struct BuildContactSyncMessageResult {

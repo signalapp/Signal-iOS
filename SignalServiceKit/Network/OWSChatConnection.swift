@@ -621,7 +621,7 @@ class OWSChatConnectionUsingLibSignal<Connection: ChatConnection & Sendable>: OW
             } catch SignalError.deviceDeregistered(_) {
                 // Handled by the subclass; this isn't a connection failure.
             } catch {
-                Logger.error("\(self.logPrefix): failed to connect: \(error)")
+                Logger.warn("\(self.logPrefix): failed to connect: \(error)")
                 OutageDetection.shared.reportConnectionFailure()
             }
             let result = await connectionAttemptCompleted(.closed(task: nil))
@@ -812,7 +812,7 @@ class OWSChatConnectionUsingLibSignal<Connection: ChatConnection & Sendable>: OW
         self.consecutiveFailureCount += 1
 
         let formattedReconnectDelay = String(format: "%.1f", reconnectDelay)
-        Logger.warn("Scheduling reconnect after \(formattedReconnectDelay)s")
+        Logger.info("Scheduling reconnect after \(formattedReconnectDelay)s")
 
         // Wait a few seconds before retrying to reduce server load.
         self.serialQueue.asyncAfter(deadline: .now() + reconnectDelay) { [weak self] in
