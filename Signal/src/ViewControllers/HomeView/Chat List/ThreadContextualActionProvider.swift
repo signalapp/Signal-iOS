@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
+import LibSignalClient
 import SignalServiceKit
 import SignalUI
 
@@ -14,7 +15,7 @@ private struct ThreadContextualAction {
     let imageFilled: UIImage
     let imageStroked: UIImage
     let title: String
-    let action: () -> Void
+    let action: @MainActor () -> Void
 }
 
 // MARK: -
@@ -60,8 +61,10 @@ extension ThreadContextualActionProvider where Self: UIViewController {
             image: action.imageFilled,
             title: action.title,
             handler: { completion in
-                action.action()
-                completion(false)
+                MainActor.assumeIsolated {
+                    action.action()
+                    completion(false)
+                }
             },
         )
     }
@@ -71,13 +74,28 @@ extension ThreadContextualActionProvider where Self: UIViewController {
     func contextMenuActions(threadViewModel: ThreadViewModel) -> [UIAction] {
         AssertIsOnMainThread()
 
-        let actions: [ThreadContextualAction] = [
+        var actions: [ThreadContextualAction] = [
             readStateContextualAction(threadViewModel: threadViewModel),
             muteStateContextualAction(threadViewModel: threadViewModel),
             pinnedStateContextualAction(threadViewModel: threadViewModel),
             archiveStateContextualAction(threadViewModel: threadViewModel),
-            deleteContextualAction(threadViewModel: threadViewModel),
         ]
+
+        let tsAccountManager = DependenciesBridge.shared.tsAccountManager
+        if
+            let groupThread = threadViewModel.threadRecord as? TSGroupThread,
+            let groupModel = groupThread.groupModel as? TSGroupModelV2,
+            let localAci = tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci
+        {
+            actions.append(leaveGroupContextualAction(
+                threadViewModel: threadViewModel,
+                groupModel: groupModel,
+                groupThread: groupThread,
+                localAci: localAci,
+            ))
+        }
+
+        actions.append(deleteContextualAction(threadViewModel: threadViewModel))
 
         return actions.map { action in
             makeUIAction(threadContextualAction: action)
@@ -98,7 +116,9 @@ extension ThreadContextualActionProvider where Self: UIViewController {
             image: action.imageStroked,
             attributes: attributes,
             handler: { _ in
-                action.action()
+                MainActor.assumeIsolated {
+                    action.action()
+                }
             },
         )
     }
@@ -215,6 +235,29 @@ extension ThreadContextualActionProvider where Self: UIViewController {
                 },
             )
         }
+    }
+
+    private func leaveGroupContextualAction(
+        threadViewModel: ThreadViewModel,
+        groupModel: TSGroupModelV2,
+        groupThread: TSGroupThread,
+        localAci: Aci,
+    ) -> ThreadContextualAction {
+        return ThreadContextualAction(
+            style: .destructive,
+            color: .Signal.label, // Not used: only relevant for swipe action
+            imageFilled: .leave, // Not used: only relevant for swipe action
+            imageStroked: .leave,
+            title: CommonStrings.leaveButton,
+            action: {
+                LeaveGroupCoordinator(
+                    groupThread: groupThread,
+                    groupModel: groupModel,
+                    localAci: localAci,
+                    onSuccess: {},
+                ).startLeaveGroupFlow(rootViewController: self)
+            },
+        )
     }
 
     // MARK: -

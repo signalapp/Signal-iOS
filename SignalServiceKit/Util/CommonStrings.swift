@@ -314,6 +314,13 @@ public enum CommonStrings {
             comment: "Label for a button that says 'Don't show again'.",
         )
     }
+
+    public static var leaveButton: String {
+        OWSLocalizedString(
+            "LEAVE_BUTTON_TITLE",
+            comment: "Confirmation button within contextual alert",
+        )
+    }
 }
 
 // MARK: -

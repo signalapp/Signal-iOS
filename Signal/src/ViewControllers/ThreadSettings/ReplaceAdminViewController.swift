@@ -7,8 +7,12 @@ import LibSignalClient
 import SignalServiceKit
 import SignalUI
 
+@MainActor
 protocol ReplaceAdminViewControllerDelegate: AnyObject {
-    func replaceAdmin(newAdminAci: Aci)
+    func replaceAdminView(
+        _ replaceAdminViewController: ReplaceAdminViewController,
+        didSelectNewAdminAci replacementAdminAci: Aci,
+    )
 }
 
 // MARK: -
@@ -40,6 +44,23 @@ class ReplaceAdminViewController: OWSTableViewController2 {
             "REPLACE_ADMIN_VIEW_TITLE",
             comment: "The title for the 'replace group admin' view.",
         )
+
+        if #available(iOS 26, *) {
+            navigationItem.leftBarButtonItem = .systemItem(
+                .close,
+                action: { [weak self] in
+                    self?.dismiss(animated: true)
+                },
+            )
+        } else {
+            navigationItem.leftBarButtonItem = .button(
+                title: CommonStrings.cancelButton,
+                style: .plain,
+                action: { [weak self] in
+                    self?.dismiss(animated: true)
+                },
+            )
+        }
 
         tableView.register(ContactTableViewCell.self, forCellReuseIdentifier: ContactTableViewCell.reuseIdentifier)
 
@@ -90,6 +111,9 @@ class ReplaceAdminViewController: OWSTableViewController2 {
             return
         }
 
-        replaceAdminViewControllerDelegate?.replaceAdmin(newAdminAci: replacementAdminAci)
+        replaceAdminViewControllerDelegate?.replaceAdminView(
+            self,
+            didSelectNewAdminAci: replacementAdminAci,
+        )
     }
 }

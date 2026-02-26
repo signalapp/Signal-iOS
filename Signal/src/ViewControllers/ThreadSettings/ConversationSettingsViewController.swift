@@ -575,152 +575,23 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
     }
 
     func didTapLeaveGroup() {
-        guard canLocalUserLeaveGroupWithoutChoosingNewAdmin else {
-            showReplaceAdminAlert()
-            return
-        }
-        showLeaveGroupConfirmAlert()
-    }
-
-    func showLeaveGroupConfirmAlert(replacementAdminAci: Aci? = nil) {
-        let alert = ActionSheetController(
-            title: OWSLocalizedString(
-                "CONFIRM_LEAVE_GROUP_TITLE",
-                comment: "Alert title",
-            ),
-            message: OWSLocalizedString(
-                "CONFIRM_LEAVE_GROUP_DESCRIPTION",
-                comment: "Alert body",
-            ),
-        )
-
-        let leaveAction = ActionSheetAction(
-            title: OWSLocalizedString(
-                "LEAVE_BUTTON_TITLE",
-                comment: "Confirmation button within contextual alert",
-            ),
-            style: .destructive,
-        ) { _ in
-            self.leaveGroup(replacementAdminAci: replacementAdminAci)
-        }
-        alert.addAction(leaveAction)
-        alert.addAction(OWSActionSheets.cancelAction)
-
-        presentActionSheet(alert)
-    }
-
-    func showReplaceAdminAlert() {
-        let candidates = self.replacementAdminCandidates
-        guard !candidates.isEmpty else {
-            // TODO: We could offer a "delete group locally" option here.
-            OWSActionSheets.showErrorAlert(message: OWSLocalizedString(
-                "GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE",
-                comment: "Message for the 'can't replace group admin' alert.",
-            ))
-            return
-        }
-
-        let alert = ActionSheetController(
-            title: OWSLocalizedString(
-                "GROUPS_REPLACE_ADMIN_ALERT_TITLE",
-                comment: "Title for the 'replace group admin' alert.",
-            ),
-            message: OWSLocalizedString(
-                "GROUPS_REPLACE_ADMIN_ALERT_MESSAGE",
-                comment: "Message for the 'replace group admin' alert.",
-            ),
-        )
-
-        alert.addAction(ActionSheetAction(
-            title: OWSLocalizedString(
-                "GROUPS_REPLACE_ADMIN_BUTTON",
-                comment: "Label for the 'replace group admin' button.",
-            ),
-            style: .default,
-        ) { _ in
-            self.showReplaceAdminView(candidates: candidates)
-        })
-        alert.addAction(OWSActionSheets.cancelAction)
-        presentActionSheet(alert)
-    }
-
-    func showReplaceAdminView(candidates: Set<SignalServiceAddress>) {
-        assert(!candidates.isEmpty)
-        let replaceAdminViewController = ReplaceAdminViewController(
-            candidates: candidates,
-            replaceAdminViewControllerDelegate: self,
-        )
-        navigationController?.pushViewController(replaceAdminViewController, animated: true)
-    }
-
-    private var canLocalUserLeaveThreadWithoutChoosingNewAdmin: Bool {
-        guard thread is TSGroupThread else {
-            return true
-        }
-        return canLocalUserLeaveGroupWithoutChoosingNewAdmin
-    }
-
-    private var canLocalUserLeaveGroupWithoutChoosingNewAdmin: Bool {
-        guard let groupThread = thread as? TSGroupThread else {
-            owsFailDebug("Invalid thread.")
-            return true
-        }
-        guard let groupModelV2 = groupThread.groupModel as? TSGroupModelV2 else {
-            return true
-        }
-        guard let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci else {
-            owsFailDebug("missing local address")
-            return true
-        }
-        return GroupManager.canLocalUserLeaveGroupWithoutChoosingNewAdmin(
-            localAci: localAci,
-            groupMembership: groupModelV2.groupMembership,
-        )
-    }
-
-    private var replacementAdminCandidates: Set<SignalServiceAddress> {
-        guard let groupThread = thread as? TSGroupThread else {
-            owsFailDebug("Invalid thread.")
-            return []
-        }
-        guard let groupModelV2 = groupThread.groupModel as? TSGroupModelV2 else {
-            return []
-        }
-        guard let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aciAddress else {
-            owsFailDebug("missing local address")
-            return []
-        }
-        var candidates = groupModelV2.groupMembership.fullMembers
-        candidates.remove(localAddress)
-        return candidates
-    }
-
-    private func leaveGroup(replacementAdminAci: Aci? = nil) {
-        guard let groupThread = thread as? TSGroupThread else {
-            owsFailDebug("Invalid thread.")
-            return
-        }
-        guard let navigationController = self.navigationController else {
-            owsFailDebug("Invalid navigationController.")
-            return
-        }
-        // On success, we want to pop back to the conversation view controller.
-        let viewControllers = navigationController.viewControllers
         guard
-            let index = viewControllers.firstIndex(of: self),
-            index > 0
+            let groupThread = thread as? TSGroupThread,
+            let groupModel = groupThread.groupModel as? TSGroupModelV2,
+            let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci
         else {
-            owsFailDebug("Invalid navigation stack.")
+            owsFailDebug("Invalid state!")
             return
         }
-        let conversationViewController = viewControllers[index - 1]
-        GroupManager.leaveGroupOrDeclineInviteAsyncWithUI(
+
+        LeaveGroupCoordinator(
             groupThread: groupThread,
-            fromViewController: self,
-            replacementAdminAci: replacementAdminAci,
-        ) {
-            self.navigationController?.popToViewController(conversationViewController, animated: true)
-        }
+            groupModel: groupModel,
+            localAci: localAci,
+            onSuccess: { [weak self] in
+                self?.navigationController?.popViewController(animated: true)
+            },
+        ).startLeaveGroupFlow(rootViewController: self)
     }
 
     func didTapUnblockThread(completion: @escaping () -> Void = {}) {
@@ -731,10 +602,27 @@ class ConversationSettingsViewController: OWSTableViewController2, BadgeCollecti
     }
 
     func didTapBlockThread() {
-        guard canLocalUserLeaveThreadWithoutChoosingNewAdmin else {
-            showReplaceAdminAlert()
+        if
+            let groupThread = thread as? TSGroupThread,
+            let groupModel = groupThread.groupModel as? TSGroupModelV2,
+            let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci,
+            GroupManager.canLocalUserLeaveGroupWithoutChoosingNewAdmin(
+                localAci: localAci,
+                groupMembership: groupModel.groupMembership,
+            )
+        {
+            LeaveGroupCoordinator(
+                groupThread: groupThread,
+                groupModel: groupModel,
+                localAci: localAci,
+                onSuccess: { [weak self] in
+                    self?.navigationController?.popViewController(animated: true)
+                },
+            ).startLeaveGroupFlow(rootViewController: self)
             return
         }
+
+        // Blocking auto-leaves the group on its own.
         BlockListUIUtils.showBlockThreadActionSheet(thread, from: self) { [weak self] _ in
             self?.reloadThreadAndUpdateContent()
         }
@@ -1131,14 +1019,6 @@ extension ConversationSettingsViewController: GroupViewHelperDelegate {
 
     var fromViewController: UIViewController? {
         return self
-    }
-}
-
-// MARK: -
-
-extension ConversationSettingsViewController: ReplaceAdminViewControllerDelegate {
-    func replaceAdmin(newAdminAci: Aci) {
-        showLeaveGroupConfirmAlert(replacementAdminAci: newAdminAci)
     }
 }
 

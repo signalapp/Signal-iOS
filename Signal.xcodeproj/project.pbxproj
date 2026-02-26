@@ -68,7 +68,7 @@
 		0480F0002E57C51A006CBB29 /* BackupsEnabledNotificationMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0480EFFF2E57C513006CBB29 /* BackupsEnabledNotificationMegaphone.swift */; };
 		0484CECE2F44B7BE009AB2CB /* AdminDeleteRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0484CECD2F44B7BB009AB2CB /* AdminDeleteRecord.swift */; };
 		0484CED02F44BD00009AB2CB /* AdminDeleteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0484CECF2F44BCFB009AB2CB /* AdminDeleteManager.swift */; };
-        0484CED22F44DD01009AB2CB /* OutgoingAdminDeleteMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0484CED12F44DCFF009AB2CB /* OutgoingAdminDeleteMessage.swift */; };
+		0484CED22F44DD01009AB2CB /* OutgoingAdminDeleteMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0484CED12F44DCFF009AB2CB /* OutgoingAdminDeleteMessage.swift */; };
 		048D58362ED4FABB00F26237 /* PinDisappearingMessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 048D58352ED4FA8500F26237 /* PinDisappearingMessageViewController.swift */; };
 		048D58382EDDD57E00F26237 /* OutgoingPinMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 048D58372EDDD56D00F26237 /* OutgoingPinMessage.swift */; };
 		04A19B432EEC815200CCB105 /* PinnedMessageExpirationJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A19B422EEC814900CCB105 /* PinnedMessageExpirationJob.swift */; };
@@ -2685,6 +2685,7 @@
 		D92A1CDA2E314BD400C91E21 /* DebugUIPrompts.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92A1CD92E314BD000C91E21 /* DebugUIPrompts.swift */; };
 		D92AB7D829E3BEE30081CA7D /* OWSDeviceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92AB7D729E3BEE30081CA7D /* OWSDeviceManager.swift */; };
 		D92C57552A2925AD00A03BB7 /* TSInfoMessage+DisplayableGroupUpdateItemTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92C57542A2925AD00A03BB7 /* TSInfoMessage+DisplayableGroupUpdateItemTest.swift */; };
+		D92CA9EF2F500EA500FDE32D /* LeaveGroupCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92CA9EE2F500EA500FDE32D /* LeaveGroupCoordinator.swift */; };
 		D92CB5562F030F8300537EBE /* BackupSubscriptionAlreadyRedeemedSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D92CB5552F030F7A00537EBE /* BackupSubscriptionAlreadyRedeemedSheet.swift */; };
 		D93086272C616391008E3A27 /* TSOutgoingMessage+Builder.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93086262C616391008E3A27 /* TSOutgoingMessage+Builder.swift */; };
 		D93086292C61672E008E3A27 /* TSErrorMessage+Builder.swift in Sources */ = {isa = PBXBuildFile; fileRef = D93086282C61672E008E3A27 /* TSErrorMessage+Builder.swift */; };
@@ -6951,6 +6952,7 @@
 		D92A1CD92E314BD000C91E21 /* DebugUIPrompts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugUIPrompts.swift; sourceTree = "<group>"; };
 		D92AB7D729E3BEE30081CA7D /* OWSDeviceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSDeviceManager.swift; sourceTree = "<group>"; };
 		D92C57542A2925AD00A03BB7 /* TSInfoMessage+DisplayableGroupUpdateItemTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+DisplayableGroupUpdateItemTest.swift"; sourceTree = "<group>"; };
+		D92CA9EE2F500EA500FDE32D /* LeaveGroupCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaveGroupCoordinator.swift; sourceTree = "<group>"; };
 		D92CB5552F030F7A00537EBE /* BackupSubscriptionAlreadyRedeemedSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupSubscriptionAlreadyRedeemedSheet.swift; sourceTree = "<group>"; };
 		D93086262C616391008E3A27 /* TSOutgoingMessage+Builder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSOutgoingMessage+Builder.swift"; sourceTree = "<group>"; };
 		D93086282C61672E008E3A27 /* TSErrorMessage+Builder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSErrorMessage+Builder.swift"; sourceTree = "<group>"; };
@@ -8704,6 +8706,7 @@
 				88BE44A72615451A00AE8E33 /* GroupPermissionsSettingsViewController.swift */,
 				347B83F624367EC00019A52C /* GroupViewHelper+MemberActionSheet.swift */,
 				347B83F82436820C0019A52C /* GroupViewHelper.swift */,
+				D92CA9EE2F500EA500FDE32D /* LeaveGroupCoordinator.swift */,
 				88A357B823639384009D6B9A /* MemberActionSheet.swift */,
 				32CBF07C258C939800D56903 /* NameCollisionResolutionViewController.swift */,
 				B9D65E522BAE1DA70067322A /* NicknameEditorViewController.swift */,
@@ -18449,6 +18452,7 @@
 				45C845AD291466C0005F6EA5 /* JournalingOrderedDictionary.swift in Sources */,
 				5045F44229E0DB7100058E5F /* LaunchJobs.swift in Sources */,
 				502F187F2D5530AA00A1BD62 /* LazyDatabaseMigratorRunner.swift in Sources */,
+				D92CA9EF2F500EA500FDE32D /* LeaveGroupCoordinator.swift in Sources */,
 				D9C30DDB2A20072F009C2184 /* LegacyGroupLearnMoreViewController.swift in Sources */,
 				B9E02DF02D974F2B00C9DDF8 /* LimitedPhotoPermissionsView.swift in Sources */,
 				B97803012DD65B0A00E9FC82 /* LinearProgressView.swift in Sources */,
