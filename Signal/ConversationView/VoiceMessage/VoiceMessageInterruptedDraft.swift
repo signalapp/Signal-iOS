@@ -72,7 +72,7 @@ final class VoiceMessageInterruptedDraft: VoiceMessageSendableDraft {
 
     func prepareForSending() throws -> URL {
         let temporaryAudioFileUrl = OWSFileSystem.temporaryFileUrl(
-            fileExtension: nil,
+            fileName: audioFileUrl.lastPathComponent,
             isAvailableWhileDeviceLocked: false,
         )
         try FileManager.default.copyItem(at: audioFileUrl, to: temporaryAudioFileUrl)
