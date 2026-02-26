@@ -318,8 +318,8 @@ public extension TSMessage {
 
         let (elapsedTime, isInFuture) = Date.ows_millisecondTimestamp().subtractingReportingOverflow(outgoingMessage.timestamp)
 
-        // TODO: replace with global config
-        guard isInFuture || (elapsedTime <= UInt64.dayInMs) else { return false }
+        let normalDeleteLimit = RemoteConfig.current.normalDeleteMaxAgeInSeconds * TimeInterval(MSEC_PER_SEC)
+        guard isInFuture || (TimeInterval(elapsedTime) <= normalDeleteLimit) else { return false }
 
         return true
     }
@@ -337,8 +337,8 @@ public extension TSMessage {
 
         let (elapsedTime, isInFuture) = Date.ows_millisecondTimestamp().subtractingReportingOverflow(self.timestamp)
 
-        // TODO: replace with global config
-        guard isInFuture || (elapsedTime <= UInt64.dayInMs) else { return false }
+        let adminDeleteLimit = RemoteConfig.current.adminDeleteMaxAgeInSeconds * TimeInterval(MSEC_PER_SEC)
+        guard isInFuture || (TimeInterval(elapsedTime) <= adminDeleteLimit) else { return false }
 
         return true
     }

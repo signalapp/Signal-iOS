@@ -339,6 +339,20 @@ public class RemoteConfig {
         )
     }
 
+    public var normalDeleteMaxAgeInSeconds: TimeInterval {
+        return TimeInterval(getUInt64Value(
+            forFlag: .normalDeleteMaxAgeInSeconds,
+            defaultValue: UInt64.dayInMs / UInt64(MSEC_PER_SEC),
+        ))
+    }
+
+    public var adminDeleteMaxAgeInSeconds: TimeInterval {
+        return TimeInterval(getUInt64Value(
+            forFlag: .adminDeleteMaxAgeInSeconds,
+            defaultValue: UInt64.dayInMs / UInt64(MSEC_PER_SEC),
+        ))
+    }
+
     // MARK: - RingRTC
 
     public var ringrtcNwPathMonitorTrial: Bool {
@@ -655,6 +669,8 @@ private enum ValueFlag: String, FlagType {
     case pinnedThreadLimit = "global.pinned_chat_limit"
     case ringrtcVp9DeviceModelDenylist = "ios.ringrtcVp9DeviceModelDenylist"
     case ringrtcVp9DeviceModelEnablelist = "ios.ringrtcVp9DeviceModelEnablelist"
+    case adminDeleteMaxAgeInSeconds = "global.adminDeleteMaxAgeInSeconds"
+    case normalDeleteMaxAgeInSeconds = "global.normalDeleteMaxAgeInSeconds"
 
 #if TESTABLE_BUILD
     case hotSwappable = "test.hotSwappable.value"
@@ -697,6 +713,8 @@ private enum ValueFlag: String, FlagType {
         case .pinnedThreadLimit: true
         case .ringrtcVp9DeviceModelDenylist: true
         case .ringrtcVp9DeviceModelEnablelist: true
+        case .adminDeleteMaxAgeInSeconds: true
+        case .normalDeleteMaxAgeInSeconds: true
 
 #if TESTABLE_BUILD
         case .hotSwappable: true
