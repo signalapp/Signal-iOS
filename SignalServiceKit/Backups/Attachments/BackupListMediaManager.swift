@@ -345,40 +345,64 @@ class BackupListMediaManagerImpl: BackupListMediaManager {
 
         if !hasCompletedEnumeratingAttchments {
             let remoteConfig = remoteConfigManager.currentConfig()
-            try await TimeGatedBatch.processAll(db: db) { tx throws(CancellationError) in
-                if Task.isCancelled {
-                    throw CancellationError()
-                }
 
-                let currentBackupPlan = backupSettingsStore.backupPlan(tx: tx)
-                var query = Attachment.Record
-                    .order(Column(Attachment.Record.CodingKeys.sqliteId).asc)
-                    .filter(Column(Attachment.Record.CodingKeys.mediaName) != nil)
-                    .limit(50)
-                var startAttachmentId: Attachment.IDType? = nil
-                if
-                    let lastAttachmentId: Attachment.IDType = kvStore.getInt64(
+            struct TxContext {
+                let backupPlan: BackupPlan
+                let originalLastEnumeratedAttachmentId: Attachment.IDType?
+                var lastEnumeratedAttachmentId: Attachment.IDType?
+                var didFinish: Bool
+            }
+
+            try await TimeGatedBatch.processAll(
+                db: db,
+                delayTwixtTx: 0.2,
+                buildTxContext: { tx throws(CancellationError) -> TxContext in
+                    let lastEnumeratedAttachmentId: Attachment.IDType? = kvStore.getInt64(
                         Constants.lastEnumeratedAttachmentIdKey,
                         transaction: tx,
                     )
-                {
-                    startAttachmentId = lastAttachmentId
-                    query = query
-                        .filter(Column(Attachment.Record.CodingKeys.sqliteId) > lastAttachmentId)
-                }
-                let attachments: [Attachment] = failIfThrows {
-                    // Ignore any attachments that cannot be instantiated:
-                    // there's nothing we can do here to recover them.
-                    try query.fetchAll(tx.database)
-                        .compactMap { try? Attachment(record: $0) }
-                }
-                let lastAttachmentId = attachments.last?.id
-                logger.info("Checking attachments [\(startAttachmentId.map(String.init) ?? "")...\(lastAttachmentId.map(String.init) ?? "")]")
 
-                for attachment in attachments {
+                    return TxContext(
+                        backupPlan: backupSettingsStore.backupPlan(tx: tx),
+                        originalLastEnumeratedAttachmentId: lastEnumeratedAttachmentId,
+                        lastEnumeratedAttachmentId: lastEnumeratedAttachmentId,
+                        didFinish: false,
+                    )
+                },
+                processBatch: { tx, txContext throws(CancellationError) -> TimeGatedBatch.ProcessBatchResult<Void> in
+                    if Task.isCancelled {
+                        throw CancellationError()
+                    }
+
+                    var query = Attachment.Record
+                        .order(Column(Attachment.Record.CodingKeys.sqliteId).asc)
+                        .filter(Column(Attachment.Record.CodingKeys.mediaName) != nil)
+
+                    if let id = txContext.lastEnumeratedAttachmentId {
+                        query = query
+                            .filter(Column(Attachment.Record.CodingKeys.sqliteId) > id)
+                    }
+
+                    let attachmentRecord: Attachment.Record? = failIfThrows {
+                        try query.fetchOne(tx.database)
+                    }
+
+                    guard let attachmentRecord else {
+                        txContext.didFinish = true
+                        return .done(())
+                    }
+
+                    txContext.lastEnumeratedAttachmentId = attachmentRecord.sqliteId.owsFailUnwrap("")
+
+                    // Ignore invalid attachments: there's nothing we can do
+                    // here to recover them.
+                    guard let attachment = try? Attachment(record: attachmentRecord) else {
+                        return .more
+                    }
+
                     guard let fullsizeMediaName = attachment.mediaName else {
                         owsFailDebug("We filtered by mediaName presence, how is it missing")
-                        continue
+                        return .more
                     }
 
                     // Check for matches for both the fullsize and the
@@ -389,7 +413,7 @@ class BackupListMediaManagerImpl: BackupListMediaManager {
                         isThumbnail: false,
                         backupKey: backupKey,
                         uploadEraAtStartOfListMedia: uploadEraAtStartOfListMedia,
-                        currentBackupPlan: currentBackupPlan,
+                        currentBackupPlan: txContext.backupPlan,
                         remoteConfig: remoteConfig,
                         hasEverRunListMedia: hasEverRunListMedia,
                         integrityChecker: integrityChecker,
@@ -399,43 +423,50 @@ class BackupListMediaManagerImpl: BackupListMediaManager {
                     // Refetch the attachment to reload any mutations applied
                     // by the fullsize matching.
                     guard let attachment = attachmentStore.fetch(id: attachment.id, tx: tx) else {
-                        continue
+                        owsFailDebug("Missing attachment we just fetched?")
+                        return .more
                     }
+
                     updateAttachmentIfNeeded(
                         attachment: attachment,
                         fullsizeMediaName: fullsizeMediaName,
                         isThumbnail: true,
                         backupKey: backupKey,
                         uploadEraAtStartOfListMedia: uploadEraAtStartOfListMedia,
-                        currentBackupPlan: currentBackupPlan,
+                        currentBackupPlan: txContext.backupPlan,
                         remoteConfig: remoteConfig,
                         hasEverRunListMedia: hasEverRunListMedia,
                         integrityChecker: integrityChecker,
                         tx: tx,
                     )
-                }
 
-                if let lastAttachmentId {
-                    kvStore.setInt64(lastAttachmentId, key: Constants.lastEnumeratedAttachmentIdKey, transaction: tx)
-                } else {
-                    // We're done
-                    kvStore.removeValue(forKey: Constants.lastEnumeratedAttachmentIdKey, transaction: tx)
-                    kvStore.setBool(true, key: Constants.hasCompletedEnumeratingAttachmentsKey, transaction: tx)
-                }
+                    return .more
+                },
+                concludeTx: { tx, txContext throws(CancellationError) in
+                    let startAttachmentLogString = txContext.originalLastEnumeratedAttachmentId.map { String($0) } ?? "nil"
+                    let endAttachmentLogString = txContext.lastEnumeratedAttachmentId.map { String($0) } ?? "nil"
+                    logger.info("Checked attachments [\(startAttachmentLogString)...\(endAttachmentLogString)]. didFinish \(txContext.didFinish)")
 
-                if
-                    let integrityCheckResult = integrityChecker.result,
-                    let serializedResult = try? JSONEncoder().encode(integrityCheckResult)
-                {
-                    kvStore.setData(
-                        serializedResult,
-                        key: Constants.inProgressIntegrityCheckResultKey,
-                        transaction: tx,
-                    )
-                }
+                    if txContext.didFinish {
+                        // We're done
+                        kvStore.removeValue(forKey: Constants.lastEnumeratedAttachmentIdKey, transaction: tx)
+                        kvStore.setBool(true, key: Constants.hasCompletedEnumeratingAttachmentsKey, transaction: tx)
+                    } else if let lastEnumeratedAttachmentId = txContext.lastEnumeratedAttachmentId {
+                        kvStore.setInt64(lastEnumeratedAttachmentId, key: Constants.lastEnumeratedAttachmentIdKey, transaction: tx)
+                    }
 
-                return attachments.isEmpty ? .done(()) : .more
-            }
+                    if
+                        let integrityCheckResult = integrityChecker.result,
+                        let serializedResult = try? JSONEncoder().encode(integrityCheckResult)
+                    {
+                        kvStore.setData(
+                            serializedResult,
+                            key: Constants.inProgressIntegrityCheckResultKey,
+                            transaction: tx,
+                        )
+                    }
+                },
+            )
         }
 
         // Any remaining attachments in the table weren't matched against a local attachment
@@ -443,18 +474,25 @@ class BackupListMediaManagerImpl: BackupListMediaManager {
         // If we created a new attachment stream between when we checked every attachment
         // above and now, that attachment will be queued for media tier upload, and that
         // media tier upload job will cancel the orphan job we schedule here.
-        try await TimeGatedBatch.processAll(db: db) { tx throws(CancellationError) in
-            if Task.isCancelled {
-                throw CancellationError()
-            }
+        try await TimeGatedBatch.processAll(
+            db: db,
+            delayTwixtTx: 0.2,
+            buildTxContext: { tx throws(CancellationError) -> Void in
+                // Nothing – we use the in-memory integrityChecker.
+            },
+            processBatch: { tx, _ throws(CancellationError) in
+                if Task.isCancelled {
+                    throw CancellationError()
+                }
 
-            let listedMediaObjects = failIfThrows {
-                try ListedBackupMediaObject
-                    .limit(100)
-                    .fetchAll(tx.database)
-            }
+                let listedMediaObject: ListedBackupMediaObject? = failIfThrows {
+                    try ListedBackupMediaObject.fetchOne(tx.database)
+                }
 
-            for listedMediaObject in listedMediaObjects {
+                guard let listedMediaObject else {
+                    return .done(())
+                }
+
                 enqueueListedMediaForDeletion(listedMediaObject, tx: tx)
 
                 failIfThrows {
@@ -466,17 +504,18 @@ class BackupListMediaManagerImpl: BackupListMediaManager {
                     backupKey: backupKey,
                     tx: tx,
                 )
-            }
 
-            if
-                let integrityCheckResult = integrityChecker.result,
-                let serializedResult = try? JSONEncoder().encode(integrityCheckResult)
-            {
-                kvStore.setData(serializedResult, key: Constants.inProgressIntegrityCheckResultKey, transaction: tx)
-            }
-
-            return listedMediaObjects.isEmpty ? .done(()) : .more
-        }
+                return .more
+            },
+            concludeTx: { tx, _ throws(CancellationError) in
+                if
+                    let integrityCheckResult = integrityChecker.result,
+                    let serializedResult = try? JSONEncoder().encode(integrityCheckResult)
+                {
+                    kvStore.setData(serializedResult, key: Constants.inProgressIntegrityCheckResultKey, transaction: tx)
+                }
+            },
+        )
 
         let needsToRunAgain = await db.awaitableWrite { tx in
             self.didFinishListMedia(startTimestamp: startTimestamp, integrityCheckResult: integrityChecker.result, tx: tx)
