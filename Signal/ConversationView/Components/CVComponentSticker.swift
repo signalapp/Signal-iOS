@@ -210,9 +210,7 @@ public class CVComponentSticker: CVComponentBase, CVComponent {
         }
 
         public var isAnimated: Bool {
-            get {
-                reusableMediaView?.needsPlayButton != nil && (reusableMediaView?.needsPlayButton)! || false
-            }
+            reusableMediaView?.needsPlayButton ?? false
         }
 
         public func setIsCellVisible(_ isCellVisible: Bool) {
