@@ -9,8 +9,8 @@ PODS:
   - LibMobileCoin/CoreHTTP (6.0.2):
     - SwiftProtobuf (~> 1.5)
   - libPhoneNumber-iOS (1.2.0)
-  - LibSignalClient (0.87.4)
-  - LibSignalClient/Tests (0.87.4)
+  - LibSignalClient (0.87.5)
+  - LibSignalClient/Tests (0.87.5)
   - libwebp (1.5.0):
     - libwebp/demux (= 1.5.0)
     - libwebp/mux (= 1.5.0)
@@ -53,8 +53,8 @@ DEPENDENCIES:
   - GRDB.swift/SQLCipher
   - LibMobileCoin/CoreHTTP (from `https://github.com/signalapp/libmobilecoin-ios-artifacts`, tag `signal/6.0.2`)
   - libPhoneNumber-iOS (from `https://github.com/signalapp/libPhoneNumber-iOS`, branch `signal-master`)
-  - LibSignalClient (from `https://github.com/signalapp/libsignal.git`, tag `v0.87.4`)
-  - LibSignalClient/Tests (from `https://github.com/signalapp/libsignal.git`, tag `v0.87.4`)
+  - LibSignalClient (from `https://github.com/signalapp/libsignal.git`, tag `v0.87.5`)
+  - LibSignalClient/Tests (from `https://github.com/signalapp/libsignal.git`, tag `v0.87.5`)
   - libwebp
   - lottie-ios
   - MobileCoin/CoreHTTP (from `https://github.com/mobilecoinofficial/MobileCoin-Swift`, tag `v6.0.3`)
@@ -92,7 +92,7 @@ EXTERNAL SOURCES:
     :git: https://github.com/signalapp/libPhoneNumber-iOS
   LibSignalClient:
     :git: https://github.com/signalapp/libsignal.git
-    :tag: v0.87.4
+    :tag: v0.87.5
   MobileCoin:
     :git: https://github.com/mobilecoinofficial/MobileCoin-Swift
     :tag: v6.0.3
@@ -116,7 +116,7 @@ CHECKOUT OPTIONS:
     :git: https://github.com/signalapp/libPhoneNumber-iOS
   LibSignalClient:
     :git: https://github.com/signalapp/libsignal.git
-    :tag: v0.87.4
+    :tag: v0.87.5
   MobileCoin:
     :git: https://github.com/mobilecoinofficial/MobileCoin-Swift
     :tag: v6.0.3
@@ -134,7 +134,7 @@ SPEC CHECKSUMS:
   GRDB.swift: 1395cb3556df6b16ed69dfc74c3886abc75d2825
   LibMobileCoin: 8503f567fa32184a5be7bc038fbd727747dd9991
   libPhoneNumber-iOS: 1a34106b49dc6e12a7f37eb9aee7c64011509547
-  LibSignalClient: 1b59cb0db4cf2b6dd1d725fdf39a22498bb1a5b0
+  LibSignalClient: b36830dd3ab9f2849f55835362c721cc4b7ef3b9
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
   Logging: beeb016c9c80cf77042d62e83495816847ef108b
   lottie-ios: fcb5e73e17ba4c983140b7d21095c834b3087418
@@ -147,6 +147,6 @@ SPEC CHECKSUMS:
   SQLCipher: ff2f045b20d675a73a70f7329395ddd4a2580063
   SwiftProtobuf: c268fcf9642d613eb6639fed15842ae25d4b975a
 
-PODFILE CHECKSUM: 891428276903cb6fd613103e147fca8607f0fe76
+PODFILE CHECKSUM: 54b2ed2c38d266948a92b2ba90d22d23fccfa4c2
 
 COCOAPODS: 1.15.2
