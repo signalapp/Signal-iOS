@@ -316,6 +316,7 @@ extension BackupArchive {
             case ChatItem_ViewOnceMessage
             case ChatItem_DirectStoryReplyMessage
             case ChatItem_Poll
+            case ChatItem_AdminDeletedMessage
 
             case StickerPack
 
@@ -376,6 +377,8 @@ extension BackupArchive {
                         self = .ChatItem_DirectStoryReplyMessage
                     case .poll:
                         self = .ChatItem_Poll
+                    case .adminDeletedMessage:
+                        self = .ChatItem_AdminDeletedMessage
                     case nil:
                         return nil
                     case .standardMessage(let standardMessage):

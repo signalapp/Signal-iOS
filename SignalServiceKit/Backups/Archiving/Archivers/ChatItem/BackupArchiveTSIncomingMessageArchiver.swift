@@ -407,7 +407,7 @@ extension BackupArchiveTSIncomingMessageArchiver: BackupArchive.TSMessageEditHis
                 messageSticker: nil,
                 giftBadge: nil,
                 paymentNotification: nil,
-                isPoll: false, // TODO(KC): fill in once polls are implemented in backups
+                isPoll: false,
             )
 
             switch contents {
@@ -451,6 +451,8 @@ extension BackupArchiveTSIncomingMessageArchiver: BackupArchive.TSMessageEditHis
             case .poll(let poll):
                 messageBuilder.isPoll = true
                 messageBuilder.setMessageBody(poll.question)
+            case .adminDeleteTombstone:
+                messageBuilder.wasRemotelyDeleted = true
             }
 
             return messageBuilder.build()

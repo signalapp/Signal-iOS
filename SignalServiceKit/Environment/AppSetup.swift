@@ -1342,6 +1342,11 @@ extension AppSetup.GlobalsContinuation {
 
         let messagePipelineSupervisor = MessagePipelineSupervisor()
 
+        let adminDeleteManager = AdminDeleteManager(
+            recipientDatabaseTable: recipientDatabaseTable,
+            tsAccountManager: tsAccountManager,
+        )
+
         let backupChatStyleArchiver = BackupArchiveChatStyleArchiver(
             attachmentManager: attachmentManager,
             attachmentStore: attachmentStore,
@@ -1490,6 +1495,7 @@ extension AppSetup.GlobalsContinuation {
                 threadStore: backupThreadStore,
                 reactionArchiver: backupReactionArchiver,
                 pinnedMessageManager: pinnedMessageManager,
+                adminDeleteManager: adminDeleteManager,
             ),
             contactRecipientArchiver: backupContactRecipientArchiver,
             databaseChangeObserver: databaseStorage.databaseChangeObserver,
@@ -1647,11 +1653,6 @@ extension AppSetup.GlobalsContinuation {
         let backupFailureStateManager = BackupFailureStateManager(
             backupSettingsStore: backupSettingsStore,
             dateProvider: dateProvider,
-            tsAccountManager: tsAccountManager,
-        )
-
-        let adminDeleteManager = AdminDeleteManager(
-            recipientDatabaseTable: recipientDatabaseTable,
             tsAccountManager: tsAccountManager,
         )
 

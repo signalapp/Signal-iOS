@@ -52,6 +52,7 @@ public class BackupArchiveChatItemArchiver: BackupArchiveProtoStreamWriter {
     private let threadStore: BackupArchiveThreadStore
     private let reactionArchiver: BackupArchiveReactionArchiver
     private let pinnedMessageManager: PinnedMessageManager
+    private let adminDeleteManager: AdminDeleteManager
 
     private lazy var contentsArchiver = BackupArchiveTSMessageContentsArchiver(
         interactionStore: interactionStore,
@@ -62,6 +63,7 @@ public class BackupArchiveChatItemArchiver: BackupArchiveProtoStreamWriter {
         reactionArchiver: reactionArchiver,
         pollArchiver: pollArchiver,
         pinnedMessageManager: pinnedMessageManager,
+        adminDeleteManager: adminDeleteManager,
     )
     private lazy var incomingMessageArchiver = BackupArchiveTSIncomingMessageArchiver(
         contentsArchiver: contentsArchiver,
@@ -101,6 +103,7 @@ public class BackupArchiveChatItemArchiver: BackupArchiveProtoStreamWriter {
         threadStore: BackupArchiveThreadStore,
         reactionArchiver: BackupArchiveReactionArchiver,
         pinnedMessageManager: PinnedMessageManager,
+        adminDeleteManager: AdminDeleteManager,
     ) {
         self.archivedPaymentStore = archivedPaymentStore
         self.attachmentsArchiver = attachmentsArchiver
@@ -118,6 +121,7 @@ public class BackupArchiveChatItemArchiver: BackupArchiveProtoStreamWriter {
         self.threadStore = threadStore
         self.reactionArchiver = reactionArchiver
         self.pinnedMessageManager = pinnedMessageManager
+        self.adminDeleteManager = adminDeleteManager
     }
 
     // MARK: -
@@ -495,7 +499,8 @@ public class BackupArchiveChatItemArchiver: BackupArchiveProtoStreamWriter {
                 .remoteDeletedMessage,
                 .stickerMessage,
                 .directStoryReplyMessage,
-                .poll:
+                .poll,
+                .adminDeletedMessage:
                 return restoreFrameError(.invalidProtoData(.directionlessChatItemNotUpdateMessage))
             case .updateMessage:
                 restoreInteractionResult = chatUpdateMessageArchiver.restoreChatItem(

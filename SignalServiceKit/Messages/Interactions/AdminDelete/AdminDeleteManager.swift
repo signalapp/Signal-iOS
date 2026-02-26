@@ -154,4 +154,18 @@ public class AdminDeleteManager {
 
         return true
     }
+
+    public func insertAdminDeleteForSignalRecipient(
+        _ recipientId: SignalRecipient.RowId,
+        interactionId: Int64,
+        tx: DBWriteTransaction,
+    ) {
+        failIfThrows {
+            try AdminDeleteRecord.insertRecord(
+                interactionId: interactionId,
+                deleteAuthorId: recipientId,
+                tx: tx,
+            )
+        }
+    }
 }

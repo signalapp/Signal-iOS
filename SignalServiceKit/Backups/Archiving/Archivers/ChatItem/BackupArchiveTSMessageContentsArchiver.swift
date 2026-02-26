@@ -128,6 +128,7 @@ extension BackupArchive {
         /// Note: only includes 1:1 story replies, not group story replies.
         case storyReply(StoryReply)
         case poll(Poll)
+        case adminDeleteTombstone(RecipientId)
     }
 }
 
@@ -150,6 +151,7 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
     private let reactionArchiver: BackupArchiveReactionArchiver
     private let pollArchiver: BackupArchivePollArchiver
     private let pinnedMessageManager: PinnedMessageManager
+    private let adminDeleteManager: AdminDeleteManager
 
     init(
         interactionStore: BackupArchiveInteractionStore,
@@ -160,6 +162,7 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
         reactionArchiver: BackupArchiveReactionArchiver,
         pollArchiver: BackupArchivePollArchiver,
         pinnedMessageManager: PinnedMessageManager,
+        adminDeleteManager: AdminDeleteManager,
     ) {
         self.interactionStore = interactionStore
         self.archivedPaymentStore = archivedPaymentStore
@@ -170,6 +173,7 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
         self.reactionArchiver = reactionArchiver
         self.pollArchiver = pollArchiver
         self.pinnedMessageManager = pinnedMessageManager
+        self.adminDeleteManager = adminDeleteManager
     }
 
     // MARK: - Archiving
@@ -234,6 +238,18 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
                 context: context.recipientContext,
             )
         } else if message.wasRemotelyDeleted {
+            if
+                let adminDeleteAuthor = adminDeleteManager.adminDeleteAuthor(
+                    interactionId: message.sqliteRowId!,
+                    tx: context.tx,
+                )
+            {
+                return archiveAdminDeleteTombstone(
+                    message,
+                    adminDeleteAuthor: adminDeleteAuthor,
+                    context: context.recipientContext,
+                )
+            }
             return archiveRemoteDeleteTombstone(
                 message,
                 context: context.recipientContext,
@@ -361,6 +377,26 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
     ) -> ArchiveInteractionResult<ChatItemType> {
         let remoteDeletedMessage = BackupProto_RemoteDeletedMessage()
         return .success(.remoteDeletedMessage(remoteDeletedMessage))
+    }
+
+    // MARK: -
+
+    private func archiveAdminDeleteTombstone(
+        _ adminDeleteTombstone: TSMessage,
+        adminDeleteAuthor: Aci,
+        context: BackupArchive.RecipientArchivingContext,
+    ) -> ArchiveInteractionResult<ChatItemType> {
+        var adminDeletedMessage = BackupProto_AdminDeletedMessage()
+        let contact = BackupArchive.ContactAddress(aci: adminDeleteAuthor)
+        guard let authorId = context[.contact(contact)] else {
+            return .messageFailure([.archiveFrameError(
+                .referencedRecipientIdMissing(.contact(contact)),
+                adminDeleteTombstone.uniqueInteractionId,
+            )])
+        }
+
+        adminDeletedMessage.adminID = authorId.value
+        return .success(.adminDeletedMessage(adminDeletedMessage))
     }
 
     // MARK: -
@@ -1055,6 +1091,8 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
                 chatThread: chatThread,
                 context: context,
             )
+        case .adminDeletedMessage(let adminDeletedMessage):
+            return restoreAdminDeleteTombstone(deleteAuthorId: BackupArchive.RecipientId(value: adminDeletedMessage.adminID))
         case .standardMessage(let standardMessage):
             return restoreStandardMessage(
                 standardMessage,
@@ -1280,6 +1318,15 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
                     context: context.recipientContext,
                 ),
             )
+        case .adminDeleteTombstone(let deleteAuthor):
+            downstreamObjectResults.append(
+                restoreAdminDeleteContents(
+                    deleteAuthorId: deleteAuthor,
+                    interactionId: messageRowId,
+                    chatItemId: chatItemId,
+                    context: context.recipientContext,
+                ),
+            )
         case .remoteDeleteTombstone, .giftBadge:
             // Nothing downstream to restore.
             break
@@ -1300,6 +1347,39 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
         return downstreamObjectResults.reduce(.success(()), {
             $0.combine($1)
         })
+    }
+
+    // MARK: -
+
+    private func restoreAdminDeleteContents(
+        deleteAuthorId: BackupArchive.RecipientId,
+        interactionId: Int64,
+        chatItemId: BackupArchive.ChatItemId,
+        context: BackupArchive.RecipientRestoringContext,
+    ) -> BackupArchive.RestoreInteractionResult<Void> {
+        var signalRecipientId: SignalRecipient.RowId?
+        switch context[deleteAuthorId] {
+        case .localAddress:
+            signalRecipientId = context.localSignalRecipientRowId
+        case .contact:
+            signalRecipientId = context.recipientDbRowId(forBackupRecipientId: deleteAuthorId)
+        default:
+            return .messageFailure([.restoreFrameError(.invalidProtoData(.adminDeleteAuthorNotContact), chatItemId)])
+        }
+
+        guard let signalRecipientId else {
+            return .messageFailure([.restoreFrameError(
+                .invalidProtoData(.recipientIdNotFound(deleteAuthorId)),
+                chatItemId,
+            )])
+        }
+
+        adminDeleteManager.insertAdminDeleteForSignalRecipient(
+            signalRecipientId,
+            interactionId: interactionId,
+            tx: context.tx,
+        )
+        return .success(())
     }
 
     // MARK: -
@@ -1393,6 +1473,12 @@ class BackupArchiveTSMessageContentsArchiver: BackupArchiveProtoStreamWriter {
         context: BackupArchive.ChatItemRestoringContext,
     ) -> RestoreInteractionResult<BackupArchive.RestoredMessageContents> {
         return .success(.remoteDeleteTombstone)
+    }
+
+    // MARK: -
+
+    private func restoreAdminDeleteTombstone(deleteAuthorId: BackupArchive.RecipientId) -> RestoreInteractionResult<BackupArchive.RestoredMessageContents> {
+        return .success(.adminDeleteTombstone(deleteAuthorId))
     }
 
     // MARK: -

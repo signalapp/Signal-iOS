@@ -2298,6 +2298,14 @@ public struct BackupProto_ChatItem: @unchecked Sendable {
     set {_uniqueStorage()._item = .poll(newValue)}
   }
 
+  public var adminDeletedMessage: BackupProto_AdminDeletedMessage {
+    get {
+      if case .adminDeletedMessage(let v)? = _storage._item {return v}
+      return BackupProto_AdminDeletedMessage()
+    }
+    set {_uniqueStorage()._item = .adminDeletedMessage(newValue)}
+  }
+
   /// only set if message is pinned
   public var pinDetails: BackupProto_ChatItem.PinDetails {
     get {_storage._pinDetails ?? BackupProto_ChatItem.PinDetails()}
@@ -2331,6 +2339,7 @@ public struct BackupProto_ChatItem: @unchecked Sendable {
     /// group story reply messages are not backed up
     case directStoryReplyMessage(BackupProto_DirectStoryReplyMessage)
     case poll(BackupProto_Poll)
+    case adminDeletedMessage(BackupProto_AdminDeletedMessage)
 
   }
 
@@ -4155,6 +4164,19 @@ public struct BackupProto_Poll: Sendable {
 
     public init() {}
   }
+
+  public init() {}
+}
+
+public struct BackupProto_AdminDeletedMessage: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  /// id of the admin that deleted the message
+  public var adminID: UInt64 = 0
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
 }
@@ -8752,7 +8774,7 @@ extension BackupProto_DistributionList.PrivacyMode: SwiftProtobuf._ProtoNameProv
 
 extension BackupProto_ChatItem: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".ChatItem"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}chatId\0\u{1}authorId\0\u{1}dateSent\0\u{1}expireStartDate\0\u{1}expiresInMs\0\u{1}revisions\0\u{1}sms\0\u{1}incoming\0\u{1}outgoing\0\u{1}directionless\0\u{1}standardMessage\0\u{1}contactMessage\0\u{1}stickerMessage\0\u{1}remoteDeletedMessage\0\u{1}updateMessage\0\u{1}paymentNotification\0\u{1}giftBadge\0\u{1}viewOnceMessage\0\u{1}directStoryReplyMessage\0\u{1}poll\0\u{1}pinDetails\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}chatId\0\u{1}authorId\0\u{1}dateSent\0\u{1}expireStartDate\0\u{1}expiresInMs\0\u{1}revisions\0\u{1}sms\0\u{1}incoming\0\u{1}outgoing\0\u{1}directionless\0\u{1}standardMessage\0\u{1}contactMessage\0\u{1}stickerMessage\0\u{1}remoteDeletedMessage\0\u{1}updateMessage\0\u{1}paymentNotification\0\u{1}giftBadge\0\u{1}viewOnceMessage\0\u{1}directStoryReplyMessage\0\u{1}poll\0\u{1}pinDetails\0\u{1}adminDeletedMessage\0")
 
   fileprivate class _StorageClass {
     var _chatID: UInt64 = 0
@@ -8980,6 +9002,19 @@ extension BackupProto_ChatItem: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
           }
         }()
         case 21: try { try decoder.decodeSingularMessageField(value: &_storage._pinDetails) }()
+        case 22: try {
+          var v: BackupProto_AdminDeletedMessage?
+          var hadOneofValue = false
+          if let current = _storage._item {
+            hadOneofValue = true
+            if case .adminDeletedMessage(let m) = current {v = m}
+          }
+          try decoder.decodeSingularMessageField(value: &v)
+          if let v = v {
+            if hadOneofValue {try decoder.handleConflictingOneOf()}
+            _storage._item = .adminDeletedMessage(v)
+          }
+        }()
         default: break
         }
       }
@@ -9069,10 +9104,13 @@ extension BackupProto_ChatItem: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
         guard case .poll(let v)? = _storage._item else { preconditionFailure() }
         try visitor.visitSingularMessageField(value: v, fieldNumber: 20)
       }()
-      case nil: break
+      default: break
       }
       try { if let v = _storage._pinDetails {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 21)
+      } }()
+      try { if case .adminDeletedMessage(let v)? = _storage._item {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 22)
       } }()
     }
     try unknownFields.traverse(visitor: &visitor)
@@ -11445,6 +11483,36 @@ extension BackupProto_Poll.PollOption.PollVote: SwiftProtobuf.Message, SwiftProt
   public static func ==(lhs: BackupProto_Poll.PollOption.PollVote, rhs: BackupProto_Poll.PollOption.PollVote) -> Bool {
     if lhs.voterID != rhs.voterID {return false}
     if lhs.voteCount != rhs.voteCount {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension BackupProto_AdminDeletedMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".AdminDeletedMessage"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}adminId\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularUInt64Field(value: &self.adminID) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.adminID != 0 {
+      try visitor.visitSingularUInt64Field(value: self.adminID, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: BackupProto_AdminDeletedMessage, rhs: BackupProto_AdminDeletedMessage) -> Bool {
+    if lhs.adminID != rhs.adminID {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

@@ -24,6 +24,7 @@ extension BackupArchive {
                 case giftBadge
                 case viewOnceMessage
                 case poll
+                case adminDeletedMessage
             }
 
             /// An error occurred serializing the proto.
@@ -845,6 +846,9 @@ extension BackupArchive {
 
                 /// A timestamp to help identify a target message overflowed a local type
                 case sentTimestampOverflowedLocalType
+
+                /// The admin delete author had an invalid non-contact address
+                case adminDeleteAuthorNotContact
             }
 
             /// The proto contained invalid or self-contradictory data, e.g an invalid ACI.
@@ -1007,7 +1011,8 @@ extension BackupArchive {
                     .noPollVoteCountForAuthor,
                     .pinMessageAuthorNotContact,
                     .invalidNumberOfPinnedMessages,
-                    .sentTimestampOverflowedLocalType:
+                    .sentTimestampOverflowedLocalType,
+                    .adminDeleteAuthorNotContact:
                     // Collapse all others by the id of the containing frame.
                     return idLogString
                 }
@@ -1121,7 +1126,8 @@ extension BackupArchive {
                     .noPollVoteCountForAuthor,
                     .pinMessageAuthorNotContact,
                     .invalidNumberOfPinnedMessages,
-                    .sentTimestampOverflowedLocalType:
+                    .sentTimestampOverflowedLocalType,
+                    .adminDeleteAuthorNotContact:
                     return .error
                 case .quotedMessageEmptyContent:
                     // It was historically possible to end up with a quote that

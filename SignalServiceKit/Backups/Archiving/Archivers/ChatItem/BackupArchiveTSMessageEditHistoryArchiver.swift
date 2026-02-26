@@ -173,11 +173,12 @@ final class BackupArchiveTSMessageEditHistoryArchiver<MessageType: TSMessage> {
             case .giftBadge: .giftBadge
             case .viewOnceMessage: .viewOnceMessage
             case .poll: .poll
+            case .adminDeletedMessage: .adminDeletedMessage
             }
         }
 
         switch latestRevisionDetails.chatItemType {
-        case .remoteDeletedMessage:
+        case .remoteDeletedMessage, .adminDeletedMessage:
             // Remote-deleted messages with edit history delete the contents of
             // their prior revisions, but leave the revisions around as
             // placeholders. We don't want to archive those, nor do we need to

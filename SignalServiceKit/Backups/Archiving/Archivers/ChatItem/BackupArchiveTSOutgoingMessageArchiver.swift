@@ -646,6 +646,8 @@ extension BackupArchiveTSOutgoingMessageArchiver: BackupArchive.TSMessageEditHis
             case .poll(let poll):
                 outgoingMessageBuilder.isPoll = true
                 outgoingMessageBuilder.setMessageBody(poll.question)
+            case .adminDeleteTombstone:
+                outgoingMessageBuilder.wasRemotelyDeleted = true
             }
 
             return .success(TSOutgoingMessage(
