@@ -127,7 +127,6 @@ class CallDrawerSheet: InteractiveSheetViewController {
 
         super.init()
 
-        self.animationsShouldBeInterruptible = true
         self.sheetPanDelegate = sheetPanDelegate
         self.callDrawerDelegate = callDrawerDelegate
 
