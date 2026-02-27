@@ -49,8 +49,6 @@ public protocol LinkPreviewState: AnyObject {
     var previewDescription: String? { get }
     var date: Date? { get }
     var isGroupInviteLink: Bool { get }
-    var activityIndicatorStyle: UIActivityIndicatorView.Style { get }
-    var conversationStyle: ConversationStyle? { get }
 }
 
 // MARK: -
@@ -130,19 +128,6 @@ public class LinkPreviewLoading: LinkPreviewState {
             return false
         }
     }
-
-    public var activityIndicatorStyle: UIActivityIndicatorView.Style {
-        switch linkType {
-        case .incomingMessageGroupInviteLink:
-            return .medium
-        case .outgoingMessageGroupInviteLink:
-            return .medium
-        default:
-            return LinkPreviewView.defaultActivityIndicatorStyle
-        }
-    }
-
-    public let conversationStyle: ConversationStyle? = nil
 }
 
 // MARK: -
@@ -228,12 +213,6 @@ public class LinkPreviewDraft: LinkPreviewState {
     public var date: Date? { linkPreviewDraft.date }
 
     public let isGroupInviteLink = false
-
-    public var activityIndicatorStyle: UIActivityIndicatorView.Style {
-        LinkPreviewView.defaultActivityIndicatorStyle
-    }
-
-    public let conversationStyle: ConversationStyle? = nil
 }
 
 // MARK: -
@@ -388,8 +367,4 @@ public class LinkPreviewSent: LinkPreviewState {
     public var date: Date? { linkPreview.date }
 
     public let isGroupInviteLink = false
-
-    public var activityIndicatorStyle: UIActivityIndicatorView.Style {
-        LinkPreviewView.defaultActivityIndicatorStyle
-    }
 }

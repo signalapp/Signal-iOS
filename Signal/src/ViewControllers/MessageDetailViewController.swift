@@ -1173,15 +1173,7 @@ extension MessageDetailViewController: CVComponentDelegate {
 
     func didTapQuotedReply(_ quotedReply: QuotedReplyModel) {}
 
-    func didTapLinkPreview(_ linkPreview: OWSLinkPreview) {
-        guard let urlString = linkPreview.urlString else {
-            owsFailDebug("Missing url.")
-            return
-        }
-        guard let url = URL(string: urlString) else {
-            owsFailDebug("Invalid url: \(urlString).")
-            return
-        }
+    func didTapLinkPreview(url: URL) {
         UIApplication.shared.open(url, options: [:])
     }
 

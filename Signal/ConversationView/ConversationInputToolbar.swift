@@ -1954,7 +1954,7 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
 
     private let linkPreviewFetchState: LinkPreviewFetchState
 
-    private var linkPreviewView: OutgoingLinkPreviewView?
+    private var linkPreviewView: LinkPreviewView?
 
     private var isLinkPreviewHidden = true
 
@@ -2013,12 +2013,12 @@ public class ConversationInputToolbar: UIView, QuotedReplyPreviewDelegate {
     private func ensureLinkPreviewView(withState state: LinkPreviewFetchState.State) {
         AssertIsOnMainThread()
 
-        let linkPreviewView: OutgoingLinkPreviewView
+        let linkPreviewView: LinkPreviewView
         if let existingLinkPreviewView = self.linkPreviewView {
             linkPreviewView = existingLinkPreviewView
             linkPreviewView.configure(withState: state)
         } else {
-            linkPreviewView = OutgoingLinkPreviewView(state: state)
+            linkPreviewView = LinkPreviewView(state: state)
             linkPreviewView.cancelButton.addAction(
                 UIAction { [weak self] _ in
                     self?.didTapDeleteLinkPreview()

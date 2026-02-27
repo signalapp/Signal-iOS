@@ -1451,7 +1451,6 @@
 		7609818C2936EF22008F8300 /* AudioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7609818B2936EF22008F8300 /* AudioPlayer.swift */; };
 		7609819429382EFF008F8300 /* UIGeometry+Signal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7609819329382EFF008F8300 /* UIGeometry+Signal.swift */; };
 		760D93AB27A0E28600F351AC /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 760D93AA27A0E28600F351AC /* CoreServices.framework */; };
-		76182F122EA734F3003B3799 /* ConversationInputToolbar+LinkPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76182F112EA734E8003B3799 /* ConversationInputToolbar+LinkPreview.swift */; };
 		7622B3B22A4510D7000E31DA /* MediaGalleryCellItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7622B3B12A4510D7000E31DA /* MediaGalleryCellItem.swift */; };
 		7628DDBE2807505D009AA53D /* ImageEditorCropView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7628DDBC28075056009AA53D /* ImageEditorCropView.swift */; };
 		7628DDBF2807505D009AA53D /* RotationControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7628DDBD2807505D009AA53D /* RotationControl.swift */; };
@@ -1471,6 +1470,7 @@
 		763D7DDD27E25DC8002EA7E6 /* AttachmentApprovalTopBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 763D7DDC27E25DC8002EA7E6 /* AttachmentApprovalTopBar.swift */; };
 		7647A33C2A270348002EAC93 /* FingerprintScanViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7647A33B2A270348002EAC93 /* FingerprintScanViewController.swift */; };
 		764981452A23194F00EC1287 /* CVItemViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764981442A23194F00EC1287 /* CVItemViewModel.swift */; };
+		764B479B2F4FB07E008C6337 /* CVLinkPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764B479A2F4FB076008C6337 /* CVLinkPreviewView.swift */; };
 		764FE03F2A2EC2E2004D2804 /* UIViewController+Permissions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764FE03E2A2EC2E2004D2804 /* UIViewController+Permissions.swift */; };
 		764FE0412A2EF3A7004D2804 /* TextFieldFormatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764FE0402A2EF3A7004D2804 /* TextFieldFormatting.swift */; };
 		764FE0452A2F0C0F004D2804 /* QuotedReplyModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 764FE0442A2F0C0F004D2804 /* QuotedReplyModel.swift */; };
@@ -5635,7 +5635,6 @@
 		7609818B2936EF22008F8300 /* AudioPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayer.swift; sourceTree = "<group>"; };
 		7609819329382EFF008F8300 /* UIGeometry+Signal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIGeometry+Signal.swift"; sourceTree = "<group>"; };
 		760D93AA27A0E28600F351AC /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
-		76182F112EA734E8003B3799 /* ConversationInputToolbar+LinkPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationInputToolbar+LinkPreview.swift"; sourceTree = "<group>"; };
 		7622B3B12A4510D7000E31DA /* MediaGalleryCellItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediaGalleryCellItem.swift; sourceTree = "<group>"; };
 		7628DDBC28075056009AA53D /* ImageEditorCropView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageEditorCropView.swift; sourceTree = "<group>"; };
 		7628DDBD2807505D009AA53D /* RotationControl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RotationControl.swift; sourceTree = "<group>"; };
@@ -5657,6 +5656,7 @@
 		763D7DDC27E25DC8002EA7E6 /* AttachmentApprovalTopBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentApprovalTopBar.swift; sourceTree = "<group>"; };
 		7647A33B2A270348002EAC93 /* FingerprintScanViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FingerprintScanViewController.swift; sourceTree = "<group>"; };
 		764981442A23194F00EC1287 /* CVItemViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVItemViewModel.swift; sourceTree = "<group>"; };
+		764B479A2F4FB076008C6337 /* CVLinkPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVLinkPreviewView.swift; sourceTree = "<group>"; };
 		764FE03E2A2EC2E2004D2804 /* UIViewController+Permissions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Permissions.swift"; sourceTree = "<group>"; };
 		764FE0402A2EF3A7004D2804 /* TextFieldFormatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldFormatting.swift; sourceTree = "<group>"; };
 		764FE0442A2F0C0F004D2804 /* QuotedReplyModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuotedReplyModel.swift; sourceTree = "<group>"; };
@@ -8806,7 +8806,6 @@
 				3457794226828A9A00732869 /* ConversationCollectionView.swift */,
 				45DDA6232090CEB500DE97F8 /* ConversationHeaderView.swift */,
 				8851DB4224CCF0EB001EACD2 /* ConversationInputTextView.swift */,
-				76182F112EA734E8003B3799 /* ConversationInputToolbar+LinkPreview.swift */,
 				457F671A20746193000EABCD /* ConversationInputToolbar+QuotedReplyPreview.swift */,
 				76A066E92EA99D0E009B3ED5 /* ConversationInputToolbar+VoiceMemo.swift */,
 				76725D2C29143CEC000E8AE1 /* ConversationInputToolbar.swift */,
@@ -9458,6 +9457,7 @@
 				3444E6BA264EDFF200B32E3B /* CVColorOrGradientView.swift */,
 				3470C87F2555F25200F5847C /* CVContactShareView.swift */,
 				768FC7B32F316CEF00707F72 /* CVDimmableView.swift */,
+				764B479A2F4FB076008C6337 /* CVLinkPreviewView.swift */,
 				34A8B3502190A40E00218A25 /* CVMediaAlbumView.swift */,
 				3488F9352191CC4000E524CC /* CVMediaView.swift */,
 				04A5736A2E4CF1BD0019651F /* CVPollView.swift */,
@@ -18199,7 +18199,6 @@
 				34E20D4C24256563002C011E /* ConversationHeaderBuilder.swift in Sources */,
 				45DDA6242090CEB500DE97F8 /* ConversationHeaderView.swift in Sources */,
 				8851DB4324CCF0EB001EACD2 /* ConversationInputTextView.swift in Sources */,
-				76182F122EA734F3003B3799 /* ConversationInputToolbar+LinkPreview.swift in Sources */,
 				457F671B20746193000EABCD /* ConversationInputToolbar+QuotedReplyPreview.swift in Sources */,
 				76A066EA2EA99D1F009B3ED5 /* ConversationInputToolbar+VoiceMemo.swift in Sources */,
 				76725D2D29143CEC000E8AE1 /* ConversationInputToolbar.swift in Sources */,
@@ -18287,6 +18286,7 @@
 				347C3834252CE69400F3D941 /* CVItemModel.swift in Sources */,
 				3426A366255C854B0036407F /* CVItemViewModelImpl.swift in Sources */,
 				347C3830252CE69400F3D941 /* CVItemViewState.swift in Sources */,
+				764B479B2F4FB07E008C6337 /* CVLinkPreviewView.swift in Sources */,
 				3470C8782555883600F5847C /* CVLoadContext.swift in Sources */,
 				347C382A252CE69400F3D941 /* CVLoadCoordinator.swift in Sources */,
 				348815B325503BAA00D4F4C4 /* CVLoader.swift in Sources */,

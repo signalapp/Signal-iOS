@@ -43,8 +43,8 @@ public class TextApprovalViewController: OWSViewController, BodyRangesTextViewDe
     // MARK: - Initializers
 
     public init(messageBody: MessageBody) {
-        self.initialMessageBody = messageBody
-        self.linkPreviewFetchState = LinkPreviewFetchState(
+        initialMessageBody = messageBody
+        linkPreviewFetchState = LinkPreviewFetchState(
             db: DependenciesBridge.shared.db,
             linkPreviewFetcher: SUIEnvironment.shared.linkPreviewFetcher,
             linkPreviewSettingStore: DependenciesBridge.shared.linkPreviewSettingStore,
@@ -52,7 +52,7 @@ public class TextApprovalViewController: OWSViewController, BodyRangesTextViewDe
 
         super.init()
 
-        self.linkPreviewFetchState.onStateChange = { [weak self] in self?.updateLinkPreviewView() }
+        linkPreviewFetchState.onStateChange = { [weak self] in self?.updateLinkPreviewView() }
     }
 
     // MARK: - View Lifecycle
@@ -60,19 +60,47 @@ public class TextApprovalViewController: OWSViewController, BodyRangesTextViewDe
     override public func viewDidLoad() {
         super.viewDidLoad()
 
+        view.backgroundColor = .Signal.background
+
         if let title = delegate?.textApprovalCustomTitle(self) {
-            self.navigationItem.title = title
+            navigationItem.title = title
         } else {
-            self.navigationItem.title = OWSLocalizedString(
+            navigationItem.title = OWSLocalizedString(
                 "MESSAGE_APPROVAL_DIALOG_TITLE",
                 comment: "Title for the 'message approval' dialog.",
             )
         }
 
-        self.navigationItem.leftBarButtonItem = .cancelButton { [weak self] in
+        navigationItem.leftBarButtonItem = .cancelButton { [weak self] in
             guard let self else { return }
             self.delegate?.textApprovalDidCancel(self)
         }
+
+        let stackView = UIStackView(arrangedSubviews: [linkPreviewView, textView])
+        stackView.axis = .vertical
+        stackView.spacing = 12
+        view.addSubview(stackView)
+        view.addSubview(footerView)
+
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        footerView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            stackView.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor),
+            stackView.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
+            stackView.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
+            footerView.topAnchor.constraint(equalTo: stackView.bottomAnchor),
+            footerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            footerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            footerView.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor),
+        ])
+
+        textView.bodyRangesDelegate = self
+        textView.backgroundColor = .Signal.background
+        textView.textColor = .Signal.label
+        textView.font = UIFont.dynamicTypeBody
+        textView.setMessageBody(initialMessageBody, txProvider: DependenciesBridge.shared.db.readTxProvider)
+        textView.contentInset = .zero
+        textView.textContainerInset = .zero
 
         footerView.delegate = self
 
@@ -104,8 +132,14 @@ public class TextApprovalViewController: OWSViewController, BodyRangesTextViewDe
     // MARK: - Link Previews
 
     private lazy var linkPreviewView: LinkPreviewView = {
-        let linkPreviewView = LinkPreviewView(draftDelegate: self)
+        let linkPreviewView = LinkPreviewView(state: .loading)
         linkPreviewView.isHidden = true
+        linkPreviewView.cancelButton.addAction(
+            UIAction { [weak self] _ in
+                self?.didTapDeleteLinkPreview()
+            },
+            for: .primaryActionTriggered,
+        )
         return linkPreviewView
     }()
 
@@ -117,47 +151,17 @@ public class TextApprovalViewController: OWSViewController, BodyRangesTextViewDe
         switch linkPreviewFetchState.currentState {
         case .none, .failed:
             linkPreviewView.isHidden = true
-        case .loading:
-            linkPreviewView.configureForNonCVC(state: LinkPreviewLoading(linkType: .preview), isDraft: true)
-            linkPreviewView.isHidden = false
-        case .loaded(let linkPreviewDraft):
-            let state: LinkPreviewState
-            if let callLink = CallLink(url: linkPreviewDraft.url) {
-                state = LinkPreviewCallLink(previewType: .draft(linkPreviewDraft), callLink: callLink)
-            } else {
-                state = LinkPreviewDraft(linkPreviewDraft: linkPreviewDraft)
-            }
-            linkPreviewView.configureForNonCVC(state: state, isDraft: true)
+
+        case .loading, .loaded:
+            linkPreviewView.configure(withState: linkPreviewFetchState.currentState)
             linkPreviewView.isHidden = false
         }
     }
 
-    // MARK: - Create Views
+    private func didTapDeleteLinkPreview() {
+        AssertIsOnMainThread()
 
-    override public func loadView() {
-
-        self.view = UIView.container()
-        self.view.backgroundColor = Theme.backgroundColor
-
-        let stackView = UIStackView(arrangedSubviews: [linkPreviewView, textView, footerView])
-        stackView.axis = .vertical
-        view.addSubview(stackView)
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            stackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            stackView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            stackView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            stackView.bottomAnchor.constraint(equalTo: keyboardLayoutGuide.topAnchor),
-        ])
-
-        // Text View
-        textView.bodyRangesDelegate = self
-        textView.backgroundColor = Theme.backgroundColor
-        textView.textColor = Theme.primaryTextColor
-        textView.font = UIFont.dynamicTypeBody
-        textView.setMessageBody(self.initialMessageBody, txProvider: DependenciesBridge.shared.db.readTxProvider)
-        textView.contentInset = UIEdgeInsets(top: 0.0, left: 0.0, bottom: 0.0, right: 0.0)
-        textView.textContainerInset = UIEdgeInsets(top: 10.0, left: 10.0, bottom: 10.0, right: 10.0)
+        linkPreviewFetchState.disable()
     }
 
     // MARK: - UITextViewDelegate
@@ -172,30 +176,30 @@ public class TextApprovalViewController: OWSViewController, BodyRangesTextViewDe
     public func textViewDidEndTypingMention(_ textView: BodyRangesTextView) {}
 
     public func textViewMentionPickerParentView(_ textView: BodyRangesTextView) -> UIView? {
-        return nil
+        nil
     }
 
     public func textViewMentionPickerReferenceView(_ textView: BodyRangesTextView) -> UIView? {
-        return nil
+        nil
     }
 
     public func textViewMentionPickerPossibleAcis(_ textView: BodyRangesTextView, tx: DBReadTransaction) -> [Aci] {
-        return []
+        []
     }
 
     public func textViewDisplayConfiguration(_ textView: BodyRangesTextView) -> HydratedMessageBody.DisplayConfiguration {
-        return .composing(textViewColor: textView.textColor)
+        .composing(textViewColor: textView.textColor)
     }
 
     public func mentionPickerStyle(_ textView: BodyRangesTextView) -> MentionPickerStyle {
-        return .default
+        .default
     }
 
     // We want to invalidate the cache but reuse it within this same controller.
     private let mentionCacheInvalidationKey = UUID().uuidString
 
     public func textViewMentionCacheInvalidationKey(_ textView: BodyRangesTextView) -> String {
-        return mentionCacheInvalidationKey
+        mentionCacheInvalidationKey
     }
 }
 
@@ -204,7 +208,7 @@ public class TextApprovalViewController: OWSViewController, BodyRangesTextViewDe
 extension TextApprovalViewController: ApprovalFooterDelegate {
     public func approvalFooterDelegateDidRequestProceed(_ approvalFooterView: ApprovalFooterView) {
         let linkPreviewDraft = linkPreviewFetchState.linkPreviewDraftIfLoaded
-        delegate?.textApproval(self, didApproveMessage: self.textView.messageBodyForSending, linkPreviewDraft: linkPreviewDraft)
+        delegate?.textApproval(self, didApproveMessage: textView.messageBodyForSending, linkPreviewDraft: linkPreviewDraft)
     }
 
     public func approvalMode(_ approvalFooterView: ApprovalFooterView) -> ApprovalMode {
@@ -212,12 +216,4 @@ extension TextApprovalViewController: ApprovalFooterDelegate {
     }
 
     public func approvalFooterDidBeginEditingText() {}
-}
-
-// MARK: -
-
-extension TextApprovalViewController: LinkPreviewViewDraftDelegate {
-    public func linkPreviewDidCancel() {
-        linkPreviewFetchState.disable()
-    }
 }

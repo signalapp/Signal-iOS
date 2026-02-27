@@ -4,28 +4,28 @@
 //
 
 import SignalServiceKit
-public import SignalUI
+import SignalUI
 
-public class CVComponentLinkPreview: CVComponentBase, CVComponent {
+class CVComponentLinkPreview: CVComponentBase, CVComponent {
 
-    public var componentKey: CVComponentKey { .linkPreview }
+    var componentKey: CVComponentKey { .linkPreview }
 
-    private let linkPreviewState: CVComponentState.LinkPreview
+    private let linkPreview: LinkPreviewSent
 
     init(
         itemModel: CVItemModel,
-        linkPreviewState: CVComponentState.LinkPreview,
+        linkPreview: LinkPreviewSent,
     ) {
-        self.linkPreviewState = linkPreviewState
+        self.linkPreview = linkPreview
 
         super.init(itemModel: itemModel)
     }
 
-    public func buildComponentView(componentDelegate: CVComponentDelegate) -> CVComponentView {
+    func buildComponentView(componentDelegate: CVComponentDelegate) -> CVComponentView {
         CVComponentViewLinkPreview()
     }
 
-    public func configureForRendering(
+    func configureForRendering(
         componentView componentViewParam: CVComponentView,
         cellMeasurement: CVCellMeasurement,
         componentDelegate: CVComponentDelegate,
@@ -48,7 +48,7 @@ public class CVComponentLinkPreview: CVComponentBase, CVComponent {
         linkPreviewView.layer.cornerRadius = 10
 
         linkPreviewView.configureForRendering(
-            state: linkPreviewState.state,
+            linkPreview: linkPreview,
             cellMeasurement: cellMeasurement,
         )
 
@@ -71,16 +71,16 @@ public class CVComponentLinkPreview: CVComponentBase, CVComponent {
 
     private static let measurementKey_linkPreviewWrapper = "CVComponentLinkPreview.measurementKey_linkPreviewWrapper"
 
-    public func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
+    func measure(maxWidth: CGFloat, measurementBuilder: CVCellMeasurement.Builder) -> CGSize {
         owsAssertDebug(maxWidth > 0)
 
         let maxWidth = min(maxWidth, conversationStyle.maxMediaMessageWidth)
         let maxContentWidth = maxWidth - stackConfig.layoutMargins.totalWidth
 
-        let linkPreviewSize = LinkPreviewView.measure(
+        let linkPreviewSize = CVLinkPreviewView.measure(
             maxWidth: maxContentWidth,
             measurementBuilder: measurementBuilder,
-            state: linkPreviewState.state,
+            linkPreview: linkPreview,
             isDraft: false,
         )
         let subviewInfos = [linkPreviewSize.asManualSubviewInfo]
@@ -96,14 +96,21 @@ public class CVComponentLinkPreview: CVComponentBase, CVComponent {
 
     // MARK: - Events
 
-    override public func handleTap(
+    override func handleTap(
         sender: UIGestureRecognizer,
         componentDelegate: CVComponentDelegate,
         componentView: CVComponentView,
         renderItem: CVRenderItem,
     ) -> Bool {
-
-        componentDelegate.didTapLinkPreview(linkPreviewState.linkPreview)
+        guard let urlString = linkPreview.urlString else {
+            owsFailDebug("Missing url.")
+            return false
+        }
+        guard let url = URL(string: urlString) else {
+            owsFailDebug("Invalid url: \(urlString).")
+            return false
+        }
+        componentDelegate.didTapLinkPreview(url: url)
         return true
     }
 
@@ -111,20 +118,20 @@ public class CVComponentLinkPreview: CVComponentBase, CVComponent {
 
     // Used for rendering some portion of an Conversation View item.
     // It could be the entire item or some part thereof.
-    public class CVComponentViewLinkPreview: NSObject, CVComponentView {
+    class CVComponentViewLinkPreview: NSObject, CVComponentView {
 
-        fileprivate let linkPreviewView = LinkPreviewView(draftDelegate: nil)
+        fileprivate let linkPreviewView = CVLinkPreviewView()
         fileprivate let linkPreviewWrapper = ManualStackView(name: "Link Preview Wrapper")
 
-        public var isDedicatedCellView = false
+        var isDedicatedCellView = false
 
-        public var rootView: UIView {
+        var rootView: UIView {
             linkPreviewWrapper
         }
 
-        public func setIsCellVisible(_ isCellVisible: Bool) {}
+        func setIsCellVisible(_ isCellVisible: Bool) {}
 
-        public func reset() {
+        func reset() {
             linkPreviewWrapper.reset()
             linkPreviewView.reset()
         }

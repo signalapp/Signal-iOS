@@ -538,7 +538,7 @@ extension PinnedMessagesDetailsViewController: CVComponentDelegate {
 
     func didTapQuotedReply(_ quotedReply: QuotedReplyModel) {}
 
-    func didTapLinkPreview(_ linkPreview: OWSLinkPreview) {}
+    func didTapLinkPreview(url: URL) {}
 
     func didTapContactShare(_ contactShare: ContactShareViewModel) {}
 

@@ -121,17 +121,6 @@ class LinkPreviewGroupLink: LinkPreviewState {
     var date: Date? { linkPreview.date }
 
     let isGroupInviteLink = true
-
-    var activityIndicatorStyle: UIActivityIndicatorView.Style {
-        switch linkType {
-        case .incomingMessageGroupInviteLink:
-            return .medium
-        case .outgoingMessageGroupInviteLink:
-            return .medium
-        default:
-            return LinkPreviewView.defaultActivityIndicatorStyle
-        }
-    }
 }
 
 // MARK: -

@@ -340,7 +340,6 @@ public struct CVComponentState: Equatable {
     let contactShare: ContactShare?
 
     struct LinkPreview: Equatable {
-        // TODO: convert OWSLinkPreview to Swift?
         let linkPreview: OWSLinkPreview
         let state: LinkPreviewState
 

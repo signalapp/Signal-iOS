@@ -110,10 +110,6 @@ public class LinkPreviewCallLink: LinkPreviewState {
     }
 
     public let isGroupInviteLink = false
-
-    public var activityIndicatorStyle: UIActivityIndicatorView.Style {
-        LinkPreviewView.defaultActivityIndicatorStyle
-    }
 }
 
 public class CommonCallLinksUI {

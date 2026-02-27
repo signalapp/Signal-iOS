@@ -557,17 +557,8 @@ extension ConversationViewController: CVComponentDelegate {
         }
     }
 
-    public func didTapLinkPreview(_ linkPreview: OWSLinkPreview) {
+    public func didTapLinkPreview(url: URL) {
         AssertIsOnMainThread()
-
-        guard
-            let urlString = linkPreview.urlString,
-            let url = URL(string: urlString)
-        else {
-            owsFailDebug("Invalid link preview URL.")
-            return
-        }
-
         self.handleUrl(url)
     }
 
