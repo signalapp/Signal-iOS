@@ -764,7 +764,7 @@ extension ConversationSettingsViewController {
                 )
             }
 
-            let showAddMemberLabel = BuildFlags.MemberLabel.send && isLocalUser && memberLabel == nil && self.groupViewHelper.canEditConversationAttributes
+            let showAddMemberLabel = isLocalUser && memberLabel == nil && self.groupViewHelper.canEditMemberLabels
 
             section.add(OWSTableItem(customCellBlock: { [weak self] in
                 guard let self else {
@@ -921,7 +921,7 @@ extension ConversationSettingsViewController {
         )
 
         if BuildFlags.MemberLabel.send {
-            let canEditMemberLabel = groupViewHelper.canEditConversationAttributes
+            let canEditMemberLabel = groupViewHelper.canEditMemberLabels
             let iconColor: UIColor
             let textColor: UIColor
             if canEditMemberLabel {
@@ -946,12 +946,7 @@ extension ConversationSettingsViewController {
                             memberLabelCoordinator?.presenter = self
                             memberLabelCoordinator?.present()
                         } else {
-                            presentToast(
-                                text: OWSLocalizedString(
-                                    "MEMBER_LABEL_ADMIN_ONLY_WARNING_TOAST",
-                                    comment: "Toast indicating that only admins can set a member label.",
-                                ),
-                            )
+                            owsFailDebug("Unimplemented!")
                         }
                     },
                 ),

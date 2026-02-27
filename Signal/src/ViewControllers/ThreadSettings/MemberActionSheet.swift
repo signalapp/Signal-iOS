@@ -278,7 +278,6 @@ class MemberActionSheet: OWSTableSheetViewController {
                         self.dismiss(animated: true) {
                             self.groupViewHelper?.memberActionSheetRevokeGroupAdminWasSelected(
                                 address: self.address,
-                                hasMemberLabel: self.memberLabel != nil,
                             )
                         }
                     },
@@ -505,7 +504,7 @@ extension MemberActionSheet: ConversationHeaderDelegate {
             memberLabelCoordinator.presenter = presenter
             memberLabelCoordinator.presentWithEducationSheet(
                 localUserHasMemberLabel: localUserHasMemberLabel,
-                canEditMemberLabel: groupViewHelper.canEditConversationAttributes,
+                canEditMemberLabel: groupViewHelper.canEditMemberLabels,
             )
         }
     }

@@ -239,21 +239,9 @@ class GroupPermissionsSettingsViewController: OWSTableViewController2 {
             return
         }
 
-        let continueBlock = {
-            self.newAccessAttributes = value
-            self.updateTableContents()
-            self.updateNavigation()
-        }
-
-        switch value {
-        case .administrator:
-            showClearMemberLabelWarning(continueHandler: {
-                continueBlock()
-            })
-            return
-        case .member, .unknown, .any, .unsatisfiable:
-            continueBlock()
-        }
+        self.newAccessAttributes = value
+        self.updateTableContents()
+        self.updateNavigation()
     }
 
     private func tryToSetIsAnnouncementsOnly(_ value: Bool) {

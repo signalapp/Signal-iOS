@@ -94,11 +94,17 @@ class GroupViewHelper {
     // * Group title (if group)
     // * Group avatar (if group)
     // * Pinned Messages (if group)
-    // * Member Labels (if group)
     var canEditConversationAttributes: Bool {
         return canLocalUserEditConversation { groupAccess in
             return groupAccess.attributes
         }
+    }
+
+    var canEditMemberLabels: Bool {
+        guard BuildFlags.MemberLabel.send else {
+            return false
+        }
+        return true
     }
 
     // Can local user edit group membership.
