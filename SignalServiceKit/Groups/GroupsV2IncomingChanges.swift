@@ -244,9 +244,6 @@ public class GroupsV2IncomingChanges {
         }
 
         for action in changeActionsProto.modifyMemberLabel {
-            if !canEditAttributes {
-                owsFailDebug("Cannot modify member label.")
-            }
             guard let userId = action.userID else {
                 throw OWSAssertionError("Missing userID.")
             }
