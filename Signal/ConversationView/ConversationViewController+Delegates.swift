@@ -16,14 +16,17 @@ extension ConversationViewController: AttachmentApprovalViewControllerDelegate {
         didApproveAttachments approvedAttachments: ApprovedAttachments,
         messageBody: MessageBody?,
     ) {
-        Task { @MainActor in
+        ModalActivityIndicatorViewController.present(fromViewController: attachmentApproval, asyncBlock: { modal in
             await self.sendAttachments(
                 approvedAttachments,
                 messageBody: messageBody,
                 from: attachmentApproval,
                 attachmentLimits: attachmentApproval.attachmentLimits,
             )
-        }
+            modal.dismiss(completion: {
+                self.dismiss(animated: true)
+            })
+        })
     }
 
     public func attachmentApprovalDidCancel() {

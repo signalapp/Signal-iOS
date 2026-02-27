@@ -889,14 +889,17 @@ extension ConversationViewController: SendMediaNavDelegate {
         didApproveAttachments approvedAttachments: ApprovedAttachments,
         messageBody: MessageBody?,
     ) {
-        Task { @MainActor in
+        ModalActivityIndicatorViewController.present(fromViewController: sendMediaNavigationController, asyncBlock: { modal in
             await self.sendAttachments(
                 approvedAttachments,
                 messageBody: messageBody,
                 from: sendMediaNavigationController,
                 attachmentLimits: sendMediaNavigationController.attachmentLimits,
             )
-        }
+            modal.dismiss(completion: {
+                self.dismiss(animated: true)
+            })
+        })
     }
 
     /// Attempts to send attachments. Handles prompting to unblock or un-verify safety numbers, as well as showing failure states.
@@ -935,7 +938,6 @@ extension ConversationViewController: SendMediaNavDelegate {
         // we want to already be at the bottom when the user returns, rather than have to watch
         // the new message scroll into view.
         scrollToBottomOfConversation(animated: true)
-        self.dismiss(animated: true)
     }
 
     func sendMediaNav(
