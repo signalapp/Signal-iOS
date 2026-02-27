@@ -236,11 +236,13 @@ public class ChatListInfo {
             return SSKEnvironment.shared.contactManagerRef.displayName(for: addedByAddress, tx: transaction).resolvedValue(useShortNameIfAvailable: true)
         }
 
+        let draftIsLatest = thread.lastDraftInteractionRowId >= lastMessageForInbox?.sqliteRowId ?? 0
+
         if isBlocked {
             return .blocked
         } else if hasPendingMessageRequest {
             return .pendingMessageRequest(addedToGroupByName: loadAddedToGroupByName())
-        } else if let draftText = loadDraftText()?.nilIfEmpty {
+        } else if let draftText = loadDraftText()?.nilIfEmpty, draftIsLatest {
             return .draft(draftText: draftText)
         } else if hasVoiceMemoDraft() {
             return .voiceMemoDraft
