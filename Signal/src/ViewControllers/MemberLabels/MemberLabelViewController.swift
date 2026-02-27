@@ -112,6 +112,9 @@ class MemberLabelViewController: OWSViewController, UITextFieldDelegate {
         buildGroupMembershipSection()
 
         textField.becomeFirstResponder()
+
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        view.addGestureRecognizer(tapGesture)
     }
 
     private func createInitialViews() {
@@ -460,17 +463,49 @@ class MemberLabelViewController: OWSViewController, UITextFieldDelegate {
             }
         }
 
-        if cellCount > 0 {
-            stackView.addArrangedSubview(sectionLabel)
-            stackView.setCustomSpacing(8, after: sectionLabel)
+        stackView.addArrangedSubview(sectionLabel)
+        stackView.setCustomSpacing(8, after: sectionLabel)
 
+        if cellCount > 0 {
             contactListStackView.translatesAutoresizingMaskIntoConstraints = false
             stackView.addArrangedSubview(contactListStackView)
             NSLayoutConstraint.activate([
                 contactListStackView.leadingAnchor.constraint(equalTo: stackView.leadingAnchor),
                 contactListStackView.trailingAnchor.constraint(equalTo: stackView.trailingAnchor),
             ])
+        } else {
+            let cellContainer = UIView()
+            cellContainer.layer.cornerRadius = 27
+            cellContainer.layer.masksToBounds = true
+            cellContainer.backgroundColor = UIColor.Signal.tertiaryBackground
+
+            let noOtherMembersLabel = UILabel()
+            noOtherMembersLabel.text = OWSLocalizedString("MEMBER_LABEL_NO_OTHER_GROUP_MEMBERS_HAVE_LABELS", comment: "Text for section that shows other group member labels, when there are none")
+            noOtherMembersLabel.font = .dynamicTypeFootnoteClamped
+            noOtherMembersLabel.textColor = UIColor.Signal.secondaryLabel
+            noOtherMembersLabel.textAlignment = .center
+            noOtherMembersLabel.numberOfLines = 0
+            cellContainer.addSubview(noOtherMembersLabel)
+            noOtherMembersLabel.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
+                noOtherMembersLabel.centerXAnchor.constraint(equalTo: cellContainer.centerXAnchor),
+                noOtherMembersLabel.centerYAnchor.constraint(equalTo: cellContainer.centerYAnchor),
+            ])
+            stackView.addArrangedSubview(cellContainer)
+            cellContainer.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
+                cellContainer.leadingAnchor.constraint(equalTo: stackView.leadingAnchor),
+                cellContainer.trailingAnchor.constraint(equalTo: stackView.trailingAnchor),
+                cellContainer.heightAnchor.constraint(greaterThanOrEqualToConstant: 96),
+            ])
         }
+    }
+
+    // MARK: -
+
+    @objc
+    private func dismissKeyboard() {
+        view.endEditing(true)
     }
 }
 
