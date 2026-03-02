@@ -92,8 +92,8 @@ public enum BuildFlags {
     public static let pollOneOnOneSend = build <= .internal
 
     public enum AdminDelete {
-        public static let receive = build <= .dev
-        public static let send = build <= .dev
+        public static let receive = build <= .internal
+        public static let send = build <= .internal
     }
 }
 
