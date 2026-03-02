@@ -81,7 +81,7 @@ public enum BuildFlags {
 
     public enum MemberLabel {
         public static let display = true
-        public static let send = true
+        public static let send = build <= .beta
     }
 
     public enum KeyTransparency {
