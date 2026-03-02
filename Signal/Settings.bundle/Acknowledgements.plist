@@ -880,7 +880,7 @@ You should also get your employer (if you work as a programmer) or school, if an
 			<key>License</key>
 			<string>GNU Affero General Public License v3.0 only</string>
 			<key>Title</key>
-			<string>attest, device-transfer, libsignal-account-keys, libsignal-account-keys 0.1.0, libsignal-bridge, libsignal-bridge-macros, libsignal-bridge-testing, libsignal-bridge-types, libsignal-core, libsignal-core 0.1.0, libsignal-ffi, libsignal-keytrans, libsignal-message-backup, libsignal-message-backup-macros, libsignal-net, libsignal-net-chat, libsignal-net-grpc, libsignal-net-infra, libsignal-protocol, libsignal-svrb, mrp 2.65.1, partial-default 0.1.0, partial-default-derive 0.1.0, poksho, protobuf 2.65.1, regex-aot 0.1.0, ringrtc 2.65.1, signal-crypto, signal-media, usernames, zkcredential, zkgroup</string>
+			<string>attest, device-transfer, libsignal-account-keys, libsignal-account-keys 0.1.0, libsignal-bridge, libsignal-bridge-macros, libsignal-bridge-testing, libsignal-bridge-types, libsignal-core, libsignal-core 0.1.0, libsignal-ffi, libsignal-keytrans, libsignal-message-backup, libsignal-message-backup-macros, libsignal-net, libsignal-net-chat, libsignal-net-grpc, libsignal-net-infra, libsignal-protocol, libsignal-svrb, mrp 2.65.3, partial-default 0.1.0, partial-default-derive 0.1.0, poksho, protobuf 2.65.3, regex-aot 0.1.0, ringrtc 2.65.3, signal-crypto, signal-media, usernames, zkcredential, zkgroup</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -1868,7 +1868,7 @@ DEALINGS IN THE SOFTWARE.
 			<key>License</key>
 			<string>MIT License</string>
 			<key>Title</key>
-			<string>bytes 1.11.0, bytes 1.11.1</string>
+			<string>bytes 1.11.1</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
