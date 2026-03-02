@@ -117,8 +117,9 @@ public class LinkPreviewView: UIView {
             configureAsLoading()
         case .loaded(let linkPreviewDraft):
             let draft = LinkPreviewDraft(linkPreviewDraft: linkPreviewDraft)
-            if CallLink(url: linkPreviewDraft.url) != nil {
-                configureAsCallLinkPreviewDraft(draft: draft)
+            if let callLink = CallLink(url: linkPreviewDraft.url) {
+                let state = LinkPreviewCallLink(previewType: .draft(linkPreviewDraft), callLink: callLink)
+                configureAsCallLinkPreview(state)
             } else {
                 configureAsLinkPreviewDraft(draft: draft)
             }
@@ -253,7 +254,7 @@ public class LinkPreviewView: UIView {
         }
     }
 
-    private func configureAsCallLinkPreviewDraft(draft: LinkPreviewDraft) {
+    private func configureAsCallLinkPreview(_ linkPreview: LinkPreviewCallLink) {
         // Image
         let imageSize: CGFloat = 27
         let cameraIcon = UIImageView(image: UIImage(imageLiteralResourceName: "video"))
@@ -294,7 +295,7 @@ public class LinkPreviewView: UIView {
         textStack.directionalLayoutMargins = .init(hMargin: 0, vMargin: 4)
 
         let titleLabel = UILabel()
-        titleLabel.text = CallStrings.signalCall
+        titleLabel.text = linkPreview.title
         titleLabel.textColor = .Signal.label
         titleLabel.numberOfLines = 2
         titleLabel.adjustsFontForContentSizeCategory = true
@@ -313,9 +314,9 @@ public class LinkPreviewView: UIView {
         subtitleLabel.setContentHuggingVerticalHigh()
         textStack.addArrangedSubview(subtitleLabel)
 
-        if let displayDomain = draft.displayDomain?.nilIfEmpty {
+        if let displayDomain = linkPreview.displayDomain?.nilIfEmpty {
             var text = displayDomain.lowercased()
-            if let date = draft.date {
+            if let date = linkPreview.date {
                 text.append(" ⋅ \(Self.dateFormatter.string(from: date))")
             }
             let label = UILabel()
