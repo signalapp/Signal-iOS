@@ -409,13 +409,10 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
             )
         }
 
-        if
-            let linkPreviewState = componentState.linkPreview,
-            let linkPreview = linkPreviewState.state as? LinkPreviewSent
-        {
+        if let linkPreviewState = componentState.linkPreview {
             self.linkPreview = CVComponentLinkPreview(
                 itemModel: itemModel,
-                linkPreview: linkPreview,
+                linkPreview: linkPreviewState.state,
             )
         }
 

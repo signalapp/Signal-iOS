@@ -10,11 +10,11 @@ class CVComponentLinkPreview: CVComponentBase, CVComponent {
 
     var componentKey: CVComponentKey { .linkPreview }
 
-    private let linkPreview: LinkPreviewSent
+    private let linkPreview: LinkPreviewState
 
     init(
         itemModel: CVItemModel,
-        linkPreview: LinkPreviewSent,
+        linkPreview: LinkPreviewState,
     ) {
         self.linkPreview = linkPreview
 

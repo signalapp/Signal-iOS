@@ -16,7 +16,7 @@ class CVLinkPreviewView: ManualStackViewWithLayer {
         return formatter
     }()
 
-    private var linkPreview: LinkPreviewSent?
+    private var linkPreview: LinkPreviewState?
     private var configurationSize: CGSize?
     private var shouldReconfigureForBounds = false
 
@@ -33,7 +33,7 @@ class CVLinkPreviewView: ManualStackViewWithLayer {
     }
 
     func configureForRendering(
-        linkPreview: LinkPreviewSent,
+        linkPreview: LinkPreviewState,
         cellMeasurement: CVCellMeasurement,
     ) {
         self.linkPreview = linkPreview
@@ -44,7 +44,7 @@ class CVLinkPreviewView: ManualStackViewWithLayer {
         )
     }
 
-    private static func adapter(for linkPreview: LinkPreviewSent) -> CVLinkPreviewViewAdapter {
+    private static func adapter(for linkPreview: LinkPreviewState) -> CVLinkPreviewViewAdapter {
         if linkPreview.isGroupInviteLink {
             return CVLinkPreviewViewAdapterGroupLink(linkPreview: linkPreview)
         }
@@ -75,7 +75,7 @@ class CVLinkPreviewView: ManualStackViewWithLayer {
     fileprivate static let sentTitleLineCount: Int = 2
     fileprivate static let sentDescriptionLineCount: Int = 3
 
-    fileprivate static func sentIsHero(linkPreview: LinkPreviewSent) -> Bool {
+    fileprivate static func sentIsHero(linkPreview: LinkPreviewState) -> Bool {
         if isSticker(linkPreview: linkPreview) || linkPreview.isGroupInviteLink {
             return false
         }
@@ -106,7 +106,7 @@ class CVLinkPreviewView: ManualStackViewWithLayer {
         return widthSatisfied && heightSatisfied
     }
 
-    private static func isSticker(linkPreview: LinkPreviewSent) -> Bool {
+    private static func isSticker(linkPreview: LinkPreviewState) -> Bool {
         guard let urlString = linkPreview.urlString else {
             owsFailDebug("Link preview is missing url.")
             return false
@@ -123,7 +123,7 @@ class CVLinkPreviewView: ManualStackViewWithLayer {
     static func measure(
         maxWidth: CGFloat,
         measurementBuilder: CVCellMeasurement.Builder,
-        linkPreview: LinkPreviewSent,
+        linkPreview: LinkPreviewState,
         isDraft: Bool,
     ) -> CGSize {
         let adapter = Self.adapter(for: linkPreview)
@@ -173,7 +173,7 @@ private protocol CVLinkPreviewViewAdapter {
     func measure(
         maxWidth: CGFloat,
         measurementBuilder: CVCellMeasurement.Builder,
-        linkPreview: LinkPreviewSent,
+        linkPreview: LinkPreviewState,
     ) -> CGSize
 }
 
@@ -186,7 +186,7 @@ extension CVLinkPreviewViewAdapter {
     fileprivate static var measurementKey_textStack: String { "LinkPreviewView.measurementKey_textStack" }
     fileprivate static var measurementKey_titleStack: String { "LinkPreviewView.measurementKey_titleStack" }
 
-    func sentTitleLabel(linkPreview: LinkPreviewSent) -> UILabel? {
+    func sentTitleLabel(linkPreview: LinkPreviewState) -> UILabel? {
         guard let config = sentTitleLabelConfig(linkPreview: linkPreview) else {
             return nil
         }
@@ -195,7 +195,7 @@ extension CVLinkPreviewViewAdapter {
         return label
     }
 
-    func sentTitleLabelConfig(linkPreview: LinkPreviewSent) -> CVLabelConfig? {
+    func sentTitleLabelConfig(linkPreview: LinkPreviewState) -> CVLabelConfig? {
         guard let text = linkPreview.title else {
             return nil
         }
@@ -208,7 +208,7 @@ extension CVLinkPreviewViewAdapter {
         )
     }
 
-    func sentDescriptionLabel(linkPreview: LinkPreviewSent) -> UILabel? {
+    func sentDescriptionLabel(linkPreview: LinkPreviewState) -> UILabel? {
         guard let config = sentDescriptionLabelConfig(linkPreview: linkPreview) else {
             return nil
         }
@@ -217,7 +217,7 @@ extension CVLinkPreviewViewAdapter {
         return label
     }
 
-    func sentDescriptionLabelConfig(linkPreview: LinkPreviewSent) -> CVLabelConfig? {
+    func sentDescriptionLabelConfig(linkPreview: LinkPreviewState) -> CVLabelConfig? {
         guard let text = linkPreview.previewDescription else { return nil }
         return CVLabelConfig.unstyledText(
             text,
@@ -228,13 +228,13 @@ extension CVLinkPreviewViewAdapter {
         )
     }
 
-    func sentDomainLabel(linkPreview: LinkPreviewSent) -> UILabel {
+    func sentDomainLabel(linkPreview: LinkPreviewState) -> UILabel {
         let label = CVLabel()
         sentDomainLabelConfig(linkPreview: linkPreview).applyForRendering(label: label)
         return label
     }
 
-    func sentDomainLabelConfig(linkPreview: LinkPreviewSent) -> CVLabelConfig {
+    func sentDomainLabelConfig(linkPreview: LinkPreviewState) -> CVLabelConfig {
         var labelText: String
         if let displayDomain = linkPreview.displayDomain?.nilIfEmpty {
             labelText = displayDomain.lowercased()
@@ -261,7 +261,7 @@ extension CVLinkPreviewViewAdapter {
     // Domain name
     func configureSentTextStack(
         linkPreviewView: CVLinkPreviewView,
-        linkPreview: LinkPreviewSent,
+        linkPreview: LinkPreviewState,
         textStack: ManualStackView,
         textStackConfig: ManualStackView.Config,
         cellMeasurement: CVCellMeasurement,
@@ -286,7 +286,7 @@ extension CVLinkPreviewViewAdapter {
     }
 
     func measureSentTextStack(
-        linkPreview: LinkPreviewSent,
+        linkPreview: LinkPreviewState,
         textStackConfig: ManualStackView.Config,
         measurementBuilder: CVCellMeasurement.Builder,
         maxLabelWidth: CGFloat,
@@ -320,9 +320,9 @@ extension CVLinkPreviewViewAdapter {
 // Does not have domain name. Image is round.
 private class CVLinkPreviewViewAdapterGroupLink: CVLinkPreviewViewAdapter {
 
-    let linkPreview: LinkPreviewSent
+    let linkPreview: LinkPreviewState
 
-    init(linkPreview: LinkPreviewSent) {
+    init(linkPreview: LinkPreviewState) {
         self.linkPreview = linkPreview
     }
 
@@ -388,7 +388,7 @@ private class CVLinkPreviewViewAdapterGroupLink: CVLinkPreviewViewAdapter {
     func measure(
         maxWidth: CGFloat,
         measurementBuilder: CVCellMeasurement.Builder,
-        linkPreview: LinkPreviewSent,
+        linkPreview: LinkPreviewState,
     ) -> CGSize {
         var maxLabelWidth = (maxWidth - (
             textStackConfig.layoutMargins.totalWidth + rootStackConfig.layoutMargins.totalWidth
@@ -437,9 +437,9 @@ private class CVLinkPreviewViewAdapterGroupLink: CVLinkPreviewViewAdapter {
 // Large full-width image above text.
 private class CVLinkPreviewViewAdapterLarge: CVLinkPreviewViewAdapter {
 
-    let linkPreview: LinkPreviewSent
+    let linkPreview: LinkPreviewState
 
-    init(linkPreview: LinkPreviewSent) {
+    init(linkPreview: LinkPreviewState) {
         self.linkPreview = linkPreview
     }
 
@@ -497,7 +497,7 @@ private class CVLinkPreviewViewAdapterLarge: CVLinkPreviewViewAdapter {
     func measure(
         maxWidth: CGFloat,
         measurementBuilder: CVCellMeasurement.Builder,
-        linkPreview: LinkPreviewSent,
+        linkPreview: LinkPreviewState,
     ) -> CGSize {
         var rootStackSubviewInfos = [ManualStackSubviewInfo]()
 
@@ -531,7 +531,7 @@ private class CVLinkPreviewViewAdapterLarge: CVLinkPreviewViewAdapter {
     }
 
     func sentHeroImageSize(
-        linkPreview: LinkPreviewSent,
+        linkPreview: LinkPreviewState,
         maxWidth: CGFloat,
     ) -> CGSize {
         guard let conversationStyle = linkPreview.conversationStyle else {
@@ -556,9 +556,9 @@ private class CVLinkPreviewViewAdapterLarge: CVLinkPreviewViewAdapter {
 // Compact thumbnail along the leading edges. Text goes to the right of the image.
 private class CVLinkPreviewViewAdapterCompact: CVLinkPreviewViewAdapter {
 
-    let linkPreview: LinkPreviewSent
+    let linkPreview: LinkPreviewState
 
-    init(linkPreview: LinkPreviewSent) {
+    init(linkPreview: LinkPreviewState) {
         self.linkPreview = linkPreview
     }
 
@@ -618,7 +618,7 @@ private class CVLinkPreviewViewAdapterCompact: CVLinkPreviewViewAdapter {
     func measure(
         maxWidth: CGFloat,
         measurementBuilder: CVCellMeasurement.Builder,
-        linkPreview: LinkPreviewSent,
+        linkPreview: LinkPreviewState,
     ) -> CGSize {
         var maxLabelWidth = (maxWidth - (
             textStackConfig.layoutMargins.totalWidth + rootStackConfig.layoutMargins.totalWidth
@@ -721,7 +721,7 @@ private class CVLinkPreviewImageView: ManualLayoutViewWithLayer {
         shouldEvacuateInBackground: true,
     )
 
-    func configure(linkPreview: LinkPreviewSent, rounding: Rounding = .none) -> UIView? {
+    func configure(linkPreview: LinkPreviewState, rounding: Rounding = .none) -> UIView? {
         switch linkPreview.imageState {
         case .loaded:
             break

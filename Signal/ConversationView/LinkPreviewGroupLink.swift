@@ -17,10 +17,7 @@ class LinkPreviewGroupLink: LinkPreviewState {
         groupInviteLinkViewModel.groupInviteLinkPreview
     }
 
-    private let _conversationStyle: ConversationStyle
-    var conversationStyle: ConversationStyle? {
-        _conversationStyle
-    }
+    let conversationStyle: ConversationStyle?
 
     init(
         linkType: LinkPreviewLinkType,
@@ -31,7 +28,7 @@ class LinkPreviewGroupLink: LinkPreviewState {
         self.linkPreview = linkPreview
         self.linkType = linkType
         self.groupInviteLinkViewModel = groupInviteLinkViewModel
-        _conversationStyle = conversationStyle
+        self.conversationStyle = conversationStyle
     }
 
     var isLoaded: Bool { groupInviteLinkPreview != nil }
