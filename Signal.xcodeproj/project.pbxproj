@@ -2731,6 +2731,7 @@
 		D94B71772EF5FD7A000C4C98 /* Emoji+Name.swift in Sources */ = {isa = PBXBuildFile; fileRef = D94B71722EF5FD7A000C4C98 /* Emoji+Name.swift */; };
 		D94B71782EF5FD7A000C4C98 /* EmojiWithSkinTones+String.swift in Sources */ = {isa = PBXBuildFile; fileRef = D94B71742EF5FD7A000C4C98 /* EmojiWithSkinTones+String.swift */; };
 		D94B71792EF5FD7A000C4C98 /* Emoji+SkinTones.swift in Sources */ = {isa = PBXBuildFile; fileRef = D94B71732EF5FD7A000C4C98 /* Emoji+SkinTones.swift */; };
+		D94CE91A2F52392F00354DE4 /* ChatListBackupProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D94CE9192F52392B00354DE4 /* ChatListBackupProgressView.swift */; };
 		D94D67CD2C9DEF870091B485 /* BackupArchivePostFrameRestoreActionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D94D67CC2C9DEF6E0091B485 /* BackupArchivePostFrameRestoreActionManager.swift */; };
 		D94D67CF2C9DF4720091B485 /* TSInfoMessage+ContactHidden.swift in Sources */ = {isa = PBXBuildFile; fileRef = D94D67CE2C9DF46E0091B485 /* TSInfoMessage+ContactHidden.swift */; };
 		D951F5312D9B236700C5EBF3 /* BackupSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D951F5302D9B236100C5EBF3 /* BackupSettingsViewController.swift */; };
@@ -3190,7 +3191,7 @@
 		D9CAFAE62A538CA200B32BDE /* UsernameLinkQRCodeContentController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9CAFAE52A538CA200B32BDE /* UsernameLinkQRCodeContentController.swift */; };
 		D9CAFAEA2A53CB1F00B32BDE /* UsernameLinkTooltipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9CAFAE92A53CB1F00B32BDE /* UsernameLinkTooltipView.swift */; };
 		D9CD40622A155C4800545803 /* TSInfoMessage+PersistableGroupUpdateItemTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9CD40612A155C4800545803 /* TSInfoMessage+PersistableGroupUpdateItemTest.swift */; };
-		D9CFB0102F1FF87F00DFB14A /* ChatListViewController+BackupProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9CFB00F2F1FF87800DFB14A /* ChatListViewController+BackupProgressView.swift */; };
+		D9CFB0102F1FF87F00DFB14A /* ChatListViewController+BackupExportProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9CFB00F2F1FF87800DFB14A /* ChatListViewController+BackupExportProgressView.swift */; };
 		D9CFB0142F20466300DFB14A /* ArcView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9CFB0132F20466100DFB14A /* ArcView.swift */; };
 		D9D1A6EB2DD69D0800050A85 /* DonationReceiptCredentialRedemptionJobFinderTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9D1A6EA2DD69CFE00050A85 /* DonationReceiptCredentialRedemptionJobFinderTest.swift */; };
 		D9D3216A2A8AC9B0004FC110 /* OutgoingGroupCallUpdateMessageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9D321692A8AC9B0004FC110 /* OutgoingGroupCallUpdateMessageTest.swift */; };
@@ -7001,6 +7002,7 @@
 		D94B71722EF5FD7A000C4C98 /* Emoji+Name.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Emoji+Name.swift"; sourceTree = "<group>"; };
 		D94B71732EF5FD7A000C4C98 /* Emoji+SkinTones.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Emoji+SkinTones.swift"; sourceTree = "<group>"; };
 		D94B71742EF5FD7A000C4C98 /* EmojiWithSkinTones+String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EmojiWithSkinTones+String.swift"; sourceTree = "<group>"; };
+		D94CE9192F52392B00354DE4 /* ChatListBackupProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatListBackupProgressView.swift; sourceTree = "<group>"; };
 		D94D67CC2C9DEF6E0091B485 /* BackupArchivePostFrameRestoreActionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupArchivePostFrameRestoreActionManager.swift; sourceTree = "<group>"; };
 		D94D67CE2C9DF46E0091B485 /* TSInfoMessage+ContactHidden.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+ContactHidden.swift"; sourceTree = "<group>"; };
 		D9517ABD292C596B00DDD37E /* Paypal+WebAuthentication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Paypal+WebAuthentication.swift"; sourceTree = "<group>"; };
@@ -7469,7 +7471,7 @@
 		D9CAFAE52A538CA200B32BDE /* UsernameLinkQRCodeContentController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameLinkQRCodeContentController.swift; sourceTree = "<group>"; };
 		D9CAFAE92A53CB1F00B32BDE /* UsernameLinkTooltipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsernameLinkTooltipView.swift; sourceTree = "<group>"; };
 		D9CD40612A155C4800545803 /* TSInfoMessage+PersistableGroupUpdateItemTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TSInfoMessage+PersistableGroupUpdateItemTest.swift"; sourceTree = "<group>"; };
-		D9CFB00F2F1FF87800DFB14A /* ChatListViewController+BackupProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatListViewController+BackupProgressView.swift"; sourceTree = "<group>"; };
+		D9CFB00F2F1FF87800DFB14A /* ChatListViewController+BackupExportProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatListViewController+BackupExportProgressView.swift"; sourceTree = "<group>"; };
 		D9CFB0132F20466100DFB14A /* ArcView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArcView.swift; sourceTree = "<group>"; };
 		D9D1A6EA2DD69CFE00050A85 /* DonationReceiptCredentialRedemptionJobFinderTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonationReceiptCredentialRedemptionJobFinderTest.swift; sourceTree = "<group>"; };
 		D9D321692A8AC9B0004FC110 /* OutgoingGroupCallUpdateMessageTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutgoingGroupCallUpdateMessageTest.swift; sourceTree = "<group>"; };
@@ -11275,6 +11277,7 @@
 			isa = PBXGroup;
 			children = (
 				1489ED0127A3D70200C7043A /* ArchivedConversationsCell.swift */,
+				D94CE9192F52392B00354DE4 /* ChatListBackupProgressView.swift */,
 				346E09002662FBBE0042375E /* ChatListCell.swift */,
 				05FDBC282CD91B31000C87BC /* ChatListContainerView.swift */,
 				052A33372C52BF410083D812 /* ChatListFilterActions.swift */,
@@ -11288,7 +11291,7 @@
 				50101FB12B083C8100C648E4 /* ChatListSettingsButtonState.swift */,
 				34E95C26269F6095004807EC /* ChatListViewController+Actions.swift */,
 				66F98DE92DC5314E009F1A86 /* ChatListViewController+BackupDownloadProgressView.swift */,
-				D9CFB00F2F1FF87800DFB14A /* ChatListViewController+BackupProgressView.swift */,
+				D9CFB00F2F1FF87800DFB14A /* ChatListViewController+BackupExportProgressView.swift */,
 				76847C932A13416A008E2EAB /* ChatListViewController+Camera.swift */,
 				34E95C28269F6109004807EC /* ChatListViewController+Helpers.swift */,
 				34E95C2C26A0673F004807EC /* ChatListViewController+Loading.swift */,
@@ -18147,6 +18150,7 @@
 				4C46361122EB98EC00185951 /* CameraFirstCaptureSendFlow.swift in Sources */,
 				D9EB22212A4B636C00C73E1D /* CGContext+LineDrawing.swift in Sources */,
 				34546F502649989D007C4958 /* ChatColorViewController.swift in Sources */,
+				D94CE91A2F52392F00354DE4 /* ChatListBackupProgressView.swift in Sources */,
 				346E09012662FBBE0042375E /* ChatListCell.swift in Sources */,
 				05FDBC292CD91B31000C87BC /* ChatListContainerView.swift in Sources */,
 				052A33382C52BF410083D812 /* ChatListFilterActions.swift in Sources */,
@@ -18160,7 +18164,7 @@
 				50101FB22B083C8100C648E4 /* ChatListSettingsButtonState.swift in Sources */,
 				34E95C27269F6096004807EC /* ChatListViewController+Actions.swift in Sources */,
 				66F98DEA2DC53155009F1A86 /* ChatListViewController+BackupDownloadProgressView.swift in Sources */,
-				D9CFB0102F1FF87F00DFB14A /* ChatListViewController+BackupProgressView.swift in Sources */,
+				D9CFB0102F1FF87F00DFB14A /* ChatListViewController+BackupExportProgressView.swift in Sources */,
 				76847C942A13416A008E2EAB /* ChatListViewController+Camera.swift in Sources */,
 				34E95C29269F6109004807EC /* ChatListViewController+Helpers.swift in Sources */,
 				34E95C2D26A06740004807EC /* ChatListViewController+Loading.swift in Sources */,

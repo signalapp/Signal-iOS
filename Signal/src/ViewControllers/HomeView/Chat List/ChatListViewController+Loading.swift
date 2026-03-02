@@ -286,7 +286,7 @@ public class CLVLoadCoordinator {
             lastSelectedThreadId: String?,
             hasVisibleReminders: Bool,
             shouldBackupDownloadProgressViewBeVisible: Bool,
-            shouldBackupProgressViewBeVisible: Bool,
+            shouldBackupExportProgressViewBeVisible: Bool,
             lastViewInfo: CLVViewInfo,
             transaction: DBReadTransaction,
         ) -> CLVLoadInfo {
@@ -299,7 +299,7 @@ public class CLVLoadCoordinator {
                 lastSelectedThreadId: lastSelectedThreadId,
                 hasVisibleReminders: hasVisibleReminders,
                 shouldBackupDownloadProgressViewBeVisible: shouldBackupDownloadProgressViewBeVisible,
-                shouldBackupProgressViewBeVisible: shouldBackupProgressViewBeVisible,
+                shouldBackupExportProgressViewBeVisible: shouldBackupExportProgressViewBeVisible,
                 transaction: transaction,
             )
 
@@ -400,7 +400,7 @@ public class CLVLoadCoordinator {
                 lastSelectedThreadId: viewController.viewState.lastSelectedThreadId,
                 hasVisibleReminders: viewController.viewState.reminderViews.hasVisibleReminders,
                 shouldBackupDownloadProgressViewBeVisible: viewController.viewState.backupDownloadProgressView.shouldBeVisible,
-                shouldBackupProgressViewBeVisible: viewController.viewState.backupProgressView.shouldBeVisible,
+                shouldBackupExportProgressViewBeVisible: viewController.viewState.backupExportProgressView.shouldBeVisible,
                 lastViewInfo: viewController.renderState.viewInfo,
                 transaction: transaction,
             )

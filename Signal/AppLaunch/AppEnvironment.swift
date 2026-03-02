@@ -63,7 +63,7 @@ public class AppEnvironment: NSObject {
         let backupSettingsStore = BackupSettingsStore()
         let backupNonceStore = BackupNonceMetadataStore()
         let backupSubscriptionIssueStore = BackupSubscriptionIssueStore()
-        let clvBackupProgressViewStore = CLVBackupProgressView.Store()
+        let clvBackupExportProgressViewStore = CLVBackupExportProgressView.Store()
 
         let badgeManager = BadgeManager(
             badgeCountFetcher: DependenciesBridge.shared.badgeCountFetcher,
@@ -98,7 +98,7 @@ public class AppEnvironment: NSObject {
             backupKeyService: DependenciesBridge.shared.backupKeyService,
             backupPlanManager: DependenciesBridge.shared.backupPlanManager,
             backupSettingsStore: backupSettingsStore,
-            clvBackupProgressViewStore: clvBackupProgressViewStore,
+            clvBackupExportProgressViewStore: clvBackupExportProgressViewStore,
             db: DependenciesBridge.shared.db,
             tsAccountManager: DependenciesBridge.shared.tsAccountManager,
         )

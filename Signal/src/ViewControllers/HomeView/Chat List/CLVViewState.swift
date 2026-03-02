@@ -25,7 +25,7 @@ class CLVViewState {
     let containerView: ChatListContainerView
     let reminderViews: CLVReminderViews
     let backupDownloadProgressView: CLVBackupDownloadProgressView
-    let backupProgressView: CLVBackupProgressView
+    let backupExportProgressView: CLVBackupExportProgressView
     let settingsButtonCreator: ChatListSettingsButtonState
     let proxyButtonCreator: ChatListProxyButtonCreator
 
@@ -132,7 +132,7 @@ class CLVViewState {
         self.containerView = ChatListContainerView(tableView: tableDataSource.tableView, searchBar: searchController.searchBar)
         self.reminderViews = CLVReminderViews()
         self.backupDownloadProgressView = CLVBackupDownloadProgressView()
-        self.backupProgressView = CLVBackupProgressView()
+        self.backupExportProgressView = CLVBackupExportProgressView()
         self.settingsButtonCreator = ChatListSettingsButtonState()
         self.proxyButtonCreator = ChatListProxyButtonCreator(chatConnectionManager: DependenciesBridge.shared.chatConnectionManager)
     }

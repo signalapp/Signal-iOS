@@ -24,7 +24,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
         loadCoordinator.viewController = self
         viewState.reminderViews.chatListViewController = self
         viewState.backupDownloadProgressView.chatListViewController = self
-        viewState.backupProgressView.chatListViewController = self
+        viewState.backupExportProgressView.chatListViewController = self
         viewState.settingsButtonCreator.delegate = self
         viewState.proxyButtonCreator.delegate = self
         viewState.configure()
@@ -92,7 +92,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
 
         // Backups
         viewState.backupDownloadProgressView.startTracking()
-        viewState.backupProgressView.startTracking()
+        viewState.backupExportProgressView.startTracking()
 
         updateBarButtonItems()
         updateArchiveReminderView()
@@ -171,7 +171,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
 
         viewState.searchResultsController.viewWillAppear(animated)
         viewState.backupDownloadProgressView.willAppear()
-        viewState.backupProgressView.willAppear()
+        viewState.backupExportProgressView.willAppear()
 
         updateUnreadPaymentNotificationsCountWithSneakyTransaction()
 
@@ -287,7 +287,7 @@ public class ChatListViewController: OWSViewController, HomeTabViewController {
 
         searchResultsController.viewDidDisappear(animated)
         viewState.backupDownloadProgressView.didDisappear()
-        viewState.backupProgressView.didDisapper()
+        viewState.backupExportProgressView.didDisappear()
     }
 
     override public func viewIsAppearing(_ animated: Bool) {

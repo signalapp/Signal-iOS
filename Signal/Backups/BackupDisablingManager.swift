@@ -29,7 +29,7 @@ final class BackupDisablingManager {
     private let backupKeyService: BackupKeyService
     private let backupPlanManager: BackupPlanManager
     private let backupSettingsStore: BackupSettingsStore
-    private let clvBackupProgressViewStore: CLVBackupProgressView.Store
+    private let clvBackupExportProgressViewStore: CLVBackupExportProgressView.Store
     private let db: DB
     private let kvStore: KeyValueStore
     private let logger: PrefixedLogger
@@ -47,7 +47,7 @@ final class BackupDisablingManager {
         backupKeyService: BackupKeyService,
         backupPlanManager: BackupPlanManager,
         backupSettingsStore: BackupSettingsStore,
-        clvBackupProgressViewStore: CLVBackupProgressView.Store,
+        clvBackupExportProgressViewStore: CLVBackupExportProgressView.Store,
         db: DB,
         tsAccountManager: TSAccountManager,
     ) {
@@ -61,7 +61,7 @@ final class BackupDisablingManager {
         self.backupKeyService = backupKeyService
         self.backupPlanManager = backupPlanManager
         self.backupSettingsStore = backupSettingsStore
-        self.clvBackupProgressViewStore = clvBackupProgressViewStore
+        self.clvBackupExportProgressViewStore = clvBackupExportProgressViewStore
         self.db = db
         self.kvStore = KeyValueStore(collection: "BackupDisablingManager")
         self.logger = PrefixedLogger(prefix: "[Backups]")
@@ -224,7 +224,7 @@ final class BackupDisablingManager {
             backupExportJobStore.wipe(tx: tx)
 
             // Reset the Backups banners, in case we later reenable Backups.
-            clvBackupProgressViewStore.setIsHidden(false, tx: tx)
+            clvBackupExportProgressViewStore.setIsHidden(false, tx: tx)
             backupAttachmentDownloadStore.resetDidDismissDownloadCompleteBanner(tx: tx)
 
             // With Backups disabled, these credentials are no longer valid

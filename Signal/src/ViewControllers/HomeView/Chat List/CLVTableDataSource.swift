@@ -14,7 +14,7 @@ public enum ChatListMode: Int, CaseIterable {
 public enum ChatListSectionType: String, CaseIterable {
     case reminders
     case backupDownloadProgressView
-    case backupProgressView
+    case backupExportProgressView
     case pinned
     case unpinned
     case archiveButton
@@ -188,7 +188,7 @@ class CLVTableDataSource: NSObject, UITableViewDataSource, UITableViewDelegate {
             switch renderState.sections[indexPath.section].type {
             case .reminders,
                  .backupDownloadProgressView,
-                 .backupProgressView,
+                 .backupExportProgressView,
                  .archiveButton,
                  .inboxFilterFooter:
                 return nil
@@ -329,7 +329,7 @@ class CLVTableDataSource: NSObject, UITableViewDataSource, UITableViewDelegate {
         case .reminders, .inboxFilterFooter:
             return nil
 
-        case .backupDownloadProgressView, .backupProgressView, .archiveButton:
+        case .backupDownloadProgressView, .backupExportProgressView, .archiveButton:
             return indexPath
 
         case .pinned, .unpinned:
@@ -378,9 +378,9 @@ class CLVTableDataSource: NSObject, UITableViewDataSource, UITableViewDelegate {
             tableView.deselectRow(at: indexPath, animated: false)
             viewController.handleBackupDownloadProgressViewTapped()
 
-        case .backupProgressView:
+        case .backupExportProgressView:
             tableView.deselectRow(at: indexPath, animated: false)
-            viewController.handleBackupProgressViewTapped()
+            viewController.handleBackupExportProgressViewTapped()
 
         case .pinned, .unpinned:
             guard let threadUniqueId = renderState.threadUniqueId(forIndexPath: indexPath) else {
@@ -431,11 +431,11 @@ class CLVTableDataSource: NSObject, UITableViewDataSource, UITableViewDelegate {
                     return UIMenu(children: actions)
                 },
             )
-        case .backupProgressView:
+        case .backupExportProgressView:
             return UIContextMenuConfiguration(
                 actionProvider: { [weak self] _ in
                     guard let self else { return nil }
-                    let actions = viewState.backupProgressView.contextMenuActions()
+                    let actions = viewState.backupExportProgressView.contextMenuActions()
                     return UIMenu(children: actions)
                 },
             )
@@ -551,13 +551,8 @@ class CLVTableDataSource: NSObject, UITableViewDataSource, UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         switch renderState.sections[indexPath.section].type {
-        case .reminders, .archiveButton, .inboxFilterFooter, .backupProgressView:
+        case .reminders, .archiveButton, .inboxFilterFooter, .backupExportProgressView, .backupDownloadProgressView:
             return UITableView.automaticDimension
-        case .backupDownloadProgressView:
-            guard let viewState = viewController?.viewState else {
-                return 0
-            }
-            return viewState.backupDownloadProgressView.measureHeight(width: tableView.bounds.width)
         case .pinned, .unpinned:
             return measureConversationCell(tableView: tableView, indexPath: indexPath)
         }
@@ -577,8 +572,8 @@ class CLVTableDataSource: NSObject, UITableViewDataSource, UITableViewDelegate {
             cell = viewController.viewState.reminderViews.reminderViewCell
         case .backupDownloadProgressView:
             cell = viewController.viewState.backupDownloadProgressView.backupDownloadProgressViewCell
-        case .backupProgressView:
-            cell = viewController.viewState.backupProgressView.backupProgressViewCell
+        case .backupExportProgressView:
+            cell = viewController.viewState.backupExportProgressView.backupExportProgressViewCell
         case .pinned, .unpinned:
             cell = buildConversationCell(tableView: tableView, indexPath: indexPath)
         case .archiveButton:
@@ -662,7 +657,7 @@ class CLVTableDataSource: NSObject, UITableViewDataSource, UITableViewDelegate {
         switch renderState.sections[indexPath.section].type {
         case .reminders,
              .backupDownloadProgressView,
-             .backupProgressView,
+             .backupExportProgressView,
              .archiveButton,
              .inboxFilterFooter:
             return nil
@@ -685,7 +680,7 @@ class CLVTableDataSource: NSObject, UITableViewDataSource, UITableViewDelegate {
         switch renderState.sections[indexPath.section].type {
         case .reminders,
              .backupDownloadProgressView,
-             .backupProgressView,
+             .backupExportProgressView,
              .archiveButton,
              .inboxFilterFooter:
             return false
@@ -698,7 +693,7 @@ class CLVTableDataSource: NSObject, UITableViewDataSource, UITableViewDelegate {
         switch renderState.sections[indexPath.section].type {
         case .reminders,
              .backupDownloadProgressView,
-             .backupProgressView,
+             .backupExportProgressView,
              .archiveButton,
              .inboxFilterFooter:
             return nil

@@ -9,10 +9,10 @@ import SignalUI
 import UIKit
 
 private extension Notification.Name {
-    static let isHiddenDidChange = Notification.Name("CLVBackupProgressView.isHiddenDidChange")
+    static let isHiddenDidChange = Notification.Name("CLVBackupExportProgressView.isHiddenDidChange")
 }
 
-class CLVBackupProgressView: BackupProgressView.Delegate {
+class CLVBackupExportProgressView: BackupExportProgressView.Delegate {
 
     struct Store {
         private enum Keys {
@@ -49,6 +49,7 @@ class CLVBackupProgressView: BackupProgressView.Delegate {
     private struct State {
         var isVisible: Bool = false
         var deviceSleepBlock: DeviceSleepBlockObject?
+        var currentViewState: BackupExportProgressView.ViewState?
 
         var earliestBackupDateToConsider: Date = .distantFuture
         var isHidden: Bool = false
@@ -70,11 +71,13 @@ class CLVBackupProgressView: BackupProgressView.Delegate {
     private let deviceSleepManager: DeviceSleepManager
     private let store: Store
 
-    weak var chatListViewController: ChatListViewController?
-    lazy var backupProgressViewCell: UITableViewCell = Self.tableViewCell(wrapping: backupProgressView)
-
-    private let backupProgressView: BackupProgressView
+    private let backupExportProgressView: BackupExportProgressView
     private let state: AtomicValue<State>
+
+    weak var chatListViewController: ChatListViewController?
+    lazy var backupExportProgressViewCell: UITableViewCell = Self.tableViewCell(
+        wrapping: backupExportProgressView,
+    )
 
     init() {
         self.backupAttachmentUploadTracker = AppEnvironment.shared.backupAttachmentUploadTracker
@@ -85,13 +88,13 @@ class CLVBackupProgressView: BackupProgressView.Delegate {
         self.deviceSleepManager = DependenciesBridge.shared.deviceSleepManager.owsFailUnwrap("Missing DeviceSleepManager!")
         self.store = Store()
 
-        self.backupProgressView = BackupProgressView(viewState: nil)
+        self.backupExportProgressView = BackupExportProgressView(viewState: nil)
         self.state = AtomicValue(State(), lock: .init())
 
-        self.backupProgressView.delegate = self
+        self.backupExportProgressView.delegate = self
     }
 
-    fileprivate static func tableViewCell(wrapping backupProgressView: BackupProgressView) -> UITableViewCell {
+    fileprivate static func tableViewCell(wrapping backupProgressView: BackupExportProgressView) -> UITableViewCell {
         let cell = UITableViewCell()
         var backgroundConfiguration = UIBackgroundConfiguration.clear()
         backgroundConfiguration.backgroundColor = .Signal.background
@@ -105,7 +108,7 @@ class CLVBackupProgressView: BackupProgressView.Delegate {
     // MARK: -
 
     var shouldBeVisible: Bool {
-        return backupProgressView.viewState != nil
+        return state.get().currentViewState != nil
     }
 
     // MARK: -
@@ -119,7 +122,7 @@ class CLVBackupProgressView: BackupProgressView.Delegate {
     }
 
     @MainActor
-    func didDisapper() {
+    func didDisappear() {
         state.update { _state in
             _state.isVisible = false
             manageDeviceSleepBlock(state: &_state)
@@ -230,16 +233,18 @@ class CLVBackupProgressView: BackupProgressView.Delegate {
 
     // MARK: -
 
-    private let chatListReloadQueue = SerialTaskQueue()
+    private let setViewStateTaskQueue = SerialTaskQueue()
 
     @MainActor
     private func setViewStateForState(state: inout State) {
-        let oldViewState = backupProgressView.viewState
+        let oldViewState = state.currentViewState
         let newViewState = viewStateForState(state: state)
+        state.currentViewState = newViewState
+        manageDeviceSleepBlock(state: &state)
 
-        chatListReloadQueue.enqueue { @MainActor [self] in
+        setViewStateTaskQueue.enqueue { @MainActor [self] in
             if oldViewState != newViewState {
-                backupProgressView.viewState = newViewState
+                backupExportProgressView.viewState = newViewState
             }
 
             if (oldViewState == nil) != (newViewState == nil) {
@@ -251,11 +256,9 @@ class CLVBackupProgressView: BackupProgressView.Delegate {
                 chatListViewController?.tableView.recomputeRowHeights()
             }
         }
-
-        manageDeviceSleepBlock(state: &state)
     }
 
-    private func viewStateForState(state: State) -> BackupProgressView.ViewState? {
+    private func viewStateForState(state: State) -> BackupExportProgressView.ViewState? {
         guard
             let lastExportJobProgressUpdate = state.lastExportJobProgressUpdate,
             let lastUploadTrackerUpdate = state.lastUploadTrackerUpdate
@@ -316,7 +319,7 @@ class CLVBackupProgressView: BackupProgressView.Delegate {
 
     @MainActor
     private func manageDeviceSleepBlock(state: inout State) {
-        var shouldBlockDeviceSleep = switch backupProgressView.viewState {
+        var shouldBlockDeviceSleep = switch state.currentViewState {
         case .backupFilePreparation: true
         case .attachmentUploadRunning: true
         case .attachmentUploadPausedNoWifi: false
@@ -333,7 +336,7 @@ class CLVBackupProgressView: BackupProgressView.Delegate {
             shouldBlockDeviceSleep,
             state.deviceSleepBlock == nil
         {
-            let deviceSleepBlock = DeviceSleepBlockObject(blockReason: "CLVBackupProgressView")
+            let deviceSleepBlock = DeviceSleepBlockObject(blockReason: "CLVBackupExportProgressView")
             deviceSleepManager.addBlock(blockObject: deviceSleepBlock)
             state.deviceSleepBlock = deviceSleepBlock
         } else if
@@ -448,7 +451,7 @@ class CLVBackupProgressView: BackupProgressView.Delegate {
             chatListViewController?.presentActionSheet(actionSheet)
         }
 
-        switch backupProgressView.viewState {
+        switch state.get().currentViewState {
         case nil:
             return []
         case .complete:
@@ -466,15 +469,7 @@ class CLVBackupProgressView: BackupProgressView.Delegate {
 
 // MARK: -
 
-extension ChatListViewController {
-    func handleBackupProgressViewTapped() {
-        SignalApp.shared.showAppSettings(mode: .backups())
-    }
-}
-
-// MARK: -
-
-private class BackupProgressView: UIView {
+private class BackupExportProgressView: ChatListBackupProgressView {
 
     protocol Delegate: AnyObject {
         func didTapDismissButton()
@@ -503,143 +498,115 @@ private class BackupProgressView: UIView {
         }
     }
 
-    /// If `nil`, this view isn't visible.
+    // MARK: -
+
     var viewState: ViewState? {
         didSet {
-            configureSubviewsForCurrentState()
+            configure(viewState: viewState)
         }
     }
-
-    // MARK: -
-
-    private static func configure(
-        label: UILabel,
-        font: UIFont = .dynamicTypeSubheadline,
-        color: UIColor,
-    ) {
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.adjustsFontForContentSizeCategory = true
-        label.font = .monospacedDigitFont(ofSize: font.pointSize)
-        label.textColor = color
-        label.numberOfLines = 0
-        label.lineBreakMode = .byWordWrapping
-    }
-
-    // MARK: -
-
-    private lazy var leadingAccessoryImageView = UIImageView()
-
-    private lazy var labelStackView = UIStackView()
-    private lazy var titleLabel = UILabel()
-    private lazy var progressLabel = UILabel()
-
-    /// A container for the various trailingAccessory views we might display. A
-    /// stack view so we can use `isHidden = true` to make subviews take up zero
-    /// space.
-    private lazy var trailingAccessoryContainerView = UIStackView()
-    private lazy var trailingAccessoryRunningArcView = ArcView()
-    private lazy var trailingAccessoryPausedWifiResumeButton = UIButton()
-    private lazy var trailingAccessoryPausedNoInternetLabel = UILabel()
-    private lazy var trailingAccessoryPausedLowBatteryLabel = UILabel()
-    private lazy var trailingAccessoryPausedLowPowerModeLabel = UILabel()
-    private lazy var trailingAccessoryCompleteDismissButton = UIButton()
 
     weak var delegate: Delegate?
 
     init(viewState: ViewState?) {
         self.viewState = viewState
+        super.init()
 
-        super.init(frame: .zero)
-
-        backgroundColor = .Signal.quaternaryFill
-        layer.cornerRadius = 24
-        layoutMargins = UIEdgeInsets(hMargin: 16, vMargin: 12)
-
-        addSubview(leadingAccessoryImageView)
-        leadingAccessoryImageView.translatesAutoresizingMaskIntoConstraints = false
-
-        addSubview(labelStackView)
-        labelStackView.translatesAutoresizingMaskIntoConstraints = false
-        labelStackView.alignment = .fill
-        labelStackView.axis = .vertical
-        labelStackView.spacing = 4
-
-        labelStackView.addArrangedSubview(titleLabel)
-        Self.configure(label: titleLabel, color: .Signal.label)
-
-        labelStackView.addArrangedSubview(progressLabel)
-        Self.configure(label: progressLabel, font: .dynamicTypeFootnote, color: .Signal.secondaryLabel)
-
-        addSubview(trailingAccessoryContainerView)
-        trailingAccessoryContainerView.alignment = .trailing
-        trailingAccessoryContainerView.translatesAutoresizingMaskIntoConstraints = false
-
-        trailingAccessoryContainerView.addArrangedSubview(trailingAccessoryRunningArcView)
-        trailingAccessoryRunningArcView.translatesAutoresizingMaskIntoConstraints = false
-
-        trailingAccessoryContainerView.addArrangedSubview(trailingAccessoryPausedWifiResumeButton)
-        trailingAccessoryPausedWifiResumeButton.translatesAutoresizingMaskIntoConstraints = false
-        trailingAccessoryPausedWifiResumeButton.setTitle(
-            OWSLocalizedString(
-                "CHAT_LIST_BACKUP_PROGRESS_VIEW_RESUME_WIFI_BUTTON",
-                comment: "Button shown in the backup progress view trailing accessory to resume uploading over Wi-Fi.",
-            ),
-            for: .normal,
-        )
-        trailingAccessoryPausedWifiResumeButton.setTitleColor(.Signal.label, for: .normal)
-        trailingAccessoryPausedWifiResumeButton.titleLabel?.font = .dynamicTypeSubheadline.semibold()
-        trailingAccessoryPausedWifiResumeButton.titleLabel?.adjustsFontForContentSizeCategory = true
-        trailingAccessoryPausedWifiResumeButton.addAction(
-            UIAction { [weak self] _ in
-                self?.delegate?.didTapPausedWifiResumeButton()
-            },
-            for: .touchUpInside,
-        )
-
-        trailingAccessoryContainerView.addArrangedSubview(trailingAccessoryCompleteDismissButton)
-        trailingAccessoryCompleteDismissButton.translatesAutoresizingMaskIntoConstraints = false
-        trailingAccessoryCompleteDismissButton.setImage(.x, animated: false)
-        trailingAccessoryCompleteDismissButton.tintColor = .Signal.secondaryLabel
-        trailingAccessoryCompleteDismissButton.addAction(
-            UIAction { [weak self] _ in
-                self?.delegate?.didTapDismissButton()
-            },
-            for: .touchUpInside,
-        )
-
-        trailingAccessoryContainerView.addArrangedSubview(trailingAccessoryPausedNoInternetLabel)
-        Self.configure(label: trailingAccessoryPausedNoInternetLabel, color: .Signal.secondaryLabel)
-        trailingAccessoryPausedNoInternetLabel.text = OWSLocalizedString(
-            "CHAT_LIST_BACKUP_PROGRESS_VIEW_NO_INTERNET_LABEL",
-            comment: "Trailing accessory label shown when backup is paused due to no internet connection.",
-        )
-
-        trailingAccessoryContainerView.addArrangedSubview(trailingAccessoryPausedLowBatteryLabel)
-        Self.configure(label: trailingAccessoryPausedLowBatteryLabel, color: .Signal.secondaryLabel)
-        trailingAccessoryPausedLowBatteryLabel.text = OWSLocalizedString(
-            "CHAT_LIST_BACKUP_PROGRESS_VIEW_LOW_BATTERY_LABEL",
-            comment: "Trailing accessory label shown when backup is paused due to low battery.",
-        )
-
-        trailingAccessoryContainerView.addArrangedSubview(trailingAccessoryPausedLowPowerModeLabel)
-        Self.configure(label: trailingAccessoryPausedLowPowerModeLabel, color: .Signal.secondaryLabel)
-        trailingAccessoryPausedLowPowerModeLabel.text = OWSLocalizedString(
-            "CHAT_LIST_BACKUP_PROGRESS_VIEW_LOW_POWER_MODE_LABEL",
-            comment: "Trailing accessory label shown when backup is paused due to Low Power Mode.",
-        )
-
-        initializeConstraints()
-        configureSubviewsForCurrentState()
+        initializeTrailingAccessoryViews([
+            trailingAccessoryRunningArcView,
+            trailingAccessoryPausedWifiResumeButton,
+            trailingAccessoryPausedNoInternetLabel,
+            trailingAccessoryPausedLowBatteryLabel,
+            trailingAccessoryPausedLowPowerModeLabel,
+            trailingAccessoryCompleteDismissButton,
+        ])
+        configure(viewState: viewState)
     }
 
     required init?(coder: NSCoder) {
-        owsFail("Not implemented!")
+        owsFail("Not implemented")
     }
+
+    // MARK: - Views
+
+    private lazy var trailingAccessoryRunningArcView: ArcView = {
+        let arcView = ArcView()
+        NSLayoutConstraint.activate([
+            arcView.heightAnchor.constraint(equalToConstant: 24),
+            arcView.widthAnchor.constraint(equalToConstant: 24),
+        ])
+        return arcView
+    }()
+
+    private lazy var trailingAccessoryPausedWifiResumeButton: UIButton = {
+        var configuration = UIButton.Configuration.plain()
+        configuration.title = OWSLocalizedString(
+            "CHAT_LIST_BACKUP_PROGRESS_VIEW_RESUME_WIFI_BUTTON",
+            comment: "Button shown in the backup progress view trailing accessory to resume uploading over Wi-Fi.",
+        )
+        configuration.baseForegroundColor = .Signal.label
+        configuration.titleTextAttributesTransformer = .defaultFont(.dynamicTypeSubheadline.bold())
+        return UIButton(
+            configuration: configuration,
+            primaryAction: UIAction { [weak self] _ in
+                self?.delegate?.didTapPausedWifiResumeButton()
+            },
+        )
+    }()
+
+    private lazy var trailingAccessoryPausedNoInternetLabel: UILabel = {
+        let label = UILabel()
+        ChatListBackupProgressView.configure(label: label, color: .Signal.secondaryLabel)
+        label.text = OWSLocalizedString(
+            "CHAT_LIST_BACKUP_PROGRESS_VIEW_NO_INTERNET_LABEL",
+            comment: "Trailing accessory label shown when backup is paused due to no internet connection.",
+        )
+        return label
+    }()
+
+    private lazy var trailingAccessoryPausedLowBatteryLabel: UILabel = {
+        let label = UILabel()
+        Self.configure(label: label, color: .Signal.secondaryLabel)
+        label.text = OWSLocalizedString(
+            "CHAT_LIST_BACKUP_PROGRESS_VIEW_LOW_BATTERY_LABEL",
+            comment: "Trailing accessory label shown when backup is paused due to low battery.",
+        )
+        return label
+    }()
+
+    private lazy var trailingAccessoryPausedLowPowerModeLabel: UILabel = {
+        let label = UILabel()
+        Self.configure(label: label, color: .Signal.secondaryLabel)
+        label.text = OWSLocalizedString(
+            "CHAT_LIST_BACKUP_PROGRESS_VIEW_LOW_POWER_MODE_LABEL",
+            comment: "Trailing accessory label shown when backup is paused due to Low Power Mode.",
+        )
+        return label
+    }()
+
+    private lazy var trailingAccessoryCompleteDismissButton: UIButton = {
+        var configuration = UIButton.Configuration.plain()
+        configuration.image = .x
+        configuration.baseForegroundColor = .Signal.secondaryLabel
+        let button = UIButton(
+            configuration: configuration,
+            primaryAction: UIAction { [weak self] _ in
+                self?.delegate?.didTapDismissButton()
+            },
+        )
+        NSLayoutConstraint.activate([
+            button.heightAnchor.constraint(equalToConstant: 24),
+            button.widthAnchor.constraint(equalToConstant: 24),
+        ])
+        return button
+    }()
 
     // MARK: -
 
-    private func configureSubviewsForCurrentState() {
+    private func configure(viewState: ViewState?) {
         // Leading accessory
+        let leadingAccessoryImage: UIImage
+        let leadingAccessoryImageTintColor: UIColor
         switch viewState {
         case nil,
              .backupFilePreparation,
@@ -648,11 +615,11 @@ private class BackupProgressView: UIView {
              .attachmentUploadPausedNoInternet,
              .attachmentUploadPausedLowBattery,
              .attachmentUploadPausedLowPowerMode:
-            leadingAccessoryImageView.image = .backup
-            leadingAccessoryImageView.tintColor = .Signal.label
+            leadingAccessoryImage = .backup
+            leadingAccessoryImageTintColor = .Signal.label
         case .complete:
-            leadingAccessoryImageView.image = .checkCircle
-            leadingAccessoryImageView.tintColor = .Signal.ultramarine
+            leadingAccessoryImage = .checkCircle
+            leadingAccessoryImageTintColor = .Signal.ultramarine
         }
 
         // Labels
@@ -698,13 +665,6 @@ private class BackupProgressView: UIView {
         case nil:
             titleLabelText = ""
         }
-        titleLabel.text = titleLabelText
-        if let progressLabelText {
-            progressLabel.text = progressLabelText
-            progressLabel.isHidden = false
-        } else {
-            progressLabel.isHidden = true
-        }
 
         // Trailing accessory
         let trailingAccessoryView: UIView?
@@ -729,44 +689,21 @@ private class BackupProgressView: UIView {
             trailingAccessoryView = nil
         }
 
-        // Hide all but at most one trailingAccessory view.
-        for view in trailingAccessoryContainerView.arrangedSubviews {
-            if view == trailingAccessoryView {
-                view.isHidden = false
-            } else {
-                view.isHidden = true
-            }
-        }
+        configure(
+            leadingAccessoryImage: leadingAccessoryImage,
+            leadingAccessoryImageTintColor: leadingAccessoryImageTintColor,
+            titleLabelText: titleLabelText,
+            progressLabelText: progressLabelText,
+            trailingAccessoryView: trailingAccessoryView,
+        )
     }
+}
 
-    // MARK: -
+// MARK: -
 
-    private func initializeConstraints() {
-        labelStackView.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        for view in trailingAccessoryContainerView.arrangedSubviews {
-            view.setContentHuggingPriority(.defaultHigh, for: .horizontal)
-        }
-
-        NSLayoutConstraint.activate([
-            leadingAccessoryImageView.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor),
-            leadingAccessoryImageView.centerYAnchor.constraint(equalTo: labelStackView.centerYAnchor),
-            leadingAccessoryImageView.heightAnchor.constraint(equalToConstant: 24),
-            leadingAccessoryImageView.widthAnchor.constraint(equalToConstant: 24),
-
-            labelStackView.leadingAnchor.constraint(equalTo: leadingAccessoryImageView.trailingAnchor, constant: 12),
-            labelStackView.topAnchor.constraint(equalTo: layoutMarginsGuide.topAnchor),
-            labelStackView.bottomAnchor.constraint(equalTo: layoutMarginsGuide.bottomAnchor),
-            labelStackView.trailingAnchor.constraint(equalTo: trailingAccessoryContainerView.leadingAnchor, constant: -12),
-
-            trailingAccessoryContainerView.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor),
-            trailingAccessoryContainerView.centerYAnchor.constraint(equalTo: labelStackView.centerYAnchor),
-
-            trailingAccessoryRunningArcView.heightAnchor.constraint(equalToConstant: 24),
-            trailingAccessoryRunningArcView.widthAnchor.constraint(equalToConstant: 24),
-
-            trailingAccessoryCompleteDismissButton.heightAnchor.constraint(equalToConstant: 24),
-            trailingAccessoryCompleteDismissButton.widthAnchor.constraint(equalToConstant: 24),
-        ])
+extension ChatListViewController {
+    func handleBackupExportProgressViewTapped() {
+        SignalApp.shared.showAppSettings(mode: .backups())
     }
 }
 
@@ -775,10 +712,10 @@ private class BackupProgressView: UIView {
 #if DEBUG
 
 private class BackupProgressViewPreviewViewController: TablePreviewViewController {
-    init(state: BackupProgressView.ViewState?) {
+    init(state: BackupExportProgressView.ViewState?) {
         super.init { _ -> [UITableViewCell] in
             return [
-                CLVBackupProgressView.tableViewCell(wrapping: BackupProgressView(
+                CLVBackupExportProgressView.tableViewCell(wrapping: BackupExportProgressView(
                     viewState: state,
                 )),
                 {
