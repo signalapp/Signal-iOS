@@ -376,15 +376,15 @@ extension UIColor.Signal {
 
         public static var fillSecondary: UIColor {
             UIColor(
-                light: UIColor(white: 1, alpha: 0.6),
-                dark: UIColor(white: 1, alpha: 0.16),
+                light: UIColor(white: 1, alpha: 0.8),
+                dark: UIColor(white: 1, alpha: 0.24),
             )
         }
 
         public static var fillTertiary: UIColor {
             UIColor(
-                light: UIColor(white: 1, alpha: 0.2),
-                dark: UIColor(white: 1, alpha: 0.08),
+                light: UIColor(white: 1, alpha: 0.6),
+                dark: UIColor(white: 1, alpha: 0.16),
             )
         }
 
@@ -422,11 +422,14 @@ extension UIColor.Signal {
         }
 
         public static var fillSecondary: UIColor {
-            UIColor(white: 1, alpha: 0.6)
+            UIColor(white: 1, alpha: 0.7)
         }
 
         public static var fillTertiary: UIColor {
-            UIColor(white: 1, alpha: 0.2)
+            UIColor(
+                light: UIColor(white: 1, alpha: 0.6),
+                dark: UIColor(white: 1, alpha: 0.48),
+            )
         }
 
         public static var button: UIColor {
