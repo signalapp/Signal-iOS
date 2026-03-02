@@ -210,7 +210,6 @@ class AttachmentTextToolbar: UIView {
 
     private(set) lazy var textView: BodyRangesTextView = {
         let textView = buildTextView()
-        textView.returnKeyType = .done
         textView.scrollIndicatorInsets = UIEdgeInsets(top: 5, left: 0, bottom: 5, right: 3)
         textView.bodyRangesDelegate = self
         return textView
@@ -368,17 +367,6 @@ extension AttachmentTextToolbar: UITextViewDelegate {
         delegate?.attachmentTextToolbarDidChange(self)
     }
 
-    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-        // Though we can wrap the text, we don't want to encourage multline captions, plus a "done" button
-        // allows the user to get the keyboard out of the way while in the attachment approval view.
-        if text == "\n" {
-            textView.resignFirstResponder()
-            return false
-        } else {
-            return true
-        }
-    }
-
     func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
         delegate?.attachmentTextToolbarWillBeginEditing(self)
 
@@ -403,8 +391,15 @@ extension AttachmentTextToolbar: UITextViewDelegate {
     }
 
     func textViewDidEndEditing(_ textView: UITextView) {
+        // We want to collapse the no-longer-editing text view to one line. If
+        // it has multiple lines, and we're focused anywhere other than the
+        // first line, this will make the text view appear blank; instead, put
+        // the cursor at the front.
+        let startTextPosition = textView.beginningOfDocument
         textView.textContainer.lineBreakMode = .byTruncatingTail
         textView.textContainer.maximumNumberOfLines = 1
+        textView.selectedTextRange = textView.textRange(from: startTextPosition, to: startTextPosition)
+
         delegate?.attachmentTextToolbarDidEndEditing(self)
         updateContent(animated: true)
     }
