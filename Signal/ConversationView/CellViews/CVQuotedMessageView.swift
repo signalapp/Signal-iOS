@@ -115,8 +115,8 @@ public class CVQuotedMessageView: ManualStackViewWithLayer {
         var backgroundTint: UIColor {
             switch (isIncoming, conversationStyle.hasWallpaper) {
             case (true, true): .Signal.MaterialBase.fillTertiary
-            case (true, _): .Signal.LightBase.fillSecondary
-            case (false, _): .Signal.ColorBase.fillSecondary
+            case (true, _): .Signal.LightBase.fillTertiary
+            case (false, _): .Signal.ColorBase.fillTertiary
             }
         }
 

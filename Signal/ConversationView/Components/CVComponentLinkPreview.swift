@@ -39,16 +39,9 @@ class CVComponentLinkPreview: CVComponentBase, CVComponent {
         let linkPreviewWrapper = componentView.linkPreviewWrapper
         let linkPreviewView = componentView.linkPreviewView
 
-        linkPreviewView.backgroundColor = switch (conversationStyle.hasWallpaper, isIncoming) {
-        case (true, true): UIColor.Signal.MaterialBase.fillSecondary
-        case (_, true): UIColor.Signal.LightBase.fillSecondary
-        case (_, false): UIColor.Signal.ColorBase.fillSecondary
-        }
-        linkPreviewView.layer.masksToBounds = true
-        linkPreviewView.layer.cornerRadius = 10
-
         linkPreviewView.configureForRendering(
             linkPreview: linkPreview,
+            isIncoming: isIncoming,
             cellMeasurement: cellMeasurement,
         )
 
@@ -81,7 +74,6 @@ class CVComponentLinkPreview: CVComponentBase, CVComponent {
             maxWidth: maxContentWidth,
             measurementBuilder: measurementBuilder,
             linkPreview: linkPreview,
-            isDraft: false,
         )
         let subviewInfos = [linkPreviewSize.asManualSubviewInfo]
         let stackMeasurement = ManualStackView.measure(

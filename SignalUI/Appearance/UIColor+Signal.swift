@@ -417,6 +417,10 @@ extension UIColor.Signal {
             UIColor(white: 0, alpha: 1)
         }
 
+        public static var labelInvertedSecondary: UIColor {
+            UIColor(white: 0, alpha: 0.7)
+        }
+
         public static var fillPrimary: UIColor {
             UIColor(white: 1, alpha: 0.8)
         }
