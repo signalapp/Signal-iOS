@@ -124,7 +124,7 @@ public class CVQuotedMessageView: ManualStackViewWithLayer {
             isIncoming ? .Signal.label : .Signal.ColorBase.labelInverted
         }
 
-        var quotedAuthorFont: UIFont { UIFont.dynamicTypeSubheadlineClamped.semibold() }
+        var quotedAuthorFont: UIFont { UIFont.dynamicTypeFootnote.semibold() }
         var quotedAuthorColor: UIColor { textColor }
         var quotedTextColor: UIColor { textColor }
         var quotedTextFont: UIFont { UIFont.dynamicTypeSubheadline }
@@ -549,7 +549,7 @@ public class CVQuotedMessageView: ManualStackViewWithLayer {
                 highlightRange: (configurator.quotedAuthorName.string as NSString).range(of: memberLabel, options: .backwards),
                 highlightFont: .dynamicTypeFootnote,
                 axLabelPrefix: nil,
-                isQuotedReply: true,
+                presentationContext: configurator.isIncoming ? .messageBubbleQuoteReplyIncoming : .messageBubbleQuoteReplyOutgoing,
                 lineBreakMode: .byTruncatingTail,
                 numberOfLines: 0,
                 onTap: nil,
@@ -849,8 +849,8 @@ public class CVQuotedMessageView: ManualStackViewWithLayer {
                 attributedText: configurator.quotedAuthorName,
                 font: configurator.quotedAuthorFont,
                 highlightRange: (configurator.quotedAuthorName.string as NSString).range(of: memberLabel, options: .backwards),
-                highlightFont: UIFont.dynamicTypeSubheadlineClamped,
-                isQuotedReply: true,
+                highlightFont: .dynamicTypeFootnote,
+                presentationContext: configurator.isIncoming ? .messageBubbleQuoteReplyIncoming : .messageBubbleQuoteReplyOutgoing,
                 maxWidth: maxLabelWidth,
             )
         } else {

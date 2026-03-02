@@ -84,7 +84,7 @@ public class CVComponentSenderName: CVComponentBase, CVComponent {
                 highlightRange: range,
                 highlightFont: .dynamicTypeFootnote,
                 axLabelPrefix: nil, // handled separately in CVItemViewState
-                isQuotedReply: false,
+                presentationContext: .messageBubbleRegular,
                 onTap: nil,
             )
         } else {
@@ -167,7 +167,7 @@ public class CVComponentSenderName: CVComponentBase, CVComponent {
                 font: UIFont.dynamicTypeFootnote.semibold(),
                 highlightRange: range,
                 highlightFont: .dynamicTypeFootnote,
-                isQuotedReply: false,
+                presentationContext: .messageBubbleRegular,
                 maxWidth: maxWidth,
             )
         } else {

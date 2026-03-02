@@ -13,10 +13,17 @@ import SignalServiceKit
  * truncates text longer than the given width and adds an ellipsis.
  */
 public class CVCapsuleLabel: UILabel {
+    public enum PresentationContext {
+        case nonMessageBubble
+        case messageBubbleRegular
+        case messageBubbleQuoteReplyIncoming
+        case messageBubbleQuoteReplyOutgoing
+    }
+
     public let highlightRange: NSRange
     public let highlightFont: UIFont
     public let axLabelPrefix: String?
-    public let isQuotedReply: Bool
+    public let presentationContext: PresentationContext
     public let onTap: (() -> Void)?
 
     // *CapsuleInset is how far beyond the text the capsule expands.
@@ -33,7 +40,7 @@ public class CVCapsuleLabel: UILabel {
         highlightRange: NSRange,
         highlightFont: UIFont,
         axLabelPrefix: String?,
-        isQuotedReply: Bool,
+        presentationContext: PresentationContext,
         lineBreakMode: NSLineBreakMode = .byTruncatingTail,
         numberOfLines: Int = 0,
         onTap: (() -> Void)?,
@@ -41,7 +48,7 @@ public class CVCapsuleLabel: UILabel {
         self.highlightRange = highlightRange
         self.highlightFont = highlightFont
         self.axLabelPrefix = axLabelPrefix
-        self.isQuotedReply = isQuotedReply
+        self.presentationContext = presentationContext
         self.onTap = onTap
 
         super.init(frame: .zero)
@@ -68,16 +75,20 @@ public class CVCapsuleLabel: UILabel {
     }
 
     private var capsuleColor: UIColor {
-        if Theme.isDarkThemeEnabled {
-            if isQuotedReply {
-                return UIColor.white.withAlphaComponent(0.20)
-            }
-            return textColor.withAlphaComponent(0.25)
-        }
-        if isQuotedReply {
+        switch presentationContext {
+        case .messageBubbleQuoteReplyOutgoing:
             return UIColor.white.withAlphaComponent(0.36)
+        case .messageBubbleQuoteReplyIncoming:
+            if Theme.isDarkThemeEnabled {
+                return UIColor.white.withAlphaComponent(0.16)
+            }
+            return UIColor.black.withAlphaComponent(0.1)
+        case .messageBubbleRegular, .nonMessageBubble:
+            if Theme.isDarkThemeEnabled {
+                return textColor.withAlphaComponent(0.32)
+            }
+            return textColor.withAlphaComponent(0.14)
         }
-        return textColor.withAlphaComponent(0.1)
     }
 
     @objc
@@ -275,7 +286,7 @@ public class CVCapsuleLabel: UILabel {
         font: UIFont,
         highlightRange: NSRange,
         highlightFont: UIFont,
-        isQuotedReply: Bool,
+        presentationContext: CVCapsuleLabel.PresentationContext,
         maxWidth: CGFloat,
     ) -> CGSize {
         let label = CVCapsuleLabel(
@@ -285,7 +296,7 @@ public class CVCapsuleLabel: UILabel {
             highlightRange: highlightRange,
             highlightFont: highlightFont,
             axLabelPrefix: nil,
-            isQuotedReply: isQuotedReply,
+            presentationContext: presentationContext,
             onTap: nil,
         )
         return label.labelSize(maxWidth: maxWidth)

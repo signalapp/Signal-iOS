@@ -244,7 +244,7 @@ public class ContactCellView: ManualStackView {
                             "MEMBER_LABEL_AX_PREFIX",
                             comment: "Accessibility prefix for member labels.",
                         ),
-                        isQuotedReply: false,
+                        presentationContext: .nonMessageBubble,
                         numberOfLines: 1,
                         onTap: nil,
                     )

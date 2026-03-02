@@ -536,7 +536,7 @@ struct ConversationHeaderBuilder {
                 "MEMBER_LABEL_AX_PREFIX",
                 comment: "Accessibility prefix for member labels.",
             ),
-            isQuotedReply: false,
+            presentationContext: .nonMessageBubble,
             numberOfLines: 1,
             onTap: { [weak delegate] in
                 delegate?.didTapMemberLabel()
