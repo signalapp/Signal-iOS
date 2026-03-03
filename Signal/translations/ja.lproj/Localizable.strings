@@ -6629,7 +6629,7 @@
 "PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_TITLE_FORMAT" = "%1$@が見つかりました";
 
 /* Pressing this button pins a thread */
-"PIN_ACTION" = "ピン留めする";
+"PIN_ACTION" = "ピン留め";
 
 /* Error body indicating that the attempt to change a PIN failed. */
 "PIN_CHANGE_ERROR_MESSAGE" = "新規のPINを作成できず、既存のPINは無効化されました。インターネット接続を確認して再度試してください。";
@@ -6785,7 +6785,7 @@
 "PINNED_MESSAGE_MENU_ACCESSIBILITY_LABEL" = "ピン留めされたメッセージメニュー";
 
 /* Label for button to pin a message */
-"PINNED_MESSAGE_PIN_ACTION_TITLE" = "ピン留めする";
+"PINNED_MESSAGE_PIN_ACTION_TITLE" = "ピン留め";
 
 /* Message for an action sheet confirming the user wants to replace oldest pinned message. */
 "PINNED_MESSAGE_REPLACE_OLDEST_BODY" = "メッセージをピン留めすると、一番最初にピン留めしたメッセージと置き換えられます。";
