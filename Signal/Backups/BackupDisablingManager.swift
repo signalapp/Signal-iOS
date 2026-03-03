@@ -27,6 +27,7 @@ final class BackupDisablingManager {
     private let backupCDNCredentialStore: BackupCDNCredentialStore
     private let backupExportJobStore: BackupExportJobStore
     private let backupKeyService: BackupKeyService
+    private let backupListMediaManager: BackupListMediaManager
     private let backupPlanManager: BackupPlanManager
     private let backupSettingsStore: BackupSettingsStore
     private let clvBackupExportProgressViewStore: CLVBackupExportProgressView.Store
@@ -45,6 +46,7 @@ final class BackupDisablingManager {
         backupCDNCredentialStore: BackupCDNCredentialStore,
         backupExportJobStore: BackupExportJobStore,
         backupKeyService: BackupKeyService,
+        backupListMediaManager: BackupListMediaManager,
         backupPlanManager: BackupPlanManager,
         backupSettingsStore: BackupSettingsStore,
         clvBackupExportProgressViewStore: CLVBackupExportProgressView.Store,
@@ -59,6 +61,7 @@ final class BackupDisablingManager {
         self.backupCDNCredentialStore = backupCDNCredentialStore
         self.backupExportJobStore = backupExportJobStore
         self.backupKeyService = backupKeyService
+        self.backupListMediaManager = backupListMediaManager
         self.backupPlanManager = backupPlanManager
         self.backupSettingsStore = backupSettingsStore
         self.clvBackupExportProgressViewStore = clvBackupExportProgressViewStore
@@ -163,23 +166,6 @@ final class BackupDisablingManager {
         await _waitForBackupAttachmentDownloads()
         logger.info("Done waiting for downloads.")
 
-        do {
-            // If we skipped downloads, it's possible we're still in the middle
-            // of a list-media operation. If so, we don't want to delete stuff
-            // out from under it.
-            logger.info("Waiting for list-media before disabling...")
-
-            try await Retry.performWithIndefiniteNetworkRetries {
-                try await backupAttachmentCoordinator.queryListMediaIfNeeded()
-            }
-
-            logger.info("Done waiting for list-media.")
-        } catch {
-            logger.error("Failed to list-media! \(error)")
-            // Continue anyway – this isn't a retryable network error, and we
-            // really want to make sure we disable Backups.
-        }
-
         let successfullyDisabledRemotely: Bool
         do {
             let (localIdentifiers, isRegisteredPrimaryDevice) = db.read { tx in
@@ -222,6 +208,7 @@ final class BackupDisablingManager {
             backupSettingsStore.resetLastBackupDetails(tx: tx)
             backupSettingsStore.resetShouldAllowBackupUploadsOnCellular(tx: tx)
             backupExportJobStore.wipe(tx: tx)
+            backupListMediaManager.wipe(tx: tx)
 
             // Reset the Backups banners, in case we later reenable Backups.
             clvBackupExportProgressViewStore.setIsHidden(false, tx: tx)

@@ -96,6 +96,7 @@ public class AppEnvironment: NSObject {
             backupCDNCredentialStore: backupCDNCredentialStore,
             backupExportJobStore: backupExportJobStore,
             backupKeyService: DependenciesBridge.shared.backupKeyService,
+            backupListMediaManager: DependenciesBridge.shared.backupListMediaManager,
             backupPlanManager: DependenciesBridge.shared.backupPlanManager,
             backupSettingsStore: backupSettingsStore,
             clvBackupExportProgressViewStore: clvBackupExportProgressViewStore,

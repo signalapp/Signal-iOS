@@ -12,6 +12,12 @@ public struct BackupListMediaStore {
 
     // MARK: -
 
+    func removeAll(tx: DBWriteTransaction) {
+        kvStore.removeAll(transaction: tx)
+    }
+
+    // MARK: -
+
     public func setLastFailingIntegrityCheckResult(
         _ newValue: ListMediaIntegrityCheckResult?,
         tx: DBWriteTransaction,

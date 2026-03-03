@@ -78,6 +78,12 @@ public protocol BackupListMediaManager {
     /// Returns true if a list media should be run whenever is next possible.
     func getNeedsQueryListMedia(tx: DBReadTransaction) -> Bool
 
+    /// Wipes any persisted state related to list-media, such as artifacts of an
+    /// interrupted attempt or details about prior attempts.
+    func wipe(tx: DBWriteTransaction)
+
+    /// Perform a list-media operation, if necessary. This is a durable,
+    /// resumable, multi-stage operation.
     func queryListMediaIfNeeded() async throws
 }
 
@@ -158,9 +164,21 @@ class BackupListMediaManagerImpl: BackupListMediaManager {
         )
     }
 
+    // MARK: -
+
     func getNeedsQueryListMedia(tx: DBReadTransaction) -> Bool {
         return needsToQueryListMedia(tx: tx)
     }
+
+    func wipe(tx: DBWriteTransaction) {
+        kvStore.removeAll(transaction: tx)
+        backupListMediaStore.removeAll(tx: tx)
+        failIfThrows {
+            try ListedBackupMediaObject.deleteAll(tx.database)
+        }
+    }
+
+    // MARK: -
 
     func queryListMediaIfNeeded() async throws {
         let task = serialTaskQueue.enqueue { [self] in
