@@ -1040,10 +1040,23 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
     // The "message" contents of this component are vertically
     // stacked in four sections.  Ordering of the keys in each
     // section determines the ordering of the subcomponents.
-    private static var topFullWidthCVComponentKeys: [CVComponentKey] { [.linkPreview] }
+    private static var topFullWidthCVComponentKeys: [CVComponentKey] { [] }
     private static var topNestedCVComponentKeys: [CVComponentKey] { [.senderName] }
-    private static var bottomFullWidthCVComponentKeys: [CVComponentKey] { [.quotedReply, .bodyMedia] }
-    private static var bottomNestedShareCVComponentKeys: [CVComponentKey] { [.viewOnce, .audioAttachment, .genericAttachment, .paymentAttachment, .archivedPaymentAttachment, .contactShare, .giftBadge, .poll] }
+    private static var bottomFullWidthCVComponentKeys: [CVComponentKey] { [
+        .quotedReply,
+        .linkPreview,
+        .bodyMedia,
+    ] }
+    private static var bottomNestedShareCVComponentKeys: [CVComponentKey] { [
+        .viewOnce,
+        .audioAttachment,
+        .genericAttachment,
+        .paymentAttachment,
+        .archivedPaymentAttachment,
+        .contactShare,
+        .giftBadge,
+        .poll,
+    ] }
     private static var bottomNestedTextCVComponentKeys: [CVComponentKey] { [.bodyText, .footer, .undownloadableAttachment] }
 
     // The "message" contents of this component for most messages are vertically
