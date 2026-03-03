@@ -54,7 +54,7 @@ public enum AttachmentUpload {
         sleepTimer: Upload.Shims.SleepTimer,
         progress: OWSProgressSource?,
     ) async throws -> Upload.Result<Metadata> {
-        attempt.logger.info("Begin upload. (CDN\(attempt.cdnNumber))")
+        attempt.logger.info("Begin upload. (CDN\(attempt.cdnNumber)) [\(attempt.encryptedDataLength) bytes]")
         try await performResumableUpload(
             attempt: attempt,
             sleepTimer: sleepTimer,
