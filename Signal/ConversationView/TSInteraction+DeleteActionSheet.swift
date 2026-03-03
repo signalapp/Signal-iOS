@@ -165,25 +165,26 @@ public extension TSInteraction {
                         (latestMessage as? TSOutgoingMessage)?.updateWithRecipientAddressStates(deleteMessage.recipientAddressStates, tx: tx)
 
                         if message.canBeRemotelyDeletedByNonAdmin {
-                            _ = TSMessage.tryToRemotelyDeleteMessageAsNonAdmin(
-                                fromAuthor: localIdentifiers.aci,
-                                sentAtTimestamp: latestMessage.timestamp,
-                                threadUniqueId: latestThread.uniqueId,
-                                serverTimestamp: 0, // TSOutgoingMessage won't have server timestamp.
-                                transaction: tx,
-                            )
+                            do {
+                                try TSMessage.tryToRemotelyDeleteMessageAsNonAdmin(
+                                    fromAuthor: localIdentifiers.aci,
+                                    sentAtTimestamp: latestMessage.timestamp,
+                                    threadUniqueId: latestThread.uniqueId,
+                                    serverTimestamp: 0, // TSOutgoingMessage won't have server timestamp.
+                                    transaction: tx,
+                                )
+                            } catch {
+                                return owsFailDebug("Unable to remotely delete message")
+                            }
                         } else if
                             canAdminDelete,
                             let groupThread = thread as? TSGroupThread
                         {
                             let originalMessageAuthorAci: Aci?
-                            let serverTimestamp: UInt64
                             if let incomingMessage = (latestMessage as? TSIncomingMessage) {
-                                serverTimestamp = incomingMessage.serverTimestamp?.uint64Value ?? 0
                                 originalMessageAuthorAci = incomingMessage.authorAddress.aci
                             } else {
                                 originalMessageAuthorAci = localIdentifiers.aci
-                                serverTimestamp = 0
                             }
 
                             guard let originalMessageAuthorAci else {
@@ -191,15 +192,19 @@ public extension TSInteraction {
                                 return
                             }
 
-                            _ = DependenciesBridge.shared.adminDeleteManager.tryToAdminDeleteMessage(
-                                originalMessageAuthorAci: originalMessageAuthorAci,
-                                deleteAuthorAci: localIdentifiers.aci,
-                                sentAtTimestamp: latestMessage.timestamp,
-                                groupThread: groupThread,
-                                threadUniqueId: latestThread.uniqueId,
-                                serverTimestamp: serverTimestamp,
-                                transaction: tx,
-                            )
+                            do {
+                                try DependenciesBridge.shared.adminDeleteManager.tryToAdminDeleteMessage(
+                                    originalMessageAuthorAci: originalMessageAuthorAci,
+                                    deleteAuthorAci: localIdentifiers.aci,
+                                    sentAtTimestamp: latestMessage.timestamp,
+                                    groupThread: groupThread,
+                                    threadUniqueId: latestThread.uniqueId,
+                                    serverTimestamp: 0, // TSOutgoingMessage won't have server timestamp.
+                                    transaction: tx,
+                                )
+                            } catch {
+                                return owsFailDebug("Unable to remotely delete message")
+                            }
                         } else {
                             owsFailDebug("Unable to delete as admin or as non-admin")
                             return

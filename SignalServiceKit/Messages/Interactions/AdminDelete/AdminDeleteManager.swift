@@ -20,24 +20,18 @@ public class AdminDeleteManager {
         self.tsAccountManager = tsAccountManager
     }
 
-    public enum AdminDeleteProcessingResult: Error {
-        case deletedMessageMissing
-        case invalidDelete
-        case success
-    }
-
     private func insertAdminDelete(
         groupThread: TSGroupThread,
         interactionId: Int64,
         deleteAuthor: Aci,
         tx: DBWriteTransaction,
-    ) -> AdminDeleteProcessingResult {
+    ) throws(TSMessage.RemoteDeleteError) {
         guard
             let groupModel = groupThread.groupModel as? TSGroupModelV2,
             groupModel.membership.isFullMemberAndAdministrator(deleteAuthor)
         else {
             logger.error("Failed to process admin delete for non-admin")
-            return .invalidDelete
+            throw .invalidDelete
         }
 
         guard
@@ -47,7 +41,7 @@ public class AdminDeleteManager {
             )?.id
         else {
             logger.error("Failed to process admin delete for missing signal recipient")
-            return .invalidDelete
+            throw .invalidDelete
         }
 
         failIfThrows {
@@ -57,7 +51,6 @@ public class AdminDeleteManager {
             )
             try adminDeleteRecord.insert(tx.database)
         }
-        return .success
     }
 
     public func tryToAdminDeleteMessage(
@@ -68,10 +61,10 @@ public class AdminDeleteManager {
         threadUniqueId: String?,
         serverTimestamp: UInt64,
         transaction: DBWriteTransaction,
-    ) -> AdminDeleteProcessingResult {
+    ) throws(TSMessage.RemoteDeleteError) {
         guard SDS.fitsInInt64(sentAtTimestamp) else {
             owsFailDebug("Unable to delete a message with invalid sentAtTimestamp: \(sentAtTimestamp)")
-            return .invalidDelete
+            throw .invalidDelete
         }
 
         if
@@ -82,26 +75,23 @@ public class AdminDeleteManager {
                 transaction: transaction,
             )
         {
-            let success = TSMessage.remotelyDeleteMessage(
+            let allowDeleteTimeframe = RemoteConfig.current.adminDeleteMaxAgeInSeconds + .day
+            let latestMessage = try TSMessage.remotelyDeleteMessage(
                 messageToDelete,
-                authorAci: originalMessageAuthorAci,
-                isAdminDelete: true,
+                deleteAuthorAci: deleteAuthorAci,
+                allowedDeleteTimeframeSeconds: allowDeleteTimeframe,
                 serverTimestamp: serverTimestamp,
                 transaction: transaction,
             )
 
-            guard success else {
-                return .invalidDelete
-            }
-
-            return insertAdminDelete(
+            return try insertAdminDelete(
                 groupThread: groupThread,
-                interactionId: messageToDelete.sqliteRowId!,
+                interactionId: latestMessage.sqliteRowId!,
                 deleteAuthor: deleteAuthorAci,
                 tx: transaction,
             )
         } else {
-            return .deletedMessageMissing
+            throw .deletedMessageMissing
         }
     }
 

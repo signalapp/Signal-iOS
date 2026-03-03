@@ -468,28 +468,29 @@ public final class MessageReceiver {
                         )
                     }
                 } else if let delete = dataMessage.delete {
-                    let result = TSMessage.tryToRemotelyDeleteMessageAsNonAdmin(
-                        fromAuthor: decryptedEnvelope.sourceAci,
-                        sentAtTimestamp: delete.targetSentTimestamp,
-                        threadUniqueId: transcript.threadForDataMessage?.uniqueId,
-                        serverTimestamp: decryptedEnvelope.serverTimestamp,
-                        transaction: tx,
-                    )
-                    switch result {
-                    case .success:
-                        break
-                    case .invalidDelete:
-                        Logger.error("Failed to remotely delete message \(delete.targetSentTimestamp)")
-                    case .deletedMessageMissing:
-                        SSKEnvironment.shared.earlyMessageManagerRef.recordEarlyEnvelope(
-                            envelope,
-                            plainTextData: request.plaintextData,
-                            wasReceivedByUD: request.wasReceivedByUD,
-                            serverDeliveryTimestamp: request.serverDeliveryTimestamp,
-                            associatedMessageTimestamp: delete.targetSentTimestamp,
-                            associatedMessageAuthor: decryptedEnvelope.sourceAci,
+                    do {
+                        try TSMessage.tryToRemotelyDeleteMessageAsNonAdmin(
+                            fromAuthor: decryptedEnvelope.sourceAci,
+                            sentAtTimestamp: delete.targetSentTimestamp,
+                            threadUniqueId: transcript.threadForDataMessage?.uniqueId,
+                            serverTimestamp: decryptedEnvelope.serverTimestamp,
                             transaction: tx,
                         )
+                    } catch {
+                        switch error {
+                        case .invalidDelete:
+                            Logger.error("Failed to remotely delete message \(delete.targetSentTimestamp)")
+                        case .deletedMessageMissing:
+                            SSKEnvironment.shared.earlyMessageManagerRef.recordEarlyEnvelope(
+                                envelope,
+                                plainTextData: request.plaintextData,
+                                wasReceivedByUD: request.wasReceivedByUD,
+                                serverDeliveryTimestamp: request.serverDeliveryTimestamp,
+                                associatedMessageTimestamp: delete.targetSentTimestamp,
+                                associatedMessageAuthor: decryptedEnvelope.sourceAci,
+                                transaction: tx,
+                            )
+                        }
                     }
                 } else if let adminDelete = dataMessage.adminDelete {
                     guard BuildFlags.AdminDelete.receive else {
@@ -511,31 +512,31 @@ public final class MessageReceiver {
                         Logger.error("Couldn't process admin delete for invalid aci")
                         return
                     }
-                    let result = adminDeleteManager.tryToAdminDeleteMessage(
-                        originalMessageAuthorAci: targetAuthorAci,
-                        deleteAuthorAci: localIdentifiers.aci,
-                        sentAtTimestamp: adminDelete.targetSentTimestamp,
-                        groupThread: groupThread,
-                        threadUniqueId: groupThread.uniqueId,
-                        serverTimestamp: envelope.serverTimestamp,
-                        transaction: tx,
-                    )
-
-                    switch result {
-                    case .success:
-                        break
-                    case .invalidDelete:
-                        Logger.warn("Couldn't process invalid admin delete")
-                    case .deletedMessageMissing:
-                        earlyMessageManager.recordEarlyEnvelope(
-                            envelope,
-                            plainTextData: request.plaintextData,
-                            wasReceivedByUD: request.wasReceivedByUD,
-                            serverDeliveryTimestamp: request.serverDeliveryTimestamp,
-                            associatedMessageTimestamp: adminDelete.targetSentTimestamp,
-                            associatedMessageAuthor: decryptedEnvelope.sourceAci,
+                    do {
+                        try adminDeleteManager.tryToAdminDeleteMessage(
+                            originalMessageAuthorAci: targetAuthorAci,
+                            deleteAuthorAci: localIdentifiers.aci,
+                            sentAtTimestamp: adminDelete.targetSentTimestamp,
+                            groupThread: groupThread,
+                            threadUniqueId: groupThread.uniqueId,
+                            serverTimestamp: envelope.serverTimestamp,
                             transaction: tx,
                         )
+                    } catch {
+                        switch error {
+                        case .invalidDelete:
+                            Logger.warn("Couldn't process invalid admin delete")
+                        case .deletedMessageMissing:
+                            earlyMessageManager.recordEarlyEnvelope(
+                                envelope,
+                                plainTextData: request.plaintextData,
+                                wasReceivedByUD: request.wasReceivedByUD,
+                                serverDeliveryTimestamp: request.serverDeliveryTimestamp,
+                                associatedMessageTimestamp: adminDelete.targetSentTimestamp,
+                                associatedMessageAuthor: decryptedEnvelope.sourceAci,
+                                transaction: tx,
+                            )
+                        }
                     }
                 } else if let groupCallUpdate = dataMessage.groupCallUpdate {
                     if let groupId {
@@ -1127,30 +1128,31 @@ public final class MessageReceiver {
         }
 
         if let delete = dataMessage.delete {
-            let result = TSMessage.tryToRemotelyDeleteMessageAsNonAdmin(
-                fromAuthor: envelope.sourceAci,
-                sentAtTimestamp: delete.targetSentTimestamp,
-                threadUniqueId: thread.uniqueId,
-                serverTimestamp: envelope.serverTimestamp,
-                transaction: tx,
-            )
-            switch result {
-            case .success:
-                break
-            case .invalidDelete:
-                Logger.warn("Couldn't process invalid remote delete w/ts \(delete.targetSentTimestamp)")
-            case .deletedMessageMissing:
-                SSKEnvironment.shared.earlyMessageManagerRef.recordEarlyEnvelope(
-                    envelope.envelope,
-                    plainTextData: request.plaintextData,
-                    wasReceivedByUD: request.wasReceivedByUD,
-                    serverDeliveryTimestamp: request.serverDeliveryTimestamp,
-                    associatedMessageTimestamp: delete.targetSentTimestamp,
-                    associatedMessageAuthor: envelope.sourceAci,
+            do {
+                try TSMessage.tryToRemotelyDeleteMessageAsNonAdmin(
+                    fromAuthor: envelope.sourceAci,
+                    sentAtTimestamp: delete.targetSentTimestamp,
+                    threadUniqueId: thread.uniqueId,
+                    serverTimestamp: envelope.serverTimestamp,
                     transaction: tx,
                 )
+            } catch {
+                switch error {
+                case .invalidDelete:
+                    Logger.warn("Couldn't process invalid remote delete w/ts \(delete.targetSentTimestamp)")
+                case .deletedMessageMissing:
+                    SSKEnvironment.shared.earlyMessageManagerRef.recordEarlyEnvelope(
+                        envelope.envelope,
+                        plainTextData: request.plaintextData,
+                        wasReceivedByUD: request.wasReceivedByUD,
+                        serverDeliveryTimestamp: request.serverDeliveryTimestamp,
+                        associatedMessageTimestamp: delete.targetSentTimestamp,
+                        associatedMessageAuthor: envelope.sourceAci,
+                        transaction: tx,
+                    )
+                }
+                return nil
             }
-            return nil
         }
 
         if let adminDelete = dataMessage.adminDelete {
@@ -1172,33 +1174,33 @@ public final class MessageReceiver {
                 Logger.error("Couldn't process admin delete for invalid aci")
                 return nil
             }
-            let result = adminDeleteManager.tryToAdminDeleteMessage(
-                originalMessageAuthorAci: targetAuthorAci,
-                deleteAuthorAci: envelope.sourceAci,
-                sentAtTimestamp: adminDelete.targetSentTimestamp,
-                groupThread: groupThread,
-                threadUniqueId: thread.uniqueId,
-                serverTimestamp: envelope.serverTimestamp,
-                transaction: tx,
-            )
-
-            switch result {
-            case .success:
-                break
-            case .invalidDelete:
-                Logger.warn("Couldn't process invalid admin delete")
-            case .deletedMessageMissing:
-                SSKEnvironment.shared.earlyMessageManagerRef.recordEarlyEnvelope(
-                    envelope.envelope,
-                    plainTextData: request.plaintextData,
-                    wasReceivedByUD: request.wasReceivedByUD,
-                    serverDeliveryTimestamp: request.serverDeliveryTimestamp,
-                    associatedMessageTimestamp: adminDelete.targetSentTimestamp,
-                    associatedMessageAuthor: envelope.sourceAci,
+            do {
+                try adminDeleteManager.tryToAdminDeleteMessage(
+                    originalMessageAuthorAci: targetAuthorAci,
+                    deleteAuthorAci: envelope.sourceAci,
+                    sentAtTimestamp: adminDelete.targetSentTimestamp,
+                    groupThread: groupThread,
+                    threadUniqueId: thread.uniqueId,
+                    serverTimestamp: envelope.serverTimestamp,
                     transaction: tx,
                 )
+            } catch {
+                switch error {
+                case .invalidDelete:
+                    Logger.warn("Couldn't process invalid admin delete")
+                case .deletedMessageMissing:
+                    SSKEnvironment.shared.earlyMessageManagerRef.recordEarlyEnvelope(
+                        envelope.envelope,
+                        plainTextData: request.plaintextData,
+                        wasReceivedByUD: request.wasReceivedByUD,
+                        serverDeliveryTimestamp: request.serverDeliveryTimestamp,
+                        associatedMessageTimestamp: adminDelete.targetSentTimestamp,
+                        associatedMessageAuthor: envelope.sourceAci,
+                        transaction: tx,
+                    )
+                }
+                return nil
             }
-            return nil
         }
 
         if let pollVote = dataMessage.pollVote {

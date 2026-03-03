@@ -343,71 +343,90 @@ public extension TSMessage {
         return true
     }
 
-    @objc(OWSRemoteDeleteProcessingResult)
-    enum RemoteDeleteProcessingResult: Int, Error {
+    enum RemoteDeleteError: Int, Error {
         case deletedMessageMissing
         case invalidDelete
-        case success
     }
 
     static func remotelyDeleteMessage(
         _ message: TSMessage,
-        authorAci: Aci,
-        isAdminDelete: Bool,
+        deleteAuthorAci: Aci,
+        allowedDeleteTimeframeSeconds: TimeInterval,
         serverTimestamp: UInt64,
         transaction: DBWriteTransaction,
-    ) -> Bool {
-        if message is TSOutgoingMessage {
-            if SignalServiceAddress(authorAci).isLocalAddress || isAdminDelete {
-                message.markMessageAsRemotelyDeleted(transaction: transaction)
-                return true
+    ) throws(RemoteDeleteError) -> TSMessage {
+        guard message.isIncoming || message.isOutgoing else {
+            owsFailDebug("Message to delete is not incoming or outgoing")
+            throw .invalidDelete
+        }
+
+        guard let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction)?.aci else {
+            throw .invalidDelete
+        }
+
+        var latestMessage = message
+        if message.editState == .pastRevision {
+            // The remote delete targeted an old revision, fetch
+            // swap out the target message for the latest (or return an error)
+            // This avoids cases where older edits could be deleted and
+            // leave newer revisions
+            if
+                let latestEdit = DependenciesBridge.shared.editMessageStore.findMessage(
+                    fromEdit: message,
+                    tx: transaction,
+                )
+            {
+                latestMessage = latestEdit
+            } else {
+                Logger.info("Ignoring delete for missing edit target.")
+                throw .invalidDelete
             }
-            owsFailDebug("Can't delete an outgoing message by non-local user unless its an admin delete.")
-            return false
-        } else if var incomingMessageToDelete = message as? TSIncomingMessage {
-            if incomingMessageToDelete.editState == .pastRevision {
-                // The remote delete targeted an old revision, fetch
-                // swap out the target message for the latest (or return an error)
-                // This avoids cases where older edits could be deleted and
-                // leave newer revisions
-                if
-                    let latestEdit = DependenciesBridge.shared.editMessageStore.findMessage(
-                        fromEdit: incomingMessageToDelete,
-                        tx: transaction,
-                    ) as? TSIncomingMessage
-                {
-                    incomingMessageToDelete = latestEdit
-                } else {
-                    Logger.info("Ignoring delete for missing edit target.")
-                    return false
-                }
+        }
+
+        // Client has already validated timestamp if local user is deleting a message.
+        if deleteAuthorAci == localAci {
+            latestMessage.markMessageAsRemotelyDeleted(transaction: transaction)
+            return latestMessage
+        }
+
+        if latestMessage.isOutgoing {
+            guard latestMessage.timestamp <= serverTimestamp else {
+                owsFailDebug("Can't delete a message from the future.")
+                throw .invalidDelete
             }
 
-            guard let messageToDeleteServerTimestamp = incomingMessageToDelete.serverTimestamp?.uint64Value else {
+            let deleteThresholdMs = UInt64(allowedDeleteTimeframeSeconds) * MSEC_PER_SEC
+            guard serverTimestamp - latestMessage.timestamp < deleteThresholdMs else {
+                owsFailDebug("Ignoring outgoing message delete sent more than allowed threshold after the original message")
+                throw .invalidDelete
+            }
+
+            latestMessage.markMessageAsRemotelyDeleted(transaction: transaction)
+            return latestMessage
+        } else if let incoming = latestMessage as? TSIncomingMessage {
+            guard let messageToDeleteServerTimestamp = incoming.serverTimestamp else {
                 // Older messages might be missing this, but since we only allow deleting for a small
                 // window after you send a message we should generally never hit this path.
                 owsFailDebug("can't delete a message without a serverTimestamp")
-                return false
+                throw .invalidDelete
             }
 
-            guard messageToDeleteServerTimestamp <= serverTimestamp else {
+            guard messageToDeleteServerTimestamp.uint64Value <= serverTimestamp else {
                 owsFailDebug("Can't delete a message from the future.")
-                return false
+                throw .invalidDelete
             }
 
-            // TODO: This should eventually be determined via global remote config separated by admin vs regular remote delete.
-            guard serverTimestamp - messageToDeleteServerTimestamp < (2 * UInt64.dayInMs) else {
-                owsFailDebug("Ignoring message delete sent more than 48 hours after the original message")
-                return false
+            guard serverTimestamp - messageToDeleteServerTimestamp.uint64Value < (UInt64(allowedDeleteTimeframeSeconds) * MSEC_PER_SEC) else {
+                owsFailDebug("Ignoring incoming message delete sent more than allowed threshold after the original message")
+                throw .invalidDelete
             }
 
-            incomingMessageToDelete.markMessageAsRemotelyDeleted(transaction: transaction)
-
-            return true
-        } else {
-            owsFailDebug("Message to delete is not incoming or outgoing")
-            return false
+            latestMessage.markMessageAsRemotelyDeleted(transaction: transaction)
+            return latestMessage
         }
+
+        owsFailDebug("Message not incoming or outgoing")
+        throw .invalidDelete
     }
 
     class func tryToRemotelyDeleteMessageAsNonAdmin(
@@ -416,10 +435,10 @@ public extension TSMessage {
         threadUniqueId: String?,
         serverTimestamp: UInt64,
         transaction: DBWriteTransaction,
-    ) -> RemoteDeleteProcessingResult {
+    ) throws(RemoteDeleteError) {
         guard SDS.fitsInInt64(sentAtTimestamp) else {
             owsFailDebug("Unable to delete a message with invalid sentAtTimestamp: \(sentAtTimestamp)")
-            return .invalidDelete
+            throw .invalidDelete
         }
 
         if
@@ -430,15 +449,15 @@ public extension TSMessage {
                 transaction: transaction,
             )
         {
-            let success = remotelyDeleteMessage(
+            let allowDeleteTimeframe = RemoteConfig.current.normalDeleteMaxAgeInSeconds + .day
+            let _ = try remotelyDeleteMessage(
                 messageToDelete,
-                authorAci: authorAci,
-                isAdminDelete: false,
+                deleteAuthorAci: authorAci,
+                allowedDeleteTimeframeSeconds: allowDeleteTimeframe,
                 serverTimestamp: serverTimestamp,
                 transaction: transaction,
             )
 
-            return success ? .success : .invalidDelete
         } else if
             let storyMessage = StoryFinder.story(
                 timestamp: sentAtTimestamp,
@@ -452,16 +471,14 @@ public extension TSMessage {
                 case .outgoing(let recipientStates) = storyMessage.manifest,
                 !recipientStates.values.flatMap({ $0.contexts }).isEmpty
             {
-                return .success
+                return
             }
 
             storyMessage.anyRemove(transaction: transaction)
-
-            return .success
         } else {
             // The message doesn't exist locally, so nothing to do.
             Logger.info("Attempted to remotely delete a message that doesn't exist \(sentAtTimestamp)")
-            return .deletedMessageMissing
+            throw .deletedMessageMissing
         }
 
     }
