@@ -528,7 +528,8 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         case .remotelyDeleted(let deleteAuthor):
             if let deleteAuthor {
                 switch deleteAuthor.authorType {
-                case .admin(let aci, let groupColor):
+                case .admin(let aci):
+                    let groupColor = GroupNameColors.forThread(thread).color(for: aci)
                     let attributedString = buildAdminDeleteAttributedString(
                         displayName: deleteAuthor.displayName,
                         groupColor: groupColor,
