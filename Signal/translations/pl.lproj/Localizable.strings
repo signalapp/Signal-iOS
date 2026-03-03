@@ -602,7 +602,7 @@
 "BACKUP_ONBOARDING_INTRO_NOT_NOW_TOAST" = "Możesz włączyć kopie zapasowe w sekcji „Ustawienia”.";
 
 /* Subtitle for a view introducing Backups during an onboarding flow. */
-"BACKUP_ONBOARDING_INTRO_SUBTITLE" = "Twórz kopie zapasowe wiadomości i multimediów w usłudze bezpiecznego przechowywania Signal, szyfrowanej metodą end-to-end. Dzięki temu nie stracisz historii wiadomości nawet po zmianie telefonu czy ponownej instalacji Signal.";
+"BACKUP_ONBOARDING_INTRO_SUBTITLE" = "Twórz kopie zapasowe wiadomości i multimediów w usłudze bezpiecznego przechowywania Signal z szyfrowaniem end-to-end. Dzięki temu nie stracisz historii wiadomości, nawet gdy zmienisz telefon lub ponownie zainstalujesz aplikację Signal.";
 
 /* Title for a view introducing Backups during an onboarding flow. */
 "BACKUP_ONBOARDING_INTRO_TITLE" = "Bezpieczne kopie zapasowe Signal";
@@ -773,7 +773,7 @@
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_BUT_IAP_NOT_FOUND_LOCALLY_DESCRIPTION" = "Subskrypcja jest nieaktywna na tym urządzeniu. Aby dalej korzystać z usługi kopii zapasowych Signal, odnów subskrypcję.";
 
 /* Header describing what the paid backup plan includes. */
-"BACKUP_SETTINGS_BACKUP_PLAN_PAID_HEADER" = "Wiadomości tekstowe i wszystkie multimedia";
+"BACKUP_SETTINGS_BACKUP_PLAN_PAID_HEADER" = "Wiadomości tekstowe + wszystkie multimedia";
 
 /* Text explaining the price of the user's paid backup plan. Embeds {{ the formatted price }}. */
 "BACKUP_SETTINGS_BACKUP_PLAN_PAID_PRICE_FORMAT" = "%1$@ miesięcznie";
@@ -1088,7 +1088,7 @@
 "BADGE_EXPIRED_SUBSCRIPTION_TITLE" = "Comiesięczna darowizna anulowana";
 
 /* String explaining to the user on a badge expiry sheet that their subscription badge has expired because the renewal payment failed. Embeds {{ a specific, already-localized string describing the payment failure }}. Will have a 'learn more' link appended, when it is rendered. */
-"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Twoja comiesięczna darowizna cykliczna została anulowana. %1$@\n\nOdznaka nie wyświetla się już w Twoim profilu.";
+"BADGE_SUBSCRIPTION_EXPIRED_BECAUSE_OF_CHARGE_FAILURE_BODY_FORMAT" = "Twoja comiesięczna darowizna została anulowana. %1$@\n\nOdznaka nie wyświetla się już w Twoim profilu.";
 
 /* Body for a sheet explaining that a bank transfer donation is complete, and that you have received a badge. */
 "BADGE_THANKS_BANK_DONATION_COMPLETE_BODY" = "Otrzymaliśmy Twój przelew. Możesz dodać do swojego profilu tę odznakę, aby pochwalić się udzielonym nam wsparciem.";
@@ -1337,16 +1337,16 @@
 "CALL_LINK_JOIN_CALL_FAILURE_SHEET_DESCRIPTION" = "Nie udało się dołączyć do rozmowy. Sprawdź połączenie z internetem i spróbuj ponownie.";
 
 /* Button on an action sheet to approve a request to join a call link. */
-"CALL_LINK_JOIN_REQUEST_APPROVE_BUTTON" = "Zatwierdź prośbę";
+"CALL_LINK_JOIN_REQUEST_APPROVE_BUTTON" = "Wpuść";
 
 /* Button on an action sheet to deny a request to join a call link. */
-"CALL_LINK_JOIN_REQUEST_DENY_BUTTON" = "Odrzuć prośbę";
+"CALL_LINK_JOIN_REQUEST_DENY_BUTTON" = "Odrzuć";
 
 /* Tappable label that appears below a user's name on a toast when they request to join a call link. */
 "CALL_LINK_JOIN_REQUEST_PROMPT" = "Prosi o dołączenie…";
 
 /* Shown in a message bubble when you send a call link in a Signal chat */
-"CALL_LINK_LINK_PREVIEW_DESCRIPTION" = "Użyj tego linku, aby dołączyć do rozmowy Signal";
+"CALL_LINK_LINK_PREVIEW_DESCRIPTION" = "Aby dołączyć do połączenia Signal, użyj tego linku";
 
 /* Text that appears on a toast in a call lobby before joining a call link informing the user what information will be shared with other call members when they have phone number sharing turned off. */
 "CALL_LINK_LOBBY_SHARING_INFO_PHONE_NUMBER_SHARING_OFF" = "Każda osoba, która dołączy do rozmowy za pomocą linku, może wyświetlić Twoje imię oraz zdjęcie.";
@@ -1355,7 +1355,7 @@
 "CALL_LINK_LOBBY_SHARING_INFO_PHONE_NUMBER_SHARING_ON" = "Każda osoba, która dołączy do połączenia za pomocą linku, może wyświetlić Twoje imię, zdjęcie oraz numer telefonu.";
 
 /* Text shown in a confirmation popup when deleting multiple calls from the calls tab. */
-"CALL_LINK_MULTI_CONFIRM" = "Linki do połączenia utworzone przez Ciebie nie będą już działać u nikogo.";
+"CALL_LINK_MULTI_CONFIRM" = "Utworzone przez Ciebie linki do połączeń przestaną działać u innych osób.";
 
 /* Title for button to approve all requests to join a call. */
 "CALL_LINK_REQUEST_SHEET_APPROVE_ALL_BUTTON" = "Zatwierdź wszystkie";
@@ -1907,7 +1907,7 @@
 "CHOOSE_BACKUP_PLAN_CONFIRMATION_ERROR_RATE_LIMITED_TITLE" = "Nie udało się włączyć usługi kopii zapasowych";
 
 /* A label indicating that a given Backup plan option is what the user has already enabled. */
-"CHOOSE_BACKUP_PLAN_CURRENT_PLAN_LABEL" = "Aktualna usługa";
+"CHOOSE_BACKUP_PLAN_CURRENT_PLAN_LABEL" = "Aktywny tryb";
 
 /* Text for a button that will downgrade the user from the paid Backup plan to the free one. */
 "CHOOSE_BACKUP_PLAN_DOWNGRADE_BUTTON_TEXT" = "Zmień tryb";
@@ -1925,7 +1925,7 @@
 "CHOOSE_BACKUP_PLAN_PAID_PLAN_NO_PURCHASES_TITLE" = "Usługa płatna (ale bezpłatna dla testerów)";
 
 /* Subtitle for the paid plan option, when choosing a Backup plan. */
-"CHOOSE_BACKUP_PLAN_PAID_PLAN_SUBTITLE" = "Wiadomości tekstowe i wszystkie Twoje multimedia";
+"CHOOSE_BACKUP_PLAN_PAID_PLAN_SUBTITLE" = "Wiadomości tekstowe + wszystkie multimedia";
 
 /* Title for the paid plan option, when choosing a Backup plan. Embeds {{ the formatted monthly cost, as currency, of the paid plan }}. */
 "CHOOSE_BACKUP_PLAN_PAID_PLAN_TITLE" = "%1$@ miesięcznie";
@@ -2452,9 +2452,6 @@
 /* Label for 'revoke group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "Usuń uprawnienia administratora";
 
-/* Message for 'revoke group admin' confirmation alert. */
-"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_MESSAGE" = "Usunięta zostanie także aktualna rola tej osoby w grupie.";
-
 /* Format for title for 'revoke group admin' confirmation alert. Embeds {user to revoke admin status from}. */
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "Czy %1$@ ma już nie mieć uprawnień administratora grupy?";
 
@@ -2525,7 +2522,7 @@
 "CREATE_CALL_LINK_LABEL" = "Utwórz link do połączenia";
 
 /* Body text for an interactive in-app prompt to set up a Signal username. */
-"CREATE_USERNAME_MEGAPHONE_BODY" = "Ukrywamy numery telefonu i wprowadzamy opcjonalną nazwę użytkownika oraz linki.";
+"CREATE_USERNAME_MEGAPHONE_BODY" = "Ukrywamy numery telefonu i wprowadzamy opcjonalną nazwę użytkownika z linkiem do jej udostępniania.";
 
 /* Title for an interactive in-app prompt to set up a Signal username. */
 "CREATE_USERNAME_MEGAPHONE_TITLE" = "Nawiązuj kontakt w nowy sposób";
@@ -2747,10 +2744,10 @@
 "DELETE_FOR_ME_NOTE_TO_SELF_LINKED_DEVICES_PRESENT_ACTION_SHEET_SUBHEADER" = "Ta wiadomość zostanie usunięta ze wszystkich Twoich urządzeń.";
 
 /* Text indicating the message was remotely deleted by an admin. Embeds {{admin display name}} */
-"DELETED_BY_ADMIN" = "Admin %1$@ deleted this message";
+"DELETED_BY_ADMIN" = "Administrator %1$@ usunął wiadomość";
 
 /* Text indicating the message was remotely deleted by its author. Embeds {{ author name }} */
-"DELETED_THIS_MESSAGE" = "%1$@ deleted this message";
+"DELETED_THIS_MESSAGE" = "Wiadomość usunął uczestnik czatu (%1$@)";
 
 /* Label indicating a user who deleted their account. */
 "DELETED_USER" = "Konto usunięte";
@@ -5095,9 +5092,6 @@
 /* Label that shows up under a local user's row in contacts prompting them to add a member label */
 "MEMBER_LABEL_ADD_CSVC" = "Podaj rolę w grupie";
 
-/* Toast indicating that only admins can set a member label. */
-"MEMBER_LABEL_ADMIN_ONLY_WARNING_TOAST" = "W tej grupie role mogą ustawiać tylko administratorzy";
-
 /* Accessibility prefix for member labels. */
 "MEMBER_LABEL_AX_PREFIX" = "Rola w grupie: ";
 
@@ -5117,7 +5111,7 @@
 "MEMBER_LABEL_FAIL_TO_SAVE" = "Nie udało się zapisać roli w grupie";
 
 /* Section header for a list of group member labels */
-"MEMBER_LABEL_GROUP_LABELS_SECTION_TITLE" = "Role w tej grupie";
+"MEMBER_LABEL_GROUP_LABELS_SECTION_TITLE" = "Group Members with Labels";
 
 /* Body for a sheet shown if a user will show their member label over their About message in a group. */
 "MEMBER_LABEL_HERO_SHEET_ABOUT_OVERRIDE_BODY" = "W tej grupie Twoja rola będzie wyświetlana obok Twojego zdjęcia – zamiast informacji z sekcji „O mnie”.";
@@ -5130,6 +5124,9 @@
 
 /* Title for a sheet shown if a user taps on someone else's member label. */
 "MEMBER_LABEL_HERO_SHEET_EDUCATION_TITLE" = "Rola w grupie";
+
+/* Text for section that shows other group member labels, when there are none */
+"MEMBER_LABEL_NO_OTHER_GROUP_MEMBERS_HAVE_LABELS" = "No other members have labels";
 
 /* Heading shown above the preview of a message bubble with the edited member label. */
 "MEMBER_LABEL_PREVIEW_HEADING" = "Podgląd";
@@ -6926,7 +6923,7 @@
 "POLL_NO_VOTES" = "Brak odpowiedzi";
 
 /* Format text for the placeholder of an option row when creating a poll. Embeds {{ the number of this option in a list, as a pre-localized string }}, so it should look like , . */
-"POLL_OPTION_PLACEHOLDER_FORMAT" = "Option %1$@";
+"POLL_OPTION_PLACEHOLDER_FORMAT" = "Opcja %1$@";
 
 /* Header for the poll options text boxes when making a new poll */
 "POLL_OPTIONS_LABEL" = "Opcje";
@@ -9863,7 +9860,7 @@
 "USERNAME_LOOKUP_ERROR_MESSAGE" = "Podczas wyszukiwania nazwy użytkownika wystąpił błąd. Spróbuj ponownie później.";
 
 /* A message indicating that a user-entered username value is not a valid username. Embeds {{ a username }}. */
-"USERNAME_LOOKUP_INVALID_USERNAME_MESSAGE_FORMAT" = "%1$@ to nieprawidłowa nazwa użytkownika. Upewnij się, że podajesz pełną nazwę użytkownika wraz z ciągiem cyfr.";
+"USERNAME_LOOKUP_INVALID_USERNAME_MESSAGE_FORMAT" = "%1$@ to nieprawidłowa nazwa użytkownika. Upewnij się, że podajesz pełną nazwę użytkownika wraz z zestawem cyfr.";
 
 /* Title for an action sheet indicating that a user-entered username value is not a valid username. */
 "USERNAME_LOOKUP_INVALID_USERNAME_TITLE" = "Nieprawidłowa nazwa użytkownika";
@@ -10070,7 +10067,7 @@
 "YOU" = "Ty";
 
 /* text indicating the message was remotely deleted by you */
-"YOU_DELETED_THIS_MESSAGE" = "You deleted this message";
+"YOU_DELETED_THIS_MESSAGE" = "Wiadomość została przez Ciebie usunięta";
 
 /* Info Message when you disabled disappearing messages. */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Wyłączasz znikające wiadomości.";

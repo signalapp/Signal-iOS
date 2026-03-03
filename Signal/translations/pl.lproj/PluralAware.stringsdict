@@ -128,13 +128,13 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Wiadomości tekstowe, w tym multimedia z ostatniego dnia</string>
+			<string>Wiadomości tekstowe + multimedia z %1$d dnia</string>
 			<key>few</key>
-			<string>Wiadomości tekstowe, w tym multimedia z ostatnich %1$d dni</string>
+			<string>Wiadomości tekstowe + multimedia z %1$d dni</string>
 			<key>many</key>
-			<string>Wiadomości tekstowe, w tym multimedia z ostatnich %1$d dni</string>
+			<string>Wiadomości tekstowe + multimedia z %1$d dni</string>
 			<key>other</key>
-			<string>Wiadomości tekstowe, w tym multimedia z ostatnich %1$d dni</string>
+			<string>Wiadomości tekstowe + multimedia z %1$d dnia</string>
 		</dict>
 	</dict>
 	<key>CALLS_TAB_DELETE_MULTIPLE_TITLE</key>

@@ -360,9 +360,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>Sms + %1$d dags medier</string>
+			<string>Tekst + %1$d dags medier</string>
 			<key>other</key>
-			<string>Sms + %1$d dages medier</string>
+			<string>Tekst + %1$d dages medier</string>
 		</dict>
 	</dict>
 	<key>CONVERSATION_DELETE_CONFIRMATIONS_ALERT_TITLE_%d</key>
