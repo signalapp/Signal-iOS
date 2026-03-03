@@ -51,11 +51,11 @@ public class AdminDeleteManager {
         }
 
         failIfThrows {
-            try AdminDeleteRecord.insertRecord(
+            var adminDeleteRecord = AdminDeleteRecord(
                 interactionId: interactionId,
                 deleteAuthorId: deleteAuthorId,
-                tx: tx,
             )
+            try adminDeleteRecord.insert(tx.database)
         }
         return .success
     }
@@ -161,11 +161,11 @@ public class AdminDeleteManager {
         tx: DBWriteTransaction,
     ) {
         failIfThrows {
-            try AdminDeleteRecord.insertRecord(
+            var adminDeleteRecord = AdminDeleteRecord(
                 interactionId: interactionId,
                 deleteAuthorId: recipientId,
-                tx: tx,
             )
+            try adminDeleteRecord.insert(tx.database)
         }
     }
 }

@@ -12,30 +12,6 @@ public struct AdminDeleteRecord: Codable, FetchableRecord, MutablePersistableRec
     public let interactionId: Int64
     public let deleteAuthorId: SignalRecipient.RowId
 
-    static func insertRecord(
-        interactionId: Int64,
-        deleteAuthorId: SignalRecipient.RowId,
-        tx: DBWriteTransaction,
-    ) throws(GRDB.DatabaseError) -> Self {
-        do {
-            return try AdminDeleteRecord.fetchOne(
-                tx.database,
-                sql: """
-                INSERT INTO \(AdminDeleteRecord.databaseTableName) (
-                    \(CodingKeys.interactionId.rawValue),
-                    \(CodingKeys.deleteAuthorId.rawValue)
-                ) VALUES (?, ?) RETURNING *
-                """,
-                arguments: [
-                    interactionId,
-                    deleteAuthorId,
-                ],
-            )!
-        } catch {
-            throw error.forceCastToDatabaseError()
-        }
-    }
-
     public enum CodingKeys: String, CodingKey {
         case interactionId
         case deleteAuthorId
@@ -45,4 +21,9 @@ public struct AdminDeleteRecord: Codable, FetchableRecord, MutablePersistableRec
         static let interactionId = Column(CodingKeys.interactionId.rawValue)
         static let deleteAuthorId = Column(CodingKeys.deleteAuthorId.rawValue)
     }
+
+    public static let persistenceConflictPolicy = PersistenceConflictPolicy(
+        insert: .ignore,
+        update: .replace,
+    )
 }
