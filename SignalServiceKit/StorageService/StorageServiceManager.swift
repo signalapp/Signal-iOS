@@ -769,12 +769,12 @@ class StorageServiceOperation {
     // MARK: - Run
 
     func run() async throws {
-        return try await Retry.performWithBackoff(maxAttempts: 4) {
-            return try await self._run()
-        }
+        return try await Retry.performWithBackoff(
+            maxAttempts: 4,
+            block: { try await _run() },
+        )
     }
 
-    // Called every retry, this is where the bulk of the operation's work should go.
     private func _run() async throws {
         let databaseStorage = SSKEnvironment.shared.databaseStorageRef
 
