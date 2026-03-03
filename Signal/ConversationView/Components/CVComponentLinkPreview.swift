@@ -49,6 +49,7 @@ public class CVComponentLinkPreview: CVComponentBase, CVComponent {
 
         linkPreviewView.configureForRendering(
             state: linkPreviewState.state,
+            isIncoming: isIncoming,
             cellMeasurement: cellMeasurement,
         )
 

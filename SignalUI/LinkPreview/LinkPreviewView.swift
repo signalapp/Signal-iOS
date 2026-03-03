@@ -105,6 +105,7 @@ public class LinkPreviewView: ManualStackViewWithLayer {
         configureForRendering(
             state: state,
             isDraft: isDraft,
+            isIncoming: true,
             hasAsymmetricalRounding: hasAsymmetricalRounding,
             cellMeasurement: cellMeasurement,
         )
@@ -119,11 +120,12 @@ public class LinkPreviewView: ManualStackViewWithLayer {
     public func configureForRendering(
         state: LinkPreviewState,
         isDraft: Bool = false,
+        isIncoming: Bool,
         hasAsymmetricalRounding: Bool = false,
         cellMeasurement: CVCellMeasurement,
     ) {
         self.state = state
-        let adapter = Self.adapter(forState: state, isDraft: isDraft)
+        let adapter = Self.adapter(forState: state, isDraft: isDraft, isIncoming: isIncoming)
         adapter.configureForRendering(
             linkPreviewView: self,
             hasAsymmetricalRounding: hasAsymmetricalRounding,
@@ -131,20 +133,24 @@ public class LinkPreviewView: ManualStackViewWithLayer {
         )
     }
 
-    private static func adapter(forState state: LinkPreviewState, isDraft: Bool) -> LinkPreviewViewAdapter {
+    private static func adapter(
+        forState state: LinkPreviewState,
+        isDraft: Bool,
+        isIncoming: Bool,
+    ) -> LinkPreviewViewAdapter {
         if !state.isLoaded {
-            return LinkPreviewViewAdapterDraftLoading(state: state)
+            return LinkPreviewViewAdapterDraftLoading(state: state, isIncoming: isIncoming)
         }
         if isDraft {
-            return LinkPreviewViewAdapterDraft(state: state)
+            return LinkPreviewViewAdapterDraft(state: state, isIncoming: isIncoming)
         }
         if state.isGroupInviteLink {
-            return LinkPreviewViewAdapterGroupLink(state: state)
+            return LinkPreviewViewAdapterGroupLink(state: state, isIncoming: isIncoming)
         }
         if state.hasLoadedImageOrBlurHash, Self.sentIsHero(state: state) {
-            return LinkPreviewViewAdapterSentHero(state: state)
+            return LinkPreviewViewAdapterSentHero(state: state, isIncoming: isIncoming)
         }
-        return LinkPreviewViewAdapterSent(state: state)
+        return LinkPreviewViewAdapterSent(state: state, isIncoming: isIncoming)
     }
 
     // Vertical specing between title, description and domain name.
@@ -239,7 +245,7 @@ public class LinkPreviewView: ManualStackViewWithLayer {
         state: LinkPreviewState,
         isDraft: Bool,
     ) -> CGSize {
-        let adapter = Self.adapter(forState: state, isDraft: isDraft)
+        let adapter = Self.adapter(forState: state, isDraft: isDraft, isIncoming: false)
         let size = adapter.measure(
             maxWidth: maxWidth,
             measurementBuilder: measurementBuilder,
@@ -290,6 +296,8 @@ public class LinkPreviewView: ManualStackViewWithLayer {
 
 private protocol LinkPreviewViewAdapter {
 
+    var isIncoming: Bool { get }
+
     func configureForRendering(
         linkPreviewView: LinkPreviewView,
         hasAsymmetricalRounding: Bool,
@@ -328,7 +336,7 @@ extension LinkPreviewViewAdapter {
         return CVLabelConfig.unstyledText(
             text,
             font: UIFont.dynamicTypeSubheadline.semibold(),
-            textColor: Theme.primaryTextColor,
+            textColor: isIncoming ? Theme.primaryTextColor : .black,
             numberOfLines: LinkPreviewView.sentTitleLineCount,
             lineBreakMode: .byTruncatingTail,
         )
@@ -348,7 +356,7 @@ extension LinkPreviewViewAdapter {
         return CVLabelConfig.unstyledText(
             text,
             font: UIFont.dynamicTypeFootnote,
-            textColor: Theme.secondaryTextAndIconColor,
+            textColor: isIncoming ? Theme.secondaryTextAndIconColor : .ows_blackAlpha70,
             numberOfLines: LinkPreviewView.sentDescriptionLineCount,
             lineBreakMode: .byTruncatingTail,
         )
@@ -376,7 +384,7 @@ extension LinkPreviewViewAdapter {
         return CVLabelConfig.unstyledText(
             labelText,
             font: UIFont.dynamicTypeCaption1,
-            textColor: Theme.secondaryTextAndIconColor,
+            textColor: isIncoming ? Theme.secondaryTextAndIconColor : .ows_blackAlpha70,
             lineBreakMode: .byTruncatingTail,
         )
     }
@@ -451,9 +459,11 @@ private class LinkPreviewViewAdapterDraft: LinkPreviewViewAdapter {
     let cancelSize: CGFloat = 20
 
     let state: LinkPreviewState
+    let isIncoming: Bool
 
-    init(state: LinkPreviewState) {
+    init(state: LinkPreviewState, isIncoming: Bool) {
         self.state = state
+        self.isIncoming = isIncoming
     }
 
     var rootStackConfig: ManualStackView.Config {
@@ -717,9 +727,11 @@ private class LinkPreviewViewAdapterDraftLoading: LinkPreviewViewAdapter {
     let activityIndicatorSize = CGSize.square(25)
 
     let state: LinkPreviewState
+    let isIncoming: Bool
 
-    init(state: LinkPreviewState) {
+    init(state: LinkPreviewState, isIncoming: Bool) {
         self.state = state
+        self.isIncoming = isIncoming
     }
 
     var rootStackConfig: ManualStackView.Config {
@@ -777,9 +789,11 @@ private class LinkPreviewViewAdapterDraftLoading: LinkPreviewViewAdapter {
 private class LinkPreviewViewAdapterGroupLink: LinkPreviewViewAdapter {
 
     let state: LinkPreviewState
+    let isIncoming: Bool
 
-    init(state: LinkPreviewState) {
+    init(state: LinkPreviewState, isIncoming: Bool) {
         self.state = state
+        self.isIncoming = isIncoming
     }
 
     var rootStackConfig: ManualStackView.Config {
@@ -894,9 +908,11 @@ private class LinkPreviewViewAdapterGroupLink: LinkPreviewViewAdapter {
 private class LinkPreviewViewAdapterSentHero: LinkPreviewViewAdapter {
 
     let state: LinkPreviewState
+    let isIncoming: Bool
 
-    init(state: LinkPreviewState) {
+    init(state: LinkPreviewState, isIncoming: Bool) {
         self.state = state
+        self.isIncoming = isIncoming
     }
 
     var rootStackConfig: ManualStackView.Config {
@@ -1015,9 +1031,11 @@ private class LinkPreviewViewAdapterSentHero: LinkPreviewViewAdapter {
 private class LinkPreviewViewAdapterSent: LinkPreviewViewAdapter {
 
     let state: LinkPreviewState
+    let isIncoming: Bool
 
-    init(state: LinkPreviewState) {
+    init(state: LinkPreviewState, isIncoming: Bool) {
         self.state = state
+        self.isIncoming = isIncoming
     }
 
     var rootStackConfig: ManualStackView.Config {
