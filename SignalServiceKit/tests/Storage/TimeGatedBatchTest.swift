@@ -223,4 +223,37 @@ class DBTimeBatchingTest: XCTestCase {
         XCTAssertEqual(processBatchCount, maxBatchCount)
         XCTAssertEqual(concludeTxCount, maxBatchCount)
     }
+
+    func testTxContextThrows() async {
+        var buildTxContextCount = 0
+        var processBatchCount = 0
+        var concludeTxCount = 0
+
+        struct TxContext {
+            var id = 0
+        }
+
+        try? await TimeGatedBatch.processAll(
+            db: InMemoryDB(),
+            buildTxContext: { _ in
+                buildTxContextCount += 1
+                return TxContext()
+            },
+            processBatch: { _, context -> TimeGatedBatch.ProcessBatchResult<Void> in
+                struct DummyError: Error {}
+
+                processBatchCount += 1
+                context.id += 1
+                throw DummyError()
+            },
+            concludeTx: { _, context in
+                XCTAssertEqual(context.id, 1)
+                concludeTxCount += 1
+            },
+        )
+
+        XCTAssertEqual(buildTxContextCount, 1)
+        XCTAssertEqual(processBatchCount, 1)
+        XCTAssertEqual(concludeTxCount, 1)
+    }
 }

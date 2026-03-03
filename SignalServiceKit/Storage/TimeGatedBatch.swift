@@ -103,9 +103,9 @@ public enum TimeGatedBatch {
         yieldTxAfter maximumDuration: TimeInterval = 0.5,
         delayTwixtTx: TimeInterval = 0,
         errorTxCompletion: GRDB.Database.TransactionCompletion = .commit,
-        buildTxContext: (DBWriteTransaction) throws(E) -> TxContext,
+        buildTxContext: (DBWriteTransaction) -> TxContext,
         processBatch: (DBWriteTransaction, inout TxContext) throws(E) -> ProcessBatchResult<DoneResult>,
-        concludeTx: (DBWriteTransaction, TxContext) throws(E) -> Void,
+        concludeTx: (DBWriteTransaction, TxContext) -> Void,
     ) async throws(E) -> DoneResult {
         return try await _processAll(
             db: db,
@@ -133,9 +133,9 @@ public enum TimeGatedBatch {
             yieldTxAfter: maximumDuration,
             delayTwixtTx: delayTwixtTx,
             errorTxCompletion: errorTxCompletion,
-            buildTxContext: { _ throws(E) in DummyTxContext() },
+            buildTxContext: { _ in DummyTxContext() },
             processBatch: { tx, _ throws(E) in try processBatch(tx) },
-            concludeTx: { _, _ throws(E) in },
+            concludeTx: { _, _ in },
         )
     }
 
@@ -145,9 +145,9 @@ public enum TimeGatedBatch {
         yieldTxAfter maximumDuration: TimeInterval,
         delayTwixtTx: TimeInterval,
         errorTxCompletion: GRDB.Database.TransactionCompletion,
-        buildTxContext: (DBWriteTransaction) throws(E) -> TxContext,
+        buildTxContext: (DBWriteTransaction) -> TxContext,
         processBatch: (DBWriteTransaction, inout TxContext) throws(E) -> ProcessBatchResult<DoneResult>,
-        concludeTx: (DBWriteTransaction, TxContext) throws(E) -> Void,
+        concludeTx: (DBWriteTransaction, TxContext) -> Void,
     ) async throws(E) -> DoneResult {
         while true {
             let txBlock: (DBWriteTransaction) throws(E) -> ProcessBatchResult<DoneResult> = { tx in
@@ -184,21 +184,24 @@ public enum TimeGatedBatch {
     /// given duration.
     private static func processBatchesInTransaction<E: Error, TxContext, DoneResult>(
         maximumDuration: CFTimeInterval,
-        buildTxContext: (DBWriteTransaction) throws(E) -> TxContext,
+        buildTxContext: (DBWriteTransaction) -> TxContext,
         processBatch: (DBWriteTransaction, inout TxContext) throws(E) -> ProcessBatchResult<DoneResult>,
-        concludeTx: (DBWriteTransaction, TxContext) throws(E) -> Void,
+        concludeTx: (DBWriteTransaction, TxContext) -> Void,
         tx: DBWriteTransaction,
     ) throws(E) -> ProcessBatchResult<DoneResult> {
         let yieldDeadline = CACurrentMediaTime() + maximumDuration
-        var txContext = try buildTxContext(tx)
+        var txContext = buildTxContext(tx)
+        defer { concludeTx(tx, txContext) }
+
         while true {
             let batchResult = try autoreleasepool { () throws(E) -> ProcessBatchResult in
                 return try processBatch(tx, &txContext)
             }
+
             if case .more = batchResult, CACurrentMediaTime() <= yieldDeadline {
                 continue
             }
-            try concludeTx(tx, txContext)
+
             return batchResult
         }
     }

@@ -65,7 +65,7 @@ struct InfoMessageGroupUpdateMigrator {
 
         try await TimeGatedBatch.processAll(
             db: db,
-            buildTxContext: { tx throws(CancellationError) -> TxContext in
+            buildTxContext: { tx -> TxContext in
                 let lastMigratedInfoMessageRowID = kvStore.fetchValue(
                     Int64.self,
                     forKey: StoreKeys.lastMigratedInfoMessageRowID,
@@ -160,7 +160,7 @@ struct InfoMessageGroupUpdateMigrator {
                 context.lastMigratedInfoMessageRowID = infoMessage.rowID
                 return .more
             },
-            concludeTx: { tx, context throws(CancellationError) in
+            concludeTx: { tx, context in
                 // We've directly modified TSInteractions that may be cached, so
                 // clear said caches.
                 modelReadCaches().evacuateAllCaches()

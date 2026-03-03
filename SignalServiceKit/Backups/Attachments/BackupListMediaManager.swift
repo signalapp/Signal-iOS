@@ -166,7 +166,7 @@ class BackupListMediaManagerImpl: BackupListMediaManager {
         let task = serialTaskQueue.enqueue { [self] in
             try await _queryListMediaIfNeeded()
         }
-        let backgroundTask = OWSBackgroundTask(label: #function) { [task] status in
+        let backgroundTask = OWSBackgroundTask(label: "[ListMediaManager]") { [task] status in
             switch status {
             case .expired:
                 task.cancel()
@@ -356,7 +356,7 @@ class BackupListMediaManagerImpl: BackupListMediaManager {
             try await TimeGatedBatch.processAll(
                 db: db,
                 delayTwixtTx: 0.2,
-                buildTxContext: { tx throws(CancellationError) -> TxContext in
+                buildTxContext: { tx -> TxContext in
                     let lastEnumeratedAttachmentId: Attachment.IDType? = kvStore.getInt64(
                         Constants.lastEnumeratedAttachmentIdKey,
                         transaction: tx,
@@ -442,7 +442,7 @@ class BackupListMediaManagerImpl: BackupListMediaManager {
 
                     return .more
                 },
-                concludeTx: { tx, txContext throws(CancellationError) in
+                concludeTx: { tx, txContext in
                     let startAttachmentLogString = txContext.originalLastEnumeratedAttachmentId.map { String($0) } ?? "nil"
                     let endAttachmentLogString = txContext.lastEnumeratedAttachmentId.map { String($0) } ?? "nil"
                     logger.info("Checked attachments [\(startAttachmentLogString)...\(endAttachmentLogString)]. didFinish \(txContext.didFinish)")
@@ -477,7 +477,7 @@ class BackupListMediaManagerImpl: BackupListMediaManager {
         try await TimeGatedBatch.processAll(
             db: db,
             delayTwixtTx: 0.2,
-            buildTxContext: { tx throws(CancellationError) -> Void in
+            buildTxContext: { tx -> Void in
                 // Nothing – we use the in-memory integrityChecker.
             },
             processBatch: { tx, _ throws(CancellationError) in
@@ -507,7 +507,7 @@ class BackupListMediaManagerImpl: BackupListMediaManager {
 
                 return .more
             },
-            concludeTx: { tx, _ throws(CancellationError) in
+            concludeTx: { tx, _ in
                 if
                     let integrityCheckResult = integrityChecker.result,
                     let serializedResult = try? JSONEncoder().encode(integrityCheckResult)
