@@ -1199,8 +1199,10 @@ public class MessageSender {
         sendResult: SendMessageResult,
     ) async {
         // Non-TSOutgoingMessage/"normal" messages never have receipts and thus
-        // never need to be marked as read/viewed.
-        guard let message = message as? TSOutgoingMessage, !(message is TransientOutgoingMessage) else {
+        // never need to be marked as read/viewed. However, some transient messages
+        // pass through receipt updates to a corresponding "normal" message and
+        // thus require receipts.
+        guard let message = message as? TSOutgoingMessage, !(message is OutgoingSyncMessage) else {
             return
         }
         // Non-Note to Self messages don't require Note to Self treatment.
