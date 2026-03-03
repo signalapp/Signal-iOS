@@ -72,7 +72,8 @@ public struct _Upload_FileSystemWrapper: Upload.Shims.FileSystem {
     }
 
     public func maxFileChunkSizeBytes() -> Int {
-        return 32 * 1024 * 1024
+        // Externally enforced limit is ~32MiB, so use 31MiB to avoid running into any issues.
+        return 31 * 1024 * 1024
     }
 
     public func readMemoryMappedFileData(url: URL) throws -> Data {
