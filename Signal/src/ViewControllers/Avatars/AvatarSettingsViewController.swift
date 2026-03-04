@@ -93,6 +93,7 @@ class AvatarSettingsViewController: OWSTableViewController2 {
             self?.didTapDone()
         }
 
+        view.backgroundColor = .Signal.groupedBackground
         updateTableContents()
         updateNavigation()
     }

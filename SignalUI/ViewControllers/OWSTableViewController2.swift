@@ -14,7 +14,7 @@ public protocol OWSTableViewControllerDelegate: AnyObject {
 // when performance is not critical, e.g. when the table
 // only holds a screenful or two of cells and it's safe to
 // retain a view model for each cell in memory at all times.
-open class OWSTableViewController2: OWSViewController {
+open class OWSTableViewController2: OWSViewController, OWSNavigationChildController {
 
     public weak var delegate: OWSTableViewControllerDelegate?
 
@@ -281,6 +281,8 @@ open class OWSTableViewController2: OWSViewController {
         applyContents()
     }
 
+    // MARK: - OWSNavigationChildController
+
     private var usesSolidNavbarStyle: Bool {
         return tableView.contentOffset.y <= (defaultSpacingBetweenSections ?? 0) - tableView.adjustedContentInset.top
     }
@@ -302,6 +304,8 @@ open class OWSTableViewController2: OWSViewController {
     open var navbarTintColorOverride: UIColor? {
         forceDarkMode ? Theme.darkThemePrimaryColor : nil
     }
+
+    // MARK: -
 
     private var hasViewAppeared = false
 
@@ -403,9 +407,9 @@ open class OWSTableViewController2: OWSViewController {
     }
 }
 
-// MARK: -
+// MARK: - UITableViewDataSource, UITableViewDelegate
 
-extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate, OWSNavigationChildController {
+extension OWSTableViewController2: UITableViewDataSource, UITableViewDelegate {
 
     public func tableView(_ tableView: UITableView, numberOfRowsInSection sectionIndex: Int) -> Int {
         guard let section = self.section(for: sectionIndex) else {
