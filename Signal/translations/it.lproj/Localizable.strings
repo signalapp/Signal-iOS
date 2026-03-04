@@ -2452,9 +2452,6 @@
 /* Label for 'revoke group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "Rimuovi dal ruolo di admin";
 
-/* Message for 'revoke group admin' confirmation alert. */
-"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_MESSAGE" = "Quest'azione rimuoverà anche il suo ruolo utente.";
-
 /* Format for title for 'revoke group admin' confirmation alert. Embeds {user to revoke admin status from}. */
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "Rimuovere %1$@ dal ruolo di admin del gruppo?";
 
@@ -2747,10 +2744,10 @@
 "DELETE_FOR_ME_NOTE_TO_SELF_LINKED_DEVICES_PRESENT_ACTION_SHEET_SUBHEADER" = "Questo messaggio verrà rimosso da tutti i tuoi dispositivi.";
 
 /* Text indicating the message was remotely deleted by an admin. Embeds {{admin display name}} */
-"DELETED_BY_ADMIN" = "Admin %1$@ deleted this message";
+"DELETED_BY_ADMIN" = "L'admin %1$@ ha eliminato questo messaggio";
 
 /* Text indicating the message was remotely deleted by its author. Embeds {{ author name }} */
-"DELETED_THIS_MESSAGE" = "%1$@ deleted this message";
+"DELETED_THIS_MESSAGE" = "%1$@ ha eliminato questo messaggio";
 
 /* Label indicating a user who deleted their account. */
 "DELETED_USER" = "Account eliminato";
@@ -5095,9 +5092,6 @@
 /* Label that shows up under a local user's row in contacts prompting them to add a member label */
 "MEMBER_LABEL_ADD_CSVC" = "Aggiungi ruolo dell'utente";
 
-/* Toast indicating that only admins can set a member label. */
-"MEMBER_LABEL_ADMIN_ONLY_WARNING_TOAST" = "Solo gli admin possono impostare i ruoli degli utenti in questo gruppo";
-
 /* Accessibility prefix for member labels. */
 "MEMBER_LABEL_AX_PREFIX" = "Ruolo dell'utente: ";
 
@@ -5117,7 +5111,7 @@
 "MEMBER_LABEL_FAIL_TO_SAVE" = "Impossibile salvare il ruolo dell'utente";
 
 /* Section header for a list of group member labels */
-"MEMBER_LABEL_GROUP_LABELS_SECTION_TITLE" = "Ruoli in questo gruppo";
+"MEMBER_LABEL_GROUP_LABELS_SECTION_TITLE" = "Group Members with Labels";
 
 /* Body for a sheet shown if a user will show their member label over their About message in a group. */
 "MEMBER_LABEL_HERO_SHEET_ABOUT_OVERRIDE_BODY" = "In questo gruppo, il tuo ruolo verrà mostrato vicino alla tua foto al posto della sezione Su di te.";
@@ -5130,6 +5124,9 @@
 
 /* Title for a sheet shown if a user taps on someone else's member label. */
 "MEMBER_LABEL_HERO_SHEET_EDUCATION_TITLE" = "Ruoli dell'utente";
+
+/* Text for section that shows other group member labels, when there are none */
+"MEMBER_LABEL_NO_OTHER_GROUP_MEMBERS_HAVE_LABELS" = "No other members have labels";
 
 /* Heading shown above the preview of a message bubble with the edited member label. */
 "MEMBER_LABEL_PREVIEW_HEADING" = "Anteprima";
@@ -6926,7 +6923,7 @@
 "POLL_NO_VOTES" = "Nessun voto";
 
 /* Format text for the placeholder of an option row when creating a poll. Embeds {{ the number of this option in a list, as a pre-localized string }}, so it should look like , . */
-"POLL_OPTION_PLACEHOLDER_FORMAT" = "Option %1$@";
+"POLL_OPTION_PLACEHOLDER_FORMAT" = "Opzione %1$@";
 
 /* Header for the poll options text boxes when making a new poll */
 "POLL_OPTIONS_LABEL" = "Opzioni";
@@ -10070,7 +10067,7 @@
 "YOU" = "Tu";
 
 /* text indicating the message was remotely deleted by you */
-"YOU_DELETED_THIS_MESSAGE" = "You deleted this message";
+"YOU_DELETED_THIS_MESSAGE" = "Hai eliminato questo messaggio";
 
 /* Info Message when you disabled disappearing messages. */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Hai disabilitato la scomparsa dei messaggi.";

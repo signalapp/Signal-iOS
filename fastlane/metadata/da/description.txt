@@ -1,6 +1,6 @@
 Signal er en sms-app med fokus på privatliv. Den er gratis og nem at bruge, og så har den stærk E2E-kryptering, der sikrer, at din kommunikation er helt privat.
 
-• Send SMS'er, talemeddelelser, billeder, videoer, GIF'er og filer helt gratis. Signal bruger din telefons dataforbindelse, så du undgår SMS- og MMS-gebyrer.
+• Send tekstbeskeder, talemeddelelser, billeder, videoer, GIF'er og filer helt gratis. Signal bruger din telefons dataforbindelse, så du undgår SMS- og MMS-gebyrer.
 
 • Ring til dine venner med krystalklare og krypterede stemme- og videoopkald. Gruppeopkald understøttes for op til 50 personer.
 

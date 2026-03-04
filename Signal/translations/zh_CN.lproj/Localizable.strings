@@ -2452,9 +2452,6 @@
 /* Label for 'revoke group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "移除管理员";
 
-/* Message for 'revoke group admin' confirmation alert. */
-"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_MESSAGE" = "此操作会同时清除其成员标签。";
-
 /* Format for title for 'revoke group admin' confirmation alert. Embeds {user to revoke admin status from}. */
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "移除 %1$@ 的管理员权限？";
 
@@ -2747,10 +2744,10 @@
 "DELETE_FOR_ME_NOTE_TO_SELF_LINKED_DEVICES_PRESENT_ACTION_SHEET_SUBHEADER" = "此消息将会从您的所有设备上删除。";
 
 /* Text indicating the message was remotely deleted by an admin. Embeds {{admin display name}} */
-"DELETED_BY_ADMIN" = "Admin %1$@ deleted this message";
+"DELETED_BY_ADMIN" = "管理员%1$@删除了此消息";
 
 /* Text indicating the message was remotely deleted by its author. Embeds {{ author name }} */
-"DELETED_THIS_MESSAGE" = "%1$@ deleted this message";
+"DELETED_THIS_MESSAGE" = "%1$@删除了此消息";
 
 /* Label indicating a user who deleted their account. */
 "DELETED_USER" = "删除账户";
@@ -5095,9 +5092,6 @@
 /* Label that shows up under a local user's row in contacts prompting them to add a member label */
 "MEMBER_LABEL_ADD_CSVC" = "添加成员标签";
 
-/* Toast indicating that only admins can set a member label. */
-"MEMBER_LABEL_ADMIN_ONLY_WARNING_TOAST" = "只有管理员能够设置此群组的成员标签";
-
 /* Accessibility prefix for member labels. */
 "MEMBER_LABEL_AX_PREFIX" = "成员标签： ";
 
@@ -5117,7 +5111,7 @@
 "MEMBER_LABEL_FAIL_TO_SAVE" = "无法保存成员标签";
 
 /* Section header for a list of group member labels */
-"MEMBER_LABEL_GROUP_LABELS_SECTION_TITLE" = "此群组中的标签";
+"MEMBER_LABEL_GROUP_LABELS_SECTION_TITLE" = "Group Members with Labels";
 
 /* Body for a sheet shown if a user will show their member label over their About message in a group. */
 "MEMBER_LABEL_HERO_SHEET_ABOUT_OVERRIDE_BODY" = "在此群组中，您的成员标签将会取代“关于”显示在您的头像旁。";
@@ -5130,6 +5124,9 @@
 
 /* Title for a sheet shown if a user taps on someone else's member label. */
 "MEMBER_LABEL_HERO_SHEET_EDUCATION_TITLE" = "成员标签";
+
+/* Text for section that shows other group member labels, when there are none */
+"MEMBER_LABEL_NO_OTHER_GROUP_MEMBERS_HAVE_LABELS" = "No other members have labels";
 
 /* Heading shown above the preview of a message bubble with the edited member label. */
 "MEMBER_LABEL_PREVIEW_HEADING" = "预览";
@@ -6926,7 +6923,7 @@
 "POLL_NO_VOTES" = "无投票";
 
 /* Format text for the placeholder of an option row when creating a poll. Embeds {{ the number of this option in a list, as a pre-localized string }}, so it should look like , . */
-"POLL_OPTION_PLACEHOLDER_FORMAT" = "Option %1$@";
+"POLL_OPTION_PLACEHOLDER_FORMAT" = "选项 %1$@";
 
 /* Header for the poll options text boxes when making a new poll */
 "POLL_OPTIONS_LABEL" = "选项";
@@ -10070,7 +10067,7 @@
 "YOU" = "您";
 
 /* text indicating the message was remotely deleted by you */
-"YOU_DELETED_THIS_MESSAGE" = "You deleted this message";
+"YOU_DELETED_THIS_MESSAGE" = "您删除了此消息";
 
 /* Info Message when you disabled disappearing messages. */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "您取消了阅后即焚。";

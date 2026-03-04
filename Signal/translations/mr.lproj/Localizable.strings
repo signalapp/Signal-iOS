@@ -2452,9 +2452,6 @@
 /* Label for 'revoke group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "प्रशासक म्हणून काढून टाका";
 
-/* Message for 'revoke group admin' confirmation alert. */
-"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_MESSAGE" = "यामुळे त्यांचे सदस्य लेबल सुद्धा नाहीसे होईल.";
-
 /* Format for title for 'revoke group admin' confirmation alert. Embeds {user to revoke admin status from}. */
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "%1$@ ला ग्रुप प्रशासक म्हणून काढून टाकायचे?";
 
@@ -2747,10 +2744,10 @@
 "DELETE_FOR_ME_NOTE_TO_SELF_LINKED_DEVICES_PRESENT_ACTION_SHEET_SUBHEADER" = "हा संदेश आपल्या सर्व डिव्हाइसेसवरून हटवला जाईल.";
 
 /* Text indicating the message was remotely deleted by an admin. Embeds {{admin display name}} */
-"DELETED_BY_ADMIN" = "Admin %1$@ deleted this message";
+"DELETED_BY_ADMIN" = "ॲडमिन %1$@ यांनी हा संदेश हटवला";
 
 /* Text indicating the message was remotely deleted by its author. Embeds {{ author name }} */
-"DELETED_THIS_MESSAGE" = "%1$@ deleted this message";
+"DELETED_THIS_MESSAGE" = "%1$@ यांनी हा संदेश हटवला";
 
 /* Label indicating a user who deleted their account. */
 "DELETED_USER" = "हटवलेले अकाऊंट";
@@ -5095,9 +5092,6 @@
 /* Label that shows up under a local user's row in contacts prompting them to add a member label */
 "MEMBER_LABEL_ADD_CSVC" = "सदस्य लेबल समाविष्ट करा";
 
-/* Toast indicating that only admins can set a member label. */
-"MEMBER_LABEL_ADMIN_ONLY_WARNING_TOAST" = "या गटात फक्त अ‍ॅडमिनच सदस्य लेबल सेट करू शकतात";
-
 /* Accessibility prefix for member labels. */
 "MEMBER_LABEL_AX_PREFIX" = "सदस्य लेबल: ";
 
@@ -5117,7 +5111,7 @@
 "MEMBER_LABEL_FAIL_TO_SAVE" = "सदस्य लेबल जतन करता आले नाही";
 
 /* Section header for a list of group member labels */
-"MEMBER_LABEL_GROUP_LABELS_SECTION_TITLE" = "या गटातील लेबल्स";
+"MEMBER_LABEL_GROUP_LABELS_SECTION_TITLE" = "Group Members with Labels";
 
 /* Body for a sheet shown if a user will show their member label over their About message in a group. */
 "MEMBER_LABEL_HERO_SHEET_ABOUT_OVERRIDE_BODY" = "या गटामध्ये, तुमचे सदस्य लेबल तुमच्या फोटोशेजारी तुमच्याविषयीच्या माहितीच्या जागी दिसेल.";
@@ -5130,6 +5124,9 @@
 
 /* Title for a sheet shown if a user taps on someone else's member label. */
 "MEMBER_LABEL_HERO_SHEET_EDUCATION_TITLE" = "सदस्य लेबल्स";
+
+/* Text for section that shows other group member labels, when there are none */
+"MEMBER_LABEL_NO_OTHER_GROUP_MEMBERS_HAVE_LABELS" = "No other members have labels";
 
 /* Heading shown above the preview of a message bubble with the edited member label. */
 "MEMBER_LABEL_PREVIEW_HEADING" = "पुनरावलोकन";
@@ -6926,7 +6923,7 @@
 "POLL_NO_VOTES" = "शून्य मते";
 
 /* Format text for the placeholder of an option row when creating a poll. Embeds {{ the number of this option in a list, as a pre-localized string }}, so it should look like , . */
-"POLL_OPTION_PLACEHOLDER_FORMAT" = "Option %1$@";
+"POLL_OPTION_PLACEHOLDER_FORMAT" = "पर्याय %1$@";
 
 /* Header for the poll options text boxes when making a new poll */
 "POLL_OPTIONS_LABEL" = "पर्याय";
@@ -10070,7 +10067,7 @@
 "YOU" = "आपण";
 
 /* text indicating the message was remotely deleted by you */
-"YOU_DELETED_THIS_MESSAGE" = "You deleted this message";
+"YOU_DELETED_THIS_MESSAGE" = "तुम्ही हा संदेश हटवला";
 
 /* Info Message when you disabled disappearing messages. */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "आपण नाहीसे होणारे संदेश अक्षम केले.";

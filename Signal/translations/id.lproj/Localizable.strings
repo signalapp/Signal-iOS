@@ -2452,9 +2452,6 @@
 /* Label for 'revoke group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "Hapus dari Peran Admin";
 
-/* Message for 'revoke group admin' confirmation alert. */
-"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_MESSAGE" = "Tindakan ini juga akan menghapus label anggota mereka.";
-
 /* Format for title for 'revoke group admin' confirmation alert. Embeds {user to revoke admin status from}. */
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "Hapus %1$@ dari admin grup?";
 
@@ -2747,10 +2744,10 @@
 "DELETE_FOR_ME_NOTE_TO_SELF_LINKED_DEVICES_PRESENT_ACTION_SHEET_SUBHEADER" = "Pesan ini akan dihapus dari semua perangkat Anda.";
 
 /* Text indicating the message was remotely deleted by an admin. Embeds {{admin display name}} */
-"DELETED_BY_ADMIN" = "Admin %1$@ deleted this message";
+"DELETED_BY_ADMIN" = "Admin %1$@ menghapus pesan ini";
 
 /* Text indicating the message was remotely deleted by its author. Embeds {{ author name }} */
-"DELETED_THIS_MESSAGE" = "%1$@ deleted this message";
+"DELETED_THIS_MESSAGE" = "%1$@ menghapus pesan ini";
 
 /* Label indicating a user who deleted their account. */
 "DELETED_USER" = "Akun Dihapus";
@@ -5095,9 +5092,6 @@
 /* Label that shows up under a local user's row in contacts prompting them to add a member label */
 "MEMBER_LABEL_ADD_CSVC" = "Tambahkan Label Anggota";
 
-/* Toast indicating that only admins can set a member label. */
-"MEMBER_LABEL_ADMIN_ONLY_WARNING_TOAST" = "Hanya admin yang dapat menetapkan label anggota di grup ini";
-
 /* Accessibility prefix for member labels. */
 "MEMBER_LABEL_AX_PREFIX" = "Label anggota: ";
 
@@ -5117,7 +5111,7 @@
 "MEMBER_LABEL_FAIL_TO_SAVE" = "Tidak Dapat Menyimpan Label Anggota";
 
 /* Section header for a list of group member labels */
-"MEMBER_LABEL_GROUP_LABELS_SECTION_TITLE" = "Label di Grup Ini";
+"MEMBER_LABEL_GROUP_LABELS_SECTION_TITLE" = "Group Members with Labels";
 
 /* Body for a sheet shown if a user will show their member label over their About message in a group. */
 "MEMBER_LABEL_HERO_SHEET_ABOUT_OVERRIDE_BODY" = "Dalam grup ini, Label Anggota akan ditampilkan di samping foto sebagai pengganti Tentang Anda.";
@@ -5130,6 +5124,9 @@
 
 /* Title for a sheet shown if a user taps on someone else's member label. */
 "MEMBER_LABEL_HERO_SHEET_EDUCATION_TITLE" = "Label anggota";
+
+/* Text for section that shows other group member labels, when there are none */
+"MEMBER_LABEL_NO_OTHER_GROUP_MEMBERS_HAVE_LABELS" = "No other members have labels";
 
 /* Heading shown above the preview of a message bubble with the edited member label. */
 "MEMBER_LABEL_PREVIEW_HEADING" = "Pratinjau";
@@ -6020,10 +6017,10 @@
 "ONBOARDING_VERIFICATION_BACK_LINK" = "Salah nomor?";
 
 /* Label for button to perform verification with a phone call. */
-"ONBOARDING_VERIFICATION_CALL_ME_BUTTON" = "Hubungi Saya";
+"ONBOARDING_VERIFICATION_CALL_ME_BUTTON" = "Telepon Saya";
 
 /* Format string for button counting down time until phone call verification can be performed. Embeds {{time remaining}}. */
-"ONBOARDING_VERIFICATION_CALL_ME_COUNTDOWN_FORMAT" = "Telepon Saya di %1$@";
+"ONBOARDING_VERIFICATION_CALL_ME_COUNTDOWN_FORMAT" = "Telepon Saya dalam %1$@";
 
 /* Label for a progress spinner currently validating code */
 "ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "Memvalidasi Kode…";
@@ -6926,7 +6923,7 @@
 "POLL_NO_VOTES" = "Tidak Ada Suara";
 
 /* Format text for the placeholder of an option row when creating a poll. Embeds {{ the number of this option in a list, as a pre-localized string }}, so it should look like , . */
-"POLL_OPTION_PLACEHOLDER_FORMAT" = "Option %1$@";
+"POLL_OPTION_PLACEHOLDER_FORMAT" = "Opsi %1$@";
 
 /* Header for the poll options text boxes when making a new poll */
 "POLL_OPTIONS_LABEL" = "Opsi";
@@ -10070,7 +10067,7 @@
 "YOU" = "Anda";
 
 /* text indicating the message was remotely deleted by you */
-"YOU_DELETED_THIS_MESSAGE" = "You deleted this message";
+"YOU_DELETED_THIS_MESSAGE" = "Anda menghapus pesan ini";
 
 /* Info Message when you disabled disappearing messages. */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Anda menonaktifkan penghilangan pesan.";

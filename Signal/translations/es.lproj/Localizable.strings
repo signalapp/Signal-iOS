@@ -608,7 +608,7 @@
 "BACKUP_ONBOARDING_INTRO_TITLE" = "Copias Seguras de Signal";
 
 /* Text for a bullet point in a view introducing the 'Recovery Key' during an onboarding flow. */
-"BACKUP_ONBOARDING_KEY_INTRO_BULLET_1" = "Tu clave de recuperación es un código de 64 caracteres que necesitarás para recuperar tu copia de seguridad.";
+"BACKUP_ONBOARDING_KEY_INTRO_BULLET_1" = "Tu clave de recuperación es un código de 64 caracteres que necesitarás para restaurar tu copia de seguridad.";
 
 /* Text for a bullet point in a view introducing the 'Recovery Key' during an onboarding flow. */
 "BACKUP_ONBOARDING_KEY_INTRO_BULLET_2" = "Guarda tu clave de recuperación en un lugar seguro, como un gestor de contraseñas, y no la compartas con nadie.";
@@ -890,7 +890,7 @@
 "BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_DISK_SPACE" = "No hay suficiente espacio para descargar tus archivos. Para continuar, libera %1$@ de espacio.";
 
 /* Subtitle for a progress bar tracking downloads that are paused because they need internet. */
-"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_INTERNET" = "Descarga en pausa: no tienes internet…";
+"BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_INTERNET" = "Descarga en pausa: sin conexión a Internet…";
 
 /* Subtitle for a progress bar tracking downloads that are paused because they need WiFi. */
 "BACKUP_SETTINGS_DOWNLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_WIFI" = "Descarga en pausa: esperando red Wi-Fi…";
@@ -1010,7 +1010,7 @@
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_LOW_POWER_MODE" = "Carga de archivos en pausa: modo de bajo consumo";
 
 /* Subtitle for a progress bar tracking uploads that are paused because they need an internet connection */
-"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_INTERNET" = "Carga de archivos en pausa: no tienes conexión a Internet";
+"BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_INTERNET" = "Carga de archivos en pausa: sin conexión a Internet…";
 
 /* Subtitle for a progress bar tracking uploads that are paused because they need WiFi. */
 "BACKUP_SETTINGS_UPLOAD_PROGRESS_SUBTITLE_PAUSED_NEEDS_WIFI" = "Carga de archivos en pausa: esperando red Wi-Fi…";
@@ -1040,7 +1040,7 @@
 "BACKUP_SUBSCRIPTION_FAILED_TO_RENEW_SHEET_TITLE" = "No se ha renovado tu suscripción a las copias de seguridad";
 
 /* Body for system notification when we detect an issue with Backup media. */
-"BACKUPS_MEDIA_ERROR_NOTIFICATION_BODY" = "Ha ocurrido algo inesperado con tu copia de seguridad de archivos. Envíanos tus registros de depuración para ayudarnos a resolver el problema.";
+"BACKUPS_MEDIA_ERROR_NOTIFICATION_BODY" = "Se ha producido un error inesperado durante el proceso de copia de seguridad de tus archivos. Envíanos tus registros de depuración para ayudarnos a resolver el problema.";
 
 /* Title for system notification when we detect an issue with Backup media. */
 "BACKUPS_MEDIA_ERROR_NOTIFICATION_TITLE" = "Error de copia de seguridad de archivos";
@@ -1823,7 +1823,7 @@
 "CHAT_LIST_BACKUP_PROGRESS_VIEW_HIDE_CONTEXT_MENU_ACTION" = "Ocultar";
 
 /* Toast shown after the user hides the backup progress view. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_HIDE_TOAST" = "Ver el progreso de la copia de seguridad en Ajustes de copia de seguridad";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_HIDE_TOAST" = "Para ver el progreso de tu copia de seguridad, ve a Ajustes de copia de seguridad.";
 
 /* Button in the action sheet to dismiss and resume backup later on Wi-Fi. */
 "CHAT_LIST_BACKUP_PROGRESS_VIEW_LATER_ON_WIFI_BUTTON" = "Más tarde, con Wi-Fi";
@@ -1835,7 +1835,7 @@
 "CHAT_LIST_BACKUP_PROGRESS_VIEW_LOW_POWER_MODE_LABEL" = "Modo de bajo consumo…";
 
 /* Trailing accessory label shown when backup is paused due to no internet connection. */
-"CHAT_LIST_BACKUP_PROGRESS_VIEW_NO_INTERNET_LABEL" = "Sin conexión a Internet";
+"CHAT_LIST_BACKUP_PROGRESS_VIEW_NO_INTERNET_LABEL" = "Sin conexión a Internet…";
 
 /* Title label shown in the chat list backup progress view while the backup file is being prepared. */
 "CHAT_LIST_BACKUP_PROGRESS_VIEW_PREPARING_BACKUP_TITLE" = "Preparando copia de seguridad";
@@ -2452,9 +2452,6 @@
 /* Label for 'revoke group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "Retirar permisos de admin";
 
-/* Message for 'revoke group admin' confirmation alert. */
-"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_MESSAGE" = "Esto también eliminará su categoría de participante.";
-
 /* Format for title for 'revoke group admin' confirmation alert. Embeds {user to revoke admin status from}. */
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "¿Retirarle los permisos de admin a %1$@?";
 
@@ -2747,10 +2744,10 @@
 "DELETE_FOR_ME_NOTE_TO_SELF_LINKED_DEVICES_PRESENT_ACTION_SHEET_SUBHEADER" = "Se eliminará este mensaje de todos tus dispositivos.";
 
 /* Text indicating the message was remotely deleted by an admin. Embeds {{admin display name}} */
-"DELETED_BY_ADMIN" = "Admin %1$@ deleted this message";
+"DELETED_BY_ADMIN" = "%1$@ (admin) ha eliminado este mensaje";
 
 /* Text indicating the message was remotely deleted by its author. Embeds {{ author name }} */
-"DELETED_THIS_MESSAGE" = "%1$@ deleted this message";
+"DELETED_THIS_MESSAGE" = "%1$@ ha eliminado este mensaje";
 
 /* Label indicating a user who deleted their account. */
 "DELETED_USER" = "Cuenta eliminada";
@@ -5095,9 +5092,6 @@
 /* Label that shows up under a local user's row in contacts prompting them to add a member label */
 "MEMBER_LABEL_ADD_CSVC" = "Añadir categoría de participante";
 
-/* Toast indicating that only admins can set a member label. */
-"MEMBER_LABEL_ADMIN_ONLY_WARNING_TOAST" = "Solo los admins pueden añadir categorías de participantes en este grupo";
-
 /* Accessibility prefix for member labels. */
 "MEMBER_LABEL_AX_PREFIX" = "Categoría de participante: ";
 
@@ -5117,7 +5111,7 @@
 "MEMBER_LABEL_FAIL_TO_SAVE" = "No se ha podido guardar la categoría de participante";
 
 /* Section header for a list of group member labels */
-"MEMBER_LABEL_GROUP_LABELS_SECTION_TITLE" = "Categorías en este grupo";
+"MEMBER_LABEL_GROUP_LABELS_SECTION_TITLE" = "Group Members with Labels";
 
 /* Body for a sheet shown if a user will show their member label over their About message in a group. */
 "MEMBER_LABEL_HERO_SHEET_ABOUT_OVERRIDE_BODY" = "En este grupo, se mostrará tu categoría de participante junto a tu foto en lugar de la información sobre ti.";
@@ -5126,16 +5120,19 @@
 "MEMBER_LABEL_HERO_SHEET_ABOUT_OVERRIDE_TITLE" = "Mostrar categoría de participante";
 
 /* Body for a sheet shown if a user taps on someone else's member label. */
-"MEMBER_LABEL_HERO_SHEET_EDUCATION_BODY" = "Añade una categoría de participante que te describa a ti o a tu rol dentro del grupo. La categoría que elijas solo se mostrará dentro de este grupo.";
+"MEMBER_LABEL_HERO_SHEET_EDUCATION_BODY" = "Añade una categoría de participante que te describa a ti o tu rol dentro del grupo. La categoría que elijas solo se mostrará dentro de este grupo.";
 
 /* Title for a sheet shown if a user taps on someone else's member label. */
 "MEMBER_LABEL_HERO_SHEET_EDUCATION_TITLE" = "Categorías de participantes";
+
+/* Text for section that shows other group member labels, when there are none */
+"MEMBER_LABEL_NO_OTHER_GROUP_MEMBERS_HAVE_LABELS" = "No other members have labels";
 
 /* Heading shown above the preview of a message bubble with the edited member label. */
 "MEMBER_LABEL_PREVIEW_HEADING" = "Vista previa";
 
 /* Text for a button to edit an existing member label */
-"MEMBER_LABEL_SET" = "Establecer tu categoría de participante";
+"MEMBER_LABEL_SET" = "Añadir tu categoría de participante";
 
 /* Text shown in the preview message bubble when a user is editing their member label. */
 "MEMBER_LABEL_VIEW_MESSAGE_PREVIEW_TEXT" = "Hola!";
@@ -5144,7 +5141,7 @@
 "MEMBER_LABEL_VIEW_PLACEHOLDER_TEXT" = "Añade tu categoría";
 
 /* Subtitle for a view where users can edit and preview their member label. */
-"MEMBER_LABEL_VIEW_SUBTITLE" = "Añade una categoría de participante que te describa a ti o a tu rol dentro del grupo. La categoría que elijas solo se mostrará dentro de este grupo.";
+"MEMBER_LABEL_VIEW_SUBTITLE" = "Añade una categoría de participante que te describa a ti o tu rol dentro del grupo. La categoría que elijas solo se mostrará dentro de este grupo.";
 
 /* Title for a view where users can edit and preview their member label. */
 "MEMBER_LABEL_VIEW_TITLE" = "Categoría de participante";
@@ -6026,7 +6023,7 @@
 "ONBOARDING_VERIFICATION_CALL_ME_COUNTDOWN_FORMAT" = "Llamarme en %1$@";
 
 /* Label for a progress spinner currently validating code */
-"ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "Verificando código…";
+"ONBOARDING_VERIFICATION_CODE_VALIDATION_PROGRESS_LABEL" = "Verificando clave…";
 
 /* First bullet point for the explainer sheet for registering via verification code. */
 "ONBOARDING_VERIFICATION_HELP_BULLET_1" = "Asegúrate de que tu teléfono tenga señal para recibir SMS o llamadas.";
@@ -6041,13 +6038,13 @@
 "ONBOARDING_VERIFICATION_HELP_LINK" = "¿Tienes problemas para registrarte?";
 
 /* Label for button to resend SMS verification code. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_BUTTON" = "Reenviar código";
+"ONBOARDING_VERIFICATION_RESEND_CODE_BUTTON" = "Reenviar clave";
 
 /* Format string for button counting down time until SMS code can be resent. Embeds {{time remaining}}. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_COUNTDOWN_FORMAT" = "Reenviar código en %1$@";
+"ONBOARDING_VERIFICATION_RESEND_CODE_COUNTDOWN_FORMAT" = "Reenviar clave en %1$@";
 
 /* Format for the title of the 'onboarding verification' view. Embeds {{the user's phone number}}. */
-"ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT" = "Introduce el código que hemos enviado al %1$@";
+"ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT" = "Introduce la clave que hemos enviado al %1$@";
 
 /* Title label for the onboarding verification page */
 "ONBOARDING_VERIFICATION_TITLE_LABEL" = "Clave de verificación";
@@ -6926,7 +6923,7 @@
 "POLL_NO_VOTES" = "Sin votos";
 
 /* Format text for the placeholder of an option row when creating a poll. Embeds {{ the number of this option in a list, as a pre-localized string }}, so it should look like , . */
-"POLL_OPTION_PLACEHOLDER_FORMAT" = "Option %1$@";
+"POLL_OPTION_PLACEHOLDER_FORMAT" = "Opción %1$@";
 
 /* Header for the poll options text boxes when making a new poll */
 "POLL_OPTIONS_LABEL" = "Opciones";
@@ -7487,10 +7484,10 @@
 "REGISTRATION_PROFILE_SETUP_TITLE" = "Completa tu perfil";
 
 /* Error shown if an SMS/call service provider is permanently unable to send a verification code to the provided number. */
-"REGISTRATION_PROVIDER_FAILURE_MESSAGE_PERMANENT" = "Signal no puede enviarte un código SMS debido a problemas con el proveedor de SMS.";
+"REGISTRATION_PROVIDER_FAILURE_MESSAGE_PERMANENT" = "Signal no puede enviarte una clave SMS debido a problemas con el proveedor de SMS.";
 
 /* Error shown if an SMS/call service provider is temporarily unable to send a verification code to the provided number. */
-"REGISTRATION_PROVIDER_FAILURE_MESSAGE_TRANSIENT" = "Signal no ha podido enviarte un código SMS debido a problemas con el proveedor de SMS. Vuelve a intentarlo dentro de unas horas.";
+"REGISTRATION_PROVIDER_FAILURE_MESSAGE_TRANSIENT" = "Signal no ha podido enviarte una clave SMS debido a problemas con el proveedor de SMS. Vuelve a intentarlo dentro de unas horas.";
 
 /* Third step in directions for how to make a backup */
 "REGISTRATION_RESTORE_METHOD_MAKE_BACKUP_TUTORIAL_ENABLE_BACKUPS" = "Habilita las copias de seguridad y espera hasta que se complete tu copia de seguridad";
@@ -7529,13 +7526,13 @@
 "REGISTRATION_SMS_CODE_FAILED_TRY_VOICE_ERROR" = "No hemos podido enviarte la clave de verificación por SMS. Intenta recibir tu clave mediante llamada.";
 
 /* Alert shown when running out of attempts at submitting a verification code. */
-"REGISTRATION_SUBMIT_CODE_ATTEMPTS_EXHAUSTED_ALERT" = "Has realizado demasiados intentos para introducir el código. Vuelve a solicitar el código e inténtalo de nuevo.";
+"REGISTRATION_SUBMIT_CODE_ATTEMPTS_EXHAUSTED_ALERT" = "Has realizado demasiados intentos para introducir la clave. Vuelve a solicitar la clave e inténtalo de nuevo.";
 
 /* Alert shown when submitting a verification code too many times. Embeds {{ duration }}, such as \"5:00\" */
-"REGISTRATION_SUBMIT_CODE_RATE_LIMIT_ALERT_FORMAT" = "Has realizado demasiados intentos para introducir el código. Vuelve a intentarlo en %1$@.";
+"REGISTRATION_SUBMIT_CODE_RATE_LIMIT_ALERT_FORMAT" = "Has realizado demasiados intentos para introducir la clave. Vuelve a intentarlo en %1$@.";
 
 /* During registration and re-registration, users may have to enter a code to verify ownership of their phone number. If they enter an invalid code, they will see this error message. */
-"REGISTRATION_VERIFICATION_ERROR_INVALID_VERIFICATION_CODE" = "El código que has introducido no es válido. Vuelve a solicitar el código e inténtalo de nuevo.";
+"REGISTRATION_VERIFICATION_ERROR_INVALID_VERIFICATION_CODE" = "La clave que has introducido no es válida. Vuelve a solicitar la clave e inténtalo de nuevo.";
 
 /* Message of alert indicating that users needs to enter a valid phone number to register. */
 "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "Introduce un número de teléfono válido para registrarte.";
@@ -7643,7 +7640,7 @@
 "RESTORING_MEDIA_BANNER_PAUSED_LOW_POWER_MODE_SUBTITLE" = "Modo de bajo consumo";
 
 /* Subtitle shown on chat list banner for restoring media from a backup when paused because the device has no internet connection */
-"RESTORING_MEDIA_BANNER_PAUSED_NOT_REACHABLE_SUBTITLE" = "Sin conexión a Internet";
+"RESTORING_MEDIA_BANNER_PAUSED_NOT_REACHABLE_SUBTITLE" = "Sin conexión a Internet…";
 
 /* Title shown on chat list banner for restoring media from a backup when paused for some reason */
 "RESTORING_MEDIA_BANNER_PAUSED_TITLE" = "Descarga en pausa";
@@ -10070,7 +10067,7 @@
 "YOU" = "Tú";
 
 /* text indicating the message was remotely deleted by you */
-"YOU_DELETED_THIS_MESSAGE" = "You deleted this message";
+"YOU_DELETED_THIS_MESSAGE" = "Has eliminado este mensaje";
 
 /* Info Message when you disabled disappearing messages. */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Has desactivado los mensajes temporales.";

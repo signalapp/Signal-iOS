@@ -1,1 +1,1 @@
-• Now you can optionally add a member label to describe yourself or your role in a group chat. Set your group member label to “Referee” or “Goalie” in your local rec league soccer chat to help kick things off when new teammates join, then choose a different label with your job title in the company chat. Member labels appear next to your profile name in that group, and group admins can control who can set a label with the “Edit Group Info” permission.
+• 现在您可以选择添加成员标签来描述您自己或您在群组聊天中的角色。成员标签会显示在您的群组成员昵称旁。群组管理员可以通过“编辑群组信息”权限控制谁可以设置标签。

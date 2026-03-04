@@ -2452,9 +2452,6 @@
 /* Label for 'revoke group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "管理者から外す";
 
-/* Message for 'revoke group admin' confirmation alert. */
-"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_MESSAGE" = "削除するとメンバーラベルも削除されます。";
-
 /* Format for title for 'revoke group admin' confirmation alert. Embeds {user to revoke admin status from}. */
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "%1$@ をグループ管理者から外しますか？";
 
@@ -2747,10 +2744,10 @@
 "DELETE_FOR_ME_NOTE_TO_SELF_LINKED_DEVICES_PRESENT_ACTION_SHEET_SUBHEADER" = "このメッセージは、ご利用のすべての端末から消去されます。";
 
 /* Text indicating the message was remotely deleted by an admin. Embeds {{admin display name}} */
-"DELETED_BY_ADMIN" = "Admin %1$@ deleted this message";
+"DELETED_BY_ADMIN" = "管理者の%1$@がこのメッセージを消去しました";
 
 /* Text indicating the message was remotely deleted by its author. Embeds {{ author name }} */
-"DELETED_THIS_MESSAGE" = "%1$@ deleted this message";
+"DELETED_THIS_MESSAGE" = "%1$@がこのメッセージを消去しました";
 
 /* Label indicating a user who deleted their account. */
 "DELETED_USER" = "消去されたアカウント";
@@ -5095,9 +5092,6 @@
 /* Label that shows up under a local user's row in contacts prompting them to add a member label */
 "MEMBER_LABEL_ADD_CSVC" = "メンバーラベルを追加";
 
-/* Toast indicating that only admins can set a member label. */
-"MEMBER_LABEL_ADMIN_ONLY_WARNING_TOAST" = "このグループのメンバーラベルを設定できるのは管理者のみです";
-
 /* Accessibility prefix for member labels. */
 "MEMBER_LABEL_AX_PREFIX" = "メンバーラベル： ";
 
@@ -5117,7 +5111,7 @@
 "MEMBER_LABEL_FAIL_TO_SAVE" = "メンバーラベルを保存できませんでした";
 
 /* Section header for a list of group member labels */
-"MEMBER_LABEL_GROUP_LABELS_SECTION_TITLE" = "このグループのラベル";
+"MEMBER_LABEL_GROUP_LABELS_SECTION_TITLE" = "Group Members with Labels";
 
 /* Body for a sheet shown if a user will show their member label over their About message in a group. */
 "MEMBER_LABEL_HERO_SHEET_ABOUT_OVERRIDE_BODY" = "このグループでは、あなたの写真の横に、自己紹介の代わりにメンバーラベルが表示されます。";
@@ -5130,6 +5124,9 @@
 
 /* Title for a sheet shown if a user taps on someone else's member label. */
 "MEMBER_LABEL_HERO_SHEET_EDUCATION_TITLE" = "メンバーラベル";
+
+/* Text for section that shows other group member labels, when there are none */
+"MEMBER_LABEL_NO_OTHER_GROUP_MEMBERS_HAVE_LABELS" = "No other members have labels";
 
 /* Heading shown above the preview of a message bubble with the edited member label. */
 "MEMBER_LABEL_PREVIEW_HEADING" = "プレビュー";
@@ -6632,7 +6629,7 @@
 "PHOTO_CAPTURE_USERNAME_QR_CODE_FOUND_TITLE_FORMAT" = "%1$@が見つかりました";
 
 /* Pressing this button pins a thread */
-"PIN_ACTION" = "ピン留めする";
+"PIN_ACTION" = "ピン留め";
 
 /* Error body indicating that the attempt to change a PIN failed. */
 "PIN_CHANGE_ERROR_MESSAGE" = "新規のPINを作成できず、既存のPINは無効化されました。インターネット接続を確認して再度試してください。";
@@ -6788,7 +6785,7 @@
 "PINNED_MESSAGE_MENU_ACCESSIBILITY_LABEL" = "ピン留めされたメッセージメニュー";
 
 /* Label for button to pin a message */
-"PINNED_MESSAGE_PIN_ACTION_TITLE" = "ピン留めする";
+"PINNED_MESSAGE_PIN_ACTION_TITLE" = "ピン留め";
 
 /* Message for an action sheet confirming the user wants to replace oldest pinned message. */
 "PINNED_MESSAGE_REPLACE_OLDEST_BODY" = "メッセージをピン留めすると、一番最初にピン留めしたメッセージと置き換えられます。";
@@ -6926,7 +6923,7 @@
 "POLL_NO_VOTES" = "投票なし";
 
 /* Format text for the placeholder of an option row when creating a poll. Embeds {{ the number of this option in a list, as a pre-localized string }}, so it should look like , . */
-"POLL_OPTION_PLACEHOLDER_FORMAT" = "Option %1$@";
+"POLL_OPTION_PLACEHOLDER_FORMAT" = "選択肢%1$@";
 
 /* Header for the poll options text boxes when making a new poll */
 "POLL_OPTIONS_LABEL" = "オプション";
@@ -10070,7 +10067,7 @@
 "YOU" = "あなた";
 
 /* text indicating the message was remotely deleted by you */
-"YOU_DELETED_THIS_MESSAGE" = "You deleted this message";
+"YOU_DELETED_THIS_MESSAGE" = "メッセージを消去しました";
 
 /* Info Message when you disabled disappearing messages. */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "消えるメッセージを無効にしました。";
