@@ -226,19 +226,9 @@ public class CVColorOrGradientView: ManualLayoutViewWithLayer, CVDimmableView {
 
         // Bubble shape.
         if let bubbleConfig {
-            // Rounded corners.
-            if let cornerRadius = bubbleConfig.corners.uniformCornerRadius(for: bounds) {
-                // If all of the corners have the same radius, don't bother using a mask layer.
-                // Set cornerRadius instead - it's more performant.
-                layer.mask = nil
-                layer.masksToBounds = true
-                layer.cornerRadius = cornerRadius
-            } else {
-                maskLayer.path = bubbleConfig.bubblePath(for: bounds).cgPath
-                layer.mask = maskLayer
-                layer.masksToBounds = false
-                layer.cornerRadius = 0
-            }
+            // Corners.
+            maskLayer.path = bubbleConfig.bubblePath(for: bounds).cgPath
+            layer.mask = maskLayer
 
             // Stroke.
             if
@@ -254,8 +244,6 @@ public class CVColorOrGradientView: ManualLayoutViewWithLayer, CVDimmableView {
             }
         } else {
             layer.mask = nil
-            layer.masksToBounds = false
-            layer.cornerRadius = 0
 
             strokeLayer.removeFromSuperlayer()
         }
