@@ -62,8 +62,8 @@ class CVLinkPreviewView: ManualStackViewWithLayer {
         for linkPreview: LinkPreviewState,
         isIncoming: Bool,
     ) -> CVLinkPreviewViewAdapter {
-        if linkPreview.isGroupInviteLink {
-            return CVLinkPreviewViewAdapterGroupLink(linkPreview: linkPreview, isIncoming: isIncoming)
+        if linkPreview.isGroupInviteLink || linkPreview.isCallLink {
+            return CVLinkPreviewViewAdapterSignalLink(linkPreview: linkPreview, isIncoming: isIncoming)
         }
         if linkPreview.hasLoadedImageOrBlurHash, sentIsHero(linkPreview: linkPreview) {
             return CVLinkPreviewViewAdapterLarge(linkPreview: linkPreview, isIncoming: isIncoming)
@@ -197,9 +197,9 @@ private class CVLinkPreviewViewAdapter {
     var rootStackConfig: ManualStackView.Config {
         ManualStackView.Config(
             axis: .horizontal,
-            alignment: .center,
-            spacing: 8,
-            layoutMargins: UIEdgeInsets(margin: 12),
+            alignment: .top,
+            spacing: 12,
+            layoutMargins: UIEdgeInsets(margin: 10),
         )
     }
 
@@ -383,7 +383,7 @@ private class CVLinkPreviewViewAdapter {
 // MARK: -
 
 // Does not have domain name. Image is round.
-private class CVLinkPreviewViewAdapterGroupLink: CVLinkPreviewViewAdapter {
+private class CVLinkPreviewViewAdapterSignalLink: CVLinkPreviewViewAdapter {
 
     override func rootStackSubviewInfos(
         maxWidth: CGFloat,
@@ -420,7 +420,7 @@ private class CVLinkPreviewViewAdapterGroupLink: CVLinkPreviewViewAdapter {
 
         if linkPreview.hasLoadedImageOrBlurHash {
             let linkPreviewImageView = linkPreviewView.linkPreviewImageView
-            if let imageView = linkPreviewImageView.configure(linkPreview: linkPreview, rounding: .circular) {
+            if let imageView = linkPreviewImageView.configure(linkPreview: linkPreview, cornerStyle: .capsule) {
                 imageView.clipsToBounds = true
                 rootStackSubviews.append(imageView)
             } else {
@@ -436,36 +436,6 @@ private class CVLinkPreviewViewAdapterGroupLink: CVLinkPreviewViewAdapter {
         rootStackSubviews.append(textStack)
 
         return rootStackSubviews
-    }
-
-    // Only title and description.
-    override func textStackSubviewInfos(maxWidth: CGFloat) -> [ManualStackSubviewInfo] {
-        var subviewInfos = [ManualStackSubviewInfo]()
-
-        if let labelConfig = sentTitleLabelConfig() {
-            let labelSize = CVText.measureLabel(config: labelConfig, maxWidth: maxWidth)
-            subviewInfos.append(labelSize.asManualSubviewInfo)
-        }
-        if let labelConfig = sentDescriptionLabelConfig() {
-            let labelSize = CVText.measureLabel(config: labelConfig, maxWidth: maxWidth)
-            subviewInfos.append(labelSize.asManualSubviewInfo)
-        }
-
-        return subviewInfos
-    }
-
-    // Only title and description.
-    override func textStackSubviews() -> [CVLabel] {
-        var subviews = [CVLabel]()
-
-        if let titleLabel = sentTitleLabel() {
-            subviews.append(titleLabel)
-        }
-        if let descriptionLabel = sentDescriptionLabel() {
-            subviews.append(descriptionLabel)
-        }
-
-        return subviews
     }
 }
 
@@ -526,7 +496,7 @@ private class CVLinkPreviewViewAdapterLarge: CVLinkPreviewViewAdapter {
         var rootStackSubviews = [UIView]()
 
         let linkPreviewImageView = linkPreviewView.linkPreviewImageView
-        if let imageView = linkPreviewImageView.configure(linkPreview: linkPreview) {
+        if let imageView = linkPreviewImageView.configure(linkPreview: linkPreview, cornerStyle: .square) {
             imageView.clipsToBounds = true
             rootStackSubviews.append(imageView)
         } else {
@@ -601,7 +571,7 @@ private class CVLinkPreviewViewAdapterCompact: CVLinkPreviewViewAdapter {
 
         if linkPreview.hasLoadedImageOrBlurHash {
             let linkPreviewImageView = linkPreviewView.linkPreviewImageView
-            if let imageView = linkPreviewImageView.configure(linkPreview: linkPreview) {
+            if let imageView = linkPreviewImageView.configure(linkPreview: linkPreview, cornerStyle: .rounded(radius: 6)) {
                 imageView.clipsToBounds = true
                 rootStackSubviews.append(imageView)
             } else {
@@ -624,12 +594,13 @@ private class CVLinkPreviewViewAdapterCompact: CVLinkPreviewViewAdapter {
 
 private class CVLinkPreviewImageView: ManualLayoutViewWithLayer {
 
-    enum Rounding: UInt {
-        case none
-        case circular
+    enum CornerStyle {
+        case square
+        case rounded(radius: CGFloat)
+        case capsule
     }
 
-    var rounding: Rounding = .none {
+    var cornerStyle: CornerStyle = .square {
         didSet {
             updateCornerRounding()
         }
@@ -669,17 +640,20 @@ private class CVLinkPreviewImageView: ManualLayoutViewWithLayer {
         imageView.reset()
         iconView.reset()
 
-        rounding = .none
+        cornerStyle = .square
         isHero = false
         configurationId = 0
     }
 
     private func updateCornerRounding() {
-        switch rounding {
-        case .none:
+        switch cornerStyle {
+        case .square:
             layer.cornerRadius = 0
 
-        case .circular:
+        case .rounded(let radius):
+            layer.cornerRadius = radius
+
+        case .capsule:
             layer.cornerRadius = bounds.size.smallerAxis / 2
         }
     }
@@ -689,7 +663,7 @@ private class CVLinkPreviewImageView: ManualLayoutViewWithLayer {
         shouldEvacuateInBackground: true,
     )
 
-    func configure(linkPreview: LinkPreviewState, rounding: Rounding = .none) -> UIView? {
+    func configure(linkPreview: LinkPreviewState, cornerStyle: CornerStyle) -> UIView? {
         switch linkPreview.imageState {
         case .loaded:
             break
@@ -708,7 +682,7 @@ private class CVLinkPreviewImageView: ManualLayoutViewWithLayer {
             addSubviewToFillSuperviewEdges(imageView)
             addSubviewToCenterOnSuperview(iconView, size: .square(36))
         }
-        self.rounding = rounding
+        self.cornerStyle = cornerStyle
         isHero = CVLinkPreviewView.sentIsHero(linkPreview: linkPreview)
         let configurationId = Self.configurationIdCounter.increment()
         self.configurationId = configurationId

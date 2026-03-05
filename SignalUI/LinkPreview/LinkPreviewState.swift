@@ -49,6 +49,7 @@ public protocol LinkPreviewState: AnyObject {
     var previewDescription: String? { get }
     var date: Date? { get }
     var isGroupInviteLink: Bool { get }
+    var isCallLink: Bool { get }
     var conversationStyle: ConversationStyle? { get }
 }
 
@@ -129,6 +130,8 @@ public class LinkPreviewLoading: LinkPreviewState {
             return false
         }
     }
+
+    public var isCallLink: Bool { false }
 
     public var conversationStyle: ConversationStyle? { nil }
 }
@@ -215,7 +218,9 @@ public class LinkPreviewDraft: LinkPreviewState {
 
     public var date: Date? { linkPreviewDraft.date }
 
-    public let isGroupInviteLink = false
+    public var isGroupInviteLink: Bool { false }
+
+    public var isCallLink: Bool { false }
 
     public var conversationStyle: ConversationStyle? { nil }
 }
@@ -371,5 +376,7 @@ public class LinkPreviewSent: LinkPreviewState {
 
     public var date: Date? { linkPreview.date }
 
-    public let isGroupInviteLink = false
+    public var isGroupInviteLink: Bool { false }
+
+    public var isCallLink: Bool { false }
 }

@@ -109,7 +109,9 @@ public class LinkPreviewCallLink: LinkPreviewState {
         }
     }
 
-    public let isGroupInviteLink = false
+    public var isGroupInviteLink: Bool { false }
+
+    public var isCallLink: Bool { true }
 }
 
 public class CommonCallLinksUI {
