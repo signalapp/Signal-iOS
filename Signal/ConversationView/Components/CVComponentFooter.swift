@@ -162,7 +162,7 @@ public class CVComponentFooter: CVComponentBase, CVComponent {
         let textColor: UIColor
         if wasRemotelyDeleted, !conversationStyle.hasWallpaper {
             owsAssertDebug(!isOverlayingMedia)
-            textColor = Theme.primaryTextColor
+            textColor = UIColor.Signal.secondaryLabel
         } else if isOverlayingMedia {
             textColor = .ows_white
         } else if isOutsideBubble, !conversationStyle.hasWallpaper {

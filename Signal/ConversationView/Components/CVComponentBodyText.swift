@@ -573,10 +573,15 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
             searchRanges: .matchedRanges([]),
         )
 
+        var textColor = UIColor.Signal.secondaryLabel
+        if conversationStyle.hasWallpaper {
+            textColor = conversationStyle.bubbleSecondaryTextColor(isIncoming: isIncoming)
+        }
+
         return CVTextViewConfig(
             text: .attributedText(text),
             font: textMessageFont,
-            textColor: bodyTextColor,
+            textColor: textColor,
             textAlignment: .natural,
             displayConfiguration: displayConfiguration,
             linkifyStyle: linkifyStyle,
