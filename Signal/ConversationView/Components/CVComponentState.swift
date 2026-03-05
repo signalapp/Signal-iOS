@@ -134,7 +134,7 @@ public struct CVComponentState: Equatable {
 
         // We use the "body text" component to
         // render the "remotely deleted" indicator.
-        case remotelyDeleted(deleteAuthor: RemoteDeleteAuthor?)
+        case remotelyDeleted(deleteAuthor: RemoteDeleteAuthor)
 
         var displayableText: DisplayableText? {
             switch self {

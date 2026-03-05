@@ -526,51 +526,45 @@ public class CVComponentBodyText: CVComponentBase, CVComponent {
         var linkItems: [CVTextLabel.Item] = []
         switch bodyText {
         case .remotelyDeleted(let deleteAuthor):
-            if let deleteAuthor {
-                switch deleteAuthor.authorType {
-                case .admin(let aci):
-                    let groupColor = GroupNameColors.forThread(thread).color(for: aci)
-                    let attributedString = buildAdminDeleteAttributedString(
-                        displayName: deleteAuthor.displayName,
-                        groupColor: groupColor,
-                    )
-                    text.append(attributedString)
+            switch deleteAuthor {
+            case .admin(let aci, let displayName):
+                let groupColor = GroupNameColors.forThread(thread).color(for: aci)
+                let attributedString = buildAdminDeleteAttributedString(
+                    displayName: displayName,
+                    groupColor: groupColor,
+                )
+                text.append(attributedString)
 
-                    if
-                        let tapItemRange = rangeOfFirstSubstring(
-                            in: text,
-                            withColor: groupColor,
-                        )
-                    {
-                        linkItems.append(.deleteAuthor(deleteAuthorItem: CVTextLabel.DeleteAuthorItem(
-                            deleteAuthorAci: aci,
-                            range: tapItemRange,
-                        )))
-                    } else {
-                        owsFailDebug("Admin delete is missing tappable range")
-                    }
-
-                case .regular:
-                    let format = OWSLocalizedString(
-                        "DELETED_THIS_MESSAGE",
-                        comment: "Text indicating the message was remotely deleted by its author. Embeds {{ author name }}",
+                if
+                    let tapItemRange = rangeOfFirstSubstring(
+                        in: text,
+                        withColor: groupColor,
                     )
-                    text.append(
-                        NSAttributedString(
-                            string: String(format: format, deleteAuthor.displayName),
-                        ),
-                    )
+                {
+                    linkItems.append(.deleteAuthor(deleteAuthorItem: CVTextLabel.DeleteAuthorItem(
+                        deleteAuthorAci: aci,
+                        range: tapItemRange,
+                    )))
+                } else {
+                    owsFailDebug("Admin delete is missing tappable range")
                 }
-            } else {
-                fallthrough
+
+            case .regular(let displayName):
+                let format = OWSLocalizedString(
+                    "DELETED_THIS_MESSAGE",
+                    comment: "Text indicating the message was remotely deleted by its author. Embeds {{ author name }}",
+                )
+                text.append(
+                    NSAttributedString(
+                        string: String(format: format, displayName),
+                    ),
+                )
+
+            case .localUser:
+                text.append(NSAttributedString(string: OWSLocalizedString("YOU_DELETED_THIS_MESSAGE", comment: "text indicating the message was remotely deleted by you")))
             }
         default:
-            let remoteDeleteNoAuthorMessage = (
-                isIncoming
-                    ? NSAttributedString(string: OWSLocalizedString("THIS_MESSAGE_WAS_DELETED", comment: "text indicating the message was remotely deleted"))
-                    : NSAttributedString(string: OWSLocalizedString("YOU_DELETED_THIS_MESSAGE", comment: "text indicating the message was remotely deleted by you")),
-            )
-            text.append(remoteDeleteNoAuthorMessage)
+            owsFailDebug("Should be remotelyDeleted")
         }
 
         let displayConfiguration = HydratedMessageBody.DisplayConfiguration.messageBubble(

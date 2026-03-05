@@ -6,14 +6,10 @@
 public import LibSignalClient
 import GRDB
 
-public struct RemoteDeleteAuthor: Equatable {
-    public enum AuthorType: Equatable {
-        case admin(aci: Aci)
-        case regular
-    }
-
-    public let displayName: String
-    public let authorType: AuthorType
+public enum RemoteDeleteAuthor: Equatable {
+    case admin(aci: Aci, displayName: String)
+    case regular(displayName: String)
+    case localUser
 }
 
 public class AdminDeleteManager {

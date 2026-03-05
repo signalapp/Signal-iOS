@@ -631,30 +631,19 @@ public extension TSMessage {
 
             let remoteDeleteString: String
             let deleteAuthor = displayNameForDeleteMessage(localAci: localAci, transaction: tx)
-            if let deleteAuthor {
-                switch deleteAuthor.authorType {
-                case .admin(let aci):
-                    if aci == localAci, isOutgoing {
-                        remoteDeleteString = OWSLocalizedString("YOU_DELETED_THIS_MESSAGE", comment: "text indicating the message was remotely deleted by you")
-                    } else {
-                        let format = OWSLocalizedString("DELETED_BY_ADMIN", comment: "Text indicating the message was remotely deleted by an admin. Embeds {{admin display name}}")
-                        remoteDeleteString = String(format: format, deleteAuthor.displayName)
-                    }
-                case .regular:
-                    let format = OWSLocalizedString(
-                        "DELETED_THIS_MESSAGE",
-                        comment: "Text indicating the message was remotely deleted by its author. Embeds {{ author name }}",
-                    )
-                    remoteDeleteString = String(format: format, deleteAuthor.displayName)
-                }
-            } else {
-                remoteDeleteString = (
-                    isIncoming
-                        ? OWSLocalizedString("THIS_MESSAGE_WAS_DELETED", comment: "text indicating the message was remotely deleted")
-                        : OWSLocalizedString("YOU_DELETED_THIS_MESSAGE", comment: "text indicating the message was remotely deleted by you"),
+            switch deleteAuthor {
+            case .admin(_, let displayName):
+                let format = OWSLocalizedString("DELETED_BY_ADMIN", comment: "Text indicating the message was remotely deleted by an admin. Embeds {{admin display name}}")
+                remoteDeleteString = String(format: format, displayName)
+            case .regular(let displayName):
+                let format = OWSLocalizedString(
+                    "DELETED_THIS_MESSAGE",
+                    comment: "Text indicating the message was remotely deleted by its author. Embeds {{ author name }}",
                 )
+                remoteDeleteString = String(format: format, displayName)
+            case .localUser:
+                remoteDeleteString = OWSLocalizedString("YOU_DELETED_THIS_MESSAGE", comment: "text indicating the message was remotely deleted by you")
             }
-
             return .remotelyDeleted(remoteDeleteString)
         }
 
@@ -864,7 +853,7 @@ extension TSMessage {
 
     // MARK: - Remote Delete String
 
-    public func displayNameForDeleteMessage(localAci: Aci, transaction: DBReadTransaction) -> RemoteDeleteAuthor? {
+    public func displayNameForDeleteMessage(localAci: Aci, transaction: DBReadTransaction) -> RemoteDeleteAuthor {
         let adminDeleteManager = DependenciesBridge.shared.adminDeleteManager
 
         let adminAuthorAci = adminDeleteManager.adminDeleteAuthor(
@@ -873,45 +862,38 @@ extension TSMessage {
         )
 
         if let adminAuthorAci {
-            if adminAuthorAci == localAci, self.isOutgoing {
+            if adminAuthorAci == localAci {
                 // Display usual self delete message for outgoing self-deletion.
-                return nil
+                return .localUser
             } else if let incomingMessage = self as? TSIncomingMessage, incomingMessage.authorAddress.aci == adminAuthorAci {
                 // Display usual (non-admin) other user delete for incoming self-deletion.
                 let displayName = SSKEnvironment.shared.contactManagerRef.displayName(
                     for: SignalServiceAddress(adminAuthorAci),
                     tx: transaction,
-                ).resolvedValue()
-                return RemoteDeleteAuthor(
-                    displayName: displayName,
-                    authorType: .regular,
-                )
+                ).resolvedValue(useShortNameIfAvailable: true)
+                return .regular(displayName: displayName)
             } else {
                 // Only display admin name if non self-delete.
                 let displayName = SSKEnvironment.shared.contactManagerRef.displayName(
                     for: SignalServiceAddress(adminAuthorAci),
                     tx: transaction,
                 ).resolvedValue()
-                return RemoteDeleteAuthor(
-                    displayName: displayName,
-                    authorType: .admin(aci: adminAuthorAci),
-                )
+                return .admin(aci: adminAuthorAci, displayName: displayName)
             }
         }
 
-        // Non-admin outgoing message shows no author.
+        // Non-admin outgoing message must be deleted by local user.
         guard let incomingMessage = self as? TSIncomingMessage else {
-            return nil
+            return .localUser
         }
+
+        // Non-admin incoming message must be deleted by its author.
         let displayName = SSKEnvironment.shared.contactManagerRef.displayName(
             for: incomingMessage.authorAddress,
             tx: transaction,
-        ).resolvedValue()
+        ).resolvedValue(useShortNameIfAvailable: true)
 
-        return RemoteDeleteAuthor(
-            displayName: displayName,
-            authorType: .regular,
-        )
+        return .regular(displayName: displayName)
     }
 }
 
