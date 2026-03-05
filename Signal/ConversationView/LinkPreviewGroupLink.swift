@@ -117,7 +117,9 @@ class LinkPreviewGroupLink: LinkPreviewState {
 
     var date: Date? { linkPreview.date }
 
-    let isGroupInviteLink = true
+    var isGroupInviteLink: Bool { true }
+
+    var isCallLink: Bool { false }
 }
 
 // MARK: -
