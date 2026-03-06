@@ -5096,7 +5096,7 @@ public class GRDBSchemaMigrator {
 
         migrator.registerMigration(.dataMigration_removeOversizedGroupAvatars) { transaction in
             var thrownError: Error?
-            TSGroupThread.anyEnumerate(transaction: transaction) { (thread: TSThread, stop: UnsafeMutablePointer<ObjCBool>) in
+            TSThread.anyEnumerate(transaction: transaction) { thread, stop in
                 guard let groupThread = thread as? TSGroupThread else { return }
                 guard let avatarData = groupThread.groupModel.legacyAvatarData else { return }
                 guard !TSGroupModel.isValidGroupAvatarData(avatarData) else { return }
@@ -5119,7 +5119,7 @@ public class GRDBSchemaMigrator {
         migrator.registerMigration(.dataMigration_scheduleStorageServiceUpdateForMutedThreads) { transaction in
             TSThread.anyEnumerate(
                 transaction: transaction,
-                sql: "SELECT * FROM \(TSThread.databaseTableName) WHERE \(threadColumn: .mutedUntilTimestamp) > 0",
+                sql: "SELECT * FROM \(TSThread.databaseTableName) WHERE \(threadColumn: .mutedUntilTimestampObsolete) > 0",
                 arguments: [],
             ) { thread, _ in
                 if let thread = thread as? TSContactThread {

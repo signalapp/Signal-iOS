@@ -20,7 +20,7 @@ public class ThreadFinder {
     /// Fetch a thread with the given SQLite row ID, if one exists.
     public func fetch(rowId: Int64, tx: DBReadTransaction) -> TSThread? {
         guard
-            let thread = TSThread.grdbFetchOne(
+            let thread = TSThread.anyFetch(
                 sql: """
                     SELECT *
                     FROM \(TSThread.databaseTableName)
@@ -63,15 +63,11 @@ public class ThreadFinder {
             FROM \(TSThread.databaseTableName)
             WHERE \(threadColumn: .recordType) = \(SDSRecordType.privateStoryThread.rawValue)
         """
-        let cursor = try ThreadRecord.fetchCursor(
+        let cursor = try TSPrivateStoryThread.fetchCursor(
             transaction.database,
             sql: sql,
         )
-        while let threadRecord = try cursor.next() {
-            guard let storyThread = (try TSThread.fromRecord(threadRecord)) as? TSPrivateStoryThread else {
-                owsFailDebug("Skipping thread that's not a story.")
-                continue
-            }
+        while let storyThread = try cursor.next() {
             guard try block(storyThread) else {
                 break
             }
@@ -89,16 +85,16 @@ public class ThreadFinder {
         let sql = """
             SELECT *
             FROM \(TSThread.databaseTableName)
-            WHERE \(threadColumn: .groupModel) IS NOT NULL
+            WHERE \(groupThreadColumn: .groupModel) IS NOT NULL
             ORDER BY \(threadColumn: .lastInteractionRowId) DESC
         """
 
-        let cursor = try ThreadRecord.fetchCursor(
+        let cursor = try TSThread.fetchCursor(
             transaction.database,
             sql: sql,
         )
         while let threadRecord = try cursor.next() {
-            guard let groupThread = (try TSThread.fromRecord(threadRecord)) as? TSGroupThread else {
+            guard let groupThread = threadRecord as? TSGroupThread else {
                 owsFailDebug("Skipping thread that's not a group.")
                 continue
             }
@@ -122,15 +118,12 @@ public class ThreadFinder {
             WHERE \(threadColumn: .recordType) IS NOT ?
         """
 
-        let cursor = try ThreadRecord.fetchCursor(
+        let cursor = try TSThread.fetchCursor(
             transaction.database,
             sql: sql,
             arguments: [SDSRecordType.privateStoryThread.rawValue],
         )
-        while
-            let thread = try cursor.next().map({ try TSThread.fromRecord($0) }),
-            try block(thread)
-        {}
+        while let thread = try cursor.next(), try block(thread) {}
     }
 
     public func visibleThreadCount(
@@ -171,11 +164,11 @@ public class ThreadFinder {
         """
 
         failIfThrows {
-            try ThreadRecord.fetchCursor(
+            try TSThread.fetchCursor(
                 transaction.database,
                 sql: sql,
-            ).forEach { threadRecord in
-                block(try TSThread.fromRecord(threadRecord))
+            ).forEach { thread in
+                block(thread)
             }
         }
     }

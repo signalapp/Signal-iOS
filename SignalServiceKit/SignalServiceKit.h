@@ -33,10 +33,8 @@ FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 #import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
 #import <SignalServiceKit/SSKAccessors+SDS.h>
 #import <SignalServiceKit/TSCall.h>
-#import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSErrorMessage.h>
 #import <SignalServiceKit/TSGroupModel.h>
-#import <SignalServiceKit/TSGroupThread.h>
 #import <SignalServiceKit/TSIncomingMessage.h>
 #import <SignalServiceKit/TSInfoMessage.h>
 #import <SignalServiceKit/TSInteraction.h>
@@ -46,9 +44,7 @@ FOUNDATION_EXPORT const unsigned char SignalServiceKitVersionString[];
 #import <SignalServiceKit/TSMessage.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
 #import <SignalServiceKit/TSPaymentModels.h>
-#import <SignalServiceKit/TSPrivateStoryThread.h>
 #import <SignalServiceKit/TSQuotedMessage.h>
-#import <SignalServiceKit/TSThread.h>
 #import <SignalServiceKit/TSUnreadIndicatorInteraction.h>
 #import <SignalServiceKit/TSYapDatabaseObject.h>
 #import <SignalServiceKit/Threading.h>

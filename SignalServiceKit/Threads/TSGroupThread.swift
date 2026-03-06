@@ -4,8 +4,181 @@
 //
 
 public import LibSignalClient
+public import GRDB
 
-extension TSGroupThread {
+extension Notification.Name {
+    public static let TSGroupThreadAvatarChanged = Notification.Name("TSGroupThreadAvatarChangedNotification")
+}
+
+public let TSGroupThread_NotificationKey_UniqueId = "TSGroupThread_NotificationKey_UniqueId"
+
+open class TSGroupThread: TSThread {
+    override public class var recordType: SDSRecordType { .groupThread }
+
+    public private(set) var groupModel: TSGroupModel
+
+    public enum CodingKeys: String, CodingKey, ColumnExpression {
+        case groupModel
+    }
+
+    public required init(inheritableDecoder decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let groupModelData = try container.decode(Data.self, forKey: .groupModel)
+        self.groupModel = try LegacySDSSerializer().deserializeLegacySDSData(groupModelData, ofClass: TSGroupModel.self)
+        try super.init(inheritableDecoder: decoder)
+    }
+
+    override public func encode(to encoder: any Encoder) throws {
+        try super.encode(to: encoder)
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(LegacySDSSerializer().serializeAsLegacySDSData(self.groupModel), forKey: .groupModel)
+    }
+
+    override public var hash: Int {
+        var hasher = Hasher()
+        hasher.combine(super.hash)
+        hasher.combine(self.groupModel)
+        return hasher.finalize()
+    }
+
+    override public func isEqual(_ object: Any?) -> Bool {
+        guard let object = object as? Self else { return false }
+        guard super.isEqual(object) else { return false }
+        guard self.groupModel == object.groupModel else { return false }
+        return true
+    }
+
+    init(
+        id: Int64?,
+        uniqueId: String,
+        conversationColorNameObsolete: String,
+        creationDate: Date?,
+        editTargetTimestamp: UInt64?,
+        isArchivedObsolete: Bool,
+        isMarkedUnreadObsolete: Bool,
+        lastDraftInteractionRowId: UInt64,
+        lastDraftUpdateTimestamp: UInt64,
+        lastInteractionRowId: UInt64,
+        lastSentStoryTimestamp: UInt64?,
+        lastVisibleSortIdObsolete: UInt64,
+        lastVisibleSortIdOnScreenPercentageObsolete: Double,
+        mentionNotificationMode: TSThreadMentionNotificationMode,
+        messageDraft: String?,
+        messageDraftBodyRanges: MessageBodyRanges?,
+        mutedUntilDateObsolete: Date?,
+        mutedUntilTimestampObsolete: UInt64,
+        shouldThreadBeVisible: Bool,
+        storyViewMode: TSThreadStoryViewMode,
+        groupModel: TSGroupModel,
+    ) {
+        self.groupModel = groupModel
+        super.init(
+            id: id,
+            uniqueId: uniqueId,
+            conversationColorNameObsolete: conversationColorNameObsolete,
+            creationDate: creationDate,
+            editTargetTimestamp: editTargetTimestamp,
+            isArchivedObsolete: isArchivedObsolete,
+            isMarkedUnreadObsolete: isMarkedUnreadObsolete,
+            lastDraftInteractionRowId: lastDraftInteractionRowId,
+            lastDraftUpdateTimestamp: lastDraftUpdateTimestamp,
+            lastInteractionRowId: lastInteractionRowId,
+            lastSentStoryTimestamp: lastSentStoryTimestamp,
+            lastVisibleSortIdObsolete: lastVisibleSortIdObsolete,
+            lastVisibleSortIdOnScreenPercentageObsolete: lastVisibleSortIdOnScreenPercentageObsolete,
+            mentionNotificationMode: mentionNotificationMode,
+            messageDraft: messageDraft,
+            messageDraftBodyRanges: messageDraftBodyRanges,
+            mutedUntilDateObsolete: mutedUntilDateObsolete,
+            mutedUntilTimestampObsolete: mutedUntilTimestampObsolete,
+            shouldThreadBeVisible: shouldThreadBeVisible,
+            storyViewMode: storyViewMode,
+        )
+    }
+
+    public init(
+        uniqueId: String,
+        groupModel: TSGroupModelV2,
+    ) {
+        owsAssertDebug(!groupModel.groupId.isEmpty)
+#if DEBUG
+        groupModel.groupMembers.forEach({ owsAssertDebug($0.isValid) })
+#endif
+
+        self.groupModel = groupModel
+        super.init(uniqueId: uniqueId)
+    }
+
+    public convenience init(groupModel: TSGroupModelV2) {
+        self.init(
+            uniqueId: Self.defaultThreadId(forGroupId: groupModel.groupId),
+            groupModel: groupModel,
+        )
+    }
+
+    override func deepCopy() -> TSThread {
+        return TSGroupThread(
+            id: self.id,
+            uniqueId: self.uniqueId,
+            conversationColorNameObsolete: self.conversationColorNameObsolete,
+            creationDate: self.creationDate,
+            editTargetTimestamp: self.editTargetTimestamp,
+            isArchivedObsolete: self.isArchivedObsolete,
+            isMarkedUnreadObsolete: self.isMarkedUnreadObsolete,
+            lastDraftInteractionRowId: self.lastDraftInteractionRowId,
+            lastDraftUpdateTimestamp: self.lastDraftUpdateTimestamp,
+            lastInteractionRowId: self.lastInteractionRowId,
+            lastSentStoryTimestamp: self.lastSentStoryTimestamp,
+            lastVisibleSortIdObsolete: self.lastVisibleSortIdObsolete,
+            lastVisibleSortIdOnScreenPercentageObsolete: self.lastVisibleSortIdOnScreenPercentageObsolete,
+            mentionNotificationMode: self.mentionNotificationMode,
+            messageDraft: self.messageDraft,
+            messageDraftBodyRanges: self.messageDraftBodyRanges,
+            mutedUntilDateObsolete: self.mutedUntilDateObsolete,
+            mutedUntilTimestampObsolete: self.mutedUntilTimestampObsolete,
+            shouldThreadBeVisible: self.shouldThreadBeVisible,
+            storyViewMode: self.storyViewMode,
+            groupModel: self.groupModel,
+        )
+    }
+
+    public class func fetchGroupThreadViaCache(uniqueId: String, transaction: DBReadTransaction) -> TSGroupThread? {
+        return fetchViaCache(uniqueId: uniqueId, transaction: transaction)
+    }
+
+    override public func recipientAddresses(with tx: DBReadTransaction) -> [SignalServiceAddress] {
+        var groupMembers = self.groupModel.groupMembers
+        groupMembers.removeAll(where: { $0.isLocalAddress })
+        return groupMembers
+    }
+
+    public var groupNameOrDefault: String {
+        return self.groupModel.groupNameOrDefault
+    }
+
+    @objc
+    public class var defaultGroupName: String {
+        return OWSLocalizedString("NEW_GROUP_DEFAULT_TITLE", comment: "")
+    }
+
+    override open func anyWillInsert(transaction: DBWriteTransaction) {
+        super.anyWillInsert(transaction: transaction)
+        updateGroupMemberRecords(transaction: transaction)
+    }
+
+    override public func anyWillUpdate(transaction: DBWriteTransaction) {
+        super.anyWillUpdate(transaction: transaction)
+
+        // We used to update the group member records here, but there are many
+        // updates that don't touch membership. Now it's done explicitly where we
+        // update the group model, and not for other updates.
+    }
+
+    override public func anyDidInsert(transaction: DBWriteTransaction) {
+        super.anyDidInsert(transaction: transaction)
+        Logger.info("Inserted group thread: \(self.groupId.hexadecimalString)")
+    }
+
     func update(
         with newGroupModel: TSGroupModel,
         transaction tx: DBWriteTransaction,
@@ -15,7 +188,7 @@ extension TSGroupThread {
 
         let oldGroupMembers = groupModel.groupMembers
 
-        anyUpdateGroupThread(transaction: tx) { groupThread in
+        anyUpdate(transaction: tx) { groupThread in
             if let oldGroupModelV2 = groupThread.groupModel as? TSGroupModelV2 {
                 if let newGroupModelV2 = newGroupModel as? TSGroupModelV2 {
                     owsPrecondition(oldGroupModelV2.revision <= newGroupModelV2.revision)
@@ -135,7 +308,7 @@ extension TSGroupThread {
 
     // MARK: -
 
-    override open func updateWithInsertedInteraction(
+    override public func updateWithInsertedInteraction(
         _ interaction: TSInteraction,
         tx: DBWriteTransaction,
     ) {
@@ -203,7 +376,7 @@ extension TSGroupThread {
     ) -> TSGroupThread {
         let groupThreadId = TSGroupThread.defaultThreadId(forGroupId: groupId)
         let groupThread = TSGroupThread(
-            grdbId: 1,
+            id: 1,
             uniqueId: groupThreadId,
             conversationColorNameObsolete: "",
             creationDate: nil,
@@ -241,7 +414,7 @@ extension TSGroupThread {
                 addedByAddress: nil,
             ),
         )
-        groupThread.clearRowId()
+        groupThread.id = nil
         return groupThread
     }
 #endif
@@ -276,5 +449,17 @@ public extension TSThreadStoryViewMode {
             owsFailDebug("Unexpected story mode \(value)")
             self = .default
         }
+    }
+}
+
+// MARK: - StringInterpolation
+
+public extension String.StringInterpolation {
+    mutating func appendInterpolation(groupThreadColumn column: TSGroupThread.CodingKeys) {
+        appendLiteral(column.rawValue)
+    }
+
+    mutating func appendInterpolation(groupThreadColumnFullyQualified column: TSGroupThread.CodingKeys) {
+        appendLiteral("\(TSThread.databaseTableName).\(column.rawValue)")
     }
 }

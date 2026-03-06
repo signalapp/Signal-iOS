@@ -356,7 +356,7 @@ public class ThreadReadCache: NSObject {
         }
 
         override func copy(value: TSThread) throws -> TSThread {
-            return try DeepCopies.deepCopy(value)
+            return value.deepCopy()
         }
     }
 

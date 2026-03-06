@@ -327,13 +327,13 @@ public class MockThreadStore: ThreadStore {
     }
 
     public func insertThread(_ thread: TSThread) {
-        thread.updateRowId(nextRowId)
+        thread.id = nextRowId
         threads.append(thread)
         nextRowId += 1
     }
 
     public func fetchThread(rowId threadRowId: Int64, tx: DBReadTransaction) -> TSThread? {
-        threads.first(where: { $0.sqliteRowId == threadRowId })
+        threads.first(where: { $0.id == threadRowId })
     }
 
     public func fetchThread(uniqueId: String, tx: DBReadTransaction) -> TSThread? {

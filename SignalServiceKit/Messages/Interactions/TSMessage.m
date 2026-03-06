@@ -5,7 +5,6 @@
 
 #import "TSMessage.h"
 #import "TSQuotedMessage.h"
-#import "TSThread.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

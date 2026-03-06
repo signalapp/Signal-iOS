@@ -54,8 +54,8 @@ struct PinnedMessageManagerTest {
     @Test
     func testFetchPinnedMessagesForThread() throws {
         let thread = db.write { tx in
-            let thread = TSThread()
-            try! thread.asRecord().insert(tx.database)
+            let thread = TSThread(uniqueId: "")
+            try! thread.insert(tx.database)
             return thread
         }
 
@@ -82,8 +82,8 @@ struct PinnedMessageManagerTest {
     @Test
     func testSortedPinnedMessages() throws {
         let thread = db.write { tx in
-            let thread = TSThread()
-            try! thread.asRecord().insert(tx.database)
+            let thread = TSThread(uniqueId: "")
+            try! thread.insert(tx.database)
             return thread
         }
 

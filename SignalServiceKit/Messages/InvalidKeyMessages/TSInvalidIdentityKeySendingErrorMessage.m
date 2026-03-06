@@ -4,7 +4,6 @@
 //
 
 #import "TSInvalidIdentityKeySendingErrorMessage.h"
-#import "TSContactThread.h"
 #import "TSOutgoingMessage.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 

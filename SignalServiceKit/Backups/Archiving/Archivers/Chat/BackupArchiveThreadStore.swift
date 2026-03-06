@@ -56,8 +56,7 @@ public final class BackupArchiveThreadStore {
         context: BackupArchive.ChatRestoringContext,
     ) throws -> TSContactThread {
         let thread = TSContactThread(contactAddress: context.recipientContext.localIdentifiers.aciAddress)
-        let record = thread.asRecord()
-        try record.insert(context.tx.database)
+        try thread.insert(context.tx.database)
         return thread
     }
 
@@ -66,8 +65,7 @@ public final class BackupArchiveThreadStore {
         context: BackupArchive.ChatRestoringContext,
     ) throws -> TSContactThread {
         let thread = TSContactThread(contactAddress: address.asInteropAddress())
-        let record = thread.asRecord()
-        try record.insert(context.tx.database)
+        try thread.insert(context.tx.database)
         return thread
     }
 
@@ -85,8 +83,7 @@ public final class BackupArchiveThreadStore {
         default:
             groupThread.storyViewMode = .default
         }
-        let record = groupThread.asRecord()
-        try record.insert(context.tx.database)
+        try groupThread.insert(context.tx.database)
         return groupThread
     }
 
@@ -127,9 +124,9 @@ public final class BackupArchiveThreadStore {
             sql: """
             UPDATE \(TSThread.databaseTableName)
             SET
-                \(TSThreadSerializer.mentionNotificationModeColumn.columnName) = ?
+                \(threadColumn: .mentionNotificationMode) = ?
             WHERE
-                \(TSThreadSerializer.idColumn.columnName) = ?;
+                \(threadColumn: .id) = ?;
             """,
             arguments: [TSThreadMentionNotificationMode.never.rawValue, thread.threadRowId],
         )
@@ -144,10 +141,10 @@ public final class BackupArchiveThreadStore {
             sql: """
             UPDATE \(TSThread.databaseTableName)
             SET
-                \(TSThreadSerializer.shouldThreadBeVisibleColumn.columnName) = 1,
-                \(TSThreadSerializer.lastInteractionRowIdColumn.columnName) = ?
+                \(threadColumn: .shouldThreadBeVisible) = 1,
+                \(threadColumn: .lastInteractionRowId) = ?
             WHERE
-                \(TSThreadSerializer.idColumn.columnName) = ?;
+                \(threadColumn: .id) = ?;
             """,
             arguments: [lastInteractionRowId ?? 0, thread.threadRowId],
         )

@@ -21,7 +21,7 @@ public struct BackupArchiveExportProgress {
             // all weighted evenly. Its just an estimate.
             return try
                 SignalRecipient.fetchCount(tx.database)
-                + ThreadRecord.fetchCount(tx.database)
+                + TSThread.fetchCount(tx.database)
                 + InteractionRecord.fetchCount(tx.database)
                 + CallLinkRecord.fetchCount(tx.database)
                 + StickerPackRecord.fetchCount(tx.database)

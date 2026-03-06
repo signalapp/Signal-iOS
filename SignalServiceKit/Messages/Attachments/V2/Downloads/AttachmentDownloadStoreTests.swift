@@ -270,7 +270,7 @@ class AttachmentDownloadStoreTests: XCTestCase {
 
     private func insertAttachment(tx: DBWriteTransaction) -> Attachment.IDType {
         let thread = TSThread(uniqueId: UUID().uuidString)
-        try! thread.asRecord().insert(tx.database)
+        try! thread.insert(tx.database)
         let interaction = TSInteraction(timestamp: 0, receivedAtTimestamp: 0, thread: thread)
         try! interaction.asRecord().insert(tx.database)
 

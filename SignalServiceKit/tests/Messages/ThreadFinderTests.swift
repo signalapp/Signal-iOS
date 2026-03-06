@@ -11,8 +11,6 @@ import XCTest
 class ThreadFinderTests: XCTestCase {
     private var db = InMemoryDB()
     private let threadFinder = ThreadFinder()
-    private var contactThread1: TSContactThread!
-    private var contactThread2: TSContactThread!
 
     enum ChatListType: CaseIterable {
         case inbox
@@ -20,62 +18,37 @@ class ThreadFinderTests: XCTestCase {
         case archive
     }
 
-    override func setUp() {
-        super.setUp()
-        let testPhone1 = E164("+16505550101")!
-        let testACI1 = Aci.constantForTesting("00000000-0000-4000-8000-00000000000A")
-        contactThread1 = TSContactThread(contactAddress: SignalServiceAddress(
-            serviceId: testACI1,
-            phoneNumber: testPhone1.stringValue,
-            cache: SignalServiceAddressCache(),
-        ))
-
-        let testPhone2 = E164("+16505550100")!
-        let testACI2 = Aci.constantForTesting("00000000-0000-4000-A000-00000000000B")
-        contactThread2 = TSContactThread(contactAddress: SignalServiceAddress(
-            serviceId: testACI2,
-            phoneNumber: testPhone2.stringValue,
-            cache: SignalServiceAddressCache(),
-        ))
-    }
-
     func buildThreadRecord(
         uniqueID: String,
-        contactThread: TSContactThread,
         draft: String?,
         lastInteractionRowID: UInt64,
         lastDraftInteractionRowId: UInt64,
         lastDraftUpdateTimestamp: UInt64,
-    ) -> ThreadRecord {
-        ThreadRecord(
-            delegate: contactThread,
-            recordType: .contactThread,
+    ) -> TSContactThread {
+        return TSContactThread(
+            id: nil,
             uniqueId: uniqueID,
-            conversationColorName: "Obsolete",
-            creationDate: Date.now.timeIntervalSince1970,
-            isArchived: false,
-            lastInteractionRowId: lastInteractionRowID,
-            messageDraft: draft,
-            mutedUntilDate: nil,
-            shouldThreadBeVisible: true,
-            contactPhoneNumber: nil,
-            contactUUID: nil,
-            groupModel: nil,
-            hasDismissedOffers: false,
-            isMarkedUnread: false,
-            lastVisibleSortIdOnScreenPercentage: 0.0,
-            lastVisibleSortId: 0,
-            messageDraftBodyRanges: nil,
-            mentionNotificationMode: 0,
-            mutedUntilTimestamp: 0,
-            allowsReplies: nil,
-            lastSentStoryTimestamp: nil,
-            name: nil,
-            addresses: nil,
-            storyViewMode: 0,
+            conversationColorNameObsolete: "Obsolete",
+            creationDate: Date.now,
             editTargetTimestamp: nil,
+            isArchivedObsolete: false,
+            isMarkedUnreadObsolete: false,
             lastDraftInteractionRowId: lastDraftInteractionRowId,
             lastDraftUpdateTimestamp: lastDraftUpdateTimestamp,
+            lastInteractionRowId: lastInteractionRowID,
+            lastSentStoryTimestamp: nil,
+            lastVisibleSortIdObsolete: 0,
+            lastVisibleSortIdOnScreenPercentageObsolete: 0.0,
+            mentionNotificationMode: .default,
+            messageDraft: draft,
+            messageDraftBodyRanges: nil,
+            mutedUntilDateObsolete: nil,
+            mutedUntilTimestampObsolete: 0,
+            shouldThreadBeVisible: true,
+            storyViewMode: .default,
+            contactUUID: nil,
+            contactPhoneNumber: nil,
+            hasDismissedOffers: false,
         )
     }
 
@@ -100,7 +73,6 @@ class ThreadFinderTests: XCTestCase {
             // New draft.
             try buildThreadRecord(
                 uniqueID: "UUID1",
-                contactThread: contactThread1,
                 draft: "test draft",
                 lastInteractionRowID: 0,
                 lastDraftInteractionRowId: 1,
@@ -116,7 +88,6 @@ class ThreadFinderTests: XCTestCase {
             // Non-draft that has more recent lastInteractionRowID.
             try buildThreadRecord(
                 uniqueID: "UUID2",
-                contactThread: contactThread2,
                 draft: nil,
                 lastInteractionRowID: 1,
                 lastDraftInteractionRowId: 0,
@@ -165,7 +136,6 @@ class ThreadFinderTests: XCTestCase {
             // New draft that is not the latest activity on the thread.
             try buildThreadRecord(
                 uniqueID: "UUID1",
-                contactThread: contactThread1,
                 draft: "test draft",
                 lastInteractionRowID: 3,
                 lastDraftInteractionRowId: 1,
@@ -181,7 +151,6 @@ class ThreadFinderTests: XCTestCase {
             // Non-draft that has less recent lastInteractionRowID.
             try buildThreadRecord(
                 uniqueID: "UUID2",
-                contactThread: contactThread2,
                 draft: nil,
                 lastInteractionRowID: 2,
                 lastDraftInteractionRowId: 0,
@@ -230,7 +199,6 @@ class ThreadFinderTests: XCTestCase {
             // Thread 1, has a draft after latest TSInteraction, but less recent than UUID2.
             try buildThreadRecord(
                 uniqueID: "UUID1",
-                contactThread: contactThread1,
                 draft: "test draft",
                 lastInteractionRowID: 2,
                 lastDraftInteractionRowId: 2,
@@ -246,7 +214,6 @@ class ThreadFinderTests: XCTestCase {
             // Thread 2, has a more recent draft based on timestamp.
             try buildThreadRecord(
                 uniqueID: "UUID2",
-                contactThread: contactThread2,
                 draft: "test draft",
                 lastInteractionRowID: 1,
                 lastDraftInteractionRowId: 2,
@@ -295,7 +262,6 @@ class ThreadFinderTests: XCTestCase {
             // New draft that is not the latest activity on the thread.
             try buildThreadRecord(
                 uniqueID: "UUID1",
-                contactThread: contactThread1,
                 draft: "test draft",
                 lastInteractionRowID: 1,
                 lastDraftInteractionRowId: 2,
@@ -311,7 +277,6 @@ class ThreadFinderTests: XCTestCase {
             // Non-draft that has less recent lastInteractionRowID.
             try buildThreadRecord(
                 uniqueID: "UUID2",
-                contactThread: contactThread2,
                 draft: nil,
                 lastInteractionRowID: 3,
                 lastDraftInteractionRowId: 0,

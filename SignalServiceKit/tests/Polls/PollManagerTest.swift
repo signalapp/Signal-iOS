@@ -53,8 +53,8 @@ struct PollManagerTest {
     private func insertIncomingPollMessage(question: String, timestamp: UInt64? = nil) -> TSIncomingMessage {
         db.write { tx in
             let db = tx.database
-            if try! groupThread.asRecord().exists(db) == false {
-                try! groupThread!.asRecord().insert(db)
+            if try! groupThread.exists(db) == false {
+                try! groupThread!.insert(db)
             }
 
             let incomingMessage = createIncomingMessage(with: groupThread) { builder in
@@ -73,8 +73,8 @@ struct PollManagerTest {
     private func insertOutgoingPollMessage(question: String) -> TSOutgoingMessage {
         db.write { tx in
             let db = tx.database
-            if try! groupThread.asRecord().exists(db) == false {
-                try! groupThread!.asRecord().insert(db)
+            if try! groupThread.exists(db) == false {
+                try! groupThread!.insert(db)
             }
 
             let outgoingMessage = TSOutgoingMessage(in: groupThread, question: question)

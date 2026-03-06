@@ -27,7 +27,7 @@ final class CallRecordQuerierTest: XCTestCase {
 
     private func insertThread(db: Database) -> (thread: TSThread, threadRowId: Int64) {
         let thread = TSThread(uniqueId: UUID().uuidString)
-        try! thread.asRecord().insert(db)
+        try! thread.insert(db)
         return (thread, thread.sqliteRowId!)
     }
 
@@ -51,7 +51,7 @@ final class CallRecordQuerierTest: XCTestCase {
             let (thread, threadRowId): (TSThread, Int64) = {
                 if let knownThreadRowId {
                     return (
-                        try! TSThread.fromRecord(ThreadRecord.fetchOne(db, key: knownThreadRowId)!),
+                        try! TSThread.fetchOne(db, key: knownThreadRowId)!,
                         knownThreadRowId,
                     )
                 } else {

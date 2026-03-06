@@ -350,7 +350,7 @@ extension ConversationViewController: ConversationInputToolbarDelegate {
 
         if
             let threadTimestamp = thread.editTargetTimestamp,
-            threadTimestamp.uint64Value != editTarget?.timestamp ?? 0
+            threadTimestamp != editTarget?.timestamp ?? 0
         {
             return true
         }

@@ -253,7 +253,7 @@ class BackupAttachmentDownloadStoreTests: XCTestCase {
 
     private func insertThread(tx: DBWriteTransaction) -> TSThread {
         let thread = TSThread(uniqueId: UUID().uuidString)
-        try! thread.asRecord().insert(tx.database)
+        try! thread.insert(tx.database)
         return thread
     }
 

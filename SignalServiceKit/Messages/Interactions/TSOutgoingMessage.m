@@ -4,8 +4,6 @@
 //
 
 #import "TSOutgoingMessage.h"
-#import "TSContactThread.h"
-#import "TSGroupThread.h"
 #import "TSQuotedMessage.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
@@ -333,7 +331,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
         [recipientAddresses addObject:localAddress];
     } else {
         // Most messages should only be sent to the current members of the group.
-        [recipientAddresses addObjectsFromArray:[thread recipientAddressesWithTransaction:transaction]];
+        [recipientAddresses addObjectsFromArray:[thread recipientAddressesWith:transaction]];
         // Some messages (eg certain call messages) go to a subset of the group.
         if (explicitRecipients.count > 0) {
             NSMutableSet<SignalServiceAddress *> *explicitRecipientAddresses = [[NSMutableSet alloc] init];

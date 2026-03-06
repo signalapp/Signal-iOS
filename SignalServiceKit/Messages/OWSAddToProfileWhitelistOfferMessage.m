@@ -4,7 +4,6 @@
 //
 
 #import "OWSAddToProfileWhitelistOfferMessage.h"
-#import "TSThread.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -45,7 +45,7 @@ final class CallRecordStoreTest: XCTestCase {
         let interaction = TSInteraction(timestamp: 0, receivedAtTimestamp: 0, thread: thread)
 
         inMemoryDB.write { tx in
-            try! thread.asRecord().insert(tx.database)
+            try! thread.insert(tx.database)
             try! interaction.asRecord().insert(tx.database)
         }
 

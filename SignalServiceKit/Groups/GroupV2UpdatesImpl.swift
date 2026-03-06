@@ -65,10 +65,7 @@ public class GroupV2UpdatesImpl: GroupV2Updates {
         // The "best" is the group that hasn't been refreshed in the longest time.
         SSKEnvironment.shared.databaseStorageRef.read { transaction in
             var groupInfoToRefresh: GroupInfo?
-            TSGroupThread.anyEnumerate(
-                transaction: transaction,
-                batched: true,
-            ) { thread, stop in
+            TSThread.anyEnumerate(transaction: transaction, batchingPreference: .batched(Batching.kDefaultBatchSize)) { thread, stop in
                 guard
                     let groupThread = thread as? TSGroupThread,
                     let groupModel = groupThread.groupModel as? TSGroupModelV2,

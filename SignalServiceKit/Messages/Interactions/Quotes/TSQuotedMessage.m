@@ -8,7 +8,6 @@
 #import "TSIncomingMessage.h"
 #import "TSInteraction.h"
 #import "TSOutgoingMessage.h"
-#import "TSThread.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

@@ -36,7 +36,7 @@ final class IndividualCallRecordManagerTest: XCTestCase {
         callType: RPRecentCallType = .incomingIncomplete,
     ) -> (TSContactThread, TSCall) {
         let thread = TSContactThread(contactAddress: .isolatedRandomForTesting())
-        thread.updateRowId(.maxRandom)
+        thread.id = .maxRandom
 
         let interaction = TSCall(callType: callType, offerType: .audio, thread: thread, sentAtTimestamp: .maxRandom)
         interaction.updateRowId(.maxRandom)

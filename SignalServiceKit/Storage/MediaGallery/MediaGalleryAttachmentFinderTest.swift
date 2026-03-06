@@ -256,7 +256,7 @@ class MediaGalleryAttachmentFinderTest: XCTestCase {
         let interaction = TSInteraction(timestamp: 0, receivedAtTimestamp: 0, thread: thread)
 
         db.write { tx in
-            try! thread.asRecord().insert(tx.database)
+            try! thread.insert(tx.database)
             try! interaction.asRecord().insert(tx.database)
         }
 

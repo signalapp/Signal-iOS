@@ -97,7 +97,7 @@ struct BackupEnablementReminderMegaphoneTests {
 
         db.write { tx in
             let db = tx.database
-            try! contactThread.asRecord().insert(db)
+            try! contactThread.insert(db)
         }
 
         for i in 0..<2000 {
@@ -123,7 +123,7 @@ struct BackupEnablementReminderMegaphoneTests {
 
         db.write { tx in
             let db = tx.database
-            try! contactThread.asRecord().insert(db)
+            try! contactThread.insert(db)
         }
 
         for i in 0..<2000 {

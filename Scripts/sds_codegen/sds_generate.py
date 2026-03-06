@@ -301,7 +301,6 @@ class ParsedClass:
             #
             # Except the special-cased ones.
             force_optional = property.type_info().is_enum
-            force_optional = force_optional and property.name not in ["mentionNotificationMode", "storyViewMode"]
             property.force_optional = force_optional
             record_properties.append(property)
         for property in subclass_properties:
@@ -485,25 +484,7 @@ class TypeInfo:
             # Do nothing; we don't need to unpack this non-optional.
             pass
 
-        if value_name == "mentionNotificationMode":
-            value_statement = (
-                "let %s: %s = TSThreadMentionNotificationMode(rawValue: %s) ?? .default"
-                % (
-                    value_name,
-                    "TSThreadMentionNotificationMode",
-                    value_expr,
-                )
-            )
-        elif value_name == "storyViewMode":
-            value_statement = (
-                "let %s: %s = TSThreadStoryViewMode(rawValue: %s) ?? .default"
-                % (
-                    value_name,
-                    "TSThreadStoryViewMode",
-                    value_expr,
-                )
-            )
-        elif self.is_codable:
+        if self.is_codable:
             value_statement = "let %s: %s = %s" % (
                 value_name,
                 initializer_param_type,
@@ -1167,7 +1148,7 @@ def generate_swift_extensions_for_model(clazz):
         return
 
     has_sds_superclass = clazz.has_sds_superclass()
-    has_remove_methods = clazz.name not in ("TSThread", "TSInteraction")
+    has_remove_methods = clazz.name not in ("TSInteraction")
     has_grdb_serializer = clazz.name in ("TSInteraction")
 
     swift_filename = os.path.basename(clazz.filepath)
@@ -1362,8 +1343,7 @@ public extension %s {
             property_name = property.column_name()
             swift_type = type_info.swift_type()
 
-            did_force_optional = property.name not in ["mentionNotificationMode", "storyViewMode"]
-            did_force_optional = did_force_optional and type_info.is_enum
+            did_force_optional = type_info.is_enum
 
             if property_name == "recordType":
                 # recordType is an enum, but its property info here doesn't
@@ -1463,8 +1443,7 @@ extension %s {
                 value_name = "%s" % property.name
 
                 if property.name not in ("uniqueId",):
-                    did_force_optional = property.name not in ["mentionNotificationMode", "storyViewMode"]
-                    did_force_optional = did_force_optional and property.name not in base_property_names
+                    did_force_optional = property.name not in base_property_names
                     did_force_optional = did_force_optional and not property.is_optional
                     did_force_optional = did_force_optional or property.type_info().is_enum
                     for statement in property.deserialize_record_invocation(
@@ -1784,8 +1763,7 @@ extension %(class_name)s: DeepCopyable {
             for property in deserialize_properties:
                 value_name = "%s" % property.name
 
-                did_force_optional = property.name not in ["mentionNotificationMode", "storyViewMode"]
-                did_force_optional = did_force_optional and property.name not in base_property_names
+                did_force_optional = property.name not in base_property_names
                 did_force_optional = did_force_optional and not property.is_optional
                 did_force_optional = did_force_optional or property.type_info().is_enum
                 for statement in property.deep_copy_record_invocation(

@@ -297,12 +297,12 @@ public struct StoryConversationItem {
         ) -> UInt64 {
             if
                 let thread = thread as? TSGroupThread,
-                associatedData?.lastReceivedTimestamp ?? 0 > thread.lastSentStoryTimestamp?.uint64Value ?? 0
+                associatedData?.lastReceivedTimestamp ?? 0 > thread.lastSentStoryTimestamp ?? 0
             {
                 return associatedData?.lastReceivedTimestamp ?? 0
             }
 
-            return thread.lastSentStoryTimestamp?.uint64Value ?? 0
+            return thread.lastSentStoryTimestamp ?? 0
         }
 
         let threads = ThreadFinder().storyThreads(

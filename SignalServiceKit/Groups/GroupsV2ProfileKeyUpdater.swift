@@ -76,7 +76,7 @@ class GroupsV2ProfileKeyUpdater {
     }
 
     func scheduleAllGroupsV2ForProfileKeyUpdate(transaction: DBWriteTransaction) {
-        TSGroupThread.anyEnumerate(transaction: transaction) { thread, _ in
+        TSThread.anyEnumerate(transaction: transaction) { thread, _ in
             guard let groupThread = thread as? TSGroupThread else {
                 return
             }

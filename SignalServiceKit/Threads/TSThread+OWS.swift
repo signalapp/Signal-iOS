@@ -136,7 +136,7 @@ extension TSThread {
     @objc
     public func editTarget(transaction: DBReadTransaction) -> TSOutgoingMessage? {
         guard
-            let editTargetTimestamp = editTargetTimestamp?.uint64Value,
+            let editTargetTimestamp,
             let localAddress = DependenciesBridge.shared.tsAccountManager.localIdentifiers(tx: transaction)?.aciAddress
         else {
             return nil

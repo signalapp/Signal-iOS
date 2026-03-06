@@ -323,7 +323,7 @@ public class BackupListMediaManagerTests {
         tx: DBWriteTransaction,
     ) -> Attachment.IDType {
         let thread = TSThread(uniqueId: UUID().uuidString)
-        try! thread.asRecord().insert(tx.database)
+        try! thread.insert(tx.database)
         let attachmentParams = Attachment.ConstructionParams.mockStream(
             mediaName: mediaName,
         )

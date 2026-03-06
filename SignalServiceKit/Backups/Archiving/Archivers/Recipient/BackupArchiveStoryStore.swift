@@ -49,7 +49,6 @@ public final class BackupArchiveStoryStore {
             allowsReplies: allowReplies,
             viewMode: viewMode,
         )
-        var record = myStory.asRecord()
 
         let existingMyStoryRowId = try Int64.fetchOne(
             context.tx.database,
@@ -59,12 +58,11 @@ public final class BackupArchiveStoryStore {
             arguments: [TSPrivateStoryThread.myStoryUniqueId],
         )
         if let existingMyStoryRowId {
-            record.id = existingMyStoryRowId
-            myStory.updateRowId(existingMyStoryRowId)
+            myStory.id = existingMyStoryRowId
         }
 
         // Use save to insert or update as my story might already exist.
-        try record.save(context.tx.database)
+        try myStory.save(context.tx.database)
         return myStory
     }
 
@@ -80,8 +78,7 @@ public final class BackupArchiveStoryStore {
         _ storyThread: TSPrivateStoryThread,
         context: BackupArchive.RecipientRestoringContext,
     ) throws {
-        let record = storyThread.asRecord()
-        try record.insert(context.tx.database)
+        try storyThread.insert(context.tx.database)
     }
 
     func createStoryContextAssociatedData(

@@ -99,7 +99,6 @@
 		05104E3A2C8B541000F8851F /* AccessibleLayoutMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05104E392C8B540C00F8851F /* AccessibleLayoutMetric.swift */; };
 		0510F69E2C91EB3000FA3FDE /* ScrollBounceBehaviorIfAvailable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0510F69D2C91EB2800FA3FDE /* ScrollBounceBehaviorIfAvailable.swift */; };
 		0512145B2C5BCECF0021EEC9 /* CollectionDifference+SSK.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0512145A2C5BCECF0021EEC9 /* CollectionDifference+SSK.swift */; };
-		0517B9782BFCFF12002CDE7D /* TSThreadTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0517B9772BFCFF12002CDE7D /* TSThreadTests.swift */; };
 		052647BF2C63BAD60076E99D /* ChatListFilterControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 052647BE2C63BAC40076E99D /* ChatListFilterControl.swift */; };
 		052647C12C6404DD0076E99D /* ChatListFilterStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 052647C02C6404D70076E99D /* ChatListFilterStore.swift */; };
 		052A33382C52BF410083D812 /* ChatListFilterActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 052A33372C52BF410083D812 /* ChatListFilterActions.swift */; };
@@ -3799,29 +3798,17 @@
 		F9C5CCA4289453B300548EEE /* SSKProto+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9B9289453B100548EEE /* SSKProto+OWS.swift */; };
 		F9C5CCAC289453B300548EEE /* PreKeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9C2289453B100548EEE /* PreKeyManager.swift */; };
 		F9C5CCB0289453B300548EEE /* RemoteAttestation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9C7289453B100548EEE /* RemoteAttestation.swift */; };
-		F9C5CCBA289453B300548EEE /* TSThread.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C9D2289453B100548EEE /* TSThread.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9C5CCC0289453B300548EEE /* ContactDiscoveryTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9D9289453B100548EEE /* ContactDiscoveryTask.swift */; };
 		F9C5CCC3289453B300548EEE /* ContactDiscoveryError.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9DC289453B100548EEE /* ContactDiscoveryError.swift */; };
 		F9C5CCC5289453B300548EEE /* SignalAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9DE289453B100548EEE /* SignalAccount.swift */; };
 		F9C5CCC8289453B300548EEE /* SignalRecipient.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9E1289453B100548EEE /* SignalRecipient.swift */; };
-		F9C5CCCA289453B300548EEE /* TSPrivateStoryThread+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9E4289453B100548EEE /* TSPrivateStoryThread+SDS.swift */; };
 		F9C5CCCB289453B300548EEE /* TSPrivateStoryThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9E5289453B100548EEE /* TSPrivateStoryThread.swift */; };
-		F9C5CCCC289453B300548EEE /* TSPrivateStoryThread.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C9E6289453B100548EEE /* TSPrivateStoryThread.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F9C5CCCD289453B300548EEE /* TSGroupThread.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9E7289453B100548EEE /* TSGroupThread.m */; };
-		F9C5CCCE289453B300548EEE /* TSGroupThread+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9E8289453B100548EEE /* TSGroupThread+SDS.swift */; };
 		F9C5CCCF289453B300548EEE /* TSThread+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9E9289453B100548EEE /* TSThread+OWS.swift */; };
-		F9C5CCD0289453B300548EEE /* TSContactThread+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9EA289453B100548EEE /* TSContactThread+SDS.swift */; };
-		F9C5CCD1289453B300548EEE /* TSContactThread.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C9EB289453B100548EEE /* TSContactThread.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F9C5CCD2289453B300548EEE /* TSGroupThread.h in Headers */ = {isa = PBXBuildFile; fileRef = F9C5C9EC289453B100548EEE /* TSGroupThread.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		F9C5CCD3289453B300548EEE /* TSPrivateStoryThread.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9ED289453B100548EEE /* TSPrivateStoryThread.m */; };
-		F9C5CCD4289453B300548EEE /* TSContactThread.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9EE289453B100548EEE /* TSContactThread.m */; };
 		F9C5CCD5289453B300548EEE /* TSGroupThread+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9EF289453B100548EEE /* TSGroupThread+OWS.swift */; };
 		F9C5CCD6289453B300548EEE /* PhoneNumberUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9F0289453B100548EEE /* PhoneNumberUtil.swift */; };
 		F9C5CCD8289453B300548EEE /* ThreadAssociatedData.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9F2289453B100548EEE /* ThreadAssociatedData.swift */; };
 		F9C5CCDA289453B300548EEE /* DisappearingMessagesConfigurationRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9F4289453B100548EEE /* DisappearingMessagesConfigurationRecord.swift */; };
 		F9C5CCDD289453B300548EEE /* SignalAccountFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9F7289453B100548EEE /* SignalAccountFinder.swift */; };
-		F9C5CCDE289453B300548EEE /* TSThread.m in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9F8289453B100548EEE /* TSThread.m */; };
-		F9C5CCDF289453B300548EEE /* TSThread+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9F9289453B100548EEE /* TSThread+SDS.swift */; };
 		F9C5CCE1289453B300548EEE /* ContactThreadFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9FB289453B100548EEE /* ContactThreadFinder.swift */; };
 		F9C5CCE2289453B300548EEE /* SignalServiceAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9FC289453B100548EEE /* SignalServiceAddress.swift */; };
 		F9C5CCE3289453B300548EEE /* TSGroupMember.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9C5C9FD289453B100548EEE /* TSGroupMember.swift */; };
@@ -4242,7 +4229,6 @@
 		05104E392C8B540C00F8851F /* AccessibleLayoutMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibleLayoutMetric.swift; sourceTree = "<group>"; };
 		0510F69D2C91EB2800FA3FDE /* ScrollBounceBehaviorIfAvailable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollBounceBehaviorIfAvailable.swift; sourceTree = "<group>"; };
 		0512145A2C5BCECF0021EEC9 /* CollectionDifference+SSK.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CollectionDifference+SSK.swift"; sourceTree = "<group>"; };
-		0517B9772BFCFF12002CDE7D /* TSThreadTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSThreadTests.swift; sourceTree = "<group>"; };
 		052647BE2C63BAC40076E99D /* ChatListFilterControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatListFilterControl.swift; sourceTree = "<group>"; };
 		052647C02C6404D70076E99D /* ChatListFilterStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatListFilterStore.swift; sourceTree = "<group>"; };
 		052A33372C52BF410083D812 /* ChatListFilterActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatListFilterActions.swift; sourceTree = "<group>"; };
@@ -8104,29 +8090,17 @@
 		F9C5C9B9289453B100548EEE /* SSKProto+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SSKProto+OWS.swift"; sourceTree = "<group>"; };
 		F9C5C9C2289453B100548EEE /* PreKeyManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreKeyManager.swift; sourceTree = "<group>"; };
 		F9C5C9C7289453B100548EEE /* RemoteAttestation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoteAttestation.swift; sourceTree = "<group>"; };
-		F9C5C9D2289453B100548EEE /* TSThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSThread.h; sourceTree = "<group>"; };
 		F9C5C9D9289453B100548EEE /* ContactDiscoveryTask.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryTask.swift; sourceTree = "<group>"; };
 		F9C5C9DC289453B100548EEE /* ContactDiscoveryError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactDiscoveryError.swift; sourceTree = "<group>"; };
 		F9C5C9DE289453B100548EEE /* SignalAccount.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalAccount.swift; sourceTree = "<group>"; };
 		F9C5C9E1289453B100548EEE /* SignalRecipient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalRecipient.swift; sourceTree = "<group>"; };
-		F9C5C9E4289453B100548EEE /* TSPrivateStoryThread+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TSPrivateStoryThread+SDS.swift"; sourceTree = "<group>"; };
 		F9C5C9E5289453B100548EEE /* TSPrivateStoryThread.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TSPrivateStoryThread.swift; sourceTree = "<group>"; };
-		F9C5C9E6289453B100548EEE /* TSPrivateStoryThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSPrivateStoryThread.h; sourceTree = "<group>"; };
-		F9C5C9E7289453B100548EEE /* TSGroupThread.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSGroupThread.m; sourceTree = "<group>"; };
-		F9C5C9E8289453B100548EEE /* TSGroupThread+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TSGroupThread+SDS.swift"; sourceTree = "<group>"; };
 		F9C5C9E9289453B100548EEE /* TSThread+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TSThread+OWS.swift"; sourceTree = "<group>"; };
-		F9C5C9EA289453B100548EEE /* TSContactThread+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TSContactThread+SDS.swift"; sourceTree = "<group>"; };
-		F9C5C9EB289453B100548EEE /* TSContactThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSContactThread.h; sourceTree = "<group>"; };
-		F9C5C9EC289453B100548EEE /* TSGroupThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TSGroupThread.h; sourceTree = "<group>"; };
-		F9C5C9ED289453B100548EEE /* TSPrivateStoryThread.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSPrivateStoryThread.m; sourceTree = "<group>"; };
-		F9C5C9EE289453B100548EEE /* TSContactThread.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSContactThread.m; sourceTree = "<group>"; };
 		F9C5C9EF289453B100548EEE /* TSGroupThread+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TSGroupThread+OWS.swift"; sourceTree = "<group>"; };
 		F9C5C9F0289453B100548EEE /* PhoneNumberUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhoneNumberUtil.swift; sourceTree = "<group>"; };
 		F9C5C9F2289453B100548EEE /* ThreadAssociatedData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThreadAssociatedData.swift; sourceTree = "<group>"; };
 		F9C5C9F4289453B100548EEE /* DisappearingMessagesConfigurationRecord.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DisappearingMessagesConfigurationRecord.swift; sourceTree = "<group>"; };
 		F9C5C9F7289453B100548EEE /* SignalAccountFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalAccountFinder.swift; sourceTree = "<group>"; };
-		F9C5C9F8289453B100548EEE /* TSThread.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TSThread.m; sourceTree = "<group>"; };
-		F9C5C9F9289453B100548EEE /* TSThread+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "TSThread+SDS.swift"; sourceTree = "<group>"; };
 		F9C5C9FB289453B100548EEE /* ContactThreadFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactThreadFinder.swift; sourceTree = "<group>"; };
 		F9C5C9FC289453B100548EEE /* SignalServiceAddress.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignalServiceAddress.swift; sourceTree = "<group>"; };
 		F9C5C9FD289453B100548EEE /* TSGroupMember.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TSGroupMember.swift; sourceTree = "<group>"; };
@@ -14666,7 +14640,6 @@
 				F94261E4289B1B5400460798 /* Util */,
 				724D47B12B97BE73001BE973 /* ZkParams */,
 				F942623A289B1B5500460798 /* SSKBaseTest.swift */,
-				0517B9772BFCFF12002CDE7D /* TSThreadTests.swift */,
 				D9C964072BE44D510058F143 /* XCTest+Thenable.swift */,
 			);
 			path = tests;
@@ -15075,9 +15048,6 @@
 				5033D45E29D4DAAC007FEADA /* ThreadMerger.swift */,
 				45161BA828A2E54B0055AB45 /* ThreadReplyInfo.swift */,
 				502D45472A0AD7BE00B8BCE0 /* ThreadReplyInfoStore.swift */,
-				F9C5C9F9289453B100548EEE /* TSThread+SDS.swift */,
-				F9C5C9D2289453B100548EEE /* TSThread.h */,
-				F9C5C9F8289453B100548EEE /* TSThread.m */,
 				D91444E62CDD72BE00221D81 /* TSThread.swift */,
 				50D6A93E2AA9167400B7F093 /* UniqueObjectRecipientMerger.swift */,
 				5037F1932A43A6A300C372AD /* UserProfileMerger.swift */,
@@ -15105,18 +15075,9 @@
 				502D45432A05A34B00B8BCE0 /* ThreadRemover.swift */,
 				D9F9A63E2C013EF100EF13EC /* ThreadSoftDeleteManager.swift */,
 				5033D46029D638FD007FEADA /* ThreadStore.swift */,
-				F9C5C9EA289453B100548EEE /* TSContactThread+SDS.swift */,
-				F9C5C9EB289453B100548EEE /* TSContactThread.h */,
-				F9C5C9EE289453B100548EEE /* TSContactThread.m */,
 				661170C92ABA522200A1B16D /* TSContactThread.swift */,
 				F9C5C9EF289453B100548EEE /* TSGroupThread+OWS.swift */,
-				F9C5C9E8289453B100548EEE /* TSGroupThread+SDS.swift */,
-				F9C5C9EC289453B100548EEE /* TSGroupThread.h */,
-				F9C5C9E7289453B100548EEE /* TSGroupThread.m */,
 				880FB40528CD205F00FA1C10 /* TSGroupThread.swift */,
-				F9C5C9E4289453B100548EEE /* TSPrivateStoryThread+SDS.swift */,
-				F9C5C9E6289453B100548EEE /* TSPrivateStoryThread.h */,
-				F9C5C9ED289453B100548EEE /* TSPrivateStoryThread.m */,
 				F9C5C9E5289453B100548EEE /* TSPrivateStoryThread.swift */,
 				F9C5C9E9289453B100548EEE /* TSThread+OWS.swift */,
 			);
@@ -15645,10 +15606,8 @@
 				F9C5CD2C289453B300548EEE /* SSKAccessors+SDS.h in Headers */,
 				668A01142C2B6077007B8808 /* Threading.h in Headers */,
 				F9C5CBC8289453B300548EEE /* TSCall.h in Headers */,
-				F9C5CCD1289453B300548EEE /* TSContactThread.h in Headers */,
 				F9C5CBDD289453B300548EEE /* TSErrorMessage.h in Headers */,
 				F9C5CE74289453B400548EEE /* TSGroupModel.h in Headers */,
-				F9C5CCD2289453B300548EEE /* TSGroupThread.h in Headers */,
 				F9C5CBDC289453B300548EEE /* TSIncomingMessage.h in Headers */,
 				F9C5CBED289453B300548EEE /* TSInfoMessage.h in Headers */,
 				F9C5CBF2289453B300548EEE /* TSInteraction.h in Headers */,
@@ -15658,9 +15617,7 @@
 				F9C5CBE0289453B300548EEE /* TSMessage.h in Headers */,
 				F9C5CBD2289453B300548EEE /* TSOutgoingMessage.h in Headers */,
 				F9C5CD82289453B300548EEE /* TSPaymentModels.h in Headers */,
-				F9C5CCCC289453B300548EEE /* TSPrivateStoryThread.h in Headers */,
 				F9C5CC03289453B300548EEE /* TSQuotedMessage.h in Headers */,
-				F9C5CCBA289453B300548EEE /* TSThread.h in Headers */,
 				F9C5CBF1289453B300548EEE /* TSUnreadIndicatorInteraction.h in Headers */,
 				F9C5CD61289453B300548EEE /* TSYapDatabaseObject.h in Headers */,
 			);
@@ -19935,8 +19892,6 @@
 				F9C5CC5D289453B300548EEE /* TSCall.m in Sources */,
 				D91AC93E2B6337B200814975 /* TSCall.swift in Sources */,
 				F9C5CE67289453B400548EEE /* TSConstants.swift in Sources */,
-				F9C5CCD0289453B300548EEE /* TSContactThread+SDS.swift in Sources */,
-				F9C5CCD4289453B300548EEE /* TSContactThread.m in Sources */,
 				661170CA2ABA522200A1B16D /* TSContactThread.swift in Sources */,
 				D93086292C61672E008E3A27 /* TSErrorMessage+Builder.swift in Sources */,
 				F9C5CBE1289453B300548EEE /* TSErrorMessage+SDS.swift in Sources */,
@@ -19948,8 +19903,6 @@
 				F9C5CE79289453B400548EEE /* TSGroupModel.swift in Sources */,
 				F9C5CE75289453B400548EEE /* TSGroupModelBuilder.swift in Sources */,
 				F9C5CCD5289453B300548EEE /* TSGroupThread+OWS.swift in Sources */,
-				F9C5CCCE289453B300548EEE /* TSGroupThread+SDS.swift in Sources */,
-				F9C5CCCD289453B300548EEE /* TSGroupThread.m in Sources */,
 				880FB40628CD205F00FA1C10 /* TSGroupThread.swift in Sources */,
 				F9C5CBDB289453B300548EEE /* TSIncomingMessage+Builder.swift in Sources */,
 				F9C5CBD5289453B300548EEE /* TSIncomingMessage+SDS.swift in Sources */,
@@ -19995,16 +19948,12 @@
 				F9C5CD8A289453B300548EEE /* TSPaymentModels.m in Sources */,
 				F9C5CD83289453B300548EEE /* TSPaymentModels.swift in Sources */,
 				6642A87C2A8EB0D800E591C2 /* TSPaymentsActivationRequestModel.swift in Sources */,
-				F9C5CCCA289453B300548EEE /* TSPrivateStoryThread+SDS.swift in Sources */,
-				F9C5CCD3289453B300548EEE /* TSPrivateStoryThread.m in Sources */,
 				F9C5CCCB289453B300548EEE /* TSPrivateStoryThread.swift in Sources */,
 				F9C5CBE4289453B300548EEE /* TSQuotedMessage.m in Sources */,
 				6615553F2ABA5A7500AA302B /* TSRegistrationState.swift in Sources */,
 				66C2B1312A05D28A008DDE72 /* TSRequest.swift in Sources */,
 				6691E7EF2996E8FB0032A68A /* TSRequestOWSURLSessionMock.swift in Sources */,
 				F9C5CCCF289453B300548EEE /* TSThread+OWS.swift in Sources */,
-				F9C5CCDF289453B300548EEE /* TSThread+SDS.swift in Sources */,
-				F9C5CCDE289453B300548EEE /* TSThread.m in Sources */,
 				D91444E72CDD72C200221D81 /* TSThread.swift in Sources */,
 				F9C5CBE3289453B300548EEE /* TSUnreadIndicatorInteraction+SDS.swift in Sources */,
 				F9C5CBD9289453B300548EEE /* TSUnreadIndicatorInteraction.m in Sources */,
@@ -20296,7 +20245,6 @@
 				F942628A289B1B5600460798 /* TSMessageTest.swift in Sources */,
 				D9495A702C76965600843BC1 /* TSOutgoingMessageRecipientStateTest.swift in Sources */,
 				F9426289289B1B5600460798 /* TSOutgoingMessageTest.swift in Sources */,
-				0517B9782BFCFF12002CDE7D /* TSThreadTests.swift in Sources */,
 				F942628F289B1B5600460798 /* TypingIndicatorMessageTest.swift in Sources */,
 				726C94252D6F48DA00ABF9B9 /* UncooperativeTimeoutTest.swift in Sources */,
 				F9426255289B1B5500460798 /* UnfairLockTest.swift in Sources */,

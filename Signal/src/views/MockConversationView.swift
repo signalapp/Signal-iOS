@@ -78,9 +78,9 @@ class MockConversationView: UIView {
     }()
 
     // Use a v5 UUID that's in a separate namespace from ACIs/PNIs.
-    fileprivate static let mockAddress = SignalServiceAddress(try! ServiceId.parseFrom(serviceIdString: "00000000-0000-5000-8000-000000000000"))
+    fileprivate static let mockAci = try! Aci.parseFrom(serviceIdString: "00000000-0000-5000-8000-000000000000")
 
-    private let thread = MockThread(contactAddress: MockConversationView.mockAddress)
+    private let thread = MockThread(contactAci: MockConversationView.mockAci)
 
     override var frame: CGRect {
         didSet {
@@ -211,28 +211,39 @@ class MockConversationView: UIView {
 // MARK: - Mock Classes
 
 private class MockThread: TSContactThread {
-    override var shouldBeSaved: Bool {
-        return false
+    init(contactAci: Aci) {
+        super.init(
+            uniqueId: "MockThread",
+            contactUUID: contactAci.serviceIdUppercaseString,
+            contactPhoneNumber: nil,
+        )
     }
 
-    override var uniqueId: String { "MockThread" }
+    required init(inheritableDecoder decoder: any Decoder) throws {
+        owsFail("not supported")
+    }
 
-    override func anyWillInsert(with transaction: DBWriteTransaction) {
+    override func anyWillInsert(transaction: DBWriteTransaction) {
         // no - op
-        owsFailDebug("shouldn't save mock thread")
+        owsFail("shouldn't save mock thread")
     }
 }
 
-public class MockGroupThread: TSGroupThread {
-    override public var shouldBeSaved: Bool {
-        return false
+class MockGroupThread: TSGroupThread {
+    init(groupModel: TSGroupModelV2) {
+        super.init(
+            uniqueId: "MockGroupThread",
+            groupModel: groupModel,
+        )
     }
 
-    override public var uniqueId: String { "MockGroupThread" }
+    required init(inheritableDecoder decoder: any Decoder) throws {
+        owsFail("not supported")
+    }
 
-    override public func anyWillInsert(with transaction: DBWriteTransaction) {
+    override func anyWillInsert(transaction: DBWriteTransaction) {
         // no - op
-        owsFailDebug("shouldn't save mock thread")
+        owsFail("shouldn't save mock thread")
     }
 }
 
@@ -296,7 +307,7 @@ public class MockOutgoingMessage: TSOutgoingMessage {
 
     override public func readRecipientAddresses() -> [SignalServiceAddress] {
         // makes message appear as read
-        return [MockConversationView.mockAddress]
+        return [SignalServiceAddress(MockConversationView.mockAci)]
     }
 
     override public func recipientState(for recipientAddress: SignalServiceAddress) -> TSOutgoingMessageRecipientState? {

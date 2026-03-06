@@ -3,11 +3,367 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-import GRDB
+public import GRDB
 public import LibSignalClient
 
-extension TSThread {
-    public static var databaseTableName: String { ThreadRecord.databaseTableName }
+public enum TSThreadMentionNotificationMode: UInt {
+    case `default` = 0
+    case always = 1
+    case never = 2
+}
+
+public enum TSThreadStoryViewMode: UInt {
+    case `default` = 0
+    case explicit = 1
+    case blockList = 2
+    case disabled = 3
+}
+
+@objc
+open class TSThread: NSObject, SDSCodableModel, InheritableRecord {
+    public static let databaseTableName: String = "model_TSThread"
+    public class var recordType: SDSRecordType { .thread }
+
+    static func concreteType(forRecordType recordType: UInt) -> (any InheritableRecord.Type)? {
+        switch recordType {
+        case SDSRecordType.thread.rawValue: TSThread.self
+        case SDSRecordType.contactThread.rawValue: TSContactThread.self
+        case SDSRecordType.groupThread.rawValue: TSGroupThread.self
+        case SDSRecordType.privateStoryThread.rawValue: TSPrivateStoryThread.self
+        default: nil
+        }
+    }
+
+    public var id: Int64?
+    public var sqliteRowId: Int64? { self.id }
+
+    @objc
+    public let uniqueId: String
+
+    public let conversationColorNameObsolete: String
+    public let creationDate: Date?
+    public let isArchivedObsolete: Bool
+    // zero if thread has never had an interaction.
+    // The corresponding interaction may have been deleted.
+    public internal(set) var lastInteractionRowId: UInt64
+    public internal(set) var messageDraft: String?
+    public let mutedUntilDateObsolete: Date?
+    public internal(set) var shouldThreadBeVisible: Bool
+    public let isMarkedUnreadObsolete: Bool
+    public let lastVisibleSortIdOnScreenPercentageObsolete: Double
+    // This maintains the row Id that was at the bottom of the conversation
+    // the last time the user viewed this thread so we can restore their
+    // scroll position.
+    //
+    // If the referenced message is deleted, this value is
+    // updated to point to the previous message in the conversation.
+    //
+    // If a new message is inserted into the conversation, this value
+    // is cleared. We only restore this state if there are no unread messages.
+    public let lastVisibleSortIdObsolete: UInt64
+    public private(set) var messageDraftBodyRanges: MessageBodyRanges?
+    public private(set) var mentionNotificationMode: TSThreadMentionNotificationMode
+    public let mutedUntilTimestampObsolete: UInt64
+    public private(set) var lastSentStoryTimestamp: UInt64?
+    public internal(set) var storyViewMode: TSThreadStoryViewMode
+    public private(set) var editTargetTimestamp: UInt64?
+    // These are used to maintain the ordering of drafts in the chat list.
+    // When a draft is saved, the lastDraftInteractionRowId for that thread
+    // should be set to the max lastInteractionRowId across all threads to
+    // prioritize it in the chat list. lastDraftUpdateTimestamp
+    // can be used to break ties between threads with the same lastDraftInteractionRowId.
+    public internal(set) var lastDraftInteractionRowId: UInt64
+    public internal(set) var lastDraftUpdateTimestamp: UInt64
+
+    // DEPRECATED_MSG_ATTRIBUTE("this property is only to be used in the sortId migration");
+    let isArchivedByLegacyTimestampForSorting: Bool = false
+
+    public enum CodingKeys: String, CodingKey, ColumnExpression {
+        case id
+        case recordType
+        case uniqueId
+
+        case conversationColorNameObsolete = "conversationColorName"
+        case creationDate
+        case editTargetTimestamp
+        case isArchivedObsolete = "isArchived"
+        case isMarkedUnreadObsolete = "isMarkedUnread"
+        case lastDraftInteractionRowId
+        case lastDraftUpdateTimestamp
+        case lastInteractionRowId
+        case lastSentStoryTimestamp
+        case lastVisibleSortIdObsolete = "lastVisibleSortId"
+        case lastVisibleSortIdOnScreenPercentageObsolete = "lastVisibleSortIdOnScreenPercentage"
+        case mentionNotificationMode
+        case messageDraft
+        case messageDraftBodyRanges
+        case mutedUntilDateObsolete = "mutedUntilDate"
+        case mutedUntilTimestampObsolete = "mutedUntilTimestamp"
+        case shouldThreadBeVisible
+        case storyViewMode
+    }
+
+    public required init(inheritableDecoder decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.id = try container.decodeIfPresent(Int64.self, forKey: .id)
+        self.uniqueId = try container.decode(String.self, forKey: .uniqueId)
+        self.conversationColorNameObsolete = try container.decode(String.self, forKey: .conversationColorNameObsolete)
+        self.creationDate = try container.decodeIfPresent(TimeInterval.self, forKey: .creationDate).map(Date.init(timeIntervalSince1970:))
+        self.editTargetTimestamp = try container.decodeIfPresent(UInt64.self, forKey: .editTargetTimestamp)
+        self.isArchivedObsolete = try container.decode(Bool.self, forKey: .isArchivedObsolete)
+        self.isMarkedUnreadObsolete = try container.decode(Bool.self, forKey: .isMarkedUnreadObsolete)
+        self.lastDraftInteractionRowId = try container.decode(UInt64.self, forKey: .lastDraftInteractionRowId)
+        self.lastDraftUpdateTimestamp = try container.decode(UInt64.self, forKey: .lastDraftUpdateTimestamp)
+        self.lastInteractionRowId = try container.decode(UInt64.self, forKey: .lastInteractionRowId)
+        self.lastSentStoryTimestamp = try container.decodeIfPresent(UInt64.self, forKey: .lastSentStoryTimestamp)
+        self.lastVisibleSortIdObsolete = try container.decode(UInt64.self, forKey: .lastVisibleSortIdObsolete)
+        self.lastVisibleSortIdOnScreenPercentageObsolete = try container.decode(Double.self, forKey: .lastVisibleSortIdOnScreenPercentageObsolete)
+        self.mentionNotificationMode = TSThreadMentionNotificationMode(rawValue: try container.decode(UInt.self, forKey: .mentionNotificationMode)) ?? .default
+        self.messageDraft = try container.decodeIfPresent(String.self, forKey: .messageDraft)
+        self.messageDraftBodyRanges = try container.decodeIfPresent(Data.self, forKey: .messageDraftBodyRanges).map({ try LegacySDSSerializer().deserializeLegacySDSData($0, ofClass: MessageBodyRanges.self) })
+        self.mutedUntilDateObsolete = try container.decodeIfPresent(TimeInterval.self, forKey: .mutedUntilDateObsolete).map(Date.init(timeIntervalSince1970:))
+        self.mutedUntilTimestampObsolete = try container.decode(UInt64.self, forKey: .mutedUntilTimestampObsolete)
+        self.shouldThreadBeVisible = try container.decode(Bool.self, forKey: .shouldThreadBeVisible)
+        self.storyViewMode = TSThreadStoryViewMode(rawValue: try container.decode(UInt.self, forKey: .storyViewMode)) ?? .default
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(self.id, forKey: .id)
+        try container.encode(Self.recordType.rawValue, forKey: .recordType)
+        try container.encode(self.uniqueId, forKey: .uniqueId)
+        try container.encode(self.conversationColorNameObsolete, forKey: .conversationColorNameObsolete)
+        try container.encode(self.creationDate?.timeIntervalSince1970, forKey: .creationDate)
+        try container.encode(self.editTargetTimestamp, forKey: .editTargetTimestamp)
+        try container.encode(self.isArchivedObsolete, forKey: .isArchivedObsolete)
+        try container.encode(self.lastDraftInteractionRowId, forKey: .lastDraftInteractionRowId)
+        try container.encode(self.lastDraftUpdateTimestamp, forKey: .lastDraftUpdateTimestamp)
+        try container.encode(self.lastInteractionRowId, forKey: .lastInteractionRowId)
+        try container.encode(self.lastSentStoryTimestamp, forKey: .lastSentStoryTimestamp)
+        try container.encode(self.lastVisibleSortIdObsolete, forKey: .lastVisibleSortIdObsolete)
+        try container.encode(self.lastVisibleSortIdOnScreenPercentageObsolete, forKey: .lastVisibleSortIdOnScreenPercentageObsolete)
+        try container.encode(self.mentionNotificationMode.rawValue, forKey: .mentionNotificationMode)
+        try container.encode(self.messageDraft, forKey: .messageDraft)
+        let messageDraftBodyRangesData = self.messageDraftBodyRanges.map(LegacySDSSerializer().serializeAsLegacySDSData(_:))
+        try container.encode(messageDraftBodyRangesData, forKey: .messageDraftBodyRanges)
+        try container.encode(self.mutedUntilDateObsolete, forKey: .mutedUntilDateObsolete)
+        try container.encode(self.mutedUntilTimestampObsolete, forKey: .mutedUntilTimestampObsolete)
+        try container.encode(self.shouldThreadBeVisible, forKey: .shouldThreadBeVisible)
+        try container.encode(self.storyViewMode.rawValue, forKey: .storyViewMode)
+    }
+
+    init(
+        id: Int64?,
+        uniqueId: String,
+        conversationColorNameObsolete: String,
+        creationDate: Date?,
+        editTargetTimestamp: UInt64?,
+        isArchivedObsolete: Bool,
+        isMarkedUnreadObsolete: Bool,
+        lastDraftInteractionRowId: UInt64,
+        lastDraftUpdateTimestamp: UInt64,
+        lastInteractionRowId: UInt64,
+        lastSentStoryTimestamp: UInt64?,
+        lastVisibleSortIdObsolete: UInt64,
+        lastVisibleSortIdOnScreenPercentageObsolete: Double,
+        mentionNotificationMode: TSThreadMentionNotificationMode,
+        messageDraft: String?,
+        messageDraftBodyRanges: MessageBodyRanges?,
+        mutedUntilDateObsolete: Date?,
+        mutedUntilTimestampObsolete: UInt64,
+        shouldThreadBeVisible: Bool,
+        storyViewMode: TSThreadStoryViewMode,
+    ) {
+        self.id = id
+        self.uniqueId = uniqueId
+        self.conversationColorNameObsolete = conversationColorNameObsolete
+        self.creationDate = creationDate
+        self.editTargetTimestamp = editTargetTimestamp
+        self.isArchivedObsolete = isArchivedObsolete
+        self.isMarkedUnreadObsolete = isMarkedUnreadObsolete
+        self.lastDraftInteractionRowId = lastDraftInteractionRowId
+        self.lastDraftUpdateTimestamp = lastDraftUpdateTimestamp
+        self.lastInteractionRowId = lastInteractionRowId
+        self.lastSentStoryTimestamp = lastSentStoryTimestamp
+        self.lastVisibleSortIdObsolete = lastVisibleSortIdObsolete
+        self.lastVisibleSortIdOnScreenPercentageObsolete = lastVisibleSortIdOnScreenPercentageObsolete
+        self.mentionNotificationMode = mentionNotificationMode
+        self.messageDraft = messageDraft
+        self.messageDraftBodyRanges = messageDraftBodyRanges
+        self.mutedUntilDateObsolete = mutedUntilDateObsolete
+        self.mutedUntilTimestampObsolete = mutedUntilTimestampObsolete
+        self.shouldThreadBeVisible = shouldThreadBeVisible
+        self.storyViewMode = storyViewMode
+    }
+
+    init(uniqueId: String) {
+        self.conversationColorNameObsolete = "Obsolete"
+        self.isArchivedObsolete = false
+        self.isMarkedUnreadObsolete = false
+        self.lastDraftInteractionRowId = 0
+        self.lastDraftUpdateTimestamp = 0
+        self.lastInteractionRowId = 0
+        self.lastVisibleSortIdObsolete = 0
+        self.lastVisibleSortIdOnScreenPercentageObsolete = 0
+        self.mentionNotificationMode = .default
+        self.messageDraft = nil
+        self.mutedUntilDateObsolete = nil
+        self.mutedUntilTimestampObsolete = 0
+        self.shouldThreadBeVisible = false
+        self.storyViewMode = .default
+
+        self.uniqueId = uniqueId
+        self.creationDate = Date()
+    }
+
+    func deepCopy() -> TSThread {
+        return TSThread(
+            id: self.id,
+            uniqueId: self.uniqueId,
+            conversationColorNameObsolete: self.conversationColorNameObsolete,
+            creationDate: self.creationDate,
+            editTargetTimestamp: self.editTargetTimestamp,
+            isArchivedObsolete: self.isArchivedObsolete,
+            isMarkedUnreadObsolete: self.isMarkedUnreadObsolete,
+            lastDraftInteractionRowId: self.lastDraftInteractionRowId,
+            lastDraftUpdateTimestamp: self.lastDraftUpdateTimestamp,
+            lastInteractionRowId: self.lastInteractionRowId,
+            lastSentStoryTimestamp: self.lastSentStoryTimestamp,
+            lastVisibleSortIdObsolete: self.lastVisibleSortIdObsolete,
+            lastVisibleSortIdOnScreenPercentageObsolete: self.lastVisibleSortIdOnScreenPercentageObsolete,
+            mentionNotificationMode: self.mentionNotificationMode,
+            messageDraft: self.messageDraft,
+            messageDraftBodyRanges: self.messageDraftBodyRanges,
+            mutedUntilDateObsolete: self.mutedUntilDateObsolete,
+            mutedUntilTimestampObsolete: self.mutedUntilTimestampObsolete,
+            shouldThreadBeVisible: self.shouldThreadBeVisible,
+            storyViewMode: self.storyViewMode,
+        )
+    }
+
+    override public var hash: Int {
+        var hasher = Hasher()
+        hasher.combine(self.id)
+        hasher.combine(self.uniqueId)
+        hasher.combine(self.conversationColorNameObsolete)
+        hasher.combine(self.creationDate)
+        hasher.combine(self.editTargetTimestamp)
+        hasher.combine(self.isArchivedByLegacyTimestampForSorting)
+        hasher.combine(self.isArchivedObsolete)
+        hasher.combine(self.isMarkedUnreadObsolete)
+        hasher.combine(self.lastDraftInteractionRowId)
+        hasher.combine(self.lastDraftUpdateTimestamp)
+        hasher.combine(self.lastInteractionRowId)
+        hasher.combine(self.lastSentStoryTimestamp)
+        hasher.combine(self.lastVisibleSortIdObsolete)
+        hasher.combine(self.lastVisibleSortIdOnScreenPercentageObsolete)
+        hasher.combine(self.mentionNotificationMode)
+        hasher.combine(self.messageDraft)
+        hasher.combine(self.messageDraftBodyRanges)
+        hasher.combine(self.mutedUntilDateObsolete)
+        hasher.combine(self.mutedUntilTimestampObsolete)
+        hasher.combine(self.shouldThreadBeVisible)
+        hasher.combine(self.storyViewMode)
+        return hasher.finalize()
+    }
+
+    override public func isEqual(_ object: Any?) -> Bool {
+        guard let object = object as? Self else { return false }
+        guard self.id == object.id else { return false }
+        guard self.uniqueId == object.uniqueId else { return false }
+        guard self.conversationColorNameObsolete == object.conversationColorNameObsolete else { return false }
+        guard self.creationDate == object.creationDate else { return false }
+        guard self.editTargetTimestamp == object.editTargetTimestamp else { return false }
+        guard self.isArchivedByLegacyTimestampForSorting == object.isArchivedByLegacyTimestampForSorting else { return false }
+        guard self.isArchivedObsolete == object.isArchivedObsolete else { return false }
+        guard self.isMarkedUnreadObsolete == object.isMarkedUnreadObsolete else { return false }
+        guard self.lastDraftInteractionRowId == object.lastDraftInteractionRowId else { return false }
+        guard self.lastDraftUpdateTimestamp == object.lastDraftUpdateTimestamp else { return false }
+        guard self.lastInteractionRowId == object.lastInteractionRowId else { return false }
+        guard self.lastSentStoryTimestamp == object.lastSentStoryTimestamp else { return false }
+        guard self.lastVisibleSortIdObsolete == object.lastVisibleSortIdObsolete else { return false }
+        guard self.lastVisibleSortIdOnScreenPercentageObsolete == object.lastVisibleSortIdOnScreenPercentageObsolete else { return false }
+        guard self.mentionNotificationMode == object.mentionNotificationMode else { return false }
+        guard self.messageDraft == object.messageDraft else { return false }
+        guard self.messageDraftBodyRanges == object.messageDraftBodyRanges else { return false }
+        guard self.mutedUntilDateObsolete == object.mutedUntilDateObsolete else { return false }
+        guard self.mutedUntilTimestampObsolete == object.mutedUntilTimestampObsolete else { return false }
+        guard self.shouldThreadBeVisible == object.shouldThreadBeVisible else { return false }
+        guard self.storyViewMode == object.storyViewMode else { return false }
+        return true
+    }
+
+    public func anyDidFetchOne(transaction: DBReadTransaction) {
+        SSKEnvironment.shared.modelReadCachesRef.threadReadCache.didReadThread(self, transaction: transaction)
+    }
+
+    public func anyDidEnumerateOne(transaction: DBReadTransaction) {
+        SSKEnvironment.shared.modelReadCachesRef.threadReadCache.didReadThread(self, transaction: transaction)
+    }
+
+    open func anyWillInsert(transaction: DBWriteTransaction) {
+    }
+
+    public func anyDidInsert(transaction: DBWriteTransaction) {
+        ThreadAssociatedData.create(for: self.uniqueId, transaction: transaction)
+
+        if self.shouldThreadBeVisible, !SSKPreferences.hasSavedThread(transaction: transaction) {
+            SSKPreferences.setHasSavedThread(true, transaction: transaction)
+        }
+
+        _anyDidInsert(tx: transaction)
+
+        SSKEnvironment.shared.modelReadCachesRef.threadReadCache.didInsertOrUpdate(thread: self, transaction: transaction)
+    }
+
+    public func anyWillUpdate(transaction: DBWriteTransaction) {
+    }
+
+    public func anyDidUpdate(transaction: DBWriteTransaction) {
+        if self.shouldThreadBeVisible, !SSKPreferences.hasSavedThread(transaction: transaction) {
+            SSKPreferences.setHasSavedThread(true, transaction: transaction)
+        }
+
+        SSKEnvironment.shared.modelReadCachesRef.threadReadCache.didInsertOrUpdate(thread: self, transaction: transaction)
+
+        DependenciesBridge.shared.pinnedThreadManager.handleUpdatedThread(self, tx: transaction)
+    }
+
+    public var isNoteToSelf: Bool { false }
+
+    public final var recipientAddressesWithSneakyTransaction: [SignalServiceAddress] {
+        let databaseStorage = SSKEnvironment.shared.databaseStorageRef
+        return databaseStorage.read { tx in self.recipientAddresses(with: tx) }
+    }
+
+    @objc
+    public func recipientAddresses(with tx: DBReadTransaction) -> [SignalServiceAddress] {
+        owsFail("abstract method")
+    }
+
+    public func hasSafetyNumbers() -> Bool { false }
+
+    public func lastInteractionForInbox(forChatListSorting isForSorting: Bool, transaction tx: DBReadTransaction) -> TSInteraction? {
+        return InteractionFinder(threadUniqueId: self.uniqueId).mostRecentInteractionForInbox(forChatListSorting: isForSorting, transaction: tx)
+    }
+
+    public func firstInteraction(atOrAroundSortId sortId: UInt64, transaction tx: DBReadTransaction) -> TSInteraction? {
+        return InteractionFinder(threadUniqueId: self.uniqueId).firstInteraction(atOrAroundSortId: sortId, transaction: tx)
+    }
+
+    func merge(from otherThread: TSThread) {
+        self.shouldThreadBeVisible = self.shouldThreadBeVisible || otherThread.shouldThreadBeVisible
+        self.lastInteractionRowId = max(self.lastInteractionRowId, otherThread.lastInteractionRowId)
+
+        // Copy the draft if this thread doesn't have one. We always assign both
+        // values if we assign one of them since they're related.
+        if self.messageDraft == nil {
+            self.messageDraft = otherThread.messageDraft
+            self.messageDraftBodyRanges = otherThread.messageDraftBodyRanges
+            self.lastDraftInteractionRowId = otherThread.lastDraftInteractionRowId
+            self.lastDraftUpdateTimestamp = otherThread.lastDraftUpdateTimestamp
+        }
+    }
 
     public typealias RowId = Int64
 
@@ -15,23 +371,21 @@ extension TSThread {
         return (self as? TSGroupThread)?.groupId.toHex() ?? self.uniqueId
     }
 
-    // [SDS] TODO: Replace with SDSCodableModel.
-    static func anyEnumerate(
-        transaction: DBReadTransaction,
-        sql: String,
-        arguments: StatementArguments,
-        block: (TSThread, UnsafeMutablePointer<ObjCBool>) -> Void,
-    ) {
-        let cursor = TSThread.grdbFetchCursor(sql: sql, arguments: arguments, transaction: transaction)
-        failIfThrows {
-            var stop: ObjCBool = false
-            while let thread = try cursor.next() {
-                block(thread, &stop)
-                if stop.boolValue {
-                    break
-                }
-            }
+    @objc
+    public class func fetchViaCacheObjC(uniqueId: String, transaction: DBReadTransaction) -> TSThread? {
+        return fetchViaCache(uniqueId: uniqueId, transaction: transaction)
+    }
+
+    public class func fetchViaCache(uniqueId: String, transaction: DBReadTransaction) -> Self? {
+        let cache = SSKEnvironment.shared.modelReadCachesRef.threadReadCache
+        guard let thread = cache.getThread(uniqueId: uniqueId, transaction: transaction) else {
+            return nil
         }
+        guard let typedThread = thread as? Self else {
+            owsFailDebug("object has type \(type(of: thread)), not \(Self.self)")
+            return nil
+        }
+        return typedThread
     }
 
     // MARK: - updateWith...
@@ -47,7 +401,7 @@ extension TSThread {
         anyUpdate(transaction: tx) { thread in
             thread.messageDraft = draftMessageBody?.text
             thread.messageDraftBodyRanges = draftMessageBody?.ranges
-            thread.editTargetTimestamp = editTargetTimestamp.map { NSNumber(value: $0) }
+            thread.editTargetTimestamp = editTargetTimestamp
 
             if draftMessageBody?.text.nilIfEmpty == nil {
                 // 0 makes these values effectively irrelevant since they will
@@ -105,8 +459,8 @@ extension TSThread {
         transaction tx: DBWriteTransaction,
     ) {
         anyUpdate(transaction: tx) { thread in
-            if lastSentStoryTimestamp > (thread.lastSentStoryTimestamp?.uint64Value ?? 0) {
-                thread.lastSentStoryTimestamp = NSNumber(value: lastSentStoryTimestamp)
+            if lastSentStoryTimestamp > thread.lastSentStoryTimestamp ?? 0 {
+                thread.lastSentStoryTimestamp = lastSentStoryTimestamp
             }
         }
     }
@@ -374,5 +728,17 @@ extension TSThread {
 
         // User is not an admin. Can't pin if its announcements-only group, or edit group is admin only.
         return groupModel.access.attributes != .administrator && !groupModel.isAnnouncementsOnly
+    }
+}
+
+// MARK: - StringInterpolation
+
+public extension String.StringInterpolation {
+    mutating func appendInterpolation(threadColumn column: TSThread.CodingKeys) {
+        appendLiteral(column.rawValue)
+    }
+
+    mutating func appendInterpolation(threadColumnFullyQualified column: TSThread.CodingKeys) {
+        appendLiteral("\(TSThread.databaseTableName).\(column.rawValue)")
     }
 }

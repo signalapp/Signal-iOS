@@ -34,7 +34,7 @@ public import LibSignalClient
 ///     messageFactory.create(count: 100)
 ///
 public protocol Factory {
-    associatedtype ObjectType: TSYapDatabaseObject
+    associatedtype ObjectType
 
     static func write(block: @escaping (DBWriteTransaction) -> Void)
     func write(block: @escaping (DBWriteTransaction) -> Void)

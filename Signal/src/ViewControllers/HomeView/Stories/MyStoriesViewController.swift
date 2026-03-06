@@ -132,7 +132,7 @@ class MyStoriesViewController: OWSViewController, FailedStorySendDisplayControll
                     StoryManager.storyName(for: rhs),
                 ) == .orderedAscending
             }
-            return (lhs.lastSentStoryTimestamp?.uint64Value ?? 0) > (rhs.lastSentStoryTimestamp?.uint64Value ?? 0)
+            return (lhs.lastSentStoryTimestamp ?? 0) > (rhs.lastSentStoryTimestamp ?? 0)
         })
         tableView.reloadData()
     }

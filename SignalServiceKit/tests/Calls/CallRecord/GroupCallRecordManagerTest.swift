@@ -41,7 +41,7 @@ final class GroupCallRecordManagerTest: XCTestCase {
 
     private func createInteraction() -> (TSGroupThread, OWSGroupCallMessage) {
         let thread = TSGroupThread.randomForTesting()
-        thread.updateRowId(.maxRandom)
+        thread.id = .maxRandom
 
         let interaction = OWSGroupCallMessage(
             joinedMemberAcis: [],

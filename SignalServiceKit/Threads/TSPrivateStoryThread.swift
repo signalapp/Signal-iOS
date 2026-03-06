@@ -4,8 +4,160 @@
 //
 
 import Foundation
+public import GRDB
 
-extension TSPrivateStoryThread {
+/// Represents a story distribution list.
+public final class TSPrivateStoryThread: TSThread {
+    override public class var recordType: SDSRecordType { .privateStoryThread }
+
+    public private(set) var allowsReplies: Bool
+    public private(set) var _name: String
+    /// deprecated
+    public let addresses: Data?
+
+    public enum CodingKeys: String, CodingKey, ColumnExpression {
+        case allowsReplies
+        case name
+        case addresses
+    }
+
+    required init(inheritableDecoder decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.allowsReplies = try container.decode(Bool.self, forKey: .allowsReplies)
+        self._name = try container.decode(String.self, forKey: .name)
+        self.addresses = try container.decodeIfPresent(Data.self, forKey: .addresses)
+        try super.init(inheritableDecoder: decoder)
+    }
+
+    override public func encode(to encoder: any Encoder) throws {
+        try super.encode(to: encoder)
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(self.allowsReplies, forKey: .allowsReplies)
+        try container.encode(self._name, forKey: .name)
+        try container.encode(self.addresses, forKey: .addresses)
+    }
+
+    init(
+        id: Int64?,
+        uniqueId: String,
+        conversationColorNameObsolete: String,
+        creationDate: Date?,
+        editTargetTimestamp: UInt64?,
+        isArchivedObsolete: Bool,
+        isMarkedUnreadObsolete: Bool,
+        lastDraftInteractionRowId: UInt64,
+        lastDraftUpdateTimestamp: UInt64,
+        lastInteractionRowId: UInt64,
+        lastSentStoryTimestamp: UInt64?,
+        lastVisibleSortIdObsolete: UInt64,
+        lastVisibleSortIdOnScreenPercentageObsolete: Double,
+        mentionNotificationMode: TSThreadMentionNotificationMode,
+        messageDraft: String?,
+        messageDraftBodyRanges: MessageBodyRanges?,
+        mutedUntilDateObsolete: Date?,
+        mutedUntilTimestampObsolete: UInt64,
+        shouldThreadBeVisible: Bool,
+        storyViewMode: TSThreadStoryViewMode,
+        allowsReplies: Bool,
+        name: String,
+        addresses: Data?,
+    ) {
+        self.allowsReplies = allowsReplies
+        self._name = name
+        self.addresses = addresses
+        super.init(
+            id: id,
+            uniqueId: uniqueId,
+            conversationColorNameObsolete: conversationColorNameObsolete,
+            creationDate: creationDate,
+            editTargetTimestamp: editTargetTimestamp,
+            isArchivedObsolete: isArchivedObsolete,
+            isMarkedUnreadObsolete: isMarkedUnreadObsolete,
+            lastDraftInteractionRowId: lastDraftInteractionRowId,
+            lastDraftUpdateTimestamp: lastDraftUpdateTimestamp,
+            lastInteractionRowId: lastInteractionRowId,
+            lastSentStoryTimestamp: lastSentStoryTimestamp,
+            lastVisibleSortIdObsolete: lastVisibleSortIdObsolete,
+            lastVisibleSortIdOnScreenPercentageObsolete: lastVisibleSortIdOnScreenPercentageObsolete,
+            mentionNotificationMode: mentionNotificationMode,
+            messageDraft: messageDraft,
+            messageDraftBodyRanges: messageDraftBodyRanges,
+            mutedUntilDateObsolete: mutedUntilDateObsolete,
+            mutedUntilTimestampObsolete: mutedUntilTimestampObsolete,
+            shouldThreadBeVisible: shouldThreadBeVisible,
+            storyViewMode: storyViewMode,
+        )
+    }
+
+    public init(uniqueId: String = UUID().uuidString, name: String, allowsReplies: Bool, viewMode: TSThreadStoryViewMode) {
+        self._name = name
+        self.allowsReplies = allowsReplies
+        self.addresses = nil
+        super.init(uniqueId: uniqueId)
+        self.storyViewMode = viewMode
+    }
+
+    override func deepCopy() -> TSThread {
+        return TSPrivateStoryThread(
+            id: self.id,
+            uniqueId: self.uniqueId,
+            conversationColorNameObsolete: self.conversationColorNameObsolete,
+            creationDate: self.creationDate,
+            editTargetTimestamp: self.editTargetTimestamp,
+            isArchivedObsolete: self.isArchivedObsolete,
+            isMarkedUnreadObsolete: self.isMarkedUnreadObsolete,
+            lastDraftInteractionRowId: self.lastDraftInteractionRowId,
+            lastDraftUpdateTimestamp: self.lastDraftUpdateTimestamp,
+            lastInteractionRowId: self.lastInteractionRowId,
+            lastSentStoryTimestamp: self.lastSentStoryTimestamp,
+            lastVisibleSortIdObsolete: self.lastVisibleSortIdObsolete,
+            lastVisibleSortIdOnScreenPercentageObsolete: self.lastVisibleSortIdOnScreenPercentageObsolete,
+            mentionNotificationMode: self.mentionNotificationMode,
+            messageDraft: self.messageDraft,
+            messageDraftBodyRanges: self.messageDraftBodyRanges,
+            mutedUntilDateObsolete: self.mutedUntilDateObsolete,
+            mutedUntilTimestampObsolete: self.mutedUntilTimestampObsolete,
+            shouldThreadBeVisible: self.shouldThreadBeVisible,
+            storyViewMode: self.storyViewMode,
+            allowsReplies: self.allowsReplies,
+            name: self.name,
+            addresses: self.addresses,
+        )
+    }
+
+    override public var hash: Int {
+        var hasher = Hasher()
+        hasher.combine(super.hash)
+        hasher.combine(self.addresses)
+        hasher.combine(self.allowsReplies)
+        hasher.combine(self.name)
+        return hasher.finalize()
+    }
+
+    override public func isEqual(_ object: Any?) -> Bool {
+        guard let object = object as? Self else { return false }
+        guard super.isEqual(object) else { return false }
+        guard self.addresses == object.addresses else { return false }
+        guard self.allowsReplies == object.allowsReplies else { return false }
+        guard self.name == object.name else { return false }
+        return true
+    }
+
+    public class func fetchPrivateStoryThreadViaCache(uniqueId: String, transaction: DBReadTransaction) -> TSPrivateStoryThread? {
+        return fetchViaCache(uniqueId: uniqueId, transaction: transaction)
+    }
+
+    public var isMyStory: Bool {
+        return self.uniqueId == Self.myStoryUniqueId
+    }
+
+    public var name: String {
+        if self.isMyStory {
+            return OWSLocalizedString("MY_STORY_NAME", comment: "Name for the 'My Story' default story that sends to all the user's contacts.")
+        }
+        return _name
+    }
+
     public typealias RowId = Int64
 
     @objc
@@ -60,7 +212,7 @@ extension TSPrivateStoryThread {
         updateStorageService: Bool,
         transaction tx: DBWriteTransaction,
     ) {
-        anyUpdatePrivateStoryThread(transaction: tx) { privateStoryThread in
+        anyUpdate(transaction: tx) { privateStoryThread in
             privateStoryThread.allowsReplies = allowsReplies
         }
 
@@ -76,8 +228,8 @@ extension TSPrivateStoryThread {
         updateStorageService: Bool,
         transaction tx: DBWriteTransaction,
     ) {
-        anyUpdatePrivateStoryThread(transaction: tx) { privateStoryThread in
-            privateStoryThread.name = name
+        anyUpdate(transaction: tx) { privateStoryThread in
+            privateStoryThread._name = name
         }
 
         if updateStorageService, let distributionListIdentifier {
@@ -113,7 +265,7 @@ extension TSPrivateStoryThread {
             )
         }
 
-        anyUpdatePrivateStoryThread(transaction: tx) { privateStoryThread in
+        anyUpdate(transaction: tx) { privateStoryThread in
             privateStoryThread.storyViewMode = storyViewMode
         }
 
