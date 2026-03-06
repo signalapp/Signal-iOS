@@ -434,7 +434,7 @@ public class AvatarBuilder {
     // the request cacheKey, in effect, removing the item from the final cache.
     private let addressToAvatarIdentifierCache = LRUCache<SignalServiceAddress, String>(maxSize: 256, nseMaxSize: 0)
 
-    public enum RequestType {
+    private enum RequestType {
         case contactAddress(address: SignalServiceAddress, localUserDisplayMode: LocalUserDisplayMode)
         case text(text: String, theme: AvatarTheme)
         case contactDefaultIcon(theme: AvatarTheme)
@@ -475,7 +475,7 @@ public class AvatarBuilder {
         }
     }
 
-    public struct Request {
+    private struct Request {
         let requestType: RequestType
         let diameterPixels: CGFloat
 

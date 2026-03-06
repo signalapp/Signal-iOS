@@ -402,7 +402,8 @@ class CallDrawerSheet: InteractiveSheetViewController {
 
     func updateMembers() {
         Logger.info("")
-        let unsortedMembers: [JoinedMember] = SSKEnvironment.shared.databaseStorageRef.read {
+        let db = DependenciesBridge.shared.db
+        let unsortedMembers: [JoinedMember] = db.read {
             callSheetDataSource.unsortedMembers(tx: $0)
         }
 
@@ -715,6 +716,48 @@ extension CallDrawerSheet: UITableViewDelegate {
             },
         ).presentInNavController(from: self, forceDarkMode: true)
     }
+
+    func tableView(
+        _ tableView: UITableView,
+        contextMenuConfigurationForRowAt indexPath: IndexPath,
+        point: CGPoint,
+    ) -> UIContextMenuConfiguration? {
+        let snapshot = dataSource.snapshot()
+        let section = snapshot.sectionIdentifiers[indexPath.section]
+        let rowID = snapshot.itemIdentifiers(inSection: section)[indexPath.row]
+
+        switch rowID {
+        case .callLink, .unknownMembers:
+            return nil
+        case .member(section: _, id: let memberId):
+            let ringRtcGroupCall: SignalRingRTC.GroupCall
+            switch call.mode {
+            case .individual:
+                return nil
+            case .groupThread(let groupThreadCall):
+                ringRtcGroupCall = groupThreadCall.ringRtcCall
+            case .callLink(let callLinkCall):
+                ringRtcGroupCall = callLinkCall.ringRtcCall
+            }
+
+            guard
+                let viewModel = viewModelsByID[memberId],
+                !viewModel.isLocalUser,
+                let demuxId = viewModel.demuxId,
+                let contactAci = viewModel.serviceId as? Aci
+            else {
+                return nil
+            }
+
+            return GroupCallContextMenuInteractionBuilder.build(
+                demuxId: demuxId,
+                contactAci: contactAci,
+                contactName: viewModel.name,
+                isAudioMuted: viewModel.isAudioMuted,
+                ringRtcGroupCall: ringRtcGroupCall,
+            )
+        }
+    }
 }
 
 // MARK: GroupCallMemberCellDelegate
@@ -861,9 +904,9 @@ private class GroupCallMemberCell: UITableViewCell, ReusableTableViewCell {
         let isLocalUser: Bool
         let demuxId: DemuxId?
 
-        @Published var shouldShowAudioMutedIcon = false
-        @Published var shouldShowVideoMutedIcon = false
-        @Published var shouldShowPresentingIcon = false
+        @Published var isAudioMuted = false
+        @Published var isVideoMuted = false
+        @Published var isPresenting = false
 
         init(member: Member) {
             self.serviceId = member.serviceId
@@ -875,9 +918,9 @@ private class GroupCallMemberCell: UITableViewCell, ReusableTableViewCell {
 
         func update(using member: Member) {
             owsAssertDebug(serviceId == member.serviceId)
-            self.shouldShowAudioMutedIcon = member.isAudioMuted ?? false
-            self.shouldShowVideoMutedIcon = member.isVideoMuted == true && member.isPresenting != true
-            self.shouldShowPresentingIcon = member.isPresenting ?? false
+            self.isAudioMuted = member.isAudioMuted ?? false
+            self.isVideoMuted = member.isVideoMuted == true && member.isPresenting != true
+            self.isPresenting = member.isPresenting ?? false
         }
     }
 
@@ -1013,9 +1056,9 @@ private class GroupCallMemberCell: UITableViewCell, ReusableTableViewCell {
             self.raisedHandIndicator.isHidden = true
             self.lowerHandButton.isHiddenInStackView = true
             self.leadingWrapper.isHiddenInStackView = false
-            self.subscribe(to: viewModel.$shouldShowAudioMutedIcon, showing: self.audioMutedIndicator)
-            self.subscribe(to: viewModel.$shouldShowVideoMutedIcon, showing: self.videoMutedIndicator)
-            self.subscribe(to: viewModel.$shouldShowPresentingIcon, showing: self.presentingIndicator)
+            self.subscribe(to: viewModel.$isAudioMuted, showing: self.audioMutedIndicator)
+            self.subscribe(to: viewModel.$isVideoMuted, showing: self.videoMutedIndicator)
+            self.subscribe(to: viewModel.$isPresenting, showing: self.presentingIndicator)
         }
 
         self.nameLabel.text = viewModel.name

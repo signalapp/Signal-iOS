@@ -336,6 +336,8 @@ class BlurredAvatarBackgroundView: UIView {
     }
 }
 
+// MARK: -
+
 extension RemoteDeviceState {
     var aci: Aci { Aci(fromUUID: userId) }
     var address: SignalServiceAddress { SignalServiceAddress(aci) }
