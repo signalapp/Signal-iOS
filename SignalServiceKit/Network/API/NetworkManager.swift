@@ -43,9 +43,7 @@ public class NetworkManager: NetworkManagerProtocol {
                     let reachability = notification.object as! Reachability
                     Logger.info("New preferred network: \(reachability.currentReachabilityString()!)")
                     do {
-                        if !SignalProxy.isEnabled {
-                            Self.resetLibsignalNetProxySettings(libsignalNet, appReadiness: appReadiness)
-                        }
+                        Self.resetLibsignalNetProxySettings(libsignalNet, appReadiness: appReadiness)
                         try libsignalNet.networkDidChange()
                     } catch {
                         owsFailDebug("error notify libsignal of network change: \(error)")
@@ -86,6 +84,11 @@ public class NetworkManager: NetworkManagerProtocol {
     }
 
     private static func resetLibsignalNetProxySettings(_ libsignalNet: Net, appReadiness: AppReadiness) {
+        guard !SignalProxy.isEnabled else {
+            // Don't stomp on in-app proxy settings, which are managed by SignalProxy.
+            return
+        }
+
         if let systemProxy = ProxyConfig.fromCFNetwork() {
             Logger.info("System '\(systemProxy.scheme)' proxy detected")
             do {
