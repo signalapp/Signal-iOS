@@ -3718,6 +3718,15 @@
 /* String displayed in group call grid cell when a user is blocked. Embeds {user's name} */
 "GROUP_CALL_BLOCKED_USER_FORMAT" = "%@ is blocked";
 
+/* Context menu action to view a call participant's contact details. */
+"GROUP_CALL_CONTEXT_MENU_CONTACT_DETAILS" = "Contact Details";
+
+/* Context menu action to navigate to the chat with a call participant. */
+"GROUP_CALL_CONTEXT_MENU_GO_TO_CHAT" = "Go to Chat";
+
+/* Context menu action to mute a call participant's audio. */
+"GROUP_CALL_CONTEXT_MENU_MUTE_AUDIO" = "Mute Audio";
+
 /* Button to continue an ongoing group call */
 "GROUP_CALL_CONTINUE_BUTTON" = "Continue Call";
 

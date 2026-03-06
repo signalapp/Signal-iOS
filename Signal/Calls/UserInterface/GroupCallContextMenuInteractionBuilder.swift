@@ -6,6 +6,7 @@
 import LibSignalClient
 import SignalRingRTC
 import SignalServiceKit
+import SignalUI
 import UIKit
 
 enum GroupCallContextMenuInteractionBuilder {
@@ -24,7 +25,10 @@ enum GroupCallContextMenuInteractionBuilder {
 
         if !isAudioMuted {
             contextMenuActions.append(UIAction(
-                title: "Mute Audio",
+                title: OWSLocalizedString(
+                    "GROUP_CALL_CONTEXT_MENU_MUTE_AUDIO",
+                    comment: "Context menu action to mute a call participant's audio.",
+                ),
                 handler: { [weak ringRtcGroupCall] _ in
                     guard let ringRtcGroupCall else { return }
 
@@ -34,6 +38,43 @@ enum GroupCallContextMenuInteractionBuilder {
                 },
             ))
         }
+
+        contextMenuActions.append(UIAction(
+            title: OWSLocalizedString(
+                "GROUP_CALL_CONTEXT_MENU_GO_TO_CHAT",
+                comment: "Context menu action to navigate to the chat with a call participant.",
+            ),
+            handler: { _ in
+                MainActor.assumeIsolated {
+                    AppEnvironment.shared.windowManagerRef.minimizeCallIfNeeded()
+                    SignalApp.shared.presentConversationForAddress(
+                        SignalServiceAddress(contactAci),
+                        animated: true,
+                    )
+                }
+            },
+        ))
+
+        contextMenuActions.append(UIAction(
+            title: OWSLocalizedString(
+                "GROUP_CALL_CONTEXT_MENU_CONTACT_DETAILS",
+                comment: "Context menu action to view a call participant's contact details.",
+            ),
+            handler: { _ in
+                guard let frontmostVC = CurrentAppContext().frontmostViewController() else {
+                    return
+                }
+
+                MainActor.assumeIsolated {
+                    AppEnvironment.shared.windowManagerRef.minimizeCallIfNeeded()
+                    ProfileSheetSheetCoordinator(
+                        address: SignalServiceAddress(contactAci),
+                        groupViewHelper: nil,
+                        spoilerState: SpoilerRenderState(),
+                    ).presentAppropriateSheet(from: frontmostVC)
+                }
+            },
+        ))
 
         return UIContextMenuConfiguration(
             actionProvider: { _ in

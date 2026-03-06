@@ -56,8 +56,7 @@ class GroupCallVideoGrid: UICollectionView, UICollectionViewDelegate, UICollecti
         guard
             indexPaths.count == 1,
             let indexPath = indexPaths.first,
-            let remoteDevice = gridRemoteDeviceStates[safe: indexPath.row],
-            let isAudioMuted = remoteDevice.audioMuted
+            let remoteDevice = gridRemoteDeviceStates[safe: indexPath.row]
         else {
             return nil
         }
@@ -73,7 +72,7 @@ class GroupCallVideoGrid: UICollectionView, UICollectionViewDelegate, UICollecti
             demuxId: remoteDevice.demuxId,
             contactAci: remoteDevice.aci,
             contactName: contactDisplayName.resolvedValue(),
-            isAudioMuted: isAudioMuted,
+            isAudioMuted: remoteDevice.audioMuted == true,
             ringRtcGroupCall: ringRtcCall,
         )
     }

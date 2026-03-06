@@ -730,6 +730,15 @@ extension CallDrawerSheet: UITableViewDelegate {
         case .callLink, .unknownMembers:
             return nil
         case .member(section: _, id: let memberId):
+            guard
+                let viewModel = viewModelsByID[memberId],
+                !viewModel.isLocalUser,
+                let demuxId = viewModel.demuxId,
+                let contactAci = viewModel.serviceId as? Aci
+            else {
+                return nil
+            }
+
             let ringRtcGroupCall: SignalRingRTC.GroupCall
             switch call.mode {
             case .individual:
@@ -738,15 +747,6 @@ extension CallDrawerSheet: UITableViewDelegate {
                 ringRtcGroupCall = groupThreadCall.ringRtcCall
             case .callLink(let callLinkCall):
                 ringRtcGroupCall = callLinkCall.ringRtcCall
-            }
-
-            guard
-                let viewModel = viewModelsByID[memberId],
-                !viewModel.isLocalUser,
-                let demuxId = viewModel.demuxId,
-                let contactAci = viewModel.serviceId as? Aci
-            else {
-                return nil
             }
 
             return GroupCallContextMenuInteractionBuilder.build(
