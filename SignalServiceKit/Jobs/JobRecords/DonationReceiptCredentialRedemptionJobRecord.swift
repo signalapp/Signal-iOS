@@ -5,8 +5,8 @@
 
 import LibSignalClient
 
-public final class DonationReceiptCredentialRedemptionJobRecord: JobRecord, FactoryInitializableFromRecordType {
-    override class var jobRecordType: JobRecordType { .donationReceiptCredentialRedemption }
+public final class DonationReceiptCredentialRedemptionJobRecord: JobRecord {
+    override public class var jobRecordType: JobRecordType { .donationReceiptCredentialRedemption }
 
     public let paymentProcessor: String
     public let paymentMethod: String?
@@ -121,7 +121,7 @@ public final class DonationReceiptCredentialRedemptionJobRecord: JobRecord, Fact
     }
 #endif
 
-    required init(forRecordTypeFactoryInitializationFrom decoder: Decoder) throws {
+    required init(inheritableDecoder decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
         paymentProcessor = try container.decode(String.self, forKey: .paymentProcessor)
@@ -152,14 +152,12 @@ public final class DonationReceiptCredentialRedemptionJobRecord: JobRecord, Fact
         }
         currencyCode = try container.decodeIfPresent(String.self, forKey: .currencyCode)
 
-        try super.init(baseClassDuringFactoryInitializationFrom: container.superDecoder())
+        try super.init(inheritableDecoder: decoder)
     }
 
     override public func encode(to encoder: Encoder) throws {
+        try super.encode(to: encoder)
         var container = encoder.container(keyedBy: CodingKeys.self)
-
-        try super.encode(to: container.superEncoder())
-
         try container.encode(paymentProcessor, forKey: .paymentProcessor)
         try container.encodeIfPresent(paymentMethod, forKey: .paymentMethod)
         try container.encode(receiptCredentialRequestContext, forKey: .receiptCredentialRequestContext)

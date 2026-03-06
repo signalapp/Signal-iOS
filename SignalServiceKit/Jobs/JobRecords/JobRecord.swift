@@ -6,59 +6,6 @@
 import Foundation
 import GRDB
 
-/// ``JobRecord`` was migrated from a previous model that used SDS codegen, and
-/// additionally used inheritance. Consequently, it uses factory initialization
-/// via ``NeedsFactoryInitializationFromRecordType``. See that type for
-/// more details.
-extension JobRecord: NeedsFactoryInitializationFromRecordType {
-    /// Identifies a specific ``JobRecord`` subclass.
-    ///
-    /// The raw value of this type represents the value to use for the
-    /// `recordType` database column required for SDS types.
-    ///
-    /// Old job records, migrated from the SDS codegen, will have raw values
-    /// derived from ``SDSRecordType``. Job records introduced after migration
-    /// of ``JobRecord`` to ``SDSCodableModel`` must provide their own unique
-    /// values here for factory initialization.
-    enum JobRecordType: UInt, CaseIterable {
-
-        // MARK: Values originally from SDSRecordType
-
-        case incomingContactSync = 61
-        case localUserLeaveGroup = 74
-        case messageSender = 35
-        case donationReceiptCredentialRedemption = 71
-        case sendGiftBadge = 73
-        case sessionReset = 52
-
-        // MARK: Created after migration to SDSCodableModel
-
-        case callRecordDeleteAll = 100
-        case bulkDeleteInteractionJobRecord = 101
-    }
-
-    static var recordTypeCodingKey: JobRecordColumns {
-        .recordType
-    }
-
-    static func classToInitialize(forRecordType recordType: UInt) -> (FactoryInitializableFromRecordType.Type)? {
-        guard let jobRecordType = JobRecordType(rawValue: recordType) else {
-            return nil
-        }
-
-        switch jobRecordType {
-        case .incomingContactSync: return IncomingContactSyncJobRecord.self
-        case .localUserLeaveGroup: return LocalUserLeaveGroupJobRecord.self
-        case .messageSender: return MessageSenderJobRecord.self
-        case .donationReceiptCredentialRedemption: return DonationReceiptCredentialRedemptionJobRecord.self
-        case .sendGiftBadge: return SendGiftBadgeJobRecord.self
-        case .sessionReset: return SessionResetJobRecord.self
-        case .callRecordDeleteAll: return CallRecordDeleteAllJobRecord.self
-        case .bulkDeleteInteractionJobRecord: return BulkDeleteInteractionJobRecord.self
-        }
-    }
-}
-
 extension JobRecord.JobRecordType {
     var jobRecordLabel: String {
         // These values are persisted and must not change, even if they're misspelled.
@@ -83,7 +30,7 @@ extension JobRecord.JobRecordType {
     }
 }
 
-public class JobRecord: SDSCodableModel {
+public class JobRecord: SDSCodableModel, InheritableRecord {
     public enum Status: Int {
         case unknown = 0
         case ready
@@ -94,8 +41,13 @@ public class JobRecord: SDSCodableModel {
 
     public static let databaseTableName: String = "model_SSKJobRecord"
 
-    class var jobRecordType: JobRecordType { owsFail("Must be provided by subclasses!") }
-    public static var recordType: UInt { jobRecordType.rawValue }
+    public class var jobRecordType: JobRecordType {
+        owsFail("Must be provided by subclasses!")
+    }
+
+    public static var recordType: UInt {
+        return jobRecordType.rawValue
+    }
 
     public var id: RowId?
     public let uniqueId: String
@@ -129,7 +81,7 @@ public class JobRecord: SDSCodableModel {
 
     public typealias CodingKeys = JobRecordColumns
 
-    init(baseClassDuringFactoryInitializationFrom decoder: Decoder) throws {
+    required init(inheritableDecoder decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
         id = try container.decodeIfPresent(SDSCodableModel.RowId.self, forKey: .id)
@@ -152,6 +104,42 @@ public class JobRecord: SDSCodableModel {
         try container.encode(failureCount, forKey: .failureCount)
         try container.encode(status.rawValue, forKey: .status)
         try container.encodeIfPresent(exclusiveProcessIdentifier, forKey: .exclusiveProcessIdentifier)
+    }
+
+    /// Identifies a specific ``JobRecord`` subclass.
+    ///
+    /// The raw value of this type represents the value to use for the
+    /// `recordType` database column required for SDS types.
+    ///
+    /// Old job records, migrated from the SDS codegen, will have raw values
+    /// derived from ``SDSRecordType``. Job records introduced after migration
+    /// of ``JobRecord`` to ``SDSCodableModel`` must provide their own unique
+    /// values here for factory initialization.
+    public enum JobRecordType: UInt, CaseIterable {
+        case incomingContactSync = 61
+        case localUserLeaveGroup = 74
+        case messageSender = 35
+        case donationReceiptCredentialRedemption = 71
+        case sendGiftBadge = 73
+        case sessionReset = 52
+        case callRecordDeleteAll = 100
+        case bulkDeleteInteractionJobRecord = 101
+    }
+
+    static func concreteType(forRecordType recordType: UInt) -> (any InheritableRecord.Type)? {
+        guard let jobRecordType = JobRecordType(rawValue: recordType) else {
+            return nil
+        }
+        switch jobRecordType {
+        case .incomingContactSync: return IncomingContactSyncJobRecord.self
+        case .localUserLeaveGroup: return LocalUserLeaveGroupJobRecord.self
+        case .messageSender: return MessageSenderJobRecord.self
+        case .donationReceiptCredentialRedemption: return DonationReceiptCredentialRedemptionJobRecord.self
+        case .sendGiftBadge: return SendGiftBadgeJobRecord.self
+        case .sessionReset: return SessionResetJobRecord.self
+        case .callRecordDeleteAll: return CallRecordDeleteAllJobRecord.self
+        case .bulkDeleteInteractionJobRecord: return BulkDeleteInteractionJobRecord.self
+        }
     }
 }
 

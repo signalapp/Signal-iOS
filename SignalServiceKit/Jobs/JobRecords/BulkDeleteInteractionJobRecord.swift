@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 //
 
-final class BulkDeleteInteractionJobRecord: JobRecord, FactoryInitializableFromRecordType {
+final class BulkDeleteInteractionJobRecord: JobRecord {
     override class var jobRecordType: JobRecord.JobRecordType { .bulkDeleteInteractionJobRecord }
 
     /// The row ID of the most-recent addressable message before which we want
@@ -38,21 +38,19 @@ final class BulkDeleteInteractionJobRecord: JobRecord, FactoryInitializableFromR
         )
     }
 
-    required init(forRecordTypeFactoryInitializationFrom decoder: any Decoder) throws {
+    required init(inheritableDecoder decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
         anchorMessageRowId = try container.decode(Int64.self, forKey: .BDIJR_anchorMessageRowId)
         fullThreadDeletionAnchorMessageRowId = try container.decodeIfPresent(Int64.self, forKey: .BDIJR_fullThreadDeletionAnchorMessageRowId)
         threadUniqueId = try container.decode(String.self, forKey: .BDIJR_threadUniqueId)
 
-        try super.init(baseClassDuringFactoryInitializationFrom: container.superDecoder())
+        try super.init(inheritableDecoder: decoder)
     }
 
     override func encode(to encoder: any Encoder) throws {
+        try super.encode(to: encoder)
         var container = encoder.container(keyedBy: CodingKeys.self)
-
-        try super.encode(to: container.superEncoder())
-
         try container.encode(anchorMessageRowId, forKey: .BDIJR_anchorMessageRowId)
         try container.encodeIfPresent(fullThreadDeletionAnchorMessageRowId, forKey: .BDIJR_fullThreadDeletionAnchorMessageRowId)
         try container.encode(threadUniqueId, forKey: .BDIJR_threadUniqueId)

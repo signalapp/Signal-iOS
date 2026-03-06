@@ -6,8 +6,8 @@
 import Foundation
 import GRDB
 
-public final class MessageSenderJobRecord: JobRecord, FactoryInitializableFromRecordType {
-    override class var jobRecordType: JobRecordType { .messageSender }
+public final class MessageSenderJobRecord: JobRecord {
+    override public class var jobRecordType: JobRecordType { .messageSender }
 
     public let threadId: String?
     public let isHighPriority: Bool
@@ -172,7 +172,7 @@ public final class MessageSenderJobRecord: JobRecord, FactoryInitializableFromRe
         case transientMessage = "invisibleMessage"
     }
 
-    required init(forRecordTypeFactoryInitializationFrom decoder: Decoder) throws {
+    required init(inheritableDecoder decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
         persistedMessageId = try container.decodeIfPresent(String.self, forKey: .persistedMessageId)
@@ -194,14 +194,12 @@ public final class MessageSenderJobRecord: JobRecord, FactoryInitializableFromRe
         removeMessageAfterSending = try container.decode(Bool.self, forKey: .removeMessageAfterSending)
         isHighPriority = try container.decode(Bool.self, forKey: .isHighPriority)
 
-        try super.init(baseClassDuringFactoryInitializationFrom: container.superDecoder())
+        try super.init(inheritableDecoder: decoder)
     }
 
     override public func encode(to encoder: Encoder) throws {
+        try super.encode(to: encoder)
         var container = encoder.container(keyedBy: CodingKeys.self)
-
-        try super.encode(to: container.superEncoder())
-
         try container.encodeIfPresent(persistedMessageId, forKey: .persistedMessageId)
         try container.encodeIfPresent(threadId, forKey: .threadId)
         try container.encode(useMediaQueue, forKey: .useMediaQueue)

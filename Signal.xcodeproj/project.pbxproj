@@ -3312,8 +3312,8 @@
 		D9F6553E29D6547F002A330A /* SDSCodableModelDatabaseInterface+Fetch.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F6553829D6547F002A330A /* SDSCodableModelDatabaseInterface+Fetch.swift */; };
 		D9F6554029D65F11002A330A /* SDSCodableModelDatabaseInterface+Enumerate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F6553F29D65F11002A330A /* SDSCodableModelDatabaseInterface+Enumerate.swift */; };
 		D9F6554229D67708002A330A /* SDSCodableModel+SDSSerialization.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F6554129D67708002A330A /* SDSCodableModel+SDSSerialization.swift */; };
-		D9F6554429D798CC002A330A /* FactoryInitialization.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F6554329D798CC002A330A /* FactoryInitialization.swift */; };
-		D9F6554829DA4277002A330A /* FactoryInitializationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F6554629DA4233002A330A /* FactoryInitializationTests.swift */; };
+		D9F6554429D798CC002A330A /* InheritableRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F6554329D798CC002A330A /* InheritableRecord.swift */; };
+		D9F6554829DA4277002A330A /* InheritableRecordTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F6554629DA4233002A330A /* InheritableRecordTest.swift */; };
 		D9F96EDC2D824E9000466C6A /* AvatarDefaultColorStorageServiceMigrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F96ED92D8249EE00466C6A /* AvatarDefaultColorStorageServiceMigrator.swift */; };
 		D9F96EDE2D83BEFF00466C6A /* Database+Execute.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F96EDD2D83BEFB00466C6A /* Database+Execute.swift */; };
 		D9F9A6392BFFC84300EF13EC /* BulkDeleteInteractionJobRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9F9A6382BFFC84300EF13EC /* BulkDeleteInteractionJobRecord.swift */; };
@@ -7601,8 +7601,8 @@
 		D9F6553829D6547F002A330A /* SDSCodableModelDatabaseInterface+Fetch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SDSCodableModelDatabaseInterface+Fetch.swift"; sourceTree = "<group>"; };
 		D9F6553F29D65F11002A330A /* SDSCodableModelDatabaseInterface+Enumerate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SDSCodableModelDatabaseInterface+Enumerate.swift"; sourceTree = "<group>"; };
 		D9F6554129D67708002A330A /* SDSCodableModel+SDSSerialization.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SDSCodableModel+SDSSerialization.swift"; sourceTree = "<group>"; };
-		D9F6554329D798CC002A330A /* FactoryInitialization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FactoryInitialization.swift; sourceTree = "<group>"; };
-		D9F6554629DA4233002A330A /* FactoryInitializationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FactoryInitializationTests.swift; sourceTree = "<group>"; };
+		D9F6554329D798CC002A330A /* InheritableRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InheritableRecord.swift; sourceTree = "<group>"; };
+		D9F6554629DA4233002A330A /* InheritableRecordTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InheritableRecordTest.swift; sourceTree = "<group>"; };
 		D9F96ED92D8249EE00466C6A /* AvatarDefaultColorStorageServiceMigrator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarDefaultColorStorageServiceMigrator.swift; sourceTree = "<group>"; };
 		D9F96EDD2D83BEFB00466C6A /* Database+Execute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Database+Execute.swift"; sourceTree = "<group>"; };
 		D9F9A6382BFFC84300EF13EC /* BulkDeleteInteractionJobRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BulkDeleteInteractionJobRecord.swift; sourceTree = "<group>"; };
@@ -14102,7 +14102,7 @@
 		D9F6553029D6530B002A330A /* SDSCodableModel */ = {
 			isa = PBXGroup;
 			children = (
-				D9F6554329D798CC002A330A /* FactoryInitialization.swift */,
+				D9F6554329D798CC002A330A /* InheritableRecord.swift */,
 				D9F6553129D6531D002A330A /* SDSCodableModel+ColumnName.swift */,
 				D9F6554129D67708002A330A /* SDSCodableModel+SDSSerialization.swift */,
 				F9C5CA4E289453B100548EEE /* SDSCodableModel.swift */,
@@ -14118,7 +14118,7 @@
 		D9F6554529DA4216002A330A /* SDSCodableModel */ = {
 			isa = PBXGroup;
 			children = (
-				D9F6554629DA4233002A330A /* FactoryInitializationTests.swift */,
+				D9F6554629DA4233002A330A /* InheritableRecordTest.swift */,
 			);
 			path = SDSCodableModel;
 			sourceTree = "<group>";
@@ -19247,7 +19247,6 @@
 				D98BC5332EE387A30052A81F /* ExpirationJob.swift in Sources */,
 				C1FB9B752B16498C00D51A3B /* ExternalPendingDonationStore.swift in Sources */,
 				F9C5CE57289453B400548EEE /* Factories.swift in Sources */,
-				D9F6554429D798CC002A330A /* FactoryInitialization.swift in Sources */,
 				F9C5CC1D289453B300548EEE /* FailedMessagesJob.swift in Sources */,
 				7255A4C82B98DF3E00E95368 /* FailedStorySendDisplayController.swift in Sources */,
 				F9C5CE60289453B400548EEE /* FakeContactsManager.swift in Sources */,
@@ -19330,6 +19329,7 @@
 				6640DD602ACDBEC500CE9A8C /* IncomingPniChangeNumberProcessor.swift in Sources */,
 				F9C5CC69289453B300548EEE /* IncompleteCallsJob.swift in Sources */,
 				D979CC262AD3933B006AAC49 /* IndividualCallRecordManager.swift in Sources */,
+				D9F6554429D798CC002A330A /* InheritableRecord.swift in Sources */,
 				D9B95A9B29E8923B00D7CB95 /* InMemoryDB.swift in Sources */,
 				C1DD78AB2BB1CEF80020F064 /* InputStreamable.swift in Sources */,
 				50FA1B822F2D2935000DDCF9 /* InstalledStickerRecord.swift in Sources */,
@@ -20143,7 +20143,6 @@
 				D9106E022AC20066007ABFE6 /* EmptyForCodableTest.swift in Sources */,
 				502B1B55297B28AF00FDB3AE /* ErrorTest.swift in Sources */,
 				D98BC5362EE390C70052A81F /* ExpirationJobTest.swift in Sources */,
-				D9F6554829DA4277002A330A /* FactoryInitializationTests.swift in Sources */,
 				F908179628EF107800D31AD5 /* GRDBDatabaseStorageAdapterTest.swift in Sources */,
 				F97217FE28DCBC5100113D9F /* GRDBSchemaMigratorTest.swift in Sources */,
 				D979CC5E2AD618EA006AAC49 /* GroupCallRecordManagerTest.swift in Sources */,
@@ -20161,6 +20160,7 @@
 				D979CC4F2AD4DECB006AAC49 /* IncomingCallEventSyncMessageManagerTest.swift in Sources */,
 				D958C67D2BA0F3B2002F6888 /* IncomingCallLogEventSyncMessageManagerTest.swift in Sources */,
 				D979CC4C2AD4DECB006AAC49 /* IndividualCallRecordManagerTest.swift in Sources */,
+				D9F6554829DA4277002A330A /* InheritableRecordTest.swift in Sources */,
 				5015B8D82E958783002A156F /* Int+SSKTest.swift in Sources */,
 				F942624D289B1B5500460798 /* InteractionFinderTest.swift in Sources */,
 				5000CA312B1F97EE00BB8EFF /* JobQueueRunnerTest.swift in Sources */,

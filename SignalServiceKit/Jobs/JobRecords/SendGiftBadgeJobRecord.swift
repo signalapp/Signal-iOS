@@ -6,8 +6,8 @@
 import Foundation
 import GRDB
 
-public final class SendGiftBadgeJobRecord: JobRecord, FactoryInitializableFromRecordType {
-    override class var jobRecordType: JobRecordType { .sendGiftBadge }
+public final class SendGiftBadgeJobRecord: JobRecord {
+    override public class var jobRecordType: JobRecordType { .sendGiftBadge }
 
     public let paymentProcessor: String
     public let receiptCredentialRequestContext: Data
@@ -66,7 +66,7 @@ public final class SendGiftBadgeJobRecord: JobRecord, FactoryInitializableFromRe
         )
     }
 
-    required init(forRecordTypeFactoryInitializationFrom decoder: Decoder) throws {
+    required init(inheritableDecoder decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
         paymentProcessor = try container.decode(String.self, forKey: .paymentProcessor)
@@ -89,13 +89,12 @@ public final class SendGiftBadgeJobRecord: JobRecord, FactoryInitializableFromRe
         threadId = try container.decode(String.self, forKey: .threadId)
         messageText = try container.decode(String.self, forKey: .messageText)
 
-        try super.init(baseClassDuringFactoryInitializationFrom: container.superDecoder())
+        try super.init(inheritableDecoder: decoder)
     }
 
     override public func encode(to encoder: Encoder) throws {
+        try super.encode(to: encoder)
         var container = encoder.container(keyedBy: CodingKeys.self)
-
-        try super.encode(to: container.superEncoder())
 
         try container.encode(paymentProcessor, forKey: .paymentProcessor)
         try container.encode(receiptCredentialRequestContext, forKey: .receiptCredentialRequestContext)

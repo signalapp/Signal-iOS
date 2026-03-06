@@ -6,8 +6,8 @@
 import Foundation
 import GRDB
 
-public final class IncomingContactSyncJobRecord: JobRecord, FactoryInitializableFromRecordType {
-    override class var jobRecordType: JobRecordType { .incomingContactSync }
+public final class IncomingContactSyncJobRecord: JobRecord {
+    override public class var jobRecordType: JobRecordType { .incomingContactSync }
 
     private let cdnNumber: UInt32?
     private let cdnKey: String?
@@ -102,7 +102,7 @@ public final class IncomingContactSyncJobRecord: JobRecord, FactoryInitializable
     }
 #endif
 
-    required init(forRecordTypeFactoryInitializationFrom decoder: Decoder) throws {
+    required init(inheritableDecoder decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
         cdnNumber = try container.decodeIfPresent(UInt32.self, forKey: .ICSJR_cdnNumber)
@@ -113,20 +113,17 @@ public final class IncomingContactSyncJobRecord: JobRecord, FactoryInitializable
 
         isCompleteContactSync = try container.decode(Bool.self, forKey: .isCompleteContactSync)
 
-        try super.init(baseClassDuringFactoryInitializationFrom: container.superDecoder())
+        try super.init(inheritableDecoder: decoder)
     }
 
     override public func encode(to encoder: Encoder) throws {
+        try super.encode(to: encoder)
         var container = encoder.container(keyedBy: CodingKeys.self)
-
-        try super.encode(to: container.superEncoder())
-
         try container.encodeIfPresent(cdnNumber, forKey: .ICSJR_cdnNumber)
         try container.encodeIfPresent(cdnKey, forKey: .ICSJR_cdnKey)
         try container.encodeIfPresent(encryptionKey, forKey: .ICSJR_encryptionKey)
         try container.encodeIfPresent(digest, forKey: .ICSJR_digest)
         try container.encodeIfPresent(plaintextLength, forKey: .ICSJR_plaintextLength)
-
         try container.encode(isCompleteContactSync, forKey: .isCompleteContactSync)
     }
 }

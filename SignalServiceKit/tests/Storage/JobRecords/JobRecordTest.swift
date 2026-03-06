@@ -136,7 +136,7 @@ extension IncomingContactSyncJobRecord: ValidatableModel {
                 failureCount: 12,
                 status: .ready,
             ),
-            Data(#"{"super":{"failureCount":12,"label":"IncomingContactSync","status":1,"uniqueId":"FF3753B3-B1FD-4B4A-96C3-2398EB120136","recordType":61},"isCompleteContactSync":true,"attachmentId":"darth revan"}"#.utf8),
+            Data(#"{"failureCount":12,"label":"IncomingContactSync","status":1,"uniqueId":"FF3753B3-B1FD-4B4A-96C3-2398EB120136","recordType":61,"isCompleteContactSync":true,"attachmentId":"darth revan"}"#.utf8),
         ),
         (
             IncomingContactSyncJobRecord(
@@ -149,7 +149,7 @@ extension IncomingContactSyncJobRecord: ValidatableModel {
                 failureCount: 6,
                 status: .permanentlyFailed,
             ),
-            Data(#"{"isCompleteContactSync":false,"super":{"uniqueId":"B1341459-3BA3-4AA7-85FF-DECF109A74EA","failureCount":6,"recordType":61,"status":3,"label":"IncomingContactSync"}}"#.utf8),
+            Data(#"{"isCompleteContactSync":false,"uniqueId":"B1341459-3BA3-4AA7-85FF-DECF109A74EA","failureCount":6,"recordType":61,"status":3,"label":"IncomingContactSync"}"#.utf8),
         ),
         (
             IncomingContactSyncJobRecord(
@@ -160,7 +160,7 @@ extension IncomingContactSyncJobRecord: ValidatableModel {
                 plaintextLength: 55,
                 isCompleteContactSync: true,
             ),
-            Data(#"{"ICSJR_digest":"291bnQiOjYsInJlY29yZFR5cGUiO","ICSJR_plaintextLength":55,"ICSJR_cdnKey":"hello","super":{"status":1,"failureCount":0,"label":"IncomingContactSync","uniqueId":"894EAC5E-918B-434C-A7CE-C24BB8F47932","recordType":61},"ICSJR_cdnNumber":3,"ICSJR_encryptionKey":"mMiOmZhbHNlLCJzdXBlciI6eyJ1b","isCompleteContactSync":true}"#.utf8),
+            Data(#"{"ICSJR_digest":"291bnQiOjYsInJlY29yZFR5cGUiO","ICSJR_plaintextLength":55,"ICSJR_cdnKey":"hello","status":1,"failureCount":0,"label":"IncomingContactSync","uniqueId":"894EAC5E-918B-434C-A7CE-C24BB8F47932","recordType":61,"ICSJR_cdnNumber":3,"ICSJR_encryptionKey":"mMiOmZhbHNlLCJzdXBlciI6eyJ1b","isCompleteContactSync":true}"#.utf8),
         ),
     ]
 
@@ -209,7 +209,7 @@ extension LocalUserLeaveGroupJobRecord: ValidatableModel {
                 failureCount: 40000,
                 status: .obsolete,
             ),
-            Data(#"{"replacementAdminUuid":"00000000-0000-4000-8000-000000000AAA","super":{"failureCount":40000,"label":"LocalUserLeaveGroup","status":4,"uniqueId":"5A4686EC-B396-46BA-8B8C-7FB0F14DB4B1","recordType":74},"threadId":"the wheels on the bus","waitForMessageProcessing":true}"#.utf8),
+            Data(#"{"replacementAdminUuid":"00000000-0000-4000-8000-000000000AAA","failureCount":40000,"label":"LocalUserLeaveGroup","status":4,"uniqueId":"5A4686EC-B396-46BA-8B8C-7FB0F14DB4B1","recordType":74,"threadId":"the wheels on the bus","waitForMessageProcessing":true}"#.utf8),
         ),
         (
             LocalUserLeaveGroupJobRecord(
@@ -219,7 +219,7 @@ extension LocalUserLeaveGroupJobRecord: ValidatableModel {
                 failureCount: 40000,
                 status: .obsolete,
             ),
-            Data(#"{"super":{"failureCount":40000,"label":"LocalUserLeaveGroup","status":4,"uniqueId":"2733BF8F-0C66-470B-846D-D23FCE1B8AB9","recordType":74},"threadId":"the wheels on the bus","waitForMessageProcessing":true}"#.utf8),
+            Data(#"{"failureCount":40000,"label":"LocalUserLeaveGroup","status":4,"uniqueId":"2733BF8F-0C66-470B-846D-D23FCE1B8AB9","recordType":74,"threadId":"the wheels on the bus","waitForMessageProcessing":true}"#.utf8),
         ),
     ]
 
@@ -245,7 +245,7 @@ extension MessageSenderJobRecord: ValidatableModel {
                 failureCount: UInt(Int.max),
                 status: .unknown,
             ),
-            Data(#"{"messageId":"1668418F-4913-4852-8B01-4E5EF8938B33","isMediaMessage":true,"super":{"failureCount":9223372036854775807,"status":0,"label":"MessageSender","uniqueId":"7695E23B-44CB-4A5A-9012-915CB3E331C1","recordType":35},"removeMessageAfterSending":false,"isHighPriority":true,"threadId":"6A860318-BC21-46BC-B1B2-695ED5D6D8A2"}"#.utf8),
+            Data(#"{"messageId":"1668418F-4913-4852-8B01-4E5EF8938B33","isMediaMessage":true,"failureCount":9223372036854775807,"status":0,"label":"MessageSender","uniqueId":"7695E23B-44CB-4A5A-9012-915CB3E331C1","recordType":35,"removeMessageAfterSending":false,"isHighPriority":true,"threadId":"6A860318-BC21-46BC-B1B2-695ED5D6D8A2"}"#.utf8),
         ),
         (
             MessageSenderJobRecord(
@@ -256,7 +256,7 @@ extension MessageSenderJobRecord: ValidatableModel {
                 failureCount: UInt(Int.max),
                 status: .unknown,
             ),
-            Data(#"{"removeMessageAfterSending":false,"super":{"failureCount":9223372036854775807,"label":"MessageSender","status":0,"uniqueId":"36064A7A-5EAE-4426-84C1-893EF5864279","recordType":35},"isHighPriority":true,"isMediaMessage":true}"#.utf8),
+            Data(#"{"removeMessageAfterSending":false,"failureCount":9223372036854775807,"label":"MessageSender","status":0,"uniqueId":"36064A7A-5EAE-4426-84C1-893EF5864279","recordType":35,"isHighPriority":true,"isMediaMessage":true}"#.utf8),
         ),
         (
             {
@@ -271,7 +271,7 @@ extension MessageSenderJobRecord: ValidatableModel {
                 jobRecord.exclusiveProcessIdentifier = "abc123"
                 return jobRecord
             }(),
-            Data(#"{"messageId":"1668418F-4913-4852-8B01-4E5EF8938B33","isMediaMessage":true,"super":{"failureCount":9223372036854775807,"status":0,"label":"MessageSender","uniqueId":"7695E23B-44CB-4A5A-9012-915CB3E331C1","exclusiveProcessIdentifier": "abc123","recordType":35},"removeMessageAfterSending":false,"isHighPriority":true,"threadId":"6A860318-BC21-46BC-B1B2-695ED5D6D8A2"}"#.utf8),
+            Data(#"{"messageId":"1668418F-4913-4852-8B01-4E5EF8938B33","isMediaMessage":true,"failureCount":9223372036854775807,"status":0,"label":"MessageSender","uniqueId":"7695E23B-44CB-4A5A-9012-915CB3E331C1","exclusiveProcessIdentifier": "abc123","recordType":35,"removeMessageAfterSending":false,"isHighPriority":true,"threadId":"6A860318-BC21-46BC-B1B2-695ED5D6D8A2"}"#.utf8),
         ),
     ]
 
@@ -339,7 +339,7 @@ extension DonationReceiptCredentialRedemptionJobRecord: ValidatableModel {
                 failureCount: 0,
                 status: .ready,
             ),
-            Data(#"{"targetSubscriptionLevel":12,"currencyCode":"EUR","shouldSuppressPaymentAlreadyRedeemed":true,"priorSubscriptionLevel":4,"paymentMethod":"SEPA_DEBIT","amount":"YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGjCwwaVSRudWxs1w0ODxAREhMUFRYXGBcWViRjbGFzc1tOUy5tYW50aXNzYVtOUy5uZWdhdGl2ZVtOUy5leHBvbmVudF5OUy5tYW50aXNzYS5ib1lOUy5sZW5ndGhaTlMuY29tcGFjdIACTxAQAAAAAAAAAAAAAAAAAAAAAAgQABABCNIbHB0eWiRjbGFzc25hbWVYJGNsYXNzZXNfEBpOU0RlY2ltYWxOdW1iZXJQbGFjZWhvbGRlcqUfICEiI18QGk5TRGVjaW1hbE51bWJlclBsYWNlaG9sZGVyXxAPTlNEZWNpbWFsTnVtYmVyWE5TTnVtYmVyV05TVmFsdWVYTlNPYmplY3QACAARABoAJAApADIANwBJAEwAUQBTAFcAXQBsAHMAfwCLAJcApgCwALsAvQDQANEA0wDVANYA2wDmAO8BDAESAS8BQQFKAVIAAAAAAAACAQAAAAAAAAAkAAAAAAAAAAAAAAAAAAABWw==","subscriberID":"feed","receiptCredentailRequest":"dead","isNewSubscription":false,"super":{"failureCount":0,"label":"SubscriptionReceiptCredentailRedemption","status":1,"uniqueId":"B6A06E3F-51F4-46C5-A3B9-58B1FC54E692","recordType":71},"receiptCredentailRequestContext":"beef","receiptCredentialPresentation":"bade","boostPaymentIntentID":"","paymentProcessor":"STRIPE","isBoost":false}"#.utf8),
+            Data(#"{"targetSubscriptionLevel":12,"currencyCode":"EUR","shouldSuppressPaymentAlreadyRedeemed":true,"priorSubscriptionLevel":4,"paymentMethod":"SEPA_DEBIT","amount":"YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGjCwwaVSRudWxs1w0ODxAREhMUFRYXGBcWViRjbGFzc1tOUy5tYW50aXNzYVtOUy5uZWdhdGl2ZVtOUy5leHBvbmVudF5OUy5tYW50aXNzYS5ib1lOUy5sZW5ndGhaTlMuY29tcGFjdIACTxAQAAAAAAAAAAAAAAAAAAAAAAgQABABCNIbHB0eWiRjbGFzc25hbWVYJGNsYXNzZXNfEBpOU0RlY2ltYWxOdW1iZXJQbGFjZWhvbGRlcqUfICEiI18QGk5TRGVjaW1hbE51bWJlclBsYWNlaG9sZGVyXxAPTlNEZWNpbWFsTnVtYmVyWE5TTnVtYmVyV05TVmFsdWVYTlNPYmplY3QACAARABoAJAApADIANwBJAEwAUQBTAFcAXQBsAHMAfwCLAJcApgCwALsAvQDQANEA0wDVANYA2wDmAO8BDAESAS8BQQFKAVIAAAAAAAACAQAAAAAAAAAkAAAAAAAAAAAAAAAAAAABWw==","subscriberID":"feed","receiptCredentailRequest":"dead","isNewSubscription":false,"failureCount":0,"label":"SubscriptionReceiptCredentailRedemption","status":1,"uniqueId":"B6A06E3F-51F4-46C5-A3B9-58B1FC54E692","recordType":71,"receiptCredentailRequestContext":"beef","receiptCredentialPresentation":"bade","boostPaymentIntentID":"","paymentProcessor":"STRIPE","isBoost":false}"#.utf8),
         ),
         (
             DonationReceiptCredentialRedemptionJobRecord(
@@ -360,7 +360,7 @@ extension DonationReceiptCredentialRedemptionJobRecord: ValidatableModel {
                 failureCount: 0,
                 status: .ready,
             ),
-            Data(#"{"targetSubscriptionLevel":12,"currencyCode":"EUR","shouldSuppressPaymentAlreadyRedeemed":false,"priorSubscriptionLevel":4,"paymentMethod":"SEPA_DEBIT","amount":"YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGjCwwaVSRudWxs1w0ODxAREhMUFRYXGBcWViRjbGFzc1tOUy5tYW50aXNzYVtOUy5uZWdhdGl2ZVtOUy5leHBvbmVudF5OUy5tYW50aXNzYS5ib1lOUy5sZW5ndGhaTlMuY29tcGFjdIACTxAQAAAAAAAAAAAAAAAAAAAAAAgQABABCNIbHB0eWiRjbGFzc25hbWVYJGNsYXNzZXNfEBpOU0RlY2ltYWxOdW1iZXJQbGFjZWhvbGRlcqUfICEiI18QGk5TRGVjaW1hbE51bWJlclBsYWNlaG9sZGVyXxAPTlNEZWNpbWFsTnVtYmVyWE5TTnVtYmVyV05TVmFsdWVYTlNPYmplY3QACAARABoAJAApADIANwBJAEwAUQBTAFcAXQBsAHMAfwCLAJcApgCwALsAvQDQANEA0wDVANYA2wDmAO8BDAESAS8BQQFKAVIAAAAAAAACAQAAAAAAAAAkAAAAAAAAAAAAAAAAAAABWw==","subscriberID":"feed","receiptCredentailRequest":"dead","isNewSubscription":false,"super":{"failureCount":0,"label":"SubscriptionReceiptCredentailRedemption","status":1,"uniqueId":"530EA5D7-3F3C-4741-BB7F-52363CE93343","recordType":71},"receiptCredentailRequestContext":"beef","receiptCredentialPresentation":"bade","boostPaymentIntentID":"","paymentProcessor":"STRIPE","isBoost":false}"#.utf8),
+            Data(#"{"targetSubscriptionLevel":12,"currencyCode":"EUR","shouldSuppressPaymentAlreadyRedeemed":false,"priorSubscriptionLevel":4,"paymentMethod":"SEPA_DEBIT","amount":"YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGjCwwaVSRudWxs1w0ODxAREhMUFRYXGBcWViRjbGFzc1tOUy5tYW50aXNzYVtOUy5uZWdhdGl2ZVtOUy5leHBvbmVudF5OUy5tYW50aXNzYS5ib1lOUy5sZW5ndGhaTlMuY29tcGFjdIACTxAQAAAAAAAAAAAAAAAAAAAAAAgQABABCNIbHB0eWiRjbGFzc25hbWVYJGNsYXNzZXNfEBpOU0RlY2ltYWxOdW1iZXJQbGFjZWhvbGRlcqUfICEiI18QGk5TRGVjaW1hbE51bWJlclBsYWNlaG9sZGVyXxAPTlNEZWNpbWFsTnVtYmVyWE5TTnVtYmVyV05TVmFsdWVYTlNPYmplY3QACAARABoAJAApADIANwBJAEwAUQBTAFcAXQBsAHMAfwCLAJcApgCwALsAvQDQANEA0wDVANYA2wDmAO8BDAESAS8BQQFKAVIAAAAAAAACAQAAAAAAAAAkAAAAAAAAAAAAAAAAAAABWw==","subscriberID":"feed","receiptCredentailRequest":"dead","isNewSubscription":false,"failureCount":0,"label":"SubscriptionReceiptCredentailRedemption","status":1,"uniqueId":"530EA5D7-3F3C-4741-BB7F-52363CE93343","recordType":71,"receiptCredentailRequestContext":"beef","receiptCredentialPresentation":"bade","boostPaymentIntentID":"","paymentProcessor":"STRIPE","isBoost":false}"#.utf8),
         ),
         (
             DonationReceiptCredentialRedemptionJobRecord(
@@ -381,7 +381,7 @@ extension DonationReceiptCredentialRedemptionJobRecord: ValidatableModel {
                 failureCount: 0,
                 status: .permanentlyFailed,
             ),
-            Data(#"{"targetSubscriptionLevel":12,"currencyCode":"USD","shouldSuppressPaymentAlreadyRedeemed":false,"priorSubscriptionLevel":4,"paymentMethod":"SEPA_DEBIT","amount":"YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGjCwwaVSRudWxs1w0ODxAREhMUFRYXGBgZViRjbGFzc1tOUy5tYW50aXNzYVtOUy5uZWdhdGl2ZVtOUy5leHBvbmVudF5OUy5tYW50aXNzYS5ib1lOUy5sZW5ndGhaTlMuY29tcGFjdIACTxAQfQAAAAAAAAAAAAAAAAAAAAgT\/\/\/\/\/\/\/\/\/\/8QAQnSGxwdHlokY2xhc3NuYW1lWCRjbGFzc2VzXxAaTlNEZWNpbWFsTnVtYmVyUGxhY2Vob2xkZXKlHyAhIiNfEBpOU0RlY2ltYWxOdW1iZXJQbGFjZWhvbGRlcl8QD05TRGVjaW1hbE51bWJlclhOU051bWJlcldOU1ZhbHVlWE5TT2JqZWN0AAgAEQAaACQAKQAyADcASQBMAFEAUwBXAF0AbABzAH8AiwCXAKYAsAC7AL0A0ADRANoA3ADdAOIA7QD2ARMBGQE2AUgBUQFZAAAAAAAAAgEAAAAAAAAAJAAAAAAAAAAAAAAAAAAAAWI=","subscriberID":"feed","receiptCredentailRequest":"dead","isNewSubscription":true,"super":{"failureCount":0,"label":"SubscriptionReceiptCredentailRedemption","status":3,"uniqueId":"47BE1A2B-4B10-44E3-BECF-025F7E81F021","recordType":71},"receiptCredentailRequestContext":"beef","receiptCredentialPresentation":"bade","boostPaymentIntentID":"beep","paymentProcessor":"STRIPE","isBoost":true}"#.utf8),
+            Data(#"{"targetSubscriptionLevel":12,"currencyCode":"USD","shouldSuppressPaymentAlreadyRedeemed":false,"priorSubscriptionLevel":4,"paymentMethod":"SEPA_DEBIT","amount":"YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGjCwwaVSRudWxs1w0ODxAREhMUFRYXGBgZViRjbGFzc1tOUy5tYW50aXNzYVtOUy5uZWdhdGl2ZVtOUy5leHBvbmVudF5OUy5tYW50aXNzYS5ib1lOUy5sZW5ndGhaTlMuY29tcGFjdIACTxAQfQAAAAAAAAAAAAAAAAAAAAgT\/\/\/\/\/\/\/\/\/\/8QAQnSGxwdHlokY2xhc3NuYW1lWCRjbGFzc2VzXxAaTlNEZWNpbWFsTnVtYmVyUGxhY2Vob2xkZXKlHyAhIiNfEBpOU0RlY2ltYWxOdW1iZXJQbGFjZWhvbGRlcl8QD05TRGVjaW1hbE51bWJlclhOU051bWJlcldOU1ZhbHVlWE5TT2JqZWN0AAgAEQAaACQAKQAyADcASQBMAFEAUwBXAF0AbABzAH8AiwCXAKYAsAC7AL0A0ADRANoA3ADdAOIA7QD2ARMBGQE2AUgBUQFZAAAAAAAAAgEAAAAAAAAAJAAAAAAAAAAAAAAAAAAAAWI=","subscriberID":"feed","receiptCredentailRequest":"dead","isNewSubscription":true,"failureCount":0,"label":"SubscriptionReceiptCredentailRedemption","status":3,"uniqueId":"47BE1A2B-4B10-44E3-BECF-025F7E81F021","recordType":71,"receiptCredentailRequestContext":"beef","receiptCredentialPresentation":"bade","boostPaymentIntentID":"beep","paymentProcessor":"STRIPE","isBoost":true}"#.utf8),
         ),
         (
             DonationReceiptCredentialRedemptionJobRecord(
@@ -402,7 +402,7 @@ extension DonationReceiptCredentialRedemptionJobRecord: ValidatableModel {
                 failureCount: 0,
                 status: .permanentlyFailed,
             ),
-            Data(#"{"targetSubscriptionLevel":12,"currencyCode":"shoop","shouldSuppressPaymentAlreadyRedeemed":false,"priorSubscriptionLevel":4,"amount":"YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGjCwwaVSRudWxs1w0ODxAREhMUFRYXGBgZViRjbGFzc1tOUy5tYW50aXNzYVtOUy5uZWdhdGl2ZVtOUy5leHBvbmVudF5OUy5tYW50aXNzYS5ib1lOUy5sZW5ndGhaTlMuY29tcGFjdIACTxAQfQAAAAAAAAAAAAAAAAAAAAgT\/\/\/\/\/\/\/\/\/\/8QAQnSGxwdHlokY2xhc3NuYW1lWCRjbGFzc2VzXxAaTlNEZWNpbWFsTnVtYmVyUGxhY2Vob2xkZXKlHyAhIiNfEBpOU0RlY2ltYWxOdW1iZXJQbGFjZWhvbGRlcl8QD05TRGVjaW1hbE51bWJlclhOU051bWJlcldOU1ZhbHVlWE5TT2JqZWN0AAgAEQAaACQAKQAyADcASQBMAFEAUwBXAF0AbABzAH8AiwCXAKYAsAC7AL0A0ADRANoA3ADdAOIA7QD2ARMBGQE2AUgBUQFZAAAAAAAAAgEAAAAAAAAAJAAAAAAAAAAAAAAAAAAAAWI=","subscriberID":"feed","receiptCredentailRequest":"dead","isNewSubscription":true,"super":{"failureCount":0,"label":"SubscriptionReceiptCredentailRedemption","status":3,"uniqueId":"FCBD3F8D-F23F-4784-9FE4-0D92BFACC28F","recordType":71},"receiptCredentailRequestContext":"beef","receiptCredentialPresentation":"bade","boostPaymentIntentID":"de","paymentProcessor":"bank","isBoost":true}"#.utf8),
+            Data(#"{"targetSubscriptionLevel":12,"currencyCode":"shoop","shouldSuppressPaymentAlreadyRedeemed":false,"priorSubscriptionLevel":4,"amount":"YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGjCwwaVSRudWxs1w0ODxAREhMUFRYXGBgZViRjbGFzc1tOUy5tYW50aXNzYVtOUy5uZWdhdGl2ZVtOUy5leHBvbmVudF5OUy5tYW50aXNzYS5ib1lOUy5sZW5ndGhaTlMuY29tcGFjdIACTxAQfQAAAAAAAAAAAAAAAAAAAAgT\/\/\/\/\/\/\/\/\/\/8QAQnSGxwdHlokY2xhc3NuYW1lWCRjbGFzc2VzXxAaTlNEZWNpbWFsTnVtYmVyUGxhY2Vob2xkZXKlHyAhIiNfEBpOU0RlY2ltYWxOdW1iZXJQbGFjZWhvbGRlcl8QD05TRGVjaW1hbE51bWJlclhOU051bWJlcldOU1ZhbHVlWE5TT2JqZWN0AAgAEQAaACQAKQAyADcASQBMAFEAUwBXAF0AbABzAH8AiwCXAKYAsAC7AL0A0ADRANoA3ADdAOIA7QD2ARMBGQE2AUgBUQFZAAAAAAAAAgEAAAAAAAAAJAAAAAAAAAAAAAAAAAAAAWI=","subscriberID":"feed","receiptCredentailRequest":"dead","isNewSubscription":true,"failureCount":0,"label":"SubscriptionReceiptCredentailRedemption","status":3,"uniqueId":"FCBD3F8D-F23F-4784-9FE4-0D92BFACC28F","recordType":71,"receiptCredentailRequestContext":"beef","receiptCredentialPresentation":"bade","boostPaymentIntentID":"de","paymentProcessor":"bank","isBoost":true}"#.utf8),
         ),
         (
             DonationReceiptCredentialRedemptionJobRecord(
@@ -423,7 +423,7 @@ extension DonationReceiptCredentialRedemptionJobRecord: ValidatableModel {
                 failureCount: 0,
                 status: .permanentlyFailed,
             ),
-            Data(#"{"subscriberID":"deef","isNewSubscription":true,"shouldSuppressPaymentAlreadyRedeemed":false,"super":{"failureCount":0,"label":"SubscriptionReceiptCredentailRedemption","status":3,"uniqueId":"BCFED95C-5550-42BD-8F0C-69AE5459FC8A","recordType":71},"receiptCredentailRequestContext":"feeb","paymentProcessor":"not svb","targetSubscriptionLevel":12,"priorSubscriptionLevel":4,"receiptCredentailRequest":"aded","isBoost":true,"boostPaymentIntentID":"na na na na na na na na na na na na na na na na na na na na"}"#.utf8),
+            Data(#"{"subscriberID":"deef","isNewSubscription":true,"shouldSuppressPaymentAlreadyRedeemed":false,"failureCount":0,"label":"SubscriptionReceiptCredentailRedemption","status":3,"uniqueId":"BCFED95C-5550-42BD-8F0C-69AE5459FC8A","recordType":71,"receiptCredentailRequestContext":"feeb","paymentProcessor":"not svb","targetSubscriptionLevel":12,"priorSubscriptionLevel":4,"receiptCredentailRequest":"aded","isBoost":true,"boostPaymentIntentID":"na na na na na na na na na na na na na na na na na na na na"}"#.utf8),
         ),
         (
             DonationReceiptCredentialRedemptionJobRecord(
@@ -444,7 +444,7 @@ extension DonationReceiptCredentialRedemptionJobRecord: ValidatableModel {
                 failureCount: 0,
                 status: .permanentlyFailed,
             ),
-            Data(#"{"subscriberID":"deef","isNewSubscription":true,"shouldSuppressPaymentAlreadyRedeemed":false,"super":{"failureCount":0,"label":"SubscriptionReceiptCredentailRedemption","status":3,"uniqueId":"BCFED95C-5550-42BD-8F0C-69AE5459FC8A","recordType":71},"receiptCredentailRequestContext":"feeb","paymentProcessor":"not svb","targetSubscriptionLevel":12,"priorSubscriptionLevel":4,"receiptCredentailRequest":"aded","receiptCredential":"deda","isBoost":true,"boostPaymentIntentID":"na na na na na na na na na na na na na na na na na na na na"}"#.utf8),
+            Data(#"{"subscriberID":"deef","isNewSubscription":true,"shouldSuppressPaymentAlreadyRedeemed":false,"failureCount":0,"label":"SubscriptionReceiptCredentailRedemption","status":3,"uniqueId":"BCFED95C-5550-42BD-8F0C-69AE5459FC8A","recordType":71,"receiptCredentailRequestContext":"feeb","paymentProcessor":"not svb","targetSubscriptionLevel":12,"priorSubscriptionLevel":4,"receiptCredentailRequest":"aded","receiptCredential":"deda","isBoost":true,"boostPaymentIntentID":"na na na na na na na na na na na na na na na na na na na na"}"#.utf8),
         ),
     ]
 
@@ -488,7 +488,7 @@ extension SendGiftBadgeJobRecord: ValidatableModel {
                 failureCount: 9,
                 status: .ready,
             ),
-            Data(#"{"paypalPaymentToken":"florp","threadId":"paul","paymentIntentClientSecret":"secret","amount":"YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGjCwwaVSRudWxs1w0ODxAREhMUFRYXGBgZViRjbGFzc1tOUy5tYW50aXNzYVtOUy5uZWdhdGl2ZVtOUy5leHBvbmVudF5OUy5tYW50aXNzYS5ib1lOUy5sZW5ndGhaTlMuY29tcGFjdIACTxAQfgAAAAAAAAAAAAAAAAAAAAgT\/\/\/\/\/\/\/\/\/\/8QAQnSGxwdHlokY2xhc3NuYW1lWCRjbGFzc2VzXxAaTlNEZWNpbWFsTnVtYmVyUGxhY2Vob2xkZXKlHyAhIiNfEBpOU0RlY2ltYWxOdW1iZXJQbGFjZWhvbGRlcl8QD05TRGVjaW1hbE51bWJlclhOU051bWJlcldOU1ZhbHVlWE5TT2JqZWN0AAgAEQAaACQAKQAyADcASQBMAFEAUwBXAF0AbABzAH8AiwCXAKYAsAC7AL0A0ADRANoA3ADdAOIA7QD2ARMBGQE2AUgBUQFZAAAAAAAAAgEAAAAAAAAAJAAAAAAAAAAAAAAAAAAAAWI=","receiptCredentailRequest":"dead","paymentMethodId":"carp","messageText":"blarp","paypalPayerId":"borp","super":{"failureCount":9,"label":"SendGiftBadge","status":1,"uniqueId":"E39E84CE-CC61-4E1F-95DD-809BA20EA0AC","recordType":73},"boostPaymentIntentID":"yarp","receiptCredentailRequestContext":"beef","paypalPaymentId":"gorp","paymentProcessor":"money","currencyCode":"zhoop"}"#.utf8),
+            Data(#"{"paypalPaymentToken":"florp","threadId":"paul","paymentIntentClientSecret":"secret","amount":"YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGjCwwaVSRudWxs1w0ODxAREhMUFRYXGBgZViRjbGFzc1tOUy5tYW50aXNzYVtOUy5uZWdhdGl2ZVtOUy5leHBvbmVudF5OUy5tYW50aXNzYS5ib1lOUy5sZW5ndGhaTlMuY29tcGFjdIACTxAQfgAAAAAAAAAAAAAAAAAAAAgT\/\/\/\/\/\/\/\/\/\/8QAQnSGxwdHlokY2xhc3NuYW1lWCRjbGFzc2VzXxAaTlNEZWNpbWFsTnVtYmVyUGxhY2Vob2xkZXKlHyAhIiNfEBpOU0RlY2ltYWxOdW1iZXJQbGFjZWhvbGRlcl8QD05TRGVjaW1hbE51bWJlclhOU051bWJlcldOU1ZhbHVlWE5TT2JqZWN0AAgAEQAaACQAKQAyADcASQBMAFEAUwBXAF0AbABzAH8AiwCXAKYAsAC7AL0A0ADRANoA3ADdAOIA7QD2ARMBGQE2AUgBUQFZAAAAAAAAAgEAAAAAAAAAJAAAAAAAAAAAAAAAAAAAAWI=","receiptCredentailRequest":"dead","paymentMethodId":"carp","messageText":"blarp","paypalPayerId":"borp","failureCount":9,"label":"SendGiftBadge","status":1,"uniqueId":"E39E84CE-CC61-4E1F-95DD-809BA20EA0AC","recordType":73,"boostPaymentIntentID":"yarp","receiptCredentailRequestContext":"beef","paypalPaymentId":"gorp","paymentProcessor":"money","currencyCode":"zhoop"}"#.utf8),
         ),
         (
             SendGiftBadgeJobRecord(
@@ -508,7 +508,7 @@ extension SendGiftBadgeJobRecord: ValidatableModel {
                 failureCount: 9,
                 status: .ready,
             ),
-            Data(#"{"amount":"YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGjCwwaVSRudWxs1w0ODxAREhMUFRYXGBgZViRjbGFzc1tOUy5tYW50aXNzYVtOUy5uZWdhdGl2ZVtOUy5leHBvbmVudF5OUy5tYW50aXNzYS5ib1lOUy5sZW5ndGhaTlMuY29tcGFjdIACTxAQfgAAAAAAAAAAAAAAAAAAAAgT\/\/\/\/\/\/\/\/\/\/8QAQnSGxwdHlokY2xhc3NuYW1lWCRjbGFzc2VzXxAaTlNEZWNpbWFsTnVtYmVyUGxhY2Vob2xkZXKlHyAhIiNfEBpOU0RlY2ltYWxOdW1iZXJQbGFjZWhvbGRlcl8QD05TRGVjaW1hbE51bWJlclhOU051bWJlcldOU1ZhbHVlWE5TT2JqZWN0AAgAEQAaACQAKQAyADcASQBMAFEAUwBXAF0AbABzAH8AiwCXAKYAsAC7AL0A0ADRANoA3ADdAOIA7QD2ARMBGQE2AUgBUQFZAAAAAAAAAgEAAAAAAAAAJAAAAAAAAAAAAAAAAAAAAWI=","super":{"failureCount":9,"label":"SendGiftBadge","status":1,"uniqueId":"A3865D66-C078-4FDF-8557-89859DBA8F07","recordType":73},"receiptCredentailRequestContext":"beef","paymentProcessor":"money","currencyCode":"zhoop","messageText":"blarp","receiptCredentailRequest":"dead","threadId":"paul"}"#.utf8),
+            Data(#"{"amount":"YnBsaXN0MDDUAQIDBAUGBwpYJHZlcnNpb25ZJGFyY2hpdmVyVCR0b3BYJG9iamVjdHMSAAGGoF8QD05TS2V5ZWRBcmNoaXZlctEICVRyb290gAGjCwwaVSRudWxs1w0ODxAREhMUFRYXGBgZViRjbGFzc1tOUy5tYW50aXNzYVtOUy5uZWdhdGl2ZVtOUy5leHBvbmVudF5OUy5tYW50aXNzYS5ib1lOUy5sZW5ndGhaTlMuY29tcGFjdIACTxAQfgAAAAAAAAAAAAAAAAAAAAgT\/\/\/\/\/\/\/\/\/\/8QAQnSGxwdHlokY2xhc3NuYW1lWCRjbGFzc2VzXxAaTlNEZWNpbWFsTnVtYmVyUGxhY2Vob2xkZXKlHyAhIiNfEBpOU0RlY2ltYWxOdW1iZXJQbGFjZWhvbGRlcl8QD05TRGVjaW1hbE51bWJlclhOU051bWJlcldOU1ZhbHVlWE5TT2JqZWN0AAgAEQAaACQAKQAyADcASQBMAFEAUwBXAF0AbABzAH8AiwCXAKYAsAC7AL0A0ADRANoA3ADdAOIA7QD2ARMBGQE2AUgBUQFZAAAAAAAAAgEAAAAAAAAAJAAAAAAAAAAAAAAAAAAAAWI=","failureCount":9,"label":"SendGiftBadge","status":1,"uniqueId":"A3865D66-C078-4FDF-8557-89859DBA8F07","recordType":73,"receiptCredentailRequestContext":"beef","paymentProcessor":"money","currencyCode":"zhoop","messageText":"blarp","receiptCredentailRequest":"dead","threadId":"paul"}"#.utf8),
         ),
     ]
 
@@ -541,7 +541,7 @@ extension SessionResetJobRecord: ValidatableModel {
                 failureCount: 14,
                 status: .ready,
             ),
-            Data(#"{"super":{"failureCount":14,"label":"SessionReset","status":1,"uniqueId":"EB87D2DC-9289-455D-B7FC-08ECA4C731CF","recordType":52},"contactThreadId":"this"}"#.utf8),
+            Data(#"{"failureCount":14,"label":"SessionReset","status":1,"uniqueId":"EB87D2DC-9289-455D-B7FC-08ECA4C731CF","recordType":52,"contactThreadId":"this"}"#.utf8),
         ),
     ]
 
@@ -565,7 +565,7 @@ extension CallRecordDeleteAllJobRecord: ValidatableModel {
                 failureCount: 19,
                 status: .ready,
             ),
-            Data(#"{"super":{"label":"CallRecordDeleteAll","uniqueId":"3989CCA4-8C1D-43FC-95C0-C3F59850AE2F","failureCount":19,"recordType":100,"status":1},"CRDAJR_sendDeleteAllSyncMessage":true,"CRDAJR_deleteAllBeforeTimestamp":1234}"#.utf8),
+            Data(#"{"label":"CallRecordDeleteAll","uniqueId":"3989CCA4-8C1D-43FC-95C0-C3F59850AE2F","failureCount":19,"recordType":100,"status":1,"CRDAJR_sendDeleteAllSyncMessage":true,"CRDAJR_deleteAllBeforeTimestamp":1234}"#.utf8),
         ),
         (
             CallRecordDeleteAllJobRecord(
@@ -576,7 +576,7 @@ extension CallRecordDeleteAllJobRecord: ValidatableModel {
                 failureCount: 19,
                 status: .ready,
             ),
-            Data(#"{"CRDAJR_deleteAllBeforeConversationId":"6EokEgnLTvubHTvrZcFEgQ==","CRDAJR_deleteAllBeforeTimestamp":1234,"CRDAJR_deleteAllBeforeCallId":"6789","super":{"label":"CallRecordDeleteAll","status":1,"recordType":100,"failureCount":19,"uniqueId":"C58527B5-C6C8-4CCB-B8FE-AA966A77E8F0"},"CRDAJR_sendDeleteAllSyncMessage":true}"#.utf8),
+            Data(#"{"CRDAJR_deleteAllBeforeConversationId":"6EokEgnLTvubHTvrZcFEgQ==","CRDAJR_deleteAllBeforeTimestamp":1234,"CRDAJR_deleteAllBeforeCallId":"6789","label":"CallRecordDeleteAll","status":1,"recordType":100,"failureCount":19,"uniqueId":"C58527B5-C6C8-4CCB-B8FE-AA966A77E8F0","CRDAJR_sendDeleteAllSyncMessage":true}"#.utf8),
         ),
         (
             CallRecordDeleteAllJobRecord(
@@ -587,7 +587,7 @@ extension CallRecordDeleteAllJobRecord: ValidatableModel {
                 failureCount: 19,
                 status: .ready,
             ),
-            Data(#"{"super":{"failureCount":19,"recordType":100,"label":"CallRecordDeleteAll","uniqueId":"9C207777-FB9F-463D-9B31-08A1B31E4C33","status":1},"CRDAJR_sendDeleteAllSyncMessage":true,"CRDAJR_deleteAllBeforeTimestamp":1234,"CRDAJR_deleteAllBeforeCallId":"6789","CRDAJR_deleteAllBeforeConversationId":"BQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQU="}"#.utf8),
+            Data(#"{"failureCount":19,"recordType":100,"label":"CallRecordDeleteAll","uniqueId":"9C207777-FB9F-463D-9B31-08A1B31E4C33","status":1,"CRDAJR_sendDeleteAllSyncMessage":true,"CRDAJR_deleteAllBeforeTimestamp":1234,"CRDAJR_deleteAllBeforeCallId":"6789","CRDAJR_deleteAllBeforeConversationId":"BQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQU="}"#.utf8),
         ),
     ]
 
@@ -609,7 +609,7 @@ extension BulkDeleteInteractionJobRecord: ValidatableModel {
                 fullThreadDeletionAnchorMessageRowId: 42,
                 threadUniqueId: "8279D1D7-EA6F-4D4E-A652-ADBF03DDDF14",
             ),
-            Data(#"{"BDIJR_anchorMessageRowId":12,"BDIJR_threadUniqueId":"8279D1D7-EA6F-4D4E-A652-ADBF03DDDF14","BDIJR_fullThreadDeletionAnchorMessageRowId":42,"super":{"failureCount":0,"status":1,"label":"BulkDeleteInteraction","recordType":101,"uniqueId":"E01CD6F0-A3B2-4AC6-8014-9DAFBC36EB63"}}"#.utf8),
+            Data(#"{"BDIJR_anchorMessageRowId":12,"BDIJR_threadUniqueId":"8279D1D7-EA6F-4D4E-A652-ADBF03DDDF14","BDIJR_fullThreadDeletionAnchorMessageRowId":42,"failureCount":0,"status":1,"label":"BulkDeleteInteraction","recordType":101,"uniqueId":"E01CD6F0-A3B2-4AC6-8014-9DAFBC36EB63"}"#.utf8),
         ),
     ]
 
