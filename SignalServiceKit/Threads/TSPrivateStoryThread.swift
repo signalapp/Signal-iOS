@@ -12,8 +12,6 @@ public final class TSPrivateStoryThread: TSThread {
 
     public private(set) var allowsReplies: Bool
     public private(set) var _name: String
-    /// deprecated
-    public let addresses: Data?
 
     public enum CodingKeys: String, CodingKey, ColumnExpression {
         case allowsReplies
@@ -25,7 +23,6 @@ public final class TSPrivateStoryThread: TSThread {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.allowsReplies = try container.decode(Bool.self, forKey: .allowsReplies)
         self._name = try container.decode(String.self, forKey: .name)
-        self.addresses = try container.decodeIfPresent(Data.self, forKey: .addresses)
         try super.init(inheritableDecoder: decoder)
     }
 
@@ -34,13 +31,12 @@ public final class TSPrivateStoryThread: TSThread {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(self.allowsReplies, forKey: .allowsReplies)
         try container.encode(self._name, forKey: .name)
-        try container.encode(self.addresses, forKey: .addresses)
+        try container.encode(nil as Data?, forKey: .addresses)
     }
 
     init(
         id: Int64?,
         uniqueId: String,
-        conversationColorNameObsolete: String,
         creationDate: Date?,
         editTargetTimestamp: UInt64?,
         isArchivedObsolete: Bool,
@@ -49,26 +45,20 @@ public final class TSPrivateStoryThread: TSThread {
         lastDraftUpdateTimestamp: UInt64,
         lastInteractionRowId: UInt64,
         lastSentStoryTimestamp: UInt64?,
-        lastVisibleSortIdObsolete: UInt64,
-        lastVisibleSortIdOnScreenPercentageObsolete: Double,
         mentionNotificationMode: TSThreadMentionNotificationMode,
         messageDraft: String?,
         messageDraftBodyRanges: MessageBodyRanges?,
-        mutedUntilDateObsolete: Date?,
         mutedUntilTimestampObsolete: UInt64,
         shouldThreadBeVisible: Bool,
         storyViewMode: TSThreadStoryViewMode,
         allowsReplies: Bool,
         name: String,
-        addresses: Data?,
     ) {
         self.allowsReplies = allowsReplies
         self._name = name
-        self.addresses = addresses
         super.init(
             id: id,
             uniqueId: uniqueId,
-            conversationColorNameObsolete: conversationColorNameObsolete,
             creationDate: creationDate,
             editTargetTimestamp: editTargetTimestamp,
             isArchivedObsolete: isArchivedObsolete,
@@ -77,12 +67,9 @@ public final class TSPrivateStoryThread: TSThread {
             lastDraftUpdateTimestamp: lastDraftUpdateTimestamp,
             lastInteractionRowId: lastInteractionRowId,
             lastSentStoryTimestamp: lastSentStoryTimestamp,
-            lastVisibleSortIdObsolete: lastVisibleSortIdObsolete,
-            lastVisibleSortIdOnScreenPercentageObsolete: lastVisibleSortIdOnScreenPercentageObsolete,
             mentionNotificationMode: mentionNotificationMode,
             messageDraft: messageDraft,
             messageDraftBodyRanges: messageDraftBodyRanges,
-            mutedUntilDateObsolete: mutedUntilDateObsolete,
             mutedUntilTimestampObsolete: mutedUntilTimestampObsolete,
             shouldThreadBeVisible: shouldThreadBeVisible,
             storyViewMode: storyViewMode,
@@ -92,7 +79,6 @@ public final class TSPrivateStoryThread: TSThread {
     public init(uniqueId: String = UUID().uuidString, name: String, allowsReplies: Bool, viewMode: TSThreadStoryViewMode) {
         self._name = name
         self.allowsReplies = allowsReplies
-        self.addresses = nil
         super.init(uniqueId: uniqueId)
         self.storyViewMode = viewMode
     }
@@ -101,7 +87,6 @@ public final class TSPrivateStoryThread: TSThread {
         return TSPrivateStoryThread(
             id: self.id,
             uniqueId: self.uniqueId,
-            conversationColorNameObsolete: self.conversationColorNameObsolete,
             creationDate: self.creationDate,
             editTargetTimestamp: self.editTargetTimestamp,
             isArchivedObsolete: self.isArchivedObsolete,
@@ -110,25 +95,20 @@ public final class TSPrivateStoryThread: TSThread {
             lastDraftUpdateTimestamp: self.lastDraftUpdateTimestamp,
             lastInteractionRowId: self.lastInteractionRowId,
             lastSentStoryTimestamp: self.lastSentStoryTimestamp,
-            lastVisibleSortIdObsolete: self.lastVisibleSortIdObsolete,
-            lastVisibleSortIdOnScreenPercentageObsolete: self.lastVisibleSortIdOnScreenPercentageObsolete,
             mentionNotificationMode: self.mentionNotificationMode,
             messageDraft: self.messageDraft,
             messageDraftBodyRanges: self.messageDraftBodyRanges,
-            mutedUntilDateObsolete: self.mutedUntilDateObsolete,
             mutedUntilTimestampObsolete: self.mutedUntilTimestampObsolete,
             shouldThreadBeVisible: self.shouldThreadBeVisible,
             storyViewMode: self.storyViewMode,
             allowsReplies: self.allowsReplies,
             name: self.name,
-            addresses: self.addresses,
         )
     }
 
     override public var hash: Int {
         var hasher = Hasher()
         hasher.combine(super.hash)
-        hasher.combine(self.addresses)
         hasher.combine(self.allowsReplies)
         hasher.combine(self.name)
         return hasher.finalize()
@@ -137,7 +117,6 @@ public final class TSPrivateStoryThread: TSThread {
     override public func isEqual(_ object: Any?) -> Bool {
         guard let object = object as? Self else { return false }
         guard super.isEqual(object) else { return false }
-        guard self.addresses == object.addresses else { return false }
         guard self.allowsReplies == object.allowsReplies else { return false }
         guard self.name == object.name else { return false }
         return true

@@ -28,7 +28,6 @@ class ThreadFinderTests: XCTestCase {
         return TSContactThread(
             id: nil,
             uniqueId: uniqueID,
-            conversationColorNameObsolete: "Obsolete",
             creationDate: Date.now,
             editTargetTimestamp: nil,
             isArchivedObsolete: false,
@@ -37,18 +36,14 @@ class ThreadFinderTests: XCTestCase {
             lastDraftUpdateTimestamp: lastDraftUpdateTimestamp,
             lastInteractionRowId: lastInteractionRowID,
             lastSentStoryTimestamp: nil,
-            lastVisibleSortIdObsolete: 0,
-            lastVisibleSortIdOnScreenPercentageObsolete: 0.0,
             mentionNotificationMode: .default,
             messageDraft: draft,
             messageDraftBodyRanges: nil,
-            mutedUntilDateObsolete: nil,
             mutedUntilTimestampObsolete: 0,
             shouldThreadBeVisible: true,
             storyViewMode: .default,
             contactUUID: nil,
             contactPhoneNumber: nil,
-            hasDismissedOffers: false,
         )
     }
 

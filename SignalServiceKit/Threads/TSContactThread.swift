@@ -16,8 +16,6 @@ open class TSContactThread: TSThread {
     public internal(set) var contactUUID: String?
     public internal(set) var contactPhoneNumber: String?
 
-    public let hasDismissedOffers: Bool
-
     public enum CodingKeys: String, CodingKey, ColumnExpression {
         case contactPhoneNumber
         case contactUUID
@@ -28,7 +26,6 @@ open class TSContactThread: TSThread {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.contactUUID = try container.decodeIfPresent(String.self, forKey: .contactUUID)
         self.contactPhoneNumber = try container.decodeIfPresent(String.self, forKey: .contactPhoneNumber)
-        self.hasDismissedOffers = try container.decode(Bool.self, forKey: .hasDismissedOffers)
         try super.init(inheritableDecoder: decoder)
     }
 
@@ -37,7 +34,7 @@ open class TSContactThread: TSThread {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(self.contactUUID, forKey: .contactUUID)
         try container.encode(self.contactPhoneNumber, forKey: .contactPhoneNumber)
-        try container.encode(self.hasDismissedOffers, forKey: .hasDismissedOffers)
+        try container.encode(false, forKey: .hasDismissedOffers)
     }
 
     override public var hash: Int {
@@ -45,7 +42,6 @@ open class TSContactThread: TSThread {
         hasher.combine(super.hash)
         hasher.combine(self.contactPhoneNumber)
         hasher.combine(self.contactUUID)
-        hasher.combine(self.hasDismissedOffers)
         return hasher.finalize()
     }
 
@@ -54,14 +50,12 @@ open class TSContactThread: TSThread {
         guard super.isEqual(object) else { return false }
         guard self.contactPhoneNumber == object.contactPhoneNumber else { return false }
         guard self.contactUUID == object.contactUUID else { return false }
-        guard self.hasDismissedOffers == object.hasDismissedOffers else { return false }
         return true
     }
 
     init(
         id: Int64?,
         uniqueId: String,
-        conversationColorNameObsolete: String,
         creationDate: Date?,
         editTargetTimestamp: UInt64?,
         isArchivedObsolete: Bool,
@@ -70,26 +64,20 @@ open class TSContactThread: TSThread {
         lastDraftUpdateTimestamp: UInt64,
         lastInteractionRowId: UInt64,
         lastSentStoryTimestamp: UInt64?,
-        lastVisibleSortIdObsolete: UInt64,
-        lastVisibleSortIdOnScreenPercentageObsolete: Double,
         mentionNotificationMode: TSThreadMentionNotificationMode,
         messageDraft: String?,
         messageDraftBodyRanges: MessageBodyRanges?,
-        mutedUntilDateObsolete: Date?,
         mutedUntilTimestampObsolete: UInt64,
         shouldThreadBeVisible: Bool,
         storyViewMode: TSThreadStoryViewMode,
         contactUUID: String?,
         contactPhoneNumber: String?,
-        hasDismissedOffers: Bool,
     ) {
         self.contactUUID = contactUUID
         self.contactPhoneNumber = contactPhoneNumber
-        self.hasDismissedOffers = hasDismissedOffers
         super.init(
             id: id,
             uniqueId: uniqueId,
-            conversationColorNameObsolete: conversationColorNameObsolete,
             creationDate: creationDate,
             editTargetTimestamp: editTargetTimestamp,
             isArchivedObsolete: isArchivedObsolete,
@@ -98,12 +86,9 @@ open class TSContactThread: TSThread {
             lastDraftUpdateTimestamp: lastDraftUpdateTimestamp,
             lastInteractionRowId: lastInteractionRowId,
             lastSentStoryTimestamp: lastSentStoryTimestamp,
-            lastVisibleSortIdObsolete: lastVisibleSortIdObsolete,
-            lastVisibleSortIdOnScreenPercentageObsolete: lastVisibleSortIdOnScreenPercentageObsolete,
             mentionNotificationMode: mentionNotificationMode,
             messageDraft: messageDraft,
             messageDraftBodyRanges: messageDraftBodyRanges,
-            mutedUntilDateObsolete: mutedUntilDateObsolete,
             mutedUntilTimestampObsolete: mutedUntilTimestampObsolete,
             shouldThreadBeVisible: shouldThreadBeVisible,
             storyViewMode: storyViewMode,
@@ -117,7 +102,6 @@ open class TSContactThread: TSThread {
     ) {
         self.contactUUID = contactUUID
         self.contactPhoneNumber = contactPhoneNumber
-        self.hasDismissedOffers = false
         super.init(uniqueId: uniqueId)
     }
 
@@ -125,7 +109,6 @@ open class TSContactThread: TSThread {
         return TSContactThread(
             id: self.id,
             uniqueId: self.uniqueId,
-            conversationColorNameObsolete: self.conversationColorNameObsolete,
             creationDate: self.creationDate,
             editTargetTimestamp: self.editTargetTimestamp,
             isArchivedObsolete: self.isArchivedObsolete,
@@ -134,18 +117,14 @@ open class TSContactThread: TSThread {
             lastDraftUpdateTimestamp: self.lastDraftUpdateTimestamp,
             lastInteractionRowId: self.lastInteractionRowId,
             lastSentStoryTimestamp: self.lastSentStoryTimestamp,
-            lastVisibleSortIdObsolete: self.lastVisibleSortIdObsolete,
-            lastVisibleSortIdOnScreenPercentageObsolete: self.lastVisibleSortIdOnScreenPercentageObsolete,
             mentionNotificationMode: self.mentionNotificationMode,
             messageDraft: self.messageDraft,
             messageDraftBodyRanges: self.messageDraftBodyRanges,
-            mutedUntilDateObsolete: self.mutedUntilDateObsolete,
             mutedUntilTimestampObsolete: self.mutedUntilTimestampObsolete,
             shouldThreadBeVisible: self.shouldThreadBeVisible,
             storyViewMode: self.storyViewMode,
             contactUUID: self.contactUUID,
             contactPhoneNumber: self.contactPhoneNumber,
-            hasDismissedOffers: self.hasDismissedOffers,
         )
     }
 

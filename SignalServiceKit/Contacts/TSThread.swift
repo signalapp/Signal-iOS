@@ -40,27 +40,14 @@ open class TSThread: NSObject, SDSCodableModel, InheritableRecord {
     @objc
     public let uniqueId: String
 
-    public let conversationColorNameObsolete: String
     public let creationDate: Date?
     public let isArchivedObsolete: Bool
     // zero if thread has never had an interaction.
     // The corresponding interaction may have been deleted.
     public internal(set) var lastInteractionRowId: UInt64
     public internal(set) var messageDraft: String?
-    public let mutedUntilDateObsolete: Date?
     public internal(set) var shouldThreadBeVisible: Bool
     public let isMarkedUnreadObsolete: Bool
-    public let lastVisibleSortIdOnScreenPercentageObsolete: Double
-    // This maintains the row Id that was at the bottom of the conversation
-    // the last time the user viewed this thread so we can restore their
-    // scroll position.
-    //
-    // If the referenced message is deleted, this value is
-    // updated to point to the previous message in the conversation.
-    //
-    // If a new message is inserted into the conversation, this value
-    // is cleared. We only restore this state if there are no unread messages.
-    public let lastVisibleSortIdObsolete: UInt64
     public private(set) var messageDraftBodyRanges: MessageBodyRanges?
     public private(set) var mentionNotificationMode: TSThreadMentionNotificationMode
     public let mutedUntilTimestampObsolete: UInt64
@@ -74,9 +61,6 @@ open class TSThread: NSObject, SDSCodableModel, InheritableRecord {
     // can be used to break ties between threads with the same lastDraftInteractionRowId.
     public internal(set) var lastDraftInteractionRowId: UInt64
     public internal(set) var lastDraftUpdateTimestamp: UInt64
-
-    // DEPRECATED_MSG_ATTRIBUTE("this property is only to be used in the sortId migration");
-    let isArchivedByLegacyTimestampForSorting: Bool = false
 
     public enum CodingKeys: String, CodingKey, ColumnExpression {
         case id
@@ -107,7 +91,6 @@ open class TSThread: NSObject, SDSCodableModel, InheritableRecord {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.id = try container.decodeIfPresent(Int64.self, forKey: .id)
         self.uniqueId = try container.decode(String.self, forKey: .uniqueId)
-        self.conversationColorNameObsolete = try container.decode(String.self, forKey: .conversationColorNameObsolete)
         self.creationDate = try container.decodeIfPresent(TimeInterval.self, forKey: .creationDate).map(Date.init(timeIntervalSince1970:))
         self.editTargetTimestamp = try container.decodeIfPresent(UInt64.self, forKey: .editTargetTimestamp)
         self.isArchivedObsolete = try container.decode(Bool.self, forKey: .isArchivedObsolete)
@@ -116,12 +99,9 @@ open class TSThread: NSObject, SDSCodableModel, InheritableRecord {
         self.lastDraftUpdateTimestamp = try container.decode(UInt64.self, forKey: .lastDraftUpdateTimestamp)
         self.lastInteractionRowId = try container.decode(UInt64.self, forKey: .lastInteractionRowId)
         self.lastSentStoryTimestamp = try container.decodeIfPresent(UInt64.self, forKey: .lastSentStoryTimestamp)
-        self.lastVisibleSortIdObsolete = try container.decode(UInt64.self, forKey: .lastVisibleSortIdObsolete)
-        self.lastVisibleSortIdOnScreenPercentageObsolete = try container.decode(Double.self, forKey: .lastVisibleSortIdOnScreenPercentageObsolete)
         self.mentionNotificationMode = TSThreadMentionNotificationMode(rawValue: try container.decode(UInt.self, forKey: .mentionNotificationMode)) ?? .default
         self.messageDraft = try container.decodeIfPresent(String.self, forKey: .messageDraft)
         self.messageDraftBodyRanges = try container.decodeIfPresent(Data.self, forKey: .messageDraftBodyRanges).map({ try LegacySDSSerializer().deserializeLegacySDSData($0, ofClass: MessageBodyRanges.self) })
-        self.mutedUntilDateObsolete = try container.decodeIfPresent(TimeInterval.self, forKey: .mutedUntilDateObsolete).map(Date.init(timeIntervalSince1970:))
         self.mutedUntilTimestampObsolete = try container.decode(UInt64.self, forKey: .mutedUntilTimestampObsolete)
         self.shouldThreadBeVisible = try container.decode(Bool.self, forKey: .shouldThreadBeVisible)
         self.storyViewMode = TSThreadStoryViewMode(rawValue: try container.decode(UInt.self, forKey: .storyViewMode)) ?? .default
@@ -132,7 +112,7 @@ open class TSThread: NSObject, SDSCodableModel, InheritableRecord {
         try container.encode(self.id, forKey: .id)
         try container.encode(Self.recordType.rawValue, forKey: .recordType)
         try container.encode(self.uniqueId, forKey: .uniqueId)
-        try container.encode(self.conversationColorNameObsolete, forKey: .conversationColorNameObsolete)
+        try container.encode("", forKey: .conversationColorNameObsolete)
         try container.encode(self.creationDate?.timeIntervalSince1970, forKey: .creationDate)
         try container.encode(self.editTargetTimestamp, forKey: .editTargetTimestamp)
         try container.encode(self.isArchivedObsolete, forKey: .isArchivedObsolete)
@@ -140,13 +120,13 @@ open class TSThread: NSObject, SDSCodableModel, InheritableRecord {
         try container.encode(self.lastDraftUpdateTimestamp, forKey: .lastDraftUpdateTimestamp)
         try container.encode(self.lastInteractionRowId, forKey: .lastInteractionRowId)
         try container.encode(self.lastSentStoryTimestamp, forKey: .lastSentStoryTimestamp)
-        try container.encode(self.lastVisibleSortIdObsolete, forKey: .lastVisibleSortIdObsolete)
-        try container.encode(self.lastVisibleSortIdOnScreenPercentageObsolete, forKey: .lastVisibleSortIdOnScreenPercentageObsolete)
+        try container.encode(0 as UInt64, forKey: .lastVisibleSortIdObsolete)
+        try container.encode(0 as Double, forKey: .lastVisibleSortIdOnScreenPercentageObsolete)
         try container.encode(self.mentionNotificationMode.rawValue, forKey: .mentionNotificationMode)
         try container.encode(self.messageDraft, forKey: .messageDraft)
         let messageDraftBodyRangesData = self.messageDraftBodyRanges.map(LegacySDSSerializer().serializeAsLegacySDSData(_:))
         try container.encode(messageDraftBodyRangesData, forKey: .messageDraftBodyRanges)
-        try container.encode(self.mutedUntilDateObsolete, forKey: .mutedUntilDateObsolete)
+        try container.encode(nil as Date?, forKey: .mutedUntilDateObsolete)
         try container.encode(self.mutedUntilTimestampObsolete, forKey: .mutedUntilTimestampObsolete)
         try container.encode(self.shouldThreadBeVisible, forKey: .shouldThreadBeVisible)
         try container.encode(self.storyViewMode.rawValue, forKey: .storyViewMode)
@@ -155,7 +135,6 @@ open class TSThread: NSObject, SDSCodableModel, InheritableRecord {
     init(
         id: Int64?,
         uniqueId: String,
-        conversationColorNameObsolete: String,
         creationDate: Date?,
         editTargetTimestamp: UInt64?,
         isArchivedObsolete: Bool,
@@ -164,19 +143,15 @@ open class TSThread: NSObject, SDSCodableModel, InheritableRecord {
         lastDraftUpdateTimestamp: UInt64,
         lastInteractionRowId: UInt64,
         lastSentStoryTimestamp: UInt64?,
-        lastVisibleSortIdObsolete: UInt64,
-        lastVisibleSortIdOnScreenPercentageObsolete: Double,
         mentionNotificationMode: TSThreadMentionNotificationMode,
         messageDraft: String?,
         messageDraftBodyRanges: MessageBodyRanges?,
-        mutedUntilDateObsolete: Date?,
         mutedUntilTimestampObsolete: UInt64,
         shouldThreadBeVisible: Bool,
         storyViewMode: TSThreadStoryViewMode,
     ) {
         self.id = id
         self.uniqueId = uniqueId
-        self.conversationColorNameObsolete = conversationColorNameObsolete
         self.creationDate = creationDate
         self.editTargetTimestamp = editTargetTimestamp
         self.isArchivedObsolete = isArchivedObsolete
@@ -185,29 +160,22 @@ open class TSThread: NSObject, SDSCodableModel, InheritableRecord {
         self.lastDraftUpdateTimestamp = lastDraftUpdateTimestamp
         self.lastInteractionRowId = lastInteractionRowId
         self.lastSentStoryTimestamp = lastSentStoryTimestamp
-        self.lastVisibleSortIdObsolete = lastVisibleSortIdObsolete
-        self.lastVisibleSortIdOnScreenPercentageObsolete = lastVisibleSortIdOnScreenPercentageObsolete
         self.mentionNotificationMode = mentionNotificationMode
         self.messageDraft = messageDraft
         self.messageDraftBodyRanges = messageDraftBodyRanges
-        self.mutedUntilDateObsolete = mutedUntilDateObsolete
         self.mutedUntilTimestampObsolete = mutedUntilTimestampObsolete
         self.shouldThreadBeVisible = shouldThreadBeVisible
         self.storyViewMode = storyViewMode
     }
 
     init(uniqueId: String) {
-        self.conversationColorNameObsolete = "Obsolete"
         self.isArchivedObsolete = false
         self.isMarkedUnreadObsolete = false
         self.lastDraftInteractionRowId = 0
         self.lastDraftUpdateTimestamp = 0
         self.lastInteractionRowId = 0
-        self.lastVisibleSortIdObsolete = 0
-        self.lastVisibleSortIdOnScreenPercentageObsolete = 0
         self.mentionNotificationMode = .default
         self.messageDraft = nil
-        self.mutedUntilDateObsolete = nil
         self.mutedUntilTimestampObsolete = 0
         self.shouldThreadBeVisible = false
         self.storyViewMode = .default
@@ -220,7 +188,6 @@ open class TSThread: NSObject, SDSCodableModel, InheritableRecord {
         return TSThread(
             id: self.id,
             uniqueId: self.uniqueId,
-            conversationColorNameObsolete: self.conversationColorNameObsolete,
             creationDate: self.creationDate,
             editTargetTimestamp: self.editTargetTimestamp,
             isArchivedObsolete: self.isArchivedObsolete,
@@ -229,12 +196,9 @@ open class TSThread: NSObject, SDSCodableModel, InheritableRecord {
             lastDraftUpdateTimestamp: self.lastDraftUpdateTimestamp,
             lastInteractionRowId: self.lastInteractionRowId,
             lastSentStoryTimestamp: self.lastSentStoryTimestamp,
-            lastVisibleSortIdObsolete: self.lastVisibleSortIdObsolete,
-            lastVisibleSortIdOnScreenPercentageObsolete: self.lastVisibleSortIdOnScreenPercentageObsolete,
             mentionNotificationMode: self.mentionNotificationMode,
             messageDraft: self.messageDraft,
             messageDraftBodyRanges: self.messageDraftBodyRanges,
-            mutedUntilDateObsolete: self.mutedUntilDateObsolete,
             mutedUntilTimestampObsolete: self.mutedUntilTimestampObsolete,
             shouldThreadBeVisible: self.shouldThreadBeVisible,
             storyViewMode: self.storyViewMode,
@@ -245,22 +209,17 @@ open class TSThread: NSObject, SDSCodableModel, InheritableRecord {
         var hasher = Hasher()
         hasher.combine(self.id)
         hasher.combine(self.uniqueId)
-        hasher.combine(self.conversationColorNameObsolete)
         hasher.combine(self.creationDate)
         hasher.combine(self.editTargetTimestamp)
-        hasher.combine(self.isArchivedByLegacyTimestampForSorting)
         hasher.combine(self.isArchivedObsolete)
         hasher.combine(self.isMarkedUnreadObsolete)
         hasher.combine(self.lastDraftInteractionRowId)
         hasher.combine(self.lastDraftUpdateTimestamp)
         hasher.combine(self.lastInteractionRowId)
         hasher.combine(self.lastSentStoryTimestamp)
-        hasher.combine(self.lastVisibleSortIdObsolete)
-        hasher.combine(self.lastVisibleSortIdOnScreenPercentageObsolete)
         hasher.combine(self.mentionNotificationMode)
         hasher.combine(self.messageDraft)
         hasher.combine(self.messageDraftBodyRanges)
-        hasher.combine(self.mutedUntilDateObsolete)
         hasher.combine(self.mutedUntilTimestampObsolete)
         hasher.combine(self.shouldThreadBeVisible)
         hasher.combine(self.storyViewMode)
@@ -271,22 +230,17 @@ open class TSThread: NSObject, SDSCodableModel, InheritableRecord {
         guard let object = object as? Self else { return false }
         guard self.id == object.id else { return false }
         guard self.uniqueId == object.uniqueId else { return false }
-        guard self.conversationColorNameObsolete == object.conversationColorNameObsolete else { return false }
         guard self.creationDate == object.creationDate else { return false }
         guard self.editTargetTimestamp == object.editTargetTimestamp else { return false }
-        guard self.isArchivedByLegacyTimestampForSorting == object.isArchivedByLegacyTimestampForSorting else { return false }
         guard self.isArchivedObsolete == object.isArchivedObsolete else { return false }
         guard self.isMarkedUnreadObsolete == object.isMarkedUnreadObsolete else { return false }
         guard self.lastDraftInteractionRowId == object.lastDraftInteractionRowId else { return false }
         guard self.lastDraftUpdateTimestamp == object.lastDraftUpdateTimestamp else { return false }
         guard self.lastInteractionRowId == object.lastInteractionRowId else { return false }
         guard self.lastSentStoryTimestamp == object.lastSentStoryTimestamp else { return false }
-        guard self.lastVisibleSortIdObsolete == object.lastVisibleSortIdObsolete else { return false }
-        guard self.lastVisibleSortIdOnScreenPercentageObsolete == object.lastVisibleSortIdOnScreenPercentageObsolete else { return false }
         guard self.mentionNotificationMode == object.mentionNotificationMode else { return false }
         guard self.messageDraft == object.messageDraft else { return false }
         guard self.messageDraftBodyRanges == object.messageDraftBodyRanges else { return false }
-        guard self.mutedUntilDateObsolete == object.mutedUntilDateObsolete else { return false }
         guard self.mutedUntilTimestampObsolete == object.mutedUntilTimestampObsolete else { return false }
         guard self.shouldThreadBeVisible == object.shouldThreadBeVisible else { return false }
         guard self.storyViewMode == object.storyViewMode else { return false }
