@@ -70,7 +70,7 @@ public import GRDB
 /// work around these issues and ensure subclasses are correctly initialized.
 ///
 /// [0]: https://github.com/apple/swift/issues/61946
-public protocol SDSCodableModel: Encodable, FetchableRecord, PersistableRecord, SDSIdentifiableModel {
+public protocol SDSCodableModel: AnyObject, Encodable, FetchableRecord, PersistableRecord, SDSIdentifiableModel {
     associatedtype CodingKeys: RawRepresentable<String>, CodingKey, ColumnExpression
     typealias Columns = CodingKeys
     typealias RowId = Int64
@@ -108,7 +108,7 @@ public extension SDSCodableModel {
     static var databaseDateEncodingStrategy: DatabaseDateEncodingStrategy { .timeIntervalSince1970 }
     static var databaseDateDecodingStrategy: DatabaseDateDecodingStrategy { .timeIntervalSince1970 }
 
-    mutating func didInsert(with rowID: Int64, for column: String?) {
+    func didInsert(with rowID: Int64, for column: String?) {
         id = rowID
     }
 }

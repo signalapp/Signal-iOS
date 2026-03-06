@@ -946,10 +946,6 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
 
     // MARK: -
 
-    public func didInsert(with rowID: Int64, for column: String?) {
-        self.id = rowID
-    }
-
     public func anyDidRemove(transaction: DBWriteTransaction) {
         // Delete all group replies for the message.
         InteractionFinder.enumerateGroupReplies(for: self, transaction: transaction) { reply, _ in

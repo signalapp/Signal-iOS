@@ -155,10 +155,6 @@ public final class SignalAccount: NSObject, SDSCodableModel, Decodable {
         try container.encode(nickname, forKey: .nickname)
         try container.encode(fullName, forKey: .fullName)
     }
-
-    public func didInsert(with rowID: Int64, for column: String?) {
-        self.id = rowID
-    }
 }
 
 // MARK: - Update in place

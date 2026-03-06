@@ -892,10 +892,6 @@ public final class OWSUserProfile: NSObject, SDSCodableModel, Decodable {
 
     // MARK: - Database Hooks
 
-    public func didInsert(with rowID: Int64, for column: String?) {
-        self.id = rowID
-    }
-
     public func anyDidInsert(transaction: DBWriteTransaction) {
         let searchableNameIndexer = DependenciesBridge.shared.searchableNameIndexer
         searchableNameIndexer.insert(self, tx: transaction)

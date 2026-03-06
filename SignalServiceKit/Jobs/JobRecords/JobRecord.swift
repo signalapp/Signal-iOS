@@ -71,10 +71,6 @@ public class JobRecord: SDSCodableModel, InheritableRecord {
         self.status = status
     }
 
-    public func didInsert(with rowID: Int64, for column: String?) {
-        id = rowID
-    }
-
     // MARK: Codable and inheritance-related hacks
 
     public typealias CodingKeys = JobRecordColumns

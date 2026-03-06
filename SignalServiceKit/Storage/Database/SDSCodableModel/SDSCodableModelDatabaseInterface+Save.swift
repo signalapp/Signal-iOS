@@ -193,10 +193,8 @@ private extension SDSCodableModelDatabaseInterface {
         transaction: DBWriteTransaction,
     ) {
         failIfThrows {
-            var recordCopy = model
-            recordCopy.id = existingGrdbRowId
-
-            try recordCopy.update(transaction.database)
+            model.id = existingGrdbRowId
+            try model.update(transaction.database)
         }
     }
 
