@@ -1151,8 +1151,8 @@ public final class MessageReceiver {
                         transaction: tx,
                     )
                 }
-                return nil
             }
+            return nil
         }
 
         if let adminDelete = dataMessage.adminDelete {
@@ -1199,8 +1199,8 @@ public final class MessageReceiver {
                         transaction: tx,
                     )
                 }
-                return nil
             }
+            return nil
         }
 
         if let pollVote = dataMessage.pollVote {
