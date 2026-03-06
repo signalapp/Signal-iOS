@@ -8,7 +8,7 @@ public import GRDB
 
 public final class InstalledStickerRecord: SDSCodableModel, Decodable {
     public static let databaseTableName: String = "model_InstalledSticker"
-    public static let recordType: UInt = SDSRecordType.installedSticker.rawValue
+    private static let recordType: SDSRecordType = .installedSticker
 
     public var id: Int64?
     public let uniqueId: String
@@ -16,7 +16,7 @@ public final class InstalledStickerRecord: SDSCodableModel, Decodable {
     public let emojiString: String?
     public let contentType: String?
 
-    public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
+    public enum CodingKeys: String, CodingKey, ColumnExpression {
         case id
         case recordType
         case uniqueId
@@ -39,7 +39,7 @@ public final class InstalledStickerRecord: SDSCodableModel, Decodable {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encodeIfPresent(self.id, forKey: .id)
         try container.encode(self.uniqueId, forKey: .uniqueId)
-        try container.encode(Self.recordType, forKey: .recordType)
+        try container.encode(Self.recordType.rawValue, forKey: .recordType)
         try container.encode(LegacySDSSerializer().serializeAsLegacySDSData(self.info), forKey: .info)
         try container.encodeIfPresent(self.emojiString, forKey: .emojiString)
         try container.encodeIfPresent(self.contentType, forKey: .contentType)

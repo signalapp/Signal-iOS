@@ -14,11 +14,9 @@ import UIKit
 /// Outgoing story threads are not represented, but this table could be extended to include
 /// them in the future.
 public final class StoryContextAssociatedData: SDSCodableModel, Decodable {
-    public static var recordType: UInt { 0 }
-
     public static let databaseTableName = "model_StoryContextAssociatedData"
 
-    public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
+    public enum CodingKeys: String, CodingKey, ColumnExpression {
         case id
         case recordType
         case uniqueId
@@ -259,9 +257,6 @@ public final class StoryContextAssociatedData: SDSCodableModel, Decodable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
-        let decodedRecordType = try container.decode(Int.self, forKey: .recordType)
-        owsAssertDebug(decodedRecordType == Self.recordType, "Unexpectedly decoded record with wrong type.")
-
         id = try container.decodeIfPresent(RowId.self, forKey: .id)
         uniqueId = try container.decode(String.self, forKey: .uniqueId)
         contactAci = try container.decodeIfPresent(UUID.self, forKey: .contactAci).map { Aci(fromUUID: $0) }
@@ -279,7 +274,7 @@ public final class StoryContextAssociatedData: SDSCodableModel, Decodable {
         var container = encoder.container(keyedBy: CodingKeys.self)
 
         if let id { try container.encode(id, forKey: .id) }
-        try container.encode(Self.recordType, forKey: .recordType)
+        try container.encode(0, forKey: .recordType)
         try container.encode(uniqueId, forKey: .uniqueId)
         try container.encode(contactAci?.rawUUID, forKey: .contactAci)
         if let groupId { try container.encode(groupId, forKey: .groupId) }

@@ -10,11 +10,9 @@ import UIKit
 
 @objc
 public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
-    public static var recordType: UInt { 0 }
-
     public static let databaseTableName = "model_StoryMessage"
 
-    public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
+    public enum CodingKeys: String, CodingKey, ColumnExpression {
         case id
         case recordType
         case uniqueId
@@ -980,9 +978,6 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
-        let decodedRecordType = try container.decode(Int.self, forKey: .recordType)
-        owsAssertDebug(decodedRecordType == Self.recordType, "Unexpectedly decoded record with wrong type.")
-
         id = try container.decodeIfPresent(RowId.self, forKey: .id)
         uniqueId = try container.decode(String.self, forKey: .uniqueId)
         timestamp = try container.decode(UInt64.self, forKey: .timestamp)
@@ -998,7 +993,7 @@ public final class StoryMessage: NSObject, SDSCodableModel, Decodable {
         var container = encoder.container(keyedBy: CodingKeys.self)
 
         if let id { try container.encode(id, forKey: .id) }
-        try container.encode(Self.recordType, forKey: .recordType)
+        try container.encode(0, forKey: .recordType)
         try container.encode(uniqueId, forKey: .uniqueId)
         try container.encode(timestamp, forKey: .timestamp)
         try container.encode(authorAci.rawUUID, forKey: .authorAci)

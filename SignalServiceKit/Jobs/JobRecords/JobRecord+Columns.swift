@@ -12,7 +12,7 @@ extension JobRecord {
     /// here are the set-union of the columns used by each individual job
     /// record. While most columns are uniquely used for a single type of job,
     /// some columns have been reused across multiple job types.
-    public enum JobRecordColumns: String, CodingKey, ColumnExpression, CaseIterable {
+    public enum JobRecordColumns: String, CodingKey, ColumnExpression {
 
         // MARK: Unused/Deprecated columns
 

@@ -7,15 +7,13 @@ import Foundation
 public import GRDB
 
 public final class DonationReceipt: SDSCodableModel, Decodable {
-    public static var recordType: UInt { 0 }
-
     public enum DonationReceiptType {
         case boost
         case subscription(subscriptionLevel: UInt)
         case gift
     }
 
-    public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
+    public enum CodingKeys: String, CodingKey, ColumnExpression {
         case id
         case uniqueId
         case timestamp

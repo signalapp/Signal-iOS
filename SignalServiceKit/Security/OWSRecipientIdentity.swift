@@ -55,7 +55,7 @@ public enum VerificationState: Equatable {
 /// Record for a recipient's identity key and associated fields used to make trust decisions.
 public final class OWSRecipientIdentity: NSObject, SDSCodableModel, Decodable {
     public static let databaseTableName = "model_OWSRecipientIdentity"
-    public static var recordType: UInt { SDSRecordType.recipientIdentity.rawValue }
+    private static var recordType: SDSRecordType { .recipientIdentity }
 
     public var id: Int64?
     public let uniqueId: String
@@ -79,7 +79,7 @@ public final class OWSRecipientIdentity: NSObject, SDSCodableModel, Decodable {
         self.verificationState = verificationState
     }
 
-    public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
+    public enum CodingKeys: String, CodingKey, ColumnExpression {
         case id
         case recordType
         case uniqueId
@@ -93,8 +93,8 @@ public final class OWSRecipientIdentity: NSObject, SDSCodableModel, Decodable {
     public init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
-        let decodedRecordType = try container.decode(UInt.self, forKey: .recordType)
-        guard decodedRecordType == Self.recordType else {
+        let decodedRecordType = try container.decode(Int64.self, forKey: .recordType)
+        guard decodedRecordType == Self.recordType.rawValue else {
             owsFailDebug("Unexpected record type: \(decodedRecordType)")
             throw SDSError.invalidValue()
         }
@@ -110,7 +110,7 @@ public final class OWSRecipientIdentity: NSObject, SDSCodableModel, Decodable {
     public func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encodeIfPresent(self.id, forKey: .id)
-        try container.encode(Self.recordType, forKey: .recordType)
+        try container.encode(Self.recordType.rawValue, forKey: .recordType)
         try container.encode(self.uniqueId, forKey: .uniqueId)
         try container.encode(self.uniqueId, forKey: .accountId)
         try container.encode(self.identityKey, forKey: .identityKey)

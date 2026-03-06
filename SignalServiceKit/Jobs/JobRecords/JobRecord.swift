@@ -45,9 +45,7 @@ public class JobRecord: SDSCodableModel, InheritableRecord {
         owsFail("Must be provided by subclasses!")
     }
 
-    public static var recordType: UInt {
-        return jobRecordType.rawValue
-    }
+    public static var recordType: UInt { jobRecordType.rawValue }
 
     public var id: RowId?
     public let uniqueId: String

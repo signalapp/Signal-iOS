@@ -71,24 +71,11 @@ public import GRDB
 ///
 /// [0]: https://github.com/apple/swift/issues/61946
 public protocol SDSCodableModel: Encodable, FetchableRecord, PersistableRecord, SDSIdentifiableModel {
-    associatedtype CodingKeys: RawRepresentable<String>, CodingKey, ColumnExpression, CaseIterable
+    associatedtype CodingKeys: RawRepresentable<String>, CodingKey, ColumnExpression
     typealias Columns = CodingKeys
     typealias RowId = Int64
 
     var id: RowId? { get set }
-
-    /// For compatibility with legacy SDS codegen (see ``SDSRecord`` and
-    /// friends). Subclasses should override to differentiate their records
-    /// from parent classes.
-    ///
-    /// See ``NeedsFactoryInitializationFromRecordType`` for more details on
-    /// models with inheritance, and how that intersects with `recordType`.
-    ///
-    /// Models using ``SDSCodableModel`` that never used codegen (i.e., were
-    /// written from the start using ``SDSCodableModel``, rather than migrated)
-    /// and which do not use inheritance may set this to zero. If they choose
-    /// to do so, they may never in the future use inheritance.
-    static var recordType: UInt { get }
 
     var uniqueId: String { get }
 

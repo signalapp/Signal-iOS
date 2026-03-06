@@ -139,7 +139,7 @@ public final class UserProfileNotifications: NSObject {
 @objc
 public final class OWSUserProfile: NSObject, SDSCodableModel, Decodable {
     public static let databaseTableName = "model_OWSUserProfile"
-    public static var recordType: UInt { SDSRecordType.userProfile.rawValue }
+    private static var recordType: SDSRecordType { .userProfile }
 
     /// An address used to identify an ``OWSUserProfile``.
     public enum Address: Hashable {
@@ -368,7 +368,7 @@ public final class OWSUserProfile: NSObject, SDSCodableModel, Decodable {
         return true
     }
 
-    public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
+    public enum CodingKeys: String, CodingKey, ColumnExpression {
         case id
         case recordType
         case uniqueId
@@ -393,7 +393,7 @@ public final class OWSUserProfile: NSObject, SDSCodableModel, Decodable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encodeIfPresent(id, forKey: .id)
-        try container.encode(Self.recordType, forKey: .recordType)
+        try container.encode(Self.recordType.rawValue, forKey: .recordType)
         try container.encode(uniqueId, forKey: .uniqueId)
         try container.encodeIfPresent(serviceIdString, forKey: .serviceIdString)
         try container.encodeIfPresent(phoneNumber, forKey: .phoneNumber)
@@ -416,8 +416,8 @@ public final class OWSUserProfile: NSObject, SDSCodableModel, Decodable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
-        let decodedRecordType = try container.decode(UInt.self, forKey: .recordType)
-        guard decodedRecordType == Self.recordType else {
+        let decodedRecordType = try container.decode(Int64.self, forKey: .recordType)
+        guard decodedRecordType == Self.recordType.rawValue else {
             owsFailDebug("Unexpected record type: \(decodedRecordType)")
             throw SDSError.invalidValue()
         }
