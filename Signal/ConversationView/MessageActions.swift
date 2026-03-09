@@ -204,10 +204,6 @@ enum MessageActionBuilder {
     ) -> MessageAction? {
         let db = DependenciesBridge.shared.db
 
-        guard BuildFlags.PinnedMessages.send else {
-            return nil
-        }
-
         guard
             let localAci = DependenciesBridge.shared.tsAccountManager.localIdentifiersWithMaybeSneakyTransaction?.aci,
             db.read(block: { tx in itemViewModel.thread.canUserEditPinnedMessages(aci: localAci, tx: tx) })

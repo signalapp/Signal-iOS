@@ -284,27 +284,22 @@ extension ConversationViewController: UIContextMenuInteractionDelegate {
     ) -> UIContextMenuConfiguration? {
         return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
             var actions: [UIAction] = []
-            if BuildFlags.PinnedMessages.send {
-                actions.append(
-                    UIAction(
-                        title: OWSLocalizedString(
-                            "PINNED_MESSAGES_UNPIN",
-                            comment: "Action menu item to unpin a message",
-                        ),
-                        image: .pinSlash,
-                    ) { [weak self] _ in
-                        guard let self else { return }
-                        if threadViewModel.pinnedMessages.indices.contains(pinnedMessageIndex) {
-                            handleActionUnpin(
-                                message: threadViewModel.pinnedMessages[pinnedMessageIndex],
-                                modalDelegate: self,
-                            )
-                        }
-                    },
-                )
-            }
-
             actions.append(contentsOf: [
+                UIAction(
+                    title: OWSLocalizedString(
+                        "PINNED_MESSAGES_UNPIN",
+                        comment: "Action menu item to unpin a message",
+                    ),
+                    image: .pinSlash,
+                ) { [weak self] _ in
+                    guard let self else { return }
+                    if threadViewModel.pinnedMessages.indices.contains(pinnedMessageIndex) {
+                        handleActionUnpin(
+                            message: threadViewModel.pinnedMessages[pinnedMessageIndex],
+                            modalDelegate: self,
+                        )
+                    }
+                },
                 UIAction(
                     title: OWSLocalizedString(
                         "PINNED_MESSAGES_GO_TO_MESSAGE",

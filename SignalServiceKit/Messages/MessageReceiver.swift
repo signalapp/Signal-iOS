@@ -399,13 +399,6 @@ public final class MessageReceiver {
                     return
                 }
 
-                if dataMessage.pinMessage != nil || dataMessage.unpinMessage != nil {
-                    guard BuildFlags.PinnedMessages.receive else {
-                        Logger.warn("Pinned messages are not supported on this device")
-                        return
-                    }
-                }
-
                 if dataMessage.hasProfileKey {
                     if let groupId {
                         SSKEnvironment.shared.profileManagerRef.addGroupId(
@@ -1460,10 +1453,7 @@ public final class MessageReceiver {
             return nil
         }
 
-        if
-            BuildFlags.PinnedMessages.receive,
-            thread.canUserEditPinnedMessages(aci: envelope.sourceAci, tx: tx)
-        {
+        if thread.canUserEditPinnedMessages(aci: envelope.sourceAci, tx: tx) {
             if let pinMessage = dataMessage.pinMessage {
                 do {
                     try DependenciesBridge.shared.pinnedMessageManager.pinMessage(

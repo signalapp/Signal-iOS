@@ -496,8 +496,8 @@ private class ConversationBannerView: UIView {
 
         private func pinMessageMenu() -> UIMenu {
             var actions: [UIAction] = []
-            if BuildFlags.PinnedMessages.send {
-                actions.append(
+            actions.append(
+                contentsOf: [
                     UIAction(
                         title: OWSLocalizedString(
                             "PINNED_MESSAGES_UNPIN",
@@ -507,10 +507,6 @@ private class ConversationBannerView: UIView {
                     ) { [weak self] _ in
                         self?.pinnedMessageInteractionDelegate?.unpinMessage(message: nil, modalDelegate: nil)
                     },
-                )
-            }
-            actions.append(
-                contentsOf: [
                     UIAction(
                         title: OWSLocalizedString(
                             "PINNED_MESSAGES_GO_TO_MESSAGE",

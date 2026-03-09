@@ -78,11 +78,6 @@ public enum BuildFlags {
 
     public static let serviceIdStrings = false
 
-    public enum PinnedMessages {
-        public static let send = true
-        public static let receive = true
-    }
-
     public enum MemberLabel {
         public static let display = true
         public static let send = build <= .beta
