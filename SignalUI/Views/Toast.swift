@@ -259,6 +259,16 @@ class ToastView: UIView {
     }
 }
 
+public class ToastViewHelper {
+    public static func presentToastOnFrontmostViewController(text: String) {
+        guard let fromViewController = CurrentAppContext().frontmostViewController() else {
+            owsFailDebug("frontmostViewController was unexpectedly nil")
+            return
+        }
+        fromViewController.presentToast(text: text)
+    }
+}
+
 // MARK: -
 
 public extension UIView {

@@ -139,7 +139,18 @@ public extension TSInteraction {
                             uniqueId: message.uniqueId,
                             transaction: tx,
                         )
-                        guard let latestMessage, let latestThread = latestMessage.thread(tx: tx) else {
+                        guard let latestMessage else {
+                            ToastViewHelper.presentToastOnFrontmostViewController(
+                                text: OWSLocalizedString(
+                                    "REMOTE_DELETE_DISAPPEARED_MESSAGE_TOAST",
+                                    comment: "Toast that appears when local user tried to delete a message that has disappeared",
+                                ),
+                            )
+                            Logger.warn("User tried to delete a message that no longer exists")
+                            return
+                        }
+
+                        guard let latestThread = latestMessage.thread(tx: tx) else {
                             // We can't reach this point in the UI if a message doesn't have a thread.
                             return owsFailDebug("Trying to delete a message without a thread.")
                         }

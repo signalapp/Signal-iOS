@@ -7603,6 +7603,9 @@
 /* Label warning the user that something is wrong with their username link. */
 "REMINDER_VIEW_USERNAME_LINK_CORRUPTED_WARNING" = "Something went wrong with your username QR code and link, it’s no longer valid. Create a new link to share with others.";
 
+/* Toast that appears when local user tried to delete a message that has disappeared */
+"REMOTE_DELETE_DISAPPEARED_MESSAGE_TOAST" = "Message disappeared before it could be deleted.";
+
 /* A message that displays when one person in a call remotely muted another participant. Embeds {{name}} {{name}} */
 "REMOTE_MUTE_TOAST_A_MUTED_B" = "%1$@ muted %2$@.";
 
