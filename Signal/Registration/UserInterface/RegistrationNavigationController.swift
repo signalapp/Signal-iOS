@@ -403,6 +403,12 @@ public class RegistrationNavigationController: OWSNavigationController {
             let title: String?
             let message: String
             switch errorSheet {
+            case .sessionCanNeverRequestVerificationCode:
+                title = nil
+                message = OWSLocalizedString(
+                    "REGISTRATION_PROVIDER_FAILURE_MESSAGE_PERMANENT",
+                    comment: "Error shown if an SMS/call service provider is unable to send a verification code to the provided number.",
+                )
             case .becameDeregistered(let reregParams):
                 handleDeregistrationReset(reregParams)
                 return nil

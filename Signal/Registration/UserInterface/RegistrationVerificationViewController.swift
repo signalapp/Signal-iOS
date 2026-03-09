@@ -414,7 +414,7 @@ class RegistrationVerificationViewController: OWSViewController {
             if isPermanent {
                 message = OWSLocalizedString(
                     "REGISTRATION_PROVIDER_FAILURE_MESSAGE_PERMANENT",
-                    comment: "Error shown if an SMS/call service provider is permanently unable to send a verification code to the provided number.",
+                    comment: "Error shown if an SMS/call service provider is unable to send a verification code to the provided number.",
                 )
             } else {
                 message = OWSLocalizedString(

@@ -99,6 +99,10 @@ public enum RegistrationStep: Equatable {
     // MARK: - Non-ViewController steps
 
     public enum ErrorSheet: Equatable {
+        /// We received a session that indicates we won't be able to use it to
+        /// request a code.
+        case sessionCanNeverRequestVerificationCode
+
         /// We should tell the user their attempt has expired
         /// and they need to start over.
         case sessionInvalidated

@@ -2551,11 +2551,23 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
         initialCodeRequestState: PersistedState.SessionState.InitialCodeRequestState? = nil,
         _ transaction: DBWriteTransaction,
     ) {
+        if
+            let session,
+            !session.verified,
+            sessionCanNeverRequestVerificationCode(session)
+        {
+            // If our session is unverified and will never be able to request a
+            // verification code, wipe it.
+            resetSession(transaction)
+            return
+        }
+
         if session == nil || persistedState.sessionState?.sessionId != session?.id {
             self.updatePersistedState(transaction) {
                 $0.sessionState = session.map { .init(sessionId: $0.id) }
             }
         }
+
         var newInitialCodeRequestState = initialCodeRequestState
         if session?.nextVerificationAttempt != nil {
             // If we can submit a code, we must have requested
@@ -2585,37 +2597,33 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
             break
         }
 
-        if session?.verified == true {
-            // Any verified session is good and we should keep it.
-            inMemoryState.session = session
-            return
-        }
-
-        if
-            let session,
-            // If we can't submit a code...
-            session.nextVerificationAttempt == nil,
-            // Can't request a code (and can't do any challenges to move on)...
-            !session.allowedToRequestCode, session.requestedInformation.isEmpty,
-            // And have exhausted our ability to request codes...
-            session.nextSMS == nil,
-            session.nextCall == nil
-        {
-            // Then this session is incapable of being verified, and we should
-            // discard it.
-
-            // UNLESS it has an unknown challenge type on it.
-            // In this case, the session might still be good, and we want to
-            // alert the user instead of discarding.
-            if session.hasUnknownChallengeRequiringAppUpdate {
-                inMemoryState.session = session
-                return
-            } else {
-                self.resetSession(transaction)
-                return
-            }
-        }
         inMemoryState.session = session
+    }
+
+    /// Returns whether the given session will never be able to request a
+    /// verification code. If given `!session.verified`, then this represents a
+    /// dead-ended session.
+    private func sessionCanNeverRequestVerificationCode(_ session: RegistrationSession) -> Bool {
+        if
+            !session.allowedToRequestCode,
+            session.requestedInformation.isEmpty,
+            !session.hasUnknownChallengeRequiringAppUpdate
+        {
+            // We aren't allowed to request a code, and there's no challenges we
+            // could complete to be able to do so.
+            return true
+        } else if
+            session.allowedToRequestCode,
+            session.nextSMS == nil,
+            session.nextCall == nil,
+            session.nextVerificationAttempt == nil
+        {
+            // We're "allowed" to request a code, but in practice we're out of
+            // attempts.
+            return true
+        }
+
+        return false
     }
 
     private func resetSession(_ transaction: DBWriteTransaction) {
@@ -2812,6 +2820,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         switch response {
         case .success(let session):
+            if sessionCanNeverRequestVerificationCode(session) {
+                db.write { resetSession($0) }
+                return .showErrorSheet(.sessionCanNeverRequestVerificationCode)
+            }
+
             db.write { transaction in
                 self.processSession(session, transaction)
 
@@ -3205,6 +3218,11 @@ public class RegistrationCoordinatorImpl: RegistrationCoordinator {
 
         switch result {
         case .success(let session):
+            if sessionCanNeverRequestVerificationCode(session) {
+                db.write { resetSession($0) }
+                return .showErrorSheet(.sessionCanNeverRequestVerificationCode)
+            }
+
             db.write { tx in
                 processSession(session, tx)
                 switch fulfillment {
