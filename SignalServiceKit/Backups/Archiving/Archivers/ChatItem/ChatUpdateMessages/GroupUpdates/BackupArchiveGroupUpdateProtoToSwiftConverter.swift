@@ -640,6 +640,18 @@ final class BackupArchiveGroupUpdateProtoToSwiftConverter {
                     return .messageFailure([error])
                 }
             }
+        case .groupMemberLabelAccessLevelChangeUpdate(let proto):
+            let newAccess = proto.accessLevel.swiftAccessLevel
+            switch unwrapOptionalAci(proto, \.updaterAci) {
+            case .unknown:
+                return .success([.memberLabelsAccessChangedByUnknownUser(newAccess: newAccess)])
+            case .localUser:
+                return .success([.memberLabelsAccessChangedByLocalUser(newAccess: newAccess)])
+            case .otherUser(let aci):
+                return .success([.memberLabelsAccessChangedByOtherUser(updaterAci: aci, newAccess: newAccess)])
+            case .invalidAci(let error):
+                return .messageFailure([error])
+            }
         }
     }
 }

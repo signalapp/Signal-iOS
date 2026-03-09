@@ -1764,6 +1764,8 @@ public struct BackupProto_Group: @unchecked Sendable {
 
     public var addFromInviteLink: BackupProto_Group.AccessControl.AccessRequired = .unknown
 
+    public var memberLabel: BackupProto_Group.AccessControl.AccessRequired = .unknown
+
     public var unknownFields = SwiftProtobuf.UnknownStorage()
 
     public enum AccessRequired: SwiftProtobuf.Enum, Swift.CaseIterable {
@@ -5118,6 +5120,14 @@ public struct BackupProto_GroupChangeChatUpdate: Sendable {
       set {update = .groupExpirationTimerUpdate(newValue)}
     }
 
+    public var groupMemberLabelAccessLevelChangeUpdate: BackupProto_GroupMemberLabelAccessLevelChangeUpdate {
+      get {
+        if case .groupMemberLabelAccessLevelChangeUpdate(let v)? = update {return v}
+        return BackupProto_GroupMemberLabelAccessLevelChangeUpdate()
+      }
+      set {update = .groupMemberLabelAccessLevelChangeUpdate(newValue)}
+    }
+
     public var unknownFields = SwiftProtobuf.UnknownStorage()
 
     /// If unset, importers should consider it to be a GenericGroupUpdate with unset updaterAci
@@ -5156,6 +5166,7 @@ public struct BackupProto_GroupChangeChatUpdate: Sendable {
       case groupV2MigrationDroppedMembersUpdate(BackupProto_GroupV2MigrationDroppedMembersUpdate)
       case groupSequenceOfRequestsAndCancelsUpdate(BackupProto_GroupSequenceOfRequestsAndCancelsUpdate)
       case groupExpirationTimerUpdate(BackupProto_GroupExpirationTimerUpdate)
+      case groupMemberLabelAccessLevelChangeUpdate(BackupProto_GroupMemberLabelAccessLevelChangeUpdate)
 
     }
 
@@ -5295,6 +5306,29 @@ public struct BackupProto_GroupDescriptionUpdate: Sendable {
 }
 
 public struct BackupProto_GroupMembershipAccessLevelChangeUpdate: Sendable {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var updaterAci: Data {
+    get {_updaterAci ?? Data()}
+    set {_updaterAci = newValue}
+  }
+  /// Returns true if `updaterAci` has been explicitly set.
+  public var hasUpdaterAci: Bool {self._updaterAci != nil}
+  /// Clears the value of `updaterAci`. Subsequent reads from it will return its default value.
+  public mutating func clearUpdaterAci() {self._updaterAci = nil}
+
+  public var accessLevel: BackupProto_GroupV2AccessLevel = .unknown
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _updaterAci: Data? = nil
+}
+
+public struct BackupProto_GroupMemberLabelAccessLevelChangeUpdate: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -8445,7 +8479,7 @@ extension BackupProto_Group.MemberBanned: SwiftProtobuf.Message, SwiftProtobuf._
 
 extension BackupProto_Group.AccessControl: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = BackupProto_Group.protoMessageName + ".AccessControl"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}attributes\0\u{1}members\0\u{1}addFromInviteLink\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}attributes\0\u{1}members\0\u{1}addFromInviteLink\0\u{1}memberLabel\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -8456,6 +8490,7 @@ extension BackupProto_Group.AccessControl: SwiftProtobuf.Message, SwiftProtobuf.
       case 1: try { try decoder.decodeSingularEnumField(value: &self.attributes) }()
       case 2: try { try decoder.decodeSingularEnumField(value: &self.members) }()
       case 3: try { try decoder.decodeSingularEnumField(value: &self.addFromInviteLink) }()
+      case 4: try { try decoder.decodeSingularEnumField(value: &self.memberLabel) }()
       default: break
       }
     }
@@ -8471,6 +8506,9 @@ extension BackupProto_Group.AccessControl: SwiftProtobuf.Message, SwiftProtobuf.
     if self.addFromInviteLink != .unknown {
       try visitor.visitSingularEnumField(value: self.addFromInviteLink, fieldNumber: 3)
     }
+    if self.memberLabel != .unknown {
+      try visitor.visitSingularEnumField(value: self.memberLabel, fieldNumber: 4)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -8478,6 +8516,7 @@ extension BackupProto_Group.AccessControl: SwiftProtobuf.Message, SwiftProtobuf.
     if lhs.attributes != rhs.attributes {return false}
     if lhs.members != rhs.members {return false}
     if lhs.addFromInviteLink != rhs.addFromInviteLink {return false}
+    if lhs.memberLabel != rhs.memberLabel {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -12195,7 +12234,7 @@ extension BackupProto_GroupChangeChatUpdate: SwiftProtobuf.Message, SwiftProtobu
 
 extension BackupProto_GroupChangeChatUpdate.Update: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = BackupProto_GroupChangeChatUpdate.protoMessageName + ".Update"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}genericGroupUpdate\0\u{1}groupCreationUpdate\0\u{1}groupNameUpdate\0\u{1}groupAvatarUpdate\0\u{1}groupDescriptionUpdate\0\u{1}groupMembershipAccessLevelChangeUpdate\0\u{1}groupAttributesAccessLevelChangeUpdate\0\u{1}groupAnnouncementOnlyChangeUpdate\0\u{1}groupAdminStatusUpdate\0\u{1}groupMemberLeftUpdate\0\u{1}groupMemberRemovedUpdate\0\u{1}selfInvitedToGroupUpdate\0\u{1}selfInvitedOtherUserToGroupUpdate\0\u{1}groupUnknownInviteeUpdate\0\u{1}groupInvitationAcceptedUpdate\0\u{1}groupInvitationDeclinedUpdate\0\u{1}groupMemberJoinedUpdate\0\u{1}groupMemberAddedUpdate\0\u{1}groupSelfInvitationRevokedUpdate\0\u{1}groupInvitationRevokedUpdate\0\u{1}groupJoinRequestUpdate\0\u{1}groupJoinRequestApprovalUpdate\0\u{1}groupJoinRequestCanceledUpdate\0\u{1}groupInviteLinkResetUpdate\0\u{1}groupInviteLinkEnabledUpdate\0\u{1}groupInviteLinkAdminApprovalUpdate\0\u{1}groupInviteLinkDisabledUpdate\0\u{1}groupMemberJoinedByLinkUpdate\0\u{1}groupV2MigrationUpdate\0\u{1}groupV2MigrationSelfInvitedUpdate\0\u{1}groupV2MigrationInvitedMembersUpdate\0\u{1}groupV2MigrationDroppedMembersUpdate\0\u{1}groupSequenceOfRequestsAndCancelsUpdate\0\u{1}groupExpirationTimerUpdate\0")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}genericGroupUpdate\0\u{1}groupCreationUpdate\0\u{1}groupNameUpdate\0\u{1}groupAvatarUpdate\0\u{1}groupDescriptionUpdate\0\u{1}groupMembershipAccessLevelChangeUpdate\0\u{1}groupAttributesAccessLevelChangeUpdate\0\u{1}groupAnnouncementOnlyChangeUpdate\0\u{1}groupAdminStatusUpdate\0\u{1}groupMemberLeftUpdate\0\u{1}groupMemberRemovedUpdate\0\u{1}selfInvitedToGroupUpdate\0\u{1}selfInvitedOtherUserToGroupUpdate\0\u{1}groupUnknownInviteeUpdate\0\u{1}groupInvitationAcceptedUpdate\0\u{1}groupInvitationDeclinedUpdate\0\u{1}groupMemberJoinedUpdate\0\u{1}groupMemberAddedUpdate\0\u{1}groupSelfInvitationRevokedUpdate\0\u{1}groupInvitationRevokedUpdate\0\u{1}groupJoinRequestUpdate\0\u{1}groupJoinRequestApprovalUpdate\0\u{1}groupJoinRequestCanceledUpdate\0\u{1}groupInviteLinkResetUpdate\0\u{1}groupInviteLinkEnabledUpdate\0\u{1}groupInviteLinkAdminApprovalUpdate\0\u{1}groupInviteLinkDisabledUpdate\0\u{1}groupMemberJoinedByLinkUpdate\0\u{1}groupV2MigrationUpdate\0\u{1}groupV2MigrationSelfInvitedUpdate\0\u{1}groupV2MigrationInvitedMembersUpdate\0\u{1}groupV2MigrationDroppedMembersUpdate\0\u{1}groupSequenceOfRequestsAndCancelsUpdate\0\u{1}groupExpirationTimerUpdate\0\u{1}groupMemberLabelAccessLevelChangeUpdate\0")
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
@@ -12645,6 +12684,19 @@ extension BackupProto_GroupChangeChatUpdate.Update: SwiftProtobuf.Message, Swift
           self.update = .groupExpirationTimerUpdate(v)
         }
       }()
+      case 35: try {
+        var v: BackupProto_GroupMemberLabelAccessLevelChangeUpdate?
+        var hadOneofValue = false
+        if let current = self.update {
+          hadOneofValue = true
+          if case .groupMemberLabelAccessLevelChangeUpdate(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.update = .groupMemberLabelAccessLevelChangeUpdate(v)
+        }
+      }()
       default: break
       }
     }
@@ -12791,6 +12843,10 @@ extension BackupProto_GroupChangeChatUpdate.Update: SwiftProtobuf.Message, Swift
     case .groupExpirationTimerUpdate?: try {
       guard case .groupExpirationTimerUpdate(let v)? = self.update else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 34)
+    }()
+    case .groupMemberLabelAccessLevelChangeUpdate?: try {
+      guard case .groupMemberLabelAccessLevelChangeUpdate(let v)? = self.update else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 35)
     }()
     case nil: break
     }
@@ -13021,6 +13077,45 @@ extension BackupProto_GroupMembershipAccessLevelChangeUpdate: SwiftProtobuf.Mess
   }
 
   public static func ==(lhs: BackupProto_GroupMembershipAccessLevelChangeUpdate, rhs: BackupProto_GroupMembershipAccessLevelChangeUpdate) -> Bool {
+    if lhs._updaterAci != rhs._updaterAci {return false}
+    if lhs.accessLevel != rhs.accessLevel {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension BackupProto_GroupMemberLabelAccessLevelChangeUpdate: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".GroupMemberLabelAccessLevelChangeUpdate"
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}updaterAci\0\u{1}accessLevel\0")
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularBytesField(value: &self._updaterAci) }()
+      case 2: try { try decoder.decodeSingularEnumField(value: &self.accessLevel) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._updaterAci {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 1)
+    } }()
+    if self.accessLevel != .unknown {
+      try visitor.visitSingularEnumField(value: self.accessLevel, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: BackupProto_GroupMemberLabelAccessLevelChangeUpdate, rhs: BackupProto_GroupMemberLabelAccessLevelChangeUpdate) -> Bool {
     if lhs._updaterAci != rhs._updaterAci {return false}
     if lhs.accessLevel != rhs.accessLevel {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}

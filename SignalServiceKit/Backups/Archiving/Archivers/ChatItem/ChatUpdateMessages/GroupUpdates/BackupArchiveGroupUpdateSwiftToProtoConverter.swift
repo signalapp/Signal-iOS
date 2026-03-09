@@ -347,12 +347,32 @@ final class BackupArchiveGroupUpdateSwiftToProtoConverter {
                 },
                 asUpdate: { .groupMembershipAccessLevelChangeUpdate($0) },
             )
-        case
-            .memberLabelsAccessChangedByLocalUser,
-            .memberLabelsAccessChangedByUnknownUser,
-            .memberLabelsAccessChangedByOtherUser:
-            // TODO: Implement when backups validator changes are merged.
-            return .skippableInteraction(.memberLabelPermission)
+        case .memberLabelsAccessChangedByLocalUser(let newAccess):
+            setUpdate(
+                BackupProto_GroupMemberLabelAccessLevelChangeUpdate(),
+                setFields: {
+                    $0.accessLevel = newAccess.backupAccessLevel
+                    $0.updaterAci = localAciData
+                },
+                asUpdate: { .groupMemberLabelAccessLevelChangeUpdate($0) },
+            )
+        case .memberLabelsAccessChangedByUnknownUser(let newAccess):
+            setUpdate(
+                BackupProto_GroupMemberLabelAccessLevelChangeUpdate(),
+                setFields: {
+                    $0.accessLevel = newAccess.backupAccessLevel
+                },
+                asUpdate: { .groupMemberLabelAccessLevelChangeUpdate($0) },
+            )
+        case .memberLabelsAccessChangedByOtherUser(let updaterAci, let newAccess):
+            setUpdate(
+                BackupProto_GroupMemberLabelAccessLevelChangeUpdate(),
+                setFields: {
+                    $0.accessLevel = newAccess.backupAccessLevel
+                    $0.updaterAci = aciData(updaterAci)
+                },
+                asUpdate: { .groupMemberLabelAccessLevelChangeUpdate($0) },
+            )
         case .attributesAccessChangedByLocalUser(let newAccess):
             setUpdate(
                 BackupProto_GroupAttributesAccessLevelChangeUpdate(),
