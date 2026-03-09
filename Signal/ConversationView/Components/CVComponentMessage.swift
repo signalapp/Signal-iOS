@@ -2886,6 +2886,11 @@ public class CVComponentMessage: CVComponentBase, CVRootComponent {
         guard let swipeActionProgress else {
             return
         }
+
+        guard !wasRemotelyDeleted else {
+            return
+        }
+
         let swipeToReplyIconView = componentView.swipeToReplyIconView
 
         // Scale the translation above or below the desired range,
