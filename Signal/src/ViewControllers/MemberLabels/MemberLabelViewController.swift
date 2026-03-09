@@ -392,7 +392,13 @@ class MemberLabelViewController: OWSViewController, UITextFieldDelegate {
     @objc
     func textDidChange(_ textField: UITextField) {
         let filteredText = textField.text?.filterStringForDisplay()
-        updatedMemberLabel = filteredText?.nilIfEmpty
+        let collapsedFilteredText = filteredText?.replacingOccurrences(
+            of: "\\s+",
+            with: " ",
+            options: .regularExpression,
+        )
+
+        updatedMemberLabel = collapsedFilteredText?.nilIfEmpty
         reloadDoneButtonStatus()
         reloadMessagePreview()
     }
