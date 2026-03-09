@@ -173,20 +173,18 @@ struct OWSDeviceServiceImpl: OWSDeviceService {
             // little-endian by default.
 
             var associatedData = Data()
-            associatedData.append(contentsOf: withUnsafeBytes(of: fetchedDevice.id.rawValue.bigEndian) { Array($0) })
-            associatedData.append(contentsOf: withUnsafeBytes(of: fetchedDevice.registrationId.bigEndian) { Array($0) })
+            associatedData += fetchedDevice.id.rawValue.bigEndianData
+            associatedData += fetchedDevice.registrationId.bigEndianData
 
             let createdAtData: Data = try identityKeyPair.privateKey.open(
                 fetchedDevice.createdAtCiphertext,
                 info: "deviceCreatedAt",
                 associatedData: associatedData,
             )
-
-            let createdAtMsInt = withUnsafeBytes(of: createdAtData) {
-                $0.load(as: Int64.self).bigEndian
+            guard let createdAt = Int64(bigEndianData: createdAtData) else {
+                throw OWSGenericError("not enough bytes for deviceCreatedAt")
             }
-
-            createdAtMs = UInt64(createdAtMsInt)
+            createdAtMs = UInt64(clamping: createdAt)
         } catch {
             throw OWSAssertionError("Failed to decrypt device createdAt! \(error)")
         }
