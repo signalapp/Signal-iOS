@@ -1345,6 +1345,7 @@ extension AppSetup.GlobalsContinuation {
         let adminDeleteManager = AdminDeleteManager(
             recipientDatabaseTable: recipientDatabaseTable,
             tsAccountManager: tsAccountManager,
+            storageServiceManager: storageServiceManager,
         )
 
         let backupChatStyleArchiver = BackupArchiveChatStyleArchiver(

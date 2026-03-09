@@ -2177,6 +2177,7 @@ class StorageServiceOperation {
                 typingIndicators: SSKEnvironment.shared.typingIndicatorsRef,
                 udManager: SSKEnvironment.shared.udManagerRef,
                 usernameEducationManager: DependenciesBridge.shared.usernameEducationManager,
+                adminDeleteManager: DependenciesBridge.shared.adminDeleteManager,
             ),
             changeState: \.localAccountChangeState,
             storageIdentifier: \.localAccountIdentifier,

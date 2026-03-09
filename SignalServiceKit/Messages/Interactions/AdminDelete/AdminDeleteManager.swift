@@ -13,17 +13,35 @@ public enum RemoteDeleteAuthor: Equatable {
 }
 
 public class AdminDeleteManager {
-    let recipientDatabaseTable: RecipientDatabaseTable
-    let tsAccountManager: TSAccountManager
+    public struct DeleteType: OptionSet {
+        public init(rawValue: Int) {
+            self.rawValue = rawValue
+        }
+
+        public let rawValue: Int
+
+        public static let admin = DeleteType(rawValue: 1 << 1)
+        public static let regular = DeleteType(rawValue: 1 << 2)
+    }
+
+    private let recipientDatabaseTable: RecipientDatabaseTable
+    private let tsAccountManager: TSAccountManager
+    private let kvStore: NewKeyValueStore
+    private let storageServiceManager: StorageServiceManager
+
+    private static let kvStoreAdminDeleteEducationReadKey = "adminDeleteEducationRead"
 
     private let logger = PrefixedLogger(prefix: "AdminDelete")
 
     init(
         recipientDatabaseTable: RecipientDatabaseTable,
         tsAccountManager: TSAccountManager,
+        storageServiceManager: StorageServiceManager,
     ) {
         self.recipientDatabaseTable = recipientDatabaseTable
         self.tsAccountManager = tsAccountManager
+        self.kvStore = NewKeyValueStore(collection: "AdminDeleteManager")
+        self.storageServiceManager = storageServiceManager
     }
 
     private func insertAdminDelete(
@@ -162,6 +180,20 @@ public class AdminDeleteManager {
                 deleteAuthorId: recipientId,
             )
             try adminDeleteRecord.insert(tx.database)
+        }
+    }
+
+    public func adminDeleteEducationReadStatus(tx: DBReadTransaction) -> Bool {
+        return kvStore.fetchValue(Bool.self, forKey: Self.kvStoreAdminDeleteEducationReadKey, tx: tx) ?? false
+    }
+
+    public func setAdminDeleteEducationRead(tx: DBWriteTransaction, updateStorageService: Bool) {
+        guard !adminDeleteEducationReadStatus(tx: tx) else {
+            return
+        }
+        kvStore.writeValue(true, forKey: Self.kvStoreAdminDeleteEducationReadKey, tx: tx)
+        if updateStorageService {
+            storageServiceManager.recordPendingLocalAccountUpdates()
         }
     }
 }

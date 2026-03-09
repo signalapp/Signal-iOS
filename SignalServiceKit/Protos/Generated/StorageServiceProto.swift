@@ -3474,6 +3474,9 @@ public struct StorageServiceProtoAccountRecord: Codable, CustomDebugStringConver
     public var automaticKeyVerificationDisabled: Bool {
         return proto.automaticKeyVerificationDisabled
     }
+    public var seenAdminDeleteEducationDialog: Bool {
+        return proto.seenAdminDeleteEducationDialog
+    }
     public var hasUnknownFields: Bool {
         return !proto.unknownFields.data.isEmpty
     }
@@ -3614,6 +3617,7 @@ extension StorageServiceProtoAccountRecord {
             builder.setAvatarColor(_value)
         }
         builder.setAutomaticKeyVerificationDisabled(automaticKeyVerificationDisabled)
+        builder.setSeenAdminDeleteEducationDialog(seenAdminDeleteEducationDialog)
         if let _value = unknownFields {
             builder.setUnknownFields(_value)
         }
@@ -3843,6 +3847,10 @@ public struct StorageServiceProtoAccountRecordBuilder {
 
     public mutating func setAutomaticKeyVerificationDisabled(_ valueParam: Bool) {
         proto.automaticKeyVerificationDisabled = valueParam
+    }
+
+    public mutating func setSeenAdminDeleteEducationDialog(_ valueParam: Bool) {
+        proto.seenAdminDeleteEducationDialog = valueParam
     }
 
     public mutating func setUnknownFields(_ unknownFields: SwiftProtobuf.UnknownStorage) {

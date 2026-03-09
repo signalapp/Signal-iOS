@@ -898,6 +898,11 @@ public struct BackupProto_AccountData: @unchecked Sendable {
       set {_uniqueStorage()._allowAutomaticKeyVerification = newValue}
     }
 
+    public var seenAdminDeleteEducationDialog: Bool {
+      get {_storage._seenAdminDeleteEducationDialog}
+      set {_uniqueStorage()._seenAdminDeleteEducationDialog = newValue}
+    }
+
     public var unknownFields = SwiftProtobuf.UnknownStorage()
 
     public init() {}
@@ -7062,7 +7067,7 @@ extension BackupProto_AccountData.AutoDownloadSettings.AutoDownloadOption: Swift
 
 extension BackupProto_AccountData.AccountSettings: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = BackupProto_AccountData.protoMessageName + ".AccountSettings"
-  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}readReceipts\0\u{1}sealedSenderIndicators\0\u{1}typingIndicators\0\u{1}linkPreviews\0\u{1}notDiscoverableByPhoneNumber\0\u{1}preferContactAvatars\0\u{1}universalExpireTimerSeconds\0\u{1}preferredReactionEmoji\0\u{1}displayBadgesOnProfile\0\u{1}keepMutedChatsArchived\0\u{1}hasSetMyStoriesPrivacy\0\u{1}hasViewedOnboardingStory\0\u{1}storiesDisabled\0\u{1}storyViewReceiptsEnabled\0\u{1}hasSeenGroupStoryEducationSheet\0\u{1}hasCompletedUsernameOnboarding\0\u{1}phoneNumberSharingMode\0\u{1}defaultChatStyle\0\u{1}customChatColors\0\u{1}optimizeOnDeviceStorage\0\u{1}backupTier\0\u{2}\u{2}defaultSentMediaQuality\0\u{1}autoDownloadSettings\0\u{2}\u{2}screenLockTimeoutMinutes\0\u{1}pinReminders\0\u{1}appTheme\0\u{1}callsUseLessDataSetting\0\u{1}allowSealedSenderFromAnyone\0\u{1}allowAutomaticKeyVerification\0\u{c}\u{16}\u{1}\u{c}\u{19}\u{1}")
+  public static let _protobuf_nameMap = SwiftProtobuf._NameMap(bytecode: "\0\u{1}readReceipts\0\u{1}sealedSenderIndicators\0\u{1}typingIndicators\0\u{1}linkPreviews\0\u{1}notDiscoverableByPhoneNumber\0\u{1}preferContactAvatars\0\u{1}universalExpireTimerSeconds\0\u{1}preferredReactionEmoji\0\u{1}displayBadgesOnProfile\0\u{1}keepMutedChatsArchived\0\u{1}hasSetMyStoriesPrivacy\0\u{1}hasViewedOnboardingStory\0\u{1}storiesDisabled\0\u{1}storyViewReceiptsEnabled\0\u{1}hasSeenGroupStoryEducationSheet\0\u{1}hasCompletedUsernameOnboarding\0\u{1}phoneNumberSharingMode\0\u{1}defaultChatStyle\0\u{1}customChatColors\0\u{1}optimizeOnDeviceStorage\0\u{1}backupTier\0\u{2}\u{2}defaultSentMediaQuality\0\u{1}autoDownloadSettings\0\u{2}\u{2}screenLockTimeoutMinutes\0\u{1}pinReminders\0\u{1}appTheme\0\u{1}callsUseLessDataSetting\0\u{1}allowSealedSenderFromAnyone\0\u{1}allowAutomaticKeyVerification\0\u{1}seenAdminDeleteEducationDialog\0\u{c}\u{16}\u{1}\u{c}\u{19}\u{1}")
 
   fileprivate class _StorageClass {
     var _readReceipts: Bool = false
@@ -7094,6 +7099,7 @@ extension BackupProto_AccountData.AccountSettings: SwiftProtobuf.Message, SwiftP
     var _callsUseLessDataSetting: BackupProto_AccountData.CallsUseLessDataSetting = .unknownCallDataSetting
     var _allowSealedSenderFromAnyone: Bool = false
     var _allowAutomaticKeyVerification: Bool = false
+    var _seenAdminDeleteEducationDialog: Bool = false
 
       // This property is used as the initial default value for new instances of the type.
       // The type itself is protecting the reference to its storage via CoW semantics.
@@ -7133,6 +7139,7 @@ extension BackupProto_AccountData.AccountSettings: SwiftProtobuf.Message, SwiftP
       _callsUseLessDataSetting = source._callsUseLessDataSetting
       _allowSealedSenderFromAnyone = source._allowSealedSenderFromAnyone
       _allowAutomaticKeyVerification = source._allowAutomaticKeyVerification
+      _seenAdminDeleteEducationDialog = source._seenAdminDeleteEducationDialog
     }
   }
 
@@ -7180,6 +7187,7 @@ extension BackupProto_AccountData.AccountSettings: SwiftProtobuf.Message, SwiftP
         case 29: try { try decoder.decodeSingularEnumField(value: &_storage._callsUseLessDataSetting) }()
         case 30: try { try decoder.decodeSingularBoolField(value: &_storage._allowSealedSenderFromAnyone) }()
         case 31: try { try decoder.decodeSingularBoolField(value: &_storage._allowAutomaticKeyVerification) }()
+        case 32: try { try decoder.decodeSingularBoolField(value: &_storage._seenAdminDeleteEducationDialog) }()
         default: break
         }
       }
@@ -7279,6 +7287,9 @@ extension BackupProto_AccountData.AccountSettings: SwiftProtobuf.Message, SwiftP
       if _storage._allowAutomaticKeyVerification != false {
         try visitor.visitSingularBoolField(value: _storage._allowAutomaticKeyVerification, fieldNumber: 31)
       }
+      if _storage._seenAdminDeleteEducationDialog != false {
+        try visitor.visitSingularBoolField(value: _storage._seenAdminDeleteEducationDialog, fieldNumber: 32)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -7317,6 +7328,7 @@ extension BackupProto_AccountData.AccountSettings: SwiftProtobuf.Message, SwiftP
         if _storage._callsUseLessDataSetting != rhs_storage._callsUseLessDataSetting {return false}
         if _storage._allowSealedSenderFromAnyone != rhs_storage._allowSealedSenderFromAnyone {return false}
         if _storage._allowAutomaticKeyVerification != rhs_storage._allowAutomaticKeyVerification {return false}
+        if _storage._seenAdminDeleteEducationDialog != rhs_storage._seenAdminDeleteEducationDialog {return false}
         return true
       }
       if !storagesAreEqual {return false}

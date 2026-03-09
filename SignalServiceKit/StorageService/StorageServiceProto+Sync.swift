@@ -1208,6 +1208,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
     private let typingIndicators: TypingIndicators
     private let udManager: OWSUDManager
     private let usernameEducationManager: UsernameEducationManager
+    private let adminDeleteManager: AdminDeleteManager
 
     init(
         localIdentifiers: LocalIdentifiers,
@@ -1234,6 +1235,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         typingIndicators: TypingIndicators,
         udManager: OWSUDManager,
         usernameEducationManager: UsernameEducationManager,
+        adminDeleteManager: AdminDeleteManager,
     ) {
         self.localIdentifiers = localIdentifiers
         self.isPrimaryDevice = isPrimaryDevice
@@ -1260,6 +1262,7 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         self.typingIndicators = typingIndicators
         self.udManager = udManager
         self.usernameEducationManager = usernameEducationManager
+        self.adminDeleteManager = adminDeleteManager
     }
 
     func unknownFields(for record: StorageServiceProtoAccountRecord) -> UnknownStorage? { record.unknownFields }
@@ -1435,6 +1438,8 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
         // Note that Storage Service stores the boolean inverted, because of a
         // misunderstanding when we added the field.
         builder.setAutomaticKeyVerificationDisabled(!keyTransparencyManager.isEnabled(tx: transaction))
+
+        builder.setSeenAdminDeleteEducationDialog(adminDeleteManager.adminDeleteEducationReadStatus(tx: transaction))
 
         return builder.buildInfallibly()
     }
@@ -1777,6 +1782,11 @@ class StorageServiceAccountRecordUpdater: StorageServiceRecordUpdater {
                 updateStorageService: false,
                 tx: transaction,
             )
+        }
+
+        let localAdminDeleteEducationRead = adminDeleteManager.adminDeleteEducationReadStatus(tx: transaction)
+        if !localAdminDeleteEducationRead, record.seenAdminDeleteEducationDialog {
+            adminDeleteManager.setAdminDeleteEducationRead(tx: transaction, updateStorageService: false)
         }
 
         return .merged(needsUpdate: needsUpdate, ())

@@ -362,6 +362,7 @@ extension ConversationViewController {
         }
         alert.addAction(deleteForMeAction)
 
+        var deleteType: AdminDeleteManager.DeleteType = []
         let canDeleteForEveryone: Bool = db.read { tx in
             selectionItems.allSatisfy { selectionItem in
                 guard
@@ -372,6 +373,13 @@ extension ConversationViewController {
                 else {
                     return false
                 }
+
+                if message.isIncoming {
+                    deleteType.update(with: .admin)
+                } else {
+                    deleteType.update(with: .regular)
+                }
+
                 let canAdminDelete = adminDeleteManager.canAdminDeleteMessage(message: message, thread: thread, tx: tx)
                 return message.canBeRemotelyDeletedByNonAdmin || canAdminDelete
             }
@@ -383,26 +391,29 @@ extension ConversationViewController {
                 style: .destructive,
             ) { [weak self] _ in
                 guard let self else { return }
-                TSInteraction.showDeleteForEveryoneConfirmationIfNecessary {
-                    ModalActivityIndicatorViewController.present(
-                        fromViewController: self,
-                        canCancel: false,
-                    ) { @MainActor [weak self] modalActivityIndicator in
-                        guard let self else { return }
-                        let thread = self.thread
-                        await db.awaitableWrite { tx in
-                            self.deleteSelectedItemsForEveryone(
-                                selectionItems: selectionItems,
-                                thread: thread,
-                                tx: tx,
-                            )
-                        }
+                TSInteraction.showDeleteForEveryoneConfirmationIfNecessary(
+                    deleteType: deleteType,
+                    completion: {
+                        ModalActivityIndicatorViewController.present(
+                            fromViewController: self,
+                            canCancel: false,
+                        ) { @MainActor [weak self] modalActivityIndicator in
+                            guard let self else { return }
+                            let thread = self.thread
+                            await db.awaitableWrite { tx in
+                                self.deleteSelectedItemsForEveryone(
+                                    selectionItems: selectionItems,
+                                    thread: thread,
+                                    tx: tx,
+                                )
+                            }
 
-                        modalActivityIndicator.dismiss {
-                            self.uiMode = .normal
+                            modalActivityIndicator.dismiss {
+                                self.uiMode = .normal
+                            }
                         }
-                    }
-                }
+                    },
+                )
             }
             alert.addAction(deleteForEveryoneAction)
         }

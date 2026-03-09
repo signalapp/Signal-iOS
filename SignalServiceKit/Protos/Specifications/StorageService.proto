@@ -273,6 +273,7 @@ message AccountRecord {
   reserved /*backupTierHistory*/ 43;
   // 44 and 45 related to notification profiles
   bool automaticKeyVerificationDisabled = 46;
+  bool seenAdminDeleteEducationDialog = 47;
 }
 
 message StoryDistributionListRecord {
