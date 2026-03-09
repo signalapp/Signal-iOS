@@ -1805,6 +1805,7 @@ public class GroupsV2Impl: GroupsV2 {
                     members: GroupAccess.defaultForV2.members,
                     attributes: GroupAccess.defaultForV2.attributes,
                     addFromInviteLink: inviteLinkPreview.addFromInviteLinkAccess,
+                    memberLabels: GroupAccess.defaultForV2.memberLabels,
                 )
                 builder.groupV2Revision = revision
                 builder.inviteLinkPassword = inviteLinkPassword

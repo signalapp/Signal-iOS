@@ -188,6 +188,7 @@ public class GroupsV2Protos {
         builder.setAttributes(groupAccess.attributes.protoAccess)
         builder.setMembers(groupAccess.members.protoAccess)
         builder.setAddFromInviteLink(groupAccess.addFromInviteLink.protoAccess)
+        builder.setMemberLabel(groupAccess.memberLabels.protoAccess)
         return builder.buildInfallibly()
     }
 
@@ -460,10 +461,13 @@ public class GroupsV2Protos {
         // disappearing messages should be disabled.
         let disappearingMessageToken = groupV2Params.decryptDisappearingMessagesTimer(groupProto.disappearingMessagesTimer)
 
+        let accessControlForMemberLabels = accessControl.memberLabel
+
         let groupAccess = GroupAccess(
             members: GroupV2Access.access(forProtoAccess: accessControlForMembers),
             attributes: GroupV2Access.access(forProtoAccess: accessControlForAttributes),
             addFromInviteLink: GroupV2Access.access(forProtoAccess: accessControlForAddFromInviteLink),
+            memberLabels: GroupV2Access.access(forProtoAccess: accessControlForMemberLabels),
         )
 
         validateInviteLinkState(inviteLinkPassword: inviteLinkPassword, groupAccess: groupAccess)

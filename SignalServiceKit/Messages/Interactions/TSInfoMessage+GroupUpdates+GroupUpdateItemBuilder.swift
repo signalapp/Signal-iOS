@@ -495,6 +495,20 @@ private struct PrecomputedGroupUpdateItemBuilder {
         case .attributesAccessChangedByUnknownUser(let newAccess):
             return .attributesAccessChangedByUnknownUser(newAccess: newAccess)
 
+        case .memberLabelsAccessChangedByLocalUser(let newAccess):
+            return .memberLabelsAccessChangedByLocalUser(newAccess: newAccess)
+
+        case .memberLabelsAccessChangedByUnknownUser(let newAccess):
+            return .memberLabelsAccessChangedByUnknownUser(newAccess: newAccess)
+
+        case .memberLabelsAccessChangedByOtherUser(let updaterAci, let newAccess):
+            let (updaterName, updaterAddress) = expandAci(updaterAci)
+            return .memberLabelsAccessChangedByOtherUser(
+                updaterName: updaterName,
+                updaterAddress: updaterAddress,
+                newAccess: newAccess,
+            )
+
         case .announcementOnlyEnabledByLocalUser:
             return .announcementOnlyEnabledByLocalUser
 
@@ -1368,6 +1382,20 @@ private struct DiffingGroupUpdateItemBuilder {
                 ))
             case .rejectedInviteToPni, .legacyE164, .unknown:
                 addItem(.attributesAccessChangedByUnknownUser(newAccess: newAccess.attributes))
+            }
+        }
+
+        if oldAccess.memberLabels != newAccess.memberLabels {
+            switch groupUpdateSource {
+            case .localUser:
+                addItem(.memberLabelsAccessChangedByLocalUser(newAccess: newAccess.memberLabels))
+            case let .aci(updaterAci):
+                addItem(.memberLabelsAccessChangedByOtherUser(
+                    updaterAci: updaterAci.codableUuid,
+                    newAccess: newAccess.memberLabels,
+                ))
+            case .rejectedInviteToPni, .legacyE164, .unknown:
+                addItem(.memberLabelsAccessChangedByUnknownUser(newAccess: newAccess.memberLabels))
             }
         }
     }

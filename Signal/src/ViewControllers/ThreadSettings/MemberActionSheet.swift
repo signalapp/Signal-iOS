@@ -278,6 +278,7 @@ class MemberActionSheet: OWSTableSheetViewController {
                         self.dismiss(animated: true) {
                             self.groupViewHelper?.memberActionSheetRevokeGroupAdminWasSelected(
                                 address: self.address,
+                                hasMemberLabel: self.memberLabel != nil,
                             )
                         }
                     },

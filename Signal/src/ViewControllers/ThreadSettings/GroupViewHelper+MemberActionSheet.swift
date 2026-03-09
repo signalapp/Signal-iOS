@@ -116,7 +116,7 @@ extension GroupViewHelper {
     }
 
     @MainActor
-    func memberActionSheetRevokeGroupAdminWasSelected(address: SignalServiceAddress) {
+    func memberActionSheetRevokeGroupAdminWasSelected(address: SignalServiceAddress, hasMemberLabel: Bool) {
         let titleFormat = OWSLocalizedString(
             "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT",
             comment: "Format for title for 'revoke group admin' confirmation alert. Embeds {user to revoke admin status from}.",
@@ -126,10 +126,23 @@ extension GroupViewHelper {
             comment: "Label for 'revoke group admin' button in conversation settings view.",
         )
 
+        var message: String?
+        if
+            BuildFlags.MemberLabel.send,
+            hasMemberLabel,
+            let groupModel = (thread as? TSGroupThread)?.groupModel as? TSGroupModelV2,
+            groupModel.access.memberLabels == .administrator
+        {
+            message = OWSLocalizedString(
+                "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_MESSAGE",
+                comment: "Message for 'revoke group admin' confirmation alert.",
+            )
+        }
+
         showMemberActionConfirmationActionSheet(
             address: address,
             titleFormat: titleFormat,
-            message: nil,
+            message: message,
             actionTitle: actionTitle,
             updateDescription: "Revoke group admin",
             updateBlock: { (oldGroupModel, aci: Aci) in

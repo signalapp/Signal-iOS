@@ -98,6 +98,7 @@ message AccessControl {
   AccessRequired attributes = 1; // Who can modify the group title, avatar, disappearing messages timer
   AccessRequired members = 2; // Who can add people to the group
   AccessRequired addFromInviteLink = 3;
+  AccessRequired member_label = 4;
 }
 
 message Group {
@@ -270,6 +271,10 @@ message GroupChange {
       AccessControl.AccessRequired addFromInviteLinkAccess = 1;
     }
 
+    message ModifyMemberLabelAccessControlAction {
+      AccessControl.AccessRequired member_label_access = 1;
+    }
+
     message ModifyInviteLinkPasswordAction {
       bytes inviteLinkPassword = 1;
     }
@@ -301,6 +306,7 @@ message GroupChange {
     ModifyAttributesAccessControlAction modifyAttributesAccess = 13; // Changed attributes access control
     ModifyMembersAccessControlAction modifyMemberAccess = 14; // Changed membership access control
     ModifyAddFromInviteLinkAccessControlAction modifyAddFromInviteLinkAccess = 15;  // change epoch = 1
+    ModifyMemberLabelAccessControlAction modify_member_label_access = 27; // change epoch = 6
     repeated AddRequestingMemberAction addRequestingMembers = 16;  // change epoch = 1
     repeated DeleteRequestingMemberAction deleteRequestingMembers = 17;  // change epoch = 1
     repeated PromoteRequestingMemberAction promoteRequestingMembers = 18;  // change epoch = 1

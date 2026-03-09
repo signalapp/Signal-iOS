@@ -285,6 +285,9 @@ extension TSInfoMessage {
             case attributesAccessChangedByLocalUser
             case attributesAccessChangedByOtherUser
             case attributesAccessChangedByUnknownUser
+            case memberLabelsAccessChangedByLocalUser
+            case memberLabelsAccessChangedByOtherUser
+            case memberLabelsAccessChangedByUnknownUser
             case announcementOnlyEnabledByLocalUser
             case announcementOnlyEnabledByOtherUser
             case announcementOnlyEnabledByUnknownUser
@@ -457,6 +460,10 @@ extension TSInfoMessage {
         case attributesAccessChangedByLocalUser(newAccess: GroupV2Access)
         case attributesAccessChangedByOtherUser(updaterAci: AciUuid, newAccess: GroupV2Access)
         case attributesAccessChangedByUnknownUser(newAccess: GroupV2Access)
+
+        case memberLabelsAccessChangedByLocalUser(newAccess: GroupV2Access)
+        case memberLabelsAccessChangedByOtherUser(updaterAci: AciUuid, newAccess: GroupV2Access)
+        case memberLabelsAccessChangedByUnknownUser(newAccess: GroupV2Access)
 
         case announcementOnlyEnabledByLocalUser
         case announcementOnlyEnabledByOtherUser(updaterAci: AciUuid)
@@ -633,7 +640,8 @@ extension TSInfoMessage.PersistableGroupUpdateItem {
             .inviteLinkEnabledWithApprovalByOtherUser(let updaterAci),
             .inviteLinkDisabledByOtherUser(let updaterAci),
             .inviteLinkApprovalDisabledByOtherUser(let updaterAci),
-            .inviteLinkApprovalEnabledByOtherUser(let updaterAci):
+            .inviteLinkApprovalEnabledByOtherUser(let updaterAci),
+            .memberLabelsAccessChangedByOtherUser(let updaterAci, _):
             return updaterAci
         case
             .sequenceOfInviteLinkRequestAndCancels,
@@ -729,7 +737,9 @@ extension TSInfoMessage.PersistableGroupUpdateItem {
             .localUserJoinedViaInviteLink,
             .inviteLinkApprovalDisabledByUnknownUser,
             .otherUserJoinedViaInviteLink,
-            .inviteLinkApprovalDisabledByLocalUser:
+            .inviteLinkApprovalDisabledByLocalUser,
+            .memberLabelsAccessChangedByLocalUser,
+            .memberLabelsAccessChangedByUnknownUser:
             return nil
         }
     }

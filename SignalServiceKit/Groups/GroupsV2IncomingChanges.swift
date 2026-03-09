@@ -99,6 +99,7 @@ public class GroupsV2IncomingChanges {
         var newMembersAccess = oldGroupAccess.members
         var newAttributesAccess = oldGroupAccess.attributes
         var newAddFromInviteLinkAccess = oldGroupAccess.addFromInviteLink
+        var newMemberLabelsAccess = oldGroupAccess.memberLabels
 
         if !oldGroupMembership.isMemberOfAnyKind(changeAuthor) {
             // Change author may have just added themself via a group invite link.
@@ -602,6 +603,19 @@ public class GroupsV2IncomingChanges {
             }
         }
 
+        if let action = changeActionsProto.modifyMemberLabelAccess {
+            if !canEditAccess {
+                owsFailDebug("Cannot edit member label access")
+            }
+
+            let protoAccess = action.memberLabelAccess
+            newMemberLabelsAccess = GroupV2Access.access(forProtoAccess: protoAccess)
+
+            if newMemberLabelsAccess == .unknown {
+                owsFailDebug("Unknown member label access.")
+            }
+        }
+
         if let action = changeActionsProto.modifyAddFromInviteLinkAccess {
             if !canEditInviteLinks {
                 owsFailDebug("Cannot edit addFromInviteLink access.")
@@ -633,7 +647,7 @@ public class GroupsV2IncomingChanges {
         }
 
         let newGroupMembership = groupMembershipBuilder.build()
-        let newGroupAccess = GroupAccess(members: newMembersAccess, attributes: newAttributesAccess, addFromInviteLink: newAddFromInviteLinkAccess)
+        let newGroupAccess = GroupAccess(members: newMembersAccess, attributes: newAttributesAccess, addFromInviteLink: newAddFromInviteLinkAccess, memberLabels: newMemberLabelsAccess)
 
         GroupsV2Protos.validateInviteLinkState(inviteLinkPassword: newInviteLinkPassword, groupAccess: newGroupAccess)
 

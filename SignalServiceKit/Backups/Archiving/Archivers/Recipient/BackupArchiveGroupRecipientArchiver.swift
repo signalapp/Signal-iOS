@@ -584,6 +584,8 @@ private extension GroupAccess {
             members: GroupV2Access(backupProtoAccessRequired: backupProtoAccessControl.members),
             attributes: GroupV2Access(backupProtoAccessRequired: backupProtoAccessControl.attributes),
             addFromInviteLink: GroupV2Access(backupProtoAccessRequired: backupProtoAccessControl.addFromInviteLink),
+            memberLabels: .member, // TODO: Implement when backups validator changes are merged.
+
         )
     }
 

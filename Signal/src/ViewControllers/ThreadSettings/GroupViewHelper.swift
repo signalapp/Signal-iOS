@@ -104,7 +104,10 @@ class GroupViewHelper {
         guard BuildFlags.MemberLabel.send else {
             return false
         }
-        return true
+
+        return canLocalUserEditConversation { groupAccess in
+            return groupAccess.memberLabels
+        }
     }
 
     // Can local user edit group membership.

@@ -113,6 +113,12 @@ extension TSInfoMessage.PersistableGroupUpdateItem {
                 return updaterAci.wrappedValue
             case .attributesAccessChangedByUnknownUser:
                 return nil
+            case .memberLabelsAccessChangedByLocalUser:
+                return nil
+            case .memberLabelsAccessChangedByUnknownUser:
+                return nil
+            case .memberLabelsAccessChangedByOtherUser(let updaterAci, _):
+                return updaterAci.wrappedValue
             case .announcementOnlyEnabledByLocalUser:
                 return nil
             case .announcementOnlyEnabledByOtherUser(let updaterAci):

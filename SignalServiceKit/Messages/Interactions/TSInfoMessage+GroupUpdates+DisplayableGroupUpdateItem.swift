@@ -53,6 +53,10 @@ public enum DisplayableGroupUpdateItem {
     case attributesAccessChangedByOtherUser(updaterName: String, updaterAddress: SignalServiceAddress, newAccess: GroupV2Access)
     case attributesAccessChangedByUnknownUser(newAccess: GroupV2Access)
 
+    case memberLabelsAccessChangedByLocalUser(newAccess: GroupV2Access)
+    case memberLabelsAccessChangedByOtherUser(updaterName: String, updaterAddress: SignalServiceAddress, newAccess: GroupV2Access)
+    case memberLabelsAccessChangedByUnknownUser(newAccess: GroupV2Access)
+
     case announcementOnlyEnabledByLocalUser
     case announcementOnlyEnabledByOtherUser(updaterName: String, updaterAddress: SignalServiceAddress)
     case announcementOnlyEnabledByUnknownUser
@@ -395,6 +399,33 @@ public enum DisplayableGroupUpdateItem {
                     comment: "Message indicating that the access to the group's attributes was changed. Embeds {{new access level}}.",
                 ),
                 groupUpdateFormatArgs: [.raw(newAccess.descriptionForCopy)],
+            )
+        case let .memberLabelsAccessChangedByLocalUser(newAccess):
+            return NSAttributedString.make(
+                fromFormat: OWSLocalizedString(
+                    "GROUP_ACCESS_MEMBER_LABELS_UPDATED_BY_LOCAL_USER_FORMAT",
+                    comment: "Message indicating that the access to setting member labels was changed by the local user. Embeds {{new access level}}.",
+                ),
+                groupUpdateFormatArgs: [.raw(newAccess.descriptionForCopy)],
+            )
+        case let .memberLabelsAccessChangedByUnknownUser(newAccess):
+            return NSAttributedString.make(
+                fromFormat: OWSLocalizedString(
+                    "GROUP_ACCESS_MEMBER_LABELS_UPDATED_FORMAT",
+                    comment: "Message indicating that the access to setting member labels was changed. Embeds {{new access level}}.",
+                ),
+                groupUpdateFormatArgs: [.raw(newAccess.descriptionForCopy)],
+            )
+        case let .memberLabelsAccessChangedByOtherUser(updaterName, updaterAddress, newAccess):
+            return NSAttributedString.make(
+                fromFormat: OWSLocalizedString(
+                    "GROUP_ACCESS_MEMBER_LABELS_UPDATED_BY_REMOTE_USER_FORMAT",
+                    comment: "Message indicating that the access to setting member labels was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}.",
+                ),
+                groupUpdateFormatArgs: [
+                    .name(updaterName, updaterAddress),
+                    .raw(newAccess.descriptionForCopy),
+                ],
             )
         case .announcementOnlyEnabledByLocalUser:
             return OWSLocalizedString(

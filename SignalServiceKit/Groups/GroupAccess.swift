@@ -72,12 +72,14 @@ public final class GroupAccess: NSObject, NSSecureCoding {
         self.addFromInviteLink = (coder.decodeObject(of: NSNumber.self, forKey: "addFromInviteLink")?.uintValue).flatMap(GroupV2Access.init(rawValue:)) ?? .unknown
         self.attributes = (coder.decodeObject(of: NSNumber.self, forKey: "attributes")?.uintValue).flatMap(GroupV2Access.init(rawValue:)) ?? .unknown
         self.members = (coder.decodeObject(of: NSNumber.self, forKey: "members")?.uintValue).flatMap(GroupV2Access.init(rawValue:)) ?? .unknown
+        self.memberLabels = (coder.decodeObject(of: NSNumber.self, forKey: "memberLabels")?.uintValue).flatMap(GroupV2Access.init(rawValue:)) ?? GroupAccess.defaultForV2.memberLabels
     }
 
     public func encode(with coder: NSCoder) {
         coder.encode(NSNumber(value: self.addFromInviteLink.rawValue), forKey: "addFromInviteLink")
         coder.encode(NSNumber(value: self.attributes.rawValue), forKey: "attributes")
         coder.encode(NSNumber(value: self.members.rawValue), forKey: "members")
+        coder.encode(NSNumber(value: self.memberLabels.rawValue), forKey: "memberLabels")
     }
 
     override public var hash: Int {
@@ -85,6 +87,7 @@ public final class GroupAccess: NSObject, NSSecureCoding {
         hasher.combine(addFromInviteLink)
         hasher.combine(attributes)
         hasher.combine(members)
+        hasher.combine(memberLabels)
         return hasher.finalize()
     }
 
@@ -94,18 +97,21 @@ public final class GroupAccess: NSObject, NSSecureCoding {
         guard self.addFromInviteLink == object.addFromInviteLink else { return false }
         guard self.attributes == object.attributes else { return false }
         guard self.members == object.members else { return false }
+        guard self.memberLabels == object.memberLabels else { return false }
         return true
     }
 
     public let members: GroupV2Access
     public let attributes: GroupV2Access
     public let addFromInviteLink: GroupV2Access
+    public let memberLabels: GroupV2Access
 
-    public init(members: GroupV2Access, attributes: GroupV2Access, addFromInviteLink: GroupV2Access) {
+    public init(members: GroupV2Access, attributes: GroupV2Access, addFromInviteLink: GroupV2Access, memberLabels: GroupV2Access) {
         // Ensure we always have valid values.
         self.members = Self.filter(forMembers: members)
         self.attributes = Self.filter(forAttributes: attributes)
         self.addFromInviteLink = Self.filter(forAddFromInviteLink: addFromInviteLink)
+        self.memberLabels = Self.filter(forMemberLabels: memberLabels)
 
         super.init()
     }
@@ -143,19 +149,32 @@ public final class GroupAccess: NSObject, NSSecureCoding {
         }
     }
 
+    public static func filter(forMemberLabels value: GroupV2Access) -> GroupV2Access {
+        switch value {
+        case .unknown:
+            // Valid for groups created before member label permission was added. Use default.
+            return GroupAccess.defaultForV2.memberLabels
+        case .member, .administrator:
+            return value
+        default:
+            owsFailDebug("Invalid access level: \(value)")
+            return .unknown
+        }
+    }
+
 #if TESTABLE_BUILD
     public static var allAccess: GroupAccess {
-        return GroupAccess(members: .member, attributes: .member, addFromInviteLink: .any)
+        return GroupAccess(members: .member, attributes: .member, addFromInviteLink: .any, memberLabels: .member)
     }
 #endif
 
     @objc
     public static var defaultForV2: GroupAccess {
-        return GroupAccess(members: .member, attributes: .member, addFromInviteLink: .unsatisfiable)
+        return GroupAccess(members: .member, attributes: .member, addFromInviteLink: .unsatisfiable, memberLabels: .member)
     }
 
     override public var debugDescription: String {
-        return "[members: \(members), attributes: \(attributes), addFromInviteLink: \(addFromInviteLink), ]"
+        return "[members: \(members), attributes: \(attributes), addFromInviteLink: \(addFromInviteLink), memberLabels: \(memberLabels), ]"
     }
 }
 

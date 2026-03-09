@@ -59,6 +59,7 @@ public class GroupsV2OutgoingChanges {
     private var accessForMembers: GroupV2Access?
     private var accessForAttributes: GroupV2Access?
     private var accessForAddFromInviteLink: GroupV2Access?
+    private var accessForMemberLabels: GroupV2Access?
 
     private enum InviteLinkPasswordMode {
         case ignore
@@ -150,6 +151,11 @@ public class GroupsV2OutgoingChanges {
     public func setAccessForAttributes(_ value: GroupV2Access) {
         owsAssertDebug(accessForAttributes == nil)
         accessForAttributes = value
+    }
+
+    public func setAccessForMemberLabels(_ value: GroupV2Access) {
+        owsAssertDebug(accessForMemberLabels == nil)
+        accessForMemberLabels = value
     }
 
     public func setNewDisappearingMessageToken(_ newDisappearingMessageToken: DisappearingMessageToken) {
@@ -582,6 +588,16 @@ public class GroupsV2OutgoingChanges {
                 var actionBuilder = GroupsProtoGroupChangeActionsModifyAttributesAccessControlAction.builder()
                 actionBuilder.setAttributesAccess(access.protoAccess)
                 actionsBuilder.setModifyAttributesAccess(actionBuilder.buildInfallibly())
+                didChange = true
+            }
+        }
+        if let access = self.accessForMemberLabels {
+            if currentAccess.memberLabels == access {
+                // Redundant change, not a conflict.
+            } else {
+                var actionBuilder = GroupsProtoGroupChangeActionsModifyMemberLabelAccessControlAction.builder()
+                actionBuilder.setMemberLabelAccess(access.protoAccess)
+                actionsBuilder.setModifyMemberLabelAccess(actionBuilder.buildInfallibly())
                 didChange = true
             }
         }

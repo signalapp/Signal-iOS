@@ -946,7 +946,12 @@ extension ConversationSettingsViewController {
                             memberLabelCoordinator?.presenter = self
                             memberLabelCoordinator?.present()
                         } else {
-                            owsFailDebug("Unimplemented!")
+                            presentToast(
+                                text: OWSLocalizedString(
+                                    "MEMBER_LABEL_ADMIN_ONLY_WARNING_TOAST",
+                                    comment: "Toast indicating that only admins can set a member label.",
+                                ),
+                            )
                         }
                     },
                 ),

@@ -23,10 +23,12 @@ class GroupPermissionsSettingsViewController: OWSTableViewController2 {
     private var oldAccessMembers: GroupV2Access { groupModelV2.access.members }
     private var oldAccessAttributes: GroupV2Access { groupModelV2.access.attributes }
     private var oldIsAnnouncementsOnly: Bool { groupModelV2.isAnnouncementsOnly }
+    private var oldAccessMemberLabels: GroupV2Access { groupModelV2.access.memberLabels }
 
     private lazy var newAccessMembers = oldAccessMembers
     private lazy var newAccessAttributes = oldAccessAttributes
     private lazy var newIsAnnouncementsOnly = oldIsAnnouncementsOnly
+    private lazy var newAccessMemberLabels = oldAccessMemberLabels
 
     init(threadViewModel: ThreadViewModel, delegate: GroupPermissionsSettingsDelegate) {
         owsAssertDebug(threadViewModel.threadRecord.isGroupV2Thread)
@@ -67,7 +69,8 @@ class GroupPermissionsSettingsViewController: OWSTableViewController2 {
 
         return oldAccessMembers != newAccessMembers ||
             oldAccessAttributes != newAccessAttributes ||
-            oldIsAnnouncementsOnly != newIsAnnouncementsOnly
+            oldIsAnnouncementsOnly != newIsAnnouncementsOnly ||
+            oldAccessMemberLabels != newAccessMemberLabels
     }
 
     // Don't allow interactive dismiss when there are unsaved changes.
@@ -122,17 +125,10 @@ class GroupPermissionsSettingsViewController: OWSTableViewController2 {
             "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS",
             comment: "Label for 'edit attributes access' action in conversation settings view.",
         )
-        if BuildFlags.MemberLabel.send {
-            accessAttributesSection.footerTitle = OWSLocalizedString(
-                "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER_V3",
-                comment: "Footer for the 'attributes access' section in conversation settings view with member labels added.",
-            )
-        } else {
-            accessAttributesSection.footerTitle = OWSLocalizedString(
-                "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER_V2",
-                comment: "Footer for the 'attributes access' section in conversation settings view with pinned messages added.",
-            )
-        }
+        accessAttributesSection.footerTitle = OWSLocalizedString(
+            "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER_V2",
+            comment: "Footer for the 'attributes access' section in conversation settings view with pinned messages added.",
+        )
 
         accessAttributesSection.add(.init(
             text: OWSLocalizedString(
@@ -191,6 +187,41 @@ class GroupPermissionsSettingsViewController: OWSTableViewController2 {
         ))
 
         contents.add(announcementOnlySection)
+
+        let accessMemberLabelsSection = OWSTableSection()
+        accessMemberLabelsSection.headerTitle = OWSLocalizedString(
+            "CONVERSATION_SETTINGS_EDIT_MEMBER_LABELS_ACCESS",
+            comment: "Label for 'edit member label access' action in conversation settings view.",
+        )
+        accessMemberLabelsSection.footerTitle = OWSLocalizedString(
+            "CONVERSATION_SETTINGS_EDIT_MEMBER_LABELS_ACCESS_FOOTER",
+            comment: "Description for the 'edit member label access'.",
+        )
+
+        accessMemberLabelsSection.add(.init(
+            text: OWSLocalizedString(
+                "CONVERSATION_SETTINGS_MEMBER_LABELS_ACCESS_ALERT_MEMBERS_BUTTON",
+                comment: "Label for button that sets 'member labels access' to 'members-only'.",
+            ),
+            actionBlock: { [weak self] in
+                self?.tryToSetAccessMemberLabels(.member)
+            },
+            accessoryType: newAccessMemberLabels == .member ? .checkmark : .none,
+        ))
+        accessMemberLabelsSection.add(.init(
+            text: OWSLocalizedString(
+                "CONVERSATION_SETTINGS_MEMBER_LABELS_ACCESS_ADMINISTRATORS_BUTTON",
+                comment: "Label for button that sets 'member labels access' to 'administrators-only'.",
+            ),
+            actionBlock: { [weak self] in
+                self?.tryToSetAccessMemberLabels(.administrator)
+            },
+            accessoryType: newAccessMemberLabels == .administrator ? .checkmark : .none,
+        ))
+
+        if BuildFlags.MemberLabel.send {
+            contents.add(accessMemberLabelsSection)
+        }
     }
 
     private func tryToSetAccessMembers(_ value: GroupV2Access) {
@@ -201,6 +232,31 @@ class GroupPermissionsSettingsViewController: OWSTableViewController2 {
         self.newAccessMembers = value
         self.updateTableContents()
         self.updateNavigation()
+    }
+
+    private func tryToSetAccessMemberLabels(_ value: GroupV2Access) {
+        guard groupViewHelper.canEditPermissions else {
+            showAdminOnlyWarningAlert()
+            return
+        }
+        let continueBlock = {
+            self.newAccessMemberLabels = value
+            self.updateTableContents()
+            self.updateNavigation()
+        }
+
+        switch value {
+        case .administrator:
+            if oldAccessMemberLabels != .administrator {
+                showClearMemberLabelWarning(continueHandler: {
+                    continueBlock()
+                })
+            } else {
+                fallthrough
+            }
+        case .member, .unknown, .any, .unsatisfiable:
+            continueBlock()
+        }
     }
 
     private func showClearMemberLabelWarning(continueHandler: @escaping () -> Void) {
@@ -327,6 +383,13 @@ class GroupPermissionsSettingsViewController: OWSTableViewController2 {
                     try await GroupManager.setIsAnnouncementsOnly(
                         groupModel: self.groupModelV2,
                         isAnnouncementsOnly: self.newIsAnnouncementsOnly,
+                    )
+                }
+
+                if self.newAccessMemberLabels != self.oldAccessMemberLabels {
+                    try await GroupManager.changeGroupMemberLabelsAccessV2(
+                        groupModel: self.groupModelV2,
+                        access: self.newAccessMemberLabels,
                     )
                 }
             },
