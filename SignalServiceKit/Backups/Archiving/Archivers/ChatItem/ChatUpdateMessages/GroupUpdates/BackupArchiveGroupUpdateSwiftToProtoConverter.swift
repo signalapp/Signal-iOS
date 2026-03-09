@@ -352,7 +352,7 @@ final class BackupArchiveGroupUpdateSwiftToProtoConverter {
             .memberLabelsAccessChangedByUnknownUser,
             .memberLabelsAccessChangedByOtherUser:
             // TODO: Implement when backups validator changes are merged.
-            break
+            return .skippableInteraction(.memberLabelPermission)
         case .attributesAccessChangedByLocalUser(let newAccess):
             setUpdate(
                 BackupProto_GroupAttributesAccessLevelChangeUpdate(),
