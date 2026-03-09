@@ -104,7 +104,9 @@ public final class MemberLabelCoordinator {
             emoji: memberLabel?.labelEmoji,
             groupNameColors: groupNameColors,
             groupMemberLabelsWithoutLocalUser: buildGroupMemberLabelsWithoutLocalUser(),
-            groupName: groupModel.groupNameOrDefault,
+            groupModel: groupModel,
+            db: db,
+            contactManager: SSKEnvironment.shared.contactManagerImplRef,
         )
         memberLabelViewController.updateDelegate = self
 

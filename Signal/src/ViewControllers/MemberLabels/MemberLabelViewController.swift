@@ -21,6 +21,9 @@ class MemberLabelViewController: OWSViewController, UITextFieldDelegate {
     private var clearButton = UIButton(type: .system)
     private var groupNameColors: GroupNameColors
     private let groupMemberLabelsWithoutLocalUser: [SignalServiceAddress: MemberLabelForRendering]
+    private let groupModel: TSGroupModelV2
+    private let db: DB
+    private let contactManager: OWSContactsManager
 
     weak var updateDelegate: MemberLabelCoordinator?
 
@@ -32,20 +35,25 @@ class MemberLabelViewController: OWSViewController, UITextFieldDelegate {
         emoji: String? = nil,
         groupNameColors: GroupNameColors,
         groupMemberLabelsWithoutLocalUser: [SignalServiceAddress: MemberLabelForRendering],
-        groupName: String,
+        groupModel: TSGroupModelV2,
+        db: DB,
+        contactManager: OWSContactsManager,
     ) {
         self.initialMemberLabel = memberLabel
         self.initialEmoji = emoji
         self.updatedMemberLabel = memberLabel
         self.updatedEmoji = emoji
         self.groupNameColors = groupNameColors
+        self.groupModel = groupModel
         textField.text = memberLabel
         self.groupMemberLabelsWithoutLocalUser = groupMemberLabelsWithoutLocalUser
+        self.db = db
+        self.contactManager = contactManager
 
         super.init()
 
         view.backgroundColor = UIColor.Signal.groupedBackground
-        addNavigationTitleView(groupName: groupName)
+        addNavigationTitleView(groupName: groupModel.groupNameOrDefault)
         navigationItem.rightBarButtonItem = .init(barButtonSystemItem: .done, target: self, action: #selector(didTapDone))
 
         navigationItem.leftBarButtonItem = .cancelButton(
@@ -421,6 +429,22 @@ class MemberLabelViewController: OWSViewController, UITextFieldDelegate {
 
     // MARK: - Group member list
 
+    private func sortedMembers() -> [(key: SignalServiceAddress, value: MemberLabelForRendering)] {
+        let allMembersSorted = db.read { tx in contactManager.sortSignalServiceAddresses(groupMemberLabelsWithoutLocalUser.keys, transaction: tx)
+        }
+
+        var membersToRender = [SignalServiceAddress]()
+        let groupMembership = groupModel.groupMembership
+        // Admin users are first.
+        let adminMembers = allMembersSorted.filter { groupMembership.isFullMemberAndAdministrator($0) }
+        membersToRender += adminMembers
+        // Non-admin users are second.
+        let nonAdminMembers = allMembersSorted.filter { !groupMembership.isFullMemberAndAdministrator($0) }
+        membersToRender += nonAdminMembers
+
+        return membersToRender.map { (key: $0, value: groupMemberLabelsWithoutLocalUser[$0]!) }
+    }
+
     private func buildGroupMembershipSection() {
         let sectionLabel = UILabel()
         sectionLabel.text = OWSLocalizedString(
@@ -438,8 +462,9 @@ class MemberLabelViewController: OWSViewController, UITextFieldDelegate {
         contactListStackView.layoutMargins = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
         contactListStackView.isLayoutMarginsRelativeArrangement = true
 
+        let sortedNonLocalMembers = sortedMembers()
         var cellCount = 0
-        for (memberAddress, memberLabel) in groupMemberLabelsWithoutLocalUser {
+        for (memberAddress, memberLabel) in sortedNonLocalMembers {
             let cell = ContactCellView()
             SSKEnvironment.shared.databaseStorageRef.read { tx in
                 let configuration = ContactCellConfiguration(address: memberAddress, localUserDisplayMode: .asLocalUser)
