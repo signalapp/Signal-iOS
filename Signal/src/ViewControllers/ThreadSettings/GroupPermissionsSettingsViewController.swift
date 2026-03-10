@@ -234,6 +234,17 @@ class GroupPermissionsSettingsViewController: OWSTableViewController2 {
         self.updateNavigation()
     }
 
+    private func nonAdminsHaveMemberLabels() -> Bool {
+        let groupMembership = groupModelV2.groupMembership
+        let nonAdmins = groupMembership.fullMembers.filter { !groupMembership.isFullMemberAndAdministrator($0) }
+        for nonAdmin in nonAdmins {
+            if let aci = nonAdmin.aci, groupMembership.memberLabel(for: aci) != nil {
+                return true
+            }
+        }
+        return false
+    }
+
     private func tryToSetAccessMemberLabels(_ value: GroupV2Access) {
         guard groupViewHelper.canEditPermissions else {
             showAdminOnlyWarningAlert()
@@ -247,7 +258,7 @@ class GroupPermissionsSettingsViewController: OWSTableViewController2 {
 
         switch value {
         case .administrator:
-            if oldAccessMemberLabels != .administrator {
+            if oldAccessMemberLabels != .administrator, nonAdminsHaveMemberLabels() {
                 showClearMemberLabelWarning(continueHandler: {
                     continueBlock()
                 })
