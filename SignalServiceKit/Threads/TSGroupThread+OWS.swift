@@ -98,19 +98,12 @@ public extension TSGroupThread {
     private static func v2GroupId(forV1GroupId v1GroupId: Data) throws -> Data {
         owsPrecondition(GroupManager.isV1GroupId(v1GroupId))
 
-        let infoString = "GV2 Migration"
-        guard
-            let keyBytes = try infoString.utf8.withContiguousStorageIfAvailable({ ptr in
-                try hkdf(
-                    outputLength: GroupMasterKey.SIZE,
-                    inputKeyMaterial: v1GroupId,
-                    salt: [],
-                    info: ptr,
-                )
-            })
-        else {
-            owsFail("Failed to compute key bytes!")
-        }
+        let keyBytes = try hkdf(
+            outputLength: GroupMasterKey.SIZE,
+            inputKeyMaterial: v1GroupId,
+            salt: [],
+            info: Data("GV2 Migration".utf8),
+        )
 
         let contextInfo = try GroupV2ContextInfo.deriveFrom(masterKeyData: keyBytes)
         return contextInfo.groupId.serialize()

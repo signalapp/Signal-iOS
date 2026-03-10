@@ -40,9 +40,7 @@ public class ProvisioningCipher {
 
         let infoData = Constants.info
         let totalLength = Constants.cipherKeyLength + Constants.macKeyLength
-        let derivedSecret = try infoData.utf8.withContiguousStorageIfAvailable {
-            return try hkdf(outputLength: totalLength, inputKeyMaterial: sharedSecret, salt: [], info: $0)
-        }!
+        let derivedSecret = try hkdf(outputLength: totalLength, inputKeyMaterial: sharedSecret, salt: [], info: Data(infoData.utf8))
         owsPrecondition(derivedSecret.count == totalLength)
         let cipherKey = derivedSecret.prefix(Constants.cipherKeyLength)
         let macKey = derivedSecret.dropFirst(Constants.cipherKeyLength)
@@ -127,10 +125,7 @@ public class ProvisioningCipher {
 
         let agreement = ourKeyPair.privateKey.keyAgreement(with: theirPublicKey)
 
-        let keyBytes = try Constants.info.utf8.withContiguousStorageIfAvailable {
-            try hkdf(outputLength: 64, inputKeyMaterial: agreement, salt: [], info: $0)
-        }!
-
+        let keyBytes = try hkdf(outputLength: 64, inputKeyMaterial: agreement, salt: [], info: Data(Constants.info.utf8))
         owsPrecondition(keyBytes.count == 64)
         let cipherKey = keyBytes.prefix(32)
         let macKey = keyBytes.dropFirst(32).prefix(32)
