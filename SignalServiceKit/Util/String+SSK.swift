@@ -828,20 +828,17 @@ public extension String {
     var isStructurallyValidE164: Bool { Self.validE164StructureRegex.hasMatch(input: self) }
 
     var filteredAsE164: String {
-        let maxLength = 256
-        let length = min(maxLength, count)
-
-        var result: [unichar] = []
-        result.reserveCapacity(length)
-        for uch in utf16 {
-            if (0x30...0x39).contains(uch) || (result.isEmpty && uch == 0x2B) {
-                result.append(uch)
-                if result.count >= length {
+        var result = Data(capacity: self.utf8.count)
+        for ch in self.utf8 {
+            // '0'...'9' anywhere OR '+' at the beginning
+            if (0x30...0x39).contains(ch) || (result.isEmpty && ch == 0x2B) {
+                result.append(ch)
+                if result.count >= 256 {
                     break
                 }
             }
         }
-        return String(utf16CodeUnits: result, count: result.count)
+        return String(data: result, encoding: .utf8).owsFailUnwrap("filtered characters are always valid")
     }
 }
 
