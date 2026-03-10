@@ -157,7 +157,7 @@ extension ReferencedAttachment {
 
         if includeEmoji {
             let emoji = self.previewEmoji()
-            return String(format: "%@ %@", emoji, attachmentString)
+            return emoji + " " + attachmentString
         }
         return attachmentString
     }
