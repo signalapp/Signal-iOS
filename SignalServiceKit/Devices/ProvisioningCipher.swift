@@ -82,16 +82,13 @@ public class ProvisioningCipher {
             throw ProvisioningError.invalidProvisionMessage("failure with status \(cryptStatus)")
         }
 
-        // message format is (iv || ciphertext)
-        let cipherText = initializationVector + ciphertextData.prefix(bytesEncrypted)
-
+        var message = Data()
         let version: UInt8 = 1
-        var message: Data = Data()
         message.append(version)
-        message.append(cipherText)
-
-        let mac = Data(HMAC<SHA256>.authenticationCode(for: message, using: .init(data: macKey)))
-        message.append(mac)
+        // message format is (iv || ciphertext)
+        message.append(initializationVector)
+        message.append(ciphertextData.prefix(bytesEncrypted))
+        message.append(contentsOf: HMAC<SHA256>.authenticationCode(for: message, using: .init(data: macKey)))
         return message
     }
 
