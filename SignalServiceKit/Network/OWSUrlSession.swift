@@ -408,7 +408,7 @@ public class OWSURLSession: OWSURLSessionProtocol {
         do {
             method = try HTTPMethod.method(for: rawRequest.method)
         } catch {
-            owsFailDebug("Invalid HTTP method: \(rawRequest.method)")
+            owsFailDebug("Invalid HTTP method: \(rawRequest.method)", logger: rawRequest.logger)
             throw OWSHTTPError.invalidRequest
         }
 
@@ -420,7 +420,7 @@ public class OWSURLSession: OWSURLSessionProtocol {
             do {
                 requestBody = try TSRequest.Body.encodedParameters(bodyParameters)
             } catch {
-                owsFailDebug("Could not serialize JSON parameters: \(error).")
+                owsFailDebug("Could not serialize JSON parameters: \(error).", logger: rawRequest.logger)
                 throw OWSHTTPError.invalidRequest
             }
 
@@ -439,7 +439,7 @@ public class OWSURLSession: OWSURLSessionProtocol {
                 headers: httpHeaders,
             )
         } catch {
-            owsFailDebug("Missing or invalid request: \(rawRequest.url).")
+            owsFailDebug("Missing or invalid request: \(rawRequest.url).", logger: rawRequest.logger)
             throw OWSHTTPError.invalidRequest
         }
 
@@ -451,15 +451,15 @@ public class OWSURLSession: OWSURLSessionProtocol {
         request.timeoutInterval = rawRequest.timeoutInterval
 
         do {
-            Logger.info("Sending… -> \(rawRequest)")
+            rawRequest.logger.info("Sending… -> \(rawRequest)")
             let response = try await performUpload(request: request, requestData: requestBody, progress: nil)
-            Logger.info("HTTP \(response.responseStatusCode) <- \(rawRequest)")
+            rawRequest.logger.info("HTTP \(response.responseStatusCode) <- \(rawRequest)")
             return response
         } catch where error.httpStatusCode != nil {
-            Logger.warn("HTTP \(error.httpStatusCode!) <- \(rawRequest)")
+            rawRequest.logger.warn("HTTP \(error.httpStatusCode!) <- \(rawRequest)")
             throw error
         } catch {
-            Logger.warn("Failure. <- \(rawRequest): \(error)")
+            rawRequest.logger.warn("Failure. <- \(rawRequest): \(error)")
             throw error
         }
     }
