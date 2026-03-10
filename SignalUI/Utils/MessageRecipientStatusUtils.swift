@@ -162,24 +162,6 @@ public class MessageRecipientStatusUtils {
     }
 
     // This method is per-message.
-    public class func receiptMessage(
-        outgoingMessage: TSOutgoingMessage,
-        transaction: DBReadTransaction,
-    ) -> String {
-        let (_, message) = receiptStatusAndMessage(outgoingMessage: outgoingMessage, transaction: transaction)
-        return message
-    }
-
-    // This method is per-message.
-    public class func receiptMessage(
-        outgoingMessage: TSOutgoingMessage,
-        hasBodyAttachments: Bool,
-    ) -> String {
-        let (_, message) = receiptStatusAndMessage(outgoingMessage: outgoingMessage, hasBodyAttachments: hasBodyAttachments)
-        return message
-    }
-
-    // This method is per-message.
     public class func recipientStatus(
         outgoingMessage: TSOutgoingMessage,
         transaction: DBReadTransaction,
